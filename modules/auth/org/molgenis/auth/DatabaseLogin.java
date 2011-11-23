@@ -30,13 +30,13 @@ import org.molgenis.auth.MolgenisRole;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.auth.util.PasswordHasher;
-import org.molgenis.framework.server.TokenManager;
+import org.molgenis.framework.server.TokenFactory;
 
 public class DatabaseLogin implements Login, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private TokenManager tm;
+	private TokenFactory tm;
 
 	/**
 	 * Specifies an enumeration for valid Permissions
@@ -61,7 +61,7 @@ public class DatabaseLogin implements Login, Serializable {
 
 	Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
-	public DatabaseLogin(TokenManager tm) {
+	public DatabaseLogin(TokenFactory tm) {
 		logger.debug("DatabaseLogin()");
 		this.tm = tm;
 	}
@@ -71,13 +71,13 @@ public class DatabaseLogin implements Login, Serializable {
 	 * @param db database to log in to.
 	 * @throws Exception 
 	 */
-	public DatabaseLogin(Database db, TokenManager tm) throws Exception
+	public DatabaseLogin(Database db, TokenFactory tm) throws Exception
 	{
 		this.tm = tm;
 		this.login(db, "anonymous", "anonymous");
 	}
 	
-	public DatabaseLogin(Database db, String redirect, TokenManager tm) throws Exception
+	public DatabaseLogin(Database db, String redirect, TokenFactory tm) throws Exception
 	{
 		this(db, tm);
 		this.redirect = redirect;
@@ -134,6 +134,26 @@ public class DatabaseLogin implements Login, Serializable {
 		// username is required
 		if (name == null || "".equals(name))
 			return false;
+		
+		//cleanup invalid tokens before we start
+		this.tm.invalidateTokens();
+		
+		//if there is a token ID for the given username, login as this user
+		if(this.tm.checkIfTokenExists(name))
+		{
+			String queryMe = this.tm.getToken(name).getUserName();
+			List<MolgenisUser> users = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, queryMe).eq(MolgenisUser.ACTIVE, true).find();
+			if (users.size() == 1)
+			{
+				user = users.get(0);
+				this.reload(db);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
 		// password is required
 		if (password == null || "".equals(password))
@@ -157,7 +177,6 @@ public class DatabaseLogin implements Login, Serializable {
 			{
 				user = users.get(0);
 				this.reload(db);
-				tm.createToken(user.getName(), true);
 				return true;
 			}
 		}

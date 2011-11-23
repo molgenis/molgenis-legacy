@@ -130,7 +130,7 @@ downloadmatrixascsv<-function(id=NULL)
 downloadmatrixascsvCURL<-function(id=NULL)
 {
 	data_url <- paste(serverpath,"/downloadmatrixascsv?id=",id,"&download=all&stream=true",sep="")
-	tetsing <- getURL(data_url)
+	tetsing <- getURL(data_url, curl = ch)
 	tmpfile <- tempfile()
 	cat(tetsing,file=tmpfile)
 	data <- read.table(tmpfile,sep="\t",header=T,row.names=1,colClasses=c("character"),check.names=FALSE)

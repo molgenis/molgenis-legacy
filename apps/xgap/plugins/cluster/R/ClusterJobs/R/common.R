@@ -51,7 +51,7 @@ generateRunfile <- function(job, est,jobid,libraryloc=NULL){
 	runfile
 }
 
-DownloadnSave <- function(investigationname, DBmarkerID = "", DBtraitID = "", dbpath = "",jobid,njobs,libraryloc=NULL){
+DownloadnSave <- function(investigationname, token, DBmarkerID = "", DBtraitID = "", dbpath = "",jobid,njobs,libraryloc=NULL){
 	#Generates a R-script to download all the information and build a cross object
 	qtlfile <- paste("./run",jobid,"/download.R",sep="")
 	#Print our report function
@@ -59,14 +59,15 @@ DownloadnSave <- function(investigationname, DBmarkerID = "", DBtraitID = "", db
 	cat("\ttask <- ",jobid,"\n",file=qtlfile,append=T)
 	cat("\ttext <- substr(URLencode(text),0,100)\n",file=qtlfile,append=T)
 	cat("\tlink <- paste(\"",dbpath,"/taskreporter?job=\",task,\"&subjob=0&statuscode=\",status,\"&statustext=\",text,sep=\"\")\n",sep="",file=qtlfile,append=T)
-	cat("\tgetURL(link)\n",file=qtlfile,append=T)
+	cat("\tgetURL(link, curl = ch)\n",file=qtlfile,append=T)
 	cat("\tif(status==-1){\n\t\tcat(\"!!!\",text,\"!!!\")\n\t\t\n\t\tq(\"no\")\n\t}\n",file=qtlfile,append=T)
 	cat("}\n\n",file=qtlfile,append=T)
 	#load needed libraries
 	cat("library(qtl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-  cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+    cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 	#Downloading of Cross object (secured)
 	cat(Generate_Statement(paste("cross <- CrossFromMolgenis(genotypematrixname='",DBmarkerID,"',phenotypematrixname='",DBtraitID,"',investigationname='",investigationname,"')","\n",sep="")),file=qtlfile,append=T)
 	cat(Generate_Statement(paste("save(cross,file=\"./run",jobid,"/cross.RData\")","\n",sep="")),file=qtlfile,append=T)
@@ -91,7 +92,7 @@ tryloadlibs <- function(lib="qtl", libraryloc, qtlfile){
   cat("}\n",sep="",file=qtlfile,append=TRUE)
 }
 
-startcode <- function(dbpath,jobid,item,libraryloc=NULL,name="subjob"){
+startcode <- function(token, dbpath,jobid,item,libraryloc=NULL,name="subjob"){
 	cat("Debug: StartCode function entered\n")
 	qtlfile <- paste("./run",jobid,"/",name,item,".R",sep="")
 	cat("Debug: FILE=",qtlfile,"\n")
@@ -101,6 +102,7 @@ startcode <- function(dbpath,jobid,item,libraryloc=NULL,name="subjob"){
 	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 #	no longer needed: cat("library(ClusterJobs,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
     cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 #	Print our report function
 	cat("\nreport <- function(status,text){\n",file=qtlfile,append=T)
 	cat("\ttask <- ",jobid,"\n",file=qtlfile,append=T)
@@ -111,7 +113,7 @@ startcode <- function(dbpath,jobid,item,libraryloc=NULL,name="subjob"){
 		cat("\tjob <- ",item,"\n",file=qtlfile,append=T)
 	}
 	cat("\tlink <- paste(\"",dbpath,"/taskreporter?job=\",task,\"&subjob=\",job,\"&statuscode=\",status,\"&statustext=\",text,sep=\"\")\n",sep="",file=qtlfile,append=T)
-	cat("\tgetURL(link)\n",file=qtlfile,append=T)
+	cat("\tgetURL(link, curl = ch)\n",file=qtlfile,append=T)
 	cat("\tif(status==-1){\n\t\tcat(\"!!!\",text,\"!!!\")\n\t\tq(\"no\")\n\t}\n",file=qtlfile,append=T)
 	cat("}\n\n",file=qtlfile,append=T)
 	qtlfile
@@ -135,13 +137,13 @@ report <- function(dbpath,task,job,status,text){
 	progress <- 0
 	text <- substr(URLencode(text),0,100)
 	link <- paste(dbpath,"/taskreporter?job=",task,"&subjob=",job,"&statuscode=",status,"&statustext=",text,"&statusprogress=",progress,sep="")
-	getURL(link)
+	getURL(link, curl = ch)
 	if(status==-1){
 		q("no")
 	}
 }
 
-run_cluster_new_new <- function(name="test", investigation="ClusterDemo", totalitems=24, njobs=2, dbpath="http://gbic.target.rug.nl:8080/clusterdemo", jobid=1, job="QTL", libraryloc="C:/Program Files/R/R-2.10.1/library", jobparams=list( c("genotypes", "genotypes"), c("phenotypes", "metaboliteexpression"),c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0"))){
+run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token = "", totalitems=24, njobs=2, dbpath="http://gbic.target.rug.nl:8080/clusterdemo", jobid=1, job="QTL", libraryloc="C:/Program Files/R/R-2.10.1/library", jobparams=list( c("genotypes", "genotypes"), c("phenotypes", "metaboliteexpression"),c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0"))){
 #	Initializes the cluster
 #	Downloads the cross datafile from molgenis and save it as a .RData
 #	Estimated time needed for each run (very crude) (totalitems in run + 25%)
@@ -171,7 +173,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", totali
 	}
 	nprun <- ceiling(totalitems/njobs)
 	cat("# of Traits:",totalitems,"\n# of Jobs",njobs,"# per run",nprun,"\n")
-	tryCatch(DownloadnSave(investigationname=investigation, genotypes, phenotypes, dbpath=dbpath,jobid,njobs,libraryloc)
+	tryCatch(DownloadnSave(investigationname=investigation, token, genotypes, phenotypes, dbpath=dbpath,jobid,njobs,libraryloc)
 		,error =  function(e){report(dbpath,jobid,0,-1,"Downloadscript")}
 	)
   cat("debug: Downloadfile generated\n")
@@ -196,7 +198,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", totali
     }else{
       todo <- 1:totalitems
     }
-    tryCatch(myanalysisfile <- startcode(dbpath,jobid,x,libraryloc)
+    tryCatch(myanalysisfile <- startcode(token, dbpath,jobid,x,libraryloc)
         ,error = function(e){cat(e[[1]],"\n");report(dbpath,jobid,x,-1,"StartCodeGeneration")}
     )
   	cat("jobid <- ",jobid,"\n",file=myanalysisfile,append=T)
@@ -241,7 +243,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", totali
 }
 
 #time execution of executing 1 trait
-est_runtime_new_new <- function(njobs=1, ntraits=1, dbpath = "", num_per_run=1, jobid=1, job, investigation, jobparams=list(c("map","scanall"),c("method","hk"),c("model","normal")), libraryloc="~/libs"){
+est_runtime_new_new <- function(token, njobs=1, ntraits=1, dbpath = "", num_per_run=1, jobid=1, job, investigation, jobparams=list(c("map","scanall"),c("method","hk"),c("model","normal")), libraryloc="~/libs"){
   cat("Debug: Gonna call user function for est time: ",paste("est_",job,sep="")," \n")
   s <- proc.time()
   cat("Debug:  est time: ",dbpath," \n")
@@ -249,7 +251,7 @@ est_runtime_new_new <- function(njobs=1, ntraits=1, dbpath = "", num_per_run=1, 
   cat("Debug:  est time: ",libraryloc," \n")
   report(dbpath,jobid,0,2,"Userfunctionexecuting")
   #Crude estimation of time that it would take a job of num_per_run qtls to finish, we get all the data from molgenis and run 2 qtls profiles
-  myanalysisfile <- startcode(dbpath,jobid,"",libraryloc,"ESTtime")
+  myanalysisfile <- startcode(token, dbpath,jobid,"",libraryloc,"ESTtime")
   cat("subjob <- ",0,"\n",file=myanalysisfile,append=T)
   cat("jobid <- ",jobid,"\n",file=myanalysisfile,append=T)
   cat("dbpath <- \"",dbpath,"\"\n",sep="",file=myanalysisfile,append=T)

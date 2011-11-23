@@ -13,6 +13,8 @@
 				type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
 			<plugin label="Upgrade person to user" name="UserToPersonPlugin"
 				type="org.molgenis.auth.service.persontouser.PersonToUser" />
+			<plugin label="Security tokens" name="TokenManagerPlugin"
+				type="org.molgenis.auth.service.tokenmanager.TokenManager" />
 			
 		</menu>
 		<plugin label="Database status" name="DatabaseSettings"

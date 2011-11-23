@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -410,6 +411,14 @@ public class ClusterPlugin extends PluginModel<Entity>
 				toServer += "name = '" + NameConvention.escapeEntityNameStrict(startedJob.getOutputDataName()) + "',";
 				// FIXME
 				toServer += "investigation = '" + inv.getName() + "',";
+				
+				String userName = db.getSecurity().getUserName();
+				
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.DATE, 2);
+				Date validUntil = cal.getTime();
+				String token = this.getTokenFactory().makeNewToken(userName, validUntil);
+				toServer += "token = '" + token + "',";
 				toServer += "totalitems = '" + totalitems + "',";
 				toServer += "njobs = '" + model.getNrOfJobs() + "',";
 				toServer += "dbpath = '" + db_path + "',";
@@ -446,7 +455,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 				toServer = toServer.substring(0, toServer.length() - 1);
 				toServer += ")";
 
-				List<Command> commands = generateNullJobCommandList(jobId, toServer, startedJob.getComputeResource(),
+				List<Command> commands = generateNullJobCommandList(jobId, token, toServer, startedJob.getComputeResource(),
 						usrHomeLibs, OS, db_path);
 
 				// submit R job that will distribute the subjobs
@@ -526,7 +535,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 		return JobSubjobMap;
 	}
 
-	public List<Command> generateNullJobCommandList(int jobId, String toServer, String computeResource,
+	public List<Command> generateNullJobCommandList(int jobId, String token, String toServer, String computeResource,
 			File usrHomeLibs, String OS, String db_path)
 	{
 		List<Command> commands = new ArrayList<Command>();
@@ -547,6 +556,8 @@ public class ClusterPlugin extends PluginModel<Entity>
 					+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "')\" >> runmij" + jobId + ".R", false, false,
 					true));
 			commands.add(new Command("echo source(\"" + db_path + "/api/R/\") >> runmij" + jobId + ".R", false, false,
+					true));
+			commands.add(new Command("echo MOLGENIS.login(\"" + token + "\") >> runmij" + jobId + ".R", false, false,
 					true));
 			commands.add(new Command("echo run_cluster_new_new(" + toServer + ") >> runmij" + jobId + ".R", false,
 					false, true));
@@ -569,6 +580,8 @@ public class ClusterPlugin extends PluginModel<Entity>
 						false, true));
 				commands.add(new Command("echo \"source('" + db_path + "/api/R/')\" >> runmij" + jobId + ".R", false,
 						false, true));
+				commands.add(new Command("echo \"MOLGENIS.login('" + token + "')\" >> runmij" + jobId + ".R", false, false,
+						true));
 				commands.add(new Command("echo \"run_cluster_new_new(" + toServer + ")\" >> runmij" + jobId + ".R",
 						false, false, true));
 				commands.add(new Command("echo \"q('no')\" >> runmij" + jobId + ".R", false, false, true));
@@ -584,6 +597,8 @@ public class ClusterPlugin extends PluginModel<Entity>
 						false, true));
 				commands.add(new Command("echo \"source('" + db_path + "/api/R/')\" >> runmij" + jobId + ".R", false,
 						false, true));
+				commands.add(new Command("echo \"MOLGENIS.login('" + token + "')\" >> runmij" + jobId + ".R", false, false,
+						true));
 				commands.add(new Command("echo \"run_cluster_new_new(" + toServer + ")\" >> runmij" + jobId + ".R",
 						false, false, false));
 				commands.add(new Command("echo \"q('no')\" >> runmij" + jobId + ".R", false, false, false));
