@@ -11,7 +11,7 @@ public class MolgenisContext
 	private DataSource ds;
 	private MolgenisOptions usedOptions;
 	private String variant;
-	private TokenManager tokenManager;
+	private TokenFactory tokenFactory;
 	
 	// other "static" variables here, eg.
 	// molgenis version
@@ -24,14 +24,12 @@ public class MolgenisContext
 		this.ds = ds;
 		this.usedOptions = usedOptions;
 		this.variant = variant;
-		this.tokenManager = new TokenManager();
+		this.tokenFactory = new TokenFactory();
 	}
 
-	
-	
-	public TokenManager getTokenManager()
+	public TokenFactory getTokenFactory()
 	{
-		return tokenManager;
+		return tokenFactory;
 	}
 
 	public String getVariant()

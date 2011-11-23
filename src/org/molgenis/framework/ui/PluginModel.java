@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.server.TokenFactory;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -32,7 +33,11 @@ public abstract class PluginModel<E extends Entity> extends
 	{
 		return this.getApplicationController().getLogin();
 	}
-
+	
+	public TokenFactory getTokenFactory()
+	{
+		return this.getController().getApplicationController().getMolgenisContext().getTokenFactory();
+	}
 
 	
 	@Override

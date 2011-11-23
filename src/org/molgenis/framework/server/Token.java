@@ -4,36 +4,21 @@ import java.util.Date;
 
 public class Token
 {
-	private String uuidTokenValue;
+	private String userName;
 	private Date expiresAt;
 	private Date createdAt;
 	
-	public Token(String uuidTokenValue, Date createdAt, Date expiresAt)
+	public Token(String userName, Date createdAt, Date expiresAt)
 	{
 		super();
-		this.uuidTokenValue = uuidTokenValue;
+		this.userName = userName;
 		this.expiresAt = expiresAt;
 		this.createdAt = createdAt;
 	}
 
-	public void setUuidTokenValue(String uuidTokenValue)
+	public String getUserName()
 	{
-		this.uuidTokenValue = uuidTokenValue;
-	}
-
-	public void setExpiresAt(Date expiresAt)
-	{
-		this.expiresAt = expiresAt;
-	}
-
-	public void setCreatedAt(Date createdAt)
-	{
-		this.createdAt = createdAt;
-	}
-
-	public String getUuidTokenValue()
-	{
-		return uuidTokenValue;
+		return userName;
 	}
 
 	public Date getExpiresAt()
@@ -45,5 +30,7 @@ public class Token
 	{
 		return createdAt;
 	}
+
+	
 	
 }
