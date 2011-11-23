@@ -22,7 +22,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 	private String renderTree(JQueryTreeViewElement node) {
 		String returnString;
 		if (node.hasChildren()) {
-			returnString = "<li><span class=\"folder\">" + node.getLabel() + "</span>";
+			returnString = "<li class=\"closed\"><span class=\"folder\">" + node.getLabel() + "</span>";
 			returnString += "<ul>";
 			Vector<JQueryTreeViewElement> children = node.getChildren();
 			for (JQueryTreeViewElement child : children) {
@@ -52,6 +52,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"</style>\n"
 		+"<script>\n"
 		+"$(document).ready(function(){\n"
+//		+"$(\"#browser\").treeview({collapsed: true});});\n"
 		+"$(\"#browser\").treeview();});\n"
 		+"</script>\n";
 		
