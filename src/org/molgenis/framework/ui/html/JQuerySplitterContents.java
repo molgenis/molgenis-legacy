@@ -10,7 +10,7 @@ public class JQuerySplitterContents
 	{
 		JQuerySplitterContents.leftPane = leftPane;
 	}
-	public static String getLeftPane()
+	public String getLeftPane()
 	{
 		return leftPane;
 	}
@@ -18,7 +18,7 @@ public class JQuerySplitterContents
 	{
 		JQuerySplitterContents.rightTopPane = rightTopPane;
 	}
-	public static String getRightTopPane()
+	public String getRightTopPane()
 	{
 		return rightTopPane;
 	}
@@ -26,7 +26,7 @@ public class JQuerySplitterContents
 	{
 		JQuerySplitterContents.rightBottomPane = rightBottomPane;
 	}
-	public static String getRightBottomPane()
+	public String getRightBottomPane()
 	{
 		return rightBottomPane;
 	}

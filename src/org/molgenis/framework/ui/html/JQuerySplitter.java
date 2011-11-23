@@ -1,82 +1,45 @@
 package org.molgenis.framework.ui.html;
 
-import java.util.Vector;
-
-import org.molgenis.util.Tree;
-
 public class JQuerySplitter<E> extends HtmlWidget
 {
 	private String splitterName;
-	private JQuerySplitterContents splitterContents;
+	private JQuerySplitterContents splitterContents = null;
 
-	public JQuerySplitter(String name, JQuerySplitterContents contents)
-	{
+	public JQuerySplitter(String name, JQuerySplitterContents contents) {
 		super(name);
 		
-		this.setSplitterContents(new JQuerySplitterContents());
 		this.setSplitterContents(contents);
 		this.setSplitterName(name);
 	}
 	
 
-	private String renderSplitter(JQuerySplitterContents contents) {
-		String returnString = "";
-
-			returnString = "<p>" + this.getSplitterName() + "</p>";
-			returnString += "test>>>>>>>>>>" ; 
-			returnString += contents; 
-
-		return returnString;
-	}
-	
-	
 	
 	@Override
 	public String toHtml(){
 		
-		String html = "<ul id=\"browser\" class=\"pointtree\">";
-		html += "</ul>";
-	    html += "<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n"
-		+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/splitter/jquery.spliter.css\" type=\"text/css\" media=\"screen\" />\n" 
-		+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>"
-		+ " <style type=\"text/css\">\n"
-		+ "$(document).ready(function() {"
-		+ "$(\"#splitterContainer\").splitter({minAsize:100,maxAsize:300,splitVertical:true,A:" 
-		+ "$('#leftPane'),B:" 
-		+ "$('#rightPane'),slave:" 
-		+ "$(\"#rightSplitterContainer\"),closeableto:0});"
-		+ "$(\"#rightSplitterContainer\").splitter({splitHorizontal:true,A:" 
-		+ "$('#rightTopPane'),B:" 
-		+ "$('#rightBottomPane'),closeableto:100});"
-		+ "});"
-		+ "<div id=\"splitterContainer\">"
-		+ "	<div id=\"leftPane\">"
-		+  		JQuerySplitterContents.getLeftPane()
-		+ "	</div>"
-		+ "<!-- #leftPane -->"
-		+ "<div id=\"rightPane\">"
-		+ "	<div style=\"height:5%;background:#bac8dc\">Toolbar?</div>"
-		+ "		<div id=\"rightSplitterContainer\" style=\"height:95%\">"
-	    + "			<div id=\"rightTopPane\">"
-		+  				JQuerySplitterContents.getRightTopPane()
-		+ "			</div>"
-		+ "			<div id=\"rightBottomPane\">"
-		+ "				<div>"
-		+  					JQuerySplitterContents.getRightBottomPane()
-		+ "				</div>"
-		+ "			</div>"
-		+ "		</div>"
-		+ "	</div>"
-		+ "</div>";
-
+		String html = "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n";
+		html += "<script type=\"text/javascript\" src=\"res/jquery-plugins/splitter/splitter.js\"></script>";
+		//html += "<style type=\"text/css\" media=\"all\">";
+	    html += "<link rel=\"stylesheet\" href=\"res/jquery-plugins/splitter/jquery.spliter.css\" type=\"text/css\" media=\"screen\" />\n" ;
+	    html += "<script>";
+		html += "$(document).ready(function() { \n";
+	    html += "$(\"#splitterContainer\").splitter({minAsize:100,maxAsize:300,splitVertical:true,A:" ;
+	    html += "$('#leftPane'),B:" ;
+		html += "$('#rightPane'),slave:" ;
+		html += "$(\"#rightSplitterContainer\"),closeableto:0})";
+		html += "$(\"#rightSplitterContainer\").splitter({splitHorizontal:true,A:"; 
+		html += "$('#rightTopPane'),B:";
+		html += "$('#rightBottomPane'),closeableto:100});";
+		html += "});";
+	    html += "</script>\n";
 		
 	    return html;
 	}
 
 
-	public void setSplitterContents(JQuerySplitterContents splitterContents)
+	public void setSplitterContents(JQuerySplitterContents contents)
 	{
-		this.splitterContents = splitterContents;
+		splitterContents = contents;
 	}
 
 
@@ -86,9 +49,9 @@ public class JQuerySplitter<E> extends HtmlWidget
 	}
 
 
-	public void setSplitterName(String splitterName)
+	public void setSplitterName(String name)
 	{
-		this.splitterName = splitterName;
+		splitterName = name;
 	}
 
 
