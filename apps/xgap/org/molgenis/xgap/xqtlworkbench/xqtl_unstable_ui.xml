@@ -8,6 +8,7 @@
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/runanalysis.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/configureanalysis.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/search.xml"/>
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/settings.xml"/>
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/>
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
 	</menu>
 </molgenis>

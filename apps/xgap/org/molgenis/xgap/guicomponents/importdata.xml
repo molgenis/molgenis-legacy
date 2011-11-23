@@ -1,8 +1,10 @@
 <molgenis>
-	<menu name="ImportDataMenu" label="Import data" group="biologist">
+	<menu name="ImportDataMenu" label="Import special data" group="biologist">
 		<plugin label="R/qtl" name="QTLWizard"
 			type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
 		<plugin label="Plink" name="PlinkFileManager"
 			type="plugins.molgenisfile.plink.PlinkFileManager" group="biologist" />
+		<plugin label="Excel" name="ExcelWizard"
+			type="plugins.genericwizard.GenericWizard" group="biologist" />
 	</menu>
 </molgenis>

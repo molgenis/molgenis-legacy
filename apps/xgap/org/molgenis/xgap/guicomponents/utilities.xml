@@ -1,0 +1,22 @@
+<molgenis>
+	<menu label="Utilities" name="Utilities">
+		<menu name="Ontologies" label="Ontologies" group="biologist">
+			<form name="Protocols" entity="Protocol" group="biologist" />
+			<form name="Persons" entity="Person" group="biologist" />
+			<form name="Institutes" entity="Institute" group="biologist" />
+			<form name="Species" entity="Species" group="biologist" />
+			<form name="Tissues" entity="Tissue" group="biologist" />
+			<form label="Other" name="OntologyTerms" entity="OntologyTerm" group="biologist" />
+		</menu>
+		<menu name="Tools" label="Tools">
+			<plugin label="Format names" name="NamingPolicy"
+				type="plugins.help.naming.NamingPlugin" group="biologist" />
+			<plugin label="Rename duplicates" name="DuplicateRenaming"
+				type="plugins.help.duplicates.DuplicatesPlugin" group="biologist" />
+			<plugin label="KEGG converter" name="KeggConverter"
+				type="plugins.keggplugin.KeggToolsPlugin" group="bioinformatician" />
+			<plugin label="ROnline" name="ROnline"
+				type="plugins.ronline.ROnline" group="bioinformatician"/>
+		</menu>
+	</menu>
+</molgenis>

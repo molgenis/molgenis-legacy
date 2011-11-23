@@ -528,29 +528,33 @@ public class XqtlSeleniumTest
 			public void userRoleMenuVisibility() throws Exception
 			{
 				//find out if admin can see the correct tabs
-				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse data*Import data*Run QTL mapping*Configure analysis*Search*Settings"));
-				clickAndWait("id=Settings_tab_button");
-				Assert.assertTrue(selenium.isTextPresent("Users and permissions*Database status*File storage*Install R packages*Ontologies*Utilities"));
+				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse / add data*Import special data*Run QTL mapping*Configure analysis*Search / report*Utilities*Admin panel"));
+				clickAndWait("id=Admin_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Users and permissions*Database status*File storage*Install R packages*Admin utilities"));
 				clickAndWait("id=OtherAdmin_tab_button");
 				Assert.assertTrue(selenium.isTextPresent("Job table"));
+				
+				String whatBiologistCanSee = "Browse / add data*Import special data*Run QTL mapping*Search / report*Utilities";
 				
 				//logout and see if the correct tabs are visible
 				clickAndWait("id=UserLogin_tab_button");
 				clickAndWait("id=Logout");
 				Assert.assertTrue(selenium.isTextPresent("Home*Login"));
-				Assert.assertFalse(selenium.isTextPresent("Browse data*Import data*Run QTL mapping*Configure analysis*Search*Settings"));
+				Assert.assertFalse(selenium.isTextPresent(whatBiologistCanSee));
 				
 				//login as biologist and see if the correct tabs are visible
 				selenium.type("id=username", "bio-user");
 				selenium.type("id=password", "bio");
 				clickAndWait("id=Login");
-				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse data*Import data*Run QTL mapping*Search*Settings"));
+				Assert.assertTrue(selenium.isTextPresent("Home*Login*" + whatBiologistCanSee));
 				Assert.assertFalse(selenium.isTextPresent("Configure analysis"));
-				clickAndWait("id=Settings_tab_button");
-				clickAndWait("id=OtherAdmin_tab_button");
-				Assert.assertTrue(selenium.isTextPresent("Advanced import*Format names*Rename duplicates"));
-				Assert.assertFalse(selenium.isTextPresent("Job table"));
+				Assert.assertFalse(selenium.isTextPresent("Admin panel"));
+				
+				clickAndWait("id=Utilities_tab_button");
+				clickAndWait("id=Tools_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Format names*Rename duplicates"));
 				Assert.assertFalse(selenium.isTextPresent("KEGG converter"));
+				Assert.assertFalse(selenium.isTextPresent("ROnline"));
 
 				//login as bioinformatician and see if the correct tabs are visible
 				clickAndWait("id=UserLogin_tab_button");
@@ -558,11 +562,13 @@ public class XqtlSeleniumTest
 				selenium.type("id=username", "bioinfo-user");
 				selenium.type("id=password", "bioinfo");
 				clickAndWait("id=Login");
-				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse data*Import data*Run QTL mapping*Configure analysis*Search*Settings"));
-				clickAndWait("id=Settings_tab_button");
-				clickAndWait("id=OtherAdmin_tab_button");
-				Assert.assertTrue(selenium.isTextPresent("Advanced import*Format names*Rename duplicates*KEGG converter"));
-				Assert.assertFalse(selenium.isTextPresent("Job table"));
+				Assert.assertTrue(selenium.isTextPresent("Home*Login*" + whatBiologistCanSee));
+				Assert.assertTrue(selenium.isTextPresent("Configure analysis"));
+				Assert.assertFalse(selenium.isTextPresent("Admin panel"));
+				
+				clickAndWait("id=Utilities_tab_button");
+				clickAndWait("id=Tools_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Format names*Rename duplicates*KEGG converter*ROnline"));
 				
 				//log back in as admin
 				clickAndWait("id=UserLogin_tab_button");
@@ -723,7 +729,7 @@ public class XqtlSeleniumTest
 				Assert.assertTrue(selenium.isTextPresent("[view all local logs]"));
 				
 				//check created job/subjobs
-				clickAndWait("id=Settings_tab_button");
+				clickAndWait("id=Admin_tab_button");
 				clickAndWait("id=OtherAdmin_tab_button");
 				clickAndWait("id=Jobs_tab_button");
 				

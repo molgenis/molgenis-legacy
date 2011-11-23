@@ -52,15 +52,15 @@
 		</td>
 		<td>
 			<input type="file" name="GenoFile"><input type="submit" id="upload_genotypes" value="Upload" onclick="__action.value='uploadGeno';return true;"/><#-->input type="button" value="Show example" onclick="mopen('genoExample');return true;"/-->
-			<div class="wizardfoldout" id="genoExample">
-			<i>Example</i><br>
+
+			<br><i>Example</i><br>
 			<table><tr><td class="matrixTableCell matrixRowColor1" style="background: white"><FONT FACE= "Courier New">
 				inv1	ind2	ind3	ind4	ind5<br>
 				mar1	A	A	B	A	B<br>
 				mar2	A	A	B	A	B<br>
 				mar3	A	A	A	A	B</font>
 			</td></tr></table>
-			</div><br><b>Your individuals must be in the first line.</b> If they are not, please have a look at <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistImport">the manual</a>.
+			<br><b>Your individuals must be in the first line.</b> If they are not, please have a look at <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistImport">the manual</a>.
 			If you have not annotated your data yet, individuals are automatically added with cross type <select name="cross"><#list model.crosses as cross><option value="${cross.id}">${cross.name}</option></#list></select>
 		</td>
 	</tr>
@@ -72,15 +72,15 @@
 			Phenotypes:
 		</td>
 		<td><input type="file" name="PhenoFile"><input type="submit" id="upload_phenotypes" value="Upload" onclick="__action.value='uploadPheno';return true;"/><#--input type="button" value="Show example" onclick="mopen('phenoExample');return true;"/-->
-			<div class="wizardfoldout" id="phenoExample">
-			<i>Example</i><br>
+
+			<br><i>Example</i><br>
 			<table><tr><td class="matrixTableCell matrixRowColor1" style="background: white"><FONT FACE= "Courier New">
 				inv1	ind2	ind3	ind4	ind5<br>
 				trt1	45	567	345	234	12<br>
 				trt2	13	673	867	754	234<br>
 				trt3	347	34	375	56	345</font>
 			</td></tr></table>
-			</div><br><b>Again, your individuals must be in the first line.</b> If they are not, please have a look at <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistImport">the manual</a>.<br>
+			<br><b>Again, your individuals must be in the first line.</b> If they are not, please have a look at <a target="_blank" href="http://www.molgenis.org/wiki/xQTLBiologistImport">the manual</a>.<br>
 			If you have not annotated your data yet, traits are automatically as <select name="trait"><#list model.xqtlObservableFeatureTypes as xof><option value="${xof}">${xof}</option></#list></select>
 		</td>
 	</tr>
@@ -92,8 +92,8 @@
 			Map:
 		</td>
 		<td><input type="file" name="MapFile"><input type="submit" id="upload_map" value="Upload" onclick="__action.value='uploadMap';return true;"/><#--input type="button" value="Show example" onclick="mopen('mapExample');return true;"/-->
-			<div class="wizardfoldout" id="mapExample">
-			<i>Example</i><br>
+
+			<br><i>Example</i><br>
 			<table><tr><td class="matrixTableCell matrixRowColor1" style="background: white"><FONT FACE= "Courier New">
 				name	chr	cm<br>
 				mar1	1	0.0<br>
@@ -102,7 +102,7 @@
 				mar4	2	1.913<br>
 				mar5	2	15.059</font>
 			</td></tr></table>
-			</div><br><b>Please use this exact first line.</b><br>
+			<br><b>Please use this exact first line.</b><br>
 		</td>
 	</tr>
 	<tr>

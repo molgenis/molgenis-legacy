@@ -1,5 +1,5 @@
 <molgenis>
-	<menu label="Settings" name="Settings">
+	<menu label="Admin panel" name="Admin">
 		<menu name="Auth" label="Users and permissions">
 			<menu label="Basic management" name="Management">
 				<form name="MolgenisUser" entity="MolgenisUser" />
@@ -15,7 +15,6 @@
 				type="org.molgenis.auth.service.persontouser.PersonToUser" />
 			<plugin label="Security tokens" name="TokenManagerPlugin"
 				type="org.molgenis.auth.service.tokenmanager.TokenManager" />
-			
 		</menu>
 		<plugin label="Database status" name="DatabaseSettings"
 			type="plugins.system.database.Settings" />
@@ -23,31 +22,10 @@
 			type="plugins.system.settings.Settings" />
 		<plugin label="Install R packages" name="DependencyManager"
 			type="plugins.cluster.demo.dependencymanager.DependencyManager" />
-		<menu name="Ontologies" label="Ontologies" group="biologist">
-			<form name="Protocols" entity="Protocol" group="biologist" />
-			<form name="Persons" entity="Person" group="biologist" />
-			<form name="Institutes" entity="Institute" group="biologist" />
-			<form name="Species" entity="Species" group="biologist" />
-			<form name="Tissues" entity="Tissue" group="biologist" />
-			<form label="Other" name="OntologyTerms" entity="OntologyTerm" group="biologist" />
-			
-		</menu>
-		<menu name="OtherAdmin" label="Utilities">
-			<plugin label="Advanced import" name="ExcelWizard"
-				type="plugins.genericwizard.GenericWizard" group="biologist" />
-			<plugin label="Format names" name="NamingPolicy"
-				type="plugins.help.naming.NamingPlugin" group="biologist" />
-			<plugin label="Rename duplicates" name="DuplicateRenaming"
-				type="plugins.help.duplicates.DuplicatesPlugin" group="biologist" />
-			<plugin label="KEGG converter" name="KeggConverter"
-				type="plugins.keggplugin.KeggToolsPlugin" group="bioinformatician" />
-			<plugin label="ROnline" name="ROnline"
-				type="plugins.ronline.ROnline"/>
+		<menu name="OtherAdmin" label="Admin utilities">
 			<form label="Job table" name="Jobs" entity="Job">
 				<form name="Subjobs" entity="Subjob" />
 			</form>
-			<!--plugin name="DatabaseArchiver" type="plugins.archiveexportimport.ArchiveExportImportPlugin" 
-				/ -->
 			<plugin label="Archiver" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 		</menu>
 	</menu>

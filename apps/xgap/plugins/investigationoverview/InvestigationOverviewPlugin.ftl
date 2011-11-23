@@ -114,7 +114,7 @@
 	</tr>
 </table>
 
-<h3>Data</h3>
+<h3>Data matrices</h3>
 
 <table width=500 style='table-layout:fixed'>
 	<col width=${colWidth}>
