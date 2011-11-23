@@ -20,6 +20,7 @@ public class StartCommandLineGeneration
     private Hashtable<String, String> userValues = new Hashtable<String, String>();
 
     private String backend = null;
+    private String templateDir  = null;
 
     private void run() throws Exception
     {
@@ -52,16 +53,31 @@ public class StartCommandLineGeneration
             }
 
             generator.processSingleWorksheet(computeBundle, userValues,
-                    "" + iii, this.backend);
+                    "" + iii, this.backend, templateDir);
             // add generated applications to the bundle
             computeBundle.setComputeJobs(generator.getComputeApplications());
             iii++;
         }
-        generator.flashSumbitScript();
+
+        if(backend.equalsIgnoreCase(WorkflowGeneratorCommandLine.CLUSTER))
+            generator.flashSumbitScript();
     }
 
     public static void main(String[] args)
     {
+
+        if (args.length == 0)
+        {
+            System.out.println("Error: provide parameters");
+            System.out.println("command line format -inputlist=<InputWorksheet> " +
+                    "-inputworkflow=<WorkflowDescriptionDir> " +
+                    "-outputscriptsdir=<OutputDir> " +
+                    "-grid|cluster=<LocationOnBackend(Grid or Cluster)> " +
+                    "-templatesdir=<TemplatesDir>" +
+                    "<GererationID>");
+            System.exit(1);
+        }
+
         Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ONCE, 1);
 
         opt.getSet().addOption("inputlist", false, Options.Separator.EQUALS);
@@ -69,6 +85,8 @@ public class StartCommandLineGeneration
         opt.getSet().addOption("outputscriptsdir", false, Options.Separator.EQUALS);
         opt.getSet().addOption("grid", false, Options.Separator.EQUALS, Options.Multiplicity.ZERO_OR_ONE);
         opt.getSet().addOption("cluster", false, Options.Separator.EQUALS, Options.Multiplicity.ZERO_OR_ONE);
+        opt.getSet().addOption("templatesdir", false, Options.Separator.EQUALS);
+
 
         boolean isCorrect = opt.check();
 
@@ -81,7 +99,8 @@ public class StartCommandLineGeneration
             System.out.println("command line format -inputlist=<InputWorksheet> " +
                     "-inputworkflow=<WorkflowDescriptionDir> " +
                     "-outputscriptsdir=<OutputDir> " +
-                    "-grid|cluster=<LocationOnBackend>" +
+                    "-grid|cluster=<LocationOnBackend(Grid or Cluster)> " +
+                    "-templatesdir=<TemplatesDir>" +
                     "<GererationID>");
             System.exit(1);
         }
@@ -96,6 +115,7 @@ public class StartCommandLineGeneration
         System.out.println("output directory: " + opt.getSet().getOption("outputscriptsdir").getResultValue(0));
         generation.setApplicationName(opt.getSet().getOption("outputscriptsdir").getResultValue(0));
         generation.setWorkflowDir(new File(opt.getSet().getOption("inputworkflow").getResultValue(0)));
+        generation.setTemplatesDir(opt.getSet().getOption("templatesdir").getResultValue(0));
 
         if (opt.getSet().isSet(WorkflowGeneratorCommandLine.GRID))
         {
@@ -121,6 +141,12 @@ public class StartCommandLineGeneration
             e.printStackTrace();
         }
         System.out.println("... done");
+        System.exit(0);
+    }
+
+    private void setTemplatesDir(String templatesdir)
+    {
+        this.templateDir = templatesdir;
     }
 
     private void setRemoteDir(String resultValue)

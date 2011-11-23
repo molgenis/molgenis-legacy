@@ -37,63 +37,25 @@ public class ParameterWeaverCommandLine
 
     private static final String VERIFICATION_COMMAND = "verificationcommand";
 
-    public static final String DO_DOWNLOAD = "download";
-    public static final String DO_EXECUTABLE = "exe";
-    public static final String DO_UPLOAD  = "upload";
+    public static final String DO_DOWNLOAD = "#INPUTS";
+    public static final String DO_EXECUTABLE = "#EXES";
+    public static final String DO_UPLOAD  = "#OUTPUTS";
 
 
 
     private Hashtable<String, String> scriptParameters = new Hashtable<String, String>();
 
-    private String scriptClusterTemplate = "#!/bin/bash \n" +
-            "#PBS -q ${clusterqueue}\n" +
-            "#PBS -l nodes=1:ppn=${cores}\n" +
-            "#PBS -l walltime=${walltime}\n" +
-            "#PBS -l mem=${memory}gb\n" +
-            "#PBS -e ${location}/err/err_${scriptID}.err\n" +
-            "#PBS -o ${location}/out/out_${scriptID}.out\n" +
-            "mkdir -p ${location}/err\n" +
-            "mkdir -p ${location}/out\n" +
-            "printf \"${scriptID}_started \" >>${location}/log_${jobID}.txt\n" +
-            "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt\n" +
-            "date \"+start time: %m/%d/%y%t %H:%M:%S\" >>${location}/extra/${scriptID}.txt\n" +
-            "echo running on node: `hostname` >>${location}/extra/${scriptID}.txt\n" +
-            "${actualcommand}\n" +
-            "${verificationcommand}" +
-            "printf \"${scriptID}_finished \" >>${location}/log_${jobID}.txt\n" +
-            "date \"+finish time: %m/%d/%y%t %H:%M:%S\" >>${location}/extra/${scriptID}.txt\n" +
-            "date \"+DATE: %m/%d/%y%tTIME: %H:%M:%S\" >>${location}/log_${jobID}.txt\n";
+    private String scriptClusterTemplate = null;
+    private String submitTemplate = null;
+    private String downloadGridTemplate = null;
+    private String executableGridTemplate = null;
+    private String uploadGridTemplate = null;
+    private String jdlTemplate = null;
 
-    private String submitTemplate = "#job_${submitID}\n" +
-            "job_${submitID}=$(qsub -N ${scriptID} ${dependancy} ${scriptID}.sh)\n" +
-            "echo $job_${submitID}\n" +
-            "sleep 8\n\n";
-
-
-    private String downloadGridTemplate = "#download input data\n" +
-            "srmcp -server_mode=passive srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/lsgrid/${srm_name} \\\n" +
-            "file:////scratch/${just_name}\n";
-
-    private String uploadGridTemplate = "#upload result data\n" +
-            "srmcp -server_mode=passive file:////scratch/${input_name} \\\n" +
-            "srm://srm.grid.sara.nl:8443/pnfs/grid.sara.nl/data/lsgrid/${output_path}${output_name}\n";
-
-    private String jdlTemplate = "Type=\"Job\";\n" +
-            "JobType=\"Normal\";\n" +
-            "\n" +
-            "Executable = \"/bin/sh\";\n" +
-            "Arguments = \"${script_name}.sh\";\n" +
-            "\n" +
-            "StdError = \"${error_log}\";\n" +
-            "StdOutput = \"${output_log}\";\n" +
-            "\n" +
-            "InputSandbox = {\"${script_location}/${script_name}.sh${extra_inputs}\"};\n" +
-            "OutputSandbox = {\"${error_log}\",\"${output_log}\"${extra_outputs}};";
-
-    private String logfilename = "${location}/log_${jobID}.txt";
-    private String errfilename = "${location}/err/err_${scriptID}.err";
-    private String outfilename = "${location}/out/out_${scriptID}.out";
-    private String extrafilename = "${location}/extra/${scriptID}.txt";
+    private String logfilename = null;
+    private String errfilename = null;
+    private String outfilename = null;
+    private String extrafilename = null;
 
     private String verificationTemplate = "java -jar /data/gcc/tools/GATK-1.0.5069/Sting/dist/GenomeAnalysisTK.jar " +
             "-R /data/gcc/resources/hg19/indices/human_g1k_v37.fa  " +
@@ -103,6 +65,33 @@ public class ParameterWeaverCommandLine
 
     private String gridHeader = "#!/bin/bash\n";
 
+    public ParameterWeaverCommandLine(String templateDir)
+    {
+        readTemplates(templateDir);
+    }
+
+    private void readTemplates(String templateDir)
+    {
+        try
+        {
+            scriptClusterTemplate = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-cluster.ftl");
+            submitTemplate = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-submit.ftl");
+            downloadGridTemplate = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-download-grid.ftl");
+            executableGridTemplate = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-exe-grid.ftl");
+            uploadGridTemplate = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-upload-grid.ftl");
+            jdlTemplate = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-jdl-grid.ftl");
+
+            logfilename = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-logfile.ftl");
+            errfilename = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-errorfile.ftl");
+            outfilename = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-outfile.ftl");
+            extrafilename = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-extrafile.ftl");
+
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     public String weaveFreemarker(String strTemplate, Hashtable<String, String> parameters)
     {
@@ -272,7 +261,7 @@ public class ParameterWeaverCommandLine
     public String processGridHeader(String element, String template, Hashtable<String, String> weavingValues)
     {
         String header = "";
-        int posInput = template.indexOf("#INPUTS");
+        int posInput = template.indexOf(element);
         int posNewLine = template.indexOf("\n", posInput);
         String list = template.substring(posInput, posNewLine);
 
@@ -295,15 +284,13 @@ public class ParameterWeaverCommandLine
 
             weavingValues.put(str, "/scratch/" + justName);
 
-            String result;
+            String result = "";
             if(element.equalsIgnoreCase(DO_DOWNLOAD))
                 result = weaveFreemarker(downloadGridTemplate, local);
-            else
-            {
-                //TODO: here executable and uploading headers will be implemented
-                result = "";
-            }
-
+            else if(element.equalsIgnoreCase(DO_EXECUTABLE))
+                result = weaveFreemarker(executableGridTemplate, local);
+            else if(element.equalsIgnoreCase(DO_UPLOAD))
+                result = weaveFreemarker(uploadGridTemplate, local);
             header += result;
         }
 
@@ -325,6 +312,22 @@ public class ParameterWeaverCommandLine
         }
         names.add(list.trim());
         return names;
+    }
+
+    private final String getFileAsString(String filename) throws IOException
+    {
+        File file = new File(filename);
+
+        if(!file.exists())
+        {
+            System.out.println("reading template error: " + filename + "does not exist");
+        }
+        final BufferedInputStream bis = new BufferedInputStream(
+                new FileInputStream(file));
+        final byte[] bytes = new byte[(int) file.length()];
+        bis.read(bytes);
+        bis.close();
+        return new String(bytes);
     }
 
 }

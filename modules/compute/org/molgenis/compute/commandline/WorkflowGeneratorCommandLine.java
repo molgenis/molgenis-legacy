@@ -49,7 +49,7 @@ public class WorkflowGeneratorCommandLine
     //some necessary values
     private String applicationName = null;
 
-    private ParameterWeaverCommandLine weaver = new ParameterWeaverCommandLine();
+    private ParameterWeaverCommandLine weaver = null;
 
     private boolean isToWriteLocally = false;
     private String localLocation = "/";
@@ -71,7 +71,7 @@ public class WorkflowGeneratorCommandLine
 
     public void processSingleWorksheet(ComputeBundle bundle,
                                        Hashtable<String, String> userValues,
-                                       String applicationName /* should be unique somehow? */, String backend) throws IOException, ParseException
+                                       String applicationName /* should be unique somehow? */, String backend, String templateDir) throws IOException, ParseException
     {
         applications = new Vector<ComputeJob>();
 
@@ -82,6 +82,7 @@ public class WorkflowGeneratorCommandLine
         this.userValues = userValues;
         this.applicationName = applicationName;
         this.backend = backend;
+        weaver = new ParameterWeaverCommandLine(templateDir);
 
 
         System.out.println(">>> generate apps");
@@ -232,7 +233,6 @@ public class WorkflowGeneratorCommandLine
             System.out.println("featurevalue: " + featureValue);
 
         }
-
 
         app.setInterpreter(protocol.getInterpreter());
         applications.add(app);
