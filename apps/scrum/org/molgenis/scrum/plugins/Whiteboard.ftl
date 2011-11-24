@@ -89,7 +89,7 @@ ${task.description} (${task.storyPoints} SP)
 <br/>
 <h2>${story.name}</h2>
 <p>How to demo: ${story.howToDemo}</p>
-<p>Importance: <#if story.linkToDemo?exists>${story.importance}<#else>NA</#if></p>
+<p>Importance: <#if story.importance?exists>${story.importance}<#else>NA</#if></p>
 <p>Demo: <#if story.linkToDemo?exists><a href="${story.linkToDemo}">${story.linkToDemo}</a><#else>NA</#if></p>
 <p>Total SP: ${screen.countSp(story)}</p>
 </#if>

@@ -79,7 +79,7 @@ public class BurndownChart extends PluginModel<Entity>
 			Sprint sprint = getSelectedSprint();
 			List<Story> stories = db.query(Story.class).eq(Story.SPRINT, sprint.getId()).find();
 
-			// load the task ids
+			// load the story ids
 			List<Integer> storyIds = new ArrayList<Integer>();
 			for (Story story : stories) {
 				storyIds.add(story.getId());
@@ -89,7 +89,7 @@ public class BurndownChart extends PluginModel<Entity>
 			taskHistory = db.query(TaskHistory.class).in(TaskHistory.STORY, storyIds)
 					.sortASC("changedOn").find();
 			
-			if(taskHistory.size() == 0) throw new Exception("no task history known for this sprint (did it already start???)");
+			if(taskHistory.size() == 0) throw new Exception("no task history known for this sprint (did it already start?)");
 			
 			// check sprint start and end date
 			Calendar start = Calendar.getInstance();
@@ -105,7 +105,7 @@ public class BurndownChart extends PluginModel<Entity>
 			end.set(Calendar.SECOND,0);
 			end.add(Calendar.DATE, 1); //so it actually ends at 0:00:00 next day.
 			
-			if (end.before(start) ) throw new Exception("start of sprint data is later than end of sprint date.");
+			if (end.before(start) ) throw new Exception("start of sprint data is later than end of sprint date");
 			
 			//we use a calendar to iterate through the days (we count each day by 23:59:59 hours)
 			Calendar calendar = Calendar.getInstance();
@@ -116,6 +116,7 @@ public class BurndownChart extends PluginModel<Entity>
 			calendar.set(Calendar.SECOND,59);
 			
 			//per day, we get for each tasks the (last known) state and then count
+			
 			//the board is a map of taskId and its details
 			Map<Integer,TaskHistory> currentBoard = new LinkedHashMap<Integer,TaskHistory>();
 			//we manage unplanned separately
@@ -125,7 +126,7 @@ public class BurndownChart extends PluginModel<Entity>
 			Date scrumDay = calendar.getTime();
 			int historyIndex = 0;
 			TaskHistory currentHistory = taskHistory.get(historyIndex);
-			while(currentHistory.getChangedOn().before(scrumDay) && historyIndex < taskHistory.size() - 1)
+			while (currentHistory.getChangedOn().before(scrumDay) && historyIndex < taskHistory.size() - 1)
 			{
 				currentBoard.put(currentHistory.getHistoryForTask_Id(), currentHistory);
 				currentHistory = taskHistory.get(++historyIndex);
@@ -134,7 +135,7 @@ public class BurndownChart extends PluginModel<Entity>
 			//then count for today
 			DateFormat df = new SimpleDateFormat("dd/MMM");
 
-			this.burndown.add(storyPointCount(currentBoard,false));
+			this.burndown.add(storyPointCount(currentBoard, false));
 			this.unplanned.add(0.0);
 			this.dates.add(df.format(calendar.getTime()));
 			
@@ -149,8 +150,8 @@ public class BurndownChart extends PluginModel<Entity>
 				calendar.add(Calendar.DATE, 1);
 				scrumDay = calendar.getTime();
 				
-				//get the board updated for today
-				while(currentHistory != null && currentHistory.getChangedOn().before(scrumDay))
+				//get the board updated for the current day
+				while (currentHistory != null && currentHistory.getChangedOn().before(scrumDay))
 				{
 					//scan for new/unplanned tickets
 					if( !currentBoard.containsKey(currentHistory.getHistoryForTask_Id()) || 
@@ -182,19 +183,18 @@ public class BurndownChart extends PluginModel<Entity>
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			this.setMessages(new ScreenMessage(e.getMessage(), false));
 		}
 
 	}
 
-	private Double storyPointCount(Map<Integer, TaskHistory> currentBoard, boolean all)
+	private Double storyPointCount(Map<Integer, TaskHistory> tasks, boolean all)
 	{
 		Double count = 0.0;
-		for(TaskHistory t: currentBoard.values())
+		for (TaskHistory t : tasks.values())
 		{
-			if( all || ! (t.getStatus().equals("done") || t.getStatus().equals("removed") ) )
+			if (all || !(t.getStatus().equals("done") || t.getStatus().equals("removed")))
 			{
 				count += t.getStoryPoints();
 			}

@@ -157,7 +157,7 @@ public class Whiteboard extends PluginModel<Entity>
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			this.setMessages(new ScreenMessage(""+e.getMessage(), false));
+			this.setMessages(new ScreenMessage("" + e.getMessage(), false));
 		}
 
 	}
@@ -168,7 +168,7 @@ public class Whiteboard extends PluginModel<Entity>
 		try
 		{
 			// load all stories for this sprint
-			stories = db.query(Story.class).eq("sprint", getSelectedSprint().getId()).find();
+			stories = db.query(Story.class).eq("sprint", getSelectedSprint().getId()).sortDESC(Story.IMPORTANCE).find();
 
 			// load all tasks for all stories in this sprint
 			List<Integer> storyIds = new ArrayList<Integer>();
