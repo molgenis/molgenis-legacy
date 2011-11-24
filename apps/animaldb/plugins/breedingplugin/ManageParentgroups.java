@@ -55,13 +55,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private String action = "init";
 	private int userId = -1;
 	
-	//hack to pass database to toHtml() via toHtml(db)
-	private Database toHtmlDb;
-	public void setToHtmlDb(Database toHtmlDb)
-	{
-		this.toHtmlDb = toHtmlDb;
-	}
-	
 	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -160,22 +153,32 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public void setAction(String action) {
 		this.action = action;
 	}
-
-	public String renderMotherMatrixViewer() {
+	
+	private String motherMatrixViewerString;
+	public String getMotherMatrixViewer()
+	{
+		return motherMatrixViewerString;
+	}
+	public void renderMotherMatrixViewer(Database db) {
 		if (motherMatrixViewer != null) {
-			motherMatrixViewer.setToHtmlDb(toHtmlDb);
-			return motherMatrixViewer.render();
+			motherMatrixViewer.setDatabase(db);
+			motherMatrixViewerString =  motherMatrixViewer.render();
 		} else {
-			return "No viewer available, matrix for selecting mother(s) cannot be rendered.";
+			motherMatrixViewerString = "No viewer available, matrix for selecting mother(s) cannot be rendered.";
 		}
 	}
 	
-	public String renderFatherMatrixViewer() {
+	private String fatherMatrixViewerString;
+	public String getFatherMatrixViewer()
+	{
+		return fatherMatrixViewerString;
+	}
+	public void renderFatherMatrixViewer(Database db) {
 		if (fatherMatrixViewer != null) {
-			fatherMatrixViewer.setToHtmlDb(toHtmlDb);
-			return fatherMatrixViewer.render();
+			fatherMatrixViewer.setDatabase(db);
+			fatherMatrixViewerString = fatherMatrixViewer.render();
 		} else {
-			return "No viewer available, matrix for selecting father(s) cannot be rendered.";
+			fatherMatrixViewerString = "No viewer available, matrix for selecting father(s) cannot be rendered.";
 		}
 	}
 
@@ -244,7 +247,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{	
 		ct.setDatabase(db);
-		this.toHtmlDb = db;
 		action = request.getString("__action");
 		try {
 			Date now = new Date();
@@ -273,6 +275,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 					this.line = request.getInt("line");
 				}
 				this.getMessages().add(new ScreenMessage("Line successfully set", true));
+				renderMotherMatrixViewer(db);
 			}
 			
 			if (action.equals("addParentgroupScreen3")) {
@@ -294,6 +297,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 					throw new Exception("No mother(s) selected");
 				}
 				this.getMessages().add(new ScreenMessage("Mother(s) " + motherNames + "successfully added", true));
+				renderFatherMatrixViewer(db);
 			}
 			
 			if (action.equals("addParentgroupScreen4")) {
@@ -417,11 +421,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 			ct.makeObservationTargetNameMap(userId, false);
 			this.setStartdate(dateOnlyFormat.format(new Date()));
 			
-			reloadMatrixViewers();
+			reloadMatrixViewers(db);
 		}
 	}
 	
-	private void reloadMatrixViewers() {
+	private void reloadMatrixViewers(Database db) {
 		try {
 			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
 			
@@ -445,10 +449,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 				// Setting filter on the RELATION field with value = line would be more efficient,
 				// but gives a very un-userfriendly toString value when shown in the UI
 			}
-			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, 
-					new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-					true, true, motherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-							Operator.IN, measurementsToShow));
+			
+			SliceablePhenoMatrix SPMM = new SliceablePhenoMatrix(Individual.class, Measurement.class);
+			SPMM.setDatabase(db);
+			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, SPMM, true, true, motherFilterRules, 
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 			// Father matrix viewer
 			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
 			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
@@ -464,8 +469,9 @@ public class ManageParentgroups extends PluginModel<Entity>
 				// Setting filter on the RELATION field with value = line would be more efficient,
 				// but gives a very un-userfriendly toString value when shown in the UI
 			}
-			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, 
-					new SliceablePhenoMatrix(Individual.class, Measurement.class), 
+			SliceablePhenoMatrix SPMF = new SliceablePhenoMatrix(Individual.class, Measurement.class);
+			SPMF.setDatabase(db);
+			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, SPMF, 
 					true, true, fatherFilterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 							Operator.IN, measurementsToShow));
 		} catch (Exception e) {

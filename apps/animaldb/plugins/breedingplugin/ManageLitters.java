@@ -303,7 +303,7 @@ public class ManageLitters extends PluginModel<Entity>
 	
 	public String renderMatrixViewer() {
 		if (matrixViewer != null) {
-			matrixViewer.setToHtmlDb(toHtmlDb);
+			matrixViewer.setDatabase(toHtmlDb);
 			return matrixViewer.render();
 		} else {
 			return "No viewer available, matrix for selecting parent group cannot be rendered.";

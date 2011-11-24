@@ -11,6 +11,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
+import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.pheno.Observation;
 import org.molgenis.pheno.ObservationElement;
@@ -31,8 +32,15 @@ import org.molgenis.pheno.ObservedValue;
  */
 public class SliceablePhenoMatrix<R extends ObservationElement, C extends ObservationElement>
 		extends AbstractObservationElementMatrix<R, C, Observation> implements
-		SliceableMatrix<R, C, Observation>
+		SliceableMatrix<R, C, Observation>, DatabaseMatrix
 {
+	
+	Database db;
+	
+	public void setDatabase(Database db)
+	{
+		this.db = db;
+	}
 
 	public SliceablePhenoMatrix(Class<R> rowClass,
 			Class<C> colClass)
@@ -52,14 +60,14 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 	}
 
 	@Override
-	public List<R> getRowHeaders(Database db) throws MatrixException
+	public List<R> getRowHeaders() throws MatrixException
 	{
 		// reload the rowheaders if filters have changed.
 		if (rowDirty)
 		{
 			try
 			{
-				Query<R> query = this.createSelectQuery(getRowClass(), db);
+				Query<R> query = this.createSelectQuery(getRowClass());
 				this.rowHeaders = query.find();
 				rowDirty = false;
 			}
@@ -71,12 +79,12 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 		return rowHeaders;
 	}
 
-	public Integer getRowCount(Database db) throws MatrixException
+	public Integer getRowCount() throws MatrixException
 	{
 		// fire a count query on headers
 		try
 		{
-			return this.createCountQuery(getRowClass(), db).count();
+			return this.createCountQuery(getRowClass()).count();
 		}
 		catch (DatabaseException e)
 		{
@@ -85,14 +93,14 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 	}
 
 	@Override
-	public List<C> getColHeaders(Database db) throws MatrixException
+	public List<C> getColHeaders() throws MatrixException
 	{
 		// reload the rowheaders if filters have changed.
 		if (colDirty)
 		{
 			try
 			{
-				Query<C> query = this.createSelectQuery(getColClass(), db);
+				Query<C> query = this.createSelectQuery(getColClass());
 				this.colHeaders = query.find();
 				colDirty = false;
 			}
@@ -104,12 +112,12 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 		return colHeaders;
 	}
 
-	public Integer getColCount(Database db) throws MatrixException
+	public Integer getColCount() throws MatrixException
 	{
 		// fire count query on col headers
 		try
 		{
-			return this.createCountQuery(getColClass(), db).count();
+			return this.createCountQuery(getColClass()).count();
 		}
 		catch (DatabaseException e)
 		{
@@ -128,16 +136,16 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 	 * is that there is no limit/offset on it
 	 */
 	private <D extends ObservationElement> Query<D> createCountQuery(
-			Class<D> xClass, Database db) throws MatrixException
+			Class<D> xClass) throws MatrixException
 	{
-		return this.createQuery(xClass, true, db);
+		return this.createQuery(xClass, true);
 	}
 
 	/** Helper method to produce a selection query for columns or rows */
 	private <D extends ObservationElement> Query<D> createSelectQuery(
-			Class<D> xClass, Database db) throws MatrixException
+			Class<D> xClass) throws MatrixException
 	{
-		return this.createQuery(xClass, false, db);
+		return this.createQuery(xClass, false);
 	}
 
 	/**
@@ -147,7 +155,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 	 * @throws MatrixException
 	 */
 	private <D extends ObservationElement> Query<D> createQuery(
-			Class<D> xClass, boolean countAll, Database database) throws MatrixException
+			Class<D> xClass, boolean countAll) throws MatrixException
 	{
 		// If xClass == getRowClass():
 		// A. filter on rowIndex + rowHeaderProperty
@@ -172,7 +180,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 			// Impl
 
 			// Impl A: header query
-			Query<D> xQuery = database.query(xClass);
+			Query<D> xQuery = db.query(xClass);
 			for (MatrixQueryRule rule : rules)
 			{
 				// rewrite rule(type=row/colIndex) to rule(type=row/colHeader, field=id)
@@ -204,7 +212,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 					// create a new subquery for each colValues column
 					if (subQueries.get(rule.getDimIndex()) == null)
 					{
-						Query<Observation> subQuery = (Query<Observation>) database.query(this
+						Query<Observation> subQuery = (Query<Observation>) db.query(this
 								.getValueClass());
 						// filter on data
 						// if(data != null)
@@ -258,13 +266,13 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 	}
 
 	@Override
-	public List<? extends Observation>[][] getValueLists(Database db) throws MatrixException
+	public List<? extends Observation>[][] getValueLists() throws MatrixException
 	{
 		try
 		{
 			// get the indices (map to real coordinates)
-			final List<Integer> rowIndexes = getRowIndices(db);
-			final List<Integer> colIndexes = getColIndices(db);
+			final List<Integer> rowIndexes = getRowIndices();
+			final List<Integer> colIndexes = getColIndices();
 
 			if (rowIndexes.size() == 0 || colIndexes.size() == 0)
 			{
@@ -277,8 +285,8 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 
 			// retrieve values matching the selected indexes
 			Query<Observation> query = (Query<Observation>)db.query(valueClass);
-			query.in(ObservedValue.FEATURE, this.getColIndices(db));
-			query.in(ObservedValue.TARGET, this.getRowIndices(db));
+			query.in(ObservedValue.FEATURE, this.getColIndices());
+			query.in(ObservedValue.TARGET, this.getRowIndices());
 
 			// use the streaming interface?
 			List<Observation> values = query.find();
@@ -317,7 +325,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 	}
 
 	@Override
-	public ObservedValue[][] getValues(Database db) throws MatrixException
+	public ObservedValue[][] getValues() throws MatrixException
 	{
 		throw new UnsupportedOperationException("use getValueLists");
 	}

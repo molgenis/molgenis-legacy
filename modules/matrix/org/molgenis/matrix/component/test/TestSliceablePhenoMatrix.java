@@ -64,7 +64,7 @@ public class TestSliceablePhenoMatrix
 		matrix.reset();
 		logger.debug("testRowHeaders");
 		
-		List<Individual> rowHeaders = matrix.getRowHeaders(db);
+		List<Individual> rowHeaders = matrix.getRowHeaders();
 		
 		Assert.assertEquals(rowHeaders.get(0).getIdValue(), targets.get(0).getIdValue());
 		Assert.assertEquals(rowHeaders.size(), matrix.getRowLimit());
@@ -80,7 +80,7 @@ public class TestSliceablePhenoMatrix
 		matrix.reset();
 		logger.debug("testColHeaders");
 		//we expect feature index in reverse order
-		List<Measurement> colHeaders = matrix.getColHeaders(db);
+		List<Measurement> colHeaders = matrix.getColHeaders();
 		
 		Assert.assertEquals(colHeaders.size(), matrix.getColLimit());
 		
@@ -95,7 +95,7 @@ public class TestSliceablePhenoMatrix
 		logger.debug("testRowIndics");
 		
 		//we expect feature index in reverse order
-		List<Integer> rowIndices = matrix.getRowIndices(db);
+		List<Integer> rowIndices = matrix.getRowIndices();
 		
 		Assert.assertEquals(rowIndices.size(), matrix.getRowLimit());
 		Assert.assertEquals(rowIndices.get(0), targets.get(0).getIdValue());
@@ -109,7 +109,7 @@ public class TestSliceablePhenoMatrix
 		logger.debug("testColIndices");
 		
 		//we expect feature index in reverse order
-		List<Integer> colIndices = matrix.getColIndices(db);
+		List<Integer> colIndices = matrix.getColIndices();
 		
 		Assert.assertEquals(colIndices.get(0), features.get(0).getIdValue());
 		Assert.assertEquals(colIndices.size(), matrix.getColLimit());
@@ -121,7 +121,7 @@ public class TestSliceablePhenoMatrix
 		matrix.reset();
 		logger.debug("testValues: load data");
 		
-		List<? extends Observation>[][] valueMatrix = matrix.getValueLists(db);
+		List<? extends Observation>[][] valueMatrix = matrix.getValueLists();
 		logger.debug("testValues: verifying...");
 		
 		for(Integer row = 0; row < matrix.getRowLimit(); row++ )
@@ -129,7 +129,7 @@ public class TestSliceablePhenoMatrix
 			for(Integer col = 0; col < matrix.getColLimit(); col++)
 			{
 				List<? extends Observation> e = valueMatrix[row][col];
-				Assert.assertEquals(e.get(0).get(ObservedValue.VALUE), this.values.get(row*matrix.getColCount(db) + col).getValue());
+				Assert.assertEquals(e.get(0).get(ObservedValue.VALUE), this.values.get(row*matrix.getColCount() + col).getValue());
 				//TODO 
 				//Assert.assertEquals(e.get(0), col);
 				//Assert.assertEquals(e.getValue(), "val"+row+","+col);
@@ -145,17 +145,17 @@ public class TestSliceablePhenoMatrix
 		
 		//check for first one greater then 
 		matrix.sliceByRowProperty(Individual.ID, Operator.GREATER, targets.get(5).getId());
-		Assert.assertEquals(matrix.getRowHeaders(db).get(0).getIdValue(), targets.get(6).getId());
+		Assert.assertEquals(matrix.getRowHeaders().get(0).getIdValue(), targets.get(6).getId());
 		
 		//repeat for sliceByRowIndex (wich should work identical to above)
 		matrix.reset();
 		matrix.sliceByRowIndex(Operator.GREATER, targets.get(5).getId());
-		Assert.assertEquals(matrix.getRowHeaders(db).get(0).getIdValue(), targets.get(6).getId());
+		Assert.assertEquals(matrix.getRowHeaders().get(0).getIdValue(), targets.get(6).getId());
 
 		
 		//reverse sort, now we should get last ID first
 		matrix.sliceByRowProperty(Individual.ID, Operator.SORTDESC, null);
-		Assert.assertEquals(matrix.getRowHeaders(db).get(0).getIdValue(), targets.get(targets.size() - 1).getIdValue());
+		Assert.assertEquals(matrix.getRowHeaders().get(0).getIdValue(), targets.get(targets.size() - 1).getIdValue());
 		
 	}
 	
@@ -168,13 +168,13 @@ public class TestSliceablePhenoMatrix
 		//filter on 5th column (values 'val4,4' and higher), we expect first result target to be row5
 		matrix.sliceByColValues(features.get(5), Operator.GREATER, "val44");
 		matrix.sortCol(features.get(5).getId(), ObservedValue.VALUE, Operator.SORTASC);
-		Assert.assertEquals(matrix.getRowHeaders(db).get(0), targets.get(5));
+		Assert.assertEquals(matrix.getRowHeaders().get(0), targets.get(5));
 		
 		//repeate but now explicity property chosing
 		matrix.reset();
 		matrix.sliceByColValueProperty(features.get(5), ObservedValue.VALUE, Operator.GREATER, "val44");
 		matrix.sortCol(features.get(5).getId(), ObservedValue.VALUE, Operator.SORTASC);
-		Assert.assertEquals(matrix.getRowHeaders(db).get(0).getIdValue(), targets.get(5).getIdValue());
+		Assert.assertEquals(matrix.getRowHeaders().get(0).getIdValue(), targets.get(5).getIdValue());
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class TestSliceablePhenoMatrix
 	{
 		matrix.reset();
 		logger.debug("testColCount");
-		Assert.assertEquals(matrix.getColCount(db), (Integer)features.size());
+		Assert.assertEquals(matrix.getColCount(), (Integer)features.size());
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class TestSliceablePhenoMatrix
 	{
 		matrix.reset();
 		logger.debug("testRowCount");
-		Assert.assertEquals(matrix.getRowCount(db), (Integer)targets.size());
+		Assert.assertEquals(matrix.getRowCount(), (Integer)targets.size());
 	}
 	
 	@Test
@@ -199,8 +199,8 @@ public class TestSliceablePhenoMatrix
 		matrix.reset();
 		logger.debug("testRowOffset");
 		matrix.setRowOffset(10);
-		Assert.assertEquals(matrix.getRowIndices(db).get(0), targets.get(10).getIdValue());	
-		Assert.assertEquals(matrix.getRowHeaders(db).get(0), targets.get(10));	
+		Assert.assertEquals(matrix.getRowIndices().get(0), targets.get(10).getIdValue());	
+		Assert.assertEquals(matrix.getRowHeaders().get(0), targets.get(10));	
 	}
 	
 	@AfterClass

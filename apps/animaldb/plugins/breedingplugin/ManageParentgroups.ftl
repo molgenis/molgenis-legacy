@@ -57,7 +57,7 @@
 
 	<p><h2>Make new parent group, step 2/4: select mother(s)</h2></p>
 
-	${screen.renderMotherMatrixViewer()}<br />
+	${screen.motherMatrixViewer}<br />
 	
 	<div style="clear:both">
 		<input type='submit' id='from2to1' class='addbutton' value='Previous' onclick="__action.value='addParentgroupScreen1'" />
@@ -69,7 +69,7 @@
 	
 	<p><h2>Make new parent group, step 3/4: select father(s)</h2></p>
 	
-	${screen.renderFatherMatrixViewer()}<br />
+	${screen.fatherMatrixViewer}<br />
 	
 	<div style="clear:both">
 		<input type='submit' id='from3to2' class='addbutton' value='Previous' onclick="__action.value='addParentgroupScreen2'" />

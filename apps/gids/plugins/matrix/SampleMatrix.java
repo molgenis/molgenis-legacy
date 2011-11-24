@@ -194,11 +194,11 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 			}
 		}
 		if(getModel().matrixViewerIndv != null){
-			getModel().matrixViewerIndv.setToHtmlDb(db);
+			getModel().matrixViewerIndv.setDatabase(db);
 			System.out.println("set for: matrixViewerIndv");
 		}
 		if(getModel().matrixViewerSample != null){
-			getModel().matrixViewerSample.setToHtmlDb(db);
+			getModel().matrixViewerSample.setDatabase(db);
 			System.out.println("set for: matrixViewerSample");
 			if (getModel().action.startsWith(getModel().matrixViewerSample.getName())) {
 				getModel().setCheckForPaging(false);

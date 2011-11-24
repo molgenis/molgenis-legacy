@@ -19,6 +19,7 @@ import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.sqlbackend.EAVRelationalBackend;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
+import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.sqlbackend.Backend;
 import org.molgenis.organization.Investigation;
@@ -43,7 +44,7 @@ import org.molgenis.protocol.Protocol;
 
 public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends ObservationElement>
         extends AbstractObservationElementMatrix<R, C, ObservedValue> implements
-        SliceableMatrix<R, C, ObservedValue> {
+        SliceableMatrix<R, C, ObservedValue>, DatabaseMatrix {
 
     private final EntityManager em;
     private final Investigation investigation;
@@ -73,6 +74,13 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
         //this.backend = new EAVViewBackend(this, "TEST001_");
         this.backend = new EAVRelationalBackend(this);
     }
+    
+    Database db;
+	
+	public void setDatabase(Database db)
+	{
+		this.db = db;
+	}
 
     public void setSort(Protocol protocol, Measurement measurement, String sortOrder) {
         this.sortProtocol = protocol;
@@ -83,7 +91,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     
     
     @Override
-    public List<R> getRowHeaders(Database db) throws MatrixException {
+    public List<R> getRowHeaders() throws MatrixException {
         // reload the rowheaders if filters have changed.
         if (rowDirty) {
             try {
@@ -98,7 +106,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public Integer getRowCount(Database db) throws MatrixException {
+    public Integer getRowCount() throws MatrixException {
         try {
             String query = createCountQuery();
             System.out.println(query);
@@ -110,7 +118,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public List<C> getColHeaders(Database db) throws MatrixException {
+    public List<C> getColHeaders() throws MatrixException {
         List<Measurement> result = new ArrayList<Measurement>();
         for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
             result.addAll(entry.getValue());
@@ -131,7 +139,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
     
     @Override
-    public Integer getColCount(Database db) throws MatrixException {
+    public Integer getColCount() throws MatrixException {
         // fire count query on col headers
         try {
             return this.createCountQuery(getColClass(), db).count();
@@ -223,7 +231,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public List<ObservedValue>[][] getValueLists(Database db) throws MatrixException {
+    public List<ObservedValue>[][] getValueLists() throws MatrixException {
         try {
             int columnCount = getVisableColumnCount();
 
@@ -270,8 +278,8 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public ObservedValue[][] getValues(Database db) throws MatrixException {
-        List<ObservedValue>[][] values = getValueLists(db);
+    public ObservedValue[][] getValues() throws MatrixException {
+        List<ObservedValue>[][] values = getValueLists();
         
         int rowCnt = values.length;
         int colCnt = values[0].length;

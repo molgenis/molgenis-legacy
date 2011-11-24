@@ -57,9 +57,9 @@ public class MatrixExporters {
         }
 
         /* Write elements */
-        Object[][] elements = matrix.getValues(db);
-        for (int i = 0; i < matrix.getColCount(db); i++) {
-            for (int j = 0; j < matrix.getRowCount(db); j++) {
+        Object[][] elements = matrix.getValues();
+        for (int i = 0; i < matrix.getColCount(); i++) {
+            for (int j = 0; j < matrix.getRowCount(); j++) {
                 if (elements[j][i] != null) {
                     Label l = new Label(i + 1, j + 1,
                             elements[j][i].toString(), cellFormat);

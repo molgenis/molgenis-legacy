@@ -251,7 +251,7 @@ public class ApplyProtocolUI {
 				new SliceablePhenoMatrix(Individual.class, Measurement.class), 
 				true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 						Operator.IN, measurementsToShow));
-		targetMatrixViewer.setToHtmlDb(db);
+		targetMatrixViewer.setDatabase(db);
 		protocolDiv.add(new HorizontalRuler());
 		protocolDiv.add(targetMatrixViewer);
 		protocolDiv.add(new HorizontalRuler());

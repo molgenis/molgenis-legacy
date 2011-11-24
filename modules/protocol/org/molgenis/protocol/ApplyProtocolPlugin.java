@@ -46,7 +46,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     public void handleRequest(Database db, Tuple request)
     {
     	if (ui.targetMatrixViewer != null) {
-    		ui.targetMatrixViewer.setToHtmlDb(db);
+    		ui.targetMatrixViewer.setDatabase(db);
     	}
     	service.setDatabase(db);
     	ScreenMessage message = null;
@@ -99,7 +99,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     public void reload(Database db)
     {
     	if (ui.targetMatrixViewer != null) {
-    		ui.targetMatrixViewer.setToHtmlDb(db);
+    		ui.targetMatrixViewer.setDatabase(db);
     	}
     	service.setDatabase(db);
 		model.setService(service);

@@ -25,6 +25,7 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
+import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.Observation;
@@ -73,10 +74,10 @@ public class MatrixViewer extends HtmlWidget
 	public String OPERATOR = getName() + "_operator";
 	
 	//hack to pass database to toHtml() via toHtml(db)
-	private Database toHtmlDb;
-	public void setToHtmlDb(Database toHtmlDb)
+	private Database db;
+	public void setDatabase(Database db)
 	{
-		this.toHtmlDb = toHtmlDb;
+		this.db = db;
 	}
 
 	/**
@@ -141,19 +142,19 @@ public class MatrixViewer extends HtmlWidget
 	
 	public String toHtml()
 	{	
-		return toHtml(toHtmlDb);
-	}
-	
-	public String toHtml(Database db)
-	{	
 		try {
+			if(this.matrix instanceof DatabaseMatrix)
+			{
+				((DatabaseMatrix) this.matrix).setDatabase(db);
+			}
+			
 			String result = "<table><tr><td>";
 			result += renderReload();
-			result += renderHeader(db);
+			result += renderHeader();
 			result += "</td></tr><tr><td>";
-			result += renderTable(db);
+			result += renderTable();
 			result += "</td></tr><tr><td>";
-			result += renderFilterPart(db);
+			result += renderFilterPart();
 			result += "</td></tr></table>";
 			return result;
 		} catch (Exception e) {
@@ -170,7 +171,7 @@ public class MatrixViewer extends HtmlWidget
 		return reload.render();
 	}
 	
-	public String renderHeader(Database db) throws MatrixException {
+	public String renderHeader() throws MatrixException {
 		String divContents = "";
 		// move vertical (row paging)
 		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
@@ -181,7 +182,7 @@ public class MatrixViewer extends HtmlWidget
 		divContents += moveUp.render();
 		int rowOffset = this.matrix.getRowOffset();
 		int rowLimit = this.matrix.getRowLimit();
-		int rowCount = this.matrix.getRowCount(db);
+		int rowCount = this.matrix.getRowCount();
 		int rowMax = Math.min(rowOffset + rowLimit, rowCount);
 		divContents += "Showing " + (rowOffset + 1) + " - " + rowMax + " of " + rowCount + " ";
 		// collimit
@@ -239,20 +240,20 @@ public class MatrixViewer extends HtmlWidget
 //		return divContents;
 //	}
 	
-	public String renderTable(Database db) throws MatrixException {
+	public String renderTable() throws MatrixException {
 		JQueryDataTable dataTable = new JQueryDataTable(getName() + "DataTable");
 		
 		Object[][] values = null;
 		try{
-			values = matrix.getValueLists(db);
+			values = matrix.getValueLists();
 		}
 		catch(UnsupportedOperationException ue)
 		{
-			values = matrix.getValues(db);
+			values = matrix.getValues();
 		}
 		
-		List<?> rows = matrix.getRowHeaders(db);
-		List<?> cols = matrix.getColHeaders(db);
+		List<?> rows = matrix.getRowHeaders();
+		List<?> cols = matrix.getColHeaders();
 		
 		//print colHeaders
 		dataTable.addColumn("ID");
@@ -369,7 +370,7 @@ public class MatrixViewer extends HtmlWidget
 		return dataTable.toHtml();
 	}
 	
-	public String renderFilterPart(Database db) throws MatrixException {
+	public String renderFilterPart() throws MatrixException {
 		String divContents = "";
 					
 		// Show applied filter rules
@@ -381,7 +382,7 @@ public class MatrixViewer extends HtmlWidget
 				// Show only column value filters to user
 				if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)) {
 					String measurementName = "";
-					for (Object meas : matrix.getColHeaders(db)) {
+					for (Object meas : matrix.getColHeaders()) {
 						
 						if(meas instanceof ObservationElement)
 						{
@@ -411,7 +412,7 @@ public class MatrixViewer extends HtmlWidget
 		SelectInput colId = new SelectInput(COLID);
 		divContents += "Add filter:";
 		
-		List<? extends Object> colH = matrix.getColHeaders(db);
+		List<? extends Object> colH = matrix.getColHeaders();
 		if(colH.get(0) instanceof Entity)
 		{
 			List<? extends Entity> lala = (List<? extends Entity>) colH;
@@ -435,7 +436,7 @@ public class MatrixViewer extends HtmlWidget
 		// column header filter
 		if (columnsRestricted) {
 			List selectedMeasurements = new ArrayList();
-			selectedMeasurements.addAll(matrix.getColHeaders(db));
+			selectedMeasurements.addAll(matrix.getColHeaders());
 			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
 					selectedMeasurements, false, false, 
 					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer", 
@@ -574,16 +575,16 @@ public class MatrixViewer extends HtmlWidget
 	{
 		this.matrix
 				.setColOffset(matrix.getColOffset() + matrix.getColLimit() < matrix
-						.getColCount(db) ? matrix.getColOffset()
+						.getColCount() ? matrix.getColOffset()
 						+ matrix.getColLimit() : matrix.getColOffset());
 	}
 
 	public void moveRightEnd(Database db, Tuple t) throws MatrixException
 	{
 		this.matrix
-				.setColOffset((matrix.getColCount(db) % matrix.getColLimit() == 0 ? new Double(
-						matrix.getColCount(db) / matrix.getColLimit()).intValue() - 1
-						: new Double(matrix.getColCount(db)
+				.setColOffset((matrix.getColCount() % matrix.getColLimit() == 0 ? new Double(
+						matrix.getColCount() / matrix.getColLimit()).intValue() - 1
+						: new Double(matrix.getColCount()
 								/ matrix.getColLimit()).intValue())
 						* matrix.getColLimit());
 	}
@@ -605,16 +606,16 @@ public class MatrixViewer extends HtmlWidget
 	{
 		this.matrix
 				.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix
-						.getRowCount(db) ? matrix.getRowOffset()
+						.getRowCount() ? matrix.getRowOffset()
 						+ matrix.getRowLimit() : matrix.getRowOffset());
 	}
 
 	public void moveDownEnd(Database db, Tuple t) throws MatrixException
 	{
 		this.matrix
-				.setRowOffset((matrix.getRowCount(db) % matrix.getRowLimit() == 0 ? new Double(
-						matrix.getRowCount(db) / matrix.getRowLimit()).intValue() - 1
-						: new Double(matrix.getRowCount(db)
+				.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(
+						matrix.getRowCount() / matrix.getRowLimit()).intValue() - 1
+						: new Double(matrix.getRowCount()
 								/ matrix.getRowLimit()).intValue())
 						* matrix.getRowLimit());
 	}
@@ -673,7 +674,7 @@ public class MatrixViewer extends HtmlWidget
 	}
 	
 	public List<?> getSelection(Database db) throws MatrixException {
-		return matrix.getRowHeaders(db);
+		return matrix.getRowHeaders();
 	}
 	
 	public SliceableMatrix getMatrix()

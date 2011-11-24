@@ -63,25 +63,25 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public List<String> getRowHeaders(Database db) throws MatrixException
+	public List<String> getRowHeaders() throws MatrixException
 	{
 		return this.copiedRowNames.subList(rowOffset, rowOffset+rowLimit);
 	}
 
 	@Override
-	public List<String> getColHeaders(Database db) throws MatrixException
+	public List<String> getColHeaders() throws MatrixException
 	{
 		return this.copiedColNames.subList(colOffset, colOffset+colLimit);
 	}
 
 	@Override
-	public List<Integer> getRowIndices(Database db) throws MatrixException
+	public List<Integer> getRowIndices() throws MatrixException
 	{
 		return this.copiedRowIndices.subList(rowOffset, rowOffset+rowLimit);
 	}
 
 	@Override
-	public List<Integer> getColIndices(Database db) throws MatrixException
+	public List<Integer> getColIndices() throws MatrixException
 	{
 		return this.copiedColIndices.subList(colOffset, colOffset+colLimit);
 	}
@@ -127,7 +127,7 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public Object[][] getValues(Database db) throws MatrixException
+	public Object[][] getValues() throws MatrixException
 	{
 		try
 		{
@@ -140,13 +140,13 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public Integer getColCount(Database db) throws MatrixException
+	public Integer getColCount() throws MatrixException
 	{
 		return wrappedMatrix.getNumberOfCols();
 	}
 
 	@Override
-	public Integer getRowCount(Database db) throws MatrixException
+	public Integer getRowCount() throws MatrixException
 	{
 		return wrappedMatrix.getNumberOfRows();
 	}
@@ -158,7 +158,7 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public List<? extends Object>[][] getValueLists(Database db) throws MatrixException
+	public List<? extends Object>[][] getValueLists() throws MatrixException
 	{
 		throw new UnsupportedOperationException();
 	}

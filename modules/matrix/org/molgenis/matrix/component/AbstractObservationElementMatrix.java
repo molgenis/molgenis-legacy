@@ -73,11 +73,11 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	}
 
 	@Override
-	public List<Integer> getRowIndices(Database db) throws MatrixException
+	public List<Integer> getRowIndices() throws MatrixException
 	{
 		// retrieve the indices from the headers (we use the id value).
 		List<Integer> rowIndices = new ArrayList<Integer>();
-		for (R row : getRowHeaders(db))
+		for (R row : getRowHeaders())
 		{
 			rowIndices.add(row.getId());
 		}
@@ -85,11 +85,11 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	}
 
 	@Override
-	public List<Integer> getColIndices(Database db) throws MatrixException
+	public List<Integer> getColIndices() throws MatrixException
 	{
 		// get col indexes from col headers
 		List<Integer> colIndices = new ArrayList<Integer>();
-		for (C col : getColHeaders(db))
+		for (C col : getColHeaders())
 		{
 			colIndices.add(col.getId());
 		}

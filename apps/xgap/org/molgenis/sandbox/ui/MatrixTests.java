@@ -133,7 +133,7 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 //			selectionItems += "<li>" + row.getName() + "</li>";
 //		}
 		
-		for(Object rowName : matrixViewer.getMatrix().getRowHeaders(db))
+		for(Object rowName : matrixViewer.getMatrix().getRowHeaders())
 		{
 			selectionItems += "<li>" + rowName.toString() + "</li>";
 		}

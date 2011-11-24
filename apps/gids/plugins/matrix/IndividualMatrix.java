@@ -184,14 +184,14 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 		}
 
 		if(getModel().matrixViewerIndv != null){
-			getModel().matrixViewerIndv.setToHtmlDb(db);
+			getModel().matrixViewerIndv.setDatabase(db);
 			System.out.println("set for: matrixViewerIndv");
 			if (getModel().action.startsWith(getModel().matrixViewerIndv.getName())) {
 				getModel().setCheckForPaging(false);
 			}
 		}
 		if(getModel().matrixViewerSample != null){
-			getModel().matrixViewerSample.setToHtmlDb(db);
+			getModel().matrixViewerSample.setDatabase(db);
 			System.out.println("set for: matrixViewerSample");
 			
 		}
