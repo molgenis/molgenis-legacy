@@ -52,17 +52,21 @@ public class taskreporter  implements MolgenisService
 
 		try
 		{
-			Tuple req = new HttpServletRequestTuple(request.getRequest());
+			//Tuple req = new HttpServletRequestTuple(request.getRequest());
+			
+			//System.out.println("TASKREPORTER GOT A REQUEST!!!! : " + request.toString());
 
-			int jobID = req.getInt("job"); // unique
+			int jobID = request.getInt("job"); // unique
 
-			int subjobNr = req.getInt("subjob"); // 1..N
+			int subjobNr = request.getInt("subjob"); // 1..N
 
-			int statusCode = req.getInt("statuscode"); // code
+			int statusCode = request.getInt("statuscode"); // code
 
-			String statusText = req.getString("statustext"); // text
+			String statusText = request.getString("statustext"); // text
 
 			Database db = request.getDatabase();
+			
+			//System.out.println("TASKREPORTER DB STATUS?? : " + db.getSecurity().isAuthenticated());
 
 			QueryRule jobQuery0 = new QueryRule("id", Operator.EQUALS, jobID);
 			QueryRule subjobQuery0 = new QueryRule("job", Operator.EQUALS, jobID);
@@ -81,7 +85,7 @@ public class taskreporter  implements MolgenisService
 
 			try
 			{
-				int statusProgress = req.getInt("statusprogress");
+				int statusProgress = request.getInt("statusprogress");
 				subjob.setStatusProgress(statusProgress);
 			}
 			catch (Exception e)
@@ -105,7 +109,7 @@ public class taskreporter  implements MolgenisService
 				cr.executeCommands(cList);
 			}
 
-			db.close();
+		//	db.close();
 
 			logger.info("serving " + request.getRequest().getRequestURI());
 		}

@@ -136,12 +136,17 @@ prepare_cluster <- function(jobid){
 report <- function(dbpath,task,job,status,text){
 	progress <- 0
 	text <- substr(URLencode(text),0,100)
-	link <- paste(dbpath,"/taskreporter?job=",task,"&subjob=",job,"&statuscode=",status,"&statustext=",text,"&statusprogress=",progress,sep="")
-	getURL(link, curl = ch)
+	link <- paste(.MOLGENIS$servletURL,"/taskreporter?job=",task,"&subjob=",job,"&statuscode=",status,"&statustext=",text,"&statusprogress=",progress,sep="")
+	getURL(link,curl=ch)
 	if(status==-1){
 		q("no")
 	}
 }
+
+#run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token = "", totalitems=24, njobs=2, dbpath="http://gbic.target.rug.nl:8080/clusterdemo", jobid=1, job="QTL", libraryloc="C:/Program Files/R/R-2.10.1/library", jobparams=list( c("genotypes", "genotypes"), c("phenotypes", "metaboliteexpression"),c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0"))){
+#	Initializes the cluster
+#  report(dbpath,jobid,0,2,"TEST")
+#}
 
 run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token = "", totalitems=24, njobs=2, dbpath="http://gbic.target.rug.nl:8080/clusterdemo", jobid=1, job="QTL", libraryloc="C:/Program Files/R/R-2.10.1/library", jobparams=list( c("genotypes", "genotypes"), c("phenotypes", "metaboliteexpression"),c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0"))){
 #	Initializes the cluster
@@ -150,6 +155,8 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 #	--Generate a QTLfile
 #	--Generate runfile for cluster
 #	--Sends the runfile as a job to the cluster
+    dbpath <- as.character(.MOLGENIS$servletURL) #now that we now the DNS name, use this! so replace eg "http://129.125.132.49:8080/xqtl" by "http://fwn-biol-132-49.biol.rug.nl:8080/xqtl"
+    report(dbpath,jobid,0,2,"TETSING1")
 	genotypes <- getparameter("genotypes",jobparams)
 	phenotypes <- getparameter("phenotypes",jobparams)
 	totalitems <- as.integer(totalitems)
@@ -164,7 +171,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 	cat("debug: RCurl loaded\n")
 	library(qtl,lib.loc=libraryloc)
 	cat("debug: qtl loaded\n")
-	source(paste(dbpath,"/api/R",sep=""))
+	#source(paste(dbpath,"/api/R",sep=""))
 	report(dbpath,jobid,0,2,"R%20libraries%20loaded")
 	est = NULL
 	runfile = NULL
@@ -183,7 +190,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 	)
 	cat("Debug: Finished downloading datasets\n")
   report(dbpath,jobid,0,2,"FinishedDownloadingDatasets")	
-	tryCatch(est <- est_runtime_new_new(njobs, totalitems, dbpath=dbpath, nprun, jobid, job=job, investigation, jobparams=jobparams, libraryloc)
+	tryCatch(est <- est_runtime_new_new(token, njobs, totalitems, dbpath=dbpath, nprun, jobid, job=job, investigation, jobparams=jobparams, libraryloc)
 		,error =  function(e){cat(e[[1]],"\n");report(dbpath,jobid,0,-1,"EstimatingTime")}
 	)
 	cat("debug: EST_runtime finished downloading datasets\n")
@@ -202,7 +209,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
         ,error = function(e){cat(e[[1]],"\n");report(dbpath,jobid,x,-1,"StartCodeGeneration")}
     )
   	cat("jobid <- ",jobid,"\n",file=myanalysisfile,append=T)
-  	cat("dbpath <- \"",dbpath,"\"\n",sep="",file=myanalysisfile,append=T)
+  	cat("dbpath <- \"", dbpath ,"\"\n",sep="",file=myanalysisfile,append=T)
   	cat("outname <- \"",name,"\"\n",sep="",file=myanalysisfile,append=T)
   	cat("investigationname <- \"",investigation,"\"\n",sep="",file=myanalysisfile,append=T)
   	cat("jobparams <- list(",file=myanalysisfile,append=T)
@@ -239,7 +246,6 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 #		system(paste("sh ",runfile,sep=""))
 	}
 	report(dbpath,jobid,0,3,"PreparationDone")
-  
 }
 
 #time execution of executing 1 trait

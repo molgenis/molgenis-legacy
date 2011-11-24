@@ -45,19 +45,19 @@ public class XqtlRApiService implements MolgenisService
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
 	{
-		Utils.console("starting RApiServlet");
+		//Utils.console("starting RApiServlet");
 		OutputStream outs = response.getResponse().getOutputStream();
 		PrintStream out = new PrintStream(new BufferedOutputStream(outs), false, "UTF8"); // 1.4
 		
 		
-		System.out.println("R API request: " + request.toString());
+		//System.out.println("R API request: " + request.toString());
 		
 		if(request.getString("usr") != null && request.getString("pw") != null )
 		{
 			String usr = request.getString("usr");
 			String pw = request.getString("pw");
 			
-			System.out.println("going to log in with " + usr + " / " + pw);
+			//System.out.println("going to log in with " + usr + " / " + pw);
 			
 			LoginStatus login = FrontControllerAuthenticator.login(request, usr, pw);
 			
@@ -89,7 +89,7 @@ public class XqtlRApiService implements MolgenisService
 		
 		if(request.getString("logout") != null && request.getString("logout").equals("logout"))
 		{
-			System.out.println("going to log out..");
+			//System.out.println("going to log out..");
 			
 			LogoutStatus logout = FrontControllerAuthenticator.logout(request, response);
 			
@@ -116,13 +116,13 @@ public class XqtlRApiService implements MolgenisService
 		}
 		
 		
-		Utils.console("URI path: " +request.getRequest().getRequestURI());
+		//Utils.console("URI path: " +request.getRequest().getRequestURI());
 		String fullServicePath = request.getRequest().getServletPath() + request.getServicePath();
-		Utils.console("servlet path: " +fullServicePath);
+		//Utils.console("servlet path: " +fullServicePath);
 		int loc = request.getRequest().getRequestURI().lastIndexOf(fullServicePath);
 		String filename = request.getRequest().getRequestURI().substring(loc+fullServicePath.length());
 
-		Utils.console("filename is now: " + filename);
+		//Utils.console("filename is now: " + filename);
 		
 		String s = "";
 
@@ -132,11 +132,11 @@ public class XqtlRApiService implements MolgenisService
 		}
 		// if R file exists, return that
 		if (!filename.equals("") && !filename.endsWith(".R")){
-			Utils.console("bad request: no R extension");
+			//Utils.console("bad request: no R extension");
 			s += "you can only load .R files\n";
 		} else if (filename.equals(""))
 		{
-			Utils.console("getting default file");
+			//Utils.console("getting default file");
 			String server = "http://" + request.getRequest().getLocalName() + ":" + request.getRequest().getLocalPort() + "/"+MolgenisServlet.getMolgenisVariantID();
 			String rSource = server + "/api/R/";
 			// getRequestURL omits port!
@@ -202,7 +202,7 @@ public class XqtlRApiService implements MolgenisService
 			{
 				Database db = request.getDatabase();
 				String name = filename.substring(12, filename.length()-2);
-				Utils.console("getting '"+name+".r'");
+				//Utils.console("getting '"+name+".r'");
 				QueryRule q = new QueryRule("name", Operator.EQUALS, name);
 				RScript script = db.find(RScript.class, q).get(0);
 				MolgenisFileHandler mfh = new MolgenisFileHandler(db);
@@ -219,7 +219,7 @@ public class XqtlRApiService implements MolgenisService
 		}
 		else{
 			// otherwise return the default R code to source all
-			Utils.console("getting specific R file");
+			//Utils.console("getting specific R file");
 			filename = filename.replace(".", "/");
 			filename = filename.substring(0, filename.length() - 2) + ".R";
 			//map to hard drive, minus path app/servlet
@@ -232,17 +232,17 @@ public class XqtlRApiService implements MolgenisService
 			File source = new File(root.getAbsolutePath() + "/" + filename);
 			
 			//up to root of app	
-			Utils.console("trying to load R file: " + filename + " from path " + source);
+			//Utils.console("trying to load R file: " + filename + " from path " + source);
 			if(source.exists()){
 				String str = this.printScript(source.toURI().toURL(), "");
 				s +=(str);
 			}else{
 				s +=("File '" + filename + "' not found\n");
 			}
-			Utils.console("done getting specific R file");
+			//Utils.console("done getting specific R file");
 		}
 		writeResponse(response, s, out);
-		Utils.console("closed & flushed");
+		//Utils.console("closed & flushed");
 
 		
 	}
@@ -260,7 +260,7 @@ public class XqtlRApiService implements MolgenisService
 
 	private String printScript( URL source, String out ) throws IOException
 	{
-		Utils.console("reading file to be outputted");
+		//Utils.console("reading file to be outputted");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(source.openStream()));
 		String sourceLine;
 		while( (sourceLine = reader.readLine()) != null )
@@ -268,13 +268,13 @@ public class XqtlRApiService implements MolgenisService
 			out += sourceLine + "\n";
 		}
 		reader.close();
-		Utils.console("done reading");
+		//Utils.console("done reading");
 		return out;
 	}
 	
 	private String printUserScript( URL source, String out, String scriptName ) throws IOException
 	{
-		Utils.console("reading file to be outputted");
+		//Utils.console("reading file to be outputted");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(source.openStream()));
 		out += "run_"+scriptName + " <- function(dbpath, subjob, item, jobid, outname, myanalysisfile, jobparams, investigationname, libraryloc){\n";
 		String sourceLine;
@@ -287,12 +287,12 @@ public class XqtlRApiService implements MolgenisService
 					out += "cat(\""+sourceLine.replace("\"", "'") + "\n\",file=myanalysisfile,append=T)\n";	
 				}
 			}else{
-				Utils.console("Removing empty line");
+				//Utils.console("Removing empty line");
 			}
 		}
 		out += "}";
 		reader.close();
-		Utils.console("done reading");
+		//Utils.console("done reading");
 		return out;
 	}
 }
