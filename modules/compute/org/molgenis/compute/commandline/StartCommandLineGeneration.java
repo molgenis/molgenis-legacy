@@ -3,7 +3,9 @@ package org.molgenis.compute.commandline;
 import org.molgenis.compute.commandline.options.Options;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA. User: georgebyelas Date: 02/11/2011 Time: 14:36 To
