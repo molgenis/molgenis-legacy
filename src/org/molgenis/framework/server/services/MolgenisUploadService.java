@@ -66,7 +66,7 @@ public class MolgenisUploadService implements MolgenisService
 			Tuple requestTuple = req;
 			HttpServletResponse response = res.getResponse();
 			
-			System.out.println("**** " + req.toString());;
+			//System.out.println("**** " + req.toString());;
 			
 			// setup the output-stream
 			response.setBufferSize(10000);
