@@ -21,7 +21,7 @@ public class FrontControllerAuthenticator
 	public static LoginStatus login(MolgenisRequest request, String username,
 			String password)
 	{
-		System.out.println("FrontControllerAuthenticator LOGIN called");
+		//System.out.println("FrontControllerAuthenticator LOGIN called");
 		try
 		{
 			
@@ -35,7 +35,7 @@ public class FrontControllerAuthenticator
 			// try to login
 			boolean loggedIn = db.getSecurity().login(db, username, password);
 			
-			System.out.println("FrontControllerAuthenticator loggedIn: " + loggedIn);
+			//System.out.println("FrontControllerAuthenticator loggedIn: " + loggedIn);
 
 			if (loggedIn)
 			{
@@ -60,7 +60,7 @@ public class FrontControllerAuthenticator
 
 	public static LogoutStatus logout(MolgenisRequest request, MolgenisResponse response)
 	{
-		System.out.println("FrontControllerAuthenticator LOGOUT called");
+		//System.out.println("FrontControllerAuthenticator LOGOUT called");
 		try
 		{
 			

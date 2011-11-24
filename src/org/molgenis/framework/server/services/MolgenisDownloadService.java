@@ -81,11 +81,11 @@ public class MolgenisDownloadService implements MolgenisService
 				try
 				{
 					
-					System.out.println("REQUEST: " + req.toString());
-					System.out.println("request.getPathInfo(): " + request.getPathInfo());
-					System.out.println("req.getServicePath() " + req.getServicePath());
+//					System.out.println("REQUEST: " + req.toString());
+//					System.out.println("request.getPathInfo(): " + request.getPathInfo());
+//					System.out.println("req.getServicePath() " + req.getServicePath());
 					String pathMinusMapping = request.getPathInfo().substring(req.getServicePath().length());
-					System.out.println("pathMinusMapping " + pathMinusMapping);
+//					System.out.println("pathMinusMapping " + pathMinusMapping);
 					
 					if (pathMinusMapping.startsWith("/")){
 						pathMinusMapping = pathMinusMapping.substring(1);
@@ -96,7 +96,7 @@ public class MolgenisDownloadService implements MolgenisService
 					// check whether a class is chosen
 					if (pathMinusMapping.equals(""))
 					{
-						System.out.println("show 'choose entity' dialogue");
+						//System.out.println("show 'choose entity' dialogue");
 						out.println("<html><body>");
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
 						out.println("You can download data:<br>");
@@ -115,13 +115,13 @@ public class MolgenisDownloadService implements MolgenisService
 						out.println("</table>");
 						out.println("</body></html>");
 
-						System.out.println("done");
+						//System.out.println("done");
 						return;
 					}
 					
 					
 					String entityName = pathMinusMapping;
-					System.out.println("entityName = " + entityName);
+					//System.out.println("entityName = " + entityName);
 
 					// check whether a querystring has to build
 					//FIXME: what does this do???
@@ -129,7 +129,7 @@ public class MolgenisDownloadService implements MolgenisService
 							&& request.getQueryString().equals(
 									"__showQueryDialogue=true"))
 					{
-						System.out.println("show 'set filters' dialogue");
+						//System.out.println("show 'set filters' dialogue");
 						out.println("<html><body><form>");
 						out.println("You choose to download '"
 								+ entityName //FIXME: bad, hardcoded location!
@@ -180,8 +180,7 @@ public class MolgenisDownloadService implements MolgenisService
 					// use get
 					if (request.getQueryString() != null)
 					{
-						System.out.println("handle find query via http-get: "
-								+ request.getQueryString());
+						//System.out.println("handle find query via http-get: " + request.getQueryString());
 						String[] ruleStrings = request.getQueryString().split("&");
 
 						for (String rule : ruleStrings)
@@ -216,8 +215,7 @@ public class MolgenisDownloadService implements MolgenisService
 					// use post
 					else
 					{
-						System.out.println("handle find query via http-post with parameters: "
-								+ req.getFields());
+						//System.out.println("handle find query via http-post with parameters: " + req.getFields());
 						for (String name : req.getFields())
 						{
 							if (req.getString(name).startsWith("["))

@@ -80,7 +80,8 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		{
 			if (path.startsWith(p))
 			{
-				System.out.println("request '"+path+"' handled by " + services.get(p).getClass().getSimpleName() + " mapped on path " + p);
+				System.out.println("> new request to '"+path+"' handled by " + services.get(p).getClass().getSimpleName() + " mapped on path " + p);
+				System.out.println("request content: " + request.toString());
 				
 				//if mapped to "/", we assume we are serving out a file, and do not manage security/connections
 				if(p.equals("/"))
@@ -90,13 +91,17 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 				else
 				{
 					UUID connId = getSecuredDatabase(request);
+					
+					System.out.println("database status: " + (request.getDatabase().getSecurity().isAuthenticated() ? "authenticated as "
+							+ request.getDatabase().getSecurity().getUserName() : "not authenticated"));
+					
 					request.setServicePath(p);
 					services.get(p).handleRequest(request, response);
 					manageConnection(connId);
 					
 					
-					printSessionInfo(req.getSession());
-					context.getTokenFactory().printTokens();
+					//printSessionInfo(req.getSession());
+					//context.getTokenFactory().printTokens();
 				}
 				
 				return;
@@ -142,7 +147,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		//remove from list (does not happen if Exception was thrown)
 		connections.remove(connId);
 		
-		System.out.println("# of active connections: " + connections.size());
+		System.out.println("< request was handled, active database connections: " + connections.size());
 	}
 	
 	private void printSessionInfo(HttpSession session)
