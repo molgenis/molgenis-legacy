@@ -10,12 +10,12 @@ package plugins.qtlfinder;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
-import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -29,6 +29,7 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Gene;
+import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.Probe;
 
 import plugins.reportbuilder.Statistics;
@@ -182,6 +183,9 @@ public class QtlFinder extends PluginModel
 						//too bad, image failed
 					}
 					
+					HashMap<String, Marker> markerInfo = getMarkerInfo(colNames, db);
+					qtl.setMarkerAnnotations(markerInfo);
+					
 					result.add(qtl);
 					
 				}
@@ -207,6 +211,9 @@ public class QtlFinder extends PluginModel
 						//too bad, image failed
 					}
 					
+					HashMap<String, Marker> markerInfo = getMarkerInfo(rowNames, db);
+					qtl.setMarkerAnnotations(markerInfo);
+					
 					result.add(qtl);
 					
 				}
@@ -223,6 +230,25 @@ public class QtlFinder extends PluginModel
 			
 		}
 		
+		return result;
+	}
+
+	private HashMap<String, Marker> getMarkerInfo(List<String> colNames, Database db)
+	{
+		HashMap<String, Marker> result = new HashMap<String, Marker>();
+		
+		try{
+			List<Marker> dbFind = db.find(Marker.class, new QueryRule(Marker.NAME, Operator.IN, colNames));
+			for(Marker m : dbFind)
+			{
+				result.put(m.getName(), m);
+			}
+		}
+		catch(Exception e)
+		{
+			//too bad, no marker annotations
+			e.printStackTrace();
+		}
 		return result;
 	}
 

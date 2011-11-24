@@ -172,16 +172,22 @@
 		<td>
 			<table cellpadding="3" border="1" style="width:700px;">
 			<tr class="form_listrow0">
-				<td colspan="2">
+				<td colspan="4">
 					<b>All information</b>
 				</td>
 			</tr>
 			<tr class="form_listrow1">
 				<td>
-					<i>Marker</i>
+					<i>Marker name</i>
 				</td>
 				<td>
 					<i>LOD score</i>
+				</td>
+				<td>
+					<i>Marker cM</i>
+				</td>
+				<td>
+					<i>Marker chromosome</i>
 				</td>
 			</tr>
 			<#list qtl.markers as m>
@@ -191,6 +197,12 @@
 					</td>
 					<td>
 							${qtl.valuesForMarkers[m_index]}
+					</td>
+					<td>
+							<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].cm}</#if>
+					</td>
+					<td>
+							<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].chromosome_name}</#if>
 					</td>
 				</tr>
 			</#list>
