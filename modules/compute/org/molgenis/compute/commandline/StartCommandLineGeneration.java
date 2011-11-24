@@ -1,7 +1,6 @@
 package org.molgenis.compute.commandline;
 
 import org.molgenis.compute.commandline.options.Options;
-import org.molgenis.util.Tuple;
 
 import java.io.File;
 import java.util.Hashtable;
@@ -40,24 +39,24 @@ public class StartCommandLineGeneration
         generator.setNewRun();
         //now iii is used produce the unique name of the script
         //TODO replace it
-        int iii = 0;
-        for (Tuple target : computeBundle.getUserParameters())
-        {
-            // ugly copy from tuple to hashtable
-            for (String field : target.getFields())
-            {
-                if (!target.isNull(field))
-                {
-                    userValues.put(field, target.getString(field));
-                }
-            }
+//        int iii = 0;
+//        for (Tuple target : computeBundle.getUserParameters())
+//        {
+//            // ugly copy from tuple to hashtable
+//            for (String field : target.getFields())
+//            {
+//                if (!target.isNull(field))
+//                {
+//                    userValues.put(field, target.getString(field));
+//                }
+//            }
 
             generator.processSingleWorksheet(computeBundle, userValues,
-                    "" + iii, this.backend, templateDir);
+                    ""/* + iii*/, this.backend, templateDir);
             // add generated applications to the bundle
             computeBundle.setComputeJobs(generator.getComputeApplications());
-            iii++;
-        }
+//            iii++;
+//        }
 
         if(backend.equalsIgnoreCase(WorkflowGeneratorCommandLine.CLUSTER))
             generator.flashSumbitScript();

@@ -6,6 +6,7 @@ import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.pipelinemodel.*;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
+import org.molgenis.util.Tuple;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -68,6 +69,9 @@ public class WorkflowGeneratorCommandLine
     int intSubmitID = -1;
 
     private String backend = null;
+    private ComputeBundle computeBundle = null;
+
+    private int iii = 0;
 
     public void processSingleWorksheet(ComputeBundle bundle,
                                        Hashtable<String, String> userValues,
@@ -76,6 +80,8 @@ public class WorkflowGeneratorCommandLine
         applications = new Vector<ComputeJob>();
 
         submitIDs = new Hashtable<String, String>();
+
+        this.computeBundle = bundle;
 
         this.cProtocols = bundle.getComputeProtocols();
         this.wfeParameters = bundle.getWorkflowElementParameters();
@@ -127,44 +133,59 @@ public class WorkflowGeneratorCommandLine
             throws ParseException, IOException
     {
 
-        weavingValues = new Hashtable<String, String>();
-        weavingValues.putAll(userValues);
-
-        System.out.println(">>> workflow element: " + workflowElement.getName());
-
-        //create complex features, which will be processed after simple features
-        Vector<ComputeParameter> featuresToDerive = new Vector<ComputeParameter>();
-
-        //get protocol and template
-        ComputeProtocol protocol = findProtocol(workflowElement.getProtocol_Name());
-
-
-        //process compute features
-        for (ComputeParameter computeFeature : allComputeParameters)
+        iii = 0;
+        for (Tuple target : computeBundle.getUserParameters())
         {
-            if (computeFeature.getDefaultValue() == null)
-                continue;
-            else if (computeFeature.getDefaultValue().contains("${"))
+            // ugly copy from tuple to hashtable
+            for (String field : target.getFields())
             {
-                featuresToDerive.addElement(computeFeature);
+                if (!target.isNull(field))
+                {
+                    userValues.put(field, target.getString(field));
+                }
             }
-            else
+
+
+            weavingValues = new Hashtable<String, String>();
+            weavingValues.putAll(userValues);
+
+            System.out.println(">>> workflow element: " + workflowElement.getName());
+
+            //create complex features, which will be processed after simple features
+            Vector<ComputeParameter> featuresToDerive = new Vector<ComputeParameter>();
+
+            //get protocol and template
+            ComputeProtocol protocol = findProtocol(workflowElement.getProtocol_Name());
+
+
+            //process compute features
+            for (ComputeParameter computeFeature : allComputeParameters)
             {
-                weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue() != null ? computeFeature.getDefaultValue() : "");
+                if (computeFeature.getDefaultValue() == null)
+                    continue;
+                else if (computeFeature.getDefaultValue().contains("${"))
+                {
+                    featuresToDerive.addElement(computeFeature);
+                }
+                else
+                {
+                    weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue() != null ? computeFeature.getDefaultValue() : "");
+                }
             }
+
+
+            //process workflow element parameters
+            List<WorkflowElementParameter> workflowElementParameters = findWorkflowElementParameters(workflowElement.getName());
+
+            for (WorkflowElementParameter par : workflowElementParameters)
+            {
+                ComputeParameter feature = findComputeFeature(par.getParameter_Name());
+                weavingValues.put(par.getParameter_Name(), feature.getDefaultValue());
+            }
+
+            generateComputeApplication(workflowElement, protocol, weavingValues, featuresToDerive);
+            iii++;
         }
-
-
-        //process workflow element parameters
-        List<WorkflowElementParameter> workflowElementParameters = findWorkflowElementParameters(workflowElement.getName());
-
-        for (WorkflowElementParameter par : workflowElementParameters)
-        {
-            ComputeParameter feature = findComputeFeature(par.getParameter_Name());
-            weavingValues.put(par.getParameter_Name(), feature.getDefaultValue());
-        }
-
-        generateComputeApplication(workflowElement, protocol, weavingValues, featuresToDerive);
     }
 
     private List<WorkflowElementParameter> findWorkflowElementParameters(String name)
@@ -212,7 +233,7 @@ public class WorkflowGeneratorCommandLine
         String runId = this.weavingValues.get("runID");
 
         //String appName = applicationName + "_" + workflowElement.getName();// + "_" + pipelineElementNumber;
-        String appName = runId + applicationName +"_" + workflowElement.getName();// + "_" + pipelineElementNumber;
+        String appName = runId + applicationName + iii + "_" + workflowElement.getName();// + "_" + pipelineElementNumber;
 
         app.setName(appName);
         System.out.println("---application---> " + appName);
@@ -275,7 +296,7 @@ public class WorkflowGeneratorCommandLine
                 //TODO here also set script result to app like in cluster version
             }
         }
-       else if (backend.equalsIgnoreCase(WorkflowGeneratorCommandLine.GRID))
+        else if (backend.equalsIgnoreCase(WorkflowGeneratorCommandLine.GRID))
         {
             pipelineScript = makeJDLScript(scriptID, scriptRemoteLocation, protocolTemplate, weavingValues);
         }
