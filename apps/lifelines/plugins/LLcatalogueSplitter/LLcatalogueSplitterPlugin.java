@@ -8,8 +8,6 @@ import org.molgenis.framework.ui.html.JQuerySplitterContents;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
-
 public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 {
 	
@@ -112,6 +110,18 @@ public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 
 	public JQuerySplitterContents getSplitterContents(){
 		return splitterContents;
+	}
+	
+	public String getSplitterLeftPane() {
+		return splitterContents.getLeftPane();
+	}
+	
+	public String getSplitterRightTopPane() {
+		return splitterContents.getRightTopPane();
+	}
+	
+	public String getSplitterRightBottomPane() {
+		return splitterContents.getRightBottomPane();
 	}
 	
 	public String getSplitter() {
