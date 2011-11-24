@@ -41,6 +41,8 @@ public class ParameterWeaverCommandLine
     public static final String DO_EXECUTABLE = "#EXES";
     public static final String DO_UPLOAD  = "#OUTPUTS";
 
+    //temporary for targets
+    public static final String READ_TARGETS  = "#TARGETS";
 
 
     private Hashtable<String, String> scriptParameters = new Hashtable<String, String>();
@@ -330,4 +332,12 @@ public class ParameterWeaverCommandLine
         return new String(bytes);
     }
 
+    public Vector<String> parseHeaderElement(String header, String protocol)
+    {
+        int posInput = protocol.indexOf(header);
+        int posNewLine = protocol.indexOf("\n", posInput);
+        String list = protocol.substring(posInput, posNewLine);
+
+        return findNames(list);
+    }
 }

@@ -133,6 +133,10 @@ public class WorkflowGeneratorCommandLine
             throws ParseException, IOException
     {
 
+        //get protocol and find its targets
+        ComputeProtocol protocol = findProtocol(workflowElement.getProtocol_Name());
+        Vector<String> targets = weaver.parseHeaderElement(ParameterWeaverCommandLine.READ_TARGETS, protocol.getScriptTemplate());
+
         iii = 0;
         for (Tuple target : computeBundle.getUserParameters())
         {
@@ -154,10 +158,6 @@ public class WorkflowGeneratorCommandLine
             //create complex features, which will be processed after simple features
             Vector<ComputeParameter> featuresToDerive = new Vector<ComputeParameter>();
 
-            //get protocol and template
-            ComputeProtocol protocol = findProtocol(workflowElement.getProtocol_Name());
-
-
             //process compute features
             for (ComputeParameter computeFeature : allComputeParameters)
             {
@@ -172,7 +172,6 @@ public class WorkflowGeneratorCommandLine
                     weavingValues.put(computeFeature.getName(), computeFeature.getDefaultValue() != null ? computeFeature.getDefaultValue() : "");
                 }
             }
-
 
             //process workflow element parameters
             List<WorkflowElementParameter> workflowElementParameters = findWorkflowElementParameters(workflowElement.getName());
