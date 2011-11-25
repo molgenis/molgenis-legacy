@@ -94,7 +94,9 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecora
 		int count = -1;
 		
 		//make security exception if the currently logged in user wants to update him/herself
-		if(entities.size() == 1 && this.getDatabase().getSecurity().getUserName().equals(entities.get(0).getName()))
+		//FIXME: we do this.getDatabase().getSecurity() == null to work with the "escaped security" solutions in the SimpleUserLogin.java..
+		//FIXME: not good, or OK ???
+		if(this.getDatabase().getSecurity() == null || entities.size() == 1 && this.getDatabase().getSecurity().getUserName().equals(entities.get(0).getName()))
 		{
 			Login saveLogin = this.getDatabase().getSecurity();
 			this.getDatabase().setLogin(null);
