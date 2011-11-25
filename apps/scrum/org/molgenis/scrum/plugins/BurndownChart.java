@@ -131,16 +131,16 @@ public class BurndownChart extends PluginModel<Entity>
 				currentBoard.put(currentHistory.getHistoryForTask_Id(), currentHistory);
 				currentHistory = taskHistory.get(++historyIndex);
 			}
-			
-			//then count for today
 			DateFormat df = new SimpleDateFormat("dd/MMM");
-
 			this.burndown.add(storyPointCount(currentBoard, false));
 			this.unplanned.add(0.0);
 			this.dates.add(df.format(calendar.getTime()));
 			
 			//then iterate through the days until end of sprint OR today, update board and check for unplanned
 			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR, 23);
+			now.set(Calendar.MINUTE, 59);
+			now.set(Calendar.SECOND,59);
 			//if now is weekend, change it to next monday
 			if(now.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) now.add(Calendar.DATE,2);
 			if(now.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) now.add(Calendar.DATE,2);
@@ -151,7 +151,7 @@ public class BurndownChart extends PluginModel<Entity>
 				Date scrumDay = calendar.getTime();
 				
 				//get the board updated for the current day
-				while (currentHistory != null && currentHistory.getChangedOn().before(scrumDay))
+				while (currentHistory != null && (currentHistory.getChangedOn().before(scrumDay) || currentHistory.getChangedOn().equals(scrumDay)))
 				{
 					//scan for new/unplanned tickets
 					if( !currentBoard.containsKey(currentHistory.getHistoryForTask_Id()) || 
@@ -172,7 +172,7 @@ public class BurndownChart extends PluginModel<Entity>
 				if(calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY)
 				{
 					//update the currentBoard list
-					if(calendar.getTime().before(now.getTime()))
+					if(calendar.getTime().before(now.getTime()) || calendar.getTime().equals(now.getTime()))
 					{
 						this.burndown.add(storyPointCount(currentBoard, false));
 						this.unplanned.add(storyPointCount(currentUnplanned, true));
