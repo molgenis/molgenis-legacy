@@ -15,7 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.log4j.Logger;
-import org.molgenis.LLTarget;
+import org.molgenis.lifelinespheno.LLTarget;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;

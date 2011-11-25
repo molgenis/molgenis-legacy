@@ -68,22 +68,51 @@ public class LoaderUtils {
         return conn;
     }    
     
-    public static String getCast(final String dataType) throws Exception {
+    public enum eDatabase {
+    	ORACLE,
+    	MYSQL
+    }
+    
+    public static String getCast(String dataType, eDatabase database) throws Exception {
+        dataType = dataType.toLowerCase();
+    	
         if (dataType.equals("code")) {
-            return "cast(%s as number)";
-        } else if (dataType.equals("int")) {
-            return "cast(%s as number)";
-        } else if (dataType.equals("datetime")) {
-            return "to_date(substr(value,1, 19), 'yyyy-mm-dd hh24:mi:ss') ";
+        	if(database == eDatabase.MYSQL) {
+        		return "cast(%s as DECIMAL)";	
+        	} else if(database == eDatabase.ORACLE) {
+        		return "cast(%s as number)";
+        	}
+        } else if (dataType.equals("int") || dataType.equals("nummer")) {
+        	if(database == eDatabase.MYSQL) {
+        		return "cast(%s as DECIMAL)";	
+        	} else if(database == eDatabase.ORACLE) {
+        		return "cast(%s as number)";
+        	}
+        } else if (dataType.equals("datetime") || dataType.equals("datum")) {
+        	if(database == eDatabase.MYSQL) {
+        		return "cast(substr(value,1, 19) AS DATETIME) ";
+        	} else {
+        		return "to_date(substr(value,1, 19), 'yyyy-mm-dd hh24:mi:ss') ";
+    		}
         } else if (dataType.equals("decimal")) {
-            return "cast(%s as number)";
-        } else if (dataType.equals("string")) {
+        	if(database == eDatabase.MYSQL) {
+        		return "cast(%s as DECIMAL)";	
+        	} else if(database == eDatabase.ORACLE) {
+        		return "cast(%s as number)";
+        	}
+        } else if (dataType.equals("string") || dataType.equals("tekst")) {
             return "%s";
         } else if(dataType.equals("long")) {
-            return "cast(%s as number)";
+        	if(database == eDatabase.MYSQL) {
+        		return "cast(%s as DECIMAL)";	
+        	} else if(database == eDatabase.ORACLE) {
+        		return "cast(%s as number)";
+        	}
         } else {
             throw new Exception("DataType not supported!" + dataType);
-        }        
+        }   
+        
+        throw new Exception("DataType/database not supported!" + dataType);
     }
     
 }

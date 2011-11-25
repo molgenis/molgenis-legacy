@@ -49,12 +49,12 @@ public class EAVToView {
     }    
 
     public static String createQuery(Investigation investigation, Protocol protocol, 
-            List<Measurement> measurements, EntityManager em) throws Exception {
-        return createQuery(investigation, protocol, measurements, em, false);
+            List<Measurement> measurements, EntityManager em, LoaderUtils.eDatabase database) throws Exception {
+        return createQuery(investigation, protocol, measurements, em, false, database);
     }    
     
     public static String createQuery(Investigation investigation, Protocol protocol, 
-            List<Measurement> measurements, EntityManager em, boolean tableInAlias) throws Exception {
+            List<Measurement> measurements, EntityManager em, boolean tableInAlias, LoaderUtils.eDatabase database) throws Exception {
         String column = "max(case when o.feature = %d then %s end) %s \n";
         StringBuilder query = new StringBuilder("SELECT ");    
 //        List<Measurement> measurements = em.createQuery("SELECT m FROM Measurement m where m.name IN (:measurementNames) AND investigation.id = :invId", Measurement.class)
@@ -63,7 +63,7 @@ public class EAVToView {
 //        	.getResultList();
             for(int i = 0; i < measurements.size(); ++i) {
                 Measurement m = measurements.get(i);
-                String castPart = LoaderUtils.getCast(m.getDataType());
+                String castPart = LoaderUtils.getCast(m.getDataType(), database);
     //            if(databaseTarget.equals("mysql")) {
     //            	if(castPart.contains("number")) {
     //            		castPart = castPart.replace("number", "DECIMAL");
@@ -95,7 +95,7 @@ public class EAVToView {
     private void load() throws DatabaseException, Exception {
     	Database db = DatabaseFactory.create();
     	EntityManager em = db.getEntityManager();
-    	String query = createQuery(investigation, protocol, fields, em, false);
+    	String query = createQuery(investigation, protocol, fields, em, false, LoaderUtils.eDatabase.ORACLE);
         String viewQuery = "";
     	String tempTableName = (schemaToExportView != null) ? "" + schemaToExportView + "." : "";
     	tempTableName += tableName;        
