@@ -162,6 +162,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 				"&select=" + this.getName() +
 				"&__action=Activate&actCode=" + user.getActivationCode();
 			String emailContents = "User registration for " + this.getRoot().getLabel() + "\n";
+			emailContents		+= "User name: " + user.getName() + "Full name: " + user.getFirstName() + " " + user.getLastName() + "\n";
 			emailContents       += "In order to activate the user visit the following URL:\n";
 			emailContents       += activationURL + "\n\n";
 			
