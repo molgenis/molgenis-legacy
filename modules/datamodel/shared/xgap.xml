@@ -143,9 +143,12 @@
 				nillable="true" />
 			<unique fields="X,Y,GridX,GridY" />
 		</entity>
-		<entity name="ProbeSet" extends="ObservableFeature">
-			<description> A set of Probes. E.g. Affymetrix probeset has multiple
-				probes.</description>
+		<entity name="ProbeSet" extends="ObservableFeature" implements="Locus">
+			<description> A set of Probes. E.g. an Affymetrix probeset has multiple
+				probes. It implements locus because sometimes you want to give the complete set of probes a range,
+				for example: indicating that this set of probes spans basepair 0 through 10.000.000 on chromosome 3.
+				The same information could arguably also be queried from the probes themselves, but if you have 40k probes,
+				retrieving the same information from only ProbeSet (if annotated so) would be much faster.</description>
 		</entity>
 		<entity name="MassPeak" extends="ObservableFeature">
 			<description> A peak that has been selected within a mass
