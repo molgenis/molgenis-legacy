@@ -32,68 +32,12 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 	{	
 		super(name, parent);
 //		JQueryTreeViewElement protocolTree = null;
-		Database db = this.getController().getDatabase();
+	//	Database db = this.getController().getDatabase(); 
+		
+		//Database db = this.getDatabase();
 
-
-		List<String> topProtocols = new ArrayList<String>();
-		
-		List<String> bottomProtocols = new ArrayList<String>();
-		
-		List<String> middleProtocols = new ArrayList<String>();
-		
-		labelToTree = new HashMap<String, JQueryTreeViewElement>();
-		
-		nameToProtocol = new HashMap<String, Protocol>();
-		
-		try {
-			for(Protocol p : db.find(Protocol.class)){
-				
-				//System.out.println(p.getName());
-				
-				List<String> subNames = p.getSubprotocols_Name();
-				
-				if(!nameToProtocol.containsKey(p.getName())){
-					nameToProtocol.put(p.getName(), p);
-				}
-				
-				if(!subNames.isEmpty()){
-					
-					if(!topProtocols.contains(p.getName()))
-						topProtocols.add(p.getName());
-					
-					for(String subProtocol : subNames){
-						
-						if(!middleProtocols.contains(subProtocol))
-							middleProtocols.add(subProtocol);
-					}
-					
-				}else{
-					
-					if(!bottomProtocols.contains(p.getName())){
-						bottomProtocols.add(p.getName());
-						
-					}
-				}
-			}
-			
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}
-		
-		middleProtocols.removeAll(bottomProtocols);
-		
-		topProtocols.removeAll(middleProtocols);
-		
-		JQueryTreeViewElement protocolsTree = new JQueryTreeViewElement("Protocols", null);
-		
-		recursiveAddingTree(topProtocols, protocolsTree);
-		
-		
-		treeView = new JQueryTreeView<JQueryTreeViewElement>("Protocols", protocolsTree);
-		
-//		JQuerySplitterContents c = new JQuerySplitterContents();
-//		JQuerySplitter2<JQuerySplitterContents> jqs2 = new JQuerySplitter2<JQuerySplitterContents>("aaa", c);
 	}
+	
 	
 	public void recursiveAddingTree(List<String> parentNode, JQueryTreeViewElement parentTree){
 		
@@ -125,7 +69,20 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 				}
 			}
 		}
-	}
+	} 
+	
+//	@Override
+//	public String getCustomHtmlBodyOnLoad()
+//	{
+//		
+//		
+////		JQuerySplitterContents c = new JQuerySplitterContents();
+////		JQuerySplitter2<JQuerySplitterContents> jqs2 = new JQuerySplitter2<JQuerySplitterContents>("aaa", c);
+//		
+//		
+//		return treeView.toHtml();;
+//		
+//	}
 	
 	public void addingMeasurementTotree(List<String> parentNode, JQueryTreeViewElement parentTree){
 		
@@ -189,19 +146,60 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-//		try
-//		{
-//			Database db = this.getDatabase();
-//			Query q = db.query(Experiment.class);
-//			q.like("name", "test");
-//			List<Experiment> recentExperiments = q.find();
-//			
-//			//do something
-//		}
-//		catch(Exception e)
-//		{
-//			//...
-//		}
+		List<String> topProtocols = new ArrayList<String>();
+		
+		List<String> bottomProtocols = new ArrayList<String>();
+		
+		List<String> middleProtocols = new ArrayList<String>();
+		
+		labelToTree = new HashMap<String, JQueryTreeViewElement>();
+		
+		nameToProtocol = new HashMap<String, Protocol>();
+		
+		try {
+			for(Protocol p : db.find(Protocol.class)){
+				
+				//System.out.println(p.getName());
+				
+				List<String> subNames = p.getSubprotocols_Name();
+				
+				if(!nameToProtocol.containsKey(p.getName())){
+					nameToProtocol.put(p.getName(), p);
+				}
+				
+				if(!subNames.isEmpty()){
+					
+					if(!topProtocols.contains(p.getName()))
+						topProtocols.add(p.getName());
+					
+					for(String subProtocol : subNames){
+						
+						if(!middleProtocols.contains(subProtocol))
+							middleProtocols.add(subProtocol);
+					}
+					
+				}else{
+					
+					if(!bottomProtocols.contains(p.getName())){
+						bottomProtocols.add(p.getName());
+						
+					}
+				}
+			}
+			
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+		
+		middleProtocols.removeAll(bottomProtocols);
+		
+		topProtocols.removeAll(middleProtocols);
+		
+		JQueryTreeViewElement protocolsTree = new JQueryTreeViewElement("Protocols", null);
+		
+		recursiveAddingTree(topProtocols, protocolsTree);
+		
+		treeView = new JQueryTreeView<JQueryTreeViewElement>("Protocols", protocolsTree);
 	}
 	
 	@Override
