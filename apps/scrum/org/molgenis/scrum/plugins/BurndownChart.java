@@ -87,7 +87,7 @@ public class BurndownChart extends PluginModel<Entity>
 
 			// get the current history
 			taskHistory = db.query(TaskHistory.class).in(TaskHistory.STORY, storyIds)
-					.sortASC("changedOn").find();
+					.sortASC(TaskHistory.CHANGEDON).find();
 			
 			if(taskHistory.size() == 0) throw new Exception("no task history known for this sprint (did it already start?)");
 			
@@ -123,10 +123,10 @@ public class BurndownChart extends PluginModel<Entity>
 			Map<Integer,TaskHistory> currentUnplanned = new LinkedHashMap<Integer,TaskHistory>();
 			
 			//first fill the board for start of sprint
-			Date scrumDay = calendar.getTime();
+			Date firstScrumDay = calendar.getTime();
 			int historyIndex = 0;
 			TaskHistory currentHistory = taskHistory.get(historyIndex);
-			while (currentHistory.getChangedOn().before(scrumDay) && historyIndex < taskHistory.size() - 1)
+			while (currentHistory.getChangedOn().equals(firstScrumDay) && historyIndex < taskHistory.size() - 1)
 			{
 				currentBoard.put(currentHistory.getHistoryForTask_Id(), currentHistory);
 				currentHistory = taskHistory.get(++historyIndex);
@@ -148,7 +148,7 @@ public class BurndownChart extends PluginModel<Entity>
 			while(calendar.getTime().before(end.getTime()) )
 			{
 				calendar.add(Calendar.DATE, 1);
-				scrumDay = calendar.getTime();
+				Date scrumDay = calendar.getTime();
 				
 				//get the board updated for the current day
 				while (currentHistory != null && currentHistory.getChangedOn().before(scrumDay))

@@ -36,13 +36,12 @@ var burndown = eval(${screen.getBurndownJSON()}); //[25,19,15,17,13];
 var unplanned = eval(${screen.getUnplannedJSON()}); //[0,0,0,2,2];
 var xlabels = eval(${screen.getDaysJSON()}); //['1/3','2/3','5/3','6/3','7/3'];
 
-   
 /* method to calculate max value of an array */
 Array.prototype.max = function() {
-var max = this[0];
-var len = this.length;
-for (var i = 1; i < len; i++) if (this[i] > max) max = this[i];
-return max;
+	var max = this[0];
+	var len = this.length;
+	for (var i = 1; i < len; i++) if (this[i] > max) max = this[i];
+	return max;
 }   
    
 //basic canvas settings
@@ -86,26 +85,26 @@ if (canvas.getContext) {
 	for(i = 0; i < max; i++)
 	{
 		ctx.beginPath();
-		ctx.moveTo(padding, i*ygrid + padding);
-		ctx.lineTo(graphWIDTH + padding, i*ygrid + padding);
+		ctx.moveTo(padding, i * ygrid + padding);
+		ctx.lineTo(graphWIDTH + padding, i * ygrid + padding);
 		ctx.stroke();
 		ctx.closePath();	
 		
-		ctx.fillText  (max - i, 15, i*ygrid + padding + 5);
+		ctx.fillText  (max - i, 15, i * ygrid + padding + 5);
 	}
 	
 	/* draw x-grid */
 	for(i = 0; i <= width; i++)
 	{
 		ctx.beginPath();
-		ctx.moveTo(i*xgrid + padding, padding);
-		ctx.lineTo(i*xgrid + padding, graphHEIGHT + padding);
+		ctx.moveTo(i * xgrid + padding, padding);
+		ctx.lineTo(i * xgrid + padding, graphHEIGHT + padding);
 		ctx.stroke();
 		ctx.closePath();		
 		
 		if(i < width) 
 		{
-			ctx.fillText(xlabels[i], i*xgrid + padding - 10, graphHEIGHT + padding + 20);
+			ctx.fillText(xlabels[i], i * xgrid + padding - 10, graphHEIGHT + padding + 20);
 		}
 	}	
 	
@@ -115,14 +114,14 @@ if (canvas.getContext) {
 	ctx.strokeStyle = "green";
 	
 	ctx.beginPath();
-	ctx.moveTo(padding, padding + ygrid);
+	ctx.moveTo(padding, padding + graphHEIGHT - burndown[0] * ygrid);
 	for(var i = 0; i < burndown.length; i++) {
-		ctx.lineTo(padding + i*xgrid, padding + graphHEIGHT - burndown[i]*ygrid);
+		ctx.lineTo(padding + i * xgrid, padding + graphHEIGHT - burndown[i] * ygrid);
 	}
 	ctx.stroke();	
 	ctx.closePath();
 	
-	/* the unplanned */
+	/* the unplanned (doesn't work properly, commented out for now)
 	ctx.lineWidth = 3;
 	ctx.strokeStyle = "blue";
 	
@@ -139,7 +138,7 @@ if (canvas.getContext) {
 
 	}
 	ctx.stroke();	
-	ctx.closePath();
+	ctx.closePath();*/
 }
 </script>
 
