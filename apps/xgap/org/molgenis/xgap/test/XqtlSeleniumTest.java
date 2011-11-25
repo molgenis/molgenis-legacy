@@ -338,10 +338,10 @@ public class XqtlSeleniumTest
 			// assert content of enum fields
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
-					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeSampleSpot");
+					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"),
-					"Metabolite\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeSampleSpot");
+					"Metabolite\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
 
 			// change Individual to Gene and save
 			selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
@@ -354,7 +354,7 @@ public class XqtlSeleniumTest
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
-					"Gene\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeSampleSpot");
+					"Gene\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
 
 			// change back to Individual and save
 			selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
@@ -366,7 +366,7 @@ public class XqtlSeleniumTest
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
-					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeSampleSpot");
+					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
 
 		}
 
