@@ -131,6 +131,26 @@ public class MolgenisFileHandler extends StorageHandler
 		return dataSource;
 
 	}
+	
+	/**
+	 * Get the file pointer for this filename / extension / type, bypassing MolgenisFile to handle it.
+	 * 
+	 * @param db
+	 * @param mf
+	 * @return
+	 * @throws Exception 
+	 */
+	public File getFileDirectly(String fileName, String extension, String mfType, Database db) throws Exception
+	{
+		File typeStorage = getStorageDirFor(mfType.toLowerCase(), db);
+		File dataSource = new File(typeStorage.getAbsolutePath() + File.separator + fileName + "." + extension);
+		if (!dataSource.exists())
+		{
+			throw new FileNotFoundException("No file found for name '" + fileName + "'");
+		}
+		return dataSource;
+
+	}
 
 	/**
 	 * Get the file pointer for this name of a MolgenisFile, if it exists.

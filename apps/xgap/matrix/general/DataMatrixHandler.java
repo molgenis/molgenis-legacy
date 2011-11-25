@@ -398,9 +398,9 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		String type = data.getStorage() + "DataMatrix";
 		Class<? extends Entity> mfClass = db.getClassForName(type);
 
-		//found out if there already is a MolgenisFile with this escaped name
+		//found out if there already is a MolgenisFile with this 'Data'
 		List<? extends Entity> mfList = db.find(mfClass,
-				new QueryRule("Data_" + Data.NAME, Operator.EQUALS, NameConvention.escapeFileName(data.getName())));
+				new QueryRule("Data_" + Data.ID, Operator.EQUALS, data.getId()));
 		
 		if (mfList.size() == 1)
 		{
@@ -411,8 +411,20 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			throw new Exception("SEVERE ERROR: Multiple files for " + data.getName() + " found!");
 		}
 		
-		//if not, try to add it
-		if(!mfPresent)
+		//find out if there is a file that can be coupled using a new MolgenisFile object
+		boolean filePresent;
+		try
+		{
+			this.getFileDirectly(NameConvention.escapeFileName(data.getName()), getExtension(data.getStorage()), type, db);
+			filePresent = true;
+		}
+		catch(FileNotFoundException fnfe)
+		{
+			filePresent = false;
+		}
+		
+		//if there is no MolgenisFile, but there is a file present, make the link
+		if(!mfPresent && filePresent)
 		{
 			MolgenisFile mfAdd = (MolgenisFile) db.getClassForName(type).newInstance();
 			
