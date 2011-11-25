@@ -3,6 +3,7 @@ package plugins.matrix.manager;
 import java.io.File;
 
 import matrix.DataMatrixInstance;
+import matrix.implementations.database.DatabaseDataMatrixInstance;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.Tuple;
@@ -14,6 +15,12 @@ import plugins.rplot.MakeRPlot;
 public class RequestHandler {
 	
 	public static void handle(MatrixManagerModel screenModel, Tuple request, Database db) throws Exception {
+	
+		if(screenModel.getBrowser().getModel().getInstance() instanceof DatabaseDataMatrixInstance)
+		{
+			((DatabaseDataMatrixInstance)screenModel.getBrowser().getModel().getInstance()).setDatabase(db);
+		}
+		
 		String action = request.getString("__action");
 		if (action.equals("refresh")) {
 			screenModel.setSelectedData(null);

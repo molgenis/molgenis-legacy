@@ -38,6 +38,11 @@ public class DatabaseDataMatrixInstance extends
 	private Database db;
 	private String type;
 	private int matrixId;
+	
+	public void setDatabase(Database db)
+	{
+		this.db = db;
+	}
 
 	public DatabaseDataMatrixInstance(Database db, Data data) throws Exception
 	{
