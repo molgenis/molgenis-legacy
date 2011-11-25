@@ -9,7 +9,7 @@
 			Panel(gonl) {- observation(relation=Feature(name=AlleleCount)), value=6) -} SequenceFeature
 			.
 		</description>
-		<entity name="GenomeBuild" extends="ObservableFeature">
+		<entity name="GenomeBuild" extends="ObservationElement">
 			<description>Reference to the genome build used. TODO: expand with
 				link to genome build file/version/database ids etc. E.g. 'hg19'.
 			</description>
@@ -79,6 +79,8 @@
 				description="sequence in the reference. Very long sequences variants will be stored elsewhere." />
 			<field name="alt"
 				description="alternative sequences observed, if multiple then seperated by ','" />
+			<!--  field name="parentalOrigin" label="Parental origin" type="enum" enum_options="[maternal,paternal,unknown]"
+				default="unknown" description="where this variant was inherited from" /> -->
 		</entity>
 		<entity name="Gene" implements="SequenceFeature" extends="ObservableFeature">
 			<field name="nuclSequence" type="text"
@@ -88,7 +90,66 @@
 			<field name="mrnaSequence" type="text"
 				description="Nucleotide sequence (bases) of the transcript" label="Nucleotide sequence" />
 		</entity>
-		<entity name="Allele" extends="ObservationElement">
+		<!--  
+		<entity name="Allele" extends="ObservableFeature">
+			<description></description>
 		</entity>
+		<entity name="Haplotype" extends="ObservableFeature">
+			<description></description>
+		</entity>
+		<entity name="Genotype" extends="ObservableFeature">
+			<description></description>
+		</entity>
+		-->
+		<!--  
+		<entity name="VariantCombo" extends="ObservableFeature">
+			<description>
+				In a given patient, we may be interested in variation occurring in more than 
+				one gene (digenic inheritance). In the example given by Juha, below, we have one 
+				gene with two haplotypes: a pair (or more) of two different variations on 
+				each copy of the gene. The model as currently proposed suggests you can phase 
+				variants, but a significant problem arises in the case where you may not have 
+				access to parental DNA samples that allow you to phase variants. For example, 
+				there may be haplotypes at the 5’ and 3’ ends of a gene or region, but without 
+				parental DNA we can’t phase them. The core issue here seems to be that all examples 
+				to this point rely on the assumption that we can phase two or more variants, 
+				which may not always be the case. 
+
+				It has been proposed that we work up from the simplest use case: a single sequence 
+				alteration/variation in one copy of a gene (in the current model, this is a SequenceVariant) 
+				and introduce a concept of ‘combos’ to group these, to build up the more complicated 
+				examples. Raymond has pointed out that as the term 'combo' is not commonly used 
+				in genetics so it should probably remain a modelling concept, and kept out of the UI, 
+				but we define it to mean "haplotype combination" and/or "variant combination" 
+
+				The current discussion focuses on the DNA perspective on the core model, where these concepts 
+				(genes, regions, variants, chromosomes etc.) are ObservableFeatures, but in the 
+				pathogenicity domain they will become the ObservationTargets, and the ObservableFeature 
+				will be the pathogenicity of interest, so we need to be mindful of how exactly we group 
+				variants now as this will have an impact on the type of complex DNA elements on which 
+				we can make pathogenicity assignments.
+				
+				Juha's example:
+				patient1
+					genotype1
+						gene1
+						haplotype (allele1)
+							variant1, variant2...
+						haplotype (allele2)
+							variant4, variant5..
+
+					genotype2
+						gene2
+						haplotype (allele1)
+							variant6, variant17
+						haplotype (allele2)
+							variant8, variant19
+			</description>
+			<field name="variants" type="mref" xref_entity="SequenceVariant"
+				description="List of variants that make up this combo" />
+			<field name="comboPhase" type="text" 
+				description="To record whether the variants in this combo are in cis, trans or if this information is unknown" />
+ 		</entity> -->
+		
 	</module>
 </molgenis>
