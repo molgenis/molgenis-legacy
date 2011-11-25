@@ -85,6 +85,8 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 	
 	public void addingMeasurementTotree(List<String> parentNode, JQueryTreeViewElement parentTree, Database db){
 		String url = "molgenis.do?__target=catalogueOverview&select=measurement";
+	
+
 
 		for(String measurementName : parentNode){
 			
@@ -97,6 +99,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 			}else{
 
 				getMeasurementDetails(measurementName,db);
+
 				childTree = new JQueryTreeViewElement(measurementName, parentTree, url);
 				labelToTree.put(measurementName, childTree);
 			}
@@ -111,13 +114,13 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 		System.out.println(measurementName);
 		
 		//Well with the current data we have no more measurement details ! TODO when we have more to show!
-		List<Measurement> descriptions = null;
-		try {
-			descriptions = db.find(Measurement.class, new QueryRule(Measurement.DESCRIPTION, Operator.EQUALS, measurementName));
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}
-		System.out.println(descriptions);
+//		List<Measurement> descriptions = null;
+//		try {
+//			descriptions = db.find(Measurement.class, new QueryRule(Measurement.DESCRIPTION, Operator.EQUALS, measurementName));
+//		} catch (DatabaseException e) {
+//			e.printStackTrace();
+//		}
+//		System.out.println(descriptions);
 
 		//String description =  descriptions.get(0).toString();
 		//System.out.println(description);

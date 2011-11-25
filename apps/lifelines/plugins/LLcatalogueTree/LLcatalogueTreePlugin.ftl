@@ -21,13 +21,26 @@
 			</#if>
 		</#list>
 		<div class="screenbody">
+		
 			<div class="screenpadding">	
-				${screen.getTreeView()}
-				
-				
+				<div class="leftSide" style="float:left; width:200px;">
+					${screen.getTreeView()}
+				</div>
+				<div class="rightSide" style="float:right; width:200px;">
+					dfsgsdfgsdfg				
+				<div>
+				<div class="bottom" style="clear:both;">
+					bottom
+				</div>
 			</div>
 		</div>
 	</div>
 </form>
+<script>
+$("a").click(function(event) {
+  event.preventDefault();
+	alert('Tree element clicked!!');
+});
+</script>
 
 </#macro>
