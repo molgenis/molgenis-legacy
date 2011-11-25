@@ -29,6 +29,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
@@ -138,24 +139,16 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 
 			if (!captcha.isCorrect(request.getString("code")))
 				throw new Exception("Code was wrong.");
-
-			if (this.getApplicationController().getLogin().isAuthenticated())
-			{
-				 // if logged in, log out first
-				this.getApplicationController().getLogin().logout(db);
-			}
 			
-			// login as admin
-			// (a bit evil but less so than giving anonymous write-rights on the
-			// MolgenisUser table)
-			this.getApplicationController().getLogin().login(db, "admin", "admin");
-			this.getApplicationController().getLogin().reload(db);
+			// save current login and then set to null, to bypass security
+			Login saveLogin = db.getSecurity();
+			db.setLogin(null);
 			
 			MolgenisUserService userService = MolgenisUserService.getInstance(db);
 			MolgenisUser user               = this.toMolgenisUser(db, request);
 			
 			// Get the email address of admin user.
-			MolgenisUser admin              = userService.findById(this.getApplicationController().getLogin().getUserId());
+			MolgenisUser admin              = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
 			if (StringUtils.isEmpty(admin.getEmail()))
 				throw new DatabaseException("Registration failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
 			
@@ -176,6 +169,9 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			this.getEmailService().email("User registration for " + this.getRoot().getLabel(), emailContents, admin.getEmail(), true);
 			
 			this.getModel().getMessages().add(new ScreenMessage("Thank you for registering. Your request has been sent to the adminstrator for approval.", true));
+		
+			// restore login
+			db.setLogin(saveLogin);
 		}
 		catch (Exception e)
 		{
@@ -196,18 +192,9 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 
 	    try
 		{
-		
-    		if (this.getApplicationController().getLogin().isAuthenticated())
-    		{
-    			 // if logged in, log out first
-    			this.getApplicationController().getLogin().logout(db);
-    		}
-    		
-    		// login as admin
-    		// (a bit evil but less so than giving anonymous write-rights on the
-    		// MolgenisUser table)
-    		this.getApplicationController().getLogin().login(db, "admin", "admin");
-    		this.getApplicationController().getLogin().reload(db);
+    		// save current login and then set to null, to bypass security
+    		Login saveLogin = db.getSecurity();
+    		db.setLogin(null);
 
 			MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();
 			criteria.setActivationCode(request.getString("actCode"));
@@ -229,6 +216,9 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			emailContents       += "your registration request for " + this.getRoot().getLabel() + " was approved.\n";
 			emailContents       += "Your account is now active.\n";
 			this.getEmailService().email("Your registration request", emailContents, user.getEmail(), true);
+			
+			// restore login
+			db.setLogin(saveLogin);
 		}
 		catch (Exception e)
 		{
@@ -245,17 +235,9 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 	{
 	    try
 		{
-    		if (this.getApplicationController().getLogin().isAuthenticated())
-    		{
-    			 // if logged in, log out first
-    			this.getApplicationController().getLogin().logout(db);
-    		}
-    		
-    		// login as admin
-    		// (a bit evil but less so than giving anonymous write-rights on the
-    		// MolgenisUser table)
-    		this.getApplicationController().getLogin().login(db, "admin", "admin");
-    		this.getApplicationController().getLogin().reload(db);
+	    	// save current login and then set to null, to bypass security
+    		Login saveLogin = db.getSecurity();
+    		db.setLogin(null);
 
     		MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();
     		criteria.setName(request.getString("username"));
@@ -283,6 +265,9 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
     		this.getEmailService().email("Your new password request", emailContents, user.getEmail(), true);
     		
     		this.getModel().getMessages().add(new ScreenMessage("Sending new password successful", true));
+    		
+    		// restore login
+    		db.setLogin(saveLogin);
 		}
 		catch (Exception e)
 		{
