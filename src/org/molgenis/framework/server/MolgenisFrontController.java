@@ -80,16 +80,19 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		{
 			if (path.startsWith(p))
 			{
-				System.out.println("> new request to '"+path+"' handled by " + services.get(p).getClass().getSimpleName() + " mapped on path " + p);
-				System.out.println("request content: " + request.toString());
+				
 				
 				//if mapped to "/", we assume we are serving out a file, and do not manage security/connections
 				if(p.equals("/"))
 				{
+					System.out.println("> serving file: " + path);
 					services.get(p).handleRequest(request, response);
 				}
 				else
 				{
+					System.out.println("> new request to '"+path+"' handled by " + services.get(p).getClass().getSimpleName() + " mapped on path " + p);
+					System.out.println("request content: " + request.toString());
+					
 					UUID connId = getSecuredDatabase(request);
 					
 					System.out.println("database status: " + (request.getDatabase().getSecurity().isAuthenticated() ? "authenticated as "
