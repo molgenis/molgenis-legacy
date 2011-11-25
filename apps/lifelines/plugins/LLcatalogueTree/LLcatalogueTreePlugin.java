@@ -1,5 +1,3 @@
-
-
 package plugins.LLcatalogueTree;
 
 
@@ -7,12 +5,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
+import org.molgenis.pheno.Category;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -31,15 +34,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 	public LLcatalogueTreePlugin(String name, ScreenController<?> parent)
 	{	
 		super(name, parent);
-//		JQueryTreeViewElement protocolTree = null;
-	//	Database db = this.getController().getDatabase(); 
-		
-		//Database db = this.getDatabase();
 
 	}
 	
 	
-	public void recursiveAddingTree(List<String> parentNode, JQueryTreeViewElement parentTree){
+	public void recursiveAddingTree(List<String> parentNode, JQueryTreeViewElement parentTree, Database db){
 		
 		for(String protocolName : parentNode){
 			
@@ -49,7 +48,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 				
 				JQueryTreeViewElement childTree;
 				
-				if(labelToTree.containsKey(protocolName)){
+				if (labelToTree.containsKey(protocolName)) {
 					
 					childTree = labelToTree.get(protocolName);
 				
@@ -61,11 +60,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 				}
 
 				if(protocol.getSubprotocols_Name() != null){
-					recursiveAddingTree(protocol.getSubprotocols_Name(), childTree);
+					recursiveAddingTree(protocol.getSubprotocols_Name(), childTree, db);
 				}
 				if(protocol.getFeatures_Name() != null){
 					
-					addingMeasurementTotree(protocol.getFeatures_Name(), childTree);
+					addingMeasurementTotree(protocol.getFeatures_Name(), childTree, db);
 				}
 			}
 		}
@@ -84,8 +83,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 //		
 //	}
 	
-	public void addingMeasurementTotree(List<String> parentNode, JQueryTreeViewElement parentTree){
-		
+	public void addingMeasurementTotree(List<String> parentNode, JQueryTreeViewElement parentTree, Database db){
+		String url = "molgenis.do?__target=catalogueOverview&select=measurement";
+
 		for(String measurementName : parentNode){
 			
 			JQueryTreeViewElement childTree;
@@ -96,11 +96,33 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 
 			}else{
 
-				childTree = new JQueryTreeViewElement(measurementName, parentTree);
+				getMeasurementDetails(measurementName,db);
+				childTree = new JQueryTreeViewElement(measurementName, parentTree, url);
 				labelToTree.put(measurementName, childTree);
 			}
 		}
 	}
+	
+	private void getMeasurementDetails(String measurementName, Database db) {
+		//create a div and put inside measurementDetails
+		Measurement m = new Measurement(); 
+		//Database db = this.getController().getDatabase();
+
+		System.out.println(measurementName);
+		
+		//Well with the current data we have no more measurement details ! TODO when we have more to show!
+		List<Measurement> descriptions = null;
+		try {
+			descriptions = db.find(Measurement.class, new QueryRule(Measurement.DESCRIPTION, Operator.EQUALS, measurementName));
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+		System.out.println(descriptions);
+
+		//String description =  descriptions.get(0).toString();
+		//System.out.println(description);
+	}
+
 	@Override
 	public String getViewName()
 	{
@@ -197,7 +219,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 		
 		JQueryTreeViewElement protocolsTree = new JQueryTreeViewElement("Protocols", null);
 		
-		recursiveAddingTree(topProtocols, protocolsTree);
+		recursiveAddingTree(topProtocols, protocolsTree, db);
 		
 		treeView = new JQueryTreeView<JQueryTreeViewElement>("Protocols", protocolsTree);
 	}
