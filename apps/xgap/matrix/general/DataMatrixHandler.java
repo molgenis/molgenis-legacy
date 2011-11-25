@@ -398,9 +398,9 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		String type = data.getStorage() + "DataMatrix";
 		Class<? extends Entity> mfClass = db.getClassForName(type);
 
-		//found out if there already is a MolgenisFile with this 'Data'
+		//found out if there already is a MolgenisFile for this 'Data' (MF name = data name)
 		List<? extends Entity> mfList = db.find(mfClass,
-				new QueryRule("Data_" + Data.ID, Operator.EQUALS, data.getId()));
+				new QueryRule(MolgenisFile.NAME, Operator.EQUALS, NameConvention.escapeFileName(data.getName())));
 		
 		if (mfList.size() == 1)
 		{
