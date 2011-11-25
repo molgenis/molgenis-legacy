@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.lifelines.listeners.ImportTupleListener;
 //import org.molgenis.lifelinespheno.LLTarget;
 import org.molgenis.organization.Investigation;
@@ -22,7 +23,6 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-import app.JpaDatabase;
 
 import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.*;
@@ -51,7 +51,8 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 			throws DatabaseException {
 		super(protocol.getName(), db, tuples);
 		
-		this.em = ((JpaDatabase)db).getEntityManagerFactory().createEntityManager();
+		//trick to prevent compilation problem in Hudson, should be changed!
+		this.em = ((JpaDatabase)db).getEntityManager().getEntityManagerFactory().createEntityManager();
 		
 		this.investigation = investigation;
 		this.protocol = protocol;
