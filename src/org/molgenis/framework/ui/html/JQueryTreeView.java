@@ -54,9 +54,23 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"$(document).ready(function(){\n"
 //		+"$(\"#browser\").treeview({collapsed: true});});\n"
 		+"$(\"#browser\").treeview();});\n"
+		+ "$(\"a\").click(function(event) {"
+		+"	  event.preventDefault();"
+		+"		alert('Tree element clicked!!');"
+		+"		$(\"#bottom\").html('This is the bottom of the screen and has been replaced with this content.');"
+		+"		$(\"#rightSide\").html('"; 
+		html+=	getMeasurementDetails();
+		html+="');"
+		+"	});"
 		+"</script>\n";
-		
+	    
 	    return html;
+	}
+
+	private String getMeasurementDetails()
+	{
+		// TODO Auto-generated method stub
+		return "This is the right of the screen and has been replaced with this content.Soon measureent details here ";
 	}
 	
 }
