@@ -18,7 +18,7 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent, String url)
 	{
 		super(name, parent);
-		this.setLabel("<a href=\"" + url + "\">"+ name +"</a>");
+		this.setLabel("<a href=\"" + url + "\" >"+ name +"</a>");
 
 	}
 
