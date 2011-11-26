@@ -23,24 +23,18 @@
 		<div class="screenbody">
 		
 			<div class="screenpadding">	
-				<div class="leftSide" style="float:left; width:200px;">
+				<div id="leftSide" style="width:200px;">
 					${screen.getTreeView()}
 				</div>
-				<div class="rightSide" style="float:right; width:200px;">
+				<div id="rightSide" style="float:right; width:200px;">
 					dfsgsdfgsdfg				
 				<div>
-				<div class="bottom" style="clear:both;">
+				<div id="bottom" style="clear:both;">
 					bottom
 				</div>
+				
 			</div>
 		</div>
 	</div>
 </form>
-<script>
-$("a").click(function(event) {
-  event.preventDefault();
-	alert('Tree element clicked!!');
-});
-</script>
-
 </#macro>
