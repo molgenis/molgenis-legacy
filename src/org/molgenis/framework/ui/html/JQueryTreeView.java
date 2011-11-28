@@ -9,7 +9,7 @@ import org.molgenis.util.Tree;
 public class JQueryTreeView<E> extends HtmlWidget
 {
 	private SimpleTree<JQueryTreeViewElement> treeData;
-	
+	private String MeasurementDetails;
 
 	public JQueryTreeView(String name, SimpleTree treeData)
 	{
@@ -69,9 +69,15 @@ public class JQueryTreeView<E> extends HtmlWidget
 
 	private String getMeasurementDetails()
 	{
-		// TODO Auto-generated method stub
 		return "This is the right of the screen and has been replaced with this content.Soon measureent details here ";
 	}
+
+	public void setMeasurementDetails(String measurementDetails)
+	{
+		MeasurementDetails = measurementDetails;
+	}
+	
+	
 	
 }
 
