@@ -3,6 +3,7 @@ package plugins.qtlfinder;
 import java.util.List;
 import java.util.Map;
 
+import org.molgenis.data.Data;
 import org.molgenis.xgap.Marker;
 
 public class QTLInfo
@@ -13,10 +14,12 @@ public class QTLInfo
 	private List<String> markers;
 	private List<Double> valuesForMarkers;
 	private Map<String, Marker> markerAnnotations;
+	private Data matrix;
 	
-	public QTLInfo(String peakMarker, Double peakValue, List<String> markers, List<Double> valuesForMarkers)
+	public QTLInfo(Data matrix, String peakMarker, Double peakValue, List<String> markers, List<Double> valuesForMarkers)
 	{
 		super();
+		this.matrix = matrix;
 		this.peakMarker = peakMarker;
 		this.peakValue = peakValue;
 		this.markers = markers;
@@ -36,8 +39,10 @@ public class QTLInfo
 	{
 		this.markerAnnotations = markerAnnotations;
 	}
-
-
+	public Data getMatrix()
+	{
+		return matrix;
+	}
 	public String getPlot()
 	{
 		return plot;
@@ -63,6 +68,4 @@ public class QTLInfo
 		return markerAnnotations;
 	}
 
-	
-	
 }

@@ -25,17 +25,20 @@ public class Statistics
 
 		List<String> dimNames;
 		int self = -1;
-
+		int iterator = -1;
+		
 		if (isRow)
 		{
 			dimNames = i.getRowNames();
 			self = i.getRowIndexForName(name);
+			iterator = i.getNumberOfRows();
 		}
 		else
 		{
 			// reassign
 			dimNames = i.getColNames();
 			self = i.getColIndexForName(name);
+			iterator = i.getNumberOfCols();
 
 			// swap row and col, easier to iterate
 			elements = transposeMatrix(elements);
@@ -52,7 +55,7 @@ public class Statistics
 		}
 		
 		
-		for (int index = 0; index < i.getNumberOfRows(); index++)
+		for (int index = 0; index < iterator; index++)
 		{
 			if (index != self)
 			{
@@ -86,6 +89,7 @@ public class Statistics
 	{
 		int r = m.length;
 		int c = m[0].length;
+		System.out.println("IN: " + r + " and " + c);
 		Object[][] t = new Object[c][r];
 		for (int i = 0; i < r; ++i)
 		{
@@ -94,6 +98,7 @@ public class Statistics
 				t[j][i] = m[i][j];
 			}
 		}
+		System.out.println("OUT: " + t.length + " and " + t[0].length);
 		return t;
 	}
 	

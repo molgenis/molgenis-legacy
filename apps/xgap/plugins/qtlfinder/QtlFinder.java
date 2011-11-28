@@ -172,7 +172,7 @@ public class QtlFinder extends PluginModel
 					String peakMarker = colNames.get(maxIndex);
 					List<Double> DvaluesList = Arrays.asList(Dvalues);
 					
-					QTLInfo qtl = new QTLInfo(peakMarker, peakDouble, colNames, DvaluesList);
+					QTLInfo qtl = new QTLInfo(d, peakMarker, peakDouble, colNames, DvaluesList);
 					
 					try{
 						File img = MakeRPlot.plot(d, instance, name, null, "row", "o", 800, 600);
@@ -200,7 +200,7 @@ public class QtlFinder extends PluginModel
 					String peakMarker = rowNames.get(maxIndex);
 					List<Double> DvaluesList = Arrays.asList(Dvalues);
 					
-					QTLInfo qtl = new QTLInfo(peakMarker, peakDouble, rowNames, DvaluesList);
+					QTLInfo qtl = new QTLInfo(d, peakMarker, peakDouble, rowNames, DvaluesList);
 					
 					try{
 						File img = MakeRPlot.plot(d, instance, null, name, "col", "o", 800, 600);

@@ -90,7 +90,6 @@
 			<h1>
 			${model.result.__type} ${model.result.name}
 			<#if model.selectedName != model.result.name>matches "${model.selectedName}"</#if>
-			
 			</h1>
 			<h2>Record information</h2>
 			<@rb.printEntity r=model.result/>
@@ -98,33 +97,47 @@
 	</tr>
 </table>
 
-
+<#if model.qtlsFound?size gt 0>
+<#else>
 <table cellpadding="30">
 	<tr>
 		<td>
 			<h1>
-			<#if model.qtlsFound?size gt 0>
-				QTLs for ${model.result.name}:
-			<#else>
+				<!--QTLs for ${model.result.name}:-->
 				No QTL information could be retrieved for ${model.result.name}.
-			</#if>
 			</h1>
 		</td>
 	</tr>
 </table>
-
+</#if>
 
 
 
 <#list model.qtlsFound as qtl>
-
 <table cellpadding="30">
 	<tr>
 		<td>
+			<h2>QTL #${qtl_index+1} - In data matrix <a href="molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${qtl.matrix.id}">${qtl.matrix.name}</a>. Basic information:</h2>
 			<table cellpadding="3" border="1" style="width:700px;">
 				<tr class="form_listrow0">
 					<td colspan="2">
-						<b>Highest peak<b>
+						<b>Plot<b>
+					</td>
+				</tr>
+				<tr class="form_listrow1">
+					<td align="center"  colspan="2">
+					<i>Click to enlarge</i><br>
+						<#if qtl.plot??>
+							<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
+							<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+								<img src="tmpfile/${qtl.plot}" width="160" height="120">
+							</a>
+						</#if>
+					</td>
+				</tr>
+				<tr class="form_listrow0">
+					<td colspan="2">
+						<b>Highest LOD score<b>
 					</td>
 				</tr>
 				<tr class="form_listrow1">
@@ -140,60 +153,39 @@
 						Marker: 
 					</td>
 					<td>
-						${qtl.peakMarker}
+						<a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a>
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr>
-		<td>
+		<td><h2>QTL #${qtl_index+1} - Advanced information:</h2>
+		<div style="overflow: auto; max-height: 400px; width: 720px;">
 			<table cellpadding="3" border="1" style="width:700px;">
 				<tr class="form_listrow0">
-					<td>
-						<b>Plot<b>
+					<td colspan="4">
+						<b>All LOD scores</b>
 					</td>
 				</tr>
 				<tr class="form_listrow1">
-					<td align="center">
-					<i>Click to enlarge</i><br>
-						<#if qtl.plot??>
-							<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
-							<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-								<img src="tmpfile/${qtl.plot}" width="160" height="120">
-							</a>
-						</#if>
+					<td>
+						<i>Marker name</i>
+					</td>
+					<td>
+						<i>LOD score</i>
+					</td>
+					<td>
+						<i>Marker cM</i>
+					</td>
+					<td>
+						<i>Marker chromosome</i>
 					</td>
 				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<table cellpadding="3" border="1" style="width:700px;">
-			<tr class="form_listrow0">
-				<td colspan="4">
-					<b>All information</b>
-				</td>
-			</tr>
-			<tr class="form_listrow1">
-				<td>
-					<i>Marker name</i>
-				</td>
-				<td>
-					<i>LOD score</i>
-				</td>
-				<td>
-					<i>Marker cM</i>
-				</td>
-				<td>
-					<i>Marker chromosome</i>
-				</td>
-			</tr>
 			<#list qtl.markers as m>
 				<tr class="form_listrow1">
 					<td>
-						${m}
+						<a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${m}">${m}</a>
 					</td>
 					<td>
 							${qtl.valuesForMarkers[m_index]}
@@ -202,11 +194,14 @@
 							<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].cm}</#if>
 					</td>
 					<td>
-							<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].chromosome_name}</#if>
+							<#if qtl.markerAnnotations?keys?seq_contains(m)><a href="molgenis.do?__target=Chromosomes&__action=filter_set&__filter_attribute=Chromosome_name&__filter_operator=EQUALS&__filter_value=${qtl.markerAnnotations[m].chromosome_name}">${qtl.markerAnnotations[m].chromosome_name}</a></#if>
 					</td>
 				</tr>
 			</#list>
 			</table>
+			<h3>Data matrix where this QTL was found:</h3>
+			<@rb.printEntity r=qtl.matrix/>
+		</div>
 		</td>
 	</tr>
 </table>
