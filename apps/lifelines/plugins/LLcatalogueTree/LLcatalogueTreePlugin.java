@@ -225,6 +225,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 		recursiveAddingTree(topProtocols, protocolsTree, db);
 		
 		treeView = new JQueryTreeView<JQueryTreeViewElement>("Protocols", protocolsTree);
+	
+		//a = db.query();
+		treeView.setMeasurementDetails("Measurement details........... ");
 	}
 	
 	@Override
