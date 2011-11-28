@@ -4,7 +4,7 @@
  * 
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
 -->
-<#macro plugins_cluster_demo_header_MolgenisHeader screen>
+<#macro org_molgenis_xgap_xqtlworkbench_header_MolgenisHeader screen>
 
 <div style="height:10px;">&nbsp;</div>
 

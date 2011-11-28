@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.cluster.demo.header;
+package org.molgenis.xgap.xqtlworkbench.header;
 
 import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.framework.db.Database;
@@ -33,13 +33,13 @@ public class MolgenisHeader extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_cluster_demo_header_MolgenisHeader";
+		return "org_molgenis_xgap_xqtlworkbench_header_MolgenisHeader";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/cluster/demo/header/MolgenisHeader.ftl";
+		return "org/molgenis/xgap/xqtlworkbench/header/MolgenisHeader.ftl";
 	}
 
 	@Override

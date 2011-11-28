@@ -5,8 +5,9 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.cluster.demo.xqtlpanaceaheader;
+package org.molgenis.xgap.other.panacea.header;
 
+import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -33,31 +34,51 @@ public class MolgenisHeader extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_cluster_demo_xqtlpanaceaheader_MolgenisHeader";
+		return "org_molgenis_xgap_other_panacea_header_MolgenisHeader";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/cluster/demo/xqtlpanaceaheader/MolgenisHeader.ftl";
+		return "org/molgenis/xgap/other/panacea/header/MolgenisHeader.ftl";
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public void handleRequest(Database db, Tuple request) throws Exception
 	{
-		//static
+		if ("doLogout".equals(request.getAction())) {
+
+			getLogin().logout(db);
+		}
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		//static
+		setUserLogin();
 	}
 
 	@Override
 	public boolean isVisible()
 	{
 		return true;
+	}
+	
+	private String userLogin;
+	
+	public String getUserLogin() {
+		
+		return userLogin;
+	}
+	
+	public void setUserLogin() {
+		if (this.getLogin().isAuthenticated()) {
+			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getUserName() + "</a>";
+			this.userLogin += " | ";
+			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
+		} else {
+			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
+		}	
 	}
 	
 	@Override

@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.cluster.demo.xqtlpanaceaheader;
+package org.molgenis.xgap.other.panacea.header;
 
 import org.molgenis.framework.ui.ScreenController;
 
@@ -23,13 +23,13 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 	@Override
 	public String getViewName()
 	{
-		return "plugins_cluster_demo_xqtlpanaceaheader_HomePage";
+		return "org_molgenis_xgap_other_panacea_header_HomePage";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/cluster/demo/xqtlpanaceaheader/HomePage.ftl";
+		return "org/molgenis/xgap/other/panacea/header/HomePage.ftl";
 	}
 
 

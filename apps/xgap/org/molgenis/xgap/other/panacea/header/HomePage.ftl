@@ -1,4 +1,4 @@
-<#macro plugins_cluster_demo_xqtlpanaceaheader_HomePage screen>
+<#macro org_molgenis_xgap_other_panacea_header_HomePage screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -107,7 +107,7 @@
 		
 		<td align="center"
 		<#if screen.loggedIn>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='QTLWizard';document.forms.main.submit();">
+			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='ImportDataMenu';document.forms.main.submit();">
 		<#else>
 			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
 		</#if>

@@ -1,4 +1,4 @@
-package org.molgenis.xgap.other.xqtlworkbench_panacea;
+package org.molgenis.xgap.other.panacea;
 
 
 import java.io.File;
@@ -13,7 +13,7 @@ public class XqtlPanaceaGenerate
 		try
 		{
 			TarGz.recursiveDeleteContentIgnoreSvn(new File("hsqldb"));
-			new Molgenis("apps/xgap/org/molgenis/xgap/other/xqtlworkbench_panacea/xqtlpanacea.properties").generate();
+			new Molgenis("apps/xgap/org/molgenis/xgap/other/panacea/xqtlpanacea.properties").generate();
 			
 		} catch(Exception e)
 		{
