@@ -147,7 +147,7 @@
 //	
 //	private Map<String, ObservationTarget> retrieveTargets(Set<String> paids) {
 //		return index(
-//				em.createQuery("SELECT t FROM LLTarget t WHERE t.investigation = :investigation AND t.name IN :targetNames", ObservationTarget.class)
+//				em.createQuery("SELECT t FROM ObservationTarget t WHERE t.investigation = :investigation AND t.name IN :targetNames", ObservationTarget.class)
 //				.setParameter("investigation", investigation)
 //				.setParameter("targetNames", paids)
 //				.getResultList(), 				

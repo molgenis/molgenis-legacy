@@ -39,15 +39,13 @@
 //	private static final int MAX_THREADS = 20;
 //	private static final int THREAD_TIME_OUT_TIME = 60;
 //	
-//	//for each table / csv file there will be one entry
-//	static Map<String, ImportTupleListener> mappings = new LinkedHashMap<String, ImportTupleListener>();
 //	
 //	/** for testing only!
 //	 * @throws Exception */
 //	public static void main(String[] args) throws Exception
 //	{
 //		//path to directory with csv files
-//		String path = "/Users/jorislops/Desktop/LifelinesCSV3/";
+//		String path = "/Users/jorislops/Desktop/LifelinesCSV5/";
 //		
 //		//target for output, either CsvWriter or Database
 //		Database db = DatabaseFactory.create();
@@ -72,11 +70,6 @@
 //		reader.parse(catListener);
 //		catListener.commit();		
 //		
-//		//create all listeners
-////		for(Protocol protocol : dicListener.getProtocols().values()) {
-////			mappings.put(protocol.getName(), new LifeLinesStandardListener(inv, protocol,db)); //will import values
-////		}		
-//		
 //		//iterate through the map assuming CSV files
 //		for(Protocol protocol : dicListener.getProtocols().values())
 //		{
@@ -90,33 +83,13 @@
 //			Object result = em.createNativeQuery(view).executeUpdate();
 //			em.getTransaction().commit();
 //
-//			CSVFileSpliter csvFileSpliter = new CSVFileSpliter(path + "VW_" + protocol.getName() +"_DATA.csv", 1000, "PA_ID");
-//			
-////			String prevFristPaID = "";
-////			String prevLastPaId = "";
-////			while(csvFileSpliter.hasMore()) {
-////				List<SimpleTuple> tuples = csvFileSpliter.getTuples();
-////				
-////				String firstPaID = tuples.get(0).getString("PA_ID");
-////				String lastPaID = tuples.get(tuples.size()-1).getString("PA_ID");
-////				
-////				System.out.println(firstPaID);
-////				System.out.println();
-////				System.out.println(lastPaID);
-////				
-////				if(prevLastPaId == firstPaID) {
-////					System.out.println("Overlapping ID!");
-////				}
-////				
-////				prevFristPaID = firstPaID;
-////				prevLastPaId = lastPaID;
-////				
-////			}
-//			
-//			
-//			//int N = 20;
-//			
-//			
+//			//this information should be stored in dict
+//			String primaryKeyColumn = "PA_ID";
+//			if(protocol.getName().contains("BEP_OMSCHR")) {
+//				continue;
+//			}
+//				
+//			CSVFileSpliter csvFileSpliter = new CSVFileSpliter(path + "VW_" + protocol.getName() +"_DATA.csv", 1000, primaryKeyColumn);
 //			
 //			List<LifeLinesStandardListener> listeners = new ArrayList<LifeLinesStandardListener>();
 //            //CountDownLatch doneSignal = new CountDownLatch(N);
@@ -131,15 +104,9 @@
 //			}
 //			Thread monitor = new Thread(new MyMonitorThread(executor, protocol.getName()));
 //			monitor.start();
-//
 //			
 //			executor.shutdown();
-//			executor.awaitTermination(5, TimeUnit.MINUTES);
-//
-////			//create CsvReader
-////			reader = new CsvFileReader(new File(path + "VW_" + csvFileName +"_DATA.csv"));
-////			reader.parse(importer);
-////			importer.commit();			
+//			executor.awaitTermination(5, TimeUnit.MINUTES);		
 //		}
 //		
 //	}

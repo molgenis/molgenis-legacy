@@ -17,12 +17,15 @@ public class CSVFileSpliter {
 	private int splitKeyIndex;
 	private final String[] headers;
 	
+	private List<String[]> leftOver = new ArrayList<String[]>();
+	private boolean hasMore = true;
+	
 	public CSVFileSpliter(String fileName, int maxNumRows, int splitKeyIndex) throws Exception {
 		this.br = new BufferedReader(new FileReader(fileName));
 		this.maxNumRows = maxNumRows;
 		this.splitKeyIndex = splitKeyIndex;
 		
-		this.headers  = br.readLine().split("\\,");
+		this.headers  = br.readLine().replace("\"", "").split("\\,");
 	}
 
 	public CSVFileSpliter(String fileName, int maxNumRows, String splitFieldName) throws Exception {
@@ -37,14 +40,6 @@ public class CSVFileSpliter {
 			throw new IllegalArgumentException(String.format("Couldn't find fieldName '%s' in file '%s'", splitFieldName, fileName));
 		}
 	}	
-	
-	private boolean hasMore = true;
-	
-	public synchronized boolean hasMore() {
-		return hasMore;
-	}
-	
-	private List<String[]> leftOver = new ArrayList<String[]>();
 	
 	public synchronized List<String[]> getLines() throws Exception {
 		List<String[]> result = new ArrayList<String[]>(maxNumRows);
@@ -66,7 +61,6 @@ public class CSVFileSpliter {
 			hasMore = false;
 		}		
 		
-		//remove to change
 		if(hasMore) {
 			String lastSplitKey = result.get(result.size()-1)[splitKeyIndex];
 			for(int i = result.size(); i >= 0; --i) {
@@ -94,6 +88,10 @@ public class CSVFileSpliter {
 		}
 		return simpleTuples;
 	}
+	
+	public synchronized boolean hasMore() {
+		return hasMore;
+	}	
 	
 	public void close() throws Exception {
 		br.close();

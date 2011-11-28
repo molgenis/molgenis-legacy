@@ -64,7 +64,7 @@
           With create-drop, the database schema will be dropped when the SessionFactory is closed explicitly.
 		e.g. validate | update | create | create-drop
            -->
-            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+            <property name="hibernate.hbm2ddl.auto" value="none"/>
 <!-- 
  	      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/LL_IMPORT_TEST"/>
 	      <property name="javax.persistence.jdbc.password" value="molgenis"/>

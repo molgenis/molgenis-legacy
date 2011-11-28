@@ -75,6 +75,10 @@ public class LoaderUtils {
     
     public static String getCast(String dataType, eDatabase database) throws Exception {
         dataType = dataType.toLowerCase();
+        int idx = dataType.indexOf("(");
+        if(idx != -1) {
+        	dataType = dataType.substring(0, idx);
+        }
     	
         if (dataType.equals("code")) {
         	if(database == eDatabase.MYSQL) {

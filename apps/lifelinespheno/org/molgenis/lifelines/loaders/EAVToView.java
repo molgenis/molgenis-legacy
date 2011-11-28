@@ -57,20 +57,10 @@ public class EAVToView {
             List<Measurement> measurements, EntityManager em, boolean tableInAlias, LoaderUtils.eDatabase database) throws Exception {
         String column = "max(case when o.feature = %d then %s end) %s \n";
         StringBuilder query = new StringBuilder("SELECT ");    
-//        List<Measurement> measurements = em.createQuery("SELECT m FROM Measurement m where m.name IN (:measurementNames) AND investigation.id = :invId", Measurement.class)
-//        	.setParameter("measurementNames", Arrays.asList(fields))
-//        	.setParameter("invId", investigationId)
-//        	.getResultList();
+
             for(int i = 0; i < measurements.size(); ++i) {
                 Measurement m = measurements.get(i);
                 String castPart = LoaderUtils.getCast(m.getDataType(), database);
-    //            if(databaseTarget.equals("mysql")) {
-    //            	if(castPart.contains("number")) {
-    //            		castPart = castPart.replace("number", "DECIMAL");
-    //            	} else if(castPart.contains("to_date")) {
-    //            		castPart = "CAST(substr(value,1, 19) AS DATETIME)";
-    //            	}
-    //            }
                 
                 String fieldAlias = null;
                 if(tableInAlias) {
