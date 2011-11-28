@@ -3,9 +3,7 @@
 //import java.io.File;
 //import java.util.ArrayList;
 //import java.util.Date;
-//import java.util.LinkedHashMap;
 //import java.util.List;
-//import java.util.Map;
 //import java.util.concurrent.ArrayBlockingQueue;
 //import java.util.concurrent.BlockingQueue;
 //import java.util.concurrent.ThreadPoolExecutor;
@@ -15,7 +13,7 @@
 //
 //import org.molgenis.framework.db.Database;
 //import org.molgenis.lifelines.ThreadReaders.CSVFileSpliter;
-//import org.molgenis.lifelines.listeners.ImportTupleListener;
+//import org.molgenis.lifelines.listeners.LifeLinesStandardListener;
 //import org.molgenis.lifelines.listeners.VWCategoryListener;
 //import org.molgenis.lifelines.listeners.VwDictListener;
 //import org.molgenis.lifelines.loaders.EAVToView;
@@ -45,7 +43,7 @@
 //	public static void main(String[] args) throws Exception
 //	{
 //		//path to directory with csv files
-//		String path = "/Users/jorislops/Desktop/LifelinesCSV5/";
+//		String path = "/Users/robert/projects/lifelines/";
 //		
 //		//target for output, either CsvWriter or Database
 //		Database db = DatabaseFactory.create();
@@ -91,6 +89,8 @@
 //				
 //			CSVFileSpliter csvFileSpliter = new CSVFileSpliter(path + "VW_" + protocol.getName() +"_DATA.csv", 1000, primaryKeyColumn);
 //			
+//			LifeLinesStandardListener.resetRowCount();
+//			
 //			List<LifeLinesStandardListener> listeners = new ArrayList<LifeLinesStandardListener>();
 //            //CountDownLatch doneSignal = new CountDownLatch(N);
 //			while(csvFileSpliter.hasMore()) {
@@ -108,6 +108,8 @@
 //			executor.shutdown();
 //			executor.awaitTermination(5, TimeUnit.MINUTES);		
 //		}
+//	
+//		System.out.println("The End!");
 //		
 //	}
 //	

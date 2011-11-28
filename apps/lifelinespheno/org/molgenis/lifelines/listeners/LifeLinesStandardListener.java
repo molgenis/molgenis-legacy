@@ -1,4 +1,4 @@
-//package org.molgenis.lifelines;
+//package org.molgenis.lifelines.listeners;
 //
 //import java.util.ArrayList;
 //import java.util.HashMap;
@@ -65,7 +65,7 @@
 //	
 //
 //
-//	private int rowCount = 0;
+//	private static int rowCount = 0;
 //	@Override
 //	public void handleLine(int line_number, Tuple tuple) throws Exception {
 //		// get reference to individual
@@ -169,6 +169,10 @@
 //	
 //	public List<Measurement> getMeasurements() {
 //		return new ArrayList<Measurement>(measurements.values()); 
+//	}
+//	
+//	public static void resetRowCount() {
+//		rowCount = 0;
 //	}
 //	
 //}
