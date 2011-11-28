@@ -240,5 +240,10 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 		return treeView.toHtml();
 	}
 	
+	
+	public String getMeasurementDetails() {
+		return "getMeasurementDetails";
+	}
+	
 
 }
