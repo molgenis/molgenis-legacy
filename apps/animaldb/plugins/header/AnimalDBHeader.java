@@ -38,8 +38,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = 4701628601897969977L;
-	private String userLogin = new String();
-
+	
 	public AnimalDBHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -60,8 +59,6 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-		this.setUserLogin();
-		
 		try {
 			int nrOfUsersInDb = db.count(MolgenisUser.class);
 			if (nrOfUsersInDb == 0) { // Check if DB is filled by counting the nr. of users (should always be >= 2)
@@ -107,17 +104,13 @@ public class AnimalDBHeader extends PluginModel<Entity>
 		}
 	}
 	
-	public void setUserLogin() {
-		if (this.getLogin().isAuthenticated()) {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
-			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + " | Logout " + "</a>";
-		} else {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
-		}	
-	}
-
 	public String getUserLogin() {
-		
+		String userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
+		if (this.getLogin().isAuthenticated()) {
+			userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
+			userLogin += "<span style=\"color:black\">&nbsp;|&nbsp;</span>";
+			userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
+		}
 		return userLogin;
 	}
 
