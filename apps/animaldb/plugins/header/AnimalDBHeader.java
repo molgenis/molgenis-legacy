@@ -72,11 +72,6 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	private void prefillDb(Database db) {
 		try {
 			// Empty DB and run generated sql scripts
-			
-			//OLD
-			//new emptyDatabase(db, true);
-			
-			//NEW
 			new emptyDatabase(db, false);
 			FillMetadata.fillMetadata(db, false);
 			
@@ -120,7 +115,4 @@ public class AnimalDBHeader extends PluginModel<Entity>
 		return true;
 	}
 	
-	public boolean isLoggedIn() {
-		return this.getLogin().isAuthenticated();
-	}
 }
