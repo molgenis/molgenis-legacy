@@ -22,8 +22,7 @@
 		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="OntologyTerms" />  
 		<plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" /> 
 		
-		
-		<plugin name="ImportExcel" type="plugins.data.ImportExcel" label="Import DataShaper data"  />
+		<plugin name="DataShaperImportExcel" type="plugins.data.DataShaperImportExcel" label="Import DataShaper data"  />
 		<plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" />
 		
 		<menu name="Admin">
