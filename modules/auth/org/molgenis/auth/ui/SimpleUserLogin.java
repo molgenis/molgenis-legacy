@@ -236,6 +236,18 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 	{
 	    try
 		{
+
+    		if (this.getApplicationController().getLogin().isAuthenticated())
+    		{
+    			 // if logged in, log out first
+    			this.getApplicationController().getLogin().logout(db);
+    		}
+    		
+    		// login as admin
+    		// (a bit evil but less so than giving anonymous write-rights on the
+    		// MolgenisUser table)
+    		this.getApplicationController().getLogin().login(db, "admin", "admin"); //TODO
+    		this.getApplicationController().getLogin().reload(db);
 	    	// save current login and then set to null, to bypass security
     		Login saveLogin = db.getSecurity();
     		db.setLogin(null);
