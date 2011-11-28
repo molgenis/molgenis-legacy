@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis name="molgenis_apps" label="AnimalDB">
+<molgenis name="animaldb" label="AnimalDB">
 	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDBHeader" />
 	<menu name="mainmenu" position="left">
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin"
