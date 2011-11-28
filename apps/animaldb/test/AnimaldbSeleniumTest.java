@@ -67,7 +67,7 @@ public class AnimaldbSeleniumTest
 	@Test
 	public void startup() throws InterruptedException
 	{
-		selenium.open("/molgenis_apps/molgenis.do");
+		selenium.open("/animaldb/molgenis.do");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 			
 		sleepHelper("startup");
