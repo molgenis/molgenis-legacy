@@ -45,4 +45,14 @@
 		</testng>			
 	</target>
 	
+	<target name="runOn" description="Start the application">
+	    <java maxmemory="128m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+	        <arg value="${port}"/>
+	        <classpath>
+	            <path refid="molgenis.classpath" />
+	            <path location="${build.dir}" />
+	        </classpath>
+	    </java>
+	</target>
+	
 </project>
