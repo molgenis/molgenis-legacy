@@ -56,7 +56,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"$(\"#browser\").treeview();});\n"
 		+ "$(\"a\").click(function(event) {"
 		+"	  event.preventDefault();"
-		+"		alert('Tree element clicked!!');"
+//		+"		alert('Tree element clicked!!');"
 		+"		$(\"#bottom\").html('This is the bottom of the screen and has been replaced with this content.');"
 		+"		$(\"#rightSide\").html('"; 
 		html+=	getMeasurementDetails();
@@ -69,7 +69,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 
 	private String getMeasurementDetails()
 	{
-		return "This is the right of the screen and has been replaced with this content.Soon measureent details here ";
+		return MeasurementDetails;
 	}
 
 	public void setMeasurementDetails(String measurementDetails)
