@@ -120,7 +120,7 @@ $(document).ready(function(){
     loadColModel(null);
     createGrid(null);
 
-    var tree = $("#demo1").jstree({
+    var tree = $("#tree").jstree({
             "json_data" : {
                     "ajax" : {
                             "url" : url + "?op=jsTreeJson&schema=molgenis"
@@ -130,7 +130,7 @@ $(document).ready(function(){
             "plugins" : [ "themes", "json_data", "checkbox", "sort", "ui" ]
     });
 
-    $("#demo1").bind("change_state.jstree", function (e, d) {
+    $("#tree").bind("change_state.jstree", function (e, d) {
         if ((d.args[0].tagName == "A" || d.args[0].tagName == "INS") &&
           (d.inst.data.core.refreshing != true && d.inst.data.core.refreshing != "undefined")) {
 //              $("#list").trigger("reloadGrid");
@@ -141,7 +141,7 @@ $(document).ready(function(){
         
     $('#getSelected').click(function() {
         var selectedColumnIds = []; 
-        $("#demo1").jstree("get_checked",null,true).each 
+        $("#tree").jstree("get_checked",null,true).each 
             (function () { 
                 selectedColumnIds.push(this.id); 
             }); 
@@ -169,15 +169,16 @@ $( "#dialog-form" ).dialog({
     modal: true,
     buttons: {
             "Export": function() {
-                e.preventDefault();  //stop the browser from following
-                window.location.href = url + "?exportType=excel";
+            	var exportType = $("input[name='exportType']:checked").val();
+            	var exportSelection = $("input[name='exportSelection']:checked").val();
+                //e.preventDefault();  //stop the browser from following
+                window.location.href = url + "?exportType=" +exportType + "&exportSelection=" + exportSelection;
             },
             Cancel: function() {
                 $( this ).dialog( "close" );
             }
     },
     close: function() {
-            allFields.val( "" ).removeClass( "ui-state-error" );
     }
 });    
         
@@ -192,24 +193,24 @@ $(function() {
 <title>Matrix Demo</title>
 </head>
 <body>
+
+<!--
     <p>Date: <input type="text" id="datepicker"></p>
-<div id="demo1" class="demo">
+-->
+<div id="tree" class="tree">
 
 </div>
+
 
 <div>
     <button id="getSelected">load data</button>
 </div>
     
 
-<!-- 
-	<table id="treegrid"></table>
-	<div id="ptreegrid"></div>
- -->
-	<table id="list"></table>
-	<div id="pager"></div>
-        
-    <button id="exportData">export data</button>
+<table id="list"></table>
+<div id="pager"></div>
+       
+<button id="exportData">export data</button>
     
 <div id="dialog-form" title="Export data">
 	<form>
@@ -219,15 +220,15 @@ $(function() {
             <input type="radio" name="exportType" value="Spss">Spss<br> 
             <input type="radio" name="exportType" value="Csv">Csv<br> 
             <label>Export option</label><br>
-            <input type="radio" name="exportSelection" value="Excel" checked>All<br>
-            <input type="radio" name="exportSelection" value="Spss">Grid<br> 
+            <input type="radio" name="exportSelection" value="All" checked>All<br>
+            <input type="radio" name="exportSelection" value="Grid">Grid<br> 
 	</fieldset>
 	</form>
 </div>
    
     
-<table id="grps"></table>
+<!--<table id="grps"></table>
 <div id="pgrps"></div>
     
-</body>
+--></body>
 </html>
