@@ -26,7 +26,7 @@
 			<div class="screenpadding">	
 			    <h3> Import dataShaper data to pheno model  </h3>
 		        <input type="submit" value="Import" onclick="__action.value='ImportDatashaperToPheno';return true;"/><br /><br />
-				<input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>
+				<!--<input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
  				<label> 	<#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
 
 			</div>

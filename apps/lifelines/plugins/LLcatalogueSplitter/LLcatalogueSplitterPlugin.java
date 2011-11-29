@@ -23,8 +23,6 @@ public class LLcatalogueSplitterPlugin  extends PluginModel<Entity>
 		
 		super(name, parent);
 		
-		
-		
 		System.out.println(">>>>The splitter has been created"); 
 		splitterContents.setLeftPane("<p>This is the left side of the splitter </p> <p>&nbsp;</p>");
 		System.out.println(">>>>Left pane of the spliter has been set "); 

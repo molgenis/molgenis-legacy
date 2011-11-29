@@ -22,34 +22,9 @@
 		</#list>
 		<div class="screenbody">
 			<div class="screenpadding">	
-						${screen.getSplitter()}
-				<div id="splitterContainer">
-					 	<div id="leftPane">
-					 	 	${screen.getSplitterContents().getLeftPane()}
-					 	 	and another : 
-					 	 	${screen.getSplitterLeftPane()}
-					 	 	coming from ftl: left pane
-					 	</div>
-					 	<div id="rightPane">
-						 	<div style="height:5%;background:#bac8dc">Toolbar.....</div>
-						 		<div id="rightSplitterContainer" style="height:95%">
-					     			<div id="rightTopPane">
-						 				 ${screen.getSplitterContents().getRightTopPane()}
-						 				 and another : 
-						 				 ${screen.getSplitterRightTopPane()}
-						 				 coming from ftl: right pane	 				 
-						 			</div>
-						 			<div id="rightBottomPane">
-						 				<div>
-						 				 ${screen.getSplitterContents().getRightBottomPane()}
-						 				 and another : 
-						 				 ${screen.getSplitterRightBottomPane()}
-						 				 coming from ftl: rightbottom pane
-						 				 </div>
-						 			</div>
-						 		</div> <!--rightSplitterContainer-->
-						</div> <!--<div id="rightPane">-->
-				</div> <!--splitterContainer-->
+				
+				${screen.getSplitter()}
+				
 			</div> <!--<div class="screenpadding"-->	
 		</div> <!--		<div class="screenbody"-->		
 	</div> <!--	<div class="formscreen"-->
