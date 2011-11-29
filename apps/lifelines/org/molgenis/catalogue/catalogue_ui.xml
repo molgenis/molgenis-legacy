@@ -23,6 +23,7 @@
 		<plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" /> 
 		
 		<plugin name="DataShaperImportExcel" type="plugins.data.DataShaperImportExcel" label="Import DataShaper data"  />
+		<plugin name="LifelineImportExcel" type="plugins.data.lifeLineImporter" label="Import Lifeline dictionary"  />
 		<plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" />
 		
 		<menu name="Admin">
