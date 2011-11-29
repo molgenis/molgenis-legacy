@@ -14,6 +14,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.gids.GidsSample;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -163,18 +164,26 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 					List<String> measurementsToShowSamples = sampleInfoProt.getFeatures_Name();
 					
 					List<MatrixQueryRule> showTheseIndividuals = new ArrayList<MatrixQueryRule>();
-					showTheseIndividuals.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
+					/*showTheseIndividuals.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
 							Operator.IN, getModel().getListIndividuals()));
-					
-					System.out.println("going to show: ");
-					for( Integer i : getModel().getListIndividuals())
-					{
-						System.out.println("id " + i);
-					}					
-					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
-							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, showTheseIndividuals, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-									Operator.IN, measurementsToShowSamples));
+					*/
+					List<Integer> sampleidList = new ArrayList<Integer>();
+					 for (Integer indiId : getModel().getListIndividuals()){
+						Individual individual = db.findById(Individual.class, indiId);
+						System.out.println("individual.getName()individual.getId()"+"\t"+individual.getName()+"\t"+individual.getId());
+						sampleidList.add(individual.getId());
+					}
+					 
+					 System.out.println("sampleidList.size() : " + sampleidList.size());
+					 
+					 
+					 showTheseIndividuals.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, GidsSample.INDIVIDUALID, 
+								Operator.IN, sampleidList));
+										
+					 getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
+								new SliceablePhenoMatrix(GidsSample.class, Measurement.class), 
+								true, true, showTheseIndividuals, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+										Operator.IN, measurementsToShowSamples));
 				}	
 				getModel().setLastInvest(invest);
 			}catch (Exception e) {
