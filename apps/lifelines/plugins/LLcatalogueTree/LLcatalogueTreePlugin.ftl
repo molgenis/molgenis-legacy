@@ -26,12 +26,14 @@
 				<div id="leftSide" style="width:200px;">
 					${screen.getTreeView()}
 				</div>
-				<div id="rightSide" style="float:right; width:200px;">
-					dfsgsdfgsdfg				
-				<div>
-				<div id="bottom" style="clear:both;">
-					bottom
+				<!--div id="rightSide" style="position: absolute;  float:right; top: 10px; "-->
+				<div id="rightSide" style="position: absolute; left: 910px; top: 20px; height: 400px; width: 100px; padding: 1em;">
+					right side	
 				</div>
+				
+				<!--<div id="bottom" style="clear:both;">
+					bottom
+				</div-->
 				
 			</div>
 		</div>
