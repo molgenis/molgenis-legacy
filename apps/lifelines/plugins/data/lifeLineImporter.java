@@ -74,8 +74,6 @@ public class lifeLineImporter extends PluginModel<Entity>
 
 			System.out.println("----------------->");
 
-			System.out.println(db.query(Investigation.class).eq(Investigation.NAME, " Lifelines").count());
-
 			Investigation inv = new Investigation();
 
 			if(db.query(Investigation.class).eq(Investigation.NAME, "LifeLines").count() == 0){
@@ -84,6 +82,7 @@ public class lifeLineImporter extends PluginModel<Entity>
 				db.add(inv);
 
 			}
+			setStatus("Start importing");
 			loadDataFromExcel(db, request, inv);
 
 		}
@@ -103,6 +102,8 @@ public class lifeLineImporter extends PluginModel<Entity>
 
 		File file = new File(tmpDir+ "/LifelinesDict.xls"); 
 
+		System.out.println("For Fuck sake!!!!!!!!!!!!!!!!!!");
+		
 		if (file.exists()) {
 
 			System.out.println("The excel file is being imported, please be patient");
@@ -128,6 +129,8 @@ public class lifeLineImporter extends PluginModel<Entity>
 				else if (dictionaryCategory.getName().equals("Category"))
 					insertCategory(workbook.getSheet(1), db, request, inv);
 			}
+		}else{
+			setSelected("Put the file under directory " + file);
 		}
 	}
 	
@@ -202,7 +205,8 @@ public class lifeLineImporter extends PluginModel<Entity>
 				measurementToCategory.put(measurement, temp);
 			}
 			
-			//System.out.println(measurement.getName() + "--------------" + category.getLabel());
+			
+			System.out.println(measurement.getName() + "--------------" + category.getLabel());
 			
 			if(!addedMeasurement.contains(measurement))
 				
@@ -214,6 +218,7 @@ public class lifeLineImporter extends PluginModel<Entity>
 		for( Category cod : addedCategory){
 			if(db.query(Category.class).eq(Category.CODE_STRING, cod.getCode_String()).count() == 0){
 				if(!addedCodes.contains(cod)){
+					cod.setInvestigation(inv.getId());
 					addedCodes.add(cod);
 				}
 			}
@@ -241,7 +246,7 @@ public class lifeLineImporter extends PluginModel<Entity>
 			}
 			
 			m.setCategories_Id(categoryId);
-			
+			m.setInvestigation(inv.getId());
 		}
 		for(Measurement m : addedMeasurement){
 			System.out.println(m.getName() + "--------" + m.getCategories_Id());
@@ -375,7 +380,7 @@ public class lifeLineImporter extends PluginModel<Entity>
 
 			if(db.query(Protocol.class).eq(Protocol.NAME, proto.getName()).count() == 0){
 				if(!addedProtocols.contains(proto)){
-
+					proto.setInvestigation(inv.getId());
 					addedProtocols.add(proto);
 				}
 			}
@@ -386,6 +391,7 @@ public class lifeLineImporter extends PluginModel<Entity>
 			if(db.query(Measurement.class).eq(Measurement.NAME, measure.getName()).count() == 0){
 
 				if(!addedMeasurements.contains(measure)){
+					measure.setInvestigation(inv.getId());
 					addedMeasurements.add(measure);
 				}
 			}

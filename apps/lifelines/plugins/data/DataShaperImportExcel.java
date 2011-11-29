@@ -75,9 +75,14 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 			if(db.query(Investigation.class).eq(Investigation.NAME, "DataShaper").count() == 0){
 
 				inv.setName("DataShaper");
+				
 				db.add(inv);
-
+				
+			}else{
+				
+				inv = db.find (Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, "DataShaper")).get(0);
 			}
+			
 			loadDataFromExcel(db, request, inv);
 
 		}
@@ -92,6 +97,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 	}
 	@SuppressWarnings("unchecked")
 	public void loadDataFromExcel(Database db, Tuple request, Investigation inv) throws BiffException, IOException, DatabaseException{
+
 
 		List<String> ProtocolFeatures = new ArrayList<String>();
 
@@ -176,6 +182,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 			for(int i = 0; i < column; i++){
 				Measurement headerMea = new Measurement();
 				headerMea.setName(sheet.getCell(i, 0).getContents().replaceAll("'", ""));
+				headerMea.setInvestigation(inv);
 				headers[i] = headerMea;
 				measurements.add(headerMea);
 			}
@@ -188,7 +195,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 
 				ontology = new Ontology();
 
-				code = new Category();
+				//code = new Category();
 
 				prot = new Protocol();
 
@@ -201,8 +208,6 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 				theme.setInvestigation(inv);
 				
 				prot.setInvestigation(inv);
-				
-				code.setInvestigation(inv);
 				
 				mea.setInvestigation(inv);
 				
@@ -277,6 +282,8 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 						mea.setName(measurementName);
 
 						mea.setOntologyReference_Name(measurementName);
+						
+						mea.setInvestigation(inv);
 
 						List<String> temporaryHolder = linkProtocolMeasurement.get(protocolName);
 
@@ -335,15 +342,23 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 							//System.out.println(sheet.getCell(j, i).getContents());
 							for(int k = 0; k < codeString.length; k++){
 
+								code = new Category();
+								
+								code.setInvestigation(inv);
+								
 								code.setName(codeString[k].replaceAll("'", ""));
 								
 								code.setCode_String(codeString[k]);
 								
 								code.setLabel(codeString[k]);
 								
-								code.setDescription(sheet.getCell(j, i).getContents());
+								code.setDescription(codeString[k]);
 								
-								System.out.println(codeString[k]);
+								if(codeString[k].equalsIgnoreCase(measurementName)){
+									code.setName(codeString[k].replaceAll("'", "") + "_code");
+								}
+								
+								//System.out.println(codeString[k]);
 								
 //								if(linkCodeMeasurement.containsKey(codeString[k])){
 //									List<String> featuresCode = linkCodeMeasurement.get(codeString[k]);
@@ -359,21 +374,25 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 								
 								if(linkCodeMeasurement.containsKey(measurementName)){
 									List<String> categories = linkCodeMeasurement.get(measurementName);
-									if(!categories.contains(codeString[k].replaceAll("'", ""))){
-										categories.add(codeString[k].replaceAll("'", ""));
-										linkCodeMeasurement.put(measurementName, categories);
+									linkCodeMeasurement.put(measurementName, categories);
+									if(!categories.contains(codeString[k])){
+										categories.add(codeString[k]);
+										
 									}
 								}else{
 									List<String> categories = new ArrayList<String>();
-									categories.add(codeString[k].replaceAll("'", ""));
+									categories.add(codeString[k]);
 									linkCodeMeasurement.put(measurementName, categories);
 								}
+								
+								
+								if(j == 9)
+									code.setIsMissing(true);
+								
 								if(!codes.contains(code))
 									codes.add(code);
-							}
-							if(j == 9)
-								code.setIsMissing(true);
 							
+							}
 						}
 
 					}else if(j == 18){
@@ -449,6 +468,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 				if(db.query(Measurement.class).eq(Measurement.NAME, measure.getName()).count() == 0){
 
 					if(!addedMeasurements.contains(measure)){
+						//measure.setInvestigation_Name(inv.getName());
 						addedMeasurements.add(measure);
 					}
 				}
@@ -459,7 +479,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 
 				if(db.query(Protocol.class).eq(Protocol.NAME, proto.getName()).count() == 0){
 					if(!addedProtocols.contains(proto)){
-
+						//proto.setInvestigation_Name(inv.getName());
 						addedProtocols.add(proto);
 					}
 				}
@@ -467,8 +487,9 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 
 
 			for( Category cod : codes){
-				if(db.query(Category.class).eq(Category.CODE_STRING, cod.getCode_String()).count() == 0){
+				if(db.query(Category.class).eq(Category.LABEL, cod.getLabel()).count() == 0){
 					if(!addedCodes.contains(cod)){
+						//cod.setInvestigation_Id(inv.getId());
 						addedCodes.add(cod);
 					}
 				}
@@ -478,7 +499,8 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 
 			for (ObservedValue ov: observedValues) {
 				if (!observedValues.contains(ov)) {
-					addedObservedValues.add(ov);
+					ov.setInvestigation(inv.getId());
+					//addedObservedValues.add(ov);
 				}
 			}
 
@@ -504,7 +526,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 					
 					if(categoryNames != null){
 						
-						List<Category> measList = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categoryNames));
+						List<Category> measList = db.find(Category.class, new QueryRule(Category.LABEL, Operator.IN, categoryNames));
 						
 						List<Integer> CategoryIdList = new ArrayList<Integer>();
 						
@@ -530,9 +552,13 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 					}
 				}
 				
-				db.add(addedMeasurements);
+				//db.add(addedMeasurements);
 				
-				
+				for(Measurement m : addedMeasurements){
+					
+					System.out.println(m);
+					db.add(m);
+				}
 				
 				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
 				for (Protocol p : addedProtocols) {
@@ -584,7 +610,9 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 				db.add(groups);
 				
 				db.add(observedValues);
-
+				
+				//db.add(inv);
+				
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
