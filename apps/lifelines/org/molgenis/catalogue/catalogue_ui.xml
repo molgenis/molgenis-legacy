@@ -19,9 +19,10 @@
 			<form name="ProtocolApplication" entity="ProtocolApplication" label="Protocol Application" />
 		</menu>
 		
-		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="OntologyTerms" />  
-		<plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" /> 
+		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="Catalogue Tree" />  
+		<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" />  -->
 		
+		<plugin name="LLDataImportExcel" type="plugins.data.LLDataImportExcel" label="Import LL data"  />
 		<plugin name="DataShaperImportExcel" type="plugins.data.DataShaperImportExcel" label="Import DataShaper data"  />
 		<plugin name="LifelineImportExcel" type="plugins.data.lifeLineImporter" label="Import Lifeline dictionary"  />
 		<plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" />
