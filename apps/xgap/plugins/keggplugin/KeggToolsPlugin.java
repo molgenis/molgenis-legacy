@@ -137,8 +137,7 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 				try
 				{
 					KEGGGene sourceGene = KEGGTools.getKeggGene(sourceOrganism + ":" + id);
-					System.out.println("id: " + id + " -> entry: " + sourceGene.getEntry());
-
+	
 					outputSimple += id + "\t" + sourceGene.getEntry() + "\n";
 					outputAdvanced += id + "\t" + sourceGene.toStringMedium("\t");
 				} catch (Exception e)
@@ -157,7 +156,6 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 			String outputAdvanced = "source" + "\t" + KEGGGene.toStringMediumHeader("\t");
 
 			String input = request.getString("inputIdList");
-			// System.out.println("input: '" + input + "'");
 			
 			if(input == null)
 			{
@@ -176,7 +174,6 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 				{
 
 					KEGGGene sourceGene = KEGGTools.getKeggGene(sourceOrganism + ":" + id);
-					System.out.println("id: " + id + " -> entry: " + sourceGene.getEntry());
 					KEGGOrthologue orthology = KEGGTools.getClosestOrthologue(sourceGene.getEntry(), targetOrganism);
 					KEGGGene targetGene = KEGGTools.getKeggGene(orthology.getTargetEntry());
 

@@ -54,7 +54,6 @@ public class taskreporter  implements MolgenisService
 		{
 			//Tuple req = new HttpServletRequestTuple(request.getRequest());
 			
-			//System.out.println("TASKREPORTER GOT A REQUEST!!!! : " + request.toString());
 
 			int jobID = request.getInt("job"); // unique
 
@@ -66,7 +65,6 @@ public class taskreporter  implements MolgenisService
 
 			Database db = request.getDatabase();
 			
-			//System.out.println("TASKREPORTER DB STATUS?? : " + db.getSecurity().isAuthenticated());
 
 			QueryRule jobQuery0 = new QueryRule("id", Operator.EQUALS, jobID);
 			QueryRule subjobQuery0 = new QueryRule("job", Operator.EQUALS, jobID);

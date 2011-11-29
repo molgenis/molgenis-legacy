@@ -17,7 +17,6 @@ public class Tester {
 
 		String out = lc.executeCommand(new Command("ls"));
 		
-		System.out.println("out: " + out);
 	}
 
 }

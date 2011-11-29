@@ -74,8 +74,6 @@ public class MatrixWizard extends PluginModel<Entity>
 		if (request.getString("__action") != null)
 		{
 
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
-
 			try
 			{
 				
@@ -106,11 +104,6 @@ public class MatrixWizard extends PluginModel<Entity>
 					String[] tagging = request.getString("tagging_"+dataIdreq).split(" -> ");
 					String dataSetName = tagging[0];
 					String dataNameName = tagging[1];
-					
-					System.out.println("request.getString(tagging): " + request.getString("tagging"));
-					System.out.println("dataSetName: " + dataSetName);
-					System.out.println("dataNameName: " + dataNameName);
-					
 					
 					Data data = db.find(Data.class, new QueryRule("id", Operator.EQUALS, dataIdreq)).get(0);
 					

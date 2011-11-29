@@ -23,8 +23,6 @@ public class XgapExcelImport
 	public XgapExcelImport(File extractDir, Database db, boolean skipWhenDestExists) throws Exception
 	{
 
-		// System.out.println("XgapExcelImport called");
-
 		File excelFile = null;
 		File dataDir = null;
 

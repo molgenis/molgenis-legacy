@@ -118,34 +118,23 @@ public class DependencyManager extends PluginModel<Entity>
 //		File clusterJobsDir = new File(usrHomeLibs.getAbsolutePath()
 //				+ File.separator + "ClusterJobs");
 		
-		System.out.println("checking dir: " + bitopsDir.getAbsolutePath());
-		System.out.println("checking dir: " + qtlDir.getAbsolutePath());
-		System.out.println("checking dir: " + rcurlDir.getAbsolutePath());
-		System.out.println("checking dir: " + qtlbimDir.getAbsolutePath());
-//		System.out.println("checking dir: " + clusterJobsDir.getAbsolutePath());
-
 		if(bitopsDir.exists()){
-			System.out.println("bitopsDir exists");
 			this.model.setBitops(true);
 		}
 		
 		if(qtlDir.exists()){
-			System.out.println("qtlDir exists");
 			this.model.setRqtl(true);
 		}
 		
 		if(rcurlDir.exists()){
-			System.out.println("rcurlDir exists");
 			this.model.setRcurl(true);
 		}
 		
 		if(qtlbimDir.exists()){
-			System.out.println("qtlbimDir exists");
 			this.model.setQtlbim(true);
 		}
 		
 //		if(clusterJobsDir.exists()){
-//			System.out.println("clusterJobsDir exists");
 //			this.model.setClusterjobs(true);
 //		}
 

@@ -41,7 +41,6 @@ public class TestBinSubMatrix {
 				String o = originalHalf.get(i);
 				String s = subbed.get(i);
 				String c = originalComplete.get(i);
-				System.out.println(o + " " + s + " " + c);
 				if(!o.equals(s)){
 					throw new Exception("Not equal: " + o + " vs. " + s + " at index " + i);
 				}

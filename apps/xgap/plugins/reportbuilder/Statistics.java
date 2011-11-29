@@ -76,11 +76,6 @@ public class Statistics
 
 		TreeMap<String, Double> sorted_map = new TreeMap(bvc);
 		sorted_map.putAll(map);
-//		
-//		for (String key : sorted_map.keySet())
-//		{
-//			System.out.println("k: " + key + ", v: " + sorted_map.get(key));
-//		}
 
 		return sorted_map;
 	}
@@ -89,7 +84,6 @@ public class Statistics
 	{
 		int r = m.length;
 		int c = m[0].length;
-		System.out.println("IN: " + r + " and " + c);
 		Object[][] t = new Object[c][r];
 		for (int i = 0; i < r; ++i)
 		{
@@ -98,7 +92,6 @@ public class Statistics
 				t[j][i] = m[i][j];
 			}
 		}
-		System.out.println("OUT: " + t.length + " and " + t[0].length);
 		return t;
 	}
 	

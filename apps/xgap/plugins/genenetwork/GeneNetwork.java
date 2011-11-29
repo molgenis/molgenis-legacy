@@ -63,7 +63,6 @@ public class GeneNetwork extends PluginModel
 		if (request.getString("__action") != null)
 		{
 
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
 			String action = request.getString("__action");
 
 			try
@@ -130,7 +129,6 @@ public class GeneNetwork extends PluginModel
 			while ((line = rd.readLine()) != null)
 			{
 				ret.add(line);
-				System.out.println("LINE: " + line);
 			}
 			rd.close();
 		}
@@ -156,7 +154,6 @@ public class GeneNetwork extends PluginModel
 		while ((strLine = br.readLine()) != null)
 		{
 			// Print the content on the console
-			// System.out.println (strLine);
 			content += strLine + "\n";
 		}
 		// Close the input stream
@@ -189,7 +186,6 @@ public class GeneNetwork extends PluginModel
 		while ((line = rd.readLine()) != null)
 		{
 			// Process line...
-			System.out.println("RESPONSE: " + line);
 			response += line;
 		}
 		wr.close();

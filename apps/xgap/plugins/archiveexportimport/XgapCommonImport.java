@@ -111,7 +111,6 @@ public class XgapCommonImport {
 			public void handleLine(int line_number, Tuple tuple)
 			{
 				names.add(tuple.getString("name"));
-				//System.out.println("added inv name: " + tuple.getString("name"));
 			}
 		};
 

@@ -32,9 +32,7 @@ class StreamGobbler extends Thread
             BufferedReader br = new BufferedReader(isr);
             String line=null;
             while ( (line = br.readLine()) != null){
-      	      if(verbose){
-      	    	  System.out.println(type + ">" + line);
-      	      }
+
   	      	  if(type.equals("OUTPUT")){
   	      		  reporter.addResultLine(line);
   	      	  }

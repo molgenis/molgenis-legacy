@@ -79,9 +79,6 @@ public final class BasicClient extends WindowAdapter
      */
     public BasicClient(Properties props) {
         this.props      = props;
-        for(Object key : props.keySet()){
-        	System.out.println(key.toString() + " = " + props.getProperty(key.toString()));
-        }
         this.exitStatus = 1;
     }
 
@@ -245,7 +242,7 @@ public final class BasicClient extends WindowAdapter
         } catch (LineReaderTerminal.ExternalMessageException e) {
             // ignore
         } catch (Exception e) {
-            System.out.println("An error occured: " + e.getMessage());
+           e.printStackTrace();
         } finally {
             if(frame != null) {
                 frame.dispose();
@@ -367,8 +364,7 @@ public final class BasicClient extends WindowAdapter
             try {
                 props.load(new FileInputStream(propsFile));
             } catch (Exception e) {
-                System.out.println("Error loading properties: " +
-                                   e.getMessage());
+                e.printStackTrace();
             }
         }
         BasicClient ssh2 = new BasicClient(props);

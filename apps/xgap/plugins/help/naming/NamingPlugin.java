@@ -64,7 +64,6 @@ public class NamingPlugin extends PluginModel<Entity> {
 
 	@Override
 	public void handleRequest(Database db, Tuple request) {
-		System.out.println("REQUEST: \n" + request.toString());
 		if (request.getString("__action") != null) {
 			if (request.getString("__action").equals("convertNames")) {
 				String rawInput = request.getString("input");
@@ -96,9 +95,7 @@ public class NamingPlugin extends PluginModel<Entity> {
 					this.setOutput(null);
 				}
 				
-				//this.setUnique("Yes");
 
-				// System.out.println(request.toString());
 			} else if (request.getString("__action").equals("loadExample")) {
 				this.setInput(example());
 			} else if (request.getString("__action").equals("clear")) {

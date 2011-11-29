@@ -60,9 +60,6 @@ public class ROnline<E extends Entity> extends PluginModel<E> {
 	public void handleRequest(Database db, Tuple request) {
 			if (request.getString("__action") != null) {
 
-			System.out.println("*** handleRequest __action: "
-					+ request.getString("__action"));
-
 			try {
 
 				if (request.getString("__action").equals("execute")) {

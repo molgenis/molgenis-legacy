@@ -25,7 +25,6 @@ public class TestExcelExport {
 
 		new ExcelExport().exportAll(file, db, true);
 		
-		System.out.println("result: " + file.getAbsolutePath());
 	}
 	
 	public static void main(String[] args) throws Exception {

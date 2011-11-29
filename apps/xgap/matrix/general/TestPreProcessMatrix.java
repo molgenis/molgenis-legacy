@@ -27,7 +27,6 @@ public class TestPreProcessMatrix
 		testContent += "678row3#\tval7\tval8\tval9\n";
 		File testMatrix = new File(System.getProperty("java.io.tmpdir") + File.separator + "testMatrix"
 				+ System.nanoTime() + ".txt");
-		System.out.println("testMatrix @ " + testMatrix.getAbsolutePath());
 		BufferedWriter out = new BufferedWriter(new FileWriter(testMatrix));
 		out.write(testContent);
 		out.close();
@@ -40,9 +39,7 @@ public class TestPreProcessMatrix
 		PreProcessMatrix pm = new PreProcessMatrix(this.testMatrix);
 		pm.prependUnderscoreToRowNames();
 		File result = pm.getResult();
-		System.out.println("ACTUAL @ " + result.getAbsolutePath());
 		String actual = readFile(result);
-		System.out.println("ACTUAL = " + actual);
 		String expected = "\tcol1$\t456col2\tcol3\n";
 		expected += "_234row1\tval1\tval2\tval3\n";
 		expected += "_&row2\tval4\tval5\tval6\n";

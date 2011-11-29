@@ -72,9 +72,7 @@ public class XqtlSeleniumTest
 		int appNameLength = appName.length();
 		String storagePath = new StorageHandler(db).getFileStorage(true, db).getAbsolutePath();
 		File storageRoot = new File(storagePath.substring(0, storagePath.length() - appNameLength));
-		System.out.println("Removing content of " + storageRoot);
 		TarGz.recursiveDeleteContent(new File(storagePath));
-		System.out.println("Removing folder " + storageRoot);
 		TarGz.delete(storageRoot, false);
 	}
 

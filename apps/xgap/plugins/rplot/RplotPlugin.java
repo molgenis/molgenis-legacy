@@ -74,7 +74,6 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 	{
 		if (request.getString("__action") != null)
 		{
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
 
 			try
 			{

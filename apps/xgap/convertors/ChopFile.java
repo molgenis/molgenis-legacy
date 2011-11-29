@@ -49,9 +49,7 @@ public class ChopFile {
 	public static void main(String[] args) {
 		String fileLocation = "D:/data/xgapdata/HumanPublicSets/193sgenome.ped";
 		File inputFile = new File(fileLocation);
-		System.out.println("Chopping file '" + inputFile.getName() + "' to bits..");
 		ChopFile.chopFile(inputFile, 1000, true);
-		System.out.println("..done");
 	}
 
 }

@@ -29,7 +29,6 @@ public class CreateZIP {
 
 
 		for (File f : files) {
-			System.out.println("Adding: " + f);
 			FileInputStream fi = new FileInputStream(f);
 			origin = new BufferedInputStream(fi, BUFFER);
 			ZipEntry entry = new ZipEntry(f.getAbsolutePath());

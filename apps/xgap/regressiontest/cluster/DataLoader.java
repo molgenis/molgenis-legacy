@@ -131,16 +131,4 @@ public class DataLoader
 
 		return result;
 	}
-
-	public static void main(String[] args) throws Exception
-	{
-		Database db = DatabaseFactory.create("xgap.properties");
-		ArrayList<String> result = DataLoader.load(db, true);
-		for (String s : result)
-		{
-			System.out.println(s);
-		}
-
-	}
-
 }

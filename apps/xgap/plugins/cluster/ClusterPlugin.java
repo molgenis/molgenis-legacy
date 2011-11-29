@@ -245,7 +245,6 @@ public class ClusterPlugin extends PluginModel<Entity>
 		String putativeName = request.getString("outputDataName");
 		putativeName = NameConvention.escapeEntityNameStrict(putativeName);
 
-		System.out.println("checking name: " + putativeName);
 		if (HelperFunctions.checkIfNameExists(db, putativeName))
 		{
 			putativeName = NameConvention.escapeEntityNameStrict(putativeName + " at "
@@ -263,14 +262,12 @@ public class ClusterPlugin extends PluginModel<Entity>
 
 	private void deleteJob(Database db, Tuple request) throws Exception
 	{
-		System.out.println("deleteJob called");
 
 		int jobID = Integer.parseInt(request.getString("jobToDelete"));
 
 		cr.cleanupJob(jobID);
 		djm.deleteJob(jobID);
 
-		System.out.println("deleteJob ended");
 	}
 
 	// TODO: dont use Tuple but list of parameters

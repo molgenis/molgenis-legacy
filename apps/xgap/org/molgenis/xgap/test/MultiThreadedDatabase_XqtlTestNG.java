@@ -41,7 +41,6 @@ public class MultiThreadedDatabase_XqtlTestNG
 		for (int i = 0; i < amountOfTests; i++)
 		{
 			tests.add(new TestDbThread(molgServ, amountInBatch));
-			System.out.println("Added new thread " + (i+1) + "/" + amountOfTests);
 		}
 
 		List<Thread> threads = new ArrayList<Thread>();
@@ -66,7 +65,6 @@ public class MultiThreadedDatabase_XqtlTestNG
 			};
 			Thread thread = new Thread(runnable);
 			thread.start();
-			System.out.println("Started thread");
 			threads.add(thread);
 		}
 
@@ -126,12 +124,10 @@ class TestDbThread
 	public void add() throws DatabaseException
 	{
 		db.add(individuals);
-		//System.out.println("Added " + amount + " individuals, starting with '" + individuals.get(0) + "'");
 	}
 
 	public void remove() throws DatabaseException
 	{
 		db.remove(individuals);
-		//System.out.println("Removed " + amount + " individuals, starting with '" + individuals.get(0) + "'");
 	}
 }

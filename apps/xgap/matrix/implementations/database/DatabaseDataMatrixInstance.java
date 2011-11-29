@@ -390,8 +390,6 @@ public class DatabaseDataMatrixInstance extends
 						.getInvestigation_Name()) + "_"
 				+ NameConvention.escapeFileName(this.getData().getName())
 				+ ".txt");
-		System.out.println("*** tmp getasfile path for db: "
-				+ tmp.getAbsolutePath());
 
 		if (tmp.exists())
 		{

@@ -67,8 +67,6 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 	public static ArrayList<String> renameDuplicates(ArrayList<String> inputs){
 		ArrayList<String> out = new ArrayList<String>();
 		
-		System.out.println("inputs.size() = " + inputs.size());
-		
 		for(String s : inputs){
 			if(out.contains(s)){
 				boolean highestDupFound = false;
@@ -85,14 +83,12 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 				out.add(s);
 			}
 		}
-		System.out.println("out.size() = " + out.size());
 		
 		return out;
 	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request) {
-		//System.out.println("REQUEST: \n" + request.toString());
 		if (request.getString("__action") != null) {
 			if (request.getString("__action").equals("convertNames")) {
 				String rawInput = request.getString("input");
@@ -133,9 +129,6 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 					this.setOutput(null);
 				}
 
-				// this.setUnique("Yes");
-
-				// System.out.println(request.toString());
 			} else if (request.getString("__action").equals("loadExample")) {
 				this.setInput(example());
 			} else if (request.getString("__action").equals("clear")) {

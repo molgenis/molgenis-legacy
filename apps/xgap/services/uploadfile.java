@@ -57,7 +57,6 @@ public class uploadfile implements MolgenisService
 					//already handled
 				}else{
 					extraFields.put(colName, req.getString(colName));
-					System.out.println("uploadfile -> adding extra field '" + colName + "' with value '" + req.getSet(colName) +"'");
 				}
 			}
 	

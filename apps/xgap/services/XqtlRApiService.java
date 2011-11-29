@@ -49,16 +49,11 @@ public class XqtlRApiService implements MolgenisService
 		OutputStream outs = response.getResponse().getOutputStream();
 		PrintStream out = new PrintStream(new BufferedOutputStream(outs), false, "UTF8"); // 1.4
 		
-		
-		//System.out.println("R API request: " + request.toString());
-		
 		if(request.getString("usr") != null && request.getString("pw") != null )
 		{
 			String usr = request.getString("usr");
 			String pw = request.getString("pw");
-			
-			//System.out.println("going to log in with " + usr + " / " + pw);
-			
+
 			LoginStatus login = FrontControllerAuthenticator.login(request, usr, pw);
 			
 			String responseLine;
@@ -89,7 +84,6 @@ public class XqtlRApiService implements MolgenisService
 		
 		if(request.getString("logout") != null && request.getString("logout").equals("logout"))
 		{
-			//System.out.println("going to log out..");
 			
 			LogoutStatus logout = FrontControllerAuthenticator.logout(request, response);
 			

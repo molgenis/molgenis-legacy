@@ -44,7 +44,6 @@ public class HapMapParser
 		String firstLine = in.readLine();
 		writeFile(findIndividuals(firstLine, true), basePath + "/individual.txt");
 
-		// System.out.println(firstLine);
 		PrintWriter markers = new PrintWriter(new BufferedWriter(new FileWriter(basePath + "/marker.txt")));
 		addToFile(markers, "name\tchr\tbpstart\tspecies_name\tseq");
 
@@ -54,7 +53,6 @@ public class HapMapParser
 		String line;
 		while ((line = in.readLine()) != null)
 		{
-			// System.out.println(line);
 			String[] split = line.split(" ");
 			addToFile(markers, split[0] + SEP + split[2].replace("chr", "") + SEP + split[3] + SEP + "Homo sapiens"
 					+ SEP + split[1]);

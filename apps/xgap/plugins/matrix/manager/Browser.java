@@ -32,14 +32,9 @@ public class Browser
 	{
 		// create instance of complete matrix and run checks
 		model.setInstance(instance);
-		// System.out.println("*** Browser instance: " +
-		// instance.getNumberOfCols() + ", rows: " + instance.getNumberOfRows()
-		// + ", first element: " + instance.getElement(0, 0));
 		model.setColMax(instance.getNumberOfCols());
 		model.setRowMax(instance.getNumberOfRows());
 
-		// System.out.println("*** matrix tostring:");
-		// System.out.println(instance.toString());
 
 		runChecks(selectedData);
 

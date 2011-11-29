@@ -63,8 +63,6 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 
 			String action = request.getString("__action");
 
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
-
 			try
 			{
 				if (action.equals("showAllAnnotations"))
@@ -129,8 +127,6 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			FormModel<Investigation> parentForm = (FormModel<Investigation>) ((FormController)parentController).getModel();
 			Investigation inv = parentForm.getRecords().get(0);
 			
-			System.out.println("Investigation inv = " + inv.toString());
-
 			this.model.setSelectedInv(inv);
 			QueryRule thisInv = new QueryRule("investigation", Operator.EQUALS, inv.getId());
 
@@ -140,7 +136,6 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			HashMap<String, Integer> annotationTypeAndNr = new HashMap<String, Integer>();
 			for (ObservationElement of : ofList)
 			{
-				// System.out.println(of.get__Type() + " " + of.getName());
 				if (!(of.get__Type().equals("Data") || of.get__Type().equals("ObservationElement")))
 				{
 					if (annotationTypeAndNr.containsKey(of.get__Type()))
@@ -161,7 +156,6 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			for (String key : annotationTypeAndNr.keySet())
 			{
 				annotationWithLinks.put(key + " (" + annotationTypeAndNr.get(key) + ")", "?select=" + key + "s");
-				System.out.println("annotationWithLinks.put: " + key + " (" + annotationTypeAndNr.get(key) + ") <- " + "?select=" + key + "s");
 			}
 
 			this.model.setAnnotationList(annotationWithLinks);
@@ -191,15 +185,6 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 
 			}
 			this.model.setOtherList(otherList);
-
-			JDBCMetaDatabase metadb = new JDBCMetaDatabase();
-			org.molgenis.model.elements.Entity entity = metadb.getEntity("ObservationElement");
-
-			System.out.println("getting children of ObservationElement");
-			for (DBSchema dbs : entity.getAllChildren())
-			{
-				System.out.println("CHILD: " + dbs.getName());
-			}
 
 			this.setMessages();
 		}

@@ -237,8 +237,6 @@ public class AbstractDataMatrixQueries
 			throw new Exception("at the moment supports only 1 QueryRule at a time");
 		}
 		
-		System.out.println("src size: rows " + matrix.getNumberOfRows() + " cols " + matrix.getNumberOfCols());
-		
 		String field = rules[0].getField();
 		Operator op = rules[0].getOperator();
 		int value = Integer.parseInt(rules[0].getValue().toString());
@@ -255,7 +253,6 @@ public class AbstractDataMatrixQueries
 			if(nRows < 1){
 				throw new Exception("No rows in resultset, empty matrix!");
 			}
-			System.out.println("submatrix: " + row + " " + nRows + " " + 0 + " " + matrix.getNumberOfCols());
 			return matrix.getSubMatrixByOffset(row, nRows, 0, matrix.getNumberOfCols());
 		}
 		else if(field.equals("col"))
@@ -265,7 +262,6 @@ public class AbstractDataMatrixQueries
 			if(nCols < 1){
 				throw new Exception("No cols in resultset, empty matrix!");
 			}
-			System.out.println("submatrix: " + 0 + " " + matrix.getNumberOfRows() + " " + col + " " + nCols);
 			return matrix.getSubMatrixByOffset(0, matrix.getNumberOfRows(), col, nCols);
 		}
 		else

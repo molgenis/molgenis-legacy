@@ -76,7 +76,6 @@ public class ReportBuilder extends PluginModel
 		if (request.getString("__action") != null)
 		{
 
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
 			String action = request.getString("__action");
 
 			try
@@ -257,8 +256,6 @@ public class ReportBuilder extends PluginModel
 								int count = db.count(entityClass);
 								if (count > 0)
 								{
-									// System.out.println(count + " " +
-									// entityType.getName());
 									annotationTypeAndNr.put(entityType.getName(), count);
 								}
 							}

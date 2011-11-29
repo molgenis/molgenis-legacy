@@ -25,7 +25,6 @@ public class exampleGetFromDb {
 		List<Gene> genes = db.find(Gene.class);
 		//TODO: Danny: Use or loose (perhaps the entire main ??)
 		/*Gene g = */genes.get(0);
-		//System.out.println(g.);
 
 	}
 

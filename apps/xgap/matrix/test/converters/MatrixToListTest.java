@@ -39,7 +39,7 @@ public class MatrixToListTest
 		
 		//print the list
 		for(String s : list){
-			System.out.println(s);
+
 		}
 	}
 

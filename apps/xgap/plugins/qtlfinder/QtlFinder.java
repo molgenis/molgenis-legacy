@@ -67,16 +67,9 @@ public class QtlFinder extends PluginModel
 	{
 		if (request.getString("__action") != null)
 		{
-
-			System.out.println("*** request: " + request.toString());
 			String action = request.getString("__action");
-
 			try
 			{
-
-			//	model.setResultSet(null);
-			//	model.setDisambiguate(null);
-			//	model.setNoResultsFound(null);
 				
 				//on all actions: set threshold, query and data filter
 				Double threshold = request.getDouble("threshold");
@@ -120,8 +113,7 @@ public class QtlFinder extends PluginModel
 					//for each input, create a QTL report or disambiguation view
 					for(String findMe : uniqueInputs)
 					{
-						System.out.println("find : " + findMe);
-						
+
 						Result r = new Result();
 						
 						r.setSelectedName(findMe);

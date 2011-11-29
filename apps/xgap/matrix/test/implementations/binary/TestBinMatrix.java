@@ -75,7 +75,6 @@ public class TestBinMatrix
 		{
 			for (String method : methods)
 			{
-				System.out.println("*** METHOD: " + method);
 				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, bm, bm.getData(),
 						h.getInputFilesDir(), method, true, true));
 			}

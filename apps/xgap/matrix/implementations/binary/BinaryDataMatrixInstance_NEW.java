@@ -139,9 +139,6 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 			int endOfElementsPointer = startOfElements + (this.getNumberOfCols() * this.getNumberOfRows() * 8);
 			this.setEndOfElementsPointer(endOfElementsPointer);
 		}
-		System.out.println(dataDescription.getValueType() + " - getStartOfElementsPointer: "
-				+ this.getStartOfElementsPointer());
-		System.out.println(dataDescription.getValueType() + " - getEndOfElementsPointer: " + this.getEndOfElementsPointer());
 	}
 
 	/***********/
@@ -161,7 +158,6 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 	 */
 	public Object[] readStringsFromRAF(RandomAccessFile raf, int elementAmount, int elementLength) throws IOException
 	{
-		//System.out.println("readFixedTextFromRAF called with: rafPointer=" + raf.getFilePointer() + ", elementAmount="+ elementAmount + ", elementLength=" + elementLength);
 		Object[] result = new Object[elementAmount];
 		int totalBytes = elementAmount * elementLength;
 
@@ -173,7 +169,6 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 		for (int i = 0; i < bytes.length; i++)
 		{
 			chars[i] = (char) bytes[i];
-			//System.out.println("chars[i]: " + chars[i]);
 		}
 
 		for (int i = 0; i < elementAmount; i++)
@@ -194,7 +189,6 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 			}else{
 				result[i] = fromChars;
 			}
-			//System.out.println("result[" + i + "]: " + result[i]);
 		}
 		return result;
 	}
@@ -387,10 +381,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 				}
 				raf.seek(this.startOfElementsPointer + byteOffset);
 				
-//				System.out.println("starting to read at: " + (this.startOfElementsPointer + byteOffset));
-//				System.out.println("can read until: " + this.endOfElementsPointer);
 				int diff = (int) (this.endOfElementsPointer - (this.startOfElementsPointer + byteOffset));
-//				System.out.println("which is " + diff + " bytes");
 			
 				// read the row as 1 big element
 				Object[] tmpResult = readStringsFromRAF(raf, 1, diff);

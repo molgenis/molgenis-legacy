@@ -76,8 +76,6 @@ public class MatrixHeatmap extends PluginModel
 		if (request.getString("__action") != null)
 		{
 
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
-
 			try
 			{
 				if (this.model.isUploadMode())
@@ -158,7 +156,6 @@ public class MatrixHeatmap extends PluginModel
 
 	private void createOverLibText(Database db) throws Exception
 	{
-		// System.out.println("*** createOverLibText");
 		List<String> rowNames = this.model.getBrowser().getModel().getSubMatrix().getRowNames();
 		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
 		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames, this.model.getSelectedData().getTargetType())));

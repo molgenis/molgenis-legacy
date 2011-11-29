@@ -67,7 +67,6 @@ public class DatasetExplorer extends PluginModel
 		if (request.getString("__action") != null)
 		{
 
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
 			String action = request.getString("__action");
 
 			try

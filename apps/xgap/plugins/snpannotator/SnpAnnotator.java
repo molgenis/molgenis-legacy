@@ -20,11 +20,7 @@ public class SnpAnnotator {
 			System.out.println(rs + "\t" + getNCBIannotation(rs));
 			Thread.sleep(100);
 		}
-		
-		
-//		Pattern p = Pattern.compile(".+jaap.+");
-//	    Matcher m = p.matcher("henkjaapbert");
-//	    System.out.println(m.matches());
+
 		
 	}
 	
@@ -38,14 +34,11 @@ public class SnpAnnotator {
 		    String inputLine;
 
 		    while ((inputLine = in.readLine()) != null){
-		//      System.out.println(inputLine);
-		  //  	bla += inputLine;
 		    	
 		    	Pattern p = Pattern.compile(".+<strong>Clinical Association:</strong></td><td  class=\"text10\" bgcolor=\"#f1f1f1\">(.+?)</td></TR>.+");
 				    
 				    Matcher m = p.matcher(inputLine);
 				    if(m.matches()){
-//				    	System.out.println("MATCH DURING PARSE\n"+inputLine);
 				    	bla = m.group(1);
 				    	break;
 				    }
@@ -53,18 +46,6 @@ public class SnpAnnotator {
 		    	
 		    }
 		    in.close();
-		 
-		  //  Pattern p = Pattern.compile("<strong>Clinical Association:</strong></td><td  class=\"text10\" bgcolor=\"#f1f1f1\">(.+)</td></TR>");
-//		    Pattern p = Pattern.compile("Clinical(.+)td");
-//		    
-//		    Matcher m = p.matcher(bla);
-//		    
-//		    if(m.matches()){
-//		    	bla = m.group();
-//		    }else{
-//		    	System.out.println("No match for " + snpRsId);
-//		    }
-		    
 		    
 		 return bla;
 	}

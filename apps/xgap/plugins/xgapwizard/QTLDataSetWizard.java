@@ -138,25 +138,21 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 							}
 							catch (InterruptedException i)
 							{
-								System.out.println("SEVERE ERROR: dataFileRollback delete FAILED");
 								i.printStackTrace();
 							}
 						}
 						else
 						{
-							System.out.println("SEVERE ERROR: dataFileRollback does not exist");
 						}
 					}
 					else
 					{
-						System.out.println("SEVERE ERROR: dataFileRollback was NULL");
 					}
 
 					db.rollbackTx();
 				}
 				catch (DatabaseException e1)
 				{
-					System.out.println("SEVERE ERROR: DB ROLLBACK FAILURE");
 					e1.printStackTrace();
 				}
 			}

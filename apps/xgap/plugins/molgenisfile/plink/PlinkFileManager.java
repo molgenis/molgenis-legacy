@@ -248,7 +248,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 		List<ParameterSet> plinkParams = this.getDatabase().find(ParameterSet.class, new QueryRule(ParameterSet.NAME, Operator.EQUALS, paramSet));
 		if(plinkParams.size() == 0)
 		{
-			System.out.println("Trying to tag Plink fileset as '"+paramValue+"', but no ParameterSet found with name '"+paramSet+"'.");
+			//Trying to tag Plink fileset as '"+paramValue+"', but no ParameterSet found with name '"+paramSet+"'.
 			return false;
 		}
 		
@@ -259,7 +259,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 		
 		if(inputName.size() == 0)
 		{
-			System.out.println("Trying to tag Plink fileset as '"+paramValue+"', but no ParameterName found with name '"+paramName+"'.");
+			//Trying to tag Plink fileset as '"+paramValue+"', but no ParameterName found with name '"+paramName+"'.
 			return false;
 		}
 
@@ -269,7 +269,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 		val.setName("Plink_"+paramValue);
 		this.getDatabase().add(val);
 	
-		System.out.println("Tagged '"+paramValue+"' in ParameterSet '"+paramSet+"' under ParameterName '"+paramName+"'.");
+		//Tagged '"+paramValue+"' in ParameterSet '"+paramSet+"' under ParameterName '"+paramName+"'.
 		
 		return true;
 	}

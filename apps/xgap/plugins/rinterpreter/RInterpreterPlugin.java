@@ -144,8 +144,6 @@ public class RInterpreterPlugin<E extends Entity> extends PluginModel<E>
 			e.printStackTrace();
 		}
 
-		System.out.println("output: " + output + ", length: " + output.length());
-
 		// UNIX?
 		// > 3+3
 		// [1] 6

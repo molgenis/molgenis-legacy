@@ -88,17 +88,14 @@ public class Archiver_XqtlTestNG
 	@Test
 	public void importExampleData() throws Exception
 	{
-		System.out.println("** importing example data **");
 		ArrayList<String> result = DataLoader.load(db, false);
 		Assert.assertTrue(result.get(result.size() - 2).equals("Complete success"));
 		checkIfExampleDataIsOK();
-		System.out.println("** example data OK **");
 	}
 
 	@Test(dependsOnMethods = "importExampleData")
 	public void exportArchive() throws Exception
 	{
-		System.out.println("** exporting to archive **");
 		File tmpDir = new File(System.getProperty("java.io.tmpdir") + File.separator + "dbexport_" + System.nanoTime());
 		tmpDir.mkdir();
 		if (!tmpDir.exists()) throw new Exception("Could not create tmp folder: " + tmpDir.getAbsolutePath());
@@ -111,48 +108,40 @@ public class Archiver_XqtlTestNG
 		new CsvExport().exportSpecial(tmpDir, db, specialCases, true);
 		archive = TarGz.tarDir(tmpDir);
 		Assert.assertTrue(archive.exists());
-		System.out.println("** tarred into: " + archive.getAbsolutePath() + " **");
 	}
 
 	@Test(dependsOnMethods = "exportArchive")
 	public void softResetDb() throws Exception
 	{
-		System.out.println("** soft reset of database (removing relational data but not files) **");
 		String report = ResetXgapDb.reset(db, false);
 		Assert.assertTrue(report.endsWith("SUCCESS"));
 		Assert.assertTrue(db.find(Marker.class).size() == 0);
 		Assert.assertTrue(db.find(Individual.class).size() == 0);
 		Assert.assertTrue(db.find(Data.class).size() == 0);
-		System.out.println("** soft reset of database OK **");
 	}
 
 	@Test(dependsOnMethods = "softResetDb")
 	public void importArchive() throws Exception
 	{
-		System.out.println("** importing archive **");
 		File extractDir = TarGz.tarExtract(archive);
 		ImportResult i = CsvImport.importAll(extractDir, db, new SimpleTuple(), true);
 		Assert.assertTrue(i.getErrorItem().equals("no error found"));
 		checkIfExampleDataIsOK();
-		System.out.println("** archive import went OK **");
 	}
 
 	@Test(dependsOnMethods = "importArchive")
 	public void hardResetDb() throws Exception
 	{
-		System.out.println("** hard reset of database (removing everything) **");
 		String report = ResetXgapDb.reset(db, true);
 		Assert.assertTrue(report.endsWith("SUCCESS"));
 		Assert.assertTrue(db.find(Marker.class).size() == 0);
 		Assert.assertTrue(db.find(Individual.class).size() == 0);
 		Assert.assertTrue(db.find(Data.class).size() == 0);
-		System.out.println("** hard reset of database OK **");
 	}
 
 	@Test(dependsOnMethods = "hardResetDb")
 	public void importArchiveAgain() throws Exception
 	{
-		System.out.println("** importing archive again **");
 		File extractDir = TarGz.tarExtract(archive);
 		ImportResult i = CsvImport.importAll(extractDir, db, new SimpleTuple(), true);
 		Assert.assertTrue(i.getErrorItem().equals("no error found"));
@@ -173,8 +162,6 @@ public class Archiver_XqtlTestNG
 		{
 			// FileNotFoundException was thrown as expected
 		}
-
-		System.out.println("** archive import went OK again, file now missing as expected **");
 	}
 
 	/**

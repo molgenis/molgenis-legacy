@@ -110,11 +110,9 @@ public class RProcess implements Runnable {
 			while ((line = bis.readLine()) != null) {
 				if (line.equals(requestEndMarker)) {
 					requestCompleted = true;
-//					System.out.println("requestCompleted = true on " + line);
 					break;
 				} else {
 					results.add(line);
-//					System.out.println("results.add(line): " + line);
 				}
 			}
 

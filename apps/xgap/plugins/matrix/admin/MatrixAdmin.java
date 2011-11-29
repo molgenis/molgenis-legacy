@@ -65,8 +65,6 @@ public class MatrixAdmin extends PluginModel
 		if (request.getString("__action") != null)
 		{
 
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
-
 			try
 			{
 

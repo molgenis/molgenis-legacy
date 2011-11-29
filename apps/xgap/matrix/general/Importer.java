@@ -46,27 +46,22 @@ public class Importer
 		}
 		if (request.getString("prependToRows") != null)
 		{
-			System.out.println("prependToRows");
 			pm.prependUnderscoreToRowNames();
 		}
 		if (request.getString("prependToCols") != null)
 		{
-			System.out.println("prependToCols");
 			pm.prependUnderscoreToColNames();
 		}
 		if (request.getString("escapeRows") != null)
 		{
-			System.out.println("escapeRows");
 			pm.escapeRowNames();
 		}
 		if (request.getString("escapeCols") != null)
 		{
-			System.out.println("escapeCols");
 			pm.escapeColNames();
 		}
 		if (request.getString("trimTextElements") != null)
 		{
-			System.out.println("trimTextElements");
 			pm.trimTextElements();
 		}
 

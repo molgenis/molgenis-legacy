@@ -67,8 +67,6 @@ public class MatrixManager extends PluginModel
 		if (request.getString("__action") != null)
 		{
 
-			System.out.println("*** handleRequest __action: " + request.getString("__action"));
-
 			try
 			{
 				if (this.model.isUploadMode())
@@ -125,7 +123,6 @@ public class MatrixManager extends PluginModel
 
 	private void createOverLibText(Database db) throws Exception
 	{
-		// System.out.println("*** createOverLibText");
 		List<String> rowNames = this.model.getBrowser().getModel().getSubMatrix().getRowNames();
 		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
 		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames, this.model.getSelectedData().getTargetType())));
@@ -180,8 +177,6 @@ public class MatrixManager extends PluginModel
 
 		for (String f : oldData.getFields())
 		{
-			// System.out.println("getting + " +f+", old = " + oldData.get(f) +
-			// ", new = " + newData.get(f));
 
 			Object oldAttr = oldData.get(f);
 			Object newAttr = newData.get(f);
@@ -189,27 +184,22 @@ public class MatrixManager extends PluginModel
 			if (oldAttr == null && newAttr == null)
 			{
 				// equal if both are null
-				// System.out.println("TWO NULLS - EQUAL!");
 			}
 			else if (oldAttr == null || newAttr == null)
 			{
 				// unequal if either is null
-				// System.out.println("ONE NULL: DOES NOT EQUAL!");
 				return true;
 			}
 			else if (!newAttr.equals(oldAttr))
 			{
 				// if both not full, perform 'equals'
-				// System.out.println("VALUE DIFFERENCE - DOES NOT EQUAL!");
 				return true;
 			}
 			else
 			{
-				// System.out.println("ALL CONDITIONS MET - EQUAL!");
 			}
 
 		}
-		// System.out.println("ALL EQUAL");
 		return false;
 	}
 
