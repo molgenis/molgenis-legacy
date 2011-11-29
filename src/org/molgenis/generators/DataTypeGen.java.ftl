@@ -385,6 +385,10 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public void set${JavaName(field)}(${JavaName(field.xrefEntity)} ${name(field)})
 	{
 		this.set${JavaName(field)}(${name(field)}.get${JavaName(field.xrefField)}());
+<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>		
+		this.set${JavaName(field)}_${JavaName(label)}(${name(field)}.get${JavaName(label)}());
+</#list></#if>
+		
 	}	
 	
 	public void set${JavaName(field)}_${JavaName(field.xrefField)}(Integer ${name(field)}_${name(field.xrefField)})
