@@ -560,11 +560,19 @@ public class MatrixViewer extends HtmlWidget
 
 	public void moveLeftEnd(Database db, Tuple t) throws MatrixException
 	{
+		if(this.matrix instanceof DatabaseMatrix)
+		{
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
 		this.matrix.setColOffset(0);
 	}
 
 	public void moveLeft(Database db, Tuple t) throws MatrixException
-	{			
+	{		
+		if(this.matrix instanceof DatabaseMatrix)
+		{
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
 		this.matrix
 				.setColOffset(matrix.getColOffset() - matrix.getColLimit() > 0 ? matrix
 						.getColOffset() - matrix.getColLimit()
@@ -573,6 +581,10 @@ public class MatrixViewer extends HtmlWidget
 
 	public void moveRight(Database db, Tuple t) throws MatrixException
 	{
+		if(this.matrix instanceof DatabaseMatrix)
+		{
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
 		this.matrix
 				.setColOffset(matrix.getColOffset() + matrix.getColLimit() < matrix
 						.getColCount() ? matrix.getColOffset()
@@ -581,6 +593,10 @@ public class MatrixViewer extends HtmlWidget
 
 	public void moveRightEnd(Database db, Tuple t) throws MatrixException
 	{
+		if(this.matrix instanceof DatabaseMatrix)
+		{
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
 		this.matrix
 				.setColOffset((matrix.getColCount() % matrix.getColLimit() == 0 ? new Double(
 						matrix.getColCount() / matrix.getColLimit()).intValue() - 1
@@ -591,11 +607,19 @@ public class MatrixViewer extends HtmlWidget
 
 	public void moveUpEnd(Database db, Tuple t) throws MatrixException
 	{
+		if(this.matrix instanceof DatabaseMatrix)
+		{
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
 		this.matrix.setRowOffset(0);
 	}
 
 	public void moveUp(Database db, Tuple t) throws MatrixException
 	{
+		if(this.matrix instanceof DatabaseMatrix)
+		{
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
 		this.matrix
 				.setRowOffset(matrix.getRowOffset() - matrix.getRowLimit() > 0 ? matrix
 						.getRowOffset() - matrix.getRowLimit()
@@ -604,6 +628,10 @@ public class MatrixViewer extends HtmlWidget
 
 	public void moveDown(Database db, Tuple t) throws MatrixException
 	{
+		if(this.matrix instanceof DatabaseMatrix)
+		{
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
 		this.matrix
 				.setRowOffset(matrix.getRowOffset() + matrix.getRowLimit() < matrix
 						.getRowCount() ? matrix.getRowOffset()
@@ -612,6 +640,10 @@ public class MatrixViewer extends HtmlWidget
 
 	public void moveDownEnd(Database db, Tuple t) throws MatrixException
 	{
+		if(this.matrix instanceof DatabaseMatrix)
+		{
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
 		this.matrix
 				.setRowOffset((matrix.getRowCount() % matrix.getRowLimit() == 0 ? new Double(
 						matrix.getRowCount() / matrix.getRowLimit()).intValue() - 1
@@ -636,16 +668,15 @@ public class MatrixViewer extends HtmlWidget
 			// try/catch for method calling
 			try
 			{
-				db.beginTx();
-				logger.debug("trying to use reflection to call "
-						+ this.getClass().getName() + "." + action);
+				//db.beginTx();
+				System.out.println("trying to use reflection to call ######## "+ this.getClass().getName() + "." + action);
 				Method m = this.getClass().getMethod(action, Database.class,
 						Tuple.class);
 				m.invoke(this, db, request);
 				logger.debug("call of " + this.getClass().getName() + "(name="
 						+ this.getName() + ")." + action + " completed");
-				if(db.inTx())
-                    db.commitTx();
+				//if(db.inTx())
+                  //  db.commitTx();
 			}
 			catch (NoSuchMethodException e1)
 			{
@@ -654,7 +685,7 @@ public class MatrixViewer extends HtmlWidget
 				logger.error("call of " + this.getClass().getName() + "(name="
 						+ this.getName() + ")." + action
 						+ "(db,tuple) failed: " + e1.getMessage());
-				db.rollbackTx();
+				//db.rollbackTx();
 			}
 			catch (Exception e)
 			{
@@ -664,7 +695,7 @@ public class MatrixViewer extends HtmlWidget
 				e.printStackTrace();
 				this.callingScreenController.getModel().setMessages(
 						new ScreenMessage(e.getCause().getMessage(), false));
-				db.rollbackTx();
+				//db.rollbackTx();
 			}
 		}
 		catch (Exception e)
