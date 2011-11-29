@@ -98,7 +98,7 @@ public class jqGrid extends HttpServlet {
             
             if (selectedMeasurementByProtocol.isEmpty()) {
                 //first time only, when data is loadeded!
-                Protocol protocolBezoek1 = em.find(Protocol.class, 50);
+                Protocol protocolBezoek1 = em.find(Protocol.class, 51);
                 selectedMeasurementByProtocol = new LinkedHashMap<Protocol, List<Measurement>>();
                 selectedMeasurementByProtocol.put(protocolBezoek1, (List<Measurement>) (List) protocolBezoek1.getFeatures());
             }
@@ -176,19 +176,24 @@ public class jqGrid extends HttpServlet {
             matrix.setSort(p, m, sord);
         }
         //put constraints in matrix (offset, limit, filters)
+
         matrix.setRowOffset(page);
-        matrix.setRowLimit(limit);
-        
+        matrix.setRowLimit(limit);        
         
         //{"groupOp":"AND","rules":[{"field":"GEWICHT","op":"eq","data":"136"},{"field":"LENGTE","op":"eq","data":"1212"}]}
         String filters = request.getParameter("filters");
         applyFiltersToMatrix(matrix, filters);
 
         try {
-
-
-            if (StringUtils.isNotEmpty(exportType) && exportType.equals("excel")) {
-                MatrixExporters.getAsExcel(db, matrix, response.getOutputStream());
+            if (StringUtils.isNotEmpty(exportType) && StringUtils.isNotEmpty(exportType)) {
+            	String exportSelection = request.getParameter("exportSelection");
+            	if(exportSelection.equals("All")) {
+            		matrix.setRowLimit(0);
+            		matrix.setRowLimit(matrix.getRowCount(db));
+            	} 
+            	if(exportType.equals("Excel")) {
+            		MatrixExporters.getAsExcel(db, matrix, response.getOutputStream());
+            	}
             } else {
                 renderJsonTable(matrix, response.getWriter(), db);
             }
@@ -198,8 +203,8 @@ public class jqGrid extends HttpServlet {
     }
 
     public void renderJsonTable(SliceablePhenoMatrixMV<ObservationTarget, Measurement> matrix, PrintWriter outWriter, Database db) throws Exception {
-        List<ObservedValue>[][] values = matrix.getValueLists();
-        List<? extends ObservationElement> rows = matrix.getRowHeaders();
+        List<ObservedValue>[][] values = matrix.getValueLists(db);
+        List<? extends ObservationElement> rows = matrix.getRowHeaders(db);
 
         StringBuilder out = new StringBuilder();
         
@@ -207,7 +212,7 @@ public class jqGrid extends HttpServlet {
         out.append("<rows>");
 
         int rowLimit = matrix.getRowLimit();
-        int rowCount = matrix.getRowCount();
+        int rowCount = matrix.getRowCount(db);
         int rowOffset = matrix.getRowOffset();
 
         //int currentPage = (int) Math.ceil((float) rowOffset / (float) rowLimit);

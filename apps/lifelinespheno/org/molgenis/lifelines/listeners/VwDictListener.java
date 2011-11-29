@@ -55,7 +55,7 @@
 //		}
 //		
 //		Measurement m = new Measurement();
-//		m.setName(tuple.getString("TABNAAM")+"_"+tuple.getString("VELD"));
+//		m.setName(tuple.getString("VELD"));
 //		m.setDataType( tuple.getString("VLDTYPE")  );
 //		m.setDescription(tuple.getString("OMSCHR"));
 //		

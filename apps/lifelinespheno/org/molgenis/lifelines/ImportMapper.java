@@ -43,7 +43,7 @@
 //	public static void main(String[] args) throws Exception
 //	{
 //		//path to directory with csv files
-//		String path = "/Users/robert/projects/lifelines/";
+//		String path = "/Users/jorislops/Desktop/LifelinesCSV7/";
 //		
 //		//target for output, either CsvWriter or Database
 //		Database db = DatabaseFactory.create();

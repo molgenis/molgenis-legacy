@@ -89,7 +89,7 @@
 //		// we iterate through all fields. Each field that is also a Measurement
 //		for (String field : tuple.getFields()) {
 //			//only include fields that are selected as measurement
-//			String mName = name +"_"+ field;
+//			String mName = field;
 //			if (measurements.containsKey(mName))
 //			{				
 //				ObservedValue v = new ObservedValue();

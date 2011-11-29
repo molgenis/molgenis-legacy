@@ -39,7 +39,7 @@
 //		
 //		String fieldName = tuple.getString("VELD");
 //		List<ObservableFeature> measurements = protocol.getFeatures();
-//		List<ObservableFeature> filterMeasurements = filter(having(on(Measurement.class).getName(), equalToIgnoringCase(tableName + "_" +fieldName)), measurements);
+//		List<ObservableFeature> filterMeasurements = filter(having(on(Measurement.class).getName(), equalToIgnoringCase(fieldName)), measurements);
 //		Measurement measurement = (Measurement) filterMeasurements.get(0);
 //		
 //		Category category = new Category();
