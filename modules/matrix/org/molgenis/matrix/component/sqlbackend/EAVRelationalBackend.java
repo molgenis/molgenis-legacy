@@ -90,6 +90,8 @@ public class EAVRelationalBackend implements Backend {
                 }
             }
 
+            List<Measurement> ms = (List<Measurement>)(List)entry.getKey().getFeatures();
+            ms.toString();
             if (!paIDExists) {
                 Measurement paIdMes = em.createQuery("SELECT m FROM Measurement m JOIN m.featuresCollection p WHERE m.name = :name and p = :protocol", Measurement.class).setParameter("name", joinColumn).setParameter("protocol", entry.getKey()).getSingleResult();
                 measurements.add(paIdMes);
@@ -130,7 +132,6 @@ public class EAVRelationalBackend implements Backend {
                 query.append(String.format(" ORDER BY %s_%s %S", 
                         sortProtocol.getName(), measurementProtocol.getName(), sortOrder));  
             }            
-            //;
         }        
         
         

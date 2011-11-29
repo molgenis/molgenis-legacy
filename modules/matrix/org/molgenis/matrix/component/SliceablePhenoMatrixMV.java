@@ -116,6 +116,20 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
             throw new MatrixException(e);
         }
     }
+    
+    @Override
+    public List<String> getColPropertyNames() {
+    	final List<String> result = new ArrayList<String>();
+    	try {
+			for(final C col : getColHeaders()) {
+				result.add(col.getName());
+			}
+		} catch (MatrixException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+    	return result;
+    }
 
     @Override
     public List<C> getColHeaders() throws MatrixException {
@@ -140,12 +154,11 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     
     @Override
     public Integer getColCount() throws MatrixException {
-        // fire count query on col headers
-        try {
-            return this.createCountQuery(getColClass(), db).count();
-        } catch (DatabaseException e) {
-            throw new MatrixException(e);
-        }
+    	int count = 0;
+    	for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
+    		count += entry.getValue().size();
+    	}
+    	return count;
     }
 
     @Override

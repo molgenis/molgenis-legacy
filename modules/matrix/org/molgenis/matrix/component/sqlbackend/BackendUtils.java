@@ -63,18 +63,26 @@ public class BackendUtils {
         return query.toString();
     }	
 	
-    public static String getCast(final String dataType) throws Exception {
+    public static String getCast(String dataType) throws Exception {
+    	int idx = dataType.indexOf("(");
+    	if(idx != -1) {
+    		dataType = dataType.substring(0, idx);
+    	}
+    	dataType = dataType.toLowerCase();
+    	
         if (dataType.equals("code")) {
             return "cast(%s as number)";
         } else if (dataType.equals("int")) {
             return "cast(%s as number)";
-        } else if (dataType.equals("datetime")) {
+        } else if (dataType.equals("datetime") || dataType.equals("datum")) {
             return "to_date(substr(value,1, 19), 'yyyy-mm-dd hh24:mi:ss') ";
         } else if (dataType.equals("decimal")) {
             return "cast(%s as number)";
-        } else if (dataType.equals("string")) {
+        } else if (dataType.equals("string") || dataType.equals("text")) {
             return "%s";
         } else if(dataType.equals("long")) {
+        	return "cast(%s as number)";
+        } else if(dataType.equals("number") || dataType.equals("nummer")) {
             return "cast(%s as number)";
         } else {
             throw new Exception("DataType not supported!" + dataType);

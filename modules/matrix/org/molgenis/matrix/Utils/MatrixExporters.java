@@ -16,6 +16,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
+import org.molgenis.pheno.ObservedValue;
 
 /**
  * Utility class that makes it possible to Export Matrix data
@@ -45,27 +46,22 @@ public class MatrixExporters {
         /* Write column headers */
         List<String> colNames = matrix.getColPropertyNames();
         for (int i = 0; i < colNames.size(); i++) {
-            Label l = new Label(i + 1, 0, colNames.get(i), headerFormat);
-            s.addCell(l);
-        }
-
-        /* Write row headers */
-        List<String> rowNames = matrix.getRowPropertyNames();
-        for (int i = 0; i < rowNames.size(); i++) {
-            Label l = new Label(0, i + 1, rowNames.get(i), headerFormat);
+            Label l = new Label(i, 0, colNames.get(i), headerFormat);
             s.addCell(l);
         }
 
         /* Write elements */
-        Object[][] elements = matrix.getValues();
-        for (int i = 0; i < matrix.getColCount(); i++) {
-            for (int j = 0; j < matrix.getRowCount(); j++) {
+        ObservedValue[][] elements = (ObservedValue[][]) matrix.getValues();
+        int colCount =  matrix.getColCount();
+        int rowCount = elements.length;
+        for (int i = 0; i < colCount; i++) {
+            for (int j = 0; j < rowCount; j++) {
                 if (elements[j][i] != null) {
-                    Label l = new Label(i + 1, j + 1,
-                            elements[j][i].toString(), cellFormat);
+                    Label l = new Label(i, j + 1,
+                            elements[j][i].getValue().toString(), cellFormat);
                     s.addCell(l);
                 } else {
-                    s.addCell(new Label(i + 1, j + 1, "", cellFormat));
+                    s.addCell(new Label(i, j + 1, "", cellFormat));
                 }
             }
         }
