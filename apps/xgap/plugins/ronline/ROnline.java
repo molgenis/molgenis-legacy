@@ -81,7 +81,7 @@ public class ROnline<E extends Entity> extends PluginModel<E> {
 				}else if(request.getString("__action").equals("executeMulti")){
 					String executeThis = request.getString("executeMulti");
 					List<String> executeMulti = new ArrayList<String>();
-					for(String s : executeThis.split("\n"))
+					for(String s : executeThis.split("\\r?\\n"))
 					{
 						executeMulti.add(s.trim());
 					}

@@ -121,8 +121,15 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 			String outputAdvanced = "source" + "\t" + KEGGGene.toStringMediumHeader("\t");
 
 			String input = request.getString("inputIdList");
+			
+			if(input == null)
+			{
+				//shoudl throw/display exception
+				return;
+			}
+			
 			input = input.replace(" ", "");
-			String[] ids = input.split("\n");
+			String[] ids = input.split("\\r?\\n");
 
 			for (String s : ids)
 			{
@@ -151,8 +158,15 @@ public class KeggToolsPlugin extends PluginModel<Entity>
 
 			String input = request.getString("inputIdList");
 			// System.out.println("input: '" + input + "'");
+			
+			if(input == null)
+			{
+				//shoudl throw/display exception
+				return;
+			}
+			
 			input = input.replace(" ", "");
-			String[] ids = input.split("\n");
+			String[] ids = input.split("\\r?\\n");
 
 			for (String s : ids)
 			{

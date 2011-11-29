@@ -100,7 +100,7 @@ public class DuplicatesPlugin extends PluginModel<Entity> {
 				if (rawInput != null) {
 					this.setInput(rawInput);
 
-					String[] split = rawInput.split("\n");
+					String[] split = rawInput.split("\\r?\\n");
 
 					output = "";
 

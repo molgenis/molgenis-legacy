@@ -1,69 +1,59 @@
 package plugins.qtlfinder;
 
 import java.util.List;
+import java.util.Map;
 
-import org.molgenis.util.Entity;
+import org.molgenis.data.Data;
 
 public class QtlFinderModel{
 
-	private String selectedName;
-	private Entity result;
-	private List<? extends Entity> disambiguate;
-	private Boolean noResultsFound;
-	private List<QTLInfo> qtlsFound;
+	private Map<String, Result> resultSet;
+	private List<Data> dataSets;
+	private String query;
+	private Double threshold;
+	private List<String> tickedDataSets;
 	
 	
-	public List<QTLInfo> getQtlsFound()
+	public List<String> getTickedDataSets()
 	{
-		return qtlsFound;
+		return tickedDataSets;
 	}
-
-	public void setQtlsFound(List<QTLInfo> qtlsFound)
+	public void setTickedDataSets(List<String> tickedDataSets)
 	{
-		this.qtlsFound = qtlsFound;
+		this.tickedDataSets = tickedDataSets;
 	}
-
-	public Boolean getNoResultsFound()
+	public Double getThreshold()
 	{
-		return noResultsFound;
+		return threshold;
 	}
-
-	public void setNoResultsFound(Boolean noResultsFound)
+	public void setThreshold(Double threshold)
 	{
-		this.noResultsFound = noResultsFound;
+		this.threshold = threshold;
 	}
-
-	public List<? extends Entity> getDisambiguate()
+	public Map<String, Result> getResultSet()
 	{
-		return disambiguate;
+		return resultSet;
 	}
-
-	public void setDisambiguate(List<? extends Entity> disambiguate)
+	public void setResultSet(Map<String, Result> resultSet)
 	{
-		this.disambiguate = disambiguate;
+		this.resultSet = resultSet;
 	}
-
-	public String getSelectedName()
+	public List<Data> getDataSets()
 	{
-		return selectedName;
+		return dataSets;
 	}
-
-	public void setSelectedName(String selectedName)
+	public void setDataSets(List<Data> dataSets)
 	{
-		this.selectedName = selectedName;
+		this.dataSets = dataSets;
 	}
-
-	public Entity getResult()
+	public String getQuery()
 	{
-		return result;
+		return query;
 	}
-
-	public void setResult(Entity result)
+	public void setQuery(String query)
 	{
-		this.result = result;
+		this.query = query;
 	}
-	
-	
 	
 
 }

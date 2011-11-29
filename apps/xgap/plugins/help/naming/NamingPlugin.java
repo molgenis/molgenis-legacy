@@ -72,7 +72,7 @@ public class NamingPlugin extends PluginModel<Entity> {
 				if (rawInput != null) {
 					this.setInput(rawInput);
 
-					String[] split = rawInput.split("\n");
+					String[] split = rawInput.split("\\r?\\n");
 
 					output = "";
 					for (String s : split) {

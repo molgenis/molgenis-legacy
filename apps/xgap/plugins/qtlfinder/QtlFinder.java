@@ -74,46 +74,98 @@ public class QtlFinder extends PluginModel
 			try
 			{
 
-				model.setResult(null);
-				model.setDisambiguate(null);
-				model.setNoResultsFound(null);
+			//	model.setResultSet(null);
+			//	model.setDisambiguate(null);
+			//	model.setNoResultsFound(null);
+				
+				//on all actions: set threshold, query and data filter
+				Double threshold = request.getDouble("threshold");
+				this.model.setThreshold(threshold);
+				
+				String query = request.getString("findme");
+				this.model.setQuery(query);
+				
+				QueryRule dataFilter = makeDataFilter(request); //also sets tickboxes
 				
 				if (action.equals("findQtl"))
 				{
-					String findMe = request.getString("findme");
-					this.model.setSelectedName(findMe);
+					//refresh results
+					this.model.setResultSet(new HashMap<String, Result>());
+
+					//works for unix and windows (http://stackoverflow.com/questions/454908/split-java-string-by-new-line)
+					String lines[] = query.split("\\r?\\n");
 					
-					List<Entity> result = findInGenesAndProbes(findMe, db);
-					
-					if(result.size() == 0)
+					List<String> uniqueInputs = new ArrayList<String>();
+
+					//checks
+					for(String findMe : lines)
 					{
-						model.setNoResultsFound(true);
-					}
-					else if(result.size() == 1)
-					{
-						model.setResult(result.get(0));
+						findMe = findMe.trim();
 						
-						List<QTLInfo> qtls = createQTLReportFor(result.get(0), db);
-						model.setQtlsFound(qtls);
+						if(findMe.equals(""))
+						{
+							throw new Exception("Empty input line is not allowed");
+						}
+						
+						if(!uniqueInputs.contains(findMe))
+						{
+							uniqueInputs.add(findMe);
+						}
+						else
+						{
+							throw new Exception("Non unique input string '"+findMe+"' not allowed");
+						}
 					}
-					else
+					
+					//for each input, create a QTL report or disambiguation view
+					for(String findMe : uniqueInputs)
 					{
-						model.setDisambiguate(result);
+						System.out.println("find : " + findMe);
+						
+						Result r = new Result();
+						
+						r.setSelectedName(findMe);
+						
+						List<Entity> result = findInGenesAndProbes(findMe, db);
+						
+						if(result.size() == 0)
+						{
+							r.setNoResultsFound(true);
+						}
+						else if(result.size() == 1)
+						{
+							r.setResult(result.get(0));
+							
+							List<QTLInfo> qtls = createQTLReportFor(result.get(0), threshold, dataFilter, db);
+							r.setQtlsFound(qtls);
+						}
+						else
+						{
+							r.setDisambiguate(result);
+						}
+						this.model.getResultSet().put(findMe, r);
 					}
+
 				}
 				else if(action.startsWith("disambig_"))
 				{	
-					String findMe = action.substring("disambig_".length());
+					//disambiguate a single input
+					String disambigt = action.substring("disambig_".length());
 					String type = request.getString("__type");
-					this.model.setSelectedName(findMe);
+					String key = request.getString("__key");
+					
+					Result r = this.model.getResultSet().get(key);
+					
+					r.setSelectedName(disambigt);
 					
 					Class<? extends Entity> entityClass = db.getClassForName(type);
-					List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservableFeature.NAME, Operator.EQUALS, findMe));
+					List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservableFeature.NAME, Operator.EQUALS, disambigt));
 
-					model.setResult(result.get(0));
+					r.setResult(result.get(0));
 					
-					List<QTLInfo> qtls = createQTLReportFor(result.get(0), db);
-					model.setQtlsFound(qtls);
+					List<QTLInfo> qtls = createQTLReportFor(result.get(0), threshold, dataFilter, db);
+					r.setQtlsFound(qtls);
+					r.setDisambiguate(null);
 				}
 
 				this.setMessages();
@@ -125,12 +177,43 @@ public class QtlFinder extends PluginModel
 			}
 		}
 	}
+	
+	private QueryRule makeDataFilter(Tuple request)
+	{
+		ArrayList<Integer> ids = new ArrayList<Integer>();
+		ArrayList<String> names = new ArrayList<String>();
+		for(Data d : this.model.getDataSets())
+		{
+			if(request.getString("dataset_filter_" + d.getId()) != null)
+			{
+				ids.add(d.getId());
+				names.add(d.getName());
+			}
+		}
+		if(ids.size() > 0)
+		{
+			this.model.setTickedDataSets(names);
+			return new QueryRule(Data.ID, Operator.IN, ids);
+		}else
+		{
+			return null;
+		}
+	}
 
-	private List<QTLInfo> createQTLReportFor(Entity entity, Database db) throws Exception
+	private List<QTLInfo> createQTLReportFor(Entity entity, Double threshold, QueryRule dataFilter, Database db) throws Exception
 	{
 		List<QTLInfo> result = new ArrayList<QTLInfo>();
 		
-		List<Data> allData = db.find(Data.class);
+		List<Data> allData;
+		if(dataFilter == null)
+		{
+			allData = db.find(Data.class);
+		}
+		else
+		{
+			allData = db.find(Data.class, dataFilter);
+		}
+		
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
 		
 		//List<MatrixLocation> matrixLocations = new ArrayList<MatrixLocation>();
@@ -169,6 +252,12 @@ public class QtlFinder extends PluginModel
 					Double[] Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
 					int maxIndex = Statistics.getIndexOfMax(Dvalues);
 					double peakDouble = Dvalues[maxIndex];
+					
+					if(threshold != null &&peakDouble < threshold.doubleValue())
+					{
+						continue;
+					}
+					
 					String peakMarker = colNames.get(maxIndex);
 					List<Double> DvaluesList = Arrays.asList(Dvalues);
 					
@@ -197,6 +286,12 @@ public class QtlFinder extends PluginModel
 					Double[] Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
 					int maxIndex = Statistics.getIndexOfMax(Dvalues);
 					double peakDouble = Dvalues[maxIndex];
+					
+					if(threshold != null && peakDouble < threshold.doubleValue())
+					{
+						continue;
+					}
+					
 					String peakMarker = rowNames.get(maxIndex);
 					List<Double> DvaluesList = Arrays.asList(Dvalues);
 					
@@ -286,9 +381,13 @@ public class QtlFinder extends PluginModel
 
 		try
 		{
+			List<Data> dataSets = db.find(Data.class);
+			this.model.setDataSets(dataSets);
 			
-			
-			
+			if(this.model.getResultSet() == null)
+			{
+				this.model.setResultSet(new HashMap<String, Result>());
+			}
 
 		}
 		catch (Exception e)
