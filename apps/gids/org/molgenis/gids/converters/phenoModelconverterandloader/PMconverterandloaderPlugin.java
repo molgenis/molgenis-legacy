@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.cxf.binding.corba.wsdl.Array;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -83,6 +84,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	private HashMap<String,String> hashStep2 = new HashMap<String, String>();
 	private HashMap<String,String> hashTargets = new HashMap<String, String>();
 	private List<String> sampleMeasList = new ArrayList<String>();
+	private List<String> indvMeasList = new ArrayList<String>();
+	List<String> measInDb = new ArrayList<String>();
+	private HashMap<String,String> hashChangeMeas = new HashMap<String, String>();
 	
 	public String[] getArrayChooseTable() {
 		return arrayChooseTable;
@@ -118,50 +122,42 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	{
 		logger.info("#######################");
 		String action = request.getString("__action");
-
-
+		
 		try {
-			if(db.query(Investigation.class).eq(Investigation.NAME, "System").count() == 0){
+			if(db.query(Investigation.class).eq(Investigation.NAME, "Shared").count() == 0){
 				Investigation i = new Investigation();
-				i.setName("System");
+				i.setName("Shared");
 				db.add(i);	
 			}
-		} catch (DatabaseException e1) {
-			e1.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		//goes to the load files into database screen
-		if(action.equals("step4")){
-			state = "skip";
-			status = "bla";
-		}
-		
-		if(action.equals("skip")){
-			state = "skip";
-			status = "bla";
-		}
-		if (action.equals("clean") ){		
-			//state = start;
-			status = "bla";
-		}
-		//goes back to the startscreen
-		if(action.equals("reset")){
-			state = "start";
-			status = "bla";
-		}
-		
-		
-		
-		/* 
-		 * Runs pipeline, data will be converted to 3 different files; individual.txt, measurement.txt and observedvalue.txt
-		 * if all the measurements already exist, then there will be no measurement.txt made.
-		 */
-		if(action.equals("goToStep2")){		
-			fileData = request.getFile("convertData");	
-			String fileName = fileData.toString();
-			try {
+			
+			//goes to the load files into database screen
+			if(action.equals("step4")){
+				state = "skip";
+				status = "bla";
+			}
+			
+			if(action.equals("skip")){
+				state = "skip";
+				status = "bla";
+			}
+			if (action.equals("clean") ){		
+				//state = start;
+				status = "bla";
+			}
+			//goes back to the startscreen
+			if(action.equals("reset")){
+				state = "start";
+				status = "bla";
+			}	
+			
+			/* 
+			 * Runs pipeline, data will be converted to 3 different files; individual.txt, measurement.txt and observedvalue.txt
+			 * if all the measurements already exist, then there will be no measurement.txt made.
+			 */
+			if(action.equals("goToStep2")){		
+				fileData = request.getFile("convertData");	
+				String fileName = fileData.toString();
+
 				BufferedReader buffy = new BufferedReader(new FileReader (fileName));
 				delimeter = request.getString("delimeter");
 				
@@ -179,25 +175,17 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 					delimeter = SEMICOLON;
 				}
 				for(int x =0; x<1; x++){
-					try {
-						String line = buffy.readLine();
-						arrayMeasurements = line.split(delimeter);
-						checkInvestigation(db, request);
-						state="inStep2";
-						System.out.println("########### " + state);
-						
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-			
+					String line = buffy.readLine();
+					arrayMeasurements = line.split(delimeter);
+					checkInvestigation(db, request);
+					state="inStep2";
+					System.out.println("########### " + state);
+				}			
+			}
+		} catch (Exception e) {
+			throw new DatabaseException(e);
 		}
-		
+
 		if(action.equals("goToStep3")){	
 			hashStep2.put("individual",request.getString("individual"));
 			hashStep2.put("sample",request.getString("sample"));
@@ -206,13 +194,31 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			//System.out.println("########### " + request.getString("target"));
 			for (String e : arrayMeasurements){
 				if(db.query(Measurement.class).eq(Measurement.NAME, e).count() == 0){
+					if(!e.equals(hashStep2.get("individual"))&& !e.equals(hashStep2.get("sample"))&&
+							!e.equals(hashStep2.get("father"))&& !e.equals(hashStep2.get("mother"))){
+						
+						listNewMeas.add(e);
+					}
 					//System.out.println(e);
-					listNewMeas.add(e);
+					
 				}
 			}
 			
+			List<Measurement> mList = db.find(Measurement.class);
+			System.out.println("mList.size()   "  +mList.size());
+			int teller=0;
+			for(Measurement s:mList){
+				System.out.println("measurements: " + s);
+				measInDb.add(mList.get(teller).getName());
+				teller++;
+			}
+			
+			
 			state= "inStep3";
 		}
+		int teller=0;
+		
+		
 		
 		if(action.equals("run pipeline")){	
 			try {
@@ -221,17 +227,30 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				sampleName = hashStep2.get("sample");
 				father = hashStep2.get("father");
 				mother = hashStep2.get("mother");
-				
+				sampleMeasList.add(individualName);
+				String knownMeas = "";
 				try{
 					if(listNewMeas.size()!=0){
 						for (String e : listNewMeas){
-							String bla = request.getString(e);
-							if(bla.equals("Samples")){
-								sampleMeasList.add(e);
+							
+							Boolean c = request.getBoolean("checker"+teller);
+							if(c){
+								knownMeas = request.getString("dropbox"+teller);
+								hashChangeMeas.put(e, knownMeas);
+							}else{
+								String bla = request.getString(e);
+								System.out.println(e);
+								if(bla.equals("Samples")){
+									sampleMeasList.add(e);
+								}
+								else{
+									indvMeasList.add(e);
+								}
+							teller++;
 							}
 						}
 					}
-					runGenerConver(fileData,invName,db,individualName, father, mother,sampleName,sampleMeasList);		    
+					runGenerConver(fileData,invName,db,individualName, father, mother,sampleName,sampleMeasList,indvMeasList,hashChangeMeas);		    
 					state = "pipeline";
 					
 					//get the server path
@@ -341,10 +360,11 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 	}
 	
-	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother, String sample,List<String> samplemeaslist){
+	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother, String sample, List<String> samplemeaslist,List<String> indvmeaslist,HashMap<String,String> hashChangeMeas){
 		try {
 			gc = new GidsConvertor();
-			gc.converter(file, invName, db, target,father,mother, sample, samplemeaslist);				
+			System.out.println("target: " + target);
+			gc.converter(file, invName, db, target,father,mother, sample, samplemeaslist,indvmeaslist,hashChangeMeas);				
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -417,6 +437,15 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	public String[] getArrayDelimeter() {
 		return arrayDelimeter;
 	}
+
+	public List<String> getMeasInDb() {
+		return measInDb;
+	}
+
+	public void setMeasInDb(List<String> measInDb) {
+		this.measInDb = measInDb;
+	}
+	
 	
  
 	

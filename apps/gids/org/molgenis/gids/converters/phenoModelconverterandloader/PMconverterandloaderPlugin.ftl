@@ -216,6 +216,7 @@
 					<td><b>Measurement</b></td>
 					<td><b>Individuals</b></td>
 					<td><b>Samples</b></td>
+					<td><b>Already in database?</b></td>
 					
 				</tr>
 					<#list screen.listNewMeas as target>
@@ -243,11 +244,24 @@
 				 			 target?matches('rs[0-9-]+') ||
 				 			 target?contains("hemolytic")> 
 					 		<td align="center"><input type="radio" name="${target}" value="Individuals"></td>
-					 		<td align="center"><input type="radio" name="${target}" value="Samples" checked></td>			 		
+					 		<td align="center"><input type="radio" name="${target}" value="Samples" checked></td>
+					 			 		
 				 		<#else>
-				 			<td align="center"><input type="radio" name="${target}" value="Individuals" checked></td>
-					 		<td align="center"><input type="radio" name="${target}" value="Samples" ></td>
+				 			<td align="center"><input type="radio" name="${target}" id="radiob${target_index}" value="Individuals" checked></td>
+					 		<td align="center"><input type="radio" name="${target}" id="radioc${target_index}" value="Samples" ></td>
 				 		</#if>
+				 		<div id="radio">
+					 	<td><input type="checkbox" name="checker${target_index}" id="checker${target_index}" value="check" onclick="controleer('${target_index}');"></td>
+					 	</div>	
+					 		<td>
+					 		<select disabled="true" name="dropbox${target_index}" id="dropbox${target_index}" style="margin-right:5px">
+							
+					 		<option value="select measurement">select measurement</option>	
+					 		<#list screen.measInDb as measInDb>
+								<option value="${measInDb}">${measInDb}</option>			
+							</#list>
+							</select></td>
+							
 					</tr>
 					</#list>
 				<#else>
@@ -257,9 +271,6 @@
 			</table>
 			<input type='submit' class='addbutton' value='next' onclick="__action.value='run pipeline'"/>
 		<br /><br />
-			
-			
-			
 			
 	</#if>
 	    <br />
@@ -271,6 +282,21 @@
 			<input type='submit' class='addbutton' value='return to mainscreen' onclick="__action.value='reset'"/>
 		</div>
 	</#if>
+	
+	<script>
+		function controleer(targetId)
+		{
+			//alert(targetId);
+			var element = document.getElementById('dropbox' +targetId);
+			var disabled = !element.disabled;
+			
+			element.disabled = disabled;			
+			document.getElementById('radiob' +targetId).disabled = !disabled;
+			document.getElementById('radioc' +targetId).disabled = !disabled;
+		}
+	</script>
+	
+	
 <#--end of your plugin-->	
 			</div>
 		</div>

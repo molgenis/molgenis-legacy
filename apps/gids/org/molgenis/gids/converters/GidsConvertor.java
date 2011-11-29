@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -27,19 +28,21 @@ public class GidsConvertor
 	final List<ObservedValue> valuesList  = new ArrayList<ObservedValue>();
 	final List<Investigation> investigationList = new ArrayList<Investigation>();
 	final List<GidsSample> samplesList = new ArrayList<GidsSample>();
+	final List<Measurement> indvList = new ArrayList<Measurement>();
 	private String invName;
+	private ArrayList<String> alIndividuals = new ArrayList<String>();
 	
 	public File tmpDir = null;
 	
 	Database db;
 
-	public void converter(File file, String invName, Database db, String individual, String father, String mother,String sample, List<String> samplemeaslist) throws Exception{
+	public void converter(File file, String invName, Database db, String individual, String father, String mother,String sample, List<String> samplemeaslist, List<String> indvmeaslist, HashMap<String,String> hashChangeMeas) throws Exception{
 		
 		this.invName = invName;
 		this.db = db;
 		makeInvestigation(invName);
 		populateIndividualAndSample(file,invName,individual, father, mother,sample);
-		populateMeasurement(file,invName,individual, father, mother, sample);
+		populateMeasurement(file,invName,individual, father, mother, sample, hashChangeMeas);
 		
 		populateValue(file,invName, individual, sample, samplemeaslist);
 		
@@ -144,7 +147,7 @@ public class GidsConvertor
 		});
 	}
 	
-	public void populateMeasurement(File file, String invName,final String target, final String father, final String mother, final String sample) throws Exception {
+	public void populateMeasurement(File file, String invName,final String target, final String father, final String mother, final String sample, HashMap<String,String> hashChangeMeas) throws Exception {
 		
 		measurementsList.clear();
 		totalMeasurementsList.clear();
@@ -155,15 +158,28 @@ public class GidsConvertor
 
 			//if (!header.equals(target) && !header.equals(mother) && !header.equals(father)&& !header.equals(sample)) {
 				if(db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0){
-					Measurement measurement = new Measurement();
-					measurement.setName(header);
-					measurement.setInvestigation_Name(invName);
-					measurementsList.add(measurement);
-					totalMeasurementsList.add(measurement);
+					
+					/*If the measurement already exist in the data, but with a wrong header (e.g. birthdate in inputfile--> date of birth in db)*/
+					if(hashChangeMeas.containsKey(header)){
+						
+						List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, hashChangeMeas.get(header)).find();
+						int invID = db.query(Investigation.class).eq(Investigation.NAME, "Shared" ).find().get(0).getId();
+						Measurement meas = measList.get(0);
+						meas.setInvestigation_Id(invID);
+						db.update(meas);
+						totalMeasurementsList.add(meas);
+					}
+					else{
+						Measurement measurement = new Measurement();
+						measurement.setName(header);
+						measurement.setInvestigation_Name(invName);
+						measurementsList.add(measurement);
+						totalMeasurementsList.add(measurement);
+					}
 
 				} else {			
 					List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, header).find();
-					int invID = db.query(Investigation.class).eq(Investigation.NAME, "System" ).find().get(0).getId();
+					int invID = db.query(Investigation.class).eq(Investigation.NAME, "Shared" ).find().get(0).getId();
 					Measurement meas = measList.get(0);
 					meas.setInvestigation_Id(invID);
 					db.update(meas);
@@ -189,6 +205,8 @@ public class GidsConvertor
 				//Change targetname into the targetname/target id column
 				String targetName = tuple.getString(individual);				
 				String sampleName = tuple.getString(sample);
+				
+				
 				if(sampleName!=null){
 					for (Measurement m : totalMeasurementsList) {
 						String featureName = m.getName();
@@ -198,11 +216,19 @@ public class GidsConvertor
 						newValue.setFeature_Name(featureName);
 						
 						if(samplemeaslist.contains(featureName)){
-							
 							newValue.setTarget_Name(sampleName);
+							
 						}
 						else{
-							newValue.setTarget_Name(targetName);
+							if(!alIndividuals.contains(featureName+targetName)){
+								alIndividuals.add(featureName+targetName);
+								newValue.setTarget_Name(targetName);
+							}
+							else{
+								break;
+							}
+							
+							
 	
 						}
 						newValue.setValue(value);
