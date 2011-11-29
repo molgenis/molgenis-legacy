@@ -7,12 +7,19 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.cxf.binding.corba.wsdl.Array;
 import org.molgenis.catalogue.OntologyBuilder;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.pheno.Measurement;
+import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -77,6 +84,47 @@ public class importOwlToPheno extends PluginModel<Entity>
 
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception	{
+		
+		List<String> topProtocols = new ArrayList<String>();
+		
+		List<String> bottomProtocols = new ArrayList<String>();
+		
+		List<String> middleProtocols = new ArrayList<String>();
+		
+		for(Protocol p : db.find(Protocol.class)){
+			
+			//System.out.println(p.getName());
+			
+			List<String> subNames = p.getSubprotocols_Name();
+			
+			if(!subNames.isEmpty()){
+				
+				if(!topProtocols.contains(p.getName()))
+					topProtocols.add(p.getName());
+				
+				for(String subProtocol : subNames){
+					
+					if(!middleProtocols.contains(subProtocol))
+						middleProtocols.add(subProtocol);
+				}
+				
+			}else{
+				
+				if(!bottomProtocols.contains(p.getName())){
+					bottomProtocols.add(p.getName());
+				}
+			}
+		}
+		
+		middleProtocols.removeAll(bottomProtocols);
+		
+		topProtocols.removeAll(middleProtocols);
+		
+		for(String p : topProtocols){
+			
+			System.out.println(p);
+		}
+		
 		if ("ImportOwlToPheno".equals(request.getAction())) {
 			try {
 					System.out.println("Starting importing owl");
@@ -221,7 +269,9 @@ public class importOwlToPheno extends PluginModel<Entity>
 	}
 
 	@Override
-	public void reload(Database db)	{
+	public void reload(Database db){
+		
+		
 	}
 	
 	@Override
