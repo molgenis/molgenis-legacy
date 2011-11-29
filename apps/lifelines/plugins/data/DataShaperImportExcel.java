@@ -32,7 +32,11 @@ import app.FillMetadata;
 import plugins.emptydb.emptyDatabase;
 
 
-
+/*
+ * This is an importer that is specific for that DataShaper Schema excel file.
+ * 
+ * 
+ */
 
 public class DataShaperImportExcel extends PluginModel<Entity>
 {
