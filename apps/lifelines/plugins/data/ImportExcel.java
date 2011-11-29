@@ -197,6 +197,16 @@ public class ImportExcel extends PluginModel<Entity>
 
 				group = new Protocol();
 				
+				group.setInvestigation(inv);
+				
+				theme.setInvestigation(inv);
+				
+				prot.setInvestigation(inv);
+				
+				code.setInvestigation(inv);
+				
+				mea.setInvestigation(inv);
+				
 				boolean WhetherDoubleCheck = false;
 				
 				for(int j = 0; j < column; j++){
@@ -350,13 +360,13 @@ public class ImportExcel extends PluginModel<Entity>
 								
 								if(linkCodeMeasurement.containsKey(measurementName)){
 									List<String> categories = linkCodeMeasurement.get(measurementName);
-									if(!categories.contains(codeString[k])){
-										categories.add(codeString[k]);
+									if(!categories.contains(codeString[k].replaceAll("'", ""))){
+										categories.add(codeString[k].replaceAll("'", ""));
 										linkCodeMeasurement.put(measurementName, categories);
 									}
 								}else{
 									List<String> categories = new ArrayList<String>();
-									categories.add(codeString[k]);
+									categories.add(codeString[k].replaceAll("'", ""));
 									linkCodeMeasurement.put(measurementName, categories);
 								}
 								if(!codes.contains(code))
@@ -418,6 +428,7 @@ public class ImportExcel extends PluginModel<Entity>
 							ob.setTarget_Name(mea.getName());
 							ob.setFeature_Name(headers[j].getName());
 							ob.setValue(cellValue);
+							ob.setInvestigation(inv);
 							if(!observedValues.contains(ob))
 								observedValues.add(ob);
 						}
@@ -494,7 +505,7 @@ public class ImportExcel extends PluginModel<Entity>
 					
 					if(categoryNames != null){
 						
-						List<Category> measList = db.find(Category.class, new QueryRule(Category.LABEL, Operator.IN, categoryNames));
+						List<Category> measList = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categoryNames));
 						
 						List<Integer> CategoryIdList = new ArrayList<Integer>();
 						
@@ -572,50 +583,6 @@ public class ImportExcel extends PluginModel<Entity>
 				}
 
 				db.add(groups);
-				
-				//the method is missing so have to rewrite
-//				for (Category c : addedCodes){
-//					List<String> featureNames = linkCodeMeasurement.get(c.getCode_String());
-//					List<Measurement> measList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
-//					List<Integer> meaIdList = new ArrayList<Integer>();
-//					for(Measurement m : measList){
-//						meaIdList.add(m.getId());
-//					}
-//					c.setFeature_Id(meaIdList);
-//				}
-//
-//				db.add(addedCodes);
-				
-				
-//				for(ObservedValue ob : observedValues){
-//					
-//					List<String> featureNames = new ArrayList<String>();
-//					
-//					featureNames.add(ob.getFeature_Name());
-//					
-//					List<String> targetNames = new ArrayList<String>();
-//					
-//					targetNames.add(ob.getTarget_Name());
-//					
-//					List<Measurement> features = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureNames));
-//					
-//					List<Measurement> targets = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, targetNames));
-//					
-//					System.out.println("The feature name is " + featureNames);
-//					
-//					System.out.println("The target name is " + targetNames);
-//					
-//					System.out.println(ob.getValue());
-//					
-//					System.out.println(ob);
-//					
-//					ob.setFeature_Id(features.get(0).getId());
-//					
-//					ob.setTarget_Id(targets.get(0).getId());
-//					
-//					db.add(ob);
-//					
-//				}
 				
 				db.add(observedValues);
 
