@@ -415,7 +415,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 						
 						if(!Target.equals("") && Target != null){
 							if(Target.equalsIgnoreCase("Participant")){
-								mea.setTargettypeAllowedForRelation_ClassName("Individual");
+								mea.setTargettypeAllowedForRelation_ClassName("org.molgenis.pheno.Individual");
 							}
 						}
 						
