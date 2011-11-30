@@ -218,6 +218,7 @@ public class LLDataImportExcel extends PluginModel<Entity>
 		for( Category cod : addedCategory){
 			if(db.query(Category.class).eq(Category.CODE_STRING, cod.getCode_String()).count() == 0){
 				if(!addedCodes.contains(cod)){
+					cod.setInvestigation(inv.getId());
 					addedCodes.add(cod);
 				}
 			}
@@ -245,7 +246,7 @@ public class LLDataImportExcel extends PluginModel<Entity>
 			}
 			
 			m.setCategories_Id(categoryId);
-			
+			m.setInvestigation(inv.getId());
 		}
 		for(Measurement m : addedMeasurement){
 			System.out.println(m.getName() + "--------" + m.getCategories_Id());
@@ -379,7 +380,7 @@ public class LLDataImportExcel extends PluginModel<Entity>
 
 			if(db.query(Protocol.class).eq(Protocol.NAME, proto.getName()).count() == 0){
 				if(!addedProtocols.contains(proto)){
-
+					proto.setInvestigation(inv.getId());
 					addedProtocols.add(proto);
 				}
 			}
@@ -390,6 +391,7 @@ public class LLDataImportExcel extends PluginModel<Entity>
 			if(db.query(Measurement.class).eq(Measurement.NAME, measure.getName()).count() == 0){
 
 				if(!addedMeasurements.contains(measure)){
+					measure.setInvestigation(inv.getId());
 					addedMeasurements.add(measure);
 				}
 			}
