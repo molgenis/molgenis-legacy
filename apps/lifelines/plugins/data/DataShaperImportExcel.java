@@ -3,6 +3,7 @@ package plugins.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.molgenis.core.Ontology;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
@@ -22,6 +24,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
@@ -465,10 +468,26 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 				if(!ontologies.contains(ontology))
 					ontologies.add(ontology);
 			}
-
+			
+			
 			for(Measurement measure : measurements){
 
-				if(db.query(Measurement.class).eq(Measurement.NAME, measure.getName()).count() == 0){
+				List<String> meaName = new ArrayList<String>();
+				
+				List<Integer> meaId = new ArrayList<Integer>();
+				
+				meaName.add(measure.getName());
+				
+				meaId.add(measure.getId());
+				
+				Query<Measurement> targetQuery = db.query(Measurement.class);
+				
+				targetQuery.addRules(new QueryRule(Measurement.NAME, Operator.IN, meaName));
+				
+				targetQuery.addRules(new QueryRule(Measurement.INVESTIGATION, Operator.IN, meaId));
+				
+				
+				if(targetQuery.find().size() == 0){
 
 					if(!addedMeasurements.contains(measure)){
 						//measure.setInvestigation_Name(inv.getName());
@@ -555,13 +574,13 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 					}
 				}
 				
-				//db.add(addedMeasurements);
+				db.add(addedMeasurements);
 				
-				for(Measurement m : addedMeasurements){
-					
-					System.out.println(m);
-					db.add(m);
-				}
+//				for(Measurement m : addedMeasurements){
+//					
+//					System.out.println(m);
+//					db.add(m);
+//				}
 				
 				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
 				for (Protocol p : addedProtocols) {
@@ -612,7 +631,14 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 
 				db.add(groups);
 				
-				db.add(observedValues);
+				//db.add(observedValues);
+				
+				for(ObservedValue val : observedValues){
+					
+					System.out.println(val);
+					db.add(val);
+					
+				}
 				
 				//db.add(inv);
 				
