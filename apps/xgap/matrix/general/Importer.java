@@ -12,6 +12,11 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.Tuple;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.framework.db.jpa.JpaDatabase;
+import java.util.HashMap;
+import filehandling.generic.PerformUpload;
+import matrix.implementations.binary.BinaryDataMatrixInstance;
 
 public class Importer
 {
@@ -20,6 +25,39 @@ public class Importer
 	{
 
 		File importFile = null;
+		
+		//special: upload existing xQTL binary matrix
+		if (request.getString("__action").equals("uploadBinary"))
+		{
+			importFile = request.getFile("uploadBinaryFile");
+			
+			//update this 'Data' with the info from the binary file
+			// but not name/investigationname
+			// additionally, set storage to Binary :)
+			BinaryDataMatrixInstance bmi = new BinaryDataMatrixInstance(importFile);
+			data.setFeatureType(bmi.getData().getFeatureType());
+			data.setTargetType(bmi.getData().getTargetType());
+			data.setValueType(bmi.getData().getValueType());
+			data.setStorage("Binary");
+			
+			db.update(data);
+			
+			// code from /molgenis_apps/apps/xgap/matrix/implementations/binary/BinaryDataMatrixWriter.java
+			// upload as a MolgenisFile, type 'BinaryDataMatrix'
+            HashMap<String, String> extraFields = new HashMap<String, String>();
+            if (db instanceof JDBCDatabase) {
+                extraFields.put("Data_" + Data.NAME, data.getName());
+            } else if (db instanceof JpaDatabase) {
+                extraFields.put("Data_" + Data.ID, data.getId().toString());
+                extraFields.put("Data_" + Data.NAME, data.getName());
+            } else {
+                throw new DatabaseException("Unsupported database mapper");
+            }
+			
+			PerformUpload.doUpload(db, true, data.getName()+".bin", "BinaryDataMatrix", importFile, extraFields, false);
+			
+			return;
+		}
 
 		if (request.getString("__action").equals("uploadTextArea"))
 		{

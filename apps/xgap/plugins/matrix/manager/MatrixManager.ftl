@@ -64,6 +64,10 @@
 targ1	val1	val2	val3
 targ2	val4	val5	val6</textarea>
 	<input id="matrixUploadTextArea" type="submit" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>
+<br>
+	<i>Advanced: import an existing xQTL binary file</i><br>
+	<input type="file" name="uploadBinaryFile"/>
+	<input id="matrixUploadBinary" type="submit" value="Upload" onclick="__action.value='uploadBinary';return true;"/><br>
 <#else>
 
 

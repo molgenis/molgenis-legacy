@@ -392,6 +392,11 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	 */
 	public boolean attemptStorageRelink(Data data, String storage, Database db) throws Exception
 	{
+		if(storage.equals("Database"))
+		{
+			return false;
+		}
+		
 		boolean relinked = false;
 		boolean mfPresent = false;
 		
