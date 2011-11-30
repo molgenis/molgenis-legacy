@@ -12,9 +12,11 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
+import org.hamcrest.core.IsInstanceOf;
 import org.molgenis.core.Ontology;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
@@ -22,8 +24,11 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
+import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
@@ -47,6 +52,10 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 	private String Status = "";
 
 	private static final long serialVersionUID = 6149846107377048848L;
+	
+	private ImporterModel importerModel = new ImporterModel();
+	
+	private String NAME = "name";
 
 	public DataShaperImportExcel(String name, ScreenController<?> parent)
 	{
@@ -130,10 +139,6 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 		List<Measurement> addedMeasurements = new ArrayList<Measurement>();
 
 		List<Protocol> addedProtocols = new ArrayList<Protocol>();
-
-		List<Category> addedCodes = new ArrayList<Category>();
-
-		List<ObservedValue> addedObservedValues = new ArrayList<ObservedValue>();
 
 		List<Measurement> measurements = new ArrayList<Measurement>();
 
@@ -343,7 +348,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 							for(int index = 0; index < codeString.length; index++){
 								codeString[index] = codeString[index].trim();
 							}
-							//System.out.println(sheet.getCell(j, i).getContents());
+
 							for(int k = 0; k < codeString.length; k++){
 
 								code = new Category();
@@ -361,22 +366,6 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 								if(codeString[k].equalsIgnoreCase(measurementName)){
 									code.setName(codeString[k].replaceAll("'", "") + "_code");
 								}
-								ProtocolApplication app = new ProtocolApplication();
-								
-								
-								//System.out.println(codeString[k]);
-								
-//								if(linkCodeMeasurement.containsKey(codeString[k])){
-//									List<String> featuresCode = linkCodeMeasurement.get(codeString[k]);
-//									if(!featuresCode.contains(measurementName)){
-//										featuresCode.add(measurementName);
-//										linkCodeMeasurement.put(codeString[k], featuresCode);
-//									}
-//								}else{
-//									List<String> featuresCode = new ArrayList<String>();
-//									featuresCode.add(measurementName);
-//									linkCodeMeasurement.put(codeString[k], featuresCode);
-//								}
 								
 								if(linkCodeMeasurement.containsKey(measurementName)){
 									List<String> categories = linkCodeMeasurement.get(measurementName);
@@ -448,7 +437,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 						if(!cellValue.equals("") && cellValue != null){
 							
 							ObservedValue ob = new ObservedValue();
-							//ob.setValue(cellValue);
+
 							ob.setTarget_Name(mea.getName());
 							ob.setFeature_Name(headers[j].getName());
 							ob.setValue(cellValue);
@@ -470,77 +459,13 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 			}
 			
 			
-			for(Measurement measure : measurements){
-
-				List<String> meaName = new ArrayList<String>();
-				
-				List<Integer> meaId = new ArrayList<Integer>();
-				
-				meaName.add(measure.getName());
-				
-				meaId.add(measure.getId());
-				
-				Query<Measurement> targetQuery = db.query(Measurement.class);
-				
-				targetQuery.addRules(new QueryRule(Measurement.NAME, Operator.IN, meaName));
-				
-				targetQuery.addRules(new QueryRule(Measurement.INVESTIGATION, Operator.IN, meaId));
-				
-				
-				if(targetQuery.find().size() == 0){
-
-					if(!addedMeasurements.contains(measure)){
-						//measure.setInvestigation_Name(inv.getName());
-						addedMeasurements.add(measure);
-					}
-				}
-
-			}
-
-			for( Protocol proto : protocols){
-
-				if(db.query(Protocol.class).eq(Protocol.NAME, proto.getName()).count() == 0){
-					if(!addedProtocols.contains(proto)){
-						//proto.setInvestigation_Name(inv.getName());
-						addedProtocols.add(proto);
-					}
-				}
-			}
-
-
-			for( Category cod : codes){
-				if(db.query(Category.class).eq(Category.LABEL, cod.getLabel()).count() == 0){
-					if(!addedCodes.contains(cod)){
-						//cod.setInvestigation_Id(inv.getId());
-						addedCodes.add(cod);
-					}
-				}
-			}
-
-
-
-			for (ObservedValue ov: observedValues) {
-				if (!observedValues.contains(ov)) {
-					ov.setInvestigation(inv.getId());
-					//addedObservedValues.add(ov);
-				}
-			}
-
-
 			try {
 
-				//System.out.println("Just before ontologies are insertd in db : >>>>" + ontologies);
-				//System.out.println("Just before addedObservedValues  are insertd in db : >>>>" + addedObservedValues);
-
-				db.add(ontologies);
-
-				db.add(ontologyTerms);
-
-				//db.add(addedObservedValues);
-
-				//link Unit(ontologyTerm) to measurements 
+				db.update(ontologies, DatabaseAction.ADD_IGNORE_EXISTING, Ontology.NAME);
 				
-				db.add(addedCodes);
+				db.update(ontologyTerms, DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+				
+				db.update(codes, DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
 				
 				for (Measurement m: addedMeasurements) {
 
@@ -574,13 +499,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 					}
 				}
 				
-				db.add(addedMeasurements);
-				
-//				for(Measurement m : addedMeasurements){
-//					
-//					System.out.println(m);
-//					db.add(m);
-//				}
+				db.update(measurements, DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 				
 				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
 				for (Protocol p : addedProtocols) {
@@ -597,8 +516,8 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 					}
 				}
 
-				db.add(addedProtocols);
-
+				db.update(protocols, DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.INVESTIGATION_NAME);
+				
 				for (Protocol p : themes) {
 
 					if(linkProtocolTheme.containsKey(p.getName())){
@@ -613,8 +532,8 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 					}
 				}
 
-				db.add(themes);
-
+				db.update(themes, DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.INVESTIGATION_NAME);
+				
 				for (Protocol p : groups) {
 
 					if(linkThemeGroup.containsKey(p.getName())){
@@ -628,19 +547,12 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 						p.setSubprotocols_Id(subProtocolsId);
 					}
 				}
-
-				db.add(groups);
 				
-				//db.add(observedValues);
 				
-				for(ObservedValue val : observedValues){
-					
-					System.out.println(val);
-					db.add(val);
-					
-				}
+				db.update(groups, DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.INVESTIGATION_NAME);
 				
-				//db.add(inv);
+				db.update(observedValues, DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.VALUE, ObservedValue.INVESTIGATION_NAME, 
+						ObservedValue.TARGET_NAME, ObservedValue.FEATURE_NAME);
 				
 			} catch (DatabaseException e) {
 				// TODO Auto-generated catch block
@@ -656,6 +568,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 		}
 
 	}
+	
 	@Override
 	public void reload(Database db)	{
 	}

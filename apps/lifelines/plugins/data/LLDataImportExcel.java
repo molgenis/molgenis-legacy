@@ -20,7 +20,9 @@ import org.apache.poi.hssf.record.formula.Ptg;
 import org.molgenis.core.Ontology;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
@@ -83,7 +85,11 @@ public class LLDataImportExcel extends PluginModel<Entity>
 				inv.setName("LifeLines");
 				db.add(inv);
 
+			}else{
+				
+				inv = db.find (Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, "LifeLines")).get(0);
 			}
+			
 			loadDataFromExcel(db, request, inv);
 
 		}
@@ -111,8 +117,6 @@ public class LLDataImportExcel extends PluginModel<Entity>
 
 			Workbook workbook = Workbook.getWorkbook(file); 
 
-			Sheet dictionary = workbook.getSheet(0); 
-			
 			Sheet dictionaryCategory = null;
 			
 			int numberOfSheet = workbook.getNumberOfSheets();
@@ -150,8 +154,6 @@ public class LLDataImportExcel extends PluginModel<Entity>
 		HashMap<String, Measurement> nameToMesurement = new HashMap<String, Measurement>();
 		
 		HashMap<Measurement, List<String>> measurementToCategory = new HashMap <Measurement, List<String>>();
-		
-		List<String> measurementNameList = new ArrayList<String>();
 		
 		List<Measurement> addedMeasurement = new ArrayList<Measurement>();
 		
@@ -192,6 +194,7 @@ public class LLDataImportExcel extends PluginModel<Entity>
 					codeString = excelSheet.getCell(j, i).getContents().replaceAll("'", "").toLowerCase();
 					category.setCode_String(codeString);
 					category.setDescription(codeString);
+					category.setInvestigation(inv);
 				}
 				
 			}
@@ -206,30 +209,11 @@ public class LLDataImportExcel extends PluginModel<Entity>
 				measurementToCategory.put(measurement, temp);
 			}
 			
-			//System.out.println(measurement.getName() + "--------------" + category.getLabel());
-			
 			if(!addedMeasurement.contains(measurement))
-				
 				addedMeasurement.add(measurement);
 		}
-		
-		List<Category> addedCodes = new ArrayList<Category>();
-		
-		for( Category cod : addedCategory){
-			if(db.query(Category.class).eq(Category.CODE_STRING, cod.getCode_String()).count() == 0){
-				if(!addedCodes.contains(cod)){
-					cod.setInvestigation(inv.getId());
-					addedCodes.add(cod);
-				}
-			}
-		}
-		
-		db.add(addedCodes);
-		
-//		for(Category code : addedCodes){
-//			System.out.println(code.getName());
-//			db.add(code);
-//		}
+			
+		db.update(addedCategory, DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
 		
 		for(Measurement m : addedMeasurement){
 
@@ -241,18 +225,13 @@ public class LLDataImportExcel extends PluginModel<Entity>
 			List<Category> categories = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categoryNames));
 			
 			for(Category c : categories){
-				if(!categoryId.contains(c.getId()))
 					categoryId.add(c.getId());
 			}
 			
 			m.setCategories_Id(categoryId);
-			m.setInvestigation(inv.getId());
+			m.setInvestigation(inv);
 		}
-		for(Measurement m : addedMeasurement){
-			System.out.println(m.getName() + "--------" + m.getCategories_Id());
-			db.update(m);
-		}
-		//db.update(addedMeasurement);
+		db.update(addedMeasurement);
 	}
 	
 	public void convertDictionary(Sheet excelSheet, Database db, Tuple request, Investigation inv) throws DatabaseException{
@@ -284,6 +263,10 @@ public class LLDataImportExcel extends PluginModel<Entity>
 			Protocol protocol = new Protocol();
 			
 			Measurement measurement = new Measurement();
+			
+			measurement.setInvestigation(inv);
+			
+			protocol.setInvestigation(inv);
 			
 			for(int j = 0; j < column; j++){
 				
@@ -376,28 +359,7 @@ public class LLDataImportExcel extends PluginModel<Entity>
 		
 		List<Measurement> addedMeasurements = new ArrayList<Measurement>();
 		
-		for( Protocol proto : protocolList){
-
-			if(db.query(Protocol.class).eq(Protocol.NAME, proto.getName()).count() == 0){
-				if(!addedProtocols.contains(proto)){
-					proto.setInvestigation(inv.getId());
-					addedProtocols.add(proto);
-				}
-			}
-		}
-		
-		for(Measurement measure : measurementList){
-
-			if(db.query(Measurement.class).eq(Measurement.NAME, measure.getName()).count() == 0){
-
-				if(!addedMeasurements.contains(measure)){
-					measure.setInvestigation(inv.getId());
-					addedMeasurements.add(measure);
-				}
-			}
-
-		}
-		db.add(measurementList);
+		db.update(measurementList, DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 		
 		for(Protocol p : addedProtocols){
 			
@@ -413,7 +375,9 @@ public class LLDataImportExcel extends PluginModel<Entity>
 			}
 		}
 		
-		db.add(protocolList);
+		//db.add(protocolList);
+		
+		db.update(protocolList, DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.INVESTIGATION_NAME);
 	}
 	
 	@Override
