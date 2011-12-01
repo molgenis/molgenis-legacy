@@ -1,15 +1,11 @@
 package org.molgenis.matrix.Utils;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Locale;
-
-import javax.servlet.ServletOutputStream;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -18,17 +14,11 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+
 import org.molgenis.framework.db.Database;
-import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
-import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.CsvWriter;
-import org.mortbay.io.BufferDateCache;
 
 /**
  * Utility class that makes it possible to Export Matrix data
