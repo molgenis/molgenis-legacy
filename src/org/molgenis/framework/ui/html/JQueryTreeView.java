@@ -56,11 +56,12 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"$(\"#browser\").treeview();});\n"
 		+ "$(\"a\").click(function(event) {"
 		+"	  event.preventDefault();"
+		+"	  alert($(this).text());"
 //		+"		alert('Tree element clicked!!');"
 		+"		$(\"#bottom\").html('This is the bottom of the screen and has been replaced with this content.');"
-		+"		$(\"#rightSide\").html('"; 
-		html+=	getMeasurementDetails();
-		html+="');"
+		+"		$(\"#rightSide\").html($(this).text());"//.html('"; 
+		//html+=	getMeasurementDetails();
+		//html+="');"				
 		+"	});"
 		+"</script>\n";
 	    
