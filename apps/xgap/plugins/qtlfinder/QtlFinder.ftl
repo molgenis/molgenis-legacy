@@ -41,9 +41,10 @@
 		<td>
 			<h1>QTL Finder</h1>
 			<ul>
-			<li>Enter (part of a) name or description of your gene and press 'find'.</li>
-			<li>You can enter one or more of such items.</li>
-			<li>(values of <b>gene</b> and <b>probe</b> annotations are matched)</li>
+			<li>Enter (part of a) name or description of your gene/probe and press 'find'.</li>
+			<li>You can enter one or more of such items. Each item must be on a new line.</li>
+			<li>Values of <a href="molgenis.do?__target=BasicAnnotations&select=Genes">gene</a> and <a href="molgenis.do?__target=AdvancedAnnotations&select=Probes">probe</a> annotations are matched to your query.</li>
+			<li>Datasets of <b>probe</b> or <b>gene</b> x <b>marker</b> are searched for QTL data.</li>
 			</ul>
 		</td>
 	</tr>
@@ -79,6 +80,66 @@
 </table>
 <br>
 
+<#if model.resultSet?size gt 0>
+	<h2>&nbsp;Result overview</h2><br>
+</#if>
+
+<#list model.resultSet?keys as key>
+
+	<#assign result = model.resultSet[key]>
+	
+	<div style="float: left; padding: 5px; border: 1px solid #999; width: 200px; height: 250px; text-align:center; ">
+	
+	<#if result.noResultsFound??>
+		No results found for "${result.selectedName}".
+	</#if>
+	
+	<#if result.disambiguate??>
+		<#if result.disambiguate?size gt 1000>
+			More than 1000 matches for "${result.selectedName}".<br>
+			Please be more specific.
+		<#else>
+			Multiple matches for "${result.selectedName}".<br><br>
+			Please disambiguate below.<br><br>
+			<a href="#${result.selectedName}"><img src="generated-res/img/filter.png" /></a>
+		</#if>
+	</#if>
+	
+	<#if result.result??>
+		<#list result.qtlsFound as qtl>
+			${result.result.__type} <a href="molgenis.do?__target=${result.result.__type}s&__action=filter_set&__filter_attribute=${result.result.__type}_name&__filter_operator=EQUALS&__filter_value=${result.result.name}">${result.result.name}</a>
+			<#if result.selectedName != result.result.name>matches "${result.selectedName}"</#if><br><b>Max. LOD: ${qtl.peakValue}</b><br><br>
+			<#if qtl.plot??>
+				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
+				<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+					<img src="tmpfile/${qtl.plot}" width="160" height="120">
+				</a><br>
+			</#if>
+			<a href="#${result.selectedName}">View QTL details <img src="generated-res/img/filter.png" /></a>
+			
+			<#if qtl_has_next>
+			</div><div style="float: left; padding: 5px; border: 1px solid #999; width: 200px; height: 250px; text-align:center; ">
+			</#if>
+		</#list>
+		
+		<#if result.qtlsFound?size == 0>
+		No QTL information for ${result.result.name}.<br><br>
+		No data or below threshold.<br><br>
+		<img src="generated-res/img/cancel.png" />
+		</#if>
+	</#if>
+	
+	
+
+	</div>
+</#list>
+
+<br style="clear: both;">
+
+<#if model.resultSet?size gt 0>
+	<br><br><br><h2>&nbsp;Detailed overview</h2>
+</#if>
+
 <#list model.resultSet?keys as key>
 	<#assign result = model.resultSet[key]>
 	<#if result.noResultsFound??>
@@ -98,7 +159,7 @@
 				<#if result.disambiguate?size gt 1000>
 					<h2>More than 1000 matches for "${result.selectedName}". Please be more specific.</h2>
 				<#else>
-				<h2>Multiple matches for "${result.selectedName}". Please choose one:</h2>
+				<h2 id="${result.selectedName}">Multiple matches for "${result.selectedName}". Please choose one:</h2>
 				<div style="overflow: auto; max-height: 400px;">
 				<ul>
 					<#list result.disambiguate as d>
@@ -121,7 +182,7 @@
 		<table cellpadding="30">
 			<tr>
 				<td>
-					<h1>
+					<h1 id="${result.selectedName}">
 					${result.result.__type} ${result.result.name}
 					<#if result.selectedName != result.result.name>matches "${result.selectedName}"</#if>
 					</h1>
