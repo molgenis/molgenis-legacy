@@ -1,3 +1,5 @@
+// DEPRECATED! We will use a non-JPA version instead.
+
 //package org.molgenis.xgap.other.xqtlworkbench_lifelines;
 //
 //import java.io.File;
