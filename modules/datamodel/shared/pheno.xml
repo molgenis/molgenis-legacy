@@ -12,11 +12,19 @@
 				dependent (e.g. to only show particular subqueries of ontologies).
 			</description>
 		</entity>
+		<entity name="AlternateId" extends="OntologyTerm">
+			<description>
+				An external identifier for an annotation. For example: name='R13H8.1', ontology='ensembl' or name='WBgene00000912', ontology='wormbase'.
+			</description>
+		</entity>
 		<entity name="ObservationElement" implements="InvestigationElement"
 			xref_label="name">
 			<description> Elements that are the targets or features we are
 				looking at of our research.
 			</description>
+			<field name="AlternateId" nillable="true" type="mref"
+				xref_entity="AlternateId" label="Alternative identifiers"
+				description="Alternative identifiers or symbols that this element is known by." />
 		</entity>
 		<entity name="ObservationTarget" extends="ObservationElement">
 			<description> An ObservationTarget class defines the subjects of
