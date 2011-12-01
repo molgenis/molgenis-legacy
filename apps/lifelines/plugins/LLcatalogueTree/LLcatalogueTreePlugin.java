@@ -37,7 +37,10 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity>
 
 	}
 	
-	
+	/*
+	 * This method adds the subprotocols to the protocols in the tree view.
+	 * Besides, it adds the measurements to the bottom leaves of protocols. 
+	 */
 	public void recursiveAddingTree(List<String> parentNode, JQueryTreeViewElement parentTree, Database db){
 		
 		for(String protocolName : parentNode){
