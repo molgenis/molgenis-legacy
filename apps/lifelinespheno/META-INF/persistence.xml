@@ -35,7 +35,6 @@
             <class>org.molgenis.auth.Institute</class>
             <class>org.molgenis.auth.MolgenisUser</class>
             <class>org.molgenis.auth.MolgenisPermission</class>
-            <class>org.molgenis.lifelinespheno.LLTarget</class>
             <class>org.molgenis.organization.Investigation_Contacts</class>
             <class>org.molgenis.pheno.Measurement_Categories</class>
             <class>org.molgenis.pheno.Panel_Individuals</class>
@@ -44,9 +43,7 @@
             <class>org.molgenis.protocol.Protocol_Subprotocols</class>
             <class>org.molgenis.protocol.ProtocolApplication_Performer</class>
 	    <properties>
-	    
-		  
-   	      <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@//localhost:2000/llpacc"/>
+   	      <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@//localhost:2000/llptest"/>
 	      <property name="javax.persistence.jdbc.password" value="molTagtGen24Ora"/>
 	      <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.driver.OracleDriver"/>
 	      <property name="javax.persistence.jdbc.user" value="molgenis"/>
@@ -119,7 +116,6 @@
             <class>org.molgenis.auth.Institute</class>
             <class>org.molgenis.auth.MolgenisUser</class>
             <class>org.molgenis.auth.MolgenisPermission</class>
-            <class>org.molgenis.lifelinespheno.LLTarget</class>
             <class>org.molgenis.organization.Investigation_Contacts</class>
             <class>org.molgenis.pheno.Measurement_Categories</class>
             <class>org.molgenis.pheno.Panel_Individuals</class>
@@ -145,7 +141,7 @@
           With create-drop, the database schema will be dropped when the SessionFactory is closed explicitly.
 		e.g. validate | update | create | create-drop
            -->
-            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>	    
+            <property name="hibernate.hbm2ddl.auto" value="none"/>	    
 	    
 	    </properties>
 	</persistence-unit>		

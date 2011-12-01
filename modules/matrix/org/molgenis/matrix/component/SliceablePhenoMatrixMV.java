@@ -54,7 +54,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     private final Backend backend;
     
     
-    
+    private transient Database db;
     
     private Protocol sortProtocol;
     private Measurement sortMeasurement;
@@ -63,7 +63,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     public SliceablePhenoMatrixMV(Database database, 
             Class<R> rowClass, Class<C> colClass, 
             Investigation investigation, LinkedHashMap<Protocol, List<Measurement>> mesurementByProtocol) {
-        //this.database = database;
+        this.db = database;
         this.rowClass = rowClass;
         this.colClass = colClass;
         this.valueClass = ObservedValue.class;
@@ -74,8 +74,6 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
         //this.backend = new EAVViewBackend(this, "TEST001_");
         this.backend = new EAVRelationalBackend(this);
     }
-    
-    Database db;
 	
 	public void setDatabase(Database db)
 	{

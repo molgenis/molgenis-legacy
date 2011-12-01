@@ -17,7 +17,7 @@ public class XWBLLGenerate
 //                    new Molgenis("apps/xgap/org/molgenis/xgap/other/xqtlworkbench_lifelines/xwbll.properties",  
 //                            JDBCDatabaseGen.class,                            
 //                            DatabaseFactoryGen.class, DatabaseFactoryGen.class, TestCsvGen.class, TestDataSetGen.class, TestDatabaseGen.class).generate();
-                    new Molgenis("apps/xgap/org/molgenis/xgap/other/xqtlworkbench_lifelines/xwbll.properties").generate();
+                    new Molgenis("apps/xgap/org/molgenis/xgap/other/xqtlworkbench_lifelines/xwbll_jpa.properties").generate();
 			
 		} catch(Exception e)
 		{

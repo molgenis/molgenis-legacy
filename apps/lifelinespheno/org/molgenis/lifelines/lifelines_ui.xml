@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <molgenis name="lifelines.ui" label="LifeLines Research Platform">
 	<plugin name="Matrix" type="org.molgenis.sandbox.ui.MatrixTestsMV" />
-<!--
 	<plugin name="MolgenisHeader" type="plugins.header.MolgenisHeader" />
 	<menu name="TopMenu" position="left">
 		<plugin name="WelcomeScreen" type="plugin.welcome.WelcomeScreenPlugin"
@@ -50,5 +49,4 @@
 				type="plugins.LuceneIndex.OntoCatIndexPlugin" />
 		</menu>
 	</menu>
--->
 </molgenis>

@@ -23,7 +23,7 @@ var colModel;
 
 function loadColNames(selectedCols) {    
     var cols = $.toJSON( selectedCols );
-    $.ajax({url : url + "?op=getColumnsNames&tableName=TEST001_LL_BEZOEK1&schema=molgenis",
+    $.ajax({url : url + "?op=getColumnNames",
         async: false,
         data: {selectedCols : cols},
         dataType: "json",
@@ -36,12 +36,11 @@ function loadColNames(selectedCols) {
             alert(thrownError);
         }   
     });
-    
 }
 
 function loadColModel(selectedCols) {
     var cols = $.toJSON( selectedCols );
-    $.ajax({url : url + "?op=getColModel&tableName=TEST001_LL_BEZOEK1&schema=molgenis",
+    $.ajax({url : url + "?op=getColModel",
         async: false,
         data: {selectedCols : cols},        
         dataType: "json",
@@ -79,7 +78,7 @@ function createGrid(selectedCols) {
                     {multipleSearch:true}
                     );		        
                         
-                        
+//not use, only uesed in passed to try datepicker                        
 jQuery("#grps").jqGrid({
    	url:'server.php?q=4',
 	datatype: "json",
@@ -123,7 +122,7 @@ $(document).ready(function(){
     var tree = $("#tree").jstree({
             "json_data" : {
                     "ajax" : {
-                            "url" : url + "?op=jsTreeJson&schema=molgenis"
+                            "url" : url + "?op=jsTreeJson"
                             }
                     }
             ,		 

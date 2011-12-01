@@ -1,4 +1,4 @@
-package org.molgenis.lifelines.listeners;
+package org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners;
 
 import java.util.List;
 

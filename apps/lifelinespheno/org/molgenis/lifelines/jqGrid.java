@@ -110,7 +110,7 @@ public class jqGrid extends HttpServlet {
             if (StringUtils.isNotEmpty(operation) && operation.equals("getColModel")) {
                 getColModel(response.getWriter(), selectedMeasurementByProtocol);
                 return;
-            } else if (StringUtils.isNotEmpty(operation) && operation.equals("getColumnsNames")) {
+            } else if (StringUtils.isNotEmpty(operation) && operation.equals("getColumnNames")) {
                 getColumnNames(response.getWriter(), selectedMeasurementByProtocol);
                 return;
             }
@@ -193,6 +193,8 @@ public class jqGrid extends HttpServlet {
             	} 
             	if(exportType.equals("Excel")) {
             		MatrixExporters.getAsExcel(db, matrix, response.getOutputStream());
+            	} else if(exportType.equals("Csv")) {
+            		MatrixExporters.getAsCSV(db, matrix, response.getOutputStream());            		
             	}
             } else {
                 renderJsonTable(matrix, response.getWriter(), db);

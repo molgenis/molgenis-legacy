@@ -1,4 +1,4 @@
-package org.molgenis.lifelines;
+package org.molgenis.xgap.other.xqtlworkbench_lifelines;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,18 +12,18 @@ import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManager;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.lifelines.ThreadReaders.CSVFileSpliter;
-import org.molgenis.lifelines.listeners.LifeLinesStandardListener;
-import org.molgenis.lifelines.listeners.VWCategoryListener;
-import org.molgenis.lifelines.listeners.VwDictListener;
-import org.molgenis.lifelines.loaders.EAVToView;
-import org.molgenis.lifelines.loaders.LoaderUtils;
-import org.molgenis.lifelines.loaders.MyMonitorThread;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
+import org.molgenis.xgap.other.xqtlworkbench_lifelines.ThreadReaders.CSVFileSpliter;
+import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.LifeLinesStandardListener;
+import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VWCategoryListener;
+import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VwDictListener;
+import org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders.EAVToView;
+import org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders.LoaderUtils;
+import org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders.MyMonitorThread;
 
 import app.DatabaseFactory;
 

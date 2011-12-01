@@ -1,33 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 	<!-- this name is used to name the war file -->
-	<property name="app_name" value="lifelinespheno" />
+	<property name="app_name" value="xgap" />
 
 	<!-- this holds all the settings for the generator -->
-	<property name="app_properties" value="apps/${app_name}/org/molgenis/lifelines/Lifelines.molgenis.properties"/>
+	<property name="app_properties" value="apps/xgap/org/molgenis/xgap/other/xqtlworkbench_lifelines/xwbll_jpa.properties"/>
 
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
-		<pathelement location="apps/${app_name}" />
-		<pathelement location="apps/sandbox" />
+		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />
-		<pathelement location="modules/matrix" />	
-		<pathelement location="modules/decorators/auth" />
-		<pathelement location="modules/decorators/core" />
-		<pathelement location="modules/decorators/pheno" />
-		<!--
-		<pathelement location="modules/auth" />
+		<pathelement location="modules/import" />
+		<pathelement location="modules/webserver" />
+		<pathelement location="modules/settings" />
 		<pathelement location="modules/pheno" />
-		<pathelement location="modules/search" />	
-		<pathelement location="modules/mutation" />	
-		<pathelement location="modules/news" />	
-		<pathelement location="modules/settings" />	
-		<pathelement location="modules/file" />	
+		<pathelement location="modules/search" />
+		<pathelement location="modules/matrix" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
-		-->
+		<pathelement location="modules/decorators/data" />
+		<pathelement location="publicdata" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->

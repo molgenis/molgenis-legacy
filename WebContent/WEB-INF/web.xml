@@ -31,10 +31,20 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<servlet>
+		<servlet-name>jqGrid</servlet-name>
+		<servlet-class>org.molgenis.lifelines.jqGrid</servlet-class>
+	</servlet>	
+	
 	<servlet-mapping>
 		<servlet-name>MolgenisServlet</servlet-name>
 		<url-pattern>*.do</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>jqGrid</servlet-name>
+		<url-pattern>/jqGrid</url-pattern>
+	</servlet-mapping>	
+		
 	<servlet-mapping>
 		<servlet-name>MolgenisServlet</servlet-name>
 		<url-pattern>/download/*</url-pattern>
