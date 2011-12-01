@@ -12,9 +12,20 @@
 		<extension>ico</extension>
 		<mime-type>image/x-icon</mime-type>
 	</mime-mapping>
+	
+	<!-- FrontController mapping for Tomcat -->
+	<!--servlet>
+		<servlet-name>FrontController</servlet-name>
+		<servlet-class>app.servlet.FrontController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>FrontController</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping-->
+	
 
 	<!-- ############### -->
-	<!-- MOLGENIS servlets -->
+	<!-- DEPRECATED: MOLGENIS servlets -->
 	<!-- ############### -->
 	<servlet>
 		<servlet-name>MolgenisServlet</servlet-name>
