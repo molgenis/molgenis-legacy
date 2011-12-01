@@ -502,7 +502,7 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 				db.update(measurements, DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 				
 				// TEMPORARY FIX FOR MREF RESOLVE FOREIGN KEYS BUG
-				for (Protocol p : addedProtocols) {
+				for (Protocol p : protocols) {
 
 					if(linkProtocolMeasurement.containsKey(p.getName())){
 						List<String> featureNames = linkProtocolMeasurement.get(p.getName());
