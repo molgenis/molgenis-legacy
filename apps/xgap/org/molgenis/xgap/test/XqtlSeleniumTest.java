@@ -335,10 +335,10 @@ public class XqtlSeleniumTest
 
 			// assert content of enum fields
 			Assert.assertEquals(
-					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
+					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"),
 					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
 			Assert.assertEquals(
-					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"),
+					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.10.1"),
 					"Metabolite\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
 
 			// change Individual to Gene and save
@@ -351,7 +351,7 @@ public class XqtlSeleniumTest
 			// expand compact view again and check value has changed
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
-					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
+					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"),
 					"Gene\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
 
 			// change back to Individual and save
@@ -363,7 +363,7 @@ public class XqtlSeleniumTest
 			// expand compact view again and check value is back to normal again
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
-					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
+					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"),
 					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
 
 		}
