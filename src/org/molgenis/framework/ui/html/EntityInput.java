@@ -22,7 +22,7 @@ public abstract class EntityInput<E> extends HtmlInput<E>
 
 	protected String error = null;
 
-	protected boolean includeAddButton = true;
+	protected boolean includeAddButton = false;
 
 	public EntityInput(String name, Class<? extends Entity> xrefEntityClass,
 			E value)
