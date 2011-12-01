@@ -36,6 +36,7 @@ import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.json.JSONObject;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -1637,34 +1638,51 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 			// transform in JSON (JavaScript Object Notation
 
-			String json = "{";
-			for (int i = 0; i < result.size(); i++)
+//			String json = "{";
+//			for (int i = 0; i < result.size(); i++)
+//			{
+//				 logger.debug("using: " + result.get(i));
+//				if (i > 0)
+//				{
+//					json += ",";
+//
+//				}
+//
+//				// write the xref key as set in xref_field
+//				json += "\"" + result.get(i).get(xref_field).toString()
+//						+ "\":\"";
+//
+//				// write the label(s) as set in xref_label
+//				for (int j = 0; j < xref_labels.size(); j++)
+//				{
+//					// hack
+//					if (j > 0) json += "|";
+//					json += StringEscapeUtils.escapeJavaScript(result.get(i)
+//							.get(xref_labels.get(j)).toString());
+//				}
+//				json += "\"";
+//				// logger.debug(result.get(i).get(xref_field) + ":\""
+//				// + result.get(i).get(xref_label) + "\"");
+//			}
+//			json += "}";
+//			logger.debug(json);
+
+			JSONObject jsonObject = new JSONObject();
+
+	        for (int i = 0; i < result.size(); i++)
 			{
-				// logger.debug("using: " + result.get(i));
-				if (i > 0)
-				{
-					json += ",";
-
-				}
-
-				// write the xref key as set in xref_field
-				json += "\"" + result.get(i).get(xref_field).toString()
-						+ "\":\"";
-
-				// write the label(s) as set in xref_label
-				for (int j = 0; j < xref_labels.size(); j++)
+	        	String key   = result.get(i).get(xref_field).toString();
+	        	String value = "";
+	        	for (int j = 0; j < xref_labels.size(); j++)
 				{
 					// hack
-					if (j > 0) json += "|";
-					json += StringEscapeUtils.escapeJavaScript(result.get(i)
-							.get(xref_labels.get(j)).toString());
+					if (j > 0) value += "|";
+					value += result.get(i).get(xref_labels.get(j)).toString();
 				}
-				json += "\"";
-				// logger.debug(result.get(i).get(xref_field) + ":\""
-				// + result.get(i).get(xref_label) + "\"");
+	        	jsonObject.put(key, value);
 			}
-			json += "}";
-
+	        
+	        String json = jsonObject.toString();
 			logger.debug(json);
 
 			// write out
