@@ -18,7 +18,7 @@ public class JQueryTreeViewElementMeasurement extends JQueryTreeViewElement{
 	public JQueryTreeViewElementMeasurement(Measurement measurement, JQueryTreeViewElementMeasurement parent, String url){
 		super(measurement.getName(), parent);
 		//must set measurementId, __action, __target
-		this.setLabel("<a href=\"#\" onclick=\"jQuery('__action').attr('value','selectNode'); jQuery('measurementId').attr('value','"+measurement.getId()+"'); jQuery('form').submit();\" >"+ name +"</a>");
+		this.setLabel("<a href=\"#\" onclick=\"jQuery('#test').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); jQuery('form').submit();\" >"+ name +"</a>");
 		
 		setMeasurementObject(measurement);
 	}

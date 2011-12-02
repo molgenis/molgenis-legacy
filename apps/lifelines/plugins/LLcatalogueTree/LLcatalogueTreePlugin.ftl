@@ -4,9 +4,9 @@
 	<!--needed in every form: to redirect the request to the right screen-->
 	<input type="hidden" name="__target" value="${screen.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__action">
+	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
-	<input type="hidden" name="measurementId">
+	<input type="hidden" name="measurementId" id="measureId" value="">
 	
 <!-- this shows a title and border -->
 	<div class="formscreen">
