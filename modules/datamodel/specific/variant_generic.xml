@@ -15,7 +15,8 @@
 			"split locations").See
 			http://gmod.org/wiki/Chado_Sequence_Module#Table:_feature
 		</description>
-		<entity name="SeqFeature" extends="ObservationElement">
+		<entity name="SequenceCharacteristic" extends="Characteristic">
+		<!--  renamed from SeqFeature -->
 			<description>A feature is a biological sequence or a section of a
 				biological sequence, or a collection of such sections. Examples
 				include genes, exons, transcripts, regulatory regions, polypeptides,
