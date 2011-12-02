@@ -5,11 +5,14 @@
 	<input type="hidden" name="__target" value="${screen.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action">
+	<!-- hidden input for measurementId -->
+	<input type="hidden" name="measurementId">
 	
 <!-- this shows a title and border -->
 	<div class="formscreen">
 		<div class="form_header" id="${screen.getName()}">
 			${screen.label}
+			${screen.getName()}
 		</div>
 			
 		<#--optional: mechanism to show messages-->
@@ -30,12 +33,20 @@
 				<div id="rightSide" style="position: absolute; left: 910px; top: 20px; height: 400px; width: 100px; padding: 1em;">
 					right side	
 				</div>
+				<div><h1>Shopping cart</h1>
+				<ul>
+				<#list screen.getShoppingCart() as measurement>
+				<li>${measurement.name}</li>
+				</#list>
+				</ul>
+				</div>
 				
 				<!--<div id="bottom" style="clear:both;">
 					bottom
 				</div-->
 				
 			</div>
+			<input type="hidden" id="test" value="">
 		</div>
 	</div>
 </form>
