@@ -48,8 +48,8 @@
 				There may be many alternative protocols to measure a feature. See
 				Protocol section.
 			</description>
-			<field name="permittedValues" type="mref" xref_entity="PermittedValue" />
-			<field name="characteristics" type="mref" xref_entity="Characteristic" />
+			<field name="permitValues" type="mref" xref_entity="PermittedValue" />
+			<field name="chars" type="mref" xref_entity="Characteristic" />
 		</entity>
 		<entity name="Measurement" extends="ObservableFeature"
 			decorator="decorators.MeasurementDecorator">
@@ -69,7 +69,7 @@
 				description="Whether this feature is time dependent and can have different values when measured 
 					on different times (e.g. weight, temporal=true) or generally only measured once (e.g. birth date, 
 					temporal=false) "/>
-			<field name="categories" type="mref" xref_entity="Category" nillable="true" description="Translation of codes into categories if applicable"/>
+			<field name="permitValues" type="mref" xref_entity="PermittedValue" nillable="true" description="Translation of codes into categories if applicable"/>
 			<field name="description" type="text" nillable="true"
 				description="(Optional) Rudimentary meta data about the observable feature. Use of ontology 
 					terms references to establish unambigious descriptions is recommended" />
