@@ -546,11 +546,11 @@ public class ClusterPlugin extends PluginModel<Entity>
 			// Command("echo library(ClusterJobs,lib.loc=\'" +
 			// usrHomeLibs.getAbsolutePath().replace("\\", "/") +
 			// "\') >> runmij" + jobId + ".R", false, false, true));
-			commands.add(new Command("echo \"library('bitops', lib.loc='"
-					+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "')\" >> runmij" + jobId + ".R", false, false,
+			commands.add(new Command("echo library('bitops', lib.loc='"
+					+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "') >> runmij" + jobId + ".R", false, false,
 					true));
-			commands.add(new Command("echo \"library('RCurl', lib.loc='"
-					+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "')\" >> runmij" + jobId + ".R", false, false,
+			commands.add(new Command("echo library('RCurl', lib.loc='"
+					+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "') >> runmij" + jobId + ".R", false, false,
 					true));
 			commands.add(new Command("echo source(\"" + db_path + "/api/R/\") >> runmij" + jobId + ".R", false, false,
 					true));
