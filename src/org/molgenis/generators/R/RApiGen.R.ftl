@@ -65,6 +65,12 @@ MOLGENIS.logout = function()
 	close( handle )
 }
 
+#upload wrapper to pass the curl handle with the session
+#untested
+MOLGENIS.upload <- function(url, Investigation_name, name, type, filename, style = 'HTTPPOST'){
+  postForm(url, Investigation_name=Investigation_name, name=name, type = type, file = fileUpload(filename=filename), style=style, curl = ch)
+}
+
 # static helper functions 
 MOLGENIS.connect <- function( servletURL, dbUser=NULL )
 {
