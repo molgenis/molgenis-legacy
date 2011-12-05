@@ -452,8 +452,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		animaltype.setLabel("Animal type:");
 		animaltype.addOption("","");
 		for (Category c : ct.getAllCodesForFeature("AnimalType")) {
-			animaltype.addOption(c.getDescription(), c.getCode_String() + " ("
-					+ c.getDescription() + ")");
+			animaltype.addOption(c.getDescription(), c.getDescription());
 		}
 		animaltype.setDescription("Give the type of the new animal(s). Select type 2 (GMO) to modify the genotype of the animal(s).");
 		animaltype.setOnchange("showHideGenotypeDiv(this.value);");

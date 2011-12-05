@@ -26,7 +26,7 @@
 				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
 					label="Breeding lines" />
 			</menu>
-			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPlugin"
+			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />
 				
 			<plugin name="PrintLabels" type="plugins.output.PrintLabelPlugin"
@@ -34,7 +34,7 @@
 				
 			<menu name="valuemenu" position="left" label="Values">
 				<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
-					label="Edit values" />
+					label="Make/edit values" />
 				<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
 					label="View values in timeline" />
 				<!--plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests"
@@ -46,7 +46,7 @@
 			<plugin name="DecStatus" type="plugins.projectportal.DecStatus"
 				label="DEC status portal" />
 			<plugin name="AnimalsInSubprojects" type="plugins.experiments.ShowAnimalsInSubprojects"
-				label="add/remove animals from DEC" />
+				label="DEC: add/remove animals" />
 			<plugin name="AddProject" type="plugins.experiments.ShowDecProjects"
 				label="DEC applications" />
 			<plugin name="AddSubproject" type="plugins.experiments.ShowDecSubprojects"
@@ -114,7 +114,7 @@
 					label="Load legacy data" />
 				<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
 				<plugin name="ApplyProtocolAdmin" type="org.molgenis.protocol.ApplyProtocolPlugin"
-					label="Make/Edit values" />
+					label="Make/edit values" />
 				<plugin name="CascadingDeleteAnimals" type="plugins.system.CascadingDeleteAnimalsPlugin"
 					label="Delete targets" />
 				<!-- <plugin name="SetCustomLabelFeature" type="plugins.system.SetCustomLabelFeaturePlugin"

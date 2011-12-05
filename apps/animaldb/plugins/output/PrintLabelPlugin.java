@@ -14,16 +14,24 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.HorizontalRuler;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.framework.ui.html.Paragraph;
+import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.component.MatrixViewer;
+import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
@@ -35,12 +43,14 @@ public class PrintLabelPlugin extends GenericPlugin
 	
 	private Container container;
 	private DivPanel panel;
-	private SelectMultipleInput targets;
+	//private SelectMultipleInput targets;
 	private SelectMultipleInput features;
 	private ActionInput printButton;
 	private Paragraph text = null;
 	private CommonService cs = CommonService.getInstance();
 	private LabelGenerator labelGenerator = null;
+	MatrixViewer targetMatrixViewer = null;
+	static String TARGETMATRIX = "targetmatrix";
 	
 	public PrintLabelPlugin(String name, ScreenController<?> parent)
 	{
@@ -51,11 +61,19 @@ public class PrintLabelPlugin extends GenericPlugin
 	public void handleRequest(Database db, Tuple request)
 	{
 		cs.setDatabase(db);
+		if (targetMatrixViewer != null) {
+			targetMatrixViewer.setDatabase(db);
+		}
+		
 		try {
-			String action = request.getString("__action");
+			String action = request.getAction();
+			
+			if (action.startsWith(targetMatrixViewer.getName())) {
+	    		targetMatrixViewer.handleRequest(db, request);
+			}
 			
 			if (action.equals("Print")) {
-				handlePrintRequest(request);
+				handlePrintRequest(db, request);
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -72,8 +90,9 @@ public class PrintLabelPlugin extends GenericPlugin
 	 * @throws LabelGeneratorException 
 	 * @throws ParseException 
 	 * @throws DatabaseException
+	 * @throws MatrixException 
 	 */
-	private void handlePrintRequest(Tuple request) throws LabelGeneratorException, DatabaseException, ParseException {
+	private void handlePrintRequest(Database db, Tuple request) throws LabelGeneratorException, DatabaseException, ParseException, MatrixException {
 		
 		int userId = this.getLogin().getUserId();
 		
@@ -84,11 +103,11 @@ public class PrintLabelPlugin extends GenericPlugin
 		labelGenerator.startDocument(pdfFile);
 		
 		List<Integer> investigationIds = cs.getAllUserInvestigationIds(userId);
-		List<Individual> individualList = getIndividualsFromUi(request);
+		List<ObservationTarget> individualList = getIndividualsFromUi(db, request);
 		List<Measurement> measurementList = getMeasurementsFromUi(request);
     	int ownInvId = cs.getOwnUserInvestigationId(userId);
         
-        for (Individual ind : individualList) {
+        for (ObservationTarget ind : individualList) {
         	
         	List<String> lineList = new ArrayList<String>();
         	List<String> lineLabelList = new ArrayList<String>();
@@ -122,7 +141,7 @@ public class PrintLabelPlugin extends GenericPlugin
 		
 		labelGenerator.finishDocument();
 		
-        text = new Paragraph("pdfFilename", "<a href=\"tmpfile/" + filename + "\">Download pdf</a>");
+        text = new Paragraph("pdfFilename", "<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download labels as pdf</a>");
 		text.setLabel("");
 		// text is added to panel on reload()
 	}
@@ -134,15 +153,17 @@ public class PrintLabelPlugin extends GenericPlugin
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ParseException
+	 * @throws MatrixException 
 	 */
-	private List<Individual> getIndividualsFromUi(Tuple request) throws DatabaseException, ParseException {
-		List<Individual> individualList = new ArrayList<Individual>();
-		List<?> targetListObject = request.getList("Targets");
-		if (targetListObject != null) {
-			for (Object o : targetListObject) {
-				String tmpString = (String)o;
-				individualList.add(cs.getIndividualById(Integer.parseInt(tmpString)));
+	private List<ObservationTarget> getIndividualsFromUi(Database db, Tuple request) throws DatabaseException, ParseException, MatrixException {
+		List<ObservationTarget> individualList = new ArrayList<ObservationTarget>();
+		List<ObservationElement> rows = (List<ObservationElement>) targetMatrixViewer.getSelection(db);
+		int rowCnt = 0;
+		for (ObservationElement row : rows) {
+			if (request.getBool(TARGETMATRIX + "_selected_" + rowCnt) != null) {
+				individualList.add(cs.getObservationTargetById(row.getId()));
 			}
+			rowCnt++;
 		}
 		return individualList;
 	}
@@ -170,33 +191,38 @@ public class PrintLabelPlugin extends GenericPlugin
 	@Override
 	public void reload(Database db)
 	{
-		int userId = this.getLogin().getUserId();
-		
 		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(userId, false);
+		if (targetMatrixViewer != null) {
+			targetMatrixViewer.setDatabase(db);
+		}
 		
 		labelGenerator = new LabelGenerator(2);
 		
-		initScreen();
+		try {
+			if (container == null) {
+				initScreen(db);
+			} else {
+				// Add link to pdf to UI, if available
+				if (text != null) {
+					panel.add(text);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.setMessages(new ScreenMessage("Something went wrong: " + e.getMessage(), false));
+		}
 	}
 	
 	/**
-	 * Initialize the UI. If already a pdf has been generated, show a link to that.
+	 * Initialize the UI.
+	 * @throws Exception 
 	 */
-	public void initScreen() {
+	public void initScreen(Database db) throws Exception {
 		container = new Container();
 		panel = new DivPanel("PrintLabelPluginDivPanel", null);
-		
-		makeTargetsSelect();
-		
+		makeTargetsSelect(db);
 		makeFeaturesSelect();
-		
 		makePrintButton();
-		
-		if (text != null) {
-			panel.add(text);
-		}
-		
 		container.add(panel);
 	}
 
@@ -206,19 +232,38 @@ public class PrintLabelPlugin extends GenericPlugin
 	
 	 /** 
      * Create a select box with Individuals grabbed from the database.
+	 * @throws Exception 
      */
-    public void makeTargetsSelect() {
-    	targets = new SelectMultipleInput("Targets", null);
-	    targets.setLabel("Select animal(s):");
-		try {
-			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
-		    for (Integer animalId : cs.getAllObservationTargetIds("Individual", true, investigationIds)) {
-		    	targets.addOption(animalId, getTargetName(animalId));
-		    }
-		} catch(Exception e) {
-		    this.setMessages(new ScreenMessage("An error occurred while retrieving animals from the database", false));
-		}
-		panel.add(targets);
+    public void makeTargetsSelect(Database db) throws Exception {
+    	List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
+		List<String> measurementsToShow = new ArrayList<String>();
+		measurementsToShow.add("Species");
+		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+				Operator.IN, investigationNames));
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+				cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
+				"Alive"));
+		targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
+				new SliceablePhenoMatrix(Individual.class, Measurement.class), 
+				true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
+						Operator.IN, measurementsToShow));
+		targetMatrixViewer.setDatabase(db);
+		targetMatrixViewer.setLabel("Choose animals:");
+		panel.add(targetMatrixViewer);
+		panel.add(new HorizontalRuler());
+		
+//    	targets = new SelectMultipleInput("Targets", null);
+//	    targets.setLabel("Select animal(s):");
+//		try {
+//			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
+//		    for (Integer animalId : cs.getAllObservationTargetIds("Individual", true, investigationIds)) {
+//		    	targets.addOption(animalId, getTargetName(animalId));
+//		    }
+//		} catch(Exception e) {
+//		    this.setMessages(new ScreenMessage("An error occurred while retrieving animals from the database", false));
+//		}
+//		panel.add(targets);
     }
     
     /**

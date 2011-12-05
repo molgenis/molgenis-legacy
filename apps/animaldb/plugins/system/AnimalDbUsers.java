@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.auth.MolgenisPermission;
+import org.molgenis.auth.MolgenisRole;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.util.PasswordHasher;
 import org.molgenis.core.MolgenisEntity;
@@ -34,7 +35,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 	private static final long serialVersionUID = 3660487327165570585L;
 	private String action = "init";
 	private List<Investigation> investigations;
-	private List<MolgenisUser> users;
+	private List<MolgenisRole> roles;
 	private Database db;
 
 	public AnimalDbUsers(String name, ScreenController<?> parent)
@@ -78,9 +79,9 @@ public class AnimalDbUsers extends PluginModel<Entity>
 		this.db = db;
 		
 		try {
-			users = db.find(MolgenisUser.class);
+			roles = db.find(MolgenisRole.class);
 		} catch (DatabaseException e1) {
-			this.setMessages(new ScreenMessage("Something went wrong while loading user list", false));
+			this.setMessages(new ScreenMessage("Something went wrong while loading users and groups", false));
 			e1.printStackTrace();
 		}
 		
@@ -118,18 +119,18 @@ public class AnimalDbUsers extends PluginModel<Entity>
 			if (action.startsWith("ShareRead")) {
 				int invNr = Integer.parseInt(action.substring(9));
 				Investigation inv = investigations.get(invNr);
-				int userId = request.getInt("shareread_" + invNr);
-				inv.setCanRead_Id(userId);
+				int roleId = request.getInt("shareread_" + invNr);
+				inv.setCanRead_Id(roleId);
 				db.update(inv);
-				this.setMessages(new ScreenMessage("Investigation successfully shared.", true));
+				this.setMessages(new ScreenMessage("Investigation successfully shared", true));
 			}
 			if (action.startsWith("ShareWrite")) {
 				int invNr = Integer.parseInt(action.substring(10));
 				Investigation inv = investigations.get(invNr);
-				int userId = request.getInt("sharewrite_" + invNr);
-				inv.setCanWrite_Id(userId);
+				int roleId = request.getInt("sharewrite_" + invNr);
+				inv.setCanWrite_Id(roleId);
 				db.update(inv);
-				this.setMessages(new ScreenMessage("Investigation successfully shared.", true));
+				this.setMessages(new ScreenMessage("Investigation successfully shared", true));
 			}
 			if (action.equals("Add")) {
 				
@@ -267,8 +268,8 @@ public class AnimalDbUsers extends PluginModel<Entity>
 		return investigations;
 	}
 	
-	public List<MolgenisUser> getUsers() {
-		return users;
+	public List<MolgenisRole> getRoles() {
+		return roles;
 	}
 
 }

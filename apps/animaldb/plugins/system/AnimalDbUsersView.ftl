@@ -82,7 +82,7 @@
 <p><a href="molgenis.do?__target=${screen.name}&__action=New">Make new user</a></p>
 
 <p>Welcome, ${screen.userName}. You own the following investigation(s):</p>
-<table>
+<table border="1">
 	<tr>
 		<th style='padding:5px'>Name</th>
 		<th style='padding:5px'>Read-rights</th>
@@ -95,12 +95,13 @@
 		<td style='padding:5px'>${invname}</td>
 		<td style='padding:5px'>
 		<#if screen.getInvestigationSharers(invname, false)??>
-			${screen.getInvestigationSharers(invname, false)}<br />
+			${screen.getInvestigationSharers(invname, false)}
 		<#else>
-			Currently none<br />
+			Currently none
 		</#if>
+			<br /><br />Change to:
 			<select name="shareread_${i}" id="shareread_${i}">
-				<#list screen.users as moluser>
+				<#list screen.roles as moluser>
 					<option value="${moluser.id?string.computer}">${moluser.name}</option>
 				</#list>
 			</select>
@@ -108,12 +109,13 @@
 		</td>
 		<td style='padding:5px'>
 		<#if screen.getInvestigationSharers(invname, true)??>
-			${screen.getInvestigationSharers(invname, true)}<br />
+			${screen.getInvestigationSharers(invname, true)}
 		<#else>
-			Currently none<br />
+			Currently none
 		</#if>
+			<br /><br />Change to:
 			<select name="sharewrite_${i}" id="sharewrite_${i}">
-				<#list screen.users as moluser>
+				<#list screen.roles as moluser>
 					<option value="${moluser.id?string.computer}">${moluser.name}</option>
 				</#list>
 			</select>

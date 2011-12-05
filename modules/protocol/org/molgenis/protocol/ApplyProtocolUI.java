@@ -206,11 +206,11 @@ public class ApplyProtocolUI {
     public void makeProtocolSelect() {
 		try {
 		    protocols = new SelectInput("Protocols");
-		    protocols.setLabel("Choose Protocol:");
+		    protocols.setLabel("Choose protocol:");
 		    protocols.setOptions(service.getAllProtocolsSorted(Protocol.NAME, "ASC", model.getInvestigationIds()), 
 		    		Protocol.ID, Protocol.NAME);
 		    protocolDiv.add(protocols);
-	
+		    protocolDiv.add(new HorizontalRuler());
 		} catch(Exception e) {
 			e.printStackTrace();
 		    logger.error("An error occurred while retrieving protocols from the database", e);
@@ -239,7 +239,6 @@ public class ApplyProtocolUI {
     public void makeTargetsMatrix(Database db, ScreenController plugin, int userId) throws Exception {
     	
     	List<String> investigationNames = service.getAllUserInvestigationNames(userId);
-		
 		List<String> measurementsToShow = new ArrayList<String>();
 		measurementsToShow.add("Species");
 		measurementsToShow.add("Sex");
@@ -252,7 +251,7 @@ public class ApplyProtocolUI {
 				true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
 						Operator.IN, measurementsToShow));
 		targetMatrixViewer.setDatabase(db);
-		protocolDiv.add(new HorizontalRuler());
+		targetMatrixViewer.setLabel("Choose animals:");
 		protocolDiv.add(targetMatrixViewer);
 		protocolDiv.add(new HorizontalRuler());
     }
@@ -263,12 +262,12 @@ public class ApplyProtocolUI {
     public void makeBatchSelect() {
 		try {
 		    batches = new SelectMultipleInput("Batches", null);
-		    batches.setLabel("Choose Batches:");
+		    batches.setLabel("Choose batches:");
 		    for (MolgenisBatch o : service.getAllBatches()) {
 		    	batches.addOption(o.getId(), o.getName());
 		    }
 		    protocolDiv.add(batches);
-	
+		    protocolDiv.add(new HorizontalRuler());
 		} catch(Exception e) {
 			e.printStackTrace();
 		    logger.error("An error occurred while retrieving batches from the database", e);

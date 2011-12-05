@@ -18,7 +18,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
@@ -387,11 +386,10 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		}
 		
 		// Get targets
-		List<?> targetListObject = request.getList(ui.TARGETMATRIX);
 		List<ObservationElement> rows = (List<ObservationElement>) ui.targetMatrixViewer.getSelection(db);
 		int rowCnt = 0;
 		for (ObservationElement row : rows) {
-			if (request.getBool(ui.TARGETMATRIX + "_selected_" + rowCnt) != null) {
+			if (request.getBool(ApplyProtocolUI.TARGETMATRIX + "_selected_" + rowCnt) != null) {
 				model.getTargetList().add(row.getId().toString());
 				fullTargetList.add(row.getId().toString());
 			}
@@ -422,7 +420,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 			}
 		}
 		if (fullTargetList.size() == 0) {
-			return new ScreenMessage("No observation targets selected", false);
+			return new ScreenMessage("No animals selected", false);
 		}
 		model.setFullTargetList(fullTargetList);
 		

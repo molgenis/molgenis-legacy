@@ -67,6 +67,8 @@ public class AddLocationPlugin extends PluginModel<Entity>
 
 	public void handleRequest(Database db, Tuple request)
 	{
+		ct.setDatabase(db);
+		
 		try {
 			String action = request.getString("__action");
 			if (action.equals("addLocation")) {

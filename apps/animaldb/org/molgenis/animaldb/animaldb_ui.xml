@@ -88,7 +88,7 @@
 				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
 					label="Manage breeding lines" />
 			</menu>
-			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPlugin"
+			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />
 			<plugin name="PrintLabels" type="plugins.output.PrintLabelPlugin"
 				label="Make (cage) labels" />
