@@ -68,11 +68,10 @@ public class viewfile  implements MolgenisService {
 
 		if (databaseIsAvailable) {
 			try {
-				Tuple req = new HttpServletRequestTuple(request.getRequest());
 			
-//				type = req.getString("type");
-//				investigationname = req.getString("investigationname");
-				name = req.getString("name");
+//				type = request.getString("type");
+//				investigationname = request.getString("investigationname");
+				name = request.getString("name");
 		
 //				if(type == null){
 //					throw new NullPointerException("Not specified: 'type'");

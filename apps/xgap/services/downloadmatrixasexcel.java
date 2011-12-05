@@ -42,7 +42,6 @@ public class downloadmatrixasexcel implements MolgenisService {
 			DatabaseException, IOException
 	{
 
-		Tuple req = null;
 		boolean databaseIsAvailable = false;
 		boolean setupSuccess = false;
 		boolean argumentsAreCorrect = false;
@@ -64,10 +63,9 @@ public class downloadmatrixasexcel implements MolgenisService {
 
 		if (databaseIsAvailable) {
 			try {
-				req = new HttpServletRequestTuple(request.getRequest());
 				
 				//special exception for filtered content: get matrix instance from memory and do complete handle
-				if(req.getString("id").equals("inmemory"))
+				if(request.getString("id").equals("inmemory"))
 				{
 					OutputStream outSpecial = response.getResponse().getOutputStream();
 					File excelFile = Browser.inmemory.getAsExcelFile();
@@ -89,7 +87,7 @@ public class downloadmatrixasexcel implements MolgenisService {
 					return;
 				}
 				
-				int matrixId = req.getInt("id");
+				int matrixId = request.getInt("id");
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				List<Data> dataList = db.find(Data.class, q);
 				if (dataList.size() != 1) {
@@ -112,15 +110,15 @@ public class downloadmatrixasexcel implements MolgenisService {
 		
 		if(setupSuccess){
 			try {
-				if (req.getString("download").equals("all"))
+				if (request.getString("download").equals("all"))
 				{
 					//correct
-				}else if (req.getString("download").equals("some"))
+				}else if (request.getString("download").equals("some"))
 				{
-					req.getInt("coff");
-					req.getInt("clim");
-					req.getInt("roff");
-					req.getInt("rlim");
+					request.getInt("coff");
+					request.getInt("clim");
+					request.getInt("roff");
+					request.getInt("rlim");
 					//correct
 				}else{
 					throw new Exception("Bad arguments.");
@@ -140,16 +138,16 @@ public class downloadmatrixasexcel implements MolgenisService {
 			OutputStream outFile = response.getResponse().getOutputStream();
 			try {
 				File excelFile = null;
-				String download = req.getString("download");
+				String download = request.getString("download");
 				if (download.equals("all"))
 				{
 					excelFile = instance.getAsExcelFile();
 				}else if (download.equals("some"))
 				{
-					int colOffset = req.getInt("coff");
-					int colLimit = req.getInt("clim");
-					int rowOffset = req.getInt("roff");
-					int rowLimit = req.getInt("rlim");
+					int colOffset = request.getInt("coff");
+					int colLimit = request.getInt("clim");
+					int rowOffset = request.getInt("roff");
+					int rowLimit = request.getInt("rlim");
 					excelFile = instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).getAsExcelFile();
 				}
 				URL localURL = excelFile.toURI().toURL();

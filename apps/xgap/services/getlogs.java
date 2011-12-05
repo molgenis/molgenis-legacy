@@ -41,11 +41,10 @@ public class getlogs implements MolgenisService
 		
 		try
 		{
-			Tuple req = new HttpServletRequestTuple(request.getRequest());
 
-			if (req.getString("file") == null)
+			if (request.getString("file") == null)
 			{
-				if (req.getInt("job") == null)
+				if (request.getInt("job") == null)
 				{
 					// show root dir listing
 					File workingDir = new File(".");
@@ -55,12 +54,12 @@ public class getlogs implements MolgenisService
 				{
 					//special: filter root dir with job id
 					File workingDir = new File(".");
-					listDir("", workingDir, out, req.getInt("job").intValue());
+					listDir("", workingDir, out, request.getInt("job").intValue());
 				}
 			}
 			else
 			{
-				String filePath = req.getString("file");
+				String filePath = request.getString("file");
 
 				if (filePath.endsWith("/"))
 				{

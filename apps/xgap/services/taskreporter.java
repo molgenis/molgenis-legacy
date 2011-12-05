@@ -52,8 +52,6 @@ public class taskreporter  implements MolgenisService
 
 		try
 		{
-			//Tuple req = new HttpServletRequestTuple(request.getRequest());
-			
 
 			int jobID = request.getInt("job"); // unique
 

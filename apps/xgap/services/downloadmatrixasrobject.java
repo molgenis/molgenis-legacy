@@ -73,10 +73,9 @@ public class downloadmatrixasrobject implements MolgenisService
 		{
 			try
 			{
-				Tuple req = new HttpServletRequestTuple(request.getRequest());
 				
 				//special exception for filtered content: get matrix instance from memory and do complete handle
-				if(req.getString("id").equals("inmemory"))
+				if(request.getString("id").equals("inmemory"))
 				{
 					content = Browser.inmemory.getAsRobject(false);
 					response.getResponse().setContentLength(content.length());
@@ -86,22 +85,22 @@ public class downloadmatrixasrobject implements MolgenisService
 					return;
 				}
 				
-				int matrixId = req.getInt("id");
+				int matrixId = request.getInt("id");
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				Data data = db.find(Data.class, q).get(0);
 				DataMatrixHandler dmh = new DataMatrixHandler(db);
 				DataMatrixInstance instance = dmh.createInstance(data, db);
 
-				if (req.getString("download").equals("all"))
+				if (request.getString("download").equals("all"))
 				{
 					content +=  instance.getAsRobject(false) ;
 				}
-				else if (req.getString("download").equals("some"))
+				else if (request.getString("download").equals("some"))
 				{
-					int colOffset = req.getInt("coff");
-					int colLimit = req.getInt("clim");
-					int rowOffset = req.getInt("roff");
-					int rowLimit = req.getInt("rlim");
+					int colOffset = request.getInt("coff");
+					int colLimit = request.getInt("clim");
+					int rowOffset = request.getInt("roff");
+					int rowLimit = request.getInt("rlim");
 					content += instance.getSubMatrixByOffset(rowOffset, rowLimit, colOffset, colLimit).getAsRobject(false);	
 				}
 				else

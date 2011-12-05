@@ -43,20 +43,19 @@ public class uploadfile implements MolgenisService
 		try
 		{
 			db = request.getDatabase();
-			Tuple req = new HttpServletRequestTuple(request.getRequest());
 
-			String fileName = req.getString("name"); // the 'real' file name
-			String fileType = req.getString("type"); // file type, must correspond to a subclass of MolgenisFile
-			File fileContent = req.getFile("file"); // has a tmp name, so content only
+			String fileName = request.getString("name"); // the 'real' file name
+			String fileType = request.getString("type"); // file type, must correspond to a subclass of MolgenisFile
+			File fileContent = request.getFile("file"); // has a tmp name, so content only
 			
 			HashMap<String, String> extraFields = new HashMap<String, String>();
 		
-			for(int cIndex = 0; cIndex < req.size(); cIndex++){
-				String colName = req.getColName(cIndex);
+			for(int cIndex = 0; cIndex < request.size(); cIndex++){
+				String colName = request.getColName(cIndex);
 				if(colName.equals("name") || colName.equals("type") || colName.equals("file")){
 					//already handled
 				}else{
-					extraFields.put(colName, req.getString(colName));
+					extraFields.put(colName, request.getString(colName));
 				}
 			}
 	

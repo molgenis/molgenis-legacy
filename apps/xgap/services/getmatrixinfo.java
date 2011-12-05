@@ -58,8 +58,7 @@ public class getmatrixinfo  implements MolgenisService {
 
 		if (databaseIsAvailable) {
 			try {
-				Tuple req = new HttpServletRequestTuple(request.getRequest());
-				int matrixId = req.getInt("id");
+				int matrixId = request.getInt("id");
 				QueryRule q = new QueryRule("id", Operator.EQUALS, matrixId);
 				List<Data> dataList = db.find(Data.class, q);
 				if (dataList.size() != 1) {
