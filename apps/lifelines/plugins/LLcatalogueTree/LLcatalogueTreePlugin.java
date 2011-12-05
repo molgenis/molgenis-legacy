@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
@@ -137,11 +138,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 	/** My new action */
 	public void handleRequest(Database db, Tuple request) {
-		
+
 		System.out.println("CAUGHT IT: " + request);
 		System.out.println(request.getInt("measurementId"));
 		try {
-			
+
 			Measurement selected = Measurement.findById(db,
 					request.getInt("measurementId"));
 			if (selected == null) {
@@ -162,68 +163,68 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	@Override
 	public void reload(Database db) {
 
-		if (treeView == null) {
+		List<String> topProtocols = new ArrayList<String>();
 
-			List<String> topProtocols = new ArrayList<String>();
+		List<String> bottomProtocols = new ArrayList<String>();
 
-			List<String> bottomProtocols = new ArrayList<String>();
+		List<String> middleProtocols = new ArrayList<String>();
 
-			List<String> middleProtocols = new ArrayList<String>();
+		labelToTree = new HashMap<String, JQueryTreeViewElementMeasurement>();
 
-			labelToTree = new HashMap<String, JQueryTreeViewElementMeasurement>();
+		nameToProtocol = new HashMap<String, Protocol>();
 
-			nameToProtocol = new HashMap<String, Protocol>();
+		try {
+			
+			for (Protocol p : db.find(Protocol.class, 
+					new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "DataShaper"))) {
 
-			try {
-				for (Protocol p : db.find(Protocol.class)) {
+				// System.out.println(p.getName());
 
-					// System.out.println(p.getName());
+				List<String> subNames = p.getSubprotocols_Name();
 
-					List<String> subNames = p.getSubprotocols_Name();
-
-					if (!nameToProtocol.containsKey(p.getName())) {
-						nameToProtocol.put(p.getName(), p);
-					}
-
-					if (!subNames.isEmpty()) {
-
-						if (!topProtocols.contains(p.getName()))
-							topProtocols.add(p.getName());
-
-						for (String subProtocol : subNames) {
-
-							if (!middleProtocols.contains(subProtocol))
-								middleProtocols.add(subProtocol);
-						}
-
-					} else {
-
-						if (!bottomProtocols.contains(p.getName())) {
-							bottomProtocols.add(p.getName());
-
-						}
-					}
+				if (!nameToProtocol.containsKey(p.getName())) {
+					nameToProtocol.put(p.getName(), p);
 				}
 
-			} catch (DatabaseException e) {
-				e.printStackTrace();
+				if (!subNames.isEmpty()) {
+
+					if (!topProtocols.contains(p.getName()))
+						topProtocols.add(p.getName());
+
+					for (String subProtocol : subNames) {
+
+						if (!middleProtocols.contains(subProtocol))
+							middleProtocols.add(subProtocol);
+					}
+
+				} else {
+
+					if (!bottomProtocols.contains(p.getName())) {
+						bottomProtocols.add(p.getName());
+
+					}
+				}
 			}
 
-			middleProtocols.removeAll(bottomProtocols);
-
-			topProtocols.removeAll(middleProtocols);
-
-			JQueryTreeViewElementMeasurement protocolsTree = new JQueryTreeViewElementMeasurement(
-					"Protocols", null);
-
-			recursiveAddingTree(topProtocols, protocolsTree, db);
-
-			treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementMeasurement>(
-					"Protocols", protocolsTree);
-
-			// a = db.query();
-			treeView.setMeasurementDetails("Measurement details........... ");
+		} catch (DatabaseException e) {
+			e.printStackTrace();
 		}
+
+		middleProtocols.removeAll(bottomProtocols);
+
+		topProtocols.removeAll(middleProtocols);
+
+		JQueryTreeViewElementMeasurement protocolsTree = new JQueryTreeViewElementMeasurement(
+				"Protocols", null);
+
+		recursiveAddingTree(topProtocols, protocolsTree, db);
+
+		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementMeasurement>(
+				"Protocols", protocolsTree);
+
+		// a = db.query();
+		treeView.setMeasurementDetails("Measurement details........... ");
+
 	}
 
 	@Override
