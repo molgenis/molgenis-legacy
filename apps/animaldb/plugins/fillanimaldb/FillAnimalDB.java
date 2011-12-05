@@ -438,11 +438,11 @@ public class FillAnimalDB {
 		// Protocol for Breeding module: SetBreedingLineSpecs
 		featureIdList = new ArrayList<Integer>();
 		featureIdList.add(ct.getMeasurementId("Line"));
-		featureIdList.add(ct.getMeasurementId("JAXName"));
+		featureIdList.add(ct.getMeasurementId("LineJAXName"));
 		featureIdList.add(ct.getMeasurementId("Species"));
-		featureIdList.add(ct.getMeasurementId("Genes"));
+		featureIdList.add(ct.getMeasurementId("GeneName"));
 		featureIdList.add(ct.getMeasurementId("LineInfoLink"));
-		featureIdList.add(ct.getMeasurementId("Remarks"));
+		featureIdList.add(ct.getMeasurementId("Remark"));
 		featureIdList.add(ct.getMeasurementId("Active"));
 		featureIdList.add(ct.getMeasurementId("SourceType"));
 		ct.makeProtocol(invid, "SetBreedingLineSpecs", "To set the specifications of a Breedingline.", featureIdList);
@@ -613,7 +613,7 @@ public class FillAnimalDB {
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				dutchProtocolId, dutchMeasurementId, groupId, "Noordse woelmuis", 0));
 		
-		http://en.wikipedia.org/wiki/Common_Vole
+		//http://en.wikipedia.org/wiki/Common_Vole
 		
 		groupId = ct.makePanel(invid, "Syrian hamster", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
