@@ -88,7 +88,7 @@
 
 	<#assign result = model.resultSet[key]>
 	
-	<div style="float: left; padding: 5px; border: 1px solid #999; width: 200px; height: 250px; text-align:center; ">
+	<div style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
 	
 	<#if result.noResultsFound??>
 		No results found for "${result.selectedName}".
@@ -112,13 +112,13 @@
 			<#if qtl.plot??>
 				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
 				<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-					<img src="tmpfile/${qtl.plot}" width="160" height="120">
+					<img src="tmpfile/${qtl.plot}" width="320" height="240">
 				</a><br>
 			</#if>
 			<a href="#${result.selectedName}">View QTL details <img src="generated-res/img/filter.png" /></a>
 			
 			<#if qtl_has_next>
-			</div><div style="float: left; padding: 5px; border: 1px solid #999; width: 200px; height: 250px; text-align:center; ">
+			</div><div style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
 			</#if>
 		</#list>
 		
@@ -140,7 +140,7 @@
 	<br><br><br><h2>&nbsp;Detailed overview</h2>
 </#if>
 
-<#list model.resultSet?keys as key>
+<#list model.resultSet?keys as key> <#-- NB: result.selectedName == key -->
 	<#assign result = model.resultSet[key]>
 	<#if result.noResultsFound??>
 	<table cellpadding="30">
@@ -163,13 +163,21 @@
 				<div style="overflow: auto; max-height: 400px;">
 				<ul>
 					<#list result.disambiguate as d>
-						<li><a href="#" onclick="document.forms.${screen.name}.__action.value = 'disambig_${d.name}'; document.forms.${screen.name}.__type.value = '${d.__type}'; document.forms.${screen.name}.__key.value = '${key}'; document.forms.${screen.name}.submit();">${d.name}</a></li>
+						<!--li><a href="#" onclick="document.forms.${screen.name}.__action.value = 'disambig_${d.name}'; document.forms.${screen.name}.__type.value = '${d.__type}'; document.forms.${screen.name}.__key.value = '${key}'; document.forms.${screen.name}.submit();">${d.name}</a></li-->
 					</#list>
 				</ul>
 				</div>
-				<h3>Alternatively, copy-paste these matches into the search box to find all of them:</h3>
+				<!--3>Alternatively, copy-paste these matches into the search box to find all of them:</h3>
 				<textarea rows="10" columns="20"><#list result.disambiguate as d>${d.name}
-</#list></textarea>
+</#list></textarea-->
+				
+
+				<#list result.disambiguate as d>
+					<input type="checkbox" name="disambig_option_${d.name}" value="true">${d.name}<br>
+				</#list>
+
+				
+				<input type="submit" value="Find" onclick="document.forms.${screen.name}.__action.value = 'disambig'; document.forms.${screen.name}.__type.value = '${result.disambiguate[0].__type}'; document.forms.${screen.name}.__key.value = '${key}'; document.forms.${screen.name}.submit();">
 				
 				</#if>
 			</td>
@@ -196,9 +204,9 @@
 		<table cellpadding="30">
 			<tr>
 				<td>
-					<h1>
+					<h2>
 						No QTL information for ${result.result.name}. (no data or below threshold)
-					</h1>
+					</h2>
 				</td>
 			</tr>
 		</table>
@@ -247,6 +255,7 @@
 							</td>
 							<td>
 								<a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a>
+								<#if qtl.markerAnnotations?keys?seq_contains(qtl.peakMarker)>(at bp ${qtl.markerAnnotations[qtl.peakMarker].bpstart?c}, cM ${qtl.markerAnnotations[qtl.peakMarker].cm})</#if>
 							</td>
 						</tr>
 					</table>
@@ -257,7 +266,7 @@
 				<div style="overflow: auto; max-height: 400px; width: 720px;">
 					<table cellpadding="3" border="1" style="width:700px;">
 						<tr class="form_listrow0">
-							<td colspan="4">
+							<td colspan="5">
 								<b>All LOD scores</b>
 							</td>
 						</tr>
@@ -270,6 +279,9 @@
 							</td>
 							<td>
 								<i>Marker cM</i>
+							</td>
+							<td>
+								<i>Marker bp</i>
 							</td>
 							<td>
 								<i>Marker chromosome</i>
@@ -285,6 +297,9 @@
 							</td>
 							<td>
 									<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].cm}</#if>
+							</td>
+							<td>
+									<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].bpstart?c}</#if>
 							</td>
 							<td>
 									<#if qtl.markerAnnotations?keys?seq_contains(m)><a href="molgenis.do?__target=Chromosomes&__action=filter_set&__filter_attribute=Chromosome_name&__filter_operator=EQUALS&__filter_value=${qtl.markerAnnotations[m].chromosome_name}">${qtl.markerAnnotations[m].chromosome_name}</a></#if>

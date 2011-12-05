@@ -139,25 +139,46 @@ public class QtlFinder extends PluginModel
 					}
 
 				}
-				else if(action.startsWith("disambig_"))
+				else if(action.equals("disambig"))
 				{	
-					//disambiguate a single input
-					String disambigt = action.substring("disambig_".length());
-					String type = request.getString("__type");
-					String key = request.getString("__key");
+					//disambiguate one resultset, but with multi input
+					String type = request.getString("__type"); //gene or probe
+					String key = request.getString("__key"); //which resultset
 					
 					Result r = this.model.getResultSet().get(key);
 					
-					r.setSelectedName(disambigt);
+					ArrayList<String> chosenItems = new ArrayList<String>();
+					for(Entity option : r.getDisambiguate())
+					{
+						String name = option.get(ObservableFeature.NAME).toString();
+						if(request.getString("disambig_option_"+name) != null)
+						{
+							chosenItems.add(name);
+						}
+					}
 					
-					Class<? extends Entity> entityClass = db.getClassForName(type);
-					List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservableFeature.NAME, Operator.EQUALS, disambigt));
+					for(String s : chosenItems)
+					{
+						System.out.println("CHOSEN: " + s);
+					}
+					
+					for(String name : chosenItems)
+					{
+						Result rs = new Result();
+						rs.setSelectedName(name);
+						
+						Class<? extends Entity> entityClass = db.getClassForName(type);
+						List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservableFeature.NAME, Operator.EQUALS, name));
 
-					r.setResult(result.get(0));
+						rs.setResult(result.get(0));
+						
+						List<QTLInfo> qtls = createQTLReportFor(result.get(0), threshold, dataFilter, db);
+						rs.setQtlsFound(qtls);
+						this.model.getResultSet().put(name, rs);
+					}
 					
-					List<QTLInfo> qtls = createQTLReportFor(result.get(0), threshold, dataFilter, db);
-					r.setQtlsFound(qtls);
-					r.setDisambiguate(null);
+					//remove the old ambiguous set
+					this.model.getResultSet().remove(key);
 				}
 
 				this.setMessages();
