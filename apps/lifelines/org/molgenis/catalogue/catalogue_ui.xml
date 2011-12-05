@@ -5,7 +5,9 @@
 	
 	<menu name="main" position="left" startswith="WelcomeScreen">
 		<!-- <plugin name="catalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" /> -->
-		<plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" />
+		<!-- plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" /-->
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login" />
+    
     
 		<menu name="catalogueOverview" label="Catalogue Overview">
 			<form name="investigation" entity="Investigation" label="Investigation" />
@@ -15,7 +17,7 @@
 			<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
 			<!-- <form name="themeProtocol" entity="themeProtocol" label="Theme" />
 			<form name="groupTheme" entity="groupTheme" label="Group" /> -->
-			<form name="Panel" entity="Panel" label="Panel" />
+			<!--form name="Panel" entity="Panel" label="Panel" /-->
 			<form name="ProtocolApplication" entity="ProtocolApplication" label="Protocol Application" />
 		</menu>
 		
