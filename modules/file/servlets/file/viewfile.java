@@ -25,6 +25,7 @@ import org.molgenis.util.Tuple;
 
 import decorators.MolgenisFileHandler;
 
+@Deprecated
 public class viewfile extends app.servlet.MolgenisServlet {
 
 	private static final long serialVersionUID = -6004230016846336249L;

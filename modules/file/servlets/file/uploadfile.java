@@ -15,6 +15,7 @@ import org.molgenis.util.Tuple;
 
 import filehandling.generic.PerformUpload;
 
+@Deprecated
 public class uploadfile extends app.servlet.MolgenisServlet
 {
 	private static final long serialVersionUID = 8579428014673624684L;

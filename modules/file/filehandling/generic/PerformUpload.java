@@ -64,7 +64,12 @@ public class PerformUpload
 			HashMap<String, String> extraFields, boolean skipWhenDestExists) throws Exception
 	{
 
-		// file check
+		// file checks
+		if (content == null)
+		{
+			throw new Exception("File holding content is a nullpointer!");
+		}
+		
 		if (!content.exists())
 		{
 			throw new Exception("File holding content does not exist: " + content.getAbsolutePath());

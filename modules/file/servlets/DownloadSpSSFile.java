@@ -23,7 +23,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 	
-
+@Deprecated
 public class DownloadSpSSFile extends app.servlet.MolgenisServlet
  
 {
