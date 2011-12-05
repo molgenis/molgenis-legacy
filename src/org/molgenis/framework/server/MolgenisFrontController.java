@@ -112,7 +112,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		}
 	}
 	
-	private UUID getSecuredDatabase(MolgenisRequest req) throws DatabaseException
+	protected UUID getSecuredDatabase(MolgenisRequest req) throws DatabaseException
 	{
 		try
 		{
@@ -131,7 +131,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		}
 	}
 	
-	private void manageConnection(UUID connId) throws DatabaseException
+	protected void manageConnection(UUID connId) throws DatabaseException
 	{
 		try
 		{
