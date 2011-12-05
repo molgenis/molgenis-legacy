@@ -8,6 +8,8 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 	
 	/** Label of the tree that can be made also linkable  **/ 
 	String label;
+	
+	String nodeName;
 
 	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent)
 	{
@@ -19,9 +21,13 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 	{
 		super(name, parent);
 		this.setLabel("<a href=\"" + url + "\" >"+ name +"</a>");
+		this.nodeName = name;
 
 	}
 
+	public String getNodeName(){
+		return nodeName;
+	}
 	//whether the element is ticked/selected
 	private boolean isSelected = false;
 	
