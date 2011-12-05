@@ -266,12 +266,14 @@ public class ConvertUliDbToPheno
 						// 51: Zucht- oder Liefereinrichtung innerhalb Deutschlands, die f�r ihre T�tigkeit eine Erlaubnis nach � 11 Abs. 1 Satz 1 Nr. 1 des Tierschutzgesetzes erhalten hat
 						// 52: andere amtlich registrierte oder zugelassene Einrichtung innerhalb der EU
 						// --> SourceType for both: Van EU-lid-staten
-						sourceName = "UliEisel51and52";
+						//sourceName = "UliEisel51and52";
+						sourceName = "Stuttgart (Uli Eisel)";
 					}
 					if (uliSourceId == 55) {
 						// 55: Switserland
 						// --> SourceType: Andere herkomst
-						sourceName = "UliEisel55";
+						//sourceName = "UliEisel55";
+						sourceName = "Stuttgart (Uli Eisel)";
 					}
 					if (uliSourceId != 0) {
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, 

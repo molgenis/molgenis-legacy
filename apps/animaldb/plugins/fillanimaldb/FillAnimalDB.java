@@ -113,7 +113,11 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "Active", stringUnitId, null, null, false, "string", "To register a target's activity span.", login.getUserId());
 		ct.makeMeasurement(invid, "Background", targetlinkUnitId, panel, "Background", false, "xref", "To set an animal's genotypic background.", login.getUserId());
 		ct.makeMeasurement(invid, "Source", targetlinkUnitId, panel, "Source", false, "xref", "To link an animal or a breeding line to a source.", login.getUserId());
-		ct.makeMeasurement(invid, "Line", targetlinkUnitId, panel, "Link", false, "xref", "To link a parentgroup to a breeding line.", login.getUserId());
+		//breeding line
+		ct.makeMeasurement(invid, "Line", targetlinkUnitId, panel, "Line", false, "xref", "To link a parentgroup to a breeding line.", login.getUserId());
+		ct.makeMeasurement(invid, "LineInfoLink", stringUnitId, null, null, false, "string", "To provide a link to a website with information about this line.", login.getUserId());
+		ct.makeMeasurement(invid, "LineJAXName", stringUnitId, null, null, false, "string", "To provide the full line name according to JAX mouse nomenclature", login.getUserId());
+		//
 		ct.makeMeasurement(invid, "SourceType", stringUnitId, null, null, false, "string", "To set the type of an animal source (used in VWA Report 4).", login.getUserId());
 		ct.makeMeasurement(invid, "SourceTypeSubproject", stringUnitId, null, null, false, "string", "To set the animal's source type, when it enters a DEC subproject (used in VWA Report 5).", login.getUserId());
 		ct.makeMeasurement(invid, "ParticipantGroup", stringUnitId, null, null, false, "string", "To set the participant group an animal is considered part of.", login.getUserId());
@@ -149,6 +153,7 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "GeneState", stringUnitId, null, null, false, "string", "To indicate whether an animal is homo- or heterozygous for a gene.", login.getUserId());
 		ct.makeMeasurement(invid, "VWASpecies", stringUnitId, null, null, false, "string", "To give a species the name the VWA uses for it.", login.getUserId());
 		ct.makeMeasurement(invid, "LatinSpecies", stringUnitId, null, null, false, "string", "To give a species its scientific (Latin) name.", login.getUserId());
+		ct.makeMeasurement(invid, "DutchSpecies", stringUnitId, null, null, false, "string", "To give a species its Dutch name.", login.getUserId());
 		ct.makeMeasurement(invid, "StartDate", datetimeUnitId, null, null, true, "datetime", "To set a (sub)project's start date.", login.getUserId());
 		ct.makeMeasurement(invid, "EndDate", datetimeUnitId, null, null, true, "datetime", "To set a (sub)project's end date.", login.getUserId());
 		ct.makeMeasurement(invid, "Removal", stringUnitId, null, null, false, "string", "To register an animal's removal.", login.getUserId());
@@ -429,6 +434,19 @@ public class FillAnimalDB {
 		featureIdList.add(ct.getMeasurementId("Size"));
 		featureIdList.add(ct.getMeasurementId("Certain"));
 		ct.makeProtocol(invid, "SetLitterSpecs", "To set the specifications of a litter.", featureIdList);
+		
+		// Protocol for Breeding module: SetBreedingLineSpecs
+		featureIdList = new ArrayList<Integer>();
+		featureIdList.add(ct.getMeasurementId("Line"));
+		featureIdList.add(ct.getMeasurementId("JAXName"));
+		featureIdList.add(ct.getMeasurementId("Species"));
+		featureIdList.add(ct.getMeasurementId("Genes"));
+		featureIdList.add(ct.getMeasurementId("LineInfoLink"));
+		featureIdList.add(ct.getMeasurementId("Remarks"));
+		featureIdList.add(ct.getMeasurementId("Active"));
+		featureIdList.add(ct.getMeasurementId("SourceType"));
+		ct.makeProtocol(invid, "SetBreedingLineSpecs", "To set the specifications of a Breedingline.", featureIdList);
+		
 		// Protocol SetAddress
 		featureIdList = new ArrayList<Integer>();
 		featureIdList.add(ct.getMeasurementId("Street"));
@@ -550,22 +568,11 @@ public class FillAnimalDB {
 		// Groups -> species
 		int vwaProtocolId = ct.getProtocolId("SetVWASpecies");
 		int latinProtocolId = ct.getProtocolId("SetVWASpecies");
+		int dutchProtocolId = ct.getProtocolId("SetDutchSpecies");
 		int vwaMeasurementId = ct.getMeasurementId("VWASpecies");
 		int latinMeasurementId = ct.getMeasurementId("LatinSpecies");
-		groupId = ct.makePanel(invid, "Syrian hamster", login.getUserId());
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				protocolId, measurementId, groupId, "Species", 0));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				vwaProtocolId, vwaMeasurementId, groupId, "Hamsters", 0));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				latinProtocolId, latinMeasurementId, groupId, "Mesocricetus auratus", 0));
-		groupId = ct.makePanel(invid, "European groundsquirrel", login.getUserId());
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				protocolId, measurementId, groupId, "Species", 0));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				vwaProtocolId, vwaMeasurementId, groupId, "And. knaagdieren", 0));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				latinProtocolId, latinMeasurementId, groupId, "Spermophilus citellus", 0));
+		int dutchMeasurementId = ct.getMeasurementId("DutchSpecies");
+		
 		groupId = ct.makePanel(invid, "House mouse", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Species", 0));
@@ -573,6 +580,61 @@ public class FillAnimalDB {
 				vwaProtocolId, vwaMeasurementId, groupId, "Muizen", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				latinProtocolId, latinMeasurementId, groupId, "Mus musculus", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				dutchProtocolId, dutchMeasurementId, groupId, "Huismuis", 0));
+		
+		groupId = ct.makePanel(invid, "Brown Rat", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Species", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				vwaProtocolId, vwaMeasurementId, groupId, "Ratten", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				latinProtocolId, latinMeasurementId, groupId, "Rattus norvegicus", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				dutchProtocolId, dutchMeasurementId, groupId, "Bruine rat", 0));
+		
+		groupId = ct.makePanel(invid, "Common Vole", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Species", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				vwaProtocolId, vwaMeasurementId, groupId, "And. knaagdieren", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				latinProtocolId, latinMeasurementId, groupId, "Microtus arvalis", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				dutchProtocolId, dutchMeasurementId, groupId, "Veldmuis", 0));
+		
+		groupId = ct.makePanel(invid, "Tundra Vole", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Species", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				vwaProtocolId, vwaMeasurementId, groupId, "And. knaagdieren", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				latinProtocolId, latinMeasurementId, groupId, "Microtus oeconomus", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				dutchProtocolId, dutchMeasurementId, groupId, "Noordse woelmuis", 0));
+		
+		http://en.wikipedia.org/wiki/Common_Vole
+		
+		groupId = ct.makePanel(invid, "Syrian hamster", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Species", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				vwaProtocolId, vwaMeasurementId, groupId, "Hamsters", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				latinProtocolId, latinMeasurementId, groupId, "Mesocricetus auratus", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				dutchProtocolId, dutchMeasurementId, groupId, "Goudhamster", 0));
+		
+		groupId = ct.makePanel(invid, "European groundsquirrel", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Species", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				vwaProtocolId, vwaMeasurementId, groupId, "And. knaagdieren", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				latinProtocolId, latinMeasurementId, groupId, "Spermophilus citellus", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				dutchProtocolId, dutchMeasurementId, groupId, "Europese grondeekhoorn", 0));
+		
 		groupId = ct.makePanel(invid, "Siberian hamster", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Species", 0));
@@ -580,28 +642,38 @@ public class FillAnimalDB {
 				vwaProtocolId, vwaMeasurementId, groupId, "Hamsters", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				latinProtocolId, latinMeasurementId, groupId, "Phodopus sungorus", 0));
-		groupId = ct.makePanel(invid, "Gray mouse lemur", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				protocolId, measurementId, groupId, "Species", 0));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				vwaProtocolId, vwaMeasurementId, groupId, "Prosimians", 0));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				latinProtocolId, latinMeasurementId, groupId, "Microcebus murinus", 0));
-		groupId = ct.makePanel(invid, "Brown rat", login.getUserId());
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				protocolId, measurementId, groupId, "Species", 0));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				vwaProtocolId, vwaMeasurementId, groupId, "Ratten", 0));
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				latinProtocolId, latinMeasurementId, groupId, "Rattus norvegicus", 0));
+				dutchProtocolId, dutchMeasurementId, groupId, "Siberische hamster", 0));
 		
-		// Groups -> Background
+		groupId = ct.makePanel(invid, "Domestic Guinea Pig", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Species", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				vwaProtocolId, vwaMeasurementId, groupId, "Cavia's", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				latinProtocolId, latinMeasurementId, groupId, "Cavia porcellus", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				dutchProtocolId, dutchMeasurementId, groupId, "Cavia", 0));
+		
+		groupId = ct.makePanel(invid, "Fat-tailed Dunnart", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Species", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				vwaProtocolId, vwaMeasurementId, groupId, "And. Zoogdieren", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				latinProtocolId, latinMeasurementId, groupId, "Sminthopsis granulipes", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				dutchProtocolId, dutchMeasurementId, groupId, "Dikstaartsmalvoetbuidelmuis", 0));
+		
+		
+		// Groups -> Backgrounds
 		groupId = ct.makePanel(invid, "CD1", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Background", 0));
-		groupId = ct.makePanel(invid, "C57black6J", login.getUserId());
+		groupId = ct.makePanel(invid, "C57BL/6J", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Background", 0));
+		
 		
 		// Groups -> Source
 		int sourceProtocolId = ct.getProtocolId("SetSourceType");
@@ -632,7 +704,13 @@ public class FillAnimalDB {
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				sourceProtocolId, sourceMeasurementId, groupId, "Niet-geregistreerde fok/afl in Nederland", 0));
 		// Sources for Uli Eisel:
-		groupId = ct.makePanel(invid, "UliEisel51and52", login.getUserId());
+		groupId = ct.makePanel(invid, "Stuttgart (Uli Eisel)", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Source", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				sourceProtocolId, sourceMeasurementId, groupId, "Van EU-lid-staten", 0));
+		/*
+		groupId = ct.makePanel(invid, "UliEisel51en52", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Source", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -642,13 +720,14 @@ public class FillAnimalDB {
 				protocolId, measurementId, groupId, "Source", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				sourceProtocolId, sourceMeasurementId, groupId, "Andere herkomst", 0));
+		*/
 		groupId = ct.makePanel(invid, "Kweek moleculaire neurobiologie", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Source", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				sourceProtocolId, sourceMeasurementId, groupId, "Eigen fok binnen uw organisatorische werkeenheid", 0));
 		// Sources for demo purposes:
-		groupId = ct.makePanel(invid, "Max-Planck-Institut fuer Verhaltensfysiologie", login.getUserId());
+		/*groupId = ct.makePanel(invid, "Max-Planck-Institut fuer Verhaltensfysiologie", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Source", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -658,6 +737,7 @@ public class FillAnimalDB {
 				protocolId, measurementId, groupId, "Source", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				sourceProtocolId, sourceMeasurementId, groupId, "Niet-geregistreerde fok/afl in andere EU-lid-staat", 0));
+		*/
 		
 		// Add everything to DB
 		db.add(valuesToAddList);
