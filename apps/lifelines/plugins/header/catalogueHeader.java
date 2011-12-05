@@ -58,6 +58,8 @@ public class catalogueHeader extends PluginModel<Entity>
 				getLogin().logout(db);
 		}
 	}
+	
+	
 
 	@Override
 	public void reload(Database db)
@@ -75,9 +77,10 @@ public class catalogueHeader extends PluginModel<Entity>
 	}
 
 	public void setUserLogin() {
+		
 		if (this.getLogin().isAuthenticated()) {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=SimpleUserLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
-			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=SimpleUserLogin&__action=doLogout'>" + " | Logout " + "</a>";
+			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
+			this.userLogin += "<a href='molgenis.do?__target=catalogueHeader&select=UserLogin&__action=doLogout'>" + " | Logout " + "</a>";
 		} else {
 			this.userLogin = "<a href='molgenis.do?__target=main&select=SimpleUserLogin'>" + "Login" + "</a>";
 		}
