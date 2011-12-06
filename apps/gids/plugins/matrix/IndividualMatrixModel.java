@@ -52,6 +52,7 @@ public class IndividualMatrixModel extends EasyPluginModel
 	private Boolean checkIfInvestchanges = false;
 	private Boolean checkForPaging = false;
 	private String lastInvest = "";
+	boolean isProjectShared;
 	
 	
 	//hack to pass database to toHtml() via toHtml(db)
@@ -259,6 +260,14 @@ public class IndividualMatrixModel extends EasyPluginModel
 
 	public void setLastInvest(String lastInvest) {
 		this.lastInvest = lastInvest;
+	}
+
+	public boolean isProjectShared() {
+		return isProjectShared;
+	}
+
+	public void setProjectShared(boolean isProjectShared) {
+		this.isProjectShared = isProjectShared;
 	}
 
 }

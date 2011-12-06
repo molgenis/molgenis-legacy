@@ -4,19 +4,21 @@
 	<input type="hidden" name="__target" value="${model.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action">
-	
+	<#if model.isProjectShared()==false>
 <!-- this shows a title and border -->
 	<div class="formscreen" style="border:0px">
+	
 		<div class="form_header" id="${model.getName()}"">
 		${model.label}
 		</div>
+		
 		<div id="protocols">
 			<span><a></a>&nbsp;</span>
 			<span class="${model.getIndividualNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Individual_info&selectedScreenI=1">Individual_info</a></span>
 			<span class="${model.getPersonalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Personal_info&selectedScreenI=2">Personal_info</a></span>
 			<span class="${model.getMedicalNavClass()}"><a href="molgenis.do?__target=${screen.name}&__action=Medical_info&selectedScreenI=3">Medical_info</a></span>
 		</div>
-
+		
 		<#--optional: mechanism to show messages-->
 		<#list model.getMessages() as message>
 			<#if message.success>
@@ -60,6 +62,7 @@
 </#if>
 	<#--end of your plugin-->	
 			</div>
-		
-
+		<#else>
+		This is an admin matrix
+</#if>
 </form>

@@ -129,9 +129,15 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 				FormModel<Investigation> form = this.getParentForm(Investigation.class);
 				List<Investigation> investigationsList = form.getRecords();
 				String invest = investigationsList.get(0).getName();
-				
+				if(invest.equals("Shared")){
+					getModel().setProjectShared(true);
+				}
+				else{
+					getModel().setProjectShared(false);
+				}
 				if(!getModel().getLastInvest().equals(invest)){
 					getModel().setCheckIfInvestchanges(true);
+					
 					System.out.println("Investchanges(true) ");
 				}
 				else{
