@@ -26,7 +26,7 @@ import org.molgenis.util.Tuple;
  * be Individual'
  */
 public class LifeLinesStandardListener extends ImportTupleListener {
-	private final int BATCH_SIZE = 1000;
+	private final int BATCH_SIZE = 10000;
 
 	// track the rows/cols of your data
 	private final Map<String, Measurement> measurements = new HashMap<String, Measurement>();
@@ -61,6 +61,7 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
 		// get reference to individual
 		String pa_id = tuple.getString("PA_ID");
+		if(pa_id == null) throw new Exception("PA_ID missing for protocol "+protocol.getName()+" in tuple: "+tuple);
 
 		Individual target = new Individual();
 		target.setName(pa_id);
@@ -100,7 +101,7 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 
 		//only add targets if they are not already there
 		db.update(new ArrayList(targets.values()),
-				DatabaseAction.ADD_IGNORE_EXISTING, "name");
+				DatabaseAction.ADD_IGNORE_EXISTING, Individual.NAME);
 		//add the values
 		db.add(this.values);
 		values.clear();

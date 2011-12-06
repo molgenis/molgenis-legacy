@@ -1,8 +1,8 @@
-<molgenis name="xqtl_lifelines" label="LifeLines xQTL workbench">
+<molgenis name="xqtl_lifelines" label="LifeLines Research Portal and Catalog">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.xwbllheader.MolgenisHeader" />
 	<menu name="main">
-		
-		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.homepage.LifeLines" />
+		<plugin label="Home" name="LifeLinesHome" type="plugins.cluster.demo.homepage.LifeLines" />
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/login.xml"/>
 		<plugin label="Publish Data Loader" name="LifeLinesLoader" type="plugins.lifelines.loader.LifeLinesLoaderPlugin" />
 		<menu label="LifeLines Catalog" name="LifeLinesCatalogMenu">
 			<plugin label="Catalog" name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" />
@@ -12,13 +12,20 @@
 				<form name="protocol" entity="Protocol" label="Protocols" />
 				<form name="category" entity="Category" label="Categories" />
 				<form name="observedValues" entity="ObservedValue" label="ObservedValues" />
-				<!-- <form name="themeProtocol" entity="themeProtocol" label="Themes" />
-				<form name="groupTheme" entity="groupTheme" label="Groups" /> -->
-				<!--form name="Panel" entity="Panel" label="Panels" />
-				<form name="ProtocolApplication" entity="ProtocolApplication" label="Protocol Applications" /-->
+				<!-- form name="themeProtocol" entity="themeProtocol" label="Themes" /-->
+				<!-- form name="groupTheme" entity="groupTheme" label="Groups" /-->
+				<!-- form name="Panel" entity="Panel" label="Panels" /-->
+				<!-- form name="ProtocolApplication" entity="ProtocolApplication" label="Protocol Applications" /-->
 			</menu>
-		</menu> 
-		<include file="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl_shared_ui.xml"/>
+		</menu>
+		<plugin label="Matrix Viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml"/>
+		<!-- include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml"/-->
+		<!-- include file="apps/xgap/org/molgenis/xgap/guicomponents/runanalysis.xml"/-->
+		<!-- include file="apps/xgap/org/molgenis/xgap/guicomponents/configureanalysis.xml"/-->
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/search.xml"/>
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/>
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
 		
 	</menu>
 </molgenis>

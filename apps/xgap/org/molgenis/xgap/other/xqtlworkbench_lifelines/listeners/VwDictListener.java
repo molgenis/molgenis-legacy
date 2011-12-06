@@ -41,28 +41,43 @@ public class VwDictListener extends ImportTupleListener {
 	@Override
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
 		
-		String protocolName = tuple.getString("TABNAAM");
-		
-		//create new protocol if not yet known
-		Protocol p = protocols.get(protocolName);
-		if(p == null)
-		{
-			p = new Protocol();
-			p.setName(protocolName);
-			//p.setInvestigation_Id(investigationId);
-			p.setInvestigation(investigation);
-			protocols.put(protocolName, p);
+		if (tuple.getString("TABNAAM") != null && !tuple.getString("TABNAAM").equals("")) {
+			String protocolName = tuple.getString("TABNAAM");
+			
+			//create new protocol if not yet known
+			Protocol p = protocols.get(protocolName);
+			if(p == null)
+			{
+				p = new Protocol();
+				p.setName(protocolName);
+				//p.setInvestigation_Id(investigationId);
+				p.setInvestigation(investigation);
+				protocols.put(protocolName, p);
+			}
+			
+			if (tuple.getString("VELD") != null) {
+				Measurement m = new Measurement();
+				m.setName(tuple.getString("VELD"));
+				m.setDataType( convertDataType(tuple.getString("VLDTYPE"))  );
+				m.setDescription(tuple.getString("OMSCHR"));
+				measurements.add(m);
+				p.getFeatures_Name().add(m.getName());
+			}
 		}
-		
-		Measurement m = new Measurement();
-		m.setName(tuple.getString("VELD"));
-		m.setDataType( tuple.getString("VLDTYPE")  );
-		m.setDescription(tuple.getString("OMSCHR"));
-		measurements.add(m);
-				
-		p.getFeatures_Name().add(m.getName());
 	}
 	
+	private String convertDataType(String string) {
+		if(string == null)
+			return "string";
+		if(string.startsWith("NUMMER"))
+				return "int";
+		if(string.startsWith("DATUM"))
+			return "datetime";
+		//else
+			return "string";
+		
+	}
+
 	public void commit() throws DatabaseException
 	{
 		db.add(measurements);

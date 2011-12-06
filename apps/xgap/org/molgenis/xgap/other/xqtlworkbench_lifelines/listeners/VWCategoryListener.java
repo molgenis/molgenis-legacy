@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
@@ -39,22 +40,24 @@ public class VWCategoryListener extends ImportTupleListener {
 		Measurement m = measurements.get(tuple.getString("VELD"));
 
 		//create the category
-		Category category = new Category();
-		category.setInvestigation(investigation);
-		category.setName(m.getName()+"_"+tuple.getString("VALLABELABEL"));
-		category.setCode_String(tuple.getString("VALLABELVAL"));
-		category.setLabel(tuple.getString("VALLABELABEL"));
-		category.setDescription(tuple.getString("VALLABELABEL"));
-		
-		//add measurement, then get id and set it on measurement.categories
-		categories.add(category);
-		m.getCategories_Name().add(category.getName());
+		if (m != null && tuple.getString("VALLABELABEL") != null) {
+			Category category = new Category();
+			category.setInvestigation(investigation);
+			category.setName(m.getName() + "_" + tuple.getString("VALLABELABEL"));
+			category.setCode_String(tuple.getString("VALLABELVAL"));
+			category.setLabel(tuple.getString("VALLABELABEL"));
+			category.setDescription(tuple.getString("VALLABELABEL"));
+			
+			//add measurement, then get id and set it on measurement.categories
+			categories.add(category);
+			m.getCategories_Name().add(category.getName());
+		}
 	}
 
 	@Override
 	public void commit() throws Exception {
 		// TODO Auto-generated method stub
-		db.add(categories);
+		db.update(categories, DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
 		db.update(new ArrayList(measurements.values()));
 	}
 

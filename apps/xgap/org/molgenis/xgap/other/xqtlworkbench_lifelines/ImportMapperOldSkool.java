@@ -6,32 +6,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.log4j.BasicConfigurator;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.xgap.other.xqtlworkbench_lifelines.ThreadReaders.CSVFileSpliter;
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.LifeLinesStandardListener;
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VWCategoryListener;
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VwDictListener;
-import org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders.EAVToView;
-import org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders.LoaderUtils;
-import org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders.MyMonitorThread;
 
 import app.DatabaseFactory;
 
@@ -42,108 +32,121 @@ import app.DatabaseFactory;
  */
 public class ImportMapperOldSkool {
 
-	private static final int MAX_THREADS = 20;
-	private static final int THREAD_TIME_OUT_TIME = 60;
-	
-	
-	/** for testing only!
-	 * @throws Exception */
-	public static void main(String[] args) throws Exception
-	{
+	/**
+	 * for testing only!
+	 * 
+	 * @throws Exception
+	 */
+	public static void main(String[] args) throws Exception {
 		// adjust for your situation!
 		importData("C:\\lifelinesdata\\all.zip");
 	}
-	
+
 	public static void importData(String zipFileName) throws Exception {
-		
+
 		// Path to store files from zip
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		String path = tmpDir.getAbsolutePath() + File.separatorChar;
 		// Extract zip
 		ZipFile zipFile = new ZipFile(zipFileName);
 		Enumeration<?> entries = zipFile.entries();
-		while(entries.hasMoreElements()) {
-			ZipEntry entry = (ZipEntry)entries.nextElement();
-			copyInputStream(zipFile.getInputStream(entry),
-			           new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
+		while (entries.hasMoreElements()) {
+			ZipEntry entry = (ZipEntry) entries.nextElement();
+			copyInputStream(
+					zipFile.getInputStream(entry),
+					new BufferedOutputStream(new FileOutputStream(path
+							+ entry.getName())));
 		}
-		
-		//enable log
+
+		// enable log
 		BasicConfigurator.configure();
-		
-		//target for output, either CsvWriter or Database
+
+		// target for output, either CsvWriter or Database
 		Database db = DatabaseFactory.create();
-		
+
 		Investigation inv = new Investigation();
 		inv.setName("Test" + new Date());
 		db.beginTx();
 		db.add(inv);
 		db.commitTx();
-		
-		//load dictonary
+
+		// load dictonary
 		final String DICT = "VW_DICT";
 		VwDictListener dicListener = new VwDictListener(inv, DICT, db);
-		CsvReader reader = new CsvFileReader(new File(path + DICT + "_DATA.csv"));
+		CsvReader reader = new CsvFileReader(
+				new File(path + DICT + "_DATA.csv"));
 		reader.parse(dicListener);
-		dicListener.commit();		
-		
-		//load categories 
+		dicListener.commit();
+
+		// load categories
 		final String CATE = "VW_DICT_VALUESETS";
-		VWCategoryListener catListener = new VWCategoryListener(dicListener.getProtocols(), inv, CATE, db);
+		VWCategoryListener catListener = new VWCategoryListener(
+				dicListener.getProtocols(), inv, CATE, db);
 		reader = new CsvFileReader(new File(path + CATE + "_DATA.csv"));
 		reader.parse(catListener);
-		catListener.commit();		
-		
-		//iterate through the map assuming CSV files
-		for(Protocol protocol : dicListener.getProtocols().values())
-		{
-			File f = new File(path + "VW_" + protocol.getName() + "_DATA.csv");
-			LifeLinesStandardListener llListener = new LifeLinesStandardListener(inv, protocol, db);
-			reader = new CsvFileReader(f);
-			reader.parse(llListener);
-			llListener.commit();
+		catListener.commit();
+
+		// iterate through the map assuming CSV files
+		List<String> exclude = Arrays.asList(new String[] { "BEP_OMSCHR",
+				"DICT_HULP" });
+		for (Protocol protocol : dicListener.getProtocols().values()) {
+			if (!exclude.contains(protocol.getName())) {
+				File f = new File(path + "VW_" + protocol.getName()
+						+ "_DATA.csv");
+				LifeLinesStandardListener llListener = new LifeLinesStandardListener(
+						inv, protocol, db);
+				reader = new CsvFileReader(f);
+				reader.parse(llListener);
+				llListener.commit();
+			}
 		}
-		
+
 		System.out.println("The End!");
-		
-//					//this information should be stored in dict
-////					String primaryKeyColumn = "PA_ID";
-////					if(protocol.getName().contains("BEP_OMSCHR")) {
-////						continue;
-////					}
-//						
-//					//CSVFileSpliter csvFileSpliter = new CSVFileSpliter(path + "VW_" + protocol.getName() +"_DATA.csv", 1000, primaryKeyColumn);
-//					
-//					//LifeLinesStandardListener.resetRowCount();
-//					
-//					List<LifeLinesStandardListener> listeners = new ArrayList<LifeLinesStandardListener>();
-//		            //CountDownLatch doneSignal = new CountDownLatch(N);
-////					while(csvFileSpliter.hasMore()) {
-////						listeners.add(new LifeLinesStandardListener(inv, protocol, db, csvFileSpliter.getTuples()));
-////					}
-//					
-//		            BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(listeners.size());
-//		            ThreadPoolExecutor executor = new ThreadPoolExecutor(MAX_THREADS, MAX_THREADS, THREAD_TIME_OUT_TIME, TimeUnit.SECONDS, workQueue);
-//					for(LifeLinesStandardListener listener : listeners) {
-//						executor.execute(listener);
-//					}
-//					Thread monitor = new Thread(new MyMonitorThread(executor, protocol.getName()));
-//					monitor.start();
-//					
-//					executor.shutdown();
-//					executor.awaitTermination(5, TimeUnit.MINUTES);
+
+		// //this information should be stored in dict
+		// // String primaryKeyColumn = "PA_ID";
+		// // if(protocol.getName().contains("BEP_OMSCHR")) {
+		// // continue;
+		// // }
+		//
+		// //CSVFileSpliter csvFileSpliter = new CSVFileSpliter(path + "VW_" +
+		// protocol.getName() +"_DATA.csv", 1000, primaryKeyColumn);
+		//
+		// //LifeLinesStandardListener.resetRowCount();
+		//
+		// List<LifeLinesStandardListener> listeners = new
+		// ArrayList<LifeLinesStandardListener>();
+		// //CountDownLatch doneSignal = new CountDownLatch(N);
+		// // while(csvFileSpliter.hasMore()) {
+		// // listeners.add(new LifeLinesStandardListener(inv, protocol, db,
+		// csvFileSpliter.getTuples()));
+		// // }
+		//
+		// BlockingQueue<Runnable> workQueue = new
+		// ArrayBlockingQueue<Runnable>(listeners.size());
+		// ThreadPoolExecutor executor = new ThreadPoolExecutor(MAX_THREADS,
+		// MAX_THREADS, THREAD_TIME_OUT_TIME, TimeUnit.SECONDS, workQueue);
+		// for(LifeLinesStandardListener listener : listeners) {
+		// executor.execute(listener);
+		// }
+		// Thread monitor = new Thread(new MyMonitorThread(executor,
+		// protocol.getName()));
+		// monitor.start();
+		//
+		// executor.shutdown();
+		// executor.awaitTermination(5, TimeUnit.MINUTES);
 	}
-	
-	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException
-	{
-	    byte[] buffer = new byte[1024];
-	    int len;
-	
-	    while((len = in.read(buffer)) >= 0)
-	      out.write(buffer, 0, len);
-	
-	    in.close();
-	    out.close();
+
+	public static final void copyInputStream(InputStream in, OutputStream out)
+			throws IOException {
+		byte[] buffer = new byte[1024];
+		int len;
+
+		while ((len = in.read(buffer)) >= 0)
+			out.write(buffer, 0, len);
+
+		in.close();
+		out.close();
 	}
-	
+
 }
