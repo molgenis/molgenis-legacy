@@ -1184,7 +1184,7 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			if (action.equals("selectParentgroup")) {
 				setUserFields(request, false);
-				List rows = matrixViewer.getSelection(db);
+				List<?> rows = matrixViewer.getSelection(db);
 				int row = request.getInt(MATRIX + "_selected");
 				this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
 				this.setAction("AddLitter");

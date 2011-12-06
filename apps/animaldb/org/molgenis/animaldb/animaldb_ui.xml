@@ -100,7 +100,7 @@
 				label="Edit values" />
 			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
 				label="View values in matrix" />
-			<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
+			<plugin name="EventViewer" type="plugins.protocol.EventViewerPluginMatrix"
 				label="View values in timeline" />
 			<!--plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests" 
 				label="Sliceable PhenoMatrix (TESTING)" / -->

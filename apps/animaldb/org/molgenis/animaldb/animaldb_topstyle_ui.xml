@@ -11,8 +11,6 @@
 		<!-- plugin name="News" type="plugins.news.News" label="News"/ -->
 		
 		<menu name="animalmenu" position="left" label="Animals">
-			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
-					label="View values in matrix" />
 			
 			<plugin name="AddAnimal" type="plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />		
@@ -33,12 +31,12 @@
 				label="Make (cage) labels" />
 				
 			<menu name="valuemenu" position="left" label="Values">
+				<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
+					label="View values in matrix" />
 				<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
 					label="Make/edit values" />
-				<plugin name="EventViewer" type="plugins.protocol.EventViewerPlugin"
+				<plugin name="EventViewer" type="plugins.protocol.EventViewerPluginMatrix"
 					label="View values in timeline" />
-				<!--plugin name="MatrixTests" type="org.molgenis.sandbox.ui.MatrixTests"
-					label="Sliceable PhenoMatrix (TESTING)" /-->
 			</menu>
 		</menu>
 		

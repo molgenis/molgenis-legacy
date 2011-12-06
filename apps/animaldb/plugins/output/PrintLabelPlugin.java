@@ -204,6 +204,7 @@ public class PrintLabelPlugin extends GenericPlugin
 			} else {
 				// Add link to pdf to UI, if available
 				if (text != null) {
+					panel.remove(text);
 					panel.add(text);
 				}
 			}
