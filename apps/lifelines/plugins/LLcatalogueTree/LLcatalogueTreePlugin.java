@@ -217,7 +217,12 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		JQueryTreeViewElementMeasurement protocolsTree = new JQueryTreeViewElementMeasurement(
 				"Protocols", null);
 
-		recursiveAddingTree(topProtocols, protocolsTree, db);
+		if(topProtocols.size() == 0){
+			recursiveAddingTree(bottomProtocols, protocolsTree, db);
+
+		}else{
+			recursiveAddingTree(topProtocols, protocolsTree, db);
+		}
 
 		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementMeasurement>(
 				"Protocols", protocolsTree);
