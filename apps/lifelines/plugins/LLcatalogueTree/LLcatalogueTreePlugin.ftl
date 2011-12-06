@@ -30,7 +30,7 @@
 					${screen.getTreeView()}
 				</div>
 				<!--div id="rightSide" style="position: absolute;  float:right; top: 10px; "-->
-				<div id="rightSide" style="position: absolute; left: 910px; top: 20px; height: 400px; width: 100px; padding: 1em;">
+				<div id="CatalogueRightSide">
 					right side	
 				</div>
 				<div><h1>Shopping cart</h1>

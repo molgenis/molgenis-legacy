@@ -67,4 +67,11 @@
 .filetree li.expandable span.folder { background: url(images/folder-closed.gif) 0 0 no-repeat; }
 .filetree span.file { background: url(images/file.gif) 0 0 no-repeat; }
 
+div#CatalogueRightSide{
+	position: absolute; 
+	left: 910px; 
+	top: 50px; 
+	font-family: Verdana,helvetica,arial,sans-serif; /* has to be the same as JQuery Tree*/
+	font-size: 68.75%;
+}
 
