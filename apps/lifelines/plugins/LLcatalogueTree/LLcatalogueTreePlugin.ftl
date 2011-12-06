@@ -28,9 +28,9 @@
 				<div id="leftSide" style="width:200px;">
 					${screen.getTreeView()}
 				</div>
-				<div id="CatalogueRightSide">
+				<!--div id="CatalogueRightSide">
 					right side	
-				</div><br/>
+				</div--><br/>
 				<div id="ShoppingCartLabel">Shopping cart</div>
 				<div class="ShoppingCartContents">
 					<ul>
@@ -44,7 +44,10 @@
 				</div>
 			</div>
 			<input type="hidden" id="test" value="">
+			<label> 	<#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
+			
 		</div>
 	</div>
 </form>
+
 </#macro>

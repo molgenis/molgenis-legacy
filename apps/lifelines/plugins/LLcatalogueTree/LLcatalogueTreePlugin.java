@@ -3,6 +3,7 @@ package plugins.LLcatalogueTree;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -20,7 +21,9 @@ import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tuple;
 
 public class LLcatalogueTreePlugin extends PluginModel<Entity> {
-
+	
+	private String Status;
+	
 	private static final long serialVersionUID = -6143910771849972946L;
 
 	private JQueryTreeViewMeasurement<JQueryTreeViewElementMeasurement> treeView = null;
@@ -36,6 +39,54 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	public LLcatalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 
+	}
+	
+	/** My new action */
+	public void handleRequest(Database db, Tuple request) {
+
+		System.out.println("CAUGHT IT: " + request);
+		System.out.println(request.getInt("measurementId"));
+		try {
+
+			Measurement selected = Measurement.findById(db,
+					request.getInt("measurementId"));
+			if (selected == null) {
+				this.setError("measurementId unknown: "
+						+ request.getInt("measurementId"));
+			} else {
+
+				System.out.println("---------------------->" + selected);
+
+				this.shoppingCart.add(selected);
+				
+				// clean the ordered measurement list form dublicates
+				this.shoppingCart = cleanShoppingCart();
+				
+				//TODO : SHow X to remove items. 
+			}
+		} catch (Exception e) {
+			this.setError(e.getMessage());
+		}
+		
+		if ("OrderMeasurements".equals(request.getAction())) {
+			
+			this.shoppingCart = cleanShoppingCart();
+			
+			
+			this.setStatus("<h4>You order is being processed.</h4>" ) ;
+		}		
+
+	}
+
+	private List<Measurement> cleanShoppingCart() {
+		List<Measurement> cleanShoppingCart = new ArrayList<Measurement>(); 
+		
+		for (int i=0; i<this.getShoppingCart().size(); i++) {
+			Measurement m = this.getShoppingCart().get(i);
+			if (!cleanShoppingCart.contains(m)) cleanShoppingCart.add(m);
+		}
+		
+		return cleanShoppingCart;
 	}
 
 	public void recursiveAddingTree(List<String> parentNode,
@@ -136,29 +187,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		return "plugins/LLcatalogueTree/LLcatalogueTreePlugin.ftl";
 	}
 
-	/** My new action */
-	public void handleRequest(Database db, Tuple request) {
-
-		System.out.println("CAUGHT IT: " + request);
-		System.out.println(request.getInt("measurementId"));
-		try {
-
-			Measurement selected = Measurement.findById(db,
-					request.getInt("measurementId"));
-			if (selected == null) {
-				this.setError("measurementId unknown: "
-						+ request.getInt("measurementId"));
-			} else {
-
-				System.out.println("---------------------->" + selected);
-
-				this.shoppingCart.add(selected);
-			}
-		} catch (Exception e) {
-			this.setError(e.getMessage());
-		}
-
-	}
+	
 
 	@Override
 	public void reload(Database db) {
@@ -250,6 +279,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 	public List<Measurement> getShoppingCart() {
 		return shoppingCart;
+	}
+
+	public void setStatus(String status) {
+		Status = status;
+	}
+
+	public String getStatus() {
+		return Status;
 	}
 
 }
