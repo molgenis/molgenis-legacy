@@ -32,13 +32,15 @@
 				<!--div id="rightSide" style="position: absolute;  float:right; top: 10px; "-->
 				<div id="CatalogueRightSide">
 					right side	
-				</div>
-				<div><h1>Shopping cart</h1>
-				<ul>
-				<#list screen.getShoppingCart() as measurement>
-				<li>${measurement.name}</li>
-				</#list>
-				</ul>
+				</div><br/>
+				<div id="ShoppingCartLabel">Shopping cart</div>
+				<div id="ShoppingCartContents">
+					laaaaaaaaaaaaaaaaaaa
+					<ul>
+					<#list screen.getShoppingCart() as measurement>
+					<li>${measurement.name}</li>
+					</#list>
+					</ul>
 				</div>
 				
 				<!--<div id="bottom" style="clear:both;">
