@@ -90,7 +90,7 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 		}
 
 		++rowCount;
-		if (values.size() > BATCH_SIZE) {
+		if (rowCount % BATCH_SIZE == 0) {
 			System.out.println("BATCH INSERT " + rowCount);
 			storeValuesInDatabase();
 		}
