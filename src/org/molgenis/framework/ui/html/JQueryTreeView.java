@@ -14,8 +14,6 @@ public class JQueryTreeView<E> extends HtmlWidget
 	public JQueryTreeView(String name, SimpleTree treeData)
 	{
 		super(name);
-		System.out.println(">>>>The splkas been created"); 
-
 		this.treeData = treeData;
 	}
 	
@@ -52,16 +50,10 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"</style>\n"
 		+"<script>\n"
 		+"$(document).ready(function(){\n"
-//		+"$(\"#browser\").treeview({collapsed: true});});\n"
 		+"$(\"#browser\").treeview();});\n"
 		+ "$(\"a\").click(function(event) {"
 		+"	  event.preventDefault();"
-		+"	  alert($(this).text());"
-//		+"		alert('Tree element clicked!!');"
-		+"		$(\"#bottom\").html('This is the bottom of the screen and has been replaced with this content.');"
-		+"		$(\"#rightSide\").html($(this).text());"//.html('"; 
-		//html+=	getMeasurementDetails();
-		//html+="');"				
+//		+"	  alert(\"Your order of \"+$(this).text() + \" has been added to you Shopping Cart\");"
 		+"	});"
 		+"</script>\n";
 	    
