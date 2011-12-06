@@ -3,9 +3,21 @@
 	<menu name="main">
 		
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.homepage.LifeLines" />
-		
 		<plugin label="Publish Data Loader" name="LifeLinesLoader" type="plugins.lifelines.loader.LifeLinesLoaderPlugin" />
-		
+		<menu label="LifeLines Catalog" name="LifeLinesCatalogMenu">
+			<plugin label="Catalog" name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" />
+			<menu label="Overview" name="catalogueOverview">
+				<form name="investigation" entity="Investigation" label="Investigations" />
+				<form name="measurement" entity="Measurement" label="Measurements" />
+				<form name="protocol" entity="Protocol" label="Protocols" />
+				<form name="category" entity="Category" label="Categories" />
+				<form name="observedValues" entity="ObservedValue" label="ObservedValues" />
+				<!-- <form name="themeProtocol" entity="themeProtocol" label="Themes" />
+				<form name="groupTheme" entity="groupTheme" label="Groups" /> -->
+				<!--form name="Panel" entity="Panel" label="Panels" />
+				<form name="ProtocolApplication" entity="ProtocolApplication" label="Protocol Applications" /-->
+			</menu>
+		</menu> 
 		<include file="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl_shared_ui.xml"/>
 		
 	</menu>
