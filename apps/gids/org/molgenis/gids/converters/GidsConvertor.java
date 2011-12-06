@@ -18,7 +18,7 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 import app.CsvExport;
-
+import java.util.Map.Entry;
 public class GidsConvertor
 {
 	private Logger logger;
@@ -32,6 +32,7 @@ public class GidsConvertor
 	private String invName;
 	private ArrayList<String> alIndividuals = new ArrayList<String>();
 	
+	
 	public File tmpDir = null;
 	
 	Database db;
@@ -44,7 +45,7 @@ public class GidsConvertor
 		populateIndividualAndSample(file,invName,individual, father, mother,sample);
 		populateMeasurement(file,invName,individual, father, mother, sample, hashChangeMeas);
 		
-		populateValue(file,invName, individual, sample, samplemeaslist);
+		populateValue(file,invName, individual, sample, samplemeaslist, hashChangeMeas);
 		
 		CsvExport export = new CsvExport();
 		tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -96,7 +97,6 @@ public class GidsConvertor
 	public Investigation makeInvestigation(String invName){
 		Investigation newInvest = new Investigation();
 		newInvest.setName(invName);
-		newInvest.setName(invName);
 		return newInvest;
 	}
 	
@@ -104,6 +104,7 @@ public class GidsConvertor
 	{
 		individualsList.clear();
 		samplesList.clear();
+		
 		
 		final List<String> namesSeen = new ArrayList<String>();
 		this.invName = invName;
@@ -153,15 +154,10 @@ public class GidsConvertor
 		totalMeasurementsList.clear();
 		
 		CsvFileReader reader = new CsvFileReader(file);
-
 		for (String header : reader.colnames()) {
-
-			//if (!header.equals(target) && !header.equals(mother) && !header.equals(father)&& !header.equals(sample)) {
 				if(db.query(Measurement.class).eq(Measurement.NAME, header).count() == 0){
-					
 					/*If the measurement already exist in the data, but with a wrong header (e.g. birthdate in inputfile--> date of birth in db)*/
 					if(hashChangeMeas.containsKey(header)){
-						
 						List<Measurement> measList = db.query(Measurement.class).eq(Measurement.NAME, hashChangeMeas.get(header)).find();
 						int invID = db.query(Investigation.class).eq(Investigation.NAME, "Shared" ).find().get(0).getId();
 						Measurement meas = measList.get(0);
@@ -185,6 +181,7 @@ public class GidsConvertor
 					db.update(meas);
 					totalMeasurementsList.add(meas);
 				}
+				
 			//}		
 		}
 	}
@@ -193,9 +190,10 @@ public class GidsConvertor
 		return invName;
 	}
 	
-	public void populateValue(File file, String invName,final String individual, final String sample, final List<String> samplemeaslist) throws Exception
+	public void populateValue(File file, String invName,final String individual, final String sample, final List<String> samplemeaslist, final HashMap<String,String> hashChangeMeas) throws Exception
 	{
 		valuesList.clear();
+		alIndividuals.clear();
 		
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
@@ -205,30 +203,45 @@ public class GidsConvertor
 				//Change targetname into the targetname/target id column
 				String targetName = tuple.getString(individual);				
 				String sampleName = tuple.getString(sample);
-				
-				
+				HashMap<String,String> hashMeasFlipped = new HashMap<String, String>();
+				//Flip the key and value and put them in the new hashmap
+				for(Entry<String,String> entry: hashChangeMeas.entrySet()){
+					hashMeasFlipped.put(entry.getValue(),entry.getKey());
+				}
+				/*If the measurement already exist in the data, but with a wrong header (e.g. birthdate in inputfile--> date of birth in db)
+				 */
 				if(sampleName!=null){
 					for (Measurement m : totalMeasurementsList) {
-						String featureName = m.getName();
+						String featureName =  m.getName();
+						//System.out.println("FEATURENAME: " + featureName);
+						String value = "";
+
+						if(hashMeasFlipped.containsKey(featureName)){
+							value = tuple.getString(hashMeasFlipped.get(featureName));						
+						}
 						
-						String value = tuple.getString(featureName);
+						else{
+							value= tuple.getString(featureName);
+						}
+						
+						
 						ObservedValue newValue = new ObservedValue();
 						newValue.setFeature_Name(featureName);
 						
+						//Check if combination Target+Feature already existed in the !Samples list
 						if(samplemeaslist.contains(featureName)){
 							newValue.setTarget_Name(sampleName);
 							
 						}
 						else{
+							//Check if featureName + target already existed in alIndviduals list
 							if(!alIndividuals.contains(featureName+targetName)){
-								alIndividuals.add(featureName+targetName);
 								newValue.setTarget_Name(targetName);
+								alIndividuals.add(featureName+targetName);
 							}
 							else{
-								break;
+								continue;
 							}
-							
-							
 	
 						}
 						newValue.setValue(value);
@@ -240,4 +253,5 @@ public class GidsConvertor
 		});
 		
 	}
+
 }

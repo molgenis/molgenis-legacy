@@ -31,6 +31,9 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.gids.converters.GidsConvertor;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
@@ -87,6 +90,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	private List<String> indvMeasList = new ArrayList<String>();
 	List<String> measInDb = new ArrayList<String>();
 	private HashMap<String,String> hashChangeMeas = new HashMap<String, String>();
+	private String existinv;
+	private String newinv;
 	
 	public String[] getArrayChooseTable() {
 		return arrayChooseTable;
@@ -177,7 +182,10 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				for(int x =0; x<1; x++){
 					String line = buffy.readLine();
 					arrayMeasurements = line.split(delimeter);
-					checkInvestigation(db, request);
+					
+					newinv = request.getString("createNewInvest");
+					existinv = request.getString("investigation");
+					checkInvestigation(db,request);
 					state="inStep2";
 					System.out.println("########### " + state);
 				}			
@@ -187,11 +195,11 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 
 		if(action.equals("goToStep3")){	
+			listNewMeas = new ArrayList<String>();
 			hashStep2.put("individual",request.getString("individual"));
 			hashStep2.put("sample",request.getString("sample"));
 			hashStep2.put("father",request.getString("father"));
 			hashStep2.put("mother",request.getString("mother"));
-			//System.out.println("########### " + request.getString("target"));
 			for (String e : arrayMeasurements){
 				if(db.query(Measurement.class).eq(Measurement.NAME, e).count() == 0){
 					if(!e.equals(hashStep2.get("individual"))&& !e.equals(hashStep2.get("sample"))&&
@@ -199,8 +207,6 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 						
 						listNewMeas.add(e);
 					}
-					//System.out.println(e);
-					
 				}
 			}
 			
@@ -209,7 +215,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			int teller=0;
 			for(Measurement s:mList){
 				System.out.println("measurements: " + s);
-				measInDb.add(mList.get(teller).getName());
+				if(!measInDb.contains(s)){
+					measInDb.add(mList.get(teller).getName());
+				}
 				teller++;
 			}
 			
@@ -217,11 +225,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			state= "inStep3";
 		}
 		int teller=0;
-		
-		
-		
+
 		if(action.equals("run pipeline")){	
-			try {
+			try {				
 				//convert csv file into different txt files
 				individualName = hashStep2.get("individual");
 				sampleName = hashStep2.get("sample");
@@ -234,7 +240,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 						for (String e : listNewMeas){
 							
 							Boolean c = request.getBoolean("checker"+teller);
-							if(c){
+							if(c!=null){
 								knownMeas = request.getString("dropbox"+teller);
 								hashChangeMeas.put(e, knownMeas);
 							}else{
@@ -250,18 +256,23 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 							}
 						}
 					}
-					runGenerConver(fileData,invName,db,individualName, father, mother,sampleName,sampleMeasList,indvMeasList,hashChangeMeas);		    
-					state = "pipeline";
 					
+					runGenerConver(fileData,invName,db,individualName, father, mother,sampleName,sampleMeasList,indvMeasList,hashChangeMeas);		    
+					//state = "pipeline";
+					state = "start";
 					//get the server path
 					File dir = gc.getDir();
 					
 					//import the data into database
+					System.out.println("Piet snot");
 					try{
 						CsvImport.importAll(dir, db, null);
 						dir = null;
-						//this.setMessages(new ScreenMessage("data succesfully added to the database", true));
-						redirectToInvestigationPage(request);
+						
+						//redirectToInvestigationPage(request);
+						
+					
+					
 					}catch(Exception e){
 						if(e.getMessage().startsWith("Tried to add existing Individual elements as new insert:")){
 							this.setMessages(new ScreenMessage("The individuals already exist in the database", false));
@@ -270,9 +281,10 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				}
 				catch(Exception e){
 					this.setMessages(new ScreenMessage(e.getMessage(), false));
-				}
-
+				}	
+				
 			} catch (Exception e) {
+				//db.rollbackTx();
 				e.printStackTrace();
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
@@ -332,13 +344,14 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		try {
 			setInvestigations(db.query(Investigation.class).find());
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} 
 		
 //		
 	}
 	
+
 	public void checkInvestigation(Database db, Tuple request){
 
 		if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
@@ -348,7 +361,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		else{
 			invName = request.getString("createNewInvest");
 			Investigation inve = new Investigation();
-			inve.setName(invName);
+			inve.setName(newinv);
+			//Protocol prot = new Protocol();
+			//prot.setName(invName);
 //			inve.setOwns_Name("admin"); default pheno.xml does not have authorizable for Investigation anymore
 			try {
 				
@@ -358,6 +373,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				e.printStackTrace();
 			} 
 		}
+		System.out.println("&&&& "  +invName + "\t" + newinv);
 	}
 	
 	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother, String sample, List<String> samplemeaslist,List<String> indvmeaslist,HashMap<String,String> hashChangeMeas){
@@ -367,7 +383,6 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			gc.converter(file, invName, db, target,father,mother, sample, samplemeaslist,indvmeaslist,hashChangeMeas);				
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}			
 		
