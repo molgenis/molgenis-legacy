@@ -4,6 +4,8 @@
 		
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.homepage.LifeLines" />
 		
+		<plugin label="Publish Data Loader" name="LifeLinesLoader" type="plugins.lifelines.loader.LifeLinesLoaderPlugin" />
+		
 		<include file="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl_shared_ui.xml"/>
 		
 	</menu>

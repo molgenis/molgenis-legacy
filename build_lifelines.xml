@@ -4,10 +4,11 @@
 	<property name="app_name" value="xgap" />
 
 	<!-- this holds all the settings for the generator -->
-	<property name="app_properties" value="apps/xgap/org/molgenis/xgap/other/xqtlworkbench_lifelines/xwbll_jpa.properties"/>
+	<property name="app_properties" value="apps/xgap/org/molgenis/xgap/other/xqtlworkbench_lifelines/xwbll.properties"/>
 
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
+		<pathelement location="apps/${app_name}" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />
