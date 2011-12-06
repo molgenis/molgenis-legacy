@@ -54,6 +54,13 @@ public class MrefField extends FieldType
 		//FIXME this function should be never called???
 		return getFieldType(f.getXrefField()).getMysqlType();
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		//FIXME this function should be never called???
+		return getFieldType(f.getXrefField()).getOracleType();
+	}
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException

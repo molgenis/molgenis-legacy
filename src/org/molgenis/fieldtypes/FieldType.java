@@ -157,4 +157,6 @@ public abstract class FieldType
 	public abstract HtmlInput createInput(String name, String xrefEntityClassNames) throws HtmlInputException;
 
 	public abstract String getCppJavaPropertyType() throws MolgenisModelException;
+
+	public abstract String getOracleType() throws MolgenisModelException;
 }

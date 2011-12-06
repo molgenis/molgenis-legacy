@@ -33,6 +33,13 @@ public class ListField extends FieldType
 	}
 	
 	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		//should never happen?
+		return "LIST CANNOT BE IN SQL";
+	}
+	
+	@Override
 	public String getJavaSetterType() throws MolgenisModelException
 	{
 		return "List";

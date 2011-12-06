@@ -31,6 +31,12 @@ public class FileField extends FieldType
 	{
 		return "VARCHAR(1024)";
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "TEXT";
+	}
 
 	@Override
 	public String getHsqlType()

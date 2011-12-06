@@ -34,6 +34,12 @@ public class DateField extends FieldType
 	}
 	
 	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "DATE";
+	}
+	
+	@Override
 	public String getJavaSetterType() throws MolgenisModelException
 	{
 		return "Date";

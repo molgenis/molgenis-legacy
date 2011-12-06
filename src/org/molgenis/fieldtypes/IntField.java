@@ -32,6 +32,12 @@ public class IntField extends FieldType
 		return "INTEGER";
 	}
 	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "NUMBER (10,0)";
+	}
+	
 	public String getJavaSetterType() throws MolgenisModelException
 	{
 		return "Int";

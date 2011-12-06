@@ -31,6 +31,12 @@ public class CharField extends FieldType
 	{
 		return "CHAR("+f.getVarCharLength()+")";
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "CHAR("+f.getVarCharLength()+")";
+	}
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException

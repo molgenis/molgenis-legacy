@@ -32,6 +32,12 @@ public class LongField extends FieldType
 	{
 		return "BIGINT";
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "NUMBER (19,0)";
+	}
 
 	@Override
 	public String getHsqlType()

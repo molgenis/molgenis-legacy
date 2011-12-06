@@ -34,6 +34,12 @@ public class DatetimeField extends FieldType
 	}
 	
 	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "DATE";
+	}
+	
+	@Override
 	public String getXsdType()
 	{
 		return "dateTime";

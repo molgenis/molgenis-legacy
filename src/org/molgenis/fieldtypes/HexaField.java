@@ -31,6 +31,12 @@ public class HexaField extends FieldType
 	{
 		return "VARCHAR(255)";
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "VARCHAR2(255)";
+	}
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException

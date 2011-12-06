@@ -39,8 +39,13 @@ public class XrefField extends FieldType
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		
 		return getFieldType(f.getXrefField()).getMysqlType();
+	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return getFieldType(f.getXrefField()).getOracleType();
 	}
 
 	@Override
