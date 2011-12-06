@@ -92,10 +92,8 @@ public class AnimaldbSeleniumTest
 	@Test(dependsOnMethods={"loginAdmin"})
 	public void makeUser() throws InterruptedException
 	{
-		// Go to AnimalDB user mgmt. plugin
-		selenium.click("id=securitymenu_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=AnimalDbUsers_tab_button");
+		// Go to AnimalDB user mgmt. plugin (first item in Admin menu)
+		selenium.click("id=Admin_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Make user 'test'
 		selenium.click("link=Make new user");
@@ -178,7 +176,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=ManageLines_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Manage breeding lines"));
+		Assert.assertTrue(selenium.isTextPresent("Breeding lines"));
 		// Add a breeding line
 		selenium.type("id=linename", "MyLine");
 		selenium.click("id=add");
@@ -187,7 +185,7 @@ public class AnimaldbSeleniumTest
 		// Go to Parentgroup plugin
 		selenium.click("id=ManageParentgroups_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Manage parent groups"));
+		Assert.assertTrue(selenium.isTextPresent("Parent groups"));
 		// Add a parent group
 		selenium.click("link=Make new parent group");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -217,7 +215,7 @@ public class AnimaldbSeleniumTest
 		// Go to Litter plugin
 		selenium.click("ManageLitters_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Manage litters"));
+		Assert.assertTrue(selenium.isTextPresent("Litters"));
 		Assert.assertTrue(selenium.isTextPresent("Make new litter"));
 		// Add a litter
 		selenium.click("link=Make new litter");
@@ -272,11 +270,11 @@ public class AnimaldbSeleniumTest
 		String[] months = new String[] {"January", "February", "March", "April", "May", "June",
 										"July", "August", "September", "October", "November", "December"};
 		// Go to DEC project plugin
-		selenium.click("id=projectmenu_tab_button");
+		selenium.click("id=decmenu_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=AddProject_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Manage DEC projects"));
+		Assert.assertTrue(selenium.isTextPresent("DEC applications"));
 		// Make a DEC project
 		selenium.click("link=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -294,7 +292,7 @@ public class AnimaldbSeleniumTest
 		// Go to DEC subproject plugin
 		selenium.click("id=AddSubproject_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Manage DEC subprojects"));
+		Assert.assertTrue(selenium.isTextPresent("DEC subprojects"));
 		// Make a DEC subproject
 		selenium.click("link=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -311,7 +309,7 @@ public class AnimaldbSeleniumTest
 		// Go to Animals in DEC plugin
 		selenium.click("id=AnimalsInSubprojects_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Manage animals in DEC subprojects"));
+		Assert.assertTrue(selenium.isTextPresent("DEC: add/remove animals"));
 		// Add animals to DEC (multiple select does not seem to work in Selenium so there is some duplication here
 		selenium.select("id=subproject", "label=DEC 12345A");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -384,6 +382,8 @@ public class AnimaldbSeleniumTest
 	@Test(dependsOnMethods={"yearlyReports"})
 	public void applyProtocol() throws Exception {
 		// Go to Protocol plugin
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=valuemenu_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=ApplyProtocol_tab_button");
@@ -406,10 +406,9 @@ public class AnimaldbSeleniumTest
 		// Check in Timeline value viewer
 		selenium.click("id=EventViewer_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.select("id=animal", "label=000001");
-		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
-		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
-		Thread.sleep(5000);
+		selenium.click("id=targetmatrix_selected_0"); // toggle radio button for first animal in list
+		selenium.click("id=select");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Weight"));
 		Assert.assertTrue(selenium.isTextPresent("200"));
 		
@@ -467,7 +466,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully added"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Manage animals in DEC subprojects"));
+		Assert.assertTrue(selenium.isTextPresent("DEC: add/remove animals"));
 	}
 
 }

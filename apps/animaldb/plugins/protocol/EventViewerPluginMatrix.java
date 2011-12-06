@@ -7,6 +7,7 @@
 
 package plugins.protocol;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
@@ -44,6 +46,7 @@ public class EventViewerPluginMatrix extends GenericPlugin
 	private DivPanel div = null;
 	private CommonService cs = CommonService.getInstance();
 	Table animalInfo = null;
+	Paragraph animalInfoHeader = null;
 	
 	public EventViewerPluginMatrix(String name, ScreenController<?> parent)
 	{
@@ -77,53 +80,53 @@ public class EventViewerPluginMatrix extends GenericPlugin
 		}
 	}
 
-	private void createInfoTable(Database db, int animalId) throws DatabaseException {
+	private void createInfoTable(Database db, int animalId) throws DatabaseException, ParseException {
+		
+		animalInfoHeader = new Paragraph("<h3>Timeline for animal " + cs.getObservationTargetLabel(animalId) + "</h3>");
+		animalInfoHeader.setId("infoheader");
+		
 		List<ObservedValue> valList = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET, 
 				Operator.EQUALS, animalId));
 		if (!valList.isEmpty()) {
 			animalInfo = new Table("AnimalInfoTable");
-			animalInfo.addColumn(""); // start time
-			animalInfo.addColumn(""); // end time
+			animalInfo.addColumn("Valid from...");
+			animalInfo.addColumn("through...");
+			animalInfo.addColumn("Protocol");
 			animalInfo.addColumn("Measurement");
 			animalInfo.addColumn("Value");
 			int rowCount = 0;
 			for (ObservedValue currentValue : valList) {
-				// Get the corresponding protocol (application):
+				animalInfo.addRow("");
+				if (currentValue.getTime() != null) {
+					animalInfo.setCell(0, rowCount, currentValue.getTime().toString());
+				}
+				if (currentValue.getEndtime() != null) {
+					animalInfo.setCell(1, rowCount, currentValue.getEndtime().toString());
+				}
 				if (currentValue.getProtocolApplication_Id() != null) {
 					int eventId = currentValue.getProtocolApplication_Id();
 					ProtocolApplication currentEvent = db.find(ProtocolApplication.class, 
 							new QueryRule(ProtocolApplication.ID, Operator.EQUALS, eventId)).get(0);
-					animalInfo.addRow(currentEvent.getProtocol_Name());
+					animalInfo.setCell(2, rowCount, currentEvent.getProtocol_Name());
 				}
-				if (currentValue.getTime() != null) {
-					animalInfo.setCell(0, rowCount, " Valid from " + currentValue.getTime().toString());
-				}
-				if (currentValue.getEndtime() != null) {
-					animalInfo.setCell(1, rowCount, " through " + currentValue.getEndtime().toString());
-				}
-				// Feature name
 				String featureName = currentValue.getFeature_Name();
 				if (featureName == null) {
-					animalInfo.setCell(2, rowCount, "");
+					animalInfo.setCell(3, rowCount, "");
+					animalInfo.setCell(4, rowCount, "");
 				} else {
-					animalInfo.setCell(2, rowCount, featureName);
+					animalInfo.setCell(3, rowCount, featureName);
 					// The actual value
-					String currentValueContents = "";
-					// Find out what the unit is:
+					String currentValueContents = "<strong>";
 					int featureId = currentValue.getFeature_Id();
 					Measurement currentFeature = db.find(Measurement.class, 
 							new QueryRule(Measurement.ID, Operator.EQUALS, featureId)).get(0);
 					if (currentFeature.getDataType().equals("xref")) {
-						try {
-							currentValueContents = currentValue.getRelation_Name();
-						} catch(Exception e) {
-							int relationId = currentValue.getRelation_Id();
-							currentValueContents = "Value (Target with ID " + relationId + ") not found in database";
-						}
+						currentValueContents += currentValue.getRelation_Name();
 					} else {
-						currentValueContents = currentValue.getValue();
+						currentValueContents += currentValue.getValue();
 					}
-					animalInfo.setCell(3, rowCount, currentValueContents);
+					currentValueContents += "</strong>";
+					animalInfo.setCell(4, rowCount, currentValueContents);
 				}
 				rowCount++;
 			}
@@ -154,6 +157,7 @@ public class EventViewerPluginMatrix extends GenericPlugin
 				div.add(targetMatrixViewer);
 				
 				ActionInput selectButton = new ActionInput("Select", "", "Select");
+				selectButton.setId("select");
 				div.add(selectButton);
 				
 				container.add(div);
@@ -164,7 +168,9 @@ public class EventViewerPluginMatrix extends GenericPlugin
 		} else {
 			targetMatrixViewer.setDatabase(db);
 			if (animalInfo != null) {
+				div.remove(animalInfoHeader); // FIXME: doesn't work
 				div.remove(animalInfo);
+				div.add(animalInfoHeader);
 				div.add(animalInfo);
 			}
 		}
