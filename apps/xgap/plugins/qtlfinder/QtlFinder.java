@@ -142,32 +142,29 @@ public class QtlFinder extends PluginModel
 				else if(action.equals("disambig"))
 				{	
 					//disambiguate one resultset, but with multi input
-					String type = request.getString("__type"); //gene or probe
 					String key = request.getString("__key"); //which resultset
-					
-					Result r = this.model.getResultSet().get(key);
-					
-					ArrayList<String> chosenItems = new ArrayList<String>();
-					for(Entity option : r.getDisambiguate())
+	
+					//name and type in a map
+					//obtained by splitting input for '@', e.g. 'disambig_option_Y37E31@Gene'
+					//OK because '@' are not allowed in names
+					HashMap<String,String> chosenItems = new HashMap<String,String>();
+					List<String> reqFields = request.getFields();
+					for(String s : reqFields)
 					{
-						String name = option.get(ObservableFeature.NAME).toString();
-						if(request.getString("disambig_option_"+name) != null)
+						if(s.startsWith("disambig_option_"))
 						{
-							chosenItems.add(name);
+							String[] split = s.split("@");
+							chosenItems.put(split[0].substring("disambig_option_".length()), split[1]);
 						}
 					}
 					
-					for(String s : chosenItems)
-					{
-						System.out.println("CHOSEN: " + s);
-					}
-					
-					for(String name : chosenItems)
+					//disambiguate terms based on name and type, create all reports and results
+					for(String name : chosenItems.keySet())
 					{
 						Result rs = new Result();
 						rs.setSelectedName(name);
 						
-						Class<? extends Entity> entityClass = db.getClassForName(type);
+						Class<? extends Entity> entityClass = db.getClassForName(chosenItems.get(name));
 						List<? extends Entity> result = db.find(entityClass, new QueryRule(ObservableFeature.NAME, Operator.EQUALS, name));
 
 						rs.setResult(result.get(0));

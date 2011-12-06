@@ -317,3 +317,29 @@
 	</#list>
 </table>
 </#macro>
+
+<#macro printEntityText r>
+<@compress single_line=true>
+<u><b>Field</b>: Value</u><br>
+<#list r.getFields() as f>
+	<#if r.get(f)?exists>
+		<b>${f}</b>: 
+		<#if r.get(f)?is_string || r.get(f)?is_date || r.get(f)?is_number>
+			${r.get(f)}
+		<#elseif r.get(f)?is_boolean>
+			<#if r.get(f) == true>true<#else>false</#if>
+		<#elseif r.get(f)?is_enumerable>
+			<#list r.get(f) as i>
+				${i} 
+				<#if i_index == 3>
+				...<#break>
+				</#if>
+			</#list>
+		<#else>
+			TYPE NOT SUPPORTED, CONTACT JOERI
+		</#if>
+		<br>
+	</#if>
+</#list>
+</@compress>
+</#macro>

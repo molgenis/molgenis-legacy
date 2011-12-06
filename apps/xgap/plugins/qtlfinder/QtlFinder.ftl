@@ -36,6 +36,8 @@
 	<#assign modelExists = false>
 </#if>
 
+<#import "../reportbuilder/ReportBuilder.ftl" as rb>
+
 <table cellpadding="10">
 	<tr>
 		<td>
@@ -159,25 +161,16 @@
 				<#if result.disambiguate?size gt 1000>
 					<h2>More than 1000 matches for "${result.selectedName}". Please be more specific.</h2>
 				<#else>
-				<h2 id="${result.selectedName}">Multiple matches for "${result.selectedName}". Please choose one:</h2>
-				<div style="overflow: auto; max-height: 400px;">
-				<ul>
-					<#list result.disambiguate as d>
-						<!--li><a href="#" onclick="document.forms.${screen.name}.__action.value = 'disambig_${d.name}'; document.forms.${screen.name}.__type.value = '${d.__type}'; document.forms.${screen.name}.__key.value = '${key}'; document.forms.${screen.name}.submit();">${d.name}</a></li-->
-					</#list>
-				</ul>
-				</div>
-				<!--3>Alternatively, copy-paste these matches into the search box to find all of them:</h3>
-				<textarea rows="10" columns="20"><#list result.disambiguate as d>${d.name}
-</#list></textarea-->
-				
+				<h2 id="${result.selectedName}">Multiple matches for "${result.selectedName}". Please choose:</h2>
+				<div style="overflow: auto; width: 780px; max-height: 400px;">
 
 				<#list result.disambiguate as d>
-					<input type="checkbox" name="disambig_option_${d.name}" value="true">${d.name}<br>
+					<input type="checkbox" name="disambig_option_${d.name}@${d.__type}" value="true">${d.__type} <a href="molgenis.do?__target=${d.__type}s&__action=filter_set&__filter_attribute=${d.__type}_name&__filter_operator=EQUALS&__filter_value=${d.name}"><div style="display: inline; text-decoration: underline; color: blue;" onmouseover="return overlib('<@rb.printEntityText r=d/>', CAPTION, 'Description')" onmouseout="return nd();">${d.name}</div></a> <div style="display: inline;"><#list d.getFields() as f><#if d.get(f)?exists><#if d.get(f)?is_enumerable && f == 'AlternateId_name' && d.get(f)?size gt 0>Alternative ID's: <b><#list d.get(f) as i>${i} <#if i_index == 5>...<#break></#if></#list></b></#if></#if></#list><#if d.description??>Description: <b><#if d.description?length gt 40>${d.description?substring(0, 20)} ... ${d.description?substring(d.description?length-20, d.description?length)}<#else>${d.description}</#if></b></#if></div><br>
 				</#list>
-
 				
-				<input type="submit" value="Find" onclick="document.forms.${screen.name}.__action.value = 'disambig'; document.forms.${screen.name}.__type.value = '${result.disambiguate[0].__type}'; document.forms.${screen.name}.__key.value = '${key}'; document.forms.${screen.name}.submit();">
+				</div>
+				<br>
+				<input type="submit" value="Select" onclick="document.forms.${screen.name}.__action.value = 'disambig'; document.forms.${screen.name}.__key.value = '${key}'; document.forms.${screen.name}.submit();">
 				
 				</#if>
 			</td>
@@ -186,7 +179,6 @@
 	</#if>
 	
 	<#if result.result??>
-		<#import "../reportbuilder/ReportBuilder.ftl" as rb>
 		<table cellpadding="30">
 			<tr>
 				<td>
