@@ -24,29 +24,24 @@
 			</#if>
 		</#list>
 		<div class="screenbody">
-		
 			<div class="screenpadding">	
 				<div id="leftSide" style="width:200px;">
 					${screen.getTreeView()}
 				</div>
-				<!--div id="rightSide" style="position: absolute;  float:right; top: 10px; "-->
 				<div id="CatalogueRightSide">
 					right side	
 				</div><br/>
 				<div id="ShoppingCartLabel">Shopping cart</div>
-				<div id="ShoppingCartContents">
-					laaaaaaaaaaaaaaaaaaa
+				<div class="ShoppingCartContents">
 					<ul>
-					<#list screen.getShoppingCart() as measurement>
-					<li>${measurement.name}</li>
-					</#list>
+						<#list screen.getShoppingCart() as measurement>
+							<li>${measurement.name}</li>
+						</#list>
 					</ul>
+					<div id="ShoopingCartButton">
+						<input type="submit" value="Order" onclick="__action.value='OrderMeasurements';return true;"/><br /><br />
+					</div> 
 				</div>
-				
-				<!--<div id="bottom" style="clear:both;">
-					bottom
-				</div-->
-				
 			</div>
 			<input type="hidden" id="test" value="">
 		</div>

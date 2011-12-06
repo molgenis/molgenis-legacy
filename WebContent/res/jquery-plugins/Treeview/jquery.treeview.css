@@ -88,7 +88,13 @@ div#ShoppingCartLabel {
     width: 35%;
 }
 
-div#ShoppingCartContents {
+div.ShoppingCartContents {
 	border-style: inset;
 	width: 35%;
+
+.ShoopingCartButton {
+		bottom: 0; 
+		right: 0;
+	}
 }
+
