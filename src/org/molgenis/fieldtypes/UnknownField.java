@@ -46,6 +46,12 @@ public class UnknownField extends FieldType
 	{
 		return null;
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return null;
+	}
 
 	@Override
 	public String getXsdType() throws MolgenisModelException

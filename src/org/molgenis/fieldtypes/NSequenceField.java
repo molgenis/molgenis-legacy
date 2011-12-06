@@ -32,6 +32,13 @@ public class NSequenceField extends FieldType
 	{
 		return "TEXT";
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "BLOB";
+	}
+
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException

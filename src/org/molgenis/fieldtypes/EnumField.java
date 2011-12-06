@@ -31,6 +31,12 @@ public class EnumField extends FieldType
 	{
 		return "ENUM("+this.toCsv(f.getEnumOptions())+")";
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "VARCHAR2";
+	}
 
 
 	@Override

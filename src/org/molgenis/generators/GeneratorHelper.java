@@ -220,6 +220,11 @@ public class GeneratorHelper
 	{
 		return MolgenisFieldTypes.get(field).getMysqlType();
 	}
+	
+	public String getOracleType(Model model, Field field) throws Exception
+	{
+		return MolgenisFieldTypes.get(field).getOracleType();
+	}
 
 	public String getXsdType(Model model, Field field) throws Exception
 	{

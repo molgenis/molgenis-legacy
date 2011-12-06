@@ -31,6 +31,12 @@ public class StringField extends FieldType
 	{
 		return "VARCHAR("+f.getVarCharLength()+")";
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "VARCHAR2("+f.getVarCharLength()+")";
+	}
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException
@@ -66,5 +72,4 @@ public class StringField extends FieldType
 	{
 		return "Ljava/lang/String;";
 	}
-
 }

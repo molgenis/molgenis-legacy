@@ -67,6 +67,9 @@
 			<#return "UNKNOWN '"+field.type + "'">
 	</#switch>
 </#function>
+<#function oracle_type model field>
+	<#return helper.getOracleType(model, field)/>
+</#function>
 <#function mysql_type model field>
 	<#return helper.getMysqlType(model, field)/>
 

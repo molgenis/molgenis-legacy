@@ -25,6 +25,13 @@ public class TextField extends FieldType
 	{
 		return "TEXT";
 	}
+	
+	@Override
+	public String getOracleType()
+	{
+		// TODO Auto-generated method stub
+		return "BLOB";
+	}
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException

@@ -31,6 +31,12 @@ public class DecimalField extends FieldType
 	{
 		return "DECIMAL(65,30)";
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "NUMBER";
+	}
 
 	@Override
 	public String getHsqlType()

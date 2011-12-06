@@ -62,7 +62,6 @@ import org.molgenis.generators.db.InMemoryDatabaseGen;
 import org.molgenis.generators.db.JDBCDatabaseGen;
 import org.molgenis.generators.db.JDBCMetaDatabaseGen;
 import org.molgenis.generators.db.JpaDatabaseGen;
-import org.molgenis.generators.db.JpaEntityListenerGen;
 import org.molgenis.generators.db.JpaMapperGen;
 import org.molgenis.generators.db.MapperDecoratorGen;
 import org.molgenis.generators.db.MapperSecurityDecoratorGen;
@@ -97,6 +96,7 @@ import org.molgenis.generators.sql.FillMetadataTablesGen;
 import org.molgenis.generators.sql.HSqlCreateSubclassPerTableGen;
 import org.molgenis.generators.sql.MySqlAlterSubclassPerTableGen;
 import org.molgenis.generators.sql.MySqlCreateSubclassPerTableGen;
+import org.molgenis.generators.sql.OracleCreateSubclassPerTableGen;
 import org.molgenis.generators.sql.PSqlCreateSubclassPerTableGen;
 import org.molgenis.generators.tests.TestCsvGen;
 import org.molgenis.generators.tests.TestDataSetGen;
@@ -279,6 +279,12 @@ public class Molgenis {
                         generators.add(new PStatementMapperGen());
                     }
                 } // hsqldb.org
+                else if (options.db_driver.equals("oracle.jdbc.driver.OracleDriver")) {
+                	generators.add(new OracleCreateSubclassPerTableGen());
+                    generators.add(new JDBCDatabaseGen());
+                    generators.add(new DataTypeGen());
+                    generators.add(new PStatementMapperGen());
+                }
                 else if (options.db_driver.equals("org.hsqldb.jdbcDriver")) {
                     logger.info("HsqlDB generators ....");
                     generators.add(new JDBCDatabaseGen());

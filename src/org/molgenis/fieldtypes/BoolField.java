@@ -31,6 +31,12 @@ public class BoolField extends FieldType
 	{
 		return "BOOL";
 	}
+	
+	@Override
+	public String getOracleType() throws MolgenisModelException
+	{
+		return "BIT";
+	}
 
 	@Override
 	public String getHsqlType()
