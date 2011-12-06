@@ -119,66 +119,116 @@
 <table width=500 style='table-layout:fixed'>
 	<col width=${colWidth}>
 	<col width=${colWidth}>
-	
-	<tr>
-	<#if model.expList?size == 0>
-		<td colspan="2">There is no experimental data.</td>
-	<#else>
-		<#list model.expList?keys as a>
-			<td>
-				<a href="${model.expList[a]}">${redSquare} ${a}</a>
-			</td>
-			
-			<#if !model.showAllExperiments && a_index == 3>
-				<#break>
-			</#if>
-			
-			<#if a_index%2!=0 && model.expList?size-1 != a_index>
-				 </tr>
-				<tr>
-					<td colspan="2">
-						&nbsp;<#-- LINEBREAK -->
-					</td>
-				</tr>
-				<tr>
-			</#if>
-		</#list>
-	
-		<#if model.showAllExperiments && model.expList?size%2!=0>
-			<td>
-				&nbsp;<#-- FILLER -->
-			</td>
-		</#if>
-	</#if>
-	</tr>
 
-	<tr>
-		<td colspan="2">
-		&nbsp;<#-- DEFAULTLINEBREAK -->
-		</td>
-	</tr>
-	
-	<tr>
-		<td>
-			<#if !model.showAllExperiments && model.expList?size gt 4>
-				${model.expList?size - 4} more...
-			<#else>
-				&nbsp;
-			</#if>
-		</td>
-		<td>
-			<#if model.expList?size lt 5>
-				<#-- no need to show a button if 4 (or less) elements-->
-			<#else>
-				<#if model.showAllExperiments>
-					<input type="submit" value="Show four" onclick="document.forms.${screen.name}.__action.value = 'showFourExperiments'; document.forms.${screen.name}.submit();"/>
-				<#else>
-					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllExperiments'; document.forms.${screen.name}.submit();"/>
+	<#if !model.viewDataByTags>
+		<tr>
+			<td colspan="2">
+				<input type="submit" value="View by tags" onclick="document.forms.${screen.name}.__action.value = 'viewDataByTags'; document.forms.${screen.name}.submit();"/>
+				<br><br>
+			</td>
+		</tr>
+		<tr>
+		<#if model.expList?size == 0>
+			<td colspan="2">There is no experimental data.</td>
+		<#else>
+			<#list model.expList?keys as a>
+				<td>
+					<a href="?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.expList[a].id}">${redSquare} ${a}</a>
+				</td>
+				
+				<#if !model.showAllExperiments && a_index == 3>
+					<#break>
 				</#if>
+				
+				<#if a_index%2!=0 && model.expList?size-1 != a_index>
+					 </tr>
+					<tr>
+						<td colspan="2">
+							&nbsp;<#-- LINEBREAK -->
+						</td>
+					</tr>
+					<tr>
+				</#if>
+			</#list>
+		
+			<#if model.showAllExperiments && model.expList?size%2!=0>
+				<td>
+					&nbsp;<#-- FILLER -->
+				</td>
 			</#if>
-			<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=Datas'">
-		</td>
-	</tr>
+		</#if>
+		</tr>
+	
+		<tr>
+			<td colspan="2">
+			&nbsp;<#-- DEFAULTLINEBREAK -->
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				<#if !model.showAllExperiments && model.expList?size gt 4>
+					${model.expList?size - 4} more...
+				<#else>
+					&nbsp;
+				</#if>
+			</td>
+			<td>
+				<#if model.expList?size lt 5>
+					<#-- no need to show a button if 4 (or less) elements-->
+				<#else>
+					<#if model.showAllExperiments>
+						<input type="submit" value="Show four" onclick="document.forms.${screen.name}.__action.value = 'showFourExperiments'; document.forms.${screen.name}.submit();"/>
+					<#else>
+						<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllExperiments'; document.forms.${screen.name}.submit();"/>
+					</#if>
+				</#if>
+				<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=Datas'">
+			</td>
+		</tr>
+	
+	<#else>
+	
+		<tr>
+			<td colspan="2">
+				<input type="submit" value="View as list" onclick="document.forms.${screen.name}.__action.value = 'viewDataAsList'; document.forms.${screen.name}.submit();"/>
+				<br><br>
+			</td>
+		</tr>
+		
+		<#import "../reportbuilder/ReportBuilder.ftl" as rb>
+		
+		<tr>
+			<td colspan="2">
+				<div id="dynacloud"></div>
+			</td>
+		<tr>
+		
+		<tr>
+			<td colspan="2">
+				&nbsp;
+			</td>
+		<tr>
+		
+		<tr>
+			<td colspan="2">
+				<div id="text" class="dynacloud">
+				<table border="1" cellspacing="0" cellpadding="2">
+					<#list model.expList?keys as a>
+						<tr style="background: white">
+							<td>
+								All tags for ${model.expList[a].name?substring(0,1)?upper_case + model.expList[a].name?substring(1,model.expList[a].name?length)}: <@rb.printEntityTextClean r=model.expList[a]/>
+							</td>
+						</tr>
+					</#list>
+				</table>
+				</div>
+			</td>
+		<tr>
+		
+		
+		
+	</#if>
 </table>
 
 

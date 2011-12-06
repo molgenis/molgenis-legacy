@@ -43,6 +43,12 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 	{
 		super(name, parent);
 	}
+	
+	@Override
+	public String getCustomHtmlHeaders()
+	{
+		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/tagcloud/jquery.dynacloud-5.js\"></script>";
+	}
 
 	@Override
 	public String getViewName()
@@ -89,7 +95,15 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 				{
 					this.model.setShowAllOther(false);
 				}
-
+				else if (action.equals("viewDataByTags"))
+				{
+					this.model.setViewDataByTags(true);
+				}
+				else if (action.equals("viewDataAsList"))
+				{
+					this.model.setViewDataByTags(false);
+				}
+				
 				this.setMessages();
 			}
 			catch (Exception e)
@@ -121,6 +135,10 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			if (this.model.getShowAllOther() == null)
 			{
 				this.model.setShowAllOther(false);
+			}
+			if(this.model.getViewDataByTags() == null)
+			{
+				this.model.setViewDataByTags(false);
 			}
 
 			ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
@@ -160,15 +178,13 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 
 			this.model.setAnnotationList(annotationWithLinks);
 
-			HashMap<String, String> expList = new HashMap<String, String>();
+			HashMap<String, Data> expList = new HashMap<String, Data>();
 			List<Data> dataList = db.find(Data.class, thisInv);
 			for (Data d : dataList)
 			{
 				String name = d.getName();
 				if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
-				expList.put(name,
-						"?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value="
-								+ d.getId());
+				expList.put(name, d);
 			}
 			this.model.setExpList(expList);
 

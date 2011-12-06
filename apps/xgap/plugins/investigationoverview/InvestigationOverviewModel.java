@@ -2,6 +2,7 @@ package plugins.investigationoverview;
 
 import java.util.HashMap;
 
+import org.molgenis.data.Data;
 import org.molgenis.organization.Investigation;
 
 public class InvestigationOverviewModel{
@@ -10,9 +11,9 @@ public class InvestigationOverviewModel{
 
 	private HashMap<String, String> annotationList;
 	
-	private HashMap<String,String> expList;
+	private HashMap<String, Data> expList;
 	
-	private HashMap<String,String> otherList;
+	private HashMap<String, String> otherList;
 	
 	private Boolean showAllAnnotations;
 	
@@ -20,6 +21,18 @@ public class InvestigationOverviewModel{
 	
 	private Boolean showAllOther;
 	
+	private Boolean viewDataByTags;
+	
+	public Boolean getViewDataByTags()
+	{
+		return viewDataByTags;
+	}
+
+	public void setViewDataByTags(Boolean viewDataByTags)
+	{
+		this.viewDataByTags = viewDataByTags;
+	}
+
 	public Investigation getSelectedInv()
 	{
 		return selectedInv;
@@ -80,15 +93,16 @@ public class InvestigationOverviewModel{
 		this.showAllOther = showAllOther;
 	}
 
-	public HashMap<String, String> getExpList()
+	public HashMap<String, Data> getExpList()
 	{
 		return expList;
 	}
 
-	public void setExpList(HashMap<String, String> expList)
+	public void setExpList(HashMap<String, Data> expList)
 	{
 		this.expList = expList;
 	}
+
 	
 
 }

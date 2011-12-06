@@ -343,3 +343,28 @@
 </#list>
 </@compress>
 </#macro>
+
+<#macro printEntityTextClean r>
+<@compress single_line=true>
+<#list r.getFields() as f>
+	<#-- dont print '__Type', 'name', booleans, dates or numbers-->
+	<#if r.get(f)?exists && f != '__Type' && f != 'name'>
+		<#if r.get(f)?is_string && r.get(f)?length gt 0>
+			<#list r.get(f)?split(' ') as sp>
+				${sp?substring(0,1)?upper_case + sp?substring(1,sp?length)} 
+			</#list>
+		<#elseif r.get(f)?is_enumerable>
+			<#list r.get(f) as i>
+				<#if i?is_string && i?length gt 0>
+					<#list i?split(' ') as sp>
+						${sp?substring(0,1)?upper_case + sp?substring(1,sp?length)} 
+					</#list>
+				<#else>
+					<#-- ignore non string stuff-->
+				</#if>
+			</#list>
+		</#if>
+	</#if>
+</#list>
+</@compress>
+</#macro>
