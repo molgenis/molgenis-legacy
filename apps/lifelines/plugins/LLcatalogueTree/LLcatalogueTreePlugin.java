@@ -90,6 +90,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			if (this.shoppingCart.get(i).getName().equals(selected)) {
 				this.shoppingCart.remove(i);
 				this.setStatus("The item "+ selected + " has been successfully removed from your shopping cart");
+				this.setSuccess("The item "+ selected + " has been successfully removed from your shopping cart");
 			}
 		}
 		
