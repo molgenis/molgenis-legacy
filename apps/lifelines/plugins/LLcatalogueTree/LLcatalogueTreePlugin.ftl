@@ -35,7 +35,9 @@
 				<div class="ShoppingCartContents">
 					<ul>
 						<#list screen.getShoppingCart() as measurement>
-							<li>${measurement.name}</li>
+							<li>${measurement.name}
+							<input type="submit" value="Delete" onclick="__action.value='DeleteMeasurement&measurementName=${measurement.name}';return true;"/><br /><br />
+							</li> 
 						</#list>
 					</ul>
 					<div id="ShoopingCartButton">

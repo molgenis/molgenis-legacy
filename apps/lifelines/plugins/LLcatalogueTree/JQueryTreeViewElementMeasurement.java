@@ -24,7 +24,6 @@ public class JQueryTreeViewElementMeasurement extends JQueryTreeViewElement{
 	}
 
 	public JQueryTreeViewElementMeasurement(String name, JQueryTreeViewElementMeasurement parent) {
-		// TODO Auto-generated constructor stub
 		super(name, parent);
 		measurement = null;
 	}

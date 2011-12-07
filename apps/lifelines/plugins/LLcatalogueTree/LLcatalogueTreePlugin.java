@@ -46,47 +46,65 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 		System.out.println("CAUGHT IT: " + request);
 		System.out.println(request.getInt("measurementId"));
+		System.out.println(request.getString("measurementName"));
+		System.out.println(request.getAction().startsWith("DeleteMeasurement"));
+
 		try {
 
-			Measurement selected = Measurement.findById(db,
-					request.getInt("measurementId"));
+			Measurement selected = Measurement.findById(db, request.getInt("measurementId"));
+			System.out.println("selected measurement id >>>>>>"+ selected);
 			if (selected == null) {
-				this.setError("measurementId unknown: "
-						+ request.getInt("measurementId"));
+				this.setError("measurementId unknown: "	+ request.getInt("measurementId"));
 			} else {
-
-				System.out.println("---------------------->" + selected);
-
+				System.out.println("--->" + selected);
 				this.shoppingCart.add(selected);
-				
 				// clean the ordered measurement list form dublicates
 				this.shoppingCart = cleanShoppingCart();
 				
-				//TODO : SHow X to remove items. 
+				
+			}
+			if ("OrderMeasurements".equals(request.getAction())) {
+				this.shoppingCart = cleanShoppingCart();
+				this.setStatus("<h4>You order is being processed.</h4>" ) ;
+			} //TODO fix this : else if ("DeleteMeasurement".equals(request.getAction()))	{
+			else if (request.getAction().startsWith("DeleteMeasurement")) {
+				
+				System.out.println("Here's the request on DELETE :"+ request);
+				String measurementName  =  request.getString("measurementName"); //TODO :  this is not working
+				measurementName = request.getAction().substring("DeleteMeasurement".length()+2+"measurementName".length(), request.getAction().length());
+				
+				System.out.println("Here's the request.measurement id on DELETE:"+ measurementName);
+				this.deleteShoppingItem(measurementName);
 			}
 		} catch (Exception e) {
 			this.setError(e.getMessage());
 		}
-		
-		if ("OrderMeasurements".equals(request.getAction())) {
-			
-			this.shoppingCart = cleanShoppingCart();
-			
-			
-			this.setStatus("<h4>You order is being processed.</h4>" ) ;
-		}		
 
 	}
 
+	private void deleteShoppingItem(String selected) {
+		//search the item
+		System.out.println(">>Trying to remove " + selected );
+		
+		for (int i=0; i<this.shoppingCart.size(); i++) {
+			if (this.shoppingCart.get(i).getName().equals(selected)) {
+				this.shoppingCart.remove(i);
+				this.setStatus("The item "+ selected + " has been successfully removed from your shopping cart");
+			}
+		}
+		
+		System.out.println(">>Shopping cart after the removal : " + this.shoppingCart);
+	}
+
 	private List<Measurement> cleanShoppingCart() {
-		List<Measurement> cleanShoppingCart = new ArrayList<Measurement>(); 
+		List<Measurement> newShoppingCart = new ArrayList<Measurement>(); 
 		
 		for (int i=0; i<this.getShoppingCart().size(); i++) {
 			Measurement m = this.getShoppingCart().get(i);
-			if (!cleanShoppingCart.contains(m)) cleanShoppingCart.add(m);
+			if (!newShoppingCart.contains(m)) newShoppingCart.add(m);
 		}
 		
-		return cleanShoppingCart;
+		return newShoppingCart;
 	}
 
 	public void recursiveAddingTree(List<String> parentNode,
