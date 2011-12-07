@@ -123,7 +123,7 @@
 	<#if !model.viewDataByTags>
 		<tr>
 			<td colspan="2">
-				<input type="submit" value="View by tags" onclick="document.forms.${screen.name}.__action.value = 'viewDataByTags'; document.forms.${screen.name}.submit();"/>
+				<input type="submit" value="View tag cloud" onclick="document.forms.${screen.name}.__action.value = 'viewDataByTags'; document.forms.${screen.name}.submit();"/>
 				<br><br>
 			</td>
 		</tr>
@@ -188,45 +188,45 @@
 		</tr>
 	
 	<#else>
-	
+		<#import "../reportbuilder/ReportBuilder.ftl" as rb>
 		<tr>
 			<td colspan="2">
 				<input type="submit" value="View as list" onclick="document.forms.${screen.name}.__action.value = 'viewDataAsList'; document.forms.${screen.name}.submit();"/>
 				<br><br>
 			</td>
 		</tr>
-		
-		<#import "../reportbuilder/ReportBuilder.ftl" as rb>
-		
 		<tr>
 			<td colspan="2">
 				<div id="dynacloud"></div>
 			</td>
 		<tr>
-		
 		<tr>
 			<td colspan="2">
 				&nbsp;
 			</td>
 		<tr>
-		
 		<tr>
 			<td colspan="2">
+			<h2>Data matrices having this tag:</h2>
 				<div id="text" class="dynacloud">
-				<table border="1" cellspacing="0" cellpadding="2">
 					<#list model.expList?keys as a>
-						<tr style="background: white">
-							<td>
-								All tags for ${model.expList[a].name?substring(0,1)?upper_case + model.expList[a].name?substring(1,model.expList[a].name?length)}: <@rb.printEntityTextClean r=model.expList[a]/>
-							</td>
-						</tr>
+							<div class="datasetunhighlight">
+								<a href="?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.expList[a].id}">${redSquare}</a>
+								"${model.expList[a].name?substring(0,1)?upper_case + model.expList[a].name?substring(1,model.expList[a].name?length)}": <@rb.printEntityTextClean r=model.expList[a]/>
+							</div>
 					</#list>
-				</table>
 				</div>
 			</td>
 		<tr>
-		
-		
+		<tr>
+			<td>
+				&nbsp;
+			</td>
+			<td>
+				<br>
+				<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=BasicAnnotations'">
+			</td>
+		<tr>
 		
 	</#if>
 </table>

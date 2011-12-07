@@ -12,6 +12,8 @@ Johann Burkard
 <http://johannburkard.de>
 <mailto:jb@eaio.com>
 
+Modified for xQTL dataset tag cloud
+
 */
 
 jQuery.fn.highlight = function(pat) {
@@ -21,12 +23,13 @@ jQuery.fn.highlight = function(pat) {
    var pos = node.data.toUpperCase().indexOf(pat);
    if (pos >= 0) {
     var spannode = document.createElement('span');
-    spannode.className = 'highlight';
+    spannode.className = 'taghighlight';
     var middlebit = node.splitText(pos);
     var endbit = middlebit.splitText(pat.length);
     var middleclone = middlebit.cloneNode(true);
     spannode.appendChild(middleclone);
     middlebit.parentNode.replaceChild(spannode, middlebit);
+    node.parentNode.className = 'datasethighlight';
     skip = 1;
    }
   }
@@ -43,8 +46,9 @@ jQuery.fn.highlight = function(pat) {
 };
 
 jQuery.fn.removeHighlight = function() {
- return this.find("span.highlight").each(function() {
+ return this.find("span.taghighlight").each(function() {
   this.parentNode.firstChild.nodeName;
+  this.parentNode.className = 'datasetunhighlight';
   with (this.parentNode) {
    replaceChild(this.firstChild, this);
    normalize();
@@ -54,8 +58,8 @@ jQuery.fn.removeHighlight = function() {
 
 jQuery.dynaCloud = {
 
- max: 20,
- sort: true,
+ max: 50,
+ sort: false,
  auto: true,
  single: true,
  wordStats: true,

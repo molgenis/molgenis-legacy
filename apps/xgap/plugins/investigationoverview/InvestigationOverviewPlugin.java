@@ -47,7 +47,8 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/tagcloud/jquery.dynacloud-5.js\"></script>";
+		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/tagcloud/jquery.dynacloud-5_xQTL.js\"></script>" +
+				"<link rel=\"stylesheet\" href=\"res/jquery-plugins/tagcloud/taghighlighting.css\">";
 	}
 
 	@Override
