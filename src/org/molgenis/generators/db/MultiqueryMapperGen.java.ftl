@@ -27,7 +27,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 import org.molgenis.framework.db.Database;
@@ -95,13 +94,13 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 				<#if f.type == "datetime">
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					String mysqlDateTime = dateFormat.format(e.get${JavaName(f)}());
-					sql.append("'"+StringEscapeUtils.escapeSql(mysqlDateTime)+"'"
+					sql.append("'"+this.escapeSql(mysqlDateTime)+"'"
 				<#elseif f.type == "date">
 					sql.append("'"+new java.sql.Date(e.get${JavaName(f)}().getTime()).toString()+"'"
 				<#elseif f.type == "bool">
 					sql.append(e.get${JavaName(f)}()
 				<#else>
-					sql.append("'"+StringEscapeUtils.escapeSql(e.get${JavaName(f)}().toString())+"'"
+					sql.append("'"+this.escapeSql(e.get${JavaName(f)}().toString())+"'"
 				</#if>
 				<#if f_has_next>+","</#if>);
 				}
@@ -172,13 +171,13 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
                             sql.append(<@compress single_line=true>
 				<#if f.type == "enum">
 					<#-->"'${f.getEnumOptions()?first}'" causes fail -->
-					"'"+StringEscapeUtils.escapeSql(e.get${JavaName(f)}())+"'"
+					"'"+this.escapeSql(e.get${JavaName(f)}())+"'"
 				<#elseif f.type == "date">
 					"'"+new java.sql.Date(e.get${JavaName(f)}().getTime()).toString()+"'"
 				<#elseif f.type == "datetime">
 					"'"+new java.sql.Timestamp(e.get${JavaName(f)}().getTime()).toString()+"'"
 				<#else>
-                                    <#if f.type == "bool">e.get${JavaName(f)}()<#else>"'"+StringEscapeUtils.escapeSql(e.get${JavaName(f)}().toString())+"'"</#if>
+                                    <#if f.type == "bool">e.get${JavaName(f)}()<#else>"'"+this.escapeSql(e.get${JavaName(f)}().toString())+"'"</#if>
                                 </#if>
                             <#if f_has_next>+","</#if></@compress>);
 			} else {
@@ -230,7 +229,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 					first = false;
 				else
 					sql.append(",");			
-				sql.append("'"+StringEscapeUtils.escapeSql(e.get${JavaName(f)}().toString())+"'");
+				sql.append("'"+this.escapeSql(e.get${JavaName(f)}().toString())+"'");
 			}				
 			sql.append(") <#if f_has_next> AND </#if>");
 		}

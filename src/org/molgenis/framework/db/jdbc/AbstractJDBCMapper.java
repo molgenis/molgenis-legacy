@@ -772,8 +772,13 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			}
 		}
 		// execute the query
-		logger.info("TEST\n"+sql);
+		//logger.info("TEST\n"+sql);
 		return getDatabase().executeQuery(sql);
+	}
+	
+	public String escapeSql(Object value)
+	{
+		return this.getDatabase().escapeSql(value);
 	}
 	
 	@Override
