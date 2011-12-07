@@ -2,6 +2,7 @@ package plugins.predictionModel;
 
 import java.util.HashMap;
 
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
@@ -34,6 +35,8 @@ public class TableField {
 	Measurement measurement = null;
 	
 	Panel panel = null;
+	
+	Category category = null;
 
 	private TableField Target = null;
 
@@ -47,31 +50,43 @@ public class TableField {
 	}
 	
 	public TableField(Panel panel, String ClassType,int columnIndex, Boolean Vertical) {
+		this(ClassType, columnIndex,  Vertical);
 		this.panel = panel;
-		this.ClassType = ClassType;
-		this.columnIndex = columnIndex;
-		this.Vertical = Vertical;
+//		this.ClassType = ClassType;
+//		this.columnIndex = columnIndex;
+//		this.Vertical = Vertical;
+		
 	}
 	
 	public TableField(Measurement measurement, String ClassType,int columnIndex, Boolean Vertical) {
+		this(ClassType, columnIndex,  Vertical);
 		this.measurement = measurement;
-		this.ClassType = ClassType;
-		this.columnIndex = columnIndex;
-		this.Vertical = Vertical;
+//		this.ClassType = ClassType;
+//		this.columnIndex = columnIndex;
+//		this.Vertical = Vertical;	
 	}
 	public TableField(ObservedValue observedValue, String ClassType,int columnIndex, Boolean Vertical) {
-	
+		this(ClassType, columnIndex,  Vertical);
 		this.observedValue = observedValue;
-		this.ClassType = ClassType;
-		this.columnIndex = columnIndex;
-		this.Vertical = Vertical;
+//		this.ClassType = ClassType;
+//		this.columnIndex = columnIndex;
+//		this.Vertical = Vertical;
 	}
 	
 	public TableField(Protocol protocol, String ClassType,int columnIndex, Boolean Vertical) {
+		this(ClassType, columnIndex,  Vertical);
 		this.protocol  = protocol;
-		this.ClassType = ClassType;
-		this.columnIndex = columnIndex;
-		this.Vertical = Vertical;
+//		this.ClassType = ClassType;
+//		this.columnIndex = columnIndex;
+//		this.Vertical = Vertical;
+	}
+
+	public TableField(Category category, String ClassType, int columnIndex, Boolean Vertical) {
+		this(ClassType, columnIndex,  Vertical);
+		this.category  = category;
+//		this.ClassType = ClassType;
+//		this.columnIndex = columnIndex;
+//		this.Vertical = Vertical;
 	}
 
 	public void initializeHashMap(String ClassType){
