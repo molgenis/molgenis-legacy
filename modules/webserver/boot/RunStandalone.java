@@ -3,6 +3,8 @@ package boot;
 import java.awt.HeadlessException;
 import java.io.IOException;
 
+import org.apache.log4j.BasicConfigurator;
+
 import core.Helper;
 import core.Webserver;
 
@@ -36,6 +38,9 @@ public class RunStandalone
 	 */
 	public static void main(String[] args) throws IOException
 	{
+		// enable log
+		BasicConfigurator.configure();
+		
 		if (args.length == 0)
 		{
 
