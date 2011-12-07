@@ -56,8 +56,6 @@
 				<br />
 				This class maps to XGAP.DataMatrix and MAGE-TAB.Data.
 			</description>
-			<field name="Tags" nillable="true" type="mref" xref_field="id" xref_label="name"
-				xref_entity="OntologyTerm" description="Any additional classifiers you want to apply to this Data. For example: 'genotypes', 'eQTL results', 'Rockman_et_al_2010', 'LOD_scores', 'raw_data', etc." />
 			<field label="ColumnType" name="FeatureType" type="enum"
 				enum_options="[Chromosome,DerivedTrait,EnvironmentalFactor,Gene,Individual,Marker,MassPeak,Measurement,Metabolite,Panel,Probe,ProbeSet,Sample,Spot]"
 				description="Defines the type of the columns of this data set. Each column refers to a Feature or Subject. " />
