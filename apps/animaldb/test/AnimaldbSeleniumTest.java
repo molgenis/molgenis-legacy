@@ -147,7 +147,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
 		// Add 10 female Syrian hamsters
 		selenium.select("id=species", "label=Syrian hamster");
-		selenium.select("id=background", "label=C57BL/6J"); // TODO: add useful Hamster background
+		selenium.select("id=background", "label=C57BL/6j"); // TODO: add useful Hamster background
 		selenium.select("id=sex", "label=Female");
 		selenium.select("id=source", "label=Harlan");
 		selenium.select("id=animaltype", "label=A. Gewoon dier");
@@ -157,7 +157,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("10 animal(s) successfully added"));
 		// Add 10 male Syrian hamsters
 		selenium.select("id=species", "label=Syrian hamster");
-		selenium.select("id=background", "label=C57BL/6J");
+		selenium.select("id=background", "label=C57BL/6j");
 		selenium.select("id=sex", "label=Male");
 		selenium.select("id=source", "label=Harlan");
 		selenium.select("id=animaltype", "label=A. Gewoon dier");
