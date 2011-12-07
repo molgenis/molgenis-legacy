@@ -347,8 +347,8 @@
 <#macro printEntityTextClean r>
 <@compress single_line=true>
 <#list r.getFields() as f>
-	<#-- dont print '__Type', 'name', booleans, dates or numbers-->
-	<#if r.get(f)?exists && f != '__Type' && f != 'name'>
+	<#-- dont print '__Type', 'name', 'Investigation_name', booleans, dates or numbers-->
+	<#if r.get(f)?exists && f != '__Type' && f != 'name' && f != 'Investigation_name'>
 		<#if r.get(f)?is_string && r.get(f)?length gt 0>
 			<#list r.get(f)?split(' ') as sp>
 				${sp?substring(0,1)?upper_case + sp?substring(1,sp?length)} 
