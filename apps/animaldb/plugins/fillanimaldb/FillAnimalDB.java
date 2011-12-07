@@ -583,7 +583,7 @@ public class FillAnimalDB {
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				dutchProtocolId, dutchMeasurementId, groupId, "Huismuis", 0));
 		
-		groupId = ct.makePanel(invid, "Brown Rat", login.getUserId());
+		groupId = ct.makePanel(invid, "Brown rat", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Species", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -593,7 +593,7 @@ public class FillAnimalDB {
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				dutchProtocolId, dutchMeasurementId, groupId, "Bruine rat", 0));
 		
-		groupId = ct.makePanel(invid, "Common Vole", login.getUserId());
+		groupId = ct.makePanel(invid, "Common vole", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Species", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -603,7 +603,7 @@ public class FillAnimalDB {
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				dutchProtocolId, dutchMeasurementId, groupId, "Veldmuis", 0));
 		
-		groupId = ct.makePanel(invid, "Tundra Vole", login.getUserId());
+		groupId = ct.makePanel(invid, "Tundra vole", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Species", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -645,7 +645,7 @@ public class FillAnimalDB {
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				dutchProtocolId, dutchMeasurementId, groupId, "Siberische hamster", 0));
 		
-		groupId = ct.makePanel(invid, "Domestic Guinea Pig", login.getUserId());
+		groupId = ct.makePanel(invid, "Domestic guinea pig", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Species", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -655,7 +655,7 @@ public class FillAnimalDB {
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				dutchProtocolId, dutchMeasurementId, groupId, "Cavia", 0));
 		
-		groupId = ct.makePanel(invid, "Fat-tailed Dunnart", login.getUserId());
+		groupId = ct.makePanel(invid, "Fat-tailed dunnart", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Species", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -667,10 +667,22 @@ public class FillAnimalDB {
 		
 		
 		// Groups -> Backgrounds
-		groupId = ct.makePanel(invid, "CD1", login.getUserId());
+		groupId = ct.makePanel(invid, "129S", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Background", 0));
-		groupId = ct.makePanel(invid, "C57BL/6J", login.getUserId());
+		groupId = ct.makePanel(invid, "C57BL/6j", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Background", 0));
+		groupId = ct.makePanel(invid, "C57BL/10j", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Background", 0));
+		groupId = ct.makePanel(invid, "CBA/j", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Background", 0));
+		groupId = ct.makePanel(invid, "BALB/c", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Background", 0));
+		groupId = ct.makePanel(invid, "CD1", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Background", 0));
 		
