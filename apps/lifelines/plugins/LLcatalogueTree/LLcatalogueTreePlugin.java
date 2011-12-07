@@ -58,8 +58,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			} else {
 				System.out.println("--->" + selected);
 				this.shoppingCart.add(selected);
+				this.setSuccess("The item "+ selected.getName() + " has been successfully added to your shopping cart");
+
 				// clean the ordered measurement list form dublicates
 				this.shoppingCart = cleanShoppingCart();
+
 				
 				
 			}
