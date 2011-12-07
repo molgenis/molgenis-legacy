@@ -3,22 +3,19 @@ package org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 /**
@@ -26,7 +23,9 @@ import org.molgenis.util.Tuple;
  * be Individual'
  */
 public class LifeLinesStandardListener extends ImportTupleListener {
-	private final int BATCH_SIZE = 10000;
+	private final int BATCH_SIZE = 1000;
+	
+	private Logger logger;
 
 	// track the rows/cols of your data
 	private final Map<String, Measurement> measurements = new HashMap<String, Measurement>();
@@ -46,6 +45,8 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 
 		this.investigation = investigation;
 		this.protocol = protocol;
+		
+		this.logger = Logger.getLogger("LLimport("+protocol.getName()+")");
 
 		// WANTED: List<Measurement> result = protocol.getFeatures(db);
 
@@ -55,7 +56,9 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 		}
 	}
 
-	private static int rowCount = 0;
+	private int rowCount = 0;
+	private int valueCount = 0;
+	private int batchCount = 0;
 
 	@Override
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
@@ -86,13 +89,17 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 				v.setProtocolApplication(app);
 
 				values.add(v);
+				
+				valueCount++;
+				batchCount++;
 			}
 		}
 
 		++rowCount;
-		if (rowCount % BATCH_SIZE == 0) {
-			System.out.println("BATCH INSERT " + rowCount);
+		if (batchCount > BATCH_SIZE) {
+			logger.info("parsed row: " + rowCount +"(valuecount='"+valueCount+"')");
 			storeValuesInDatabase();
+			batchCount = 0;
 		}
 	}
 
@@ -102,8 +109,20 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 		//only add targets if they are not already there
 		db.update(new ArrayList(targets.values()),
 				DatabaseAction.ADD_IGNORE_EXISTING, Individual.NAME);
+		
+		//update all target_names with the target_ids
+		for(ObservedValue v: values)
+		{
+			v.setTarget(targets.get(v.getTarget_Name()));
+		}
+		
+		//clear the targets for next batch
+		this.targets.clear();
+		
 		//add the values
 		db.add(this.values);
+		
+		//clear the values
 		values.clear();
 	}
 
@@ -122,10 +141,6 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 
 	public List<Measurement> getMeasurements() {
 		return new ArrayList<Measurement>(measurements.values());
-	}
-
-	public static void resetRowCount() {
-		rowCount = 0;
 	}
 
 }

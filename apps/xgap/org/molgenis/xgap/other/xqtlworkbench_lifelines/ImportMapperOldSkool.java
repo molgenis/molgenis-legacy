@@ -38,6 +38,9 @@ public class ImportMapperOldSkool {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
+		// enable log
+		BasicConfigurator.configure();
+		
 		// adjust for your situation!
 		importData("C:\\lifelinesdata\\all.zip");
 	}
@@ -57,9 +60,6 @@ public class ImportMapperOldSkool {
 					new BufferedOutputStream(new FileOutputStream(path
 							+ entry.getName())));
 		}
-
-		// enable log
-		BasicConfigurator.configure();
 
 		// target for output, either CsvWriter or Database
 		Database db = DatabaseFactory.create();
@@ -88,9 +88,9 @@ public class ImportMapperOldSkool {
 
 		// iterate through the map assuming CSV files
 		List<String> exclude = Arrays.asList(new String[] { "BEP_OMSCHR",
-				"DICT_HULP" });
+				"DICT_HULP","ONDERZOEK" });
 		for (Protocol protocol : dicListener.getProtocols().values()) {
-			if (!exclude.contains(protocol.getName())) {
+			if (/*"UVDEMOG".equals(protocol.getName()) && */!exclude.contains(protocol.getName())) {
 				File f = new File(path + "VW_" + protocol.getName()
 						+ "_DATA.csv");
 				LifeLinesStandardListener llListener = new LifeLinesStandardListener(
