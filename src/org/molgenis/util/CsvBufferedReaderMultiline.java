@@ -275,9 +275,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 						{
 							e.printStackTrace();
 							logger.error("parsing of row " + lineCount
-									+ " failed: " + e);
-							logger.error("parse error on line " + lineCount
-									+ ": " + e.getMessage());
+									+ " failed: " + e.getMessage()+". Tuple: "+t);
 							throw e;
 						}
 					}
