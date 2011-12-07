@@ -20,7 +20,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 	private String renderTree(JQueryTreeViewElement node) {
 		String returnString;
 		if (node.hasChildren()) {
-			returnString = "<li class=\"closed\"><span class=\"folder\">" + node.getLabel() + "</span>";
+			returnString = "<li class=\"open\"><span class=\"folder\">" + node.getLabel() + "</span>";
 			returnString += "<ul>";
 			Vector<JQueryTreeViewElement> children = node.getChildren();
 			for (JQueryTreeViewElement child : children) {
@@ -53,7 +53,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"$(\"#browser\").treeview();});\n"
 		+ "$(\"a\").click(function(event) {"
 		+"	  event.preventDefault();"
-//		+"	  alert(\"Your order of \"+$(this).text() + \" has been added to you Shopping Cart\");"
+		+"	  alert(\"Your order of \"+$(this).text() + \" has been added to you Shopping Cart\");"
 		+"	});"
 		+"</script>\n";
 	    
