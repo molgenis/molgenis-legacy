@@ -59,6 +59,8 @@ public class ParameterWeaverCommandLine
     private String outfilename = null;
     private String extrafilename = null;
 
+    private String executionGridDirectory = null;
+
     private String verificationTemplate = "java -jar /data/gcc/tools/GATK-1.0.5069/Sting/dist/GenomeAnalysisTK.jar " +
             "-R /data/gcc/resources/hg19/indices/human_g1k_v37.fa  " +
             "-I /data/gcc/test_george/819/110214_SN163_391A80MTLABXX_4_AGAGAT.sorted.bam " +
@@ -87,6 +89,8 @@ public class ParameterWeaverCommandLine
             errfilename = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-errorfile.ftl");
             outfilename = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-outfile.ftl");
             extrafilename = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-extrafile.ftl");
+
+            executionGridDirectory = getFileAsString(templateDir + System.getProperty("file.separator") + "templ-exe-grid-dir.ftl");
 
         }
         catch (IOException e)
@@ -284,7 +288,7 @@ public class ParameterWeaverCommandLine
             local.put("srm_name", srmValue);
             local.put("just_name", justName);
 
-            weavingValues.put(str, "/scratch/" + justName);
+            weavingValues.put(str, executionGridDirectory + justName);
 
             String result = "";
             if(element.equalsIgnoreCase(DO_DOWNLOAD))
