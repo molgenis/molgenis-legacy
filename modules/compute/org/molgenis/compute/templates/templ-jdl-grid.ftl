@@ -17,5 +17,3 @@ Requirements = other.GlueCEUniqueID == "ce.grid.rug.nl:8443/cream-pbs-medium"
 || other.GlueCEUniqueID =="gb-ce-rug.sara.usor.nl:8443/cream-pbs-medium" 
 || other.GlueCEUniqueID =="gb-ce-ams.els.sara.nl:8443/cream-pbs-medium" 
 || other.GlueCEUniqueID =="creamce.grid.rug.nl:8443/cream-pbs-medium";
-
-
