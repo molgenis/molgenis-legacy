@@ -19,6 +19,11 @@ public class SimpleLogin implements Login
     {
 
     }        
+    
+    public SimpleLogin(Database db, String redirect, TokenFactory tm) throws Exception
+	{
+
+	}
         
 	@Override
 	public void reload(Database db)
