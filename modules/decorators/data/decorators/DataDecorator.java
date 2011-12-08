@@ -12,6 +12,7 @@ import java.util.List;
 
 import matrix.general.DataMatrixHandler;
 
+import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.DatabaseException;
@@ -53,7 +54,7 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MappingDeco
 		for(Data e : entities)
 		{
 			System.out.println(e.toString());
-			if(e.getPerformer().size() == 0)
+			if(e.getPerformer().size() == 0 && this.getDatabase().getSecurity() instanceof DatabaseLogin)
 			{
 				e.setPerformer_Id(this.getDatabase().getSecurity().getUserId());
 			}

@@ -9,12 +9,9 @@ package org.molgenis.auth.service.tokenmanager;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.server.Token;
+import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -119,6 +116,14 @@ public class TokenManager extends PluginModel
 		
 	}
 
-	
+	@Override
+	public boolean isVisible()
+	{
+		if (this.getController().getApplicationController().getLogin() instanceof SimpleLogin)
+		{
+			return false;
+		}
+		return super.isVisible();
+	}
 
 }

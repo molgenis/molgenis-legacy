@@ -14,6 +14,7 @@ import java.util.List;
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
+import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.MolgenisUser;
@@ -326,7 +327,8 @@ public class ClusterDemo extends PluginModel<Entity>
 			this.setLoggedIn(false);
 		}
 		
-		
+		if(this.getLogin() instanceof DatabaseLogin)
+	{
 		try
 		{
 			//fails when there is no table 'MolgenisUser', or no MolgenisUser named 'admin'
@@ -374,6 +376,37 @@ public class ClusterDemo extends PluginModel<Entity>
 			setUserIsAdminAndDatabaseIsEmpty(false);
 		}
 		
+	}
+		else
+		{
+			// for simplelogin, just check if there are investigations present
+			try
+			{
+				List<Investigation> invList = db.find(Investigation.class);
+				if(invList.size() == 0){
+					
+					//flip bool to enable box
+					setUserIsAdminAndDatabaseIsEmpty(true);
+					
+					// since we're now showing the special box,
+					// find out if there is a validated path and save this info
+					if(sh.hasValidFileStorage(db)){
+						this.setValidpath(sh.getFileStorage(true, db).getAbsolutePath());
+					}else{
+						this.setValidpath(null);
+					}
+				}else{
+					setUserIsAdminAndDatabaseIsEmpty(false);
+				}
+			
+			}catch(Exception e)
+			{
+				//something went wrong, set boolean to false for safety
+				setUserIsAdminAndDatabaseIsEmpty(false);
+			}
+			
+			
+		}
 	}
 	
 	@Override

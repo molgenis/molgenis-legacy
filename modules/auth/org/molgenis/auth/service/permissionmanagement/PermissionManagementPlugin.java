@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -139,5 +140,15 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
     {
     	this.setMessages();
     }
+    
+    @Override
+    public boolean isVisible()
+	{
+		if (this.getController().getApplicationController().getLogin() instanceof SimpleLogin)
+		{
+			return false;
+		}
+		return super.isVisible();
+	}
 
 }

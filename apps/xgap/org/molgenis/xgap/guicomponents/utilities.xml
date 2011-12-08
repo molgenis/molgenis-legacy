@@ -8,7 +8,7 @@
 			<form name="Tissues" entity="Tissue" group="biologist" />
 			<form name="AlternateIds" label="Alternative identifiers" entity="AlternateId" group="biologist" />
 			<form name="Publications" label="Publications" entity="Publication" group="biologist" />
-			<form label="Data tags" name="OntologyTerms" entity="OntologyTerm" group="biologist" />
+			<form label="Other ontologies" name="OntologyTerms" entity="OntologyTerm" group="biologist" />
 		</menu>
 		<menu name="Tools" label="Tools">
 			<plugin label="Format names" name="NamingPolicy"

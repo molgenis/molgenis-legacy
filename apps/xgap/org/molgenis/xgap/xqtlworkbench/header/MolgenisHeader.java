@@ -71,13 +71,19 @@ public class MolgenisHeader extends PluginModel<Entity>
 	}
 	
 	public void setUserLogin() {
-		if (this.getLogin().isAuthenticated()) {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getUserName() + "</a>";
-			this.userLogin += " | ";
-			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
-		} else {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
-		}	
+		if(this.getLogin() instanceof DatabaseLogin)
+		{
+			if (this.getLogin().isAuthenticated()) {
+				this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getUserName() + "</a>";
+				this.userLogin += " | ";
+				this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
+			} else {
+				this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
+			}
+		}else{
+			//simplelogin
+			this.userLogin = "";
+		}
 	}
 	
 	@Override
