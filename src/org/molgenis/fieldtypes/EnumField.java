@@ -35,7 +35,7 @@ public class EnumField extends FieldType
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
-		return "VARCHAR2";
+		return "VARCHAR2(255)";
 	}
 
 

@@ -35,7 +35,7 @@ public class FileField extends FieldType
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
-		return "TEXT";
+		return "CLOB";
 	}
 
 	@Override
