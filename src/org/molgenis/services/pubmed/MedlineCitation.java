@@ -12,16 +12,16 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 public class MedlineCitation
 {
 	@XmlElement
-	String PMID;
+	public String PMID;
 
 	@XmlElement(name = "Article")
-	Article article;
+	public Article article;
 
 	@XmlElementWrapper(name="MeshHeadingList")
 	@XmlElement(name="MeshHeading")
-	List<MeshHeading> MeshHeadings = new ArrayList<MeshHeading>();
+	public List<MeshHeading> MeshHeadings = new ArrayList<MeshHeading>();
 	
-	List<Author> authors = new ArrayList<Author>();
+	public List<Author> authors = new ArrayList<Author>();
 
 	public String toString()
 	{
