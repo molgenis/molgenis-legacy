@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -13,15 +14,18 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.ValueLabel;
+
+
 
 public class LLcatalogueTreePlugin extends PluginModel<Entity> {
-	
 	private String Status;
 	
 	private static final long serialVersionUID = -6143910771849972946L;
@@ -33,7 +37,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	private HashMap<String, JQueryTreeViewElementMeasurement> labelToTree;
 
 	private List<Measurement> shoppingCart = new ArrayList<Measurement>();
-
+	
+	CheckboxInput checkBoxInput ;
+	
 	public String MeasurementName = "------------------------------------->";
 
 	public LLcatalogueTreePlugin(String name, ScreenController<?> parent) {
@@ -45,9 +51,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	public void handleRequest(Database db, Tuple request) {
 
 		System.out.println("CAUGHT IT: " + request);
-		System.out.println(request.getInt("measurementId"));
-		System.out.println(request.getString("measurementName"));
-		System.out.println(request.getAction().startsWith("DeleteMeasurement"));
+//		System.out.println(request.getInt("measurementId"));
+//		System.out.println(request.getString("measurementName"));
+//		System.out.println(request.getAction().startsWith("DeleteMeasurement"));
 
 		try {
 
@@ -58,16 +64,25 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			} else {
 				System.out.println("--->" + selected);
 				this.shoppingCart.add(selected);
-				this.setSuccess("The item "+ selected.getName() + " has been successfully added to your shopping cart");
+				this.setSuccess("The item \""+ selected.getName() + "\" has been successfully added to your shopping cart");
 
 				// clean the ordered measurement list form dublicates
 				this.shoppingCart = cleanShoppingCart();
 
+				 
+				Vector<ValueLabel> ShoppingCartOptions = null;
+				List<String> shoppingCartLabels = new Vector<String>() ;
+				for (int i=0; i<this.shoppingCart.size(); i++) {
+					shoppingCartLabels.add(this.shoppingCart.get(i).getName());
+				}
+		
+				this.checkBoxInput = new CheckboxInput("ShoppingCart", "Shopping Cart", "ShoppingCart", ShoppingCartOptions, shoppingCartLabels);
+				checkBoxInput.render();
 				
 				
 			}
 			if ("OrderMeasurements".equals(request.getAction())) {
-				this.shoppingCart = cleanShoppingCart();
+				//TODO : .fill this !.....
 				this.setStatus("<h4>You order is being processed.</h4>" ) ;
 			} //TODO fix this : else if ("DeleteMeasurement".equals(request.getAction()))	{
 			else if (request.getAction().startsWith("DeleteMeasurement")) {
@@ -80,9 +95,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				this.deleteShoppingItem(measurementName);
 			}
 		} catch (Exception e) {
-			this.setError(e.getMessage());
+			this.setError("LLCataloguetreePlugin handle request " + e.getMessage());
 		}
 
+	}
+
+	private void add(CheckboxInput checkboxInput) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void deleteShoppingItem(String selected) {
@@ -92,8 +112,8 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		for (int i=0; i<this.shoppingCart.size(); i++) {
 			if (this.shoppingCart.get(i).getName().equals(selected)) {
 				this.shoppingCart.remove(i);
-				this.setStatus("The item "+ selected + " has been successfully removed from your shopping cart");
-				this.setSuccess("The item "+ selected + " has been successfully removed from your shopping cart");
+				this.setStatus("The item \""+ selected + "\" has been successfully removed from your shopping cart");
+				this.setSuccess("The item \""+ selected + "\" has been successfully removed from your shopping cart");
 			}
 		}
 		
@@ -291,6 +311,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		return true;
 	}
 
+	public String getcheckBoxInput(){
+		return this.checkBoxInput.toHtml();
+	}
 	public String getTreeView() {
 		return treeView.toHtml();
 	}
