@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
@@ -29,6 +30,7 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Gene;
+import org.molgenis.xgap.Locus;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.Probe;
 
@@ -40,6 +42,9 @@ public class QtlFinder extends PluginModel
 
 	private QtlFinderModel model = new QtlFinderModel();
 	private DataMatrixHandler dmh = null;
+	
+	private int plotWidth = 1024;
+	private int plotHeight = 768;
 
 	public QtlFinderModel getMyModel()
 	{
@@ -249,6 +254,16 @@ public class QtlFinder extends PluginModel
 				//create instance and get name of the row/col we want
 				DataMatrixInstance instance = dmh.createInstance(d, db);
 				String name = entity.get(ObservationElement.NAME).toString();
+			
+				long locus;
+				if(entity instanceof Locus)
+				{
+					locus = ((Locus)entity).getBpStart();
+				}
+				else
+				{
+					locus = 0;
+				}
 				
 				//find out if the name is in the row or col names
 				List<String> rowNames = instance.getRowNames();
@@ -273,17 +288,32 @@ public class QtlFinder extends PluginModel
 					
 					QTLInfo qtl = new QTLInfo(d, peakMarker, peakDouble, colNames, DvaluesList);
 					
+					HashMap<String, Marker> markerInfo = getMarkerInfo(colNames, db);
+					qtl.setMarkerAnnotations(markerInfo);
+					
 					try{
-						File img = MakeRPlot.plot(d, instance, name, null, "row", "o", 800, 600);
+						File img;
+						
+						//find out if we can do QTL plot
+						//RIGHT NOW THIS IS ALWAYS TRUE
+						//MISSING VALUES ARE 'HANDLED' BY THE QTL PLOT
+						if(qtlInformationIsComplete(markerInfo, colNames))
+						{
+							TreeMap<Long, QtlPlotDataPoint> data = sortQtlPlotData(colNames, DvaluesList, markerInfo);
+							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight); //TODO: position of gene or probe!!!!!
+						}
+						else
+						{
+							img = MakeRPlot.plot(d, instance, name, null, "row", "o", plotWidth, plotHeight);
+						}
 						qtl.setPlot(img.getName());
-					}catch(Exception e)
+						
+					}
+					catch(Exception e)
 					{
 						e.printStackTrace();
 						//too bad, image failed
 					}
-					
-					HashMap<String, Marker> markerInfo = getMarkerInfo(colNames, db);
-					qtl.setMarkerAnnotations(markerInfo);
 					
 					result.add(qtl);
 					
@@ -307,17 +337,32 @@ public class QtlFinder extends PluginModel
 					
 					QTLInfo qtl = new QTLInfo(d, peakMarker, peakDouble, rowNames, DvaluesList);
 					
+					HashMap<String, Marker> markerInfo = getMarkerInfo(rowNames, db);
+					qtl.setMarkerAnnotations(markerInfo);
+					
 					try{
-						File img = MakeRPlot.plot(d, instance, null, name, "col", "o", 800, 600);
+						File img;
+						
+						//find out if we can do QTL plot
+						//RIGHT NOW THIS IS ALWAYS TRUE
+						//MISSING VALUES ARE 'HANDLED' BY THE QTL PLOT
+						if(qtlInformationIsComplete(markerInfo, rowNames))
+						{
+							TreeMap<Long, QtlPlotDataPoint> data = sortQtlPlotData(rowNames, DvaluesList, markerInfo);
+							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight); //TODO: position of gene or probe!!!!!
+						}
+						else
+						{
+							img = MakeRPlot.plot(d, instance, null, name, "col", "o", plotWidth, plotHeight);
+						}
+						
 						qtl.setPlot(img.getName());
-					}catch(Exception e)
+					}
+					catch(Exception e)
 					{
 						e.printStackTrace();
 						//too bad, image failed
 					}
-					
-					HashMap<String, Marker> markerInfo = getMarkerInfo(rowNames, db);
-					qtl.setMarkerAnnotations(markerInfo);
 					
 					result.add(qtl);
 					
@@ -336,6 +381,30 @@ public class QtlFinder extends PluginModel
 		}
 		
 		return result;
+	}
+
+	//sort the datapoints to bp position to be plottable
+	//use bppos as index to get automatic natural sorting!
+	private TreeMap<Long, QtlPlotDataPoint> sortQtlPlotData(List<String> markers, List<Double> lodscores, HashMap<String, Marker> markerInfo)
+	{
+		TreeMap<Long, QtlPlotDataPoint> res = new TreeMap<Long, QtlPlotDataPoint>();
+		for(int i=0; i < markers.size(); i++)
+		{
+			long bpPos = markerInfo.get(markers.get(i)).getBpStart();
+			String chr = markerInfo.get(markers.get(i)).getChromosome_Name();
+			
+			QtlPlotDataPoint qd = new QtlPlotDataPoint(lodscores.get(i).doubleValue(), bpPos, chr);
+			
+			res.put(new Long(bpPos), qd);
+		}
+		
+		return res;
+	}
+	
+	private boolean qtlInformationIsComplete(HashMap<String, Marker> markerInfo, List<String> colNames)
+	{
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 	private HashMap<String, Marker> getMarkerInfo(List<String> colNames, Database db)

@@ -36,6 +36,9 @@
 	<#assign modelExists = false>
 </#if>
 
+<#assign plotWidth = (1024+50)>
+<#assign plotHeight = (768+50)>
+
 <#import "../reportbuilder/ReportBuilder.ftl" as rb>
 
 <table cellpadding="10">
@@ -90,7 +93,7 @@
 
 	<#assign result = model.resultSet[key]>
 	
-	<div style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
+	<div id="${result.selectedName}" style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
 	
 	<#if result.noResultsFound??>
 		No results found for "${result.selectedName}".
@@ -113,7 +116,7 @@
 			<#if result.selectedName != result.result.name>matches "${result.selectedName}"</#if><br><b>Max. LOD: ${qtl.peakValue}</b><br><br>
 			<#if qtl.plot??>
 				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
-				<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+				<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 					<img src="tmpfile/${qtl.plot}" width="320" height="240">
 				</a><br>
 			</#if>
@@ -127,7 +130,7 @@
 		<#if result.qtlsFound?size == 0>
 		No QTL information for ${result.result.name}.<br><br>
 		No data or below threshold.<br><br>
-		<img src="generated-res/img/cancel.png" />
+		<img src="generated-res/img/cancel.png" onclick="showhide('${result.selectedName}');"/>
 		</#if>
 	</#if>
 	
@@ -222,7 +225,7 @@
 							<i>Click to enlarge</i><br>
 								<#if qtl.plot??>
 									<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
-									<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+									<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 										<img src="tmpfile/${qtl.plot}" width="160" height="120">
 									</a>
 								</#if>
@@ -294,7 +297,7 @@
 									<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].bpstart?c}</#if>
 							</td>
 							<td>
-									<#if qtl.markerAnnotations?keys?seq_contains(m)><a href="molgenis.do?__target=Chromosomes&__action=filter_set&__filter_attribute=Chromosome_name&__filter_operator=EQUALS&__filter_value=${qtl.markerAnnotations[m].chromosome_name}">${qtl.markerAnnotations[m].chromosome_name}</a></#if>
+									<#if qtl.markerAnnotations?keys?seq_contains(m) && qtl.markerAnnotations[m].chromosome_name??><a href="molgenis.do?__target=Chromosomes&__action=filter_set&__filter_attribute=Chromosome_name&__filter_operator=EQUALS&__filter_value=${qtl.markerAnnotations[m].chromosome_name}">${qtl.markerAnnotations[m].chromosome_name}</a></#if>
 							</td>
 						</tr>
 					</#list>
