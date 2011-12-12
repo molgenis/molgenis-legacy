@@ -112,8 +112,6 @@
 				label="Manage DEC projects" />
 			<plugin name="AddSubproject" type="plugins.experiments.ShowDecSubprojects"
 				label="Manage DEC subprojects" />
-			<plugin name="AnimalsInSubprojects" type="plugins.experiments.ShowAnimalsInSubprojects"
-				label="Manage animals in DEC subprojects" />
 		</menu>
 		<plugin name="YearlyReportModule" type="plugins.report.YearlyReportModule"
 			label="Yearly report" />

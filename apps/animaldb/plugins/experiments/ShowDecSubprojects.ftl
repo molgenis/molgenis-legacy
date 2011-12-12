@@ -21,36 +21,29 @@
 
 <#if screen.action == "AddEdit">
 
-<p><strong>
-<#if screen.listId == 0>Add<#else>Edit</#if> DEC Subproject
-</strong></p>
+	<p><strong>
+	<#if screen.listId == -1>Add<#else>Edit</#if> DEC subproject
+	</strong></p>
 
-<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>
-
-<form method="post" enctype="multipart/form-data" name="${screen.name}">
+	<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>
+	
+	<#if screen.listId != -1>
+		<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
+	</#if>
+	
+	<form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->
 	<input type="hidden" name="__target" value="${screen.name}"" />
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action" />
-	
-	<#if screen.listId != 0>
-		<#assign currentDecSubproject = screen.getDecSubprojectByListId()>
-	</#if>
-	
-	<#if currentDecSubproject??>
-	<div class="row">
-		<label for="name">Name:</label>
-		<input disabled type="text" name="name" id="name" class="textbox"  value="${currentDecSubproject.name}" />
-	</div>
-	</#if>
 	
 	<div class="row">
 		<label for="decapp">DEC application:</label>
 		<select name="decapp" id="decapp"> 
 			<#list screen.decApplicationList as decAppListItem>
 				<option 
-				<#if currentDecSubproject??><#if currentDecSubproject.decApplicationId = decAppListItem.id>selected="selected"</#if></#if>
-				value="${decAppListItem.id}">${decAppListItem.name}</option>
+				<#if currentDecSubproject??><#if currentDecSubproject.decApplicationId == decAppListItem.id>selected="selected"</#if></#if>
+				value="${decAppListItem.id?string.computer}">${decAppListItem.name}</option>
 			</#list>
 		</select>
 	</div>
@@ -67,7 +60,7 @@
 	</div>
 	
 	<div class="row">
-		<label for="experimenttitle">DEC Title:</label>
+		<label for="experimenttitle">DEC title:</label>
 		<input type="text" name="experimenttitle" id="experimenttitle" class="textbox" <#if currentDecSubproject??> value="${currentDecSubproject.experimentTitle}"</#if> />
 	</div>
 	
@@ -182,67 +175,239 @@
 	</div>
 	
 	<div class='row'>
-		<input type='submit' id='addsubproject' class='addbutton' value='Add' onclick="__action.value='addEditDecSubproject'" />
+		<input type='submit' id='addsubproject' class='addbutton' value='Save' onclick="__action.value='addEditDecSubproject'" />
 	</div>
 	
-</form>
+	</form>
+
+<#elseif screen.action == "EditAnimals">
+
+	<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>
+
+	<form method="post" enctype="multipart/form-data" name="${screen.name}">
+	<!--needed in every form: to redirect the request to the right screen-->
+	<input type="hidden" name="__target" value="${screen.name}"" />
+	<!--needed in every form: to define the action. This can be set by the submit button-->
+	<input type="hidden" name="__action" />
+
+	<table cellpadding="10" cellspacing="2" border="1">
+		<tr>
+			<th>Name</th>
+			<th><input type='submit' id='startrem' class='addbutton' value='Remove selected' onclick="__action.value='RemoveAnimalsFromSubproject'" /></th>
+		</tr>
+		<#assign i = 0>
+		<#list screen.getAnimalIdList() as animalId>
+			<#assign name = screen.getAnimalName(animalId)>
+			<tr>
+				<td style='padding:5px'>${name}</td>
+				<td style='padding:5px'><input type="checkbox" id="rem${i}" name="rem${i}" value="rem${i}" /></td>
+			</tr>
+			<#assign i = i + 1>
+		</#list>
+	</table>
+	
+	<br />
+	<input type='submit' id='startadd' class='addbutton' value='Add' onclick="__action.value='AddAnimalToSubproject'" />
+
+	</form>
+
+<#elseif screen.action == "RemoveAnimalsFromSubproject">
+
+	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
+	
+	<em>Removing&nbsp;
+	<#list screen.getAnimalRemoveIdList() as animalId>
+		<#assign name = screen.getAnimalName(animalId)>
+		${name}&nbsp;
+	</#list>
+	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
+	from ${currentDecSubproject.name}</em>
+	
+	<form method="post" enctype="multipart/form-data" name="${screen.name}">
+	<!--needed in every form: to redirect the request to the right screen-->
+	<input type="hidden" name="__target" value="${screen.name}"" />
+	<!--needed in every form: to define the action. This can be set by the submit button-->
+	<input type="hidden" name="__action" />
+	
+	<div class="row">
+		<label for="subprojectremovaldate">Date of removal from DEC subproject:</label>
+		<input type='text' class='textbox' id='subprojectremovaldate' name='subprojectremovaldate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
+	</div>
+	
+	<div class='row'>
+		<label for='discomfort'>Actual discomfort:</label>
+		<select name='discomfort' id='discomfort'>
+		<#list screen.actualDiscomfortCodeList as dcl>
+			<option value="${dcl.description}">${dcl.code_string} (${dcl.description})</option>
+		</#list>
+		</select>
+	</div>
+	
+	<div class='row'>
+		<label for='endstatus'>Actual animal end status:</label>
+		<select name='endstatus' id='endstatus' onchange="showDeathDatetime(this.value);">
+		<#list screen.actualEndstatusCodeList as ecl>
+			<option value="${ecl.description}">${ecl.code_string} (${ecl.description})</option>
+		</#list>
+		</select>
+	</div>
+	
+	<div class="row" style="display:block">
+		<label for="deathdate">Date of death:</label>
+		<input type='text' class='textbox' id='deathdate' name='deathdate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
+	</div>
+	
+	<div class='row'>
+		<input type='submit' id='dorem' class='addbutton' value='Apply' onclick="__action.value='ApplyRemoveAnimalsFromSubproject'" />
+	</div>
+	
+	</form>
+
+<#elseif screen.action == "ApplyRemoveAnimalsFromSubproject">
+
+	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
+
+<#elseif screen.action == "ApplyAddAnimalToSubproject">
+
+	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
+
+<#elseif screen.action == "AddAnimalToSubproject">
+
+	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
+	
+	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
+	<em>Adding animal(s) to ${currentDecSubproject.name}</em><br />
+	
+	<form method="post" enctype="multipart/form-data" name="${screen.name}">
+	<!--needed in every form: to redirect the request to the right screen-->
+	<input type="hidden" name="__target" value="${screen.name}"" />
+	<!--needed in every form: to define the action. This can be set by the submit button-->
+	<input type="hidden" name="__action" />
+		
+	<div style='float:left'>
+		<label for='animal'>Animal(s):</label>
+		<select name='animal' id='animal' size='20' multiple='multiple'>
+		<#list screen.allAnimalIdList as animalId>
+			<#assign name = screen.getAnimalName(animalId)>
+			<option value="${animalId?string.computer}">${name}</option>
+		</#list>
+		</select>
+	</div>
+	
+	<div>
+		<label for='groupname'>Batch(es):</label>
+		<select name='groupname' id='groupname' size='20' multiple='multiple'>
+			<#list screen.batchList as batch>
+				<option value="${batch.id?string.computer}">${batch.name}</option>
+			</#list>
+		</select>
+	</div>
+	
+	<div class="row" style='clear:left'>
+		<label for="subprojectadditiondate">Date of entry into DEC subproject:</label>
+		<input type='text' class='textbox' id='subprojectadditiondate' name='subprojectadditiondate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
+	</div>
+	
+	<div class='row'>
+		<label for='painmanagement'>Pain management:</label>
+		<select name='painmanagement' id='painmanagement'>
+		<#list screen.painManagementCodeList as pml>
+			<option value="${pml.description}">${pml.code_string} (${pml.description})</option>
+		</#list>
+		</select>
+	</div>
+	
+	<div class='row'>
+		<label for='anaesthesia'>Anaesthesia:</label>
+		<select name='anaesthesia' id='anaesthesia'>
+		<#list screen.anaesthesiaCodeList as al>
+			<option value="${al.description}">${al.code_string} (${al.description})</option>
+		</#list>
+		</select>
+	</div>
+	
+	<div class='row'>
+		<label for='discomfort'>Expected discomfort:</label>
+		<select name='discomfort' id='discomfort'>
+		<#list screen.expectedDiscomfortCodeList as dcl>
+			<option value="${dcl.description}">${dcl.code_string} (${dcl.description})</option>
+		</#list>
+		</select>
+	</div>
+	
+	<div class='row'>
+		<label for='endstatus'>Expected animal end status:</label>
+		<select name='endstatus' id='endstatus'>
+		<#list screen.expectedEndstatusCodeList as ecl>
+			<option value="${ecl.description}">${ecl.code_string} (${ecl.description})</option>
+		</#list>
+		</select>
+	</div>
+	
+	<div class='row'>
+		<input type='submit' id='doadd' class='addbutton' value='Apply' onclick="__action.value='ApplyAddAnimalToSubproject'" />
+	</div>
+	
+	</form>
 
 <#else>
 
-<div id="experimentlist">
-	<p><strong>DEC Subprojects</strong></p>
-	<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0">Add</a></p>
-	<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable">
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Start date</th>
-				<th>End date</th>
-				<th>DEC project (application)</th>
-				<th>DEC subproject code</th>
-				<th>DEC subproject title</th>
-				<th>DEC subproject application PDF</th>
-				<th>Concern</th>
-				<th>Goal</th>
-				<th>Special techniques</th>
-				<th>Law definition</th>
-				<th>Toxic research</th>
-				<th>Anaesthesia</th>
-				<th>Pain management</th>
-				<th>Expected animal end status</th>
-				<th>Remarks</th>
-				<th>Nr. of animals currently in</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<#if screen.experimentList?exists>
-				<#list screen.experimentList as expl>
-					<tr>
-						<td>${expl.name}</td>
-						<td>${expl.startDate}</td>
-						<td>${expl.endDate}</td>
-						<td>${expl.decApplication}</td>
-						<td>${expl.experimentNr}</td>
-						<td>${expl.experimentTitle}</td>
-						<td>${expl.decSubprojectApplicationPDF}</td>
-						<td>${expl.concern}</td>
-						<td>${expl.goal}</td>
-						<td>${expl.specialTechn}</td>
-						<td>${expl.lawDef}</td>
-						<td>${expl.toxRes}</td>
-						<td>${expl.anaesthesia}</td>
-						<td>${expl.painManagement}</td>
-						<td>${expl.animalEndStatus}</td>
-						<td>${expl.oldAnimalDBRemarks}</td>
-						<td>${expl.nrOfAnimals}</td>
-						<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${expl.decExpListId}">Edit</a>&nbsp;</td>
-					</tr>
-				</#list>
-			</#if>
-		</tbody>
-	</table>
-</div>
+	<div id="experimentlist">
+		<p><strong>DEC subprojects</strong></p>
+		<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1">Add</a></p>
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Start date</th>
+					<th>End date</th>
+					<th>DEC application</th>
+					<th>DEC subproject code</th>
+					<th>DEC subproject title</th>
+					<th>DEC subproject application PDF</th>
+					<th>Concern</th>
+					<th>Goal</th>
+					<th>Special techniques</th>
+					<th>Law definition</th>
+					<th>Toxic research</th>
+					<th>Anaesthesia</th>
+					<th>Pain management</th>
+					<th>Expected animal end status</th>
+					<th>Remarks</th>
+					<th>Animals</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<#if screen.experimentList?exists>
+					<#assign i = 0>
+					<#list screen.experimentList as expl>
+						<tr>
+							<td>${expl.name}</td>
+							<td>${expl.startDate}</td>
+							<td>${expl.endDate}</td>
+							<td>${expl.decApplication}</td>
+							<td>${expl.experimentNr}</td>
+							<td>${expl.experimentTitle}</td>
+							<td>${expl.decSubprojectApplicationPDF}</td>
+							<td>${expl.concern}</td>
+							<td>${expl.goal}</td>
+							<td>${expl.specialTechn}</td>
+							<td>${expl.lawDef}</td>
+							<td>${expl.toxRes}</td>
+							<td>${expl.anaesthesia}</td>
+							<td>${expl.painManagement}</td>
+							<td>${expl.animalEndStatus}</td>
+							<td>${expl.oldAnimalDBRemarks}</td>
+							<td>${expl.nrOfAnimals} [<a href='molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${i}'>Manage</a>]</td>
+							<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${i}">Edit</a>&nbsp;</td>
+						</tr>
+						<#assign i = i + 1>
+					</#list>
+				</#if>
+			</tbody>
+		</table>
+	</div>
 
 </#if>
 	

@@ -50,7 +50,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	private ObservationTarget animalToAddOrRemove;
 	private ObservationTarget subproject;
 	private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
-	private SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 	public ShowAnimalsInSubprojects(String name, ScreenController<?> parent)

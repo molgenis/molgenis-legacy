@@ -43,15 +43,12 @@
 		<menu name="decmenu" position="left" label="DEC applications">
 			<plugin name="DecStatus" type="plugins.projectportal.DecStatus"
 				label="DEC status portal" />
-			<plugin name="AnimalsInSubprojects" type="plugins.experiments.ShowAnimalsInSubprojects"
-				label="DEC: add/remove animals" />
 			<plugin name="AddProject" type="plugins.experiments.ShowDecProjects"
 				label="DEC applications" />
 			<plugin name="AddSubproject" type="plugins.experiments.ShowDecSubprojects"
 				label="DEC subprojects" />
-			
 			<plugin name="YearlyReportModule" type="plugins.report.YearlyReportModule"
-			label="Yearly report" />
+				label="Yearly report" />
 		</menu>
 		
 		<menu name="batches" position="left" label="Batches">	
@@ -62,8 +59,6 @@
 			<plugin name="BatchView" type="plugins.batch.BatchViewPlugin"
 				label="Batch viewer" />
 		</menu>
-		
-		
 		
 		<!-- plugin name="AddSpecialGroup" type="plugins.specialgroups.AddSpecialGroupPlugin"
 			label="Groups" /-->

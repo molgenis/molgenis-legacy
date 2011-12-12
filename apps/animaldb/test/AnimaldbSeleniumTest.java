@@ -11,7 +11,6 @@ import org.testng.annotations.Test;
 
 import plugins.emptydb.emptyDatabase;
 import app.DatabaseFactory;
-import app.servlet.MolgenisServlet;
 import boot.RunStandalone;
 
 import com.thoughtworks.selenium.DefaultSelenium;
@@ -267,8 +266,8 @@ public class AnimaldbSeleniumTest
 	@Test(dependsOnMethods={"breedingWorkflow"})
 	public void decWorkflow() throws Exception {
 		Calendar calendar = Calendar.getInstance();
-		String[] months = new String[] {"January", "February", "March", "April", "May", "June",
-										"July", "August", "September", "October", "November", "December"};
+		//String[] months = new String[] {"January", "February", "March", "April", "May", "June",
+		//								"July", "August", "September", "October", "November", "December"};
 		// Go to DEC project plugin
 		selenium.click("id=decmenu_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -304,14 +303,9 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=enddate", thisYear + "-03-01");		
 		selenium.click("id=addsubproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("DEC Subproject successfully added"));
-		//Assert.assertTrue(selenium.isTextPresent("MyProject"));
-		// Go to Animals in DEC plugin
-		selenium.click("id=AnimalsInSubprojects_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("DEC: add/remove animals"));
+		Assert.assertTrue(selenium.isTextPresent("DEC subproject successfully added"));
 		// Add animals to DEC (multiple select does not seem to work in Selenium so there is some duplication here
-		selenium.select("id=subproject", "label=DEC 12345A");
+		selenium.click("link=Manage");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		addAnimalToDec("000021");
 		addAnimalToDec("000022");
@@ -466,7 +460,6 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully added"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("DEC: add/remove animals"));
 	}
 
 }
