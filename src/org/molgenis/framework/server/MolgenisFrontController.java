@@ -1,5 +1,6 @@
 package org.molgenis.framework.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,13 +10,17 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.DatabaseException;
 
@@ -24,7 +29,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 {
 	// helper vars
 	private static final long serialVersionUID = -2141508157810793106L;
-	Logger logger = Logger.getLogger(MolgenisFrontController.class);
+	protected Logger logger;
 	
 	// map of all services for this app
 	protected Map<String, MolgenisService> services;
@@ -151,6 +156,47 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		connections.remove(connId);
 		
 		System.out.println("< request was handled, active database connections: " + connections.size());
+	}
+	
+	protected void createLogger(MolgenisOptions mo) throws ServletException
+	{
+		try{
+			//get logger and remove appenders added by classpath JARs. (= evil)
+			Logger rootLogger = Logger.getRootLogger();
+			rootLogger.removeAllAppenders();
+	
+			//the pattern used to format the logger output
+			PatternLayout pattern = new PatternLayout("%-4r %-5p [%c] %m%n");
+
+			//get the level from the molgenis options
+			rootLogger.setLevel(mo.log_level);
+	      
+			//console appender
+			if(mo.log_target.equals(MolgenisOptions.LogTarget.CONSOLE))
+			{
+				rootLogger.addAppender(new ConsoleAppender(pattern));
+				System.out.println("Log4j CONSOLE appender added log level " + mo.log_level);
+			}
+			
+			//file appender
+			if(mo.log_target.equals(MolgenisOptions.LogTarget.FILE))
+			{
+				RollingFileAppender fa = new RollingFileAppender(pattern, "logger.out");
+				fa.setMaximumFileSize(100000000); //100MB
+				rootLogger.addAppender(fa);
+				System.out.println("Log4j FILE appender added with level " + mo.log_level + ", writing to: " + new File(fa.getFile()).getAbsolutePath());
+			}
+			
+			//add no appender at all  
+			if(mo.log_target.equals(MolgenisOptions.LogTarget.OFF))
+			{
+				System.out.println("Log4j logger turned off");
+			}			
+		}
+		catch(Exception e)
+		{
+			throw new ServletException(e);
+		}
 	}
 	
 	private void printSessionInfo(HttpSession session)

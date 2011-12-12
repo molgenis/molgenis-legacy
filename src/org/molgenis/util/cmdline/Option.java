@@ -42,7 +42,8 @@ public @interface Option {
 		DIRPATH,
 		PASSWORD,
 		CLASS,
-		ENUM
+		ENUM,
+		LOG4JLEVEL
 	};
 
 

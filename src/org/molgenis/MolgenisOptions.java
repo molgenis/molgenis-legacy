@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.ui.html.render.LinkoutRenderDecorator;
 import org.molgenis.util.cmdline.CmdLineException;
@@ -36,6 +37,15 @@ public class MolgenisOptions
 	public enum MapperImplementation
 	{
 		MULTIQUERY, JPA, PREPARED_STATEMENT, UNKNOWN
+	}
+	
+	/**
+	 * Possible log4j log targets
+	 *
+	 */
+	public enum LogTarget
+	{
+		CONSOLE, FILE, OFF;
 	}
 
 	/** Properties file where this data came from */
@@ -264,6 +274,14 @@ public class MolgenisOptions
 
 	@Option(name = "disable_decorators", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage="disables all decorators for generated test")
 	public boolean disable_decorators = false;
+	
+	/** The log level of log4j used by your application. Used by FrontController. **/
+	@Option(name = "log_level", param = Option.Param.LOG4JLEVEL, type = Option.Type.OPTIONAL_ARGUMENT, usage="Use this log level to initialize log4j. Default: debug")
+	public Level log_level = Level.INFO;
+	
+	/** The log level of log4j used by your application. Used by FrontController. **/
+	@Option(name = "log_target", param = Option.Param.ENUM, type = Option.Type.OPTIONAL_ARGUMENT, usage="Use this log target to initialize log4j. Default: console")
+	public LogTarget log_target = LogTarget.CONSOLE;
 	
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =

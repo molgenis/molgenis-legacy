@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 import javax.sql.DataSource;
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisContext;
@@ -51,6 +52,10 @@ public class FrontController extends MolgenisFrontController
 	@Override
 	public void init(javax.servlet.ServletConfig conf) throws javax.servlet.ServletException
 	{
+		//create fresh logger based on MolgenisOptions
+		createLogger(new UsedMolgenisOptions());
+		logger = Logger.getLogger(FrontController.class);
+		
 		//first, we initialize so the ServletContext is created from the webserver
 		super.init(conf);
 		
