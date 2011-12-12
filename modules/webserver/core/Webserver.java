@@ -344,8 +344,6 @@ public class Webserver implements ServletContext, Serializable {
 		try {
 			if (getServlet(urlPat) != null)
 				log("Servlet overriden by " + servlet + ", for path:" + urlPat);
-			if(initParams == null){ initParams = new Hashtable<String,Object>(); }
-			initParams.put("log4j-properties-location", "log4j_djws.properties");
 			servlet.init(new ServeConfig((ServletContext) this, initParams, urlPat));
 			if (virtualHost != null) {
 				if (virtuals == null)
