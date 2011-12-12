@@ -14,6 +14,7 @@ package ${package}.servlet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.molgenis.MolgenisOptions;
+import org.apache.log4j.Level;
 
 public class UsedMolgenisOptions extends MolgenisOptions
 {
@@ -40,8 +41,12 @@ public class UsedMolgenisOptions extends MolgenisOptions
 		this.${key} = <#if options.optionsAsMap[key] == true>true<#else>false</#if>;
 	<#elseif options.optionsAsMap[key]?is_number>
 		this.${key} = ${options.optionsAsMap[key]};
-	<#elseif key == 'mapper_implementation'>
-		this.${key} = MapperImplementation.valueOf("${options.optionsAsMap[key]}");
+	<#elseif key == 'mapper_implementation'> <#-- fixme: check on ENUM type, reflection to get class? -->
+		this.${key} = MapperImplementation.${options.optionsAsMap[key]};
+	<#elseif key == 'log_level'> <#-- fixme: check on ENUM type, reflection to get class? -->
+		this.${key} = Level.${options.optionsAsMap[key]};
+	<#elseif key == 'log_target'> <#-- fixme: check on ENUM type, reflection to get class? -->
+		this.${key} = LogTarget.${options.optionsAsMap[key]};
 	<#elseif options.optionsAsMap[key]?is_string>
 		this.${key} = "${options.optionsAsMap[key]}";
 	<#else>

@@ -11,7 +11,6 @@ package org.molgenis.util.cmdline;
 
 // jdk
 import java.io.PrintStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.molgenis.MolgenisOptions.MapperImplementation;
+import org.apache.log4j.Level;
 
 /**
  * This class defines the commandline options parser. Based on a class filled
@@ -295,6 +294,10 @@ public class CmdLineParser
 	            case ENUM: 
                         System.out.println(field);                        
                         field.set(options, Enum.valueOf((Class<Enum>) field.getType(), result));
+	            break;
+	            
+	            case LOG4JLEVEL:
+	            	 field.set(options, Level.toLevel(result));
 	            break;
 	            
 	            //if unrecognized: apply default of setting value without parsing or checks
