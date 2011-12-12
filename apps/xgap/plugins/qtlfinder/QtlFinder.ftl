@@ -93,7 +93,7 @@
 
 	<#assign result = model.resultSet[key]>
 	
-	<div id="${result.selectedName}" style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
+	<div id="${result.selectedName}_closeme" style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
 	
 	<#if result.noResultsFound??>
 		No results found for "${result.selectedName}".
@@ -130,7 +130,7 @@
 		<#if result.qtlsFound?size == 0>
 		No QTL information for ${result.result.name}.<br><br>
 		No data or below threshold.<br><br>
-		<img src="generated-res/img/cancel.png" onclick="showhide('${result.selectedName}');"/>
+		<img src="generated-res/img/cancel.png" onclick="showhide('${result.selectedName}_closeme');"/>
 		</#if>
 	</#if>
 	
