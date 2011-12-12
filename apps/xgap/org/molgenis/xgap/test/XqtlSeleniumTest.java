@@ -443,10 +443,11 @@ public class XqtlSeleniumTest
 			//"Now for the killer part, for sites that use jQuery, if all you need is to confirm there aren't any active asynchronous requests, then the following does the trick:"
 			selenium.waitForCondition("selenium.browserbot.getUserWindow().$.active == 0", "10000");
 			selenium.click("css=span");
-			clickAndWait("id=Add");
+			selenium.click("id=Add");
 
 			// add content and save
 			selenium.selectWindow("title=xQTL workbench");
+			selenium.waitForPageToLoad(pageLoadTimeout);
 			Assert.assertTrue(selenium.isTextPresent("ADD SUCCESS: affected 1"))
 			;
 			Assert.assertTrue(selenium.isTextPresent("No file found. Please upload it here."));
