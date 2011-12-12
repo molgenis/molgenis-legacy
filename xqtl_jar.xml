@@ -74,7 +74,7 @@
 	<!-- Compile Molgenis on the unjarred content in jarme -->
 	<target name="compile_molgenis_jarme" description="Compile MOLGENIS on unjarred classes">
 		<!-- Run javac on molgenis, using the unjarred content as classpath -->
-		<javac srcdir="../molgenis/src" destdir="${jarme}" includeantruntime="false">
+		<javac srcdir="../molgenis/src" destdir="${jarme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<classpath path="{jarme}" />
 			<exclude name="**/org/molgenis/framework/db/lifewise**" />
 		</javac>
@@ -97,23 +97,23 @@
 	</target>
 	
 	<target name="compile_datatypes_jarme" description="Compile generated datatypes">
-		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${jarme}" includeantruntime="false">
+		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${jarme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<classpath path="${jarme}" />
 		</javac>
 	</target>
 	
 	<target name="compile_app_jarme" description="Compile application">
 		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
-		<javac srcdir="${app_src}" destdir="${jarme}" includeantruntime="false">
+		<javac srcdir="${app_src}" destdir="${jarme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<classpath path="${jarme}" />
 		</javac>
 	</target>
 	
 	<target name="compile_other_jarme" description="Compile other generated">
-		<javac srcdir="generated/java/app" destdir="${jarme}" includeantruntime="false">
+		<javac srcdir="generated/java/app" destdir="${jarme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<classpath path="${jarme}" />
 		</javac>
-		<javac srcdir="generated/java/test" destdir="${jarme}" includeantruntime="false">
+		<javac srcdir="generated/java/test" destdir="${jarme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<classpath path="${jarme}" />
 		</javac>
 	</target>

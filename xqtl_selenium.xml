@@ -48,40 +48,4 @@
 			</classpath>
 		</testng>
 	</target>
-		
-	<!--
-	STANDALONE FUNCTION.
-	Test the webtest frameworks to see if they run at all.
-	Atm in Hudson as 'web_test_frameworks'. Don't touch.
-	-->
-	<target name="test_webframeworks">
-		<mkdir dir="${app_build_dir}"/>
-		<javac srcdir="modules/webserver/test/webtestframeworks" includes="*TestWebFrameworkOnly.java" destdir="${app_build_dir}" includeantruntime="false" debug="on">
-			<classpath>
-				<path refid="app-libs" />
-			</classpath>
-		</javac>
-		<path id="webserver_path">
-			<pathelement location="modules/webserver" />
-		</path>
-		<pathconvert pathsep="/**/*," refid="webserver_path" property="webserver_path_pattern">
-			<regexpmapper from=".*/(.*/.*)" to="\1" />
-		</pathconvert>
-		<fileset dir="." id="webserver_path" includes="${webserver_path_pattern}/**/*">
-			<include name="**/testng_test_${framework}_only.xml" />
-			<exclude name="**/*.java" />
-		</fileset>
-		<copy todir="${app_build_dir}" verbose="true">
-			<fileset refid="webserver_path" />
-			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
-		</copy>
-		<testng haltOnFailure="true">
-			<classfileset dir="${app_build_dir}/test/webtestframeworks" includes="*TestWebFrameworkOnly.class" />
-			<classpath>
-				<path refid="app-libs" />
-				<path location="${app_build_dir}" />
-			</classpath>
-		</testng>
-	</target>
-	
 </project>
