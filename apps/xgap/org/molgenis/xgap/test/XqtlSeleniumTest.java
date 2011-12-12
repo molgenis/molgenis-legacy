@@ -434,6 +434,8 @@ public class XqtlSeleniumTest
 			Assert.assertEquals(selenium.getTable("css=table.listtable.1.4"),
 					"This is a basic QTL analysis performed in the R environment for statistical computing, powered by th...");
 
+			if(gbicdev_dontrunthis){
+			
 			// browse to R scripts and add a script
 			clickAndWait("id=RScripts_tab_button");
 			selenium.click("id=RScripts_edit_new");
@@ -450,7 +452,7 @@ public class XqtlSeleniumTest
 
 			// add content and save
 			selenium.selectWindow("title=xQTL workbench");
-			if(gbicdev_dontrunthis) Assert.assertTrue(selenium.isTextPresent("ADD SUCCESS: affected 1"));
+			Assert.assertTrue(selenium.isTextPresent("ADD SUCCESS: affected 1"));
 			Assert.assertTrue(selenium.isTextPresent("No file found. Please upload it here."));
 			selenium.type("name=inputTextArea", "content");
 			clickAndWait("id=uploadTextArea");
@@ -462,7 +464,9 @@ public class XqtlSeleniumTest
 					"You are about to delete a record. If you click [yes] you won't be able to undo this operation.");
 			selenium.waitForPageToLoad(pageLoadTimeout);
 			Assert.assertTrue(selenium.isTextPresent("REMOVE SUCCESS: affected 1"));
-
+			
+			}
+			
 			// browse to Tag data and click the hide/show buttons
 			clickAndWait("id=MatrixWizard_tab_button");
 			Assert.assertTrue(selenium
