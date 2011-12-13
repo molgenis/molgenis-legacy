@@ -27,23 +27,22 @@
 			<div class="screenpadding">	
 				<div id="leftSide" style="width:200px;">
 					${screen.getTreeView()}
-				</div>
-				<!--div id="CatalogueRightSide">
-					right side	
-				</div--><br/>
-				<div id="ShoppingCartLabel">Shopping cart</div>
-				<div class="ShoppingCartContents">
-					<ul>
-						<#list screen.getShoppingCart() as measurement>
-							<li>${measurement.name}
-							<input type="submit" value="Delete" onclick="__action.value='DeleteMeasurement&measurementName=${measurement.name}';return true;"/><br /><br />
-							</li> 
-						</#list>
-					</ul>
-					<div id="ShoopingCartButton">
-						<input type="submit" name="orderMeasurementsSubmit" value="Next" onclick="__action.value='OrderMeasurements';return true;"/><br /><br />
-					</div> 
-				</div>
+				</div><br/>
+				<!--div id="CatalogueRightSide"-->
+					<div id="ShoppingCartLabel">Shopping cart</div>
+					<div class="ShoppingCartContents">
+						<ul>
+							<#list screen.getShoppingCart() as measurement>
+								<li>${measurement.name}
+									<input type="submit" value="Delete" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) { __action.value='DeleteMeasurement&measurementName=${measurement.name}';return true; } else {return false;}"/><br /><br />
+								</li> 
+							</#list>
+						</ul>
+						<div id="ShoopingCartButton">
+							<input type="submit" name="orderMeasurementsSubmit" value="Next" onclick="__action.value='OrderMeasurements';return true;"/><br /><br />
+						</div> 
+					</div>
+				<!--/div-->
 			</div>
 			
 			<input type="hidden" id="testInput" value="">

@@ -26,7 +26,7 @@ import org.molgenis.util.ValueLabel;
 
 
 public class LLcatalogueTreePlugin extends PluginModel<Entity> {
-	private String Status;
+	private String Status = "Welcome!";
 	
 	private static final long serialVersionUID = -6143910771849972946L;
 
@@ -95,7 +95,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				this.deleteShoppingItem(measurementName);
 			}
 		} catch (Exception e) {
-			this.setError("LLCataloguetreePlugin handle request " + e.getMessage());
+			//this.setError("LLCataloguetreePlugin handle request " + e.getMessage());
 		}
 
 	}
