@@ -276,7 +276,7 @@
 	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
 	
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
-	<em>Adding animal(s) to ${currentDecSubproject.name}</em><br />
+	<p><h3>Adding animal(s) to ${currentDecSubproject.name}</h3></p>
 	
 	<form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -284,24 +284,28 @@
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action" />
 		
-	<div style='float:left'>
+	<!--div style='float:left'>
 		<label for='animal'>Animal(s):</label>
 		<select name='animal' id='animal' size='20' multiple='multiple'>
-		<#list screen.allAnimalIdList as animalId>
-			<#assign name = screen.getAnimalName(animalId)>
-			<option value="${animalId?string.computer}">${name}</option>
-		</#list>
+		<list screen.allAnimalIdList as animalId>
+			<assign name = screen.getAnimalName(animalId)>
+			<option value="{animalId?string.computer}">{name}</option>
+		</list>
 		</select>
 	</div>
 	
 	<div>
 		<label for='groupname'>Batch(es):</label>
 		<select name='groupname' id='groupname' size='20' multiple='multiple'>
-			<#list screen.batchList as batch>
-				<option value="${batch.id?string.computer}">${batch.name}</option>
-			</#list>
+			<list screen.batchList as batch>
+				<option value="{batch.id?string.computer}">{batch.name}</option>
+			</list>
 		</select>
-	</div>
+	</div-->
+	
+	${screen.renderMatrixViewer()}
+	
+	<hr />
 	
 	<div class="row" style='clear:left'>
 		<label for="subprojectadditiondate">Date of entry into DEC subproject:</label>

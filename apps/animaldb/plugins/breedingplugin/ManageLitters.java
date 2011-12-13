@@ -306,7 +306,7 @@ public class ManageLitters extends PluginModel<Entity>
 			matrixViewer.setDatabase(toHtmlDb);
 			return matrixViewer.render();
 		} else {
-			return "No viewer available, matrix for selecting parent group cannot be rendered.";
+			return "No viewer available, matrix for selecting a parent group cannot be rendered.";
 		}
 	}
 

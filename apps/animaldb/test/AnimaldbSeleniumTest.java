@@ -304,14 +304,23 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=addsubproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC subproject successfully added"));
-		// Add animals to DEC (multiple select does not seem to work in Selenium so there is some duplication here
+		// Add animals to DEC
 		selenium.click("link=Manage");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		addAnimalToDec("000021");
-		addAnimalToDec("000022");
-		addAnimalToDec("000023");
-		addAnimalToDec("000024");
-		addAnimalToDec("000025");
+		selenium.click("id=startadd");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// toggle selectboxes for first five animals in list
+		selenium.click("id=targetmatrix_selected_0");
+		selenium.click("id=targetmatrix_selected_1");
+		selenium.click("id=targetmatrix_selected_2");
+		selenium.click("id=targetmatrix_selected_3");
+		selenium.click("id=targetmatrix_selected_4");
+		selenium.type("id=subprojectadditiondate", thisYear + "-02-20");
+		selenium.click("id=doadd");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully added"));
+		selenium.click("link=Back to overview");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Remove animals from DEC
 		selenium.click("id=rem0");
 		selenium.click("id=rem1");
@@ -441,25 +450,6 @@ public class AnimaldbSeleniumTest
 	{
 		System.out.println(who + " done, now sleeping for " + sleepTime + " msec");
 		Thread.sleep(sleepTime);
-	}
-	
-	/**
-	 * Helper method to add an animal to a DEC subproject.
-	 * 
-	 * @param name
-	 */
-	private void addAnimalToDec(String name) {
-		Calendar calendar = Calendar.getInstance();
-		selenium.click("id=startadd");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.select("id=animal", "label=" + name);
-		int thisYear = calendar.get(Calendar.YEAR);
-		selenium.type("id=subprojectadditiondate", thisYear + "-02-20");
-		selenium.click("id=doadd");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully added"));
-		selenium.click("link=Back to overview");
-		selenium.waitForPageToLoad(pageLoadTimeout);
 	}
 
 }

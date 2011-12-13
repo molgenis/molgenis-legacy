@@ -23,7 +23,12 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.matrix.component.MatrixViewer;
+import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.pheno.Category;
+import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
@@ -57,9 +62,18 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private List<Integer> animalIdList = new ArrayList<Integer>();
 	private ObservationTarget animalToAddOrRemove;
 	private List<DecSubproject> experimentList = new ArrayList<DecSubproject>();
-	private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
+	//private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
+	MatrixViewer targetMatrixViewer = null;
+	static String TARGETMATRIX = "targetmatrix";
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	
+	//hack to pass database to toHtml() via toHtml(db)
+	private Database toHtmlDb;
+	public void setToHtmlDb(Database toHtmlDb)
+	{
+		this.toHtmlDb = toHtmlDb;
+	}
 
 	public ShowDecSubprojects(String name, ScreenController<?> parent)
 	{
@@ -291,13 +305,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		return animalRemoveIdList;
 	}
 	
-	public void setBatchList(List<MolgenisBatch> batchList) {
+	/*public void setBatchList(List<MolgenisBatch> batchList) {
 		this.batchList = batchList;
 	}
 
 	public List<MolgenisBatch> getBatchList() {
 		return batchList;
-	}
+	}*/
 
 	public void setAction(String action) {
 		this.action = action;
@@ -316,8 +330,16 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		ct.setDatabase(db);
+		if (targetMatrixViewer != null) {
+			targetMatrixViewer.setDatabase(db);
+		}
+		
 		try {
 			this.setAction(request.getAction());
+			
+			if (action.startsWith(targetMatrixViewer.getName())) {
+	    		targetMatrixViewer.handleRequest(db, request);
+			}
 		
 			if (action.equals("AddEdit") || action.equals("EditAnimals"))
 			{
@@ -738,9 +760,21 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 				
-				// Make list of all the animal id's, both individuals ones and those from groups
+				// Make list of all the animal id's (, both individuals ones and those from groups)
 				List<Integer> animalIdList = new ArrayList<Integer>();
-				if (request.getList("animal") != null) {
+				List<ObservationElement> rows = (List<ObservationElement>) targetMatrixViewer.getSelection(db);
+				int rowCnt = 0;
+				for (ObservationElement row : rows) {
+					if (request.getBool(TARGETMATRIX + "_selected_" + rowCnt) != null) {
+						int animalId = row.getId();
+						if (!animalIdList.contains(animalId)) {
+							animalIdList.add(animalId);
+						}
+					}
+					rowCnt++;
+				}
+				
+				/*if (request.getList("animal") != null) {
 					List<?> animalIdsAsObjectsList = request.getList("animal");
 					for (Object animalIdAsObject : animalIdsAsObjectsList) {
 						String animalIdString = (String)animalIdAsObject;
@@ -759,7 +793,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 							animalIdList.add(e.getObjectId());
 						}
 					}
-				}
+				}*/
+				
 				// Remove animals from id list that are already in an experiment currently
 				int featureId = ct.getMeasurementId("Experiment");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
@@ -867,12 +902,13 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
+		this.toHtmlDb = db;
 		
 		try {
 			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
 			
 			// Populate batch list
-			setBatchList(ct.getAllBatches());
+			//setBatchList(ct.getAllBatches());
 			
 			// Populate list of all animals
 			allAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);			
@@ -1003,6 +1039,15 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				
 				pos++;
 			}
+			
+			// Initialize matrix viewer
+			if (targetMatrixViewer == null) {
+				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+						true, true, null, null);
+				targetMatrixViewer.setDatabase(db);
+			}
+			
 		} catch (Exception e) {
 			this.getMessages().clear();
 			String message = "Something went wrong while loading lists";
@@ -1011,6 +1056,15 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
+		}
+	}
+	
+	public String renderMatrixViewer() {
+		if (targetMatrixViewer != null) {
+			targetMatrixViewer.setDatabase(toHtmlDb);
+			return targetMatrixViewer.render();
+		} else {
+			return "No viewer available, matrix for selecting animals cannot be rendered.";
 		}
 	}
 	
