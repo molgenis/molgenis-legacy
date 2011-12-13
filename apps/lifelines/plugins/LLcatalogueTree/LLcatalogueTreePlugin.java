@@ -7,6 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -19,6 +22,7 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
@@ -82,7 +86,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				
 			}
 			if ("OrderMeasurements".equals(request.getAction())) {
-				//TODO : .fill this !.....
+				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+				HttpServletRequest httpRequest   = rt.getRequest();
+				HttpServletResponse httpResponse = rt.getResponse();
+				
+				//String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
+				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=MeasurementsOrderForm" ;
+				httpResponse.sendRedirect(redirectURL);
+				
 				this.setStatus("<h4>You order is being processed.</h4>" ) ;
 			} //TODO fix this : else if ("DeleteMeasurement".equals(request.getAction()))	{
 			else if (request.getAction().startsWith("DeleteMeasurement")) {
@@ -93,7 +104,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				
 				System.out.println("Here's the request.measurement id on DELETE:"+ measurementName);
 				this.deleteShoppingItem(measurementName);
-			}
+			} 
+				
+			
 		} catch (Exception e) {
 			//this.setError("LLCataloguetreePlugin handle request " + e.getMessage());
 		}
