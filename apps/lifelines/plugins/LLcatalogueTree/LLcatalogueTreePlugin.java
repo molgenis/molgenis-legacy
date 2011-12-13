@@ -51,13 +51,13 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 	}
 	
-	/** My new action */
+	
 	public void handleRequest(Database db, Tuple request) {
 
 		System.out.println("CAUGHT IT: " + request);
-//		System.out.println(request.getInt("measurementId"));
-//		System.out.println(request.getString("measurementName"));
-//		System.out.println(request.getAction().startsWith("DeleteMeasurement"));
+		/*System.out.println(request.getInt("measurementId"));
+		System.out.println(request.getString("measurementName"));
+		System.out.println(request.getAction().startsWith("DeleteMeasurement"));*/
 
 		try {
 
@@ -70,7 +70,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				this.shoppingCart.add(selected);
 				this.setSuccess("The item \""+ selected.getName() + "\" has been successfully added to your shopping cart");
 
-				// clean the ordered measurement list form dublicates
+				// clean the ordered measurement list form duplicates
 				this.shoppingCart = cleanShoppingCart();
 
 				 
@@ -92,6 +92,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				
 				//String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
 				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=MeasurementsOrderForm" ;
+				
 				httpResponse.sendRedirect(redirectURL);
 				
 				this.setStatus("<h4>You order is being processed.</h4>" ) ;

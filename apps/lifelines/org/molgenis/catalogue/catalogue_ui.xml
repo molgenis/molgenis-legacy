@@ -22,6 +22,8 @@
 		</menu>
 		
 		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="Catalogue Tree" />  
+		<plugin name="MeasurementsOrderForm" type="plugins.data.MeasurementsOrderForm" label="Your Orders" />  
+
 		<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" />  -->
 		
 		<menu name="ImportData" label="Import Data">

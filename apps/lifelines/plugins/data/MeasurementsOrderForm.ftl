@@ -25,7 +25,7 @@
 		<div class="screenbody">
 			<div class="screenpadding">	
 			    <h3> Measurements Order Form  </h3>
-		        <input type="submit" value="Confirm" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) {__action.value='ConfirmMeasurementsOrderForm';return true;} else {return false;}"/><br /><br />
+		        <input type="submit" value="Confirm" onclick="if (confirm('You are about to complete your order. Are you sure you want to proceed?')) {__action.value='ConfirmMeasurementsOrderForm';return true;} else {return false;}"/><br /><br />
 		        
 				<label> 	<#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
 
