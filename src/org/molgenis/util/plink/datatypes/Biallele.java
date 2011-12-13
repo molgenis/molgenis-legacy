@@ -37,4 +37,8 @@ public class Biallele
 		return allele2;
 	}
 
+	public String toString()
+	{
+		return allele1 + " " + allele2;
+	}
 }

@@ -14,6 +14,7 @@ import org.molgenis.util.plink.drivers.MapFileDriver;
 import org.molgenis.util.plink.drivers.PedFileDriver;
 import org.molgenis.util.plink.writers.BimFileWriter;
 import org.molgenis.util.plink.writers.MapFileWriter;
+import org.molgenis.util.plink.writers.PedFileWriter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -300,6 +301,16 @@ public class PlinkTest
 		MapFileWriter w = new MapFileWriter(newMap);
 		w.writeAll(mapfd.getAllEntries());
 		boolean filesAreEqual = DirectoryCompare.compareFileContent(testMap, newMap);
+		Assert.assertTrue(filesAreEqual);
+	}
+	
+	@Test
+	public void PED_writer() throws Exception
+	{
+		File newPed = new File(testPed.getAbsolutePath().replace(testPed.getName(), "new.ped"));
+		PedFileWriter w = new PedFileWriter(newPed);
+		w.writeAll(pedfd.getAllEntries());
+		boolean filesAreEqual = DirectoryCompare.compareFileContent(testPed, newPed);
 		Assert.assertTrue(filesAreEqual);
 	}
 	
