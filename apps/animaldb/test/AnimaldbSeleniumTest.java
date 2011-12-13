@@ -310,11 +310,11 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=startadd");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// toggle selectboxes for first five animals in list
-		selenium.click("id=targetmatrix_selected_0");
-		selenium.click("id=targetmatrix_selected_1");
-		selenium.click("id=targetmatrix_selected_2");
-		selenium.click("id=targetmatrix_selected_3");
-		selenium.click("id=targetmatrix_selected_4");
+		selenium.click("id=addanimalsmatrix_selected_0");
+		selenium.click("id=addanimalsmatrix_selected_1");
+		selenium.click("id=addanimalsmatrix_selected_2");
+		selenium.click("id=addanimalsmatrix_selected_3");
+		selenium.click("id=addanimalsmatrix_selected_4");
 		selenium.type("id=subprojectadditiondate", thisYear + "-02-20");
 		selenium.click("id=doadd");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -322,11 +322,12 @@ public class AnimaldbSeleniumTest
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Remove animals from DEC
-		selenium.click("id=rem0");
-		selenium.click("id=rem1");
-		selenium.click("id=startrem");
+		// toggle selectboxes for first two animals in list
+		selenium.click("id=remanimalsmatrix_selected_0");
+		selenium.click("id=remanimalsmatrix_selected_1");
+		selenium.click("id=dorem"); // click Remove button
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=dorem");
+		selenium.click("id=dorem"); // click Apply button
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully removed"));
 		selenium.click("link=Back to overview");

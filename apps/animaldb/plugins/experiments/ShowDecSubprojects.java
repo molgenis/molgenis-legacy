@@ -25,6 +25,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
@@ -63,8 +64,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private ObservationTarget animalToAddOrRemove;
 	private List<DecSubproject> experimentList = new ArrayList<DecSubproject>();
 	//private List<MolgenisBatch> batchList = new ArrayList<MolgenisBatch>();
-	MatrixViewer targetMatrixViewer = null;
-	static String TARGETMATRIX = "targetmatrix";
+	MatrixViewer addAnimalsMatrixViewer = null;
+	static String ADDANIMALSMATRIX = "addanimalsmatrix";
+	MatrixViewer remAnimalsMatrixViewer = null;
+	static String REMANIMALSMATRIX = "remanimalsmatrix";
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	
@@ -330,15 +333,23 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		ct.setDatabase(db);
-		if (targetMatrixViewer != null) {
-			targetMatrixViewer.setDatabase(db);
+		if (addAnimalsMatrixViewer != null) {
+			addAnimalsMatrixViewer.setDatabase(db);
+		}
+		if (remAnimalsMatrixViewer != null) {
+			remAnimalsMatrixViewer.setDatabase(db);
 		}
 		
 		try {
 			this.setAction(request.getAction());
 			
-			if (action.startsWith(targetMatrixViewer.getName())) {
-	    		targetMatrixViewer.handleRequest(db, request);
+			if (addAnimalsMatrixViewer != null && action.startsWith(addAnimalsMatrixViewer.getName())) {
+				addAnimalsMatrixViewer.handleRequest(db, request);
+				action = "AddAnimalToSubproject";
+			}
+			if (remAnimalsMatrixViewer != null && action.startsWith(remAnimalsMatrixViewer.getName())) {
+				remAnimalsMatrixViewer.handleRequest(db, request);
+				action = "EditAnimals";
 			}
 		
 			if (action.equals("AddEdit") || action.equals("EditAnimals"))
@@ -601,23 +612,71 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				for (ObservedValue v : valueList) {
 					animalIdList.add(v.getTarget_Id());
 				}
+				
+				// (Re)initialize remove animals matrix viewer
+				List<String> measurementsToShow = new ArrayList<String>();
+				measurementsToShow.add("Active");
+				measurementsToShow.add("Experiment");
+				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+						ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Experiment"),
+						ObservedValue.RELATION, Operator.EQUALS, getSelectedDecSubproject().getId()));
+				// TODO: find a way to filter out only the animals that are CURRENTLY in this DEC subproject
+				remAnimalsMatrixViewer = new MatrixViewer(this, REMANIMALSMATRIX, 
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+						true, true, filterRules, 
+						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				remAnimalsMatrixViewer.setDatabase(db);
+				
 				this.reload(db);
 			}
 			
 			if (action.equals("RemoveAnimalsFromSubproject"))
 			{
-				animalRemoveIdList.clear();
+				/*animalRemoveIdList.clear();
 				for (int animalCounter = 0; animalCounter < animalIdList.size(); animalCounter++) {
 					if (request.getBool("rem" + animalCounter) != null) {
 						animalRemoveIdList.add(animalIdList.get(animalCounter));
 					}
+				}*/
+				
+				animalRemoveIdList.clear();
+				List<ObservationElement> rows = (List<ObservationElement>) remAnimalsMatrixViewer.getSelection(db);
+				int rowCnt = 0;
+				for (ObservationElement row : rows) {
+					if (request.getBool(REMANIMALSMATRIX + "_selected_" + rowCnt) != null) {
+						int animalId = row.getId();
+						if (!animalRemoveIdList.contains(animalId)) {
+							animalRemoveIdList.add(animalId);
+						}
+					}
+					rowCnt++;
 				}
+				
 				this.reload(db);
 			}
 			
 			if (action.equals("AddAnimalToSubproject"))
 			{
-				// no action required here
+				// (Re)initialize add animals matrix viewer
+				List<String> measurementsToShow = new ArrayList<String>();
+				measurementsToShow.add("Active");
+				measurementsToShow.add("Species");
+				measurementsToShow.add("Sex");
+				measurementsToShow.add("Experiment");
+				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+						ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+				//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Experiment"),
+				//		ObservedValue.RELATION, Operator.NOT, getSelectedDecSubproject().getId()));
+				//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Experiment"),
+				//		ObservedValue.RELATION, Operator.EQUALS, null));
+				// TODO: find a way to filter out only the animals that are CURRENTLY NOT in THIS DEC subproject
+				addAnimalsMatrixViewer = new MatrixViewer(this, ADDANIMALSMATRIX, 
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+						true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				addAnimalsMatrixViewer.setDatabase(db);
 			}
 			
 			if (action.equals("ApplyRemoveAnimalsFromSubproject"))
@@ -762,10 +821,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				
 				// Make list of all the animal id's (, both individuals ones and those from groups)
 				List<Integer> animalIdList = new ArrayList<Integer>();
-				List<ObservationElement> rows = (List<ObservationElement>) targetMatrixViewer.getSelection(db);
+				List<ObservationElement> rows = (List<ObservationElement>) addAnimalsMatrixViewer.getSelection(db);
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
-					if (request.getBool(TARGETMATRIX + "_selected_" + rowCnt) != null) {
+					if (request.getBool(ADDANIMALSMATRIX + "_selected_" + rowCnt) != null) {
 						int animalId = row.getId();
 						if (!animalIdList.contains(animalId)) {
 							animalIdList.add(animalId);
@@ -1001,7 +1060,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 
 				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 				featureId = ct.getMeasurementId("Experiment");
-				// Make list of ID's of all animals that are alive
+				// Make list of ID's of all animals in this DEC subproject that are alive
 				List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);
 				int nrOfAnimals = 0;
 				if (aliveAnimalIdList.size() > 0) {
@@ -1040,14 +1099,6 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				pos++;
 			}
 			
-			// Initialize matrix viewer
-			if (targetMatrixViewer == null) {
-				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
-						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, true, null, null);
-				targetMatrixViewer.setDatabase(db);
-			}
-			
 		} catch (Exception e) {
 			this.getMessages().clear();
 			String message = "Something went wrong while loading lists";
@@ -1059,12 +1110,21 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		}
 	}
 	
-	public String renderMatrixViewer() {
-		if (targetMatrixViewer != null) {
-			targetMatrixViewer.setDatabase(toHtmlDb);
-			return targetMatrixViewer.render();
+	public String renderAddAnimalsMatrixViewer() {
+		if (addAnimalsMatrixViewer != null) {
+			addAnimalsMatrixViewer.setDatabase(toHtmlDb);
+			return addAnimalsMatrixViewer.render();
 		} else {
-			return "No viewer available, matrix for selecting animals cannot be rendered.";
+			return "No viewer available, matrix for adding animals cannot be rendered";
+		}
+	}
+	
+	public String renderRemAnimalsMatrixViewer() {
+		if (remAnimalsMatrixViewer != null) {
+			remAnimalsMatrixViewer.setDatabase(toHtmlDb);
+			return remAnimalsMatrixViewer.render();
+		} else {
+			return "No viewer available, matrix for removing animals cannot be rendered";
 		}
 	}
 	

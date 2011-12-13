@@ -183,6 +183,9 @@
 <#elseif screen.action == "EditAnimals">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=Show">Back to overview</a></p>
+	
+	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
+	<h3>Manage animals in ${currentDecSubproject.name}</h3>
 
 	<form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -190,38 +193,41 @@
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action" />
 
-	<table cellpadding="10" cellspacing="2" border="1">
+	<!--table cellpadding="10" cellspacing="2" border="1">
 		<tr>
 			<th>Name</th>
 			<th><input type='submit' id='startrem' class='addbutton' value='Remove selected' onclick="__action.value='RemoveAnimalsFromSubproject'" /></th>
 		</tr>
-		<#assign i = 0>
-		<#list screen.getAnimalIdList() as animalId>
-			<#assign name = screen.getAnimalName(animalId)>
+		<assign i = 0>
+		<list screen.getAnimalIdList() as animalId>
+			<assign name = screen.getAnimalName(animalId)>
 			<tr>
-				<td style='padding:5px'>${name}</td>
-				<td style='padding:5px'><input type="checkbox" id="rem${i}" name="rem${i}" value="rem${i}" /></td>
+				<td style='padding:5px'>{name}</td>
+				<td style='padding:5px'><input type="checkbox" id="rem{i}" name="rem{i}" value="rem{i}" /></td>
 			</tr>
-			<#assign i = i + 1>
-		</#list>
-	</table>
+			<assign i = i + 1>
+		</list>
+	</table-->
 	
-	<br />
-	<input type='submit' id='startadd' class='addbutton' value='Add' onclick="__action.value='AddAnimalToSubproject'" />
-
+	<input type='submit' id='startadd' class='addbutton' value='Add animals' onclick="__action.value='AddAnimalToSubproject'" />
+	<br /><hr /><br />
+	
+	${screen.renderRemAnimalsMatrixViewer()}
+	<input type='submit' id='dorem' class='addbutton' value='Remove selected animals' onclick="__action.value='RemoveAnimalsFromSubproject'" />
+	
 	</form>
 
 <#elseif screen.action == "RemoveAnimalsFromSubproject">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${screen.listId?string.computer}">Back to overview</a></p>
 	
-	<em>Removing&nbsp;
+	<h3>Removing&nbsp;
 	<#list screen.getAnimalRemoveIdList() as animalId>
 		<#assign name = screen.getAnimalName(animalId)>
 		${name}&nbsp;
 	</#list>
 	<#assign currentDecSubproject = screen.getSelectedDecSubproject()>
-	from ${currentDecSubproject.name}</em>
+	from ${currentDecSubproject.name}</h3>
 	
 	<form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -303,7 +309,7 @@
 		</select>
 	</div-->
 	
-	${screen.renderMatrixViewer()}
+	${screen.renderAddAnimalsMatrixViewer()}
 	
 	<hr />
 	
