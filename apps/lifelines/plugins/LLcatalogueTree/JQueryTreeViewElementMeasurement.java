@@ -21,8 +21,9 @@ public class JQueryTreeViewElementMeasurement extends JQueryTreeViewElement{
 		//this.setLabel("<a href=\"#\" onclick=\"jQuery('#test').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); jQuery('form').submit();\" >"+ name +"</a>");
 		
 		//this.setLabel("<a href=\"#\" onclick=\"jQuery('input').filter('#test').find('__ACTION').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); jQuery('form').submit();\" >"+ name +"</a>");this.setLabel("<a href=\"#\" onclick=\"jQuery('input').filter('#test').find('__ACTION').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); jQuery('form').submit();\" >"+ name +"</a>");
-		this.setLabel("<a href=\"#\" onclick=\"jQuery('input').filter('#test').find('__ACTION').prop('value','selectNode'); jQuery('#measureId').prop('value','"+measurement.getId()+"'); jQuery('form').submit();\" >"+ name +"</a>");
-
+		//this.setLabel("<a href=\"#\" onclick=\"jQuery('#__action').prop('value','selectNode'); jQuery('#measureId').prop('value','"+measurement.getId()+"'); jQuery('form').submit();\" >"+ name +"</a>");
+		this.setLabel("<a href=\"#\" onclick=\"$('#leftSide').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); jQuery('form').submit();\" >"+ name +"</a>");
+		
 
 		setMeasurementObject(measurement);
 	}

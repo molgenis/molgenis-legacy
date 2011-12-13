@@ -4,7 +4,7 @@
 	<!--needed in every form: to redirect the request to the right screen-->
 	<input type="hidden" name="__target" value="${screen.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
-	<input type="hidden" name="__ACTION" id="test" value="">
+	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
 	
@@ -36,12 +36,12 @@
 					<ul>
 						<#list screen.getShoppingCart() as measurement>
 							<li>${measurement.name}
-							<input type="submit" value="Delete" onclick="__ACTION.value='DeleteMeasurement&measurementName=${measurement.name}';return true;"/><br /><br />
+							<input type="submit" value="Delete" onclick="__action.value='DeleteMeasurement&measurementName=${measurement.name}';return true;"/><br /><br />
 							</li> 
 						</#list>
 					</ul>
 					<div id="ShoopingCartButton">
-						<input type="submit" name="orderMeasurementsSubmit" value="Order" onclick="__ACTION.value='OrderMeasurements';return true;"/><br /><br />
+						<input type="submit" name="orderMeasurementsSubmit" value="Next" onclick="__action.value='OrderMeasurements';return true;"/><br /><br />
 					</div> 
 				</div>
 			</div>
