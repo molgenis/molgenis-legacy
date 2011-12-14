@@ -3,7 +3,6 @@ package tritoplinkslice.sources;
 import csvtobin.sources.SimpleTuple;
 import csvtobin.sources.Tuple;
 
-
 /**
  * See: http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#map
  *

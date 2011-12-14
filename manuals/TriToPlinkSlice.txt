@@ -1,0 +1,6 @@
+
+Convert from TriTyper to Plink TPED+TFAM format while making a subselection of individuals and appending phenotypes to the FAM file.
+java -jar -Xmx1g TriToPlinkSlice.jar BrainsetTriTyper/ output subsetPlusPheno.txt 
+
+Get help:
+java -jar TriToPlinkSlice.jar

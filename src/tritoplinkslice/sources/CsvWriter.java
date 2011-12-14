@@ -197,7 +197,7 @@ public class CsvWriter implements TupleWriter
 	
    private static final char CSV_DELIMITER = ',';
 	     private static final char CSV_QUOTE = '"';
-	    private static final String CSV_QUOTE_STR = String.valueOf(CSV_QUOTE);
+	 //   private static final String CSV_QUOTE_STR = String.valueOf(CSV_QUOTE);
 	    public static final char CR = '\r';
 	    public static final char LF = '\n';
 
