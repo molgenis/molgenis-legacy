@@ -3,536 +3,587 @@ package plugins.predictionModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.molgenis.core.Ontology;
+import jxl.Sheet;
+
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.organization.Investigation;
+import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.Tuple;
+import org.openqa.jetty.util.Observed;
+import org.springframework.validation.DataBinder;
 
-import jxl.Sheet;
+import com.googlecode.charts4j.Data;
+
+import app.DatabaseFactory;
 
 public class TableModel {
 
 	private Database db;
-	
-	public static final String MEASUREMENT_DATATYPE = "measurement_datatype";
 
-	public static final String MEASUREMENT_DESCRIPTION = "measurement_description";
-
-	public static final String PROTOCOL_FEATURE = "Protocol_Feature";
-
-	public static final String MEASUREMENT_STRING = "string";
-	
-	public static final String MEASUREMENT_INT = "int";
-	
-	public static final String MEASUREMENT_DATE = "datetime";
-	
-	public static final String MEASUREMENT_CATEGORICAL = "categorical";
-	
-	public static final String MEASUREMENT_CODE = "code";
-
-	public static final String IGNORE = "IGNORE";
-
-	public static final String CATEGORY = "Category";
-
-	public static final String MEASUREMENT_CATEGORY = "Measurement_Category";
-
-	public static final String CODE_STRING = "Code_String";
-	
-	public static String PANEL = "Panel";
-	
-	public static String PROTOCOLAPPLICATION = "ProtocolApplication";
-	
-	public static String MEASUREMENT = "Measurement";
-	
-	public static String OBSERVERDVALUE = "ObservedValue";
-	
-	public static String PROTOCOL = "Protocol";
-	
 	public int columnSize = 0;
-	
+
 	public List<TableField> configuration;
-	
-	public Prediction prediction;
-	
+
 	public TableField field;
-	
+
 	private int observationTarget = -1;
 
-	private int protocolIndex = -1;
+	private String MeasurementDataType = "Not Matching";
 
-	private int featureIndex = -1;
-
-	private String MeasurementDataType = "string";
-	
 	private HashMap<String, String> InputToMolgenisDataType = new HashMap<String, String>();
-	
+
 	private HashMap<Integer, Integer> protocolSubprotocolIndex = new HashMap<Integer, Integer>();
 
 	private HashMap<Integer, Integer> protocolSubProtocol = new HashMap<Integer, Integer>();
 
-	private String protocolName = null;
+	private HashMap<Integer, TableField> columnIndexToTableField = new HashMap<Integer, TableField>();
 
-	private String subProtocolName = null;
+	private HashMap<TableField, TableField> referenceField = new HashMap<TableField, TableField>();
 
-	private int unitsIndex = -1;
+	//	private int protocolIndex = -1;
+	//
+	//	private int featureIndex = -1;
 
-	private int temporalIndex = -1;
-
-	private int measurementIndex = -1;
-
-	private int categoryIndex = -1;
-
-	private int missingCategoryIndex = -1;
+	//	private String protocolName = null;
+	//
+	//	private String subProtocolName = null;
+	//
+	//	private int unitsIndex = -1;
+	//
+	//	private int temporalIndex = -1;
+	//
+	//	private int measurementIndex = -1;
+	//
+	//	private int categoryIndex = -1;
+	//
+	//	private int missingCategoryIndex = -1;
 
 	private List<Integer> missingCategoryList = new ArrayList<Integer>();
 
 	private HashMap<Integer, List<Integer>> categoryAddToMeasurement = new HashMap<Integer, List<Integer>>();
-	
+
 	//OntologyTerm Parameters
-	private int ontologyTermIndex = -1;
+	//	private int ontologyTermIndex = -1;
+	//
+	//	private int ontologyNameIndex = -1;
+	//
+	//	private int ontologyTermAccessIndex = -1;
+	//
+	//	private int ontologyDefinitionIndex = -1;
+	//
+	//	private int ontologyTermPathIndex = -1;
+	private HashMap<Integer, List<Integer>> relationIndex = new HashMap<Integer, List<Integer>>();
+	private String[] updateMeasurementDatabaseRules = {Measurement.NAME, Measurement.DESCRIPTION, 
+			Measurement.DATATYPE, Measurement.CATEGORIES_NAME, Measurement.UNIT_NAME,Measurement.INVESTIGATION_NAME};
+	private String[] updateProtocolDatabaseRules = {Protocol.NAME, Protocol.FEATURES_NAME, Protocol.SUBPROTOCOLS_NAME, Protocol.INVESTIGATION_NAME};
+	private String[] updateCategoryDatabaseRules = {Category.NAME, Category.CODE_STRING, Category.DESCRIPTION, Category.LABEL, Category.ISMISSING, Category.INVESTIGATION_NAME};
+	private String[] updateObservedValuesDatabaseRules = {ObservedValue.VALUE, ObservedValue.TARGET_NAME, ObservedValue.FEATURE_NAME, ObservedValue.INVESTIGATION_NAME};
 
-	private int ontologyNameIndex = -1;
-
-	private int ontologyTermAccessIndex = -1;
-
-	private int ontologyDefinitionIndex = -1;
-
-	private int ontologyTermPathIndex = -1;
+	private String investigationName = null;
 
 	public TableModel(int i,  Database db) {
 		this.db = db;
 		this.columnSize = i;
 		configuration = new ArrayList<TableField>();
 	}
-	
 
-	public void addField(Prediction prediction, String ClassType, int[] columnList, Boolean Vertical) {
-		
+	public void addField(String classType, String fieldName, int[] columnList, Boolean Vertical) 
+	{
+		this.addField(classType, fieldName, columnList, Vertical, new SimpleTuple());
+	}
+
+	public void addField(String ClassType, String fieldName, int[] columnList, Boolean Vertical, Tuple defaults) {
+
 		for(int i = 0; i < columnList.length; i++){
-			addField(prediction, ClassType, columnList[i], Vertical);
+			this.addField( ClassType, fieldName, columnList[i], Vertical, defaults, -1);
 		}
-		
 	}
-	
-	
-	public void addField(Prediction prediction, String ClassType, int columnIndex, Boolean Vertical){
-		
-		TableField field;
-		
-		if(ClassType.equalsIgnoreCase("Measurement")){
-			
-			Measurement measurement = new Measurement();
-			
-			field = new TableField(measurement, ClassType, columnIndex, Vertical);
-			
-			configuration.add(field);
-		
-		}else if(ClassType.equalsIgnoreCase("Panel")){
-		
-			Panel panel = new Panel();
-			
-			field = new TableField(panel, ClassType, columnIndex, Vertical);
-			
-			configuration.add(field);
-		
-		}else if(ClassType.equalsIgnoreCase("ObservedValue")){
-		
-			ObservedValue observedValue = new ObservedValue();
-			
-			field = new TableField(observedValue, ClassType, columnIndex, Vertical);
-			
-			configuration.add(field);
-			
-		}else if(ClassType.equalsIgnoreCase("Protocol")){
-		
-			Protocol protocol = new Protocol();
-			
-			field = new TableField(protocol, ClassType, columnIndex, Vertical);
-			
-			configuration.add(field);
-		
-		}else if(ClassType.equalsIgnoreCase("Category")){
-		
-			Category category = new Category();
-			
-			field = new TableField(category, ClassType, columnIndex, Vertical);
-			
-			configuration.add(field);
-		
-		}else{
-			
-			field = new TableField(ClassType, columnIndex, Vertical);
-			
-			configuration.add(field);
+
+	public void addField(String ClassType, String fieldName, boolean Vertical, int dependedIndex, int... columnIndexes) {
+
+		List<Integer> columnList = new ArrayList<Integer>();
+
+		for(int i = 0; i < columnIndexes.length; i++)
+		{
+
+			if(columnIndexToTableField.containsKey(columnIndexes[i]))
+			{
+				columnIndexToTableField.get(columnIndexes[i]).setDependentColumnIndex(dependedIndex);
+				columnIndexToTableField.get(columnIndexes[i]).setRelation(fieldName);
+
+			}else{
+
+				this.addField(ClassType, fieldName, columnIndexes[i], Vertical, new SimpleTuple(), dependedIndex);
+				columnIndexToTableField.get(columnIndexes[i]).setRelation(fieldName);
+			}
+			columnList.add(columnIndexes[i]);
 		}
-		
+		relationIndex.put(dependedIndex, columnList);
 	}
-	
+
+	public void addField(String ClassType, String fieldName, int columnIndex, Boolean Vertical) {
+		this.addField( ClassType, fieldName, columnIndex, Vertical, new SimpleTuple(), -1);
+	}
+
+	public void addField(String ClassType, String fieldName, int columnIndex,
+			boolean Vertical, int... dependentColumnIndex) {
+
+		this.addField(ClassType, fieldName, columnIndex, Vertical, new SimpleTuple(), dependentColumnIndex);
+
+	}
+
+	public void addField(String ClassType, String fieldName, int columnIndex,
+			boolean Vertical, Tuple defaults) {
+		this.addField(ClassType, fieldName, columnIndex, Vertical, defaults, -1);
+
+	}
+
+	public void addField(String ClassType, String fieldName, int[] coHeaders,
+			int targetIndex, boolean Vertical) {
+		observationTarget = targetIndex;
+		this.addField(ClassType, fieldName, coHeaders, Vertical, new SimpleTuple());
+		observationTarget = -1;
+	}
+
+	public void addField(String ClassType, String fieldName, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex){
+
+		try {					
+			//create a tableField that will take care of loading columnIndex into 'name' property
+			field = new TableField(ClassType, fieldName, columnIndex, Vertical, defaults, dependentColumnIndex);
+			//add to the parser configuration
+			configuration.add(field);
+
+			columnIndexToTableField.put(columnIndex, field);
+
+			if(observationTarget != -1){
+				field.setObservationTarget(observationTarget);
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+
+	}
+
 	public TableField getField(int columnIndex){
 		return configuration.get(columnIndex);
 	}
-	
+
 	public List<TableField> getConfiguration(){
 		return configuration;
 	}
-	
+
 	public void convertIntoPheno(Sheet sheet){
-		
+
 		int row = sheet.getRows();
 
 		int column = sheet.getColumns();
-		
-		List<Panel> panelList = new ArrayList<Panel> ();
-		
-		List<Protocol> protocolList = new ArrayList<Protocol> ();
-		
-		List<Measurement> measurementList = new ArrayList<Measurement> ();
-		
+
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
 		
-		List<Category> categoryList = new ArrayList<Category>();
-		
 		List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
-		
-		HashMap<String, List> protocolMeasurementList = new HashMap<String, List>();
-		
-		HashMap<String, List> measurementCategoryList = new HashMap<String, List>();
-		
-		HashMap<String, List> protocolSubprotocolList = new HashMap<String, List>();
-		
-		HashMap<String, String> protocolSubprotocolName = new HashMap<String, String>();
-		
-		Measurement measurement;
-		
-		Protocol protocol;
-		
-		ObservedValue observedValue;
-		
-		Category category;
-		
-		Panel panel;
-		
-		for(int i = 0; i < row; i++){
-			
-			measurement = new Measurement();
-			panel = new Panel ();
-			protocol = new Protocol();
-			category = new Category();
-			String protocolWithFeature = null;
-			String featureWithProtocol = null;
-			
-			for(int j = 0; j < column; j++){
-				
-				String cellValue = sheet.getCell(j, i).getContents().replaceAll("'", "").trim();
 
-				System.out.println("The cell value is " + cellValue);
-				System.out.println("The size is =========== " + configuration.size());
-				TableField field = configuration.get(j);
-				
-				if(field.getVertical()){
-					
-					if(field.ClassType.equalsIgnoreCase("IGNORE")){
-						System.out.println("The row " + i + " and column " + j + " are ignored!");
-					}else if(field.ClassType.equalsIgnoreCase("Measurement") && i != 0){
-						
-						measurement.setName(cellValue);
-						
-						measurementList.add(measurement);
-						
-						if(featureIndex == j){
-							featureWithProtocol = cellValue;
+		//three dimensional matrix of<colIndex, rowIndex, valueIndex>
+		//third dimension of valueIndex is to deal with multiple values in one cell
+		//we made colIndex key because not all colIndexes are used
+		Map<Integer,List<List<InvestigationElement>>> colValues = new LinkedHashMap<Integer,List<List<InvestigationElement>>>();
+		Map<Integer,Map<String, List<InvestigationElement>>> existingValues = new LinkedHashMap<Integer, Map<String, List<InvestigationElement>>>();
+		List<Measurement> headerMeasurements = new ArrayList<Measurement>();
+
+		try
+		{
+			for(int rowIndex = 0; rowIndex < row; rowIndex++){
+
+				for(int colIndex = 0; colIndex < column; colIndex++){
+
+					String cellValue = sheet.getCell(colIndex, rowIndex).getContents().replaceAll("'", "").trim().toLowerCase();
+
+					System.out.println("The cell value is " + cellValue);
+					System.out.println("The size is =========== " + configuration.size());
+
+					TableField field = columnIndexToTableField.get(colIndex);
+
+					if(columnIndexToTableField.get(colIndex) != null && columnIndexToTableField.get(colIndex).getVertical() && rowIndex != 0){
+
+						//Keep track of the entities
+						if(!existingValues.containsKey(colIndex))
+						{
+							Map<String, List<InvestigationElement>> tempHolder = new LinkedHashMap<String, List<InvestigationElement>>();
+							existingValues.put(colIndex, tempHolder);
 						}
-						
-					} else if(field.ClassType.equalsIgnoreCase("Panel") && i != 0){
-						
-						panel.setName(cellValue);
-						
-						panelList.add(panel);
-						
-					}else if(field.ClassType.equalsIgnoreCase("Protocol") && i != 0){
-						
-						protocol.setName(cellValue);
-						
-						if(protocolSubProtocol.size() != 0 ){
-							
-							if(protocolSubProtocol.containsKey(j)){
-								protocolName = cellValue;
-								Integer subProtocolIndex = protocolSubProtocol.get(j);
-								subProtocolName = sheet.getCell(subProtocolIndex.intValue(), i).getContents().replaceAll("'", "").trim();
-								
-								if(protocolName != null & subProtocolName != null){
-									
-									if(protocolSubprotocolList.containsKey(protocolName)){
-										List<String> subProtocolList = protocolSubprotocolList.get(protocolName);
-										if(!subProtocolList.contains(subProtocolName)){
-											subProtocolList.add(subProtocolName);
-											protocolSubprotocolList.put(protocolName, subProtocolList);
-										}
-									}else{
-										List<String> subProtocolList = new ArrayList<String>();
-										subProtocolList.add(subProtocolName);
-										protocolSubprotocolList.put(protocolName, subProtocolList);
+
+						if(existingValues.get(colIndex).containsKey(cellValue))
+						{
+							if(colValues.get(colIndex).size() != rowIndex)
+							{
+								colValues.get(colIndex).add(new ArrayList<InvestigationElement>());
+							}
+
+							colValues.get(colIndex).get(rowIndex - 1).addAll(existingValues.get(colIndex).get(cellValue));
+
+
+						}else{
+							//we split on multivalue
+							String[] multiValue = cellValue.split(field.getValueSplitter());
+
+							for(int valueIndex = 0; valueIndex < multiValue.length; valueIndex++)
+							{
+								//If the fieldName is 'name', added as a new entity
+								if(field.getFieldName().equalsIgnoreCase("NAME")){
+
+									String value = multiValue[valueIndex];
+
+									InvestigationElement entity = null;
+
+									//check colIndex: if there is already a list for colIndex
+									if(colValues.get(colIndex) == null)
+									{
+										colValues.put(colIndex, new ArrayList<List<InvestigationElement>>());
 									}
-									protocolName = null;
-									subProtocolName = null;
+									//check rowIndex: if there is already a list values
+									if(colValues.get(colIndex).size() != rowIndex)
+									{
+										//create a list for our values (to deal with multivalue)
+										colValues.get(colIndex).add(new ArrayList<InvestigationElement>());
+
+									}
+
+									//check valueIndex: if there is already a value 
+									//TODO Chao`s comment: should be multiValue.length instead of rowIndex
+									if(colValues.get(colIndex).get(rowIndex - 1).size() != multiValue.length)
+									{
+										//create the entity
+										entity = (InvestigationElement) DatabaseFactory.create().getClassForName(field.getClassType()).newInstance();
+									}
+
+
+									if(!value.equalsIgnoreCase("")){
+
+										if(field.getClassType().equals(Category.class.getSimpleName())){
+
+											//Category entity couldn`t have empty property in name, description, code_string, label
+											//therefore it`s separated from other entites.
+											entity.set(Category.NAME, value);
+											entity.set(Category.DESCRIPTION, value);
+											entity.set(Category.CODE_STRING, value);
+											entity.set(Category.LABEL, value);
+											if(field.getDefaults().getString(Category.ISMISSING) != null)
+												entity.set(Category.ISMISSING, field.getDefaults().getString(Category.ISMISSING));
+
+										}else{
+											//set the field as specified in getFieldName() = 'name' or 'missing' or 'dataType', etc
+											entity.set(field.getFieldName(), value);
+										}
+
+										if(investigationName != null)
+											entity.set("Investigation_name", investigationName);
+										
+										colValues.get(colIndex).get(rowIndex - 1).add(entity);
+
+										//field.setEntity(entity);
+									}
 								}
 							}
 						}
-						
-						if(!protocolList.contains(protocol))
-							protocolList.add(protocol);
-					
-						if(j == protocolIndex){
-							protocolWithFeature = cellValue;
-						}
-						protocol = new Protocol();
-						
-					}else if(field.ClassType.equalsIgnoreCase("Category") && i != 0 && cellValue.length() > 0){
-						
-						String [] codeString = cellValue.split("\\|");
-						
-						for(int index = 0; index < codeString.length; index++){
-							codeString[index] = codeString[index].trim();
-						}
-						
-						for(int k = 0; k < codeString.length; k++){
 
-							category = new Category();
-							
-							category.setName(codeString[k].replaceAll("'", ""));
-							
-							category.setCode_String(codeString[k]);
-							
-							category.setLabel(codeString[k]);
-							
-							category.setDescription(cellValue);
-							
-							if(missingCategoryList.contains(j)){
-								category.setIsMissing(true);
+						if(field.getDependentColumnIndex()[0] != -1){
+
+							for(int index = 0; index < field.getDependentColumnIndex().length; index++){
+
+								int dependentColumn = field.getDependentColumnIndex()[index];
+
+								TableField dependendField = columnIndexToTableField.get(dependentColumn);
+
+								//InvestigationElement addingPropertyToEntity = dependendField.getEntity();
+
+								InvestigationElement addingPropertyToEntity = colValues.get(dependentColumn).get(rowIndex - 1).get(0);
+
+								String multipleValues[] = cellValue.split(dependendField.getValueSplitter());
+
+								List<Object> values = new ArrayList<Object>();
+
+								for(int i = 0; i < multipleValues.length; i++){
+									values.add(multipleValues[i].trim());
+								}
+
+								//Due to using generic method get() property of the Pheno Entity, so we don`t know which Object data
+								//the field would be. We need to check the field type first. It could be list, boolean, string
+								if(addingPropertyToEntity.get(field.getRelationString()) != null)
+								{
+									if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(ArrayList.class))
+									{
+										List<String> previousProperties = (List<String>) addingPropertyToEntity.get(field.getRelationString());
+
+										if(previousProperties != null && previousProperties.size() > 0)
+										{
+											for(String newValue : previousProperties)
+											{
+												if(!values.contains(newValue))
+												{
+													values.add(newValue);
+												}
+											}
+										}
+
+									}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(Boolean.class)){
+
+										values.clear();
+
+										if(cellValue.equalsIgnoreCase("yes"))
+											values.add(true);
+
+									}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(String.class)){
+
+										values.clear();
+										values.add(addingPropertyToEntity.get(field.getRelationString()));
+									}
+
+									if(field.getRelationString().equals(Measurement.DATATYPE)){
+
+										String dataType = adjustDataTypeValue(cellValue);
+
+										if(!dataType.equals(MeasurementDataType))
+										{
+											values.clear();
+											values.add(dataType);
+										}
+									}
+								}
+								
+								if(field.getRelationString().equals(Measurement.UNIT_NAME)){
+
+									for(int i = 0; i < multipleValues.length; i++)
+									{
+										List<String> eachValues = new ArrayList<String>();
+
+										eachValues.add(multipleValues[i]);
+
+										List<OntologyTerm> existingOntologyTermList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, eachValues));
+
+										if(existingOntologyTermList.size() == 0 && !multipleValues[i].equals("")){
+											OntologyTerm unitOntologyTerm = new OntologyTerm();
+											unitOntologyTerm.set(OntologyTerm.NAME, multipleValues[i]);
+
+											if(!ontologyTermList.contains(unitOntologyTerm)){
+												ontologyTermList.add(unitOntologyTerm);
+											}
+										}
+
+									}
+								}
+
+								if(values.size() == 1)
+								{
+									addingPropertyToEntity.set(field.getRelationString(), values.get(0));
+								}else{
+									addingPropertyToEntity.set(field.getRelationString(), values);
+								}
 							}
-							
-							if(!categoryList.contains(category))
-								categoryList.add(category);
-							
-							if(measurementIndex != -1 && categoryAddToMeasurement.get(measurementIndex).contains(j))
-								addCategoryToMeasurement(category, measurement, measurementCategoryList);
 						}
-						
-					}else if(field.ClassType.equalsIgnoreCase(MEASUREMENT_DESCRIPTION) && i != 0){
-						
-						measurement.setDescription(cellValue);
-					
-					}else if(field.ClassType.equalsIgnoreCase(MEASUREMENT_DATATYPE) && i != 0){
-						
-						String datatype = adjustDataTypeValue(cellValue);
-						if(!datatype.equals("string"))
-							measurement.setDataType(datatype);
-					}else if(field.ClassType.equalsIgnoreCase(CODE_STRING) && i != 0){
-						
-							category.setCode_String(cellValue);
-					}
-					
-				}else{
-					
-					//The header is measurement!
-					if(i == 0){
-						
-						if(field.ClassType.equalsIgnoreCase("Measurement")){
-							
-							measurement = new Measurement();
-							
-							measurement.setName(cellValue);
-							
-							measurementList.add(measurement);
+
+
+						if(!existingValues.get(colIndex).containsKey(cellValue) && colValues.containsKey(colIndex))
+						{
+							existingValues.get(colIndex).put(cellValue, colValues.get(colIndex).get(rowIndex - 1));
 						}
-					//The rest of the column is observedValue!
+
 					}else{
+
+						//The header is measurement!
+						if(rowIndex == 0){
+
+							if(field.getClassType().equalsIgnoreCase(ObservedValue.class.getSimpleName())){
+
+								Measurement measurement = new Measurement();
+
+								measurement.setName(cellValue);
+
+								headerMeasurements.add(measurement);
+								
+								if(investigationName != null)
+									measurement.set("Investigation_name", investigationName);
+							}
+							//The rest of the column is observedValue!
+						}else{
+
+							if(!cellValue.equals("") && cellValue != null && field.getObservationTarget() != -1){
+
+								ObservedValue observedValue = new ObservedValue();
+
+								String headerName = sheet.getCell(colIndex, 0).getContents().replaceAll("'", "").trim().toLowerCase();
+
+								String targetName = sheet.getCell(field.getObservationTarget(), rowIndex).getContents().replaceAll("'", "").trim().toLowerCase();
+
+								observedValue.setFeature_Name(headerName);
+
+								observedValue.setTarget_Name(targetName);
+
+								observedValue.setValue(cellValue);
+
+								observedValueList.add(observedValue);
+								
+								if(investigationName != null)
+									observedValue.set("Investigation_name", investigationName);
+							}
+						}
+					}
+				}
+			}
+
+			//convert the columnValues into one list per column for the database
+			Map<Integer,List<InvestigationElement>> dataToAdd = new LinkedHashMap<Integer,List<InvestigationElement>>();
+
+
+			List<InvestigationElement> measurementList = new ArrayList<InvestigationElement>();
+			List<InvestigationElement> categoryList = new ArrayList<InvestigationElement>();
+			List<InvestigationElement> protocolList = new ArrayList<InvestigationElement>();
+
+
+			for(Integer colIndex: colValues.keySet())
+			{
+				//dataToAdd.put(colIndex, new ArrayList<InvestigationElement>());
+				List<InvestigationElement> addedList = new ArrayList<InvestigationElement>();
+				for(List<InvestigationElement> list: colValues.get(colIndex))
+				{
+					//addedList.addAll(list);
+					if(columnIndexToTableField.get(colIndex).getClassType().equals("Measurement"))
+					{
+						measurementList.addAll(list);
+					}
+					if(columnIndexToTableField.get(colIndex).getClassType().equals("Category"))
+					{
+						categoryList.addAll(list);
+					}
+					if(columnIndexToTableField.get(colIndex).getClassType().equals("Protocol"))
+					{
+						protocolList.addAll(list);
+					}
+				}
+
+			}
+			
+			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+
+			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
+
+			for(InvestigationElement m : measurementList){
+				List<String> categories_name = (List<String>) m.get(Measurement.CATEGORIES_NAME);
+				if(categories_name.size() > 0)
+				{
+					List<Category> categories = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categories_name));
+					List<Integer> categoryId = new ArrayList<Integer>();
+					for(Category c : categories){
 						
-						if(!cellValue.equals("") && cellValue != null && observationTarget != -1){
-							
-							observedValue = new ObservedValue();
-							
-							String headerName = sheet.getCell(j, 0).getContents().replaceAll("'", "").trim();
-							
-							String targetName = sheet.getCell(observationTarget, i).getContents().replaceAll("'", "").trim();
-							
-							observedValue.setFeature_Name(headerName);
-							
-							observedValue.setTarget_Name(targetName);
-							
-							observedValue.setValue(cellValue);
-							
-							observedValueList.add(observedValue);
+						if(m.get(Measurement.NAME).equals(c.getName())){
+							c.setName(c.getName() + "_code");
+							db.update(c);
 						}
+						categoryId.add(c.getId());
 					}
-				}
-				
-				//This is for the measurement configuration
-				if(unitsIndex == j){
-					if(!cellValue.equals("")){
-						measurement.setUnit_Name(cellValue);
-						OntologyTerm ontologyTerm = new OntologyTerm();
-						ontologyTerm.setName(cellValue);
-						if(!ontologyTermList.contains(ontologyTerm))
-							ontologyTermList.add(ontologyTerm);
-					}
-				}
-				if(temporalIndex == j){
-					
-					if(cellValue.equalsIgnoreCase("yes")){
-						measurement.setTemporal(true);
-					}else if(cellValue.equalsIgnoreCase("no")){
-						measurement.setTemporal(false);
-					}
+					m.set(Measurement.CATEGORIES, categoryId);
 				}
 			}
 			
-			if(i != 0 && protocolWithFeature != null && featureWithProtocol != null){
-				
-				if(protocolMeasurementList.containsKey(protocolWithFeature)){
-					List<String> featureList = protocolMeasurementList.get(protocolWithFeature);
-					if(!featureList.contains(featureWithProtocol)){
-						featureList.add(featureWithProtocol);
-						protocolMeasurementList.put(protocolWithFeature, featureList);
-					}
-				}else{
-					List<String> featureList = new ArrayList<String>();
-					featureList.add(featureWithProtocol);
-					protocolMeasurementList.put(protocolWithFeature, featureList);
-				}
-				featureWithProtocol = null;
-				protocolWithFeature = null;
-				
-			}
-		}
-		
-		try {
-			
-			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.CODE_STRING, Category.INVESTIGATION_NAME);
-			
-			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME, OntologyTerm.ONTOLOGY_NAME);
-			
-			if(measurementCategoryList.size() != 0){
-				
-				for(Measurement m : measurementList){
-					List<String> categoryNameList = measurementCategoryList.get(m.getName());
-					if(categoryNameList != null){
-						List<Category> categoryEntityList = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categoryNameList));
-						List<Integer> categoryIdList = new ArrayList<Integer>();
-						for(Category c : categoryEntityList){
-							categoryIdList.add(c.getId());
+			db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
+
+			for(InvestigationElement p : protocolList)
+			{
+
+				List<String> feature_names = (List<String>) p.get(Protocol.FEATURES_NAME);
+
+				if(feature_names.size() > 0)
+				{
+					List<Measurement> features = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, feature_names));
+
+					if(features.size() > 0)
+					{
+						List<Integer> featuresId = new ArrayList<Integer>();
+						for(Measurement m : features){
+							if(!featuresId.contains(m.getId()))
+								featuresId.add(m.getId());
 						}
-						m.setCategories(categoryIdList);
+						p.set(Protocol.FEATURES, featuresId);
 					}
 				}
 			}
-			
-			db.update(measurementList, Database.DatabaseAction.ADD_UPDATE_EXISTING, Measurement.NAME, 
-					Measurement.CATEGORIES_NAME, Measurement.DATATYPE, Measurement.INVESTIGATION_NAME);
-			
-			
-			if(protocolMeasurementList.size() != 0){
-				
-				for(Protocol p : protocolList){
-					List<String> featureList = protocolMeasurementList.get(p.getName());
-					
-					if(featureList != null){
-						List<Measurement> featureEntityList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, featureList));
-						List<Integer> featureIdList = new ArrayList<Integer>();
-						for(Measurement m : featureEntityList){
-							featureIdList.add(m.getId());
+
+			db.update(protocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
+
+			List<InvestigationElement> subProtocols = new ArrayList<InvestigationElement>();
+
+			List<InvestigationElement> noneDuplicatedElements = new ArrayList<InvestigationElement>();
+
+			for(InvestigationElement p : protocolList)
+			{
+				if(!subProtocols.contains(p)){
+
+					List<String> subProtocol_names = (List<String>) p.get(Protocol.SUBPROTOCOLS_NAME);
+
+					if(subProtocol_names.size() > 0)
+					{
+						List<Protocol> subProtocolList = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, subProtocol_names));
+
+						if(subProtocolList.size() > 0)
+						{
+							List<Integer> subProtocolId = new ArrayList<Integer>();
+
+							for(Protocol subPro : subProtocolList){
+								if(!subProtocolId.contains(subPro.getId())){
+									subProtocolId.add(subPro.getId());
+								}
+							}
+							p.set(Protocol.SUBPROTOCOLS, subProtocolId);
+
 						}
-						p.setFeatures_Id(featureIdList);
 					}
-				}
-			}
-			
-			db.update(protocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.FEATURES_NAME, Protocol.SUBPROTOCOLS_NAME, Protocol.INVESTIGATION_NAME);
-			
-			List<Protocol> topProtocol = new ArrayList<Protocol>();
-			
-			if(protocolSubprotocolList.size() != 0){
-				
-				for(Protocol p : protocolList){
-					
-					List<String> subProtocolList = protocolSubprotocolList.get(p.getName());
-					if(subProtocolList != null){
-						List<Protocol> subProtocolEntityList = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, subProtocolList));
-						List<Integer> subProtocolIdList = new ArrayList<Integer>();
-						for(Protocol pro : subProtocolEntityList){
-							subProtocolIdList.add(pro.getId());
-						}
-						
-						p.setSubprotocols(subProtocolIdList);
+					if(p.getId() != null)
 						db.update(p);
-					}
 				}
 			}
-			db.update(panelList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Panel.NAME, Panel.INDIVIDUALS_NAME, Panel.INVESTIGATION_NAME);
-			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.VALUE, 
-					ObservedValue.TARGET_NAME, ObservedValue.FEATURE_NAME, ObservedValue.INVESTIGATION_NAME);
+
+
+
+			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.CATEGORIES_NAME, Measurement.DATATYPE);
 			
-		} catch (DatabaseException e) {
+			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
+			
+			//put all in the database, using right order
+			//TODO
+
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	private void addCategoryToMeasurement(Category category, Measurement measurement, 
-			HashMap<String, List> measurementCategoryList){
 
-
-		String categoryName = category.getName();
-		String measurementName = measurement.getName();
-
-		if(categoryName.equalsIgnoreCase(measurementName)){
-			category.setName(category.getName() + "_code");
-		}
-
-		if(categoryName != null && measurementName != null){
-			if(measurementCategoryList.containsKey(measurementName)){
-				List<String> categoryNameList = measurementCategoryList.get(measurementName);
-				if(!categoryNameList.contains(categoryName)){
-					categoryNameList.add(categoryName);
-					measurementCategoryList.put(measurementName, categoryNameList);	
-				}
-			}else{
-				List<String> categoryNameList = new ArrayList<String>();
-				categoryNameList.add(categoryName);
-				measurementCategoryList.put(measurementName, categoryNameList);
-			}
-		}
-
-	}
-	
 	private String adjustDataTypeValue(String cellValue) {
-		
-		Set dataTypeSet = InputToMolgenisDataType.keySet();
-		
-		Iterator iterator = dataTypeSet.iterator();
-		
-		while(iterator.hasNext()){
-			
-			String keySet = (String) iterator.next();
-			
+
+		for(String keySet : InputToMolgenisDataType.keySet())
+		{
 			Pattern p = Pattern.compile(keySet);
-			
+
 			Matcher m = p.matcher(cellValue);
-			
+
 			if(m.find()){
 				return InputToMolgenisDataType.get(keySet);
 			}
@@ -542,89 +593,26 @@ public class TableModel {
 
 
 	public void setDataType(String dataTypeInput, String molgenisDataType) {
-		
-		InputToMolgenisDataType.put(dataTypeInput, molgenisDataType);
+
+		InputToMolgenisDataType.put(dataTypeInput.toLowerCase(), molgenisDataType);
 	}
-
-
-	public Entity nameToClass(String className, Database db) throws Exception{
-		
-		//String className = "Measurement";
-		Class<? extends Entity> c = db.getClassForName(className);
-		Entity e = c.newInstance();
-		e.set(ObservationElement.NAME,"myname");
-		e.set("dataType","int");
-		return e;
-	}
-
-	public void setObservedValue (int Target, int Feature){
-		
-		TableField Subject = configuration.get(Target);
-		
-		TableField Object = configuration.get(Feature);
-		
-		Subject.setRelation(Subject, Object);
-	}
-
-	public void setTarget(int i) {
-		this.observationTarget = i;
-	}
-
-	public void setProtocolFeatureRelation(int protocolIndex, int featureIndex, String protocolFeature) {
-		
-		this.protocolIndex = protocolIndex;
-		this.featureIndex = featureIndex;
-		protocolSubprotocolIndex.put(protocolIndex, featureIndex);
-			
-	}
-
-
-	public void setMeasurementCategoryRelation(int measurementIndex, Integer categoryIndex) {
-		
-		this.measurementIndex = measurementIndex;
-		this.categoryIndex = categoryIndex;
-		
-		if(categoryAddToMeasurement.containsKey(measurementIndex)){
-			List<Integer> categoryIndexList = categoryAddToMeasurement.get(measurementIndex);
-			categoryIndexList.add(categoryIndex);
-			categoryAddToMeasurement.put(measurementIndex, categoryIndexList);
-		}else{
-			List<Integer> categoryIndexList = new ArrayList<Integer>();
-			categoryIndexList.add(categoryIndex);
-			categoryAddToMeasurement.put(measurementIndex, categoryIndexList);
-		}
-		
-	}
-
-
-	public void setSubProtocolRelation(int protocolIndex, int subProtocolIndex) {
-		protocolSubProtocol.put(protocolIndex, subProtocolIndex);
-	}
-
-
-	public void measurementSetting(int measurementIndex, int unitsIndex, int temporalIndex, int[] categoryList) {
-		this.measurementIndex = measurementIndex;
-		this.unitsIndex = unitsIndex;
-		this.temporalIndex = temporalIndex;
-		
-		for(int i = 0; i < categoryList.length; i++){
-			setMeasurementCategoryRelation(measurementIndex, categoryList[i]);
-		}
-	}
-
 
 	public void setMissingCategoryIndex(int missingCategoryIndex) {
 		missingCategoryList.add(missingCategoryIndex);
 	}
 
-	//TODO need to be more flexible. What if there are more columns for OntologyTerm
-	//have to make ontologyTerm a list
-	public void setOntologyTerm(int ontologyTermIndex, int ontologyNameIndex, int ontologyTermAccessIndex
-			, int ontologyDefinitionIndex, int ontologyTermPathIndex) {
-		this.ontologyTermIndex = ontologyTermIndex;
-		this.ontologyNameIndex = ontologyNameIndex;
-		this.ontologyTermAccessIndex = ontologyTermAccessIndex;
-		this.ontologyDefinitionIndex = ontologyDefinitionIndex;
-		this.ontologyTermPathIndex = ontologyTermPathIndex;
+	public void setInvestigation(String investigationName) throws DatabaseException {
+		
+		Investigation investigation = new Investigation();
+		
+		if(db.query(Investigation.class).eq(Investigation.NAME, investigationName).count() == 0){
+
+			investigation.setName(investigationName);
+			
+			db.add(investigation);
+			
+		}
+		
+		this.investigationName = investigationName;
 	}
 }

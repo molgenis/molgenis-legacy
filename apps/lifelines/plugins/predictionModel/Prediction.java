@@ -3,48 +3,26 @@ package plugins.predictionModel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
-import org.apache.cxf.binding.corba.wsdl.Array;
-import org.apache.poi.hssf.record.formula.Ptg;
-import org.molgenis.core.Ontology;
-import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.html.Table;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservableFeature;
-import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-import com.sun.codemodel.ClassType;
-
-import app.FillMetadata;
-import app.servlet.RestApi.CategoryList;
-
 import plugins.emptydb.emptyDatabase;
+import app.FillMetadata;
 
 
 
@@ -96,8 +74,10 @@ public class Prediction extends PluginModel<Entity>
 
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
-		File file = new File(tmpDir+ "/DataShaperExcel.xls"); 
+		//File file = new File(tmpDir+ "/DataShaperExcel.xls"); 
 
+		File file = new File(tmpDir+ "/LifelinesDict.xls"); 
+		
 		if (file.exists()) {
 
 			System.out.println("The excel file is being imported, please be patient");
@@ -110,92 +90,122 @@ public class Prediction extends PluginModel<Entity>
 
 			table = new TableModel (dictionaryCategory.getColumns(), db);
 			
-			int [] columnList = {0, 1, 2};
-			
-			int [] ignoreColumnList = {5,6};
-			
-			int [] observedValues = new int[16];
-			
-			for(int i = 0; i < observedValues.length; i++){
-				observedValues[i] = i + 10;
+			//DataShaper input code!
+			{			
+//				int [] columnList = {0, 1, 2};
+//				
+//				table.setInvestigation("DataShaper");
+//				
+//				table.addField(Protocol.class.getSimpleName(), Protocol.NAME, columnList, TableField.COLVALUE);
+//				
+//				table.addField(Protocol.class.getSimpleName(), Protocol.SUBPROTOCOLS_NAME, TableField.COLVALUE, 0,1);
+//				
+//				table.addField(Protocol.class.getSimpleName(), Protocol.SUBPROTOCOLS_NAME, TableField.COLVALUE, 1,2);
+//				
+//				table.addField(Measurement.class.getSimpleName(), Measurement.NAME, 3, TableField.COLVALUE);
+//				
+//				table.addField(Category.class.getSimpleName(), Category.NAME, 8, TableField.COLVALUE);
+//				
+//				Tuple defaults = new SimpleTuple();
+//				
+//				defaults.set(Category.ISMISSING, true);
+//				
+//				table.addField(Category.class.getSimpleName(), Category.NAME, 9, TableField.COLVALUE, defaults);
+//				
+//				table.addField(Measurement.class.getSimpleName(), Measurement.DESCRIPTION, TableField.COLVALUE, 3,4);
+//				
+//				table.addField(Measurement.class.getSimpleName(), Measurement.CATEGORIES_NAME, TableField.COLVALUE, 3,8,9);
+//				
+//				table.addField(Protocol.class.getSimpleName(), Protocol.FEATURES_NAME, TableField.COLVALUE, 2,3);
+//				
+//				int [] coHeaders = {7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24};
+//				
+//				table.addField(ObservedValue.class.getSimpleName(), ObservedValue.VALUE, coHeaders, 3, TableField.COLHEADER);		
+//				
+//				table.addField(Measurement.class.getSimpleName(), Measurement.UNIT_NAME, TableField.COLVALUE, 3, 5);
+//				
+//				table.addField(Measurement.class.getSimpleName(), Measurement.TEMPORAL, TableField.COLVALUE, 3, 6);
+//				
+//				table.addField(Measurement.class.getSimpleName(), Measurement.DATATYPE, TableField.COLVALUE, 3, 19, 25);
+//				
+//				table.setDataType("Integer", "int");
+//				
+//				table.setDataType("Categorical", "categorical");
+//				
+//				table.setDataType("Decimal", "int");
+//				
+//				table.setDataType("Date", "datetime");
+//				
+//				table.convertIntoPheno(dictionaryCategory);
 			}
 			
-			table.addField(this, TableModel.PROTOCOL, columnList, TableField.VERTICAL);
+			//Lifeline Dictionary input
+			{
+				int [] columnList = {1,2,4};
+	
+				table.setInvestigation("LifelinesDict");
+				
+				table.addField(Protocol.class.getSimpleName(), Protocol.NAME, 0, TableField.COLVALUE);
+				
+				table.addField(Measurement.class.getSimpleName(), Measurement.NAME, 3, TableField.COLVALUE);
+				
+				table.addField(ObservedValue.class.getSimpleName(), ObservedValue.VALUE, columnList, 3, TableField.COLHEADER);
+				
+				table.addField(Measurement.class.getSimpleName(), Measurement.DESCRIPTION, TableField.COLVALUE, 3, 5);
+				
+				table.addField(Protocol.class.getSimpleName(), Protocol.FEATURES_NAME, TableField.COLVALUE, 0, 3);
+				
+				table.convertIntoPheno(dictionaryCategory);
+	
+//				Sheet categoryInput = workbook.getSheet(1);
+//	
+//				table = new TableModel (categoryInput.getColumns(), db);
+//	
+//				table.addField(TableModel.IGNORE, 0, TableField.COLVALUE);
+//	
+//				table.addField(TableModel.IGNORE, 1, TableField.COLVALUE);
+//	
+//				table.addField(TableModel.IGNORE, 2, TableField.COLVALUE);
+//	
+//				table.addField(TableModel.CATEGORY, 3, TableField.COLVALUE);
+//	
+//				table.addField(TableModel.CODE_STRING, 4, TableField.COLVALUE);
+//	
+//				table.setMeasurementCategoryRelation(1,3);
+//	
+//				table.convertIntoPheno(categoryInput);
+			}
 			
-			table.addField(this, TableModel.MEASUREMENT, 3, TableField.VERTICAL);
-			
-			table.addField(this, TableModel.MEASUREMENT_DESCRIPTION, 4, TableField.VERTICAL);
-			
-			table.addField(this,TableModel.IGNORE, ignoreColumnList,TableField.VERTICAL);
-			
-			table.addField(this, TableModel.MEASUREMENT, 7, TableField.HORIZONTAL);
-			
-			table.addField(this, TableModel.CATEGORY, 8, TableField.VERTICAL);
-			
-			table.addField(this, TableModel.CATEGORY, 9, TableField.VERTICAL);
-			
-			table.addField(this, TableModel.MEASUREMENT, observedValues, TableField.HORIZONTAL);
-			
-			table.setMissingCategoryIndex(9);
-			
-			table.setSubProtocolRelation(0, 1);
-			
-			table.setSubProtocolRelation(1, 2);
-			
-			table.setProtocolFeatureRelation(2,3, TableModel.PROTOCOL_FEATURE);
-			
-			int categoryList[] = {7,8};
-			
-			table.measurementSetting(4, 5, 6, categoryList);
-			
-			table.setTarget(3);
-			
-			table.convertIntoPheno(dictionaryCategory);
-			
-//			int [] columnList = {1,2};
-//
-//			table.setDataType("TEKST", TableModel.MEASUREMENT_STRING);
-//
-//			table.setDataType("NUMMER", TableModel.MEASUREMENT_INT);
-//
-//			table.setDataType("DATUM", TableModel.MEASUREMENT_DATE);
-//
-//			table.addField(this, TableModel.PROTOCOL, 0, TableField.VERTICAL);
-//
-//			table.addField(this, TableModel.MEASUREMENT, columnList, TableField.HORIZONTAL);
-//
-//			table.addField(this, TableModel.MEASUREMENT, 3, TableField.VERTICAL);
-//
-//			table.addField(this, TableModel.MEASUREMENT_DATATYPE, 4, TableField.VERTICAL);
-//
-//			table.addField(this, TableModel.MEASUREMENT_DESCRIPTION, 5, TableField.VERTICAL);
-//
-//			table.setTarget(3);
-//
-//			table.setProtocolFeatureRelation(0,3,TableModel.PROTOCOL_FEATURE);
-//
-//			table.convertIntoPheno(dictionaryCategory);
-//
-//			Sheet categoryInput = workbook.getSheet(1);
-//
-//			table = new TableModel (categoryInput.getColumns(), db);
-//
-//			table.addField(this, TableModel.PROTOCOL, 0, TableField.VERTICAL);
-//
-//			table.addField(this, TableModel.MEASUREMENT, 1, TableField.VERTICAL);
-//
-//			table.addField(this, TableModel.IGNORE, 2, TableField.VERTICAL);
-//
-//			table.addField(this, TableModel.CATEGORY, 3, TableField.VERTICAL);
-//
-//			table.addField(this, TableModel.CODE_STRING, 4, TableField.VERTICAL);
-//
-//			table.setProtocolFeatureRelation(0,1, TableModel.PROTOCOL_FEATURE);
-//
-//			table.setMeasurementCategoryRelation(1,3,TableModel.MEASUREMENT_CATEGORY);
-//
-//			table.convertIntoPheno(categoryInput);
+			//This is for the prediction model input
+			{
+//				int measurementList[] = {2,3,4,5,6,7};
+//				table.addField(TableModel.PANEL, 0, TableField.COLVALUE);
+//				table.addField(TableModel.MEASUREMENT, measurementList, TableField.COLHEADER);
+//				table.addField(TableModel.PROTOCOL, 1, TableField.COLVALUE);
+//				table.setTarget(0);
+				
+				//how should each ObservedValue be constructed: you need target, feature and protocol (or protocolApplication).
+//				table.setTarget(TableField.COLVALUE, 0);
+//				table.setFeature(TableField.COLHEADER, measurementList);
+//				table.setProtocol(TableField.COLVALUE, 1);
 
+//				table.convertIntoPheno(dictionaryCategory);
+				
+				
+//				addField(entityType, row-coordinates, col-coordinates)
+//				table.addColumn(TableModel.PANEL, 0);
+//				table.addHeaders(TableModel.MEASUREMENT, measurementList);
+//				
+//				table.addField(TableModel.PANEL, TableField.COLUMN, 0);
+//				table.addField(TableModel.MEASUREMENT, TableField.COLHEADER, measurementList);
+//				table.addField(TableModel.PROTOCOL, 1, TableField.COLUMN);
+//				table.setTarget(0);
+//				table.convertIntoPheno(dictionaryCategory);
+				
+
+				
+			}
+			
 			this.setStatus("finished!");
 
 		} else {
