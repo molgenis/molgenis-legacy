@@ -67,6 +67,8 @@
 .filetree li.expandable span.folder { background: url(images/folder-closed.gif) 0 0 no-repeat; }
 .filetree span.file { background: url(images/file.gif) 0 0 no-repeat; }
 
+
+
 div#CatalogueRightSide{
 	position: absolute; 
 	left: 910px; 
@@ -75,26 +77,4 @@ div#CatalogueRightSide{
 	font-size: 68.75%;
 }
 
-div#ShoppingCartLabel {
-	border:solid;
- 	background: #5B82A4;
-	color: #FFFFFF;
-	font-family: arial;
-    font-size: 10pt;
-    font-weight: bold;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    width: 35%;
-}
-
-div.ShoppingCartContents {
-	border-style: inset;
-	width: 35%;
-
-.ShoopingCartButton {
-		bottom: 0; 
-		right: 0;
-	}
-}
 

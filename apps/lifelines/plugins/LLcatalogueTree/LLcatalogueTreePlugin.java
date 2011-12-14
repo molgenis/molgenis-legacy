@@ -56,6 +56,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	}
 	
 	
+	public String getCustomHtmlHeaders()
+    {
+        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/shopping_cart.css\">";
+    }
+	
 	public void handleRequest(Database db, Tuple request) {
 
 		System.out.println("CAUGHT IT: " + request);
@@ -92,11 +97,13 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			if ("OrderMeasurements".equals(request.getAction())) {
 				for (int i=0; i<this.shoppingCart.size(); i++) {
 
-					ShoppingCart  shoppingCart= new ShoppingCart();
+					ShoppingCart shoppingCart= new ShoppingCart();
 					
 					shoppingCart.setMeasurementName(this.shoppingCart.get(i).getName());
 					shoppingCart.setUserID(this.getLogin().getUserName());
+					//db.update(shoppingCart, Database.DatabaseAction.ADD_IGNORE_EXISTING, "measurementName" );
 					db.add(shoppingCart);
+				
 				}
 				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 				HttpServletRequest httpRequest   = rt.getRequest();
