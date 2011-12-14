@@ -14,6 +14,7 @@ import org.molgenis.util.plink.drivers.MapFileDriver;
 import org.molgenis.util.plink.drivers.PedFileDriver;
 import org.molgenis.util.plink.drivers.TpedFileDriver;
 import org.molgenis.util.plink.writers.BimFileWriter;
+import org.molgenis.util.plink.writers.FamFileWriter;
 import org.molgenis.util.plink.writers.MapFileWriter;
 import org.molgenis.util.plink.writers.PedFileWriter;
 import org.molgenis.util.plink.writers.TpedFileWriter;
@@ -320,6 +321,16 @@ public class PlinkTest
 		PedFileWriter w = new PedFileWriter(newPed);
 		w.writeAll(pedfd.getAllEntries());
 		boolean filesAreEqual = DirectoryCompare.compareFileContent(testPed, newPed);
+		Assert.assertTrue(filesAreEqual);
+	}
+	
+	@Test
+	public void FAM_writer() throws Exception
+	{
+		File newFam = new File(testFam.getAbsolutePath().replace(testFam.getName(), "new.fam"));
+		FamFileWriter w = new FamFileWriter(newFam);
+		w.writeAll(famfd.getAllEntries());
+		boolean filesAreEqual = DirectoryCompare.compareFileContent(testFam, newFam);
 		Assert.assertTrue(filesAreEqual);
 	}
 	
