@@ -101,6 +101,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					
 					Query<ShoppingCart> q = db.query(ShoppingCart.class);
 					q.addRules(new QueryRule("measurementName", Operator.EQUALS, measurementName));
+					q.addRules(new QueryRule("userID", Operator.EQUALS, this.getLogin().getUserName()));
 					List<ShoppingCart> result = q.find();
 					
 					if (result.isEmpty()) {
