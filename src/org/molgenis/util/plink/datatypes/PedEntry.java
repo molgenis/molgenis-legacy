@@ -8,6 +8,7 @@ import org.molgenis.util.Tuple;
 public class PedEntry extends FamEntry
 {
 
+	//list iterates SNP's, so 1 list per individual
 	List<Biallele> bialleles;
 
 	public PedEntry(String family, String individual, String father,
