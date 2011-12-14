@@ -34,7 +34,8 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 	
 	@Override
 	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception {
-		
+		//TODO : Retrieve shopping list here . Is there a convenient way to pass it form the redirected plugin (will it still be convenient with larger amount of items?)
+		//TODO : maybe consider adding  shopping List in the database. 
 	}
 
 	@Override

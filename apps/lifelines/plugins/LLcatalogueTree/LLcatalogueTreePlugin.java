@@ -1,5 +1,7 @@
 package plugins.LLcatalogueTree;
 
+import gcc.catalogue.ShoppingCart;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -18,6 +21,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.CheckboxInput;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.protocol.Protocol;
@@ -78,14 +82,22 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				List<String> shoppingCartLabels = new Vector<String>() ;
 				for (int i=0; i<this.shoppingCart.size(); i++) {
 					shoppingCartLabels.add(this.shoppingCart.get(i).getName());
+					
 				}
 		
 				this.checkBoxInput = new CheckboxInput("ShoppingCart", "Shopping Cart", "ShoppingCart", ShoppingCartOptions, shoppingCartLabels);
 				checkBoxInput.render();
 				
-				
 			}
 			if ("OrderMeasurements".equals(request.getAction())) {
+				for (int i=0; i<this.shoppingCart.size(); i++) {
+
+					ShoppingCart  shoppingCart= new ShoppingCart();
+					
+					shoppingCart.setMeasurementName(this.shoppingCart.get(i).getName());
+					shoppingCart.setUserID(this.getLogin().getUserName());
+					db.add(shoppingCart);
+				}
 				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 				HttpServletRequest httpRequest   = rt.getRequest();
 				HttpServletResponse httpResponse = rt.getResponse();

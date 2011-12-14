@@ -28,7 +28,15 @@
 		<entity name="groupTheme" extends="themeProtocol">
 			<field name="Features" type="mref" xref_entity="themeProtocol" nillable="true" />
 		</entity>
+
+		We should find a trick to hide the fields from pheno model that are empty .  
 		-->
+		<entity name="shoppingCart">
+		    <field name="id" type="autoid" description="automatically generated id" />
+			<field name="measurementName" type="string" nillable="true" />
+			<field name="userID" type="string" nillable="true" />
+			
+		</entity>
 	</module>
 </molgenis>
 
