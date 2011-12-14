@@ -12,9 +12,11 @@ import org.molgenis.util.plink.drivers.BimFileDriver;
 import org.molgenis.util.plink.drivers.FamFileDriver;
 import org.molgenis.util.plink.drivers.MapFileDriver;
 import org.molgenis.util.plink.drivers.PedFileDriver;
+import org.molgenis.util.plink.drivers.TpedFileDriver;
 import org.molgenis.util.plink.writers.BimFileWriter;
 import org.molgenis.util.plink.writers.MapFileWriter;
 import org.molgenis.util.plink.writers.PedFileWriter;
+import org.molgenis.util.plink.writers.TpedFileWriter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -40,6 +42,9 @@ public class PlinkTest
 	File testMap;
 	MapFileDriver mapfd;
 	
+	File testTped;
+	TpedFileDriver tpedfd;
+	
 	@BeforeClass
 	public void setup() throws Exception
 	{
@@ -62,6 +67,10 @@ public class PlinkTest
 		testMap = new File(Biallele.class
 				.getResource("../testfiles/test.map").getFile());
 		mapfd = new MapFileDriver(testMap);
+		
+		testTped = new File(Biallele.class
+				.getResource("../testfiles/test.tped").getFile());
+		tpedfd = new TpedFileDriver(testTped);
 	}
 
 	@Test
@@ -314,6 +323,16 @@ public class PlinkTest
 		Assert.assertTrue(filesAreEqual);
 	}
 	
+	@Test
+	public void TPED_writer() throws Exception
+	{
+		File newTped = new File(testTped.getAbsolutePath().replace(testTped.getName(), "new.tped"));
+		TpedFileWriter w = new TpedFileWriter(newTped);
+		w.writeAll(tpedfd.getAllEntries());
+		boolean filesAreEqual = DirectoryCompare.compareFileContent(testTped, newTped);
+		Assert.assertTrue(filesAreEqual);
+	}
+	
 	@AfterClass
 	public void close() throws IOException
 	{
@@ -321,6 +340,7 @@ public class PlinkTest
 		famfd.close();
 		pedfd.close();
 		mapfd.close();
+		tpedfd.close();
 	}
 
 	private boolean stringArrEqual(String[] arr1, String[] arr2)
