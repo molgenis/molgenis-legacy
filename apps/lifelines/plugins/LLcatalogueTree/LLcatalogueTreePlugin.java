@@ -97,19 +97,31 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			if ("OrderMeasurements".equals(request.getAction())) {
 				for (int i=0; i<this.shoppingCart.size(); i++) {
 
-					ShoppingCart shoppingCart= new ShoppingCart();
+					String measurementName = this.shoppingCart.get(i).getName();
 					
-					shoppingCart.setMeasurementName(this.shoppingCart.get(i).getName());
-					shoppingCart.setUserID(this.getLogin().getUserName());
-					//db.update(shoppingCart, Database.DatabaseAction.ADD_IGNORE_EXISTING, "measurementName" );
-					db.add(shoppingCart);
+					Query<ShoppingCart> q = db.query(ShoppingCart.class);
+					q.addRules(new QueryRule("measurementName", Operator.EQUALS, measurementName));
+					List<ShoppingCart> result = q.find();
+					
+					if (result.isEmpty()) {
+						ShoppingCart shoppingCart= new ShoppingCart();
+						
+						shoppingCart.setMeasurementName(this.shoppingCart.get(i).getName());
+						shoppingCart.setUserID(this.getLogin().getUserName());
+						//db.update(shoppingCart, Database.DatabaseAction.ADD_IGNORE_EXISTING, "measurementName" );
+						db.add(shoppingCart);
+						System.out.println(measurementName + " has been added in the DB.");
+						this.setSuccess(measurementName + " has been added in the DB.");
+					} else {
+						System.out.println(measurementName + " has not been added in the DB because it was already there");
+						this.setSuccess(measurementName + " has not been added in the DB because it was already there");
+					}
+					
 				
 				}
 				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 				HttpServletRequest httpRequest   = rt.getRequest();
 				HttpServletResponse httpResponse = rt.getResponse();
-				
-				//String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=" + this.getApplicationController().getLogin().getRedirect();
 				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=MeasurementsOrderForm" ;
 				
 				httpResponse.sendRedirect(redirectURL);

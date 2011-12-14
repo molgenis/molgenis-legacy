@@ -74,7 +74,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 			else {
 	    		System.out.println(">>>shoppingCart>>>>>>>>"+ shoppingCart);
 
-	    		String emailContents = "Dear Salome, " + "\n\n"; 
+	    		String emailContents = "Dear admin, " + "\n\n"; 
 	    		emailContents += "The user : "+ this.getLogin().getUserName() +"\n";
 	    		emailContents += "has send a request for the items/measurements below:" + "\n";
 	    		for (int i=0; i<shoppingCart.size(); i++) {
