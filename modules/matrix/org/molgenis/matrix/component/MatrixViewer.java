@@ -149,8 +149,8 @@ public class MatrixViewer extends HtmlWidget
 			}
 			
 			String result = "<table><tr><td>";
-			result += renderReload();
-			result += renderHeader();
+			result += "<div style=\"vertical-align:middle;\">"+renderReload();
+			result += renderHeader()+"</div>";
 			result += "</td></tr><tr><td>";
 			result += renderTable();
 			result += "</td></tr><tr><td>";
@@ -413,7 +413,7 @@ public class MatrixViewer extends HtmlWidget
 		//divContents += new ActionInput(CLEARFILTERS, "", "Clear all filters").render();
 		// add column filter
 		SelectInput colId = new SelectInput(COLID);
-		divContents += "<br />Add filter:";
+		divContents += "<div style=\"vertical-align:middle\">Add filter:";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		if(colHeaders.get(0) instanceof Entity) {
 			List<? extends Entity> headers = (List<? extends Entity>) colHeaders;
@@ -430,6 +430,7 @@ public class MatrixViewer extends HtmlWidget
 		StringInput colValue = new StringInput(COLVALUE);
 		divContents += colValue.render();
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
+		divContents+="</div>";
 		// column header filter
 		if (columnsRestricted) {
 			List selectedMeasurements = new ArrayList();
@@ -442,9 +443,10 @@ public class MatrixViewer extends HtmlWidget
 			measurementChooser.setIncludeAddButton(false);
 			divContents += new Newline().render();
 			divContents += new Newline().render();
-			divContents += "Add/remove columns:";
+			divContents += "<div style=\"vertical-align:middle\">Add/remove columns:";
 			divContents += measurementChooser.render();
 			divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
+			divContents += "</div>";
 		}
 		
 		return divContents;

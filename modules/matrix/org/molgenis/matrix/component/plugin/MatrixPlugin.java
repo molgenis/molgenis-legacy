@@ -7,7 +7,11 @@
 
 package org.molgenis.matrix.component.plugin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -15,6 +19,7 @@ import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Tuple;
@@ -59,9 +64,20 @@ public class MatrixPlugin extends GenericPlugin
 			container = new Container();
 			div = new DivPanel();
 			try {
+				List<String> measurementsToShow = new ArrayList<String>();
+				List<Measurement> allMeasurements = db.find(Measurement.class);
+				int nr = 0;
+				for (Measurement measurement : allMeasurements) {
+					measurementsToShow.add(measurement.getName());
+					if (nr == 9) {
+						break;
+					}
+					nr++;
+				}
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, true, null, null);
+						true, true, null, 
+						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
 				div.add(targetMatrixViewer);
 				container.add(div);
