@@ -23,10 +23,10 @@ public class LifeLinesLoaderPlugin extends PluginModel<Entity>
 		super(name, parent);
 	}
 	
-	public String getCustomHtmlHeaders()
-    {
-        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-    }
+//	public String getCustomHtmlHeaders()
+//    {
+//        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+//    }
 
 	@Override
 	public String getViewName()

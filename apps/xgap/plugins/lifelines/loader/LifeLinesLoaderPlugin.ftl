@@ -25,14 +25,12 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<h1>Load Publish data from Oracle CSV files</h1>
-<em>Caution: this might interfere with existing database items!</em>
-
-<div class="row">
-	<label for="zip">Archive containing the CSV files:</label>
-	<input type="file" name="zip" id="zip" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<input type='submit' class='addbutton' value='Load' onclick="__action.value='load'" />
-</div>
+<h3>Load CIT Publish data from Oracle CSV files</h3>
+<p><em>Caution: this might interfere with existing database items!</em></p>
+<label for="zip">Archive containing the CSV files:</label>
+<input type="file" name="zip" id="zip" />
+<br />
+<input type='submit' value='Load' onclick="__action.value='load'" />
 	
 <#--end of your plugin-->	
 			</div>

@@ -65,7 +65,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	
 	public void handleRequest(Database db, Tuple request) {
 
-		System.out.println("CAUGHT IT: " + request);
+		//System.out.println("CAUGHT IT: " + request);
 		/*System.out.println(request.getInt("measurementId"));
 		System.out.println(request.getString("measurementName"));
 		System.out.println(request.getAction().startsWith("DeleteMeasurement"));*/
@@ -73,9 +73,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		try {
 
 			Measurement selected = Measurement.findById(db, request.getInt("measurementId"));
-			System.out.println("selected measurement id >>>>>>"+ selected);
+			//System.out.println("selected measurement id >>>>>>"+ selected);
 			if (selected == null) {
-				this.setError("measurementId unknown: "	+ request.getInt("measurementId"));
+				if (!"OrderMeasurements".equals(request.getAction()) && !request.getAction().startsWith("DeleteMeasurement")) {
+					this.setError("No measurement known with ID: " + request.getInt("measurementId"));
+				}
 			} else {
 				System.out.println("--->" + selected);
 				this.shoppingCart.add(selected);
@@ -108,9 +110,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				System.out.println("Here's the request.measurement id on DELETE:"+ measurementName);
 				this.deleteShoppingItem(measurementName);
 			} 
-				
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			//this.setError("LLCataloguetreePlugin handle request " + e.getMessage());
 		}
 
@@ -151,7 +153,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 		HttpServletRequest httpRequest   = rt.getRequest();
 		HttpServletResponse httpResponse = rt.getResponse();
-		String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=MeasurementsOrderForm" ;
+		String redirectURL = httpRequest.getRequestURL() + "?__target=LifeLinesCatalogMenu&select=MeasurementsOrderForm" ;
 		
 		httpResponse.sendRedirect(redirectURL);
 		

@@ -330,61 +330,61 @@ public class MatrixViewer extends HtmlWidget
 				dataTable.setCell(2, row, radioButtonCode);
 			}
 			// get the data for this row
-			Object valueObject = values[row][0];
-			if (valueObject instanceof List) {
-				List<Observation>[] rowValues = (List<Observation>[]) values[row];
-				for (int col = 0; col < rowValues.length; col++) {
-					if (rowValues[col] != null && rowValues[col].size() > 0) {
-						boolean first = true;
-						for (Observation val : rowValues[col]) {
-							String valueToShow = (String) val.get("value");
-							
-							if (val instanceof ObservedValue && valueToShow == null) {
-								valueToShow = ((ObservedValue)val).getRelation_Name();
-							}
-							// if timing should be shown:
-							if (showValueValidRange) {
-								if (val.get(ObservedValue.TIME) != null) {
-									valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.TIME));
+			if (values[row] != null) {
+				Object valueObject = values[row][0];
+				if (valueObject instanceof List) {
+					List<Observation>[] rowValues = (List<Observation>[]) values[row];
+					for (int col = 0; col < rowValues.length; col++) {
+						if (rowValues[col] != null && rowValues[col].size() > 0) {
+							boolean first = true;
+							for (Observation val : rowValues[col]) {
+								String valueToShow = (String) val.get("value");
+								
+								if (val instanceof ObservedValue && valueToShow == null) {
+									valueToShow = ((ObservedValue)val).getRelation_Name();
 								}
-								if (val.get(ObservedValue.ENDTIME) != null) {
-									valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME)) + ")";
-								} else if (val.get(ObservedValue.TIME) != null) {
-									valueToShow += ")";
+								// if timing should be shown:
+								if (showValueValidRange) {
+									if (val.get(ObservedValue.TIME) != null) {
+										valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.TIME));
+									}
+									if (val.get(ObservedValue.ENDTIME) != null) {
+										valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME)) + ")";
+									} else if (val.get(ObservedValue.TIME) != null) {
+										valueToShow += ")";
+									}
+								}
+								
+								if (first) {
+									first = false;
+									dataTable.setCell(col + 3, row, valueToShow);
+								} else {
+									// Append to contents of cell, on new line
+									dataTable.setCell(col + 3, row, dataTable.getCell(col + 3, row) + "<br />" + valueToShow);
 								}
 							}
-							
-							if (first) {
-								first = false;
-								dataTable.setCell(col + 3, row, valueToShow);
-							} else {
-								// Append to contents of cell, on new line
-								dataTable.setCell(col + 3, row, dataTable.getCell(col + 3, row) + "<br />" + valueToShow);
-							}
+						} else {
+							dataTable.setCell(col + 3, row, "NA");
 						}
-					} else {
-						dataTable.setCell(col + 3, row, "NA");
 					}
+					
 				}
-				
-			}
-			else
-			{
-				Object[] rowValues = values[row];
-				for (int col = 0; col < rowValues.length; col++) {
-					Object val = rowValues[col];
-					if (val != null) {
-						dataTable.setCell(col + 3, row, val);
+				else
+				{
+					Object[] rowValues = values[row];
+					for (int col = 0; col < rowValues.length; col++) {
+						Object val = rowValues[col];
+						if (val != null) {
+							dataTable.setCell(col + 3, row, val);
+						}
+						else {
+							dataTable.setCell(col + 3, row, "NA");
+						}
 					}
-					else {
-						dataTable.setCell(col + 3, row, "NA");
-					}
+					
+					
 				}
-				
-				
 			}
-			
-			
 		}
 		
 		return dataTable.toHtml();
