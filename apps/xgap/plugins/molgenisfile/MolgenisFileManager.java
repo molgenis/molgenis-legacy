@@ -203,9 +203,4 @@ public class MolgenisFileManager extends PluginModel<Entity>
 		}
 	}
 
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
 }

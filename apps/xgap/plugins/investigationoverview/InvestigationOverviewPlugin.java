@@ -212,9 +212,4 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 		}
 	}
 
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
 }

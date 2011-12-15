@@ -8,7 +8,6 @@
 package plugins.cluster;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import matrix.AbstractDataMatrixInstance;
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
@@ -48,7 +46,6 @@ import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
 
-import plugins.cluster.demo.Millipede;
 import plugins.cluster.helper.Command;
 import plugins.cluster.helper.HelperFunctions;
 import plugins.cluster.helper.LoginSettings;
@@ -57,7 +54,6 @@ import plugins.cluster.implementations.ClusterComputationResource;
 import plugins.cluster.implementations.DatabaseJobManager;
 import plugins.cluster.implementations.LocalComputationResource;
 import plugins.cluster.interfaces.ComputationResource;
-import app.servlet.MolgenisServlet;
 import decorators.NameConvention;
 
 
@@ -181,7 +177,8 @@ public class ClusterPlugin extends PluginModel<Entity>
 		}
 		catch (Exception e)
 		{
-			// e.g. show a message in your form
+			e.printStackTrace();
+			this.setError(e.getMessage());
 		}
 	}
 
@@ -273,8 +270,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 	// TODO: dont use Tuple but list of parameters
 	// then use function inbetween to map tuple-to-params
 	// so the function is usable in regression tests :)
-	private void clusterJob(Database db, Tuple request) throws IOException, DatabaseException, InstantiationException,
-			IllegalAccessException
+	private void clusterJob(Database db, Tuple request) throws Exception
 	{
 
 		boolean dbSucces = false;
@@ -330,13 +326,11 @@ public class ClusterPlugin extends PluginModel<Entity>
 		catch (Exception e)
 		{
 			db.rollbackTx();
-			e.printStackTrace();
+			throw new Exception(e);
 		}
 
 		if (dbSucces)
 		{
-			try
-			{
 
 				// TODO! SelectedData are xrefs?? should be name probably? like
 				// SelectedParameters!
@@ -389,8 +383,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 					host = HtmlTools.getExposedIPAddress();
 				}
 
-				URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, app.servlet.MolgenisServlet
-						.getMolgenisVariantID());
+				URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, this.getApplicationController().getMolgenisContext().getVariant());
 
 				String db_path = reconstructedURL.toString();
 
@@ -465,8 +458,9 @@ public class ClusterPlugin extends PluginModel<Entity>
 				{
 					if (this.getMyModel().getLs().getUser() == null)
 					{
-						this.getMyModel().getLs().setUser(Millipede.z);
-						this.getMyModel().getLs().setPassword(Millipede.k);
+//						this.getMyModel().getLs().setUser(Millipede.z);
+//						this.getMyModel().getLs().setPassword(Millipede.k);
+						throw new Exception("No user specified");
 					}
 					cr = new ClusterComputationResource(this.getMyModel().getLs());
 
@@ -502,11 +496,6 @@ public class ClusterPlugin extends PluginModel<Entity>
 				cr.installDependencies();
 
 				cr.executeCommands(commands);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -626,41 +615,34 @@ public class ClusterPlugin extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-		
-		if(this.model.getDeployName() == null){
-			this.model.setDeployName(MolgenisServlet.getMolgenisVariantID());
-		}
-
-		if (djm == null)
+		try
 		{
-			djm = new DatabaseJobManager(db);
-		}
-		
-		if (dmh == null)
-		{
-			dmh = new DataMatrixHandler(db);
-		}
-
-		if (model.getState() == null)
-		{
-			model.setState("main");
-		}
-		else if (model.getState().equals("newjob1"))
-		{
-			try
+			if(this.model.getDeployName() == null)
+			{
+				this.model.setDeployName(this.getApplicationController().getMolgenisContext().getVariant());
+			}
+	
+			if (djm == null)
+			{
+				djm = new DatabaseJobManager(db);
+			}
+			
+			if (dmh == null)
+			{
+				dmh = new DataMatrixHandler(db);
+			}
+	
+			if (model.getState() == null)
+			{
+				model.setState("main");
+			}
+			else if (model.getState().equals("newjob1"))
 			{
 				Query<Analysis> q = db.query(Analysis.class);
 				List<Analysis> analysis = q.find();
 				model.setAnalysis(analysis);
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		else if (model.getState().equals("newjob2"))
-		{
-			try
+			else if (model.getState().equals("newjob2"))
 			{
 				Analysis analysis = db.find(Analysis.class,
 						new QueryRule("id", Operator.EQUALS, model.getCandidateJob().getAnalysis())).get(0);
@@ -696,16 +678,8 @@ public class ClusterPlugin extends PluginModel<Entity>
 					datavalues.addAll(results);
 				}
 				model.setDatavalues(datavalues);
-
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		else if (model.getState().equals("jobmanager"))
-		{
-			try
+			else if (model.getState().equals("jobmanager"))
 			{
 				Query<Job> q = db.query(Job.class);
 				List<Job> jobList = q.sortASC("timestamp").find();
@@ -794,20 +768,17 @@ public class ClusterPlugin extends PluginModel<Entity>
 					}
 				}
 				this.model.setJobToOutputLink(jobToOutputLink);
-				
-				
-				
 			}
-			catch (Exception e)
+			
+			if(model.getState().equals("main"))
 			{
-				e.printStackTrace();
+				this.getMyModel().setRefreshRate("off"); //FIXME: stops refreshing outside of Job manager??
 			}
 		}
-		
-		if(model.getState().equals("main"))
+		catch (Exception e)
 		{
-			this.getMyModel().setRefreshRate("off"); //FIXME: stops refreshing outside of Job manager??
+			e.printStackTrace();
+			this.setError(e.getMessage());
 		}
 	}
-
 }

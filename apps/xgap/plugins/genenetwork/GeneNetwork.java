@@ -52,12 +52,6 @@ public class GeneNetwork extends PluginModel
 		return "plugins/genenetwork/GeneNetwork.ftl";
 	}
 
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
-
 	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)

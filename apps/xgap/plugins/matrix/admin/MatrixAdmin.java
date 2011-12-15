@@ -54,12 +54,6 @@ public class MatrixAdmin extends PluginModel
 		return "plugins/matrix/admin/MatrixAdmin.ftl";
 	}
 
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
-
 	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)

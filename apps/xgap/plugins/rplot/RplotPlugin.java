@@ -64,12 +64,6 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 		return "plugins/rplot/RplotPlugin.ftl";
 	}
 
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
-
 	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)

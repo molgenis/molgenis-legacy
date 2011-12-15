@@ -73,12 +73,4 @@ public class addnewtoolshelp extends PluginModel<Entity>
 //		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		return true;
-	}
 }

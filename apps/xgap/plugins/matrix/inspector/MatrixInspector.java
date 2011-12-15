@@ -57,12 +57,6 @@ public class MatrixInspector extends PluginModel
 		return "plugins/matrix/inspector/MatrixInspector.ftl";
 	}
 
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
-
 	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)
