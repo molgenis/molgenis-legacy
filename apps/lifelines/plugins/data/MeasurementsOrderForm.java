@@ -105,29 +105,17 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 	
 	public void emptyShoppingCart(Database db) {
 		//empty db table: actually delete the ones that have checkedOut='false' 
-		
-		//String  truncateShpCrtSql = String.format("truncate table shoppingCart;");
-		String deleteShpCartSql = String.format("delete  from shoppingCart where checkedOut='false';");
+		List<ShoppingCart> resshoppingCart  = new ArrayList<ShoppingCart>();
+		Query<ShoppingCart> q = db.query(ShoppingCart.class);
+		q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
 		try {
-			//ResultSetTuple removedRecords = new ResultSetTuple(db.executeQuery(deleteShpCartSql));
-			List<ShoppingCart> resshoppingCart  = new ArrayList<ShoppingCart>();
-			
-			Query<ShoppingCart> q = db.query(ShoppingCart.class);
-			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
-			try {
-				resshoppingCart = q.find();
-			} catch (DatabaseException e) {
-				e.printStackTrace();
-			}
-			
+			resshoppingCart = q.find();
 			db.remove(resshoppingCart);
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.reload(db);
 		this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is now empty, you can reload items from catalogue tree", true));
-		//db.executeQuery(query, queryRules) remove(ShoppingCart.class);
 	}
 	@Override
 	public void reload(Database db) {
