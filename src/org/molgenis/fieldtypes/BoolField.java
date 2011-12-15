@@ -35,7 +35,7 @@ public class BoolField extends FieldType
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
-		return "BIT";
+		return "CHAR";
 	}
 
 	@Override
