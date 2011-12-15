@@ -71,7 +71,7 @@ public class Search extends SearchPlugin
 			text = new StrBuilder();
 			text.appendln("<h4>General remarks</h4>");
 			text.appendln("<ol>");
-			text.appendln("<li>Mutations are numbered according to the current reference sequence (<a href=\"http://www.ncbi.nlm.nih.gov/nuccore/157389010\" target=\"_new\">GenBank Accession no. NM_017780.2</a>)</li>");
+			text.appendln("<li>Mutations are numbered according to the current reference sequence (<a href=\"http://www.ncbi.nlm.nih.gov/nuccore/NM_017780.3\" target=\"_new\">GenBank Accession no. NM_017780.3</a>)</li>");
 			text.appendln("<li>Mutation nomenclature is according to the <a href=\"http://www.hgvs.org/mutnomen/\" target=\"_new\">HGVS recommendations</a></li>");
 			text.appendln("</ol>");
 			
@@ -81,13 +81,8 @@ public class Search extends SearchPlugin
 			text.appendln("<h4>Collaborators and supporters</h4>");
 			text.appendln("<table width=\"100%\">");
 			text.appendln("<tr>");
-			text.appendln("<td><a href=\"http://www.umcg.nl/NL/UMCG/overhetumcg/organisatie/Specialismen/dermatologie/Pages/default.aspx\" target=\"_new\"><img src=\"res/img/col7a1/umcg.jpg\" width=\"200\"/></a></td>");
-			text.appendln("<td><a href=\"\" target=\"_new\"><img src=\"http://www.umcn.nl/_layouts/IMAGES/radboud/logo.jpg\"/></a></td>");
-	//		text.appendln("<td><a href=\"http://www.idi.it/web/idi/home\" target=\"_new\"><img src=\"res/img/col7a1/idi.jpg\" height=\"75\"/></a></td>");
-	//		text.appendln("<td><a href=\"http://www.eb-haus.eu/index.php?id=21&L=1\" target=\"_new\"><img src=\"res/img/col7a1/ebhaus.png\" height=\"75\"/></a></td>");
-	//		text.appendln("<td><a href=\"http://www.guysandstthomas.nhs.uk/services/dash/dermatology/dermatology.aspx\" target=\"_new\"><img src=\"res/img/col7a1/stjohns.jpg\" height=\"75\"/></a></td>");
-	//		text.appendln("<td><a href=\"http://www.uniklinik-freiburg.de/ims/live/hospital/dermatology_en.html\" target=\"_new\"><img src=\"res/img/col7a1/ukl-logo.jpg\" width=\"200\"/></a></td>");
-	//		text.appendln("<td><a href=\"http://www.debra-international.org/\" target=\"_new\"><img src=\"res/img/col7a1/debra_international.png\" height=\"75\"/></a></td>");
+			text.appendln("<td><a href=\"http://www.rug.nl/umcg/faculteit/disciplinegroepen/medischegenetica/research/chargesyndrome/index\" target=\"_new\"><img src=\"res/img/col7a1/umcg.jpg\" width=\"200\"/></a></td>");
+			text.appendln("<td><a href=\"http://www.humangenetics.nl/en/index_en.php\" target=\"_new\"><img src=\"http://www.umcn.nl/_layouts/IMAGES/radboud/logo.jpg\"/></a></td>");
 			text.appendln("</tr>");
 			text.appendln("</table>");
 			
