@@ -9,12 +9,22 @@
 			<plugin name="MeasurementsOrderForm" type="plugins.data.MeasurementsOrderForm" label="Orders" />  
 		</menu>
 		<plugin label="Matrix Viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml"/>
-		<!-- include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml"/-->
-		<!-- include file="apps/xgap/org/molgenis/xgap/guicomponents/runanalysis.xml"/-->
-		<!-- include file="apps/xgap/org/molgenis/xgap/guicomponents/configureanalysis.xml"/-->
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/search.xml"/>
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/>
+		<menu label="Database Tables" name="DatabaseTables">
+			<form label="Studies" name="investigation" entity="Investigation" view="list">
+				<form name="protocol" entity="Protocol" view="list" label="Protocols" />
+				<form name="protocolapplication" entity="ProtocolApplication"
+					view="list" label="Protocol applications" />
+				<form name="measurement" entity="Measurement" view="list"
+					label="Measurements" />
+				<form name="individual" entity="Individual" view="list" label="Individuals" />
+				<form name="observedvalue" entity="ObservedValue" view="list"
+					label="Observed values" />
+				<form name="category" entity="Category" view="list" label="Categories" />
+				<form name="ontology" entity="Ontology" view="list" label="Ontologies" />
+				<form name="ontologyterm" entity="OntologyTerm" view="list"
+					label="Ontology terms" />
+			</form>
+		</menu>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
 		
 	</menu>

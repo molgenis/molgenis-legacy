@@ -298,21 +298,15 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	public void reload(Database db) {
 
 		List<String> topProtocols = new ArrayList<String>();
-
 		List<String> bottomProtocols = new ArrayList<String>();
-
 		List<String> middleProtocols = new ArrayList<String>();
-
 		labelToTree = new HashMap<String, JQueryTreeViewElementMeasurement>();
-
 		nameToProtocol = new HashMap<String, Protocol>();
 
 		try {
 			
-			for (Protocol p : db.find(Protocol.class, 
-					new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "DataShaper"))) {
-
-				// System.out.println(p.getName());
+			for (Protocol p : db.find(Protocol.class/*, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "DataShaper")*/)) {
+				// Hardcoded filter should go!!! Otherwise this only works for one situation
 
 				List<String> subNames = p.getSubprotocols_Name();
 
@@ -322,20 +316,19 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 				if (!subNames.isEmpty()) {
 
-					if (!topProtocols.contains(p.getName()))
+					if (!topProtocols.contains(p.getName())) {
 						topProtocols.add(p.getName());
-
+					}
 					for (String subProtocol : subNames) {
-
-						if (!middleProtocols.contains(subProtocol))
+						if (!middleProtocols.contains(subProtocol)) {
 							middleProtocols.add(subProtocol);
+						}
 					}
 
 				} else {
 
 					if (!bottomProtocols.contains(p.getName())) {
 						bottomProtocols.add(p.getName());
-
 					}
 				}
 			}
@@ -345,7 +338,6 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		}
 
 		middleProtocols.removeAll(bottomProtocols);
-
 		topProtocols.removeAll(middleProtocols);
 
 		JQueryTreeViewElementMeasurement protocolsTree = new JQueryTreeViewElementMeasurement(
@@ -361,17 +353,8 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementMeasurement>(
 				"Protocols", protocolsTree);
 
-		// a = db.query();
 		treeView.setMeasurementDetails("Measurement details........... ");
 
-	}
-
-	@Override
-	public boolean isVisible() {
-		if (!this.getLogin().isAuthenticated()) {
-			return false;
-		}
-		return true;
 	}
 
 	public String getcheckBoxInput(){

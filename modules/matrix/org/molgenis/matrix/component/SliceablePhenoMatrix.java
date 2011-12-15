@@ -98,16 +98,13 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 		// reload the rowheaders if filters have changed.
 		if (colDirty)
 		{
-			try
-			{
-				Query<C> query = this.createSelectQuery(getColClass());
+			Query<C> query = this.createSelectQuery(getColClass());
+			try {
 				this.colHeaders = query.find();
-				colDirty = false;
+			} catch (DatabaseException e) {
+				this.colHeaders = new ArrayList<C>();
 			}
-			catch (Exception e)
-			{
-				throw new MatrixException(e);
-			}
+			colDirty = false;
 		}
 		return colHeaders;
 	}

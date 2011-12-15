@@ -77,9 +77,10 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	{
 		// retrieve the indices from the headers (we use the id value).
 		List<Integer> rowIndices = new ArrayList<Integer>();
-		for (R row : getRowHeaders())
-		{
-			rowIndices.add(row.getId());
+		if (getRowHeaders() != null) {
+			for (R row : getRowHeaders()) {
+				rowIndices.add(row.getId());
+			}
 		}
 		return rowIndices;
 	}

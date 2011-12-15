@@ -435,7 +435,7 @@ public class MatrixViewer extends HtmlWidget
 		SelectInput colId = new SelectInput(COLID);
 		divContents += "<div style=\"vertical-align:middle\">Add filter:";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
-		if(colHeaders != null && colHeaders.get(0) instanceof Entity) {
+		if (colHeaders != null && colHeaders.size() > 0 && colHeaders.get(0) instanceof Entity) {
 			List<? extends Entity> headers = (List<? extends Entity>) colHeaders;
 			colId.setEntityOptions(headers);
 		} else {
