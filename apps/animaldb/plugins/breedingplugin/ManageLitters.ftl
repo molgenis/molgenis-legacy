@@ -90,7 +90,7 @@
 						<td>${litter.size}</td>
 						<td>${litter.weanSize}</td>
 						<td>${litter.remarks}</td>
-						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Make temporary cage labels</a></td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Create temporary cage labels</a></td>
 						<td><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
 					</tr>
 				</#list>
@@ -369,7 +369,7 @@
 						<td>${litter.size}</td>
 						<td>${litter.weanSize}</td>
 						<td>${litter.remarks}</td>
-						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeDefLabels&id=${litter.id?string.computer}">Make definitive cage labels</a></td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeDefLabels&id=${litter.id?string.computer}">Create definitive cage labels</a></td>
 					</tr>
 				</#list>
 				</tbody>

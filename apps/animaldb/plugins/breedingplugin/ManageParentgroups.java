@@ -452,6 +452,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			measurementsToShow.add("Sex");
 			measurementsToShow.add("Active");
 			measurementsToShow.add("Line");
+			measurementsToShow.add("Background");
 			// Mother matrix viewer
 			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
 			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 

@@ -215,7 +215,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("ManageLitters_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Litters"));
-		Assert.assertTrue(selenium.isTextPresent("Make new litter"));
+		Assert.assertTrue(selenium.isTextPresent("Create new litter"));
 		// Add a litter
 		selenium.click("link=Create new litter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -236,7 +236,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully weaned"));
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		// Check cage labels link
-		selenium.click("link=Make temporary cage labels");
+		selenium.click("link=Create temporary cage labels");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Download temporary wean labels as pdf"));
 		selenium.click("link=Back to overview");
@@ -254,7 +254,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("link=Show weaned and genotyped litters");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
-		selenium.click("link=Make definitive cage labels");
+		selenium.click("link=Create definitive cage labels");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
 		selenium.click("link=Back to overview");
