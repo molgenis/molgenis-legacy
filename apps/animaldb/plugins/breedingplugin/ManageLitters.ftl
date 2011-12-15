@@ -29,7 +29,7 @@
 
 <#if screen.action == "ShowLitters">
 
-	<p><a href="molgenis.do?__target=${screen.name}&__action=AddLitter">Make new litter</a></p>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=AddLitter">Create new litter</a></p>
 	
 	<#if screen.litterList?exists>
 		<#if screen.litterList?size gt 0>

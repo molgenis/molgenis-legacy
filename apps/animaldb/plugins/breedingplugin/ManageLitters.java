@@ -1656,11 +1656,14 @@ public class ManageLitters extends PluginModel<Entity>
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("TypeOfGroup");
 			measurementsToShow.add("Line");
+			measurementsToShow.add("Active");
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 					Operator.IN, investigationNames));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("TypeOfGroup"),
 					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+					ObservedValue.VALUE, Operator.EQUALS, "Active"));
 			matrixViewer = new MatrixViewer(this, MATRIX, 
 					new SliceablePhenoMatrix(Panel.class, Measurement.class), 
 					true, false, false, filterRules, 

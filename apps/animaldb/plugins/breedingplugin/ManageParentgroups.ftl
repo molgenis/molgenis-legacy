@@ -86,7 +86,7 @@
 		<input type='text' class='textbox' id='startdate' name='startdate' value='<#if screen.startdate?exists>${screen.getStartdate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	
-	<div>
+	<div style='clear:left'>
 		<label for='remarks'>Remarks:</label>
 		<input type='text' class='textbox' id='remarks' name='remarks' />
 	</div>
@@ -100,7 +100,7 @@
 <#else>
 
 <div>
-	<p><a href="molgenis.do?__target=${screen.name}&__action=addParentgroupScreen1">Make new parent group</a></p>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=addParentgroupScreen1">Create new parent group</a></p>
 	
 	<#if screen.pgList?size gt 0>
 		<p><h2>Existing parent groups</h2></p>
@@ -110,6 +110,7 @@
 					<th>Name</th>
 					<th>Start date</th>
 					<th>Remarks</th>
+					<th>Status</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -119,6 +120,7 @@
 					<td>${pg.name}</td>
 					<td>${screen.getPgStartDate(pgId)}</td>
 					<td>${screen.getPgRemarks(pgId)}</td>
+					<td>${screen.getPgStatus(pgId)}</td>
 				</tr>
 			</#list>
 			</tbody>

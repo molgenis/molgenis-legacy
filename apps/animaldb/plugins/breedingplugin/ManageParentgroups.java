@@ -47,6 +47,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private List<ObservationTarget> lineList;
 	private int line = -1;
 	private String remarks = null;
+	private String status = null;
 	private List<ObservationTarget> pgList;
 	MatrixViewer motherMatrixViewer = null;
 	MatrixViewer fatherMatrixViewer = null;
@@ -118,6 +119,9 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	public List<ObservationTarget> getPgList() {
 		return pgList;
@@ -145,6 +149,15 @@ public class ManageParentgroups extends PluginModel<Entity>
 			returnString = returnString.substring(0, returnString.length() - 4);
 		}
 		return returnString;
+	}
+	
+	public String getPgStatus(int pgId) throws DatabaseException {
+		try {
+			return ct.getMostRecentValueAsString(pgId, ct.getMeasurementId("Active"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error while retrieving status";
+		}
 	}
 	
 	public String getAction() {
@@ -367,6 +380,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 							protocolId, measurementId, groupId, remarks, 0));
 				}
 				
+				//Add Set Active, with (start)time = entrydate and endtime = null
+				protocolId = ct.getProtocolId("SetActive");
+				measurementId = ct.getMeasurementId("Active");
+				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, measurementId, groupId, "Active", 0));
+								
 				// Success: empty selected lists and show success message
 				this.setAction("init");
 				this.resetUserFields();
