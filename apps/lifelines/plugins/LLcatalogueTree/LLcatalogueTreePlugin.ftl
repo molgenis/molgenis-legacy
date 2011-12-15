@@ -25,7 +25,7 @@
 		</#list>
 		<div class="screenbody">
 			<div class="screenpadding">	
-				<div id="leftSide" style="width:200px;">
+				<div id="leftSide">
 					${screen.getTreeView()}
 				</div><br/>
 				<!--div id="CatalogueRightSide"-->

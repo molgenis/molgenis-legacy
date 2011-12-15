@@ -2,6 +2,7 @@ package plugins.LLcatalogueTree;
 
 import gcc.catalogue.ShoppingCart;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
@@ -77,57 +79,25 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			} else {
 				System.out.println("--->" + selected);
 				this.shoppingCart.add(selected);
-				this.setSuccess("The item \""+ selected.getName() + "\" has been successfully added to your shopping cart");
+				//this.setSuccess("The item \""+ selected.getName() + "\" has been successfully added to your shopping cart");
+				this.getModel().getMessages().add(new ScreenMessage("The item \""+ selected.getName() + "\" has been successfully added to your shopping cart", true));
 
 				// clean the ordered measurement list form duplicates
 				this.shoppingCart = cleanShoppingCart();
 
-				 
 				Vector<ValueLabel> ShoppingCartOptions = null;
 				List<String> shoppingCartLabels = new Vector<String>() ;
 				for (int i=0; i<this.shoppingCart.size(); i++) {
 					shoppingCartLabels.add(this.shoppingCart.get(i).getName());
 					
 				}
-		
 				this.checkBoxInput = new CheckboxInput("ShoppingCart", "Shopping Cart", "ShoppingCart", ShoppingCartOptions, shoppingCartLabels);
 				checkBoxInput.render();
-				
 			}
 			if ("OrderMeasurements".equals(request.getAction())) {
-				for (int i=0; i<this.shoppingCart.size(); i++) {
-
-					String measurementName = this.shoppingCart.get(i).getName();
-					
-					Query<ShoppingCart> q = db.query(ShoppingCart.class);
-					q.addRules(new QueryRule("measurementName", Operator.EQUALS, measurementName));
-					q.addRules(new QueryRule("userID", Operator.EQUALS, this.getLogin().getUserName()));
-					List<ShoppingCart> result = q.find();
-					
-					if (result.isEmpty()) {
-						ShoppingCart shoppingCart= new ShoppingCart();
-						
-						shoppingCart.setMeasurementName(this.shoppingCart.get(i).getName());
-						shoppingCart.setUserID(this.getLogin().getUserName());
-						//db.update(shoppingCart, Database.DatabaseAction.ADD_IGNORE_EXISTING, "measurementName" );
-						db.add(shoppingCart);
-						System.out.println(measurementName + " has been added in the DB.");
-						this.setSuccess(measurementName + " has been added in the DB.");
-					} else {
-						System.out.println(measurementName + " has not been added in the DB because it was already there");
-						this.setSuccess(measurementName + " has not been added in the DB because it was already there");
-					}
-					
-				
-				}
-				HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-				HttpServletRequest httpRequest   = rt.getRequest();
-				HttpServletResponse httpResponse = rt.getResponse();
-				String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=MeasurementsOrderForm" ;
-				
-				httpResponse.sendRedirect(redirectURL);
-				
+				this.addMeasurementsToTree(db, request);
 				this.setStatus("<h4>You order is being processed.</h4>" ) ;
+				
 			} //TODO fix this : else if ("DeleteMeasurement".equals(request.getAction()))	{
 			else if (request.getAction().startsWith("DeleteMeasurement")) {
 				
@@ -146,6 +116,44 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 	}
 
+	private void addMeasurementsToTree(Database db, Tuple request) throws DatabaseException, IOException {
+		for (int i=0; i<this.shoppingCart.size(); i++) {
+
+			String measurementName = this.shoppingCart.get(i).getName();
+			
+			Query<ShoppingCart> q = db.query(ShoppingCart.class);
+			q.addRules(new QueryRule("measurementName", Operator.EQUALS, measurementName));
+			q.addRules(new QueryRule("userID", Operator.EQUALS, this.getLogin().getUserName()));
+			List<ShoppingCart> result = q.find();
+			
+			if (result.isEmpty()) {
+				ShoppingCart shoppingCart= new ShoppingCart();
+				
+				shoppingCart.setMeasurementName(this.shoppingCart.get(i).getName());
+				shoppingCart.setUserID(this.getLogin().getUserName());
+				//db.update(shoppingCart, Database.DatabaseAction.ADD_IGNORE_EXISTING, "measurementName" );
+				db.add(shoppingCart);
+				System.out.println(measurementName + " has been added in the DB.");
+				//this.setSuccess(measurementName + " has been added in the DB.");
+				this.getModel().getMessages().add(new ScreenMessage(measurementName + " has been added in the DB.", true));
+
+			} else {
+				System.out.println(measurementName + " has not been added in the DB because it was already there");
+				//this.setSuccess(measurementName + " has not been added in the DB because it was already there");
+				this.getModel().getMessages().add(new ScreenMessage(measurementName + " has not been added in the DB because it was already there", true));
+			}
+			
+		
+		}
+		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+		HttpServletRequest httpRequest   = rt.getRequest();
+		HttpServletResponse httpResponse = rt.getResponse();
+		String redirectURL = httpRequest.getRequestURL() + "?__target=main" + "&select=MeasurementsOrderForm" ;
+		
+		httpResponse.sendRedirect(redirectURL);
+		
+	}
+	
 	private void add(CheckboxInput checkboxInput) {
 		// TODO Auto-generated method stub
 		
@@ -159,7 +167,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			if (this.shoppingCart.get(i).getName().equals(selected)) {
 				this.shoppingCart.remove(i);
 				this.setStatus("The item \""+ selected + "\" has been successfully removed from your shopping cart");
-				this.setSuccess("The item \""+ selected + "\" has been successfully removed from your shopping cart");
+				//this.setSuccess("The item \""+ selected + "\" has been successfully removed from your shopping cart");
+				this.getModel().getMessages().add(new ScreenMessage("The item \""+ selected + "\" has been successfully removed from your shopping cart", true));
+
 			}
 		}
 		
