@@ -93,6 +93,11 @@ table {
 
 .edit_button {
 	cursor: pointer;
+	vertical-align:middle;
+}
+
+.chzn-container-multi{
+	vertical-align:middle;
 }
 
 .tableheader {
