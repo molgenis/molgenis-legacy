@@ -194,8 +194,8 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 						"Alive"));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
 						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-						true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-								Operator.IN, measurementsToShow));
+						true, true, false, filterRules, 
+						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
 				targetMatrixViewer.setLabel("Choose animals:");
 				div.add(targetMatrixViewer);

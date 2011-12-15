@@ -150,8 +150,8 @@ public class EventViewerPluginMatrix extends GenericPlugin
 						Operator.IN, investigationNames));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
 						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-						true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-								Operator.IN, measurementsToShow));
+						true, false, false, filterRules, 
+						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
 				targetMatrixViewer.setLabel("Choose animal:");
 				div.add(targetMatrixViewer);

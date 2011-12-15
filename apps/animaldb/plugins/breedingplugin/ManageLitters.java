@@ -1659,8 +1659,8 @@ public class ManageLitters extends PluginModel<Entity>
 					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
 			matrixViewer = new MatrixViewer(this, MATRIX, 
 					new SliceablePhenoMatrix(Panel.class, Measurement.class), 
-					true, false, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-							Operator.IN, measurementsToShow));
+					true, false, false, filterRules, 
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		} catch (Exception e) {
 			String message = "Something went wrong while loading matrix viewer";
 			if (e.getMessage() != null) {
