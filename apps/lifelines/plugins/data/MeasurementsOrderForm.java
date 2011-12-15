@@ -57,11 +57,12 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		
 		if ("EmptyShoppingCart".equals(request.getAction())) {
 			this.emptyShoppingCart(db);
+			this.reload(db);
 			
 		}else if ("checkoutOrder".equals(request.getAction())) {
 			if (shoppingCart == null){
 				this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is empty. You cannot continue with the checkout! Please visit the catalogue tree.", true));
-
+				this.reload(db);
 			}
 			else {
 				//set field shoppingCart.setCheckedOut(true);
@@ -69,10 +70,11 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 	    		this.sendOrderEmail(db); 
 				//this.emptyShoppingCart(db);
 				this.getModel().getMessages().add(new ScreenMessage("Your orders request has been sent!", true));
-
+				this.reload(db);
 			}
 		}
 	}
+
 
 	public void updateShoppingCartAsCheckedOut(Database db) {
 		shoppingCart.setCheckedOut(true);
@@ -124,16 +126,17 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		this.reload(db);
 		this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is now empty, you can reload items from catalogue tree", true));
 	}
+	
 	@Override
 	public void reload(Database db) {
-		System.out.println("request>checkoutOrder>>>>>>>>>");
 		
-		Query<ShoppingCart> q = db.query(ShoppingCart.class);
-		q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
-		q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
 
 		try {
-			shoppingCart = q.find().get(0);
+			Query<ShoppingCart> q = db.query(ShoppingCart.class);
+			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
+			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
+
+			if (!q.find().isEmpty()) shoppingCart = q.find().get(0);
 		} catch (Exception e) {
 			this.getModel().getMessages().add(new ScreenMessage("No shopping cart available", false));
 			e.printStackTrace();
