@@ -241,7 +241,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 		System.out.println(">> Start reading csv " + file.toString());
 
 		ComputeBundleFromDirectory cb = new ComputeBundleFromDirectory();
-		cb.setUserParameters(file);
+		cb.setWorksheet(file);
 		List<Tuple> lt = cb.getUserParameters();
 
 

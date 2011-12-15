@@ -1,6 +1,8 @@
 package org.molgenis.compute.commandline;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
@@ -13,7 +15,7 @@ import org.molgenis.util.Tuple;
 public class ComputeBundle
 {
 	//all parameters needed to describe a workflow
-	private List<ComputeParameter> computeParameters = new ArrayList<ComputeParameter>();
+	private Map<String,ComputeParameter> computeParameters = new LinkedHashMap<String,ComputeParameter>();
 	private List<ComputeProtocol> computeProtocols = new ArrayList<ComputeProtocol>();
 	private List<WorkflowElement> workflowElements = new ArrayList<WorkflowElement>();
 	private List<WorkflowElementParameter> workflowElementParameters = new ArrayList<WorkflowElementParameter>();
@@ -21,20 +23,39 @@ public class ComputeBundle
 	//parameters specific to this analysis run
 	private List<Tuple> userParameters = new ArrayList<Tuple>();
 	
+	// worksheet for this analysis
+	// This is a combination of userParameters (from worksheet.txt)
+	// 						and computeParameters (parameters.txt)
+	private List<Tuple> worksheet;
+	
 	//generated result of jobs
 	private List<ComputeJob> computeJobs = new ArrayList<ComputeJob>();
 	
 	public List<ComputeParameter> getComputeParameters()
 	{
-		return computeParameters;
+		return new ArrayList<ComputeParameter>(computeParameters.values());
 	}
 	public void setComputeParameters(List<ComputeParameter> computeParameters)
 	{
-		this.computeParameters = computeParameters;
+		this.computeParameters.clear();
+		for(ComputeParameter cp: computeParameters)
+		{
+			this.computeParameters.put(cp.getName(),cp);
+		}
 	}
+	
+	public ComputeParameter getComputeParameter(String name)
+	{
+		return this.computeParameters.get(name);
+	}
+	
 	public List<ComputeProtocol> getComputeProtocols()
 	{
 		return computeProtocols;
+	}
+	public void addComputeParameter(ComputeParameter cp)
+	{
+		this.computeParameters.put(cp.getName(), cp);
 	}
 	public void setComputeProtocols(List<ComputeProtocol> computeProtocols)
 	{
@@ -74,6 +95,14 @@ public class ComputeBundle
 		this.computeJobs = computeJobs;
 	}
 	
+	public void setWorksheet(List<Tuple> worksheet)
+	{
+		this.worksheet = worksheet;
+	}
+	public List<Tuple> getWorksheet()
+	{
+		return worksheet;
+	}
 	public void prettyPrint()
 	{
 		System.out.println("ComputeParameter:");

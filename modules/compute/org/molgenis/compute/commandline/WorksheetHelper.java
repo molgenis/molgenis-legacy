@@ -57,7 +57,9 @@ public class WorksheetHelper
 			public void handleLine(int line_number, Tuple tuple)
 					throws Exception
 			{
+				tuple.set("line_number",line_number);
 				tuples.add(tuple);
+				
 //				logger.warn("renamed externalSampleId to sample");
 //				tuple.set("sample",tuple.getString("externalSampleId"));
 //				tuple.set("machine",tuple.getString("sequencer"));

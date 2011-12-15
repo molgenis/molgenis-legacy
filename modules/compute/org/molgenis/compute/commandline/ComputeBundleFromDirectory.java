@@ -1,33 +1,42 @@
 package org.molgenis.compute.commandline;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
-import org.molgenis.util.*;
+import org.molgenis.util.CsvFileReader;
+import org.molgenis.util.CsvReader;
+import org.molgenis.util.CsvReaderListener;
+import org.molgenis.util.Entity;
+import org.molgenis.util.SimpleTuple;
+import org.molgenis.util.Tuple;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 public class ComputeBundleFromDirectory extends ComputeBundle
 {
 	Logger logger = Logger.getLogger(ComputeBundleFromDirectory.class);
 
 	/**
-	 * Minimal constructor only requiring path to workflow directory + worksheet
-	 * file. This uses defaults:
+	 * Minimal constructor only requiring path to workflow directory + worksheet file. This uses defaults:
 	 * <ul>
 	 * <li>workflowDir/parameters.txt -> loads ComputeParameter
 	 * <li>workflowDir/workflow.txt -> loads WorkflowElement
-	 * <li>workflowDir/protocols -> reads all ftl in that directory into
-	 * protocol
-	 * <li>workflowDir/workflowelementparameters.txt -> optional: read
-	 * WorkflowElementParameter
+	 * <li>workflowDir/protocols -> reads all ftl in that directory into protocol
+	 * <li>workflowDir/workflowelementparameters.txt -> optional: read WorkflowElementParameter
 	 * <li>(DISCUSSION: can we not merge with ComputeParameter???)
 	 * </ul>
 	 * 
@@ -35,42 +44,161 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	 * @param worksheetFile
 	 * @throws Exception
 	 */
-	public ComputeBundleFromDirectory(File workflowDir, File worksheetFile)
-			throws Exception
+	public ComputeBundleFromDirectory(ComputeCommandLine options) throws Exception
 	{
 		// load files
-		this.setComputeParameters(new File(workflowDir.getAbsolutePath()
-				+ File.separator + "parameters.txt"));
-		this.setWorkflowElements(new File(workflowDir.getAbsolutePath()
-				+ File.separator + "workflow.txt"));
+		this.setComputeParameters(options.parametersfile);
+		this.setWorkflowElements(options.workflowfile);
 
-		try
-		{
-			this.setWorkflowElementParameters(new File(workflowDir
-					.getAbsolutePath()
-					+ File.separator
-					+ "workflowparameters.txt"));
-		}
-		catch (Exception e)
-		{
-			// if file does not exists, do nothing
-		}
+		// put names of workflowElement into parameters (so we can refer to them in worksheet for dependencies)
+		// for(WorkflowElement wfe: this.getWorkflowElements())
+		// {
+		// ComputeParameter pm = new ComputeParameter();
+		// pm.setName(wfe.getName());
+		// this.getComputeParameters().add(pm);
+		// }
+
+		// try
+		// {
+		// this.setWorkflowElementParameters(new File(workflowDir.getAbsolutePath() + File.separator
+		// + "workflowparameters.txt"));
+		// }
+		// catch (Exception e)
+		// {
+		// // if file does not exists, do nothing
+		// }
 		// read user parameters
-		this.setUserParameters(worksheetFile);
+		this.setWorksheet(options.worksheetfile);
 
-		// load the templates
-		this.setComputeProtocols(new File(workflowDir.getAbsolutePath()
-				+ File.separator + "protocols"));
+		// combine computeParameters (parameters.txt) and userParameters (worksheetFile)
+		// into one file, called worksheet
+		// this.fillWorksheet();
+
+		// load the protocol templates
+		this.setComputeProtocols(options.protocoldir);
 	}
 
-	public void setUserParameters(File worksheetFile) throws Exception
+	// private void fillWorksheet()
+	// {
+	// List<ComputeParameter> parameterlist = getComputeParameters(); // parameters.txt
+	// List<Tuple> userworksheet = getUserParameters(); // original user worksheet
+	//
+	// Map<String, String> parameters = new HashMap<String, String>();
+	//
+	// // novel worksheet that combines user worksheet with parameters
+	// List<Tuple> worksheet = new ArrayList<Tuple>();
+	//
+	// // fill worksheet and iteratively substitute values that point to parameters
+	// for (Tuple usertuple : userworksheet)
+	// {
+	// // first put all parameters/values in map
+	// parameters.clear();
+	//
+	// // add parameters.txt fields to parameters
+	// for (ComputeParameter cp : parameterlist)
+	// {
+	// String field = cp.getName();
+	// String value = cp.getDefaultValue();
+	// // only add if it not exists yet
+	// if (!parameters.containsKey(field)) {
+	// parameters.put(cp.getName(), value == null ? "" : value);
+	// } else {
+	// // // check whether existing value is empty
+	// // // if not: error
+	// // if (value != null && value != "") {
+	// throw new RuntimeException("Parameter " + field + " occurs > 1 times in your parameter.txt file.");
+	// // }
+	// }
+	// }
+	//
+	// // add user worksheet values to wt, for this tuple
+	// for (String field : usertuple.getFields())
+	// {
+	// String value = usertuple.getString(field);
+	// parameters.put(field, value == null ? "" : value);
+	// }
+	//
+	// // iteratively substitute values that point to parameters
+	// String fieldtemplate, value, originalvalue;
+	// Template template;
+	// Configuration conf = new Configuration();
+	// StringWriter filledtemplate;
+	//
+	// boolean done = false;
+	// while (!done)
+	// {
+	// boolean updated = false;
+	// for (String field : parameters.keySet())
+	// {
+	// try
+	// {
+	// // do substitution for field
+	// originalvalue = parameters.get(field);
+	// fieldtemplate = new String(originalvalue == null ? "" : originalvalue);
+	// template = new Template(field, new StringReader(fieldtemplate), conf);
+	// filledtemplate = new StringWriter();
+	// template.process(parameters, filledtemplate);
+	//
+	// value = filledtemplate.toString();
+	//
+	// if (!value.equalsIgnoreCase(originalvalue))
+	// {
+	// // update value of field in parameter list
+	// parameters.put(field, value);
+	// updated = true;
+	// }
+	// }
+	// catch (Exception e)
+	// {
+	// e.printStackTrace();
+	// }
+	// }
+	//
+	// if (!updated) done = true; // nothing changed, so we're done
+	// }
+	//
+	// // all values in parameters for this usertupele + parameters.txt are now iteratively filled
+	//
+	// // put these parameters in worksheet tuple (wt)
+	//
+	// Tuple wt = new SimpleTuple();
+	//
+	// for (String field : parameters.keySet())
+	// {
+	// value = parameters.get(field);
+	// wt.set(field, value == null ? "" : value);
+	// }
+	//
+	// // add wt to worksheet
+	// worksheet.add(wt);
+	// }
+	//
+	// setWorksheet(worksheet);
+	// }
+
+	public void setWorksheet(File worksheetFile) throws Exception
 	{
-		this.setUserParameters(new WorksheetHelper()
-				.readTuplesFromFile(worksheetFile));
+		this.setUserParameters(new WorksheetHelper().readTuplesFromFile(worksheetFile));
+		// copy missing parameters from worksheet header to ComputeParameter
+		Tuple firstTuple = this.getUserParameters().get(0);
+		for (String field : firstTuple.getFields())
+		{
+			if (this.getComputeParameter(field) == null)
+			{
+				ComputeParameter cp = new ComputeParameter();
+				cp.setName(field);
+				this.addComputeParameter(cp);
+			}
+		}
 	}
 
 	public ComputeBundleFromDirectory()
 	{
+	}
+
+	public ComputeBundleFromDirectory(File workflowDir, File fileWorksheet)
+	{
+		// TODO Auto-generated constructor stub
 	}
 
 	public void setComputeProtocols(File templateFolder) throws IOException
@@ -107,18 +235,13 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 							{
 								String[] data = keyValue.split("=");
 
-								if (data.length != 2) throw new RuntimeException(
-										"error parsing file " + f
-												+ ", keyValue ='" + keyValue
-												+ "': " + line);
+								if (data.length != 2) throw new RuntimeException("error parsing file " + f + ", keyValue ='" + keyValue
+										+ "': " + line);
 
 								String key = data[0];
 								if (!p.getFields().contains(key))
 								{
-									throw new RuntimeException(
-											"error parsing file " + f
-													+ ", unknown key '" + key
-													+ "' in line: " + line);
+									throw new RuntimeException("error parsing file " + f + ", unknown key '" + key + "' in line: " + line);
 								}
 
 								params.set(data[0], data[1]);
@@ -126,11 +249,23 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 						}
 						// set the params
 						p.setMem(params.getInt("mem"));
-						//p.setIterateOver_Name(params.getStringList("iterateOver"));
+						// p.setIterateOver_Name(params.getStringList("iterateOver"));
 						p.setWalltime(params.getString("walltime"));
 						p.setNodes(params.getInt("nodes"));
 						p.setCores(params.getInt("cores"));
-                        p.setClusterQueue(params.getString("clusterQueue"));
+						p.setClusterQueue(params.getString("clusterQueue"));
+					}
+					else if (line.trim().startsWith("#FOREACH"))
+					{
+						line = line.substring("#FOREACH".length()).trim();
+						if (line.length() > 0)
+						{
+							String[] targets = line.split(",");
+							for (String target : targets)
+							{
+								p.getIterateOver_Name().add(target.trim());
+							}
+						}
 					}
 					else if (line.trim().startsWith("#PBS"))
 					{
@@ -183,10 +318,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 				}
 				reader.close();
 
-				if (!foundHeader) logger
-						.warn("protocol "
-								+ f
-								+ " does not contain #MOLGENIS header. Defaults will be used");
+				if (!foundHeader) logger.warn("protocol " + f + " does not contain #MOLGENIS header. Defaults will be used");
 
 				p.setScriptTemplate(scriptTemplate);
 
@@ -198,24 +330,20 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 	public void setComputeParameters(File file) throws Exception
 	{
-		this.setComputeParameters(readEntitiesFromFile(file,
-				ComputeParameter.class));
+		this.setComputeParameters(readEntitiesFromFile(file, ComputeParameter.class));
 	}
 
 	public void setWorkflowElements(File file) throws Exception
 	{
-		this.setWorkflowElements(readEntitiesFromFile(file,
-				WorkflowElement.class));
+		this.setWorkflowElements(readEntitiesFromFile(file, WorkflowElement.class));
 	}
 
 	public void setWorkflowElementParameters(File file) throws Exception
 	{
-		this.setWorkflowElementParameters(readEntitiesFromFile(file,
-				WorkflowElementParameter.class));
+		this.setWorkflowElementParameters(readEntitiesFromFile(file, WorkflowElementParameter.class));
 	}
 
-	private <E extends Entity> List<E> readEntitiesFromFile(File file,
-			final Class<E> klazz) throws Exception
+	private <E extends Entity> List<E> readEntitiesFromFile(File file, final Class<E> klazz) throws Exception
 	{
 		final List<E> result = new ArrayList<E>();
 
@@ -231,8 +359,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		reader.parse(new CsvReaderListener()
 		{
 
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
+			public void handleLine(int line_number, Tuple tuple) throws Exception
 			{
 				E entity = klazz.newInstance();
 				entity.set(tuple);
@@ -260,19 +387,17 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		return fileData.toString();
 	}
 
-	public static void main(String[] args) throws Exception
-	{
-		// just a test
-		File workflowDir = new File(
-				"/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01");
-		File worksheetFile = new File(workflowDir.getAbsolutePath()
-				+ File.separator + "SampleList_A102.csv");
-
-		ComputeBundleFromDirectory bundle = new ComputeBundleFromDirectory(
-				workflowDir, worksheetFile);
-
-		// print
-		bundle.prettyPrint();
-	}
+	// public static void main(String[] args) throws Exception
+	// {
+	// // just a test
+	// File workflowDir = new File(
+	// "/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01");
+	// File worksheetFile = new File(workflowDir.getAbsolutePath() + File.separator + "SampleList_A102.csv");
+	//
+	// ComputeBundleFromDirectory bundle = new ComputeBundleFromDirectory();
+	//
+	// // print
+	// bundle.prettyPrint();
+	// }
 
 }

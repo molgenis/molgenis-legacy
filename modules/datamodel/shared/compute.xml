@@ -22,8 +22,13 @@
 			<description>Interface to store common compute properties
 			</description>
 			<!-- discussion: rename Features to Inputs and Outputs -->
+			<field name="interpreter" type="enum" default="bash" enum_options="[bash,R,Python,WorkflowInterpreter,jdl]" description="the interpreter used to run this command. For example 'shellTemplate'" />
+			<field name="walltime" nillable="true" type="string" description="# the expected maximum runtime of this job. Notation: 'dd:hh:mm'" />
+			<field name="mem" default="1" type="int" description="# required RAM in Gigabytes" />
+			<field name="cores" default="1" type="int" description="# required cores" />
+
 		</entity>
-		<entity name="ComputeProtocol" extends="Protocol">
+		<entity name="ComputeProtocol" extends="Protocol" implements="ComputeDetails">
 			<description>
 				Executable definitions of computational 'protocols' of analysis. For
 				example: bwa-align. Therefore the Protocol class is extended:
@@ -33,7 +38,8 @@
 						: Each operation is defined in a wrapping, that is, a
 						parameterizable description of the computation in Freemarker or R
 						(depends on interpeter). The parameters are defined via the
-						features of the protocol.
+						features of the
+						protocol.
 					</li>
 					<li>
 						<b>interpreter</b>
@@ -44,140 +50,87 @@
 					</li>
 				</ul>
 			</description>
-			<field name="scriptTemplate" type="freemarker"
-				description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
-			<field name="iterateOver" type="mref" xref_entity="ComputeParameter" nillable="true"/>
-			<field name="interpreter" type="enum"
-				default="bash"
-				enum_options="[bash,R,Python,WorkflowInterpreter,jdl]"
-				description="the interpreter used to run this command. For example 'shellTemplate'" />
-			<field name="walltime" nillable="true" type="string"
-				description="# the expected maximum runtime of this job. Notation: 'dd:hh:mm'" />
-			<field name="mem" default="1" type="int" description="# required RAM in Gigabytes" />
-			<field name="cores" default="1" type="int" description="# required cores" />
+			<field name="scriptTemplate" type="freemarker" description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
+			<field name="iterateOver" type="mref" xref_entity="ComputeParameter" nillable="true" />
 			<field name="nodes" default="1" type="int" description="# required nodes" />
-            <field name="clusterQueue" default="nodes" type="string" description="# queue for the cluster implementation "/>
-			<!-- field name="Inputs" type="mref" xref_entity="ComputeFeature" label="Inputs" 
-				nillable="true" description="Shadows Protocol.Features (copy):The features 
-				that can be observed using this protocol. For example 'length' or 'rs123534' 
-				or 'probe123'. Also protocol parameters are considered observable features 
-				as they are important to the interpretation of the observed values." /> <field 
-				name="Outputs" type="mref" xref_entity="ComputeFeature" nillable="true" description="Shadows 
-				Protocol.Features (copy):The features that can be observed using this protocol. 
-				For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters 
-				are considered observable features as they are important to the interpretation 
-				of the observed values." / -->
+			<field name="clusterQueue" default="nodes" type="string" description="# queue for the cluster implementation " />
+			<!-- field name="Inputs" type="mref" xref_entity="ComputeFeature" label="Inputs" nillable="true" description="Shadows Protocol.Features (copy):The features that can be observed using this protocol. 
+				For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." /> <field name="Outputs" 
+				type="mref" xref_entity="ComputeFeature" nillable="true" description="Shadows Protocol.Features (copy):The features that can be observed using this protocol. For example 'length' or 'rs123534' or 'probe123'. 
+				Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." / -->
 		</entity>
 		<entity name="ComputeParameter" extends="Measurement">
 			<description>Parameter are the inputs or outputs into an
 				ComputeProtocol. It reuses all of ObservableFeature to define the
 				type of the parameters. It extends ObserveableFeature with the
-				marking whether the parameter is input, output or both. It is good
+				marking
+				whether the parameter is input, output or both. It is good
 				practice to name ComputeFeature that are specific to a
 				ComputeProtocol by using ComputeProtocol.name as a prefix. E.g.
 				bwa_param1.
 			</description>
-			<!-- field name="iterateOver" type="boolean" default="false" description="Use 
-				this parameter to iterate over the values in this parameter. Only holds for 
-				'range' and 'list' value types. TODO: support list/range types." / -->
-			<field name="defaultValue" type="text" nillable="true"
-				description="the value of the parameter for ComputeProtocols" />
-			<field name="isUser" type="boolean" default="false"
-				description="Define if this feature is interesting for user (otherwise, hide it by default)" />
-			<!-- use 'DataType'field name="featureType" type="enum" enum_options="[default,log,data]" 
-				default="default" description="field to specify the type of input/output 
-				features" / -->
-			<!-- field name="isDerived" type="boolean" 
-				description="a flag to indicate if the ComputeFeature consists of other ComputeFeatures" /-->
-			<field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name"
-				description="Workflow this element is part of" />
+			<!-- field name="iterateOver" type="boolean" default="false" description="Use this parameter to iterate over the values in this parameter. Only holds for 'range' and 'list' value types. TODO: support 
+				list/range types." / -->
+			<field name="defaultValue" type="text" nillable="true" description="the value of the parameter for ComputeProtocols" />
+			<field name="isUser" type="boolean" default="false" description="Define if this feature is interesting for user (otherwise, hide it by default)" />
+			<!-- use 'DataType'field name="featureType" type="enum" enum_options="[default,log,data]" default="default" description="field to specify the type of input/output features" / -->
+			<!-- field name="isDerived" type="boolean" description="a flag to indicate if the ComputeFeature consists of other ComputeFeatures" / -->
+			<field name="Workflow" type="xref" xref_entity="Workflow" xref_label="name" description="Workflow this element is part of" />
+			<field name="hasOne" type="mref" xref_entity="ComputeParameter" />
 		</entity>
-		<entity name="ComputeJob" extends="ProtocolApplication"
-			implements="ComputeDetails">
+		<entity name="ComputeJob" extends="ProtocolApplication" implements="ComputeDetails">
 			<description>A protocolApplication that reports the scheduling or
 				application of running a ComputeProtocol. Discussion: how to tie
 				this closer to the data?
 			</description>
-			<!-- <field name="StartTime" auto="true" nillable="false" type="datetime" 
-				description="Datatime when the job was started." /> -->
-			<field name="interpreter" type="enum"
-				enum_options="[bash,R,Python,WorkflowInterpreter,jdl]"
-				description="the interpreter used to run this command. For example 'shellTemplate'" />
-			<field name="clusterQueue" nillable="true" type="string"
-				description="the name of the queue for the cluster" />
-			<field name="protocol" type="xref" xref_entity="Protocol"
-				description="Reference to the protocol this ProtocolApplication is an application of. Shadows ProtocolApplication.protocol." />
+			<!-- <field name="StartTime" auto="true" nillable="false" type="datetime" description="Datatime when the job was started." /> -->
+			<field name="interpreter" type="enum" enum_options="[bash,R,Python,WorkflowInterpreter,jdl]" description="the interpreter used to run this command. For example 'shellTemplate'" />
+			<field name="clusterQueue" nillable="true" type="string" description="the name of the queue for the cluster" />
+			<field name="protocol" type="xref" xref_entity="Protocol" description="Reference to the protocol this ProtocolApplication is an application of. Shadows ProtocolApplication.protocol." />
 			<!-- xref to WorkflowElement to test - hardcore # reads counting -->
-			<field name="ComputationalTime" nillable="true"
-				description="the passage of time from the start to the completion of a task" />
-			<field name="WorkflowElement" type="xref" xref_entity="WorkflowElement"
-				nillable="true"
-				description="reference
+			<field name="ComputationalTime" nillable="true" description="the passage of time from the start to the completion of a task" />
+			<field name="WorkflowElement" type="xref" xref_entity="WorkflowElement" nillable="true" description="reference
 				to workflow element of the compute application" />
-			<field name="PrevSteps" type="mref" xref_entity="ComputeJob"
-				nillable="true"
-				description="To keep track of calculation dependencies == workflow; Note: can be changed at runtime (name was PreviousSteps)" />
+			<field name="PrevSteps" type="mref" xref_entity="ComputeJob" nillable="true" description="To keep track of calculation dependencies == workflow; Note: can be changed at runtime (name was PreviousSteps)" />
 			<field name="ComputeScript" nillable="true" type="text"
 				description="The actual command to be sent to the cluster, is a
 			filled in version of the one define in the ComputeProtocol, depending on the interpreter (e.g. R gets values prepended, bash gets freemarker template applied" />
-			<field name="StatusCode" nillable="false" type="enum"
-				enum_options="[idle,submitted,started,finished]" default="idle"
-				description="Status code of this subjob." />
-			<field name="StatusText" nillable="false" type="varchar"
-				default="no
+			<field name="StatusCode" nillable="false" type="enum" enum_options="[idle,submitted,started,finished]" default="idle" description="Status code of this subjob." />
+			<field name="StatusText" nillable="false" type="varchar" default="no
 				status" length="127" description="Status text of this subjob." />
-			<!-- field name="StatusProgress" nillable="true" type="int" description="Percentage 
-				done." default="0" / -->
+			<!-- field name="StatusProgress" nillable="true" type="int" description="Percentage done." default="0" / -->
 			<!-- few new fields to show log information -->
-			<!-- field name="ClusterHost" nillable="true" description="Hostname of 
-				cluster that runs this job." / -->
-			<field name="ComputeResource" type="xref" xref_entity="ComputeResource"
-				nillable="true" description="The compute backend used" />
-			<field name="JobID" nillable="true"
-				description="The ID of this job within the cluster." />
-			<field name="LogFile" nillable="true" type="text"
-				description="field to show the content of the log file" />
-			<field name="OutputFile" nillable="true" type="text"
-				description="field to show the content of the output file" />
-			<field name="ErrorFile" nillable="true" type="text"
-				description="field to show the content of the error file" />
-			<field name="Queue" nillable="true" type="text"
-				description="ADDED TO FIX THE BUILD - NEEDED IN PbsSubmitApplication.java: currentjob.setQueue(app.getQueue());" />
+			<!-- field name="ClusterHost" nillable="true" description="Hostname of cluster that runs this job." / -->
+			<field name="ComputeResource" type="xref" xref_entity="ComputeResource" nillable="true" description="The compute backend used" />
+			<field name="JobID" nillable="true" description="The ID of this job within the cluster." />
+			<field name="LogFile" nillable="true" type="text" description="field to show the content of the log file" />
+			<field name="OutputFile" nillable="true" type="text" description="field to show the content of the output file" />
+			<field name="ErrorFile" nillable="true" type="text" description="field to show the content of the error file" />
+			<field name="Queue" nillable="true" type="text" description="ADDED TO FIX THE BUILD - NEEDED IN PbsSubmitApplication.java: currentjob.setQueue(app.getQueue());" />
 		</entity>
-		<!-- BELOW TO BE DISCUSSED: WE CAN JUST QUERY METADATA OF ENTITIES SO WE 
-			DON"T NEED UNLESS RENAMING STUFF -->
-		<entity name="UserParameter"
-			description="metadata: initial version (fast solution) mapper of the database field to the feature name in the workflow description">
+		<!-- BELOW TO BE DISCUSSED: WE CAN JUST QUERY METADATA OF ENTITIES SO WE DON"T NEED UNLESS RENAMING STUFF -->
+		<entity name="UserParameter" description="metadata: initial version (fast solution) mapper of the database field to the feature name in the workflow description">
 			<field name="id" type="autoid" />
-			<field name="FeatureName" type="string" nillable="false"
-				description="The name of the feature in workflow description" />
-			<field name="DatabaseField" type="string" nillable="false"
-				description="corresponding field in the database" />
-			<field name="DatabaseTable" type="string" nillable="false"
-				description="corresponding table" />
-			<unique fields="FeatureName"/>
+			<field name="FeatureName" type="string" nillable="false" description="The name of the feature in workflow description" />
+			<field name="DatabaseField" type="string" nillable="false" description="corresponding field in the database" />
+			<field name="DatabaseTable" type="string" nillable="false" description="corresponding table" />
+			<unique fields="FeatureName" />
 		</entity>
-		<entity name="ComputeResource" implements="Identifiable,Nameable"
-			xref_label="name">
+		<entity name="ComputeResource" implements="Identifiable,Nameable" xref_label="name">
 			<description>Declaration of a compute resource such as a PBS cluster,
 				Amazon cloud or GRID
 			</description>
 			<unique fields="name" />
 		</entity>
-		<entity name="ComputeCredentials" implements="Identifiable,Nameable"
-			xref_label="name">
+		<entity name="ComputeCredentials" implements="Identifiable,Nameable" xref_label="name">
 			<description>Declaration of username and password for a MOLGENIS user
 				on a compute resource. The unique name should follow pattern
 				username@resource
 			</description>
-			<field name="ComputeResource" type="xref" xref_entity="ComputeResource"
-				description="The compute resource these credentials are for." />
-			<field name="MolgenisUser" type="xref" xref_entity="MolgenisUser"
-				description="The molgenis user these credentials belong to." />
-			<field name="username"
-				description="username on the remote system. Should be protected!!!" />
-			<field name="password"
-				description="password on the remote cluster. Should be protected!!!" />
+			<field name="ComputeResource" type="xref" xref_entity="ComputeResource" description="The compute resource these credentials are for." />
+			<field name="MolgenisUser" type="xref" xref_entity="MolgenisUser" description="The molgenis user these credentials belong to." />
+			<field name="username" description="username on the remote system. Should be protected!!!" />
+			<field name="password" description="password on the remote cluster. Should be protected!!!" />
 		</entity>
 	</module>
 </molgenis>
