@@ -4,21 +4,17 @@ import gcc.catalogue.ShoppingCart;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
-import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
 
@@ -26,11 +22,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 
 
 	private static final long serialVersionUID = -8140222842047905408L;
-	
-	private String Status = "Welcome to Measurements Order Form";
-
-	//private List<String> shoppingCart = new ArrayList<String>();
-	private List<ShoppingCart> shoppingCart = new ArrayList<ShoppingCart>();
+	private ShoppingCart shoppingCart = null;
 	
 	public MeasurementsOrderForm(String name, ScreenController<?> parent)
 	{
@@ -65,8 +57,8 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 			this.emptyShoppingCart(db);
 			
 		}else if ("checkoutOrder".equals(request.getAction())) {
-			if (shoppingCart.isEmpty()){
-				this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is empty.You cannot continue with the checkout!Please visit the catalogue tree.", true));
+			if (shoppingCart == null){
+				this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is empty. You cannot continue with the checkout! Please visit the catalogue tree.", true));
 
 			}
 			else {
@@ -81,17 +73,14 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 	}
 
 	public void updateShoppingCartAsCheckedOut(Database db) {
-		for (int i=0; i<shoppingCart.size(); i++) {
-			shoppingCart.get(i).setCheckedOut(true);
-			System.out.println("shoppingCart>>>>>>>>>>>>>"+shoppingCart);
-			try {
-				//db.update(shoppingCart,DatabaseAction.UPDATE, "checkedOut");
-				db.update(shoppingCart);
+		shoppingCart.setCheckedOut(true);
+		System.out.println("shoppingCart>>>>>>>>>>>>>"+shoppingCart);
+		try {
+			db.update(shoppingCart);
 
-			} catch (DatabaseException e) {
-				this.getModel().getMessages().add(new ScreenMessage("A problem with update shopping cart has occured", true));
-				e.printStackTrace();
-			}
+		} catch (DatabaseException e) {
+			this.getModel().getMessages().add(new ScreenMessage("A problem with update shopping cart has occured", true));
+			e.printStackTrace();
 		}
 	}
 	
@@ -100,10 +89,8 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 
 		String emailContents = "Dear admin, " + "\n\n"; 
 		emailContents += "The user : "+ this.getLogin().getUserName() +"\n";
-		emailContents += "has send a request for the items/measurements below:" + "\n";
-		for (int i=0; i<shoppingCart.size(); i++) {
-			emailContents += shoppingCart.get(i) + "\n";
-		}
+		emailContents += "has sent a request for the items/measurements below:" + "\n";
+		emailContents += shoppingCart.toString() + "\n";
 		emailContents += "\n\n" ;
 
 		System.out.println(emailContents);
@@ -126,7 +113,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 			List<ShoppingCart> resshoppingCart  = new ArrayList<ShoppingCart>();
 			
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
-			q.addRules(new QueryRule("checkedOut", Operator.EQUALS, false));
+			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
 			try {
 				resshoppingCart = q.find();
 			} catch (DatabaseException e) {
@@ -147,28 +134,19 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		System.out.println("request>checkoutOrder>>>>>>>>>");
 		
 		Query<ShoppingCart> q = db.query(ShoppingCart.class);
-		q.addRules(new QueryRule("userID", Operator.EQUALS, this.getLogin().getUserName()));
-		q.addRules(new QueryRule("checkedOut", Operator.EQUALS, false));
+		q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
+		q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
 
 		try {
-			shoppingCart = q.find();
-		} catch (DatabaseException e) {
+			shoppingCart = q.find().get(0);
+		} catch (Exception e) {
+			this.getModel().getMessages().add(new ScreenMessage("No shopping cart available", false));
 			e.printStackTrace();
 		}
-		
-		this.setStatus("Shopping cart loaded");
 
 	}
 
-	public void setStatus(String status) {
-		Status = status;
-	}
-
-	public String getStatus() {
-		return Status;
-	}
-
-	public List<ShoppingCart> getshoppingCart() {
+	public ShoppingCart getshoppingCart() {
 		return shoppingCart;
 	}
 }

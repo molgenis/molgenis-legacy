@@ -119,41 +119,37 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	}
 
 	private void addMeasurementsToTree(Database db, Tuple request) throws DatabaseException, IOException {
-		for (int i=0; i<this.shoppingCart.size(); i++) {
-
-			String measurementName = this.shoppingCart.get(i).getName();
-			
-			Query<ShoppingCart> q = db.query(ShoppingCart.class);
-			q.addRules(new QueryRule("measurementName", Operator.EQUALS, measurementName));
-			q.addRules(new QueryRule("userID", Operator.EQUALS, this.getLogin().getUserName()));
-			List<ShoppingCart> result = q.find();
-			
-			if (result.isEmpty()) {
-				//Add to database 
-				ShoppingCart shoppingCart= new ShoppingCart();
-				
-				shoppingCart.setMeasurementName(this.shoppingCart.get(i).getName());
-				shoppingCart.setUserID(this.getLogin().getUserName());
-				shoppingCart.setCheckedOut(false);
-				
-				//db.update(shoppingCart, Database.DatabaseAction.ADD_IGNORE_EXISTING, "measurementName" );
-				db.add(shoppingCart);
-				System.out.println(measurementName + " has been added in the DB.");
-				//this.setSuccess(measurementName + " has been added in the DB.");
-				this.getModel().getMessages().add(new ScreenMessage(measurementName + " has been added in the DB.", true));
-
-			} else {
-				System.out.println(measurementName + " has not been added in the DB because it was already there");
-				//this.setSuccess(measurementName + " has not been added in the DB because it was already there");
-				this.getModel().getMessages().add(new ScreenMessage(measurementName + " has not been added in the DB because it was already there", true));
-			}
-			
 		
+		List<Integer> orderedMeasurementIds = new ArrayList<Integer>();
+		for (Measurement m : this.shoppingCart) {
+			orderedMeasurementIds.add(m.getId());
 		}
+		
+		Query<ShoppingCart> q = db.query(ShoppingCart.class);
+		q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
+		q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
+		List<ShoppingCart> result = q.find();
+		
+		if (result.isEmpty()) {
+			//Add to database 
+			ShoppingCart shoppingCart = new ShoppingCart();
+			shoppingCart.setMeasurements(orderedMeasurementIds);
+			shoppingCart.setUserID(this.getLogin().getUserName());
+			shoppingCart.setCheckedOut(false);
+			db.add(shoppingCart);
+			System.out.println("Shopping cart has been added to the DB.");
+			
+		} else {
+			ShoppingCart shoppingCart = result.get(0); // assuming user can have only one shopping cart that's NOT checked out
+			shoppingCart.setMeasurements(orderedMeasurementIds);
+			db.update(shoppingCart);
+			System.out.println("Shopping cart has been updated in the DB.");
+		}
+			
 		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 		HttpServletRequest httpRequest   = rt.getRequest();
 		HttpServletResponse httpResponse = rt.getResponse();
-		String redirectURL = httpRequest.getRequestURL() + "?__target=LifeLinesCatalogMenu&select=MeasurementsOrderForm" ;
+		String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsOrderForm";
 		
 		httpResponse.sendRedirect(redirectURL);
 		
