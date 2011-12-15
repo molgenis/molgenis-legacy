@@ -4,14 +4,14 @@ package plugins.JavascriptTests;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.html.JavascriptTests;
+//import org.molgenis.framework.ui.html.JavascriptTests; DOES NOT EXIST!!!
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 public class JavascriptTestsPlugin extends PluginModel<Entity>{
 	
 	//A Test class for  javascript. 
-	JavascriptTests JsTest = new JavascriptTests("test");
+	//JavascriptTests JsTest = new JavascriptTests("test");
 
 	
 	public JavascriptTestsPlugin(String name, ScreenController<?> parent) {
@@ -58,8 +58,8 @@ public class JavascriptTestsPlugin extends PluginModel<Entity>{
 
 	public String getJavascriptTest() {
 		System.out.println("test from JavascripttestsPlugin");
-		return JsTest.toHtml();
+		return "org.molgenis.framework.ui.html.JavascriptTests does not exist!";
+		//return JsTest.toHtml();
 	}
 	
-
 }

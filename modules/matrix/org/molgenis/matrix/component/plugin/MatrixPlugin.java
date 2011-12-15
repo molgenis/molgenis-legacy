@@ -31,6 +31,7 @@ public class MatrixPlugin extends GenericPlugin
 	static String TARGETMATRIX = "targetmatrix";
 	private Container container = null;
 	private DivPanel div = null;
+	private String action = "init";
 	
 	public MatrixPlugin(String name, ScreenController<?> parent)
 	{
@@ -44,7 +45,7 @@ public class MatrixPlugin extends GenericPlugin
 			targetMatrixViewer.setDatabase(db);
 		}
 		
-		String action = request.getAction();
+		action = request.getAction();
 		
 		try {
 			if (action.startsWith(targetMatrixViewer.getName())) {
@@ -76,7 +77,7 @@ public class MatrixPlugin extends GenericPlugin
 				}
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, true, null, 
+						true, true, true, null, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
 				div.add(targetMatrixViewer);

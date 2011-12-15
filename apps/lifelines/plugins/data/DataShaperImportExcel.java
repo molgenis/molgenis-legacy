@@ -53,9 +53,9 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 
 	private static final long serialVersionUID = 6149846107377048848L;
 	
-	private ImporterModel importerModel = new ImporterModel();
+	//private ImporterModel importerModel = new ImporterModel();
 	
-	private String NAME = "name";
+	//private String NAME = "name";
 
 	public DataShaperImportExcel(String name, ScreenController<?> parent)
 	{

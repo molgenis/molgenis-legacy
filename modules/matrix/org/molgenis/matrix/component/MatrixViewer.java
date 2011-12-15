@@ -1,5 +1,9 @@
 package org.molgenis.matrix.component;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -44,10 +48,14 @@ public class MatrixViewer extends HtmlWidget
 	Logger logger = Logger.getLogger(this.getClass());
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	
+	// Configuration booleans. TODO: solve in a nicer way; use a plugin strategy?
 	private boolean showLimitControls = true;
 	private boolean columnsRestricted = false;
 	private boolean selectMultiple = true;
 	private boolean showValueValidRange = false;
+	private boolean showDownloadOptions = false;
+	
+	private String downloadLink = null;
 	
 	public String ROWLIMIT = getName() + "_rowLimit";
 	public String CHANGEROWLIMIT = getName() + "_changeRowLimit";
@@ -61,6 +69,7 @@ public class MatrixViewer extends HtmlWidget
 	public String MOVEUP = getName() + "_moveUp";
 	public String MOVEDOWN = getName() + "_moveDown";
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
+	public String DOWNLOADALLCSV = getName() + "_downloadAllCsv";
 	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
 	public String FILTERCOL = getName() + "_filterCol";
@@ -91,7 +100,8 @@ public class MatrixViewer extends HtmlWidget
 	 */
 	public MatrixViewer(ScreenController<?> callingScreenController, String name, 
 			SliceableMatrix<?,?,?> matrix,
-			boolean showLimitControls, boolean selectMultiple, List<MatrixQueryRule> filterRules)
+			boolean showLimitControls, boolean selectMultiple, boolean showDownloadOptions,
+			List<MatrixQueryRule> filterRules)
 	{
 		super(name);
 		super.setLabel("");
@@ -99,6 +109,7 @@ public class MatrixViewer extends HtmlWidget
 		this.matrix = matrix;
 		this.showLimitControls = showLimitControls;
 		this.selectMultiple = selectMultiple;
+		this.showDownloadOptions = showDownloadOptions;
 		if (filterRules != null) {
 			this.matrix.getRules().addAll(filterRules);
 		}
@@ -116,10 +127,11 @@ public class MatrixViewer extends HtmlWidget
 	 */
 	public MatrixViewer(ScreenController<?> callingScreenController, String name, 
 			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
-			boolean showLimitControls, boolean selectMultiple, List<MatrixQueryRule> filterRules, 
-			MatrixQueryRule columnRule) throws Exception
+			boolean showLimitControls, boolean selectMultiple, boolean showDownloadOptions,
+			List<MatrixQueryRule> filterRules, MatrixQueryRule columnRule) throws Exception
 	{
-		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, filterRules);
+		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, 
+				showDownloadOptions, filterRules);
 		if (columnRule != null && columnRule.getFilterType().equals(MatrixQueryRule.Type.colHeader)) {
 			columnsRestricted = true;
 			this.matrix.getRules().add(columnRule);
@@ -148,14 +160,18 @@ public class MatrixViewer extends HtmlWidget
 				((DatabaseMatrix) this.matrix).setDatabase(db);
 			}
 			
-			String result = "<table><tr><td>";
-			result += "<div style=\"vertical-align:middle;\">"+renderReload();
-			result += renderHeader()+"</div>";
+			String result = "";
+			if (downloadLink != null) {
+				result += "<div><p><a href=\"tmpfile/" + downloadLink + "\">Download your export</a></p></div>";
+			}
+			result += "<table><tr><td>";
+			result += renderHeader();
 			result += "</td></tr><tr><td>";
 			result += renderTable();
 			result += "</td></tr><tr><td>";
 			result += renderFilterPart();
 			result += "</td></tr></table>";
+			
 			return result;
 		} catch (Exception e) {
 			((PluginModel)this.callingScreenController).setError(e.getMessage());
@@ -164,19 +180,16 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 	
-	public String renderReload() {
-		// button to reload the matrix data, whilst keeping the filters intact
-		ActionInput reload = new ActionInput(RELOADMATRIX, "", "");
-		reload.setIcon("generated-res/img/update.gif");
-		return reload.render();
-	}
-	
 	public String renderHeader() throws MatrixException {
 		String divContents = "";
+		// reload
+		ActionInput reload = new ActionInput(RELOADMATRIX, "", "Reload");
+		reload.setIcon("generated-res/img/update.gif");
+		divContents += "<div style=\"float:left; vertical-align:middle\">" + reload.render() + "</div>";
 		// move vertical (row paging)
 		ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
 		moveUpEnd.setIcon("generated-res/img/first.png");
-		divContents += moveUpEnd.render();
+		divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + moveUpEnd.render();
 		ActionInput moveUp = new ActionInput(MOVEUP, "", "");
 		moveUp.setIcon("generated-res/img/prev.png");
 		divContents += moveUp.render();
@@ -197,7 +210,14 @@ public class MatrixViewer extends HtmlWidget
 		divContents += moveDown.render();
 		ActionInput moveDownEnd = new ActionInput(MOVEDOWNEND, "", "");
 		moveDownEnd.setIcon("generated-res/img/last.png");
-		divContents += moveDownEnd.render();
+		divContents += moveDownEnd.render() + "</div>";
+		// download options
+		if (showDownloadOptions) {
+			// TODO: turn into menu with actions
+			ActionInput downloadAllCsv = new ActionInput(DOWNLOADALLCSV, "", "Export all to CSV");
+			downloadAllCsv.setIcon("generated-res/img/download.png");
+			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadAllCsv.render() + "</div>";
+		}
 		
 		return divContents;
 	}
@@ -415,7 +435,7 @@ public class MatrixViewer extends HtmlWidget
 		SelectInput colId = new SelectInput(COLID);
 		divContents += "<div style=\"vertical-align:middle\">Add filter:";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
-		if(colHeaders.get(0) instanceof Entity) {
+		if(colHeaders != null && colHeaders.get(0) instanceof Entity) {
 			List<? extends Entity> headers = (List<? extends Entity>) colHeaders;
 			colId.setEntityOptions(headers);
 		} else {
@@ -432,9 +452,9 @@ public class MatrixViewer extends HtmlWidget
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
 		divContents+="</div>";
 		// column header filter
-		if (columnsRestricted) {
+		if (columnsRestricted && colHeaders != null) {
 			List selectedMeasurements = new ArrayList();
-			selectedMeasurements.addAll(matrix.getColHeaders());
+			selectedMeasurements.addAll(colHeaders);
 			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
 					selectedMeasurements, false, false, 
 					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer", 
@@ -481,6 +501,111 @@ public class MatrixViewer extends HtmlWidget
 		}
 		this.matrix.getRules().removeAll(removeList);
 		matrix.reload();
+	}
+	
+	public void downloadAllCsv(Database db, Tuple t) throws MatrixException, IOException
+	{
+		// TODO: factor out overlap with renderTable()!
+		
+		if (this.matrix instanceof DatabaseMatrix) {
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
+		
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File file = new File(tmpDir.getAbsolutePath() + File.separatorChar + "download.csv");
+		FileWriter output = new FileWriter(file);
+		
+		Object[][] values = null;
+		try {
+			values = matrix.getValueLists();
+		} catch(UnsupportedOperationException ue) {
+			values = matrix.getValues();
+		}
+		List<?> rows = matrix.getRowHeaders();
+		List<?> cols = matrix.getColHeaders();
+		
+		//print colHeaders
+		output.write("'ID,Name"); // the ' is there so Excel doesn't think this is SYLK format
+		for (Object col: cols) {
+			output.write(",");
+			if(col instanceof ObservationElement) {
+				ObservationElement colobs = (ObservationElement) col;
+				output.write(colobs.getName());
+			} else {
+				output.write(col.toString());
+			}
+			
+		}
+		output.write("\n");
+		
+		//print rowHeader + colValues
+		for (int row = 0; row < values.length; row++) {
+			// print ID and name
+			Object rowobj = rows.get(row);
+			if(rowobj instanceof ObservationElement) {
+				ObservationElement rowObs = (ObservationElement) rowobj;
+				output.write(rowObs.getId() + ",");
+				output.write(rowObs.getName());
+			} else {
+				output.write("0,");
+				output.write(rowobj.toString());
+			}
+			// get the data for this row
+			Object valueObject = values[row][0];
+			if (valueObject instanceof List) {
+				List<Observation>[] rowValues = (List<Observation>[]) values[row];
+				for (int col = 0; col < rowValues.length; col++) {
+					if (rowValues[col] != null && rowValues[col].size() > 0) {
+						//boolean first = true;
+						//for (Observation val : rowValues[col]) {
+						Observation val = rowValues[col].get(0);
+						String valueToShow = (String) val.get("value");
+						if (val instanceof ObservedValue && valueToShow == null) {
+							valueToShow = ((ObservedValue)val).getRelation_Name();
+						}
+						// if timing should be shown:
+//							if (showValueValidRange) {
+//								if (val.get(ObservedValue.TIME) != null) {
+//									valueToShow += " (valid from " + newDateOnlyFormat.format(val.get(ObservedValue.TIME));
+//								}
+//								if (val.get(ObservedValue.ENDTIME) != null) {
+//									valueToShow += " through " + newDateOnlyFormat.format(val.get(ObservedValue.ENDTIME)) + ")";
+//								} else if (val.get(ObservedValue.TIME) != null) {
+//									valueToShow += ")";
+//								}
+//							}
+						
+						//if (first) {
+						//	first = false;
+						output.write("," + valueToShow);
+						//} else {
+							// Append to contents of cell, on new line
+						//	dataTable.setCell(col + 3, row, dataTable.getCell(col + 3, row) + "<br />" + valueToShow);
+						//}
+						//}
+					} else {
+						output.write(",NA");
+					}
+				}
+				
+			} else {
+				Object[] rowValues = values[row];
+				for (int col = 0; col < rowValues.length; col++) {
+					Object val = rowValues[col];
+					if (val != null) {
+						output.write("," + val);
+					}
+					else {
+						output.write(",NA");
+					}
+				}
+			}
+			output.write("\n");
+		}
+		
+		output.flush();
+		output.close();
+		downloadLink = file.getName();
 	}
 	
 	public void reloadMatrix(Database db, Tuple t) throws MatrixException
@@ -658,7 +783,7 @@ public class MatrixViewer extends HtmlWidget
 
 	public void delegate(String action, Database db, Tuple request)
 			throws HandleRequestDelegationException
-	{
+	{	
 		// try/catch for db.rollbackTx
 		try
 		{
