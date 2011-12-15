@@ -5,6 +5,8 @@ import gcc.catalogue.ShoppingCart;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -64,7 +66,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 			else {
 				//set field shoppingCart.setCheckedOut(true);
 				this.updateShoppingCartAsCheckedOut(db);
-	    		this.sendOrderEmail(); 
+	    		this.sendOrderEmail(db); 
 				//this.emptyShoppingCart(db);
 				this.getModel().getMessages().add(new ScreenMessage("Your orders request has been sent!", true));
 
@@ -84,18 +86,23 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		}
 	}
 	
-	public void sendOrderEmail()  {
-		System.out.println(">>>shoppingCart>>>>>>>>"+ shoppingCart);
+	public void sendOrderEmail(Database db) throws DatabaseException  {
+		MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
+		if (StringUtils.isEmpty(admin.getEmail()))
+			throw new DatabaseException("Registration failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
+		
 
 		String emailContents = "Dear admin, " + "\n\n"; 
 		emailContents += "The user : "+ this.getLogin().getUserName() +"\n";
 		emailContents += "has sent a request for the items/measurements below:" + "\n";
-		emailContents += shoppingCart.toString() + "\n";
+		for (String name : shoppingCart.getMeasurements_Name()) {
+			emailContents += name + "\n";
+		}
 		emailContents += "\n\n" ;
 
 		System.out.println(emailContents);
 		try {
-			this.getEmailService().email("New items/measurements ordered", emailContents, "antonakd@gmail.com", true);
+			this.getEmailService().email("New items/measurements ordered", emailContents, admin.getEmail(), true);
 		} catch (EmailException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
