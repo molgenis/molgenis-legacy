@@ -117,10 +117,23 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 	
 	
 	public void emptyShoppingCart(Database db) {
-		//empty db table
-		String  truncateShpCrtSql = String.format("truncate table shoppingCart;");
+		//empty db table: actually delete the ones that have checkedOut='false' 
+		
+		//String  truncateShpCrtSql = String.format("truncate table shoppingCart;");
+		String deleteShpCartSql = String.format("delete  from shoppingCart where checkedOut='false';");
 		try {
-			ResultSetTuple removedRecords = new ResultSetTuple(db.executeQuery(truncateShpCrtSql));
+			//ResultSetTuple removedRecords = new ResultSetTuple(db.executeQuery(deleteShpCartSql));
+			List<ShoppingCart> resshoppingCart  = new ArrayList<ShoppingCart>();
+			
+			Query<ShoppingCart> q = db.query(ShoppingCart.class);
+			q.addRules(new QueryRule("checkedOut", Operator.EQUALS, false));
+			try {
+				resshoppingCart = q.find();
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+			}
+			
+			db.remove(resshoppingCart);
 		} catch (DatabaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
