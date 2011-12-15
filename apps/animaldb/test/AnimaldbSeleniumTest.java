@@ -186,7 +186,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Parent groups"));
 		// Add a parent group
-		selenium.click("link=Make new parent group");
+		selenium.click("link=Create new parent group");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Screen 1: line
 		selenium.click("id=from1to2");
@@ -217,7 +217,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Litters"));
 		Assert.assertTrue(selenium.isTextPresent("Make new litter"));
 		// Add a litter
-		selenium.click("link=Make new litter");
+		selenium.click("link=Create new litter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=matrix_selected_0"); // toggle selectbox for first parent group in list
 		selenium.click("id=selectpg");
