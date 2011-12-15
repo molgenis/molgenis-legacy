@@ -18,6 +18,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.ResultSetTuple;
+import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
 
 public class MeasurementsOrderForm extends PluginModel<Entity>{
@@ -55,42 +56,60 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 	
 	@Override
 	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception {
-		//TODO : Retrieve shopping list here . Is there a convenient way to pass it form the redirected plugin (will it still be convenient with larger amount of items?)
-		//TODO : maybe consider adding  shopping List in the database. 
 		
 		this.reload(db);
 		
 		
 		if ("EmptyShoppingCart".equals(request.getAction())) {
-			//empty db table
-			String  truncateShpCrtSql = String.format("truncate table shoppingCart;");
-			ResultSetTuple removedRecords = new ResultSetTuple(db.executeQuery(truncateShpCrtSql));
-			this.reload(db);
-			this.setSuccess("Your shopping cart is now empty, you can reload items from catalogue tree");
-			//db.executeQuery(query, queryRules) remove(ShoppingCart.class);
+			this.emptyShoppingCart(db);
 			
 		}else if ("checkoutOrder".equals(request.getAction())) {
-			if (shoppingCart.isEmpty()) this.setSuccess("Your shopping cart is empty.You cannot continue with the checkout!Please visit the catalogue tree.");
+			if (shoppingCart.isEmpty()){
+				this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is empty.You cannot continue with the checkout!Please visit the catalogue tree.", true));
+
+			}
 			else {
-	    		System.out.println(">>>shoppingCart>>>>>>>>"+ shoppingCart);
+	    		this.sendOrderEmail(); 
+				this.emptyShoppingCart(db);
+				this.getModel().getMessages().add(new ScreenMessage("Your orders request has been sent!", true));
 
-	    		String emailContents = "Dear admin, " + "\n\n"; 
-	    		emailContents += "The user : "+ this.getLogin().getUserName() +"\n";
-	    		emailContents += "has send a request for the items/measurements below:" + "\n";
-	    		for (int i=0; i<shoppingCart.size(); i++) {
-	    			emailContents += shoppingCart.get(i) + "\n";
-	    		}
-	    		emailContents += "\n\n" ;
-
-	    		System.out.println(emailContents);
-	    		this.getEmailService().email("New items/measurements ordered", emailContents, "antonakd@gmail.com", true);
-	    		
-	    		this.getModel().getMessages().add(new ScreenMessage("Your orders request has been sent!", true));
-	    		
 			}
 		}
 	}
 
+	public void sendOrderEmail()  {
+		System.out.println(">>>shoppingCart>>>>>>>>"+ shoppingCart);
+
+		String emailContents = "Dear admin, " + "\n\n"; 
+		emailContents += "The user : "+ this.getLogin().getUserName() +"\n";
+		emailContents += "has send a request for the items/measurements below:" + "\n";
+		for (int i=0; i<shoppingCart.size(); i++) {
+			emailContents += shoppingCart.get(i) + "\n";
+		}
+		emailContents += "\n\n" ;
+
+		System.out.println(emailContents);
+		try {
+			this.getEmailService().email("New items/measurements ordered", emailContents, "antonakd@gmail.com", true);
+		} catch (EmailException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void emptyShoppingCart(Database db) {
+		//empty db table
+		String  truncateShpCrtSql = String.format("truncate table shoppingCart;");
+		try {
+			ResultSetTuple removedRecords = new ResultSetTuple(db.executeQuery(truncateShpCrtSql));
+		} catch (DatabaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.reload(db);
+		this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is now empty, you can reload items from catalogue tree", true));
+		//db.executeQuery(query, queryRules) remove(ShoppingCart.class);
+	}
 	@Override
 	public void reload(Database db) {
 		System.out.println("request>checkoutOrder>>>>>>>>>");
