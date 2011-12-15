@@ -11,6 +11,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -69,14 +70,31 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 
 			}
 			else {
+				//set field shoppingCart.setCheckedOut(true);
+				this.updateShoppingCartAsCheckedOut(db);
 	    		this.sendOrderEmail(); 
-				this.emptyShoppingCart(db);
+				//this.emptyShoppingCart(db);
 				this.getModel().getMessages().add(new ScreenMessage("Your orders request has been sent!", true));
 
 			}
 		}
 	}
 
+	public void updateShoppingCartAsCheckedOut(Database db) {
+		for (int i=0; i<shoppingCart.size(); i++) {
+			shoppingCart.get(i).setCheckedOut(true);
+			System.out.println("shoppingCart>>>>>>>>>>>>>"+shoppingCart);
+			try {
+				//db.update(shoppingCart,DatabaseAction.UPDATE, "checkedOut");
+				db.update(shoppingCart);
+
+			} catch (DatabaseException e) {
+				this.getModel().getMessages().add(new ScreenMessage("A problem with update shopping cart has occured", true));
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void sendOrderEmail()  {
 		System.out.println(">>>shoppingCart>>>>>>>>"+ shoppingCart);
 
@@ -96,6 +114,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 			e.printStackTrace();
 		}
 	}
+	
 	
 	public void emptyShoppingCart(Database db) {
 		//empty db table

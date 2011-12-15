@@ -127,10 +127,13 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			List<ShoppingCart> result = q.find();
 			
 			if (result.isEmpty()) {
+				//Add to database 
 				ShoppingCart shoppingCart= new ShoppingCart();
 				
 				shoppingCart.setMeasurementName(this.shoppingCart.get(i).getName());
 				shoppingCart.setUserID(this.getLogin().getUserName());
+				shoppingCart.setCheckedOut(false);
+				
 				//db.update(shoppingCart, Database.DatabaseAction.ADD_IGNORE_EXISTING, "measurementName" );
 				db.add(shoppingCart);
 				System.out.println(measurementName + " has been added in the DB.");
