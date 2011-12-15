@@ -148,6 +148,8 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		
 		Query<ShoppingCart> q = db.query(ShoppingCart.class);
 		q.addRules(new QueryRule("userID", Operator.EQUALS, this.getLogin().getUserName()));
+		q.addRules(new QueryRule("checkedOut", Operator.EQUALS, false));
+
 		try {
 			shoppingCart = q.find();
 		} catch (DatabaseException e) {
