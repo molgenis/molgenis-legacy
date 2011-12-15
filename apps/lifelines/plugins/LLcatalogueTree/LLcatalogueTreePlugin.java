@@ -181,7 +181,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		
 		for (int i=0; i<this.getShoppingCart().size(); i++) {
 			Measurement m = this.getShoppingCart().get(i);
-			if (!newShoppingCart.contains(m)) newShoppingCart.add(m);
+			if (!newShoppingCart.contains(m)) {
+				newShoppingCart.add(m);
+			}else {
+				this.getModel().getMessages().add(new ScreenMessage("The item \""+ m.getName() + "\" has not been added to you cart since it's already there. ", true));
+			}
 		}
 		
 		return newShoppingCart;
