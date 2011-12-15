@@ -27,12 +27,15 @@ public class AutocompleteInput<E> extends HtmlInput<E>
 				"				$.each(data, function(key, val) { suggestions.push(key); });\n" +
 				"				return suggestions;\n" +
 				"			};\n" +
+				"           errorFunction = function(jqXHR, textStatus, errorThrown) {\n" +
+				"               alert(textStatus);\n" +
+				"           };\n" +
 				"			var dataHash = new Object();\n" +
 				"			dataHash['xref_entity'] = '" + this.entityClass + "';\n" +
 				"			dataHash['xref_field']  = '" + this.entityField + "';\n" +
 				"			dataHash['xref_label']  = '" + this.entityField + "';\n" +
 				"			dataHash['xref_label_search'] = req.term;\n" +
-				"			jQuery.ajax({ url: url, data: dataHash, dataType: \"json\", type: \"POST\", async: false, success: successFunction });\n" +
+				"			jQuery.ajax({ url: url, data: dataHash, dataType: \"json\", type: \"POST\", async: false, success: successFunction, error: errorFunction });\n" +
 				"			resp(suggestions);\n" +
 				"		},\n" +
 				"		select: function(e, ui) { },\n" +
