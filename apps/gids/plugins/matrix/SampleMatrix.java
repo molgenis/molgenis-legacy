@@ -156,8 +156,8 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 					
 					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIXS, 
 							new SliceablePhenoMatrix(GidsSample.class, Measurement.class), 
-							true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-									Operator.IN, measurementsToShow));
+							true, true, false, filterRules, 
+							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				}
 				// if samples are chosen, individualmatrix will be filled with chosenProtocol
 				
@@ -180,8 +180,8 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 					
 					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIXS, 
 							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, filterRules, new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, 
-									Operator.IN, measurementsToShowIndividuals));
+							true, true, false, filterRules, 
+							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShowIndividuals));
 				}
 				
 				getModel().setLastInvest(invest);
