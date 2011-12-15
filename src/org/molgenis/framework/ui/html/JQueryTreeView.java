@@ -17,6 +17,13 @@ public class JQueryTreeView<E> extends HtmlWidget
 		this.treeData = treeData;
 	}
 	
+	/**
+	 * 
+	 * No Nodes collapsed explicitly. Node is manually closed then by giving its LI element a "closed"(/opened) CSS class.
+	 * Animation enabled, speed is "normal".
+	 * "Cookie" persistence enabled, causing the current tree state to be persisted.
+	 *	Dynamically adding a sub tree to the existing tree demonsrated.
+	 */
 	private String renderTree(JQueryTreeViewElement node) {
 		String returnString;
 		if (node.hasChildren()) {
@@ -36,7 +43,10 @@ public class JQueryTreeView<E> extends HtmlWidget
 	@Override
 	public String toHtml(){
 		
-		String html = "<ul id=\"browser\" class=\"pointtree\">";
+		String html = "<div id=\"masstoggler\">	<a title=\"Collapse entire tree\" href=\"#\"> Collapse All</a> | ";
+		html += "<a title=\"Expand entire tree\" href=\"#\"> Expand All</a> | " ;
+		html += "<a title=\"Toggle the tree below\" href=\"#\">Toggle All</a></div> ";
+		html += "<ul id=\"browser\" class=\"pointtree\">";
 		html += renderTree(treeData.getRoot());
 		html += "</ul>";
 	    html += "<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n"
@@ -50,7 +60,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"</style>\n"
 		+"<script>\n"
 		+"$(document).ready(function(){\n"
-		+"$(\"#browser\").treeview();});\n"
+		+"$(\"#browser\").treeview({control: \"#masstoggler\"});});\n"
 		+ "$(\"#leftSide\").click(function(event) {"
 		+"	  event.preventDefault();"
 //		+"	  alert(\"Your order of \"+$(this).text() + \" has been added to you Shopping Cart\");"
