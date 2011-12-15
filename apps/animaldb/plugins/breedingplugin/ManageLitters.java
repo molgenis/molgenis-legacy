@@ -877,9 +877,13 @@ public class ManageLitters extends PluginModel<Entity>
 						// Make new or use existing cross background
 						String motherBackgroundName = ct.getObservationTargetLabel(motherBackgroundId);
 						String fatherBackgroundName = ct.getObservationTargetLabel(fatherBackgroundId);
-						backgroundId = ct.getObservationTargetId(motherBackgroundName + " X " + fatherBackgroundName);
+						if (motherBackgroundId == fatherBackgroundId) {
+							backgroundId = ct.getObservationTargetId(fatherBackgroundName);
+						}else {
+							backgroundId = ct.getObservationTargetId(fatherBackgroundName + " X " + motherBackgroundName);
+						}
 						if (backgroundId == -1) {
-							backgroundId = ct.makePanel(invid, motherBackgroundName + " X " + fatherBackgroundName, userId);
+							backgroundId = ct.makePanel(invid, fatherBackgroundName + " X " + motherBackgroundName, userId);
 							protocolId = ct.getProtocolId("SetTypeOfGroup");
 							measurementId = ct.getMeasurementId("TypeOfGroup");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, null, 
