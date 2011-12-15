@@ -1,3 +1,4 @@
+package org.molgenis.xgap.other.xqtlworkbench_lifelines.legacy;
 // DEPRECATED! We will use a non-JPA version instead.
 
 //package org.molgenis.xgap.other.xqtlworkbench_lifelines;

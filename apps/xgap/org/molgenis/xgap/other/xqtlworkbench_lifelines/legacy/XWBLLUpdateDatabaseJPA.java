@@ -1,4 +1,4 @@
-package org.molgenis.xgap.other.xqtlworkbench_lifelines;
+package org.molgenis.xgap.other.xqtlworkbench_lifelines.legacy;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
