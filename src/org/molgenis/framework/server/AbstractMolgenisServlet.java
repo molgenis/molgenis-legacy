@@ -63,6 +63,7 @@ import org.molgenis.util.TupleWriter;
  * Abstract MOLGENIS servlet. Implement abstract methods to get it to work.
  * TODO: make it use either context.xml or a properties file for configuration.
  */
+@Deprecated
 public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 {
 	/** the name of the datatype input */
