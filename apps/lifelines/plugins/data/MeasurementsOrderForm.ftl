@@ -40,6 +40,7 @@
 						<input type="submit" value="Empty Shopping Cart" onclick="if (confirm('You are about to delete all you orders. Are you sure you want to proceed?')) { __action.value='EmptyShoppingCart';return true; } else {return false;}"/><br /><br />
 						
 					</div>
+				<h5> Before continue to checkout, please complete your profile <a href="molgenis.do?__target=main&select=UserLogin"> here </a></h5> 
 				
 				<h5>If you want to continue with your order to checkout :</h5>
 		        <input type="submit" value="Checkout" onclick="if (confirm('You are about to complete your order. Are you sure you want to checkout?')) {__action.value='checkoutOrder';return true;} else {return false;}"/><br /><br />

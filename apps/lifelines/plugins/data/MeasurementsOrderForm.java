@@ -2,6 +2,7 @@ package plugins.data;
 
 import gcc.catalogue.ShoppingCart;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 
 	private static final long serialVersionUID = -8140222842047905408L;
 	private ShoppingCart shoppingCart = null;
+	private MolgenisUser user = null;
 	
 	public MeasurementsOrderForm(String name, ScreenController<?> parent)
 	{
@@ -65,11 +67,14 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 				this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is empty. You cannot continue with the checkout! Please visit the catalogue tree.", true));
 				this.reload(db);
 			}
+			else if (!this.checkIfUserDetailsEmpty(db)) {
+				this.getModel().getMessages().add(new ScreenMessage("Please complete your profile first!", true));
+			}
 			else {
-				//set field shoppingCart.setCheckedOut(true);
+				System.out.println("checkIfUserDetailsEmpty:>>>>>>>>>>>>>>>>>>>>"+this.checkIfUserDetailsEmpty(db));
+				
 				this.updateShoppingCartAsCheckedOut(db);
 	    		this.sendOrderEmail(db); 
-				//this.emptyShoppingCart(db);
 				this.getModel().getMessages().add(new ScreenMessage("Your orders request has been sent!", true));
 				this.reload(db);
 			}
@@ -88,6 +93,28 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		}
 	}
 	
+	public boolean checkIfUserDetailsEmpty(Database db) {
+		boolean allFieldsAvailable = false;
+		
+		try {
+			user = MolgenisUser.findById(db, this.getLogin().getUserId());
+			if (!(user.getAddress() == null ||
+				  user.getCity() == null || 
+				  user.getDepartment() == null ||
+				  user.getAffiliation() == null))
+				
+				  allFieldsAvailable = true; 
+			
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		} catch (DatabaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return allFieldsAvailable;
+	}
+	
 	public void sendOrderEmail(Database db) throws DatabaseException  {
 		MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
 		if (StringUtils.isEmpty(admin.getEmail()))
@@ -100,6 +127,8 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		for (String name : shoppingCart.getMeasurements_Name()) {
 			emailContents += name + "\n";
 		}
+
+		emailContents += "User details: "+ this.getLogin().getUserId(); 
 		emailContents += "\n\n" ;
 
 		System.out.println(emailContents);
