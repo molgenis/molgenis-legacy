@@ -2,10 +2,10 @@
 <#if db_driver?contains('hsql')>
 SET WRITE_DELAY FALSE;
 </#if>
-INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', 1, 'system');
-INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisUser', 2, 'admin');
-INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisUser', 3, 'anonymous');
-INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', 4, 'AllUsers');
+INSERT INTO MolgenisRole (d__Type, id, name) values ('MolgenisGroup', 1, 'system');
+INSERT INTO MolgenisRole (d__Type, id, name) values ('MolgenisUser', 2, 'admin');
+INSERT INTO MolgenisRole (d__Type, id, name) values ('MolgenisUser', 3, 'anonymous');
+INSERT INTO MolgenisRole (d__Type, id, name) values ('MolgenisGroup', 4, 'AllUsers');
 
 INSERT INTO MolgenisGroup (id) values (1);
 INSERT INTO MolgenisGroup (id) values (4);
@@ -25,7 +25,7 @@ INSERT INTO MolgenisUser (id, password_, emailaddress, firstname, lastname, acti
 INSERT INTO MolgenisUser (id, password_, emailaddress, firstname, lastname, active) values (3, 'md5_294de3557d9d00b3d2d8a1e6aab028cf', '', 'anonymous','anonymous', true);
 -->
 <#list model.getUserinterface().getAllUniqueGroups() as group>
-INSERT INTO MolgenisRole (__Type, id, name) values ('MolgenisGroup', ${group_index+5}, '${group}');
+INSERT INTO MolgenisRole (d__Type, id, name) values ('MolgenisGroup', ${group_index+5}, '${group}');
 INSERT INTO MolgenisGroup (id) values (${group_index+5});
 </#list>
 
