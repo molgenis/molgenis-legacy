@@ -114,7 +114,7 @@ public class ComputeCommandLine
 							else
 								jobName += "_" + work.getString(target);
 						}
-						dependencies.add(jobName);
+						dependencies.add(jobName + stepnr(previousWfe.getName()));
 					}
 					job.getPrevSteps_Name().addAll(dependencies);
 				}
@@ -135,6 +135,22 @@ public class ComputeCommandLine
 
 	}
 
+	private String stepnr(String wfeName)
+	{
+		// retrieve step number of wfeName in total workflow
+		
+		List<WorkflowElement> workflow = computeBundle.getWorkflowElements();
+		for (int i=0; i < workflow.size(); i++)
+		{
+			if (wfeName.equalsIgnoreCase(workflow.get(i).getName()))
+			{
+				return("_step" + i);
+			}
+		}
+		
+		return null;
+	}
+
 	private String generateJobName(WorkflowElement wfe, Tuple tuple)
 	{
 		String jobName = wfe.getName();
@@ -152,13 +168,8 @@ public class ComputeCommandLine
 			{
 				jobName += "_" + tuple.getString(target);
 			}
-		return jobName;
-	}
-
-	private List<Tuple> getUnfolded(Tuple work)
-	{
-		// TODO Auto-generated method stub
-		return null;
+		
+		return jobName + stepnr(wfe.getName());
 	}
 
 	private String filledtemplate(String scripttemplate, Tuple work) throws IOException, TemplateException
@@ -206,21 +217,21 @@ public class ComputeCommandLine
 		return null;
 	}
 
-	public String[] parseHeaderElement(String header, String protocol)
-	{
-		int posInput = protocol.indexOf(header) + header.length();
-		int posNewLine = protocol.indexOf("\n", posInput);
-		String list = protocol.substring(posInput, posNewLine);
-
-		String[] elements = list.split(",");
-
-		for (int i = 0; i < elements.length; i++)
-		{
-			elements[i] = elements[i].trim();
-		}
-
-		return elements;
-	}
+//	public String[] parseHeaderElement(String header, String protocol)
+//	{
+//		int posInput = protocol.indexOf(header) + header.length();
+//		int posNewLine = protocol.indexOf("\n", posInput);
+//		String list = protocol.substring(posInput, posNewLine);
+//
+//		String[] elements = list.split(",");
+//
+//		for (int i = 0; i < elements.length; i++)
+//		{
+//			elements[i] = elements[i].trim();
+//		}
+//
+//		return elements;
+//	}
 
 	public static void main(String[] args)
 	{
