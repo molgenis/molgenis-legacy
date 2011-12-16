@@ -34,7 +34,9 @@
 						<ul>
 							<#list screen.getShoppingCart() as measurement>
 								<li>${measurement.name}
-									<input type="submit" value="Delete" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) { __action.value='DeleteMeasurement&measurementName=${measurement.name}';return true; } else {return false;}"/><br /><br />
+									<input type="image" src="res/img/delete.png" value="Submit" alt="Delete" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) { __action.value='DeleteMeasurement&measurementName=${measurement.name}';return true; } else {return false;}"/>
+								
+									<!--input type="submit" value="Delete" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) { __action.value='DeleteMeasurement&measurementName=${measurement.name}';return true; } else {return false;}"/><br /><br /-->
 								</li> 
 							</#list>
 						</ul>
