@@ -7,12 +7,12 @@
 		<plugin label="Home" name="ClusterDemo" type="org.molgenis.xgap.other.panacea.header.HomePage" />
 
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/login.xml"/>
-		<!--include file="apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml"/>
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/runanalysis.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/configureanalysis.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/other/panacea/search.xml"/>
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/-->
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
 
 	</menu>

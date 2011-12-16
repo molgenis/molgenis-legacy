@@ -26,7 +26,6 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.pheno.ObservableFeature;
-import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Gene;
@@ -37,11 +36,13 @@ import org.molgenis.xgap.Probe;
 import plugins.reportbuilder.Statistics;
 import plugins.rplot.MakeRPlot;
 
-public class QtlFinder extends PluginModel
+public class QtlFinder extends PluginModel<Entity>
 {
 
+	private static final long serialVersionUID = 1L;
+
 	private QtlFinderModel model = new QtlFinderModel();
-	private DataMatrixHandler dmh = null;
+	//private DataMatrixHandler dmh = null;
 	
 	private int plotWidth = 1024;
 	private int plotHeight = 768;
@@ -253,7 +254,7 @@ public class QtlFinder extends PluginModel
 				
 				//create instance and get name of the row/col we want
 				DataMatrixInstance instance = dmh.createInstance(d, db);
-				String name = entity.get(ObservationElement.NAME).toString();
+				String name = entity.get(ObservableFeature.NAME).toString();
 			
 				long locus;
 				if(entity instanceof Locus)
