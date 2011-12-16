@@ -433,6 +433,7 @@ public class FillAnimalDB {
 		featureIdList.add(ct.getMeasurementId("DateOfBirth"));
 		featureIdList.add(ct.getMeasurementId("Size"));
 		featureIdList.add(ct.getMeasurementId("Certain"));
+		featureIdList.add(ct.getMeasurementId("Active"));
 		ct.makeProtocol(invid, "SetLitterSpecs", "To set the specifications of a litter.", featureIdList);
 		
 		// Protocol for Breeding module: SetBreedingLineSpecs
