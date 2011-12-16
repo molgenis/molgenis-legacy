@@ -127,10 +127,26 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		for (String name : shoppingCart.getMeasurements_Name()) {
 			emailContents += name + "\n";
 		}
+		emailContents += "\n User details: \n"; 
+		emailContents += "Title: "+ user.getTitle() +"\n";
+		emailContents += "First Name: "+ user.getFirstName() +"\n";
+		emailContents += "Last Name: "+ user.getLastName() +"\n";
+		emailContents += "Department: "+ user.getDepartment() +"\n";
+		
+		emailContents += "Email: "+ user.getEmail() +"\n";
+		emailContents += "Phone: "+ user.getPhone() +"\n";
+		emailContents += "Fax: "+ user.getFax() +"\n";
+		emailContents += "TollFreePhone: "+ user.getTollFreePhone() +"\n";
+		emailContents += "Address: "+ user.getAddress() +"\n"; 
+		emailContents += "Phone: "+ user.getPhone() +"\n";
 
-		emailContents += "User details: "+ this.getLogin().getUserId(); 
-		emailContents += "\n\n" ;
-
+		emailContents += "Department: "+ user.getDepartment() +"\n";
+		emailContents += "Affiliation: "+ user.getAffiliation() +"\n";
+		emailContents += "City: "+ user.getCity() +"\n";
+		emailContents += "Country: "+ user.getCountry() +"\n";
+		
+		//TODO :Institute,	Position
+		
 		System.out.println(emailContents);
 		try {
 			this.getEmailService().email("New items/measurements ordered", emailContents, admin.getEmail(), true);
