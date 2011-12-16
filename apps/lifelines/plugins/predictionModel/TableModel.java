@@ -605,14 +605,16 @@ public class TableModel {
 		
 		Investigation investigation = new Investigation();
 		
-		if(db.query(Investigation.class).eq(Investigation.NAME, investigationName).count() == 0){
+		if(investigationName != null && db.query(Investigation.class).eq(Investigation.NAME, investigationName).count() == 0){
 
 			investigation.setName(investigationName);
 			
 			db.add(investigation);
 			
 		}
-		
-		this.investigationName = investigationName;
+		if(investigationName != null)
+		{
+			this.investigationName = investigationName;
+		}
 	}
 }
