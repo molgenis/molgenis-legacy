@@ -56,6 +56,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		
 		
 		if ("EmptyShoppingCart".equals(request.getAction())) {
+	
 			this.emptyShoppingCart(db);
 			this.reload(db);
 			
@@ -78,7 +79,6 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 
 	public void updateShoppingCartAsCheckedOut(Database db) {
 		shoppingCart.setCheckedOut(true);
-		System.out.println("shoppingCart>>>>>>>>>>>>>"+shoppingCart);
 		try {
 			db.update(shoppingCart);
 
@@ -118,8 +118,11 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		Query<ShoppingCart> q = db.query(ShoppingCart.class);
 		q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
 		try {
+			db.beginTx();
 			resshoppingCart = q.find();
 			db.remove(resshoppingCart);
+			db.commitTx();
+
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 		}
@@ -129,14 +132,19 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 	
 	@Override
 	public void reload(Database db) {
-		
+		System.out.println("At RELOAD>>>>>>>>>>>>>>>");
+
 
 		try {
+			db.beginTx();
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
 
 			if (!q.find().isEmpty()) shoppingCart = q.find().get(0);
+			db.commitTx();
+
+			System.out.println(">>>>@@@@@@>>>>"+shoppingCart);
 		} catch (Exception e) {
 			this.getModel().getMessages().add(new ScreenMessage("No shopping cart available", false));
 			e.printStackTrace();
