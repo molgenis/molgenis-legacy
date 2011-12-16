@@ -71,7 +71,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.setView(new FreemarkerView("SearchPlugin.ftl", getModel()));
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
-		this.getModel().setPatientViewer("patient.ftl");
+		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
 	}
 
 	@Override
