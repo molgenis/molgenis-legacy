@@ -30,6 +30,21 @@ public class UserAreaForm extends Container
 		email.setNillable(false);
 		email.setLabel("Email");
 		addressGroup.add(email);
+		
+		TextLineInput phone               = new TextLineInput("phone");
+		phone.setLabel("Phone");
+		addressGroup.add(phone);
+		TextLineInput fax               = new TextLineInput("fax");
+		fax.setLabel("Fax");
+		addressGroup.add(fax);
+		TextLineInput tollFreePhone               = new TextLineInput("tollFreePhone");
+		tollFreePhone.setLabel("TollFreePhone");
+		addressGroup.add(tollFreePhone);
+		TextLineInput address               = new TextLineInput("address");
+		address.setLabel("Address");
+		addressGroup.add(address);
+		
+		
 		TextLineInput title               = new TextLineInput("title");
 		title.setLabel("Title");
 		addressGroup.add(title);

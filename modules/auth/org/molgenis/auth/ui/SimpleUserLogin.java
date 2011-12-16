@@ -380,6 +380,12 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		user.setName(request.getString("username"));
 		user.setPassword(request.getString("password"));
 		user.setEmail(request.getString("email"));
+		
+		user.setPhone(request.getString("phone"));
+		user.setFax(request.getString("fax"));
+		user.setTollFreePhone(request.getString("tollFreePhone"));
+		user.setAddress(request.getString("address"));
+		
 		user.setTitle(request.getString("title"));
 		user.setLastName(request.getString("lastname"));
 		user.setFirstName(request.getString("firstname"));
@@ -403,6 +409,16 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			user.setPassword(request.getString("newpwd"));
 		if (StringUtils.isNotEmpty(request.getString("emailaddress")))
 			user.setEmail(request.getString("emailaddress"));
+		
+		if (StringUtils.isNotEmpty(request.getString("phone")))
+			user.setPhone(request.getString("phone"));
+		if (StringUtils.isNotEmpty(request.getString("fax")))
+			user.setFax(request.getString("fax"));
+		if (StringUtils.isNotEmpty(request.getString("tollFreePhone")))
+			user.setTollFreePhone(request.getString("tollFreePhone"));
+		if (StringUtils.isNotEmpty(request.getString("address")))
+			user.setAddress(request.getString("address"));
+				
 		if (StringUtils.isNotEmpty(request.getString("title")))
 			user.setTitle(request.getString("title"));
 		if (StringUtils.isNotEmpty(request.getString("lastname")))
@@ -453,6 +469,12 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			
 			UserAreaForm userAreaForm       = new UserAreaForm();
 			((TablePanel) userAreaForm.get("personal")).get("emailaddress").setValue(user.getEmail());
+			
+			((TablePanel) userAreaForm.get("personal")).get("phone").setValue(user.getEmail());
+			((TablePanel) userAreaForm.get("personal")).get("fax").setValue(user.getEmail());
+			((TablePanel) userAreaForm.get("personal")).get("tollFreePhone").setValue(user.getEmail());
+			((TablePanel) userAreaForm.get("personal")).get("address").setValue(user.getEmail());
+						
 			((TablePanel) userAreaForm.get("personal")).get("title").setValue(user.getTitle());
 			((TablePanel) userAreaForm.get("personal")).get("firstname").setValue(user.getFirstName());
 			((TablePanel) userAreaForm.get("personal")).get("lastname").setValue(user.getLastName());

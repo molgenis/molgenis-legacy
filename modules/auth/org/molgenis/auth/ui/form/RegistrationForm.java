@@ -12,15 +12,26 @@ public class RegistrationForm extends Container
 
 	public RegistrationForm()
 	{
-		TextLineInput usernameInput    = new TextLineInput("username");
+		TextLineInput usernameInput     = new TextLineInput("username");
 		usernameInput.setLabel("Username");
 		this.add(usernameInput);
-		PasswordInput passwordInput    = new PasswordInput("password");
+		PasswordInput passwordInput     = new PasswordInput("password");
 		this.add(passwordInput);
-		PasswordInput passwordInput2   = new PasswordInput("password2");
+		PasswordInput passwordInput2    = new PasswordInput("password2");
 		this.add(passwordInput2);
-		TextLineInput emailInput       = new TextLineInput("email");
+		TextLineInput emailInput        = new TextLineInput("email");
 		this.add(emailInput);
+		
+		TextLineInput phoneInput         = new TextLineInput("phone");
+		this.add(phoneInput);
+		TextLineInput faxInput           = new TextLineInput("fax");
+		this.add(faxInput);
+		TextLineInput tollFreePhoneInput = new TextLineInput("tollFreePhone");
+		this.add(tollFreePhoneInput);
+		TextLineInput addressInput       = new TextLineInput("address");
+		this.add(addressInput);
+		
+		
 		TextLineInput titleInput       = new TextLineInput("title");
 		this.add(titleInput);
 		TextLineInput lastnameInput    = new TextLineInput("lastname");

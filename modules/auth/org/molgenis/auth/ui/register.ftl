@@ -6,6 +6,10 @@
 <tr><td>Password</td><td>${form.password}</td><td>*</td></tr>
 <tr><td>Repeat password</td><td>${form.password2}</td><td>*</td></tr>
 <tr><td>Email address</td><td>${form.email}</td><td>*</td></tr>
+<tr><td>Phone</td><td>${form.phone}</td></tr>
+<tr><td>Fax</td><td>${form.fax}</td></tr>
+<tr><td>tollFreePhone</td><td>${form.tollFreePhone}</td></tr>
+<tr><td>Address</td><td>${form.address}</td></tr>
 </table>
 <h3>Personal and professional details</h3>
 <table>
