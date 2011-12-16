@@ -185,12 +185,12 @@ public class ComputeCommandLine
 		template.process(parameters, filledtemplate);
 
 		// put debug info in script
-		String script = "#####\n";
-//		script = script + "## Parameter/values : " + parameters.toString() + "\n";
-		script = script + "## Parameters that are lists: " + worksheet.list + "\n";
-		script = script + "## Parameters that are reduced to values:\n";
-		script = script + "##   - we folded on: " + worksheet.foldon + "\n";
-		script = script + "##   - constants: " + worksheet.getConstants() + "\n";
+		String script 	= "\n#####\n";
+		script = script + "## The following ${parameters} are values:\n";
+		script = script + "##   - " + worksheet.foldon + "\n";
+		script = script + "##   - " + worksheet.getConstants() + "\n";
+		script = script + "## The following parameters are lists, <#list parameters as p>${p}</#list> \n";
+		script = script + "##   - " + worksheet.list + "\n";
 		script = script + "#####\n\n";
 		script = script + filledtemplate.toString();
 
