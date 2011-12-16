@@ -61,16 +61,15 @@ public abstract class PluginModel<E extends Entity> extends
 	@Override
 	public boolean isVisible()
 	{
-		if (this.getLogin().isAuthenticated()){
-			try {
-				if (this.getLogin().canRead(this)) {
-					return true;
-				}
-			} catch (DatabaseException e) {
-				e.printStackTrace();
-			}
+		try
+		{
+			return this.getLogin().canRead(this.getController());
 		}
-		return false;
+		catch (DatabaseException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override
