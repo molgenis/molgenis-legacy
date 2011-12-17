@@ -43,6 +43,7 @@
 						<th>Size</th>
 						<th>Size approximate?</th>
 						<th>Remarks</th>
+						<th>Status</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -55,6 +56,7 @@
 						<td>${litter.size}</td>
 						<td>${litter.isSizeApproximate}</td>
 						<td>${litter.remarks}</td>
+						<td>${litter.status}</td>
 						<td><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id?string.computer}">Wean</a></td>
 					</tr>
 				</#list>
@@ -76,6 +78,7 @@
 						<th>Size at birth</th>
 						<th>Size at weaning</th>
 						<th>Remarks</th>
+						<th>Status</th>
 						<th></th>
 						<th></th>
 					</tr>
@@ -90,6 +93,7 @@
 						<td>${litter.size}</td>
 						<td>${litter.weanSize}</td>
 						<td>${litter.remarks}</td>
+						<td>${litter.status}</td>
 						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Create temporary cage labels</a></td>
 						<td><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
 					</tr>
@@ -356,6 +360,7 @@
 						<th>Size at birth</th>
 						<th>Size at weaning</th>
 						<th>Remarks</th>
+						<th>Status</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -369,6 +374,7 @@
 						<td>${litter.size}</td>
 						<td>${litter.weanSize}</td>
 						<td>${litter.remarks}</td>
+						<td>${litter.status}</td>
 						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeDefLabels&id=${litter.id?string.computer}">Create definitive cage labels</a></td>
 					</tr>
 				</#list>

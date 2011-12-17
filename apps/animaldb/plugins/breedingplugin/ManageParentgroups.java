@@ -47,7 +47,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private List<ObservationTarget> lineList;
 	private int line = -1;
 	private String remarks = null;
-	private String status = null;
+	private String pgStatus = null;
 	private List<ObservationTarget> pgList;
 	MatrixViewer motherMatrixViewer = null;
 	MatrixViewer fatherMatrixViewer = null;
@@ -119,8 +119,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setPgStatus(String status) {
+		this.pgStatus = status;
 	}
 
 	public List<ObservationTarget> getPgList() {

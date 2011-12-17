@@ -81,6 +81,7 @@ public class ManageLitters extends PluginModel<Entity>
 	//private Database db;
 	private List<String> bases = null;
 	private String remarks = null;
+	private String status = null;
 	private Table genotypeTable = null;
 	private int nrOfGenotypes = 1;
 	MatrixViewer matrixViewer = null;
@@ -570,6 +571,19 @@ public class ManageLitters extends PluginModel<Entity>
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+	
+	public String getStatus(int litterId) throws DatabaseException {
+		try {
+			return ct.getMostRecentValueAsString(litterId, ct.getMeasurementId("Active"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error while retrieving status";
+		}
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
@@ -676,6 +690,11 @@ public class ManageLitters extends PluginModel<Entity>
 				} catch(Exception e) {
 					//
 				}
+				// Active
+				measurementId = ct.getMeasurementId("Active");
+				valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, litterid, 
+						"Active", 0));
+				
 				// Add everything to DB
 				db.add(valuesToAddList);
 				
@@ -788,6 +807,13 @@ public class ManageLitters extends PluginModel<Entity>
 							protocolId, measurementId, litter, remarks, 0));
 				}
 				
+				// change litter status from active to inactive
+				protocolId = ct.getProtocolId("SetActive");
+				measurementId = ct.getMeasurementId("Active");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, null, measurementId, protocolId, litter, 
+						"Inactive", 0));
+				
+							
 				// Make animal, link to litter and set wean dates etc.
 				for (int animalNumber = 0; animalNumber < weanSize; animalNumber++) {
 					String nrPart = "" + (startNumber + animalNumber);
@@ -1562,6 +1588,13 @@ public class ManageLitters extends PluginModel<Entity>
 					remarks = remarks.substring(0, remarks.length() - 4);
 				}
 				litterToAdd.setRemarks(remarks);
+				
+				// Status
+				featid = ct.getMeasurementId("Active");
+				String status = ct.getMostRecentValueAsString(litterId, featid);
+				litterToAdd.setStatus(status);
+				
+				
 				// Add to the right list
 				if (!weanedLitterIdList.contains(litterId) && !genotypedLitterIdList.contains(litterId)) {
 					litterList.add(litterToAdd);

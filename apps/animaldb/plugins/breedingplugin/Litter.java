@@ -15,6 +15,7 @@ public class Litter {
 	private int weanSize;
 	private String parentgroup;
 	private String remarks;
+	private String status;
 	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	
@@ -93,5 +94,13 @@ public class Litter {
 	}
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+	
+	public String getStatus() {
+		return status;
+	}
+	
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }
