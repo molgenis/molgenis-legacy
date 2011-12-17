@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.WidgetFactory;
+import org.molgenis.model.elements.Field;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
@@ -150,6 +151,7 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 		templateArgs.put("screen", model);
 		templateArgs.put("model", model);
 		templateArgs.put("widgetfactory", new WidgetFactory());
+		templateArgs.put("typefield", Field.TYPE_FIELD);
 		
 
 		
