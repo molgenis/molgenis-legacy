@@ -2,7 +2,6 @@ package org.molgenis.scrum;
 
 
 import org.molgenis.Molgenis;
-import org.molgenis.framework.db.jpa.JpaUtil;
 
 /**
  * Updates the Scrum database, clearing existing tables but not removing obsolete ones.
