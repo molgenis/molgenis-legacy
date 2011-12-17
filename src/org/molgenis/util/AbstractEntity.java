@@ -13,6 +13,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.molgenis.model.elements.Field;
+
 /**
  * Abstract Entity class that implements common parts for each Entity.
  */
@@ -147,19 +149,25 @@ public abstract class AbstractEntity implements Entity, Serializable
 	/** Default implementation. Will be overriden if your entity model contains subclasses */
 	public String get__Type()
 	{
-		throw new UnsupportedOperationException();
+		if(this.get(Field.TYPE_FIELD) != null)
+			return this.get(Field.TYPE_FIELD).toString();
+		return null;
 	}
 	
 	/** Default implementation. Will be overriden if your entity model contains subclasses */
 	public String get__TypeLabel()
 	{
-		throw new UnsupportedOperationException();
+		if(this.get(Field.TYPE_FIELD+"_Label") != null)
+			return this.get(Field.TYPE_FIELD+"_Label").toString();
+		return null;
 	}
 	
 	/** Default implementation. Will be overriden if your entity model contains subclasses */
 	public List<ValueLabel> get__TypeOptions()
 	{
-		throw new UnsupportedOperationException();
+		if(this.get(Field.TYPE_FIELD+"_options") != null)
+			return (List<ValueLabel>) this.get(Field.TYPE_FIELD+"_options");
+		return null;
 	}
 	
 	public void set__Type(String type)

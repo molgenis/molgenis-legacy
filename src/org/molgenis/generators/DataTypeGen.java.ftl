@@ -492,6 +492,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		<#if field.type == "enum" >	
 		if(name.equalsIgnoreCase("${name(field)}_label"))
 			return get${JavaName(field)}Label();
+		if(name.equalsIgnoreCase("${name(field)}_options"))
+			return get${JavaName(field)}Options();	
 		<#elseif field.type == "xref" || field.type == "mref">
 <#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>	
 		if(name.equalsIgnoreCase("${field.name}_${label}"))
