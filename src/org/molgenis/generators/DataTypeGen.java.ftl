@@ -238,7 +238,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * 
 	 */
-	public static ${JavaName(entity)} findBy<#list key.fields as f>${JavaName(f)}</#list>(Database db<#list key.fields as f>, ${type(f)} ${name(f)}</#list>) throws DatabaseException, ParseException
+	public static ${JavaName(entity)} findBy<#list key.fields as f>${JavaName(f)}</#list>(Database db<#list key.fields as f>, ${type(f)} ${name(f)}</#list>) throws DatabaseException
 	{
 		Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class);
 		<#list key.fields as f>q.eq(${JavaName(entity)}.${f.name?upper_case}, ${name(f)});</#list>
@@ -267,6 +267,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * Get the ${field.description}.
 	 * @return ${name(field)}.
 	 */
+	<#if type_label == "xref" || type_label == "mref">@Deprecated</#if>
 	public ${type(field)} get${JavaName(field)}()
 	{
 		<#if type_label == "xref">
@@ -304,6 +305,51 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		return this._${name(field)};
 	}	
 	</#if>
+	
+	<#if type_label="xref">
+	/** Helper method to get object that is refered via xref '${field.name}' directly from database */
+	public ${JavaName(field.xrefEntity)} get${JavaName(field)}(Database db) throws DatabaseException
+	{
+		//if the object is already there
+		if(this._${name(field)}_object != null)
+			return this._${name(field)}_object;
+			
+		//if referred to via id
+		if (this.get${JavaName(field)}_${JavaName(field.xrefField)}() != null)
+		{
+			
+			Query<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}> q = db.query(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}.class);
+			q.eq(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}.${field.xrefField.name?upper_case}, this.get${JavaName(field)}_${JavaName(field.xrefField)}());
+			List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}> result = q.find();
+			if(result.size() == 1) return result.get(0);
+		}
+		
+		//otherwise
+		return null;
+	}
+	</#if>
+	
+	<#if type_label="mref">
+	/** Helper method to get object that is refered via mref '${field.name}' directly from database */
+	public List<${JavaName(field.xrefEntity)}> get${JavaName(field)}(Database db) throws DatabaseException
+	{
+		//if the object is already there
+		if(this._${name(field)}_objects != null)
+			return this._${name(field)}_objects;
+			
+		//if referred to via id
+		if(this._${name(field)}_objects != null && this._${name(field)}_objects.size() > 0)
+		{
+			Query<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}> q = db.query(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}.class);
+			q.in(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}.${field.xrefField.name?upper_case}, this.get${JavaName(field)}_${JavaName(field.xrefField)}());
+			return q.find();
+		}
+		
+		//otherwise
+		return null;
+	}	
+	</#if>
+	
 	
 	
 	/**
