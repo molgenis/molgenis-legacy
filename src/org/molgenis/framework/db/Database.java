@@ -512,7 +512,6 @@ public interface Database
 	 * Executes a query and get back a List of (Molgenis)Tuples
 	 * @return List<Tuple>
 	 */
-	@Deprecated
 	public List<Tuple> sql(String query, QueryRule ...queryRules) throws DatabaseException;
 	
 	/**
