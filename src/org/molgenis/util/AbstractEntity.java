@@ -172,7 +172,15 @@ public abstract class AbstractEntity implements Entity, Serializable
 	
 	public void set__Type(String type)
 	{
-		throw new UnsupportedOperationException();
+		//throwing would be better but requires more refactoring
+		try
+		{
+			this.set(Field.TYPE_FIELD, type);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	public String getLabelValue()

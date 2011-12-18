@@ -93,7 +93,7 @@
 				this.set${JavaName(f)}_${JavaName(label)}( values );			
 			}	
 			</#list></#if>					
-		<#elseif f.name != typefield()>
+		<#else>
 			//set ${JavaName(f)}
 			<#if f.type == "xref">	
 			if( strict || tuple.get${settertype(f)}("${f.name}_${f.xrefField.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name}_${f.xrefField.name}"));
