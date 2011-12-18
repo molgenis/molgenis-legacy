@@ -110,7 +110,7 @@
 	
 	<#if result.result??>
 		<#list result.qtlsFound as qtl>
-			${result.result.get(model.typeField)} <a href="molgenis.do?__target=${result.result.get(model.typeField)}s&__action=filter_set&__filter_attribute=${result.result.get(model.typeField)}_name&__filter_operator=EQUALS&__filter_value=${result.result.name}">${result.result.name}</a>
+			${result.result.get(typefield)} <a href="molgenis.do?__target=${result.result.get(typefield)}s&__action=filter_set&__filter_attribute=${result.result.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${result.result.name}">${result.result.name}</a>
 			<#if result.selectedName != result.result.name>matches "${result.selectedName}"</#if><br><b>Max. LOD: ${qtl.peakValue}</b><br><br>
 			<#if qtl.plot??>
 				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
@@ -166,7 +166,7 @@
 				<div style="overflow: auto; width: 780px; max-height: 400px;">
 
 				<#list result.disambiguate as d>
-					<input type="checkbox" name="disambig_option_${d.name}@${d.get(model.typeField)}" value="true">${d.get(model.typeField)} <a href="molgenis.do?__target=${d.get(model.typeField)}s&__action=filter_set&__filter_attribute=${d.get(model.typeField)}_name&__filter_operator=EQUALS&__filter_value=${d.name}"><div style="display: inline; text-decoration: underline; color: blue;" onmouseover="return overlib('<@rb.printEntityText r=d/>', CAPTION, 'Description')" onmouseout="return nd();">${d.name}</div></a> <div style="display: inline;"><#list d.getFields() as f><#if d.get(f)?exists><#if d.get(f)?is_enumerable && f == 'AlternateId_name' && d.get(f)?size gt 0>Alternative ID's: <b><#list d.get(f) as i>${i} <#if i_index == 5>...<#break></#if></#list></b></#if></#if></#list><#if d.description??>Description: <b><#if d.description?length gt 40>${d.description?substring(0, 20)} ... ${d.description?substring(d.description?length-20, d.description?length)}<#else>${d.description}</#if></b></#if></div><br>
+					<input type="checkbox" name="disambig_option_${d.name}@${d.get(typefield)}" value="true">${d.get(typefield)} <a href="molgenis.do?__target=${d.get(typefield)}s&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}"><div style="display: inline; text-decoration: underline; color: blue;" onmouseover="return overlib('<@rb.printEntityText r=d/>', CAPTION, 'Description')" onmouseout="return nd();">${d.name}</div></a> <div style="display: inline;"><#list d.getFields() as f><#if d.get(f)?exists><#if d.get(f)?is_enumerable && f == 'AlternateId_name' && d.get(f)?size gt 0>Alternative ID's: <b><#list d.get(f) as i>${i} <#if i_index == 5>...<#break></#if></#list></b></#if></#if></#list><#if d.description??>Description: <b><#if d.description?length gt 40>${d.description?substring(0, 20)} ... ${d.description?substring(d.description?length-20, d.description?length)}<#else>${d.description}</#if></b></#if></div><br>
 				</#list>
 				
 				</div>
@@ -184,7 +184,7 @@
 			<tr>
 				<td>
 					<h1 id="${result.selectedName}">
-					${result.result.get(model.typeField)} ${result.result.name}
+					${result.result.get(typefield)} ${result.result.name}
 					<#if result.selectedName != result.result.name>matches "${result.selectedName}"</#if>
 					</h1>
 					<h2>Record information</h2>

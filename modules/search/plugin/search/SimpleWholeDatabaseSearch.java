@@ -157,10 +157,6 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 			{
 				metadb = new JDBCMetaDatabase();
 			}
-			if(model.getTypeField() == null)
-			{
-				model.setTypeField(Field.TYPE_FIELD);
-			}
 		}
 		catch (Exception e)
 		{

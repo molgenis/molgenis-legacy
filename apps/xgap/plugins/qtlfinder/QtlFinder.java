@@ -469,11 +469,6 @@ public class QtlFinder extends PluginModel<Entity>
 			{
 				this.model.setResultSet(new HashMap<String, Result>());
 			}
-			if(model.getTypeField() == null)
-			{
-				model.setTypeField(Field.TYPE_FIELD);
-			}
-
 		}
 		catch (Exception e)
 		{
