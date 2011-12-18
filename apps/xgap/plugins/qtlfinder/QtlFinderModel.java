@@ -12,8 +12,17 @@ public class QtlFinderModel{
 	private String query;
 	private Double threshold;
 	private List<String> tickedDataSets;
+	String typeField;
 	
 	
+	public String getTypeField()
+	{
+		return typeField;
+	}
+	public void setTypeField(String typeField)
+	{
+		this.typeField = typeField;
+	}
 	public List<String> getTickedDataSets()
 	{
 		return tickedDataSets;
