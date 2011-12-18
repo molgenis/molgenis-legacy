@@ -21,6 +21,7 @@ import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -78,7 +79,7 @@ public class PersonToUser extends PluginModel
 					MolgenisUser mu = new MolgenisUser();
 					for(String f : p.getFields(true))
 					{
-						if(!f.equals(Person.__TYPE))
+						if(!f.equals(Field.TYPE_FIELD))
 						{
 							mu.set(f, p.get(f));
 						}
@@ -155,7 +156,7 @@ public class PersonToUser extends PluginModel
 		
 		try
 		{
-			personList = db.find(Person.class, new QueryRule(Person.__TYPE, Operator.EQUALS, "Person"));
+			personList = db.find(Person.class, new QueryRule(Field.TYPE_FIELD, Operator.EQUALS, "Person"));
 			this.model.setPersonList(personList);
 			groupList = db.find(MolgenisGroup.class);
 			this.model.setGroupList(groupList);

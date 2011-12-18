@@ -17,6 +17,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -127,7 +128,7 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 							// superclasses from results
 							// 3. Lowercased value matches the lowercased search
 							// string
-							if (e.get(field) != null && e.get("__Type").toString().equals(entityType.getName())
+							if (e.get(field) != null && e.get(Field.TYPE_FIELD).toString().equals(entityType.getName())
 									&& e.get(field).toString().toLowerCase().contains(searchThis.toLowerCase()))
 							{
 								res.add(e);
@@ -155,6 +156,10 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 			if (metadb == null)
 			{
 				metadb = new JDBCMetaDatabase();
+			}
+			if(model.getTypeField() == null)
+			{
+				model.setTypeField(Field.TYPE_FIELD);
 			}
 		}
 		catch (Exception e)

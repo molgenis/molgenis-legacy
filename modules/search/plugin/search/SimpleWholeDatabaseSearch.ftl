@@ -46,17 +46,17 @@
 Found ${model.results?size} result(s) in ${model.time} seconds.
 <#assign currentType = "null">
 <#list model.results as r>
-	<#if currentType != r.get("__Type")>
+	<#if currentType != r.get(model.typeField)>
 	<#if currentType != "null">
 		</table></div>
 	</#if>
-	<h4>Type: <i>${r.get("__Type")}</i></h4>
+	<h4>Type: <i>${r.get(model.typeField)}</i></h4>
 	<div style="width:inherit;overflow:auto;">
 	<table border="1" bgcolor="#F5F5F5" bordercolor="silver" cellpadding="3">
 		<tr>
 		<td><i><b><nobr>Go there</nobr></b></i></td>
 		<#list r.getFields() as f>
-			<#if f != "__Type">
+			<#if f != model.typeField>
 			<td><b>${f}</b></td>
 			</#if>
 		</#list>
@@ -64,10 +64,10 @@ Found ${model.results?size} result(s) in ${model.time} seconds.
 	</#if>
 	<tr>
 	<td>
-		<a href="?__target=${r.get("__Type")}s&__action=filter_set&__filter_attribute=${r.get("__Type")}_id&__filter_operator=EQUALS&__filter_value=${r.get("id")}"> <b>Link<b> </a>
+		<a href="?__target=${r.get(model.typeField)}s&__action=filter_set&__filter_attribute=${r.get(model.typeField)}_id&__filter_operator=EQUALS&__filter_value=${r.get("id")}"> <b>Link<b> </a>
 	</td>
 		<#list r.getFields() as f>
-			<#if f != "__Type">
+			<#if f != model.typeField>
 			<td>
 				<#if r.get(f)?exists>
 					<#if r.get(f)?is_string || r.get(f)?is_date || r.get(f)?is_number>
@@ -89,7 +89,7 @@ Found ${model.results?size} result(s) in ${model.time} seconds.
 			</#if>
 		</#list>
 	</tr>
-	<#assign currentType = r.get("__Type")>
+	<#assign currentType = r.get(model.typeField)>
 </#list>
 </table></div>
 </#if>

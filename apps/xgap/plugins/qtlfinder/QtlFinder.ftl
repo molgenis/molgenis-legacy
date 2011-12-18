@@ -8,8 +8,6 @@
 	<!--need to be set to "true" in order to force a download-->
 	<input type="hidden" name="__show">
 	
-	<!-- pass entity type on disambiguation-->
-	<input type="hidden" name="__type">
 	<!-- pass resultset key on disambiguation-->
 	<input type="hidden" name="__key">
 	

@@ -25,6 +25,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
@@ -154,7 +155,7 @@ public class ReportBuilder extends PluginModel
 		List<MatrixLocation> matrixLocations = new ArrayList<MatrixLocation>();
 		for(Data d : allData)
 		{
-			if(d.getTargetType().equals(entity.get(ObservationElement.__TYPE)) || d.getFeatureType().equals(entity.get(ObservationElement.__TYPE))){
+			if(d.getTargetType().equals(entity.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(entity.get(Field.TYPE_FIELD))){
 				DataMatrixInstance instance = dmh.createInstance(d, db);
 				String name = entity.get(ObservationElement.NAME).toString();
 				

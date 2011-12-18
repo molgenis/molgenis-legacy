@@ -9,6 +9,19 @@ public class SimpleWholeDatabaseSearchModel
 	String searchThis;
 	List<Entity> results;
 	double time;
+	String typeField;
+	
+	
+
+	public String getTypeField()
+	{
+		return typeField;
+	}
+
+	public void setTypeField(String typeField)
+	{
+		this.typeField = typeField;
+	}
 
 	public double getTime()
 	{

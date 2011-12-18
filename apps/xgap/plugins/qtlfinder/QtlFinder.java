@@ -25,6 +25,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -247,7 +248,7 @@ public class QtlFinder extends PluginModel<Entity>
 			}
 			//match row/col type of the matrix to the type of entity queried
 			//and one of the dimensions is Marker
-			if((d.getTargetType().equals(entity.get(ObservableFeature.__TYPE)) || d.getFeatureType().equals(entity.get(ObservableFeature.__TYPE)))
+			if((d.getTargetType().equals(entity.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(entity.get(Field.TYPE_FIELD)))
 				&&
 				(d.getTargetType().equals("Marker") || d.getFeatureType().equals("Marker")))
 			{
