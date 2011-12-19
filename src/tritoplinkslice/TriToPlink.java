@@ -2,7 +2,6 @@ package tritoplinkslice;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.zip.DataFormatException;
 
 import tritobin.sources.TriTyperGenotypeData;
 import tritoplinkslice.sources.TriTyperSliceToPlink;
@@ -24,10 +23,12 @@ public class TriToPlink
 		
 		if (args.length != 3)
 		{
-			throw new DataFormatException(
-					"You must supply 3 arguments:\n* input directory\n* slice+pheno file (used to subselect Individuals.txt)" +
-					"\n* output file name. (e.g. 'result' for result"+tp+" / result"+tf+")" +
-							"\nPLEASE NOTE: The slice+pheno file must be of format: [individual name] [TAB] [phenotype value], without headers.");
+			throw new Exception(
+					"You must supply 3 arguments:\n" +
+					"* input directory location\n" +
+					"* output file name (e.g. 'result' for result"+tp+" / result"+tf+")\n" +
+					"* slice+pheno file (used to subselect Individuals.txt)\n" +
+					"PLEASE NOTE: The slice+pheno file must be of format: [individual name] [TAB] [phenotype value], without headers.");
 		}
 
 		// get args
