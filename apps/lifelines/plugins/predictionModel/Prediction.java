@@ -19,6 +19,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
@@ -43,7 +44,7 @@ public class Prediction extends PluginModel<Entity>
 	
 	private String investigation = null;
 	
-	private boolean importingFinished = false;
+	private boolean importingFinished = true;
 
 	private static final long serialVersionUID = 6149846107377048848L;
 	
@@ -111,7 +112,10 @@ public class Prediction extends PluginModel<Entity>
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.CODE_STRING);
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.LABEL);
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.DESCRIPTION);
+		chooseFieldName.add(ObservedValue.class.getSimpleName());
+		chooseFieldName.add(ObservationTarget.class.getSimpleName() + ":" + ObservationTarget.NAME);
 		chooseClassType.add(ObservedValue.class.getSimpleName());
+		chooseClassType.add(ObservationTarget.class.getSimpleName());
 		
 		dataTypeOptions.add("string");
 		dataTypeOptions.add("int");
@@ -154,8 +158,7 @@ public class Prediction extends PluginModel<Entity>
 
 		if ("UploadFile".equals(request.getAction())) 
 		{
-			importingFinished = false;
-			setStatus("");
+			
 			System.out.println(request);
 			readHeaders();
 			
@@ -191,6 +194,7 @@ public class Prediction extends PluginModel<Entity>
 								index++;
 								
 							}else if(index == 2){
+								System.out.println(columnIndex + "-------------------------->" + eachMember.toString());
 								columnIndexToRelation.put(columnIndex, Integer.parseInt(eachMember.toString()));
 							}
 						}
@@ -227,7 +231,6 @@ public class Prediction extends PluginModel<Entity>
 				setStatus("Please do the step one first!");
 			}
 			
-			
 		} else if ("fillinDatabase".equals(request.getAction())) {
 
 			new emptyDatabase(db, false);
@@ -241,11 +244,18 @@ public class Prediction extends PluginModel<Entity>
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
-		//File file = new File(tmpDir+ "/DataShaperExcel.xls"); 
+		//file = new File(tmpDir+ "/DataShaperExcel.xls"); 
 
-		file = new File(tmpDir+ "/LifelinesDict.xls"); 
+		//file = new File(tmpDir+ "/LifelinesDict.xls"); 
+		
+		file = new File(tmpDir+ "/TextFileFromRoan.xls"); 
+		
 		
 		if (file.exists()) {
+			
+			importingFinished = false;
+			
+			setStatus("");
 			
 			Workbook workbook = Workbook.getWorkbook(file); 
 
@@ -265,6 +275,10 @@ public class Prediction extends PluginModel<Entity>
 			}
 			
 			setSpreadSheetHeanders(headers);
+			
+		}else {
+			
+			this.setStatus("The file should be in " + file );
 		}
 	}
 	
@@ -366,7 +380,7 @@ public class Prediction extends PluginModel<Entity>
 					if(classType.equals(ObservedValue.class.getSimpleName()))
 					{
 						int coHeaders[] = {columnIndex.intValue()};
-						
+						System.out.println(columnIndex);
 						table.addField(classType, ObservedValue.VALUE, coHeaders, dependedColumn.intValue(), TableField.COLHEADER);
 						
 					}else{
@@ -462,8 +476,7 @@ public class Prediction extends PluginModel<Entity>
 //				table.setTarget(0);
 //				table.convertIntoPheno(dictionaryCategory);
 				
-
-				
+	
 			}
 			
 			this.setStatus("finished!");

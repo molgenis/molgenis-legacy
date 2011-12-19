@@ -22,6 +22,7 @@ import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
@@ -457,7 +458,7 @@ public class TableModel {
 			List<InvestigationElement> measurementList = new ArrayList<InvestigationElement>();
 			List<InvestigationElement> categoryList = new ArrayList<InvestigationElement>();
 			List<InvestigationElement> protocolList = new ArrayList<InvestigationElement>();
-
+			List<InvestigationElement> observationTargetList = new ArrayList<InvestigationElement>();
 
 			for(Integer colIndex: colValues.keySet())
 			{
@@ -478,11 +479,17 @@ public class TableModel {
 					{
 						protocolList.addAll(list);
 					}
+					if(columnIndexToTableField.get(colIndex).getClassType().equals("ObservationTarget"))
+					{
+						observationTargetList.addAll(list);
+					}
 				}
 
 			}
 			
-			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+			
+			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservationTarget.NAME);
 
 			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
 
