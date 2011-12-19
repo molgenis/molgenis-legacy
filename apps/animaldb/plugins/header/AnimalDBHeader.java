@@ -7,24 +7,22 @@
 
 package plugins.header;
 
-import mx4j.log.Logger;
-
+import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SimpleEmailService;
 import org.molgenis.util.Tuple;
-
-import app.FillMetadata;
 
 import plugins.emptydb.emptyDatabase;
 import plugins.fillanimaldb.FillAnimalDB;
-
-import commonservice.CommonService;
+import app.FillMetadata;
 
 
 /**
@@ -36,12 +34,19 @@ import commonservice.CommonService;
  */
 public class AnimalDBHeader extends PluginModel<Entity>
 {
-
+	private String feedback = null;
 	private static final long serialVersionUID = 4701628601897969977L;
 	
 	public AnimalDBHeader(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+	}
+	
+	public String getCustomHtmlHeaders() {
+		return  "<script src=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.js\" language=\"javascript\"></script>\n" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.css\">" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.rounded.css\">" +
+				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.roundedBr.css\">";		
 	}
 
 	@Override
@@ -79,13 +84,13 @@ public class AnimalDBHeader extends PluginModel<Entity>
 			FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
 			myFillAnimalDB.populateDB(this.getLogin());
 			
-			logger.info("Your database was empty, so it was prefilled with entities needed to make AnimalDB run");
+			this.getMessages().add(new ScreenMessage("Your database was empty, so it was prefilled with entities needed to make AnimalDB run", true));
 		} catch (Exception e) {
 			String message = "Something went wrong while trying to prefill your database";
 			if (e.getMessage() != null) {
 				message += (": " + e.getMessage());
 			}
-			logger.info(message);
+			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
 	}
@@ -94,19 +99,49 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request) throws Exception
 	{
 		if ("doLogout".equals(request.getAction())) {
-
-				getLogin().logout(db);
+			getLogin().logout(db);
+		}
+		
+		if ("sendFeedback".equals(request.getAction())) {
+			feedback = "User: " + this.getLogin().getUserName() + " sent: " + request.getString("feedback") + " about: " + request.getString("plugin");
+			
+			// get admin email
+			MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
+			if (StringUtils.isEmpty(admin.getEmail()))
+				throw new DatabaseException("Registration failed: the administrator has no email address set. Please contact your administrator about this.");
+			
+			SimpleEmailService ses = new SimpleEmailService();
+			ses.email("New feedback on AnimalDB", feedback, admin.getEmail(), true);
+			
+			this.getMessages().add(new ScreenMessage(feedback, true));
+		}
+		
+		if ("resetFeedbackForm".equals(request.getAction())) {
+			feedback = null;
 		}
 	}
 	
-	public String getUserLogin() {
-		String userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
-		if (this.getLogin().isAuthenticated()) {
-			userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
-			userLogin += "<span style=\"color:black\">&nbsp;|&nbsp;</span>";
-			userLogin += "<a href='molgenis.do?__target=AnimalDBHeader&select=AnimalDBHeader&__action=doLogout'>" + "Logout " + "</a>";
+	public String getActivePlugin() {
+		if (this.getParent().getSelected() == null) {
+			return "";
 		}
-		return userLogin;
+		ScreenModel model = this.getParent().getSelected();
+		while (model.getSelected() != null) {
+			model = model.getSelected();
+		}
+		return model.getLabel();
+	}
+
+	public String getFullUserName() {
+		
+		if (this.getLogin().isAuthenticated()) {
+			return ((DatabaseLogin)this.getLogin()).getFullUserName();
+		}
+		return null;
+	}
+	
+	public String getFeedback() {
+		return feedback;
 	}
 
 	@Override
