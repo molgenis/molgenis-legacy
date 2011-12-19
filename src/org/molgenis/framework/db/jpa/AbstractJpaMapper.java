@@ -250,7 +250,7 @@ public abstract class AbstractJpaMapper<E extends Entity> implements Mapper<E> {
                         // remove mrefs before the entity itself
                         this.resolveForeignKeys(entities);
                         for (E e : sublist) {
-                            edit(e);
+                            destroy(e);
                             ++updatedRows;
                         }
                         em.flush();
