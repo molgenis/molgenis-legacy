@@ -104,7 +104,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 		if (this.getLogin().isAuthenticated()) {
 			userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
 			userLogin += "<span style=\"color:black\">&nbsp;|&nbsp;</span>";
-			userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
+			userLogin += "<a href='molgenis.do?__target=AnimalDBHeader&select=AnimalDBHeader&__action=doLogout'>" + "Logout " + "</a>";
 		}
 		return userLogin;
 	}
