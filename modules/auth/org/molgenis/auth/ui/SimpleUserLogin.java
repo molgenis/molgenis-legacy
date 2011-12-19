@@ -470,10 +470,10 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 			UserAreaForm userAreaForm       = new UserAreaForm();
 			((TablePanel) userAreaForm.get("personal")).get("emailaddress").setValue(user.getEmail());
 			
-			((TablePanel) userAreaForm.get("personal")).get("phone").setValue(user.getEmail());
-			((TablePanel) userAreaForm.get("personal")).get("fax").setValue(user.getEmail());
-			((TablePanel) userAreaForm.get("personal")).get("tollFreePhone").setValue(user.getEmail());
-			((TablePanel) userAreaForm.get("personal")).get("address").setValue(user.getEmail());
+			((TablePanel) userAreaForm.get("personal")).get("phone").setValue(user.getPhone());
+			((TablePanel) userAreaForm.get("personal")).get("fax").setValue(user.getFax());
+			((TablePanel) userAreaForm.get("personal")).get("tollFreePhone").setValue(user.getTollFreePhone());
+			((TablePanel) userAreaForm.get("personal")).get("address").setValue(user.getAddress());
 						
 			((TablePanel) userAreaForm.get("personal")).get("title").setValue(user.getTitle());
 			((TablePanel) userAreaForm.get("personal")).get("firstname").setValue(user.getFirstName());
