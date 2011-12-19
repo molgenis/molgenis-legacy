@@ -53,6 +53,8 @@ public class IndividualMatrixModel extends EasyPluginModel
 	private Boolean checkForPaging = false;
 	private String lastInvest = "";
 	boolean isProjectShared;
+	String investigation;
+	private List<String> measExport;
 	
 	
 	//hack to pass database to toHtml() via toHtml(db)
@@ -67,6 +69,14 @@ public class IndividualMatrixModel extends EasyPluginModel
 	//public List<Investigation> investigations = new ArrayList<Investigation>();
 
 	
+
+	public List<String> getMeasExport() {
+		return measExport;
+	}
+
+	public void setMeasExport(List<String> measExport) {
+		this.measExport = measExport;
+	}
 
 	public IndividualMatrixModel(IndividualMatrix controller)
 	{
@@ -268,6 +278,14 @@ public class IndividualMatrixModel extends EasyPluginModel
 
 	public void setProjectShared(boolean isProjectShared) {
 		this.isProjectShared = isProjectShared;
+	}
+
+	public String getInvestigation() {
+		return investigation;
+	}
+
+	public void setInvestigation(String investigation) {
+		this.investigation = investigation;
 	}
 
 }
