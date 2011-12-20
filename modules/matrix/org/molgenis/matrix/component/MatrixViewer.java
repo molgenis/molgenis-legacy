@@ -8,8 +8,18 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -33,6 +43,7 @@ import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
+import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.Observation;
 import org.molgenis.pheno.ObservationElement;
@@ -71,6 +82,7 @@ public class MatrixViewer extends HtmlWidget
 	public String MOVEDOWN = getName() + "_moveDown";
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
 	public String DOWNLOADVISCSV = getName() + "_downloadVisibleCsv";
+	public String DOWNLOADVISEXCEL = getName() + "_downloadVisibleExcel";
 	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
 	public String FILTERCOL = getName() + "_filterCol";
@@ -218,6 +230,9 @@ public class MatrixViewer extends HtmlWidget
 			ActionInput downloadAllCsv = new ActionInput(DOWNLOADVISCSV, "", "Export visible to CSV");
 			downloadAllCsv.setIcon("generated-res/img/download.png");
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadAllCsv.render() + "</div>";
+			ActionInput downloadVisExcel = new ActionInput(DOWNLOADVISEXCEL, "", "Export visible to Excel");
+			downloadVisExcel.setIcon("generated-res/img/download.png");
+			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadVisExcel.render() + "</div>";
 		}
 		
 		return divContents;
@@ -408,11 +423,13 @@ public class MatrixViewer extends HtmlWidget
 							ObservationElement measr = (ObservationElement)meas;
 							if (measr.getId().intValue() == mqr.getDimIndex().intValue()) {
 								measurementName = measr.getName();
+								
 							}
 						} else {
 							measurementName = meas.toString();
 						}
 					}
+					
 					// Name not in column headers, so retrieve via DB (if available)
 					if (measurementName.equals("") && this.matrix instanceof DatabaseMatrix) {
 						measurementName = db.findById(Measurement.class, mqr.getDimIndex()).getName();
@@ -423,9 +440,12 @@ public class MatrixViewer extends HtmlWidget
 					removeButton.setIcon("generated-res/img/delete.png");
 					filterRules += removeButton.render();
 				}
+				System.out.println("(mqr.getFilterType() "  + mqr.getFilterType());
 				filterCnt++;
 			}
+			
 		}
+		
 		if (filterRules.equals("")) {
 			filterRules = " none";
 		}
@@ -609,6 +629,122 @@ public class MatrixViewer extends HtmlWidget
 		downloadLink = file.getName();
 	}
 	
+	public void downloadVisibleExcel(Database db, Tuple t) throws Exception{
+		
+		if (this.matrix instanceof DatabaseMatrix) {
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
+		
+			List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
+			List<String> listC = new ArrayList<String>();
+			List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
+			List<String> listR = new ArrayList<String>();	
+			List<ObservedValue>[][] listVal = (List<ObservedValue>[][]) this.matrix.getValueLists();
+			
+			String target = "name";
+			String id = "ID";
+			for(Object col: listCol){
+				if(col instanceof ObservationElement) {
+					ObservationElement colobs = (ObservationElement) col;
+					listC.add(colobs.getName());
+				}
+			}
+			for(Object m : listRow){
+				if(m instanceof ObservationElement) {
+					ObservationElement colobs = (ObservationElement) m;
+					listR.add(colobs.getName());
+				}
+			}		
+		       /* Create tmp file */
+		       File excelFile = new File(System.getProperty("java.io.tmpdir")
+		               + File.separatorChar  + "download.xls");
+		       System.out.println(excelFile);
+		       /* Create new Excel workbook and sheet */
+		       WorkbookSettings ws = new WorkbookSettings();
+		       ws.setLocale(new Locale("en", "EN"));
+		       WritableWorkbook workbook = Workbook.createWorkbook(excelFile, ws);
+		       WritableSheet s = workbook.createSheet("Sheet1", 0);
+
+		       /* Format the fonts */
+		       WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
+		       WritableCellFormat headerFormat = new WritableCellFormat(headerFont);
+		       headerFormat.setWrap(false);
+		       WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
+		       WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
+		       cellFormat.setWrap(false);
+
+		       //
+		       Label d = new Label(0, 0, id, headerFormat);
+		       s.addCell(d);
+		       Label e = new Label(1, 0, target, headerFormat);
+	           s.addCell(e);
+
+	          
+	           
+		       // Write column headers 
+		       for (int i = 0; i < listC.size(); i++)
+		       {
+		    	   
+		           Label l = new Label(i + 2, 0, listC.get(i), headerFormat);
+		           s.addCell(l);
+		       }
+
+		       // Write row headers 
+		       for (int i = 0; i < listRow.size(); i++)
+		       {
+		    	   Object rowobj = listRow.get(i);
+					if(rowobj instanceof ObservationElement) {
+						ObservationElement rowObs = (ObservationElement) rowobj;
+						 Label l = new Label(0, i+1 , rowObs.getId()+"", headerFormat);
+				           s.addCell(l);
+				           Label j = new Label(1, i+1 ,rowObs.getName(), headerFormat);
+				           s.addCell(j);   
+
+					} else {
+						 Label l = new Label(0, i+1 , "0", headerFormat);						 
+						 Label j = new Label(1, i+1 , rowobj.toString(), headerFormat);
+						 s.addCell(l);  
+						 s.addCell(j);  
+					}
+		       }
+
+		       // Write elements 
+		       for (int a = 0; a < listC.size(); a++)
+		       {
+		           for (int b = 0; b < listR.size(); b++)
+		           {
+		               if (listVal[b][a] != null)
+		               {
+		                   Label l = new Label(a + 2, b + 1, listObsValToString(listVal[b][a]), cellFormat);
+		                   s.addCell(l);
+		               }
+		               else
+		               {
+		                   s.addCell(new Label(a + 2, b + 1, "", cellFormat));
+		               }
+		        
+		           }
+		       }
+		      
+		       workbook.write();
+		       workbook.close();
+		     
+		       downloadLink = excelFile.getName();
+		   }
+	
+		
+	 private String listObsValToString(List<ObservedValue> values) throws Exception
+	    {
+	    	String japie= "";
+	    	for (ObservedValue s : values){
+	    		japie = s.getValue();
+	    		
+	    	}
+	    	if(values.size()>1){
+	    		throw new Exception("more than one value in the cell :) !!!");
+	    	}
+	    	return japie;
+	    }
 	public void reloadMatrix(Database db, Tuple t) throws MatrixException
 	{
 		matrix.reload();
