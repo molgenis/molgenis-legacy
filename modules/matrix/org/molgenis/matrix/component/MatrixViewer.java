@@ -93,6 +93,8 @@ public class MatrixViewer extends HtmlWidget
 	public String RELOADMATRIX = getName() + "_reloadMatrix";
 	public String SELECTED = getName() + "_selected";
 	public String UPDATECOLHEADERFILTER = getName() + "_updateColHeaderFilter";
+	public String ADDALLCOLHEADERFILTER = getName() + "_addAllColHeaderFilter";
+	public String REMALLCOLHEADERFILTER = getName() + "_remAllColHeaderFilter";
 	public String MEASUREMENTCHOOSER = getName() + "_measurementChooser";
 	public String OPERATOR = getName() + "_operator";
 	
@@ -292,9 +294,9 @@ public class MatrixViewer extends HtmlWidget
 		List<?> cols = matrix.getColHeaders();
 		
 		//print colHeaders
+		dataTable.addColumn("Select"); // for checkbox / radio input
 		dataTable.addColumn("ID");
 		dataTable.addColumn("Name");
-		dataTable.addColumn(""); // for checkbox / radio input
 		
 		for (Object col: cols)
 		{
@@ -314,21 +316,6 @@ public class MatrixViewer extends HtmlWidget
 		{
 			// print empty rowHeader
 			dataTable.addRow("");
-			// print ID and name
-			
-			Object rowobj = rows.get(row);
-			if(rowobj instanceof ObservationElement)
-			{
-				ObservationElement rowObs = (ObservationElement) rowobj;
-				dataTable.setCell(0, row, rowObs.getId());
-				dataTable.setCell(1, row, rowObs.getName());
-			}
-			else
-			{
-				dataTable.setCell(0, row, "0");
-				dataTable.setCell(1, row, rowobj.toString());
-			}
-			
 			// print checkbox or radio input for this row
 			if (selectMultiple) {
 				List<String> options = new ArrayList<String>();
@@ -338,15 +325,28 @@ public class MatrixViewer extends HtmlWidget
 				CheckboxInput rowCheckbox = new CheckboxInput(SELECTED + "_" + row, options, 
 						optionLabels, "", null, true, false);
 				rowCheckbox.setId(SELECTED + "_" + row);
-				dataTable.setCell(2, row, rowCheckbox);
+				dataTable.setCell(0, row, rowCheckbox);
 			} else {
 				// When the user may select only one, use a radio button group, which is mutually exclusive
 				String radioButtonCode = "<input type='radio' name='" + SELECTED + "' id='" + 
 						(SELECTED + "_" + row) + "' value='" + row + "'></input>";
-				dataTable.setCell(2, row, radioButtonCode);
+				dataTable.setCell(0, row, radioButtonCode);
+			}
+			// print ID and name
+			Object rowobj = rows.get(row);
+			if(rowobj instanceof ObservationElement)
+			{
+				ObservationElement rowObs = (ObservationElement) rowobj;
+				dataTable.setCell(1, row, rowObs.getId());
+				dataTable.setCell(2, row, rowObs.getName());
+			}
+			else
+			{
+				dataTable.setCell(1, row, "0");
+				dataTable.setCell(2, row, rowobj.toString());
 			}
 			// get the data for this row
-			if (values[row] != null) {
+			if (values[row] != null && values[row].length > 0) {
 				Object valueObject = values[row][0];
 				if (valueObject instanceof List) {
 					List<Observation>[] rowValues = (List<Observation>[]) values[row];
@@ -487,9 +487,10 @@ public class MatrixViewer extends HtmlWidget
 			divContents += "<div style=\"vertical-align:middle\">Add/remove columns:";
 			divContents += measurementChooser.render();
 			divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
+			divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
+			divContents += new ActionInput(REMALLCOLHEADERFILTER, "", "Remove all").render();
 			divContents += "</div>";
 		}
-		
 		return divContents;
 	}
 	
@@ -779,11 +780,25 @@ public class MatrixViewer extends HtmlWidget
 		} else {
 			chosenMeasurementIds = new ArrayList<Object>();
 		}
-		List<String> chosenMeasurements = new ArrayList<String>();
+		List<String> chosenMeasurementNames = new ArrayList<String>();
 		for (Object measurementId : chosenMeasurementIds) {
 			int measId = Integer.parseInt((String)measurementId);
-			chosenMeasurements.add(db.findById(Measurement.class, measId).getName());
+			chosenMeasurementNames.add(db.findById(Measurement.class, measId).getName());
 		}
+		setColHeaderFilter(chosenMeasurementNames);
+	}
+	
+	public void addAllColHeaderFilter(Database db, Tuple t) throws Exception
+	{
+		List<Measurement> allMeasurements = db.find(Measurement.class);
+		List<String> chosenMeasurementNames = new ArrayList<String>();
+		for (Measurement measurement : allMeasurements) {
+			chosenMeasurementNames.add(measurement.getName());
+		}
+		setColHeaderFilter(chosenMeasurementNames);
+	}
+	
+	public void setColHeaderFilter(List<String> chosenMeasurements) throws DatabaseException, MatrixException {
 		// Find and update col header filter rule
 		boolean hasRule = false;
 		for (MatrixQueryRule mqr : matrix.getRules()) {
@@ -802,6 +817,19 @@ public class MatrixViewer extends HtmlWidget
 			matrix.getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, chosenMeasurements));
 		}
 		matrix.setColLimit(chosenMeasurements.size()); // grow with selected measurements
+		matrix.reload();
+	}
+	
+	public void remAllColHeaderFilter(Database db, Tuple t) throws Exception
+	{
+		List<MatrixQueryRule> removeList = new ArrayList<MatrixQueryRule>();
+		for (MatrixQueryRule mqr : matrix.getRules()) {
+			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colHeader)) {
+				removeList.add(mqr); 
+			}
+		}
+		matrix.getRules().removeAll(removeList);
+		matrix.setColLimit(0);
 		matrix.reload();
 	}
 	

@@ -43,19 +43,19 @@ public class LifeLinesLoaderPlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		try {
-			String action = request.getAction();
-			
-			if( action.equals("load") )
-			{
-				String zipFileName = request.getString("zip");
+		
+		String action = request.getAction();
+		
+		if( action.equals("load") )
+		{
+			String zipFileName = request.getString("zip");
+			try {
 				ImportMapperOldSkool.importData(zipFileName);
+				this.setSuccess("LifeLines Publish data import complete!");
+			} catch(Exception e) {
+				e.printStackTrace();
+				this.setError("LifeLines Publish data import failed");
 			}
-			
-			
-			
-		} catch(Exception e) {
-			e.printStackTrace();
 		}
 	}
 

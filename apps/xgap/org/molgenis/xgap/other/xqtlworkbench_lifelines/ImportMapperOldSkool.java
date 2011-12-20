@@ -14,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Investigation;
 import org.molgenis.protocol.Protocol;
@@ -23,6 +24,8 @@ import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.LifeLinesStanda
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VWCategoryListener;
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VwDictListener;
 
+import core.servlets.tmpfileservlet;
+
 import app.DatabaseFactory;
 
 /**
@@ -31,6 +34,8 @@ import app.DatabaseFactory;
  * database. The target schema is molgenis.pheno
  */
 public class ImportMapperOldSkool {
+	
+	private static Logger logger = Logger.getLogger(tmpfileservlet.class);
 
 	/**
 	 * for testing only!
@@ -100,7 +105,7 @@ public class ImportMapperOldSkool {
 			}
 		}
 
-		System.out.println("The End!");
+		logger.info("LifeLines Publish data import complete!");
 
 		// //this information should be stored in dict
 		// // String primaryKeyColumn = "PA_ID";
