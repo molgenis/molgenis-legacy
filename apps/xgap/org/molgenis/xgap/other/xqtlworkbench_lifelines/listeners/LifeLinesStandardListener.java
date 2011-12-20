@@ -49,9 +49,7 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 		this.logger = Logger.getLogger("LLimport("+protocol.getName()+")");
 
 		// WANTED: List<Measurement> result = protocol.getFeatures(db);
-
-		for (Measurement m : db.query(Measurement.class)
-				.in(Measurement.ID, protocol.getFeatures_Id()).find()) {
+		for (Measurement m : db.query(Measurement.class).in(Measurement.ID, protocol.getFeatures_Id()).find()) {
 			measurements.put(m.getName(), m);
 		}
 	}
@@ -64,10 +62,12 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
 		// get reference to individual
 		String pa_id = tuple.getString("PA_ID");
-		if(pa_id == null) throw new Exception("PA_ID missing for protocol "+protocol.getName()+" in tuple: "+tuple);
+		if (pa_id == null) throw new Exception("PA_ID missing for protocol " + protocol.getName() + 
+				" in tuple: " + tuple);
 
 		Individual target = new Individual();
 		target.setName(pa_id);
+		target.setInvestigation(investigation);
 		targets.put(target.getName(), target);
 
 		ProtocolApplication app = new ProtocolApplication();
@@ -79,7 +79,7 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 		// we iterate through all fields. Each field that is also a Measurement
 		for (String field : tuple.getFields()) {
 			// only include fields that are selected as measurement
-			String mName = field;
+			String mName = protocol.getName() + "_" + field; // temporarily prepend measurement name with table (protocol) name
 			if (measurements.containsKey(mName)) {
 				ObservedValue v = new ObservedValue();
 				v.setTarget(target);

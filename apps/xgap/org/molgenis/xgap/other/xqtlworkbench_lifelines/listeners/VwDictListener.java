@@ -50,19 +50,20 @@ public class VwDictListener extends ImportTupleListener {
 			{
 				p = new Protocol();
 				p.setName(protocolName);
-				//p.setInvestigation_Id(investigationId);
 				p.setInvestigation(investigation);
-				protocols.put(protocolName, p);
 			}
 			
 			if (tuple.getString("VELD") != null) {
 				Measurement m = new Measurement();
-				m.setName(tuple.getString("VELD"));
-				m.setDataType( convertDataType(tuple.getString("VLDTYPE"))  );
+				m.setName(p.getName() + "_" + tuple.getString("VELD")); // temporarily prepend measurement name with table (protocol) name
+				m.setInvestigation(investigation);
+				m.setDataType(convertDataType(tuple.getString("VLDTYPE")));
 				m.setDescription(tuple.getString("OMSCHR"));
 				measurements.add(m);
-				p.getFeatures_Name().add(m.getName());
+				p.getFeatures_Name().add(m.getName()); // link to protocol
 			}
+			
+			protocols.put(protocolName, p);
 		}
 	}
 	
