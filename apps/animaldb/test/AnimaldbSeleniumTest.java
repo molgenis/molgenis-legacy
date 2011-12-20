@@ -142,6 +142,7 @@ public class AnimaldbSeleniumTest
 	public void addAnimals() throws Exception {
 		// Go to Add Animal plugin
 		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=AddAnimal_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
