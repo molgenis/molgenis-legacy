@@ -227,7 +227,7 @@
 	</div>
 	<div id="divstartnumber" class="row">
 		<label for="startnumber">Start numbering at:</label>
-		<input type="text" name="startnumber" id="startnumber" class="textbox" value="${screen.getStartNumberForEmptyBase()?string.computer}" />
+		<input type="text" readonly="true" name="startnumber" id="startnumber" class="textbox" value="${screen.getStartNumberForEmptyBase()?string.computer}" />
 	</div>
 	<!-- Remarks -->
 	<div class='row'>
