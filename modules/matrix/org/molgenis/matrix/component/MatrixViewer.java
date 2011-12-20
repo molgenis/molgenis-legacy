@@ -1,5 +1,6 @@
 package org.molgenis.matrix.component;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -52,6 +53,8 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
+import com.pmstation.spss.SPSSWriter;
+
 public class MatrixViewer extends HtmlWidget
 {
 	ScreenController<?> callingScreenController;
@@ -82,7 +85,7 @@ public class MatrixViewer extends HtmlWidget
 	public String MOVEDOWN = getName() + "_moveDown";
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
 	public String DOWNLOADVISCSV = getName() + "_downloadVisibleCsv";
-	public String DOWNLOADVISSPSS = getName() + "_downloadVisibleSPSS";
+	public String DOWNLOADVISSPSS = getName() + "_downloadVisibleSPSS"; 
 	public String DOWNLOADVISEXCEL = getName() + "_downloadVisibleExcel";
 	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
@@ -752,6 +755,82 @@ public class MatrixViewer extends HtmlWidget
 	    	}
 	    	return japie;
 	    }
+	 
+	 
+	 public void downloadVisibleSPSS(Database db, Tuple t) throws Exception
+		{
+		 if (this.matrix instanceof DatabaseMatrix) {
+				((DatabaseMatrix) this.matrix).setDatabase(db);
+			}
+			File spssFile = new File(System.getProperty("java.io.tmpdir")
+					+ File.separator + "download.sav");
+			
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(spssFile));
+			SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
+			spssWriter.setCalculateNumberOfCases(false);
+			spssWriter.addDictionarySection(-1);
+			
+			//Object[][] elements = this.matrix.getValueLists();
+			
+			List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
+			List<String> listC = new ArrayList<String>();
+			List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
+			List<String> listR = new ArrayList<String>();	
+			List<ObservedValue>[][] elements = (List<ObservedValue>[][]) this.matrix.getValueLists();
+			
+			for(Object col: listCol){
+				if(col instanceof ObservationElement) {
+					ObservationElement colobs = (ObservationElement) col;
+					listC.add(colobs.getName());
+				}
+			}
+			for(Object m : listRow){
+				if(m instanceof ObservationElement) {
+					ObservationElement colobs = (ObservationElement) m;
+					listR.add(colobs.getName());
+				}
+			}
+			spssWriter.addStringVar("id", 10, "id");
+			spssWriter.addStringVar("name", 10, "name");
+				for(String colName : listC){
+					spssWriter.addStringVar(colName, 10, colName);
+				}
+				
+				spssWriter.addDataSection();
+
+				
+				for(int rowIndex = 0; rowIndex < listR.size(); rowIndex++)
+				{
+					Object rowobj = listRow.get(rowIndex);
+					ObservationElement rowObs = (ObservationElement) rowobj;
+					spssWriter.addData(rowObs.getId()+"");
+					spssWriter.addData(rowObs.getName());
+					for(int colIndex = 0; colIndex < listC.size(); colIndex++)
+					{
+						Object val = listObsValToString(elements[rowIndex][colIndex]);
+						if(val == null)
+						{
+							spssWriter.addData(""); //FIXME: correct?
+						}
+						else
+						{
+							
+							spssWriter.addData(val.toString());	
+						}
+						
+					}
+				
+			}
+			
+			
+			spssWriter.addFinishSection();
+			out.close();
+			downloadLink = spssFile.getName();
+			
+		}
+		
+	 
+	 
 	public void reloadMatrix(Database db, Tuple t) throws MatrixException
 	{
 		matrix.reload();
