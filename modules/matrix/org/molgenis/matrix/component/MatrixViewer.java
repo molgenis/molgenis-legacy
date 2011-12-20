@@ -82,6 +82,7 @@ public class MatrixViewer extends HtmlWidget
 	public String MOVEDOWN = getName() + "_moveDown";
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
 	public String DOWNLOADVISCSV = getName() + "_downloadVisibleCsv";
+	public String DOWNLOADVISSPSS = getName() + "_downloadVisibleSPSS";
 	public String DOWNLOADVISEXCEL = getName() + "_downloadVisibleExcel";
 	public String COLID = getName() + "_colId";
 	public String COLVALUE = getName() + "_colValue";
@@ -229,12 +230,17 @@ public class MatrixViewer extends HtmlWidget
 		// download options
 		if (showDownloadOptions) {
 			// TODO: turn into menu with actions
-			ActionInput downloadAllCsv = new ActionInput(DOWNLOADVISCSV, "", "Export visible to CSV");
-			downloadAllCsv.setIcon("generated-res/img/download.png");
-			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadAllCsv.render() + "</div>";
-			ActionInput downloadVisExcel = new ActionInput(DOWNLOADVISEXCEL, "", "Export visible to Excel");
+			divContents += "<div> Export";
+			ActionInput downloadVisCsv = new ActionInput(DOWNLOADVISCSV, "", "Visible to CSV");
+			downloadVisCsv.setIcon("generated-res/img/download.png");
+			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadVisCsv.render() + "</div>";
+			ActionInput downloadVisExcel = new ActionInput(DOWNLOADVISEXCEL, "", "Visible to Excel");
 			downloadVisExcel.setIcon("generated-res/img/download.png");
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadVisExcel.render() + "</div>";
+			ActionInput downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "", "Visible to SPSS");
+			downloadVisExcel.setIcon("generated-res/img/download.png");
+			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadVisSPSS.render() + "</div>";
+			divContents += "</div>";
 		}
 		
 		return divContents;
