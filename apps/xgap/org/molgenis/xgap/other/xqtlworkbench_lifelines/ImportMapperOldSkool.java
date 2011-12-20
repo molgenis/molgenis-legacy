@@ -87,18 +87,18 @@ public class ImportMapperOldSkool {
 		catListener.commit();
 
 		// iterate through the map assuming CSV files
-//		List<String> exclude = Arrays.asList(new String[] { "BEP_OMSCHR", "DICT_HULP","ONDERZOEK" });
-//		for (Protocol protocol : dicListener.getProtocols().values()) {
-//			if (!exclude.contains(protocol.getName())) {
-//				File f = new File(path + "VW_" + protocol.getName()
-//						+ "_DATA.csv");
-//				LifeLinesStandardListener llListener = new LifeLinesStandardListener(
-//						inv, protocol, db);
-//				reader = new CsvFileReader(f);
-//				reader.parse(llListener);
-//				llListener.commit();
-//			}
-//		}
+		List<String> exclude = Arrays.asList(new String[] { "BEP_OMSCHR", "DICT_HULP","ONDERZOEK" });
+		for (Protocol protocol : dicListener.getProtocols().values()) {
+			if (!exclude.contains(protocol.getName())) {
+				File f = new File(path + "VW_" + protocol.getName()
+						+ "_DATA.csv");
+				LifeLinesStandardListener llListener = new LifeLinesStandardListener(
+						inv, protocol, db);
+				reader = new CsvFileReader(f);
+				reader.parse(llListener);
+				llListener.commit();
+			}
+		}
 
 		System.out.println("The End!");
 
