@@ -5,7 +5,7 @@
 	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDBHeader" />
 
 	<menu name="mainmenu" position="top_left">
-		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/settings"/>
+		
 		<plugin name="AnimalDBWelcomeScreen" type="plugins.welcome.AnimalDBWelcomeScreenPlugin"
 			label="Welcome" />
 		<!-- plugin name="News" type="plugins.news.News" label="News"/ -->
@@ -62,8 +62,24 @@
 		
 		<!-- plugin name="AddSpecialGroup" type="plugins.specialgroups.AddSpecialGroupPlugin"
 			label="Groups" /-->
+			
+		<menu name="Settings" position="left" label="Settings">
+			<!--  placeholder menu items for setting modifications -->
+			<menu name="species" position="left" label="Species"></menu>
+			<menu name="genes" position="left" label="Genes"></menu>
+			<menu name="backgrounds" position="left" label="Backgrounds"></menu>
+			<!-- ... -->
+			
+			<menu name="locationmenu" position="left" label="Locations">
+			<plugin name="AddLocation" type="plugins.location.AddLocationPlugin"
+				label="Add locations" />
+			<plugin name="LocationInfo" type="plugins.location.LocationInfoPlugin"
+				label="Location info" />
+			</menu>
+		</menu>
 		
-		<menu name="Admin" position="left" label="Admin options">
+		
+		<menu name="Admin" position="left" label="Admin settings">
 			
 			<menu name="securitymenu" position="left" label="Security">
 				<plugin name="AnimalDbUsers" type="plugins.system.AnimalDbUsers" label="Manage users and investigations" />
@@ -78,13 +94,6 @@
 				<plugin name="PermissionManagementPlugin" type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin"
 					label="Permission management" />
 			</menu>
-			
-			<menu name="locationmenu" position="left" label="Locations">
-			<plugin name="AddLocation" type="plugins.location.AddLocationPlugin"
-				label="Add locations" />
-			<plugin name="LocationInfo" type="plugins.location.LocationInfoPlugin"
-				label="Location info" />
-			</menu>	
 			
 			<menu name="systemmenu" position="left" label="System">
 				<menu name="tablemenu" position="left" label="Content tables">
@@ -118,7 +127,7 @@
 		<!-- menu name="searchmenu" position="left" label="Search">
 			<plugin name="SimpleDbSearch" label="Simple search" type="plugin.search.SimpleWholeDatabaseSearch" />
 		</menu -->
-	       
+	    <plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/settings"/>
 	</menu>
 
 </molgenis>

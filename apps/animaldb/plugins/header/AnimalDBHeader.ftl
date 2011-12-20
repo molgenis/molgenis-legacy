@@ -38,7 +38,7 @@
 			<span style="font-size: 35%; font-family: arial, sans-serif; font-style: italic;" >provide feedback:</span> 
 			<a href=# onclick="showFeedback();"><img src="res/img/feedback.jpeg" align="middle" height="35px" alt="Give feedback or comments on the active page." title="Give feedback or comments on the active page."></a>
 			<!-- input type="button" value="Give feedback" onclick="showFeedback();" / -->
-		</div -->
+		
 		
 		<div id="feedbackDiv" style="float:right; padding-right:75px; font-size: 75%; font-family: arial, sans-serif; font-style: italic; display:none; ">
 			
