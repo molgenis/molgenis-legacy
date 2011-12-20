@@ -201,6 +201,15 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		// TODO Auto-generated constructor stub
 	}
 
+    public ComputeBundleFromDirectory(File parametersfile, File workflowfile, File worksheetfile, File protocoldir) throws Exception
+    {
+        this.setComputeParameters(parametersfile);
+		this.setWorkflowElements(workflowfile);
+		this.setWorksheet(worksheetfile);
+		this.setComputeProtocols(protocoldir);
+    }
+
+
 	public void setComputeProtocols(File templateFolder) throws IOException
 	{
 		// assume each file.ftl in the 'protocols' folder to be a protocol
