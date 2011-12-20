@@ -35,7 +35,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 			}
 			returnString += "</ul></li>";
 		} else {
-			returnString = "<li><span class=\"point\">" + node.getLabel() + "</span></li>";
+			returnString = "<li><span class=\"point\">" + "<input type=\"checkbox\" id=\"CataloguecheckBox\" name=\"measurementLabel\" >" + node.getLabel() + "</span></li>";
 		}
 		return returnString;
 	}
@@ -60,9 +60,16 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"</style>\n"
 		+"<script>\n"
 		+"$(document).ready(function(){\n"
-		+"$(\"#browser\").treeview({control: \"#masstoggler\"});});\n"
+		+"$(\"#browser\").treeview({control: \"#masstoggler\"});" 
+		+"$(\"#CataloguecheckBox\").validate({"
+		+"	   rules:   { list:     {required: \"#list0:checked\"} },"
+		+"	   messages:  { list:  \"Please select at least one Measurement\"}"                                                        
+		+"	 });"
+		+"});\n"
 		+ "$(\"#leftSide\").click(function(event) {"
-		+"	  event.preventDefault();"
+		+"	event.preventDefault();"
+		//if link is clicked set the checkbox clicked.
+		+ "$(\"#CataloguecheckBox\").attr('checked', true)"
 //		+"	  alert(\"Your order of \"+$(this).text() + \" has been added to you Shopping Cart\");"
 		+"	});"
 		+"</script>\n";
