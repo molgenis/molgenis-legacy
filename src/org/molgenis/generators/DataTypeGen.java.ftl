@@ -153,14 +153,14 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	private ${type(field.xrefLabels[label_index])} _${name(field)}_${label} = null;						
 			</#list></#if>
-	@XmlTransient
-	private  ${JavaName(field.xrefEntity)} _${name(field)}_object = null;				
+	//@XmlTransient
+	//private  ${JavaName(field.xrefEntity)} _${name(field)}_object = null;				
 		<#elseif type_label == "mref">
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	private java.util.List<${type(field.xrefLabels[label_index])}> _${name(field)}_${label} = new java.util.ArrayList<${type(field.xrefLabels[label_index])}>();
 			</#list></#if>	
-	@XmlTransient
-	private java.util.List<${JavaName(field.xrefEntity)}> _${name(field)}_objects= new java.util.ArrayList<${JavaName(field.xrefEntity)}>();						
+	//@XmlTransient
+	//private java.util.List<${JavaName(field.xrefEntity)}> _${name(field)}_objects= new java.util.ArrayList<${JavaName(field.xrefEntity)}>();						
 		<#elseif type_label == "file" || type_label=="image" >
 	private File _${name(field)}_file = null;
 		</#if>
@@ -271,17 +271,17 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public ${type(field)} get${JavaName(field)}()
 	{
 		<#if type_label == "xref">
-		if(this._${name(field)}_object != null)
-			return this._${name(field)}_object.get${JavaName(field.xrefField)}();
+		//if(this._${name(field)}_object != null)
+		//	return this._${name(field)}_object.get${JavaName(field.xrefField)}();
 		<#elseif type_label == "mref">
-		if(this._${name(field)}_objects != null && this._${name(field)}_objects.size() > 0)
+		/*if(this._${name(field)}_objects != null && this._${name(field)}_objects.size() > 0)
 		{
 			${type(field)} result = ${default(field)};
 			for(${JavaName(field.xrefEntity)} o: _${name(field)}_objects) result.add(o.get${JavaName(field.xrefField)}());
 			//this should be smarter, like a List that automatically syncs...
 			//and this also doesn't give an informative error why it is not modifiable
 			return java.util.Collections.unmodifiableList(result);
-		}		
+		}*/		
 		</#if>
 		return this._${name(field)};
 	}
@@ -290,17 +290,17 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public ${type(field)} get${JavaName(field)}_${JavaName(field.xrefField)}()
 	{
 		<#if type_label == "xref">
-		if(this._${name(field)}_object != null)
-			return this._${name(field)}_object.get${JavaName(field.xrefField)}();
+		//if(this._${name(field)}_object != null)
+		//	return this._${name(field)}_object.get${JavaName(field.xrefField)}();
 		<#elseif type_label == "mref">
-		if(this._${name(field)}_objects != null && this._${name(field)}_objects.size() > 0)
+		/*if(this._${name(field)}_objects != null && this._${name(field)}_objects.size() > 0)
 		{
 			${type(field)} result = ${default(field)};
 			for(${JavaName(field.xrefEntity)} o: _${name(field)}_objects) result.add(o.get${JavaName(field.xrefField)}());
 			//this should be smarter, like a List that automatically syncs...
 			//and this also doesn't give an informative error why it is not modifiable
 			return java.util.Collections.unmodifiableList(result);
-		}		
+		}*/		
 		</#if>
 		return this._${name(field)};
 	}	
@@ -311,13 +311,12 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public ${JavaName(field.xrefEntity)} get${JavaName(field)}(Database db) throws DatabaseException
 	{
 		//if the object is already there
-		if(this._${name(field)}_object != null)
-			return this._${name(field)}_object;
+		//if(this._${name(field)}_object != null)
+		//	return this._${name(field)}_object;
 			
 		//if referred to via id
 		if (this.get${JavaName(field)}_${JavaName(field.xrefField)}() != null)
 		{
-			
 			Query<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}> q = db.query(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}.class);
 			q.eq(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}.${field.xrefField.name?upper_case}, this.get${JavaName(field)}_${JavaName(field.xrefField)}());
 			List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}> result = q.find();
@@ -334,11 +333,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public List<${JavaName(field.xrefEntity)}> get${JavaName(field)}(Database db) throws DatabaseException
 	{
 		//if the object is already there
-		if(this._${name(field)}_objects != null)
-			return this._${name(field)}_objects;
+		//if(this._${name(field)}_objects != null)
+		//	return this._${name(field)}_objects;
 			
 		//if referred to via id
-		if(this._${name(field)}_objects != null && this._${name(field)}_objects.size() > 0)
+		if(this._${name(field)} != null && this._${name(field)}.size() > 0)
 		{
 			Query<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}> q = db.query(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}.class);
 			q.in(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}.${field.xrefField.name?upper_case}, this.get${JavaName(field)}_${JavaName(field.xrefField)}());
@@ -371,7 +370,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		//else make list empty
 		else
 		{
-			this._${name(field)}_objects = new java.util.ArrayList<${JavaName(field.xrefEntity)}>();
+			//this._${name(field)}_objects = new java.util.ArrayList<${JavaName(field.xrefEntity)}>();
 		
 			if(this._${name(field)} != null)
 				this._${name(field)} = _${name(field)};
@@ -391,7 +390,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		this._${name(field)} = _${name(field)};
 		<#if type_label == "xref">
 		//erases the xref object
-		this._${name(field)}_object = null;
+		//this._${name(field)}_object = null;
 		</#if>
 		</#if>
 	}
@@ -459,7 +458,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	{
 		_${name(field)}_${label} = ${name(field)}_${label};
 		//clear the object cache
-		_${name(field)}_object = null;
+		//_${name(field)}_object = null;
 	}		
 </#list></#if>
 	 
@@ -481,14 +480,14 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 */
 	public java.util.List<${type(field.xrefLabels[label_index])}> get${JavaName(field)}_${JavaName(label)}()
 	{
-		if(this._${name(field)}_objects != null && this._${name(field)}_objects.size() > 0)
+		/*if(this._${name(field)}_objects != null && this._${name(field)}_objects.size() > 0)
 		{
 			java.util.List<${type(field.xrefLabels[label_index])}> result = new java.util.ArrayList<${type(field.xrefLabels[label_index])}>();
 			for(${JavaName(field.xrefEntity)} o: _${name(field)}_objects) result.add(o.get${JavaName(label)}());
 			//this should be smarter, like a List that automatically syncs...
 			//and this also doesn't give an informative error why it is not modifiable
 			return java.util.Collections.unmodifiableList(result);
-		}		
+		}*/		
 		return  _${name(field)}_${label};
 	}
 		
@@ -497,7 +496,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	{
 		_${name(field)}_${label} = ${name(field)}_${label};
 		//clear the object cache
-		_${name(field)}_objects = null;
+		//_${name(field)}_objects = null;
 	}		
 </#list></#if>
 
