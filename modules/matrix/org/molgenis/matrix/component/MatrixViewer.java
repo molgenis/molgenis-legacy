@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -648,20 +649,21 @@ public class MatrixViewer extends HtmlWidget
 			chosenMeasurements.add(db.findById(Measurement.class, measId).getName());
 		}
 		// Find and update col header filter rule
+		boolean hasRule = false;
 		for (MatrixQueryRule mqr : matrix.getRules()) {
 			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colHeader)) {
 				if (chosenMeasurements.size() > 0) {
 					mqr.setValue(chosenMeasurements); // update
+					hasRule = true;
 				} else {
-					matrix.getRules().remove(mqr); // remove rule if no measurements selected
-					// Consequence of this is that, if you 'click away' all measurements,
-					// there is no restriction on measurement anymore and you end up with ALL columns.
-					// Is this desirable? A user may not understand this and may expect to see
-					// NO columns. How would this be achievable? Would we have to do some tricks
-					// in createQuery()?
+					matrix.getRules().remove(mqr); 
 				}
 				break;
 			}
+		}
+		if(hasRule == false && chosenMeasurements.size() > 0)
+		{
+			matrix.getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, chosenMeasurements));
 		}
 		matrix.setColLimit(chosenMeasurements.size()); // grow with selected measurements
 		matrix.reload();
