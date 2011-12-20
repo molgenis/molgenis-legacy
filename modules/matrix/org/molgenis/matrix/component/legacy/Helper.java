@@ -3,6 +3,7 @@ package org.molgenis.matrix.component.legacy;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.matrix.component.legacy.SomeColType;
 
 public class Helper
 {

@@ -2,6 +2,7 @@ package plugins.matrix.heatmap;
 
 import matrix.DataMatrixInstance;
 import plugins.matrix.manager.MatrixManagerModel;
+import plugins.matrix.heatmap.RGB;
 
 public class MatrixHeatmapModel extends MatrixManagerModel{
 

@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import core.servlets.Servlet;
+
 /**
  * Serves static files such as images, css files and javascript from classpath.
  * This is servlet is used when serving from a Jar file in the Mortbay server.

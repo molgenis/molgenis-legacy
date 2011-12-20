@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.molgenis.util.RScript;
 import org.molgenis.util.RScriptException;
+import plugins.rplot.PlotParameters;
 
 public class ScriptInstance
 {
