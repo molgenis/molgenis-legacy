@@ -158,7 +158,6 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 		// A. filter on rowIndex + rowHeaderProperty
 		// B. filter on colValue: 1 subquery per column
 		// C. filter on rowOffset and rowLimit
-
 		try
 		{
 			// parameterize the refresh of the dim, either TARGET or FEATURE
@@ -253,7 +252,13 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 					xQuery.offset(rowOffset);
 				}
 			}
-
+			
+			//check for empty column filters
+			if(xClass.equals(getColClass()))
+			{
+				System.out.println("header filter: "+xQuery);
+			}
+			
 			return xQuery;
 		}
 		catch (Exception e)

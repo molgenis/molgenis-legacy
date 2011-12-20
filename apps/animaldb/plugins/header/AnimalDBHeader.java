@@ -16,8 +16,8 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.util.EmailService;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleEmailService;
 import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
@@ -96,8 +96,10 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	}
 	
 	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
+	public void handleRequest(Database db, Tuple request)
 	{
+		try
+		{
 		if ("doLogout".equals(request.getAction())) {
 			getLogin().logout(db);
 		}
@@ -108,9 +110,9 @@ public class AnimalDBHeader extends PluginModel<Entity>
 			// get admin email
 			MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
 			if (StringUtils.isEmpty(admin.getEmail()))
-				throw new DatabaseException("Registration failed: the administrator has no email address set. Please contact your administrator about this.");
+				throw new DatabaseException("Sending feedback failed: the administrator has no email address set. Please contact your administrator about this.");
 			
-			SimpleEmailService ses = new SimpleEmailService();
+			EmailService ses = this.getEmailService();
 			ses.email("New feedback on AnimalDB", feedback, admin.getEmail(), true);
 			
 			this.getMessages().add(new ScreenMessage(feedback, true));
@@ -118,6 +120,12 @@ public class AnimalDBHeader extends PluginModel<Entity>
 		
 		if ("resetFeedbackForm".equals(request.getAction())) {
 			feedback = null;
+		}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			this.getMessages().add(new ScreenMessage(e.getMessage(), false));
+			//this.setError(e.getMessage());
 		}
 	}
 	
