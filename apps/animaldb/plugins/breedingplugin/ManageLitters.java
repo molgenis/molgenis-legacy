@@ -621,10 +621,20 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			if (action.equals("ApplyAddLitter")) {
 				
-				if (selectedParentgroup == -1) {
+				//setUserFields(request, false);
+				List<?> rows = matrixViewer.getSelection(db);
+				try { 
+					int row = request.getInt(MATRIX + "_selected");
+					this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
+				} catch (Exception e) {	
+				//this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
+					this.setAction("AddLitter");
 					throw new Exception("No parent group selected - litter not added");
+					
 				}
 				
+							
+					
 				int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 				setUserFields(request, false);
 				Date eventDate = newDateOnlyFormat.parse(birthdate);
@@ -1213,14 +1223,6 @@ public class ManageLitters extends PluginModel<Entity>
 				reloadLitterLists(db, true);
 			}
 			
-			if (action.equals("selectParentgroup")) {
-				setUserFields(request, false);
-				List<?> rows = matrixViewer.getSelection(db);
-				int row = request.getInt(MATRIX + "_selected");
-				this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
-				this.setAction("AddLitter");
-			}
-
 		} catch (Exception e) {
 			try {
 				db.rollbackTx();

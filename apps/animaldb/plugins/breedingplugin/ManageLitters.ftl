@@ -125,13 +125,7 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 	
-	<!-- Parent group selector -->
-	<div>
-		<label for='selectedpg'>Selected parent group:</label>
-		<input id='selectedpg' name='selectedpg' type='text' readonly='readonly' value='${screen.getSelectedParentgroupName()}' />
-		<input type='submit' id='selectpg' class='addbutton' value='Use selected from matrix' onclick='__action.value="selectParentgroup"' />
-	</div>
-	<hr />
+	
 	${screen.renderMatrixViewer()}
 	<hr />
 	
