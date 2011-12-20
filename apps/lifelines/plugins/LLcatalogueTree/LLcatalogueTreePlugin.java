@@ -93,8 +93,8 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					shoppingCartLabels.add(this.shoppingCart.get(i).getName());
 					
 				}
-				this.checkBoxInput = new CheckboxInput("ShoppingCart", "Shopping Cart", "ShoppingCart", ShoppingCartOptions, shoppingCartLabels);
-				checkBoxInput.render();
+				//this.checkBoxInput = new CheckboxInput("ShoppingCart", "Shopping Cart", "ShoppingCart", ShoppingCartOptions, shoppingCartLabels);
+				//checkBoxInput.render();
 			}
 			if ("OrderMeasurements".equals(request.getAction())) {
 				this.addMeasurementsToTree(db, request);

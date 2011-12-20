@@ -28,14 +28,16 @@
 				<div id="leftSide">
 					${screen.getTreeView()}
 				</div><br/>
-				<!--div id="CatalogueRightSide"-->
+				<div id="Catalogue" >
+				
 					<div id="ShoppingCartLabel">Shopping cart</div>
 					<div class="ShoppingCartContents">
 						<ul>
 							<#list screen.getShoppingCart() as measurement>
 								<li>${measurement.name}
-									<input type="image" src="res/img/delete.png" value="Submit" alt="Delete" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) { __action.value='DeleteMeasurement&measurementName=${measurement.name}';return true; } else {return false;}"/>
-								
+									<div id="image">
+									    <input type="image" src="res/img/delete.png" value="Submit" alt="Delete" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) { __action.value='DeleteMeasurement&measurementName=${measurement.name}';return true; } else {return false;}"/>
+									</div>
 									<!--input type="submit" value="Delete" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) { __action.value='DeleteMeasurement&measurementName=${measurement.name}';return true; } else {return false;}"/><br /><br /-->
 								</li> 
 							</#list>
@@ -44,7 +46,7 @@
 							<input type="submit" name="orderMeasurementsSubmit" value="Next" onclick="__action.value='OrderMeasurements';return true;"/><br /><br />
 						</div> 
 					</div>
-				<!--/div-->
+				</div>
 			</div>
 			
 			<input type="hidden" id="testInput" value="">
@@ -53,6 +55,7 @@
 			
 		</div>
 	</div>
+
 </form>
 
 </#macro>

@@ -44,11 +44,11 @@
 				
 				<h5>If you want to continue with your order to checkout :</h5>
 		        <!--input type="submit" value="Checkout" onclick="if (confirm('You are about to complete your order. Are you sure you want to checkout?')) {__action.value='checkoutOrder';return true;} else {return false;}"/><br /><br /-->
-				<input type="image" src="res/img/iconCheckout.png" value="Submit" alt="Checkout" onclick="if (confirm('You are about to complete your order. Are you sure you want to checkout?')) {__action.value='checkoutOrder';return true;} else {return false;}"/><br /><br />
+					<input type="image" src="res/img/iconCheckout.png" value="Submit" alt="Checkout" onclick="if (confirm('You are about to complete your order. Are you sure you want to checkout?')) {__action.value='checkoutOrder';return true;} else {return false;}"/><br /><br />
+				</h5>
 			</div>
 		</div>
 	</div>
-	
 </form>
 </#macro>
 
