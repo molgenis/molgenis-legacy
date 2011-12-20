@@ -25,7 +25,7 @@ public class Worksheet
 	public List<Tuple> reduced = new ArrayList<Tuple>();
 	List<ComputeParameter> parameterlist; // parameters.txt
 	List<Tuple> userworksheet; // original user worksheet
-	public Set<String> reducedfields; // fields (lists) that are reduced to a single value
+	public Set<String> reducedfields = new HashSet<String>(); // fields (lists) that are reduced to a single value
 	public Set<String> foldon = new HashSet<String>(); // fields on which we folded
 	public Set<String> list; // fields that remain a list
 
