@@ -66,7 +66,8 @@ public class ManageLitters extends PluginModel<Entity>
 	private boolean litterSizeApproximate;
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+	//private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private String action = "ShowLitters";
 	private String nameBase = null;
 	private int startNumber = -1;
@@ -156,7 +157,7 @@ public class ManageLitters extends PluginModel<Entity>
 		if (birthdate != null) {
 			return birthdate;
 		}
-		return oldDateOnlyFormat.format(new Date());
+		return newDateOnlyFormat.format(new Date());
 		
 	}
 	public void setBirthdate(String birthdate) {
@@ -170,7 +171,7 @@ public class ManageLitters extends PluginModel<Entity>
 		if (weandate != null) {
 			return weandate;
 		}
-		return oldDateOnlyFormat.format(new Date());
+		return newDateOnlyFormat.format(new Date());
 	}
 
 	public int getLitterSize() {
@@ -626,7 +627,7 @@ public class ManageLitters extends PluginModel<Entity>
 				
 				int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 				setUserFields(request, false);
-				Date eventDate = oldDateOnlyFormat.parse(birthdate);
+				Date eventDate = newDateOnlyFormat.parse(birthdate);
 				int userId = this.getLogin().getUserId();
 				
 				int lineId = ct.getMostRecentValueAsXref(selectedParentgroup, ct.getMeasurementId("Line"));
@@ -715,7 +716,7 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("Wean")) {
 				int invid = ct.getObservationTargetById(litter).getInvestigation_Id();
 				setUserFields(request, true);
-				Date weanDate = oldDateOnlyFormat.parse(weandate);
+				Date weanDate = newDateOnlyFormat.parse(weandate);
 				int userId = this.getLogin().getUserId();
 				
 				// Init lists that we can later add to the DB at once

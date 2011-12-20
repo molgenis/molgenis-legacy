@@ -17,7 +17,7 @@ public class Litter {
 	private String remarks;
 	private String status;
 	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	
 	public void setId(int id) {
 		this.id = id;
@@ -36,7 +36,7 @@ public class Litter {
 			try {
 				this.birthDate = dateOnlyFormat.parse(birthDate);
 			} catch (ParseException e) {
-				this.birthDate = dateTimeFormat.parse(birthDate);
+				//this.birthDate = dateTimeFormat.parse(birthDate);
 			}
 		} else {
 			this.birthDate = null;
@@ -51,7 +51,7 @@ public class Litter {
 			try {
 				this.weanDate = dateOnlyFormat.parse(weanDate);
 			} catch (ParseException e) {
-				this.weanDate = dateTimeFormat.parse(weanDate);
+				//this.weanDate = dateTimeFormat.parse(weanDate);
 			}
 		} else {
 			this.weanDate = null;

@@ -138,13 +138,27 @@
 	<!-- Date of birth -->
 	<div id='newlitter_datevalue_part' class='row'>
 		<label for='birthdate'>Birth date:</label>
-		<input type='text' class='textbox' id='birthdate' name='birthdate' value='<#if screen.birthdate?exists>${screen.getBirthdate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
+		<!-- input type='text' class='textbox' id='birthdate' name='birthdate' value='<#if screen.birthdate?exists>${screen.getBirthdate()}</#if>' onclick='showDateInput(this)' autocomplete='off' / -->
+		<script>
+			$(function() {
+				$( "#birthdate" ).datepicker({
+					numberOfMonths: 1,
+					showButtonPanel: true,
+					dateFormat: "yy-mm-dd"
+				});
+			});
+		</script>			
+		<input type='text' id='birthdate' name='birthdate' <#if screen.getBirthdate??> value="${screen.getBirthdate()}"</#if> />
 	</div>
 	
 	<!-- Size -->
 	<div id='newlitter_size_part' class='row'>
 		<label for='littersize'>Litter size:</label>
 		<input type='text' class='textbox' name='littersize' id='littersize' value='<#if screen.litterSize?exists>${screen.getLitterSize()}</#if>' />
+		
+		
+	
+		
 	</div>
 	
 	<!-- Size approximate? -->
@@ -170,7 +184,17 @@
 	<!-- Date and time of weaning -->
 	<div id='weandatediv' class='row'>
 		<label for='weandate'>Wean date:</label>
-		<input type='text' class='textbox' id='weandate' name='weandate' value='<#if screen.weandate?exists>${screen.getWeandate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
+		<!-- <input type='text' class='textbox' id='weandate' name='weandate' value='<#if screen.weandate?exists>${screen.getWeandate()}</#if>' onclick='showDateInput(this)' autocomplete='off' / -->
+		<script>
+			$(function() {
+				$( "#weandate" ).datepicker({
+					numberOfMonths: 1,
+					showButtonPanel: true,
+					dateFormat: "yy-mm-dd"
+				});
+			});
+		</script>			
+		<input type='text' id='weandate' name='weandate' <#if screen.weandate??> value="${screen.getWeandate()}"</#if> />
 	</div>
 	<!-- Size -->
 	<div id='weansize_part1' class='row'>
