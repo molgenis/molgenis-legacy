@@ -24,9 +24,9 @@
 				String key = "";
 
 				<#if f.type == 'xref'>
-				Object label = object.get${JavaName(f)}_${JavaName(label)}();
+				Object label = object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}();
 				<#else>
-				for(String label: object.get${JavaName(f)}_${JavaName(label)}())
+				for(String label: object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}())
 				</#if>
 				{
 					<#list f.xrefLabelNames as label>
