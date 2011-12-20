@@ -11,18 +11,20 @@
 		<!-- plugin name="News" type="plugins.news.News" label="News"/ -->
 		
 		<menu name="animalmenu" position="left" label="Animals">
-			
+			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
+					label="All Animals" />
 			<plugin name="AddAnimal" type="plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />		
 			<menu name="breedingmodule" position="left" label="Breeding">
-				<plugin name="ViewFamily" type="plugins.breedingplugin.ViewFamily"
-					label="Family tree" />
+				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
+					label="Breeding lines" />
 				<plugin name="ManageParentgroups" type="plugins.breedingplugin.ManageParentgroups"
 					label="Parent groups" />
 				<plugin name="ManageLitters" type="plugins.breedingplugin.ManageLitters"
 					label="Litters" />
-				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
-					label="Breeding lines" />
+				<plugin name="ViewFamily" type="plugins.breedingplugin.ViewFamily"
+					label="Show Family tree" />
+				
 			</menu>
 			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />
@@ -31,8 +33,6 @@
 				label="Make (cage) labels" />
 				
 			<menu name="valuemenu" position="left" label="Values">
-				<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
-					label="View values in matrix" />
 				<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
 					label="Make/edit values" />
 				<plugin name="EventViewer" type="plugins.protocol.EventViewerPluginMatrix"
