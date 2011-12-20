@@ -3,7 +3,6 @@ package org.molgenis.matrix.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixColHeaderFilter;
@@ -12,12 +11,11 @@ import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.general.MatrixRowHeaderFilter;
 import org.molgenis.matrix.component.general.MatrixRowValueFilter;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.pheno.Observation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 
 /** Abstract observation matrix */
-public abstract class AbstractObservationElementMatrix<R extends ObservationElement, C extends ObservationElement, V extends Observation> implements
+public abstract class AbstractObservationElementMatrix<R extends ObservationElement, C extends ObservationElement, V extends ObservedValue> implements
 		SliceableMatrix<R, C, V>
 {
 
@@ -191,32 +189,32 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 		this.colOffset = colOffset;
 	}
 
-	protected Class<R> getRowClass()
+	public Class<R> getRowClass()
 	{
 		return rowClass;
 	}
 
-	protected void setRowClass(Class<R> rowClass)
+	public void setRowClass(Class<R> rowClass)
 	{
 		this.rowClass = rowClass;
 	}
 
-	protected Class<C> getColClass()
+	public Class<C> getColClass()
 	{
 		return colClass;
 	}
 
-	protected void setColClass(Class<C> colClass)
+	public void setColClass(Class<C> colClass)
 	{
 		this.colClass = colClass;
 	}
 
-	protected Class<? extends V> getValueClass()
+	public Class<? extends V> getValueClass()
 	{
 		return valueClass;
 	}
 
-	protected void setValueClass(Class<V> valueClass)
+	public void setValueClass(Class<V> valueClass)
 	{
 		this.valueClass = valueClass;
 	}

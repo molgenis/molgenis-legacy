@@ -24,8 +24,6 @@ import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.LifeLinesStanda
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VWCategoryListener;
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VwDictListener;
 
-import core.servlets.tmpfileservlet;
-
 import app.DatabaseFactory;
 
 /**
@@ -35,7 +33,7 @@ import app.DatabaseFactory;
  */
 public class ImportMapperOldSkool {
 	
-	private static Logger logger = Logger.getLogger(tmpfileservlet.class);
+	private static Logger logger = Logger.getLogger(ImportMapperOldSkool.class);
 
 	/**
 	 * for testing only!
