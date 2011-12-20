@@ -109,7 +109,7 @@
 		{
 			${JavaName(entity)} object = entities.get(i);		
 			<#list allFields(entity) as f>
-			<#if (f.type == 'xref'  || f.type == 'mref') && f.xrefLabelNames[0] != f.xrefFieldName>
+			<#if (f.type == 'xref'  || f.type == 'mref') && f.xrefLabelNames[0] != f.xrefFieldName && f.xrefLabelNames[0]?exists>
 			//update object using label fields ${csv(f.xrefLabelNames)}
 			if(object.get${JavaName(f)}() == null <#if f.type == 'mref'>|| object.get${JavaName(f)}().size() == 0</#if>)
 			{
