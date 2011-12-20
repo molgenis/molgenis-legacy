@@ -8,7 +8,9 @@
 # =====================================================
 #
 
-#MOLGENIS walltime=10:00:00 nodes=1 cores=1 mem=10 clusterQueue=cluster
+<#include "macros_demultiplex.ftl"/>
+<@begin/>
+#MOLGENIS walltime=20:00:00 nodes=1 cores=1 mem=10
 #INPUTS 
 #OUTPUTS
 #EXEC
@@ -33,3 +35,4 @@ ${demultiplexscript} \
 --log ${logfile} \
 --discardleft  ${discardleft} \
 --discardright ${discardright}
+<@end/>

@@ -11,14 +11,11 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/import"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/settings"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/file"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/matrix"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/core"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/pheno"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/auth"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/auth"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/xgap"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/data"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/publicdata"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/webserver"/>
         <dependent-module archiveName="ontoCAT_v0.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/ontoCAT_v0.8.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>

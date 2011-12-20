@@ -80,6 +80,9 @@ public class ComputeCommandLine
 				job.setWalltime(protocol.getWalltime());
 				job.setCores(protocol.getCores());
 
+				// set jobname. If a job starts/completes, we put this in a logfile
+				work.set("jobname", job.getName());
+				
 				// record in worksheet job names for each element
 				// (in column with same name as wfe)
 				// this.worksheet.set(targets, work, wfe.getName(), job.getName());
@@ -294,6 +297,7 @@ public class ComputeCommandLine
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			System.exit(1);
 		}
 		print("Finished with generation!");
 		System.exit(0);
@@ -330,6 +334,7 @@ public class ComputeCommandLine
 
 				// write headers (depends on backend)
 				jobWriter.println("#!/bin/bash");
+				jobWriter.println("#PBS -N " + job.getName());
 				jobWriter.println("#PBS -q gcc");
 				jobWriter.println("#PBS -l nodes=1:ppn=" + job.getCores());
 				jobWriter.println("#PBS -l walltime=" + job.getWalltime());

@@ -8,7 +8,9 @@
 # =====================================================
 #
 
-#MOLGENIS walltime=08:00:00 nodes=1 cores=1 mem=1 clusterQueue=cluster
+<#include "macros.ftl"/>
+<@begin/>
+#MOLGENIS walltime=08:00:00 nodes=1 cores=1 mem=1
 #INPUTS 
 #OUTPUTS
 #EXEC
@@ -36,3 +38,4 @@ ${fastqcjar} ${leftfilegz} \
 ${fastqcjar} ${rightfilegz} \
 -Dfastqc.output_dir=${intermediatedir} \
 -Dfastqc.unzip=false
+<@end/>

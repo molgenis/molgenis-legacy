@@ -25,41 +25,19 @@
   <classpathentry kind="lib" path="WebContent/WEB-INF/lib/selenium-java-2.2.0.jar"></classpathentry>
   <classpathentry kind="lib" path="WebContent/WEB-INF/lib/selenium-server-standalone-2.2.0.jar"></classpathentry>
   <classpathentry kind="output" path="build/classes"></classpathentry>
-  <classpathentry kind="src" path="apps/gcc"></classpathentry>
+  <classpathentry kind="src" path="apps/compute"></classpathentry>
   <classpathentry kind="src" path="modules/auth"></classpathentry>
-  <classpathentry kind="src" path="modules/datamodel"></classpathentry>
-  <classpathentry kind="src" path="modules/import"></classpathentry>
-  <classpathentry kind="src" path="modules/mutation"></classpathentry>
-  <classpathentry kind="src" path="modules/pheno"></classpathentry>
-  <classpathentry kind="src" path="modules/settings"></classpathentry>
-  <classpathentry kind="src" path="modules/batch"></classpathentry>
   <classpathentry kind="src" path="modules/compute"></classpathentry>
+  <classpathentry kind="src" path="modules/pheno"></classpathentry>
+  <classpathentry kind="src" path="modules/import"></classpathentry>
+  <classpathentry kind="src" path="modules/settings"></classpathentry>
   <classpathentry kind="src" path="modules/file"></classpathentry>
-  <classpathentry kind="src" path="modules/matrix"></classpathentry>
-  <classpathentry kind="src" path="modules/news"></classpathentry>
-  <classpathentry kind="src" path="modules/search"></classpathentry>
-  <classpathentry kind="src" path="modules/webserver"></classpathentry>
-  <classpathentry kind="src" path="modules/decorators/core"></classpathentry>
-  <classpathentry kind="src" path="modules/decorators/auth"></classpathentry>
-  <classpathentry kind="src" path="modules/decorators/pheno"></classpathentry>
-  <classpathentry kind="src" path="modules/decorators/data"></classpathentry>
-  <classpathentry kind="src" path="apps/animaldb"></classpathentry>
-  <classpathentry kind="src" path="apps/chd7"></classpathentry>
-  <classpathentry kind="src" path="apps/designgg"></classpathentry>
-  <classpathentry kind="src" path="apps/gscf"></classpathentry>
-  <classpathentry kind="src" path="apps/lifelinespheno"></classpathentry>
   <classpathentry kind="src" path="apps/ngs"></classpathentry>
-  <classpathentry kind="src" path="apps/bbmri"></classpathentry>
-  <classpathentry kind="src" path="apps/col7a1"></classpathentry>
-  <classpathentry kind="src" path="apps/gwascentral"></classpathentry>
-  <classpathentry kind="src" path="apps/magetab"></classpathentry>
-  <classpathentry kind="src" path="apps/sandbox"></classpathentry>
-  <classpathentry kind="src" path="apps/bioshare"></classpathentry>
-  <classpathentry kind="src" path="apps/cvdb"></classpathentry>
-  <classpathentry kind="src" path="apps/gids"></classpathentry>
-  <classpathentry kind="src" path="apps/maze"></classpathentry>
-  <classpathentry kind="src" path="apps/xgap"></classpathentry>
-  <classpathentry kind="src" path="publicdata"></classpathentry>
+  <classpathentry kind="src" path="modules/datamodel"></classpathentry>
+  <classpathentry kind="src" path="modules/decorators/core"></classpathentry>
+  <classpathentry kind="src" path="modules/decorators/pheno"></classpathentry>
+  <classpathentry kind="src" path="modules/decorators/auth"></classpathentry>
+  <classpathentry kind="src" path="modules/webserver"></classpathentry>
   <classpathentry kind="src" path="generated/sql"></classpathentry>
   <classpathentry kind="src" path="generated/java"></classpathentry>
 </classpath>

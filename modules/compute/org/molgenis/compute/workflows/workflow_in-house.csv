@@ -1,1 +1,1 @@
-name	protocol_name	PreviousSteps_namedemultiplex	demultiplex	zipfq	zipfq	demultiplexfastqc	fastqc	zipfqbwa_align_left	bwa_align_left	fastqcbwa_align_right	bwa_align_right	fastqc
+name	protocol_name	PreviousSteps_namedemultiplex	demultiplex	zipfq	zipfq	demultiplexfastqc	fastqc	zipfqbwaAlignLeft	bwaAlignLeft	fastqcbwaAlignRight	bwaAlignRight	fastqcbwaSampe	bwaSampe	"bwaAlignLeft, bwaAlignRight"samToBam	samToBam	bwaSampesamSort	samSort	samToBampicardQC	picardQC	samSortmarkduplicates	markduplicates	samSort

@@ -10,14 +10,19 @@
 
 <#include "macros.ftl"/>
 <@begin/>
-#MOLGENIS walltime=10:00:00 nodes=1 cores=1 mem=10 clusterQueue=cluster
+#MOLGENIS walltime=35:59:00 mem=4
 #INPUTS 
 #OUTPUTS
 #EXEC
 #FOREACH
 
-# The following code gzips files and removes original file
-# However, in the case of a symlink, the symlink is removed.
-gzip -f ${leftbarcode}
-gzip -f ${rightbarcode}
-<@end/>
+inputs "${samfile}"
+outputs "${bamfile}"
+
+${samtobamjar} \
+INPUT=${samfile} \
+OUTPUT=${bamfile} \
+VALIDATION_STRINGENCY=LENIENT \
+MAX_RECORDS_IN_RAM=2000000 \
+TMP_DIR=${tempdir}
+<@end />

@@ -8,20 +8,23 @@
 # =====================================================
 #
 
-#MOLGENIS walltime=15:00:00 nodes=1 cores=4 mem=6 clusterQueue=cluster
+<#include "macros.ftl"/>
+<@begin/>
+#MOLGENIS walltime=15:00:00 nodes=1 cores=4 mem=6
 #INPUTS 
 #OUTPUTS
 #EXEC
 #FOREACH
 
 inputs "${indexfile}" 
-inputs "${rightfilegz}"
-outputs "${bwaoutput}"
+inputs "${leftfilegz}"
+outputs "${leftbwaout}"
 
 mkdir -p "${intermediatedir}"
 
 ${bwaalignjar} \
 ${indexfile} \
-${rightfilegz} \
+${leftfilegz} \
 -t ${bwaaligncores} \
--f ${bwaoutput}
+-f ${leftbwaout}
+<@end/>
