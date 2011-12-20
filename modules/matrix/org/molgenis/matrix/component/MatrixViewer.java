@@ -233,7 +233,6 @@ public class MatrixViewer extends HtmlWidget
 		// download options
 		if (showDownloadOptions) {
 			// TODO: turn into menu with actions
-			
 			ActionInput downloadVisCsv = new ActionInput(DOWNLOADVISCSV, "", "Visible to CSV");
 			downloadVisCsv.setIcon("generated-res/img/download.png");
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadVisCsv.render() + "</div>";
@@ -241,9 +240,9 @@ public class MatrixViewer extends HtmlWidget
 			downloadVisExcel.setIcon("generated-res/img/download.png");
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadVisExcel.render() + "</div>";
 			ActionInput downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "", "Visible to SPSS");
-			downloadVisExcel.setIcon("generated-res/img/download.png");
+			downloadVisSPSS.setIcon("generated-res/img/download.png");
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">" + downloadVisSPSS.render() + "</div>";
-			downloadVisExcel.setIcon("generated-res/img/download.png");
+
 			
 		}
 		
