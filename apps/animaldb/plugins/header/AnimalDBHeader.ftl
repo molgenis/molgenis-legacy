@@ -29,16 +29,42 @@
 		<div style="float:left; margin-top:3px; margin-bottom:2px">
 			<a href="http://www.animaldb.org" target="_blank"><img src="res/img/rug_fmns_animaldb_header_logo.png" width="620px" height="49px"></a>
 		</div>
-	
+		
 		<div style="float:right">
 			<a href="http://www.molgenis.org" target="_blank"><img src="generated-res/img/logo_molgenis.gif" height="49px"></a>
 		</div>
+		
+		<!-- div id="buttonDiv" style="float:right; display:block; padding-right:75px;">
+			<span style="font-size: 35%; font-family: arial, sans-serif; font-style: italic;" >provide feedback:</span> 
+			<a href=# onclick="showFeedback();"><img src="res/img/feedback.jpeg" align="middle" height="35px" alt="Give feedback or comments on the active page." title="Give feedback or comments on the active page."></a>
+			<!-- input type="button" value="Give feedback" onclick="showFeedback();" / -->
+		</div -->
+		
+		<div id="feedbackDiv" style="float:right; padding-right:75px; font-size: 75%; font-family: arial, sans-serif; font-style: italic; display:none; ">
+			
+			<fieldset><legend style="font-size: 75%; font-family: arial, sans-serif; font-style: italic;">Provide here your feedback on the ${screen.getActivePlugin()} screen:</legend>
+			<label for="feedback" style="vertical-align: middle">feedback text:</label>
+			<br />
+			<textarea name="feedback" id="feedback" rows="3" cols="70"></textarea>
+			<br />
+			<label for="name" style="vertical-align: middle">name:</label>
+			<br />
+			<input id="name" type="text" />
+			<input type="hidden" name="plugin" id="plugin" value="${screen.getActivePlugin()}" />
+			<br /><br />
+			<input type="submit" value="Send" onclick="hideFeedback(); __action.value='sendFeedback'" />
+			<input type="reset" value="cancel" onclick="hideFeedback(); __action.value='sendFeedback'" />
+			</fieldset>
+		</div>
+		
 	</div>
 	<div style="clear:both"></div>
 	<div class="form_header" id="headermenu" style="width:100%" >
 		<div style="float:right; font-size: 75%; font-family: arial, sans-serif; font-style: italic;">
 	   		<div style="float:right; font-size: 75%; font-family: arial, sans-serif; font-style: italic;">
 				<#if screen.getFullUserName()??>
+					<a href=# onclick="showFeedback();"><img src="res/img/feedback.jpeg" align="middle" height="20px" alt="Give feedback or comments on the active page." title="Give feedback or comments on the active page."> feedback</a>
+					<span style="color:black">&nbsp;|&nbsp;</span>
 					<a href='molgenis.do?__target=main&select=UserLogin'>Logged in as: ${screen.getFullUserName()}</a>
 					<span style="color:black">&nbsp;|&nbsp;</span>
 					<a href="molgenis.do?__target=AnimalDBHeader&select=AnimalDBHeader&__action=doLogout">Logout</a>
@@ -54,20 +80,7 @@
 		<div align="right" style="color: maroon; font: 12px Arial;margin-right: 10px;">| <a href="about.html">About</a>  | <a href="doc/objectmodel.html">Object model</a>  | <a href="api/R">R-project API</a> | <a href="api/find">HTTP API</a> | <a href="api/rest/?_wadl">REST API</a> | <a href="api/soap?wsdl">Web Services API</a></div>
 	</if -->
 	
-	<div id="buttonDiv" style="float:right; display:block">
-		<input type="button" value="Give feedback" onclick="showFeedback();" />
-	</div>
-	<div style="clear:both"></div>
 	
-	<div id="feedbackDiv" style="float:right; font-size: 75%; font-family: arial, sans-serif; font-style: italic; display:none;">
-		<label for="feedback" style="vertical-align: middle">Your feedback on ${screen.getActivePlugin()}:</label>
-		<br />
-		<textarea name="feedback" id="feedback" rows="3" cols="50"></textarea>
-		<input type="hidden" name="plugin" id="plugin" value="${screen.getActivePlugin()}" />
-		<br />
-		<input type="submit" value="Send" onclick="hideFeedback(); __action.value='sendFeedback'" />
-	</div>
-	<div style="clear:both"></div>
 
 </div>
 
@@ -76,12 +89,12 @@
 <script>
 function showFeedback() {
 	document.getElementById("feedbackDiv").style.display="block";
-	document.getElementById("buttonDiv").style.display="none";
+	//document.getElementById("buttonDiv").style.display="none";
 }
 
 function hideFeedback() {
 	document.getElementById("feedbackDiv").style.display="none";
-	document.getElementById("buttonDiv").style.display="block";
+	//document.getElementById("buttonDiv").style.display="block";
 }
 </script>
 
