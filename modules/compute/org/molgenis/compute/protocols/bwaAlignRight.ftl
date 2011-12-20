@@ -22,7 +22,7 @@ outputs "${rightbwaout}"
 
 mkdir -p "${intermediatedir}"
 
-${bwaalignjar} \
+${bwaalignjar} aln \
 ${indexfile} \
 ${rightfilegz} \
 -t ${bwaaligncores} \

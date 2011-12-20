@@ -28,14 +28,14 @@ outputs "${meanqualitybycyclepdf}"
 outputs "${qualityscoredistribution}"
 outputs "${qualityscoredistributionpdf}"
 
-${alignmentmetricsjar} \
+java -jar -Xmx4g ${alignmentmetricsjar} \
 I=${sortedbam} \
 O=${alignmentmetrics} \
 R=${indexfile} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
-${gcbiasmetricsjar} \
+java -jar ${gcbiasmetricsjar} \
 R=${indexfile} \
 I=${sortedbam} \
 O=${gcbiasmetrics} \
@@ -43,27 +43,28 @@ CHART=${gcbiasmetricspdf} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
-${insertsizemetricsjar} \
+java -jar ${insertsizemetricsjar} \
 I=${sortedbam} \
 O=${insertsizemetrics} \
 H=${insertsizemetricspdf} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
-${meanqualitybycyclejar} \
+java -jar ${meanqualitybycyclejar} \
 I=${sortedbam} \
 O=${meanqualitybycycle} \
 CHART=${meanqualitybycyclepdf} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
-${qualityscoredistributionjar} \
+java -jar ${qualityscoredistributionjar} \
 I=${sortedbam}
 O=${qualityscoredistribution} \
 CHART=${qualityscoredistributionpdf} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
+java -jar -Xmx4g \
 ${hsmetricsjar} \
 INPUT=${sortedbam} \
 OUTPUT=${hsmetrics} \
@@ -72,7 +73,7 @@ TARGET_INTERVALS=${targetintervals} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
-${bamindexstatsjar} \
+java -jar ${bamindexstatsjar} \
 INPUT=${sortedbam} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir} \

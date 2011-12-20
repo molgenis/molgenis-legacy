@@ -33,6 +33,7 @@ public class ComputeCommandLine
 	private static final String FOREACH = "#FOREACH";
 	private List<ComputeJob> jobs = new ArrayList<ComputeJob>();
 	private Worksheet worksheet;
+	private int defaultCores = 0;
 
 	private void generateJobs() throws Exception
 	{
@@ -78,7 +79,10 @@ public class ComputeCommandLine
 				job.setName(this.generateJobName(wfe, work));
 				job.setInterpreter(protocol.getInterpreter());
 				job.setWalltime(protocol.getWalltime());
-				job.setCores(protocol.getCores());
+				Integer cores = (protocol.getCores()  == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
+				job.setCores(cores);
+				Integer mem = (protocol.getMem()  == null ? Integer.parseInt(worksheet.getdefaultvalue("mem")) : protocol.getMem());
+				job.setMem(mem);
 
 				// set jobname. If a job starts/completes, we put this in a logfile
 				work.set("jobname", job.getName());
@@ -242,7 +246,7 @@ public class ComputeCommandLine
 
 		opt.getSet().addOption("parametersfile", false, Options.Separator.EQUALS);
 		opt.getSet().addOption("workflowfile", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("inputlist", false, Options.Separator.EQUALS);
+		opt.getSet().addOption("worksheet", false, Options.Separator.EQUALS);
 		opt.getSet().addOption("protocoldir", false, Options.Separator.EQUALS);
 		opt.getSet().addOption("outputscriptsdir", false, Options.Separator.EQUALS);
 		opt.getSet().addOption("grid", false, Options.Separator.EQUALS, Options.Multiplicity.ZERO_OR_ONE);
@@ -265,7 +269,7 @@ public class ComputeCommandLine
 
 		ccl.parametersfile = new File(opt.getSet().getOption("parametersfile").getResultValue(0));
 		ccl.workflowfile = new File(opt.getSet().getOption("workflowfile").getResultValue(0));
-		ccl.worksheetfile = new File(opt.getSet().getOption("inputlist").getResultValue(0));
+		ccl.worksheetfile = new File(opt.getSet().getOption("worksheet").getResultValue(0));
 		ccl.outputdir = opt.getSet().getOption("outputscriptsdir").getResultValue(0);
 		ccl.protocoldir = new File(opt.getSet().getOption("protocoldir").getResultValue(0));
 		ccl.templatedir = opt.getSet().getOption("templatesdir").getResultValue(0);

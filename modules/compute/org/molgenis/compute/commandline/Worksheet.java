@@ -693,6 +693,18 @@ public class Worksheet
 				result.add(unfoldedTuple);
 			}
 		}
-
+	}
+	
+	public String getdefaultvalue(String parameter)
+	{
+		for (ComputeParameter cp : parameterlist)
+		{
+			if (cp.getName().equalsIgnoreCase(parameter))
+			{
+				return cp.getDefaultValue();
+			}
+		}
+		
+		return null;
 	}
 }

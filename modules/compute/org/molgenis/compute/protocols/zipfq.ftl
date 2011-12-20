@@ -18,6 +18,6 @@
 
 # The following code gzips files and removes original file
 # However, in the case of a symlink, the symlink is removed.
-gzip -f ${leftbarcode}
-gzip -f ${rightbarcode}
+gzip -f ${leftbarcodefq}
+gzip -f ${rightbarcodefq}
 <@end/>

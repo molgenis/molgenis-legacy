@@ -12,10 +12,6 @@
 <#include "macros.ftl"/>
 <@begin/>
 #MOLGENIS walltime=23:59:00
-#INPUTS 
-#OUTPUTS
-#EXEC
-#FOREACH
 
 inputs "${indexfile}"
 inputs "${leftbwaout}"
@@ -24,7 +20,7 @@ inputs "${leftfilegz}"
 inputs "${rightfilegz}"
 outputs "${samfile}"
 
-${bwasampejar} \
+${bwasampejar} sampe -P \
 -p illumina \
 -i ${lane} \
 -m ${externalSampleID} \
