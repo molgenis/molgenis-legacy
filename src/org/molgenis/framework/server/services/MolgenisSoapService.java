@@ -1,22 +1,19 @@
 package org.molgenis.framework.server.services;
 
 import java.io.IOException;
-import java.util.Hashtable;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.xml.ws.Endpoint;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
-import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
+import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.framework.server.ServeConfig;
 
 /**
  * 
@@ -26,25 +23,27 @@ import org.molgenis.framework.server.ServeConfig;
  * WARNING: WebApplicationException has been caught : no cause is available
  * 
  */
-public class MolgenisSoapService extends CXFNonSpringJaxrsServlet implements
+public class MolgenisSoapService extends CXFNonSpringServlet implements
 		MolgenisService
 {
 	Logger logger = Logger.getLogger(MolgenisRapiService.class);
 	private static final long serialVersionUID = 1L;
-	//private MolgenisContext mc;
+	private MolgenisContext mc;
 	private boolean cxfLoaded;
 	
 	protected Database freshDatabase = null;
 
 	public MolgenisSoapService(MolgenisContext mc) throws ServletException
 	{
-		//this.mc = mc;
+		this.mc = mc;
+		
+		super.init(mc.getServletConfig());
 
-		Hashtable<String, Object> params = new Hashtable<String, Object>();
-		params.put("jaxrs.serviceClasses", "app.servlet.RestApi");
-
-		ServletConfig sc = new ServeConfig(mc.getServletContext(), params, "/");
-		super.init(sc);
+//		Hashtable<String, Object> params = new Hashtable<String, Object>();
+//		params.put("jaxrs.serviceClasses", "app.servlet.SoapApi");
+//
+//		//ServletConfig sc = config;
+//		//super.init(sc);
 	}
 
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response)
@@ -56,10 +55,11 @@ public class MolgenisSoapService extends CXFNonSpringJaxrsServlet implements
 		{
 			if (this.cxfLoaded == false && (this.getSoapImpl() != null))
 			{
-				super.loadBus(this.getServletConfig());
+				super.loadBus(mc.getServletConfig());
 				Bus bus = this.getBus();
 				BusFactory.setDefaultBus(bus);
-				Endpoint.publish("/soap/", this.getSoapImpl());
+				//FIXME: unhardcode path
+				Endpoint.publish("/api/soap", this.getSoapImpl());
 				this.cxfLoaded = true;
 			}
 
