@@ -103,7 +103,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 				  user.getDepartment() == null ||
 				  user.getAffiliation() == null))
 				  allFieldsAvailable = true; 
-		} catch (DatabaseException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
