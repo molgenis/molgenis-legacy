@@ -217,7 +217,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 
 			// Impl B: create subquery per column, order matters because of
 			// sorting (not supported).
-			Map<Integer, Query<Observation>> subQueries = new LinkedHashMap<Integer, Query<Observation>>();
+			Map<Integer, Query<ObservedValue>> subQueries = new LinkedHashMap<Integer, Query<ObservedValue>>();
 			for (MatrixQueryRule rule : rules)
 			{
 				// only add colValues / rowValues as subquery
@@ -226,7 +226,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 					// create a new subquery for each colValues column
 					if (subQueries.get(rule.getDimIndex()) == null)
 					{
-						Query<Observation> subQuery = (Query<Observation>) db.query(this.getValueClass());
+						Query<ObservedValue> subQuery = (Query<ObservedValue>) db.query(this.getValueClass());
 						// filter on data
 						// if(data != null)
 						// subQuery.eq(TextDataElement.DATA, data.getIdValue());
@@ -243,7 +243,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 
 			// add each subquery as condition on
 			// ObservedValue.FEATURE/ObservedValue.TARGET
-			for (Query<Observation> q : subQueries.values())
+			for (Query<ObservedValue> q : subQueries.values())
 			{
 				String sql = q.createFindSql();
 				// strip 'select ... from' and replace with 'select id from'
