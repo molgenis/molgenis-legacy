@@ -33,34 +33,6 @@
 
 <input type="hidden" name="userId" id="userId" value="${screen.userId}" />
 
-<div id="togglesdiv">
-Show date-time info with values:
-<input type="checkbox" id="datetimetoggle" name="datetimetoggle" value="datetime" onclick="fnReloadTable()" />
-&nbsp;
-Limit values to most recent one:
-<input type="checkbox" id="limitvaltoggle" name="limitvaltoggle" value="limitval" checked="true" onclick="fnReloadTable()" />
-</div>
-
-<div id="showhideselect">
-	<strong>Show/hide features</strong>
-	<select id="" name="" onchange="fnAddRemFeature(this.value);">
-		<option value="-1">&nbsp;</option>
-		<#list screen.featureList as fl>
-			<option value="${fl.id}">${fl.name}</option>
-		</#list>
-	</select>
-</div>
-
-<div id='top_part'>
-	<strong>Type of target:</strong>
-	<select name="targettype" id="targettype" onchange="fnReloadTable()">
-		<option value="All">All</option>
-		<option value="Individual">Individual</option>
-		<option value="Panel">Panel</option>
-		<option value="Location">Location</option>
-	</select>
-</div>
-
 <div id="demo">
 
 	<table cellpadding="0" cellspacing="0" border="0" class="display" id="listtable">
@@ -95,16 +67,47 @@ Limit values to most recent one:
 	</table>
 </div>
 
-<div id='buttons_part' style='border:1px solid; margin:10px; padding:10px; float:left'>
+<div id="Settings" style='margin:10px; padding:10px; float:left'>
+	<fieldset><legend><strong>Change display Settings: </strong></legend> 
+	<div id='top_part'>
+		<p>
+		Show: 
+		<select name="targettype" id="targettype" onchange="fnReloadTable()">
+			<option value="Individual">Individual animals </option>
+			<option value="Panel">Groups </option>
+			<option value="Location">Locations </option>
+			<option value="All">Everything </option>
+		</select>
+		in the table: </p>
+		<p>
+	        Add/remove column <select id="" name="" onchange="fnAddRemFeature(this.value);">
+	                   		<option value="-1">&nbsp;</option>
+	               			 	<#list screen.featureList as fl>
+                        	<option value="${fl.id}">${fl.name}</option>
+                			</#list>
+	       			   </select> To the table:
+		</p>
+	</div>
+	
+	<div id="togglesdiv">
+		Show date-time info with values: <input type="checkbox" id="datetimetoggle" name="datetimetoggle" value="datetime" onclick="fnReloadTable()" />
+	&nbsp; &nbsp;<br />
+	Limit valuedisplay to the most recent one: <input type="checkbox" id="limitvaltoggle" name="limitvaltoggle" value="limitval" onclick="fnReloadTable()" />
+	</div>
+	</fieldset>
+</div>
+
+<div id='buttons_part' style='margin:10px; padding:10px; float:left'>
+	<fieldset><legend><strong>Save as batch: </strong></legend>
 	<input type="hidden" name="saveselection" id="saveselection" />
-	Add visible selection to Batch:
-	<select id="batch" name="batch">
-		<#list screen.batchList as batch>
-			<option value="${batch.id}">${batch.name}</option>
-		</#list>
-	</select>
-	<br />Or, save as new Batch with name: <input type="text" name="newbatchname" id="newbatchname" class="textbox" />
-	<br /><input type='submit' class='addbutton' value='Apply' onclick="var targetNames = fnMakeGroup(); saveselection.value = targetNames; __action.value='saveBatch'" />
+	Add visible selection to the existing Batch: <select id="batch" name="batch">
+										<#list screen.batchList as batch>
+											<option value="${batch.id}">${batch.name}</option>
+										</#list>
+									</select>
+	<br />Or, save selection as a new Batch with the name: <input type="text" name="newbatchname" id="newbatchname" class="textbox" />
+	<br /><input type='submit' class='addbutton' value='Save' onclick="var targetNames = fnMakeGroup(); saveselection.value = targetNames; __action.value='saveBatch'" />
+	</fieldset>
 </div>
 <div style='clear:left'>
 	<!-- Bogus div so previous div remains within the page limits -->
