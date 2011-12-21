@@ -17,7 +17,7 @@ import org.testng.annotations.Test;
 
 import app.servlet.MolgenisServlet;
 
-public class MultiThreadedDatabase_XqtlTestNG
+public class MultiThreadedDatabase_XqtlTestNG_skip
 {
 	int amountInBatch = 100; //amount of Individuals per add/remove test
 	int amountOfTests = 100; //amount of test threads running simultaneously
