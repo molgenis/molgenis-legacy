@@ -18,7 +18,8 @@ inputs "${matefixedcovariatecsv}"
 outputs "${recalbam}"
 
 java -jar -Xmx4g \
-${tooldir}/GATK-1.0.5069/Sting/dist/GenomeAnalysisTK.jar -l INFO \
+${genomeAnalysisTKjar} \
+-l INFO \
 -T TableRecalibration \
 -U ALLOW_UNINDEXED_BAM \
 -R ${indexfile} \
