@@ -101,7 +101,8 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				this.setStatus("<h4>You order is being processed.</h4>" ) ;
 				
 			} //TODO fix this : else if ("DeleteMeasurement".equals(request.getAction()))	{
-			else if (request.getAction().startsWith("DeleteMeasurement")) {
+			else if (request.getAction() != null 
+					&& request.getAction().startsWith("DeleteMeasurement")) {
 				
 				System.out.println("Here's the request on DELETE :"+ request);
 				String measurementName  =  request.getString("measurementName"); //TODO :  this is not working
