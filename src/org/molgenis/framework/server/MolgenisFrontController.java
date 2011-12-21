@@ -104,8 +104,15 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 							+ request.getDatabase().getSecurity().getUserName() : "not authenticated"));
 					
 					request.setServicePath(p);
-					services.get(p).handleRequest(request, response);
-					manageConnection(connId);
+					
+					try
+					{
+						services.get(p).handleRequest(request, response);
+					}
+					finally
+					{
+						manageConnection(connId);
+					}
 					
 					
 					//printSessionInfo(req.getSession());

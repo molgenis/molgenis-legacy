@@ -1,5 +1,6 @@
 package org.molgenis.framework.server;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
@@ -7,7 +8,7 @@ import org.molgenis.MolgenisOptions;
 
 public class MolgenisContext
 {
-	private ServletContext sc;
+	private ServletConfig sc;
 	private DataSource ds;
 	private MolgenisOptions usedOptions;
 	private String variant;
@@ -18,7 +19,7 @@ public class MolgenisContext
 	// date/time of generation
 	// revision number
 	
-	public MolgenisContext(ServletContext sc, DataSource ds, MolgenisOptions usedOptions, String variant)
+	public MolgenisContext(ServletConfig sc, DataSource ds, MolgenisOptions usedOptions, String variant)
 	{
 		this.sc = sc;
 		this.ds = ds;
@@ -37,9 +38,14 @@ public class MolgenisContext
 		return variant;
 	}
 
-	public ServletContext getServletContext()
+	public ServletConfig getServletConfig()
 	{
 		return sc;
+	}
+	
+	public ServletContext getServletContext()
+	{
+		return sc.getServletContext();
 	}
 
 	public DataSource getDataSource()

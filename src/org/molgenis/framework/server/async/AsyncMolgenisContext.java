@@ -1,6 +1,6 @@
 package org.molgenis.framework.server.async;
 
-import javax.servlet.ServletContext;
+import javax.servlet.ServletConfig;
 import javax.sql.DataSource;
 
 import org.molgenis.MolgenisOptions;
@@ -12,7 +12,7 @@ public class AsyncMolgenisContext extends MolgenisContext
 	private LoadingScreenFactory loadingScreenUUIDFactory;
 	
 	
-	public AsyncMolgenisContext(ServletContext sc, DataSource ds, MolgenisOptions usedOptions, String variant)
+	public AsyncMolgenisContext(ServletConfig sc, DataSource ds, MolgenisOptions usedOptions, String variant)
 	{
 		super(sc, ds, usedOptions, variant);
 		this.loadingScreenUUIDFactory = new LoadingScreenFactory();
