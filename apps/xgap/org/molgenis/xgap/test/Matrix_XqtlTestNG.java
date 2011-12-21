@@ -9,7 +9,6 @@ import matrix.test.implementations.general.Params;
 import matrix.test.implementations.memory.TestMemoryMatrix;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.organization.Investigation;
 import org.molgenis.util.DetectOS;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
@@ -55,17 +54,12 @@ public class Matrix_XqtlTestNG
 		XqtlSeleniumTest.deleteDatabase();
 		db = DatabaseFactory.create();
 
-		// assert db is empty
-		//(it does seem to have tables here though, which is not really the idea)
-		Assert.assertTrue(db.find(Investigation.class).size() == 0);
-		
 		//setup database tables
 		String report = ResetXgapDb.reset(db, true);
 		Assert.assertTrue(report.endsWith("SUCCESS"));
-		StorageHandler sh = new StorageHandler(db);
-		Assert.assertFalse(sh.hasFileStorage(false, db));
 
 		// setup file storage
+		StorageHandler sh = new StorageHandler(db);
 		sh.setFileStorage(storagePath(), db);
 		sh.validateFileStorage(db);
 		Assert.assertTrue(sh.hasValidFileStorage(db));
