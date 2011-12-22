@@ -1,6 +1,5 @@
 <!-- this is a 'superclass' ant script with all stuff in common. 
-It should be used via 'import' 
-plus passing of properties 
+It should be used via 'import' plus passing of properties 
 'app_properties' (reference properties file) and
 'app_src' (listing of the src folders to be included) -->
 <project>
