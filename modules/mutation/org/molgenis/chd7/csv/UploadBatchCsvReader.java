@@ -37,8 +37,13 @@ import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.MutationUploadVO;
 import org.molgenis.mutation.vo.ObservedValueVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
+import org.molgenis.core.Publication;
+import org.molgenis.core.service.PublicationService;
 import org.molgenis.core.vo.PublicationVO;
 //import col7a1.UploadBatch;
+import org.molgenis.services.PubmedService;
+import org.molgenis.services.pubmed.Author;
+import org.molgenis.services.pubmed.PubmedArticle;
 import org.molgenis.submission.Submission;
 
 /**
@@ -63,11 +68,15 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		//cache for entities of which xrefs couldn't be resolved (e.g. if there is a self-refence)
 		//these entities can be updated with their xrefs in a second round when all entities are in the database
 		//final List<UploadBatch> uploadBatchsMissingRefs = new ArrayList<UploadBatch>();
-	
+
+//		db.beginTx();
+
 		final UploadService uploadService       = new UploadService();
 		uploadService.setDatabase(db);
 		final MutationService mutationService   = new MutationService();
 		mutationService.setDatabase(db);
+		final PublicationService publicationService = new PublicationService(db);
+		final PubmedService pubmedService       = new PubmedService();
 
 		final Submission submission             = new Submission();
 		DateFormat dateFormat                   = new SimpleDateFormat("yyyy-MM-dd");
@@ -92,8 +101,8 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 
 			public void handleLine(int lineNo, Tuple tuple) throws Exception
 			{
-				for (String fieldName : tuple.getFields())
-					System.out.println(">>> fieldName==" +fieldName);
+//				for (String fieldName : tuple.getFields())
+//					System.out.println(">>> fieldName==" +fieldName);
 				//parse object, setting defaults and values from file
 //				if (lineNo > 5) return;
 				PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
@@ -102,15 +111,16 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 
 				patientSummaryVO.setPatientNumber(tuple.getString("ID CHARGE database"));
 				patientSummaryVO.setPatientGender("unknown");
-//				patientSummaryVO.setPatientEthnicity(tuple.getString("Ethnicity"));
+				patientSummaryVO.setPatientEthnicity("unknown");
 				patientSummaryVO.setPatientAge("unknown");
-				patientSummaryVO.setPatientDeceased("unknown");
+				patientSummaryVO.setPatientDeceased(tuple.getString("Deceased"));
 
 				patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
 
 				if (StringUtils.isNotEmpty(tuple.getString("CHD7 c")))
 				{
 					MutationUploadVO mutationUploadVO = new MutationUploadVO();
+					mutationUploadVO.setGeneSymbol("CHD7");
 					mutationUploadVO.setMutation(new Mutation());
 					mutationUploadVO.getMutation().setCdna_Notation("c." + tuple.getString("CHD7 c"));
 					mutationService.assignValuesFromNotation(mutationUploadVO);
@@ -146,22 +156,48 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 				// Leave xref == null and add remark in mutation2remark
 				patientSummaryVO.setVariantComment("NA");
 
+				patientSummaryVO.setPhenotypeId(null);
 				patientSummaryVO.setPhenotypeMajor(tuple.getString("Phenotype"));
 				patientSummaryVO.setPhenotypeSub("");
 
 				patientSummaryVO.setPatientConsent("no");
 
-				if (tuple.getString("PubMed ID") != null || tuple.getString("Reference") != null)
+				if (tuple.getString("Pubmed ID") != null)
 				{
 					List<PublicationVO> publicationVOs = new ArrayList<PublicationVO>();
-//					String[] pubmeds                   = tuple.getString("PubMed ID").split(";");
-					String[] titles                    = tuple.getString("Reference").split(";");
-					for (int i = 0; i < titles.length; i++)
+					String[] pubmeds                   = tuple.getString("PubMed ID").split("[,;]");
+
+					for (String pubmed : pubmeds)
 					{
+						pubmed                      = StringUtils.deleteWhitespace(pubmed);
+
 						PublicationVO publicationVO = new PublicationVO();
-//						publicationVO.setPubmed("");
-						publicationVO.setName(titles[i]);
-						publicationVO.setTitle(titles[i]);
+						publicationVO.setPubmedId(pubmed);
+
+						// Insert publication if it does not exist already
+
+						List<Publication> results = db.query(Publication.class).equals(Publication.NAME, pubmed).find();
+
+						if (results.size() < 1)
+						{
+							List<Integer> pubmedIdList         = new ArrayList<Integer>();
+							pubmedIdList.add(Integer.valueOf(pubmed));
+
+							List<PubmedArticle> pubmedArticles = pubmedService.getPubmedArticlesForIds(pubmedIdList);
+//							System.out.println(">>> pubmedService: ids==" + pubmedIdList + ", result==" + pubmedArticles);
+							for (PubmedArticle pubmedArticle : pubmedArticles)
+							{
+//								System.out.println(">>> pubmedArticle==" + pubmedArticle.MedlineCitation.article.ArticleTitle);
+								List<Author> authorList = pubmedArticle.MedlineCitation.article.Authors;
+								List<String> authors    = new ArrayList<String>();
+								for (Author author : authorList)
+									authors.add(author.toInitials());
+								publicationVO.setAuthors(StringUtils.join(authors, "; "));
+								publicationVO.setName(pubmedArticle.MedlineCitation.PMID);
+								publicationVO.setTitle(pubmedArticle.MedlineCitation.article.ArticleTitle);
+								publicationService.insert(publicationVO);
+							}
+						}
 						publicationVOs.add(publicationVO);
 					}
 					patientSummaryVO.setPublicationVOList(publicationVOs);
@@ -214,6 +250,8 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 //				}
 			}
 		});
+		
+//		db.commitTx();
 		//add remaining elements to the database
 //		if(!uploadBatchList.isEmpty())
 //		{
