@@ -270,7 +270,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
     	</#if>
         <#if field.type == "mref">
 			<#assign multipleXrefs = entity.getNumberOfReferencesTo(field.xrefEntity)/>
-    @ManyToMany(<#if field.jpaCascade??>cascade={${field.jpaCascade}}<#else>/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/</#if>)
+    @ManyToMany(<#if field.jpaCascade??>fetch=FetchType.LAZY, cascade={${field.jpaCascade}}<#else>fetch=FetchType.LAZY /*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/</#if>)
     @JoinColumn(name="${SqlName(field)}", insertable=true, updatable=true, nullable=${field.isNillable()?string})
 			<#if multipleXrefs &gt; 1>
 	@JoinTable(name="${Name(entity)}_${SqlName(field)}", 
@@ -280,7 +280,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			joinColumns=@JoinColumn(name="${Name(entity)}"), inverseJoinColumns=@JoinColumn(name="${SqlName(field)}"))			
 			</#if>			
        	<#elseif field.type == "xref">
-    @ManyToOne(<#if field.jpaCascade??>cascade={${field.jpaCascade}}<#else>/*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/</#if>)
+    @ManyToOne(<#if field.jpaCascade??>fetch=FetchType.LAZY, cascade={${field.jpaCascade}}<#else>fetch=FetchType.LAZY /*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/</#if>)
     @JoinColumn(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)   	
        	<#else>
 			<#if isPrimaryKey(field,entity)>
@@ -833,7 +833,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		<#if f.type=="xref" && f.getXrefEntityName() == entity.name>
 			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
 //${multipleXrefs}
-	@OneToMany(mappedBy="${name(f)}"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
     private Collection<${JavaName(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new ArrayList<${JavaName(f.entity)}>();
 
 	@XmlTransient
@@ -858,7 +858,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
 				<#assign multipleXrefs = e.getNumberOfMrefTo(entity)/>
 	//${multipleXrefs}
-    @ManyToMany(mappedBy="${name(f)}"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
+    @ManyToMany(fetch=FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
     private Collection<${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
 
 	@XmlTransient
