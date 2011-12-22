@@ -866,17 +866,17 @@ public class MatrixViewer extends HtmlWidget
 
 	private String listObsValToString(List<ObservedValue> values) throws Exception
 	{
-		String japie = "";
+		String result = "";
+		int pass = 0;
 		for (ObservedValue s : values)
 		{
-			japie = s.getValue();
-
+			if (pass > 0) {
+				result += "|";
+			}
+			result += s.getValue();
+			pass++;
 		}
-		if (values.size() > 1)
-		{
-			throw new Exception("more than one value in the cell :) !!!");
-		}
-		return japie;
+		return result;
 	}
 
 	 

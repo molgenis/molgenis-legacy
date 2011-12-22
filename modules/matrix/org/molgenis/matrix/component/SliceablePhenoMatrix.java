@@ -252,6 +252,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 						+ sql.substring(sql.indexOf("FROM"));
 				// use QueryRule.Operator.IN_SUBQUERY
 				xQuery.subquery(ObservationElement.ID, sql);
+				System.out.println("SQL: " + sql);
 			}
 
 			// add limit and offset, unless count
