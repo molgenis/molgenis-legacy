@@ -25,6 +25,7 @@ public class AutocompleteInput<E> extends HtmlInput<E>
 				"			var suggestions = [];\n" +
 				"			successFunction = function(data, textStatus) {\n" +
 				"				$.each(data, function(key, val) { suggestions.push(key); });\n" +
+				"               suggestions.sort();" +
 				"				return suggestions;\n" +
 				"			};\n" +
 				"           errorFunction = function(jqXHR, textStatus, errorThrown) {\n" +
