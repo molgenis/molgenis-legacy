@@ -2,12 +2,19 @@ package org.molgenis.core.vo;
 
 public class PublicationVO
 {
+	String authors;
 	String name;
 	String title;
 	String pubmedId;
 	String pubmedUrl;
 	String status;
 
+	public String getAuthors() {
+		return authors;
+	}
+	public void setAuthors(String authors) {
+		this.authors = authors;
+	}
 	public String getName() {
 		return name;
 	}

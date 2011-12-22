@@ -1,6 +1,5 @@
 package org.molgenis.core.service;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class PublicationService
 	public static final String PUBMED_URL                = "http://www.ncbi.nlm.nih.gov/pubmed/";
 
 	// private constructor, use singleton instance
-	private PublicationService(Database db)
+	public PublicationService(Database db)
 	{
 		this.db = db;
 	}
@@ -30,11 +29,17 @@ public class PublicationService
 		return publicationService;
 	}
 
-	public List<PublicationVO> getAll() throws DatabaseException, ParseException
+	public List<PublicationVO> getAll() throws DatabaseException
 	{
-		return this.toPublicationVOList(this.db.query(Publication.class).sortASC(Publication.NAME).find());
+		return this.toPublicationVOList(this.db.query(Publication.class).sortASC(Publication.TITLE).find());
 	}
 	
+	public void insert(PublicationVO publicationVO) throws DatabaseException
+	{
+		Publication publication = this.toPublication(publicationVO);
+		this.db.add(publication);
+	}
+
 	private List<PublicationVO> toPublicationVOList(List<Publication> publications)
 	{
 		List<PublicationVO> result = new ArrayList<PublicationVO>();
@@ -48,6 +53,7 @@ public class PublicationService
 	private PublicationVO toPublicationVO(Publication publication)
 	{
 		PublicationVO publicationVO = new PublicationVO();
+		publicationVO.setAuthors(publication.getAuthorList());
 		publicationVO.setName(publication.getName());
 		publicationVO.setPubmedId(publication.getPubmedID_Name());
 		publicationVO.setPubmedUrl(PublicationService.PUBMED_URL + publication.getPubmedID_Name());
@@ -55,5 +61,16 @@ public class PublicationService
 		publicationVO.setTitle(publication.getTitle());
 		
 		return publicationVO;
+	}
+	
+	private Publication toPublication(PublicationVO publicationVO)
+	{
+		Publication publication = new Publication();
+		publication.setAuthorList(publicationVO.getAuthors());
+		publication.setName(publicationVO.getName());
+		publication.setPubmedID_Name(publicationVO.getPubmedId());
+		publication.setTitle(publicationVO.getTitle());
+		
+		return publication;
 	}
 }
