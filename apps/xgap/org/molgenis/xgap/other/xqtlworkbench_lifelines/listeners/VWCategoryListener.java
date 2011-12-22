@@ -37,8 +37,8 @@ public class VWCategoryListener extends ImportTupleListener {
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
 	
 		//get the measurement
-		Measurement m = measurements.get(tuple.getString("VELD"));
-
+		Measurement m = measurements.get(tuple.getString("TABNAAM") + "_" + tuple.getString("VELD"));
+		
 		//create the category
 		if (m != null && tuple.getString("VALLABELABEL") != null) {
 			Category category = new Category();
