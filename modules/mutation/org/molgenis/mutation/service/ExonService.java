@@ -40,7 +40,7 @@ public class ExonService implements Serializable
 		this.db = db;
 	}
 
-	public List<ExonSummaryVO> findExons(ExonSearchCriteriaVO criteria) throws DatabaseException, ParseException, RESyntaxException
+	public List<ExonSummaryVO> findExons(ExonSearchCriteriaVO criteria) throws DatabaseException, RESyntaxException
 	{
 		if (this.db instanceof JDBCDatabase)
 		{
@@ -404,7 +404,7 @@ public class ExonService implements Serializable
 			throw new RESyntaxException("Invalid mutation notation: " + position);
 	}
 
-	public List<Exon> findExonsByProteinDomainId(Integer proteinDomainId, Boolean noIntrons) throws DatabaseException, ParseException
+	public List<Exon> findExonsByProteinDomainId(Integer proteinDomainId, Boolean noIntrons) throws DatabaseException
 	{
 		Query<Exon> query =
 			this.db.query(Exon.class)

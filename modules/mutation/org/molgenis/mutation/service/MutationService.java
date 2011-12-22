@@ -33,7 +33,6 @@ import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.Patient;
-import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.ProteinDomain;
 import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.mutation.vo.ExonSearchCriteriaVO;
@@ -43,6 +42,8 @@ import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.MutationUploadVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
+import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservedValue;
 import org.molgenis.submission.Submission;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.Publication;
@@ -118,44 +119,45 @@ public class MutationService implements Serializable
 				query = query.like(Mutation.INHERITANCE, criteria.getInheritance() + "%");
 			if (criteria.getMutationId() != null)
 				query = query.equals(Mutation.ID, criteria.getMutationId());
-			if (criteria.getPhenotypeId() != null)
-			{
-				//TODO: add proper join capability
-				List<Patient> patients    = this.db.query(Patient.class).equals(Patient.PHENOTYPE, criteria.getPhenotypeId()).find();
-				List<Integer> mutationIds = new ArrayList<Integer>();
-				for (Patient patient : patients)
-				{
-					mutationIds.add(patient.getMutation1_Id());
-					mutationIds.add(patient.getMutation2_Id());
-				}
-				if (mutationIds.size() > 0)
-					query = query.in(Mutation.ID, mutationIds);
-			}
 			if (StringUtils.length(criteria.getPhenotypeName()) > 2)
 			{
 				//TODO: add proper join capability
-				List<MutationPhenotype> phenotypes =
-					this.db.query(MutationPhenotype.class)
-					.like(MutationPhenotype.NAME, criteria.getPhenotypeName() + "%").or()
-					.like(MutationPhenotype.MAJORTYPE, criteria.getPhenotypeName() + "%").or()
-					.like(MutationPhenotype.SUBTYPE, criteria.getPhenotypeName() + "%")
-					.find();
-				List<Integer> phenotypeIds = new ArrayList<Integer>();
-				for (MutationPhenotype phenotype : phenotypes)
-					phenotypeIds.add(phenotype.getId());
-				if (phenotypeIds.size() > 0)
+				List<ObservedValue> phenotypes = this.db.query(ObservedValue.class).equals(ObservedValue.VALUE, criteria.getPhenotypeName()).find();
+				for (ObservedValue phenotype : phenotypes)
 				{
-					List<Patient> patients    = this.db.query(Patient.class).in(Patient.PHENOTYPE, phenotypeIds).find();
+					Patient patient           = this.db.findById(Patient.class, phenotype.getTarget_Id());
 					List<Integer> mutationIds = new ArrayList<Integer>();
-					for (Patient patient : patients)
-					{
-						mutationIds.add(patient.getMutation1_Id());
-						mutationIds.add(patient.getMutation2_Id());
-					}
+					mutationIds.add(patient.getMutation1_Id());
+					mutationIds.add(patient.getMutation2_Id());
 					if (mutationIds.size() > 0)
 						query = query.in(Mutation.ID, mutationIds);
 				}
 			}
+//			if (StringUtils.length(criteria.getPhenotypeName()) > 2)
+//			{
+//				//TODO: add proper join capability
+//				List<MutationPhenotype> phenotypes =
+//					this.db.query(MutationPhenotype.class)
+//					.like(MutationPhenotype.NAME, criteria.getPhenotypeName() + "%").or()
+//					.like(MutationPhenotype.MAJORTYPE, criteria.getPhenotypeName() + "%").or()
+//					.like(MutationPhenotype.SUBTYPE, criteria.getPhenotypeName() + "%")
+//					.find();
+//				List<Integer> phenotypeIds = new ArrayList<Integer>();
+//				for (MutationPhenotype phenotype : phenotypes)
+//					phenotypeIds.add(phenotype.getId());
+//				if (phenotypeIds.size() > 0)
+//				{
+//					List<Patient> patients    = this.db.query(Patient.class).in(Patient.PHENOTYPE, phenotypeIds).find();
+//					List<Integer> mutationIds = new ArrayList<Integer>();
+//					for (Patient patient : patients)
+//					{
+//						mutationIds.add(patient.getMutation1_Id());
+//						mutationIds.add(patient.getMutation2_Id());
+//					}
+//					if (mutationIds.size() > 0)
+//						query = query.in(Mutation.ID, mutationIds);
+//				}
+//			}
 			if (criteria.getPid() != null)
 			{
 				//TODO: add proper join capability
@@ -269,8 +271,8 @@ public class MutationService implements Serializable
 
 				if (criteria.getPhenotypeId() != null || StringUtils.length(criteria.getPhenotypeName()) > 2)
 				{
-					Join<Patient, MutationPhenotype> phenotype1 = patient1.join("phenotype", JoinType.LEFT);
-					Join<Patient, MutationPhenotype> phenotype2 = patient2.join("phenotype", JoinType.LEFT);
+					Join<Patient, ObservedValue> phenotype1 = patient1.join("phenotype", JoinType.LEFT);
+					Join<Patient, ObservedValue> phenotype2 = patient2.join("phenotype", JoinType.LEFT);
 
 					if (criteria.getPhenotypeId() != null)
 						mutationCriteria.add(cb.or(cb.equal(phenotype1.get("id"), criteria.getPhenotypeId()), cb.equal(phenotype2.get("id"), criteria.getPhenotypeId())));
@@ -344,22 +346,33 @@ public class MutationService implements Serializable
 
 		mutationSummaryVO.setPatientSummaryVOList(new ArrayList<PatientSummaryVO>());
 		// helper hash to get distinct phenotypes
-		HashMap<Integer, String> phenotypeNameHash        = new HashMap<Integer, String>();
+		HashMap<String, String> phenotypeNameHash         = new HashMap<String, String>();
 		// helper hash to get distinct publications
 		HashMap<Integer, PublicationVO> publicationVOHash = new HashMap<Integer, PublicationVO>();
 		
 		List<Patient> patients = this.db.query(Patient.class).equals(Patient.MUTATION1, mutation.getId()).or().equals(Patient.MUTATION2, mutation.getId()).find();
+		
+		List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, "Phenotype").find();
+		if (features.size() != 1)
+			throw new DatabaseException("Not exactly one ObservableFeature with name 'Phenotype' found.");
+
 		for (Patient patient : patients)
 		{
 			PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
 			patientSummaryVO.setPatientIdentifier(patient.getIdentifier());
 			patientSummaryVO.setVariantComment(patient.getMutation2remark());
 			
-			MutationPhenotype phenotype = this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id());
-			patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
-			patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
-			String phenotypeName = phenotype.getMajortype() + (StringUtils.isNotEmpty(phenotype.getSubtype()) ? ", " + phenotype.getSubtype() : "");
-			phenotypeNameHash.put(phenotype.getId(), phenotypeName);
+			List<ObservedValue> phenotypes = this.db.query(ObservedValue.class).equals(ObservedValue.FEATURE, features.get(0).getId()).equals(ObservedValue.TARGET, patient.getId()).find();
+			List<String> phenotypeNames    = new ArrayList<String>();
+			for (ObservedValue phenotype : phenotypes)
+			{
+				phenotypeNames.add(phenotype.getValue());
+				phenotypeNameHash.put(phenotype.getValue(), phenotype.getValue());
+			}
+			patientSummaryVO.setPhenotypeMajor(StringUtils.join(phenotypeNames, ", "));
+			patientSummaryVO.setPhenotypeSub("");
+//			String phenotypeName = phenotype.getMajortype() + (StringUtils.isNotEmpty(phenotype.getSubtype()) ? ", " + phenotype.getSubtype() : "");
+//			phenotypeNameHash.put(phenotype.getId(), phenotypeName);
 
 			patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
 			//TODO: How to generalize this in future?
@@ -703,7 +716,7 @@ public class MutationService implements Serializable
 		this.assignValuesFromPosition(mutationUploadVO);
 	}
 
-	public void assignValuesFromPosition(MutationUploadVO mutationUploadVO) throws DatabaseException, ParseException, RESyntaxException
+	public void assignValuesFromPosition(MutationUploadVO mutationUploadVO) throws DatabaseException, RESyntaxException
 	{
 		if (StringUtils.isEmpty(mutationUploadVO.getMutation().getMutationPosition()) || "0".equals(mutationUploadVO.getMutation().getMutationPosition()))
 			return;

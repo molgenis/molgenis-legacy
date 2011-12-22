@@ -15,6 +15,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.Publication;
 import org.molgenis.core.service.PublicationService;
@@ -25,13 +26,13 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.mutation.Mutation;
-import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.vo.MutationSummaryVO;
 import org.molgenis.mutation.vo.ObservedValueVO;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.mutation.vo.PhenotypeDetailsVO;
+import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.Workflow;
@@ -51,7 +52,7 @@ public class PatientService implements Serializable
 		this.db = db;
 	}
 
-	public List<PatientSummaryVO> findPatients(PatientSearchCriteriaVO criteria) throws DatabaseException, java.text.ParseException
+	public List<PatientSummaryVO> findPatients(PatientSearchCriteriaVO criteria) throws DatabaseException
 	{
 		if (this.db instanceof JDBCDatabase)
 		{
@@ -246,7 +247,7 @@ public class PatientService implements Serializable
 				Protocol protocol = this.db.findById(Protocol.class, workflowElement.getProtocol_Id());
 
 				javax.persistence.Query query = this.db.getEntityManager().createNativeQuery("SELECT ov.id, f.name, ov.value FROM ObservedValue ov JOIN Protocol_Features pf ON (ov.Feature = pf.Features) JOIN ObservationElement f ON (pf.Features = f.id) WHERE ov.target = " + patient.getId() + " AND pf.Protocol = " + protocol.getId());
-				List observedValueList        = query.getResultList();
+				List<?> observedValueList     = query.getResultList();
 				
 				if (observedValueList.size() == 0)
 					continue;
@@ -269,7 +270,7 @@ public class PatientService implements Serializable
 			throw new UnsupportedOperationException("Unsupported database mapper");
 	}
 
-	public List<PatientSummaryVO> getAllPatientSummaries() throws DatabaseException, ParseException
+	public List<PatientSummaryVO> getAllPatientSummaries() throws DatabaseException
 	{
 		List<Patient> patients = this.db.query(Patient.class).sortASC(Patient.IDENTIFIER).find();
 		return this.toPatientSummaryVOList(patients);
@@ -448,9 +449,16 @@ public class PatientService implements Serializable
 //		}
 		patientSummaryVO.setVariantComment(patient.getMutation2remark());
 
-		MutationPhenotype phenotype = this.db.findById(MutationPhenotype.class, patient.getPhenotype_Id());
-		patientSummaryVO.setPhenotypeMajor(phenotype.getMajortype());
-		patientSummaryVO.setPhenotypeSub(phenotype.getSubtype());
+		List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, "Phenotype").find();
+		if (features.size() != 1)
+			throw new DatabaseException("Not exactly one ObservableFeature with name 'Phenotype' found.");
+
+		List<ObservedValue> phenotypes = this.db.query(ObservedValue.class).equals(ObservedValue.FEATURE, features.get(0).getId()).equals(ObservedValue.TARGET, patient.getId()).find();
+		List<String> phenotypeNames    = new ArrayList<String>();
+		for (ObservedValue phenotype : phenotypes)
+			phenotypeNames.add(phenotype.getValue());
+		patientSummaryVO.setPhenotypeMajor(StringUtils.join(phenotypeNames, ", "));
+		patientSummaryVO.setPhenotypeSub("");
 			
 		patientSummaryVO.setPatientMaterialList(patient.getMaterial_Name());
 			

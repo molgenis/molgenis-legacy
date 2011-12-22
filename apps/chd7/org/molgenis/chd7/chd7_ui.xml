@@ -9,9 +9,9 @@
 		<plugin name="SearchPlugin" type="org.molgenis.chd7.ui.Search" label="Search">
 			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
 		</plugin>
-		<!--
-		<plugin name="UploadPlugin" type="org.molgenis.mutation.ui.upload.Chd7Upload" label="Submit data"/>
-		-->
+
+		<plugin name="UploadPlugin" type="org.molgenis.chd7.ui.Upload" label="Submit data"/>
+
 		<plugin name="Contact" type="org.molgenis.feedback.ui.Contact" label="Contact"/>
 		<plugin name="Publications" type="org.molgenis.core.ui.AllPublications" label="References"/>
 		<plugin name="Background" type="org.molgenis.chd7.ui.Background" label="Background"/>
@@ -21,7 +21,6 @@
 			<form name="ProteinDomain" entity="ProteinDomain" label="Protein domain"/>
 			<form name="Exon" entity="Exon"/>
 			<form name="Mutation" entity="Mutation"/>
-			<form name="Phenotype" entity="MutationPhenotype"/>
 			<form name="Workflow" entity="Workflow" label="Patient Workflow">
 				<form name="WorkflowElement" entity="WorkflowElement">
 					<form name="Protocol" entity="Protocol" label="Patient Protocol" hide_fields="Investigation,ontologyReference,TargetFilter"/>

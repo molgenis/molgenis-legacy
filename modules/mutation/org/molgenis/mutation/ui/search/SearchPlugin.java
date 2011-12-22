@@ -34,7 +34,6 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationGene;
-import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.service.ExonService;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
@@ -161,8 +160,8 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 					criteria.setType(request.getString("type"));
 				if (StringUtils.isNotEmpty(request.getString("domain_id")))
 					criteria.setProteinDomainId(request.getInt("domain_id"));
-				if (StringUtils.isNotEmpty(request.getString("phenotype_id")))
-					criteria.setPhenotypeId(request.getInt("phenotype_id"));
+				if (StringUtils.isNotEmpty(request.getString("phenotype")))
+					criteria.setPhenotypeName(request.getString("phenotype"));
 				if (StringUtils.isNotEmpty(request.getString("inheritance")))
 					criteria.setInheritance(request.getString("inheritance"));
 				if (StringUtils.isNotEmpty(request.getString("snpbool")))
@@ -717,13 +716,13 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		
 		List<ValueLabel> phenotypeOptions   = new ArrayList<ValueLabel>();
 		phenotypeOptions.add(new ValueLabel("", "Select phenotype"));
-		for (MutationPhenotype phenotype : this.searchService.getAllPhenotypes())
-			phenotypeOptions.add(new ValueLabel(phenotype.getId(), phenotype.getMajortype() + ", " + phenotype.getSubtype()));
-		((SelectInput) this.getModel().getExpertSearchForm().get("phenotype_id")).setOptions(phenotypeOptions);
+		for (String phenotypeName : this.searchService.getAllPhenotypes())
+			phenotypeOptions.add(new ValueLabel(phenotypeName, phenotypeName));
+		((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setOptions(phenotypeOptions);
 		if (this.mutationSearchCriteriaVO.getPhenotypeId() != null)
-			((SelectInput) this.getModel().getExpertSearchForm().get("phenotype_id")).setValue(this.mutationSearchCriteriaVO.getPhenotypeId());
+			((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setValue(this.mutationSearchCriteriaVO.getPhenotypeId());
 		else
-			((SelectInput) this.getModel().getExpertSearchForm().get("phenotype_id")).setValue("Select phenotype");
+			((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setValue("Select phenotype");
 
 		List<ValueLabel> inheritanceOptions   = template.getInheritanceOptions();
 		inheritanceOptions.add(0, new ValueLabel("", "Select inheritance"));

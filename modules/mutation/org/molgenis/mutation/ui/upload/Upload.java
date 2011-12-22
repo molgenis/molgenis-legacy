@@ -29,7 +29,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationGene;
-import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.service.ExonService;
 import org.molgenis.mutation.service.MutationService;
@@ -238,9 +237,9 @@ public abstract class Upload extends PluginModel<Entity>
 		for (Mutation mutation : searchService.getAllMutations())
 			mutationOptions.add(new ValueLabel(mutation.getId(), mutation.getCdna_Notation()));
 
-		List<ValueLabel> phenotypeOptions = new ArrayList<ValueLabel>();
-		for (MutationPhenotype phenotype : searchService.getAllPhenotypes())
-			phenotypeOptions.add(new ValueLabel(phenotype.getId(), phenotype.getMajortype() + ", " + phenotype.getSubtype() + " (" + phenotype.getName() + ")"));
+//		List<ValueLabel> phenotypeOptions = new ArrayList<ValueLabel>();
+//		for (MutationPhenotype phenotype : searchService.getAllPhenotypes())
+//			phenotypeOptions.add(new ValueLabel(phenotype.getId(), phenotype.getMajortype() + ", " + phenotype.getSubtype() + " (" + phenotype.getName() + ")"));
 
 		Vector<String> deceasedValue      = new Vector<String>();
 		deceasedValue.add(this.patientSummaryVO.getPatientDeceased());
@@ -256,7 +255,7 @@ public abstract class Upload extends PluginModel<Entity>
 		if (this.patientSummaryVO.getVariantSummaryVOList().size() > 1)
 			this.patientForm.get("mutation2").setValue(this.patientSummaryVO.getVariantSummaryVOList().get(1).getId());
 		this.patientForm.get("number").setValue(this.patientSummaryVO.getPatientNumber());
-		((SelectInput) this.patientForm.get("phenotype")).setOptions(phenotypeOptions);
+//		((SelectInput) this.patientForm.get("phenotype")).setOptions(phenotypeOptions);
 		this.patientForm.get("phenotype").setValue(this.patientSummaryVO.getPhenotypeId());
 		((SelectInput) this.patientForm.get("phenotype")).setOnchange("toggleForm(this.value);");
 		((SelectInput) this.patientForm.get("consent")).setOptions(new Patient().getConsentOptions());

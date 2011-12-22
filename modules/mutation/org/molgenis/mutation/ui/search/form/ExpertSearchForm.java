@@ -36,9 +36,9 @@ public class ExpertSearchForm extends Container
 		((SelectInput) this.get("consequence")).setSize(3);
 		this.add(new SelectInput("domain_id", ""));
 		((SelectInput) this.get("domain_id")).setClazz("adv_search");
-		this.add(new SelectInput("phenotype_id", ""));
-		((SelectInput) this.get("phenotype_id")).setClazz("adv_search");
-		((SelectInput) this.get("phenotype_id")).setSize(3);
+		this.add(new SelectInput("phenotype", ""));
+		((SelectInput) this.get("phenotype")).setClazz("adv_search");
+		((SelectInput) this.get("phenotype")).setSize(3);
 		this.add(new SelectInput("inheritance", ""));
 		((SelectInput) this.get("inheritance")).setClazz("adv_search");
 		this.add(new ActionInput("findMutations"));

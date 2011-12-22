@@ -22,7 +22,6 @@ import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.MutationGene;
-import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.excel.UploadBatchExcelReader;
 import org.molgenis.mutation.util.MutationComparator;
@@ -89,16 +88,17 @@ public class UploadService implements Serializable
 		}
 
 		// phenotypes are never inserted via patients, just select
-		if (patientSummaryVO.getPhenotypeId() == null)
-		{
-			List<MutationPhenotype> phenotypes = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.MAJORTYPE, patientSummaryVO.getPhenotypeMajor()).equals(MutationPhenotype.SUBTYPE, patientSummaryVO.getPhenotypeSub()).find();
-
-			if (phenotypes.size() != 1)
-				throw new Exception("No phenotype found for " + patientSummaryVO.getPhenotypeMajor() + ", " + patientSummaryVO.getPhenotypeSub());
-
-			patientSummaryVO.setPhenotypeId(phenotypes.get(0).getId());
-		}
-		patient.setPhenotype_Id(patientSummaryVO.getPhenotypeId());
+//		if (patientSummaryVO.getPhenotypeId() == null)
+//		{
+////			System.out.println(">>> Query: majortype==" + patientSummaryVO.getPhenotypeMajor() + ", subtype==" + patientSummaryVO.getPhenotypeSub());
+//			List<MutationPhenotype> phenotypes = this.db.query(MutationPhenotype.class).equals(MutationPhenotype.MAJORTYPE, patientSummaryVO.getPhenotypeMajor()).equals(MutationPhenotype.SUBTYPE, patientSummaryVO.getPhenotypeSub()).find();
+//
+//			if (phenotypes.size() != 1)
+//				throw new Exception("No phenotype found for " + patientSummaryVO.getPhenotypeMajor() + ", " + patientSummaryVO.getPhenotypeSub());
+//
+//			patientSummaryVO.setPhenotypeId(phenotypes.get(0).getId());
+//		}
+//		patient.setPhenotype_Id(patientSummaryVO.getPhenotypeId());
 
 		// Publications are never inserted via patients, just select
 		if (CollectionUtils.isNotEmpty(patientSummaryVO.getPublicationVOList()))
@@ -115,7 +115,7 @@ public class UploadService implements Serializable
 				if (pubmedTerms.size() != 1)
 					continue;
 
-				List<Publication> publications = this.db.query(Publication.class).equals(Publication.PUBMEDID_NAME,	pubmedTerms.get(0).getId()).find();
+				List<Publication> publications = this.db.query(Publication.class).equals(Publication.PUBMEDID, pubmedTerms.get(0).getId()).find();
 
 				if (publications.size() != 1)
 					throw new Exception("No publication found for Pubmed ID " + publicationVO.getPubmedId());

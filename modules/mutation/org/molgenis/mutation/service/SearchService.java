@@ -3,14 +3,18 @@ package org.molgenis.mutation.service;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.mutation.Mutation;
-import org.molgenis.mutation.MutationPhenotype;
 import org.molgenis.mutation.ProteinDomain;
 import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
+import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservedValue;
 
 public class SearchService implements Serializable
 {
@@ -42,9 +46,17 @@ public class SearchService implements Serializable
 	 * @return phenotypes
 	 * @throws DatabaseException
 	 */
-	public List<MutationPhenotype> getAllPhenotypes() throws DatabaseException
+	public List<String> getAllPhenotypes() throws DatabaseException
 	{
-		return this.db.query(MutationPhenotype.class).sortASC(MutationPhenotype.NAME).find();
+		List<Measurement> features = this.db.query(Measurement.class).equals(Measurement.NAME, "Phenotype").find();
+		if (features.size() != 1)
+			return new ArrayList<String>();
+
+		List<ObservedValue> phenotypes         = this.db.query(ObservedValue.class).equals(ObservedValue.FEATURE, features.get(0).getId()).sortASC(ObservedValue.VALUE).find();
+		HashMap<String, String> phenotypeNames = new HashMap<String, String>();
+		for (ObservedValue phenotype : phenotypes)
+			phenotypeNames.put(phenotype.getValue(), phenotype.getValue());
+		return Arrays.asList(phenotypeNames.keySet().toArray(new String[0]));
 	}
 
 	/**
@@ -70,7 +82,7 @@ public class SearchService implements Serializable
 		return this.toProteinDomainSummaryVOList(this.db.query(ProteinDomain.class).find());
 	}
 	
-	private ProteinDomainSummaryVO toProteinDomainSummaryVO(ProteinDomain proteinDomain, Boolean noIntrons) throws DatabaseException, ParseException
+	private ProteinDomainSummaryVO toProteinDomainSummaryVO(ProteinDomain proteinDomain, Boolean noIntrons) throws DatabaseException
 	{
 		ProteinDomainSummaryVO proteinDomainSummaryVO = new ProteinDomainSummaryVO();
 		proteinDomainSummaryVO.setProteinDomain(proteinDomain);
@@ -82,7 +94,7 @@ public class SearchService implements Serializable
 		return proteinDomainSummaryVO;
 	}
 	
-	private List<ProteinDomainSummaryVO> toProteinDomainSummaryVOList(List<ProteinDomain> proteinDomains) throws DatabaseException, ParseException
+	private List<ProteinDomainSummaryVO> toProteinDomainSummaryVOList(List<ProteinDomain> proteinDomains) throws DatabaseException
 	{
 		List<ProteinDomainSummaryVO> result = new ArrayList<ProteinDomainSummaryVO>();
 
