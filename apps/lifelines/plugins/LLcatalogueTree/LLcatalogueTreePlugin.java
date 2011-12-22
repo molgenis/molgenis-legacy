@@ -156,11 +156,6 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		
 	}
 	
-	private void add(CheckboxInput checkboxInput) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private void deleteShoppingItem(String selected) {
 		//search the item
 		System.out.println(">>Trying to remove " + selected );

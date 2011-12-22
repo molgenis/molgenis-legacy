@@ -6,6 +6,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
@@ -18,6 +21,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
 
@@ -78,6 +82,14 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 				this.getModel().getMessages().add(new ScreenMessage("Your orders request has been sent!", true));
 				this.reload(db);
 			}
+		} else if("seeOldPlacedOrders".equals(request.getAction())) {
+			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+			HttpServletRequest httpRequest   = rt.getRequest();
+			HttpServletResponse httpResponse = rt.getResponse();
+			String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=OldPlacedOrders";
+			
+			httpResponse.sendRedirect(redirectURL);
+			
 		}
 	}
 
