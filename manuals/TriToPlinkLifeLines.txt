@@ -1,0 +1,16 @@
+
+Convert from TriTyper to Plink TPED+TFAM format while making a subselection of individuals and appending phenotypes to the FAM file. Additionally:
+The subselection using the first column of the 'slice' file (pseudonymisation+pheno) is made on Individuals.txt, but the output pseudonymized individual names are retrieved from the second column.
+The phenotypes for the FAM file are now the thirst column. See: examples/TriToPlinkLifeLines-exampleSubsetPseudo.txt
+
+You can also specify whether you want to output:
+- Just the TPED file, use P
+- Just the TFAM file, use F
+- Both TPED and TFAM, use B
+
+Example usage:
+java -jar TriToPlinkLifeLines.jar F BrainsetTriTyper/ myresults subsetpseudo.txt
+java -jar -Xmx1g TriToPlinkLifeLines.jar B LifeLinesTriTyper/ study9 subsetpseudo_userX.txt
+
+Get help:
+java -jar TriToPlinkSlice.jar
