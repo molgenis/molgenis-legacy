@@ -17,6 +17,11 @@ public class Author
 	String ForeName;
 	String Initials;
 	
+	public String toInitials()
+	{
+		return String.format("%s, %s", LastName, Initials);
+	}
+
 	public String toString()
 	{
 		return String.format("author: lastname=%s, forename=%s, initials=%s",LastName,ForeName,Initials);
