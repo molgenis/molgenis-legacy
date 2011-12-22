@@ -30,10 +30,8 @@ public class ComputeCommandLine
 	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
 	protected String outputdir, templatedir, backend;
 	protected Hashtable<String, Object> userValues = new Hashtable<String, Object>();
-	private static final String FOREACH = "#FOREACH";
 	private List<ComputeJob> jobs = new ArrayList<ComputeJob>();
 	private Worksheet worksheet;
-	private int defaultCores = 0;
 
 	private void generateJobs() throws Exception
 	{
@@ -78,7 +76,10 @@ public class ComputeCommandLine
 				ComputeJob job = new ComputeJob();
 				job.setName(this.generateJobName(wfe, work));
 				job.setInterpreter(protocol.getInterpreter());
-				job.setWalltime(protocol.getWalltime());
+
+				// if walltime, cores, mem not specified in protocol, then use value from worksheet
+				String walltime = (protocol.getWalltime() == null ? worksheet.getdefaultvalue("walltime") : protocol.getWalltime());
+				job.setWalltime(walltime);
 				Integer cores = (protocol.getCores()  == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
 				job.setCores(cores);
 				Integer mem = (protocol.getMem()  == null ? Integer.parseInt(worksheet.getdefaultvalue("mem")) : protocol.getMem());
@@ -121,7 +122,7 @@ public class ComputeCommandLine
 							else
 								jobName += "_" + work.getString(target);
 						}
-						dependencies.add(jobName + stepnr(previousWfe.getName()));
+						dependencies.add(stepnr(previousWfe.getName()) + jobName);
 					}
 					job.getPrevSteps_Name().addAll(dependencies);
 				}
@@ -151,7 +152,7 @@ public class ComputeCommandLine
 		{
 			if (wfeName.equalsIgnoreCase(workflow.get(i).getName()))
 			{
-				return("_step" + i);
+				return("s" + i + "_");
 			}
 		}
 		
@@ -176,7 +177,7 @@ public class ComputeCommandLine
 				jobName += "_" + tuple.getString(target);
 			}
 		
-		return jobName + stepnr(wfe.getName());
+		return stepnr(wfe.getName()) + jobName;
 	}
 
 	private String filledtemplate(String scripttemplate, Tuple work) throws IOException, TemplateException
@@ -310,6 +311,7 @@ public class ComputeCommandLine
 	/** Convert all compute jobs into scripts + submit.sh */
 	private void generateScripts()
 	{
+		new File(outputdir).mkdirs();
 		try
 		{
 			// and produce submit.sh

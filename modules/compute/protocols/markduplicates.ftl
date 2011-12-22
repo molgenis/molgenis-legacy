@@ -17,7 +17,7 @@ inputs "${sortedbamindex}"
 outputs "${dedupbam}"
 outputs "${dedupmetrics}"
 
-${markduplicatesjar} \
+java -Xmx4g -jar ${markduplicatesjar} \
 INPUT=${sortedbam} \
 OUTPUT=${dedupbam} \
 METRICS_FILE=${dedupmetrics} \
@@ -26,7 +26,7 @@ ASSUME_SORTED=true \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
-java -jar -Xmx3g ${tooldir}/picard-tools-1.32/BuildBamIndex.jar \
+java -jar -Xmx3g ${buildbamindexjar} \
 INPUT=${dedupbam} \
 OUTPUT=${dedupbamindex} \
 VALIDATION_STRINGENCY=LENIENT \

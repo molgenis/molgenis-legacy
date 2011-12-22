@@ -20,7 +20,7 @@ inputs "${bamfile}"
 outputs "${sortedbam}"
 outputs "${sortedbamindex}"
 
-${sortsamjar} \
+java -jar -Xmx3g ${sortsamjar} \
 INPUT=${bamfile} \
 OUTPUT=${sortedbam} \
 SORT_ORDER=coordinate \
@@ -28,7 +28,7 @@ VALIDATION_STRINGENCY=LENIENT \
 MAX_RECORDS_IN_RAM=1000000 \
 TMP_DIR=${tempdir}
 
-${buildbamindexjar} \
+java -jar -Xmx3g ${buildbamindexjar} \
 INPUT=${sortedbam} \
 OUTPUT=${sortedbamindex} \
 VALIDATION_STRINGENCY=LENIENT \
