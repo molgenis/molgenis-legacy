@@ -14,6 +14,7 @@ import org.molgenis.util.Tuple;
 public class DivPanel extends HtmlWidget
 {
 	LinkedHashMap<String, HtmlInput<?>> inputs = new LinkedHashMap<String, HtmlInput<?>>();
+	String style = null;
 
 	public DivPanel()
 	{
@@ -24,6 +25,13 @@ public class DivPanel extends HtmlWidget
 	{
 		super(name, label);
 		this.setLabel(label);
+	}
+	
+	/**
+	 * Set the containing div's css style.
+	 */
+	public void setStyle(String style) {
+		this.style = style;
 	}
 
 	/**
@@ -65,7 +73,11 @@ public class DivPanel extends HtmlWidget
 	 */
 	public String toHtml()
 	{
-		String result = "";
+		String result = "<div";
+		if (style != null) {
+			result += " style=\"" + style + "\"";
+		}
+		result += ">";
 		for (HtmlInput<?> i : this.inputs.values())
 		{
 			result += "<div style=\"clear:both; ";
@@ -80,15 +92,12 @@ public class DivPanel extends HtmlWidget
 			if (i.getId() != null)
 			{
 				result += (" id=\"div" + i.getId() + "\"");
-				// changed by ER on 12-8-2011:
-				// prefix div id with 'div' to it is different from the input's id,
-				// which make is much easier to script against!
-				// TODO: check if this breaks anyone's code - please let me know
 			}
 			result += "><label style=\"width:16em;float:left;\" for=\""
 					+ i.getName() + "\">" + i.getLabel() + "</label>"
 					+ i.toHtml() + (!i.isNillable() ? " *" : "") + "</div>";
 		}
+		result += "</div>";
 		return result;
 	}
 
