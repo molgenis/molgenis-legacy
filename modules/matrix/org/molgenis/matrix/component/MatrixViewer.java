@@ -636,12 +636,12 @@ public class MatrixViewer extends HtmlWidget
 			// retrieve a batch
 			matrix.setRowOffset(offset);
 			// retrieve names of targets in batch
-			List<ObservationElement> names = (List<ObservationElement>)matrix.getRowHeaders();
+			List<ObservationElement> targets = (List<ObservationElement>)matrix.getRowHeaders();
 			// write lines to file
 			int rowCnt = 0;
 			for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
 			{
-				writer.writeValue(names.get(rowCnt));
+				writer.writeValue(targets.get(rowCnt).getName());
 				for (int colId = 0; colId < row.length; colId++)
 				{
 					List<? extends ObservedValue> valueList = row[colId];
