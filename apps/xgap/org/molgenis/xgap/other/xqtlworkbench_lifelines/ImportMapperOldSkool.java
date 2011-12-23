@@ -105,17 +105,15 @@ public class ImportMapperOldSkool
 				{
 					protocol.getFeatures().clear();
 					llListener = new LifeLinesMedicatieListener(db, protocol);
-					
-					reader = new CsvFileReader(f);
-					reader.parse(llListener);
-					llListener.commit();
 				}
 				else
 				{
 					llListener = new LifeLinesStandardListener(inv, protocol, db);
 				}
 
-
+				reader = new CsvFileReader(f);
+				reader.parse(llListener);
+				llListener.commit();
 			}
 		}
 

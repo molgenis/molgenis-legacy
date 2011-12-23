@@ -27,13 +27,9 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 	
 	private Logger logger;
 
-	// track the rows/cols of your data
 	private final Map<String, Measurement> measurements = new HashMap<String, Measurement>();
 	private final Map<String, Individual> targets = new HashMap<String, Individual>();
-
-	// each BZ_ID is a protocolApplication
-	private final List<ProtocolApplication> protocolApps = new ArrayList<ProtocolApplication>();
-
+	private final Map<String, ProtocolApplication> protocolApps = new HashMap<String, ProtocolApplication>();
 	private final List<ObservedValue> values = new ArrayList<ObservedValue>();
 
 	private Protocol protocol;
@@ -72,9 +68,9 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 
 		ProtocolApplication app = new ProtocolApplication();
 		app.setProtocol(protocol);
-		app.setName(name + ": " + pa_id);
+		app.setName(protocol.getName() + "_" + pa_id + "_" + line_number);
 		app.setInvestigation(investigation);
-		protocolApps.add(app);
+		protocolApps.put(app.getName(), app);
 
 		// we iterate through all fields. Each field that is also a Measurement
 		for (String field : tuple.getFields()) {
@@ -105,19 +101,24 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 
 	private void storeValuesInDatabase() throws DatabaseException,
 			ParseException {
+		
+		// add protocol applications
+		db.add(new ArrayList(protocolApps.values()));
 
 		//only add targets if they are not already there
 		db.update(new ArrayList(targets.values()),
 				DatabaseAction.ADD_IGNORE_EXISTING, Individual.NAME);
 		
-		//update all target_names with the target_ids
+		//update all _names with the _ids
 		for(ObservedValue v: values)
 		{
 			v.setTarget(targets.get(v.getTarget_Name()));
+			v.setProtocolApplication(protocolApps.get(v.getProtocolApplication_Name()));
 		}
 		
-		//clear the targets for next batch
+		//clear the targets and protocol applications for next batch
 		this.targets.clear();
+		this.protocolApps.clear();
 		
 		//add the values
 		db.add(this.values);

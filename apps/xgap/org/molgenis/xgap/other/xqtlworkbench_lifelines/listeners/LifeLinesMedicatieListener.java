@@ -16,6 +16,7 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
+import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Tuple;
 
 public class LifeLinesMedicatieListener extends ImportTupleListener
@@ -26,6 +27,7 @@ public class LifeLinesMedicatieListener extends ImportTupleListener
 	private final Map<String, Measurement> measurements = new LinkedHashMap<String, Measurement>();
 	private final List<ObservedValue> values = new ArrayList<ObservedValue>();
 	private final Map<String, Individual> targets = new HashMap<String, Individual>();
+	private final Map<String, ProtocolApplication> protocolApps = new HashMap<String, ProtocolApplication>();
 
 	private Logger logger;
 
@@ -67,6 +69,12 @@ public class LifeLinesMedicatieListener extends ImportTupleListener
 		target.setInvestigation(protocol.getInvestigation());
 		targets.put(target.getName(), target);
 		
+		ProtocolApplication app = new ProtocolApplication();
+		app.setProtocol(protocol);
+		app.setName(protocol.getName() + "_" + pa_id + "_" + line_number);
+		app.setInvestigation(protocol.getInvestigation());
+		protocolApps.put(app.getName(), app);
+		
 		// each unique measurement needs to be logged (check for divergent
 		// units)
 		String atccode = tuple.getString("ATCCODE");
@@ -93,14 +101,15 @@ public class LifeLinesMedicatieListener extends ImportTupleListener
 		v.setInvestigation(protocol.getInvestigation());
 		v.setFeature(measurements.get(atccode));
 		v.setValue("yes");
+		v.setProtocolApplication(app);
 		
 		ObservedValue v2 = new ObservedValue();
 		v2.setTarget_Name(tuple.getString("PA_ID"));
 		v2.setInvestigation(protocol.getInvestigation());
 		v2.setFeature(measurements.get(atccode+"_REDEN"));
 		v2.setValue(tuple.getString("REDEN"));
-		// v.setProtocolApplication(app);
-
+		v2.setProtocolApplication(app);
+		
 		values.add(v);
 		values.add(v2);
 
@@ -119,7 +128,9 @@ public class LifeLinesMedicatieListener extends ImportTupleListener
 
 	private void storeValuesInDatabase() throws DatabaseException, ParseException
 	{
-
+		// add protocol applications
+		db.add(new ArrayList(protocolApps.values()));
+				
 		// only add targets if they are not already there
 		db.update(new ArrayList(targets.values()), DatabaseAction.ADD_IGNORE_EXISTING, Individual.NAME);
 
@@ -139,8 +150,9 @@ public class LifeLinesMedicatieListener extends ImportTupleListener
 		// add the values
 		db.add(this.values);
 
-		// clear the values
+		// clear the values and protocol applications
 		values.clear();
+		protocolApps.clear();
 	}
 
 	@Override
