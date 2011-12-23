@@ -27,7 +27,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.DatabaseException;
-import org.springframework.util.Log4jConfigurer;
 
 public abstract class MolgenisFrontController extends HttpServlet implements
 		MolgenisService
