@@ -49,9 +49,6 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 	@Override
 	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception {
 		
-		this.reload(db);
-		
-		
 		if ("DeleteOldOrders".equals(request.getAction())) {
 	
 			this.DeleteOldOrders(db);
@@ -64,12 +61,11 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 		//empty db table: actually delete the ones that have checkedOut='false' 
 		List<ShoppingCart> resshoppingCart  = new ArrayList<ShoppingCart>();
 		Query<ShoppingCart> q = db.query(ShoppingCart.class);
+		q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 		q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
 		try {
-			db.beginTx();
 			resshoppingCart = q.find();
 			db.remove(resshoppingCart);
-			db.commitTx();
 
 		} catch (DatabaseException e) {
 			e.printStackTrace();
@@ -80,19 +76,17 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 	
 	@Override
 	public void reload(Database db) {
-		System.out.println("At RELOAD>>>>>>>>>>>>>>>");
-
-
 		try {
-			db.beginTx();
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
 
-			if (!q.find().isEmpty()) shoppingCart = q.find().get(0);
-			db.commitTx();
+			if (!q.find().isEmpty()) {
+				shoppingCart = q.find().get(0);
+			} else {
+				shoppingCart = null;
+			}
 
-			System.out.println(">>>>@@@@@@>>>>"+shoppingCart);
 		} catch (Exception e) {
 			this.getModel().getMessages().add(new ScreenMessage("No old orders available", false));
 			e.printStackTrace();

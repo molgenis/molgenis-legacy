@@ -627,14 +627,11 @@ public class ManageLitters extends PluginModel<Entity>
 					int row = request.getInt(MATRIX + "_selected");
 					this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
 				} catch (Exception e) {	
-				//this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
+					//this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
 					this.setAction("AddLitter");
 					throw new Exception("No parent group selected - litter not added");
-					
 				}
 				
-							
-					
 				int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 				setUserFields(request, false);
 				Date eventDate = newDateOnlyFormat.parse(birthdate);

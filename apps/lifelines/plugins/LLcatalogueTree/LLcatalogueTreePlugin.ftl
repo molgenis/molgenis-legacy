@@ -24,35 +24,19 @@
 			</#if>
 		</#list>
 		<div class="screenbody">
-			<div class="screenpadding">	
+			<div class="screenpadding">
+			<#--plugin code from here -->
+			
 				<div id="leftSide">
 					${screen.getTreeView()}
 				</div><br/>
-				<div id="Catalogue" >
 				
-					<div id="ShoppingCartLabel">Shopping cart</div>
-					<div class="ShoppingCartContents">
-						<ul>
-							<#list screen.getShoppingCart() as measurement>
-								<li>${measurement.name}
-									<div id="image">
-									    <input type="image" src="res/img/delete.png" value="Submit" alt="Delete" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) { __action.value='DeleteMeasurement&measurementName=${measurement.name}';return true; } else {return false;}"/>
-									</div>
-									<!--input type="submit" value="Delete" onclick="if (confirm('You are about to delete an item. Are you sure you want to proceed?')) { __action.value='DeleteMeasurement&measurementName=${measurement.name}';return true; } else {return false;}"/><br /><br /-->
-								</li> 
-							</#list>
-						</ul>
-						<div id="ShoopingCartButton">
-							<input type="submit" name="orderMeasurementsSubmit" value="Next" onclick="__action.value='OrderMeasurements';return true;"/><br /><br />
-						</div> 
-					</div>
+				<div id="ShoopingCartButton">
+					<input type="submit" name="orderMeasurementsSubmit" value="Order" onclick="__action.value='OrderMeasurements';"/>
 				</div>
+				
+			<#--plugin code until here -->	
 			</div>
-			
-			<input type="hidden" id="testInput" value="">
-			
-			<label> 	<#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
-			
 		</div>
 	</div>
 

@@ -7,9 +7,10 @@
 		<menu label="LifeLines Catalog" name="LifeLinesCatalogMenu">
 			<plugin label="Catalog" name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" />
 			<plugin name="MeasurementsOrderForm" type="plugins.data.MeasurementsOrderForm" label="Orders" />  
+			<plugin name="OldPlacedOrders" type="plugins.data.OldPlacedOrders" label="Old Orders" /> 
 		</menu>
 		<plugin label="Matrix Viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
-		<plugin label="PLINK download" name="PlinkDownload" type="plugins.lifelines.plinkdownload.PlinkDownload" />
+		<plugin label="PLINK Download" name="PlinkDownload" type="plugins.lifelines.plinkdownload.PlinkDownload" />
 		<menu label="Database Tables" name="DatabaseTables">
 			<form label="Studies" name="investigation" entity="Investigation" view="list">
 				<form name="protocol" entity="Protocol" view="list" label="Protocols" />
@@ -25,6 +26,7 @@
 				<form name="ontologyterm" entity="OntologyTerm" view="list"
 					label="Ontology terms" />
 			</form>
+			<form name="shopcart" entity="shoppingCart" view="list" label="Shopping Carts" />
 		</menu>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
 		

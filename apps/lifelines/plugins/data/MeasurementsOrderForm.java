@@ -68,18 +68,16 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 			
 		}else if ("checkoutOrder".equals(request.getAction())) {
 			if (shoppingCart == null){
-				this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is empty. You cannot continue with the checkout! Please visit the catalogue tree.", true));
+				this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is empty. You cannot continue with the checkout! Please visit the Catalog first.", false));
 				this.reload(db);
 			}
-			else if (!this.checkIfUserDetailsEmpty(db)) {
-				this.getModel().getMessages().add(new ScreenMessage("Please complete your profile first!", true));
+			else if (this.checkIfUserDetailsEmpty(db)) {
+				this.getModel().getMessages().add(new ScreenMessage("Please complete your profile first!", false));
 			}
 			else {
-				System.out.println("checkIfUserDetailsEmpty:>>>>>>>>>>>>>>>>>>>>"+this.checkIfUserDetailsEmpty(db));
-				
 				this.updateShoppingCartAsCheckedOut(db);
 	    		this.sendOrderEmail(db); 
-				this.getModel().getMessages().add(new ScreenMessage("Your orders request has been sent!", true));
+				this.getModel().getMessages().add(new ScreenMessage("Your order has been sent!", true));
 				this.reload(db);
 			}
 		} else if("seeOldPlacedOrders".equals(request.getAction())) {
@@ -100,36 +98,32 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 			db.update(shoppingCart);
 
 		} catch (DatabaseException e) {
-			this.getModel().getMessages().add(new ScreenMessage("A problem with update shopping cart has occured", true));
+			this.getModel().getMessages().add(new ScreenMessage("A problem with updating your shopping cart has occurred", true));
 			e.printStackTrace();
 		}
 	}
 	
-	public boolean checkIfUserDetailsEmpty(Database db) {
-		boolean allFieldsAvailable = false;
-		
-		try {
-			user = MolgenisUser.findById(db, this.getLogin().getUserId());
-			if (!(user.getAddress() == null ||
-				  user.getCity() == null || 
-				  user.getDepartment() == null ||
-				  user.getAffiliation() == null))
-				  allFieldsAvailable = true; 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return allFieldsAvailable;
+	/**
+	 * Returns true if one or more fields are empty
+	 * 
+	 * @param db
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public boolean checkIfUserDetailsEmpty(Database db) throws DatabaseException {
+		user = MolgenisUser.findById(db, this.getLogin().getUserId());
+		return (user.getAddress() == null ||
+				user.getCity() == null ||
+				user.getDepartment() == null ||
+				user.getAffiliation() == null);
 	}
 	
 	public void sendOrderEmail(Database db) throws DatabaseException  {
 		MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
 		if (StringUtils.isEmpty(admin.getEmail()))
-			throw new DatabaseException("Registration failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
+			throw new DatabaseException("Order failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
 		
-
-		String emailContents = "Dear admin, " + "\n\n"; 
+		String emailContents = "Dear LifeLines administrator," + "\n\n"; 
 		emailContents += "The user : "+ this.getLogin().getUserName() +"\n";
 		emailContents += "has sent a request for the items/measurements below:" + "\n";
 		for (String name : shoppingCart.getMeasurements_Name()) {
@@ -139,7 +133,6 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		emailContents += "Title: "+ user.getTitle() +"\n";
 		emailContents += "First Name: "+ user.getFirstName() +"\n";
 		emailContents += "Last Name: "+ user.getLastName() +"\n";
-		emailContents += "Department: "+ user.getDepartment() +"\n";
 		
 		emailContents += "Email: "+ user.getEmail() +"\n";
 		emailContents += "Phone: "+ user.getPhone() +"\n";
@@ -155,7 +148,6 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		
 		//TODO :Institute,	Position
 		
-		System.out.println(emailContents);
 		try {
 			this.getEmailService().email("New items/measurements ordered", emailContents, admin.getEmail(), true);
 		} catch (EmailException e) {
@@ -167,37 +159,34 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 	
 	public void emptyShoppingCart(Database db) {
 		//empty db table: actually delete the ones that have checkedOut='false' 
-		List<ShoppingCart> resshoppingCart  = new ArrayList<ShoppingCart>();
 		Query<ShoppingCart> q = db.query(ShoppingCart.class);
 		q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
+		q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 		try {
-			db.beginTx();
-			resshoppingCart = q.find();
+			List<ShoppingCart> resshoppingCart = q.find();
 			db.remove(resshoppingCart);
-			db.commitTx();
-
+			this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is now empty, you can reload items from the Catalog", true));
 		} catch (DatabaseException e) {
 			e.printStackTrace();
+			this.getModel().getMessages().add(new ScreenMessage("Emptying your shopping cart failed", true));
 		}
 		this.reload(db);
-		this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is now empty, you can reload items from catalogue tree", true));
 	}
 	
 	@Override
 	public void reload(Database db) {
-		System.out.println("At RELOAD>>>>>>>>>>>>>>>");
-
-
+		
 		try {
-			db.beginTx();
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
 
-			if (!q.find().isEmpty()) shoppingCart = q.find().get(0);
-			db.commitTx();
+			if (!q.find().isEmpty()) {
+				shoppingCart = q.find().get(0);
+			} else {
+				shoppingCart = null;
+			}
 
-			System.out.println(">>>>@@@@@@>>>>"+shoppingCart);
 		} catch (Exception e) {
 			this.getModel().getMessages().add(new ScreenMessage("No shopping cart available", false));
 			e.printStackTrace();

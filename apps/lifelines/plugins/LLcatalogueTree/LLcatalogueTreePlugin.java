@@ -3,17 +3,14 @@ package plugins.LLcatalogueTree;
 import gcc.catalogue.ShoppingCart;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -23,40 +20,25 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.CheckboxInput;
-import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationElement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tuple;
-import org.molgenis.util.ValueLabel;
 
 
 
 public class LLcatalogueTreePlugin extends PluginModel<Entity> {
-	private String Status = "Welcome!";
 	
 	private static final long serialVersionUID = -6143910771849972946L;
-
 	private JQueryTreeViewMeasurement<JQueryTreeViewElementMeasurement> treeView = null;
-
 	private HashMap<String, Protocol> nameToProtocol;
-
 	private HashMap<String, JQueryTreeViewElementMeasurement> labelToTree;
-
 	private List<Measurement> shoppingCart = new ArrayList<Measurement>();
 	
-	CheckboxInput checkBoxInput ;
-	
-	public String MeasurementName = "------------------------------------->";
-
 	public LLcatalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
-
 	}
-	
 	
 	public String getCustomHtmlHeaders()
     {
@@ -65,62 +47,36 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	
 	public void handleRequest(Database db, Tuple request) {
 
-		//System.out.println("CAUGHT IT: " + request);
-		/*System.out.println(request.getInt("measurementId"));
-		System.out.println(request.getString("measurementName"));
-		System.out.println(request.getAction().startsWith("DeleteMeasurement"));*/
-
 		try {
-
-			Measurement selected = Measurement.findById(db, request.getInt("measurementId"));
-			//System.out.println("selected measurement id >>>>>>"+ selected);
-			if (selected == null) {
-				if (!"OrderMeasurements".equals(request.getAction()) && !request.getAction().startsWith("DeleteMeasurement")) {
-					this.setError("No measurement known with ID: " + request.getInt("measurementId"));
-				}
-			} else {
-				System.out.println("--->" + selected);
-				this.shoppingCart.add(selected);
-				//this.setSuccess("The item \""+ selected.getName() + "\" has been successfully added to your shopping cart");
-				this.getModel().getMessages().add(new ScreenMessage("The item \""+ selected.getName() + "\" has been successfully added to your shopping cart", true));
-
-				// clean the ordered measurement list form duplicates
-				this.shoppingCart = cleanShoppingCart();
-
-				Vector<ValueLabel> ShoppingCartOptions = null;
-				List<String> shoppingCartLabels = new Vector<String>() ;
-				for (int i=0; i<this.shoppingCart.size(); i++) {
-					shoppingCartLabels.add(this.shoppingCart.get(i).getName());
-					
-				}
-				//this.checkBoxInput = new CheckboxInput("ShoppingCart", "Shopping Cart", "ShoppingCart", ShoppingCartOptions, shoppingCartLabels);
-				//checkBoxInput.render();
-			}
 			if ("OrderMeasurements".equals(request.getAction())) {
 				this.addMeasurementsToTree(db, request);
-				this.setStatus("<h4>You order is being processed.</h4>" ) ;
 				
-			} //TODO fix this : else if ("DeleteMeasurement".equals(request.getAction()))	{
-			else if (request.getAction() != null 
-					&& request.getAction().startsWith("DeleteMeasurement")) {
+			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 				
-				System.out.println("Here's the request on DELETE :"+ request);
 				String measurementName  =  request.getString("measurementName"); //TODO :  this is not working
 				measurementName = request.getAction().substring("DeleteMeasurement".length()+2+"measurementName".length(), request.getAction().length());
-				
-				System.out.println("Here's the request.measurement id on DELETE:"+ measurementName);
 				this.deleteShoppingItem(measurementName);
 			} 
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			//this.setError("LLCataloguetreePlugin handle request " + e.getMessage());
+			this.setError("There was a problem handling yor order: " + e.getMessage());
 		}
 
 	}
 
 	private void addMeasurementsToTree(Database db, Tuple request) throws DatabaseException, IOException {
 		
+		// fill shopping cart using selected selectboxes (measurements)
+		// the ID's and names of the selectboxes are the same as the measurement names,
+		// so we can easily get them from the request
+		List<Measurement> allMeasList  = db.find(Measurement.class);
+		for (Measurement m : allMeasList) {
+			if (request.getBool(m.getName()) != null) {
+				this.shoppingCart.add(m);
+			}
+		}
+
 		List<Integer> orderedMeasurementIds = new ArrayList<Integer>();
 		for (Measurement m : this.shoppingCart) {
 			orderedMeasurementIds.add(m.getId());
@@ -138,13 +94,13 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			shoppingCart.setUserID(this.getLogin().getUserName());
 			shoppingCart.setCheckedOut(false);
 			db.add(shoppingCart);
-			System.out.println("Shopping cart has been added to the DB.");
+			System.out.println("Shopping cart has been added to the DB");
 			
 		} else {
 			ShoppingCart shoppingCart = result.get(0); // assuming user can have only one shopping cart that's NOT checked out
 			shoppingCart.setMeasurements(orderedMeasurementIds);
 			db.update(shoppingCart);
-			System.out.println("Shopping cart has been updated in the DB.");
+			System.out.println("Shopping cart has been updated in the DB");
 		}
 			
 		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
@@ -153,39 +109,16 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsOrderForm";
 		
 		httpResponse.sendRedirect(redirectURL);
-		
 	}
 	
 	private void deleteShoppingItem(String selected) {
 		//search the item
-		System.out.println(">>Trying to remove " + selected );
-		
 		for (int i=0; i<this.shoppingCart.size(); i++) {
 			if (this.shoppingCart.get(i).getName().equals(selected)) {
 				this.shoppingCart.remove(i);
-				this.setStatus("The item \""+ selected + "\" has been successfully removed from your shopping cart");
-				//this.setSuccess("The item \""+ selected + "\" has been successfully removed from your shopping cart");
 				this.getModel().getMessages().add(new ScreenMessage("The item \""+ selected + "\" has been successfully removed from your shopping cart", true));
-
 			}
 		}
-		
-		System.out.println(">>Shopping cart after the removal : " + this.shoppingCart);
-	}
-
-	private List<Measurement> cleanShoppingCart() {
-		List<Measurement> newShoppingCart = new ArrayList<Measurement>(); 
-		
-		for (int i=0; i<this.getShoppingCart().size(); i++) {
-			Measurement m = this.getShoppingCart().get(i);
-			if (!newShoppingCart.contains(m)) {
-				newShoppingCart.add(m);
-			}else {
-				this.getModel().getMessages().add(new ScreenMessage("The item \""+ m.getName() + "\" has not been added to you cart since it's already there. ", true));
-			}
-		}
-		
-		return newShoppingCart;
 	}
 
 	public void recursiveAddingTree(List<String> parentNode,
@@ -228,50 +161,23 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		}
 	}
 
-	// @Override
-	// public String getCustomHtmlBodyOnLoad()
-	// {
-	//
-	//
-	// // JQuerySplitterContents c = new JQuerySplitterContents();
-	// // JQuerySplitter2<JQuerySplitterContents> jqs2 = new
-	// JQuerySplitter2<JQuerySplitterContents>("aaa", c);
-	//
-	//
-	// return treeView.toHtml();;
-	//
-	// }
-
 	public void addingMeasurementTotree(List<String> childNode,
 			JQueryTreeViewElementMeasurement parentTree, Database db) {
 
-		String url = "molgenis.do?__target=catalogueOverview&select=measurement";
-
-		// System.out.println(childNode);
-
-		List<Measurement> measurementList;
-		try {
-			measurementList = db.find(Measurement.class, new QueryRule(
+		 try {
+			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(
 					Measurement.NAME, Operator.IN, childNode));
-
 			for (Measurement measurement : measurementList) {
 
 				JQueryTreeViewElementMeasurement childTree;
-
 				if (labelToTree.containsKey(measurement.getName())) {
-
 					childTree = labelToTree.get(measurement.getName());
-
 				} else {
-
-					childTree = new JQueryTreeViewElementMeasurement(
-							measurement, parentTree, url);
-
+					childTree = new JQueryTreeViewElementMeasurement(measurement, parentTree);
 					labelToTree.put(measurement.getName(), childTree);
 				}
 			}
 		} catch (DatabaseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -346,32 +252,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementMeasurement>(
 				"Protocols", protocolsTree);
-
-		treeView.setMeasurementDetails("Measurement details........... ");
-
 	}
 
-	public String getcheckBoxInput(){
-		return this.checkBoxInput.toHtml();
-	}
 	public String getTreeView() {
 		return treeView.toHtml();
 	}
 
-	public String getMeasurementDetails() {
-		return "getMeasurementDetails";
-	}
-
 	public List<Measurement> getShoppingCart() {
 		return shoppingCart;
-	}
-
-	public void setStatus(String status) {
-		Status = status;
-	}
-
-	public String getStatus() {
-		return Status;
 	}
 
 }
