@@ -400,10 +400,6 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		String currentRecord = "";
 		while ((line = reader.readLine()) != null)
 		{
-			if(line.contains("astma bronchiale"))
-			{
-				System.out.println("found");
-			}
             if(!inQuotes && this.getBlockEnd().equals(line.trim()))
             {
             	return null;
