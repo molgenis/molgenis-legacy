@@ -20,6 +20,8 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
+import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.ImportTupleListener;
+import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.LifeLinesMedicatieListener;
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.LifeLinesStandardListener;
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VWCategoryListener;
 import org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners.VwDictListener;
@@ -31,8 +33,9 @@ import app.DatabaseFactory;
  * in MOLGENIS. The tuples can come from a CSV file or from SQL queries on some
  * database. The target schema is molgenis.pheno
  */
-public class ImportMapperOldSkool {
-	
+public class ImportMapperOldSkool
+{
+
 	private static Logger logger = Logger.getLogger(ImportMapperOldSkool.class);
 
 	/**
@@ -40,15 +43,17 @@ public class ImportMapperOldSkool {
 	 * 
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception
+	{
 		// enable log
 		BasicConfigurator.configure();
-		
+
 		// adjust for your situation!
 		importData("C:\\lifelinesdata\\all.zip");
 	}
 
-	public static void importData(String zipFileName) throws Exception {
+	public static void importData(String zipFileName) throws Exception
+	{
 
 		// Path to store files from zip
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -56,12 +61,11 @@ public class ImportMapperOldSkool {
 		// Extract zip
 		ZipFile zipFile = new ZipFile(zipFileName);
 		Enumeration<?> entries = zipFile.entries();
-		while (entries.hasMoreElements()) {
+		while (entries.hasMoreElements())
+		{
 			ZipEntry entry = (ZipEntry) entries.nextElement();
-			copyInputStream(
-					zipFile.getInputStream(entry),
-					new BufferedOutputStream(new FileOutputStream(path
-							+ entry.getName())));
+			copyInputStream(zipFile.getInputStream(entry),
+					new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
 		}
 
 		// target for output, either CsvWriter or Database
@@ -76,30 +80,42 @@ public class ImportMapperOldSkool {
 		// load dictonary
 		final String DICT = "VW_DICT";
 		VwDictListener dicListener = new VwDictListener(inv, DICT, db);
-		CsvReader reader = new CsvFileReader(
-				new File(path + DICT + "_DATA.csv"));
+		CsvReader reader = new CsvFileReader(new File(path + DICT + "_DATA.csv"));
 		reader.parse(dicListener);
 		dicListener.commit();
 
 		// load categories
 		final String CATE = "VW_DICT_VALUESETS";
-		VWCategoryListener catListener = new VWCategoryListener(
-				dicListener.getProtocols(), inv, CATE, db);
+		VWCategoryListener catListener = new VWCategoryListener(dicListener.getProtocols(), inv, CATE, db);
 		reader = new CsvFileReader(new File(path + CATE + "_DATA.csv"));
 		reader.parse(catListener);
 		catListener.commit();
 
 		// iterate through the map assuming CSV files
-		List<String> exclude = Arrays.asList(new String[] { "BEP_OMSCHR", "DICT_HULP","ONDERZOEK" });
-		for (Protocol protocol : dicListener.getProtocols().values()) {
-			if (!exclude.contains(protocol.getName())) {
-				File f = new File(path + "VW_" + protocol.getName()
-						+ "_DATA.csv");
-				LifeLinesStandardListener llListener = new LifeLinesStandardListener(
-						inv, protocol, db);
-				reader = new CsvFileReader(f);
-				reader.parse(llListener);
-				llListener.commit();
+		List<String> exclude = Arrays.asList(new String[] { "BEP_OMSCHR", "DICT_HULP", "ONDERZOEK" });
+		for (Protocol protocol : dicListener.getProtocols().values())
+		{
+			if (!exclude.contains(protocol.getName()))
+			{
+
+				File f = new File(path + "VW_" + protocol.getName() + "_DATA.csv");
+
+				ImportTupleListener llListener;
+				if ("MEDICATIE".equals(protocol.getName()))
+				{
+					protocol.getFeatures().clear();
+					llListener = new LifeLinesMedicatieListener(db, protocol);
+					
+					reader = new CsvFileReader(f);
+					reader.parse(llListener);
+					llListener.commit();
+				}
+				else
+				{
+					llListener = new LifeLinesStandardListener(inv, protocol, db);
+				}
+
+
 			}
 		}
 
@@ -139,8 +155,8 @@ public class ImportMapperOldSkool {
 		// executor.awaitTermination(5, TimeUnit.MINUTES);
 	}
 
-	public static final void copyInputStream(InputStream in, OutputStream out)
-			throws IOException {
+	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException
+	{
 		byte[] buffer = new byte[1024];
 		int len;
 

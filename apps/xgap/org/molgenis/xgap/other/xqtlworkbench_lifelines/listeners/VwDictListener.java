@@ -82,7 +82,10 @@ public class VwDictListener extends ImportTupleListener {
 	public void commit() throws DatabaseException
 	{
 		db.add(measurements);
-		db.add(new ArrayList(protocols.values()));	
+		
+		List<Protocol> protocolList = new ArrayList(protocols.values());
+		db.add(protocolList);
+		for(Protocol p: protocolList) protocols.put(p.getName(), p); 
 	}
 
 	public Map<String, Protocol> getProtocols() {

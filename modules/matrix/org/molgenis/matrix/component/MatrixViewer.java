@@ -191,18 +191,19 @@ public class MatrixViewer extends HtmlWidget
 				((DatabaseMatrix) this.matrix).setDatabase(db);
 			}
 
-			String result = "";
+			String result = "<div style=\"width:auto\">";
 			if (downloadLink != null)
 			{
 				result += "<div><p><a href=\"tmpfile/" + downloadLink + "\">Download your export</a></p></div>";
 			}
-			result += "<table><tr><td>";
+			result += "<table style=\"width:auto\"><tr><td>";
 			result += renderHeader();
 			result += "</td></tr><tr><td>";
 			result += renderTable();
 			result += "</td></tr><tr><td>";
 			result += renderFilterPart();
 			result += "</td></tr></table>";
+			result += "</div>";
 
 			return result;
 		}
@@ -679,7 +680,7 @@ public class MatrixViewer extends HtmlWidget
 		downloadCsv(rows, cols, values);
 	}
 
-	public void downloadCsv(List<?> rows, List<?> cols, List<? extends ObservedValue>[][] values) throws IOException
+	public void downloadCsv(List<?> rows, List<?> cols, List<? extends ObservedValue>[][] values) throws IOException, MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
@@ -688,25 +689,18 @@ public class MatrixViewer extends HtmlWidget
 
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File file = new File(tmpDir.getAbsolutePath() + File.separatorChar + "download.csv");
-		FileWriter output = new FileWriter(file);
+		CsvWriter writer = new CsvFileWriter(file);
+		writer.setSeparator(",");
 
-		// print colHeaders
-		output.write("Name");
-		for (Object col : cols)
+		// write headers
+		List<String> headers = new ArrayList<String>();
+		headers.add("Name");
+		for (ObservationElement colHeader : (List<ObservationElement>)matrix.getColHeaders())
 		{
-			output.write(",");
-			if (col instanceof ObservationElement)
-			{
-				ObservationElement colobs = (ObservationElement) col;
-				output.write(colobs.getName());
-			}
-			else
-			{
-				output.write(col.toString());
-			}
-
+			headers.add(colHeader.getName());
 		}
-		output.write("\n");
+		writer.setHeaders(headers);
+		writer.writeHeader();
 
 		// print rowHeader + colValues
 		for (int row = 0; row < values.length; row++)
@@ -716,18 +710,19 @@ public class MatrixViewer extends HtmlWidget
 			if (rowobj instanceof ObservationElement)
 			{
 				ObservationElement rowObs = (ObservationElement) rowobj;
-				output.write(rowObs.getName());
+				writer.writeValue(rowObs.getName());
 			}
 			else
 			{
-				output.write(rowobj.toString());
+				writer.writeValue(rowobj.toString());
 			}
 			// get the data for this row
 			List<? extends ObservedValue>[] value = values[row];
 
 			for(List<? extends ObservedValue> valueList: value)
 			{
-				output.write("," + 	this.valueListToString(valueList));
+				writer.writeSeparator();
+				writer.writeValue(this.valueListToString(valueList));
 			}
 //			else
 //			{
@@ -745,11 +740,10 @@ public class MatrixViewer extends HtmlWidget
 //					}
 //				}
 //			}
-			output.write("\n");
+			writer.writeEndOfLine();
 		}
 
-		output.flush();
-		output.close();
+		writer.close();
 		downloadLink = file.getName();
 	}
 
