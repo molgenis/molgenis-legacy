@@ -16,6 +16,7 @@ import org.molgenis.framework.ui.html.render.LinkoutRenderDecorator;
 import org.molgenis.util.cmdline.CmdLineException;
 import org.molgenis.util.cmdline.CmdLineParser;
 import org.molgenis.util.cmdline.Option;
+import org.molgenis.util.cmdline.Option.Type;
 
 /**
  * Option to parameterize the {@link Molgenis} and the
@@ -274,6 +275,9 @@ public class MolgenisOptions
 
 	@Option(name = "disable_decorators", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage="disables all decorators for generated test")
 	public boolean disable_decorators = false;
+	
+	@Option(name = "log4j_properties_uri", param = Option.Param.STRING, type = Type.OPTIONAL_ARGUMENT, usage="specify the location of the log4j.properties file that Molgenis should use, if not specified than log_level and log_target properties are used instead")
+	public String log4j_properties_uri = "";
 	
 	/** The log level of log4j used by your application. Used by FrontController. **/
 	@Option(name = "log_level", param = Option.Param.LOG4JLEVEL, type = Option.Type.OPTIONAL_ARGUMENT, usage="Use this log level to initialize log4j. Default: debug")
@@ -690,5 +694,16 @@ public class MolgenisOptions
 		this.disable_decorators = disable_decorators;
 	}
 
+	public String getLog4j_properties_uri()
+	{
+		return log4j_properties_uri;
+	}
+
+	public void setLog4j_properties_uri(String log4j_properties_uri)
+	{
+		this.log4j_properties_uri = log4j_properties_uri;
+	}
+
+	
 	
 }
