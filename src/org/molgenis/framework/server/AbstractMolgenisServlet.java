@@ -30,6 +30,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.ws.Endpoint;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
@@ -58,6 +59,7 @@ import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleWriter;
+import org.springframework.util.Log4jConfigurer;
 
 /**
  * Abstract MOLGENIS servlet. Implement abstract methods to get it to work.
@@ -142,19 +144,31 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	}
 	
 	public void init(ServletConfig config) throws ServletException {
-		System.out.println("Log4JInitServlet is initializing log4j");
+		System.out.println("AbstractMolgenisServlet is initializing log4j");
 		String log4jLocation = config.getInitParameter("log4j-properties-location");
 
 		ServletContext sc = config.getServletContext();
 
 		if (log4jLocation == null) {
-			System.err.println("*** No log4j-properties-location init param, so initializing log4j with BasicConfigurator");
-			BasicConfigurator.configure();
+			if(StringUtils.isNotEmpty(this.usedOptions.log4j_properties_uri)) {
+				ClassLoader loader = this.getClass().getClassLoader();
+				URL urlLog4jProp = loader.getResource(this.usedOptions.log4j_properties_uri);
+				if(urlLog4jProp == null) {
+					System.out.println(String.format("*** Incorrect log4j_properties_uri : '%s' in Molgenis properties file, so initializing log4j with BasicConfigurator", urlLog4jProp));
+					BasicConfigurator.configure();					
+				} else {
+					System.out.println(String.format("*** Log4j initializing with config file %s", urlLog4jProp));
+					PropertyConfigurator.configure(urlLog4jProp);	
+				}				
+			} else {
+				System.err.println("*** No log4j-properties-location init param, so initializing log4j with BasicConfigurator");
+				BasicConfigurator.configure();
+			}
 		} else {
 			String webAppPath = sc.getRealPath("/");
 			String log4jProp = webAppPath + File.separator + log4jLocation;
-			File yoMamaYesThisSaysYoMama = new File(log4jProp);
-			if (yoMamaYesThisSaysYoMama.exists()) {
+			File log4jFile = new File(log4jProp);
+			if (log4jFile.exists()) {
 				System.out.println("Initializing log4j with: " + log4jProp);
 				PropertyConfigurator.configure(log4jProp);
 			} else {
