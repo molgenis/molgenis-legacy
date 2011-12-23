@@ -206,15 +206,15 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 					System.out.println("Log4j logger turned off");
 				}			
 			} else {
-//				ClassLoader loader = this.getClass().getClassLoader();
-//				URL urlLog4jProp = loader.getResource(mo.log4j_properties_uri);
-//				if(urlLog4jProp == null) {
-//					System.out.println(String.format("*** Incorrect log4j_properties_uri : '%s' in Molgenis properties file, so initializing log4j with BasicConfigurator", urlLog4jProp));
-//					BasicConfigurator.configure();					
-//				} else {
-//					System.out.println(String.format("*** Log4j initializing with config file %s", urlLog4jProp));
-//					PropertyConfigurator.configure(urlLog4jProp);	
-//				}				
+				ClassLoader loader = this.getClass().getClassLoader();
+				URL urlLog4jProp = loader.getResource(mo.log4j_properties_uri);
+				if(urlLog4jProp == null) {
+					System.out.println(String.format("*** Incorrect log4j_properties_uri : '%s' in Molgenis properties file, so initializing log4j with BasicConfigurator", urlLog4jProp));
+					BasicConfigurator.configure();					
+				} else {
+					System.out.println(String.format("*** Log4j initializing with config file %s", urlLog4jProp));
+					PropertyConfigurator.configure(urlLog4jProp);	
+				}				
 			}
 		}
 		catch(Exception e)
