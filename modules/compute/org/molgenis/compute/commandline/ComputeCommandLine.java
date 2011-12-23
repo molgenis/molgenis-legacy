@@ -152,7 +152,7 @@ public class ComputeCommandLine
 		{
 			if (wfeName.equalsIgnoreCase(workflow.get(i).getName()))
 			{
-				return("s" + i + "_");
+				return("s" + (i < 10 ? "0" : "") + i + "_");
 			}
 		}
 		

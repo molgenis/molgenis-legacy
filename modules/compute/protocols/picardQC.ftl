@@ -11,13 +11,9 @@
 <#include "macros.ftl"/>
 <@begin/>
 #MOLGENIS walltime=35:59:00 mem=4
-#INPUTS 
-#OUTPUTS
-#EXEC
-#FOREACH
 
 inputs "${sortedbam}"
-inputs "${indexfile}
+inputs "${indexfile}"
 outputs "${alignmentmetrics}"
 outputs "${gcbiasmetrics}"
 outputs "${gcbiasmetricspdf}"
@@ -27,6 +23,8 @@ outputs "${meanqualitybycycle}"
 outputs "${meanqualitybycyclepdf}"
 outputs "${qualityscoredistribution}"
 outputs "${qualityscoredistributionpdf}"
+outputs "${hsmetrics}"
+outputs "${bamindexstats}"
 
 java -jar -Xmx4g ${alignmentmetricsjar} \
 I=${sortedbam} \
