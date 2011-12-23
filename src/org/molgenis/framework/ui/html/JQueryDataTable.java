@@ -34,6 +34,7 @@ public class JQueryDataTable extends Table
 				"\n\"bFilter\": false," +
 				"\n\"bSort\": false," +
 				"\n\"bInfo\": false," +
+				"\n\"bAutoWidth\": false," +
 				"\n\"bJQueryUI\": true})" +
 				"</script>";
 		return result;

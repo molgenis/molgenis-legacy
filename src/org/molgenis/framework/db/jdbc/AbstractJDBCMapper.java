@@ -168,6 +168,9 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			{
 				superUpdatedRows = getSuperTypeMapper().update(entities);
 			}
+			
+			// attempt to resolve foreign keys by label (ie. 'name')
+			this.resolveForeignKeys(entities);
 
 			// update in batches
 			for (int i = 0; i < entities.size(); i += BATCH_SIZE)
@@ -237,6 +240,9 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 
 			// prepare file attachments
 			this.prepareFileAttachements(entities, database.fileSource);
+			
+			// attempt to resolve foreign keys by label (ie. 'name')
+			this.resolveForeignKeys(entities);
 
 			// remove in batches
 			for (int i = 0; i < entities.size(); i += BATCH_SIZE)
