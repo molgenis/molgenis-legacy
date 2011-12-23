@@ -9,7 +9,6 @@ import org.molgenis.util.Tree;
 public class JQueryTreeView<E> extends HtmlWidget
 {
 	private SimpleTree<JQueryTreeViewElement> treeData;
-	private String MeasurementDetails;
 
 	public JQueryTreeView(String name, SimpleTree treeData)
 	{
@@ -35,7 +34,8 @@ public class JQueryTreeView<E> extends HtmlWidget
 			}
 			returnString += "</ul></li>";
 		} else {
-			returnString = "<li><span class=\"point\">" + "<input type=\"checkbox\" id=\"CataloguecheckBox\" name=\"measurementLabel\" >" + node.getLabel() + "</span></li>";
+			returnString = "<li><span class=\"point\"><input type=\"checkbox\" id=\"" + 
+				node.getLabel() + "\" name=\"" + node.getLabel() + "\" />" + node.getLabel() + "</span></li>";
 		}
 		return returnString;
 	}
@@ -43,9 +43,9 @@ public class JQueryTreeView<E> extends HtmlWidget
 	@Override
 	public String toHtml(){
 		
-		String html = "<div id=\"masstoggler\">	<a title=\"Collapse entire tree\" href=\"#\"> Collapse All</a> | ";
-		html += "<a title=\"Expand entire tree\" href=\"#\"> Expand All</a> | " ;
-		html += "<a title=\"Toggle the tree below\" href=\"#\">Toggle All</a></div> ";
+		String html = "<div id=\"masstoggler\">	<a title=\"Collapse entire tree\" href=\"#\">Collapse All</a> | ";
+		html += "<a title=\"Expand entire tree\" href=\"#\">Expand All</a>" ;
+		//html += " | <a title=\"Toggle the tree below\" href=\"#\">Toggle All</a></div> ";
 		html += "<ul id=\"browser\" class=\"pointtree\">";
 		html += renderTree(treeData.getRoot());
 		html += "</ul>";
@@ -61,33 +61,20 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"<script>\n"
 		+"$(document).ready(function(){\n"
 		+"$(\"#browser\").treeview({control: \"#masstoggler\"});" 
-		+"$(\"#CataloguecheckBox\").validate({"
-		+"	   rules:   { list:     {required: \"#list0:checked\"} },"
-		+"	   messages:  { list:  \"Please select at least one Measurement\"}"                                                        
-		+"	 });"
+//		+"$(\"#CataloguecheckBox\").validate({"
+//		+"	   rules:   { list:     {required: \"#list0:checked\"} },"
+//		+"	   messages:  { list:  \"Please select at least one Measurement\"}"                                                        
+//		+"	 });"
 		+"});\n"
-		+ "$(\"#leftSide\").click(function(event) {"
-		+"	event.preventDefault();"
-		//if link is clicked set the checkbox clicked.
-		+ "$(\"#CataloguecheckBox\").attr('checked', true)"
-//		+"	  alert(\"Your order of \"+$(this).text() + \" has been added to you Shopping Cart\");"
-		+"	});"
+//		+ "$(\"#leftSide\").click(function(event) {"
+//		+"	event.preventDefault();"
+//		//if link is clicked set the checkbox clicked.
+//		+ "$(\"#CataloguecheckBox\").attr('checked', true)"
+////		+"	  alert(\"Your order of \"+$(this).text() + \" has been added to you Shopping Cart\");"
+//		+"	});"
 		+"</script>\n";
 	    
 	    return html;
 	}
-
-	private String getMeasurementDetails()
-	{
-		return MeasurementDetails;
-	}
-
-	public void setMeasurementDetails(String measurementDetails)
-	{
-		MeasurementDetails = measurementDetails;
-	}
-	
-	
-	
 }
 
