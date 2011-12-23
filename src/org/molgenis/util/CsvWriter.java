@@ -204,7 +204,7 @@ public class CsvWriter implements TupleWriter
 					if (i != 0) writer.print(listSeparator);
 					if (list.get(i) != null)
 					{
-						writer.print(list.get(i).toString());
+						writer.print(StringEscapeUtils.escapeCsv(list.get(i).toString()));
 					}
 					else
 					{
