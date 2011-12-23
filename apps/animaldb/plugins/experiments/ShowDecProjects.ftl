@@ -54,7 +54,7 @@
 	</div>
 	
 	<div class="row">
-		<label for="dectitle">DEC Title:</label>
+		<label for="dectitle">DEC title:</label>
 		<input type="text" name="dectitle" id="dectitle" class="textbox" 
 		<#if currentDecProject?? && currentDecProject.getDecTitle()??> value="${currentDecProject.decTitle}"</#if>
 		/>
@@ -125,7 +125,7 @@
 			<tr>
 				<th>Name</th>
 				<th>DEC number</th>
-				<th>DEC Title</th>
+				<th>DEC title</th>
 				<th>Start date</th>
 				<th>End date</th>
 				<th>DEC applicant</th>

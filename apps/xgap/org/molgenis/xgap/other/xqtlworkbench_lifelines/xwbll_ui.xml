@@ -9,7 +9,7 @@
 			<plugin name="MeasurementsOrderForm" type="plugins.data.MeasurementsOrderForm" label="Orders" />  
 		</menu>
 		<plugin label="Matrix Viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
-		<plugin label="Plink download" name="PlinkDownload" type="plugins.lifelines.plinkdownload.PlinkDownload" />
+		<plugin label="PLINK download" name="PlinkDownload" type="plugins.lifelines.plinkdownload.PlinkDownload" />
 		<menu label="Database Tables" name="DatabaseTables">
 			<form label="Studies" name="investigation" entity="Investigation" view="list">
 				<form name="protocol" entity="Protocol" view="list" label="Protocols" />

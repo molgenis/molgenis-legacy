@@ -39,6 +39,9 @@ public class DecEntity {
 	
 	public void setEndDate(String endDate) throws ParseException
 	{
+		if (endDate.equals("")) {
+			this.endDate = null;
+		}
 		this.endDate = dbFormat.parse(endDate);
 	}
 	public String getEndDate()

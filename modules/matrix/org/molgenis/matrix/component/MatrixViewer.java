@@ -602,13 +602,13 @@ public class MatrixViewer extends HtmlWidget
 
 	public void downloadAllCsv(Database db, Tuple t) throws MatrixException, IOException
 	{
-		// remember old limis and offset
+		// remember old limits and offset
 		int rowOffset = matrix.getRowOffset();
 		int rowLimit = matrix.getRowLimit();
 		int colOffset = matrix.getColOffset();
 		int colLimit = matrix.getColLimit();
-
-		// batch through rows
+		
+		// max for batching
 		int maxRow = matrix.getRowCount();
 
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -622,6 +622,7 @@ public class MatrixViewer extends HtmlWidget
 
 		// write headers
 		List<String> headers = new ArrayList<String>();
+		headers.add("Name");
 		for (ObservationElement colHeader : (List<ObservationElement>)matrix.getColHeaders())
 		{
 			headers.add(colHeader.getName());
@@ -634,21 +635,21 @@ public class MatrixViewer extends HtmlWidget
 		{
 			// retrieve a batch
 			matrix.setRowOffset(offset);
+			// retrieve names of targets in batch
+			List<ObservationElement> names = (List<ObservationElement>)matrix.getRowHeaders();
 			// write lines to file
+			int rowCnt = 0;
 			for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
 			{
+				writer.writeValue(names.get(rowCnt));
 				for (int colId = 0; colId < row.length; colId++)
 				{
-					// TODO doesn't work for multivalue
 					List<? extends ObservedValue> valueList = row[colId];
-
-					if (colId > 0)
-					{
-						writer.writeSeparator();
-					}
+					writer.writeSeparator();
 					writer.writeValue(this.valueListToString(valueList));
 				}
 				writer.writeEndOfLine();
+				rowCnt++;
 			}
 		}
 		writer.close();
@@ -690,8 +691,7 @@ public class MatrixViewer extends HtmlWidget
 		FileWriter output = new FileWriter(file);
 
 		// print colHeaders
-		output.write("'ID,Name"); // the ' is there so Excel doesn't think this
-									// is SYLK format
+		output.write("Name");
 		for (Object col : cols)
 		{
 			output.write(",");
@@ -711,17 +711,15 @@ public class MatrixViewer extends HtmlWidget
 		// print rowHeader + colValues
 		for (int row = 0; row < values.length; row++)
 		{
-			// print ID and name
+			// print name
 			Object rowobj = rows.get(row);
 			if (rowobj instanceof ObservationElement)
 			{
 				ObservationElement rowObs = (ObservationElement) rowobj;
-				output.write(rowObs.getId() + ",");
 				output.write(rowObs.getName());
 			}
 			else
 			{
-				output.write("0,");
 				output.write(rowobj.toString());
 			}
 			// get the data for this row
@@ -770,7 +768,6 @@ public class MatrixViewer extends HtmlWidget
 		List<ObservedValue>[][] listVal = (List<ObservedValue>[][]) this.matrix.getValueLists();
 
 		String target = "name";
-		String id = "ID";
 		for (Object col : listCol)
 		{
 			if (col instanceof ObservationElement)
@@ -805,16 +802,14 @@ public class MatrixViewer extends HtmlWidget
 		cellFormat.setWrap(false);
 
 		//
-		Label d = new Label(0, 0, id, headerFormat);
-		s.addCell(d);
-		Label e = new Label(1, 0, target, headerFormat);
+		Label e = new Label(0, 0, target, headerFormat);
 		s.addCell(e);
 
 		// Write column headers
 		for (int i = 0; i < listC.size(); i++)
 		{
 
-			Label l = new Label(i + 2, 0, listC.get(i), headerFormat);
+			Label l = new Label(i + 1, 0, listC.get(i), headerFormat);
 			s.addCell(l);
 		}
 
@@ -825,17 +820,13 @@ public class MatrixViewer extends HtmlWidget
 			if (rowobj instanceof ObservationElement)
 			{
 				ObservationElement rowObs = (ObservationElement) rowobj;
-				Label l = new Label(0, i + 1, rowObs.getId() + "", headerFormat);
-				s.addCell(l);
-				Label j = new Label(1, i + 1, rowObs.getName(), headerFormat);
+				Label j = new Label(0, i + 1, rowObs.getName(), headerFormat);
 				s.addCell(j);
 
 			}
 			else
 			{
-				Label l = new Label(0, i + 1, "0", headerFormat);
-				Label j = new Label(1, i + 1, rowobj.toString(), headerFormat);
-				s.addCell(l);
+				Label j = new Label(0, i + 1, rowobj.toString(), headerFormat);
 				s.addCell(j);
 			}
 		}
@@ -847,12 +838,12 @@ public class MatrixViewer extends HtmlWidget
 			{
 				if (listVal[b][a] != null)
 				{
-					Label l = new Label(a + 2, b + 1, listObsValToString(listVal[b][a]), cellFormat);
+					Label l = new Label(a + 1, b + 1, listObsValToString(listVal[b][a]), cellFormat);
 					s.addCell(l);
 				}
 				else
 				{
-					s.addCell(new Label(a + 2, b + 1, "", cellFormat));
+					s.addCell(new Label(a + 1, b + 1, "", cellFormat));
 				}
 
 			}
@@ -881,77 +872,69 @@ public class MatrixViewer extends HtmlWidget
 
 	 
 	 
-	 public void downloadVisibleSPSS(Database db, Tuple t) throws Exception
-		{
-		 if (this.matrix instanceof DatabaseMatrix) {
-				((DatabaseMatrix) this.matrix).setDatabase(db);
+	public void downloadVisibleSPSS(Database db, Tuple t) throws Exception
+	{
+		if (this.matrix instanceof DatabaseMatrix) {
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+		}
+		File spssFile = new File(System.getProperty("java.io.tmpdir")
+				+ File.separator + "download.sav");
+		
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(spssFile));
+		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
+		spssWriter.setCalculateNumberOfCases(false);
+		spssWriter.addDictionarySection(-1);
+		
+		List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
+		List<String> listC = new ArrayList<String>();
+		List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
+		List<String> listR = new ArrayList<String>();	
+		List<ObservedValue>[][] elements = (List<ObservedValue>[][]) this.matrix.getValueLists();
+		
+		for(Object col: listCol){
+			if(col instanceof ObservationElement) {
+				ObservationElement colobs = (ObservationElement) col;
+				listC.add(colobs.getName());
 			}
-			File spssFile = new File(System.getProperty("java.io.tmpdir")
-					+ File.separator + "download.sav");
-			
-			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(spssFile));
-			SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
-			spssWriter.setCalculateNumberOfCases(false);
-			spssWriter.addDictionarySection(-1);
-			
-			//Object[][] elements = this.matrix.getValueLists();
-			
-			List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
-			List<String> listC = new ArrayList<String>();
-			List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
-			List<String> listR = new ArrayList<String>();	
-			List<ObservedValue>[][] elements = (List<ObservedValue>[][]) this.matrix.getValueLists();
-			
-			for(Object col: listCol){
-				if(col instanceof ObservationElement) {
-					ObservationElement colobs = (ObservationElement) col;
-					listC.add(colobs.getName());
-				}
+		}
+		for(Object m : listRow){
+			if(m instanceof ObservationElement) {
+				ObservationElement colobs = (ObservationElement) m;
+				listR.add(colobs.getName());
 			}
-			for(Object m : listRow){
-				if(m instanceof ObservationElement) {
-					ObservationElement colobs = (ObservationElement) m;
-					listR.add(colobs.getName());
-				}
-			}
-			spssWriter.addStringVar("id", 10, "id");
-			spssWriter.addStringVar("name", 10, "name");
-				for(String colName : listC){
-					spssWriter.addStringVar(colName, 10, colName);
-				}
-				
-				spssWriter.addDataSection();
+		}
+		spssWriter.addStringVar("name", 10, "name");
+		for(String colName : listC){
+			spssWriter.addStringVar(colName, 10, colName);
+		}
+		
+		spssWriter.addDataSection();
 
-				
-				for(int rowIndex = 0; rowIndex < listR.size(); rowIndex++)
+		for(int rowIndex = 0; rowIndex < listR.size(); rowIndex++)
+		{
+			Object rowobj = listRow.get(rowIndex);
+			ObservationElement rowObs = (ObservationElement) rowobj;
+			spssWriter.addData(rowObs.getName());
+			for(int colIndex = 0; colIndex < listC.size(); colIndex++)
+			{
+				Object val = listObsValToString(elements[rowIndex][colIndex]);
+				if(val == null)
 				{
-					Object rowobj = listRow.get(rowIndex);
-					ObservationElement rowObs = (ObservationElement) rowobj;
-					spssWriter.addData(rowObs.getId()+"");
-					spssWriter.addData(rowObs.getName());
-					for(int colIndex = 0; colIndex < listC.size(); colIndex++)
-					{
-						Object val = listObsValToString(elements[rowIndex][colIndex]);
-						if(val == null)
-						{
-							spssWriter.addData(""); //FIXME: correct?
-						}
-						else
-						{
-							
-							spssWriter.addData(val.toString());	
-						}
-						
-					}
-				
+					spssWriter.addData(""); //FIXME: correct?
+				}
+				else
+				{
+					
+					spssWriter.addData(val.toString());	
+				}
 			}
-			
-			
-			spssWriter.addFinishSection();
-			out.close();
-			downloadLink = spssFile.getName();
 			
 		}
+		
+		spssWriter.addFinishSection();
+		out.close();
+		downloadLink = spssFile.getName();
+	}
 		
 	 
 	 
