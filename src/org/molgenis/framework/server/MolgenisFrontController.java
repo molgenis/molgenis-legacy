@@ -64,7 +64,8 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		try
 		{
 			//wrap request and response
-			MolgenisRequest req = new MolgenisRequest(request, response); //TODO: Bad, but needed for redirection. DISCUSS.
+			MolgenisRequest req = new MolgenisRequest(request, response); 
+			//TODO: Bad, but needed for redirection. DISCUSS.
 			MolgenisResponse res = new MolgenisResponse(response);
 			
 			//handle the request with current database + login
@@ -85,6 +86,10 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		HttpServletRequest req = request.getRequest();
 		String path = req.getRequestURI().substring(context.getVariant().length()+1);
 		if(path.equals("")) path = "/";
+
+		if(!path.startsWith("/")) {
+			path = "/"+path;
+		}
 	
 		for (String p : services.keySet())
 		{
