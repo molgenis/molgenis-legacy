@@ -50,7 +50,7 @@
 			</menu>
 			<plugin name="PreFillDatabase" type="plugins.fillanimaldb.PreFillDatabasePlugin"
 				label="Reset database" />
-			<plugin name="FillDatabase" type="plugins.fillanimaldb.FillDatabasePlugin"
+			<plugin name="LoadLegacy" type="plugins.fillanimaldb.LoadLegacyPlugin"
 				label="Load legacy data" />
 			<plugin name="SimpleArchiver" type="plugins.archiver.Archiver"
 				label="Import/export database" />

@@ -18,11 +18,11 @@ import commonservice.CommonService;
 import convertors.oldadb.LoadAnimalDB;
 import convertors.ulidb.ConvertUliDbToPheno;
 
-public class FillDatabasePlugin extends PluginModel<Entity>
+public class LoadLegacyPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5634663322794444817L;
 
-	public FillDatabasePlugin(String name, ScreenController<?> parent)
+	public LoadLegacyPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -35,13 +35,13 @@ public class FillDatabasePlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_fillanimaldb_FillDatabasePlugin";
+		return "plugins_fillanimaldb_LoadLegacyPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/fillanimaldb/FillDatabasePlugin.ftl";
+		return "plugins/fillanimaldb/LoadLegacyPlugin.ftl";
 	}
 
 	@Override
