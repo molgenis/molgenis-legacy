@@ -13,8 +13,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
-
 import convertors.oldadb.LoadAnimalDB;
 import convertors.ulidb.ConvertUliDbToPheno;
 
@@ -50,112 +48,128 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 		try {
 			String action = request.getString("__action");
 			
-			if( action.equals("loadUliBackgrounds") )
-			{
-				String filename = request.getString("ulibackgroundtable");
-				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
-				myLoadUliDb.populateBackground(filename);
+			if (action.equals("load")) {
+				String filename = request.getString("zip");
+				String legacy = request.getString("source");
+				if (legacy.equals("ulidb")) {
+					ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
+					myLoadUliDb.convertFromZip(filename);
+				} else if (legacy.equals("oldadb")) {
+					LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+					myLoadAnimalDB.convertFromZip(filename);
+				} else if (legacy.equals("rhutdb")) {
+					// TODO
+					throw new Exception("This convertor is still under construction");
+				}
 			}
-			
-			if( action.equals("loadUliGenes") )
-			{
-				String filename = request.getString("uligenetable");
-				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
-				myLoadUliDb.populateGene(filename);
-			}
-			
-			if( action.equals("loadUliLines") )
-			{
-				String filename = request.getString("ulilinetable");
-				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
-				myLoadUliDb.populateLine(filename);
-			}
-			
-			if( action.equals("loadUliAnimals") )
-			{
-				String filename = request.getString("ulianimaltable");
-				//String filename = "C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/Tierdetails.csv";
-				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
-				//myLoadUliDb.populateLine("C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/Linie.csv");
-				//myLoadUliDb.populateGene("C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/Gen.csv");
-				//myLoadUliDb.populateBackground("C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/GenetischerHintergrund.csv");
-				myLoadUliDb.populateAnimal(filename);
-				myLoadUliDb.populateProtocolApplication();
-				myLoadUliDb.populateValue(filename);
-				myLoadUliDb.parseParentRelations(filename);
-				myLoadUliDb.writeToDb();
 				
-				CommonService cs = CommonService.getInstance();
-				cs.setDatabase(db);
-				cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
-			}
 			
-			if( action.equals("loadAnimals") )
-			{
-				String filename = request.getString("animaltable");
-				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
-				myLoadAnimalDB.populateAnimal(filename);
-			}
-			
-			if( action.equals("loadLocations") )
-			{
-				String filename = request.getString("locationtable");
-				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
-				myLoadAnimalDB.populateLocation(filename);
-			}
-			
-			if( action.equals("loadLitters") )
-			{
-				String filename = request.getString("littertable");
-				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
-				myLoadAnimalDB.populateLitter(filename);
-			}
-			
-			if( action.equals("loadExperiments") )
-			{
-				String filename = request.getString("experimenttable");
-				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
-				myLoadAnimalDB.populateExperiment(filename);
-			}
-			
-			if( action.equals("loadDECApplications") )
-			{
-				String filename = request.getString("decapplicationtable");
-				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
-				myLoadAnimalDB.populateDECApplication(filename);
-			}
-			
-			if( action.equals("loadAnimalsInExperiments") )
-			{
-				String filename = request.getString("experimentanimaltable");
-				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
-				myLoadAnimalDB.populateAnimalsInExperiments(filename);
-			}
-			
-			if( action.equals("loadPresets") )
-			{
-				String filename = request.getString("presettable");
-				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
-				myLoadAnimalDB.populatePreset(filename);
-			}
-			
-			if( action.equals("loadPresetAnimals") )
-			{
-				String filename = request.getString("presetanimaltable");
-				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
-				myLoadAnimalDB.populatePresetAnimals(filename);
-			}
-			
-			if( action.equals("loadEvents") )
-			{
-				String filename = request.getString("eventtable");
-				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
-				myLoadAnimalDB.populateEvents(filename);
-			}
+//			if( action.equals("loadUliBackgrounds") )
+//			{
+//				String filename = request.getString("ulibackgroundtable");
+//				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
+//				myLoadUliDb.populateBackground(filename);
+//			}
+//			
+//			if( action.equals("loadUliGenes") )
+//			{
+//				String filename = request.getString("uligenetable");
+//				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
+//				myLoadUliDb.populateGene(filename);
+//			}
+//			
+//			if( action.equals("loadUliLines") )
+//			{
+//				String filename = request.getString("ulilinetable");
+//				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
+//				myLoadUliDb.populateLine(filename);
+//			}
+//			
+//			if( action.equals("loadUliAnimals") )
+//			{
+//				String filename = request.getString("ulianimaltable");
+//				//String filename = "C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/Tierdetails.csv";
+//				ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
+//				//myLoadUliDb.populateLine("C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/Linie.csv");
+//				//myLoadUliDb.populateGene("C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/Gen.csv");
+//				//myLoadUliDb.populateBackground("C:/Documents and Settings/Administrator/workspace/molgenis_apps/data/AnimalDB/legacy/20110429_UliEisel/GenetischerHintergrund.csv");
+//				myLoadUliDb.populateAnimal(filename);
+//				myLoadUliDb.populateProtocolApplication();
+//				myLoadUliDb.populateValue(filename);
+//				myLoadUliDb.parseParentRelations(filename);
+//				myLoadUliDb.writeToDb();
+//				
+//				CommonService cs = CommonService.getInstance();
+//				cs.setDatabase(db);
+//				cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
+//			}
+//			
+//			if( action.equals("loadAnimals") )
+//			{
+//				String filename = request.getString("animaltable");
+//				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+//				myLoadAnimalDB.populateAnimal(filename);
+//			}
+//			
+//			if( action.equals("loadLocations") )
+//			{
+//				String filename = request.getString("locationtable");
+//				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+//				myLoadAnimalDB.populateLocation(filename);
+//			}
+//			
+//			if( action.equals("loadLitters") )
+//			{
+//				String filename = request.getString("littertable");
+//				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+//				myLoadAnimalDB.populateLitter(filename);
+//			}
+//			
+//			if( action.equals("loadExperiments") )
+//			{
+//				String filename = request.getString("experimenttable");
+//				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+//				myLoadAnimalDB.populateExperiment(filename);
+//			}
+//			
+//			if( action.equals("loadDECApplications") )
+//			{
+//				String filename = request.getString("decapplicationtable");
+//				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+//				myLoadAnimalDB.populateDECApplication(filename);
+//			}
+//			
+//			if( action.equals("loadAnimalsInExperiments") )
+//			{
+//				String filename = request.getString("experimentanimaltable");
+//				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+//				myLoadAnimalDB.populateAnimalsInExperiments(filename);
+//			}
+//			
+//			if( action.equals("loadPresets") )
+//			{
+//				String filename = request.getString("presettable");
+//				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+//				myLoadAnimalDB.populatePreset(filename);
+//			}
+//			
+//			if( action.equals("loadPresetAnimals") )
+//			{
+//				String filename = request.getString("presetanimaltable");
+//				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+//				myLoadAnimalDB.populatePresetAnimals(filename);
+//			}
+//			
+//			if( action.equals("loadEvents") )
+//			{
+//				String filename = request.getString("eventtable");
+//				LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
+//				myLoadAnimalDB.populateEvents(filename);
+//			}
 			
 		} catch(Exception e) {
 			e.printStackTrace();
-			//e.g. show a message in your form
+			this.setError("Something went wrong while loading your legacy database: " + e.getMessage());
 		}
 	}
 

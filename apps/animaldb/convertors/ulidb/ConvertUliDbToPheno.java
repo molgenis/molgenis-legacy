@@ -1,16 +1,23 @@
 package convertors.ulidb;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
@@ -86,52 +93,72 @@ public class ConvertUliDbToPheno
 		litterNrMap = new HashMap<String, Integer>();
 	}
 	
-	public void writeToDb() {
-		try {
-			db.add(protocolAppsToAddList);
-			logger.debug("Protocols successfully added");
-			
-			db.add(animalsToAddList);
-			// Make entry in name prefix table with highest animal nr. (Tiernummer)
-			NamePrefix namePrefix = new NamePrefix();
-			namePrefix.setUserId_Name(userName);
-			namePrefix.setTargetType("animal");
-			namePrefix.setPrefix("");
-			namePrefix.setHighestNumber(highestNr);
-			db.add(namePrefix);
-			logger.debug("Animals successfully added");
-			
-			db.add(panelsToAddList);
-			// Make entries in name prefix table with highest parentgroup nrs.
-			for (String lineName : parentgroupNrMap.keySet()) {
-				namePrefix = new NamePrefix();
-				namePrefix.setUserId_Name(userName);
-				namePrefix.setTargetType("parentgroup");
-				namePrefix.setPrefix("PG_" + lineName + "_");
-				namePrefix.setHighestNumber(parentgroupNrMap.get(lineName));
-				db.add(namePrefix);
-			}
-			// Make entries in name prefix table with highest litter nrs.
-			for (String lineName : litterNrMap.keySet()) {
-				namePrefix = new NamePrefix();
-				namePrefix.setUserId_Name(userName);
-				namePrefix.setTargetType("litter");
-				namePrefix.setPrefix("LT_" + lineName + "_");
-				namePrefix.setHighestNumber(litterNrMap.get(lineName));
-				db.add(namePrefix);
-			}
-			logger.debug("Panels successfully added");
-			
-			for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += 1000) {
-				int valueEnd = Math.min(valuesToAddList.size(), valueStart + 1000);
-				db.add(valuesToAddList.subList(valueStart, valueEnd));
-				logger.debug("Values " + valueStart + " through " + valueEnd + " successfully added");
-			}
-			
-		} catch (Exception e) {
-			logger.error("Writing to DB failed: " + e.getMessage());
-			e.printStackTrace();
+	public void convertFromZip(String filename) throws Exception {
+		// Path to store files from zip
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		String path = tmpDir.getAbsolutePath() + File.separatorChar;
+		// Extract zip
+		ZipFile zipFile = new ZipFile(filename);
+		Enumeration<?> entries = zipFile.entries();
+		while (entries.hasMoreElements())
+		{
+			ZipEntry entry = (ZipEntry) entries.nextElement();
+			copyInputStream(zipFile.getInputStream(entry),
+					new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
 		}
+		// Run convertor steps
+		populateBackground(path + "Genetischer Hintergrund.txt");
+		populateGene(path + "Gen.txt");
+		populateLine(path + "Linie.txt");
+		populateAnimal(path + "Tierdetails.txt");
+		populateProtocolApplication();
+		populateValue(path + "Tierdetails.txt");
+		parseParentRelations(path + "Tierdetails.txt");
+		
+		writeToDb();
+	}
+	
+	public void writeToDb() throws Exception {
+		db.add(protocolAppsToAddList);
+		logger.debug("Protocols successfully added");
+		
+		db.add(animalsToAddList);
+		// Make entry in name prefix table with highest animal nr. (Tiernummer)
+		NamePrefix namePrefix = new NamePrefix();
+		namePrefix.setUserId_Name(userName);
+		namePrefix.setTargetType("animal");
+		namePrefix.setPrefix("");
+		namePrefix.setHighestNumber(highestNr);
+		db.add(namePrefix);
+		logger.debug("Animals successfully added");
+		
+		db.add(panelsToAddList);
+		// Make entries in name prefix table with highest parentgroup nrs.
+		for (String lineName : parentgroupNrMap.keySet()) {
+			namePrefix = new NamePrefix();
+			namePrefix.setUserId_Name(userName);
+			namePrefix.setTargetType("parentgroup");
+			namePrefix.setPrefix("PG_" + lineName + "_");
+			namePrefix.setHighestNumber(parentgroupNrMap.get(lineName));
+			db.add(namePrefix);
+		}
+		// Make entries in name prefix table with highest litter nrs.
+		for (String lineName : litterNrMap.keySet()) {
+			namePrefix = new NamePrefix();
+			namePrefix.setUserId_Name(userName);
+			namePrefix.setTargetType("litter");
+			namePrefix.setPrefix("LT_" + lineName + "_");
+			namePrefix.setHighestNumber(litterNrMap.get(lineName));
+			db.add(namePrefix);
+		}
+		logger.debug("Panels successfully added");
+		
+		for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += 1000) {
+			int valueEnd = Math.min(valuesToAddList.size(), valueStart + 1000);
+			db.add(valuesToAddList.subList(valueStart, valueEnd));
+			logger.debug("Values " + valueStart + " through " + valueEnd + " successfully added");
+		}
+
 	}
 	
 	public void populateAnimal(String filename) throws Exception
@@ -588,7 +615,10 @@ public class ConvertUliDbToPheno
 				Date now = calendar.getTime();
 				
 				String lineName = tuple.getString("Linie");
-				// Make line panel
+				// Make line panel (append 'line' if there is already a background with this name)
+				if (ct.getObservationTargetId(lineName) != -1) {
+					lineName += " (line)";
+				}
 				int lineId = ct.makePanel(invid, lineName, login.getUserId());
 				// Label it as line using the (Set)TypeOfGroup protocol and feature
 				int featureId = ct.getMeasurementId("TypeOfGroup");
@@ -687,5 +717,17 @@ public class ConvertUliDbToPheno
 		ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
 		protocolAppsToAddList.add(app);
 		appMap.put(protocolLabel, app.getName());
+	}
+	
+	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException
+	{
+		byte[] buffer = new byte[1024];
+		int len;
+
+		while ((len = in.read(buffer)) >= 0)
+			out.write(buffer, 0, len);
+
+		in.close();
+		out.close();
 	}
 }

@@ -261,6 +261,20 @@ public class CommonService
 	}
 	
 	/**
+	 * Retrieve a location by id
+	 * 
+	 * @param locationId the id to look for
+	 * @return a Location entity with Id locationId
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public Location getLocationById(int locationId)
+			throws DatabaseException, ParseException
+	{
+		return db.findById(Location.class, locationId);
+	}
+	
+	/**
 	 * Retrieve an individual by id
 	 * 
 	 * @param individualId the id to look for

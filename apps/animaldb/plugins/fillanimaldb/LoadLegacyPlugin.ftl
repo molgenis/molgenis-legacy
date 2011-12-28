@@ -26,8 +26,26 @@
 <#--begin your plugin-->	
 
 <h1>Load data from legacy systems</h1>
-<em>Caution: this might interfere with existing database items!</em>
+<p><em>Caution: this might interfere with existing database items!</em></p>
 
+<div class="row">
+	<label for="zip" style="height:2em">ZIP file with CSV exports from your legacy database:</label>
+	<input type="file" name="zip" id="zip" class="textbox" />
+</div>
+<div class="row" style="height:3em">
+	<label for="source" style="height:3em">Your legacy database:</label>
+	<input type="radio" name="source" value="ulidb" />Molecular Neurobiology (Uli Eisel group)
+	<br />
+	<input type="radio" name="source" value="oldadb" />Old AnimalDB (Ate Boerema)
+	<br />
+	<input type="radio" name="source" value="rhutdb" />Roelof Hut
+	<br />
+</div>
+<div class="row">
+	<input type='submit' class='addbutton' value='Load' onclick="__action.value='load'" />
+</div>
+
+<!--
 <div>
     <br />
     <hr />
@@ -121,6 +139,7 @@
 	<input type="file" name="eventtable" id="eventtable" class="textbox" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type='submit' class='addbutton' value='Load events from old version' onclick="__action.value='loadEvents'" />
 </div>
+-->
 	
 <#--end of your plugin-->	
 			</div>

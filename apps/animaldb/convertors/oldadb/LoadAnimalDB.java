@@ -1,15 +1,22 @@
 package convertors.oldadb;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -52,6 +59,31 @@ public class LoadAnimalDB
 		newInv.setOwns(login.getUserId());
 		db.add(newInv);
 		invid = newInv.getId();
+	}
+	
+	public void convertFromZip(String filename) throws Exception {
+		// Path to store files from zip
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		String path = tmpDir.getAbsolutePath() + File.separatorChar;
+		// Extract zip
+		ZipFile zipFile = new ZipFile(filename);
+		Enumeration<?> entries = zipFile.entries();
+		while (entries.hasMoreElements())
+		{
+			ZipEntry entry = (ZipEntry) entries.nextElement();
+			copyInputStream(zipFile.getInputStream(entry),
+					new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
+		}
+		// Run convertor steps
+		populateAnimal(path + "oldanimals.csv");
+		populateLocation(path + "oldlocations.csv");
+		populateLitter(path + "oldlitters.csv");
+		populateExperiment(path + "oldexperiments.csv");
+		populateDECApplication(path + "olddecapplications.csv");
+		populateAnimalsInExperiments(path + "oldexperimentanimals.csv");
+		populatePreset(path + "oldpresets.csv");
+		populatePresetAnimals(path + "oldpresetanimals.csv");
+		populateEvents(path + "oldevents.csv");
 	}
 
 	public void populateAnimal(String filename) throws Exception
@@ -204,7 +236,7 @@ public class LoadAnimalDB
 				// Location
 				if (!oldlocid.equals("NULL")) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, "OldAnimalDBAnimalID"));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBAnimalID"));
 					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldlocid));
 					List<ObservedValue> valueList = q.find();
 					Iterator<ObservedValue> valueIt = valueList.iterator();
@@ -212,13 +244,15 @@ public class LoadAnimalDB
 					{
 						// Check that the target is a Location, since there are also Animals with OldAnimalDB ID's
 						int newlocid = valueIt.next().getTarget_Id();
-						ObservationTarget tmpTarget = ct.getObservationTargetById(newlocid);
-						if (tmpTarget.getOntologyReference_Name().equals("Location")) {
+						try {
+							ct.getLocationById(newlocid);
 							protocolId = ct.getProtocolId("SetLocation");
 							measurementId = ct.getMeasurementId("Location");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 									now, null, protocolId, measurementId, newanimalid, null, newlocid));
 							break;
+						} catch (Exception le) {
+							// ignore
 						}
 					}
 				}
@@ -1162,6 +1196,18 @@ public class LoadAnimalDB
 				db.add(valuesToAddList);
 			}
 		});
+	}
+	
+	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException
+	{
+		byte[] buffer = new byte[1024];
+		int len;
+
+		while ((len = in.read(buffer)) >= 0)
+			out.write(buffer, 0, len);
+
+		in.close();
+		out.close();
 	}
 
 }

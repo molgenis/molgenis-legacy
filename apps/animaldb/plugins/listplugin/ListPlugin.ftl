@@ -68,44 +68,43 @@
 </div>
 
 <div id="Settings" style='margin:10px; padding:10px; float:left'>
-	<fieldset><legend><strong>Change display Settings: </strong></legend> 
+	<fieldset><legend><strong>Change display settings</strong></legend> 
 	<div id='top_part'>
 		<p>
-		Show: 
-		<select name="targettype" id="targettype" onchange="fnReloadTable()">
+		Show <select name="targettype" id="targettype" onchange="fnReloadTable()">
 			<option value="Individual">Individual animals </option>
 			<option value="Panel">Groups </option>
 			<option value="Location">Locations </option>
 			<option value="All">Everything </option>
 		</select>
-		in the table: </p>
+		in the table</p>
 		<p>
-	        Add/remove column <select id="" name="" onchange="fnAddRemFeature(this.value);">
-	                   		<option value="-1">&nbsp;</option>
-	               			 	<#list screen.featureList as fl>
-                        	<option value="${fl.id}">${fl.name}</option>
-                			</#list>
-	       			   </select> To the table:
+	    Add/remove column <select id="" name="" onchange="fnAddRemFeature(this.value);">
+       		<option value="-1">&nbsp;</option>
+   			<#list screen.featureList as fl>
+        		<option value="${fl.id}">${fl.name}</option>
+			</#list>
+	   </select> to/from the table
 		</p>
 	</div>
 	
 	<div id="togglesdiv">
 		Show date-time info with values: <input type="checkbox" id="datetimetoggle" name="datetimetoggle" value="datetime" onclick="fnReloadTable()" />
-	&nbsp; &nbsp;<br />
-	Limit valuedisplay to the most recent one: <input type="checkbox" id="limitvaltoggle" name="limitvaltoggle" value="limitval" onclick="fnReloadTable()" />
+		&nbsp; &nbsp;<br />
+		Limit value display to the most recent one: <input type="checkbox" id="limitvaltoggle" name="limitvaltoggle" value="limitval" onclick="fnReloadTable()" />
 	</div>
 	</fieldset>
 </div>
 
 <div id='buttons_part' style='margin:10px; padding:10px; float:left'>
-	<fieldset><legend><strong>Save as batch: </strong></legend>
+	<fieldset><legend><strong>Save as batch</strong></legend>
 	<input type="hidden" name="saveselection" id="saveselection" />
-	Add visible selection to the existing Batch: <select id="batch" name="batch">
-										<#list screen.batchList as batch>
-											<option value="${batch.id}">${batch.name}</option>
-										</#list>
-									</select>
-	<br />Or, save selection as a new Batch with the name: <input type="text" name="newbatchname" id="newbatchname" class="textbox" />
+	Add visible selection to existing batch: <select id="batch" name="batch">
+	<#list screen.batchList as batch>
+		<option value="${batch.id}">${batch.name}</option>
+	</#list>
+	</select>
+	<br />Or, save selection as a new batch with name: <input type="text" name="newbatchname" id="newbatchname" class="textbox" />
 	<br /><input type='submit' class='addbutton' value='Save' onclick="var targetNames = fnMakeGroup(); saveselection.value = targetNames; __action.value='saveBatch'" />
 	</fieldset>
 </div>
