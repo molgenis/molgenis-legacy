@@ -15,6 +15,7 @@ import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
+import convertors.oldadb.LoadAnimalDB;
 import convertors.ulidb.ConvertUliDbToPheno;
 
 public class FillDatabasePlugin extends PluginModel<Entity>

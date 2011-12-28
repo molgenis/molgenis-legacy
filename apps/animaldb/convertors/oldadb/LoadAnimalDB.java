@@ -1,4 +1,4 @@
-package plugins.fillanimaldb;
+package convertors.oldadb;
 
 import java.io.File;
 import java.io.IOException;
