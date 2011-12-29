@@ -18,7 +18,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvFileWriter;
+import org.molgenis.util.TupleWriter;
 
 import java.text.ParseException;
 
@@ -86,7 +86,8 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 		return super.remove(entities);
 	}
 
-	public int add(CsvReader reader, CsvFileWriter writer) throws DatabaseException
+	@Override
+	public int add(CsvReader reader, TupleWriter writer) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
@@ -133,7 +134,8 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 		return result;
 	}
 
-	public void find(CsvFileWriter writer, QueryRule ...rules) throws DatabaseException
+	@Override
+	public void find(TupleWriter writer, QueryRule ...rules) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
@@ -176,7 +178,8 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 		return super.update(reader);
 	}
 
-	public void find(CsvFileWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
+	@Override
+	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
