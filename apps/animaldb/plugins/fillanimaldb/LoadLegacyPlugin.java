@@ -14,6 +14,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import convertors.oldadb.LoadAnimalDB;
+import convertors.rhutdb.ConvertRhutDbToPheno;
 import convertors.ulidb.ConvertUliDbToPheno;
 
 public class LoadLegacyPlugin extends PluginModel<Entity>
@@ -58,8 +59,8 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 					LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
 					myLoadAnimalDB.convertFromZip(filename);
 				} else if (legacy.equals("rhutdb")) {
-					// TODO
-					throw new Exception("This convertor is still under construction");
+					ConvertRhutDbToPheno myLoadRhutDb = new ConvertRhutDbToPheno(db, this.getLogin());
+					myLoadRhutDb.convertFromZip(filename);
 				}
 			}
 				
