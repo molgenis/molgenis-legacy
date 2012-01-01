@@ -13,7 +13,6 @@ import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.ProteinDomain;
 import org.molgenis.mutation.vo.ProteinDomainSummaryVO;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 
 public class SearchService implements Serializable
