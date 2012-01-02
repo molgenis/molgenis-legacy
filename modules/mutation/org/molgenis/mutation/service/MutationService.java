@@ -274,11 +274,12 @@ public class MutationService implements Serializable
 				}
 				if (StringUtils.length(criteria.getPhenotypeName()) > 2)
 				{
-					Join<Patient, ObservedValue> observedValues = patient1.join("targetObservedValueCollection", JoinType.LEFT);
-					mutationCriteria.add(cb.equal(observedValues.get("value"), criteria.getPhenotypeName()));
-
+					Join<Patient, ObservedValue> observedValues               = patient1.join("targetObservedValueCollection", JoinType.LEFT);
 					Join<ObservedValue, ObservableFeature> observableFeatures = observedValues.join("feature", JoinType.LEFT);
-					mutationCriteria.add(cb.equal(observableFeatures.get("name"), "Phenotype"));
+					
+					mutationCriteria.add(cb.or(
+							cb.and(cb.equal(observableFeatures.get("name"), "Phenotype"), cb.equal(observedValues.get("value"), criteria.getPhenotypeName())),
+							cb.and(cb.equal(observableFeatures.get("name"), criteria.getPhenotypeName()), cb.equal(observedValues.get("value"), "yes"))));
 				}
 				
 				if (StringUtils.length(criteria.getPublication()) > 2)
