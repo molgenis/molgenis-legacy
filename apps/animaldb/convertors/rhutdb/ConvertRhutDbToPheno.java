@@ -72,7 +72,7 @@ public class ConvertRhutDbToPheno
 		userName = login.getUserName();
 		
 		// If needed, make investigation
-		invName = "RoleofHutLegacyImport";
+		invName = "RoelofHutLegacyImport";
 		if (ct.getInvestigationId(invName) == -1) {
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);
@@ -107,33 +107,41 @@ public class ConvertRhutDbToPheno
 					new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
 		}
 		// Run convertor steps
+		populateAnimal(path + "IDtable.csv");
+		populateProtocolApplication();
+		populateValue(path + "IDtable.csv");
 		
 		writeToDb();
 	}
 	
 	public void writeToDb() throws Exception {
+		
 		db.add(protocolAppsToAddList);
-		logger.debug("Protocols successfully added");
+		logger.debug("Protocol applications successfully added");
 		
 		db.add(animalsToAddList);
-		// Make entry in name prefix table with highest animal nr. (Tiernummer)
+		logger.debug("Animals successfully added");
+		
+		// Make entry in name prefix table with highest animal nr.
 		NamePrefix namePrefix = new NamePrefix();
 		namePrefix.setUserId_Name(userName);
 		namePrefix.setTargetType("animal");
 		namePrefix.setPrefix("");
 		namePrefix.setHighestNumber(highestNr);
 		db.add(namePrefix);
-		logger.debug("Animals successfully added");
 		
 		db.add(panelsToAddList);
+		logger.debug("Panels successfully added");
+		
 		// Make entries in name prefix table with highest parentgroup nrs.
+		List<NamePrefix> prefixList = new ArrayList<NamePrefix>();
 		for (String lineName : parentgroupNrMap.keySet()) {
 			namePrefix = new NamePrefix();
 			namePrefix.setUserId_Name(userName);
 			namePrefix.setTargetType("parentgroup");
 			namePrefix.setPrefix("PG_" + lineName + "_");
 			namePrefix.setHighestNumber(parentgroupNrMap.get(lineName));
-			db.add(namePrefix);
+			prefixList.add(namePrefix);
 		}
 		// Make entries in name prefix table with highest litter nrs.
 		for (String lineName : litterNrMap.keySet()) {
@@ -142,9 +150,10 @@ public class ConvertRhutDbToPheno
 			namePrefix.setTargetType("litter");
 			namePrefix.setPrefix("LT_" + lineName + "_");
 			namePrefix.setHighestNumber(litterNrMap.get(lineName));
-			db.add(namePrefix);
+			prefixList.add(namePrefix);
 		}
-		logger.debug("Panels successfully added");
+		db.add(prefixList);
+		logger.debug("Prefixes successfully added");
 		
 		for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += 1000) {
 			int valueEnd = Math.min(valuesToAddList.size(), valueStart + 1000);
@@ -162,93 +171,71 @@ public class ConvertRhutDbToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-//				// Tiernummer -> make new animal
-//				String animalName = tuple.getString("Tiernummer");
-//				// Store highest animal nr. for later storage in name prefix table
-//				try {
-//					int animalNr = Integer.parseInt(animalName);
-//					if (animalNr > highestNr) {
-//						highestNr = animalNr;
-//					}
-//				} catch (NumberFormatException e) {
-//					// Not a parseable animal nr.: ignore
-//				}
-//				// Deal with empty names (of which there are a few in Uli's DB
-//				if (animalName == null) {
-//					animalName = "OldUliId_" + tuple.getString("laufende Nr");
-//				} else {
-//					// Prepend 0's to name
-//					animalName = ct.prependZeros(animalName, 6);
-//				}
-//				// Make sure we have a unique name
-//				while (animalNames.contains(animalName)) {
-//					animalName = ("Dup_" + animalName);
-//				}
-//				animalNames.add(animalName);
-//				Individual newAnimal = ct.createIndividual(invName, animalName, userName);
-//				animalsToAddList.add(newAnimal);
+				
+				//ID -> animal name
+				String animalName = tuple.getString("ID");
+				animalNames.add(animalName);
+				Individual newAnimal = ct.createIndividual(invName, animalName, userName);
+				animalsToAddList.add(newAnimal);
 			}
 		});
 	}
 	
 	public void populateProtocolApplication() throws Exception
 	{
-//		makeProtocolApplication("SetOldUliDbId");
-//		makeProtocolApplication("SetSpecies");
-//		makeProtocolApplication("SetAnimalType");
-//		makeProtocolApplication("SetActive");
-//		makeProtocolApplication("SetDateOfBirth");
-//		makeProtocolApplication("SetDeathDate");
-//		makeProtocolApplication("SetSource");
-//		//makeProtocolApplication("SetOldUliDbExperimentator");
-//		//makeProtocolApplication("SetOldUliDbTierschutzrecht");
-//		makeProtocolApplication("SetSex");
-//		makeProtocolApplication("SetColor");
-//		makeProtocolApplication("SetEarmark");
-//		makeProtocolApplication("SetGenotype", "SetGenotype1");
-//		makeProtocolApplication("SetGenotype", "SetGenotype2");
-//		makeProtocolApplication("SetBackground");
-//		makeProtocolApplication("SetOldUliDbMotherInfo");
-//		makeProtocolApplication("SetOldUliDbFatherInfo");
-//		makeProtocolApplication("SetTypeOfGroup");
-//		makeProtocolApplication("SetMother");
-//		makeProtocolApplication("SetFather");
-//		//makeProtocolApplication("SetLine");
-//		makeProtocolApplication("SetParentgroup");
-//		makeProtocolApplication("SetLitter");
-//		makeProtocolApplication("SetLine");
-//		makeProtocolApplication("SetWeanDate");
-//		makeProtocolApplication("SetGenotypeDate");
+		makeProtocolApplication("SetSpecies");
+		makeProtocolApplication("SetAnimalType");
 	}
 	
 	public void populateValue(String filename) throws Exception
 	{
-		//final String speciesName = "House mouse";
-		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-//				Date now = calendar.getTime();
-//				
-//				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
-//				
-//				// laufende Nr -> OldUliDbId
-//				String oldUliDbId = tuple.getString("laufende Nr");
-//				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbId"), now, 
-//						null, "OldUliDbId", newAnimalName, oldUliDbId, null));
-//				oldUliDbIdMap.put(oldUliDbId, newAnimalName);
-//				
-//				// Tierkategorie -> Species (always Mus musculus)
-//				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, 
-//						null, "Species", newAnimalName, null, speciesName));
-//				
-//				// AnimalType (always "B. Transgeen dier")
-//				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, 
-//						null, "AnimalType", newAnimalName, "B. Transgeen dier", null));
-//				
+				Date now = calendar.getTime();
+				
+				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
+				
+				//Species (always Mus musculus)
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, 
+						null, "Species", newAnimalName, null, "House mouse"));
+				
+				// AnimalType (always "B. Transgeen dier")
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, 
+						null, "AnimalType", newAnimalName, "B. Transgeen dier", null));
+				
+				//litter nr -> OldRhutDbLitterId
+				
+				//Sex -> Sex (0 = female, 1 = male)
+				
+				//Genotype -> Background
+				
+				//Genotyped as -> Genotype (GeneName + GeneState)
+				
+				//arrival date -> Active start time + DateOfBirth
+				
+				//rem date -> Active end time + DeathDate
+				
+				//rem cause -> Removal
+				
+				//remarks -> Source
+				
+				//Ear Code -> Earmark
+				
+				//Transp ID -> TransponderId
+				
+				//sample date -> OldRhutDbSampleDate
+				
+				//sample nr -> OldRhutDbSampleNr
+				
+				//Fenotyped as -> SKIP (not filled in)
+				//To Be Removed -> SKIP
+				//Cage nr -> SKIP (not filled in)
+
+				
 //				// Eingangsdatum, Abgangsdatum and Status ->
 //				// DateOfBirth, DeathDate and Active + start and end time
 //				String startDateString = tuple.getString("Eingangsdatum");
@@ -301,15 +288,6 @@ public class ConvertRhutDbToPheno
 //					}
 //				}
 //				
-//				//  not needed, skip import (update ate @ 2011-09-20)
-//				// K�rzel -> OldUliDbKuerzel
-//				/*
-//				 * String kuerzel = tuple.getString("K�rzel");
-//				 * if (kuerzel != null) {
-//				 * 	valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbKuerzel"), 
-//				 * 		now, null, "OldUliDbKuerzel", newAnimalName, kuerzel, null));
-//				 * }
-//				*/
 //				
 //				// Bemerkungen -> Remark
 //				String remark = tuple.getString("Bemerkungen");
@@ -318,32 +296,6 @@ public class ConvertRhutDbToPheno
 //							now, null, "Remark", newAnimalName, remark, null));
 //				}
 //				
-//				//  not needed, skip import (update ate @ 2011-09-20)
-//				/*// Aktenzeichen -> OldUliDbAktenzeichen
-//				String aktenzeichen = tuple.getString("Aktenzeichen");
-//				if (aktenzeichen != null) {
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbAktenzeichen"), 
-//							now, null, "OldUliDbAktenzeichen", newAnimalName, aktenzeichen, null));
-//				}*/
-//				
-//				//  not needed, skip import (update ate @ 2011-09-20)
-//				/*// Experimentator -> OldUliDbExperimentator
-//				String experimentator = tuple.getString("Experimentator");
-//				if (experimentator != null) {
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbExperimentator"), 
-//							now, null, "OldUliDbExperimentator", newAnimalName, experimentator, null));
-//				}*/
-//				
-//				//  not needed, skip import (update ate @ 2011-09-20)
-//				// Tierschutzrecht -> OldUliDbTierschutzrecht
-//				// TODO: actually this corresponds to Goal, but in AnimalDB that is linked
-//				// to a DEC subproject (Experiment) instead of to the individual animals.
-//				// For now, store in OldUliDbTierschutzrecht.
-//				/*String tierschutzrecht = tuple.getString("Tierschutzrecht");
-//				if (tierschutzrecht != null) {;
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbTierschutzrecht"), 
-//							now, null, "OldUliDbTierschutzrecht", newAnimalName, tierschutzrecht, null));
-//				}*/
 //				
 //				// BeschrGeschlecht -> Sex
 //				String sex = tuple.getString("BeschrGeschlecht");
