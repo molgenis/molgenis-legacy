@@ -282,7 +282,7 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=decapppdf", "/home/test/app.pdf");
 		selenium.type("id=decapprovalpdf", "/home/test/app2.pdf");
 		int thisYear = calendar.get(Calendar.YEAR);
-		selenium.type("id=startdate", thisYear + "-01-31");
+		selenium.type("id=startdate", thisYear + "-01-01");
 		selenium.type("id=enddate", thisYear + "-12-31");
 		selenium.click("id=addproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -299,8 +299,8 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=expnumber", "A");
 		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		//int thisMonth = calendar.get(Calendar.MONTH);
-		selenium.type("id=startdate", thisYear + "-02-01");
-		selenium.type("id=enddate", thisYear + "-03-01");		
+		selenium.type("id=startdate", thisYear + "-01-01");
+		selenium.type("id=enddate", thisYear + "-02-01");		
 		selenium.click("id=addsubproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC subproject successfully added"));
@@ -315,7 +315,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=addanimalsmatrix_selected_2");
 		selenium.click("id=addanimalsmatrix_selected_3");
 		selenium.click("id=addanimalsmatrix_selected_4");
-		selenium.type("id=subprojectadditiondate", thisYear + "-02-20");
+		selenium.type("id=subprojectadditiondate", thisYear + "-01-01");
 		selenium.click("id=doadd");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Animal(s) successfully added"));
