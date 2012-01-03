@@ -89,6 +89,7 @@ public class MatrixViewer extends HtmlWidget
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
 	public String DOWNLOADALLCSV = getName() + "_downloadAllCsv";
 	public String DOWNLOADALLEXCEL = getName() + "_downloadAllExcel";
+	public String DOWNLOADALLSPSS = getName() + "_downloadAllSPSS";	
 	public String DOWNLOADVISCSV = getName() + "_downloadVisibleCsv";
 	public String DOWNLOADVISSPSS = getName() + "_downloadVisibleSPSS"; 
 	public String DOWNLOADVISEXCEL = getName() + "_downloadVisibleExcel";
@@ -272,7 +273,10 @@ public class MatrixViewer extends HtmlWidget
 			downloadVisExcel.setIcon("generated-res/img/download.png");
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 					+ downloadVisExcel.render() + "</div>";
-			
+			ActionInput downloadAllSPSS = new ActionInput(DOWNLOADALLSPSS, "", "All to SPSS");
+			downloadAllSPSS.setIcon("generated-res/img/download.png");
+			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+					+ downloadAllSPSS.render() + "</div>";
 			
 			ActionInput downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "", "Visible to SPSS");
 			downloadVisSPSS.setIcon("generated-res/img/download.png");
@@ -757,7 +761,6 @@ public class MatrixViewer extends HtmlWidget
 		downloadLink = file.getName();
 	}
 
-	
 	public void downloadAllExcel(Database db, Tuple t) throws MatrixException, IOException, RowsExceededException, WriteException
 	{
 		// remember old limits and offset
@@ -817,7 +820,7 @@ public class MatrixViewer extends HtmlWidget
 			{
 				Label l = new Label(0, rowCnt+1, targets.get(rowCnt).getName(), cellFormat);
 				s.addCell(l);
-				//writer.writeValue(targets.get(rowCnt).getName());
+
 				for (int colId = 0; colId < row.length; colId++)
 				{
 					List<? extends ObservedValue> valueList = row[colId];
@@ -825,7 +828,7 @@ public class MatrixViewer extends HtmlWidget
 					Label m = new Label(colId+1, rowCnt+1, this.valueListToString(valueList), cellFormat);
 					s.addCell(m);
 				}
-				//writer.writeEndOfLine();
+
 				rowCnt++;
 			}
 		}
@@ -840,8 +843,6 @@ public class MatrixViewer extends HtmlWidget
 
 		downloadLink = excelFile.getName();
 	}
-	
-	
 	
 	public void downloadVisibleExcel(Database db, Tuple t) throws Exception
 	{
@@ -945,23 +946,6 @@ public class MatrixViewer extends HtmlWidget
 		downloadLink = excelFile.getName();
 	}
 
-	private String listObsValToString(List<ObservedValue> values) throws Exception
-	{
-		String result = "";
-		int pass = 0;
-		for (ObservedValue s : values)
-		{
-			if (pass > 0) {
-				result += "|";
-			}
-			result += s.getValue();
-			pass++;
-		}
-		return result;
-	}
-
-	 
-	 
 	public void downloadVisibleSPSS(Database db, Tuple t) throws Exception
 	{
 		if (this.matrix instanceof DatabaseMatrix) {
@@ -1026,8 +1010,92 @@ public class MatrixViewer extends HtmlWidget
 		downloadLink = spssFile.getName();
 	}
 		
+	public void downloadAllSPSS(Database db, Tuple t) throws MatrixException, IOException
+	{
+		// remember old limits and offset
+		int rowOffset = matrix.getRowOffset();
+		int rowLimit = matrix.getRowLimit();
+		int colOffset = matrix.getColOffset();
+		int colLimit = matrix.getColLimit();
+		
+		// max for batching
+		int maxRow = matrix.getRowCount();
+//
+		File spssFile = new File(System.getProperty("java.io.tmpdir")
+				+ File.separator + "download.sav");
+		
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(spssFile));
+		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
+		spssWriter.setCalculateNumberOfCases(false);
+		spssWriter.addDictionarySection(-1);
+//
+		// batch size = 100
+		matrix.setRowLimit(100);
+		matrix.setColLimit(matrix.getColCount());
+
+		// write headers
+		List<String> headers = new ArrayList<String>();
+		headers.add("Name");
+		for (ObservationElement colHeader : (List<ObservationElement>)matrix.getColHeaders())
+		{
+			headers.add(colHeader.getName());
+		}
+		for(String colName : headers){
+			spssWriter.addStringVar(colName, 10, colName);
+		}
+		
+		spssWriter.addDataSection();
+		
+		// iterate through all available rows
+		for (int offset = 0; offset < maxRow; offset += 100)
+		{
+			// retrieve a batch
+			matrix.setRowOffset(offset);
+			// retrieve names of targets in batch
+			List<ObservationElement> targets = (List<ObservationElement>)matrix.getRowHeaders();
+			// write lines to file
+			int rowCnt = 0;
+			for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
+			{
+				spssWriter.addData(targets.get(rowCnt).getName());
+				for (int colId = 0; colId < row.length; colId++)
+				{
+					List<? extends ObservedValue> valueList = row[colId];
+					
+					spssWriter.addData(this.valueListToString(valueList));
+				}
+				
+				rowCnt++;
+			}
+		}
+		spssWriter.addFinishSection();
+		out.close();
+		downloadLink = spssFile.getName();
+
+		// restore limit and offset
+		matrix.setRowOffset(rowOffset);
+		matrix.setRowLimit(rowLimit);
+		matrix.setColOffset(colOffset);
+		matrix.setColLimit(colLimit);
+
+		
+	} 
 	 
-	 
+	private String listObsValToString(List<ObservedValue> values) throws Exception
+	{
+		String result = "";
+		int pass = 0;
+		for (ObservedValue s : values)
+		{
+			if (pass > 0) {
+				result += "|";
+			}
+			result += s.getValue();
+			pass++;
+		}
+		return result;
+	}
+	
 	public void reloadMatrix(Database db, Tuple t) throws MatrixException
 	{
 		matrix.reload();
