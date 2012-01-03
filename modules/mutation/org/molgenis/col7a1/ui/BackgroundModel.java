@@ -57,7 +57,10 @@ public class BackgroundModel extends EasyPluginModel
 		this.numPatientsUnpub = numPatientsUnpub;
 	}
 	public Integer getPhenotypeCount(String phenotypeName) {
-		return this.phenotypeCountHash.get(phenotypeName);
+		if (this.phenotypeCountHash.containsKey(phenotypeName))
+			return this.phenotypeCountHash.get(phenotypeName);
+		else
+			return 0;
 	}
 	public void setPhenotypeCountHash(HashMap<String, Integer> phenotypeCountHash) {
 		this.phenotypeCountHash = phenotypeCountHash;

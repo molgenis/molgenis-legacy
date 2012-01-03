@@ -507,7 +507,7 @@ public class PatientService implements Serializable
 	{
 		if (this.db instanceof JDBCDatabase)
 		{
-			List<Tuple> counts = ((JDBCDatabase) this.db).sql("SELECT p.name, COUNT(i.id) FROM MutationPhenotype p LEFT OUTER JOIN Patient i ON (p.id = i.phenotype) GROUP BY p.name");
+			List<Tuple> counts = ((JDBCDatabase) this.db).sql("SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value");
 			HashMap<String, Integer> result = new HashMap<String, Integer>();
 		
 			for (Tuple entry : counts)
@@ -517,7 +517,7 @@ public class PatientService implements Serializable
 		}
 		else if (this.db instanceof JpaDatabase)
 		{
-			String sql                      = "SELECT p.name, COUNT(i.id) FROM MutationPhenotype p LEFT OUTER JOIN Patient i ON (p.id = i.phenotype) GROUP BY p.name";
+			String sql                      = "SELECT v.value, COUNT(v.value) FROM ObservedValue v JOIN ObservationElement e ON (e.id = v.Feature) WHERE e.name = 'Phenotype' GROUP BY value";
 			List<Object[]> counts           = this.db.getEntityManager().createNativeQuery(sql).getResultList();
 
 			HashMap<String, Integer> result = new HashMap<String, Integer>();
