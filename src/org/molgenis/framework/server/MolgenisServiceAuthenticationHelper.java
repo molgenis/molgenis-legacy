@@ -151,19 +151,19 @@ public class MolgenisServiceAuthenticationHelper
 		}
 		
 		// regular request: check if user is authenticated
-		if(!req.getDatabase().getSecurity().isAuthenticated())
-		{
-			out.println("<html><body>");
-			out.println("<form name=\"input\" action=\"\" method=\"post\">");
-			out.println("<table><tr><td colspan=\"2\">Please log in:</td></tr>");
-			out.println("<tr><td>Username:</td><td><input type=\"text\" name=\"" + LOGIN_USER_NAME + "\"></td></tr>");
-			out.println("<tr><td>Password:</td><td><input type=\"text\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>");
-			out.println("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Login\"></td></tr></table>");
-			out.println("</form>");
-			out.println("</body></html>");
-			out.close();
-			return false;
-		}
+//		if(!req.getDatabase().getSecurity().isAuthenticated())
+//		{
+//			out.println("<html><body>");
+//			out.println("<form name=\"input\" action=\"\" method=\"post\">");
+//			out.println("<table><tr><td colspan=\"2\">Please log in:</td></tr>");
+//			out.println("<tr><td>Username:</td><td><input type=\"text\" name=\"" + LOGIN_USER_NAME + "\"></td></tr>");
+//			out.println("<tr><td>Password:</td><td><input type=\"text\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>");
+//			out.println("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Login\"></td></tr></table>");
+//			out.println("</form>");
+//			out.println("</body></html>");
+//			out.close();
+//			return false;
+//		}
 		
 		return true;
 	}
