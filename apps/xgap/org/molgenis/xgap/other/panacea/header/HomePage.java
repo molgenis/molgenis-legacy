@@ -57,15 +57,67 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 
 					// allow to see the QTL finder
 					"app.ui.QtlFinderPublicPlugin",
-
-					// allow to find genes and probes
-					"org.molgenis.xgap.Gene", "org.molgenis.xgap.Probe",
-
-					// allow to see marker info and plotting
+					
+					// enable the Browse Data menu (minus Inspector and matrix removal)
+					"app.ui.InvestigationsFormController",
+					"app.ui.DatasFormController",
+					"app.ui.OverviewPlugin",
+					"app.ui.ManagerPlugin",
+					
+					// needed to query elements for investigation overview
+					"org.molgenis.pheno.ObservationElement",
+					
+					// needed to view the generated annotation menus
+					"app.ui.IndividualsFormController",
+					"org.molgenis.pheno.Individual",
+					
+					"app.ui.PanelsFormController",
+					"org.molgenis.pheno.Panel",
+					
+					"app.ui.ChromosomesFormController",
+					"org.molgenis.xgap.Chromosome",
+					
+					"app.ui.MarkersFormController",
 					"org.molgenis.xgap.Marker",
+					
+					"app.ui.GenesFormController",
+					"org.molgenis.xgap.Gene",
+					
+					"app.ui.TranscriptsFormController",
+					"org.molgenis.xgap.Transcript",
+					
+					"app.ui.MeasurementsFormController",
+					"org.molgenis.pheno.Measurement",
+					
+					"app.ui.EnvironmentalFactorsFormController",
+					"org.molgenis.xgap.EnvironmentalFactor",
+					
+					"app.ui.MassPeaksFormController",
+					"org.molgenis.xgap.MassPeak",
+					
+					"app.ui.MetabolitesFormController",
+					"org.molgenis.xgap.Metabolite",
+					
+					"app.ui.ProbesFormController",
+					"org.molgenis.xgap.Probe",
+					
+					"app.ui.ProbeSetsFormController",
+					"org.molgenis.xgap.ProbeSet",
+					
+					"app.ui.SNPsFormController",
+					"org.molgenis.xgap.SNP",
+					
+					"app.ui.PolymorphismsFormController",
+					"org.molgenis.xgap.Polymorphism",
+					
+					"app.ui.SamplesFormController",
+					"org.molgenis.xgap.Sample",
+					
+					"app.ui.SpotsFormController",
+					"org.molgenis.xgap.Spot",
 
-					// allow reading datasets
-					"org.molgenis.data.Data", "org.molgenis.data.BinaryDataMatrix", "org.molgenis.data.CSVDataMatrix",
+					// allow reading datasets and investigations
+					"org.molgenis.organization.Investigation", "org.molgenis.data.Data", "org.molgenis.data.BinaryDataMatrix", "org.molgenis.data.CSVDataMatrix",
 					"org.molgenis.data.DecimalDataElement", "org.molgenis.data.TextDataElement",
 
 					// allow reading dataset backend files
