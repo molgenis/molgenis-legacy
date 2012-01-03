@@ -55,12 +55,15 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 				if (legacy.equals("ulidb")) {
 					ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
 					myLoadUliDb.convertFromZip(filename);
+					this.setSuccess("Legacy import from Uli Eisel DB successful");
 				} else if (legacy.equals("oldadb")) {
 					LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
 					myLoadAnimalDB.convertFromZip(filename);
+					this.setSuccess("Legacy import from old AnimalDB successful");
 				} else if (legacy.equals("rhutdb")) {
 					ConvertRhutDbToPheno myLoadRhutDb = new ConvertRhutDbToPheno(db, this.getLogin());
 					myLoadRhutDb.convertFromZip(filename);
+					this.setSuccess("Legacy import from Roelof Hut DB successful");
 				}
 			}
 				

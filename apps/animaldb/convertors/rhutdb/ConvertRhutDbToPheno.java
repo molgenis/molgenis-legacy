@@ -107,9 +107,8 @@ public class ConvertRhutDbToPheno
 					new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
 		}
 		// Run convertor steps
-		populateAnimal(path + "IDtable.csv");
 		populateProtocolApplication();
-		populateValue(path + "IDtable.csv");
+		populateAnimal(path + "IDtable.csv");
 		
 		writeToDb();
 	}
@@ -165,18 +164,165 @@ public class ConvertRhutDbToPheno
 	
 	public void populateAnimal(String filename) throws Exception
 	{
+		final Date now = new Date();
+		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
 		reader.parse(new CsvReaderListener()
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				
-				//ID -> animal name
+				// ID -> animal name
 				String animalName = tuple.getString("ID");
 				animalNames.add(animalName);
 				Individual newAnimal = ct.createIndividual(invName, animalName, userName);
 				animalsToAddList.add(newAnimal);
+				
+				// Species (always Mus musculus)
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, 
+						null, "Species", animalName, null, "House mouse"));
+				
+				// AnimalType (always "B. Transgeen dier")
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, 
+						null, "AnimalType", animalName, "B. Transgeen dier", null));
+				
+				// litter nr -> OldRhutDbLitterId
+				String litterId = tuple.getString("litter nr");
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbLitterId"), now, 
+						null, "OldRhutDbLitterId", animalName, litterId, null));
+				
+				// Sex -> Sex (0 = female, 1 = male)
+				Integer sex = tuple.getInt("Sex");
+				if (sex != null) {
+					String sexName;
+					if (sex == 0) {
+						sexName = "Female";
+					} else {
+						sexName = "Male";
+					}
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSex"), 
+							now, null, "Sex", animalName, null, sexName));
+				}
+				
+				// Genotype -> Background (default C57BL/6j and otherwise CBA/CaJ) or Genotype (GeneName + GeneState)
+				String background = tuple.getString("Genotype");
+				if (background != null) {
+					String backgroundName;
+					if (background.equals("CBA/CaJ")) {
+						backgroundName = "CBA/CaJ";
+					} else {
+						backgroundName = "C57BL/6j";
+					}
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetBackground"), 
+							now, null, "Background", animalName, null, backgroundName));
+				}
+				
+				// Genotyped as -> Genotype (GeneName + GeneState)
+				String genotype = tuple.getString("Genotyped as");
+				// if empty, try Genotype column (stored as background)
+				if (genotype == null && background != null && (background.contains("Cry") || background.contains("Per"))) {
+					genotype = background;
+				}
+				if (genotype != null) {
+					String geneState;
+					String geneName;
+					String geneNameBase = null;
+					if (genotype.contains("Cry")) geneNameBase = "Cry";
+					if (genotype.contains("Per")) geneNameBase = "Per";
+					int index1 = genotype.indexOf("1");
+					if (index1 != -1) {
+						geneName = geneNameBase + "1";
+						geneState = genotype.substring(index1 + 1, index1 + 4);
+						if (geneState.equals("-/+")) geneState = "+/-";
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
+								now, null, "GeneName", animalName, geneName, null));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
+								now, null, "GeneState", animalName, geneState, null));
+					}
+					int index2 = genotype.indexOf("2");
+					if (index2 != -1) {
+						geneName = geneNameBase + "2";
+						geneState = genotype.substring(index2 + 1, index2 + 4);
+						if (geneState.equals("-/+")) geneState = "+/-";
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
+								now, null, "GeneName", animalName, geneName, null));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
+								now, null, "GeneState", animalName, geneState, null));
+					}
+				}
+				
+				// arrival date and rem date -> Active start and end time
+				String state = "Alive";
+				String startDateString = tuple.getString("arrival date");
+				Date startDate = null;
+				Date remDate = null;
+				if (startDateString != null) {
+					startDate = dbFormat.parse(startDateString);
+					startDateString = dateOnlyFormat.format(startDate);
+				}
+				String remDateString = tuple.getString("rem date");
+				if (remDateString != null) {
+					state = "Dead";
+					remDate = dbFormat.parse(remDateString);
+					remDateString = dateOnlyFormat.format(remDate);
+				}
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
+						startDate, remDate, "Active", animalName, state, null));
+				
+				//rem cause -> Removal
+				String removal = tuple.getString("rem cause");
+				if (removal != null && remDate != null) {
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemoval"), 
+							remDate, null, "Removal", animalName, removal, null));
+				}
+				
+				// remarks -> Source
+				//Erasmus : ErasmusMC
+				//Jaap : Kweek moleculaire neurobiologie (?)
+				//Arjen : Kweek moleculaire neurobiologie (?)
+				//(h/H)arlan : Harlan
+				//Jackson/Charles River) : JacksonCharlesRiver
+				// TODO: sometimes a DoB is mentioned; parse and store?
+				String source = tuple.getString("remarks");
+				if (source != null) {
+					String sourceName = null;
+					if (source.contains("Erasmus")) sourceName = "ErasmusMC";
+					if (source.contains("Jaap")) sourceName = "Kweek moleculaire neurobiologie";
+					if (source.contains("Arjen")) sourceName = "Kweek moleculaire neurobiologie";
+					if (source.contains("arlan")) sourceName = "Harlan";
+					if (source.contains("Jackson")) sourceName = "JacksonCharlesRiver";
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, 
+							"Source", animalName, null, sourceName));
+				}
+						
+				// Ear Code -> Earmark (R -> 1 r, L -> 1 l, RL -> 1 r 1 l)
+				String earmark = tuple.getString("Ear Code");
+				if (earmark != null) {
+					if (earmark.equals("R")) earmark = "1 r";
+					if (earmark.equals("L")) earmark = "1 l";
+					if (earmark.equals("RL")) earmark = "1 r 1 l";
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetEarmark"), 
+							now, null, "Earmark", animalName, earmark, null));
+				}
+				
+				// sample date -> OldRhutDbSampleDate
+				String sampleDate = tuple.getString("sample date");
+				if (sampleDate != null) {
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbSampleDate"), 
+							now, null, "OldRhutDbSampleDate", animalName, sampleDate, null));
+				}
+				
+				//sample nr -> OldRhutDbSampleNr
+				String sampleNr = tuple.getString("sample nr");
+				if (sampleNr != null) {
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbSampleNr"), 
+							now, null, "OldRhutDbSampleNr", animalName, sampleNr, null));
+				}
+				
+				//Transp ID -> TransponderId -> SKIP (not filled in)
+				//Fenotyped as -> SKIP (not filled in)
+				//To Be Removed -> SKIP
+				//Cage nr -> SKIP (not filled in)
 			}
 		});
 	}
@@ -185,212 +331,16 @@ public class ConvertRhutDbToPheno
 	{
 		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetAnimalType");
-	}
-	
-	public void populateValue(String filename) throws Exception
-	{
-		File file = new File(filename);
-		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
-		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				Date now = calendar.getTime();
-				
-				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
-				
-				//Species (always Mus musculus)
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, 
-						null, "Species", newAnimalName, null, "House mouse"));
-				
-				// AnimalType (always "B. Transgeen dier")
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, 
-						null, "AnimalType", newAnimalName, "B. Transgeen dier", null));
-				
-				//litter nr -> OldRhutDbLitterId
-				
-				//Sex -> Sex (0 = female, 1 = male)
-				
-				//Genotype -> Background
-				
-				//Genotyped as -> Genotype (GeneName + GeneState)
-				
-				//arrival date -> Active start time + DateOfBirth
-				
-				//rem date -> Active end time + DeathDate
-				
-				//rem cause -> Removal
-				
-				//remarks -> Source
-				
-				//Ear Code -> Earmark
-				
-				//Transp ID -> TransponderId
-				
-				//sample date -> OldRhutDbSampleDate
-				
-				//sample nr -> OldRhutDbSampleNr
-				
-				//Fenotyped as -> SKIP (not filled in)
-				//To Be Removed -> SKIP
-				//Cage nr -> SKIP (not filled in)
-
-				
-//				// Eingangsdatum, Abgangsdatum and Status ->
-//				// DateOfBirth, DeathDate and Active + start and end time
-//				String startDateString = tuple.getString("Eingangsdatum");
-//				Date startDate = null;
-//				if (startDateString != null) {
-//					startDate = dbFormat.parse(startDateString);
-//					String dateOfBirth = dateOnlyFormat.format(startDate);
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
-//							startDate, null, "DateOfBirth", newAnimalName, dateOfBirth, null));
-//				}
-//				String endDateString = tuple.getString("Abgangsdatum");
-//				Date endDate = null;
-//				if (endDateString != null) {
-//					endDate = dbFormat.parse(endDateString);
-//					String dateOfDeath = dateOnlyFormat.format(endDate);
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), 
-//							startDate, null, "DeathDate", newAnimalName, dateOfDeath, null));
-//				}
-//				String state = tuple.getString("Status");
-//				if (state != null) {
-//					if (state.equals("lebt")) {
-//						state = "Alive";
-//					} else {
-//						state = "Dead";
-//					}
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
-//							startDate, endDate, "Active", newAnimalName, state, null));
-//				}
-//				
-//				// Herkunft -> Source
-//				Integer uliSourceId = tuple.getInt("Herkunft");
-//				if (uliSourceId != null) {
-//					String sourceName = null;
-//					if (uliSourceId == 51 || uliSourceId == 52) {
-//						// 51: Zucht- oder Liefereinrichtung innerhalb Deutschlands, die f�r ihre T�tigkeit eine Erlaubnis nach � 11 Abs. 1 Satz 1 Nr. 1 des Tierschutzgesetzes erhalten hat
-//						// 52: andere amtlich registrierte oder zugelassene Einrichtung innerhalb der EU
-//						// --> SourceType for both: Van EU-lid-staten
-//						//sourceName = "UliEisel51and52";
-//						sourceName = "Stuttgart (Uli Eisel)";
-//					}
-//					if (uliSourceId == 55) {
-//						// 55: Switserland
-//						// --> SourceType: Andere herkomst
-//						//sourceName = "UliEisel55";
-//						sourceName = "Stuttgart (Uli Eisel)";
-//					}
-//					if (uliSourceId != 0) {
-//						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, 
-//								"Source", newAnimalName, null, sourceName));
-//					}
-//				}
-//				
-//				
-//				// Bemerkungen -> Remark
-//				String remark = tuple.getString("Bemerkungen");
-//				if (remark != null) {
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), 
-//							now, null, "Remark", newAnimalName, remark, null));
-//				}
-//				
-//				
-//				// BeschrGeschlecht -> Sex
-//				String sex = tuple.getString("BeschrGeschlecht");
-//				if (sex != null) {
-//					String sexName;
-//					if (sex.equals("w")) {
-//						sexName = "Female";
-//					} else {
-//						sexName = "Male";
-//					}
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSex"), 
-//							now, null, "Sex", newAnimalName, null, sexName));
-//				}
-//				
-//				// Farbe -> Color
-//				String color = tuple.getString("Farbe");
-//				if (color != null) {
-//					String colorName = null;
-//					if (color.equals("beige")) colorName = "beige";
-//					if (color.equals("braun")) colorName = "brown";
-//					if (color.equals("gelb")) colorName = "yellow";
-//					if (color.equals("grau")) colorName = "gray";
-//					if (color.equals("grau-braun")) colorName = "gray-brown";
-//					if (color.equals("rotbraun")) colorName = "red-brown";
-//					if (color.equals("schwarz")) colorName = "black";
-//					if (color.equals("Schwarz-braun")) colorName = "black-brown";
-//					if (color.equals("schwarz-gray")) colorName = "black-gray";
-//					if (color.equals("weiss")) colorName = "white";
-//					if (color.equals("zimt")) colorName = "cinnamon";
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetColor"), 
-//							now, null, "Color", newAnimalName, colorName, null));
-//				}
-//				
-//				// Ohrmarkierung1 -> Earmark
-//				String earmark = tuple.getString("Ohrmarkierung1");
-//				if (earmark != null) {
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetEarmark"), 
-//							now, null, "Earmark", newAnimalName, earmark, null));
-//				}
-//				
-//				// Gen and tg -> Gene and GeneState (in one or more SetGenotype protocol applications)
-//				String geneName = tuple.getString("Gen");
-//				if (geneName == null) {
-//					geneName = "unknown";
-//				}
-//				String geneState = tuple.getString("tg"); // Allowed flavors: -/- +/- +/+ ntg wt unknown transgenic
-//				// First do some normalization
-//				if (geneState == null || geneState.equals("Unknown")) {
-//					geneState = "unknown";
-//				}
-//				if (geneState.equals("WT")) {
-//					geneState = "wt";
-//				}
-//				logger.debug(geneState);
-//				// Then check if geneState is singular or double
-//				if (!geneState.equals("+/+") && !geneState.equals("+/-") && !geneState.equals("-/-") && 
-//						!geneState.equals("ntg") && !geneState.equals("transgenic") && !geneState.equals("unknown") && 
-//						!geneState.equals("wt")) {
-//					// Double geneState, so split (first 3 chars and last 3 chars, ignoring all the spaces and slashes in between)
-//					String geneState1 = geneState.substring(0, 3);
-//					String geneState2 = geneState.substring(geneState.length() - 3, geneState.length());
-//					// Try to split geneName, on slash (if present)
-//					// TODO: find out from Uli if this is OK!
-//					String geneName1 = geneName;
-//					String geneName2 = geneName;
-//					String[] geneNames = geneName.split("/");
-//					if (geneNames.length == 2) {
-//						geneName1 = geneNames[0];
-//						geneName2 = geneNames[1];
-//					}
-//					// Add to values list
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
-//							now, null, "GeneName", newAnimalName, geneName1, null));
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
-//							now, null, "GeneState", newAnimalName, geneState1, null));
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
-//							now, null, "GeneName", newAnimalName, geneName2, null));
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
-//							now, null, "GeneState", newAnimalName, geneState2, null));
-//				} else {
-//					// geneName and geneState can remain as is
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
-//							now, null, "GeneName", newAnimalName, geneName, null));
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
-//							now, null, "GeneState", newAnimalName, geneState, null));
-//				}
-//				
-//				// gen Hintergrund-Tier -> Background
-//				String background = tuple.getString("gen Hintergrund-Tier");
-//				if (background != null) {
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetBackground"), 
-//							now, null, "Background", newAnimalName, null, background));
-//				}
-			}
-		});
+		makeProtocolApplication("SetOldRhutDbLitterId");
+		makeProtocolApplication("SetSex");
+		makeProtocolApplication("SetBackground");
+		makeProtocolApplication("SetGenotype", "SetGenotype1");
+		makeProtocolApplication("SetGenotype", "SetGenotype2");
+		makeProtocolApplication("SetActive");
+		makeProtocolApplication("SetSource");
+		makeProtocolApplication("SetEarmark");
+		makeProtocolApplication("SetOldRhutDbSampleDate");
+		makeProtocolApplication("SetOldRhutDbSampleNr");
 	}
 	
 	public void parseParentRelations(String filename) throws Exception
@@ -545,114 +495,7 @@ public class ConvertRhutDbToPheno
 			}
 		});
 	}
-	
-	public void populateLine(String filename) throws Exception
-	{
-		final int invid = ct.getInvestigationId(invName);
-		
-		File file = new File(filename);
-		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
-		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-//				Calendar calendar = Calendar.getInstance();
-//				Date now = calendar.getTime();
-//				
-//				String lineName = tuple.getString("Linie");
-//				// Make line panel (append 'line' if there is already a background with this name)
-//				if (ct.getObservationTargetId(lineName) != -1) {
-//					lineName += " (line)";
-//				}
-//				int lineId = ct.makePanel(invid, lineName, login.getUserId());
-//				// Label it as line using the (Set)TypeOfGroup protocol and feature
-//				int featureId = ct.getMeasurementId("TypeOfGroup");
-//				int protocolId = ct.getProtocolId("SetTypeOfGroup");
-//				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
-//						"Line", 0));
-//				// Set the source of the line (always 'Kweek moleculaire neurobiologie')
-//				featureId = ct.getMeasurementId("Source");
-//				protocolId = ct.getProtocolId("SetSource");
-//				int sourceId = ct.getObservationTargetId("Kweek moleculaire neurobiologie");
-//				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
-//						null, sourceId));
-			}
-		});
-	}
-	
-	public void populateGene(String filename) throws Exception
-	{
-		File file = new File(filename);
-		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
-		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-//				// Every gene becomes a code for the 'GeneName' feature
-//				String geneName = tuple.getString("Gen");
-//				ct.makeCode(geneName, geneName, "GeneName");
-			}
-		});
-	}
-	
-	public void populateBackground(String filename) throws Exception
-	{
-		final int featureId = ct.getMeasurementId("TypeOfGroup");
-		final int protocolId = ct.getProtocolId("SetTypeOfGroup");
-		final int invid = ct.getInvestigationId(invName);
-		
-		File file = new File(filename);
-		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
-		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-//				Calendar calendar = Calendar.getInstance();
-//				Date now = calendar.getTime();
-//				
-//				String bkgName = tuple.getString("Genetischer Hintergrund");
-//				if (bkgName != null && ct.getObservationTargetId(bkgName) == -1) {
-//					// Make background panel
-//					int bkgId = ct.makePanel(invid, bkgName, login.getUserId());
-//					// Label it as background using the (Set)TypeOfGroup protocol and feature
-//					db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, bkgId, 
-//							"Background", 0));
-//				}
-			}
-		});
-	}
-	
-	public List<Integer> SplitParentIdsString(String parentIdsString) {
-		List<Integer> idsList = new ArrayList<Integer>();
-		// Separators can be: comma + whitespace OR forward slash OR whitespace OR
-		// period + whitespace OR whitespace + plus sign + whitespace
-		String[] ids = parentIdsString.split("[(,\\s)/\\s(\\.\\s)(\\s\\+\\s)]");
-		for (String idString : ids) {
-			Integer id = 0;
-			try {
-				id = Integer.parseInt(idString);
-			} catch (Exception e) {
-				//
-			}
-			if (id != 0) {
-				// We now know it's a number
-				if (idString.length() == 8) {
-					// Two Tiernummers glued together
-					idsList.add(Integer.parseInt(idString.substring(0, 4)));
-					idsList.add(Integer.parseInt(idString.substring(4, 8)));
-				} else {
-					if (idString.length() == 10) {
-						// Two laufende Nrs glued together
-						idsList.add(Integer.parseInt(idString.substring(0, 5)));
-						idsList.add(Integer.parseInt(idString.substring(5, 10)));
-					} else {
-						idsList.add(id);
-					}
-				}
-			}
-		}
-		return idsList;
-	}
+
 	
 	public void makeProtocolApplication(String protocolName) throws ParseException, DatabaseException, IOException {
 		makeProtocolApplication(protocolName, protocolName);

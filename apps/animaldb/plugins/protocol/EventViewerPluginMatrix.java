@@ -82,6 +82,10 @@ public class EventViewerPluginMatrix extends GenericPlugin
 
 	private void createInfoTable(Database db, int animalId) throws DatabaseException, ParseException {
 		
+		// Remove old items from screen div first:
+		if (animalInfoHeader != null) div.remove(animalInfoHeader);
+		if (animalInfo != null) div.remove(animalInfo);
+		
 		animalInfoHeader = new Paragraph("<h3>Timeline for animal " + cs.getObservationTargetLabel(animalId) + "</h3>");
 		animalInfoHeader.setId("infoheader");
 		
@@ -168,8 +172,6 @@ public class EventViewerPluginMatrix extends GenericPlugin
 		} else {
 			targetMatrixViewer.setDatabase(db);
 			if (animalInfo != null) {
-				div.remove(animalInfoHeader); // FIXME: doesn't work
-				div.remove(animalInfo);
 				div.add(animalInfoHeader);
 				div.add(animalInfo);
 			}

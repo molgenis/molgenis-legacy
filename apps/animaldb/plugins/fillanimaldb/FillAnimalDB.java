@@ -669,7 +669,6 @@ public class FillAnimalDB {
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				dutchProtocolId, dutchMeasurementId, groupId, "Dikstaartsmalvoetbuidelmuis", 0));
 		
-		
 		// Groups -> Backgrounds
 		groupId = ct.makePanel(invid, "129S", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
@@ -689,7 +688,9 @@ public class FillAnimalDB {
 		groupId = ct.makePanel(invid, "CD1", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Background", 0));
-		
+		groupId = ct.makePanel(invid, "CBA/CaJ", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Background", 0));
 		
 		// Groups -> Source
 		int sourceProtocolId = ct.getProtocolId("SetSourceType");
@@ -742,6 +743,17 @@ public class FillAnimalDB {
 				protocolId, measurementId, groupId, "Source", 0));
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				sourceProtocolId, sourceMeasurementId, groupId, "Eigen fok binnen uw organisatorische werkeenheid", 0));
+		// Sources for Roelof Hut:
+		groupId = ct.makePanel(invid, "ErasmusMC", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Source", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				sourceProtocolId, sourceMeasurementId, groupId, "Geregistreerde fok/aflevering in Nederland", 0));
+		groupId = ct.makePanel(invid, "JacksonCharlesRiver", login.getUserId());
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Source", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				sourceProtocolId, sourceMeasurementId, groupId, "Andere herkomst", 0));
 		// Sources for demo purposes:
 		/*groupId = ct.makePanel(invid, "Max-Planck-Institut fuer Verhaltensfysiologie", login.getUserId());
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
