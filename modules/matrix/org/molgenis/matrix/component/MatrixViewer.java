@@ -19,6 +19,8 @@ import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -86,6 +88,7 @@ public class MatrixViewer extends HtmlWidget
 	public String MOVEDOWN = getName() + "_moveDown";
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
 	public String DOWNLOADALLCSV = getName() + "_downloadAllCsv";
+	public String DOWNLOADALLEXCEL = getName() + "_downloadAllExcel";
 	public String DOWNLOADVISCSV = getName() + "_downloadVisibleCsv";
 	public String DOWNLOADVISSPSS = getName() + "_downloadVisibleSPSS"; 
 	public String DOWNLOADVISEXCEL = getName() + "_downloadVisibleExcel";
@@ -260,10 +263,17 @@ public class MatrixViewer extends HtmlWidget
 			downloadVisCsv.setIcon("generated-res/img/download.png");
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 					+ downloadVisCsv.render() + "</div>";
+			
+			ActionInput downloadAllExcel = new ActionInput(DOWNLOADALLEXCEL, "", "All to Excel");
+			downloadAllExcel.setIcon("generated-res/img/download.png");
+			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+					+ downloadAllExcel.render() + "</div>";
 			ActionInput downloadVisExcel = new ActionInput(DOWNLOADVISEXCEL, "", "Visible to Excel");
 			downloadVisExcel.setIcon("generated-res/img/download.png");
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 					+ downloadVisExcel.render() + "</div>";
+			
+			
 			ActionInput downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "", "Visible to SPSS");
 			downloadVisSPSS.setIcon("generated-res/img/download.png");
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
@@ -747,6 +757,92 @@ public class MatrixViewer extends HtmlWidget
 		downloadLink = file.getName();
 	}
 
+	
+	public void downloadAllExcel(Database db, Tuple t) throws MatrixException, IOException, RowsExceededException, WriteException
+	{
+		// remember old limits and offset
+		int rowOffset = matrix.getRowOffset();
+		int rowLimit = matrix.getRowLimit();
+		int colOffset = matrix.getColOffset();
+		int colLimit = matrix.getColLimit();
+		
+		// max for batching
+		int maxRow = matrix.getRowCount();
+		String target = "name";
+		
+		/* Create tmp file */
+		File excelFile = new File(System.getProperty("java.io.tmpdir") + File.separatorChar + "download.xls");
+		System.out.println(excelFile);
+		/* Create new Excel workbook and sheet */
+		WorkbookSettings ws = new WorkbookSettings();
+		ws.setLocale(new Locale("en", "EN"));
+		WritableWorkbook workbook = Workbook.createWorkbook(excelFile, ws);
+		WritableSheet s = workbook.createSheet("Sheet1", 0);
+
+		/* Format the fonts */
+		WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
+		WritableCellFormat headerFormat = new WritableCellFormat(headerFont);
+		headerFormat.setWrap(false);
+		WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
+		WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
+		cellFormat.setWrap(false);
+
+		// batch size = 100
+		matrix.setRowLimit(100);
+		matrix.setColLimit(matrix.getColCount());
+		
+		// write targetheader
+		Label e = new Label(0, 0, target, headerFormat);
+		s.addCell(e);
+
+		// Write column headers
+		int teller =1;
+		for (ObservationElement colHeader : (List<ObservationElement>)matrix.getColHeaders())
+		{
+			Label f = new Label(teller, 0, colHeader.getName(), headerFormat);
+			s.addCell(f);
+			teller++;
+		}
+
+		// iterate through all available rows
+		for (int offset = 0; offset <= maxRow; offset += 100)
+		{
+			// retrieve a batch
+			matrix.setRowOffset(offset);
+			// retrieve names of targets in batch
+			List<ObservationElement> targets = (List<ObservationElement>)matrix.getRowHeaders();
+			// write lines to file
+			int rowCnt = 0;
+			for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
+			{
+				Label l = new Label(0, rowCnt+1, targets.get(rowCnt).getName(), cellFormat);
+				s.addCell(l);
+				//writer.writeValue(targets.get(rowCnt).getName());
+				for (int colId = 0; colId < row.length; colId++)
+				{
+					List<? extends ObservedValue> valueList = row[colId];
+					
+					Label m = new Label(colId+1, rowCnt+1, this.valueListToString(valueList), cellFormat);
+					s.addCell(m);
+				}
+				//writer.writeEndOfLine();
+				rowCnt++;
+			}
+		}
+		workbook.write();
+		workbook.close();
+
+		// restore limit and offset
+		matrix.setRowOffset(rowOffset);
+		matrix.setRowLimit(rowLimit);
+		matrix.setColOffset(colOffset);
+		matrix.setColLimit(colLimit);
+
+		downloadLink = excelFile.getName();
+	}
+	
+	
+	
 	public void downloadVisibleExcel(Database db, Tuple t) throws Exception
 	{
 
