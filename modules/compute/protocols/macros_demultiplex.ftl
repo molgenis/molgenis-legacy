@@ -15,6 +15,7 @@ echo "Begin job ${jobname} for ${fileprefix} at $(date)" >> ${runtimelogdemultip
 
 echo Running on node: `hostname`
 
+sleep 2
 ###### MAIN ######
 </#macro>
 

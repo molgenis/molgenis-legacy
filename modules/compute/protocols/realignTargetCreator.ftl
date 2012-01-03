@@ -26,6 +26,6 @@ ${genomeAnalysisTKjar} \
 -I ${dedupbam} \
 -R ${indexfile} \
 -D ${dbsnprod} \
--B:${pilot1KgVcf} \
+-B:indels,VCF ${pilot1KgVcf} \
 -o ${realignTargets}
 <@end />
