@@ -715,10 +715,13 @@ public class Molgenis {
             boolean error = false;
             logger.info("Updating database....");
             int i = 0;
+ 
             for (String command : create_tables_sql.split(";")) {
                 if (command.trim().length() > 0) {
                     try {
-                        stmt.executeUpdate(command + ";");
+                        logger.debug(command.trim() + ";");
+                        stmt.executeUpdate(command.trim() );
+                        
                         if (i++ % 10 == 0) {
                             logger.debug(".");
                         }
