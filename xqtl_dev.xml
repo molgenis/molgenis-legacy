@@ -25,6 +25,8 @@
 	-->
 	<path id="app.class.path">
 		<pathelement location="apps/xgap" />
+		<!-- temp fix: add the other xqtls to path as well until plugins are deconvoluted (moved) -->
+		<pathelement location="apps/lifelinesresearchportal" />
 		<pathelement location="generated/java" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
