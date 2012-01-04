@@ -1,4 +1,4 @@
-package org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders;
+package org.molgenis.lifelinesresearchportal.loaders;
 
 import java.util.concurrent.ThreadPoolExecutor;
 

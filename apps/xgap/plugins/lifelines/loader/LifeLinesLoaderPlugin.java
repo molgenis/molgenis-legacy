@@ -10,9 +10,9 @@ package plugins.lifelines.loader;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.lifelinesresearchportal.ImportMapperOldSkool;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-import org.molgenis.xgap.other.xqtlworkbench_lifelines.ImportMapperOldSkool;
 
 public class LifeLinesLoaderPlugin extends PluginModel<Entity>
 {

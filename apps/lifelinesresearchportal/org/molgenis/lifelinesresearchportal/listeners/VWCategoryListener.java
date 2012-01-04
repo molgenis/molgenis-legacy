@@ -1,4 +1,4 @@
-package org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners;
+package org.molgenis.lifelinesresearchportal.listeners;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

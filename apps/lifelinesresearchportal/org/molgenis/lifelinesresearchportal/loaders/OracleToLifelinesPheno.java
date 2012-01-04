@@ -1,4 +1,4 @@
-package org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders;
+package org.molgenis.lifelinesresearchportal.loaders;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -23,8 +24,6 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.protocol.Protocol;
 
 import app.DatabaseFactory;
-import javax.persistence.NoResultException;
-import org.molgenis.pheno.ObservableFeature;
 
 /**
  *

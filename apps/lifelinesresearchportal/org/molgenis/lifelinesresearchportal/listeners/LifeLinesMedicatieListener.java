@@ -1,4 +1,4 @@
-package org.molgenis.xgap.other.xqtlworkbench_lifelines.listeners;
+package org.molgenis.lifelinesresearchportal.listeners;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -9,11 +9,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;

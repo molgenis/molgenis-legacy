@@ -1,4 +1,4 @@
-package org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders;
+package org.molgenis.lifelinesresearchportal.loaders;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,7 +7,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.EntityManager;
+
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;

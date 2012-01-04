@@ -1,4 +1,4 @@
-package org.molgenis.xgap.other.xqtlworkbench_lifelines.ThreadReaders;
+package org.molgenis.lifelinesresearchportal.ThreadReaders;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

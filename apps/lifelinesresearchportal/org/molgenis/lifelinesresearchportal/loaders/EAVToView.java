@@ -1,22 +1,21 @@
-package org.molgenis.xgap.other.xqtlworkbench_lifelines.loaders;
+package org.molgenis.lifelinesresearchportal.loaders;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.protocol.Protocol;
 
 import app.DatabaseFactory;
-import org.apache.commons.lang.StringUtils;
-import org.molgenis.organization.Investigation;
-import org.molgenis.protocol.Protocol;
 
 /**
  * Creates an View on top of EAV table to reconstruct original table,

@@ -1,0 +1,34 @@
+<molgenis name="xqtl_lifelines" label="LifeLines Research Portal and Catalog">
+	<plugin name="molgenis_header" type="plugins.cluster.demo.xwbllheader.MolgenisHeader" />
+	<menu name="main">
+		<plugin label="Home" name="LifeLinesHome" type="plugins.cluster.demo.homepage.LifeLines" />
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/login.xml"/>
+		<plugin label="Publish Data Loader" name="LifeLinesLoader" type="plugins.lifelines.loader.LifeLinesLoaderPlugin" />
+		<menu label="LifeLines Catalog" name="LifeLinesCatalogMenu">
+			<plugin label="Catalog" name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" />
+			<plugin name="MeasurementsOrderForm" type="plugins.data.MeasurementsOrderForm" label="Orders" />  
+			<plugin name="OldPlacedOrders" type="plugins.data.OldPlacedOrders" label="Old Orders" /> 
+		</menu>
+		<plugin label="Matrix Viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
+		<plugin label="PLINK Download" name="PlinkDownload" type="plugins.lifelines.plinkdownload.PlinkDownload" />
+		<menu label="Database Tables" name="DatabaseTables">
+			<form label="Studies" name="investigation" entity="Investigation" view="list">
+				<form name="protocol" entity="Protocol" view="list" label="Protocols" />
+				<form name="protocolapplication" entity="ProtocolApplication"
+					view="list" label="Protocol applications" />
+				<form name="measurement" entity="Measurement" view="list"
+					label="Measurements" />
+				<form name="individual" entity="Individual" view="list" label="Individuals" />
+				<form name="observedvalue" entity="ObservedValue" view="list"
+					label="Observed values" />
+				<form name="category" entity="Category" view="list" label="Categories" />
+				<form name="ontology" entity="Ontology" view="list" label="Ontologies" />
+				<form name="ontologyterm" entity="OntologyTerm" view="list"
+					label="Ontology terms" />
+			</form>
+			<form name="shopcart" entity="shoppingCart" view="list" label="Shopping Carts" />
+		</menu>
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
+		
+	</menu>
+</molgenis>
