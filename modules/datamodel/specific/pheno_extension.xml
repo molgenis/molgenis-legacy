@@ -241,7 +241,7 @@
 				description="(Optional) Time when the value was observed. For example in time series or if feature is time-dependent like 'age'" />
 			<field nillable="true" auto="false" name="endtime" type="datetime"
 				description="(Optional) Time when the value's validity ended" />
-			<field name="permittedValues" type="xref" xref_entity="PermittedValue" />
+			<field name="permittedValues" type="xref" xref_entity="PermittedValue" nillable="true" />
 			<!-- JORIS CODE THAT SHOULD NOT BE IN THE SHARED STUFF! <indices> <index 
 				name="valueIdx"> <indexfield name="value"/> </index> <index name="featureIdx"> 
 				<indexfield name="Feature"/> </index> <index name="targetIdx"> <indexfield 
