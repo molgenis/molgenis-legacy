@@ -10,7 +10,7 @@
 
 <#include "macros.ftl"/>
 <@begin/>
-#MOLGENIS walltime=35:59:00 mem=4
+#MOLGENIS walltime=35:59:00 mem=3
 #INPUTS 
 #OUTPUTS
 #EXEC
@@ -19,7 +19,7 @@
 inputs "${samfile}"
 outputs "${bamfile}"
 
-${samtobamjar} \
+java -jar -Xmx3g ${samtobamjar} \
 INPUT=${samfile} \
 OUTPUT=${bamfile} \
 VALIDATION_STRINGENCY=LENIENT \

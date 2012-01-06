@@ -17,6 +17,7 @@ import java.util.Set;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.commandline.options.Options;
+import org.molgenis.compute.workflowgenerator.WorkflowGeneratorDB;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
 
@@ -137,6 +138,29 @@ public class ComputeCommandLine
 			}
 		}
 
+		// as a last step add a job that writes a "pipeline.finished" file
+		ComputeJob job = new ComputeJob();
+		job.setName(getworkflowfilename());
+		job.setInterpreter("bash");
+
+		// if walltime, cores, mem not specified in protocol, then use value from worksheet
+		job.setWalltime("00:00:10");
+		job.setCores(1);
+		job.setMem(1);
+
+		// final job is dependent on all other jobs
+		Set<String> dependencies = new HashSet<String>();
+		for (ComputeJob cj : this.jobs)
+		{
+			dependencies.add(cj.getName());
+		}
+		job.getPrevSteps_Name().addAll(dependencies);
+		
+		// add the script
+		job.setComputeScript("touch $PBS_O_WORKDIR" + File.separator + getworkflowfilename() + ".finished");
+		
+		this.jobs.add(job);
+		
 		// print("compute parameters: " + computeBundle.getComputeParameters().toString());
 		// print("user parameters: " + computeBundle.getUserParameters());
 		// print("full worksheet: " + computeBundle.getWorksheet());
@@ -308,6 +332,11 @@ public class ComputeCommandLine
 		System.exit(0);
 	}
 
+	private String getworkflowfilename() {
+		String[] workflowfilenamelist = this.workflowfile.toString().split(File.separator);
+		return workflowfilenamelist[workflowfilenamelist.length - 1];
+	}
+	
 	/** Convert all compute jobs into scripts + submit.sh */
 	private void generateScripts()
 	{
@@ -316,6 +345,10 @@ public class ComputeCommandLine
 		{
 			// and produce submit.sh
 			PrintWriter submitWriter = new PrintWriter(new File(outputdir + File.separator + "submit.sh"));
+			
+			// touch "workflow file name".started in same directory as submit.sh, when starting submit.sh
+			submitWriter.println("DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd )\"");
+			submitWriter.println("touch $DIR" + File.separator + getworkflowfilename() + ".started");
 
 			for (ComputeJob job : this.jobs)
 			{
@@ -341,7 +374,7 @@ public class ComputeCommandLine
 				// write headers (depends on backend)
 				jobWriter.println("#!/bin/bash");
 				jobWriter.println("#PBS -N " + job.getName());
-				jobWriter.println("#PBS -q gcc");
+				jobWriter.println("#PBS -q test");
 				jobWriter.println("#PBS -l nodes=1:ppn=" + job.getCores());
 				jobWriter.println("#PBS -l walltime=" + job.getWalltime());
 				jobWriter.println("#PBS -l mem=" + job.getMem() + "gb");
@@ -355,6 +388,7 @@ public class ComputeCommandLine
 
 				jobWriter.close();
 			}
+			
 			submitWriter.close();
 		}
 		catch (FileNotFoundException e)

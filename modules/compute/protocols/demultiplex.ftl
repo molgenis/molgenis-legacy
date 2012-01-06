@@ -18,9 +18,9 @@
 
 inputs "${leftinputfile}"
 inputs "${rightinputfile}"
-alloutputsexist "${leftbarcodefq}" "${rightbarcodefq}"
-
 <#include "helpers.ftl"/>
+alloutputsexist ${ssvQuoted(leftbarcodefq)} ${ssvQuoted(rightbarcodefq)}
+
 
 # create directories to put demultiplexed files in
 <#list projectrawdatadir as thisoutputdir>
