@@ -16,6 +16,10 @@
 #EXEC
 #FOREACH flowcell, lane
 
+inputs "${leftinputfile}"
+inputs "${rightinputfile}"
+alloutputsexist "${leftbarcodefq}" "${rightbarcodefq}"
+
 <#include "helpers.ftl"/>
 
 # create directories to put demultiplexed files in

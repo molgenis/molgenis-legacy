@@ -9,6 +9,7 @@ Make sure this template is put at the _top_ of the generated scripts!
 #PBS -l walltime=${walltime}
 -->
 ##### BEFORE #####
+touch $PBS_O_WORKDIR/${jobname}.out
 source ${importscript}
 before="$(date +%s)"
 echo "Begin job ${jobname} for ${fileprefix} at $(date)" >> ${runtimelog}
@@ -27,6 +28,7 @@ sleep 2
 after="$(date +%s)"
 elapsed_seconds="$(expr $after - $before)"
 echo Completed ${jobname} for ${fileprefix} at $(date) in $elapsed_seconds seconds >> ${runtimelog}
+touch $PBS_O_WORKDIR/${jobname}.finished
 ######## END ########
 
 </#macro>

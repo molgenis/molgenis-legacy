@@ -62,8 +62,7 @@ CHART=${qualityscoredistributionpdf} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
-java -jar -Xmx4g \
-${hsmetricsjar} \
+java -jar -Xmx4g ${hsmetricsjar} \
 INPUT=${sortedbam} \
 OUTPUT=${hsmetrics} \
 BAIT_INTERVALS=${baitintervals} \

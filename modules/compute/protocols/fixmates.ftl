@@ -24,7 +24,7 @@ SORT_ORDER=coordinate \
 VALIDATION_STRINGENCY=SILENT \
 TMP_DIR=${tempdir}
 
-${buildbamindexjar} \
+java -jar -Xmx3g ${buildbamindexjar} \
 INPUT=${matefixedbam} \
 OUTPUT=${matefixedbamindex} \
 VALIDATION_STRINGENCY=LENIENT \

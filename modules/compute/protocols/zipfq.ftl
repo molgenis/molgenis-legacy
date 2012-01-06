@@ -16,6 +16,9 @@
 #EXEC
 #FOREACH
 
+alloutputsexist ${leftfilegz} ${rightfilegz}
+inputs ${leftbarcodefq} ${rightbarcodefq}
+
 # The following code gzips files and removes original file
 # However, in the case of a symlink, the symlink is removed.
 gzip -f ${leftbarcodefq}
