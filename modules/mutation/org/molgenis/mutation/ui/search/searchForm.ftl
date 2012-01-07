@@ -54,7 +54,6 @@ ${form.expertSearch}
 <tr><td>Variation: </td><td>${form.variation}</td><td>Nucleotide No: </td><td>${form.nuclno}</td></tr>
 <tr><td>Amino Acid No: </td><td>${form.aano}</td><td>Exon/Intron: </td><td>${form.exon_id}</td></tr>
 <tr><td>Mutation type:</td><td>${form.type}</td><td>Phenotype:</td><td>${form.phenotype}</td></tr>
-<tr><td>Protein domain:</td><td>${form.domain_id}</td><td></td><td></td></tr>
 <#else>
 <tr><td>Variation: </td><td>${form.variation}</td><td>Nucleotide No: </td><td>${form.nuclno}</td></tr>
 <tr><td>Amino Acid No: </td><td>${form.aano}</td><td>Exon/Intron: </td><td>${form.exon_id}</td></tr>
