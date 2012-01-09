@@ -51,6 +51,9 @@ public class MolgenisOptions
 
 	/** Properties file where this data came from */
 	private String molgenis_properties = "";
+	
+	/** Password file where passwords are */
+	private String molgenis_passwd = "";
 
 	/**
 	 * relative paths to the data model XML files. Discussion: is COLLECTION
@@ -113,7 +116,7 @@ public class MolgenisOptions
 
 	/** Database user password */
 	@Option(name = "db_password", param = Option.Param.PASSWORD, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Password for database. Default: ''")
-	public String db_password = "molgenis";
+	public String db_password = "";
 
 	/** Database uri. For example: jdbc:mysql://localhost/molgenis" */
 	@Option(name = "db_uri", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Uri of the database. Default: 'jdbc:mysql://localhost/molgenis?innodb_autoinc_lock_mode=2'")
@@ -259,6 +262,9 @@ public class MolgenisOptions
 	@Option(name = "generate_plugins", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the Molgenis plugin API. Default: true")
 	public boolean generate_plugins = true;
 
+	@Option(name = "generate_mobile", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate the Molgenis mobile GUI. Default: true")
+	public boolean generate_mobile = false;
+
 	@Option(name = "generate_decorators", param = Option.Param.BOOLEAN, type = Option.Type.OPTIONAL_ARGUMENT, usage = "generate decorator templates. Default: true")
 	public boolean generate_decorators = true;
 
@@ -383,14 +389,38 @@ public class MolgenisOptions
 
 		CmdLineParser parser = new CmdLineParser(this);
 		parser.parse(props);
-		// System.out.println("Mapper implementation molgenis name: " +
-		// this.mapper_implementation.name());
+		this.molgenis_properties = propertiesFile;
+		
+		//parse passwordfile
+		String passwordFile = propertiesFile.replace(".properties", ".passwd");
+		this.molgenis_passwd= passwordFile;
+		props = new Properties();
+		try
+		{
+			// try to load from local files
+			props.load(new FileInputStream(passwordFile.trim()));
+		}
+		catch (FileNotFoundException e)
+		{
+			try
+			{
+				// try to load from classpath
+				props.load(ClassLoader.getSystemResourceAsStream(passwordFile
+						.trim()));
+			}
+			catch (Exception e2)
+			{
+				//no biggie
+			}
 
-		// if (new File(propertiesFile).getParentFile() != null)
-		// {
-		// this.path = new
-		// File(propertiesFile).getParentFile().getAbsolutePath() + "/";
-		// }
+		}
+		parser = new CmdLineParser(this);
+		parser.parse(props);
+		
+		//warn if no password was provided
+		if("".equals(this.db_password))
+			System.err.println("WARNING: db_password was not provided in neither "+propertiesFile +" nor "+passwordFile);
+
 		Logger.getLogger(this.getClass().getSimpleName()).debug(
 				"parsed properties file.");
 	}
