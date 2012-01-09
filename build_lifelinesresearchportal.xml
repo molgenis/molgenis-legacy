@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="build_lifelinesresearchportal" default="run" basedir=".">
+
+<project>
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="xqtl_lifelines" />
+
+	<!-- this holds all the settings for the generator -->
+	<property name="app_properties" value="apps/lifelinesresearchportal/org/molgenis/lifelinesresearchportal/lifelinesresearchportal.properties"/>
+
+	<!-- this determines what handwritten modules should be loaded -->
+	<path id="app.class.path">
+		<pathelement location="apps/lifelinesresearchportal" />
+		<pathelement location="apps/xgap" />
+		<pathelement location="apps/lifelines" />
+		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/auth" />
+		<pathelement location="modules/file" />
+		<pathelement location="modules/import" />
+		<pathelement location="modules/webserver" />
+		<pathelement location="modules/settings" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/search" />
+		<pathelement location="modules/matrix" />
+		<pathelement location="modules/decorators/core" />
+		<pathelement location="modules/decorators/auth" />
+		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/decorators/data" />
+		<pathelement location="publicdata" />
+	</path>
+
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml" />
+</project>
+	
+<!--project name="build_lifelinesresearchportal" default="run" basedir=".">
 	
 	<description>
 		
@@ -15,17 +48,18 @@
 
     </description>
 	
-	<!--
+	<-
 	The properties file supplied to the generator
-	-->
+	-
 	<property name="app_properties" value="apps/lifelinesresearchportal/org/molgenis/lifelinesresearchportal/lifelinesresearchportal.properties"/>
 
-	<!--
+	<-
 	Application class path. Describes the location of the app and the modules it consists of.
-	-->
+	-
 	<path id="app.class.path">
 		<pathelement location="apps/lifelinesresearchportal" />
 		<pathelement location="apps/xgap" />
+		<pathelement location="apps/lifelines" />
 		<pathelement location="generated/java" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
@@ -41,36 +75,64 @@
 		<pathelement location="modules/decorators/pheno" />
 		<pathelement location="modules/decorators/data" />
 		<pathelement location="publicdata" />
-		<pathelement location="apps/lifelines" />
 	</path>
 	
-	<!-- Path refs to build dirs -->
+	<- Path refs to build dirs -
 	<property name="mol_build_dir" value="../molgenis/bin" />
 	<property name="app_build_dir" value="build/classes" />
 
-	<!-- Path ref to the molgenis libraries -->
+	<- Path ref to the molgenis libraries -
 	<path id="molgenis-libs">
 		<fileset dir="../molgenis/lib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
 
-	<!-- Path ref to the application libraries -->
+	<- Path ref to the application libraries -
 	<path id="app-libs">
 		<fileset dir="WebContent/WEB-INF/lib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
+	
+	<- path to MOLGENIS toolkit -
+	<path id="molgenis.classpath">
+		<pathelement location="${build.dir}" />
+		<fileset dir="../molgenis/lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="WebContent/WEB-INF/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	
+	<target name="update-eclipse">
+		<taskdef name="xmltask" classpathref="molgenis.classpath" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
 
-	<!--
+		<pathconvert property="app_xml" refid="app.class.path" pathsep="&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;">
+			<map from="${user.dir}/" to="" />
+		</pathconvert>
+		
+		<- add generated src as well -
+		<property name="app_xml2" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${app_xml}&quot;/&gt;"/>
+		<property name="app_xml3" value="${app_xml2}&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_sql}&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_src}&quot;/&gt;"/>
+		<echo message="eclipse .classpath xml: ${app_xml3}"/>
+	
+		<xmltask source=".classpath" dest=".classpath" outputter="simple">
+			<remove path="classpath/classpathentry[@kind='src' and not(@exported)]"/>
+			<insert path="classpath" position="under" xml="${app_xml3}"/>
+		</xmltask>
+	</target>
+
+	<-
 	CLEAN - Step 1: Delete the content of the app build, app generated and Molgenis build folders.
-	-->
+	-
 	<target name="clean" description="Delete generated and build content">
-		<!-- create build dirs if they doesn't exist -->
+		<- create build dirs if they doesn't exist -
 		<mkdir dir="${mol_build_dir}"/>
 		<mkdir dir="${app_build_dir}"/>
 		
-		<!-- remove content of build, ${mol_build_dir} and generated -->
+		<- remove content of build, ${mol_build_dir} and generated -
 		<delete includeemptydirs="true">
 			<fileset dir="${app_build_dir}" includes="**/*" />
 		</delete>
@@ -82,34 +144,34 @@
 		</delete>
 	</target>
 
-	<!--
+	<-
 	MAKE - Step 2: Compile MOLGENIS. This is assumed to be in your 'workspace'. (e.g. you run
 	this script in '/somedir/molgenis_apps', then molgenis must be in '/somedir/molgenis')
-	-->
+	-
 	<target name="compile_molgenis" description="Compile MOLGENIS">
-		<!-- create build dir if it doesn't exist -->
+		<- create build dir if it doesn't exist -
 		<mkdir dir="${mol_build_dir}"/>
 		
-		<!-- Run javac on the src dir to be compiled into build, using the molgenis-libs fileset as classpath -->
+		<- Run javac on the src dir to be compiled into build, using the molgenis-libs fileset as classpath -
 		<javac srcdir="../molgenis/src" destdir="${mol_build_dir}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<path refid="molgenis-libs" />
 			</classpath>
 		</javac>
-		<!-- Copy the res folder to the build dir so it can be found by MolgenisResourceCopyGen -->
+		<- Copy the res folder to the build dir so it can be found by MolgenisResourceCopyGen -
 		<copy todir="${mol_build_dir}/org/molgenis/framework/ui/res" verbose="true">
 			<fileset dir="../molgenis/src/org/molgenis/framework/ui/res" includes="**/*.*" />
 		</copy>
-		<!-- Copy all Freemarker templates anywhere in MOLGENIS too -->
+		<- Copy all Freemarker templates anywhere in MOLGENIS too -
 		<copy todir="${mol_build_dir}" verbose="true">
 			<fileset dir="../molgenis/src" includes="**/*.ftl" />
 		</copy>
 	</target>
 
-	<!--
+	<-
 	MAKE - Step 3: Generate the application. This assumes you have compiled molgenis.
 	The molgenis/build and libraries are used as classpath.
-	-->
+	-
 	<target name="generate_app" description="Generate the application">
 		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
 			<arg value="${app_properties}" />
@@ -120,15 +182,15 @@
 		</java>
 	</target>
 
-	<!--
+	<-
 	MAKE - Step 4: Compile generated datatypes. However we must exclude the
 	security decorators, which depend on the org.molgenis.auth.service module.
-	 -->
+	 -
 	<target name="compile_datatypes" description="Compile generated datatypes">
-		<!-- create build dir if it doesn't exist -->
+		<- create build dir if it doesn't exist -
 		<mkdir dir="${app_build_dir}"/>
 		
-		<!-- Run javac into app_build, using molgenis-libs and molgenis_build -->
+		<- Run javac into app_build, using molgenis-libs and molgenis_build -
 		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${app_build_dir}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<path refid="molgenis-libs" />
@@ -137,9 +199,9 @@
 		</javac>
 	</target>
 
-	<!--
+	<-
 	MAKE - Step 5: Compile the actual application using the components specified in app.class.path.
-	-->
+	-
 	<target name="compile_app" description="Compile application">
 		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
 		<javac srcdir="${app_src}" destdir="${app_build_dir}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
@@ -151,9 +213,9 @@
 		</javac>
 	</target>
 
-	<!--
+	<-
 	MAKE - Step 6: Compile other generated parts that depends on having the application compiled first.
-	-->
+	-
 	<target name="compile_other" description="Compile other generated">
 		<javac srcdir="generated/java/app" destdir="${app_build_dir}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<classpath>
@@ -171,42 +233,42 @@
 	</target>
 
 
-	<!--
+	<-
 	MAKE - Step 7: Copy resources other than Java files from the locations of app.class.path into the build folder.
-	-->
+	-
 	<target name="copy_resources">
 
-		<!-- Grab the elements of app.class.path and convert to make a fileset pattern
+		<- Grab the elements of app.class.path and convert to make a fileset pattern
 		usable by fileset. We concatenate the elements with '/**/*,' to grab all files.
 		The regexp cuts off everything until the original specified path location. Eg:
 		"/Users/joerivandervelde/Workspaces/workspace-23-03-2010/molgenis_apps/apps/xgap"
 		becomes "apps/xgap/**/*".
-		-->
+		-
 		<pathconvert pathsep="/**/*," refid="app.class.path" property="app_fileset_pattern">
 			<regexpmapper from=".*/(.*/.*)" to="\1" />
 		</pathconvert>
 
-		<!-- Grab all files from the fileset pattern, excluding Java files -->
+		<- Grab all files from the fileset pattern, excluding Java files -
 		<fileset dir="." id="app_fileset" includes="${app_fileset_pattern}/**/*">
 			<exclude name="**/*.java" />
 		</fileset>
 
-		<!-- Copy to build dir. Use a regexp to remove the leading locations
-		such as 'apps/xgap' or 'modules/pheno' -->
+		<- Copy to build dir. Use a regexp to remove the leading locations
+		such as 'apps/xgap' or 'modules/pheno' -
 		<copy todir="${app_build_dir}" verbose="true">
 			<fileset refid="app_fileset" />
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
 		</copy>
 		
-		<!-- Copy SQL files from generated/sql to build root -->
+		<- Copy SQL files from generated/sql to build root -
 		<copy todir="${app_build_dir}" verbose="true">				
 			<fileset dir="generated/sql" includes="**/*.sql" />
 		</copy>
 	</target>
 	
-	<!--
+	<-
 	RUN - Step 8: Start the application.
-	-->
+	-
 	<target name="run" description="Start the application">
 		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<classpath>
@@ -218,10 +280,10 @@
 		</java>
 	</target>
 	
-	<!--
+	<-
 	Deploy help: run on a specific port, and on that port only
 	Usage: ant -f xqtl_dev.xml runOn -Dport=9000
-	-->
+	-
 	<target name="runOn" description="Start the application">
 		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<arg value="${port}"/>
@@ -234,9 +296,9 @@
 		</java>
 	</target>
 	
-	<!--
+	<-
 	MAKE WRAPPER - All instructions to make the application in one bundle
-	-->
+	-
 	<target name="make"  description="Make the application">
 		<antcall target="compile_molgenis" />
 		<antcall target="generate_app" />
@@ -246,39 +308,39 @@
 		<antcall target="copy_resources" />
 	</target>
 	
-	<!-- 
+	<-
 	CLEAN, MAKE - Clean and make the application.
 	Used when setting up the app from scratch, but not starting the webserver
 	or running any tests. Good for developing and running Selenium web
 	tests separately later on.
-	-->
+	-
 	<target name="clean_make" description="Clean and make the application">
 		<antcall target="clean" />
 		<antcall target="make" />
 	</target>
 	
-	<!--
+	<-
 	MAKE, RUN - The complete make & run procedure.
 	Used when installing the app from a fresh SVN checkout.
-	-->
+	-
 	<target name="make_run" description="Make and start the application">
 		<antcall target="make" />
 		<antcall target="run" />
 	</target>
 	
-	<!-- 
+	<-
 	CLEAN, MAKE, TEST - Clean and make the application, then run tests.
 	Used for project validation on Hudson.
-	-->
+	-
 	<target name="clean_make_test" description="Clean and make the application">
 		<antcall target="clean" />
 		<antcall target="make" />
 		<antcall target="test" />
 	</target>
 	
-	<!--
+	<-
 	Dev help: Recompile/copy the app. Basically MAKE without the generation step.
-	-->
+	-
 	<target name="recompile" description="Recompile/copy the application">
 		<antcall target="compile_molgenis" />
 		<antcall target="compile_datatypes" />
@@ -287,12 +349,12 @@
 		<antcall target="copy_resources" />
 	</target>
 	
-	<!-- Import TestNG as an Ant task -->
+	<- Import TestNG as an Ant task -
 	<taskdef resource="testngtasks" classpath="../molgenis/lib/testng-5.14.10.jar" />
 	
-	<!--
+	<-
 	Dev help: Run xQTL tests on a compiled application.
-	-->
+	-
 	<target name="test" description="Run all tests">
 		<testng haltOnFailure="true">
 			<classfileset dir="${app_build_dir}" includes="**/*_XqtlTestNG.class" />
@@ -305,9 +367,9 @@
 		</testng>
 	</target>
 	
-	<!--
+	<-
 	Dev help: Remove HSQL database
-	-->
+	-
 	<target name="deletedb" description="Delete generated and build content">
 		<mkdir dir="hsqldb" />
 		<delete includeemptydirs="true">
@@ -315,25 +377,25 @@
 		</delete>
 	</target>
 	
-	<!--
+	<-
 	Create a Java class with information about this build.
 	SVN info part: http://stackoverflow.com/questions/166322/obtain-current-svn-revision-in-webapp
 	Other listing from: http://www.ghidinelli.com/2008/04/01/built-in-ant-properties
-	-->
+	-
 	<target name="generate_revision_info_class">
-		<!-- Try to call SVN to get the revision number -->
+		<- Try to call SVN to get the revision number -
 		<exec executable="svnversion" failifexecutionfails="no" outputproperty="revision">
 			<arg value="."/> 
 			<arg value="-n"/>
 		</exec>
 		
-		<!-- If that failed, try a bash script. If ${revision} was already set, this has no effect -->
+		<- If that failed, try a bash script. If ${revision} was already set, this has no effect -
 		<exec executable="bash" failifexecutionfails="no" outputproperty="revision">
 			<arg value="-c"/>
 			<arg value="head .svn/entries | awk 'NR==4' | sed -e 's/\(.$\)/\1 (from bash, please install SVN)/g'"/>
 		</exec>
 		
-		<!-- If that failed, set it to this message -->
+		<- If that failed, set it to this message -
 		<property name="revision" value="ERROR: Could not get revision number. Please install SVN and/or use Linux"/>
 		
 		<tstamp>
@@ -388,7 +450,7 @@
 		public static final String antProjectName = "${ant.project.name}";
 		public static final String antJavaVersion = "${ant.java.version}";
 			
-		<!-- can't output paths: unescaped backslash for MS Windows breaks the code
+		<- can't output paths: unescaped backslash for MS Windows breaks the code
 		printing file and line seps is also dangerous
 		also put some pointless vars here
 		public static final String fileSep = "${file.separator}";
@@ -412,9 +474,9 @@
 		public static final String javaVmVersion = "${java.vm.version}";
 		public static final String javaVmVendor = "${java.vm.vendor}";
 		public static final String javaVmName = "${java.vm.name}";
-		-->
+		-
 		}
 		</echo>
 	</target>
 	
-</project>
+</project -->
