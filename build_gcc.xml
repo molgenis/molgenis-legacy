@@ -29,7 +29,6 @@
 		<pathelement location="apps/chd7" />
 		<pathelement location="apps/designgg" />
 		<pathelement location="apps/gscf" />
-		<pathelement location="apps/lifelinespheno" />
 		<pathelement location="apps/ngs" />
 		<pathelement location="apps/bbmri" />
 		<pathelement location="apps/col7a1" />
