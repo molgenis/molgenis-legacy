@@ -21,7 +21,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 	 * No Nodes collapsed explicitly. Node is manually closed then by giving its LI element a "closed"(/opened) CSS class.
 	 * Animation enabled, speed is "normal".
 	 * "Cookie" persistence enabled, causing the current tree state to be persisted.
-	 *	Dynamically adding a sub tree to the existing tree demonsrated.
+	 *	Dynamically adding a sub tree to the existing tree demonstrated.
 	 */
 	private String renderTree(JQueryTreeViewElement node) {
 		String returnString;
@@ -61,17 +61,10 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+"<script>\n"
 		+"$(document).ready(function(){\n"
 		+"$(\"#browser\").treeview({control: \"#masstoggler\"});" 
-//		+"$(\"#CataloguecheckBox\").validate({"
-//		+"	   rules:   { list:     {required: \"#list0:checked\"} },"
-//		+"	   messages:  { list:  \"Please select at least one Measurement\"}"                                                        
-//		+"	 });"
 		+"});\n"
-//		+ "$(\"#leftSide\").click(function(event) {"
-//		+"	event.preventDefault();"
-//		//if link is clicked set the checkbox clicked.
-//		+ "$(\"#CataloguecheckBox\").attr('checked', true)"
-////		+"	  alert(\"Your order of \"+$(this).text() + \" has been added to you Shopping Cart\");"
-//		+"	});"
+//		+ "$(document).unload(function() {"
+//		+ "alert('Handler for .unload() called.');"
+//		+ "});"
 		+"</script>\n";
 	    
 	    return html;
