@@ -129,7 +129,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		String action = request.getString("__action");
 		
 		try {
-			if(db.query(Investigation.class).eq(Investigation.NAME, "Shared").count() == 0){
+			if(db.query(Investigation.class).eq(Investigation.NAME, "Shared").count() ==0){
 				Investigation i = new Investigation();
 				i.setName("Shared");
 				db.add(i);	
@@ -183,9 +183,10 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 					String line = buffy.readLine();
 					arrayMeasurements = line.split(delimeter);
 					
-					newinv = request.getString("createNewInvest");
-					existinv = request.getString("investigation");
+					setNewinv(request.getString("createNewInvest"));
+					setExistinv(request.getString(request.getString("investigation")));
 					checkInvestigation(db,request);
+					
 					state="inStep2";
 					System.out.println("########### " + state);
 				}			
@@ -268,11 +269,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 					try{
 						CsvImport.importAll(dir, db, null);
 						dir = null;
-						
-						//redirectToInvestigationPage(request);
-						
-					
-					
+						redirectToInvestigationPage(request);
 					}catch(Exception e){
 						if(e.getMessage().startsWith("Tried to add existing Individual elements as new insert:")){
 							this.setMessages(new ScreenMessage("The individuals already exist in the database", false));
@@ -284,43 +281,16 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				}	
 				
 			} catch (Exception e) {
-				//db.rollbackTx();
+				db.rollbackTx();
 				e.printStackTrace();
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
 		
-		
-		/*
-		 * Create downloadable links
-		 */
-		/*
-		if (action.equals("downloads") ){
-			try {
-				individualName = request.getString("individual");
-				father = request.getString("father");
-				mother = request.getString("mother");
-				sampleName = request.getString("sample");
-				//convert csv file into different txt files
-				
-				runGenerConver(fileData,invName,db,individualName,father,mother, sampleName,sampleMeasList);				
-				status = "downloaded";
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-			}
-
-		}	
-		*/
 		if (action.equals("emptyDB") ){
 			try {
 				if(db.count(Investigation.class)!=0){
-					
-					//OLD
-					//new emptyDatabase(db, true);
-					
-					//NEW
+
 					new emptyDatabase(db, false);
 					FillMetadata.fillMetadata(db, false);
 					
@@ -336,6 +306,22 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 						
 	}
 	
+	public String getExistinv() {
+		return existinv;
+	}
+
+	public void setExistinv(String existinv) {
+		this.existinv = existinv;
+	}
+
+	public String getNewinv() {
+		return newinv;
+	}
+
+	public void setNewinv(String newinv) {
+		this.newinv = newinv;
+	}
+
 	@Override
 	public void reload(Database db)
 	{
@@ -352,7 +338,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	}
 	
 
-	public void checkInvestigation(Database db, Tuple request){
+	public void checkInvestigation(Database db, Tuple request) throws DatabaseException{
 
 		if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
 			invName = request.getString("investigation");	
@@ -362,20 +348,21 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			invName = request.getString("createNewInvest");
 			Investigation inve = new Investigation();
 			inve.setName(newinv);
-			//Protocol prot = new Protocol();
-			//prot.setName(invName);
+			db.add(inve);
+			Protocol prot = new Protocol();
+			prot.setName(invName);
+			
+			prot.setInvestigation(inve);
+	
+			db.add(prot);
 //			inve.setOwns_Name("admin"); default pheno.xml does not have authorizable for Investigation anymore
-			try {
-				
-				db.add(inve);
-				
-			} catch (DatabaseException e) {
-				e.printStackTrace();
-			} 
+
+			
+
 		}
 		System.out.println("&&&& "  +invName + "\t" + newinv);
 	}
-	
+
 	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother, String sample, List<String> samplemeaslist,List<String> indvmeaslist,HashMap<String,String> hashChangeMeas){
 		try {
 			gc = new GidsConvertor();

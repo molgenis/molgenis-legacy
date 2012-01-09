@@ -210,8 +210,9 @@ public class GidsConvertor
 				}
 				/*If the measurement already exist in the data, but with a wrong header (e.g. birthdate in inputfile--> date of birth in db)
 				 */
-				if(sampleName!=null){
-					for (Measurement m : totalMeasurementsList) {
+				
+				for (Measurement m : totalMeasurementsList) {
+					if(sampleName!=null){
 						String featureName =  m.getName();
 						//System.out.println("FEATURENAME: " + featureName);
 						String value = "";
@@ -244,11 +245,30 @@ public class GidsConvertor
 							}
 	
 						}
+						
 						newValue.setValue(value);
 						newValue.setInvestigation_Name(getInvestigation());					
 						valuesList.add(newValue);	
 					}
+					else{
+						String value = "";
+						String featureName =  m.getName();
+						if(tuple.getString(featureName)!=null){
+							value = tuple.getString(featureName);						
+						}
+						ObservedValue newValue = new ObservedValue();
+						newValue.setFeature_Name(featureName);
+							
+						newValue.setTarget_Name(targetName);
+						alIndividuals.add(featureName+targetName);
+
+						newValue.setValue(value);
+						newValue.setInvestigation_Name(getInvestigation());					
+						valuesList.add(newValue);	
+					}
+					
 				}
+				
 			}
 		});
 		

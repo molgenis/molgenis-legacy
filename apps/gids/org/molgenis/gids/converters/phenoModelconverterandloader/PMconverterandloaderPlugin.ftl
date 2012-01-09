@@ -185,8 +185,7 @@
 			</div>
 			<br />
 			<div style="margin-top:20px" id="converter" class="row" >			
-				<input type='submit' class='addbutton' value='next' onclick="__action.value='goToStep3'"/>	
-				<input type='submit' class='addbutton' value='download files' onclick="__action.value='downloads'"/>
+				<input type='submit' class='addbutton' value='next' onclick="__action.value='goToStep3'"/>
 				
 				<br />
 			</div>	
