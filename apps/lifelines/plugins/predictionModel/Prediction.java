@@ -18,11 +18,14 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
+import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
+import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
@@ -61,7 +64,11 @@ public class Prediction extends PluginModel<Entity>
 	private HashMap<String, String> userInputToDataType = new HashMap<String, String>();
 	private HashMap<Integer, String> columnIndexToClassType = new HashMap<Integer, String>();
 	private HashMap<Integer, Integer> columnIndexToRelation = new HashMap<Integer, Integer>();
-	private HashMap<Integer, String> columnIndexToFieldName = new HashMap<Integer, String>();;
+	private HashMap<Integer, String> columnIndexToFieldName = new HashMap<Integer, String>();
+
+	private String excelDirection = "UploadFileByColumn";
+
+	private String uploadFileName = "";
 	
 	public Prediction(String name, ScreenController<?> parent)
 	{
@@ -98,6 +105,7 @@ public class Prediction extends PluginModel<Entity>
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.DESCRIPTION);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.DATATYPE);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.UNIT_NAME);
+		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.TEMPORAL);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.INVESTIGATION_NAME);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.CATEGORIES_NAME);
 		chooseClassType.add(Protocol.class.getSimpleName());
@@ -112,10 +120,16 @@ public class Prediction extends PluginModel<Entity>
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.CODE_STRING);
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.LABEL);
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.DESCRIPTION);
+		chooseFieldName.add(Individual.class.getSimpleName() + ":" + Individual.FATHER_NAME);
+		chooseFieldName.add(Individual.class.getSimpleName() + ":" + Individual.MOTHER_NAME);
 		chooseFieldName.add(ObservedValue.class.getSimpleName());
 		chooseFieldName.add(ObservationTarget.class.getSimpleName() + ":" + ObservationTarget.NAME);
+		chooseFieldName.add(Panel.class.getSimpleName() + ":" + Panel.NAME);
+		chooseFieldName.add(Panel.class.getSimpleName() + ":" + Panel.INDIVIDUALS_NAME);
 		chooseClassType.add(ObservedValue.class.getSimpleName());
 		chooseClassType.add(ObservationTarget.class.getSimpleName());
+		chooseClassType.add(Individual.class.getSimpleName());
+		chooseClassType.add(Panel.class.getSimpleName());
 		
 		dataTypeOptions.add("string");
 		dataTypeOptions.add("int");
@@ -156,11 +170,18 @@ public class Prediction extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception	{
 
-		if ("UploadFile".equals(request.getAction())) 
+		if ("UploadFileByColumn".equals(request.getAction())) 
 		{
-			
+			excelDirection = "UploadFileByColumn";
 			System.out.println(request);
-			readHeaders();
+			uploadFileName  = request.getString("uploadFile");
+			readHeaders(request.getAction());
+		} else if ("UploadFileByRow".equals(request.getAction())) {
+			excelDirection = "UploadFileByRow";
+			System.out.println(request);
+			uploadFileName  = request.getString("uploadFile");
+			readHeaders(request.getAction());
+			
 			
 		} else if ("ImportLifelineToPheno".equals(request.getAction())){
 			
@@ -240,7 +261,7 @@ public class Prediction extends PluginModel<Entity>
 		
 	}
 	
-	public void readHeaders() throws BiffException, IOException{
+	public void readHeaders(String header) throws BiffException, IOException{
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
@@ -248,7 +269,7 @@ public class Prediction extends PluginModel<Entity>
 
 		//file = new File(tmpDir+ "/LifelinesDict.xls"); 
 		
-		file = new File(tmpDir+ "/TextFileFromRoan.xls"); 
+		file = new File(uploadFileName); 
 		
 		
 		if (file.exists()) {
@@ -263,22 +284,41 @@ public class Prediction extends PluginModel<Entity>
 			
 			int columns = sheet.getColumns();
 			
+			int rows = sheet.getRows();
+			
 			headers = new ArrayList<String>();
 			
 			columnIndex.add(-1);
 			
-			for(int i = 0 ; i < columns; i++)
+			if(header.equals("UploadFileByColumn"))
 			{
-				columnIndex.add(i);
-				headers.add(sheet.getCell(i, 0).getContents().toString().replaceAll(" ", "_"));
-				System.out.println(sheet.getCell(i, 0).getContents().toString());
+				for(int i = 0 ; i < columns; i++)
+				{
+					columnIndex.add(i);
+					headers.add(sheet.getCell(i, 0).getContents().toString().replaceAll(" ", "_"));
+					System.out.println(sheet.getCell(i, 0).getContents().toString());
+				}
+				
+				setSpreadSheetHeanders(headers);
 			}
 			
-			setSpreadSheetHeanders(headers);
+			if(header.equals("UploadFileByRow"))
+			{
+				for(int i = 0 ; i < rows; i++)
+				{
+					columnIndex.add(i);
+					headers.add(sheet.getCell(0, i).getContents().toString().replaceAll(" ", "_"));
+					System.out.println(sheet.getCell(0, i).getContents().toString());
+				}
+				
+				setSpreadSheetHeanders(headers);
+			}
+			
+			
 			
 		}else {
 			
-			this.setStatus("The file should be in " + file );
+			this.setStatus("Please upload a file first!");
 		}
 	}
 	
@@ -377,11 +417,20 @@ public class Prediction extends PluginModel<Entity>
 					
 					Integer dependedColumn = columnIndexToRelation.get(columnIndex);
 					
+					table.setDirection(excelDirection);
+					
 					if(classType.equals(ObservedValue.class.getSimpleName()))
 					{
 						int coHeaders[] = {columnIndex.intValue()};
 						System.out.println(columnIndex);
 						table.addField(classType, ObservedValue.VALUE, coHeaders, dependedColumn.intValue(), TableField.COLHEADER);
+						
+					}else if (classType.equals(Category.class.getSimpleName() + ":" + Category.ISMISSING)){
+						
+						Tuple defaults = new SimpleTuple();
+						defaults.set(Category.ISMISSING, true);
+						table.addField(Category.class.getSimpleName(), "name", columnIndex.intValue(), TableField.COLVALUE, defaults);
+						table.addField(classType, fieldName, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
 						
 					}else{
 						
@@ -394,7 +443,6 @@ public class Prediction extends PluginModel<Entity>
 							if(referenceClass.contains(fieldName))
 							{
 								table.addField(classType, "name", columnIndex.intValue(), TableField.COLVALUE);
-								
 							}
 							
 							table.addField(classType, fieldName, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());

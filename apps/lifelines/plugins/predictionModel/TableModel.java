@@ -100,6 +100,8 @@ public class TableModel {
 
 	private String investigationName = null;
 
+	private String excelDirection = "UploadFileByColumn";
+
 	public TableModel(int i,  Database db) {
 		this.db = db;
 		this.columnSize = i;
@@ -203,7 +205,13 @@ public class TableModel {
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
 		
 		List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
-
+		
+		if(excelDirection.equals("UploadFileByRow"))
+		{
+			row = sheet.getColumns();
+			column = sheet.getRows();
+		}
+		
 		//three dimensional matrix of<colIndex, rowIndex, valueIndex>
 		//third dimension of valueIndex is to deal with multiple values in one cell
 		//we made colIndex key because not all colIndexes are used
@@ -217,8 +225,12 @@ public class TableModel {
 
 				for(int colIndex = 0; colIndex < column; colIndex++){
 
-					String cellValue = sheet.getCell(colIndex, rowIndex).getContents().replaceAll("'", "").trim().toLowerCase();
-
+					String cellValue;
+					
+					if(excelDirection.equals("UploadFileByRow"))
+						cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("'", "").trim().toLowerCase();
+					else
+						cellValue = sheet.getCell(colIndex, rowIndex).getContents().replaceAll("'", "").trim().toLowerCase();
 					System.out.println("The cell value is " + cellValue);
 					System.out.println("The size is =========== " + configuration.size());
 
@@ -350,8 +362,19 @@ public class TableModel {
 
 										values.clear();
 
-										if(cellValue.equalsIgnoreCase("yes"))
-											values.add(true);
+										if(field.getRelationString().equalsIgnoreCase(Measurement.TEMPORAL))
+										{
+											if(cellValue.equalsIgnoreCase("yes"))
+											{
+												values.add(true);
+											}else{
+												values.add(false);
+											}
+											
+										}else{
+											if(cellValue.equalsIgnoreCase("yes"))
+												values.add(true);
+										}
 
 									}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(String.class)){
 
@@ -512,7 +535,9 @@ public class TableModel {
 			}
 			
 			db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
-
+			
+			HashMap<String, List<String>> subProtocolAndProtocol = new HashMap<String, List<String>>();
+			
 			for(InvestigationElement p : protocolList)
 			{
 
@@ -532,9 +557,18 @@ public class TableModel {
 						p.set(Protocol.FEATURES, featuresId);
 					}
 				}
+				
+				if(p.get(Protocol.SUBPROTOCOLS_NAME) != null){
+					
+					if(!subProtocolAndProtocol.containsKey(p.getName())){
+						subProtocolAndProtocol.put(p.getName(), (List<String>) p.get(Protocol.SUBPROTOCOLS_NAME));
+					}
+					List<String> newList = new ArrayList<String>();
+					p.set(Protocol.SUBPROTOCOLS_NAME, newList);
+				}
 			}
 
-			db.update(protocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
+			db.update(protocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.INVESTIGATION_NAME);
 
 			List<InvestigationElement> subProtocols = new ArrayList<InvestigationElement>();
 
@@ -544,7 +578,7 @@ public class TableModel {
 			{
 				if(!subProtocols.contains(p)){
 
-					List<String> subProtocol_names = (List<String>) p.get(Protocol.SUBPROTOCOLS_NAME);
+					List<String> subProtocol_names = subProtocolAndProtocol.get(p.getName());
 
 					if(subProtocol_names.size() > 0)
 					{
@@ -623,5 +657,11 @@ public class TableModel {
 		{
 			this.investigationName = investigationName;
 		}
+	}
+
+	public void setDirection(String excelDirection) {
+		
+		this.excelDirection  = excelDirection;
+		
 	}
 }
