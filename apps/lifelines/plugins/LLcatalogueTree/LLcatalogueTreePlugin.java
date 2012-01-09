@@ -255,7 +255,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	}
 
 	public String getTreeView() {
-		return treeView.toHtml();
+		List<String> selected = new ArrayList<String>();
+		for (Measurement m : shoppingCart) {
+			selected.add(m.getName());
+		}
+		return treeView.toHtml(selected);
 	}
 
 	public List<Measurement> getShoppingCart() {
