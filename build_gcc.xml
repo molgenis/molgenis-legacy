@@ -41,9 +41,6 @@
 		<pathelement location="apps/gids" />
 		<pathelement location="apps/wormqtl" />
 		<pathelement location="apps/lifelinesresearchportal" />
-		<!--
-		<pathelement location="apps/lifelines" />
-		-->
 		<pathelement location="apps/maze" />
 		<pathelement location="apps/xgap" />
 		<pathelement location="apps/compute" />

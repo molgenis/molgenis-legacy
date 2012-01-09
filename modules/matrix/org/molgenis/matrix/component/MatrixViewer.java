@@ -35,6 +35,7 @@ import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.JQueryDataTable;
+import org.molgenis.framework.ui.html.MenuInput;
 import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.Paragraph;
@@ -255,33 +256,41 @@ public class MatrixViewer extends HtmlWidget
 		// download options
 		if (showDownloadOptions)
 		{
-			// TODO: turn into menu with actions
+			MenuInput menu = new MenuInput("Download", "Download");
 			ActionInput downloadAllCsv = new ActionInput(DOWNLOADALLCSV, "", "All to CSV");
 			downloadAllCsv.setIcon("generated-res/img/download.png");
-			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
-					+ downloadAllCsv.render() + "</div>";
+			menu.AddAction(downloadAllCsv);
+			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+			//		+ downloadAllCsv.render() + "</div>";
 			ActionInput downloadVisCsv = new ActionInput(DOWNLOADVISCSV, "", "Visible to CSV");
 			downloadVisCsv.setIcon("generated-res/img/download.png");
-			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
-					+ downloadVisCsv.render() + "</div>";
-			
+			menu.AddAction(downloadVisCsv);
+			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+			//		+ downloadVisCsv.render() + "</div>";
 			ActionInput downloadAllExcel = new ActionInput(DOWNLOADALLEXCEL, "", "All to Excel");
 			downloadAllExcel.setIcon("generated-res/img/download.png");
-			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
-					+ downloadAllExcel.render() + "</div>";
+			menu.AddAction(downloadAllExcel);
+			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+			//		+ downloadAllExcel.render() + "</div>";
 			ActionInput downloadVisExcel = new ActionInput(DOWNLOADVISEXCEL, "", "Visible to Excel");
 			downloadVisExcel.setIcon("generated-res/img/download.png");
-			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
-					+ downloadVisExcel.render() + "</div>";
+			menu.AddAction(downloadVisExcel);
+			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+			//		+ downloadVisExcel.render() + "</div>";
 			ActionInput downloadAllSPSS = new ActionInput(DOWNLOADALLSPSS, "", "All to SPSS");
 			downloadAllSPSS.setIcon("generated-res/img/download.png");
-			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
-					+ downloadAllSPSS.render() + "</div>";
-			
+			menu.AddAction(downloadAllSPSS);
+			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+			//		+ downloadAllSPSS.render() + "</div>";
 			ActionInput downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "", "Visible to SPSS");
 			downloadVisSPSS.setIcon("generated-res/img/download.png");
+			menu.AddAction(downloadVisSPSS);
+			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
+			//		+ downloadVisSPSS.render() + "</div>";
+			
 			divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
-					+ downloadVisSPSS.render() + "</div>";
+				+ menu.render() + "</div>";
+
 		}
 
 		return divContents;
