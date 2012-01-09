@@ -81,8 +81,8 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 				}
 				else
 				{
-				items += "<li><a href=\"#\" onclick=\""+action.getJavaScriptAction()+"\">" + action.getButtonValue()
-						+ "</a></li>";
+					items += "<li><a href=\"#\" onclick=\"" + action.getJavaScriptAction()+"\">" + 
+						action.getButtonValue() + "</a></li>";
 				}
 			}
 			else
@@ -90,21 +90,21 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 				MenuInput menu = (MenuInput) item;
 				if(this.equals(root))
 				{
-					items += "<button onclick=\"return false;\">"+menu.getLabel()+"</button>"+ menu.render(root);
+					items += "<button onclick=\"return false;\">"+menu.getLabel()+"</button>" + 
+						menu.render(root);
 				}
 				else
 				{
 					items += "<li><a href=\"#\">" + menu.getLabel() + "</a>"
-							+ menu.render(root) + "</li>";
+						+ menu.render(root) + "</li>";
 				}
 			}
 		}
 
 		if (this.equals(root))
 		{
-			return "<div id=\""+getId()+"\" class=\"ui-widget ui-widget-content ui-corner-all\">"+items+"</div><script>$('#"+getId()+"').menubar();</script>";
-			
-			
+			return "<div id=\""+getId()+"\" class=\"ui-widget ui-widget-content ui-corner-all\">" + 
+				items + "</div><script>$('#" + getId() + "').menubar();</script>";
 			
 //			String result = "<ul id=\""+getId()+"\">" + items
 //					+ "</ul>" + "<script>$('#" + this.getId()
@@ -127,9 +127,10 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 //				result += "flyOut: true";
 //			result +="});</script>";
 //			return result;
-		}
-		else
+			
+		} else {
 			return "<ul>" + items + "</ul>";
+		}
 	}
 
 	@Override
