@@ -116,7 +116,7 @@ public class MolgenisOptions
 
 	/** Database user password */
 	@Option(name = "db_password", param = Option.Param.PASSWORD, type = Option.Type.OPTIONAL_ARGUMENT, usage = "Password for database. Default: ''")
-	public String db_password = "";
+	public String db_password = "molgenis";
 
 	/** Database uri. For example: jdbc:mysql://localhost/molgenis" */
 	@Option(name = "db_uri", param = Option.Param.STRING, type = Option.Type.REQUIRED_ARGUMENT, usage = "Uri of the database. Default: 'jdbc:mysql://localhost/molgenis?innodb_autoinc_lock_mode=2'")
