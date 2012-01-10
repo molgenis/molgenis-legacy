@@ -212,6 +212,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 		try {
 	
+			this.arrayInvestigations.clear();
 			for (Investigation i: db.find(Investigation.class)) {
 				this.arrayInvestigations.add(i);
 			}
