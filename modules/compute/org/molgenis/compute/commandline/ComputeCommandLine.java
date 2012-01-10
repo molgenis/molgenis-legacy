@@ -334,7 +334,12 @@ public class ComputeCommandLine
 
 	private String getworkflowfilename() {
 		String[] workflowfilenamelist = this.workflowfile.toString().split(File.separator);
-		return workflowfilenamelist[workflowfilenamelist.length - 1];
+		String f = workflowfilenamelist[workflowfilenamelist.length - 1];
+		
+		// replace dots with underscore, because qsub does not allow for dots in job names or so...
+		f = f.replace('.', '_');
+		
+		return f;
 	}
 	
 	/** Convert all compute jobs into scripts + submit.sh */
@@ -366,7 +371,7 @@ public class ComputeCommandLine
 				submitWriter.println("#"+job.getName());
 				submitWriter.println(job.getName()+"=$(qsub -N "+job.getName()+" "+dependency+" "+job.getName()+".sh)");
 				submitWriter.println("echo $"+job.getName());
-				submitWriter.println("sleep 1");
+				submitWriter.println("sleep 5");
 				
 				// produce .sh file in outputdir for each job
 				PrintWriter jobWriter = new PrintWriter(new File(outputdir + File.separator + job.getName() + ".sh"));
@@ -374,7 +379,7 @@ public class ComputeCommandLine
 				// write headers (depends on backend)
 				jobWriter.println("#!/bin/bash");
 				jobWriter.println("#PBS -N " + job.getName());
-				jobWriter.println("#PBS -q test");
+				jobWriter.println("#PBS -q umcg");
 				jobWriter.println("#PBS -l nodes=1:ppn=" + job.getCores());
 				jobWriter.println("#PBS -l walltime=" + job.getWalltime());
 				jobWriter.println("#PBS -l mem=" + job.getMem() + "gb");
