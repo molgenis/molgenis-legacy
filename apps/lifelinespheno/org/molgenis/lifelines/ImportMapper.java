@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManager;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.lifelines.ThreadReaders.CSVFileSpliter;
 import org.molgenis.lifelines.listeners.LifeLinesStandardListener;
 import org.molgenis.lifelines.listeners.VWCategoryListener;
 import org.molgenis.lifelines.listeners.VwDictListener;
@@ -43,7 +42,7 @@ public class ImportMapper {
 	public static void main(String[] args) throws Exception
 	{
 		//path to directory with csv files
-		String path = "/Users/jorislops/Desktop/LifelinesCSV7/";
+		String path = "/Users/jorislops/Desktop/MOLGENIS1/";
 		
 		//target for output, either CsvWriter or Database
 		Database db = DatabaseFactory.create();
@@ -87,7 +86,7 @@ public class ImportMapper {
 				continue;
 			}
 				
-			CSVFileSpliter csvFileSpliter = new CSVFileSpliter(path + "VW_" + protocol.getName() +"_DATA.csv", 1000, primaryKeyColumn);
+			org.molgenis.lifelines.CSVFileSpliter csvFileSpliter = new org.molgenis.lifelines.CSVFileSpliter(path + "VW_" + protocol.getName() +"_DATA.csv", 1000, primaryKeyColumn);
 			
 			LifeLinesStandardListener.resetRowCount();
 			
@@ -114,3 +113,4 @@ public class ImportMapper {
 	}
 	
 }
+
