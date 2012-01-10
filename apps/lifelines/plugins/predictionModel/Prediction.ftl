@@ -312,10 +312,17 @@
 		</script>
 			<div class="screenpadding" id = "screenpadding">	
 			    <h3 id="test"> Import dataShaper data to pheno model  </h3>
+		        <h4> Please select the file </h4>
+		        <input type="file" name = "uploadFile"/><br /><br />
+		        
+		        <h4> Please choose ONE of the followinf options: </h4>
+		        
 		        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
 		        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
-		        <input type="file" name = "uploadFile"/><br /><br />
+		        
+		        <h4> ...now you can finish with choosing import: </h4>
 		        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/><br /><br />
+				
 				<!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
  				
 				<#list screen.getDataTypeOptions() as dataTypeOptions>
