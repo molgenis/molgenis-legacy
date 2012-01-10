@@ -7,8 +7,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -108,7 +110,8 @@ public class MatrixViewer extends HtmlWidget
 	public String REMALLCOLHEADERFILTER = getName() + "_remAllColHeaderFilter";
 	public String MEASUREMENTCHOOSER = getName() + "_measurementChooser";
 	public String OPERATOR = getName() + "_operator";
-
+	private String stat;
+	private String extension;
 	// hack to pass database to toHtml() via toHtml(db)
 	private Database db;
 
@@ -199,7 +202,7 @@ public class MatrixViewer extends HtmlWidget
 			String result = "<div style=\"width:auto\">";
 			if (downloadLink != null)
 			{
-				result += "<div><p><a href=\"tmpfile/" + downloadLink + "\">Download your export</a></p></div>";
+				result += "<div><p><a href=\"tmpfile/" + downloadLink + "\">Download your export ("+downloadLink+")</a></p></div>";
 			}
 			result += "<table style=\"width:auto\"><tr><td>";
 			result += renderHeader();
@@ -624,6 +627,19 @@ public class MatrixViewer extends HtmlWidget
 		matrix.reload();
 	}
 
+	public String selectDate(){
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		Date dat = new Date();
+		return dateFormat.format(dat);
+	}
+	
+	public File file(String visAll,String extension){
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File file = new File(tmpDir.getAbsolutePath() + File.separatorChar + "Export"+visAll+"_"+selectDate()+"."+extension);
+		return file; 
+	}
+	
+	
 	public void downloadAllCsv(Database db, Tuple t) throws MatrixException, IOException
 	{
 		// remember old limits and offset
@@ -635,8 +651,10 @@ public class MatrixViewer extends HtmlWidget
 		// max for batching
 		int maxRow = matrix.getRowCount();
 
-		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File file = new File(tmpDir.getAbsolutePath() + File.separatorChar + "download.csv");
+		stat = "_All";
+		extension = "csv";
+
+		File file = file(stat,extension);
 		CsvWriter writer = new CsvFileWriter(file);
 		writer.setSeparator(",");
 
@@ -687,11 +705,17 @@ public class MatrixViewer extends HtmlWidget
 		downloadLink = file.getName();
 	}
 
+	
+	
 	public void downloadVisibleCsv(Database db, Tuple t) throws MatrixException, IOException
 	{
 		List<?> rows = matrix.getRowHeaders();
 		List<?> cols = matrix.getColHeaders();
 		List<? extends ObservedValue>[][] values = null;
+		stat = "_Visible";
+		extension = "xls";
+
+		File file = file(stat,extension);
 		try
 		{
 			values = (List<? extends ObservedValue>[][]) matrix.getValueLists();
@@ -700,18 +724,17 @@ public class MatrixViewer extends HtmlWidget
 		{
 			//values = matrix.getValues();
 		}
-		downloadCsv(rows, cols, values);
+		downloadCsv(rows, cols, values,file);
 	}
 
-	public void downloadCsv(List<?> rows, List<?> cols, List<? extends ObservedValue>[][] values) throws IOException, MatrixException
+	public void downloadCsv(List<?> rows, List<?> cols, List<? extends ObservedValue>[][] values,File file) throws IOException, MatrixException
 	{
 		if (this.matrix instanceof DatabaseMatrix)
 		{
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
 
-		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File file = new File(tmpDir.getAbsolutePath() + File.separatorChar + "download.csv");
+
 		CsvWriter writer = new CsvFileWriter(file);
 		writer.setSeparator(",");
 
@@ -783,12 +806,15 @@ public class MatrixViewer extends HtmlWidget
 		String target = "name";
 		
 		/* Create tmp file */
-		File excelFile = new File(System.getProperty("java.io.tmpdir") + File.separatorChar + "download.xls");
-		System.out.println(excelFile);
+		stat = "_All";
+		extension = "xls";
+
+		File file = file(stat,extension);
+		System.out.println(file);
 		/* Create new Excel workbook and sheet */
 		WorkbookSettings ws = new WorkbookSettings();
 		ws.setLocale(new Locale("en", "EN"));
-		WritableWorkbook workbook = Workbook.createWorkbook(excelFile, ws);
+		WritableWorkbook workbook = Workbook.createWorkbook(file, ws);
 		WritableSheet s = workbook.createSheet("Sheet1", 0);
 
 		/* Format the fonts */
@@ -850,7 +876,7 @@ public class MatrixViewer extends HtmlWidget
 		matrix.setColOffset(colOffset);
 		matrix.setColLimit(colLimit);
 
-		downloadLink = excelFile.getName();
+		downloadLink = file.getName();
 	}
 	
 	public void downloadVisibleExcel(Database db, Tuple t) throws Exception
@@ -885,12 +911,14 @@ public class MatrixViewer extends HtmlWidget
 			}
 		}
 		/* Create tmp file */
-		File excelFile = new File(System.getProperty("java.io.tmpdir") + File.separatorChar + "download.xls");
-		System.out.println(excelFile);
+		stat = "_Visible";
+		extension = "xls";
+
+		File file = file(stat,extension);
 		/* Create new Excel workbook and sheet */
 		WorkbookSettings ws = new WorkbookSettings();
 		ws.setLocale(new Locale("en", "EN"));
-		WritableWorkbook workbook = Workbook.createWorkbook(excelFile, ws);
+		WritableWorkbook workbook = Workbook.createWorkbook(file, ws);
 		WritableSheet s = workbook.createSheet("Sheet1", 0);
 
 		/* Format the fonts */
@@ -952,7 +980,7 @@ public class MatrixViewer extends HtmlWidget
 		workbook.write();
 		workbook.close();
 
-		downloadLink = excelFile.getName();
+		downloadLink = file.getName();
 	}
 
 	public void downloadVisibleSPSS(Database db, Tuple t) throws Exception
@@ -960,10 +988,12 @@ public class MatrixViewer extends HtmlWidget
 		if (this.matrix instanceof DatabaseMatrix) {
 			((DatabaseMatrix) this.matrix).setDatabase(db);
 		}
-		File spssFile = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator + "download.sav");
+		stat = "_Visible";
+		extension = "sav";
+
+		File file = file(stat,extension);
 		
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(spssFile));
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
 		spssWriter.setCalculateNumberOfCases(false);
 		spssWriter.addDictionarySection(-1);
@@ -1016,7 +1046,7 @@ public class MatrixViewer extends HtmlWidget
 		
 		spssWriter.addFinishSection();
 		out.close();
-		downloadLink = spssFile.getName();
+		downloadLink = file.getName();
 	}
 		
 	public void downloadAllSPSS(Database db, Tuple t) throws MatrixException, IOException
@@ -1030,10 +1060,11 @@ public class MatrixViewer extends HtmlWidget
 		// max for batching
 		int maxRow = matrix.getRowCount();
 //
-		File spssFile = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator + "download.sav");
-		
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(spssFile));
+		stat = "_All";
+		extension = "sav";
+
+		File file = file(stat,extension);
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
 		spssWriter.setCalculateNumberOfCases(false);
 		spssWriter.addDictionarySection(-1);
@@ -1079,7 +1110,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 		spssWriter.addFinishSection();
 		out.close();
-		downloadLink = spssFile.getName();
+		downloadLink = file.getName();
 
 		// restore limit and offset
 		matrix.setRowOffset(rowOffset);
