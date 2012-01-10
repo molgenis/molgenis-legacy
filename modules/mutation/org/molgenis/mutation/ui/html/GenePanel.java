@@ -16,6 +16,12 @@ public class GenePanel extends HtmlInput
 {
 	private List<ProteinDomainSummaryVO> proteinDomainSummaryVOList = new ArrayList<ProteinDomainSummaryVO>();
 	private String baseUrl                                          = "";
+	private Boolean showNames                                       = true;
+
+	public void setShowNames(Boolean showNames)
+	{
+		this.showNames = showNames;
+	}
 
 	@Override
 	public String toHtml()
@@ -24,20 +30,23 @@ public class GenePanel extends HtmlInput
 
 		result.appendln("<div class=\"scrollable\">");
 		result.appendln("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"  width=\"1%\">");
-		result.appendln("<tr>");
 
 		// first row: names
-		for (ProteinDomainSummaryVO proteinDomainSummaryVO : proteinDomainSummaryVOList)
+		if (this.showNames)
 		{
-			List<Exon> exons = proteinDomainSummaryVO.getExons();
-
-			if (exons.size() > 0)
+			result.appendln("<tr>");
+			for (ProteinDomainSummaryVO proteinDomainSummaryVO : proteinDomainSummaryVOList)
 			{
-				result.appendln("<td align=\"center\" valign=\"bottom\" colspan=\"" + exons.size() + "\" width=\"1%\">" + proteinDomainSummaryVO.getProteinDomain().getName() + " (exon " + exons.get(0).getNumber() + " - " + exons.get(exons.size() - 1).getNumber() + ")</td>");
+				List<Exon> exons = proteinDomainSummaryVO.getExons();
+	
+				if (exons.size() > 0)
+				{
+					result.appendln("<td align=\"center\" valign=\"bottom\" colspan=\"" + exons.size() + "\" width=\"1%\">" + proteinDomainSummaryVO.getProteinDomain().getName() + " (exon " + exons.get(0).getNumber() + " - " + exons.get(exons.size() - 1).getNumber() + ")</td>");
+				}
 			}
+			result.appendln("</tr>");
 		}
 
-		result.appendln("</tr>");
 		result.appendln("<tr>");
 
 		// second row: boxes

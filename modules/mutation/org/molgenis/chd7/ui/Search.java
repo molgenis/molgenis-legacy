@@ -26,6 +26,7 @@ public class Search extends SearchPlugin
 		this.setModel(new SearchModel(this));
 		this.setView(new FreemarkerView("SearchPlugin.ftl", this.getModel()));
 		this.getModel().setGeneName("CHD7");
+		this.getModel().getmBrowseVO().getGenePanel().setShowNames(false);
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
