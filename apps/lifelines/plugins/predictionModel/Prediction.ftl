@@ -320,8 +320,7 @@
 		        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
 		        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
 		        
-		        <h4> ...now you can finish with choosing import: </h4>
-		        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/><br /><br />
+		        
 				
 				<!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
  				
@@ -419,7 +418,10 @@
 					<label> <#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
 				</#if> 
 				<div id="mytable">
-				</div>				
+				</div>	
+				
+				<h4> ...now you can finish with choosing import: </h4>
+		        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/><br /><br />			
 			</div>
 		</div>
 	</div>
