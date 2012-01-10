@@ -510,9 +510,9 @@ public class TableModel {
 
 			}
 			
-			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING,ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
 			
-			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservationTarget.NAME);
+			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
 
 			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
 
@@ -604,9 +604,9 @@ public class TableModel {
 
 
 
-			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.CATEGORIES_NAME, Measurement.DATATYPE);
+			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 			
-			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
+			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
 			
 			//put all in the database, using right order
 			//TODO
