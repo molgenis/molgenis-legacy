@@ -43,11 +43,15 @@ public class SampleMatrixModel extends EasyPluginModel
 	String individualNavClass;
 	String personalNavClass;
 	String medicalNavClass;
+	String projectSpecificNavClass;
 	int selectedScreenI = 1;
 	int selectedScreenS = 1;
 	private Boolean checkIfInvestchanges = false;
 	private Boolean checkForPaging = false;
 	private String lastInvest = "";
+	boolean isProjectShared;
+	String investigation;
+	private List<String> measExport;
 	
 	
 	//another example, you can also use getInvestigations() and setInvestigations(...)
@@ -59,6 +63,14 @@ public class SampleMatrixModel extends EasyPluginModel
 	{
 		//each Model can access the controller to notify it when needed.
 		super(controller);
+	}
+	
+	public List<String> getMeasExport() {
+		return measExport;
+	}
+
+	public void setMeasExport(List<String> measExport) {
+		this.measExport = measExport;
 	}
 	
 	public String getAction() {
@@ -245,6 +257,30 @@ public class SampleMatrixModel extends EasyPluginModel
 
 	public void setLastInvest(String lastInvest) {
 		this.lastInvest = lastInvest;
+	}
+	
+	public boolean isProjectShared() {
+		return isProjectShared;
+	}
+
+	public void setProjectShared(boolean isProjectShared) {
+		this.isProjectShared = isProjectShared;
+	}
+
+	public String getInvestigation() {
+		return investigation;
+	}
+
+	public void setInvestigation(String investigation) {
+		this.investigation = investigation;
+	}
+
+	public String getProjectSpecificNavClass() {
+		return projectSpecificNavClass;
+	}
+
+	public void setProjectSpecificNavClass(String projectSpecificNavClass) {
+		this.projectSpecificNavClass = projectSpecificNavClass;
 	}
 	
 }

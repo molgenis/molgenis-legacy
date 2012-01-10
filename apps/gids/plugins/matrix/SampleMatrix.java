@@ -50,7 +50,9 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 	@Override
 	public void reload(Database db) throws Exception
 	{	
-
+		FormModel<Investigation> form = this.getParentForm(Investigation.class);
+		List<Investigation> investigationsList = form.getRecords();
+		getModel().setInvestigation(investigationsList.get(0).getName());
 		List<Protocol> listProtocols = db.query(Protocol.class).find();
 		if(listProtocols.size()==0){
 			getModel().error =true;
@@ -77,8 +79,15 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 					getModel().matrixViewerIndv = null;
 					getModel().medicalNavClass="nav1";
 				}else{getModel().medicalNavClass="nav";}
-	
-		
+
+				if(!getModel().getInvestigation().equals("Shared")){
+					if(getModel().selectedScreenI==4){
+						getModel().setChosenProtocolNameI(getModel().getInvestigation());
+						getModel().matrixViewerIndv = null;
+						getModel().projectSpecificNavClass="nav1";
+					}else{getModel().projectSpecificNavClass="nav";}
+				}
+				
 				if (getModel().selectedScreenS==1) {
 					getModel().setChosenProtocolNameS("Sample_info");	
 					getModel().matrixViewerSample = null;
@@ -124,39 +133,39 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 			
 			
 			
-			try{
+			try {
 				getModel().error=false;
-				FormModel<Investigation> form = this.getParentForm(Investigation.class);
-				List<Investigation> investigationsList = form.getRecords();
-				String invest = investigationsList.get(0).getName();
-			
-			
-				if(!getModel().getLastInvest().equals(invest)){
+				//FormModel<Investigation> form = this.getParentForm(Investigation.class);
+				//List<Investigation> investigationsList = form.getRecords();
+				getModel().setInvestigation(investigationsList.get(0).getName());
+				if(getModel().getInvestigation().equals("Shared")){
+					getModel().setProjectShared(true);
+				}
+				else{
+					getModel().setProjectShared(false);
+				}
+				if(!getModel().getLastInvest().equals(getModel().getInvestigation())){
 					getModel().setCheckIfInvestchanges(true);
-					System.out.println("Investchanges(true) ");
 				}
 				else{
 					if (!getModel().action.startsWith(getModel().SAMPLEMATRIXS)) {
-						getModel().setCheckIfInvestchanges(false);
-						System.out.println("Investchanges(false) ");
-					} else {
-						System.out.println("Investchanges remains true because you did a Matrix action");
-					}
+						getModel().setCheckIfInvestchanges(false);						
+					} 
 				}
 			
-				System.out.println(getModel().getLastInvest()+"\t"  + invest);
+
 				//Show sampleMatrix, with chosenProtocol name to be shown
-				if (getModel().matrixViewerSample == null  && !invest.equals("System"))  {
+				if (getModel().matrixViewerSample == null  && !(getModel().getInvestigation().equals("Shared")))  {
 					Protocol sampleInfoProt = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, getModel().chosenProtocolNameS)).get(0);
 					List<String> measurementsToShow = sampleInfoProt.getFeatures_Name();
 					
 					List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 					filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, GidsSample.INVESTIGATION_NAME, 
-							Operator.EQUALS, invest));
+							Operator.EQUALS, getModel().getInvestigation()));
 					
 					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIXS, 
 							new SliceablePhenoMatrix(GidsSample.class, Measurement.class), 
-							true, true, false, filterRules, 
+							true, true, true, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				}
 				// if samples are chosen, individualmatrix will be filled with chosenProtocol
@@ -180,11 +189,11 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 					
 					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIXS, 
 							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, false, filterRules, 
+							true, true, true, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShowIndividuals));
 				}
 				
-				getModel().setLastInvest(invest);
+				getModel().setLastInvest(getModel().getInvestigation());
 			
 			}
 			catch (Exception e) {
