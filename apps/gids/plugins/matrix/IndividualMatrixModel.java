@@ -40,6 +40,7 @@ public class IndividualMatrixModel extends EasyPluginModel
 	String individualNavClass;
 	String personalNavClass;
 	String medicalNavClass;
+	String projectSpecificNavClass;
 	String sampleNavClass;
 	String dnaNavClass;
 	String rnaNavClass;
@@ -286,6 +287,14 @@ public class IndividualMatrixModel extends EasyPluginModel
 
 	public void setInvestigation(String investigation) {
 		this.investigation = investigation;
+	}
+
+	public String getProjectSpecificNavClass() {
+		return projectSpecificNavClass;
+	}
+
+	public void setProjectSpecificNavClass(String projectSpecificNavClass) {
+		this.projectSpecificNavClass = projectSpecificNavClass;
 	}
 
 }

@@ -31,6 +31,7 @@ import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
+import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
@@ -66,6 +67,10 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 	@Override
 	public void reload(Database db) throws Exception
 	{	
+		FormModel<Investigation> form = this.getParentForm(Investigation.class);
+		List<Investigation> investigationsList = form.getRecords();
+		getModel().setInvestigation(investigationsList.get(0).getName());
+		
 		List<Protocol> listProtocols = db.query(Protocol.class).find();
 		if(listProtocols.size()==0){	
 			getModel().error=true;
@@ -92,7 +97,14 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 					getModel().matrixViewerIndv = null;
 					getModel().medicalNavClass="nav1";
 				}else{getModel().medicalNavClass="nav";}
-	
+
+				if(!getModel().getInvestigation().equals("Shared")){
+					if(getModel().selectedScreenI==4){
+						getModel().setChosenProtocolNameI(getModel().getInvestigation());
+						getModel().matrixViewerIndv = null;
+						getModel().projectSpecificNavClass="nav1";
+					}else{getModel().projectSpecificNavClass="nav";}
+				}
 		
 				if (getModel().selectedScreenS==1) {
 					getModel().setChosenProtocolNameS("Sample_info");	
@@ -141,8 +153,8 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 			
 			try {
 				getModel().error=false;
-				FormModel<Investigation> form = this.getParentForm(Investigation.class);
-				List<Investigation> investigationsList = form.getRecords();
+				//FormModel<Investigation> form = this.getParentForm(Investigation.class);
+				//List<Investigation> investigationsList = form.getRecords();
 				getModel().setInvestigation(investigationsList.get(0).getName());
 				if(getModel().getInvestigation().equals("Shared")){
 					getModel().setProjectShared(true);
@@ -169,7 +181,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 							Operator.EQUALS, getModel().getInvestigation()));
 					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIX, 
 							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, false, filterRules, 
+							true, true, true, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				}
 
@@ -179,7 +191,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 					List<MatrixQueryRule> showTheseIndividuals = new ArrayList<MatrixQueryRule>();
 
 					List<Integer> sampleidList = new ArrayList<Integer>();
-					 for (Integer indiId : getModel().getListIndividuals()){
+					for (Integer indiId : getModel().getListIndividuals()){
 						Individual individual = db.findById(Individual.class, indiId);
 						sampleidList.add(individual.getId());
 					}
@@ -213,94 +225,6 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 		}
 		
 	}
-	
-	public File getAsExcelFile(String investigation, MatrixViewer matrixI) throws Exception
-	   {
-		
-		List<Measurement> listCol = (List<Measurement>) matrixI.getMatrix().getColHeaders();
-		List<String> listC = new ArrayList<String>();
-		List<Individual> listRow = (List<Individual>) matrixI.getMatrix().getRowHeaders();
-		List<String> listR = new ArrayList<String>();
-		
-		ObservedValue[][] listVal = (ObservedValue[][])matrixI.getMatrix().getValueLists();
-		
-		//TODO Connection is CLOSED!! WHY???????
-		/*
-		if(((JDBCDatabase) this.getDatabase()).getConnection().isClosed()){
-			System.out.println("connection is closed");
-		}else{
-			System.out.println("connection is still open");
-		}
-		*/
-		
-		
-		for(Measurement m : listCol){
-			listC.add(m.getName());
-		}
-		for(Individual m : listRow){
-			listR.add(m.getName());
-		}		
-		
-//		
-	
-		Calendar start = Calendar.getInstance();
-		String dateAndTime = start.getTime().toString();
-			System.out.println(investigation + "\t"+ dateAndTime);
-	       /* Create tmp file */
-	       File excelFile = new File(System.getProperty("java.io.tmpdir")
-	               + File.separator + (investigation+dateAndTime) + ".xls");
-
-	       /* Create new Excel workbook and sheet */
-	       WorkbookSettings ws = new WorkbookSettings();
-	       ws.setLocale(new Locale("en", "EN"));
-	       WritableWorkbook workbook = Workbook.createWorkbook(excelFile, ws);
-	       WritableSheet s = workbook.createSheet("Sheet1", 0);
-
-	       /* Format the fonts */
-	       WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10,
-	               WritableFont.BOLD);
-	       WritableCellFormat headerFormat = new WritableCellFormat(headerFont);
-	       headerFormat.setWrap(false);
-	       WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10,
-	               WritableFont.NO_BOLD);
-	       WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
-	       cellFormat.setWrap(false);
-
-	       // Write column headers 
-	       for (int i = 0; i < listC.size(); i++)
-	       {
-	           Label l = new Label(i + 1, 0, listC.get(i), headerFormat);
-	           s.addCell(l);
-	       }
-
-	       // Write row headers 
-	       for (int i = 0; i < listR.size(); i++)
-	       {
-	           Label l = new Label(0, i + 1, listR.get(i), headerFormat);
-	           s.addCell(l);
-	       }
-
-	       // Write elements 
-	       for (int i = 0; i < listC.size(); i++)
-	       {
-	           for (int j = 0; j < listR.size(); j++)
-	           {
-	               if (listVal[j][i] != null)
-	               {
-	                   Label l = new Label(i + 1, j + 1,
-	                		   listVal[j][i].toString(), cellFormat);
-	                   s.addCell(l);
-	               }
-	               else
-	               {
-	                   s.addCell(new Label(i + 1, j + 1, "", cellFormat));
-	               }
-	           }
-	       }
-	       workbook.write();
-	       workbook.close();
-	       return excelFile;
-	   }
 	
 	
 	@Override
@@ -343,9 +267,18 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 				getModel().setListIndividuals(listIndividualIds);
 				getModel().matrixViewerSample = null;						
 			}
+
+				//getAsExcelFile(getModel().getInvestigation(),getModel().matrixViewerIndv);	
+				
 			
-			if (getModel().action.equals("downVisXcel")) {
-				getAsExcelFile(getModel().getInvestigation(),getModel().matrixViewerIndv);	
+			if (getModel().action.equals("downAllXcel")) {
+				getModel().matrixViewerIndv.setDatabase(db);
+				if (getModel().matrixViewerIndv.getMatrix() instanceof DatabaseMatrix) {
+					((DatabaseMatrix) getModel().matrixViewerIndv.getMatrix()).setDatabase(db);
+				}
+				getModel().matrixViewerIndv.getMatrix().reset();
+				//getAsExcelFile(getModel().getInvestigation(),getModel().matrixViewerIndv);	
+				
 			}
 			
 			
