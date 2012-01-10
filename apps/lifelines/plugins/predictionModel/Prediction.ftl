@@ -315,7 +315,7 @@
 		        <h4> Please select the file </h4>
 		        <input type="file" name = "uploadFile"/><br /><br />
 		        
-		        <h4> Please choose ONE of the followinf options: </h4>
+		        <h4> Please choose ONE of the following options: </h4>
 		        
 		        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
 		        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
