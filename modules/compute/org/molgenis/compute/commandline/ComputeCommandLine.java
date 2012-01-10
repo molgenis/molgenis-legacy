@@ -1,12 +1,17 @@
 package org.molgenis.compute.commandline;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -17,9 +22,10 @@ import java.util.Set;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.commandline.options.Options;
-import org.molgenis.compute.workflowgenerator.WorkflowGeneratorDB;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
+
+import com.google.common.io.Files;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -81,14 +87,14 @@ public class ComputeCommandLine
 				// if walltime, cores, mem not specified in protocol, then use value from worksheet
 				String walltime = (protocol.getWalltime() == null ? worksheet.getdefaultvalue("walltime") : protocol.getWalltime());
 				job.setWalltime(walltime);
-				Integer cores = (protocol.getCores()  == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
+				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
 				job.setCores(cores);
-				Integer mem = (protocol.getMem()  == null ? Integer.parseInt(worksheet.getdefaultvalue("mem")) : protocol.getMem());
+				Integer mem = (protocol.getMem() == null ? Integer.parseInt(worksheet.getdefaultvalue("mem")) : protocol.getMem());
 				job.setMem(mem);
 
 				// set jobname. If a job starts/completes, we put this in a logfile
 				work.set("jobname", job.getName());
-				
+
 				// record in worksheet job names for each element
 				// (in column with same name as wfe)
 				// this.worksheet.set(targets, work, wfe.getName(), job.getName());
@@ -155,12 +161,12 @@ public class ComputeCommandLine
 			dependencies.add(cj.getName());
 		}
 		job.getPrevSteps_Name().addAll(dependencies);
-		
+
 		// add the script
 		job.setComputeScript("touch $PBS_O_WORKDIR" + File.separator + getworkflowfilename() + ".finished");
-		
+
 		this.jobs.add(job);
-		
+
 		// print("compute parameters: " + computeBundle.getComputeParameters().toString());
 		// print("user parameters: " + computeBundle.getUserParameters());
 		// print("full worksheet: " + computeBundle.getWorksheet());
@@ -170,16 +176,16 @@ public class ComputeCommandLine
 	private String stepnr(String wfeName)
 	{
 		// retrieve step number of wfeName in total workflow
-		
+
 		List<WorkflowElement> workflow = computeBundle.getWorkflowElements();
-		for (int i=0; i < workflow.size(); i++)
+		for (int i = 0; i < workflow.size(); i++)
 		{
 			if (wfeName.equalsIgnoreCase(workflow.get(i).getName()))
 			{
-				return("s" + (i < 10 ? "0" : "") + i + "_");
+				return ("s" + (i < 10 ? "0" : "") + i + "_");
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -200,7 +206,7 @@ public class ComputeCommandLine
 			{
 				jobName += "_" + tuple.getString(target);
 			}
-		
+
 		return stepnr(wfe.getName()) + jobName;
 	}
 
@@ -228,7 +234,7 @@ public class ComputeCommandLine
 		template.process(parameters, filledtemplate);
 
 		// put debug info in script
-		String script 	= "\n#####\n";
+		String script = "\n#####\n";
 		script = script + "## The following ${parameters} are values:\n";
 		script = script + "##   - " + worksheet.foldon + "\n";
 		script = script + "##   - " + worksheet.getConstants() + "\n";
@@ -249,21 +255,21 @@ public class ComputeCommandLine
 		return null;
 	}
 
-//	public String[] parseHeaderElement(String header, String protocol)
-//	{
-//		int posInput = protocol.indexOf(header) + header.length();
-//		int posNewLine = protocol.indexOf("\n", posInput);
-//		String list = protocol.substring(posInput, posNewLine);
-//
-//		String[] elements = list.split(",");
-//
-//		for (int i = 0; i < elements.length; i++)
-//		{
-//			elements[i] = elements[i].trim();
-//		}
-//
-//		return elements;
-//	}
+	// public String[] parseHeaderElement(String header, String protocol)
+	// {
+	// int posInput = protocol.indexOf(header) + header.length();
+	// int posNewLine = protocol.indexOf("\n", posInput);
+	// String list = protocol.substring(posInput, posNewLine);
+	//
+	// String[] elements = list.split(",");
+	//
+	// for (int i = 0; i < elements.length; i++)
+	// {
+	// elements[i] = elements[i].trim();
+	// }
+	//
+	// return elements;
+	// }
 
 	public static void main(String[] args)
 	{
@@ -320,7 +326,7 @@ public class ComputeCommandLine
 		try
 		{
 			ccl.generateJobs();
-
+			ccl.copyWorksheetAndWorkflow();
 			ccl.generateScripts();
 		}
 		catch (Exception e)
@@ -332,16 +338,36 @@ public class ComputeCommandLine
 		System.exit(0);
 	}
 
-	private String getworkflowfilename() {
+	private void copyWorksheetAndWorkflow()
+	{
+		try
+		{
+			for (File f : Arrays.asList(this.workflowfile, this.worksheetfile))
+			{
+				String[] filenamelist = f.toString().split(File.separator);
+				String filename = filenamelist[filenamelist.length - 1];
+				
+				Files.copy(f, new File(this.outputdir + File.separator + filename));
+			}
+		}
+		catch (IOException e1)
+		{
+			e1.printStackTrace();
+		}
+
+	}
+
+	private String getworkflowfilename()
+	{
 		String[] workflowfilenamelist = this.workflowfile.toString().split(File.separator);
 		String f = workflowfilenamelist[workflowfilenamelist.length - 1];
-		
+
 		// replace dots with underscore, because qsub does not allow for dots in job names or so...
 		f = f.replace('.', '_');
-		
+
 		return f;
 	}
-	
+
 	/** Convert all compute jobs into scripts + submit.sh */
 	private void generateScripts()
 	{
@@ -350,7 +376,7 @@ public class ComputeCommandLine
 		{
 			// and produce submit.sh
 			PrintWriter submitWriter = new PrintWriter(new File(outputdir + File.separator + "submit.sh"));
-			
+
 			// touch "workflow file name".started in same directory as submit.sh, when starting submit.sh
 			submitWriter.println("DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd )\"");
 			submitWriter.println("touch $DIR" + File.separator + getworkflowfilename() + ".started");
@@ -359,20 +385,20 @@ public class ComputeCommandLine
 			{
 				// create submit in submit.sh
 				String dependency = "";
-				if(job.getPrevSteps_Name().size() > 0)
+				if (job.getPrevSteps_Name().size() > 0)
 				{
 					dependency = "-W depend=afterok";
-				
-					for(String previous: job.getPrevSteps_Name())
+
+					for (String previous : job.getPrevSteps_Name())
 					{
-						dependency += ":$"+previous;
+						dependency += ":$" + previous;
 					}
 				}
-				submitWriter.println("#"+job.getName());
-				submitWriter.println(job.getName()+"=$(qsub -N "+job.getName()+" "+dependency+" "+job.getName()+".sh)");
-				submitWriter.println("echo $"+job.getName());
+				submitWriter.println("#" + job.getName());
+				submitWriter.println(job.getName() + "=$(qsub -N " + job.getName() + " " + dependency + " " + job.getName() + ".sh)");
+				submitWriter.println("echo $" + job.getName());
 				submitWriter.println("sleep 5");
-				
+
 				// produce .sh file in outputdir for each job
 				PrintWriter jobWriter = new PrintWriter(new File(outputdir + File.separator + job.getName() + ".sh"));
 
@@ -383,8 +409,8 @@ public class ComputeCommandLine
 				jobWriter.println("#PBS -l nodes=1:ppn=" + job.getCores());
 				jobWriter.println("#PBS -l walltime=" + job.getWalltime());
 				jobWriter.println("#PBS -l mem=" + job.getMem() + "gb");
-				jobWriter.println("#PBS -e "+job.getName()+".err");
-				jobWriter.println("#PBS -o "+job.getName()+".out");
+				jobWriter.println("#PBS -e " + job.getName() + ".err");
+				jobWriter.println("#PBS -o " + job.getName() + ".out");
 
 				// write the script
 				jobWriter.println(job.getComputeScript());
@@ -393,7 +419,7 @@ public class ComputeCommandLine
 
 				jobWriter.close();
 			}
-			
+
 			submitWriter.close();
 		}
 		catch (FileNotFoundException e)
