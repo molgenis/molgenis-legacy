@@ -10,11 +10,13 @@
     
     
 		<menu name="catalogueOverview" label="Catalogue Overview">
-			<form name="investigation" entity="Investigation" label="Investigation" />
-			<form name="measurement" entity="Measurement" label="Measurement" />
-			<form name="protocol" entity="Protocol" label="Protocol" />
-			<form name="category" entity="Category" label="Category" />
-			<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
+			<form name="investigation" entity="Investigation" label="Investigation">
+				<form name="measurement" entity="Measurement" label="Measurement" />
+				<form name="protocol" entity="Protocol" label="Protocol" />
+				<form name="observationTarget" entity="ObservationTarget" label="Observation Target" >
+					<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
+				</form>
+			</form>
 			<!-- <form name="themeProtocol" entity="themeProtocol" label="Theme" />
 			<form name="groupTheme" entity="groupTheme" label="Group" /> -->
 			<!--form name="Panel" entity="Panel" label="Panel" />
@@ -24,13 +26,16 @@
 		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="Catalogue Tree" />  
 		<plugin name="MeasurementsOrderForm" type="plugins.data.MeasurementsOrderForm" label="Your Current Orders" />  
 		<plugin name="OldPlacedOrders" type="plugins.data.OldPlacedOrders" label="Your Old Orders" />  
-
+		<plugin name="Prediction" type="plugins.predictionModel.Prediction" label="Prediction Model"/>
 		<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" />  -->
 		<menu name="ImportData" label="Import Data">
 			<plugin name="LLDataImportExcel" type="plugins.data.LLDataImportExcel" label="Import LL data"  />
 			<plugin name="DataShaperImportExcel" type="plugins.data.DataShaperImportExcel" label="Import DataShaper data"  />
 			<!-- <plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" /> -->
 		</menu>
+		
+		<plugin label="Matrix Viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
+		
 		<menu name="Admin">
 		  <plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
 		  <plugin name="Settings" type="plugins.system.settings.Settings" />
