@@ -25,17 +25,24 @@
 		</#list>
 		<div class="screenbody">
 			<div class="screenpadding">
-			<#--plugin code from here -->
-			
-				<div id="leftSide">
-					${screen.getTreeView()}
-				</div><br/>
+				<h4> Choose an investigation</h4> 
+				<select name="investigation" id="investigation"> 
+					<#list screen.arrayInvestigations as inv>
+						<option value="${inv.name}">${inv.name}</option>			
+					</#list>
+				</select>
+				<input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"/>
 				
-				<div id="ShoopingCartButton">
-					<input type="submit" name="orderMeasurementsSubmit" value="Order" onclick="__action.value='OrderMeasurements';"/>
-				</div>
-				
-			<#--plugin code until here -->	
+			   <#if screen.isSelectedInv() == true>
+					<div id="leftSide">
+						${screen.getTreeView()}
+					</div><br/>
+					
+					<div id="ShoopingCartButton">
+						<input type="submit" name="orderMeasurementsSubmit" value="Order" onclick="__action.value='OrderMeasurements';"/>
+					</div>
+				</#if>
+					
 			</div>
 		</div>
 	</div>

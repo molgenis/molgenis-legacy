@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +18,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.html.CheckboxInput;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
@@ -35,6 +34,10 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	private HashMap<String, Protocol> nameToProtocol;
 	private HashMap<String, JQueryTreeViewElementMeasurement> labelToTree;
 	private List<Measurement> shoppingCart = new ArrayList<Measurement>();
+	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
+	private String selectedInvestigation = null;
+	private boolean isSelectedInv = false; 
+
 	
 	public LLcatalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -46,10 +49,13 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
     }
 	
 	public void handleRequest(Database db, Tuple request) {
-
+		
 		try {
-			if ("OrderMeasurements".equals(request.getAction())) {
-				this.addMeasurementsToTree(db, request);
+			if ("chooseInvestigation".equals(request.getAction())) {
+				selectedInvestigation = request.getString("investigation");
+				arrayInvestigations.clear();
+			} else if ("OrderMeasurements".equals(request.getAction())) {
+				this.addMeasurementsToTree(db, request, selectedInvestigation);
 				
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 				
@@ -65,11 +71,12 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 	}
 
-	private void addMeasurementsToTree(Database db, Tuple request) throws DatabaseException, IOException {
+	private void addMeasurementsToTree(Database db, Tuple request, String selectedInvestigation) throws DatabaseException, IOException {
 		
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement names,
 		// so we can easily get them from the request
+		
 		List<Measurement> allMeasList  = db.find(Measurement.class);
 		for (Measurement m : allMeasList) {
 			if (request.getBool(m.getName()) != null) {
@@ -204,10 +211,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		nameToProtocol = new HashMap<String, Protocol>();
 
 		try {
+	
+			for (Investigation i: db.find(Investigation.class)) {
+				this.arrayInvestigations.add(i);
+			}
 			
-			for (Protocol p : db.find(Protocol.class/*, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "DataShaper")*/)) {
-				// Hardcoded filter should go!!! Otherwise this only works for one situation
-
+			for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation))) {
+				
+				setSelectedInv(true);
 				List<String> subNames = p.getSubprotocols_Name();
 
 				if (!nameToProtocol.containsKey(p.getName())) {
@@ -265,5 +276,23 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	public List<Measurement> getShoppingCart() {
 		return shoppingCart;
 	}
+
+	public void setArrayInvestigations(List<Investigation> arrayInvestigations) {
+		this.arrayInvestigations = arrayInvestigations;
+	}
+
+	public List<Investigation> getArrayInvestigations() {
+		return arrayInvestigations;
+	}
+
+	public void setSelectedInv(boolean isSelectedInv) {
+		this.isSelectedInv = isSelectedInv;
+	}
+
+	public boolean isSelectedInv() {
+		return isSelectedInv;
+	}
+
+
 
 }
