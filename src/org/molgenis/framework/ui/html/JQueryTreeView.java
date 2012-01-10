@@ -16,14 +16,22 @@ public class JQueryTreeView<E> extends HtmlWidget
 		this.treeData = treeData;
 	}
 	
-	private boolean nodeOpen(JQueryTreeViewElement node, List<String> selected) {
+	/**
+	 * Checks whether the given node contains labels that have been selected/toggled,
+	 * entailing the node should be presented expanded (opened).
+	 * 
+	 * @param node
+	 * @param selected
+	 * @return
+	 */
+	private boolean nodeOpen(JQueryTreeViewElement node, List<String> selectedLabels) {
 		Vector<JQueryTreeViewElement> children = node.getChildren();
 		for (JQueryTreeViewElement child : children) {
-			if (selected.contains(child.getLabel())) {
+			if (selectedLabels.contains(child.getLabel())) {
 				return true;
 			}
 			if (child.hasChildren()) {
-				return nodeOpen(child, selected);
+				return nodeOpen(child, selectedLabels);
 			}
 		}
 		return false;
@@ -36,21 +44,21 @@ public class JQueryTreeView<E> extends HtmlWidget
 	 * "Cookie" persistence enabled, causing the current tree state to be persisted.
 	 *	Dynamically adding a sub tree to the existing tree demonstrated.
 	 */
-	private String renderTree(JQueryTreeViewElement node, List<String> selected) {
+	private String renderTree(JQueryTreeViewElement node, List<String> selectedLabels) {
 		String returnString;
 		if (node.hasChildren()) {
-			returnString = "<li class=\"" + (nodeOpen(node, selected) ? "opened" : "closed") + 
+			returnString = "<li class=\"" + (nodeOpen(node, selectedLabels) ? "opened" : "closed") + 
 					"\"><span class=\"folder\">" + node.getLabel() + "</span>";
 			returnString += "<ul>";
 			Vector<JQueryTreeViewElement> children = node.getChildren();
 			for (JQueryTreeViewElement child : children) {
-				returnString += renderTree(child, selected);
+				returnString += renderTree(child, selectedLabels);
 			}
 			returnString += "</ul></li>";
 		} else {
 			returnString = "<li><span class=\"point\"><input type=\"checkbox\" id=\"" + 
 				node.getLabel() + "\" name=\"" + node.getLabel() + "\"" + 
-				(selected.contains(node.getLabel()) ? " checked=\"yes\"" : "") + 
+				(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") + 
 				" />" + node.getLabel() + "</span></li>";
 		}
 		return returnString;
@@ -58,9 +66,9 @@ public class JQueryTreeView<E> extends HtmlWidget
 	
 	public String toHtml(List<String> selected){
 		
-		String html = "<div id=\"masstoggler\">	<a title=\"Collapse entire tree\" href=\"#\">Collapse All</a> | ";
-		html += "<a title=\"Expand entire tree\" href=\"#\">Expand All</a>" ;
-		//html += " | <a title=\"Toggle the tree below\" href=\"#\">Toggle All</a></div> ";
+		String html = "<div id=\"masstoggler\">	<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | ";
+		html += "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>" ;
+		//html += " | <a title=\"Toggle the tree below\" href=\"#\">Toggle all</a></div> ";
 		html += "<ul id=\"browser\" class=\"pointtree\">";
 		html += renderTree(treeData.getRoot(), selected);
 		html += "</ul>";
