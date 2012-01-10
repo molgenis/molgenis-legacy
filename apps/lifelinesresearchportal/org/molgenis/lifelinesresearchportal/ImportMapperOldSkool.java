@@ -54,7 +54,6 @@ public class ImportMapperOldSkool
 
 	public static void importData(String zipFileName) throws Exception
 	{
-
 		// Path to store files from zip
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		String path = tmpDir.getAbsolutePath() + File.separatorChar;
@@ -72,7 +71,18 @@ public class ImportMapperOldSkool
 		Database db = DatabaseFactory.create();
 
 		Investigation inv = new Investigation();
-		inv.setName("Test" + new Date());
+		if (zipFileName.equals("molgenis1.zip")) {
+			inv.setName("OV004+OV013 Steverink");
+			inv.setDescription("The mediating role of postive and negative affects in the relation between social support and health. Social relationship factors, SWB, self-regulation, health outcomes");
+		}
+		if (zipFileName.equals("molgenis2.zip")) {
+			inv.setName("OV039 Boezen");
+			inv.setDescription("Identifying novel genes for lung function and lung function decline in LifeLines");
+		}
+		if (zipFileName.equals("molgenis3.zip")) {
+			inv.setName("OV077 Van der Harst");
+			inv.setDescription("Heritability, Genetics and Prognosis of PR conduction");
+		}
 		db.beginTx();
 		db.add(inv);
 		db.commitTx();
@@ -118,39 +128,6 @@ public class ImportMapperOldSkool
 		}
 
 		logger.info("LifeLines Publish data import complete!");
-
-		// //this information should be stored in dict
-		// // String primaryKeyColumn = "PA_ID";
-		// // if(protocol.getName().contains("BEP_OMSCHR")) {
-		// // continue;
-		// // }
-		//
-		// //CSVFileSpliter csvFileSpliter = new CSVFileSpliter(path + "VW_" +
-		// protocol.getName() +"_DATA.csv", 1000, primaryKeyColumn);
-		//
-		// //LifeLinesStandardListener.resetRowCount();
-		//
-		// List<LifeLinesStandardListener> listeners = new
-		// ArrayList<LifeLinesStandardListener>();
-		// //CountDownLatch doneSignal = new CountDownLatch(N);
-		// // while(csvFileSpliter.hasMore()) {
-		// // listeners.add(new LifeLinesStandardListener(inv, protocol, db,
-		// csvFileSpliter.getTuples()));
-		// // }
-		//
-		// BlockingQueue<Runnable> workQueue = new
-		// ArrayBlockingQueue<Runnable>(listeners.size());
-		// ThreadPoolExecutor executor = new ThreadPoolExecutor(MAX_THREADS,
-		// MAX_THREADS, THREAD_TIME_OUT_TIME, TimeUnit.SECONDS, workQueue);
-		// for(LifeLinesStandardListener listener : listeners) {
-		// executor.execute(listener);
-		// }
-		// Thread monitor = new Thread(new MyMonitorThread(executor,
-		// protocol.getName()));
-		// monitor.start();
-		//
-		// executor.shutdown();
-		// executor.awaitTermination(5, TimeUnit.MINUTES);
 	}
 
 	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException

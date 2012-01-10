@@ -635,7 +635,7 @@ public class MatrixViewer extends HtmlWidget
 	
 	public File file(String visAll,String extension){
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-		File file = new File(tmpDir.getAbsolutePath() + File.separatorChar + "Export"+visAll+"_"+selectDate()+"."+extension);
+		File file = new File(tmpDir.getAbsolutePath() + File.separatorChar + "Export"+visAll+"_"+selectDate().replace(":", "_")+"."+extension);
 		return file; 
 	}
 	
