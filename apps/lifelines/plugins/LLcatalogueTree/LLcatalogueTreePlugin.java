@@ -3,7 +3,10 @@ package plugins.LLcatalogueTree;
 import gcc.catalogue.ShoppingCart;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,7 +58,10 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				selectedInvestigation = request.getString("investigation");
 				arrayInvestigations.clear();
 			} else if ("OrderMeasurements".equals(request.getAction())) {
-				this.addMeasurementsToTree(db, request, selectedInvestigation);
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+				Date dat = new Date();
+				String dateOfOrder = dateFormat.format(dat);
+				this.addMeasurementsToTree(db, request, selectedInvestigation, dateOfOrder);
 				
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 				
@@ -71,7 +77,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 	}
 
-	private void addMeasurementsToTree(Database db, Tuple request, String selectedInvestigation) throws DatabaseException, IOException {
+	private void addMeasurementsToTree(Database db, Tuple request, String selectedInvestigation, String dateOfOrder) throws DatabaseException, IOException {
 		
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement names,
@@ -100,6 +106,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			shoppingCart.setMeasurements(orderedMeasurementIds);
 			shoppingCart.setUserID(this.getLogin().getUserName());
 			shoppingCart.setCheckedOut(false);
+			shoppingCart.setDateOfOrder(dateOfOrder);
 			db.add(shoppingCart);
 			System.out.println("Shopping cart has been added to the DB");
 			
