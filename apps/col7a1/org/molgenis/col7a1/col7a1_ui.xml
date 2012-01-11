@@ -19,7 +19,6 @@
 			<form name="ProteinDomain" entity="ProteinDomain" label="Protein domain"/>
 			<form name="Exon" entity="Exon"/>
 			<form name="Mutation" entity="Mutation"/>
-			<form name="Phenotype" entity="MutationPhenotype"/>
 			<form name="Workflow" entity="Workflow" label="Patient Workflow">
 				<form name="WorkflowElement" entity="WorkflowElement">
 					<form name="Protocol" entity="Protocol" label="Patient Protocol" hide_fields="Investigation,ontologyReference,TargetFilter"/>
