@@ -83,7 +83,8 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 			throws ParseException, DatabaseException, IOException
 	{
 		HttpServletRequest req = request.getRequest();
-		String path = req.getRequestURI().substring(context.getVariant().length()+1);
+		String contextPath = (StringUtils.isNotEmpty(req.getContextPath()) ? req.getContextPath() : context.getVariant());
+		String path = req.getRequestURI().substring(contextPath.length()+1);
 		if(path.equals("")) path = "/";
 
 		if(!path.startsWith("/")) {
@@ -154,24 +155,27 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	
 	protected void manageConnection(UUID connId) throws DatabaseException
 	{
-		try
+		if (connections.containsKey(connId))
 		{
-			//close the connection and check if it really was closed
-			connections.get(connId).close();
-			if(!connections.get(connId).isClosed())
+			try
 			{
-				throw new DatabaseException("ERROR: connection was not closed!");
+				//close the connection and check if it really was closed
+				connections.get(connId).close();
+				if(!connections.get(connId).isClosed())
+				{
+					throw new DatabaseException("ERROR: connection was not closed!");
+				}
 			}
+			catch(SQLException sqle)
+			{
+				throw new DatabaseException(sqle);
+			}
+			
+			//remove from list (does not happen if Exception was thrown)
+			connections.remove(connId);
+			
+			System.out.println("< request was handled, active database connections: " + connections.size());
 		}
-		catch(SQLException sqle)
-		{
-			throw new DatabaseException(sqle);
-		}
-		
-		//remove from list (does not happen if Exception was thrown)
-		connections.remove(connId);
-		
-		System.out.println("< request was handled, active database connections: " + connections.size());
 	}
 	
 	protected void createLogger(MolgenisOptions mo) throws ServletException
