@@ -31,14 +31,17 @@
 					<div class="ShoppingCartContents">
 						<ul>
 							<#if screen.getshoppingCart()??>
-								<#assign measurements = screen.getshoppingCart()>
-								<#list measurements.getMeasurements_Name() as name>
-									<li>${name}</li> 
+								<!--<#assign measurements = screen.getshoppingCart()>-->
+								<#list screen.getshoppingCart() as eachOrder>
+									The order is created at ${eachOrder.getDateOfOrder()}
+									<#list eachOrder.getMeasurements_Name() as name>
+										<li>${name}</li> 
+									</#list>
+									<br>
 								</#list>
 							</#if>
 						</ul>
 						<input type="submit" value="Delete old orders" onclick="if (confirm('You are about to delete all you old orders. Are you sure you want to proceed?')) { __action.value='DeleteOldOrders';return true; } else {return false;}"/><br /><br />
-						
 					</div>
 			</div>
 		</div>
