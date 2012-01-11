@@ -34,7 +34,7 @@
 			<!-- <plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" /> -->
 		</menu>
 		
-		<plugin label="Matrix Viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
+		<plugin label="Matrix Viewer" name="MatrixViewer" type="plugins.matrix.CatalogueMatrix" />
 		
 		<menu name="Admin">
 		  <plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
