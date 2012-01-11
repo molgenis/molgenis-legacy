@@ -211,7 +211,16 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		nameToProtocol = new HashMap<String, Protocol>();
 
 		try {
-	
+			
+			Query<ShoppingCart> q = db.query(ShoppingCart.class);
+			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
+			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
+			List<ShoppingCart> result = q.find();
+			shoppingCart.clear();
+			for(ShoppingCart cart : result){
+				shoppingCart.addAll(cart.getMeasurements(db));
+			}
+			
 			this.arrayInvestigations.clear();
 			for (Investigation i: db.find(Investigation.class)) {
 				this.arrayInvestigations.add(i);
