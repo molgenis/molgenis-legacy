@@ -28,6 +28,9 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+import plugins.LLcatalogueTree.JQueryTreeViewElementMeasurement;
+import plugins.LLcatalogueTree.JQueryTreeViewMeasurement;
+
 
 
 public class LLcatalogueTreePlugin extends PluginModel<Entity> {

@@ -36,9 +36,11 @@
 		
 		<plugin label="Matrix Viewer" name="MatrixViewer" type="plugins.matrix.CatalogueMatrix" />
 		
+		
 		<menu name="Admin">
-		  <plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
-		  <plugin name="Settings" type="plugins.system.settings.Settings" />
+			<plugin name="ApproveUserOrders" type="plugins.data.ApproveUserOrders" label="Approve User Orders" />  
+			<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
+		  	<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
 				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
