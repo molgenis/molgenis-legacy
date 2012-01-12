@@ -75,7 +75,7 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 				}
 				
 			}
-			fakeProveMethod(db, shoppingCartList, this.getLogin().getUserName());
+			ApproveOrders(db, shoppingCartList, this.getLogin().getUserName());
 		}
 	}
 
@@ -130,7 +130,7 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 		return shoppingCartList;
 	}
 	
-	public void fakeProveMethod(Database db, List<ShoppingCart> shoppingCartList, String userName) throws DatabaseException{
+	public void ApproveOrders(Database db, List<ShoppingCart> shoppingCartList, String userName) throws DatabaseException{
 		
 		UserMeasurements newUserWithMeasurements;
 		
