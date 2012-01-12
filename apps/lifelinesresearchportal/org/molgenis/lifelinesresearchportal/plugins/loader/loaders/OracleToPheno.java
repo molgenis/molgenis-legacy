@@ -1,4 +1,4 @@
-package org.molgenis.lifelinesresearchportal.loaders;
+package org.molgenis.lifelinesresearchportal.plugins.loader.loaders;
 //package org.molgenis.lifelines.loaders;
 //
 //import java.sql.Connection;

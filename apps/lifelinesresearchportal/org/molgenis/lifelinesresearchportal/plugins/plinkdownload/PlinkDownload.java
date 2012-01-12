@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.lifelines.plinkdownload;
+package org.molgenis.lifelinesresearchportal.plugins.plinkdownload;
 
 import java.io.File;
 import java.util.ArrayList;

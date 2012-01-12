@@ -1,4 +1,4 @@
-package org.molgenis.lifelinesresearchportal.loaders;
+package org.molgenis.lifelinesresearchportal.plugins.loader.loaders;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

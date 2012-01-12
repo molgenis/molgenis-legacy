@@ -1,4 +1,4 @@
-package org.molgenis.lifelinesresearchportal;
+package org.molgenis.lifelinesresearchportal.plugins.loader;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -16,11 +16,11 @@ import java.util.zip.ZipFile;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.lifelinesresearchportal.listeners.ImportTupleListener;
-import org.molgenis.lifelinesresearchportal.listeners.LifeLinesMedicatieListener;
-import org.molgenis.lifelinesresearchportal.listeners.LifeLinesStandardListener;
-import org.molgenis.lifelinesresearchportal.listeners.VWCategoryListener;
-import org.molgenis.lifelinesresearchportal.listeners.VwDictListener;
+import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.ImportTupleListener;
+import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.LifeLinesMedicatieListener;
+import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.LifeLinesStandardListener;
+import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.VWCategoryListener;
+import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.VwDictListener;
 import org.molgenis.organization.Investigation;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.CsvFileReader;
@@ -109,13 +109,14 @@ public class ImportMapperOldSkool
 		reader.parse(catListener);
 		catListener.commit();
 
-		// iterate through the map assuming CSV files
-		List<String> exclude = Arrays.asList(new String[] { "BEP_OMSCHR", "DICT_HULP", "ONDERZOEK" });
+		// iterate through the protocols map assuming CSV files
+		// exclude a few views:
+		// BEZOEK is skipped because we use BEZOEK_PIVOT, where each subvisit has become a row
+		List<String> exclude = Arrays.asList(new String[] { "BEZOEK", "BEP_OMSCHR", "DICT_HULP", "ONDERZOEK" });
 		for (Protocol protocol : dicListener.getProtocols().values())
 		{
 			if (!exclude.contains(protocol.getName()))
 			{
-
 				File f = new File(path + "VW_" + protocol.getName() + "_DATA.csv");
 
 				ImportTupleListener llListener;

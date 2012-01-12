@@ -1,4 +1,4 @@
-package org.molgenis.lifelinesresearchportal.listeners;
+package org.molgenis.lifelinesresearchportal.plugins.loader.listeners;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.molgenis.lifelinesresearchportal.ThreadReaders;
+package org.molgenis.lifelinesresearchportal.plugins.loader.ThreadReaders;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

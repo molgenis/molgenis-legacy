@@ -5,12 +5,11 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.lifelines.loader;
+package org.molgenis.lifelinesresearchportal.plugins.loader;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.lifelinesresearchportal.ImportMapperOldSkool;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
