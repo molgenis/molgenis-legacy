@@ -21,6 +21,7 @@ import jxl.write.Label;
 
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
@@ -80,48 +81,66 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 		//
 		//		getModel().setInvestigation(investigationsList.get(0).getName());
 
-		getModel().matrixViewerCat = null;
+		
 
 		try {
+			
 			getModel().error=false;
-
-			if (getModel().matrixViewerCat == null) {	
+			
+			if(getModel().matrixViewerCat != null){
+				
+				getModel().matrixViewerCat.setDatabase(db);
+			
+			} else if (getModel().matrixViewerCat == null) {	
 
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, ObservationTarget.INVESTIGATION_NAME, 
 				//	Operator.EQUALS, "DataShaper"));
 				String userName = this.getApplicationController().getLogin().getUserName();
 
-				List<ShoppingCart> userMeasurement = db.find(ShoppingCart.class, new QueryRule(ShoppingCart.USERID, Operator.EQUALS, userName));
-				List<String> listMeas = new ArrayList<String>();
-				for (int i=0; i<userMeasurement.size(); i++) {
-					
-				}
+				Query<ShoppingCart> q = db.query(ShoppingCart.class);
 				
-				System.out.println("ADFADSFNADIS:F DSIFN DSAF OADS FONDS F DS::: " + listMeas.size());
-				getModel().matrixViewerCat = new MatrixViewer(this, getModel().CATMATRIX, 
-						new SliceablePhenoMatrix(ObservationTarget.class, Measurement.class), 
-						true, true, true, filterRules, 
-						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, listMeas));
+				q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, userName));
+				
+				q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
+				
+				q.addRules(new QueryRule(ShoppingCart.APPROVED, Operator.EQUALS, true));
+				
+				
+				List<String> listMeas = new ArrayList<String>();
+				
+				if(q.find().size() > 0)
+				{
+					List<ShoppingCart> shoppingCartList = q.find();
+					
+					for(ShoppingCart eachCart : shoppingCartList)
+					{
+						listMeas.addAll(eachCart.getMeasurements_Name());
+					}
+					
+					listMeas = removeDuplication(listMeas);
+					
+					System.out.println("ADFADSFNADIS:F DSIFN DSAF OADS FONDS F DS::: " + listMeas.size());
+					
+					getModel().matrixViewerCat = new MatrixViewer(this, getModel().CATMATRIX, 
+							new SliceablePhenoMatrix(ObservationTarget.class, Measurement.class), 
+							true, true, true, filterRules, 
+							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, listMeas));
+					getModel().matrixViewerCat.setDatabase(db);
+				}
 			}
 
 		}catch (Exception e) {
 			logger.error(e.getMessage());
 		}
 
-
-		if(getModel().matrixViewerCat != null){
-			getModel().matrixViewerCat.setDatabase(db);
-		}
-
-
 	}
 
-	public List<Integer> removeDuplication (List<Integer> allMeasurementList){
+	public List<String> removeDuplication (List<String> allMeasurementList){
 
-		List<Integer> temporaryList = new ArrayList<Integer>();
+		List<String> temporaryList = new ArrayList<String>();
 
-		for(Integer m : allMeasurementList)
+		for(String m : allMeasurementList)
 		{
 			if(!temporaryList.contains(m))
 			{
@@ -135,7 +154,13 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	throws HandleRequestDelegationException
 	{
-		//default show
+		
+		if(getModel().matrixViewerCat != null){
+			getModel().matrixViewerCat.setDatabase(db);
+		}
+		if (request.getAction().startsWith(getModel().matrixViewerCat.getName())) {
+			getModel().matrixViewerCat.handleRequest(db, request);
+		}
 		return Show.SHOW_MAIN;
 	}
 
