@@ -30,13 +30,13 @@ public class LifeLinesLoaderPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_lifelines_loader_LifeLinesLoaderPlugin";
+		return "org_molgenis_lifelinesresearchportal_plugins_loader_LifeLinesLoaderPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/lifelines/loader/LifeLinesLoaderPlugin.ftl";
+		return "org/molgenis/lifelinesresearchportal/plugins/loader/LifeLinesLoaderPlugin.ftl";
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class LifeLinesLoaderPlugin extends PluginModel<Entity>
 			String zipFileName = request.getString("zip");
 			int study = request.getInt("study");
 			try {
-				ImportMapperOldSkool.importData(zipFileName, study);
+				ImportMapper.importData(zipFileName, study);
 				this.setSuccess("LifeLines Publish data import complete!");
 			} catch(Exception e) {
 				e.printStackTrace();

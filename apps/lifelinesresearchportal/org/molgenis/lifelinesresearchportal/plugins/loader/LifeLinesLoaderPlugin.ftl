@@ -1,4 +1,4 @@
-<#macro plugins_lifelines_loader_LifeLinesLoaderPlugin screen>
+<#macro org_molgenis_lifelinesresearchportal_plugins_loader_LifeLinesLoaderPlugin screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->

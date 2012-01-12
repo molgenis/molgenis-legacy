@@ -33,10 +33,10 @@ import app.DatabaseFactory;
  * in MOLGENIS. The tuples can come from a CSV file or from SQL queries on some
  * database. The target schema is molgenis.pheno
  */
-public class ImportMapperOldSkool
+public class ImportMapper
 {
 
-	private static Logger logger = Logger.getLogger(ImportMapperOldSkool.class);
+	private static Logger logger = Logger.getLogger(ImportMapper.class);
 
 	/**
 	 * for testing only!
