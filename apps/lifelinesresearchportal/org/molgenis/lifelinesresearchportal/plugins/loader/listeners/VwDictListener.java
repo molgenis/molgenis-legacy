@@ -42,12 +42,12 @@ public class VwDictListener extends ImportTupleListener {
 	@Override
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
 		
-		// BEZOEK is skipped because we use BEZOEK_PIVOT, where each subvisit has become a row
+		// BEZOEK is skipped because we use VW_BEZOEK_PIVOT, where each subvisit has become a row
 		if (tuple.getString("TABNAAM") != null && !tuple.getString("TABNAAM").equals("") && 
 			!tuple.getString("TABNAAM").equals("BEZOEK")) {
 			
 			String protocolName = tuple.getString("TABNAAM");
-			// rename BEZOEK_PIVOT to BEZOEK
+			// rename VW_BEZOEK_PIVOT to BEZOEK
 			if (protocolName.equals("VW_BEZOEK_PIVOT")) {
 				protocolName = "BEZOEK";
 			}

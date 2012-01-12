@@ -86,6 +86,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		// the ID's and names of the selectboxes are the same as the measurement names,
 		// so we can easily get them from the request
 		
+		this.shoppingCart.clear();
 		List<Measurement> allMeasList  = db.find(Measurement.class);
 		for (Measurement m : allMeasList) {
 			if (request.getBool(m.getName()) != null) {

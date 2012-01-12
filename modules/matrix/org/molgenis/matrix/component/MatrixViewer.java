@@ -770,22 +770,6 @@ public class MatrixViewer extends HtmlWidget
 				writer.writeSeparator();
 				writer.writeValue(this.valueListToString(valueList));
 			}
-//			else
-//			{
-//				Object[] rowValues = values[row];
-//				for (int col = 0; col < rowValues.length; col++)
-//				{
-//					Object val = rowValues[col];
-//					if (val != null)
-//					{
-//						output.write("," + val);
-//					}
-//					else
-//					{
-//						output.write(",NA");
-//					}
-//				}
-//			}
 			writer.writeEndOfLine();
 		}
 
@@ -1415,14 +1399,16 @@ public class MatrixViewer extends HtmlWidget
 		for (int i = 0; i < valueList.size(); i++)
 		{
 			if (i > 0) result += "|";
-			if (valueList.get(i) instanceof ObservedValue && valueList.get(i).getValue() == null)
-			{
-				result += valueList.get(i).getRelation_Name();
+			String tmpValue;
+			if (valueList.get(i) instanceof ObservedValue && valueList.get(i).getValue() == null){
+				tmpValue = valueList.get(i).getRelation_Name();
+			} else {
+				tmpValue = valueList.get(i).getValue();
 			}
-			else
-			{
-				result += valueList.get(i).getValue();
+			if (tmpValue == null) { // null values become NA, empty ones remain empty
+				tmpValue = "NA";
 			}
+			result += tmpValue;
 		}
 		return result;
 	}
