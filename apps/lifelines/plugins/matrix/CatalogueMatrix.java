@@ -79,7 +79,8 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 //
 //		getModel().setInvestigation(investigationsList.get(0).getName());
 	
-
+		getModel().matrixViewerCat = null;
+		
 			try {
 				getModel().error=false;
 
