@@ -26,14 +26,20 @@ public class JQueryTreeView<E> extends HtmlWidget
 	 */
 	private boolean nodeOpen(JQueryTreeViewElement node, List<String> selectedLabels) {
 		Vector<JQueryTreeViewElement> children = node.getChildren();
+		// iterate through all children of this node
 		for (JQueryTreeViewElement child : children) {
+			// if this child is in the selected list, node should be open
 			if (selectedLabels.contains(child.getLabel())) {
 				return true;
 			}
+			// if this child has children and one of them is in the selected list, node should be open
 			if (child.hasChildren()) {
-				return nodeOpen(child, selectedLabels);
+				if (nodeOpen(child, selectedLabels) == true) {
+					return true;
+				}
 			}
 		}
+		// no (grand)child selected, so node should be closed
 		return false;
 	}
 	
