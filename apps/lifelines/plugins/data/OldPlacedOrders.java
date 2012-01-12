@@ -1,7 +1,6 @@
 package plugins.data;
 
 import gcc.catalogue.ShoppingCart;
-import gcc.catalogue.UserMeasurements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,30 +52,10 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception {
 		
 		if ("DeleteOldOrders".equals(request.getAction())) {
-			if(db.find(UserMeasurements.class, new QueryRule(UserMeasurements.USERID, Operator.EQUALS, this.getLogin().getUserName())).size() > 0)
-			{
-				UserMeasurements userMeasurement = db.find(UserMeasurements.class, new QueryRule(UserMeasurements.USERID, Operator.EQUALS, this.getLogin().getUserName())).get(0);
-				db.remove(userMeasurement);
-			}
 			this.DeleteOldOrders(db);
 			this.reload(db);
 			
-		} else if ("approveOrder".equals(request.getAction())) {
-			
-			Query<ShoppingCart> q = db.query(ShoppingCart.class);
-			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
-			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
-			if (!q.find().isEmpty()) {
-				shoppingCart = q.find().get(0);
-				//Same user could order multiple times
-				shoppingCartList = new ArrayList<ShoppingCart>();
-				for(ShoppingCart order : q.find()){
-					shoppingCartList.add(order);
-				}
-				
-			}
-			ApproveOrders(db, shoppingCartList, this.getLogin().getUserName());
-		}
+		} 
 	}
 
 	public void DeleteOldOrders(Database db) {
@@ -130,58 +109,6 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 		return shoppingCartList;
 	}
 	
-	public void ApproveOrders(Database db, List<ShoppingCart> shoppingCartList, String userName) throws DatabaseException{
-		
-		UserMeasurements newUserWithMeasurements;
-		
-		if(db.find(UserMeasurements.class, new QueryRule(UserMeasurements.USERID, Operator.EQUALS, userName)).size() > 0){
-			
-			newUserWithMeasurements = db.find(UserMeasurements.class, new QueryRule(UserMeasurements.USERID, Operator.EQUALS, userName)).get(0);
-			
-			List<Integer> allMeasurementList = newUserWithMeasurements.getMeasurements_Id();
-			
-			for(ShoppingCart eachOrder : shoppingCartList){
-				allMeasurementList.addAll(eachOrder.getMeasurements_Id());
-			}
-			
-			allMeasurementList = removeDuplication(allMeasurementList);
-			
-			newUserWithMeasurements.setMeasurements_Id(allMeasurementList);
-			
-			db.update(newUserWithMeasurements);
-			
-		}else{
-			
-			newUserWithMeasurements = new UserMeasurements();
-			
-			newUserWithMeasurements.setUserID(userName);
-			
-			List<Integer> allMeasurementList = new ArrayList<Integer>();
-			
-			for(ShoppingCart eachOrder : shoppingCartList){
-				allMeasurementList.addAll(eachOrder.getMeasurements_Id());
-			}
-			
-			allMeasurementList = removeDuplication(allMeasurementList);
-			
-			newUserWithMeasurements.setMeasurements_Id(allMeasurementList);
-			
-			db.add(newUserWithMeasurements);
-		}
-		
-	}
 	
-	public List<Integer> removeDuplication (List<Integer> allMeasurementList){
-		
-		List<Integer> temporaryList = new ArrayList<Integer>();
-		
-		for(Integer m : allMeasurementList)
-		{
-			if(!temporaryList.contains(m))
-			{
-				temporaryList.add(m);
-			}
-		}
-		return temporaryList;
-	}
+	
 }

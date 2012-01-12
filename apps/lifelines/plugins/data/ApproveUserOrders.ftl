@@ -32,8 +32,23 @@
 					</#list>
 				</select>
 				<input type="submit" name="chooseUser" value="show orders" onclick="__action.value='showOrders';"/>
-			    
-
+			  
+			    <div id="ShoppingCartLabel">Old User Orders</div>
+					<div class="ShoppingCartContents">
+						<ul>
+							<#if screen.getUserOrders()??>
+								<#list screen.getUserOrders() as eachOrder>
+									The order is created at ${eachOrder.getDateOfOrder()}
+									<#list eachOrder.getMeasurements_Name() as name>
+										<li>${name}</li> 
+									</#list>
+									<br>
+								</#list>
+							</#if>
+						</ul>
+						<input type="submit" value="Delete old orders" onclick="if (confirm('You are about to delete ALL orders. This action is irreversible. Are you sure you want to proceed?')) { __action.value='DeleteOldOrders';return true; } else {return false;}"/><br /><br />
+					</div>
+					<input type="submit" value="Approve user orders" onclick="__action.value='approveOrder';return true;"}"/><br /><br />
 			</div>
 		</div>
 	</div>

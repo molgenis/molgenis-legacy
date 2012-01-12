@@ -37,11 +37,7 @@
 			<field name="userID" type="string" nillable="true" />
 			<field name="checkedOut" type="boolean" nillable="true" />
 			<field name="dateOfOrder" type="string"/>
-		</entity>
-		<entity name="userMeasurements">
-		    <field name="id" type="autoid" description="automatically generated id" />
-			<field name="measurements" type="mref" xref_entity="Measurement" nillable="true" />
-			<field name="userID" type="string" nillable="true" unique="true"/>
+			<field name="approved" type="boolean" nillable="true" />
 		</entity>
 	</module>
 </molgenis>
