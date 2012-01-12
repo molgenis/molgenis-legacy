@@ -18,7 +18,12 @@
 <#list allFields(entity) as f>
 	<#if (f.type == 'xref' || f.type == 'mref') && f.xrefLabelNames[0] != f.xrefFieldName>
 		<#if f.xrefLabelNames?size &gt; 1>
-			//create xref/mref rule filtering ${f.xrefEntityName} on the combination of labels ${csv(f.xrefLabelNames)}
+			//create xref/mref rule filtering ${f.xrefEntityName} on the combination of labels ${csv(f.xrefLabelNames)} if xref(id)==null and xref(name) exists
+			<#if f.type == 'xref'>
+			if(object.get${JavaName(f)}() == null && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}() != null)
+			<#else>
+			if(object.get${JavaName(f)}().size() == 0 && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size() > 0)
+			</#if>
 			{
 				List<QueryRule> rules = new ArrayList<QueryRule>();
 				String key = "";
@@ -43,6 +48,11 @@
 			}
 		<#else>
 			//create xref/mref rule filtering ${f.xrefEntityName} on the label ${csv(f.xrefLabelNames)}
+			<#if f.type == 'xref'>
+			if(object.get${JavaName(f)}() == null && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}() != null)
+			<#else>
+			if(object.get${JavaName(f)}().size() == 0 && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size() > 0)
+			</#if>
 			{
 				<#if f.type == 'xref'>
 				Object label = object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}();
