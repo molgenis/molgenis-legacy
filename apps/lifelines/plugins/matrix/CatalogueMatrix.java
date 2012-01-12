@@ -1,7 +1,8 @@
 
 package plugins.matrix;
 
-import gcc.catalogue.UserMeasurements;
+import gcc.catalogue.ShoppingCart;
+import gcc.catalogue.ShoppingCart_Measurements;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -62,62 +63,77 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 		super(name, null, parent);
 		this.setModel(new CatalogueMatrixModel(this)); //the default model
 		this.setView(new FreemarkerView("CatalogueMatrixView.ftl", getModel())); //<plugin flavor="freemarker"
-		
+
 	}
-	
+
 	public String getCustomHtmlHeaders() {
 		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/gids.css\">";
 	}
-		
+
 	@Override
 	public void reload(Database db) throws Exception
 	{	
-		
-//		FormModel<Investigation> form = this.getParentForm(Investigation.class);
-//
-//		List<Investigation> investigationsList = form.getRecords();
-//
-//		getModel().setInvestigation(investigationsList.get(0).getName());
-	
+
+		//		FormModel<Investigation> form = this.getParentForm(Investigation.class);
+		//
+		//		List<Investigation> investigationsList = form.getRecords();
+		//
+		//		getModel().setInvestigation(investigationsList.get(0).getName());
+
 		getModel().matrixViewerCat = null;
-		
-			try {
-				getModel().error=false;
 
-				if (getModel().matrixViewerCat == null) {	
+		try {
+			getModel().error=false;
 
-					List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-					//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, ObservationTarget.INVESTIGATION_NAME, 
-						//	Operator.EQUALS, "DataShaper"));
-					String userName = this.getApplicationController().getLogin().getUserName();
+			if (getModel().matrixViewerCat == null) {	
+
+				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+				//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, ObservationTarget.INVESTIGATION_NAME, 
+				//	Operator.EQUALS, "DataShaper"));
+				String userName = this.getApplicationController().getLogin().getUserName();
+
+				List<ShoppingCart> userMeasurement = db.find(ShoppingCart.class, new QueryRule(ShoppingCart.USERID, Operator.EQUALS, userName));
+				List<String> listMeas = new ArrayList<String>();
+				for (int i=0; i<userMeasurement.size(); i++) {
 					
-					UserMeasurements userMeasurement = db.find(UserMeasurements.class, new QueryRule(UserMeasurements.USERID, Operator.EQUALS, userName)).get(0);
-					
-					List<String> listMeas = userMeasurement.getMeasurements_Name();
-//					
-					
-					System.out.println("ADFADSFNADIS:F DSIFN DSAF OADS FONDS F DS::: " + listMeas.size());
-					getModel().matrixViewerCat = new MatrixViewer(this, getModel().CATMATRIX, 
-							new SliceablePhenoMatrix(ObservationTarget.class, Measurement.class), 
-							true, true, true, filterRules, 
-							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, listMeas));
 				}
 				
-			}catch (Exception e) {
-				logger.error(e.getMessage());
+				System.out.println("ADFADSFNADIS:F DSIFN DSAF OADS FONDS F DS::: " + listMeas.size());
+				getModel().matrixViewerCat = new MatrixViewer(this, getModel().CATMATRIX, 
+						new SliceablePhenoMatrix(ObservationTarget.class, Measurement.class), 
+						true, true, true, filterRules, 
+						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, listMeas));
 			}
-			
+
+		}catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
 
 		if(getModel().matrixViewerCat != null){
 			getModel().matrixViewerCat.setDatabase(db);
 		}
-		
-		
+
+
+	}
+
+	public List<Integer> removeDuplication (List<Integer> allMeasurementList){
+
+		List<Integer> temporaryList = new ArrayList<Integer>();
+
+		for(Integer m : allMeasurementList)
+		{
+			if(!temporaryList.contains(m))
+			{
+				temporaryList.add(m);
+			}
+		}
+		return temporaryList;
 	}
 
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
-			throws HandleRequestDelegationException
+	throws HandleRequestDelegationException
 	{
 		//default show
 		return Show.SHOW_MAIN;
