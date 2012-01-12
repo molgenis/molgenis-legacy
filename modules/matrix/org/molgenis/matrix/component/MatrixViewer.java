@@ -633,7 +633,7 @@ public class MatrixViewer extends HtmlWidget
 		return dateFormat.format(dat);
 	}
 	
-	public File file(String visAll,String extension){
+	public File makeFile(String visAll,String extension){
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File file = new File(tmpDir.getAbsolutePath() + File.separatorChar + "Export"+visAll+"_"+selectDate().replace(":", "_")+"."+extension);
 		return file; 
@@ -654,7 +654,7 @@ public class MatrixViewer extends HtmlWidget
 		stat = "_All";
 		extension = "csv";
 
-		File file = file(stat,extension);
+		File file = makeFile(stat,extension);
 		CsvWriter writer = new CsvFileWriter(file);
 		writer.setSeparator(",");
 
@@ -715,7 +715,7 @@ public class MatrixViewer extends HtmlWidget
 		stat = "_Visible";
 		extension = "xls";
 
-		File file = file(stat,extension);
+		File file = makeFile(stat,extension);
 		try
 		{
 			values = (List<? extends ObservedValue>[][]) matrix.getValueLists();
@@ -793,7 +793,7 @@ public class MatrixViewer extends HtmlWidget
 		stat = "_All";
 		extension = "xls";
 
-		File file = file(stat,extension);
+		File file = makeFile(stat,extension);
 		System.out.println(file);
 		/* Create new Excel workbook and sheet */
 		WorkbookSettings ws = new WorkbookSettings();
@@ -898,7 +898,7 @@ public class MatrixViewer extends HtmlWidget
 		stat = "_Visible";
 		extension = "xls";
 
-		File file = file(stat,extension);
+		File file = makeFile(stat,extension);
 		/* Create new Excel workbook and sheet */
 		WorkbookSettings ws = new WorkbookSettings();
 		ws.setLocale(new Locale("en", "EN"));
@@ -975,7 +975,7 @@ public class MatrixViewer extends HtmlWidget
 		stat = "_Visible";
 		extension = "sav";
 
-		File file = file(stat,extension);
+		File file = makeFile(stat,extension);
 		
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
@@ -1047,7 +1047,7 @@ public class MatrixViewer extends HtmlWidget
 		stat = "_All";
 		extension = "sav";
 
-		File file = file(stat,extension);
+		File file = makeFile(stat,extension);
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
 		spssWriter.setCalculateNumberOfCases(false);
@@ -1101,8 +1101,6 @@ public class MatrixViewer extends HtmlWidget
 		matrix.setRowLimit(rowLimit);
 		matrix.setColOffset(colOffset);
 		matrix.setColLimit(colLimit);
-
-		
 	} 
 	 
 	private String listObsValToString(List<ObservedValue> values) throws Exception
