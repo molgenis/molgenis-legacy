@@ -30,6 +30,14 @@
 <label for="zip">Archive containing the CSV files:</label>
 <input type="file" name="zip" id="zip" />
 <br />
+<label for="study">Study:</label>
+<br />
+<input type="radio" name="study" value="1" />OV004+OV013 Steverink (The mediating role of postive and negative affects in the relation between social support and health. Social relationship factors, SWB, self-regulation, health outcomes)
+<br />
+<input type="radio" name="study" value="2" />OV039 Boezen (Identifying novel genes for lung function and lung function decline in LifeLines)
+<br />
+<input type="radio" name="study" value="3" />OV077 Van der Harst (Heritability, Genetics and Prognosis of PR conduction)
+<br />
 <input type='submit' value='Load' onclick="__action.value='load'" />
 	
 <#--end of your plugin-->	

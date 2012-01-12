@@ -49,10 +49,10 @@ public class ImportMapperOldSkool
 		BasicConfigurator.configure();
 
 		// adjust for your situation!
-		importData("C:\\lifelinesdata\\all.zip");
+		importData("C:\\lifelinesdata\\all.zip", 0);
 	}
 
-	public static void importData(String zipFileName) throws Exception
+	public static void importData(String zipFileName, int studyNr) throws Exception
 	{
 		// Path to store files from zip
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -71,17 +71,25 @@ public class ImportMapperOldSkool
 		Database db = DatabaseFactory.create();
 
 		Investigation inv = new Investigation();
-		if (zipFileName.equals("molgenis1.zip")) {
-			inv.setName("OV004+OV013 Steverink");
-			inv.setDescription("The mediating role of postive and negative affects in the relation between social support and health. Social relationship factors, SWB, self-regulation, health outcomes");
-		}
-		if (zipFileName.equals("molgenis2.zip")) {
-			inv.setName("OV039 Boezen");
-			inv.setDescription("Identifying novel genes for lung function and lung function decline in LifeLines");
-		}
-		if (zipFileName.equals("molgenis3.zip")) {
-			inv.setName("OV077 Van der Harst");
-			inv.setDescription("Heritability, Genetics and Prognosis of PR conduction");
+		switch (studyNr) {
+			case 0:
+				inv.setName("Test" + new Date());
+				break;
+			case 1:
+				inv.setName("OV004+OV013 Steverink");
+				inv.setDescription("The mediating role of postive and negative affects in the relation between social support and health. Social relationship factors, SWB, self-regulation, health outcomes");
+				break;
+			case 2:
+				inv.setName("OV039 Boezen");
+				inv.setDescription("Identifying novel genes for lung function and lung function decline in LifeLines");
+				break;
+			case 3:
+				inv.setName("OV077 Van der Harst");
+				inv.setDescription("Heritability, Genetics and Prognosis of PR conduction");
+				break;
+			default:
+				inv.setName("Test" + new Date());
+				break;
 		}
 		db.beginTx();
 		db.add(inv);

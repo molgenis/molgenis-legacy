@@ -49,8 +49,9 @@ public class LifeLinesLoaderPlugin extends PluginModel<Entity>
 		if( action.equals("load") )
 		{
 			String zipFileName = request.getString("zip");
+			int study = request.getInt("study");
 			try {
-				ImportMapperOldSkool.importData(zipFileName);
+				ImportMapperOldSkool.importData(zipFileName, study);
 				this.setSuccess("LifeLines Publish data import complete!");
 			} catch(Exception e) {
 				e.printStackTrace();

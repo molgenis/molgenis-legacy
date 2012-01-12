@@ -31,6 +31,7 @@ public class VwDictListener extends ImportTupleListener {
 
 	private Map<String, Protocol> protocols = new LinkedHashMap<String, Protocol>();
 	private List<Measurement> measurements = new ArrayList<Measurement>();
+	private List<String> measurementNames = new ArrayList<String>();
 	private final Investigation investigation;
 	
 	public VwDictListener(Investigation investigation, String name, Database db) {
@@ -53,9 +54,11 @@ public class VwDictListener extends ImportTupleListener {
 				p.setInvestigation(investigation);
 			}
 			
-			if (tuple.getString("VELD") != null) {
+			String measName = p.getName() + "_" + tuple.getString("VELD"); // temporarily prepend measurement name with table (protocol) name
+			if (tuple.getString("VELD") != null && !measurementNames.contains(measName)) { // prevent duplicates
+				measurementNames.add(measName);
 				Measurement m = new Measurement();
-				m.setName(p.getName() + "_" + tuple.getString("VELD")); // temporarily prepend measurement name with table (protocol) name
+				m.setName(measName);
 				m.setInvestigation(investigation);
 				m.setDataType(convertDataType(tuple.getString("VLDTYPE")));
 				m.setDescription(tuple.getString("OMSCHR"));
