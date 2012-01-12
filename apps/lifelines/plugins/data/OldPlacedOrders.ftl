@@ -44,7 +44,7 @@
 						<input type="submit" value="Delete old orders" onclick="if (confirm('You are about to delete ALL you old orders. This action is irreversible. Are you sure you want to proceed?')) { __action.value='DeleteOldOrders';return true; } else {return false;}"/><br /><br />
 					</div>
 			</div>
-			<input type="submit" value="Prove the orders for the user" onclick="__action.value='proveOrder';return true;"}"/><br /><br />
+			<input type="submit" value="Approve the orders for the user" onclick="__action.value='approveOrder';return true;"}"/><br /><br />
 		</div>
 	</div>
 </form>

@@ -61,7 +61,7 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 			this.DeleteOldOrders(db);
 			this.reload(db);
 			
-		} else if ("proveOrder".equals(request.getAction())) {
+		} else if ("approveOrder".equals(request.getAction())) {
 			
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
