@@ -53,13 +53,30 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception {
 		
 		if ("DeleteOldOrders".equals(request.getAction())) {
-	
-			UserMeasurements userMeasurement = db.find(UserMeasurements.class, new QueryRule(UserMeasurements.USERID, Operator.EQUALS, this.getLogin().getUserName())).get(0);
-			db.remove(userMeasurement);
+			if(db.find(UserMeasurements.class, new QueryRule(UserMeasurements.USERID, Operator.EQUALS, this.getLogin().getUserName())).size() > 0)
+			{
+				UserMeasurements userMeasurement = db.find(UserMeasurements.class, new QueryRule(UserMeasurements.USERID, Operator.EQUALS, this.getLogin().getUserName())).get(0);
+				db.remove(userMeasurement);
+			}
 			this.DeleteOldOrders(db);
 			this.reload(db);
+			
+		} else if ("proveOrder".equals(request.getAction())) {
+			
+			Query<ShoppingCart> q = db.query(ShoppingCart.class);
+			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
+			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
+			if (!q.find().isEmpty()) {
+				shoppingCart = q.find().get(0);
+				//Same user could order multiple times
+				shoppingCartList = new ArrayList<ShoppingCart>();
+				for(ShoppingCart order : q.find()){
+					shoppingCartList.add(order);
+				}
+				
+			}
+			fakeProveMethod(db, shoppingCartList, this.getLogin().getUserName());
 		}
-		
 	}
 
 	public void DeleteOldOrders(Database db) {
@@ -93,8 +110,6 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 				for(ShoppingCart order : q.find()){
 					shoppingCartList.add(order);
 				}
-				
-				fakeProveMethod(db, shoppingCartList, this.getLogin().getUserName());
 				
 			} else {
 				shoppingCart = null;
