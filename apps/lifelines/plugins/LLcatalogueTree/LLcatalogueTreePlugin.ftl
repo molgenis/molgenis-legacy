@@ -28,7 +28,8 @@
 				<h4> Choose an investigation</h4> 
 				<select name="investigation" id="investigation"> 
 					<#list screen.arrayInvestigations as inv>
-						<option value="${inv.name}">${inv.name}</option>			
+						<#assign invName = inv.name>
+						<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
 					</#list>
 				</select>
 				<input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"/>

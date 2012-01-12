@@ -51,9 +51,9 @@ public class PlinkDownload extends GenericPlugin
 			{
 				mainPanel = new DivPanel();
 				
-				Paragraph manual = new Paragraph("<strong>Here you can generate and download PLINK files " +
+				Paragraph manual = new Paragraph("<strong>Here you can generate PLINK files " +
 						"for your GWAS analyses</strong><br /><br />After choosing a phenotype, two text files " +
-						"will be generated: one (TPED) containing SNP and genotype information where " +
+						"will be ready for you on Target GPFS storage: one (TPED) containing SNP and genotype information where " +
 						"one row is a SNP; one (TFAM) containing individual and family information, " +
 						"where one row is an individual.<br />The first 4 columns of a TPED file are " +
 						"the same as a standard 4-column MAP file. Then all genotypes are listed for " +
@@ -195,10 +195,9 @@ public class PlinkDownload extends GenericPlugin
 			
 			downloadPanel = new DivPanel();
 			downloadPanel.setStyle("border: 1px solid red; margin: 10px 10px 10px 0px; padding: 10px; width: auto");
-			downloadPanel.add(new Paragraph("<strong>Your PLINK files are ready for download:</strong>"));
-			downloadPanel.add(new Paragraph("Download TPED file [under construction]"));
-			downloadPanel.add(new Paragraph("<a href='tmpfile/" + famExport.getName() + 
-					"'>Download TFAM file</a>"));
+			downloadPanel.add(new Paragraph("<strong>Your PLINK files are ready on Target GPFS storage [under construction]:</strong>"));
+			downloadPanel.add(new Paragraph("TPED file"));
+			downloadPanel.add(new Paragraph("<a href='tmpfile/" + famExport.getName() + "'>TFAM file</a>"));
 			String parContents = "These participants were skipped because their phenotype values could not be found:";
 			for (String name : skipListNoVal) {
 				parContents += " " + name;

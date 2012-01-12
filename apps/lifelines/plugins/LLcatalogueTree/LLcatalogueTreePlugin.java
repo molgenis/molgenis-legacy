@@ -314,6 +314,8 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		return isSelectedInv;
 	}
 
-
+	public String getSelectedInvestigation() {
+		return selectedInvestigation;
+	}
 
 }
