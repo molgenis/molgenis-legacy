@@ -24,14 +24,11 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">	
-			    <h3> Measurements Order Form  </h3>
-			       <h5>If you want to review you shopping cart : </h5>
-				
-					<div id="ShoppingCartLabel">Shopping cart</div>
+			    <h3> Your orders  </h3>
+					<div id="ShoppingCartLabel">Orders</div>
 					<div class="ShoppingCartContents">
 						<ul>
 							<#if screen.getshoppingCart()??>
-								<!--<#assign measurements = screen.getshoppingCart()>-->
 								<#list screen.getshoppingCart() as eachOrder>
 									The order is created at ${eachOrder.getDateOfOrder()}
 									<#list eachOrder.getMeasurements_Name() as name>

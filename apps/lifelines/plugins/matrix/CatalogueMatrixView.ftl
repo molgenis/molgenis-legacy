@@ -27,7 +27,7 @@
 			
 			
 	<#--begin your plugin-->	
-${model.getMatrixViewerIndv()}
+		${model.getMatrixViewerIndv()}
 		<#--end of your plugin-->	
 	</div>
 	

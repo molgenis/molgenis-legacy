@@ -28,7 +28,7 @@ public class CatalogueMatrixModel extends EasyPluginModel
 	private static final long serialVersionUID = 1L;
 	
 	MatrixViewer matrixViewerCat = null;
-	static String CATMATRIX = "catmatrix";
+	private static String CATMATRIX = "catmatrix";
 	boolean error = false;
 	String selection = null;
 	private String investigation;
@@ -79,5 +79,27 @@ public class CatalogueMatrixModel extends EasyPluginModel
 
 	public void setError(boolean error) {
 		this.error = error;
+	}
+	
+	public MatrixViewer getMatrixViewerCat() {
+		return matrixViewerCat;
+	}
+
+
+
+	public void setMatrixViewerCat(MatrixViewer matrixViewer) {
+		this.matrixViewerCat = matrixViewer;
+	}
+
+
+
+	public static void setCATMATRIX(String cATMATRIX) {
+		CATMATRIX = cATMATRIX;
+	}
+
+
+
+	public static String getCATMATRIX() {
+		return CATMATRIX;
 	}
 }
