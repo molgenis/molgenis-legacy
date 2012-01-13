@@ -55,7 +55,7 @@
 			return o;
 		}
 		
-		public ${JavaName(entity)} create(Database db) throws DatabaseException, IOException
+		public ${JavaName(entity)} create(org.molgenis.framework.db.Database db) throws DatabaseException, IOException
 		{
 			db.add(o);
 			return o;

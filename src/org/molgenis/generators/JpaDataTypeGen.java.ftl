@@ -17,114 +17,21 @@
 
 package ${package};
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
-
-<#if !entity.abstract>
-import java.util.Vector;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collection;
-import java.io.StringWriter;
-import org.molgenis.util.Tuple;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.ResultSetTuple;
-import org.molgenis.util.AbstractEntity;
-import java.text.ParseException;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
-<#--import parent class if extends-->
-<#list entity.getImplements() as i>
-import ${i.namespace}.${JavaName(i)};
-</#list>
-<#if entity.hasAncestor()>
-import ${entity.getAncestor().namespace}.${JavaName(entity.getAncestor())};
-</#if>
-<#--import Dateformater if there are Date or Timestamp fields-->
-<#list allFields(entity) as f>
-		<#if f.type == "datetime">
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-			<#break>
-		</#if>
-</#list>
-</#if>
-<#--import ValueLabel and Array if there are xref fields-->
-<#list entity.getImplementedFields() as f>
-	<#if f.type == "mref" || f.type="xref" || f.type="enum">
-import org.molgenis.util.ValueLabel;
-
-		<#if !entity.abstract>
-import java.util.ArrayList;
-</#if>
-<#break>
-</#if>
-</#list>
-<#list allFields(entity) as f>
-	<#if f.type == "mref">
-import java.util.StringTokenizer;
-		<#break>
-	</#if>
-</#list>
-<#--import File if there are file fields-->
-<#list entity.fields as f>
-	<#if f.type == "file" || f.type == "image" >
-import java.io.File;
-		<#break>
-	</#if>
-</#list>
-<#--import all xref entities-->
-<#foreach field in entity.getAllFields()>
-	<#assign type_label = field.getType().toString()>
-	<#if type_label == "user" || type_label="xref" || type_label="mref">
-			<#assign xref_entity = field.xrefEntity>
-import ${xref_entity.namespace}.${JavaName(xref_entity)};			
-	</#if>	
-</#foreach>	
-
-<#-- inverse relations -->
-<#list model.entities as e><#if !e.abstract && !e.isAssociation()>
-	<#list e.allFields as f>
-		<#if (f.type=="xref" || f.type == "mref") && f.getXrefEntityName() == entity.name>
-			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
-import ${e.namespace}.${JavaName(e)};	
-		</#if>
-	</#list></#if>
-</#list>
-
-<#-- import implementing entities -->
-<#if entity.hasImplements()>
-	<#list entity.getImplements() as impl_entity>
-import ${impl_entity.namespace}.${JavaName(impl_entity)};
-	</#list>
-</#if>
-
 /**
  * ${Name(entity)}: ${entity.description}.
  * @version ${date} 
  * @author MOLGENIS generator
  */
 <#if entity.abstract>
-public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list entity.getImplements() as i> ${JavaName(i)}<#if i_has_next>,</#if></#list><#else>org.molgenis.util.Entity</#if>
+public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list entity.getImplements() as i> ${i.namespace}.${JavaName(i)}<#if i_has_next>,</#if></#list><#else>org.molgenis.util.Entity</#if>
 <#else>
 <#-- disables many-to-many relationships (makes it compatible with no-JPA database)   -->
 	<#if !entity.description?contains("Link table for many-to-many relationship") >
-@Entity
+@javax.persistence.Entity
 //@org.hibernate.search.annotations.Indexed
-@Table(name = "${SqlName(entity)}"<#list entity.getUniqueKeysWithoutPk() as uniqueKeys ><@compress single_line=true>
+@javax.persistence.Table(name = "${SqlName(entity)}"<#list entity.getUniqueKeysWithoutPk() as uniqueKeys ><@compress single_line=true>
 	<#if uniqueKeys_index = 0 >, uniqueConstraints={
-	@UniqueConstraint( columnNames={<#else>), @UniqueConstraint( columnNames={</#if>
+	@javax.persistence.UniqueConstraint( columnNames={<#else>), @javax.persistence.UniqueConstraint( columnNames={</#if>
     <#list key_fields(uniqueKeys) as uniqueFields >
 	"${uniqueFields.name}"<#if uniqueFields_has_next>,
 		</#if>
@@ -152,13 +59,13 @@ public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list 
 </#if>
 
 		<#if !entity.hasAncestor() && entity.hasDescendants() >
-@Inheritance(strategy=InheritanceType.JOINED)
-@DiscriminatorColumn(name="DType", discriminatorType=DiscriminatorType.STRING)
+@javax.persistence.Inheritance(strategy=javax.persistence.InheritanceType.JOINED)
+@javax.persistence.DiscriminatorColumn(name="DType", discriminatorType=javax.persistence.DiscriminatorType.STRING)
 		</#if>
 	</#if>
-@XmlAccessorType(XmlAccessType.FIELD)
+@javax.xml.bind.annotation.XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
 //@EntityListeners({${package}.db.${JavaName(entity)}EntityListener.class})
-public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(entity.getAncestor())}<#else>org.molgenis.util.AbstractEntity</#if> <#if entity.hasImplements()>implements<#list entity.getImplements() as i> ${JavaName(i)}<#if i_has_next>,</#if></#list></#if>
+public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getAncestor().namespace}.${JavaName(entity.getAncestor())}<#else>org.molgenis.util.AbstractEntity</#if> <#if entity.hasImplements()>implements<#list entity.getImplements() as i> ${i.namespace}.${JavaName(i)}<#if i_has_next>,</#if></#list></#if>
 </#if>
 {
 <#if entity.abstract>
@@ -166,10 +73,10 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	<#foreach field in entity.getImplementedFields()>
 		<#assign type_label = field.getType().toString()>
 		<#if (field.name != typefield()) || !entity.hasAncestor()>
-	public <#if field.type = "xref">${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}();
-	public void set${JavaName(field)}(<#if field.type = "xref">${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> ${name(field)});
+	public <#if field.type = "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}();//NEW
+	public void set${JavaName(field)}(<#if field.type = "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> ${name(field)});//NEW
 		<#if type_label == "enum">
-	public java.util.List<ValueLabel> get${JavaName(field)}Options();
+	public java.util.List<org.molgenis.util.ValueLabel> get${JavaName(field)}Options();
 		<#elseif type_label="xref">			
         public ${type(field.xrefField)} get${JavaName(field)}_${JavaName(field.xrefField)}();
         public void set${JavaName(field)}_${JavaName(field.xrefField)}(${type(field.xrefField)} ${name(field)});
@@ -181,15 +88,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
                             </#list>
                         </#if>		
 		<#elseif type_label == "mref">	
-	public List<${type(f.xrefField)}> get${JavaName(field)}_${JavaName(f.xrefField)}();	
-	public void set${JavaName(field)}_${JavaName(f.xrefField)}(List<${type(f.xrefField)}> ${JavaName(field)}_${JavaName(f.xrefField)}List);	
+	public java.util.List<${type(f.xrefField)}> get${JavaName(field)}_${JavaName(f.xrefField)}();	
+	public void set${JavaName(field)}_${JavaName(f.xrefField)}(java.util.List<${type(f.xrefField)}> ${JavaName(field)}_${JavaName(f.xrefField)}List);	
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	public java.util.List<String> get${JavaName(field)}_${JavaName(label)}();
 	public void set${JavaName(field)}_${JavaName(label)}(java.util.List<String> ${name(field)}_${label}List);	
 			</#list></#if>						
 		<#elseif type_label == "file" || type_label=="image" >
-	public File get${JavaName(field)}File();
-	public void set${JavaName(field)}File(File file);
+	public java.io.File get${JavaName(field)}File();
+	public void set${JavaName(field)}File(java.io.File file);
 			</#if>
 		</#if>	
 	</#foreach>	
@@ -205,15 +112,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * Shorthand for db.query(${JavaName(entity)}.class).
 	 */
-	public static Query<? extends ${JavaName(entity)}> query(Database db)
+	public static org.molgenis.framework.db.Query<? extends ${JavaName(entity)}> query(org.molgenis.framework.db.Database db)
 	{
 		return db.query(${JavaName(entity)}.class);
 	}
 	
 	/**
-	 * Shorthand for db.find(${JavaName(entity)}.class, QueryRule ... rules).
+	 * Shorthand for db.find(${JavaName(entity)}.class, org.molgenis.framework.db.QueryRule ... rules).
 	 */
-	public static List<? extends ${JavaName(entity)}> find(Database db, QueryRule ... rules) throws DatabaseException
+	public static java.util.List<? extends ${JavaName(entity)}> find(org.molgenis.framework.db.Database db, org.molgenis.framework.db.QueryRule ... rules) throws org.molgenis.framework.db.DatabaseException
 	{
 		return db.find(${JavaName(entity)}.class, rules);
 	}	
@@ -222,11 +129,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * 
 	 */
-	public static ${JavaName(entity)} findBy<#list key.fields as f>${JavaName(f)}</#list>(Database db<#list key.fields as f>, ${type(f)} ${name(f)}</#list>) throws DatabaseException, ParseException
+	public static ${JavaName(entity)} findBy<#list key.fields as f>${JavaName(f)}</#list>(org.molgenis.framework.db.Database db<#list key.fields as f>, ${type(f)} ${name(f)}</#list>) throws org.molgenis.framework.db.DatabaseException, java.text.ParseException
 	{
-		Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class);
+		org.molgenis.framework.db.Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class);
 		<#list key.fields as f>q.eq(${JavaName(entity)}.${f.name?upper_case}, ${name(f)});</#list>
-		List<${JavaName(entity)}> result = q.find();
+		java.util.List<${JavaName(entity)}> result = q.find();
 		if(result.size()>0) return result.get(0);
 		else return null;
 	}
@@ -248,57 +155,73 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
  			<#if isPrimaryKey(field,entity) && !entity.hasAncestor()>
     			<#if field.auto = true>
 	    			<#if jpa_use_sequence >
-	@SequenceGenerator(name="${JavaName(entity)}_Gen", sequenceName="${JavaName(entity)}_Seq"<#if entity.allocationSize??>, allocationSize=${entity.allocationSize?c}</#if>)
-    @Id @GeneratedValue(generator="${JavaName(entity)}_Gen", strategy=GenerationType.SEQUENCE)		
+	@javax.persistence.SequenceGenerator(name="${JavaName(entity)}_Gen", sequenceName="${JavaName(entity)}_Seq"<#if entity.allocationSize??>, allocationSize=${entity.allocationSize?c}</#if>)
+    @javax.persistence.Id @javax.persistence.GeneratedValue(generator="${JavaName(entity)}_Gen", strategy=javax.persistence.GenerationType.SEQUENCE)		
     				<#else>
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @javax.persistence.Id @javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.AUTO)
     				</#if>   			
     			<#else>
     			@Id
     			</#if>
     		</#if>
 		</#if>	
+		<#assign key_found = 0>
 		<#foreach index in entity.indices>
+			<#if key_found == 1>
+				<#break>
+			</#if>
 			<#if index.name == field.name>
-//	@Field(index=Index.TOKENIZED, store=Store.NO)
+//	@org.hibernate.search.annotations.Field(index=org.hibernate.search.annotations.Index.TOKENIZED, store=org.hibernate.search.annotations.Store.NO)
+				<#assign key_found = 1>
 			</#if>
 		</#foreach>
+		<#foreach unique in entity.getUniqueKeysWithoutPk()>
+			<#if key_found == 1>
+				<#break>
+			</#if>
+			<#foreach unique_field in unique.fields>
+				<#if unique_field.name == field.name>
+//	@org.hibernate.search.annotations.Field(index=org.hibernate.search.annotations.Index.TOKENIZED, store=org.hibernate.search.annotations.Store.NO)
+					<#assign key_found = 1>
+				</#if>
+			</#foreach>
+		</#foreach>
         <#if field.type == "date">
-    @Temporal(TemporalType.DATE)
+    @javax.persistence.Temporal(javax.persistence.TemporalType.DATE)
     	<#elseif field.type == "datetime">
-    @Temporal(TemporalType.TIMESTAMP)
+    @javax.persistence.Temporal(javax.persistence.TemporalType.TIMESTAMP)
     	</#if>
         <#if field.type == "mref">
 			<#assign multipleXrefs = entity.getNumberOfReferencesTo(field.xrefEntity)/>
-    @ManyToMany(<#if field.jpaCascade??>fetch=FetchType.LAZY, cascade={${field.jpaCascade}}<#else>fetch=FetchType.LAZY /*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/</#if>)
-    @JoinColumn(name="${SqlName(field)}", insertable=true, updatable=true, nullable=${field.isNillable()?string})
+    @javax.persistence.ManyToMany(<#if field.jpaCascade??>fetch=javax.persistence.FetchType.LAZY, cascade={${field.jpaCascade}}<#else>fetch=javax.persistence.FetchType.LAZY /*cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/</#if>)
+    @javax.persistence.JoinColumn(name="${SqlName(field)}", insertable=true, updatable=true, nullable=${field.isNillable()?string})
 			<#if multipleXrefs &gt; 1>
-	@JoinTable(name="${Name(entity)}_${SqlName(field)}", 
-			joinColumns=@JoinColumn(name="${Name(entity)}"), inverseJoinColumns=@JoinColumn(name="${SqlName(field)}"))
+	@javax.persistence.JoinTable(name="${Name(entity)}_${SqlName(field)}", 
+			joinColumns=@javax.persistence.JoinColumn(name="${Name(entity)}"), inverseJoinColumns=@javax.persistence.JoinColumn(name="${SqlName(field)}"))
 			<#else> 
-	@JoinTable(name="${Name(entity)}_${SqlName(field)}", 
-			joinColumns=@JoinColumn(name="${Name(entity)}"), inverseJoinColumns=@JoinColumn(name="${SqlName(field)}"))			
+	@javax.persistence.JoinTable(name="${Name(entity)}_${SqlName(field)}", 
+			joinColumns=@javax.persistence.JoinColumn(name="${Name(entity)}"), inverseJoinColumns=@javax.persistence.JoinColumn(name="${SqlName(field)}"))			
 			</#if>			
        	<#elseif field.type == "xref">
-    @ManyToOne(<#if field.jpaCascade??>fetch=FetchType.LAZY, cascade={${field.jpaCascade}}<#else>fetch=FetchType.LAZY /*cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/</#if>)
-    @JoinColumn(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)   	
+    @javax.persistence.ManyToOne(<#if field.jpaCascade??>fetch=javax.persistence.FetchType.LAZY, cascade={${field.jpaCascade}}<#else>fetch=javax.persistence.FetchType.LAZY /*cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/</#if>)
+    @javax.persistence.JoinColumn(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)   	
        	<#else>
 			<#if isPrimaryKey(field,entity)>
 				<#if !entity.hasAncestor()>
-    @Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
-	@XmlElement(name="${name(field)}")
+    @javax.persistence.Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
+	@javax.xml.bind.annotation.XmlElement(name="${name(field)}")
 				</#if>
 			<#else>
 				<#if field.type == "text" >			
-	@Lob()
-	@Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
+	@javax.persistence.Lob()
+	@javax.persistence.Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
 				<#else>
         <#if SqlName(field) == '__Type'>
-	@Column(name="DType"<#if !field.nillable>, nullable=false</#if>)            
+	@javax.persistence.Column(name="DType"<#if !field.nillable>, nullable=false</#if>)            
         <#else>
-	@Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
+	@javax.persistence.Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
         </#if>
-	@XmlElement(name="${name(field)}")
+	@javax.xml.bind.annotation.XmlElement(name="${name(field)}")
 				</#if>
 			</#if>   	
        	</#if>
@@ -306,39 +229,39 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		<#assign type_label = field.getType().toString()>
 			<#if isPrimaryKey(field,entity)>
 				<#if !entity.hasAncestor()>
-	//@NotNull
-	private <#if field.type="xref">${JavaName(field.xrefEntity)}<#elseif field.type="mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new ArrayList<${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;				
+	//@javax.validation.constraints.NotNull
+	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;//NEW
 				</#if>
 			<#else>
 				
 
 				<#if !field.isNillable() >
-	@NotNull
+	@javax.validation.constraints.NotNull
 				</#if>
-	private <#if field.type="xref">${JavaName(field.xrefEntity)}<#elseif field.type="mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new ArrayList<${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;
+	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;//NEW
 			</#if>
 		<#if type_label == "enum">
-	@Transient
+	@javax.persistence.Transient
 	private String ${name(field)}_label = null;
-	@Transient
-	private java.util.List<ValueLabel> ${name(field)}_options = new ArrayList<ValueLabel>();
+	@javax.persistence.Transient
+	private java.util.List<org.molgenis.util.ValueLabel> ${name(field)}_options = new java.util.ArrayList<org.molgenis.util.ValueLabel>();
 		<#elseif type_label == "xref">
-	@Transient
+	@javax.persistence.Transient
 	private ${type(field.xrefField)} ${name(field)}_${name(field.xrefField)} = null;	
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
-	@Transient
+	@javax.persistence.Transient
 	private ${type(field.xrefLabels[label_index])} ${name(field)}_${label} = null;						
 			</#list></#if>
 			<#elseif type_label == "mref">
-	@Transient
-	private List<${type(field.xrefField)}> ${name(field)}_${name(field.xrefField)} = null;		
+	@javax.persistence.Transient
+	private java.util.List<${type(field.xrefField)}> ${name(field)}_${name(field.xrefField)} = null;		
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
-	@Transient
+	@javax.persistence.Transient
 	private java.util.List<String> ${name(field)}_${label} = new java.util.ArrayList<String>();
 			</#list></#if>	
 			<#elseif type_label == "file" || type_label=="image" >
-	@Lob
-	private File ${name(field)}_file = null;
+	@javax.persistence.Lob
+	private java.io.File ${name(field)}_file = null;
 		</#if>
 	</#foreach>	
 
@@ -354,7 +277,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		<#if f.type == "enum">
 		//options for enum ${JavaName(f)}
 			<#list f.getEnumOptions() as option>
-		${name(f)}_options.add(new ValueLabel("${option}","${option}"));
+		${name(f)}_options.add(new org.molgenis.util.ValueLabel("${option}","${option}"));
 			</#list>
 		</#if>	
 	</#list>
@@ -369,7 +292,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * Get the ${field.description}.
 	 * @return ${name(field)}.
 	 */
-	public <#if field.type =="xref">${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}()
+	public <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}()//NEW
 	{
 		return this.${name(field)};
 	}	
@@ -380,7 +303,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * @return ${name(field)}.
 	 */
 
-	public <#if field.type =="xref">${JavaName(field.xrefEntity)}<#elseif field.type == "mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> get${JavaName(field)}()
+	public <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> get${JavaName(field)}()//NEW
 	{
 		return this.${name(field)};
 	}
@@ -392,7 +315,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * Set the ${field.description}.
 	 * @param ${name(field)}
 	 */
-	public void set${JavaName(field)}( <#if field.type =="xref">${JavaName(field.xrefEntity)}<#elseif field.type == "mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)})
+	public void set${JavaName(field)}( <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)})//NEW
 	{
 		this.${name(field)} = ${name(field)};
 	}
@@ -402,7 +325,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * Set the ${field.description}.
 	 * @param ${name(field)}
 	 */
-	public void set${JavaName(field)}( <#if field.type =="xref">${JavaName(field.xrefEntity)}<#elseif field.type == "mref">List<${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)})
+	public void set${JavaName(field)}( <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)})//NEW
 	{
 		<#-- hack to solve problem with variable hidden in supertype -->
 		<#if entity.hasAncestor()> 
@@ -427,7 +350,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * Set the ${field.description}. Automatically converts string into date;
 	 * @param ${name(field)}
 	 */	
-	public void set${JavaName(field)}(String datestring) throws ParseException
+	public void set${JavaName(field)}(String datestring) throws java.text.ParseException
 	{
 		this.set${JavaName(field)}(string2date(datestring));
 	}	
@@ -443,7 +366,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * ${JavaName(field)} is enum. This method returns all available enum options.
 	 */
-	public java.util.List<ValueLabel> get${JavaName(field)}Options()
+	public java.util.List<org.molgenis.util.ValueLabel> get${JavaName(field)}Options()
 	{
 		return ${name(field)}_options;
 	}	
@@ -509,7 +432,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		this.set${JavaName(field)}_${JavaName(field.xrefField)}(java.util.Arrays.asList(${name(field)}));
 	}	
 	
-	public void set${JavaName(field)}(${JavaName(field.xrefEntity)} ... ${name(field)})
+	public void set${JavaName(field)}(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)} ... ${name(field)})
 	{
 		this.set${JavaName(field)}(java.util.Arrays.asList(${name(field)}));
 	}	
@@ -519,15 +442,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * This will erase any foreign key objects currently set.
 	 * FIXME: can we autoload the new object?
 	 */
-	public void set${JavaName(field)}_${JavaName(field.xrefField)}(List<${type(field.xrefField)}> ${name(field)}_${name(field.xrefField)})
+	public void set${JavaName(field)}_${JavaName(field.xrefField)}(java.util.List<${type(field.xrefField)}> ${name(field)}_${name(field.xrefField)})
 	{
 		this.${name(field)}_${name(field.xrefField)} = ${name(field)}_${name(field.xrefField)};
 	}	
 	
-	public List<${type(field.xrefField)}> get${JavaName(field)}_${JavaName(field.xrefField)}()
+	public java.util.List<${type(field.xrefField)}> get${JavaName(field)}_${JavaName(field.xrefField)}()
 	{
 		if(${name(field)} != null && !${name(field)}.isEmpty()) {
-			List<${type(field.xrefField)}> result = new ArrayList<${type(field.xrefField)}>();
+			java.util.List<${type(field.xrefField)}> result = new java.util.ArrayList<${type(field.xrefField)}>();
 //			for(${type(field.xrefField)} xref: ${name(field)}_${name(field.xrefField)}) {
 //				result.add(xref);
 //			}
@@ -536,7 +459,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			return result;
 		} else {
 			if(${name(field)}_${name(field.xrefField)} == null) {
-				${name(field)}_${name(field.xrefField)} = new ArrayList<Integer>();
+				${name(field)}_${name(field.xrefField)} = new java.util.ArrayList<Integer>();
 			}		
 			return ${name(field)}_${name(field.xrefField)};
 		}
@@ -551,7 +474,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		if(this.${name(field)} != null && this.${name(field)}.size() > 0)
 		{
 			java.util.List<${type(field.xrefLabels[label_index])}> result = new java.util.ArrayList<${type(field.xrefLabels[label_index])}>();
-			for(${JavaName(field.xrefEntity)} o: ${name(field)}) result.add(o.get${JavaName(label)}().toString());
+			for(${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)} o: ${name(field)}) result.add(o.get${JavaName(label)}().toString());
 			return java.util.Collections.unmodifiableList(result);
 		}	
 		else
@@ -574,7 +497,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * get${JavaName(field)}() is a textual pointer to a file. get${JavaName(field)}AttachedFile() can be used to retrieve the full paht to this file.
 	 */
-	public File get${JavaName(field)}AttachedFile()
+	public java.io.File get${JavaName(field)}AttachedFile()
 	{
 		return ${name(field)}_file;
 	}
@@ -583,7 +506,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * ${JavaName(field)} is a pointer to a file. Use set${JavaName(field)}AttachedFile() to attach this file so it can be 
 	 * retrieved using get${JavaName(field)}AttachedFile().
 	 */
-	public void set${JavaName(field)}AttachedFile(File file)
+	public void set${JavaName(field)}AttachedFile(java.io.File file)
 	{
 		${name(field)}_file = file;
 	}
@@ -615,10 +538,10 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		return "";
 	}	
 	
-	public void validate() throws DatabaseException
+	public void validate() throws org.molgenis.framework.db.DatabaseException
 	{
 	<#list allFields(entity) as field><#if field.nillable == false>
-		if(this.get${JavaName(field)}() == null) throw new DatabaseException("required field ${name(field)} is null");
+		if(this.get${JavaName(field)}() == null) throw new org.molgenis.framework.db.DatabaseException("required field ${name(field)} is null");
 	</#if></#list>
 	}
 	
@@ -636,8 +559,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 <#list allFields(entity) as field>
 	<#assign type_label = field.getType().toString()>
 		<#if field.type.toString() == "datetime">
-		result+= "${name(field)}='" + (get${JavaName(field)}() == null ? "" : new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US).format(get${JavaName(field)}()))+"'<#if field_has_next> </#if>";
-		result+= "${name(field)}='" + (get${JavaName(field)}() == null ? "" : new SimpleDateFormat("MMMM d, yyyy", Locale.US).format(get${JavaName(field)}()))+"'<#if field_has_next> </#if>";		
+		result+= "${name(field)}='" + (get${JavaName(field)}() == null ? "" : new java.text.SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", java.util.Locale.US).format(get${JavaName(field)}()))+"'<#if field_has_next> </#if>";
+		result+= "${name(field)}='" + (get${JavaName(field)}() == null ? "" : new java.text.SimpleDateFormat("MMMM d, yyyy", java.util.Locale.US).format(get${JavaName(field)}()))+"'<#if field_has_next> </#if>";		
 		<#else>
 		result+= "${name(field)}='" + get${JavaName(field)}()+"'<#if field_has_next> </#if>";
 			<#if field.type == "xref" || field.type == "mref">
@@ -714,9 +637,9 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	/**
 	 * Get the names of all public properties of ${JavaName(entity)}.
 	 */
-	public Vector<String> getFields(boolean skipAutoIds)
+	public java.util.Vector<String> getFields(boolean skipAutoIds)
 	{
-		Vector<String> fields = new Vector<String>();
+		java.util.Vector<String> fields = new java.util.Vector<String>();
 	<#list allFields(entity) as field>
 		<#if (field.auto && field.type = "int")>
 		if(!skipAutoIds)
@@ -737,7 +660,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		return fields;
 	}	
 
-	public Vector<String> getFields()
+	public java.util.Vector<String> getFields()
 	{
 		return getFields(false);
 	}
@@ -751,9 +674,9 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 
 	
 	@Override
-	public List<String> getLabelFields()
+	public java.util.List<String> getLabelFields()
 	{
-		List<String> result = new ArrayList<String>();
+		java.util.List<String> result = new java.util.ArrayList<String>();
 		<#if entity.getXrefLabels()?exists><#list entity.getXrefLabels() as label>
 		result.add("${label}");
 		</#list></#if>
@@ -803,7 +726,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	@Deprecated
 	public String getValues(String sep)
 	{
-		StringWriter out = new StringWriter();
+		java.io.StringWriter out = new java.io.StringWriter();
 	<#list allFields(entity) as field>
 		{
 			Object valueO = get${JavaName(field)}();
@@ -821,7 +744,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	}
 	
 	@Override
-	public ${JavaName(entity)} create(Tuple tuple) throws Exception
+	public ${JavaName(entity)} create(org.molgenis.util.Tuple tuple) throws Exception
 	{
 		${JavaName(entity)} e = new ${JavaName(entity)}();
 		e.set(tuple);
@@ -833,18 +756,18 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		<#if f.type=="xref" && f.getXrefEntityName() == entity.name>
 			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
 //${multipleXrefs}
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
-    private Collection<${JavaName(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new ArrayList<${JavaName(f.entity)}>();
+	@javax.persistence.OneToMany(fetch=javax.persistence.FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/)
+    private java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new java.util.ArrayList<${f.entity.namespace}.${JavaName(f.entity)}>();
 
-	@XmlTransient
-	public Collection<${JavaName(f.entity)}> get${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection()
+	@javax.xml.bind.annotation.XmlTransient
+	public java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> get${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection()
 	{
             return ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection;
 	}
 
-    public void set${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection(Collection<${JavaName(f.entity)}> collection)
+    public void set${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection(java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> collection)
     {
-        for (${JavaName(f.entity)} ${name(f.entity)} : collection) {
+        for (${f.entity.namespace}.${JavaName(f.entity)} ${name(f.entity)} : collection) {
             ${name(f.entity)}.set${JavaName(f)}(this);
         }
         ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = collection;
@@ -858,16 +781,16 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 			<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
 				<#assign multipleXrefs = e.getNumberOfMrefTo(entity)/>
 	//${multipleXrefs}
-    @ManyToMany(fetch=FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}*/)
-    private Collection<${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection = new ArrayList<${Name(f.entity)}>();
+    @javax.persistence.ManyToMany(fetch=javax.persistence.FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/)
+    private java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection = new java.util.ArrayList<${f.entity.namespace}.${Name(f.entity)}>();
 
-	@XmlTransient
-	public Collection<${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection()
+	@javax.xml.bind.annotation.XmlTransient
+	public java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection()
 	{
         return ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection;
 	}
 
-    public void set${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(Collection<${Name(f.entity)}> collection)
+    public void set${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> collection)
     {
     	${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection.addAll(collection);
     }	
