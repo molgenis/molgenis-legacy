@@ -149,10 +149,6 @@
 	<div id='newlitter_size_part' class='row'>
 		<label for='littersize'>Litter size:</label>
 		<input type='text' class='textbox' name='littersize' id='littersize' value='<#if screen.litterSize?exists>${screen.getLitterSize()}</#if>' />
-		
-		
-	
-		
 	</div>
 	
 	<!-- Size approximate? -->
@@ -243,8 +239,8 @@
 	
 	${screen.getGenotypeTable()}
 	
-	<input type='submit' id='addgenocol' class='addbutton' value='Add Gene name + state' onclick="__action.value='AddGenoCol'" />
-	<input type='submit' id='remgenocol' class='addbutton' value='Remove Gene name + state' onclick="__action.value='RemGenoCol'" />
+	<input type='submit' id='addgenocol' class='addbutton' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
+	<input type='submit' id='remgenocol' class='addbutton' value='Remove Gene modification + state' onclick="__action.value='RemGenoCol'" />
 	
 	<#--
 	<p>OLD TABLE</p>

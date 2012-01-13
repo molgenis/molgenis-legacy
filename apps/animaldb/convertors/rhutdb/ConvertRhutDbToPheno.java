@@ -204,7 +204,7 @@ public class ConvertRhutDbToPheno
 							now, null, "Sex", animalName, null, sexName));
 				}
 				
-				// Genotype -> Background (default C57BL/6j and otherwise CBA/CaJ) or Genotype (GeneName + GeneState)
+				// Genotype -> Background (default C57BL/6j and otherwise CBA/CaJ) or Genotype (GeneModification + GeneState)
 				String background = tuple.getString("Genotype");
 				if (background != null) {
 					String backgroundName;
@@ -217,7 +217,7 @@ public class ConvertRhutDbToPheno
 							now, null, "Background", animalName, null, backgroundName));
 				}
 				
-				// Genotyped as -> Genotype (GeneName + GeneState)
+				// Genotyped as -> Genotype (GeneModification + GeneState)
 				String genotype = tuple.getString("Genotyped as");
 				// if empty, try Genotype column (stored as background)
 				if (genotype == null && background != null && (background.contains("Cry") || background.contains("Per"))) {
@@ -232,16 +232,18 @@ public class ConvertRhutDbToPheno
 					int index1 = genotype.indexOf("1");
 					if (index1 != -1) {
 						geneName = geneNameBase + "1";
+						geneName += " KO";
 						geneState = genotype.substring(index1 + 1, index1 + 4);
 						if (geneState.equals("-/+")) geneState = "+/-";
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
-								now, null, "GeneName", animalName, geneName, null));
+								now, null, "GeneModification", animalName, geneName, null));
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
-								now, null, "GeneState", animalName, geneState, null));
+								now, null, "GeneModification", animalName, geneState, null));
 					}
 					int index2 = genotype.indexOf("2");
 					if (index2 != -1) {
 						geneName = geneNameBase + "2";
+						geneName += " KO";
 						geneState = genotype.substring(index2 + 1, index2 + 4);
 						if (geneState.equals("-/+")) geneState = "+/-";
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 

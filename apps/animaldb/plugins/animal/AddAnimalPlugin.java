@@ -160,7 +160,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		List<String> geneList = gene.getObject();
 		for (String geneName : geneList) {
 			SelectInput genestateBox = new SelectInput("genestate_" + geneName);
-			genestateBox.setLabel("State for gene " + geneName + ":");
+			genestateBox.setLabel("State for gene modification " + geneName + ":");
 			for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
 				genestateBox.addOption(option, option);
 			}
@@ -321,7 +321,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		featureIdList.add(ct.getMeasurementId("AnimalType"));
 		featureIdList.add(ct.getMeasurementId("Source"));
 		featureIdList.add(ct.getMeasurementId("Background"));
-		featureIdList.add(ct.getMeasurementId("GeneName"));
+		featureIdList.add(ct.getMeasurementId("GeneModification"));
 		featureIdList.add(ct.getMeasurementId("GeneState"));
 		featureIdList.add(ct.getMeasurementId("DateOfBirth"));
 		
@@ -465,7 +465,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		gene.setUseJqueryMultiplePlugin(true);
 		gene.setNillable(false); // to avoid the empty option from showing up
 		gene.setLabel("Gene(s):");
-		for (String option : ct.getAllCodesForFeatureAsStrings("GeneName")) {
+		for (String option : ct.getAllCodesForFeatureAsStrings("GeneModification")) {
 			gene.addOption(option, option);
 		}
 		gmoPanel.add(gene);

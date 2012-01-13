@@ -500,7 +500,7 @@ public class ManageLitters extends PluginModel<Entity>
 		returnString += ("background: " + animalBackgroundName + "; ");
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneName")));
+		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneModification")));
 		List<ObservedValue> valueList = q.find();
 		if (valueList != null) {
 			int protocolApplicationId;
@@ -767,7 +767,7 @@ public class ManageLitters extends PluginModel<Entity>
 					animalType = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("AnimalType"));
 					color = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("Color"));
 					motherBackgroundId = ct.getMostRecentValueAsXref(motherId, ct.getMeasurementId("Background"));
-					geneName = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("GeneName"));
+					geneName = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("GeneModification"));
 					geneState = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("GeneState"));
 				} catch (Exception e) {
 					throw(new Exception("No mother (properties) found - litter not weaned"));
@@ -930,11 +930,12 @@ public class ManageLitters extends PluginModel<Entity>
 									null, protocolId, measurementId, animalId, null, backgroundId));
 					}
 					// Set genotype
+					// TODO: Set based on mother's X father's and ONLY if you can know the outcome
 					if (!geneName.equals("") && !geneState.equals("")) {
 						protocolId = ct.getProtocolId("SetGenotype");
 						int paId = ct.makeProtocolApplication(invid, protocolId);
-						// Set gene name based on mother's (can be changed during genotyping)
-						measurementId = ct.getMeasurementId("GeneName");
+						// Set gene mod name based on mother's (can be changed during genotyping)
+						measurementId = ct.getMeasurementId("GeneModification");
 						valuesToAddList.add(ct.createObservedValue(invid, paId, weanDate, 
 								null, measurementId, animalId, geneName, 0));
 						// Set gene state based on mother's (can be changed during genotyping)
@@ -969,7 +970,7 @@ public class ManageLitters extends PluginModel<Entity>
 				genotypeTable.addColumn("Color");
 				genotypeTable.addColumn("Earmark");
 				genotypeTable.addColumn("Background");
-				genotypeTable.addColumn("Gene name");
+				genotypeTable.addColumn("Gene modification");
 				genotypeTable.addColumn("Gene state");
 				int row = 0;
 				for (Individual animal : getAnimalsInLitter(db)) {
@@ -985,6 +986,7 @@ public class ManageLitters extends PluginModel<Entity>
 						sexInput.addOption(sex.getId(), sex.getName());
 					}
 					sexInput.setValue(getAnimalSex(animalId));
+					sexInput.setWidth(-1);
 					genotypeTable.setCell(1, row, sexInput);
 					// Color
 					SelectInput colorInput = new SelectInput("2_" + row);
@@ -992,6 +994,7 @@ public class ManageLitters extends PluginModel<Entity>
 						colorInput.addOption(color, color);
 					}
 					colorInput.setValue(getAnimalColor(animalId));
+					colorInput.setWidth(-1);
 					genotypeTable.setCell(2, row, colorInput);
 					// Earmark
 					SelectInput earmarkInput = new SelectInput("3_" + row);
@@ -999,6 +1002,7 @@ public class ManageLitters extends PluginModel<Entity>
 						earmarkInput.addOption(earmark.getCode_String(), earmark.getCode_String());
 					}
 					earmarkInput.setValue(getAnimalEarmark(animalId));
+					earmarkInput.setWidth(-1);
 					genotypeTable.setCell(3, row, earmarkInput);
 					// Background
 					SelectInput backgroundInput = new SelectInput("4_" + row);
@@ -1006,13 +1010,18 @@ public class ManageLitters extends PluginModel<Entity>
 						backgroundInput.addOption(background.getId(), background.getName());
 					}
 					backgroundInput.setValue(getAnimalBackground(animalId));
+					backgroundInput.setWidth(-1);
 					genotypeTable.setCell(4, row, backgroundInput);
-					// Gene name (1)
+					
+					// TODO: show columns and selectboxes for ALL set geno mods
+					
+					// Gene mod name (1)
 					SelectInput geneNameInput = new SelectInput("5_" + row);
 					for (String geneName : this.geneNameList) {
 						geneNameInput.addOption(geneName, geneName);
 					}
-					geneNameInput.setValue(getAnimalGeneInfo("GeneName", animalId, 0, db));
+					geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalId, 0, db));
+					geneNameInput.setWidth(-1);
 					genotypeTable.setCell(5, row, geneNameInput);
 					// Gene state (1)
 					SelectInput geneStateInput = new SelectInput("6_" + row);
@@ -1020,6 +1029,7 @@ public class ManageLitters extends PluginModel<Entity>
 						geneStateInput.addOption(geneState, geneState);
 					}
 					geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalId, 0, db));
+					geneStateInput.setWidth(-1);
 					genotypeTable.setCell(6, row, geneStateInput);
 					row++;
 				}
@@ -1028,7 +1038,7 @@ public class ManageLitters extends PluginModel<Entity>
 			if (action.equals("AddGenoCol")) {
 				storeGenotypeTable(db, request);
 				nrOfGenotypes++;
-				genotypeTable.addColumn("Gene name");
+				genotypeTable.addColumn("Gene modification");
 				genotypeTable.addColumn("Gene state");
 				int row = 0;
 				for (Individual animal : getAnimalsInLitter(db)) {
@@ -1041,7 +1051,7 @@ public class ManageLitters extends PluginModel<Entity>
 							selectedGenes.add(request.getString(currCol + "_" + row));
 						}
 					}
-					// Make new gene name box
+					// Make new gene mod name box
 					int newCol = 5 + ((nrOfGenotypes - 1) * 2);
 					SelectInput geneNameInput = new SelectInput(newCol + "_" + row);
 					for (String geneName : this.geneNameList) {
@@ -1049,7 +1059,8 @@ public class ManageLitters extends PluginModel<Entity>
 							geneNameInput.addOption(geneName, geneName);
 						}
 					}
-					geneNameInput.setValue(getAnimalGeneInfo("GeneName", animalId, nrOfGenotypes, db));
+					geneNameInput.setValue(getAnimalGeneInfo("GeneModification", animalId, nrOfGenotypes, db));
+					geneNameInput.setWidth(-1);
 					genotypeTable.setCell(newCol, row, geneNameInput);
 					// Make new gene state box
 					SelectInput geneStateInput = new SelectInput((newCol + 1) + "_" + row);
@@ -1057,10 +1068,11 @@ public class ManageLitters extends PluginModel<Entity>
 						geneStateInput.addOption(geneState, geneState);
 					}
 					geneStateInput.setValue(getAnimalGeneInfo("GeneState", animalId, nrOfGenotypes, db));
+					geneStateInput.setWidth(-1);
 					genotypeTable.setCell(newCol + 1, row, geneStateInput);
 					row++;
 				}
-				this.getMessages().add(new ScreenMessage("Gene name + state pair successfully added", true));
+				this.getMessages().add(new ScreenMessage("Gene modification + state pair successfully added", true));
 			}
 			
 			if (action.equals("RemGenoCol")) {
@@ -1069,9 +1081,9 @@ public class ManageLitters extends PluginModel<Entity>
 					genotypeTable.removeColumn(currCol); // NB: nr. of cols is now 1 lower!
 					genotypeTable.removeColumn(currCol);
 					nrOfGenotypes--;
-					this.getMessages().add(new ScreenMessage("Gene name + state pair successfully removed", true));
+					this.getMessages().add(new ScreenMessage("Gene modification + state pair successfully removed", true));
 				} else {
-					this.getMessages().add(new ScreenMessage("Cannot remove - at least one Gene name + state pair has to remain", false));
+					this.getMessages().add(new ScreenMessage("Cannot remove - at least one Gene modification + state pair has to remain", false));
 				}
 				storeGenotypeTable(db, request);
 			}
@@ -1169,12 +1181,12 @@ public class ManageLitters extends PluginModel<Entity>
 						int paId = ct.makeProtocolApplication(invid, ct.getProtocolId("SetGenotype"));
 						String geneName = request.getString(currCol + "_" + animalCount);
 						List<ObservedValue> valueList = ct.getObservedValuesByTargetAndFeature(animal.getId(), 
-								ct.getMeasurementByName("GeneName"), investigationIds, invid);
+								ct.getMeasurementByName("GeneModification"), investigationIds, invid);
 						if (genoNr < valueList.size()) {
 							value = valueList.get(genoNr);
 						} else {
 							value = new ObservedValue();
-							value.setFeature_Id(ct.getMeasurementId("GeneName"));
+							value.setFeature_Id(ct.getMeasurementId("GeneModification"));
 							value.setTarget_Id(animal.getId());
 							value.setInvestigation_Id(invid);
 						}
@@ -1271,7 +1283,7 @@ public class ManageLitters extends PluginModel<Entity>
 			// Line
 			elementLabelList.add("Line:");
 			elementList.add(line);
-			// Background + GeneName + GeneState
+			// Background + GeneModification + GeneState
 			elementLabelList.add("Genotype:");
 			elementList.add(this.getGenoInfo(animalId, db));
 			// Color + Sex
@@ -1456,7 +1468,7 @@ public class ManageLitters extends PluginModel<Entity>
 			// Populate sexes list
 			this.setSexList(ct.getAllMarkedPanels("Sex", investigationIds));
 			// Populate gene name list
-			this.setGeneNameList(ct.getAllCodesForFeatureAsStrings("GeneName"));
+			this.setGeneNameList(ct.getAllCodesForFeatureAsStrings("GeneModification"));
 			// Populate gene state list
 			this.setGeneStateList(ct.getAllCodesForFeatureAsStrings("GeneState"));
 			// Populate color list

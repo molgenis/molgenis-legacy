@@ -147,8 +147,8 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "ActualAnimalEndStatus", stringUnitId, null, null, false, "string", "To set the actual end status of an animal in an experiment.", login.getUserId());
 		ct.makeMeasurement(invid, "Experiment", targetlinkUnitId, panel, "Experiment", false, "xref", "To link an animal to a DEC subproject (experiment).", login.getUserId());
 		ct.makeMeasurement(invid, "FromExperiment", targetlinkUnitId, panel, "Experiment", false, "xref", "To remove an animal from a DEC subproject (experiment).", login.getUserId());
-		ct.makeMeasurement(invid, "GeneName", stringUnitId, null, null, false, "string", "The name of a gene that may or may not be present in an animal.", login.getUserId());
-		ct.makeMeasurement(invid, "GeneState", stringUnitId, null, null, false, "string", "To indicate whether an animal is homo- or heterozygous for a gene.", login.getUserId());
+		ct.makeMeasurement(invid, "GeneModification", stringUnitId, null, null, false, "string", "A genetic modification to a gene in an animal.", login.getUserId());
+		ct.makeMeasurement(invid, "GeneState", stringUnitId, null, null, false, "string", "To indicate whether an animal is homo- or heterozygous for a gene modification.", login.getUserId());
 		ct.makeMeasurement(invid, "VWASpecies", stringUnitId, null, null, false, "string", "To give a species the name the VWA uses for it.", login.getUserId());
 		ct.makeMeasurement(invid, "LatinSpecies", stringUnitId, null, null, false, "string", "To give a species its scientific (Latin) name.", login.getUserId());
 		ct.makeMeasurement(invid, "DutchSpecies", stringUnitId, null, null, false, "string", "To give a species its Dutch name.", login.getUserId());
@@ -353,11 +353,14 @@ public class FillAnimalDB {
 		ct.makeCode("2", "B. Transgeen dier", "AnimalType");
 		ct.makeCode("3", "C. Wildvang", "AnimalType");
 		ct.makeCode("4", "D. Biotoop", "AnimalType");
-		// Codes for GeneName
-		ct.makeCode("Cry1", "Cry1", "GeneName");
-		ct.makeCode("Cry2", "Cry2", "GeneName");
-		ct.makeCode("Per1", "Per1", "GeneName");
-		ct.makeCode("Per2", "Per2", "GeneName");
+		// Codes for GeneModification
+		// TODO: find a way to make the KO/KI part mandatory
+		// Maybe turn Gene into a Panel on which you have to set the ModificationType measurement
+		ct.makeCode("Cry1 KO", "Cry1 KO", "GeneModification");
+		ct.makeCode("Cry2 KO", "Cry2 KO", "GeneModification");
+		ct.makeCode("Per1 KO", "Per1 KO", "GeneModification");
+		ct.makeCode("Per2 KO", "Per2 KO", "GeneModification");
+		ct.makeCode("Per2::Luc KI", "Per2::Luc KI", "GeneModification");
 		// Codes for GeneState
 		ct.makeCode("0", "-/-", "GeneState");
 		ct.makeCode("1", "+/-", "GeneState");
@@ -444,7 +447,7 @@ public class FillAnimalDB {
 		featureIdList.add(ct.getMeasurementId("Line"));
 		featureIdList.add(ct.getMeasurementId("LineJAXName"));
 		featureIdList.add(ct.getMeasurementId("Species"));
-		featureIdList.add(ct.getMeasurementId("GeneName"));
+		featureIdList.add(ct.getMeasurementId("GeneModification"));
 		featureIdList.add(ct.getMeasurementId("LineInfoLink"));
 		featureIdList.add(ct.getMeasurementId("Remark"));
 		featureIdList.add(ct.getMeasurementId("Active"));
@@ -502,9 +505,9 @@ public class FillAnimalDB {
 		ct.makeProtocol(invid, "AnimalFromSubproject", "To remove an animal from an experiment.", featureIdList);
 		// Protocol SetGenotype
 		featureIdList = new ArrayList<Integer>();
-		featureIdList.add(ct.getMeasurementId("GeneName"));
+		featureIdList.add(ct.getMeasurementId("GeneModification"));
 		featureIdList.add(ct.getMeasurementId("GeneState"));
-		ct.makeProtocol(invid, "SetGenotype", "To set part (one gene) of an animal's genotype.", featureIdList);
+		ct.makeProtocol(invid, "SetGenotype", "To set part (one gene modification) of an animal's genotype.", featureIdList);
 		// Protocol Wean
 		// Discussion: for now we leave out the custom label feature, because that is flexible (set by user).
 		// Discussion: for now we leave out the Genotype features. Genotype is set a few weeks after weaning,

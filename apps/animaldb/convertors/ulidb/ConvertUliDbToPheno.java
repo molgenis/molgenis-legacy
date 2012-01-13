@@ -423,17 +423,17 @@ public class ConvertUliDbToPheno
 					}
 					// Add to values list
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
-							now, null, "GeneName", newAnimalName, geneName1, null));
+							now, null, "GeneModification", newAnimalName, geneName1, null));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
 							now, null, "GeneState", newAnimalName, geneState1, null));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
-							now, null, "GeneName", newAnimalName, geneName2, null));
+							now, null, "GeneModification", newAnimalName, geneName2, null));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
 							now, null, "GeneState", newAnimalName, geneState2, null));
 				} else {
 					// geneName and geneState can remain as is
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
-							now, null, "GeneName", newAnimalName, geneName, null));
+							now, null, "GeneModification", newAnimalName, geneName, null));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
 							now, null, "GeneState", newAnimalName, geneState, null));
 				}
@@ -643,9 +643,9 @@ public class ConvertUliDbToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				// Every gene becomes a code for the 'GeneName' feature
+				// Every gene becomes a code for the 'GeneModification' feature
 				String geneName = tuple.getString("Gen");
-				ct.makeCode(geneName, geneName, "GeneName");
+				ct.makeCode(geneName, geneName, "GeneModification");
 			}
 		});
 	}
