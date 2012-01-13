@@ -1,10 +1,10 @@
 	
 	
 	//@Implements
-	public void set( Tuple tuple, boolean strict )  throws Exception
+	public void set( org.molgenis.util.Tuple tuple, boolean strict )  throws Exception
 	{
 		//optimization :-(
-		if(tuple instanceof ResultSetTuple)
+		if(tuple instanceof org.molgenis.util.ResultSetTuple)
 		{
 	<#list allFields(entity) as f>
 		<#assign type_label = f.getType().toString()>
@@ -101,8 +101,8 @@
 			//alias of xref
 			<#if databaseImp = 'JPA'>
 			if( tuple.getObject("${f.name}") != null) { 
-				if(AbstractEntity.isObjectRepresentation(tuple.getObject("${f.name}").toString())) {
-					${JavaName(f.xrefEntity)} instance = AbstractEntity.setValuesFromString((String)tuple.getObject("${f.name}"), ${JavaName(f.xrefEntity)}.class);
+				if(org.molgenis.util.AbstractEntity.isObjectRepresentation(tuple.getObject("${f.name}").toString())) {
+					${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)} instance = org.molgenis.util.AbstractEntity.setValuesFromString((String)tuple.getObject("${f.name}"), ${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)}.class);
 					this.set${JavaName(f)}(instance);				
 				} else {
 					this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f.xrefField)}("investigation"));
@@ -112,7 +112,7 @@
 				this.set${JavaName(f)}_${JavaName(f.xrefField)}(tuple.get${settertype(f.xrefField)}("${entity.name}_${f.name}"));			
 			
 			if( tuple.getObject("${entity.name}.${f.name}") != null) 
-				this.set${JavaName(f)}((${JavaName(f.xrefEntity)})tuple.getObject("${entity.name}.${f.name}_${f.xrefField.name}"));
+				this.set${JavaName(f)}((${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)})tuple.getObject("${entity.name}.${f.name}_${f.xrefField.name}"));
 			<#else>			
 			if( tuple.getObject("${f.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${f.name}"));
 			if( tuple.getObject("${entity.name}_${f.name}") != null) this.set${JavaName(f)}(tuple.get${settertype(f)}("${entity.name}_${f.name}"));
