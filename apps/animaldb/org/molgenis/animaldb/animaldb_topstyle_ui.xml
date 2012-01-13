@@ -12,7 +12,7 @@
 		
 		<menu name="animalmenu" position="left" label="Animals">
 			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
-					label="All Animals" />
+					label="All animals" />
 			<plugin name="AddAnimal" type="plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />		
 			<menu name="breedingmodule" position="left" label="Breeding">
@@ -23,7 +23,7 @@
 				<plugin name="ManageLitters" type="plugins.breedingplugin.ManageLitters"
 					label="Litters" />
 				<plugin name="ViewFamily" type="plugins.breedingplugin.ViewFamily"
-					label="Show Family tree" />
+					label="Show family tree" />
 				
 			</menu>
 			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPluginMatrix"

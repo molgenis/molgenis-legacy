@@ -338,13 +338,12 @@ public class LoadAnimalDB
 						protocolId, measurementId, litterid, "Litter", 0));
 
 				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-				SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				// pairstartdate -> time
 				String pairStartDateString = tuple.getString("pairstartdate");
 				Date pairStartDate = null;
 				if (!pairStartDateString.equals("NULL")) {
 					pairStartDate = dbFormat.parse(pairStartDateString);
-					
 				}
 
 				// pairenddate -> endtime
@@ -420,7 +419,7 @@ public class LoadAnimalDB
 				} else {
 					//change date formatting from mysql to molgenis style
 					birthDayDate = dbFormat.parse(birthDayString);
-					birthDayString = dateOnlyFormat.format(birthDayDate);
+					birthDayString = newDateOnlyFormat.format(birthDayDate);
 				}
 					
 				protocolId = ct.getProtocolId("SetDateOfBirth");
@@ -451,7 +450,7 @@ public class LoadAnimalDB
 					int featureId = ct.getMeasurementId("OldAnimalDBLitterID");
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-					q.addRules(new QueryRule("value", Operator.EQUALS, oldlitterid));
+					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, oldlitterid));
 					List<ObservedValue> valueList = q.find();
 					Iterator<ObservedValue> valueIt = valueList.iterator();
 					while (valueIt.hasNext())
@@ -1041,8 +1040,8 @@ public class LoadAnimalDB
 				if (newanimalid > 0) {
 					// date
 					SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-					SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-					SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
+					SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+					SimpleDateFormat newDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 					String dateString = tuple.getString("date");
 					Date eventDate = null;
 					if (!dateString.equals("NULL")) {
@@ -1086,14 +1085,14 @@ public class LoadAnimalDB
 								measurementId = ct.getMeasurementId("DateOfBirth");
 								valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 										eventDate, null, protocolId, measurementId, newanimalid, 
-										dateOnlyFormat.format(eventDate), 0));
+										newDateOnlyFormat.format(eventDate), 0));
 							} else {
 								// Set the broughtinevent based on the oldanimaldb "Broughtin" event
 								int protocolId = ct.getProtocolId("SetOldAnimalDBBroughtinDate");
 								measurementId = ct.getMeasurementId("OldAnimalDBBroughtinDate");
 								valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 										eventDate, null, protocolId, measurementId, newanimalid, 
-										dateOnlyFormat.format(eventDate), 0));
+										newDateOnlyFormat.format(eventDate), 0));
 							}
 						}
 						if (eventType.equals("Died")) {
@@ -1101,7 +1100,7 @@ public class LoadAnimalDB
 							int protocolId = ct.getProtocolId("SetDeathDate");
 							int measurementId = ct.getMeasurementId("DeathDate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-									protocolId, measurementId, newanimalid, dateOnlyFormat.format(eventDate), 0));
+									protocolId, measurementId, newanimalid, newDateOnlyFormat.format(eventDate), 0));
 							
 							// Report as dead/removed by setting the endtime of the most recent Active value
 							measurementId = ct.getMeasurementId("Active");
@@ -1155,7 +1154,7 @@ public class LoadAnimalDB
 							int protocolId = ct.getProtocolId("SetCageCleanDate");
 							int measurementId = ct.getMeasurementId("CageCleanDate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-									protocolId, measurementId, newanimalid, dateTimeFormat.format(eventDate), 0));
+									protocolId, measurementId, newanimalid, newDateTimeFormat.format(eventDate), 0));
 						}
 
 						// Set the weandate based on the oldanimaldb "Wean" event
@@ -1163,7 +1162,7 @@ public class LoadAnimalDB
 							int protocolId = ct.getProtocolId("SetWeanDate");
 							int measurementId = ct.getMeasurementId("Weandate");
 							valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, eventDate, null, 
-									protocolId, measurementId, newanimalid, dateOnlyFormat.format(eventDate), 0));
+									protocolId, measurementId, newanimalid, newDateOnlyFormat.format(eventDate), 0));
 						}
 
 						// Set the Remark application based on the oldanimaldb "Remark" event

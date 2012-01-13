@@ -66,7 +66,6 @@ public class ManageLitters extends PluginModel<Entity>
 	private boolean litterSizeApproximate;
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-	//private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private String action = "ShowLitters";
 	private String nameBase = null;
@@ -79,7 +78,6 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<String> colorList;
 	private List<Category> earmarkList;
 	private int genoLitterId;
-	//private Database db;
 	private List<String> bases = null;
 	private String remarks = null;
 	private String status = null;
@@ -395,9 +393,8 @@ public class ManageLitters extends PluginModel<Entity>
 			q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, litterId));
 			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("Litter")));
 			List<ObservedValue> valueList = q.find();
-			int animalId;
 			for (ObservedValue value : valueList) {
-				animalId = value.getTarget_Id();
+				int animalId = value.getTarget_Id();
 				returnList.add(ct.getIndividualById(animalId));
 			}
 			return returnList;
@@ -1553,7 +1550,7 @@ public class ManageLitters extends PluginModel<Entity>
 				// Birth date
 				featid = ct.getMeasurementId("DateOfBirth");
 				String birthDate = ct.getMostRecentValueAsString(litterId, featid);
-				if (!birthDate.equals("")) {
+				if (birthDate != null && !birthDate.equals("")) {
 					litterToAdd.setBirthDate(birthDate);
 				}
 				// Wean date

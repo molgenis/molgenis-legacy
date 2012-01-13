@@ -52,8 +52,7 @@ public class ConvertUliDbToPheno
 	private Map<String, String> appMap;
 	private Calendar calendar;
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-	//private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
 	private int highestNr = 0;
@@ -262,7 +261,7 @@ public class ConvertUliDbToPheno
 				Date startDate = null;
 				if (startDateString != null) {
 					startDate = dbFormat.parse(startDateString);
-					String dateOfBirth = dateOnlyFormat.format(startDate);
+					String dateOfBirth = newDateOnlyFormat.format(startDate);
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
 							startDate, null, "DateOfBirth", newAnimalName, dateOfBirth, null));
 				}
@@ -270,7 +269,7 @@ public class ConvertUliDbToPheno
 				Date endDate = null;
 				if (endDateString != null) {
 					endDate = dbFormat.parse(endDateString);
-					String dateOfDeath = dateOnlyFormat.format(endDate);
+					String dateOfDeath = newDateOnlyFormat.format(endDate);
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), 
 							startDate, null, "DeathDate", newAnimalName, dateOfDeath, null));
 				}
@@ -467,7 +466,7 @@ public class ConvertUliDbToPheno
 				String weanDate = null;
 				if (birthDateString != null) {
 					Date birthDate = dbFormat.parse(birthDateString);
-					weanDate = dateOnlyFormat.format(birthDate);
+					weanDate = newDateOnlyFormat.format(birthDate);
 				}
 				
 				// Mutter-Nr -> Mother

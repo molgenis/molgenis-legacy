@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -23,6 +22,9 @@ import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
@@ -48,20 +50,16 @@ public class ConvertRhutDbToPheno
 	private List<String> animalNames;
 	private List<ObservedValue> valuesToAddList;
 	private List<Panel> panelsToAddList;
-	private Map<String, String> oldRhutDbIdMap;
 	private Map<String, String> appMap;
-	private Calendar calendar;
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-	//private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
 	private int highestNr = 0;
+	String lineName = "RHut";
 
 	public ConvertRhutDbToPheno(Database db, Login login) throws Exception
 	{
-		calendar = Calendar.getInstance();
-		
 		this.db = db;
 		this.login = login;
 		ct = CommonService.getInstance();
@@ -73,12 +71,29 @@ public class ConvertRhutDbToPheno
 		
 		// If needed, make investigation
 		invName = "RoelofHutLegacyImport";
-		if (ct.getInvestigationId(invName) == -1) {
+		int invId = ct.getInvestigationId(invName);
+		if (invId == -1) {
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);
 			newInv.setOwns_Name(userName);
 			db.add(newInv);
+			invId = newInv.getId();
 		}
+		
+		// Create single line (TODO?)
+		int lineId = ct.makePanel(invId, lineName, login.getUserId());
+		// Label it as line using the (Set)TypeOfGroup protocol and feature
+		Date now = new Date();
+		int featureId = ct.getMeasurementId("TypeOfGroup");
+		int protocolId = ct.getProtocolId("SetTypeOfGroup");
+		db.add(ct.createObservedValueWithProtocolApplication(invId, now, null, protocolId, featureId, lineId, 
+				"Line", 0));
+		// Set the source of the line (always 'Kweek chronobiologie'?)
+		featureId = ct.getMeasurementId("Source");
+		protocolId = ct.getProtocolId("SetSource");
+		int sourceId = ct.getObservationTargetId("Kweek chronobiologie");
+		db.add(ct.createObservedValueWithProtocolApplication(invId, now, null, protocolId, featureId, lineId, 
+				null, sourceId));
 		
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();
@@ -87,7 +102,6 @@ public class ConvertRhutDbToPheno
 		valuesToAddList = new ArrayList<ObservedValue>();
 		panelsToAddList = new ArrayList<Panel>();
 		
-		oldRhutDbIdMap = new HashMap<String, String>();
 		appMap = new HashMap<String, String>();
 		parentgroupNrMap = new HashMap<String, Integer>();
 		litterNrMap = new HashMap<String, Integer>();
@@ -109,6 +123,7 @@ public class ConvertRhutDbToPheno
 		// Run convertor steps
 		populateProtocolApplication();
 		populateAnimal(path + "IDtable.csv");
+		parseParentRelations(path + "Litters.csv");
 		
 		writeToDb();
 	}
@@ -154,8 +169,9 @@ public class ConvertRhutDbToPheno
 		db.add(prefixList);
 		logger.debug("Prefixes successfully added");
 		
-		for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += 1000) {
-			int valueEnd = Math.min(valuesToAddList.size(), valueStart + 1000);
+		int batchSize = 1000;
+		for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += batchSize) {
+			int valueEnd = Math.min(valuesToAddList.size(), valueStart + batchSize);
 			db.add(valuesToAddList.subList(valueStart, valueEnd));
 			logger.debug("Values " + valueStart + " through " + valueEnd + " successfully added");
 		}
@@ -238,7 +254,7 @@ public class ConvertRhutDbToPheno
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
 								now, null, "GeneModification", animalName, geneName, null));
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype1"), 
-								now, null, "GeneModification", animalName, geneState, null));
+								now, null, "GeneState", animalName, geneState, null));
 					}
 					int index2 = genotype.indexOf("2");
 					if (index2 != -1) {
@@ -247,7 +263,7 @@ public class ConvertRhutDbToPheno
 						geneState = genotype.substring(index2 + 1, index2 + 4);
 						if (geneState.equals("-/+")) geneState = "+/-";
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
-								now, null, "GeneName", animalName, geneName, null));
+								now, null, "GeneModification", animalName, geneName, null));
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotype2"), 
 								now, null, "GeneState", animalName, geneState, null));
 					}
@@ -260,13 +276,13 @@ public class ConvertRhutDbToPheno
 				Date remDate = null;
 				if (startDateString != null) {
 					startDate = dbFormat.parse(startDateString);
-					startDateString = dateOnlyFormat.format(startDate);
+					//startDateString = newDateOnlyFormat.format(startDate);
 				}
 				String remDateString = tuple.getString("rem date");
 				if (remDateString != null) {
 					state = "Dead";
 					remDate = dbFormat.parse(remDateString);
-					remDateString = dateOnlyFormat.format(remDate);
+					//remDateString = newDateOnlyFormat.format(remDate);
 				}
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
 						startDate, remDate, "Active", animalName, state, null));
@@ -329,8 +345,157 @@ public class ConvertRhutDbToPheno
 		});
 	}
 	
+	public void parseParentRelations(String filename) throws Exception
+	{	
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				Date now = new Date();
+				
+				// litter nr -> skip first two lines
+				String litter = tuple.getString("litter nr");
+				if (litter.equals("-1") || litter.equals("0")) {
+					return;
+				}
+				// ID mother -> skip unknown names
+				String motherName = tuple.getString("ID mother");
+				if (!animalNames.contains(motherName)) {
+					motherName = null;
+				}
+				// lit mtr -> SKIP
+				// Gen mother -> SKIP
+				// ID father -> skip unknown names
+				String fatherName = tuple.getString("ID father");
+				if (!animalNames.contains(fatherName)) {
+					fatherName = null;
+				}
+				// lit ftr -> SKIP
+				// Gen father -> SKIP
+				// GMO -> SKIP
+				// Pair StartDate -> convert to yyyy-mm-dd format
+				String startDate = tuple.getString("Pair StartDate");
+				if (startDate != null && !startDate.equals("")) {
+					Date tmpStartDate = dbFormat.parse(startDate);
+					startDate = newDateOnlyFormat.format(tmpStartDate);
+				}
+				// DOB -> convert to yyyy-mm-dd format
+				String dob = tuple.getString("DOB");
+				if (dob != null && !dob.equals("")) {
+					Date tmpDob = dbFormat.parse(dob);
+					dob = newDateOnlyFormat.format(tmpDob);
+				}
+				// Wean date -> convert to yyyy-mm-dd format
+				String weanDate = tuple.getString("Wean date");
+				if (weanDate != null && !weanDate.equals("")) {
+					Date tmpWeanDate = dbFormat.parse(weanDate);
+					weanDate = newDateOnlyFormat.format(tmpWeanDate);
+				}
+				// females weaned
+				int femWeaned = 0;
+				if (tuple.getInt("females weaned") != null ) {
+					femWeaned = tuple.getInt("females weaned");
+				}
+				// males weaned
+				int maleWeaned = 0;
+				if (tuple.getInt("males weaned") != null) {
+					maleWeaned = tuple.getInt("males weaned");
+				}
+				// . born (if not set, use sum of wean sizes)
+				int nrBorn = femWeaned + maleWeaned;
+				if (tuple.getInt(". born") != null) {
+					nrBorn = tuple.getInt(". born");
+				}
+				// remarks
+				String remark = tuple.getString("remarks");
+				// To be Genotyped -> SKIP
+				
+				// Create a parentgroup
+				int parentgroupNr = 1;
+				if (parentgroupNrMap.containsKey(lineName)) {
+					parentgroupNr = parentgroupNrMap.get(lineName) + 1;
+				}
+				parentgroupNrMap.put(lineName, parentgroupNr);
+				String parentgroupNrPart = ct.prependZeros("" + parentgroupNr, 6);
+				String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
+				panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
+						now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
+				// Link parents to parentgroup (if known)
+				if (motherName != null) {
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
+						now, null, "Mother", motherName, null, parentgroupName));
+				}
+				if (fatherName != null) {
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
+						now, null, "Father", fatherName, null, parentgroupName));
+				}
+				// Set line of parentgroup
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
+						now, null, "Line", parentgroupName, null, lineName));
+				// Set StartDate
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetStartDate"), 
+						now, null, "StartDate", parentgroupName, startDate, null));
+				
+				// Make a litter and set birth, wean and genotype dates + sizes
+				int litterNr = 1;
+				if (litterNrMap.containsKey(lineName)) {
+					litterNr = litterNrMap.get(lineName) + 1;
+				}
+				litterNrMap.put(lineName, litterNr);
+				String litterNrPart = ct.prependZeros("" + litterNr, 6);
+				String litterName = "LT_" + lineName + "_" + litterNrPart;
+				panelsToAddList.add(ct.createPanel(invName, litterName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
+						now, null, "TypeOfGroup", litterName, "Litter", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
+						now, null, "DateOfBirth", litterName, dob, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), 
+						now, null, "WeanDate", litterName, weanDate, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotypeDate"), 
+						now, null, "GenotypeDate", litterName, weanDate, null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSize"), 
+						now, null, "Size", litterName, Integer.toString(nrBorn), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSize"), 
+						now, null, "WeanSize", litterName, Integer.toString(femWeaned + maleWeaned), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeMale"), 
+						now, null, "WeanSizeMale", litterName, Integer.toString(maleWeaned), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeFemale"), 
+						now, null, "WeanSizeFemale", litterName, Integer.toString(femWeaned), null));
+				// Set Remark
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), 
+						now, null, "Remark", litterName, remark, null));
+				// Link litter to parentgroup
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
+						now, null, "Parentgroup", litterName, null, parentgroupName));
+				
+				// Find animals that came out of this litter using 'litter' value on OldRhutDbLitterId
+				// MAJOR TODO: animals have not yet been added to the DB, so finding them with
+				// a query is NONSENSE!!! Use a map instead!!!
+				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldRhutDbLitterId"));
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, litter));
+				List<ObservedValue> valueList = q.find();
+				if (valueList != null) {
+					for (ObservedValue tmpValue : valueList) {
+						String animalName = tmpValue.getTarget_Name();
+						// Link animal to litter
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
+								now, null, "Litter", animalName, null, litterName));
+						// Set line also on animal
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
+								now, null, "Line", animalName, null, lineName));
+					}
+				}
+			}
+		});
+	}
+	
 	public void populateProtocolApplication() throws Exception
 	{
+		// animals
 		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetAnimalType");
 		makeProtocolApplication("SetOldRhutDbLitterId");
@@ -343,159 +508,22 @@ public class ConvertRhutDbToPheno
 		makeProtocolApplication("SetEarmark");
 		makeProtocolApplication("SetOldRhutDbSampleDate");
 		makeProtocolApplication("SetOldRhutDbSampleNr");
-	}
-	
-	public void parseParentRelations(String filename) throws Exception
-	{	
-		//final Map<String, String> litterMap = new HashMap<String, String>();
-		
-		File file = new File(filename);
-		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
-		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-//				Date now = calendar.getTime();
-//				
-//				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
-//				
-//				// Eingangsdatum -> DateOfBirth
-//				String birthDateString = tuple.getString("Eingangsdatum");
-//				String weanDate = null;
-//				if (birthDateString != null) {
-//					Date birthDate = dbFormat.parse(birthDateString);
-//					weanDate = dateOnlyFormat.format(birthDate);
-//				}
-//				
-//				// Mutter-Nr -> Mother
-//				List<String> motherList = new ArrayList<String>();
-//				String motherIdsString = tuple.getString("Mutter-Nr");
-//				if (motherIdsString != null) {
-//					// First, store literal value
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbMotherInfo"), 
-//							now, null, "OldUliDbMotherInfo", newAnimalName, motherIdsString, null));
-//					for (Integer oldMotherId : SplitParentIdsString(motherIdsString)) {
-//						// Find corresponding animal
-//						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (name)
-//						String motherName = null;
-//						if (oldMotherId.toString().length() == 5) {
-//							motherName = oldUliDbIdMap.get(oldMotherId.toString());
-//						} else {
-//							int idx = animalNames.indexOf(oldMotherId.toString());
-//							if (idx != -1) {
-//								motherName = animalNames.get(idx);
-//							}
-//						}
-//						if (motherName != null) {
-//							motherList.add(motherName);
-//						}
-//					}
-//				}
-//				
-//				// Vater-Nr -> Father
-//				List<String> fatherList = new ArrayList<String>();
-//				String fatherIdsString = tuple.getString("Vater-Nr");
-//				if (fatherIdsString != null) {
-//					// First, store literal value
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbFatherInfo"), 
-//							now, null, "OldUliDbFatherInfo", newAnimalName, fatherIdsString, null));
-//					for (Integer oldFatherId : SplitParentIdsString(fatherIdsString)) {
-//						// Find corresponding animal
-//						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (name)
-//						String fatherName = null;
-//						if (oldFatherId.toString().length() == 5) {
-//							fatherName = oldUliDbIdMap.get(oldFatherId.toString());
-//						} else {
-//							int idx = animalNames.indexOf(oldFatherId.toString());
-//							if (idx != -1) {
-//								fatherName = animalNames.get(idx);
-//							}
-//						}
-//						if (fatherName != null) {
-//							fatherList.add(fatherName);
-//						}
-//					}
-//				}
-//				
-//				// Put date of birth, mother info and father info into one string and check if we've
-//				// seen this combination before
-//				String litterInfo = birthDateString + motherList.toString() + fatherList.toString();
-//				if (litterMap.containsKey(litterInfo)) {
-//					
-//					// This combination of birth date and parents has  been seen before,
-//					// so retrieve litter and link animal directly to it
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
-//							now, null, "Litter", newAnimalName, null, litterMap.get(litterInfo)));
-//					
-//				} else {
-//					
-//					// This combination of birth date and parents has not been seen before,
-//					// so start a new parentgroup and litter
-//					
-//					String lineName = tuple.getString("Linie");
-//				
-//					// Create a parentgroup
-//					int parentgroupNr = 1;
-//					if (parentgroupNrMap.containsKey(lineName)) {
-//						parentgroupNr = parentgroupNrMap.get(lineName) + 1;
-//					}
-//					parentgroupNrMap.put(lineName, parentgroupNr);
-//					String parentgroupNrPart = ct.prependZeros("" + parentgroupNr, 6);
-//					String parentgroupName = "PG_" + lineName + "_" + parentgroupNrPart;
-//					panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
-//							now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
-//					
-//					// Link parent(s) to parentgroup
-//					for (String motherName : motherList) {
-//						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
-//								now, null, "Mother", motherName, null, parentgroupName));
-//					}
-//					for (String fatherName : fatherList) {
-//						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
-//								now, null, "Father", fatherName, null, parentgroupName));
-//					}
-//					
-//					// Set line (Linie) of parentgroup
-//					if (lineName != null) {
-//						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
-//								now, null, "Line", parentgroupName, null, lineName));
-//					}
-//					
-//					// Make a litter and set wean and genotype dates
-//					int litterNr = 1;
-//					if (litterNrMap.containsKey(lineName)) {
-//						litterNr = litterNrMap.get(lineName) + 1;
-//					}
-//					litterNrMap.put(lineName, litterNr);
-//					String litterNrPart = ct.prependZeros("" + litterNr, 6);
-//					String litterName = "LT_" + lineName + "_" + litterNrPart;
-//					panelsToAddList.add(ct.createPanel(invName, litterName, userName));
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
-//							now, null, "TypeOfGroup", litterName, "Litter", null));
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanDate"), 
-//							now, null, "WeanDate", litterName, weanDate, null));
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotypeDate"), 
-//							now, null, "GenotypeDate", litterName, weanDate, null));
-//					
-//					// Link litter to parentgroup
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
-//							now, null, "Parentgroup", litterName, null, parentgroupName));
-//					
-//					// Link animal to litter
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
-//							now, null, "Litter", newAnimalName, null, litterName));
-//					
-//					// Set litter also on animal
-//					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
-//							now, null, "Line", newAnimalName, null, lineName));
-//					
-//					// Add litter to hashmap for reuse with siblings of this animal
-//					litterMap.put(litterInfo, litterName);
-//				
-//				}
-			}
-		});
+		// parent relations
+		makeProtocolApplication("SetTypeOfGroup");
+		makeProtocolApplication("SetMother");
+		makeProtocolApplication("SetFather");
+		makeProtocolApplication("SetLine");
+		makeProtocolApplication("SetStartDate");
+		makeProtocolApplication("SetDateOfBirth");
+		makeProtocolApplication("SetWeanDate");
+		makeProtocolApplication("SetGenotypeDate");
+		makeProtocolApplication("SetSize");
+		makeProtocolApplication("SetWeanSize");
+		makeProtocolApplication("SetWeanSizeMale");
+		makeProtocolApplication("SetWeanSizeFemale");
+		makeProtocolApplication("SetRemark");
+		makeProtocolApplication("SetParentgroup");
+		makeProtocolApplication("SetLitter");
 	}
 
 	

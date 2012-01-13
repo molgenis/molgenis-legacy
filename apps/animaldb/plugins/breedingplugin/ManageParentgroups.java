@@ -132,7 +132,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 	
 	public String getPgStartDate(int pgId) {
 		try {
-			return ct.getMostRecentValueAsString(pgId, ct.getMeasurementId("StartDate"));
+			String result = ct.getMostRecentValueAsString(pgId, ct.getMeasurementId("StartDate"));
+			if (result != null) {
+				return result;
+			} else {
+				return "";
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "Error when retrieving start date";
