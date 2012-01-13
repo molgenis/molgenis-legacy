@@ -69,8 +69,12 @@ public class Prediction extends PluginModel<Entity>
 	private String excelDirection = "UploadFileByColumn";
 
 	private String uploadFileName = "";
+
+	private int StepsFlag = 0;
+
+	private int columnCount = 0;
 	
-	public Prediction(String name, ScreenController<?> parent)
+ 	public Prediction(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		
@@ -176,12 +180,13 @@ public class Prediction extends PluginModel<Entity>
 			System.out.println(request);
 			uploadFileName  = request.getString("uploadFile");
 			readHeaders(request.getAction());
+			this.setStepsFlag(1);
 		} else if ("UploadFileByRow".equals(request.getAction())) {
 			excelDirection = "UploadFileByRow";
 			System.out.println(request);
 			uploadFileName  = request.getString("uploadFile");
 			readHeaders(request.getAction());
-			
+			this.setStepsFlag(1);
 			
 		} else if ("ImportLifelineToPheno".equals(request.getAction())){
 			
@@ -292,11 +297,14 @@ public class Prediction extends PluginModel<Entity>
 			
 			if(header.equals("UploadFileByColumn"))
 			{
+				setColumnCount(columns);
+				
 				for(int i = 0 ; i < columns; i++)
 				{
 					columnIndex.add(i);
 					headers.add(sheet.getCell(i, 0).getContents().toString().replaceAll(" ", "_"));
 					System.out.println(sheet.getCell(i, 0).getContents().toString());
+					
 				}
 				
 				setSpreadSheetHeanders(headers);
@@ -304,6 +312,8 @@ public class Prediction extends PluginModel<Entity>
 			
 			if(header.equals("UploadFileByRow"))
 			{
+				setColumnCount(rows);
+				
 				for(int i = 0 ; i < rows; i++)
 				{
 					columnIndex.add(i);
@@ -551,5 +561,26 @@ public class Prediction extends PluginModel<Entity>
 
 	public String getStatus() {
 		return Status;
+	}
+
+
+	public void setStepsFlag(int stepsFlag) {
+		StepsFlag = stepsFlag;
+	}
+
+
+	public int getStepsFlag() {
+		return StepsFlag;
+	}
+
+
+	public void setColumnCount(int columnCount) {
+		this.columnCount = columnCount;
+	}
+
+
+	public boolean getColumnCount() {
+		if (this.columnCount > 5) return true;
+		else return false;
 	}
 }
