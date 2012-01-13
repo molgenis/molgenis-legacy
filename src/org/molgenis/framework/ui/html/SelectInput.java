@@ -29,6 +29,7 @@ public class SelectInput extends OptionInput<Object>
 {
 	private String targetfield;
 	private String onchange;
+	private int width = 16;
 
 	public SelectInput(Tuple t) throws HtmlInputException
 	{
@@ -123,8 +124,9 @@ public class SelectInput extends OptionInput<Object>
 			String description = " title=\"" + this.getDescription() + "\"";
 			readonly = this.isReadonly() ? "readonly " : "";
 			return "<select class=\""+readonly+" ui-widget-content ui-corner-all\" id=\"" 
-			+ this.getId() + "\" name=\"" + this.getName() + "\" "
-			+ onchange + " style=\"width:16em;\" "+description+">\n" + optionsHtml.toString()
+			+ this.getId() + "\" name=\"" + this.getName() + "\" " + onchange
+			+ (this.getWidth() != -1 ? " style=\"width:" + this.getWidth() + "em;\" " : "")
+			+ description+">\n" + optionsHtml.toString()
 			+ "</select><script>$(\"#"+this.getId()+"\").chosen();</script>\n";
 		}
 			return "STYLE NOT AVAILABLE";
@@ -212,5 +214,20 @@ public class SelectInput extends OptionInput<Object>
 //					"<script src=\"generated-res/lib/jquery-plugins/chosen.js\" type=\"text/javascript\" language=\"javascript\"></script>\n";
 		}
 		return "";
+	}
+
+	public int getWidth()
+	{
+		return width;
+	}
+
+	/**
+	 * Set component width. Default is 16. Set to -1 for auto-size.
+	 * 
+	 * @param width
+	 */
+	public void setWidth(int width)
+	{
+		this.width = width;
 	}
 }
