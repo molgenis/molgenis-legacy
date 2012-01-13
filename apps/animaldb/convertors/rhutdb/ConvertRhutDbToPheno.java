@@ -22,9 +22,6 @@ import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
@@ -41,7 +38,6 @@ public class ConvertRhutDbToPheno
 {
 	private Database db;
 	private CommonService ct;
-	private Login login;
 	private Logger logger;
 	private String userName;
 	private String invName;
@@ -55,13 +51,13 @@ public class ConvertRhutDbToPheno
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
+	private Map<String, List<String>> litterMap;
 	private int highestNr = 0;
 	String lineName = "RHut";
 
 	public ConvertRhutDbToPheno(Database db, Login login) throws Exception
 	{
 		this.db = db;
-		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
 		ct.makeObservationTargetNameMap(login.getUserId(), false);
@@ -105,6 +101,7 @@ public class ConvertRhutDbToPheno
 		appMap = new HashMap<String, String>();
 		parentgroupNrMap = new HashMap<String, Integer>();
 		litterNrMap = new HashMap<String, Integer>();
+		litterMap = new HashMap<String, List<String>>();
 	}
 	
 	public void convertFromZip(String filename) throws Exception {
@@ -124,10 +121,12 @@ public class ConvertRhutDbToPheno
 		populateProtocolApplication();
 		populateAnimal(path + "IDtable.csv");
 		parseParentRelations(path + "Litters.csv");
+		populateDec(path + "Experiments.csv");
+		parseDecRelations(path + "IDsInExp.csv");
 		
 		writeToDb();
 	}
-	
+
 	public void writeToDb() throws Exception {
 		
 		db.add(protocolAppsToAddList);
@@ -204,6 +203,14 @@ public class ConvertRhutDbToPheno
 				
 				// litter nr -> OldRhutDbLitterId
 				String litterId = tuple.getString("litter nr");
+				List<String> animalNameList;
+				if (litterMap.get(litterId) != null) {
+					animalNameList = litterMap.get(litterId);
+				} else {
+					animalNameList = new ArrayList<String>();
+				}
+				animalNameList.add(animalName);
+				litterMap.put(litterId, animalNameList);
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbLitterId"), now, 
 						null, "OldRhutDbLitterId", animalName, litterId, null));
 				
@@ -471,16 +478,9 @@ public class ConvertRhutDbToPheno
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
 						now, null, "Parentgroup", litterName, null, parentgroupName));
 				
-				// Find animals that came out of this litter using 'litter' value on OldRhutDbLitterId
-				// MAJOR TODO: animals have not yet been added to the DB, so finding them with
-				// a query is NONSENSE!!! Use a map instead!!!
-				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldRhutDbLitterId"));
-				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, litter));
-				List<ObservedValue> valueList = q.find();
-				if (valueList != null) {
-					for (ObservedValue tmpValue : valueList) {
-						String animalName = tmpValue.getTarget_Name();
+				// Find animals that came out of this litter, using 'litter' as index for the map of litters and animals
+				if (litterMap.get(litter) != null) {
+					for (String animalName : litterMap.get(litter)) {
 						// Link animal to litter
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
 								now, null, "Litter", animalName, null, litterName));
@@ -489,6 +489,49 @@ public class ConvertRhutDbToPheno
 								now, null, "Line", animalName, null, lineName));
 					}
 				}
+			}
+		});
+	}
+	
+	public void populateDec(String filename) throws Exception
+	{	
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				// TODO
+				
+				// DEC.
+				// Exp.
+				// Title
+				// Researcher
+				// DECStartDate
+				// DECEndDate
+				// Room .
+			}
+		});
+	}
+	
+	public void parseDecRelations(String filename) throws Exception
+	{	
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				// TODO
+				
+				// Case -> skip
+				// Exp. -> to relate to Experiments.csv
+				// ID -> animal
+				// InExp Date
+				// OutExp Date
+				// DEC. -> doesn't always correspond to Exp. -> TODO
+				// Treatment -> skip
+
 			}
 		});
 	}
@@ -524,6 +567,10 @@ public class ConvertRhutDbToPheno
 		makeProtocolApplication("SetRemark");
 		makeProtocolApplication("SetParentgroup");
 		makeProtocolApplication("SetLitter");
+		// DEC
+		
+		// Animals in DECs
+		
 	}
 
 	
