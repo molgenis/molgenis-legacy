@@ -36,8 +36,7 @@ public class ApproveUserOrders extends PluginModel<Entity>
 	private List<MolgenisUser> arrayUsers = new ArrayList<MolgenisUser>();
 	private String selectedUser;
 	private List<ShoppingCart> UserOrders = new ArrayList<ShoppingCart>();
-	private CatalogueMatrixModel matrixModel = new CatalogueMatrixModel(null);
-	private MatrixViewer matrixViewerCat = null;
+	private List<Integer> shoppingCartIds = new ArrayList<Integer>();
 	public ApproveUserOrders(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -54,6 +53,11 @@ public class ApproveUserOrders extends PluginModel<Entity>
 	{
 		return "plugins/data/ApproveUserOrders.ftl";
 	}
+	
+	public String getCustomHtmlHeaders()
+    {
+        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/shopping_cart.css\">";
+    }
 
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception	{
@@ -66,23 +70,41 @@ public class ApproveUserOrders extends PluginModel<Entity>
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
-			//q.addRules(new QueryRule(ShoppingCart.APPROVED, Operator.EQUALS, false));
+			q.addRules(new QueryRule(ShoppingCart.APPROVED, Operator.EQUALS, false));
 
 			if (!q.find().isEmpty()) {
 				UserOrders.addAll(q.find());
+				for (int i=0; i<UserOrders.size(); i++) 
+					shoppingCartIds.add(UserOrders.get(i).getId());
 				
 			} else {
 				this.getModel().getMessages().add(new ScreenMessage("No orders found!", false));
 			}
 			
-			loadMatrix(db);
-		} else if ("approveOrder".equals(request.getAction())) {
+		} else if ("ApproveSelectedOrders".equals(request.getAction())) {
+			System.out.println("the user has pressed approve , now let's retrieve the selected items ");
+			String selecteditems =  request.getString("approvedItems");
+			
+			String[] temp;
+			String delimiter = ",";
+			temp = selecteditems.split(delimiter);
+			for(int i =0; i < temp.length ; i++) {
+				temp[i] = temp[i].replace("[","").replace("]", "").trim();
+			    System.out.println("-->"+ temp[i]);
+			}
+			
+			for (int i=0; i< temp.length; i++) {
 				
-			//ApproveOrders(db, shoppingCartList, this.getLogin().getUserName());
+				ShoppingCart sc = db.query(ShoppingCart.class).eq(ShoppingCart.ID, temp[i]).find().get(0);
+				sc.setApproved(true);
+				db.update(sc);
+
+			}
+			
+			
 		}
 		
 	}
-	
 	
 	@Override
 	public void reload(Database db) {
@@ -91,101 +113,10 @@ public class ApproveUserOrders extends PluginModel<Entity>
 			for (MolgenisUser u: db.find(MolgenisUser.class)) {
 				this.arrayUsers.add(u);
 			}
-			
-			
-			
-			
-			
-			
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
-		
-				
-	}
-	
-	public void loadMatrix(Database db) {
-		// Load the fancy matrix with the user orders 
-		
-		//plugins.matrix.CatalogueMatrix.class
-		matrixModel.setError(false);    //getModel().error=false;
-		
-		if(matrixModel.getMatrixViewerCat() != null){
-			
-			matrixModel.getMatrixViewerCat().setDatabase(db);
-		
-		} else if (matrixModel.getMatrixViewerCat() == null) {		//the matrix is completely new
-
-			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-			//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, ObservationTarget.INVESTIGATION_NAME, 
-			//	Operator.EQUALS, "DataShaper"));
-			String userName = this.getApplicationController().getLogin().getUserName();
-
-			Query<ShoppingCart> q = db.query(ShoppingCart.class);
-			
-			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, userName));
-			
-			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
-			
-			//q.addRules(new QueryRule(ShoppingCart.APPROVED, Operator.EQUALS, true));
-			
-			List<String> listMeas = new ArrayList<String>();
-			
-			try {
-				if(q.find().size() > 0)
-				{
-					List<ShoppingCart> shoppingCartList = q.find();
-					
-					for(ShoppingCart eachCart : shoppingCartList)
-					{
-						listMeas.addAll(eachCart.getMeasurements_Name());
-					}
-					
-					listMeas = removeDuplication(listMeas);
-					
-					System.out.println("ADFADSFNADIS:F DSIFN DSAF OADS FONDS F DS::: " + listMeas.size());
-					
-					try {
-						matrixViewerCat = new MatrixViewer(this, matrixModel.getCATMATRIX(), 
-								new SliceablePhenoMatrix(ObservationTarget.class, Measurement.class), 
-								true, true, true, filterRules, 
-								new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, listMeas));
-						matrixModel.setMatrixViewerCat(matrixViewerCat);
-//						matrixModel.setMatrixViewerCat((new MatrixViewer(this, matrixModel.getCATMATRIX(), 
-//								new SliceablePhenoMatrix(ObservationTarget.class, Measurement.class), 
-//								true, true, true, filterRules, 
-//								new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, listMeas))));
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					matrixModel.getMatrixViewerCat().setDatabase(db);
-				}
-			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-	}
-	
-	public List<String> removeDuplication (List<String> allMeasurementList){
-
-		List<String> temporaryList = new ArrayList<String>();
-
-		for(String m : allMeasurementList)
-		{
-			if(!temporaryList.contains(m))
-			{
-				temporaryList.add(m);
-			}
-		}
-		return temporaryList;
-	}
-
-	public void setArrayUsers(List<MolgenisUser> arrayUsers) {
-		this.arrayUsers = arrayUsers;
 	}
 
 	public List<MolgenisUser> getArrayUsers() {
@@ -195,8 +126,8 @@ public class ApproveUserOrders extends PluginModel<Entity>
 	public List<ShoppingCart> getUserOrders() {
 		return UserOrders;
 	}
-	
-	public String getMatrixModel() {
-		return matrixModel.getMatrixViewerIndv();
+
+	public List<Integer> getShoppingCartIds() {
+		return shoppingCartIds;
 	}
 }

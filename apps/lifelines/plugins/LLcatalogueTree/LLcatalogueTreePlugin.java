@@ -111,6 +111,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			shoppingCart.setUserID(this.getLogin().getUserName());
 			shoppingCart.setCheckedOut(false);
 			shoppingCart.setDateOfOrder(dateOfOrder);
+			shoppingCart.setApproved(false);
 			db.add(shoppingCart);
 			System.out.println("Shopping cart has been added to the DB");
 			

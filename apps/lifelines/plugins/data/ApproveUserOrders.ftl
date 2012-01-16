@@ -1,5 +1,32 @@
 <#macro plugins_data_ApproveUserOrders screen>
+<style type="text/css">
+#approveShoppingCart {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	width:100%;
+	border-collapse:collapse;
+}
 
+#approveShoppingCart td, #approveShoppingCart th  {
+	font-size:1em;
+	border:1px solid #98bf21;
+	padding:3px 7px 2px 7px;
+}
+
+#approveShoppingCart th {
+	font-size:1.1em;
+	text-align:left;
+	padding-top:5px;
+	padding-bottom:4px;
+	background-color:#A7C942;
+	color:#ffffff;
+}
+
+#approveShoppingCart tr.alt td {
+	color:#000000;
+	background-color:#EAF2D3;
+}
+
+</style>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -32,26 +59,26 @@
 					</#list>
 				</select>
 				<input type="submit" name="chooseUser" value="show orders" onclick="__action.value='showOrders';"/>
-			  
-			    Old User Orders
-						<ul>
-						
-						${screen.getMatrixModel()}
-						
-							<#if screen.getUserOrders()??>
-								<#list screen.getUserOrders() as eachOrder>
-									The order is created at ${eachOrder.getDateOfOrder()}
-									<#list eachOrder.getMeasurements_Name() as name>
-										<li>${name}</li> 
-									</#list>
-									<br>
-								</#list>
-							</#if>
-						</ul>
-						<input type="submit" value="Delete old orders" onclick="if (confirm('You are about to delete ALL orders. This action is irreversible. Are you sure you want to proceed?')) { __action.value='DeleteOldOrders';return true; } else {return false;}"/><br /><br />
-					
-					<input type="submit" value="Approve user orders" onclick="__action.value='approveOrder';return true;"}"/><br /><br />
-
+				<br/><br/><br/>
+					<#if screen.getUserOrders()??>
+						<table id="approveShoppingCart">
+							<tr>
+	  							<th>Date & time created</th>
+	 							<th>Approve the order</th>
+							</tr>
+							<tr>
+							<#list screen.getUserOrders() as eachOrder>
+									<tr class="alt">
+										<td>  ${eachOrder.getDateOfOrder()}</td>
+										<td><input type="checkbox" name="approvedItems" value=${eachOrder.getId()}> <#list eachOrder.getMeasurements_Name() as name> ${name} - <br/></#list> </td>
+									</tr>
+							</#list>
+						</table>
+				  	</#if>
+				  	
+				<br/><br/>  	
+				<input type="submit" value="Approve selected orders" onclick="if (confirm('Approve the selected orders?')) { __action.value='ApproveSelectedOrders';return true; } else {return false;}"/><br /><br />
+				<input type="submit" value="Delete old orders" onclick="if (confirm('You are about to delete ALL orders. This action is irreversible. Are you sure you want to proceed?')) { __action.value='DeleteOldOrders';return true; } else {return false;}"/><br /><br />
 			</div>
 		</div>
 	</div>
