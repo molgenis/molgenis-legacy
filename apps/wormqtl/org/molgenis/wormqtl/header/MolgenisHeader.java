@@ -34,13 +34,13 @@ public class MolgenisHeader extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_xgap_other_panacea_header_MolgenisHeader";
+		return "org_molgenis_wormqtl_header_MolgenisHeader";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/xgap/other/panacea/header/MolgenisHeader.ftl";
+		return "org/molgenis/wormqtl/header/MolgenisHeader.ftl";
 	}
 
 	@Override
