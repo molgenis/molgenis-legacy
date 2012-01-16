@@ -57,7 +57,7 @@ CREATE TABLE ${SqlName(entity)} (
 <#list entity.getIndices() as i>
 	, INDEX (<#list i.fields as f>${SqlName(f)}<#if f_has_next>,</#if></#list>)
 </#list>
-) CHARACTER SET latin1 COLLATE latin1_swedish_ci ENGINE=InnoDB;
+) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB;
 <#--need innodb to support transactions. Do not change! If you need MyISAM, we can make this an generator option-->
 <#--http://www.mysql.org/doc/refman/5.1/en/multiple-tablespaces.html for one file per table innodb-->
 </#if>
