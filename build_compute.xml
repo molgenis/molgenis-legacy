@@ -37,6 +37,7 @@
 		<property name="lib_dir" value="${app_distro_dir}/lib/"/>
 		<property name="protocols_dir" value="${app_distro_dir}/protocols/"/>
 		<property name="workflows_dir" value="${app_distro_dir}/workflows/"/>
+		<property name="app_module_dir" value="${user.dir}/modules/compute/" />
 		
 		<mkdir dir="${app_distro_dir}"/>
 		
@@ -62,6 +63,13 @@
 				<fileset dir="${app_distro_dir}" />
 		</delete>
 		
+		<!-- Copy README to the distro dir -->
+		<copy todir="${app_distro_dir}">
+			<fileset dir="${app_module_dir}">
+				<include name="README*"/>
+			</fileset>
+		</copy>
+		
 		<!-- Copy all protocols and workflows to the distro dir -->
 		<copy todir="${protocols_dir}">
 		    <fileset dir="modules/compute/protocols"/>
@@ -78,7 +86,7 @@
 				<include name="log4j-1.2.15.jar"/>
 			</fileset>
 		</copy>
-				
+						
 		<!-- Create molgenis_app.jar -->
 		<jar jarfile="${lib_dir}/molgenis_compute-r${svn.Revision}.jar" basedir="${build.dir}" update="false"/>
 		
@@ -90,14 +98,16 @@
 #
 
 java -cp \
-$(dirname -- "$0")/lib/molgenis_compute_r${svn.Revision}.jar:\
+$(dirname -- "$0")/lib/molgenis_compute-r${svn.Revision}.jar:\
 $(dirname -- "$0")/lib/freemarker.jar:\
 $(dirname -- "$0")/lib/log4j-1.2.15.jar \
 org.molgenis.compute.commandline.StartCommandLineGeneration \
 $*
 		</echo>
+		<chmod file="${app_distro_dir}/molgenis_compute.sh" perm="755"/>
+
 		
-		<zip destfile="${root_distro_dir}/molgenis_compute_r${svn.Revision}.zip" basedir="${app_distro_dir}" update="false" />
+		<zip destfile="${root_distro_dir}/molgenis_compute-r${svn.Revision}.zip" basedir="${app_distro_dir}" update="false" />
 		
 		<!-- Cleanup -->
 		<delete includeEmptyDirs="true" failonerror="false">
