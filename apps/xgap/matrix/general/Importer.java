@@ -2,18 +2,23 @@ package matrix.general;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 
 import matrix.implementations.binary.BinaryDataMatrixWriter;
 import matrix.implementations.csv.CSVDataMatrixWriter;
 import matrix.implementations.database.DatabaseDataMatrixWriter;
 
+import org.molgenis.core.MolgenisFile;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.Tuple;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
+
+import decorators.NameConvention;
+
 import java.util.HashMap;
 import filehandling.generic.PerformUpload;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
@@ -145,10 +150,34 @@ public class Importer
 			}
 		}
 		else
-		{
-			if (dmh.findSourceFile(data, db) != null)
+		{			
+			boolean realFilePresent;
+			try
+			{
+				String type = data.getStorage() + "DataMatrix";
+				dmh.getFileDirectly(NameConvention.escapeFileName(data.getName()), dmh.getExtension(data.getStorage()), type, db);
+				realFilePresent = true;
+			}
+			catch(FileNotFoundException fnfe)
+			{
+				realFilePresent = false;
+			}
+			
+			
+			// original check here: dmh.findSourceFile(data, db) != null
+			// which fails when there is a leftover MF but no actual file
+			if (realFilePresent)
 			{
 				throw new DatabaseException("File source already exists for source type '" + data.getStorage() + "'");
+			}
+			
+			//no file present, remove the MF link if there is one
+			//this is needed when you throw away the file on the file system 'without telling the database'
+			//and subsequently try to upload a new matrix, because otherwise the names would clash
+			MolgenisFile mf = dmh.findMolgenisFile(data, db);
+			if(mf != null)
+			{
+				db.remove(mf);
 			}
 		}
 

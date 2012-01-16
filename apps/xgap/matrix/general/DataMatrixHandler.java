@@ -310,6 +310,9 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			{
 				QueryRule mfId = new QueryRule("id", Operator.EQUALS, e.get(e.getIdField()));
 				return db.find(MolgenisFile.class, mfId).get(0);
+				// alternative: by name
+				// db.find(mfClass, new QueryRule(MolgenisFile.NAME, Operator.EQUALS, NameConvention.escapeFileName(data.getName())));
+
 			}
 		}
 		return null;
@@ -400,24 +403,15 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		boolean relinked = false;
 		boolean mfPresent = false;
 		
-		String type = data.getStorage() + "DataMatrix";
-		Class<? extends Entity> mfClass = db.getClassForName(type);
-
-		//found out if there already is a MolgenisFile for this 'Data' (MF name = data name)
-		List<? extends Entity> mfList = db.find(mfClass,
-				new QueryRule(MolgenisFile.NAME, Operator.EQUALS, NameConvention.escapeFileName(data.getName())));
-		
-		if (mfList.size() == 1)
+		//found out if there already is a MolgenisFile for this 'Data'
+		if(findMolgenisFile(data, db) != null)
 		{
 			mfPresent = true;
-		}
-		else if (mfList.size() > 1)
-		{
-			throw new Exception("SEVERE ERROR: Multiple files for " + data.getName() + " found!");
 		}
 		
 		//find out if there is a file that can be coupled using a new MolgenisFile object
 		boolean filePresent;
+		String type = data.getStorage() + "DataMatrix";
 		try
 		{
 			this.getFileDirectly(NameConvention.escapeFileName(data.getName()), getExtension(data.getStorage()), type, db);
@@ -454,7 +448,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		return relinked;
 	}
 	
-	private String getExtension(String storage) throws Exception
+	public String getExtension(String storage) throws Exception
 	{
 		if(storage.equals("Binary"))
 		{

@@ -252,7 +252,13 @@ public class MatrixManager extends PluginModel
 				if(!hasLinkedStorage)
 				{
 					//attempt to relink
-					dmh.attemptStorageRelink(data, data.getStorage(), db);
+					boolean relinked = dmh.attemptStorageRelink(data, data.getStorage(), db);
+					
+					if(relinked)
+					{
+						this.setMessages(new ScreenMessage("INFO: Datamatrix '"+data.getName()+"' relinked to a storage file with the same (file escaped) name. Please make sure this is intented.", true));
+					}
+					
 					//and requery
 					this.model.setHasBackend(dmh.isDataStoredIn(data, data.getStorage(), db));
 				}
@@ -267,6 +273,17 @@ public class MatrixManager extends PluginModel
 					logger.info("*** creating browser instance");
 					Browser br = createBrowserInstance(db, data);
 					this.model.setBrowser(br);
+					
+					if(!br.getModel().getInstance().getData().getValueType().equals(data.getValueType()))
+					{
+						String oldDt = data.getValueType();
+						String newDt = br.getModel().getInstance().getData().getValueType();
+						
+						data.setValueType(newDt);
+						db.update(data);
+						
+						this.setMessages(new ScreenMessage("WARNING: Data valuetype '" + oldDt + "' adjusted to storage specification '" + newDt + "' to prevent problems with e.g. value types", true));
+					}
 					
 					//refresh attributes, operators, filter
 					this.model.setRowHeaderAttr(null);
