@@ -17,8 +17,8 @@ inputs "${sortedrecalbam}"
 alloutputsexist \
 "${finalreport}" \
 "${familylist}" \
-"${fileWithIndexID}.array.fam" \
-"${fileWithIndexID}.array.lgen" \
+"${fileWithIndexID}.concordance.fam" \
+"${fileWithIndexID}.concordance.lgen" \
 "${arraytmpmap}" \
 "${arraymapfile}" \
 "${fileWithIndexID}.ped" \
@@ -49,8 +49,8 @@ awk '$2 == "${arrayID}" {$2 = "${externalSampleID}"; print}' ${arrayfilelocation
 echo '1 ${externalSampleID}' > ${familylist}
 
 ##Create .fam, .lgen and .map file from sample_report.txt
-sed -e '1,10d' ${finalreport} | awk '{print "1",$2,"0","0","0","1"}' | uniq > ${fileWithIndexID}.array.fam
-sed -e '1,10d' ${finalreport} | awk '{print "1",$2,$1,$3,$4}' | awk -f ${tooldir}/scripts/RecodeFRToZero.awk > ${fileWithIndexID}.array.lgen
+sed -e '1,10d' ${finalreport} | awk '{print "1",$2,"0","0","0","1"}' | uniq > ${fileWithIndexID}.concordance.fam
+sed -e '1,10d' ${finalreport} | awk '{print "1",$2,$1,$3,$4}' | awk -f ${tooldir}/scripts/RecodeFRToZero.awk > ${fileWithIndexID}.concordance.lgen
 sed -e '1,10d' ${finalreport} | awk '{print $6,$1,"0",$7}' OFS="\t" | sort -k1n -k4n | uniq > ${arraytmpmap}
 grep -P '^[123456789]' ${arraytmpmap} | sort -k1n -k4n > ${arraymapfile}
 grep -P '^[X]\s' ${arraytmpmap} | sort -k4n >> ${arraymapfile}
