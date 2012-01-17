@@ -77,7 +77,10 @@
 	</tr>
 	<tr>
 		<td>
-			<input type="submit" value="Find" onclick="document.forms.${screen.name}.__action.value = 'findQtl'; document.forms.${screen.name}.submit();">
+			<#--input type="submit" value="Find" onclick="document.forms.${screen.name}.__action.value = 'findQtl'; document.forms.${screen.name}.submit();"-->
+			
+			<@action name="findQtl" label="Find (QTL per plot)"/>
+			<@action name="findQtlMulti" label="Find (All-in-one plot)"/>
 		</td>
 	</tr>
 </table>

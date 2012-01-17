@@ -16,6 +16,7 @@ import java.util.TreeMap;
 
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
+import matrix.implementations.memory.MemoryDataMatrixInstance;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
@@ -70,6 +71,40 @@ public class QtlFinder extends PluginModel<Entity>
 		return "plugins/qtlfinder/QtlFinder.ftl";
 	}
 
+	private List<String> getInput(String query) throws Exception
+	{
+		//refresh results
+		this.model.setResultSet(new HashMap<String, Result>());
+		this.model.setQmpr(null);
+
+		//works for unix and windows (http://stackoverflow.com/questions/454908/split-java-string-by-new-line)
+		String lines[] = query.split("\\r?\\n");
+		
+		List<String> uniqueInputs = new ArrayList<String>();
+
+		//checks
+		for(String findMe : lines)
+		{
+			findMe = findMe.trim();
+			
+			if(findMe.equals(""))
+			{
+				throw new Exception("Empty input line is not allowed");
+			}
+			
+			if(!uniqueInputs.contains(findMe))
+			{
+				uniqueInputs.add(findMe);
+			}
+			else
+			{
+				throw new Exception("Non unique input string '"+findMe+"' not allowed");
+			}
+		}
+		
+		return uniqueInputs;
+	}
+	
 	public void handleRequest(Database db, Tuple request)
 	{
 		if (request.getString("__action") != null)
@@ -87,35 +122,29 @@ public class QtlFinder extends PluginModel<Entity>
 				
 				QueryRule dataFilter = makeDataFilter(request); //also sets tickboxes
 				
+				//NEW: multiple QTL's in a single plot
+				if (action.equals("findQtlMulti"))
+				{
+					//get inputs from box
+					List<String> uniqueInputs = getInput(query);
+					
+					//match all inputs to database and create 1 plot with everything
+					List<Entity> entities = new ArrayList<Entity>();
+					for(String findMe : uniqueInputs)
+					{
+						entities.addAll(findInGenesAndProbes(findMe, db));
+					}
+					
+					
+					
+				}
+				
+				//old style: 1 QTL per plot
 				if (action.equals("findQtl"))
 				{
-					//refresh results
-					this.model.setResultSet(new HashMap<String, Result>());
-
-					//works for unix and windows (http://stackoverflow.com/questions/454908/split-java-string-by-new-line)
-					String lines[] = query.split("\\r?\\n");
-					
-					List<String> uniqueInputs = new ArrayList<String>();
-
-					//checks
-					for(String findMe : lines)
-					{
-						findMe = findMe.trim();
-						
-						if(findMe.equals(""))
-						{
-							throw new Exception("Empty input line is not allowed");
-						}
-						
-						if(!uniqueInputs.contains(findMe))
-						{
-							uniqueInputs.add(findMe);
-						}
-						else
-						{
-							throw new Exception("Non unique input string '"+findMe+"' not allowed");
-						}
-					}
+				
+					//get inputs from box
+					List<String> uniqueInputs = getInput(query);
 					
 					//for each input, create a QTL report or disambiguation view
 					for(String findMe : uniqueInputs)
@@ -384,6 +413,134 @@ public class QtlFinder extends PluginModel<Entity>
 		
 		return result;
 	}
+	
+	
+	
+	
+	private QTLMultiPlotResult createQTLMultiPlotReportFor(List<Entity> entities, Double threshold, QueryRule dataFilter, Database db) throws Exception
+	{
+		
+		
+		List<String> rowNamesForFinalPlot = new ArrayList<String>();
+		List<String> colNamesForFinalPlot = new ArrayList<String>();
+		List<Double[]> valuesForFinalPlot = new ArrayList<Double[]>();
+		
+		List<Data> allData;
+		if(dataFilter == null)
+		{
+			allData = db.find(Data.class);
+		}
+		else
+		{
+			allData = db.find(Data.class, dataFilter);
+		}
+		
+		List<String> entityTypes = new ArrayList<String>();
+		for(Entity e : entities)
+		{
+			entityTypes.add(e.get(Field.TYPE_FIELD).toString());
+		}
+		
+		DataMatrixHandler dmh = new DataMatrixHandler(db);
+		
+		//List<MatrixLocation> matrixLocations = new ArrayList<MatrixLocation>();
+		for(Data d : allData)
+		{
+			//if something fails with this matrix, don't break the loop
+			//e.g. backend file is missing
+			try{
+
+			
+			//loop over Text data (can't be QTL)
+			if(d.getValueType().equals("Text")){
+				continue;
+			}
+			//check if datamatrix target/features matches any entity type
+			//and one of the dimensions is Marker
+			if(entityTypes.contains(d.getTargetType()) || entityTypes.contains(d.getFeatureType())
+				&&
+				(d.getTargetType().equals("Marker") || d.getFeatureType().equals("Marker")))
+			{
+				
+				//create instance and get name of the row/col we want
+				DataMatrixInstance instance = dmh.createInstance(d, db);
+				
+				List<String> rowNames = instance.getRowNames();
+				List<String> colNames = instance.getColNames();
+				
+				//for each entity, see if the types match to the matrix
+				for(Entity e : entities)
+				{
+					if(d.getTargetType().equals(e.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(e.get(Field.TYPE_FIELD)))
+					{
+						//if so, use this entity to 'query' the matrix and store the values
+						
+						String name = e.get(ObservableFeature.NAME).toString();
+						
+						//find out if the name is in the row or col names
+						int rowIndex = rowNames.indexOf(name);
+						int colIndex = colNames.indexOf(name);
+						
+						
+						//if its in row, do row stuff
+						if(rowIndex != -1)
+						{
+							Double[] Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
+							int maxIndex = Statistics.getIndexOfMax(Dvalues);
+							double peakDouble = Dvalues[maxIndex];
+							
+							if(threshold != null && peakDouble < threshold.doubleValue())
+							{
+								continue;
+							}
+							
+							
+						}
+						
+						//if its in col, and not in row, do col stuff
+						//we assume its not in row and col at the same time, then its not QTL data but correlations or so
+						if(rowIndex == -1 && colIndex != -1)
+						{
+							Double[] Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
+							int maxIndex = Statistics.getIndexOfMax(Dvalues);
+							double peakDouble = Dvalues[maxIndex];
+							
+							if(threshold != null && peakDouble < threshold.doubleValue())
+							{
+								continue;
+							}
+							
+						}
+						
+						
+					}
+				}
+				
+				
+			}
+			
+			
+			
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				//too bad, data matrix failed
+			}
+		}
+		
+		
+		MemoryDataMatrixInstance mdm = new MemoryDataMatrixInstance(rowNamesForFinalPlot, colNamesForFinalPlot, valuesForFinalPlot, null);
+		
+		QTLMultiPlotResult result = new QTLMultiPlotResult();
+		
+		return result;
+	}
+	
+	
+	
+	
+	
 
 	//sort the datapoints to bp position to be plottable
 	//use bppos as index to get automatic natural sorting!

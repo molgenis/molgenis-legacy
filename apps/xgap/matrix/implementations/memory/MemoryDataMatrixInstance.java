@@ -23,6 +23,54 @@ public class MemoryDataMatrixInstance<E> extends AbstractDataMatrixInstance<E>
 	// matrix of row,col
 	E[][] values;
 	
+	
+	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, List<E[]> valueList, Data data) throws MatrixException
+	{
+		int nrOfRows = valueList.size();
+		int nrOfCols = valueList.get(0).length;
+		
+		//see: http://stackoverflow.com/questions/2927391/whats-the-reason-i-cant-create-generic-array-types-in-java
+		E[][] values = (E[][]) new Object[nrOfRows][nrOfCols];
+		
+		for(int rowIndex = 0; rowIndex < nrOfRows; rowIndex++)
+		{
+			E[] row = valueList.get(rowIndex);
+			if(row.length != nrOfCols)
+			{
+				throw new MatrixException("Unequal number of columns in this matrix is not allowed");
+			}
+			for(int colIndex = 0; colIndex < row.length; colIndex++)
+			{
+				values[rowIndex][colIndex] = row[colIndex];
+			}
+		}
+		
+		// checks
+		if (rownames.size() != values.length) throw new MatrixException(
+				"rownames.length and values[] (rows) are of different sizes: " + rownames.size() + " vs "
+						+ values.length);
+		int i = 0;
+		for (E[] row : values)
+		{
+			if (colnames.size() != row.length) throw new MatrixException("colnames.length and values[" + i
+					+ "].length (col) are of different sizes: " + colnames.size() + " vs " + row.length);
+			i++;
+		}
+
+		if(data == null){
+			data = new Data();
+			data.setName("nameless_memorymatrix");
+		}
+
+		// configure
+		this.setColNames(colnames);
+		this.setRowNames(rownames);
+		this.setNumberOfCols(colnames.size());
+		this.setNumberOfRows(rownames.size());
+		this.values = values;
+		this.setData(data);
+	}
+	
 	public MemoryDataMatrixInstance(List<String> rownames, List<String> colnames, E[][] values, Data data) throws MatrixException
 	{
 		// checks

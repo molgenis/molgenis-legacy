@@ -12,7 +12,18 @@ public class QtlFinderModel{
 	private String query;
 	private Double threshold;
 	private List<String> tickedDataSets;
+	private QTLMultiPlotResult qmpr;
 
+	
+	
+	public QTLMultiPlotResult getQmpr()
+	{
+		return qmpr;
+	}
+	public void setQmpr(QTLMultiPlotResult qmpr)
+	{
+		this.qmpr = qmpr;
+	}
 	public List<String> getTickedDataSets()
 	{
 		return tickedDataSets;
