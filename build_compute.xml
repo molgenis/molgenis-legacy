@@ -32,9 +32,10 @@
 	<target name="makedistro">
 		
 		<!-- Create folder structure for distro -->
-		<property name="root_distro_dir" value="dist/"/>
+		<property name="root_distro_dir" value="${user.dir}/dist/"/>
 		<property name="app_distro_dir" value="${root_distro_dir}/molgenis_${app_name}/"/>
 		<property name="lib_dir" value="${app_distro_dir}/lib/"/>
+		<property name="templates_dir" value="${app_distro_dir}/templates/"/>
 		<property name="protocols_dir" value="${app_distro_dir}/protocols/"/>
 		<property name="workflows_dir" value="${app_distro_dir}/workflows/"/>
 		<property name="app_module_dir" value="${user.dir}/modules/compute/" />
@@ -70,18 +71,21 @@
 			</fileset>
 		</copy>
 		
-		<!-- Copy all protocols and workflows to the distro dir -->
+		<!-- Copy all generic templates, protocols and workflows to the distro dir -->
+		<copy todir="${templates_dir}">
+		    <fileset dir="${app_module_dir}/org/molgenis/compute/templates/"/>
+		</copy>
 		<copy todir="${protocols_dir}">
-		    <fileset dir="modules/compute/protocols"/>
+		    <fileset dir="${app_module_dir}/protocols/"/>
 		</copy>
 		<copy todir="${workflows_dir}">
-			<fileset dir="modules/compute/workflows"/>
+			<fileset dir="${app_module_dir}/workflows/"/>
 		</copy>
 		
 		<!-- Copy all dependencies to the distro lib dir -->
 		<!-- This is a manually maintained list of libs for now, but we should collect this from include statements -->
 		<copy todir="${lib_dir}">
-			<fileset dir="${molgenis.dir}/lib">
+			<fileset dir="${molgenis.dir}/lib/">
 				<include name="freemarker.jar"/>
 				<include name="log4j-1.2.15.jar"/>
 			</fileset>
