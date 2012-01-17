@@ -164,11 +164,11 @@ public class Importer
 			}
 			
 			
-			// original check here: dmh.findSourceFile(data, db) != null
-			// which fails when there is a leftover MF but no actual file
+			// original check here: dmh.findSourceFile(data, db) != null which failed when there is a leftover MF but no actual file
+			// so now there's this check instead
 			if (realFilePresent)
 			{
-				throw new DatabaseException("File source already exists for source type '" + data.getStorage() + "'");
+				throw new DatabaseException("There is already a storage file named '" +NameConvention.escapeFileName(data.getName()) +"' which is used when escaping the name '" + data.getName() + "'. Please rename your Data matrix or contact your admin.");
 			}
 			
 			//no file present, remove the MF link if there is one

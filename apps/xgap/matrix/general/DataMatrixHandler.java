@@ -422,8 +422,17 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			filePresent = false;
 		}
 		
+		// find out if there is a MolgenisFile for the escaped file name already, else adding of a Data record
+		// with a name that is allowed at first still fails due to relinking, e.g. an immediate error after adding:
+		// File name 'metaboliteExpression' already exists in database when escaped to filesafe format. ('metaboliteexpression')
+		boolean escapedMolgenisFileNameExists = false;
+		if(db.find(db.getClassForName(type), new QueryRule(MolgenisFile.NAME, Operator.EQUALS, NameConvention.escapeFileName(data.getName()))).size() > 0)
+		{
+			escapedMolgenisFileNameExists = true;
+		}
+		
 		//if there is no MolgenisFile, but there is a file present, make the link
-		if(!mfPresent && filePresent)
+		if(!mfPresent && filePresent && !escapedMolgenisFileNameExists)
 		{
 			MolgenisFile mfAdd = (MolgenisFile) db.getClassForName(type).newInstance();
 			

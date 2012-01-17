@@ -655,7 +655,7 @@ public class XqtlSeleniumTest
 				//add some content and try to save - this must fail
 				selenium.type("id=matrixInputTextArea", "qw er\nty 1 2");
 				clickAndWait("id=matrixUploadTextArea");
-				Assert.assertTrue(selenium.isTextPresent("File name 'metaboliteExpression' already exists in database when escaped to filesafe format. ('metaboliteexpression')"));
+				Assert.assertTrue(selenium.isTextPresent("There is already a storage file named 'metaboliteexpression' which is used when escaping the name 'metaboliteExpression'. Please rename your Data matrix or contact your admin."));
 				
 				// delete the test data and check if it happened
 				selenium.click("id=delete_Datas");
