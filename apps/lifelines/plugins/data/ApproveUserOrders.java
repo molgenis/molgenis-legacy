@@ -63,6 +63,7 @@ public class ApproveUserOrders extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request) throws Exception	{
 
 		if ("showOrders".equals(request.getAction())) {
+			UserOrders.clear();
 			selectedUser = request.getString("user");
 			System.out.println(">>" + selectedUser);
 			//arrayUsers.clear();
@@ -98,12 +99,8 @@ public class ApproveUserOrders extends PluginModel<Entity>
 				ShoppingCart sc = db.query(ShoppingCart.class).eq(ShoppingCart.ID, temp[i]).find().get(0);
 				sc.setApproved(true);
 				db.update(sc);
-
 			}
-			
-			
-		}
-		
+		}	
 	}
 	
 	@Override
