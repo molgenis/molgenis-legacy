@@ -13,7 +13,6 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 
-import static ch.lambdaj.Lambda.*;
 
 /**
  * Backend on EAV model,
@@ -122,7 +121,8 @@ public class EAVBackend {
         q.append(") AND ");
         
         
-        String featureIds = join(extract(feature, on(Measurement.class).getId()));
+        String featureIds = ""; //join(extract(feature, on(Measurement.class).getId()));
+        // Lambdaj import doesn't work and "on" method cannot be found; Joris please fix!
         q.append(String.format(" feature IN (%s) ", featureIds));            
         q.append("ORDER BY sortCol");
         
