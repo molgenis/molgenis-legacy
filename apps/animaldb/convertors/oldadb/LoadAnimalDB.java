@@ -642,7 +642,7 @@ public class LoadAnimalDB
 
 				// Name
 				String name = tuple.getString("projecttitle");
-				int decappid = ct.makePanel(invid, "DEC Project: " + name, login.getUserId());
+				int decappid = ct.makePanel(invid, "DEC project: " + name, login.getUserId());
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 

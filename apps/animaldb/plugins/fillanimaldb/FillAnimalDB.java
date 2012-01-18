@@ -182,6 +182,7 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "OldRhutDbLitterId", stringUnitId, null, null, false, "string", "To link an animal to a litter with this ID in the old version of Roelof Hut's DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldRhutDbSampleDate", datetimeUnitId, null, null, false, "datetime", "To set the date that an animal was sampled in the old version of Roelof Hut's DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldRhutDbSampleNr", numberUnitId, null, null, false, "int", "To set the sample number in the old version of Roelof Hut's DB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldRhutDbExperimentId", numberUnitId, null, null, false, "int", "To set the experiment's ID in the old version of Roelof Hut's DB.", login.getUserId());
 		
 		logger.info("Add codes");
 		// Codes for Subprojects

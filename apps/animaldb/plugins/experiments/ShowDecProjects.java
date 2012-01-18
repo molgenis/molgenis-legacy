@@ -101,10 +101,8 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// No action here
 			}
 			if (action.equals("addEditDecProject")) {
-				SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-				//SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+				//SimpleDateFormat oldDateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-				//SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd");
 				// Get values from form
 				
@@ -122,12 +120,12 @@ public class ShowDecProjects extends PluginModel<Entity>
 					throw(new Exception("No DEC number given - project not added"));
 				}
 				
-				// DEC Title
+				// DEC title
 				String dectitle = "";
 				if (request.getString("dectitle") != null && !request.getString("dectitle").equals("")) {
 					dectitle = request.getString("dectitle");
 				} else {
-					throw(new Exception("No DEC Title given - project not added"));
+					throw(new Exception("No DEC title given - project not added"));
 				}
 				
 				// DEC application PDF
@@ -152,7 +150,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 					throw(new Exception("No start date given - project not added"));
 				}
 				
-				// End date-time
+				// End date
 				Date enddate = null;
 				if (request.getString("enddate") != null) {
 					//String enddateString = request.getString("enddate");
@@ -270,8 +268,6 @@ public class ShowDecProjects extends PluginModel<Entity>
 				featureId = ct.getMeasurementId("DecTitle");
 				String decTitle = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
 				if (decTitle != null) tmpDec.setDecTitle(decTitle);
-				
-				
 				// set decapplicant
 				featureId = ct.getMeasurementId("DecApplicantId");
 				String decApplicantString = ct.getMostRecentValueAsString(currentDec.getId(), featureId);

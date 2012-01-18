@@ -383,7 +383,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					throw(new Exception("No title given - Subproject not added"));
 				}
 				
-				// DEC Project (Application)
+				// DEC project (Application)
 				int decappId = 0;
 				if (request.getString("decapp") != null) {
 					decappId = request.getInt("decapp");
