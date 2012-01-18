@@ -24,6 +24,8 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 	private static final long serialVersionUID = -8140222842047905408L;
 	private ShoppingCart shoppingCart = null;
 	private List<ShoppingCart> shoppingCartList = null;
+	private List<ShoppingCart> ApprovedShoppingCartList = null;
+
 	
 	public OldPlacedOrders(String name, ScreenController<?> parent)
 	{
@@ -78,6 +80,7 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 	@Override
 	public void reload(Database db) {
 		try {
+			//get all the items
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
@@ -95,6 +98,26 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 				shoppingCartList = null;
 			}
 
+			//get only the approved shopping cart 
+			Query<ShoppingCart> aq = db.query(ShoppingCart.class);
+			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
+			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
+			q.addRules(new QueryRule(ShoppingCart.APPROVED, Operator.EQUALS, true));
+
+			if (!q.find().isEmpty()) {
+				shoppingCart = q.find().get(0);
+				//Same user could order multiple times
+				ApprovedShoppingCartList = new ArrayList<ShoppingCart>();
+				for(ShoppingCart order : q.find()){
+					ApprovedShoppingCartList.add(order);
+				}
+				
+			} else {
+				shoppingCart = null;
+				ApprovedShoppingCartList = null;
+			}
+
+			
 		} catch (Exception e) {
 			this.getModel().getMessages().add(new ScreenMessage("No old orders available", false));
 			e.printStackTrace();
@@ -109,6 +132,9 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 		return shoppingCartList;
 	}
 	
+	public List<ShoppingCart> getApprovedShoppingCart(){
+		return ApprovedShoppingCartList;
+	}
 	
 	
 }
