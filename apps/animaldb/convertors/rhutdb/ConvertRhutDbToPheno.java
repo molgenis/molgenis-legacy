@@ -20,6 +20,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
@@ -50,10 +51,12 @@ public class ConvertRhutDbToPheno
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
 	private SimpleDateFormat expDbFormat = new SimpleDateFormat("yyyy-M-d H:mm:ss", Locale.US);
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	private Map<String, String> sourceMap;
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
 	private Map<String, List<String>> litterMap;
 	private Map<String, String> decMap;
+	private Map<String, Integer> researcherMap;
 	private int highestNr = 0;
 	String lineName = "RHut";
 
@@ -101,10 +104,12 @@ public class ConvertRhutDbToPheno
 		panelsToAddList = new ArrayList<Panel>();
 		
 		appMap = new HashMap<String, String>();
+		sourceMap = new HashMap<String, String>();
 		parentgroupNrMap = new HashMap<String, Integer>();
 		litterNrMap = new HashMap<String, Integer>();
 		litterMap = new HashMap<String, List<String>>();
 		decMap = new HashMap<String, String>();
+		researcherMap = new HashMap<String, Integer>();
 	}
 	
 	public void convertFromZip(String filename) throws Exception {
@@ -124,7 +129,6 @@ public class ConvertRhutDbToPheno
 		populateProtocolApplication();
 		populateAnimal(path + "IDtable.csv");
 		parseParentRelations(path + "Litters.csv");
-		populateResearchers(path + "Researchers.csv");
 		populateDec(path + "Experiments.csv");
 		parseDecRelations(path + "IDsInExp.csv");
 		
@@ -322,6 +326,7 @@ public class ConvertRhutDbToPheno
 					if (source.contains("Jackson")) sourceName = "JacksonCharlesRiver";
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, 
 							"Source", animalName, null, sourceName));
+					sourceMap.put(animalName, sourceName);
 				}
 						
 				// Ear Code -> Earmark (R -> 1 r, L -> 1 l, RL -> 1 r 1 l)
@@ -497,19 +502,6 @@ public class ConvertRhutDbToPheno
 		});
 	}
 	
-	public void populateResearchers(String filename) throws Exception
-	{	
-		File file = new File(filename);
-		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
-		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				// TODO!
-			}
-		});
-	}
-	
 	public void populateDec(String filename) throws Exception
 	{	
 		final List<String> addedDecApps = new ArrayList<String>();
@@ -528,12 +520,14 @@ public class ConvertRhutDbToPheno
 					return;
 				}
 				String project = "DEC";
-				String expNr = null;
+				String expNr = "A";
 				if (decNr.length() == 5) {
-					expNr = decNr.substring(4);
+					expNr = decNr.substring(4).toUpperCase();
 					decNr = decNr.substring(0, 4);
 				}
 				project += decNr;
+				// Title -> name and ExperimentTitle for subproject, DecTitle for project
+				String subproject = tuple.getString("Title");
 				// If not added yet, make new DEC app
 				if (!addedDecApps.contains(project)) {
 					addedDecApps.add(project);
@@ -542,17 +536,22 @@ public class ConvertRhutDbToPheno
 							now, null, "TypeOfGroup", project, "DecApplication", null));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
 							now, null, "DecNr", project, decNr, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
+							now, null, "DecTitle", project, subproject, null));
 				}
-				// Title -> name for subproject
-				String subproject = tuple.getString("Title");
 				// Make a DEC subproject
 				panelsToAddList.add(ct.createPanel(invName, subproject, userName));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 						now, null, "TypeOfGroup", subproject, "Experiment", null));
+				// Link to DEC app
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
+						now, null, "DecApplication", subproject, null, project));
 				if (expNr != null) {
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
 							now, null, "ExperimentNr", subproject, expNr, null));
 				}
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
+						now, null, "ExperimentTitle", subproject, subproject, null));
 				// Exp. -> OldRhutDbExperimentId (on the DEC subproject) + 
 				// store in map for later linking of animals to subprojects
 				String oldId = tuple.getString("Exp.");
@@ -560,10 +559,21 @@ public class ConvertRhutDbToPheno
 						now, null, "OldRhutDbExperimentId", subproject, oldId, null));
 				decMap.put(oldId, subproject);
 				// Researcher -> DecApplicantId (on the DEC app)
-				// TODO: store Researchers as Users!
 				String res = tuple.getString("Researcher");
+				res = res.split("/")[0]; // if multiple names, take first as leading
+				res = res.replace(" ", "");
+				Integer resId;
+				if (!researcherMap.containsKey(res)) {
+					MolgenisUser newUser = new MolgenisUser();
+					newUser.setName(res);
+					db.add(newUser);
+					resId = newUser.getId();
+					researcherMap.put(res, resId);
+				} else {
+					resId = researcherMap.get(res);
+				}
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
-						now, null, "DecApplicantId", project, res, null));
+						now, null, "DecApplicantId", project, resId.toString(), null));
 				// DECStartDate -> StartDate (on both)
 				String startDate = tuple.getString("DECStartDate");
 				Date tmpDate = expDbFormat.parse(startDate);
@@ -595,17 +605,57 @@ public class ConvertRhutDbToPheno
 			{
 				// Case -> skip
 				// Exp. -> to relate to Experiments.csv
-				
+				String oldId = tuple.getString("Exp.");
+				if (oldId.equals("0")) {
+					return;
+				}
+				String subproject = decMap.get(oldId);
+				if (subproject == null) {
+					return;
+				}
 				// ID -> animal
-				
-				// InExp Date
-				
-				// OutExp Date
-				
+				String animal = tuple.getString("ID");
+				if (!animalNames.contains(animal)) {
+					return;
+				}
+				// InExp Date -> start date of Experiment value
+				Date startDate = dbFormat.parse(tuple.getString("InExp Date"));
+				// OutExp Date -> end date of Experiment value
+				Date endDate = dbFormat.parse(tuple.getString("OutExp Date"));
 				// DEC. -> doesn't always correspond to Exp. so skip for now
 				// TODO find out from Roelof what this means
 				// Treatment -> skip
-
+				
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalInSubproject"), 
+						startDate, endDate, "Experiment", animal, null, subproject));
+				// SourceTypeSubproject
+				String sourceName = sourceMap.get(animal);
+				String sourceType = null;
+				if (sourceName != null) {
+					if (sourceName.equals("ErasmusMC")) {
+						sourceType = "Geregistreerde fok/aflevering in Nederland";
+					}
+					if (sourceName.equals("Kweek moleculaire neurobiologie")) {
+						sourceType = "Geregistreerde fok/aflevering in Nederland";
+					}
+					if (sourceName.equals("Harlan")) {
+						sourceType = "Geregistreerde fok/aflevering in Nederland";
+					}
+					if (sourceName.equals("JacksonCharlesRiver")) {
+						sourceType = "Andere herkomst";
+					}
+				} else {
+					// assume default source is eigen kweek
+					sourceType = "Geregistreerde fok/aflevering in Nederland";
+				}
+				// TODO: check for hergebruik?
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalInSubproject"), 
+						endDate, null, "SourceTypeSubproject", animal, sourceType, null));
+				
+				if (endDate != null) {
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalFromSubproject"), 
+							endDate, null, "Experiment", animal, null, subproject));
+				}
 			}
 		});
 	}
@@ -646,7 +696,8 @@ public class ConvertRhutDbToPheno
 		makeProtocolApplication("SetDecSubprojectSpecs");
 		makeProtocolApplication("SetOldRhutDbExperimentId");
 		// Animals in DECs
-		
+		makeProtocolApplication("AnimalInSubproject");
+		makeProtocolApplication("AnimalFromSubproject");
 	}
 
 	

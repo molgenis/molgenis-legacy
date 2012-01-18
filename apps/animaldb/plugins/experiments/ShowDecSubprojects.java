@@ -1049,7 +1049,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				
 				featureId = ct.getMeasurementId("DecApplication");
 				int decApplicationId = ct.getMostRecentValueAsXref(currentExp.getId(), featureId);
-				String decApplicationName = ct.getObservationTargetById(decApplicationId).getName();
+				String decApplicationName = "";
+				if (decApplicationId != -1) {
+					decApplicationName = ct.getObservationTargetById(decApplicationId).getName();
+				}
 				
 				String startDate = null;
 				featureId = ct.getMeasurementId("StartDate");
@@ -1090,7 +1093,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				tmpExp.setPainManagement(painManagement);
 				tmpExp.setAnimalEndStatus(animalEndStatus);
 				tmpExp.setOldAnimalDBRemarks(oldAnimalDBRemarks);
-				if (decApplicationId != 0) tmpExp.setDecApplicationId(decApplicationId);
+				if (decApplicationId != -1) tmpExp.setDecApplicationId(decApplicationId);
 				tmpExp.setDecApplication(decApplicationName);
 				tmpExp.setNrOfAnimals(nrOfAnimals);
 				if (startDate != null) tmpExp.setStartDate(startDate);
