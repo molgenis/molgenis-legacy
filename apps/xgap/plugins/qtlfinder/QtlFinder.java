@@ -135,6 +135,7 @@ public class QtlFinder extends PluginModel<Entity>
 						entities.addAll(findInGenesAndProbes(findMe, db));
 					}
 					
+					createQTLMultiPlotReportFor(entities, threshold, dataFilter, db);
 					
 					
 				}
@@ -423,7 +424,11 @@ public class QtlFinder extends PluginModel<Entity>
 		
 		List<String> rowNamesForFinalPlot = new ArrayList<String>();
 		List<String> colNamesForFinalPlot = new ArrayList<String>();
-		List<Double[]> valuesForFinalPlot = new ArrayList<Double[]>();
+	//List<Double[]> valuesForFinalPlot = new ArrayList<Double[]>();
+		
+		//HashMap<String, Marker> allMarkers = new HashMap<String, Marker>();
+		HashMap<String, List<Marker>> markersPerDataset = new HashMap<String, List<Marker>>();
+		HashMap<String, List<Double[]>> valuesPerDataset = new HashMap<String, List<Double[]>>();
 		
 		List<Data> allData;
 		if(dataFilter == null)
@@ -450,6 +455,7 @@ public class QtlFinder extends PluginModel<Entity>
 			//e.g. backend file is missing
 			try{
 
+			List<Double[]> valuesToRemember = new ArrayList<Double[]>();
 			
 			//loop over Text data (can't be QTL)
 			if(d.getValueType().equals("Text")){
@@ -462,11 +468,16 @@ public class QtlFinder extends PluginModel<Entity>
 				(d.getTargetType().equals("Marker") || d.getFeatureType().equals("Marker")))
 			{
 				
+				System.out.println("** LOOKING INTO MATRIX: " + d.getName());
+				
 				//create instance and get name of the row/col we want
 				DataMatrixInstance instance = dmh.createInstance(d, db);
 				
 				List<String> rowNames = instance.getRowNames();
 				List<String> colNames = instance.getColNames();
+				
+				boolean needToRememberMarkersAndQtlProfiles = false;
+				boolean markersAreOnCols = false;
 				
 				//for each entity, see if the types match to the matrix
 				for(Entity e : entities)
@@ -476,6 +487,8 @@ public class QtlFinder extends PluginModel<Entity>
 						//if so, use this entity to 'query' the matrix and store the values
 						
 						String name = e.get(ObservableFeature.NAME).toString();
+						
+						System.out.println("** LOOKING INTO ENTITY: " + name);
 						
 						//find out if the name is in the row or col names
 						int rowIndex = rowNames.indexOf(name);
@@ -489,11 +502,17 @@ public class QtlFinder extends PluginModel<Entity>
 							int maxIndex = Statistics.getIndexOfMax(Dvalues);
 							double peakDouble = Dvalues[maxIndex];
 							
+							needToRememberMarkersAndQtlProfiles = true;
+							markersAreOnCols = true; //multiple assignments but should be OK (expected consistent per dataset)
+							
 							if(threshold != null && peakDouble < threshold.doubleValue())
 							{
 								continue;
 							}
 							
+							valuesToRemember.add(Dvalues);
+							
+							System.out.println("** ROW PLOT VALS ADDED: " + Dvalues[0] + ", " + Dvalues[1] + ", " + Dvalues[2] + " ETC");
 							
 						}
 						
@@ -505,16 +524,35 @@ public class QtlFinder extends PluginModel<Entity>
 							int maxIndex = Statistics.getIndexOfMax(Dvalues);
 							double peakDouble = Dvalues[maxIndex];
 							
+							needToRememberMarkersAndQtlProfiles = true;
+							markersAreOnCols = false; //multiple assignments but should be OK (expected consistent per dataset)
+							
 							if(threshold != null && peakDouble < threshold.doubleValue())
 							{
 								continue;
 							}
+							
+							valuesToRemember.add(Dvalues);
+							
+							System.out.println("** COL PLOT VALS ADDED: " + Dvalues[0] + ", " + Dvalues[1] + ", " + Dvalues[2] + " ETC");
 							
 						}
 						
 						
 					}
 				}
+				
+				
+				if(needToRememberMarkersAndQtlProfiles)
+				{
+					//query the markers
+					List<Marker> markers = db.find(Marker.class, new QueryRule(Marker.NAME, Operator.IN, markersAreOnCols ? colNames : rowNames));
+					markersPerDataset.put(d.getName(), markers);
+					
+					//store the values in the hash
+					valuesPerDataset.put(d.getName(), valuesToRemember);
+				}
+				
 				
 				
 			}
@@ -529,8 +567,21 @@ public class QtlFinder extends PluginModel<Entity>
 			}
 		}
 		
+		// now reconstruct a big supermatrix:
 		
-		MemoryDataMatrixInstance mdm = new MemoryDataMatrixInstance(rowNamesForFinalPlot, colNamesForFinalPlot, valuesForFinalPlot, null);
+		// use markersPerDataset
+		// use valuesPerDataset
+		
+		//sort ALL markers across datasets by basepair position...
+		//align all the values to their corresponding markers
+		//and plot the results...
+		
+		
+	//	MemoryDataMatrixInstance mdm = new MemoryDataMatrixInstance(rowNamesForFinalPlot, colNamesForFinalPlot, valuesForFinalPlot, null);
+		
+		System.out.println("*** R MATRIX: ");
+	//	System.out.println(mdm.getAsRobject(false));
+		System.out.println("***");
 		
 		QTLMultiPlotResult result = new QTLMultiPlotResult();
 		
