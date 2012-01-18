@@ -8,14 +8,14 @@ import org.molgenis.util.SimpleTree;
 
 public class JQueryTreeViewMeasurement<E> extends JQueryTreeView<E>{
 
-	private SimpleTree<JQueryTreeViewElementMeasurement> treeData;
+	private SimpleTree<JQueryTreeViewElementObject> treeData;
 	
 	public JQueryTreeViewMeasurement(String name, SimpleTree treeData) {
 		super(name, treeData);
 		this.treeData = treeData;
 	}
 	
-	public SimpleTree<JQueryTreeViewElementMeasurement> getTree (){
+	public SimpleTree<JQueryTreeViewElementObject> getTree (){
 		return treeData;
 	}
 }
