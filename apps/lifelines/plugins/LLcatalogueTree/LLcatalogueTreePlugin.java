@@ -64,7 +64,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 				Date dat = new Date();
 				String dateOfOrder = dateFormat.format(dat);
-				this.addMeasurementsToTree(db, request, selectedInvestigation, dateOfOrder);
+				this.addMeasurements(db, request, selectedInvestigation, dateOfOrder);
 				
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 				
@@ -80,13 +80,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 	}
 
-	private void addMeasurementsToTree(Database db, Tuple request, String selectedInvestigation, String dateOfOrder) throws DatabaseException, IOException {
+	private void addMeasurements(Database db, Tuple request, String selectedInvestigation, String dateOfOrder) throws DatabaseException, IOException {
 		
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement names,
 		// so we can easily get them from the request
 		
 		this.shoppingCart.clear();
+		
 		List<Measurement> allMeasList  = db.find(Measurement.class);
 		for (Measurement m : allMeasList) {
 			if (request.getBool(m.getName()) != null) {
