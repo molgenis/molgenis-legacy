@@ -162,15 +162,15 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_predictionModel_Prediction";
+		return "plugins_GenericImporter_GenericImporterPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/predictionModel/Prediction.ftl";
+		return "plugins/GenericImporter/GenericImporterPlugin.ftl";
 	}
-
+	
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception	{
 
