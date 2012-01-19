@@ -85,29 +85,53 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 
 		try {
 			
-			getModel().error=false;
-			if(getModel().matrixViewerCat != null){
-				getModel().matrixViewerCat.setDatabase(db);
+			getModel().error = false;
+			
+			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+			//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, ObservationTarget.INVESTIGATION_NAME, 
+			//	Operator.EQUALS, "DataShaper"));
+			String userName = this.getApplicationController().getLogin().getUserName();
 
+			Query<ShoppingCart> q = db.query(ShoppingCart.class);
+			
+			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, userName));
+			
+			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
+			
+			q.addRules(new QueryRule(ShoppingCart.APPROVED, Operator.EQUALS, true));
+			
+			
+			List<String> listMeas = new ArrayList<String>();
+			
+			if(q.find().size() > 0)
+			{
+				List<ShoppingCart> shoppingCartList = q.find();
+				
+				for(ShoppingCart eachCart : shoppingCartList)
+				{
+					listMeas.addAll(eachCart.getMeasurements_Name());
+				}
+				
+				listMeas = removeDuplication(listMeas);
+			}
+			
+			if(getModel().matrixViewerCat != null){
+				
+				getModel().matrixViewerCat.setDatabase(db);
+				
+				if(listMeas.size() == 0)
+				{
+				
+					getModel().matrixViewerCat = null;
+				
+				}else{
+					getModel().matrixViewerCat.setColHeaderFilter(listMeas);
+					
+				}
+				
 			} else if (getModel().matrixViewerCat == null) {		//the matrix is completely new
 
-				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-				//filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, ObservationTarget.INVESTIGATION_NAME, 
-				//	Operator.EQUALS, "DataShaper"));
-				String userName = this.getApplicationController().getLogin().getUserName();
-
-				Query<ShoppingCart> q = db.query(ShoppingCart.class);
-				
-				q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, userName));
-				
-				q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
-				
-				q.addRules(new QueryRule(ShoppingCart.APPROVED, Operator.EQUALS, true));
-				
-				
-				List<String> listMeas = new ArrayList<String>();
-				
-				if(q.find().size() > 0)
+				if(listMeas.size() > 0)
 				{
 					List<ShoppingCart> shoppingCartList = q.find();
 					
@@ -124,6 +148,7 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 							new SliceablePhenoMatrix(ObservationTarget.class, Measurement.class), 
 							true, true, true, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, listMeas));
+					
 					getModel().matrixViewerCat.setDatabase(db);
 				}
 			}
@@ -132,6 +157,8 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 			logger.error(e.getMessage());
 		}
 
+
+	
 	}
 
 	public List<String> removeDuplication (List<String> allMeasurementList){
