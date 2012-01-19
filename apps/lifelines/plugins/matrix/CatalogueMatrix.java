@@ -86,11 +86,9 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 		try {
 			
 			getModel().error=false;
-			
 			if(getModel().matrixViewerCat != null){
-				
 				getModel().matrixViewerCat.setDatabase(db);
-			
+
 			} else if (getModel().matrixViewerCat == null) {		//the matrix is completely new
 
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
