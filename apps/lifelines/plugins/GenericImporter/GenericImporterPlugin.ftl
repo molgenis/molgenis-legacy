@@ -1,4 +1,4 @@
-<#macro plugins_predictionModel_Prediction screen>
+<#macro plugins_GenericImporter_GenericImporterPlugin screen>
 
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
@@ -414,14 +414,12 @@
 						</#list>
 					</tr>
 				</table>
-				<#else>
-					<label> <#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
-				</#if> 
-				<div id="mytable">
-				</div>	
-				
 				<h4> ...now you can finish with choosing import: </h4>
 		        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/><br /><br />			
+				<#else>
+					</br></br>
+					<label> <#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
+				</#if> 
 			</div>
 		</div>
 	</div>
