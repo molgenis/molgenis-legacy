@@ -527,7 +527,7 @@ public class ConvertRhutDbToPheno
 				}
 				project += decNr;
 				// Title -> name and ExperimentTitle for subproject, DecTitle for project
-				String subproject = tuple.getString("Title");
+				String subproject = expNr + ". " + tuple.getString("Title");
 				// If not added yet, make new DEC app
 				if (!addedDecApps.contains(project)) {
 					addedDecApps.add(project);

@@ -648,6 +648,7 @@ public class CommonService
 		QueryRule qr2 = new QueryRule(Operator.OR);
 		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 		valueQuery.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigations
+		valueQuery.addRules(new QueryRule(Operator.SORTASC, ObservedValue.TARGET_NAME));
 		List<ObservedValue> valueList = valueQuery.find();
 		for (ObservedValue value : valueList) {
 			panelIdList.add(value.getTarget_Id());
