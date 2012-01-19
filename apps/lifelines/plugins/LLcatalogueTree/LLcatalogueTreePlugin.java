@@ -153,29 +153,18 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				JQueryTreeViewElementObject childTree;
 
 				if (labelToTree.containsKey(protocolName)) {
-
 					childTree = labelToTree.get(protocolName);
-
 				} else {
-
-					childTree = new JQueryTreeViewElementObject(
-							protocolName, parentTree);
+					childTree = new JQueryTreeViewElementObject(protocolName, parentTree);
 					childTree.setCollapsed(true);
 					labelToTree.put(protocolName, childTree);
 				}
 
-				if (protocol.getSubprotocols_Name() != null
-						&& protocol.getSubprotocols_Name().size() > 0) {
-
-					recursiveAddingTree(protocol.getSubprotocols_Name(),
-							childTree, db);
-
+				if (protocol.getSubprotocols_Name() != null	&& protocol.getSubprotocols_Name().size() > 0) {
+					recursiveAddingTree(protocol.getSubprotocols_Name(), childTree, db);
 				}
-				if (protocol.getFeatures_Name() != null
-						&& protocol.getFeatures_Name().size() > 0) {
-
-					addingMeasurementTotree(protocol.getFeatures_Name(),
-							childTree, db);
+				if (protocol.getFeatures_Name() != null	&& protocol.getFeatures_Name().size() > 0) {
+					addingMeasurementTotree(protocol.getFeatures_Name(), childTree, db);
 				}
 			}
 		}
@@ -185,15 +174,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			JQueryTreeViewElementObject parentTree, Database db) {
 
 		 try {
-			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(
-					Measurement.NAME, Operator.IN, childNode));
+			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode));
 			for (Measurement measurement : measurementList) {
 
 				JQueryTreeViewElementObject childTree;
 				if (labelToTree.containsKey(measurement.getName())) {
 					childTree = labelToTree.get(measurement.getName());
 				} else {
-					childTree = new JQueryTreeViewElementObject(measurement, null, parentTree); //TODO : fill in the category
+					childTree = new JQueryTreeViewElementObject(measurement, null, null, parentTree); //TODO : fill in the category
 					labelToTree.put(measurement.getName(), childTree);
 				}
 			}
