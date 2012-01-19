@@ -1,4 +1,4 @@
-<#macro plugins_GenericImporter_GenericImporterPlugin screen>
+<#macro plugins_predictionModel_Prediction screen>
 
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
@@ -315,119 +315,113 @@
 		        <h4> Please select the file </h4>
 		        <input type="file" name = "uploadFile"/><br /><br />
 		        
-		  
-				        <h4> Please choose ONE of the following options: </h4>
-				        
-				        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
-				        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
-				 <#if screen.getStepsFlag() != 0>        
-				        
-						
-						<!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
-		 			<#if screen.getStepsFlag() == 1> 	 
-		 				<#if screen.getColumnCount() == true>
-							<#list screen.getDataTypeOptions() as dataTypeOptions>
-								<script type="text/javascript">
-									createSelection("${dataTypeOptions}");
-								</script>
-							</#list>
-							
-							
-							<#list screen.getSpreadSheetHeanders() as header>
-								<script type="text/javascript">
-									createHashMap("${header}");
-								</script>
-							</#list>
-							
-							<#list screen.getChooseFieldName() as fieldNameOptions>
-								<script type="text/javascript">
-									createFieldName("${fieldNameOptions}");
-								</script>
-							</#list>
-							
-							<#if screen.isImportingFinished() == false>
-								Please enter your investigation: <input type="text" name="investigation" size="15" value=""> <br/><br/>
-								
-								
-								Enter column numbers  <input type="text" id="shortcut" size="15" value=""> 
-								<select id='shortcutClassType' name='shortcut'>
-										<#list screen.getChooseClassType() as options>
-											<option id="">${options}</option>
-										</#list>
+		        <h4> Please choose ONE of the following options: </h4>
+		        
+		        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
+		        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
+		        
+		        
+				
+				<!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
+ 				
+				<#list screen.getDataTypeOptions() as dataTypeOptions>
+					<script type="text/javascript">
+						createSelection("${dataTypeOptions}");
+					</script>
+				</#list>
+				
+				
+				<#list screen.getSpreadSheetHeanders() as header>
+					<script type="text/javascript">
+						createHashMap("${header}");
+					</script>
+				</#list>
+				
+				<#list screen.getChooseFieldName() as fieldNameOptions>
+					<script type="text/javascript">
+						createFieldName("${fieldNameOptions}");
+					</script>
+				</#list>
+				
+				<#if screen.isImportingFinished() == false>
+				Please enter your investigation: <input type="text" name="investigation" size="15" value=""> <br/><br/>
+				
+				
+				Enter column numbers  <input type="text" id="shortcut" size="15" value=""> 
+				<select id='shortcutClassType' name='shortcut'>
+						<#list screen.getChooseClassType() as options>
+							<option id="">${options}</option>
+						</#list>
+				</select>
+				<select id='shortcutFieldName' name='shortcut'>
+					<#list screen.getChooseFieldName() as options>
+						<option id="">${options}</option>
+					</#list>
+				</select>
+				Choose Target <input type="text" id="shortcutTarget" size="5" value=""> 
+				<button type="button" onclick="updateTableContent();">Update</button> 
+				<br/><br/>
+				
+					
+				<table id="table" border="1">
+					<tr>
+						<#list screen.getSpreadSheetHeanders() as header>
+							<th>${header}</th>
+						</#list>
+					</tr>
+					<tr>
+						<#list screen.getSpreadSheetHeanders() as header>
+							<td><div id='${header}'>lalala</div></td>
+							<script type="text/javascript">getCount('${header}');</script>
+						</#list>
+					</tr>
+					
+					<tr><div id='1'>
+						<#list screen.getSpreadSheetHeanders() as header>
+							<td><select id='1' name='${header}' onchange="changeFieldContent('${header}');">
+								<#list screen.getChooseClassType() as options>
+								  <option id="">${options}</option>
+								</#list>
 								</select>
-								<select id='shortcutFieldName' name='shortcut'>
-									<#list screen.getChooseFieldName() as options>
-										<option id="">${options}</option>
-									</#list>
+							</td>
+						</#list>
+					</div></tr>
+					<tr><div id='1'>
+						<#list screen.getSpreadSheetHeanders() as header>
+							<td><select id='2' name='${header}' onchange="changeFieldContent('${header}');">
+								<#list screen.getChooseFieldName() as options>
+								  <option id="">${options}</option>
+								</#list>
 								</select>
-								Choose Target <input type="text" id="shortcutTarget" size="5" value=""> 
-								<button type="button" onclick="updateTableContent();">Update</button> 
-								<br/><br/>
-							</#if>	
-								
-							<table id="table" border="1">
-								<tr>
-									<#list screen.getSpreadSheetHeanders() as header>
-										<th>${header}</th>
-									</#list>
-								</tr>
-								<tr>
-									<#list screen.getSpreadSheetHeanders() as header>
-										<td><div id='${header}'>lalala</div></td>
-										<script type="text/javascript">getCount('${header}');</script>
-									</#list>
-								</tr>
-								
-								<tr><div id='1'>
-									<#list screen.getSpreadSheetHeanders() as header>
-										<td><select id='1' name='${header}' onchange="changeFieldContent('${header}');">
-											<#list screen.getChooseClassType() as options>
-											  <option id="">${options}</option>
-											</#list>
-											</select>
-										</td>
-									</#list>
-								</div></tr>
-								<tr><div id='1'>
-									<#list screen.getSpreadSheetHeanders() as header>
-										<td><select id='2' name='${header}' onchange="changeFieldContent('${header}');">
-											<#list screen.getChooseFieldName() as options>
-											  <option id="">${options}</option>
-											</#list>
-											</select>
-										</td>
-									</#list>
-								</div></tr>
-								<tr>
-									<#list screen.getSpreadSheetHeanders() as header>
-										<td><select id='3' name='${header}' onchange="changeFieldContent('${header}');">
-											<#list screen.getColumnIndex() as options>
-											  <option id="">${options}</option>
-											</#list>
-											</select>
-										</td>
-									</#list>
-								</tr>
-								
-								<tr>
-									<#list screen.getSpreadSheetHeanders() as header>
-										<td><div id='${header}'>data type</div>
-										</td>
-									</#list>
-								</tr>
-							</table>
-							<#else>
-								<label> <#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
-							</#if> 
-							<div id="mytable">
-							</div>	
-						
-						 </#if>
-						  
-						 	<h4> ...now you can finish with choosing import: </h4>
-					        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/><br /><br />		
-						       	
-				   </#if>
+							</td>
+						</#list>
+					</div></tr>
+					<tr>
+						<#list screen.getSpreadSheetHeanders() as header>
+							<td><select id='3' name='${header}' onchange="changeFieldContent('${header}');">
+								<#list screen.getColumnIndex() as options>
+								  <option id="">${options}</option>
+								</#list>
+								</select>
+							</td>
+						</#list>
+					</tr>
+					
+					<tr>
+						<#list screen.getSpreadSheetHeanders() as header>
+							<td><div id='${header}'>data type</div>
+							</td>
+						</#list>
+					</tr>
+				</table>
+				<#else>
+					<label> <#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
+				</#if> 
+				<div id="mytable">
+				</div>	
+				
+				<h4> ...now you can finish with choosing import: </h4>
+		        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/><br /><br />			
 			</div>
 		</div>
 	</div>
