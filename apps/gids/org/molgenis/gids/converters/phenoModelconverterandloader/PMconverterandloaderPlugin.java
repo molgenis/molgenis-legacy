@@ -128,6 +128,9 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		logger.info("#######################");
 		String action = request.getString("__action");
 		
+		PM_Updater pm = new PM_Updater();
+		
+		
 		try {
 			if(db.query(Investigation.class).eq(Investigation.NAME, "Shared").count() ==0){
 				Investigation i = new Investigation();
@@ -188,7 +191,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 					checkInvestigation(db,request);
 					
 					state="inStep2";
-					System.out.println("########### " + state);
+
 				}			
 			}
 		} catch (Exception e) {
@@ -212,10 +215,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			}
 			
 			List<Measurement> mList = db.find(Measurement.class);
-			System.out.println("mList.size()   "  +mList.size());
 			int teller=0;
 			for(Measurement s:mList){
-				System.out.println("measurements: " + s);
 				if(!measInDb.contains(s)){
 					measInDb.add(mList.get(teller).getName());
 				}
@@ -246,7 +247,6 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 								hashChangeMeas.put(e, knownMeas);
 							}else{
 								String bla = request.getString(e);
-								System.out.println(e);
 								if(bla.equals("Samples")){
 									sampleMeasList.add(e);
 								}
@@ -263,9 +263,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 					state = "start";
 					//get the server path
 					File dir = gc.getDir();
-					
+					System.out.println("ABSOLUTE PATH: "  +dir.getAbsolutePath());
 					//import the data into database
-					System.out.println("Piet snot");
 					try{
 						CsvImport.importAll(dir, db, null);
 						dir = null;
@@ -360,13 +359,11 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			
 
 		}
-		System.out.println("&&&& "  +invName + "\t" + newinv);
 	}
 
 	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother, String sample, List<String> samplemeaslist,List<String> indvmeaslist,HashMap<String,String> hashChangeMeas){
 		try {
 			gc = new GidsConvertor();
-			System.out.println("target: " + target);
 			gc.converter(file, invName, db, target,father,mother, sample, samplemeaslist,indvmeaslist,hashChangeMeas);				
 			
 		} catch (Exception e) {
