@@ -69,7 +69,6 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	MatrixViewer remAnimalsMatrixViewer = null;
 	static String REMANIMALSMATRIX = "remanimalsmatrix";
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	
 	//hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
@@ -788,11 +787,11 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				
 				// Get Subproject start and end dates
 				String subprojectStartDateString = ct.getMostRecentValueAsString(subprojectId, ct.getMeasurementId("StartDate"));
-				Date subprojectStartDate = dbFormat.parse(subprojectStartDateString);
+				Date subprojectStartDate = newDateOnlyFormat.parse(subprojectStartDateString);
 				Date subprojectEndDate = null;
 				String subprojectEndDateString = ct.getMostRecentValueAsString(subprojectId, ct.getMeasurementId("EndDate"));
 				if (!subprojectEndDateString.equals("")) {
-					subprojectEndDate = dbFormat.parse(subprojectEndDateString);
+					subprojectEndDate = newDateOnlyFormat.parse(subprojectEndDateString);
 				}
 				
 				// Get values from form for one or more animals
