@@ -19,13 +19,14 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 
 	private JQueryTreeViewMeasurement treeView;
 	
-	public JQueryTreeViewElementObject(Measurement measurement,Category category, JQueryTreeViewElementObject parent){
+	public JQueryTreeViewElementObject(Measurement measurement,Category category,Institute institute, JQueryTreeViewElementObject parent){
 		super(measurement.getName(), parent);
 		
 		//this.setLabel("<a href=\"#\" onclick=\"$('#leftSide').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); $('#plugins_LLcatalogueTree_LLcatalogueTreePlugin').submit();\" >"+ name +"</a>");
 		this.setLabel(name);
 		setMeasurementObject(measurement);
 		setCategoryObject(category);
+		setInstituteObject(institute);
 	}
 
 	
