@@ -69,7 +69,7 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 		this.institute = institute;
 	}
 	
-	public void setTreeView (JQueryTreeViewMeasurement treeView) {
+	public void setTreeView (JQueryTreeViewMeasurement<JQueryTreeViewElementObject> treeView) {
 		this.treeView = treeView;
 	}
 	
