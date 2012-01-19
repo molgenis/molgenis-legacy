@@ -1,5 +1,6 @@
 package plugins.LLcatalogueTree;
 
+import org.molgenis.auth.Institute;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
@@ -14,6 +15,7 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 	String label;
 	Measurement measurement;
 	Category category;
+	Institute institute;
 
 	private JQueryTreeViewMeasurement treeView;
 	
@@ -31,6 +33,7 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 		super(name, parent);
 		measurement = null;
 		category = null;
+		institute = null;
 	}
 	
 	public JQueryTreeViewElementObject(String name, JQueryTreeViewElementObject parent, String url)
@@ -38,6 +41,7 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 		super(name, parent, url);
 		measurement = null;
 		category = null;
+		institute = null;
 	}
 
 	public Measurement getMeasurementObject(){
@@ -54,13 +58,20 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 	
 	private void setCategoryObject(Category category) {
 		this.category = category;
-		
 	}
 
-	public void setTreeView (JQueryTreeViewMeasurement treeView) {
-			
-		this.treeView = treeView;
-		
+	public Institute getInstituteObject(){
+		return institute;
 	}
+	
+	private void setInstituteObject(Institute institute) {
+		this.institute = institute;
+	}
+	
+	public void setTreeView (JQueryTreeViewMeasurement treeView) {
+		this.treeView = treeView;
+	}
+	
+	
 	
 }
