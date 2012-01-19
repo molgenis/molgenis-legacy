@@ -27,6 +27,16 @@
 		<pathelement location="modules/decorators/data" />
 		<pathelement location="publicdata" />
 	</path>
+	
+	<target name="runOn" description="Start the application">
+	    <java maxmemory="128m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+	        <arg value="${port}"/>
+	        <classpath>
+	            <path refid="molgenis.classpath" />
+	            <path location="${build.dir}" />
+	        </classpath>
+	    </java>
+	</target>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml" />
