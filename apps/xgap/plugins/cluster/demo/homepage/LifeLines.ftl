@@ -45,10 +45,11 @@
 				<br><br></td></tr></table>
 			</#if>
 			<br><br>
-			Welcome to <strong>LifeLines Research Platform</strong>, based on xQTL workbench, a platform for the storage and analysis of geno- and phenotypic data<br />
+			<h3>Welcome to the LifeLines Research Platform<#if screen.studyInfo??> for study ${screen.studyInfo}</#if></h3>
+			<br /><br />
+			This Research Platform is based on xQTL workbench, a platform for the storage and analysis of geno- and phenotypic data<br />
 			For manuals and more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>
 			</div>
-			<div style="height: 10px">&nbsp;</div>
 		</td>
 	</tr>
 	<tr>
