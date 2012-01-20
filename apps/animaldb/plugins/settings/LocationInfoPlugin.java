@@ -26,6 +26,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
+import convertors.locations.ImportAteLocations;
 
 public class LocationInfoPlugin extends PluginModel<Entity>
 {
@@ -110,6 +111,13 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 			
 			if (action.equals("Manage")) {
 				//
+			}
+			
+			if (action.equals("importLocations")) {
+				String fileName = request.getString("csv");
+				ImportAteLocations importer = new ImportAteLocations(db, this.getLogin());
+				importer.doImport(fileName);
+				this.setSuccess("Locations successfully imported");
 			}
 			
 			if (action.equals("addLocation")) {

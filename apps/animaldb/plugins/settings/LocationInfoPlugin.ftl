@@ -28,8 +28,15 @@
 <#if screen.action == "Import">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
+	
+	<div class="row">
+		<label for="csv">CSV file:</label>
+		<input type="file" name="csv" id="csv" class="textbox" />
+	</div>
 
-	Import
+	<div id='buttons_part' class='row'>
+		<input type='submit' class='addbutton' value='Import' onclick="__action.value='importLocations'" />
+	</div>
 
 <#elseif screen.action == "Manage">
 	
@@ -57,7 +64,7 @@
 	</div>
 	
 	<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Add' onclick="__action.value='addLocation'" />
+		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addLocation'" />
 	</div>
 
 <#else>

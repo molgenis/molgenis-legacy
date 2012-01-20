@@ -27,7 +27,7 @@
 
 <#if screen.action = "init">
 
-<input type='submit' class='addbutton' value='Show value matrix' onclick="__action.value='Show'" />
+<input type='submit' class='addbutton' value='Show data' onclick="__action.value='Show'" />
 
 <#else>
 
