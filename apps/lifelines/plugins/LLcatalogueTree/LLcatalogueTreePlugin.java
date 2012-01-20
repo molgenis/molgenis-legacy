@@ -23,6 +23,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.Measurement_Categories;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
@@ -30,8 +31,6 @@ import org.molgenis.util.Tuple;
 
 import plugins.LLcatalogueTree.JQueryTreeViewElementObject;
 import plugins.LLcatalogueTree.JQueryTreeViewMeasurement;
-
-
 
 public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	
@@ -164,14 +163,13 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					recursiveAddingTree(protocol.getSubprotocols_Name(), childTree, db);
 				}
 				if (protocol.getFeatures_Name() != null	&& protocol.getFeatures_Name().size() > 0) {
-					addingMeasurementTotree(protocol.getFeatures_Name(), childTree, db);
+					addingTotree(protocol.getFeatures_Name(), childTree, db);
 				}
 			}
 		}
 	}
 
-	public void addingMeasurementTotree(List<String> childNode,
-			JQueryTreeViewElementObject parentTree, Database db) {
+	public void addingTotree(List<String> childNode, JQueryTreeViewElementObject parentTree, Database db) {
 
 		 try {
 			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode));
@@ -180,6 +178,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				JQueryTreeViewElementObject childTree;
 				if (labelToTree.containsKey(measurement.getName())) {
 					childTree = labelToTree.get(measurement.getName());
+					
+					//get the corresponding Category joined with Measurement_categories
+					List<Measurement_Categories> categoryIds = new ArrayList<Measurement_Categories>();
+					categoryIds = db.find(Measurement_Categories.class, new QueryRule(Measurement_Categories.MEASUREMENT_NAME, Operator.EQUALS, measurement.getId()));
+					System.out.println("category ids for "+ measurement.getId()+ ">>>>: "+ categoryIds);
 				} else {
 					childTree = new JQueryTreeViewElementObject(measurement, null, null, parentTree); //TODO : fill in the category
 					labelToTree.put(measurement.getName(), childTree);
