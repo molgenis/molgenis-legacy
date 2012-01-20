@@ -64,13 +64,15 @@
 						<table id="approveShoppingCart">
 							<tr>
 	  							<th>Date & time created</th>
+	  							<th>Measurement details</th>
 	 							<th>Approve the order</th>
 							</tr>
 							<tr>
 							<#list screen.getUserOrders() as eachOrder>
 									<tr class="alt">
 										<td>  ${eachOrder.getDateOfOrder()}</td>
-										<td><input type="checkbox" name="approvedItems" value=${eachOrder.getId()}> <#list eachOrder.getMeasurements_Name() as name> ${name} - <br/></#list> </td>
+										<td> <#list eachOrder.getMeasurements_Name() as name> ${name} - <br/></#list> </td>
+										<td><input type="checkbox" name="approvedItems" value=${eachOrder.getId()}><br/> </td>
 									</tr>
 							</#list>
 						</table>
