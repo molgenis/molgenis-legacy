@@ -83,7 +83,7 @@
 					</td>
 				</tr>
 			</table>
-			<font size=1>(c) 2009-2011 GCC - TCC - Target</font>
+			<font size=1>(c) 2009-2012 GCC - TCC - Target</font>
 		</td>
 	</tr>
 </table>
