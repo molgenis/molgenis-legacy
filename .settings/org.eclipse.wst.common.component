@@ -41,24 +41,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/maze"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/xgap"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/publicdata"/>
-        <dependent-module archiveName="ontoCAT_v0.8.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/ontoCAT_v0.8.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="mydas-1.6.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/mydas-1.6.0.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="mindterm.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/mindterm.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="jaxrpc.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/jaxrpc.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="keggapi.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/C:/Documents and Settings/Administrator/workspace/gcc/lib/keggapi.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="molgenis.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/molgenis/molgenis">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="java-output-path"/>
         <property name="context-root" value="molgenis_apps"/>
     </wb-module>
