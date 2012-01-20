@@ -57,12 +57,14 @@
 			label="Groups" /-->
 			
 		<menu name="Settings" position="left" label="Settings">
-			<plugin name="Locations" type="plugins.location.LocationInfoPlugin"
+			<plugin name="Locations" type="plugins.settings.LocationInfoPlugin"
 				label="Locations" />
-			<!--  placeholder menu items for setting modifications -->
-			<menu name="species" position="left" label="Species"></menu>
-			<menu name="genes" position="left" label="Genes"></menu>
-			<menu name="backgrounds" position="left" label="Backgrounds"></menu>
+			<plugin name="Species" type="plugins.settings.SpeciesPlugin"
+				label="Species" />
+			<plugin name="Genes" type="plugins.settings.GenePlugin"
+				label="Genes" />
+			<plugin name="Backgrounds" type="plugins.settings.BackgroundPlugin"
+				label="Backgrounds" />
 		</menu>
 		
 		<menu name="Admin" position="left" label="Admin">

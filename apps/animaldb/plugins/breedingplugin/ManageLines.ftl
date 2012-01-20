@@ -107,7 +107,5 @@
 	  "bJQueryUI" : true }
 	);
 </script>
-
-
     
 </#macro>
