@@ -1,4 +1,4 @@
-<#macro plugins_settings_LocationInfoPlugin screen>
+<#macro plugins_settings_BackgroundPlugin screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -31,12 +31,6 @@
 
 	Import
 
-<#elseif screen.action == "Manage">
-	
-	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
-
-	Manage
-
 <#elseif screen.action == "Add">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
@@ -46,50 +40,33 @@
 	<input type="text" name="name" id="name" class="textbox" />
 	</div>
 	
-	<div id="superlocation" class="row">
-	<label for="superlocation">Sublocation of:</label>
-	<select name="superlocation" id="superlocation" class="selectbox">
-		<option value="0">&nbsp;</option>
-		<#list screen.locationList as ll>
-			<option value="${ll.id?string.computer}">${ll.name}</option>
-		</#list>
-	</select>
-	</div>
-	
 	<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Add' onclick="__action.value='addLocation'" />
+	<input type='submit' class='addbutton' value='Add' onclick="__action.value='addBackground'" />
 	</div>
 
 <#else>
 
 	<p>
-		<a href="molgenis.do?__target=${screen.name}&__action=Add">Make new location</a>
-		<br />
-		<a href="molgenis.do?__target=${screen.name}&__action=Import">Import locations</a>
+		<a href="molgenis.do?__target=${screen.name}&__action=Add">Make new background</a>
 	</p>
 
-	<#if screen.locationList?size gt 0>
-		<table cellpadding="0" cellspacing="0" border="0" class="display" id="loctable">
+	<#if screen.backgroundList?size gt 0>
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="bkgtable">
 			<thead>
 				<tr>
 					<th>Name</th>
-					<th>Part of</th>
-					<th></th>
 				</tr>
 			</thead>
 			<tbody>
-			<#list screen.locationList as loc>
-				<#assign locId = loc.getId()>
+			<#list screen.backgroundList as bkg>
 				<tr>
-					<td>${loc.name}</td>
-					<td>${screen.getSuperLocName(locId)}</td>
-					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId}">Manage animals in ${loc.name}</a></td>
+					<td>${bkg.name}</td>
 				</tr>
 			</#list>
 			</tbody>
 		</table>
 	<#else>
-		<p>There are no locations yet</p>
+		<p>There are no backgrounds yet</p>
 	</#if>
 </#if>
 	
@@ -100,7 +77,7 @@
 </form>
 
 <script>
-	var oTable = jQuery('#loctable').dataTable(
+	var oTable = jQuery('#bkgtable').dataTable(
 	{ "bProcessing": true,
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",

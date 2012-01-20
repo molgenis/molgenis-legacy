@@ -8,7 +8,6 @@
 package plugins.settings;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,11 +20,8 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.pheno.Location;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -46,9 +42,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 	
 	public String getCustomHtmlHeaders()
     {
-		return "<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
- 	   "<script src=\"res/scripts/custom/locationinfo.js\" language=\"javascript\"></script>\n" +
- 	   "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
     }
 	
 	public List<ObservationTarget> getLocationList() {
@@ -123,8 +117,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 				// Get values from form + current datetime
 				int slocid = request.getInt("superlocation");
 				String name = request.getString("name");
-				Calendar calendar = Calendar.getInstance();
-				Date now = calendar.getTime();
+				Date now = new Date();
 				
 				// Make and add location
 				int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());

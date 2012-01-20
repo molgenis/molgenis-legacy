@@ -1,4 +1,4 @@
-<#macro plugins_settings_LocationInfoPlugin screen>
+<#macro plugins_settings_SpeciesPlugin screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -31,12 +31,6 @@
 
 	Import
 
-<#elseif screen.action == "Manage">
-	
-	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
-
-	Manage
-
 <#elseif screen.action == "Add">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
@@ -57,39 +51,39 @@
 	</div>
 	
 	<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Add' onclick="__action.value='addLocation'" />
+	<input type='submit' class='addbutton' value='Add' onclick="__action.value='addSpecies'" />
 	</div>
 
 <#else>
 
-	<p>
-		<a href="molgenis.do?__target=${screen.name}&__action=Add">Make new location</a>
-		<br />
-		<a href="molgenis.do?__target=${screen.name}&__action=Import">Import locations</a>
-	</p>
+	<!--p>
+		<a href="molgenis.do?__target={screen.name}&__action=Add">Make new species</a>
+	</p-->
 
-	<#if screen.locationList?size gt 0>
-		<table cellpadding="0" cellspacing="0" border="0" class="display" id="loctable">
+	<#if screen.speciesList?size gt 0>
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="spectable">
 			<thead>
 				<tr>
 					<th>Name</th>
-					<th>Part of</th>
-					<th></th>
+					<th>Latin name</th>
+					<th>Dutch name</th>
+					<th>VWA category</th>
 				</tr>
 			</thead>
 			<tbody>
-			<#list screen.locationList as loc>
-				<#assign locId = loc.getId()>
+			<#list screen.speciesList as spec>
+				<#assign specId = spec.getId()>
 				<tr>
-					<td>${loc.name}</td>
-					<td>${screen.getSuperLocName(locId)}</td>
-					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId}">Manage animals in ${loc.name}</a></td>
+					<td>${spec.name}</td>
+					<td>${screen.getLatinName(specId)}</td>
+					<td>${screen.getDutchName(specId)}</td>
+					<td>${screen.getVwaName(specId)}</td>
 				</tr>
 			</#list>
 			</tbody>
 		</table>
 	<#else>
-		<p>There are no locations yet</p>
+		<p>There are no species yet</p>
 	</#if>
 </#if>
 	
@@ -100,7 +94,7 @@
 </form>
 
 <script>
-	var oTable = jQuery('#loctable').dataTable(
+	var oTable = jQuery('#spectable').dataTable(
 	{ "bProcessing": true,
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",

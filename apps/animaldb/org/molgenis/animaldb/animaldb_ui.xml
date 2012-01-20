@@ -62,7 +62,7 @@
 			<plugin name="Species" type="plugins.settings.SpeciesPlugin"
 				label="Species" />
 			<plugin name="Genes" type="plugins.settings.GenePlugin"
-				label="Genes" />
+				label="Gene modifications" />
 			<plugin name="Backgrounds" type="plugins.settings.BackgroundPlugin"
 				label="Backgrounds" />
 		</menu>
