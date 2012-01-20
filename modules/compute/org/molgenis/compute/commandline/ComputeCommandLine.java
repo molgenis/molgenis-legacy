@@ -19,13 +19,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
 
-import com.google.common.io.Files;
+// This dependency needs to go when we upgrade to Java 7+
+//import com.google.common.io.Files;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -346,8 +348,8 @@ public class ComputeCommandLine
 			{
 				String[] filenamelist = f.toString().split(File.separator);
 				String filename = filenamelist[filenamelist.length - 1];
-				
-				Files.copy(f, new File(this.outputdir + File.separator + filename));
+				//Files.copy(f, new File(this.outputdir + File.separator + filename));
+				FileUtils.copyFile(f, new File(this.outputdir + File.separator + filename));
 			}
 		}
 		catch (IOException e1)
