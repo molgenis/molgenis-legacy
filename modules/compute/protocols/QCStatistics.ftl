@@ -23,15 +23,17 @@ inputs ${ssvQuoted(hsmetrics)}
 inputs ${ssvQuoted(alignmentmetrics)}
 inputs ${ssvQuoted(recalinsertsizemetrics)}
 inputs ${ssvQuoted(dedupmetrics)}
+inputs ${ssvQuoted(concordancefile)}
 alloutputsexist ${qcstatisticscsv}
 
 
 ${getStatisticsScript} \
---runtimelog ${runtimelog} \
+<#-->runtimelog ${runtimelog} \<-->
 --hsmetrics ${csvQuoted(hsmetrics)} \
 --alignment ${csvQuoted(alignmentmetrics)} \
 --insertmetrics ${csvQuoted(recalinsertsizemetrics)} \
 --dedupmetrics ${csvQuoted(dedupmetrics)} \
+--concordance ${csvQuoted(concordancefile)} \
 --sample ${csvQuoted(externalSampleID)} \
 --out ${qcstatisticscsv}
 

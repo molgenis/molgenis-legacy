@@ -28,4 +28,4 @@ GenomicAnnotator,GenomicAnnotator,VariantAnnotator
 VariantFiltration,VariantFiltration,"GenomicAnnotator, MakeIndelMask"
 VcfToTable,VcfToTable,VariantFiltration
 ConcordanceCheck,ConcordanceCheck,"SamSortRecal, UnifiedGenotyper"
-QCStatistics,QCStatistics,PicardQC
+QCStatistics,QCStatistics,"PicardQC, ConcordanceCheck"

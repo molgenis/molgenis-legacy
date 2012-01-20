@@ -35,7 +35,7 @@ alloutputsexist \
 "${fileWithIndexID}.genotypeArray.updated.header.interval_list" \
 "${fileWithIndexID}.concordance.q20.dp10.vcf" \
 "${fileWithIndexID}.concordance.q20.dp10.eval" \
-"${fileWithIndexID}.concordance.ngsVSarray.txt"
+"${concordancefile}"
 
 ##Set R library path
 R_LIBS=${tooldir}/GATK-1.3-24-gc8b1c92/gsalib
@@ -147,8 +147,8 @@ java -Xmx2g -Djava.io.tmpdir=${tempdir} -jar ${tooldir}/GATK-1.2-1-g33967a4/dist
 -EV GenotypeConcordance
 
 ##Create concordance output file with header
-echo 'name,step,#SNPs\t%dbSNP,Ti/Tv_known,Ti/Tv_Novel,%All_comp_het_called_het,%Known_comp_het_called_het,%Non-Ref_Sensitivity,%Non-Ref_discrepancy,%Overall_concordance\n' \
-> ${fileWithIndexID}.concordance.ngsVSarray.txt
+echo 'name, step, nSNPs, PercDbSNP, Ti/Tv_known, Ti/Tv_Novel, All_comp_het_called_het, Known_comp_het_called_het, Non-Ref_Sensitivity, Non-Ref_discrepancy, Overall_concordance' \
+> ${concordancefile}
 
 ##Retrieve name,step,#SNPs,%dbSNP,Ti/Tv known,Ti/Tv Novel,Non-Ref Sensitivity,Non-Ref discrepancy,Overall concordance from sample.q20_dp10_concordance.eval
 ##Don't forget to add .libPaths("/target/gpfs2/gcc/tools/GATK-1.3-24-gc8b1c92/public/R") to your ~/.Rprofile
@@ -157,5 +157,5 @@ Rscript ${tooldir}/scripts/extract_info_GATK_variantEval_V3.R \
 --step q20_dp10_concordance \
 --name ${externalSampleID} \
 --comp comp_immuno \
---header >> ${fileWithIndexID}.concordance.ngsVSarray.txt
+--header >> ${concordancefile}
 <@end />

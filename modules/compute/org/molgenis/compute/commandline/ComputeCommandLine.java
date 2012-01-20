@@ -144,7 +144,8 @@ public class ComputeCommandLine
 			}
 		}
 
-		// as a last step add a job that writes a "pipeline.finished" file
+		// UNCOMMENT THE FOLLOWING CODE IF YOU WANT: as a last step add a job that writes a "pipeline.finished" file
+/*		
 		ComputeJob job = new ComputeJob();
 		job.setName(getworkflowfilename());
 		job.setInterpreter("bash");
@@ -170,7 +171,7 @@ public class ComputeCommandLine
 		// print("compute parameters: " + computeBundle.getComputeParameters().toString());
 		// print("user parameters: " + computeBundle.getUserParameters());
 		// print("full worksheet: " + computeBundle.getWorksheet());
-
+*/
 	}
 
 	private String stepnr(String wfeName)
@@ -236,8 +237,7 @@ public class ComputeCommandLine
 		// put debug info in script
 		String script = "\n#####\n";
 		script = script + "## The following ${parameters} are values:\n";
-		script = script + "##   - " + worksheet.foldon + "\n";
-		script = script + "##   - " + worksheet.getConstants() + "\n";
+		script = script + "##   - " + worksheet.foldon + " " + worksheet.getConstants() + "\n";
 		script = script + "## The following parameters are lists, <#list parameters as p>${p}</#list> \n";
 		script = script + "##   - " + worksheet.list + "\n";
 		script = script + "#####\n\n";
