@@ -79,12 +79,33 @@
 		<td>
 			<#--input type="submit" value="Find" onclick="document.forms.${screen.name}.__action.value = 'findQtl'; document.forms.${screen.name}.submit();"-->
 			
-			<@action name="findQtl" label="Find (QTL per plot)"/>
+			<@action name="findQtl" label="Find (One QTL per plot)"/>
 			<@action name="findQtlMulti" label="Find (All-in-one plot)"/>
 		</td>
 	</tr>
 </table>
 <br>
+
+<#if model.qmpr??>
+<table cellpadding="30"><tr><td>
+	<h2>Results for "${model.query}"</h2><br>
+	<i>All-in-one plot of search matches, click to enlarge:</i><br>
+	<#if model.qmpr.plot??>
+		<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.qmpr.plot + "></body></html>">
+		<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+			<img src="tmpfile/${model.qmpr.plot}" width="320" height="320">
+		</a><br>
+	</#if>
+	
+	<br><br>
+	<i>Details of all matches that are in the plot (hover for details):</i>
+	<div style="overflow: auto; width: 780px; max-height: 400px;">
+	<#list model.qmpr.matches?values as d>
+		<a href="molgenis.do?__target=${d.get(typefield)}s&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}"><div style="display: inline; text-decoration: underline; color: blue;" onmouseover="return overlib('<@rb.printEntityText r=d/>', CAPTION, 'Description')" onmouseout="return nd();">${d.name}</div></a> <div style="display: inline;"><#list d.getFields() as f><#if d.get(f)?exists><#if d.get(f)?is_enumerable && f == 'AlternateId_name' && d.get(f)?size gt 0>Alternative ID's: <b><#list d.get(f) as i>${i} <#if i_index == 5>...<#break></#if></#list></b></#if></#if></#list><#if d.description??>Description: <b><#if d.description?length gt 40>${d.description?substring(0, 20)} ... ${d.description?substring(d.description?length-20, d.description?length)}<#else>${d.description}</#if></b></#if></div><br>
+	</#list>
+	</div>
+</td></tr></table>
+</#if>
 
 <#if model.resultSet?size gt 0>
 	<h2>&nbsp;Result overview</h2><br>

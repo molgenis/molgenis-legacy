@@ -421,14 +421,12 @@ public class QtlFinder extends PluginModel<Entity>
 	private QTLMultiPlotResult createQTLMultiPlotReportFor(List<Entity> entities, Double threshold, QueryRule dataFilter, Database db) throws Exception
 	{
 		
+		HashMap<String,Entity> matches = new HashMap<String,Entity>();
 		
-		List<String> rowNamesForFinalPlot = new ArrayList<String>();
-		List<String> colNamesForFinalPlot = new ArrayList<String>();
-	//List<Double[]> valuesForFinalPlot = new ArrayList<Double[]>();
-		
-		//HashMap<String, Marker> allMarkers = new HashMap<String, Marker>();
-		HashMap<String, List<Marker>> markersPerDataset = new HashMap<String, List<Marker>>();
-		HashMap<String, List<Double[]>> valuesPerDataset = new HashMap<String, List<Double[]>>();
+		 // valnr - markername - markerbp - traitname - traitloc - value
+		// 1 PVV4 3422 Y34G3 3456 5.424
+		List<String> valueListForR = new ArrayList<String>();
+		int overallIndex = 1;
 		
 		List<Data> allData;
 		if(dataFilter == null)
@@ -448,151 +446,140 @@ public class QtlFinder extends PluginModel<Entity>
 		
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
 		
-		//List<MatrixLocation> matrixLocations = new ArrayList<MatrixLocation>();
 		for(Data d : allData)
 		{
 			//if something fails with this matrix, don't break the loop
 			//e.g. backend file is missing
 			try{
-
-			List<Double[]> valuesToRemember = new ArrayList<Double[]>();
 			
-			//loop over Text data (can't be QTL)
-			if(d.getValueType().equals("Text")){
-				continue;
-			}
-			//check if datamatrix target/features matches any entity type
-			//and one of the dimensions is Marker
-			if(entityTypes.contains(d.getTargetType()) || entityTypes.contains(d.getFeatureType())
-				&&
-				(d.getTargetType().equals("Marker") || d.getFeatureType().equals("Marker")))
-			{
-				
-				System.out.println("** LOOKING INTO MATRIX: " + d.getName());
-				
-				//create instance and get name of the row/col we want
-				DataMatrixInstance instance = dmh.createInstance(d, db);
-				
-				List<String> rowNames = instance.getRowNames();
-				List<String> colNames = instance.getColNames();
-				
-				boolean needToRememberMarkersAndQtlProfiles = false;
-				boolean markersAreOnCols = false;
-				
-				//for each entity, see if the types match to the matrix
-				for(Entity e : entities)
+				//loop over Text data (can't be QTL)
+				if(d.getValueType().equals("Text")){
+					continue;
+				}
+				//check if datamatrix target/features matches any entity type
+				//and one of the dimensions is Marker
+				if(entityTypes.contains(d.getTargetType()) || entityTypes.contains(d.getFeatureType())
+					&&
+					(d.getTargetType().equals("Marker") || d.getFeatureType().equals("Marker")))
 				{
-					if(d.getTargetType().equals(e.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(e.get(Field.TYPE_FIELD)))
+					
+					//create instance and get name of the row/col we want
+					DataMatrixInstance instance = dmh.createInstance(d, db);
+					List<String> rowNames = instance.getRowNames();
+					List<String> colNames = instance.getColNames();
+					
+					//get the markers
+					List<Marker> markers = db.find(Marker.class, new QueryRule(Marker.NAME, Operator.IN, d.getFeatureType().equals("Marker") ? colNames : rowNames));
+					HashMap<String,Marker> nameToMarker = new HashMap<String,Marker>();
+					for(Marker m : markers)
 					{
-						//if so, use this entity to 'query' the matrix and store the values
-						
-						String name = e.get(ObservableFeature.NAME).toString();
-						
-						System.out.println("** LOOKING INTO ENTITY: " + name);
-						
-						//find out if the name is in the row or col names
-						int rowIndex = rowNames.indexOf(name);
-						int colIndex = colNames.indexOf(name);
-						
-						
-						//if its in row, do row stuff
-						if(rowIndex != -1)
+						nameToMarker.put(m.getName(), m);
+					}
+					
+					//for each entity, see if the types match to the matrix
+					for(Entity e : entities)
+					{
+						if(d.getTargetType().equals(e.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(e.get(Field.TYPE_FIELD)))
 						{
-							Double[] Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
-							int maxIndex = Statistics.getIndexOfMax(Dvalues);
-							double peakDouble = Dvalues[maxIndex];
+							//if so, use this entity to 'query' the matrix and store the values
+							String name = e.get(ObservableFeature.NAME).toString();
 							
-							needToRememberMarkersAndQtlProfiles = true;
-							markersAreOnCols = true; //multiple assignments but should be OK (expected consistent per dataset)
-							
-							if(threshold != null && peakDouble < threshold.doubleValue())
+							//find out if the name is in the row or col names
+							int rowIndex = rowNames.indexOf(name);
+							int colIndex = colNames.indexOf(name);
+						
+							//get trait bp loc
+							long locus;
+							if(e instanceof Locus)
 							{
-								continue;
+								locus = ((Locus)e).getBpStart();
+							}
+							else
+							{
+								locus = 0;
+							}
+	
+							//if its in row, do row stuff
+							if(rowIndex != -1)
+							{
+								Double[] Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
+								int maxIndex = Statistics.getIndexOfMax(Dvalues);
+								double peakDouble = Dvalues[maxIndex];
+								
+								if(threshold != null && peakDouble < threshold.doubleValue())
+								{
+									continue;
+								}
+								
+								matches.put(name, e);
+								
+								for(int markerIndex = 0; markerIndex < colNames.size(); markerIndex++)
+								{
+									if(nameToMarker.containsKey(colNames.get(markerIndex)))
+									{
+										String line = "plotMe <- rbind(plotMe, c(" + overallIndex + ", \"" + colNames.get(markerIndex) + "\", " + nameToMarker.get(colNames.get(markerIndex)).getBpStart() + ", \"" + name + "\", " + locus + ", " + Dvalues[markerIndex] + "))";
+										valueListForR.add(line);
+										overallIndex++;
+									}
+								}
 							}
 							
-							valuesToRemember.add(Dvalues);
-							
-							System.out.println("** ROW PLOT VALS ADDED: " + Dvalues[0] + ", " + Dvalues[1] + ", " + Dvalues[2] + " ETC");
-							
-						}
-						
-						//if its in col, and not in row, do col stuff
-						//we assume its not in row and col at the same time, then its not QTL data but correlations or so
-						if(rowIndex == -1 && colIndex != -1)
-						{
-							Double[] Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
-							int maxIndex = Statistics.getIndexOfMax(Dvalues);
-							double peakDouble = Dvalues[maxIndex];
-							
-							needToRememberMarkersAndQtlProfiles = true;
-							markersAreOnCols = false; //multiple assignments but should be OK (expected consistent per dataset)
-							
-							if(threshold != null && peakDouble < threshold.doubleValue())
+							//if its in col, and not in row, do col stuff
+							//we assume its not in row and col at the same time, then its not QTL data but correlations or so
+							if(rowIndex == -1 && colIndex != -1)
 							{
-								continue;
+								Double[] Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
+								int maxIndex = Statistics.getIndexOfMax(Dvalues);
+								double peakDouble = Dvalues[maxIndex];
+	
+								if(threshold != null && peakDouble < threshold.doubleValue())
+								{
+									continue;
+								}
+								
+								matches.put(name, e);
+								
+								for(int markerIndex = 0; markerIndex < rowNames.size(); markerIndex++)
+								{
+									if(nameToMarker.containsKey(rowNames.get(markerIndex)))
+									{
+										String line = "plotMe <- rbind(plotMe, c(" + overallIndex + ", \"" + rowNames.get(markerIndex) + "\", " + nameToMarker.get(rowNames.get(markerIndex)).getBpStart() + ", \"" + name + "\", " + locus + ", " + Dvalues[markerIndex] + "))";
+										valueListForR.add(line);
+										overallIndex++;
+									}
+								}
 							}
 							
-							valuesToRemember.add(Dvalues);
-							
-							System.out.println("** COL PLOT VALS ADDED: " + Dvalues[0] + ", " + Dvalues[1] + ", " + Dvalues[2] + " ETC");
-							
+							if(matches.size() > 100)
+							{
+								break;
+							}
 						}
-						
-						
 					}
 				}
-				
-				
-				if(needToRememberMarkersAndQtlProfiles)
-				{
-					//query the markers
-					List<Marker> markers = db.find(Marker.class, new QueryRule(Marker.NAME, Operator.IN, markersAreOnCols ? colNames : rowNames));
-					markersPerDataset.put(d.getName(), markers);
-					
-					//store the values in the hash
-					valuesPerDataset.put(d.getName(), valuesToRemember);
-				}
-				
-				
-				
-			}
-			
-			
-			
 			}
 			catch(Exception e)
 			{
 				e.printStackTrace();
 				//too bad, data matrix failed
 			}
+			
+			if(matches.size() > 100)
+			{
+				throw new Exception("More than 100 matches to your search query. Please be more specific.");
+			}
 		}
 		
-		// now reconstruct a big supermatrix:
-		
-		// use markersPerDataset
-		// use valuesPerDataset
-		
-		//sort ALL markers across datasets by basepair position...
-		//align all the values to their corresponding markers
-		//and plot the results...
-		
-		
-	//	MemoryDataMatrixInstance mdm = new MemoryDataMatrixInstance(rowNamesForFinalPlot, colNamesForFinalPlot, valuesForFinalPlot, null);
-		
-		System.out.println("*** R MATRIX: ");
-	//	System.out.println(mdm.getAsRobject(false));
-		System.out.println("***");
-		
+		File plot = MakeRPlot.qtlMultiPlot(valueListForR, plotWidth, plotHeight);
 		QTLMultiPlotResult result = new QTLMultiPlotResult();
+		result.setPlot(plot.getName());
+		result.setMatches(matches);
+		
+		this.model.setQmpr(result);
 		
 		return result;
 	}
 	
-	
-	
-	
-	
-
 	//sort the datapoints to bp position to be plottable
 	//use bppos as index to get automatic natural sorting!
 	private TreeMap<Long, QtlPlotDataPoint> sortQtlPlotData(List<String> markers, List<Double> lodscores, HashMap<String, Marker> markerInfo)

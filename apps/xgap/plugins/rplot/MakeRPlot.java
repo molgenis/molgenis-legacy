@@ -1,6 +1,7 @@
 package plugins.rplot;
 
 import java.io.File;
+import java.util.List;
 import java.util.TreeMap;
 
 import matrix.DataMatrixInstance;
@@ -9,7 +10,6 @@ import org.molgenis.data.Data;
 import org.molgenis.util.RScript;
 import org.molgenis.util.RScriptException;
 
-import plugins.matrix.manager.MatrixManagerModel;
 import plugins.qtlfinder.QtlPlotDataPoint;
 
 public class MakeRPlot
@@ -112,6 +112,38 @@ public class MakeRPlot
 		}
 		return qtlPlot(plotName, lodscores, bplocs, chromosomes, genePos, width, height);
 	}
+	
+	public static File qtlMultiPlot(List<String> dataPoints, int width, int height) throws RScriptException
+	{
+		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot" + System.nanoTime() + ".png");
+		
+		RScript script = new RScript();
+		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
+		
+		//lines input example:
+		//plotMe <- rbind(plotMe, c(807, "C5M5_2", 66810758, "A_12_P172557", 15184683, 0.0127419530093572))
+		script.append("plotMe <- NULL");
+		for(String line : dataPoints)
+		{
+			script.append(line);
+		}
+		
+		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
+		script.append("png(imagefile, width = " + width + ", height = " + height + ")");
+		script.append("op <- par(mai=c(1,2,1,1))");		
+		script.append("plot(as.numeric(plotMe[,3]),as.numeric(as.factor(plotMe[,4])),type='n',yaxt='n',ylab=\"\", xlab=\"Basepair location\")");
+		script.append("for(x in 1:nrow(plotMe)){");
+		script.append("   points(as.numeric(plotMe[x,3]),as.numeric(as.factor(plotMe[,4])[x]),cex=as.numeric(plotMe[x,6]),pch=20)");
+		script.append("}");
+		script.append("axis(2,at=1:length(unique(as.factor(plotMe[,4]))),unique(as.factor(plotMe[,4])),las=1,cex.axis=0.7)");
+		
+		//print to file
+		script.append("dev.off()");
+		script.execute();
+				
+		return tmpImg;
+	}
+			
 
 	//all inputs must be sorted and of equal length!!
 	//create QTL plot scaling by incrementing basepair position
