@@ -2,46 +2,11 @@
 <project-modules id="moduleCoreId" project-version="1.5.0">
     <wb-module deploy-name="molgenis_apps">
         <wb-resource deploy-path="/" source-path="/WebContent"/>
-        <wb-resource deploy-path="/" source-path="/generated/java"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/datamodel"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/sql"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/java"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/pheno"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/import"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/settings"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/file"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/matrix"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/core"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/pheno"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/auth"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/auth"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/xgap"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/data"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/publicdata"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/gcc"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/mutation"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/batch"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/matrix"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/news"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/search"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/data"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/animaldb"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/chd7"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/designgg"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/gscf"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/lifelinespheno"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/bbmri"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/col7a1"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/gwascentral"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/magetab"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/sandbox"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/bioshare"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/cvdb"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/gids"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/maze"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/xgap"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/publicdata"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/"/>
         <property name="java-output-path"/>
         <property name="context-root" value="molgenis_apps"/>
+        <dependent-module archiveName="molgenis.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/molgenis/molgenis">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
     </wb-module>
 </project-modules>
