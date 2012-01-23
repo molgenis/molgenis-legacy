@@ -77,6 +77,9 @@ public class SearchModel extends EasyPluginModel
 	private String textSearch                                 = "";
 	private String textRemarks                                = "";
 	private String textCollaborations                         = "";
+	
+	private List<MutationSummaryVO> positionMutations;
+	private List<MutationSummaryVO> codonMutations;
 
 	public String getGeneName()
 	{
@@ -473,6 +476,19 @@ public class SearchModel extends EasyPluginModel
 		this.textCollaborations = textCollaborations;
 	}
 
+	public List<MutationSummaryVO> getPositionMutations() {
+		return positionMutations;
+	}
+	public void setPositionMutations(List<MutationSummaryVO> positionMutations) {
+		this.positionMutations = positionMutations;
+	}
+	public List<MutationSummaryVO> getCodonMutations() {
+		return codonMutations;
+	}
+	public void setCodonMutations(List<MutationSummaryVO> codonMutations) {
+		this.codonMutations = codonMutations;
+	}
+	
 	public SearchModel(SearchPlugin controller) {
 		super(controller);
 		// TODO Auto-generated constructor stub

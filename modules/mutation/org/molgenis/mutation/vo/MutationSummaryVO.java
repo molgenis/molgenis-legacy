@@ -11,12 +11,14 @@ public class MutationSummaryVO implements Serializable
 	private Integer id;
 	private String identifier;
 	private String cdnaNotation;
+	private Integer cdnaPosition;
 	private String gdnaNotation;
 	private Integer gdnaPosition;
 	private String aaNotation;
 	private Integer aaPosition;
 	private String codonChange;
 	private Integer exonId;
+	private Integer exonNumber;
 	private String exonName;
 	private List<String> proteinDomainNameList;
 	private String consequence;
@@ -29,8 +31,6 @@ public class MutationSummaryVO implements Serializable
 	private String pubmedURL;
 	private List<PublicationVO> publicationVOList;
 	private String niceNotation;
-	private List<MutationSummaryVO> positionMutations;
-	private List<MutationSummaryVO> codonMutations;
 
 	public Integer getId() {
 		return id;
@@ -49,6 +49,12 @@ public class MutationSummaryVO implements Serializable
 	}
 	public void setCdnaNotation(String cdnaNotation) {
 		this.cdnaNotation = cdnaNotation;
+	}
+	public Integer getCdnaPosition() {
+		return cdnaPosition;
+	}
+	public void setCdnaPosition(Integer cdnaPosition) {
+		this.cdnaPosition = cdnaPosition;
 	}
 	public String getGdnaNotation() {
 		return gdnaNotation;
@@ -79,6 +85,12 @@ public class MutationSummaryVO implements Serializable
 	}
 	public void setExonId(Integer exonId) {
 		this.exonId = exonId;
+	}
+	public Integer getExonNumber() {
+		return exonNumber;
+	}
+	public void setExonNumber(Integer exonNumber) {
+		this.exonNumber = exonNumber;
 	}
 	public String getExonName() {
 		return exonName;
@@ -157,17 +169,5 @@ public class MutationSummaryVO implements Serializable
 	}
 	public void setPubmedURL(String pubmedURL) {
 	    this.pubmedURL = pubmedURL;
-	}
-	public List<MutationSummaryVO> getPositionMutations() {
-		return positionMutations;
-	}
-	public void setPositionMutations(List<MutationSummaryVO> positionMutations) {
-		this.positionMutations = positionMutations;
-	}
-	public List<MutationSummaryVO> getCodonMutations() {
-		return codonMutations;
-	}
-	public void setCodonMutations(List<MutationSummaryVO> codonMutations) {
-		this.codonMutations = codonMutations;
 	}
 }

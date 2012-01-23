@@ -22,7 +22,7 @@ public class Search extends SearchPlugin
 	{
 		super(name, parent);
 		this.setModel(new SearchModel(this));
-		this.setView(new FreemarkerView("SearchPlugin.ftl", this.getModel()));
+		this.setView(new FreemarkerView("init.ftl", this.getModel()));
 		this.getModel().setGeneName("COL7A1");
 		this.getModel().setPatientPager("res/mutation/col7a1/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/col7a1/mutationPager.jsp");

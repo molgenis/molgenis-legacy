@@ -25,6 +25,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
+import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.Mutation;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.vo.MutationSummaryVO;
@@ -65,7 +66,7 @@ public class PatientService implements Serializable
 			if (criteria.getMutationId() != null)
 			{
 				Mutation mutation = this.db.findById(Mutation.class, criteria.getMutationId());
-				query = query.equals(Patient.MUTATION1, mutation.getId()).or().equals(Patient.MUTATION2, mutation.getId());
+				query = query.equals(Patient.MUTATIONS, mutation.getId());
 			}
 			if (criteria.getMid() != null)
 			{
@@ -73,7 +74,7 @@ public class PatientService implements Serializable
 				if (mutations.size() == 1)
 				{
 					Integer mutationId = mutations.get(0).getId();
-					query = query.equals(Patient.MUTATION1, mutationId).or().equals(Patient.MUTATION2, mutationId);
+					query = query.equals(Patient.MUTATIONS, mutationId);
 				}
 			}
 			if (criteria.getConsent() != null)
@@ -414,39 +415,27 @@ public class PatientService implements Serializable
 		patientSummaryVO.setPatientMmp1Allele2(patient.getMmp1_Allele2());
 			
 		patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
-		Mutation mutation1 = this.db.findById(Mutation.class, patient.getMutation1_Id());
-		MutationSummaryVO variantSummaryVO1 = new MutationSummaryVO();
-		variantSummaryVO1.setIdentifier(mutation1.getIdentifier());
-		variantSummaryVO1.setCdnaNotation(mutation1.getCdna_Notation());
-		variantSummaryVO1.setAaNotation(mutation1.getAa_Notation());
-		variantSummaryVO1.setExonId(mutation1.getExon_Id());
-		variantSummaryVO1.setExonName(mutation1.getExon_Name());
-		variantSummaryVO1.setConsequence(mutation1.getConsequence());
-		variantSummaryVO1.setPathogenicity(mutation1.getPathogenicity());
-		patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO1);
-		if (patient.getMutation2_Id() != null)
+		List<Mutation> mutations = this.db.query(Mutation.class).in(Mutation.ID, patient.getMutations_Id()).find();
+		for (Mutation mutation : mutations)
 		{
-			Mutation mutation2 = this.db.findById(Mutation.class, patient.getMutation2_Id());
-			MutationSummaryVO variantSummaryVO2 = new MutationSummaryVO();
-			variantSummaryVO2.setIdentifier(mutation2.getIdentifier());
-			variantSummaryVO2.setCdnaNotation(mutation2.getCdna_Notation());
-			variantSummaryVO2.setAaNotation(mutation2.getAa_Notation());
-			variantSummaryVO2.setExonId(mutation2.getExon_Id());
-			variantSummaryVO2.setExonName(mutation2.getExon_Name());
-			variantSummaryVO2.setConsequence(mutation2.getConsequence());
-			variantSummaryVO2.setPathogenicity(mutation2.getPathogenicity());
-			patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO2);
+			MutationSummaryVO variantSummaryVO = new MutationSummaryVO();
+			variantSummaryVO.setIdentifier(mutation.getIdentifier());
+			variantSummaryVO.setCdnaNotation(mutation.getCdna_Notation());
+			variantSummaryVO.setAaNotation(mutation.getAa_Notation());
+			variantSummaryVO.setExonId(mutation.getExon_Id());
+			variantSummaryVO.setExonName(mutation.getExon_Name());
+			variantSummaryVO.setConsequence(mutation.getConsequence());
+			variantSummaryVO.setPathogenicity(mutation.getPathogenicity());
+			patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO);
 		}
-//		else
-//		{
-//			MutationSummaryVO variantSummaryVO2 = new MutationSummaryVO();
-//			variantSummaryVO2.setIdentifier(patient.getMutation2remark());
-//			variantSummaryVO2.setCdnaNotation(patient.getMutation2remark());
-//			variantSummaryVO2.setAaNotation(patient.getMutation2remark());
-//			variantSummaryVO2.setExonName(patient.getMutation2remark());
-//			variantSummaryVO2.setConsequence(patient.getMutation2remark());
-//			patientSummaryVO.getVariantSummaryVOList().add(variantSummaryVO2);
-//		}
+		if (mutations.size() > 0)
+		{
+			Mutation mutation1 = mutations.get(0);
+			patientSummaryVO.setCdnaPosition(mutation1.getCdna_Position());
+			patientSummaryVO.setAaPosition(mutation1.getAa_Position());
+			Exon exon = this.db.findById(Exon.class, mutation1.getExon_Id());
+			patientSummaryVO.setExonNumber(exon.getNumber());
+		}
 		patientSummaryVO.setVariantComment(patient.getMutation2remark());
 
 		List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, "Phenotype").find();

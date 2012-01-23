@@ -128,6 +128,7 @@ public class ExportService implements Serializable
 		row.add(patient.getIdentifier());
 		row.add(patient.getNumber());
 		row.add(patient.getConsent());
+
 		List<ObservedValue> phenotypes = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, patient.getId()).find();
 		List<String> phenotypeNames    = new ArrayList<String>();
 		for (ObservedValue phenotype : phenotypes)
@@ -135,16 +136,30 @@ public class ExportService implements Serializable
 			phenotypeNames.add(phenotype.getValue());
 		}
 		row.add(StringUtils.join(phenotypeNames, ", "));
-		Mutation mutation1             = this.db.findById(Mutation.class, patient.getMutation1_Id());
-		row.add(mutation1.getCdna_Notation());
-		row.add("r.?");
-		row.add(mutation1.getAa_Notation());
-		row.add(mutation1.getExon_Name());
-		row.add(mutation1.getConsequence());
-		row.add(mutation1.getInheritance());
-		if (patient.getMutation2_Id() != null)
+		
+		List<Mutation> mutations       = this.db.query(Mutation.class).in(Mutation.ID, patient.getMutations_Id()).find();
+		if (mutations.size() > 0)
 		{
-			Mutation mutation2 = this.db.findById(Mutation.class, patient.getMutation2_Id());
+			Mutation mutation1         = mutations.get(0);
+			row.add(mutation1.getCdna_Notation());
+			row.add("r.?");
+			row.add(mutation1.getAa_Notation());
+			row.add(mutation1.getExon_Name());
+			row.add(mutation1.getConsequence());
+			row.add(mutation1.getInheritance());
+		}
+		else
+		{
+			row.add("NA");
+			row.add("");
+			row.add("");
+			row.add("");
+			row.add("");
+			row.add("");
+		}
+		if (mutations.size() > 1)
+		{
+			Mutation mutation2 = mutations.get(1);
 			row.add(mutation2.getCdna_Notation());
 			row.add("r.?");
 			row.add(mutation2.getAa_Notation());
@@ -161,17 +176,6 @@ public class ExportService implements Serializable
 			row.add("");
 			row.add("");
 		}
-//		List<I_F> ifs               = this.db.query(I_F.class).equals(I_F.PATIENT, patient.getId()).find();
-//		row.add(ifs.get(0).getValue());
-//		row.add(ifs.get(0).getRetention());
-//
-//		List<E_M> ems               = this.db.query(E_M.class).equals(E_M.PATIENT, patient.getId()).find();
-//		row.add(ems.get(0).getNumber());
-//		row.add(ems.get(0).getAppearance());
-//		row.add(ems.get(0).getRetention());
-
-//		row.add(patient.getMmp1_Allele1());
-//		row.add(patient.getMmp1_Allele2());
 
 		List<Publication> publications = this.db.query(Publication.class).in(Publication.ID, patient.getPatientreferences_Id()).find();
 		List<String> publicationNames  = new ArrayList<String>();
@@ -189,36 +193,6 @@ public class ExportService implements Serializable
 //		row.add(patient.getEthnicity());
 //		row.add(patient.getDeceased());
 //		row.add(patient.getDeath_Cause());
-
-//		PhenotypeDetails phenotypeDetails = this.db.findById(PhenotypeDetails.class, patient.getPhenotype_Details_Id());
-//		row.add(phenotypeDetails.getBlistering());
-//		row.add(phenotypeDetails.getLocation());
-//		row.add(phenotypeDetails.getHands());
-//		row.add(phenotypeDetails.getFeet());
-//		row.add(phenotypeDetails.getArms());
-//		row.add(phenotypeDetails.getLegs());
-//		row.add(phenotypeDetails.getProximal_Body_Flexures());
-//		row.add(phenotypeDetails.getTrunk());
-//		row.add(phenotypeDetails.getMucous_Membranes());
-//		row.add(phenotypeDetails.getSkin_Atrophy());
-//		row.add(phenotypeDetails.getMilia());
-//		row.add(phenotypeDetails.getNail_Dystrophy());
-//		row.add(phenotypeDetails.getAlbopapuloid_Papules());
-//		row.add(phenotypeDetails.getPruritic_Papules());
-//		row.add(phenotypeDetails.getAlopecia());
-//		row.add(phenotypeDetails.getSquamous_Cell_Carcinomas());
-//		row.add(phenotypeDetails.getRevertant_Skin_Patch());
-//		row.add(phenotypeDetails.getMechanism());
-//		row.add(phenotypeDetails.getFlexion_Contractures());
-//		row.add(phenotypeDetails.getPseudosyndactyly_Hands());
-//		row.add(phenotypeDetails.getMicrostomia());
-//		row.add(phenotypeDetails.getAnkyloglossia());
-//		row.add(phenotypeDetails.getDysphagia());
-//		row.add(phenotypeDetails.getGrowth_Retardation());
-//		row.add(phenotypeDetails.getAnemia());
-//		row.add(phenotypeDetails.getRenal_Failure());
-//		row.add(phenotypeDetails.getDilated_Cardiomyopathy());
-//		row.add(phenotypeDetails.getOther());
 
 		return row;
 	}

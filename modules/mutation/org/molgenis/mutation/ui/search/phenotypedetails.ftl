@@ -1,3 +1,5 @@
+<#include "header.ftl">
+
 <#-- Patient details that are not considered to be phenotypic details -->
 <#assign patientSummaryVO = vo.patientSummaryVO>
 <h4><a name="phenotype">Characteristics</a></h4>
@@ -47,3 +49,7 @@
 <p>
 [<a href="#">Back to top</a>]
 </p>
+
+<#-- <#include "displayOptions.ftl"> -->
+
+<#include "footer.ftl">

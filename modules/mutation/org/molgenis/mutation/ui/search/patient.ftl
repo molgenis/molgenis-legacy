@@ -1,3 +1,5 @@
+<#include "header.ftl">
+
 <#assign patientSummaryVO = vo.patientSummaryVO>
 <table class="listtable">
 <tr class="form_listrow0"><th>Patient ID</th><td>${patientSummaryVO.patientIdentifier}</td></tr>
@@ -25,3 +27,7 @@ Unpublished<br/>
 <p>
 [<a href="#">Back to top</a>]
 </p>
+
+<#-- <#include "displayOptions.ftl"> -->
+
+<#include "footer.ftl">

@@ -20,6 +20,9 @@ public class PatientSummaryVO implements Serializable
 	private String patientMmp1Allele1;
 	private String patientMmp1Allele2;
 	private List<MutationSummaryVO> variantSummaryVOList;
+	private Integer cdnaPosition; // for sorting
+	private Integer aaPosition; // for sorting
+	private Integer exonNumber; //for sorting
 	private String variantComment;
 	private Integer phenotypeId;
 	private String phenotypeMajor;
@@ -155,6 +158,30 @@ public class PatientSummaryVO implements Serializable
 
 	public void setVariantSummaryVOList(List<MutationSummaryVO> variantSummaryVOList) {
 		this.variantSummaryVOList = variantSummaryVOList;
+	}
+
+	public Integer getCdnaPosition() {
+		return cdnaPosition;
+	}
+
+	public void setCdnaPosition(Integer cdnaPosition) {
+		this.cdnaPosition = cdnaPosition;
+	}
+
+	public Integer getAaPosition() {
+		return aaPosition;
+	}
+
+	public void setAaPosition(Integer aaPosition) {
+		this.aaPosition = aaPosition;
+	}
+
+	public Integer getExonNumber() {
+		return exonNumber;
+	}
+
+	public void setExonNumber(Integer exonNumber) {
+		this.exonNumber = exonNumber;
 	}
 
 	public String getVariantComment() {

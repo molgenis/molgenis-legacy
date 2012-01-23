@@ -53,17 +53,21 @@
 				nillable="true" label="Age" />
 			<field name="gender" type="enum" enum_options="[f,m,unknown]"
 				default="unknown" description="Gender/sex of patient." label="Gender" />
-			<field name="ethnicity" nillable="true" default="unknown"
+			<field name="ethnicity" index="true" nillable="true" default="unknown"
 				description="Ethnicity." label="Ethnicity" />
 			<field name="deceased" type="enum" enum_options="yes,no,unknown"
 				default="unknown" description="Is patient deceased?" label="Deceased?" />
-			<field name="death_cause" nillable="true" label="Cause of death" />
+			<field name="death_cause" index="true" nillable="true" label="Cause of death" />
 			<field name="mmp1_allele1" nillable="true" label="MMP1 allele 1" />
 			<field name="mmp1_allele2" nillable="true" label="MMP1 allele 2" />
+			<field name="mutations" type="mref" xref_field="Mutation.id"
+				xref_label="name" nillable="true" label="Mutations" />
+<!--
 			<field name="mutation1" type="xref" xref_field="Mutation.id"
 				xref_label="name" nillable="true" label="First Mutation" />
 			<field name="mutation2" type="xref" xref_field="Mutation.id"
 				xref_label="name" nillable="true" label="Second Mutation" />
+-->
 			<field name="mutation2remark" type="enum" enum_options="[NA,unknown]"
 				nillable="true"
 				description="Reason why mutation2 might be null: NA - mutation1 is dominant, unknown - mutation2 is unknown"
@@ -130,7 +134,7 @@
 			<field name="effectOnSplicing" type="bool"
 				description="Predicted effect on splicing? Should be calculated automatically."
 				nillable="true" label="Effect on splicing?" />
-			<field name="pathogenicity" type="enum"
+			<field name="pathogenicity" index="true" type="enum"
 				enum_options="pathogenic,likely pathogenic,unclassified variant,polymorphism,unknown"
 				default="pathogenic" description="Pathogenicity" label="Pathogenicity" />
 			<field name="founderMutation" type="bool" description="Founder mutation?"

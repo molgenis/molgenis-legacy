@@ -1,4 +1,6 @@
-<#assign mutationSummaryVO = vo.mutationSummaryVO>
+<#include "header.ftl">
+
+<#assign mutationSummaryVO = model.mutationSummaryVO>
 <table cellpadding="2" cellspacing="2">
 <tr>
 	<th><a href="molgenis.do?__target=${screen.name}&__action=showFirstMutation#results"><img src="generated-res/img/first.png"/></a></th>
@@ -32,9 +34,9 @@
 <tr class="form_listrow0"><th>Conserved amino acid?</th><td><#if mutationSummaryVO.mutation.conservedAA??>${mutationSummaryVO.mutation.conservedAA?string("yes", "no")}</#if></td></tr>
 <tr class="form_listrow1"><th>Predicted effect on splicing?</th><td><#if mutationSummaryVO.mutation.effectOnSplicing??>${mutationSummaryVO.mutation.effectOnSplicing?string("yes", "no")}</#if></td></tr>
 -->
-<tr class="form_listrow1"><th>Other changes at nucleotide position</th><td><#if mutationSummaryVO.positionMutations??><#list mutationSummaryVO.positionMutations as positionMutationVO><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${positionMutationVO.identifier}#results">${positionMutationVO.cdnaNotation}</a><br/></#list></#if></td></tr>
+<tr class="form_listrow1"><th>Other changes at nucleotide position</th><td><#if model.positionMutations??><#list model.positionMutations as positionMutationVO><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${positionMutationVO.identifier}#results">${positionMutationVO.cdnaNotation}</a><br/></#list></#if></td></tr>
 <#if mutationSummaryVO.codonChange != "">
-<#if mutationSummaryVO.codonMutations??><tr class="form_listrow0"><th>Other changes at codon position</th><td><#list mutationSummaryVO.codonMutations as codonMutationVO><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${codonMutationVO.identifier}#results">${codonMutationVO.cdnaNotation}</a><br/></#list></td></tr></#if>
+<#if model.codonMutations??><tr class="form_listrow0"><th>Other changes at codon position</th><td><#list model.codonMutations as codonMutationVO><a href="molgenis.do?__target=${screen.name}&__action=showMutation&mid=${codonMutationVO.identifier}#results">${codonMutationVO.cdnaNotation}</a><br/></#list></td></tr></#if>
 </#if>
 </table>
 
@@ -44,3 +46,5 @@
 <p>
 [<a href="#">Back to top</a>]
 </p>
+
+<#include "footer.ftl">

@@ -1,3 +1,5 @@
+<#include "header.ftl">
+
 <#assign exonSummaryVO      = vo.exonSummaryVO>
 <#assign mutationSummaryVOs = vo.mutationSummaryVOs>
 <table cellpadding="2" cellspacing="2">
@@ -27,3 +29,11 @@
 <tr class="form_listrow0"><th>Multiple of 3 nucleotides?</th><td>${exonSummaryVO.multiple3Nucl?string("yes", "no")}</td></tr>
 </table>
 </div>
+
+<#include "mbrowse.ftl">
+
+${vo.rawOutput}
+
+<#-- <#include "displayOptions.ftl"> -->
+
+<#include "footer.ftl">

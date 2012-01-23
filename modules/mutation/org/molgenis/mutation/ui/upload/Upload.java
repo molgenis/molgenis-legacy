@@ -608,11 +608,11 @@ public abstract class Upload extends PluginModel<Entity>
 		}
 	}
 	
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
+//	@Override
+//	public boolean isVisible()
+//	{
+//		return true;
+//	}
 	
 	public String getAction()
 	{

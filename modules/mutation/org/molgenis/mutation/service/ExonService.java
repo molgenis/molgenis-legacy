@@ -3,6 +3,7 @@ package org.molgenis.mutation.service;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -31,9 +32,10 @@ import org.molgenis.mutation.vo.ExonSummaryVO;
 
 public class ExonService implements Serializable
 {
-	private static final long serialVersionUID   = -6713716877840714621L;
-	private Database db                          = null;
-	private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	private static final long serialVersionUID    = -6713716877840714621L;
+	private Database db;
+	private static final transient Logger logger  = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	private HashMap<Integer, ExonSummaryVO> cache = new HashMap<Integer, ExonSummaryVO>();
 
 	public void setDatabase(Database db)
 	{
@@ -287,6 +289,9 @@ public class ExonService implements Serializable
 
 	private ExonSummaryVO toExonSummaryVO(Exon exon) throws DatabaseException
 	{
+		if (this.cache.containsKey(exon.getId()))
+			return this.cache.get(exon.getId());
+
 		ExonSummaryVO exonSummaryVO = new ExonSummaryVO();
 		exonSummaryVO.setExon(exon);
 		exonSummaryVO.setId(exon.getId());
@@ -329,6 +334,9 @@ public class ExonService implements Serializable
 		lastExonCriteria.setOrientation(gene.getOrientation());
 		exonSummaryVO.setLastExon(this.findLastExon(lastExonCriteria));
 
+		// cache value
+		this.cache.put(exon.getId(), exonSummaryVO);
+
 		return exonSummaryVO;
 	}
 
@@ -346,13 +354,13 @@ public class ExonService implements Serializable
 	{
 		if (this.db instanceof JDBCDatabase)
 		{
-			List<Tuple> result = ((JDBCDatabase) this.db).sql(String.format("SELECT id FROM Exon WHERE cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
+			List<Tuple> result = ((JDBCDatabase) this.db).sql(String.format("SELECT id FROM Exon WHERE isIntron = 0 AND cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
 			// Should be only one result if exons have been entered correctly
 			return result.get(0).getInt("id");
 		}
 		else if (this.db instanceof JpaDatabase)
 		{
-			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery(String.format("SELECT id FROM Exon WHERE cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery(String.format("SELECT id FROM Exon WHERE isIntron = 0 AND cdna_position <= %d AND %d <= cdna_position + length - 1", cdna_position, cdna_position));
 			return (Integer) q.getSingleResult();
 		}
 		else
@@ -402,17 +410,6 @@ public class ExonService implements Serializable
 		}
 		else
 			throw new RESyntaxException("Invalid mutation notation: " + position);
-	}
-
-	public List<Exon> findExonsByProteinDomainId(Integer proteinDomainId, Boolean noIntrons) throws DatabaseException
-	{
-		Query<Exon> query =
-			this.db.query(Exon.class)
-			.equals(Exon.PROTEINDOMAIN, proteinDomainId)
-			.sortASC(Exon.GDNA_POSITION);
-		if (noIntrons)
-			query.equals(Exon.ISINTRON, false);
-		return query.find();
 	}
 
 	/**
@@ -480,6 +477,19 @@ public class ExonService implements Serializable
 		MutationGene gene     = this.db.findById(MutationGene.class, exon.getGene_Id());
 		Integer gdnaStart = Math.abs(exon.getGdna_Position() - gene.getBpStart().intValue());
 		Integer gdnaEnd   = gdnaStart + exon.getLength();
+		
+//		if (!exon.getIsIntron())
+//		{
+//		String sequence   = StringUtils.substring(gene.getSeq(), gdnaStart, gdnaEnd);
+//		String upSequence = sequence.toUpperCase();
+//		System.out.println(">>> gdnaStart==" + gdnaStart + ", gdnaEnd==" + gdnaEnd + ", seq.length==" + gene.getSeq().length());
+//		System.out.println(">>> left==" + StringUtils.substring(gene.getSeq(), 0, gdnaStart).length() + ", right==" + StringUtils.substring(gene.getSeq(), gdnaEnd).length());
+//		String newSeq = StringUtils.substring(gene.getSeq(), 0, gdnaStart) + upSequence + StringUtils.substring(gene.getSeq(), gdnaEnd);
+//		gene.setSeq(newSeq);
+//		this.db.beginTx();
+//		this.db.update(gene);
+//		this.db.commitTx();
+//		}
 		return StringUtils.substring(gene.getSeq(), gdnaStart, gdnaEnd);
 	}
 

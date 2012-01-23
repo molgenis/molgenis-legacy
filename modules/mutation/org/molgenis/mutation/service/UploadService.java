@@ -70,7 +70,6 @@ public class UploadService implements Serializable
 //		}
 
 		// mutations are never inserted via patients, just select
-		int i = 1;
 		for (MutationSummaryVO mutationSummaryVO : patientSummaryVO.getVariantSummaryVOList())
 		{
 			List<Mutation> mutations = this.db.query(Mutation.class).equals(Mutation.CDNA_NOTATION, mutationSummaryVO.getCdnaNotation()).find();
@@ -79,12 +78,7 @@ public class UploadService implements Serializable
 			if (mutations.size() != 1)
 				throw new Exception("ERROR: No mutation found for " + mutationSummaryVO.getCdnaNotation());
 
-			if (i == 1)
-				patient.setMutation1_Id(mutations.get(0).getId());
-			else
-				patient.setMutation2_Id(mutations.get(0).getId());
-			
-			i++;
+			patient.getMutations_Id().add(mutations.get(0).getId());
 		}
 
 		// phenotypes are never inserted via patients, just select

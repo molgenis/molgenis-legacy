@@ -54,10 +54,10 @@ import org.molgenis.util.ValueLabel;
 public abstract class SearchPlugin extends IntegratedPluginController<SearchModel>
 {
 	private static final long serialVersionUID                = 651270609185006020L;
-	private ExonService exonService;
-	private MutationService mutationService;
-	private PatientService patientService;
-	private SearchService searchService;
+//	private ExonService exonService;
+//	private MutationService mutationService;
+//	private PatientService patientService;
+//	private SearchService searchService;
 
 	private ExonSearchCriteriaVO exonSearchCriteriaVO         = new ExonSearchCriteriaVO();
 	private MutationSearchCriteriaVO mutationSearchCriteriaVO = new MutationSearchCriteriaVO();
@@ -67,7 +67,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	{
 		super(name, null, parent);
 		this.setModel(new SearchModel(this));
-		this.setView(new FreemarkerView("SearchPlugin.ftl", getModel()));
+		this.setView(new FreemarkerView("init.ftl", getModel()));
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
@@ -76,7 +76,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
-		this.reload(db);
+//		this.reload(db);
 
 		try
 		{
@@ -94,48 +94,48 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 			else
 				this.getModel().getQueryParametersVO().setExpertSearch(false);
 
-			if (StringUtils.isNotEmpty(request.getString("snpbool")))
-				if (request.getString("snpbool").equals("show"))
-					this.getModel().getQueryParametersVO().setShowSNP(true);
-				else if (request.getString("snpbool").equals("hide"))
-				{
-					this.getModel().getQueryParametersVO().setShowSNP(false);
-					this.exonSearchCriteriaVO.setIsIntron(false);
-				}
-
-			if (StringUtils.isNotEmpty(request.getString("showIntrons")))
-				if (request.getString("showIntrons").equals("show"))
-				{
-					this.getModel().getQueryParametersVO().setShowIntrons(true);
-					this.exonSearchCriteriaVO.setIsIntron(null);
-				}
-				else if (request.getString("showIntrons").equals("hide"))
-				{
-					this.getModel().getQueryParametersVO().setShowIntrons(false);
-					this.exonSearchCriteriaVO.setIsIntron(false);
-				}
-
-			if (StringUtils.isNotEmpty(request.getString("showNames")))
-				if (request.getString("showNames").equals("show"))
-					this.getModel().getQueryParametersVO().setShowNames(true);
-				else if (request.getString("showNames").equals("hide"))
-					this.getModel().getQueryParametersVO().setShowNames(false);
-
-			if (StringUtils.isNotEmpty(request.getString("showNumbering")))
-				if (request.getString("showNumbering").equals("show"))
-					this.getModel().getQueryParametersVO().setShowNumbering(true);
-				else if (request.getString("showNumbering").equals("hide"))
-					this.getModel().getQueryParametersVO().setShowNumbering(false);
-
-			if (StringUtils.isNotEmpty(request.getString("showMutations")))
-				if (request.getString("showMutations").equals("show"))
-					this.getModel().getQueryParametersVO().setShowMutations(true);
-				else if (request.getString("showMutations").equals("hide"))
-					this.getModel().getQueryParametersVO().setShowMutations(false);
+//			if (StringUtils.isNotEmpty(request.getString("snpbool")))
+//				if (request.getString("snpbool").equals("show"))
+//					this.getModel().getQueryParametersVO().setShowSNP(true);
+//				else if (request.getString("snpbool").equals("hide"))
+//				{
+//					this.getModel().getQueryParametersVO().setShowSNP(false);
+//					this.exonSearchCriteriaVO.setIsIntron(false);
+//				}
+//
+//			if (StringUtils.isNotEmpty(request.getString("showIntrons")))
+//				if (request.getString("showIntrons").equals("show"))
+//				{
+//					this.getModel().getQueryParametersVO().setShowIntrons(true);
+//					this.exonSearchCriteriaVO.setIsIntron(null);
+//				}
+//				else if (request.getString("showIntrons").equals("hide"))
+//				{
+//					this.getModel().getQueryParametersVO().setShowIntrons(false);
+//					this.exonSearchCriteriaVO.setIsIntron(false);
+//				}
+//
+//			if (StringUtils.isNotEmpty(request.getString("showNames")))
+//				if (request.getString("showNames").equals("show"))
+//					this.getModel().getQueryParametersVO().setShowNames(true);
+//				else if (request.getString("showNames").equals("hide"))
+//					this.getModel().getQueryParametersVO().setShowNames(false);
+//
+//			if (StringUtils.isNotEmpty(request.getString("showNumbering")))
+//				if (request.getString("showNumbering").equals("show"))
+//					this.getModel().getQueryParametersVO().setShowNumbering(true);
+//				else if (request.getString("showNumbering").equals("hide"))
+//					this.getModel().getQueryParametersVO().setShowNumbering(false);
+//
+//			if (StringUtils.isNotEmpty(request.getString("showMutations")))
+//				if (request.getString("showMutations").equals("show"))
+//					this.getModel().getQueryParametersVO().setShowMutations(true);
+//				else if (request.getString("showMutations").equals("hide"))
+//					this.getModel().getQueryParametersVO().setShowMutations(false);
 
 			if (this.getModel().getAction().equals("findMutationsByTerm"))
 			{
-				this.handleFindMutationsByTerm(request);
+				this.handleFindMutationsByTerm(db, request);
 			}
 			else if (this.getModel().getAction().equals("findMutations"))
 			{
@@ -168,69 +168,63 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 					if (request.getString("snpbool").equals("hide"))
 						criteria.setReportedAsSNP(false);
 
-				this.getModel().setMutationSummaryVOs(this.mutationService.findMutations(criteria));
+				MutationService mutationService = new MutationService();
+				mutationService.setDatabase(db);
+				this.getModel().setMutationSummaryVOs(mutationService.findMutations(criteria));
 				((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryVOs());
 				this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 
 				this.getModel().setHeader(this.getModel().getMutationSummaryVOs().size() + " results.");
+				
+				this.setView(new FreemarkerView("included.ftl", this.getModel()));
 			}
 			else if (this.getModel().getAction().equals("findPatients"))
 			{
-				this.handleFindPatients(request);
+				this.handleFindPatients(db, request);
 			}
 			else if (this.getModel().getAction().equals("listAllMutations"))
 			{
-				this.handleListAllMutations(request);
+				this.handleListAllMutations(db, request);
 			}
 			else if (this.getModel().getAction().equals("listAllPatients"))
 			{
-				this.handleListAllPatients(request);
+				this.handleListAllPatients(db, request);
 			}
 			else if (this.getModel().getAction().equals("showProteinDomain"))
 			{
-				this.handleShowProteinDomain(request);
+				this.handleShowProteinDomain(db, request);
 			}
 			else if (this.getModel().getAction().equals("showExon"))
 			{
-				this.handleShowExon(request);
+				this.handleShowExon(db, request);
 			}
 			else if (this.getModel().getAction().equals("showMutation"))
 			{
-				if (StringUtils.isNotEmpty(request.getString("mid")))
-					this.mutationSearchCriteriaVO.setMid(request.getString("mid"));
-				if (StringUtils.isNotEmpty(request.getString("snpbool")))
-					if (request.getString("snpbool").equals("hide"))
-						this.mutationSearchCriteriaVO.setReportedAsSNP(false);
-
-				List<MutationSummaryVO> mutationSummaryVOs = this.mutationService.findMutations(mutationSearchCriteriaVO);
-				if (mutationSummaryVOs.size() != 1)
-					throw new Exception("Unknown mutation id.");
-				this.getModel().setMutationSummaryVO(mutationSummaryVOs.get(0));
-				this.getModel().setHeader("Details for mutation '" + this.mutationSearchCriteriaVO.getMid() + "'");
+				this.handleShowMutation(db, request);
 			}
 			else if (this.getModel().getAction().equals("showFirstMutation"))
 			{
-				this.handleShowFirstMutation();
+				this.handleShowFirstMutation(db);
 			}
 			else if (this.getModel().getAction().equals("showPrevMutation"))
 			{
-				this.handleShowPrevMutation(request);
+				this.handleShowPrevMutation(db, request);
 			}
 			else if (this.getModel().getAction().equals("showNextMutation"))
 			{
-				this.handleShowNextMutation(request);
+				this.handleShowNextMutation(db, request);
 			}
 			else if (this.getModel().getAction().equals("showLastMutation"))
 			{
-				this.handleShowLastMutation();
+				this.handleShowLastMutation(db);
 			}
 			else if (this.getModel().getAction().equals("showPatient"))
 			{
-				this.handleShowPatient(request);
+				this.handleShowPatient(db, request);
 			}
 			else if (this.getModel().getAction().equals("showPhenotypeDetails"))
 			{
-				this.handleShowPhenotypeDetails(request);
+				this.handleShowPhenotypeDetails(db, request);
 			}
 			else if (this.getModel().getAction().startsWith("mutationsFirstPage"))
 			{
@@ -248,6 +242,10 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 			{
 				this.getModel().getPager().last();
 			}
+			else
+			{
+				this.setView(new FreemarkerView("init.ftl", this.getModel()));
+			}
 			
 			this.populateDisplayOptionsForm();
 		}
@@ -263,18 +261,47 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		return Show.SHOW_MAIN;
 	}
 
-	private void handleFindPatients(Tuple request) throws DatabaseException, ParseException
+	private void handleShowMutation(Database db, Tuple request) throws DatabaseException
+	{
+		if (StringUtils.isNotEmpty(request.getString("mid")))
+			this.mutationSearchCriteriaVO.setMid(request.getString("mid"));
+		if (StringUtils.isNotEmpty(request.getString("snpbool")))
+			if (request.getString("snpbool").equals("hide"))
+				this.mutationSearchCriteriaVO.setReportedAsSNP(false);
+
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+
+		List<MutationSummaryVO> mutationSummaryVOs = mutationService.findMutations(mutationSearchCriteriaVO);
+		if (mutationSummaryVOs.size() != 1)
+			throw new DatabaseException("Unknown mutation id.");
+		this.getModel().setMutationSummaryVO(mutationSummaryVOs.get(0));
+
+		this.getModel().setPositionMutations(mutationService.findPositionMutations(mutationSummaryVOs.get(0)));
+		this.getModel().setCodonMutations(mutationService.findCodonMutations(mutationSummaryVOs.get(0)));
+
+		this.getModel().setHeader("Details for mutation '" + this.mutationSearchCriteriaVO.getMid() + "'");
+		
+		this.setView(new FreemarkerView("mutation.ftl", getModel()));
+	}
+
+	private void handleFindPatients(Database db, Tuple request) throws DatabaseException
 	{
 		if (StringUtils.isNotEmpty(request.getString("mid")))
 			this.patientSearchCriteriaVO.setMid(request.getString("mid"));
 		
-		this.getModel().setPatientSummaryVOs(this.patientService.findPatients(this.patientSearchCriteriaVO));
+		PatientService patientService = new PatientService();
+		patientService.setDatabase(db);
+
+		this.getModel().setPatientSummaryVOs(patientService.findPatients(this.patientSearchCriteriaVO));
 		((HttpServletRequestTuple) request).getRequest().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getPatientPager()));
 		this.getModel().setHeader(this.getModel().getPatientSummaryVOs().size() + " results for " + this.patientSearchCriteriaVO.toString());
+		
+		this.setView(new FreemarkerView("included.ftl", this.getModel()));
 	}
 
-	private void handleFindMutationsByTerm(Tuple request) throws DatabaseException, ParseException, ServletException, IOException
+	private void handleFindMutationsByTerm(Database db, Tuple request) throws DatabaseException, ParseException, ServletException, IOException
 	{
 //		if (StringUtils.isNotEmpty(request.getString("term")) && request.getString("term").length() < 3)
 //		throw new SearchException("Search term is too general. Please use a more specific one.");
@@ -296,130 +323,167 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 
 		MutationSearchCriteriaVO criteria = new MutationSearchCriteriaVO();
 		criteria.setVariation(request.getString("term"));
-		this.findAndAdd(request, criteria, "variation");
+		this.findAndAdd(db, request, criteria, "variation");
 	
 		criteria = new MutationSearchCriteriaVO();
 		criteria.setMid(request.getString("term"));
-		this.findAndAdd(request, criteria, "MID");
+		this.findAndAdd(db, request, criteria, "MID");
 	
 		criteria = new MutationSearchCriteriaVO();
 		criteria.setInheritance(request.getString("term"));
-		this.findAndAdd(request, criteria, "inheritance");
+		this.findAndAdd(db, request, criteria, "inheritance");
 	
 		criteria = new MutationSearchCriteriaVO();
 		criteria.setConsequence(request.getString("term"));
-		this.findAndAdd(request, criteria, "consequence");
+		this.findAndAdd(db, request, criteria, "consequence");
 	
 		criteria = new MutationSearchCriteriaVO();
 		criteria.setPhenotypeName(request.getString("term"));
-		this.findAndAdd(request, criteria, "phenotype");
+		this.findAndAdd(db, request, criteria, "phenotype");
 	
 		criteria = new MutationSearchCriteriaVO();
 		criteria.setPid(request.getString("term"));
-		this.findAndAdd(request, criteria, "PID");
+		this.findAndAdd(db, request, criteria, "PID");
 	
 		criteria = new MutationSearchCriteriaVO();
 		criteria.setPublication(request.getString("term"));
-		this.findAndAdd(request, criteria, "publication");
+		this.findAndAdd(db, request, criteria, "publication");
 	
 		criteria = new MutationSearchCriteriaVO();
 		criteria.setType(request.getString("term"));
-		this.findAndAdd(request, criteria, "mutation type");
+		this.findAndAdd(db, request, criteria, "mutation type");
 	
 		if (NumberUtils.isNumber(request.getString("term")))
 		{
 			criteria = new MutationSearchCriteriaVO();
 			criteria.setExonNumber(request.getInt("term"));
-			this.findAndAdd(request, criteria, "exon number");
+			this.findAndAdd(db, request, criteria, "exon number");
 			
 			criteria = new MutationSearchCriteriaVO();
 			criteria.setCdnaPosition(request.getInt("term"));
-			this.findAndAdd(request, criteria, "nucleotide position");
+			this.findAndAdd(db, request, criteria, "nucleotide position");
 	
 			criteria = new MutationSearchCriteriaVO();
 			criteria.setCodonChangeNumber(request.getInt("term"));
-			this.findAndAdd(request, criteria, "protein position");
+			this.findAndAdd(db, request, criteria, "protein position");
 		}
 
 		int numres = (this.getModel().getResult().equals("patients") ? this.getModel().getPatientSummaryVOHash().keySet().size() : this.getModel().getMutationSummaryVOHash().keySet().size());
 		this.getModel().setHeader(numres + " results found.");
+		
+		this.setView(new FreemarkerView("freetext.ftl", this.getModel()));
 	}
 
-	private void handleShowNextMutation(Tuple request) throws DatabaseException
+	private void handleShowNextMutation(Database db, Tuple request) throws DatabaseException
 	{
-		this.getModel().setMutationSummaryVO(this.mutationService.getNextMutation(request.getString("identifier")));
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+
+		this.getModel().setMutationSummaryVO(mutationService.getNextMutation(request.getString("identifier")));
+		this.setView(new FreemarkerView("mutation.ftl", getModel()));
 	}
 
-	private void handleShowPrevMutation(Tuple request) throws DatabaseException
+	private void handleShowPrevMutation(Database db, Tuple request) throws DatabaseException
 	{
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+
 		this.getModel().setMutationSummaryVO(mutationService.getPrevMutation(request.getString("mid")));
+		this.setView(new FreemarkerView("mutation.ftl", getModel()));
 	}
 
-	private void handleShowLastMutation() throws DatabaseException
+	private void handleShowLastMutation(Database db) throws DatabaseException
 	{
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+
 		this.getModel().setMutationSummaryVO(mutationService.getLastMutation());
+		this.setView(new FreemarkerView("mutation.ftl", getModel()));
 	}
 
-	private void handleShowFirstMutation() throws DatabaseException
+	private void handleShowFirstMutation(Database db) throws DatabaseException
 	{
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+
 		this.getModel().setMutationSummaryVO(mutationService.getFirstMutation());
+		this.setView(new FreemarkerView("mutation.ftl", getModel()));
 	}
 
-	private void handleListAllMutations(Tuple request) throws DatabaseException, ParseException
+	private void handleListAllMutations(Database db, Tuple request) throws DatabaseException, ParseException
 	{
-		this.getModel().setMutationSummaryVOs(this.mutationService.getAllMutationSummaries());
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+
+		this.getModel().setMutationSummaryVOs(mutationService.getAllMutationSummaries());
 		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryVOs());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 
 		this.getModel().setHeader(this.getModel().getMutationSummaryVOs().size() + " results for \"Display all mutations\".");
+		this.setView(new FreemarkerView("included.ftl", getModel()));
 	}
 
-	private void handleShowPatient(Tuple request) throws Exception
+	private void handleShowPatient(Database db, Tuple request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("pid")))
 		{
+			PatientService patientService = new PatientService();
+			patientService.setDatabase(db);
+
 			PatientSearchCriteriaVO criteria = new PatientSearchCriteriaVO();
 			criteria.setPid(request.getString("pid"));
-			List<PatientSummaryVO> patientSummaryVOs = this.patientService.findPatients(criteria);
+			List<PatientSummaryVO> patientSummaryVOs = patientService.findPatients(criteria);
 			if (patientSummaryVOs.size() != 1)
 				throw new Exception("Unknown patient id.");
 			this.getModel().setPatientSummaryVO(patientSummaryVOs.get(0));
 			this.getModel().setHeader("Details for patient '" + criteria.getPid() + "'");
+			
+			this.setView(new FreemarkerView(this.getModel().getPatientViewer(), getModel()));
 		}	
 	}
 
-	private void handleListAllPatients(Tuple request) throws DatabaseException, ParseException
+	private void handleListAllPatients(Database db, Tuple request) throws DatabaseException
 	{
 //		MolgenisUser user = new MolgenisUser();
 //		user.setId(this.getLogin().getUserId());
 //		this.getModel().setPatientSummaryVOs(this.patientService.find(user));
-		List<PatientSummaryVO> patientSummaryVOs = this.patientService.getAllPatientSummaries();
+		PatientService patientService = new PatientService();
+		patientService.setDatabase(db);
+
+		List<PatientSummaryVO> patientSummaryVOs = patientService.getAllPatientSummaries();
 		this.getModel().setPatientSummaryVOs(patientSummaryVOs);
 		((HttpServletRequestTuple) request).getRequest().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getPatientPager()));
 		this.getModel().setHeader(this.getModel().getPatientSummaryVOs().size() + " results for \"Display all patients\".");
+		
+		this.setView(new FreemarkerView("included.ftl", this.getModel()));
 	}
 
-	private void handleShowPhenotypeDetails(Tuple request) throws Exception
+	private void handleShowPhenotypeDetails(Database db, Tuple request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("pid")))
 		{
+			PatientService patientService = new PatientService();
+			patientService.setDatabase(db);
+
 			PatientSearchCriteriaVO criteria = new PatientSearchCriteriaVO();
 			criteria.setPid(request.getString("pid"));
 			criteria.setConsent(true);
-			List<PatientSummaryVO> patientSummaryVOs = this.patientService.findPatients(criteria);
+			List<PatientSummaryVO> patientSummaryVOs = patientService.findPatients(criteria);
 			if (patientSummaryVOs.size() != 1)
 				throw new Exception("Unknown patient id.");
 			this.getModel().setPatientSummaryVO(patientSummaryVOs.get(0));
 
-			PhenotypeDetailsVO phenotypeDetailsVO = this.patientService.findPhenotypeDetails(request.getString("pid"));
+			PhenotypeDetailsVO phenotypeDetailsVO = patientService.findPhenotypeDetails(request.getString("pid"));
 			this.getModel().setPhenotypeDetailsVO(phenotypeDetailsVO);
 
 			this.getModel().setHeader("Phenotypic details for patient '" + criteria.getPid() + "'");
+			
+			this.setView(new FreemarkerView("phenotypedetails.ftl", getModel()));
 		}
 	}
 
-	private void handleShowProteinDomain(Tuple request) throws Exception
+	private void handleShowProteinDomain(Database db, Tuple request) throws Exception
 	{
 		if (StringUtils.isNotEmpty(request.getString("domain_id")))
 			this.mutationSearchCriteriaVO.setProteinDomainId(request.getInt("domain_id"));
@@ -427,8 +491,14 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 			if (request.getString("snpbool").equals("hide"))
 				this.mutationSearchCriteriaVO.setReportedAsSNP(false);
 
-		this.getModel().setProteinDomainSummaryVO(this.searchService.findProteinDomain(request.getInt("domain_id"), false));
-		this.getModel().setMutationSummaryVOs(this.mutationService.findMutations(mutationSearchCriteriaVO));
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+
+		SearchService searchService = new SearchService();
+		searchService.setDatabase(db);
+
+		this.getModel().setProteinDomainSummaryVO(searchService.findProteinDomain(request.getInt("domain_id"), false));
+		this.getModel().setMutationSummaryVOs(mutationService.findMutations(mutationSearchCriteriaVO));
 		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryVOs());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 
@@ -444,6 +514,9 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		}
 		if (this.getModel().getmBrowseVO().getExonList() == null)
 		{
+			ExonService exonService = new ExonService();
+			exonService.setDatabase(db);
+
 			List<ExonSummaryVO> exonList = exonService.getAllExons();
 			if ("R".equals(this.getModel().getGene().getOrientation()))
 				Collections.reverse(exonList);
@@ -452,9 +525,11 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		
 		this.populateProteinDomainPanel();
 		this.populateExonIntronPanel();
+		
+		this.setView(new FreemarkerView("proteindomain.ftl", getModel()));
 	}
 
-	private void handleShowExon(Tuple request) throws DatabaseException, ParseException, RESyntaxException
+	private void handleShowExon(Database db, Tuple request) throws DatabaseException, RESyntaxException
 	{
 		if (StringUtils.isNotEmpty(request.getString("exon_id")))
 		{
@@ -465,30 +540,29 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 			if (request.getString("snpbool").equals("hide"))
 				this.mutationSearchCriteriaVO.setReportedAsSNP(false);
 
-		this.getModel().setExonSummaryVO(this.exonService.findExons(exonSearchCriteriaVO).get(0));
+		ExonService exonService = new ExonService();
+		exonService.setDatabase(db);
+
+		this.getModel().setExonSummaryVO(exonService.findExons(exonSearchCriteriaVO).get(0));
+
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
 
 		if (this.getModel().getQueryParametersVO().getShowMutations())
 		{
-			this.getModel().setMutationSummaryVOs(this.mutationService.findMutations(mutationSearchCriteriaVO));
+			this.getModel().setMutationSummaryVOs(mutationService.findMutations(mutationSearchCriteriaVO));
 			((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryVOs());
 			this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 		}
 		this.getModel().setHeader("");
 		this.populateSequencePanel();
+		
+		this.setView(new FreemarkerView("exon.ftl", getModel()));
 	}
 
 	@Override
 	public void reload(Database db)
 	{
-		this.exonService              = new ExonService();
-		this.exonService.setDatabase(db);
-		this.mutationService          = new MutationService();
-		this.mutationService.setDatabase(db);
-		this.patientService           = new PatientService();
-		this.patientService.setDatabase(db);
-		this.searchService            = new SearchService();
-		this.searchService.setDatabase(db);
-
 		try
 		{
 			List<MutationGene> genes  = db.query(MutationGene.class).equals(MutationGene.NAME, this.getModel().getGeneName()).find();
@@ -499,7 +573,10 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 
 			if (this.getModel().getmBrowseVO().getProteinDomainList() == null)
 			{
-				this.getModel().getmBrowseVO().setProteinDomainList(this.searchService.getAllProteinDomains());
+				SearchService searchService = new SearchService();
+				searchService.setDatabase(db);
+
+				this.getModel().getmBrowseVO().setProteinDomainList(searchService.getAllProteinDomains());
 				//TODO Move this to business logic
 //				System.out.println(">>> exons before reverse: " + this.genomeBrowserVO.getProteinDomainList().get(0).getAllExons().toString());
 				if ("R".equals(this.getModel().getGene().getOrientation()))
@@ -507,9 +584,14 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 //				System.out.println(">>> exons after reverse: " + this.genomeBrowserVO.getProteinDomainList().get(0).getAllExons().toString());
 			}
 
-			this.getModel().setNumMutations(this.mutationService.getNumMutations());
-			this.getModel().setNumPatients(this.patientService.getNumPatients());
-			this.getModel().setNumUnpublished(this.patientService.getNumUnpublishedPatients());
+			MutationService mutationService = new MutationService();
+			mutationService.setDatabase(db);
+			PatientService patientService   = new PatientService();
+			patientService.setDatabase(db);
+
+			this.getModel().setNumMutations(mutationService.getNumMutations());
+			this.getModel().setNumPatients(patientService.getNumPatients());
+			this.getModel().setNumUnpublished(patientService.getNumUnpublishedPatients());
 //			this.getModel().setNews(this.newsService.getAllNews(5));
 
 			this.populateGenePanel();
@@ -518,8 +600,8 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 			this.populateListAllPatientsForm();
 			this.populateToSimpleSearchForm();
 			this.populateToExpertSearchForm();
-			this.populateShowMutationForm();
-			this.populateExpertSearchForm();
+			this.populateShowMutationForm(db);
+			this.populateExpertSearchForm(db);
 		}
 		catch (Exception e)
 		{
@@ -594,11 +676,14 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	 * @throws IOException 
 	 * @throws ServletException 
 	 */
-	private void findAndAdd(Tuple request, MutationSearchCriteriaVO criteria, String key) throws DatabaseException, ParseException, ServletException, IOException
+	private void findAndAdd(Database db, Tuple request, MutationSearchCriteriaVO criteria, String key) throws DatabaseException, ParseException, ServletException, IOException
 	{
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+
 		if (this.getModel().getResult().equals("patients"))
 		{
-			List<PatientSummaryVO> patientSummaryVOs = this.mutationService.findPatients(criteria);
+			List<PatientSummaryVO> patientSummaryVOs = mutationService.findPatients(criteria);
 			if (patientSummaryVOs.size() > 0)
 			{
 				this.getModel().setPatientSummaryVOs(patientSummaryVOs);
@@ -608,7 +693,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		}
 		else
 		{
-			List<MutationSummaryVO> mutationSummaryVOs = this.mutationService.findMutations(criteria);
+			List<MutationSummaryVO> mutationSummaryVOs = mutationService.findMutations(criteria);
 			if (mutationSummaryVOs.size() > 0)
 			{
 				this.getModel().setMutationSummaryVOs(mutationSummaryVOs);
@@ -648,20 +733,30 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.getModel().getToExpertSearchForm().get("__target").setValue(this.getName());
 	}
 
-	private void populateShowMutationForm() throws DatabaseException, ParseException
+	private void populateShowMutationForm(Database db) throws DatabaseException, ParseException
 	{
+		SearchService searchService = new SearchService();
+		searchService.setDatabase(db);
+
 		this.getModel().getShowMutationForm().get("__target").setValue(this.getName());
 		this.getModel().getListAllMutationsForm().get("select").setValue(this.getName());
 		List<ValueLabel> mutationIdOptions  = new ArrayList<ValueLabel>();
 		mutationIdOptions.add(new ValueLabel("", "Select mutation"));
-		for (Mutation mutation : this.searchService.getAllMutations())
+		for (Mutation mutation : searchService.getAllMutations())
 			mutationIdOptions.add(new ValueLabel(mutation.getIdentifier(), mutation.getCdna_Notation() + " (" + mutation.getAa_Notation() + ")"));
 		((SelectInput) this.getModel().getShowMutationForm().get("mid")).setOptions(mutationIdOptions);
 		((SelectInput) this.getModel().getShowMutationForm().get("mid")).setValue("Select mutation");
 	}
 
-	private void populateExpertSearchForm() throws DatabaseException, ParseException, SQLException
+	private void populateExpertSearchForm(Database db) throws DatabaseException, ParseException, SQLException
 	{
+		ExonService exonService = new ExonService();
+		exonService.setDatabase(db);
+		MutationService mutationService = new MutationService();
+		mutationService.setDatabase(db);
+		SearchService searchService = new SearchService();
+		searchService.setDatabase(db);
+
 		Mutation template = new Mutation();
 		
 		this.getModel().getExpertSearchForm().get("__target").setValue(this.getName());
@@ -678,7 +773,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 
 		List<ValueLabel> exonIdOptions      = new ArrayList<ValueLabel>();
 		exonIdOptions.add(new ValueLabel("", "Select exon/intron"));
-		for (ExonSummaryVO exonSummaryVO : this.exonService.getAllExons())
+		for (ExonSummaryVO exonSummaryVO : exonService.getAllExons())
 			exonIdOptions.add(new ValueLabel(exonSummaryVO.getExon().getId(), exonSummaryVO.getExon().getName()));
 		((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setOptions(exonIdOptions);
 		if (this.mutationSearchCriteriaVO.getExonId() != null)
@@ -688,7 +783,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 
 		List<ValueLabel> typeOptions        = new ArrayList<ValueLabel>();
 		typeOptions.add(0, new ValueLabel("", "Select mutation type"));
-		for (String mutationType : this.mutationService.getMutationTypes())
+		for (String mutationType : mutationService.getMutationTypes())
 			typeOptions.add(new ValueLabel(mutationType, mutationType));
 		((SelectInput) this.getModel().getExpertSearchForm().get("type")).setOptions(typeOptions);
 		if (this.mutationSearchCriteriaVO.getType() != null)
@@ -704,9 +799,13 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		else
 			((SelectInput) this.getModel().getExpertSearchForm().get("consequence")).setValue("Select consequence");
 
+		List<MutationGene> genes  = db.query(MutationGene.class).equals(MutationGene.NAME, this.getModel().getGeneName()).find();
+		if (genes.size() != 1)
+			throw new DatabaseException("Not exactly one gene found for " + this.getModel().getGeneName());
+
 		List<ValueLabel> domainOptions      = new ArrayList<ValueLabel>();
 		domainOptions.add(new ValueLabel("", "Select protein domain"));
-		for (ProteinDomainSummaryVO domainVO : this.searchService.getAllProteinDomains())
+		for (ProteinDomainSummaryVO domainVO : searchService.getAllProteinDomains())
 			domainOptions.add(new ValueLabel(domainVO.getProteinDomain().getId(), domainVO.getProteinDomain().getName()));
 		((SelectInput) this.getModel().getExpertSearchForm().get("domain_id")).setOptions(domainOptions);
 		if (this.mutationSearchCriteriaVO.getProteinDomainId() != null)
@@ -716,7 +815,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		
 		List<ValueLabel> phenotypeOptions   = new ArrayList<ValueLabel>();
 		phenotypeOptions.add(new ValueLabel("", "Select phenotype"));
-		for (String phenotypeName : this.searchService.getAllPhenotypes())
+		for (String phenotypeName : searchService.getAllPhenotypes())
 			phenotypeOptions.add(new ValueLabel(phenotypeName, phenotypeName));
 		((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setOptions(phenotypeOptions);
 		if (this.mutationSearchCriteriaVO.getPhenotypeId() != null)

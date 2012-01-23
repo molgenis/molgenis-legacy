@@ -24,7 +24,7 @@ public class Search extends SearchPlugin
 	{
 		super(name, parent);
 		this.setModel(new SearchModel(this));
-		this.setView(new FreemarkerView("SearchPlugin.ftl", this.getModel()));
+		this.setView(new FreemarkerView("init.ftl", this.getModel()));
 		this.getModel().setGeneName("CHD7");
 		this.getModel().getmBrowseVO().getGenePanel().setShowNames(false);
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
