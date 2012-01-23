@@ -386,9 +386,9 @@ public class AnimaldbSeleniumTest
 	@Test(dependsOnMethods={"yearlyReports"})
 	public void applyProtocol() throws Exception {
 		// Go to Protocol plugin
-		selenium.click("id=animalmenu_tab_button");
+		selenium.click("id=Admin_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=valuemenu_tab_button");
+		selenium.click("id=systemmenu_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=ApplyProtocol_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
