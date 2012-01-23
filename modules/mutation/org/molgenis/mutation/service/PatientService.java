@@ -127,13 +127,12 @@ public class PatientService implements Serializable
 			if (criteria.getPid() != null)
 				patientCriteria.add(cb.equal(patient.get("identifier"), criteria.getPid()));
 			if (criteria.getMutationId() != null)
-				patientCriteria.add(cb.or(cb.equal(patient.get("mutation1"), criteria.getMutationId()), cb.equal(patient.get("mutation2"), criteria.getMutationId())));
+				patientCriteria.add(cb.or(cb.equal(patient.get("mutations"), criteria.getMutationId())));
 			if (criteria.getMid() != null)
 			{
-				Join<Patient, Mutation> mutation1 = patient.join("mutation1", JoinType.LEFT);
-				Join<Patient, Mutation> mutation2 = patient.join("mutation2", JoinType.LEFT);
+				Join<Patient, Mutation> mutation = patient.join("mutations", JoinType.LEFT);
 
-				patientCriteria.add(cb.or(cb.equal(mutation1.get("identifier"), criteria.getMid()), cb.equal(mutation2.get("identifier"), criteria.getMid())));
+				patientCriteria.add(cb.or(cb.equal(mutation.get("identifier"), criteria.getMid())));
 			}
 			if (criteria.getConsent() != null)
 			{
@@ -296,10 +295,10 @@ public class PatientService implements Serializable
 	public int getNumPatientsByPathogenicity(String pathogenicity) throws DatabaseException
 	{
 		if (this.db instanceof JDBCDatabase)
-			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT p.id FROM Patient p LEFT JOIN Mutation m ON (p.mutation1 = m.id) WHERE m.pathogenicity = '" + pathogenicity + "'").size();
+			return ((JDBCDatabase) this.db).sql("SELECT DISTINCT p.id FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) WHERE m.pathogenicity = '" + pathogenicity + "'").size();
 		else if (this.db instanceof JpaDatabase)
 		{
-			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT JOIN Mutation m ON (p.mutation1 = m.id) WHERE m.pathogenicity = '" + pathogenicity + "'");
+			javax.persistence.Query q = this.db.getEntityManager().createNativeQuery("SELECT COUNT(DISTINCT p.id) FROM Patient p LEFT JOIN Patient_mutations pm ON (p.id = pm.Patient) LEFT JOIN Mutation m ON (m.id = pm.mutations) WHERE m.pathogenicity = '" + pathogenicity + "'");
 			return Integer.valueOf(q.getSingleResult().toString());
 		}
 		else
