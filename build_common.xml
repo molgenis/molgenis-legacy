@@ -191,6 +191,10 @@ It should be used via 'import' plus passing of properties
 	-->
 	
 	<target name="update-eclipse">
+				
+		<copy file="${user.dir}/.classpath.template.xml" tofile="${user.dir}/.classpath" overwrite="true"/>
+		<echo>Restoring .classpath from template file ${user.dir}/.classpath.template.xml</echo>
+		<echo>Customizing .classpath for ${app_name} ...</echo>
 		
 		<pathconvert property="app_xml" refid="app.class.path" pathsep="&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;">
 			<map from="${user.dir}/" to="" />
