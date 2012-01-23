@@ -32,23 +32,23 @@ Table 1. Dystrophic EB subtypes (modified from Fine et al., 2008)
 <table class="listtable">
 <caption align="bottom">* Rare variants in italic type.<br/>** Previously called RDEB, Hallopeau-Siemens.</caption>
 <tr class="tableheader"><th>Type</th><th>Subtype*</th><th>Number of patients</th></tr>
-<tr class="form_listrow1"><td rowspan="7">DDEB</td><td>DDEB, generalized (DDEB-gen)</td><td>${model.getPhenotypeCount("DDEB-gen")}</td></tr>
-<tr class="form_listrow0"><td><i>DDEB, acral (DDEB-ac)</i></td><td>${model.getPhenotypeCount("DDEB-ac")}</td></tr>
-<tr class="form_listrow1"><td><i>DDEB, pretibial (DDEB-Pt)</i></td><td>${model.getPhenotypeCount("DDEB-Pt")}</td></tr>
-<tr class="form_listrow0"><td><i>DDEB, pruriginosa (DDEB-Pr)</i></td><td>${model.getPhenotypeCount("DDEB-Pr")}</td></tr>
-<tr class="form_listrow1"><td><i>DDEB, nails only (DDEB-na)</i></td><td>${model.getPhenotypeCount("DDEB-na")}</td></tr>
-<tr class="form_listrow0"><td><i>DDEB, bullous dermolysis of the newborn (DDEB-BDN)</i></td><td>${model.getPhenotypeCount("DDEB-BDN")}</td></tr>
-<tr class="form_listrow1"><td><i>DDEB, unknown (DDEB-u)</i></td><td>${model.getPhenotypeCount("DDEB-u")}</td></tr>
+<tr class="form_listrow1"><td rowspan="7">DDEB</td><td>DDEB, generalized (DDEB-gen)</td><td>${model.getPhenotypeCount("DDEB, generalized")}</td></tr>
+<tr class="form_listrow0"><td><i>DDEB, acral (DDEB-ac)</i></td><td>${model.getPhenotypeCount("DDEB, acral")}</td></tr>
+<tr class="form_listrow1"><td><i>DDEB, pretibial (DDEB-Pt)</i></td><td>${model.getPhenotypeCount("DDEB, pretibial")}</td></tr>
+<tr class="form_listrow0"><td><i>DDEB, pruriginosa (DDEB-Pr)</i></td><td>${model.getPhenotypeCount("DDEB, pruriginosa")}</td></tr>
+<tr class="form_listrow1"><td><i>DDEB, nails only (DDEB-na)</i></td><td>${model.getPhenotypeCount("DDEB, nails only")}</td></tr>
+<tr class="form_listrow0"><td><i>DDEB, bullous dermolysis of the newborn (DDEB-BDN)</i></td><td>${model.getPhenotypeCount("DDEB, bullous dermolysis of the newborn")}</td></tr>
+<tr class="form_listrow1"><td><i>DDEB, unknown (DDEB-u)</i></td><td>${model.getPhenotypeCount("DDEB, unknown")}</td></tr>
 <tr class="form_listrow0"><td>DEB</td><td><i>DEB, unknown (DEB-u)</i></td><td>${model.getPhenotypeCount("DEB-u")}</td></tr>
-<tr class="form_listrow1"><td rowspan="9">RDEB</td><td>RDEB, severe generalized (RDEB-sev gen)**</td><td>${model.getPhenotypeCount("RDEB-sev gen")}</td></tr>
-<tr class="form_listrow0"><td>RDEB, generalized other (RDEB-O)</td><td>${model.getPhenotypeCount("RDEB-O")}</td></tr>
-<tr class="form_listrow1"><td><i>RDEB, acral (RDEB-ac)</i></td><td>${model.getPhenotypeCount("RDEB-ac")}</td></tr>
-<tr class="form_listrow0"><td><i>RDEB, inversa (RDEB-i)</i></td><td>${model.getPhenotypeCount("RDEB-i")}</td></tr>
-<tr class="form_listrow1"><td><i>RDEB, pretibial (RDEB-Pt)</i></td><td>${model.getPhenotypeCount("RDEB-Pt")}</td></tr>
-<tr class="form_listrow0"><td><i>RDEB, pruriginosa (RDEB-Pr)</i></td><td>${model.getPhenotypeCount("RDEB-Pr")}</td></tr>
+<tr class="form_listrow1"><td rowspan="9">RDEB</td><td>RDEB, severe generalized (RDEB-sev gen)**</td><td>${model.getPhenotypeCount("RDEB, severe generalized")}</td></tr>
+<tr class="form_listrow0"><td>RDEB, generalized other (RDEB-O)</td><td>${model.getPhenotypeCount("RDEB, generalized other")}</td></tr>
+<tr class="form_listrow1"><td><i>RDEB, acral (RDEB-ac)</i></td><td>${model.getPhenotypeCount("RDEB, acral")}</td></tr>
+<tr class="form_listrow0"><td><i>RDEB, inversa (RDEB-i)</i></td><td>${model.getPhenotypeCount("RDEB, inversa")}</td></tr>
+<tr class="form_listrow1"><td><i>RDEB, pretibial (RDEB-Pt)</i></td><td>${model.getPhenotypeCount("RDEB, pretibial")}</td></tr>
+<tr class="form_listrow0"><td><i>RDEB, pruriginosa (RDEB-Pr)</i></td><td>${model.getPhenotypeCount("RDEB, pruriginosa")}</td></tr>
 <tr class="form_listrow1"><td><i>RDEB, centripetalis (RDEB-Ce)</i></td><td>${model.getPhenotypeCount("RDEB-Ce")}</td></tr>
-<tr class="form_listrow0"><td><i>RDEB, bullous dermolysis of the newborn (RDEB-BDN)</i></td><td>${model.getPhenotypeCount("RDEB-BDN")}</td></tr>
-<tr class="form_listrow1"><td><i>RDEB, unknown (RDEB-u)</i></td><td>${model.getPhenotypeCount("RDEB-u")}</td></tr>
+<tr class="form_listrow0"><td><i>RDEB, bullous dermolysis of the newborn (RDEB-BDN)</i></td><td>${model.getPhenotypeCount("RDEB, bullous dermolysis of the newborn")}</td></tr>
+<tr class="form_listrow1"><td><i>RDEB, unknown (RDEB-u)</i></td><td>${model.getPhenotypeCount("RDEB, unknown")}</td></tr>
 </table>
 <h3>About the data</h3>
 <p>
