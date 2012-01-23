@@ -191,7 +191,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 						    if (!oldValue.equals(newValue) || oldStartTime != startTime || oldEndTime != endTime) {
 								if (dataType.equals("xref")) {
 									// Set _Id instead of _Name because db.update() doesn't resolve foreign keys
-									originalObservedValue.setRelation_Id(service.getObservationTargetId(newValue));
+									originalObservedValue.setRelation_Id(Integer.parseInt(newValue));
 								    originalObservedValue.setValue(null);
 								} else {
 								    originalObservedValue.setValue(newValue);
@@ -240,8 +240,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 			
 					    // Compare, and update if necessary
 					    if (dataType.equals("xref")) {
-					    	newValue.setRelation_Id(null);
-					    	newValue.setRelation_Name(value);
+					    	newValue.setRelation_Id(Integer.parseInt(value));
 					    	newValue.setValue(null);
 						} else {
 							newValue.setValue(value);

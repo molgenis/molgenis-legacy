@@ -20,13 +20,18 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.matrix.component.MatrixViewer;
+import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
+
 import convertors.locations.ImportAteLocations;
 
 public class LocationInfoPlugin extends PluginModel<Entity>
@@ -35,8 +40,9 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 	private List<ObservationTarget> locationList;
 	private String action = "init";
 	private Map<Integer, String> superLocMap;
-	private List<Individual> animalsInLoc = new ArrayList<Individual>();
 	private CommonService ct = CommonService.getInstance();
+	MatrixViewer animalsInLocMatrixViewer = null;
+	static String ANIMALSINLOCMATRIX = "animalsinlocmatrix";
 	
 	public LocationInfoPlugin(String name, ScreenController<?> parent)
 	{
@@ -100,8 +106,16 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request)
 	{
 		ct.setDatabase(db);
+		if (animalsInLocMatrixViewer != null) {
+			animalsInLocMatrixViewer.setDatabase(db);
+		}
+		
 		try {
 			action = request.getString("__action");
+			
+			if (animalsInLocMatrixViewer != null && action.startsWith(animalsInLocMatrixViewer.getName())) {
+				animalsInLocMatrixViewer.handleRequest(db, request);
+			}
 			
 			if (action.equals("Add")) {
 				//
@@ -112,9 +126,29 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 			}
 			
 			if (action.equals("Manage")) {
-				Integer locId = request.getInt("locId");
-				animalsInLoc.clear();
-				// Find animals in this location
+				int locId = request.getInt("locId");
+				String locName = ct.getObservationTargetLabel(locId);
+				// Prepare matrix with animals in this location
+				List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserId());
+				List<String> measurementsToShow = new ArrayList<String>();
+				measurementsToShow.add("Location");
+				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+						Operator.IN, investigationNames));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						ct.getMeasurementId("Location"), ObservedValue.RELATION_NAME, Operator.EQUALS,
+						locName));
+				animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX, 
+						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
+						true, true, false, filterRules, 
+						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				animalsInLocMatrixViewer.setDatabase(db);
+				animalsInLocMatrixViewer.setLabel("Animals in " + locName + ":");
+			}
+			
+			if (action.equals("Move")) {
+				// TODO: read selection from matrix + location selected in 'moveto'
+				// TODO: for selected animals, end current Location value and make new one
 			}
 			
 			if (action.equals("importLocations")) {
@@ -178,6 +212,14 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 			this.setError(message);
 			e.printStackTrace();
 		}
+	}
+	
+	public String renderAnimalsInLocMatrixViewer() {
+		if (animalsInLocMatrixViewer != null) {
+			return "<p>" + animalsInLocMatrixViewer.getLabel() + "</p>" + 
+					animalsInLocMatrixViewer.render();
+		}
+		return "Error - location matrix not initialized";
 	}
 	
 }

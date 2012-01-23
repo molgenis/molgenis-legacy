@@ -42,7 +42,16 @@
 	
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 
-	Manage
+	${screen.renderAnimalsInLocMatrixViewer()}
+	
+	<div class='row'>
+		<select name="moveto" id="moveto" class="selectbox">
+			<#list screen.locationList as ll>
+				<option value="${ll.id?string.computer}">${ll.name}</option>
+			</#list>
+		</select>
+		<input type='submit' class='addbutton' value='Move selected' onclick="__action.value='Move'" />
+	</div>
 
 <#elseif screen.action == "Add">
 

@@ -1,8 +1,8 @@
 
 package plugins.system;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.auth.MolgenisPermission;
@@ -208,17 +208,20 @@ public class AnimalDbUsers extends PluginModel<Entity>
 					throw new Exception("No (valid) investigation chosen");
 				}
 				
-				// Give new user rights on ALL entities, forms, menus and plugins (TODO: leave some out?)
+				// Give new user write rights on almost all entities, forms, menus and plugins
+				List<String> exclude = Arrays.asList(new String[] { "AdminMenu" });
 				List<MolgenisPermission> permList = new ArrayList<MolgenisPermission>();
 				Query<MolgenisEntity> q = db.query(MolgenisEntity.class);
 				List<MolgenisEntity> entList = q.find();
 				if (entList != null) {
 					for (MolgenisEntity ent : entList) {
-						MolgenisPermission newPerm = new MolgenisPermission();
-						newPerm.setRole_Id(userId);
-						newPerm.setPermission("write");
-						newPerm.setEntity_Id(ent.getId());
-						permList.add(newPerm);
+						if (!exclude.contains(ent.getName())) {
+							MolgenisPermission newPerm = new MolgenisPermission();
+							newPerm.setRole_Id(userId);
+							newPerm.setPermission("write");
+							newPerm.setEntity_Id(ent.getId());
+							permList.add(newPerm);
+						}
 					}
 				}
 				db.add(permList);
