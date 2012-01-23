@@ -37,7 +37,7 @@
 					<input type="submit" name="submitOrdersChoice" value="show orders" onclick="__action.value='showOrders';"/>
 				
 			   
-					<div id="ShoppingCartLabel">Placed Orders</div>
+					<div id="ShoppingCartLabel"> ${screen.getChoiceLabel()}</div>
 					<div class="ShoppingCartContents">
 						<ul>
 							<#if screen.getshoppingCart()??>

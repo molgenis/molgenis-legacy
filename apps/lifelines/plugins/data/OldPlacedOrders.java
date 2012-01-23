@@ -153,6 +153,12 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 	public String getselectedOrdersChoice() {
 		return selectedOrdersChoice;
 	}
+	
+	public String getChoiceLabel() {
+		if (ApprovedordersChoice) return "Your approved orders";
+		else if (!ApprovedordersChoice) return "All your placed orders";  
+		else return "please make a choice !";
+	}
 
 	
 	
