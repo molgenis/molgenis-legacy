@@ -90,7 +90,7 @@
 				<tr>
 					<td>${loc.name}</td>
 					<td>${screen.getSuperLocName(locId)}</td>
-					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId}">Manage animals in ${loc.name}</a></td>
+					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId?string.computer}">Manage animals in ${loc.name}</a></td>
 				</tr>
 			</#list>
 			</tbody>

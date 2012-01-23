@@ -20,6 +20,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
@@ -34,6 +35,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 	private List<ObservationTarget> locationList;
 	private String action = "init";
 	private Map<Integer, String> superLocMap;
+	private List<Individual> animalsInLoc = new ArrayList<Individual>();
 	private CommonService ct = CommonService.getInstance();
 	
 	public LocationInfoPlugin(String name, ScreenController<?> parent)
@@ -110,7 +112,9 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 			}
 			
 			if (action.equals("Manage")) {
-				//
+				Integer locId = request.getInt("locId");
+				animalsInLoc.clear();
+				// Find animals in this location
 			}
 			
 			if (action.equals("importLocations")) {

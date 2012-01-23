@@ -266,7 +266,7 @@ public class ApplyProtocolService {
 
 	public String getEntityName(int entityId) {
 		try {
-			return db.findById(MolgenisEntity.class, entityId).getName();
+			return db.findById(MolgenisEntity.class, entityId).getClassName();
 		} catch (DatabaseException e) {
 			return null;
 		}

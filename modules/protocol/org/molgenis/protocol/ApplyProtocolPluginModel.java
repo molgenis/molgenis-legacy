@@ -58,7 +58,7 @@ public class ApplyProtocolPluginModel {
 			String panelLabel = m.getPanelLabelAllowedForRelation();
 			panelMap.put(m, service.getAllMarkedPanels(panelLabel, investigationIds));
 			
-			String observationTargetType = "ObservationTarget";
+			String observationTargetType = "org.molgenis.pheno.ObservationTarget";
 			if (m.getTargettypeAllowedForRelation() != null) {
 				int entityId = m.getTargettypeAllowedForRelation_Id();
 				observationTargetType = service.getEntityName(entityId);
