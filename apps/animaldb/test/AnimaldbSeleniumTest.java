@@ -408,6 +408,8 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Protocol applied successfully"));
 		// Check in Timeline value viewer
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=EventViewer_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=targetmatrix_selected_0"); // toggle radio button for first animal in list
