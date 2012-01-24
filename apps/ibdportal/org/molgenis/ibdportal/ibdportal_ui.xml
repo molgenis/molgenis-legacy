@@ -5,9 +5,22 @@
 	<plugin name="IBDPortalHeader" type="org.molgenis.ibdportal.plugins.header.IBDPortalHeader" />
 
 	<menu name="mainmenu" position="top_left">
+	
+		<plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
 		
-		<plugin name="LoadLegacy" type="org.molgenis.ibdportal.plugins.importer.ImportPlugin"
-			label="Import data" />
+		<plugin name="Importer" type="org.molgenis.ibdportal.plugins.importer.ImportPlugin"
+			label="Data importer" />
+			
+		<menu name="tablemenu" position="left" label="Content tables">
+			<form name="investigation" entity="Investigation" view="list" label="Investigations" />
+			<form name="category" entity="Category" view="list" label="Categories" />
+			<form name="individual" entity="Individual" view="list" label="Individuals" />
+			<form name="panel" entity="Panel" view="list" label="Panels" />
+			<form name="measurement" entity="Measurement" view="list" label="Measurements" />
+			<form name="protocol" entity="Protocol" view="list" label="Protocols" />
+			<form name="protocolapplication" entity="ProtocolApplication" view="list" label="Protocol applications" />
+			<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
+		</menu>
 		
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/account settings"/>
 	    

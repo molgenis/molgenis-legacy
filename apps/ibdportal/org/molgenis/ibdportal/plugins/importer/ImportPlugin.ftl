@@ -26,15 +26,15 @@
 <#--begin your plugin-->	
 
 <h1>Import data</h1>
-<p><em>Caution: this might interfere with existing database items!</em></p>
+<p><em>Caution: this will first remove all existing database items!</em></p>
 
 <div class="row">
-	<label for="zip" style="height:2em">ZIP file with CSV exports from your legacy database:</label>
-	<input type="file" name="zip" id="zip" class="textbox" />
+	<label for="csv" style="height:2em">CSV file with IBD data:</label>
+	<input type="file" name="csv" id="csv" class="textbox" />
 </div>
 
 <div class="row">
-	<input type='submit' class='addbutton' value='Load' onclick="__action.value='load'" />
+	<input type='submit' class='addbutton' value='Import' onclick="__action.value='load'" />
 </div>
 	
 <#--end of your plugin-->	

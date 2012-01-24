@@ -13,6 +13,9 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
+import plugins.emptydb.emptyDatabase;
+import app.FillMetadata;
+
 
 public class ImportPlugin extends PluginModel<Entity>
 {
@@ -47,9 +50,15 @@ public class ImportPlugin extends PluginModel<Entity>
 			String action = request.getString("__action");
 			
 			if (action.equals("load")) {
-				String filename = request.getString("zip");
-				String legacy = request.getString("source");
-				
+				String filename = request.getString("csv");
+				// First empty the db
+				new emptyDatabase(db, false);
+				FillMetadata.fillMetadata(db, false);
+				// Then import
+				Importer importer = new Importer(db, this.getLogin());
+				importer.doImport(filename);
+				importer.writeToDb();
+				this.setSuccess("Imported IBD data successfully");
 			}
 			
 		} catch(Exception e) {
