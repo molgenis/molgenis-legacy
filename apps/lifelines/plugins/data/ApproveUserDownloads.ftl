@@ -1,4 +1,4 @@
-<#macro plugins_data_ApproveUserOrders screen>
+<#macro plugins_data_ApproveUserDownloads screen>
 <style type="text/css">
 #approveShoppingCart {
 	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -51,36 +51,36 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">	
-				<h2> Use order administration page </h2>
+				<h2> Use Download administration page </h2>
 			    <h3> Please choose a user </h3>
 			    <select name="user" id="user"> 
 					<#list screen.arrayUsers as user>
 						<option value="${user.name}">${user.name}</option>			
 					</#list>
 				</select>
-				<input type="submit" name="chooseUser" value="show orders" onclick="__action.value='showOrders';"/>
+				<input type="submit" name="chooseUser" value="show Downloads" onclick="__action.value='showDownloads';"/>
 				<br/><br/><br/>
-					<#if screen.getUserOrders()??>
+					<#if screen.getUserDownloads()??>
 						<table id="approveShoppingCart">
 							<tr>
 	  							<th>Date & time created</th>
 	  							<th>Measurement details</th>
-	 							<th>Approve the order</th>
+	 							<th>Approve the Download</th>
 							</tr>
 							<tr>
-							<#list screen.getUserOrders() as eachOrder>
+							<#list screen.getUserDownloads() as eachDownload>
 									<tr class="alt">
-										<td>  ${eachOrder.getDateOfOrder()}</td>
-										<td> <#list eachOrder.getMeasurements_Name() as name> ${name} - <br/></#list> </td>
-										<td><input type="checkbox" name="approvedItems" value=${eachOrder.getId()}><br/> </td>
+										<td>  ${eachDownload.getDateOfOrder()}</td>
+										<td> <#list eachDownload.getMeasurements_Name() as name> ${name} - <br/></#list> </td>
+										<td><input type="checkbox" name="approvedItems" value=${eachDownload.getId()}><br/> </td>
 									</tr>
 							</#list>
 						</table>
 				  	</#if>
 				  	
 				<br/><br/>  	
-				<input type="submit" value="Approve selected orders" onclick="if (confirm('Approve the selected orders?')) { __action.value='ApproveSelectedOrders';return true; } else {return false;}"/><br /><br />
-				<input type="submit" value="Delete old orders" onclick="if (confirm('You are about to delete ALL orders. This action is irreversible. Are you sure you want to proceed?')) { __action.value='DeleteOldOrders';return true; } else {return false;}"/><br /><br />
+				<input type="submit" value="Approve selected Downloads" onclick="if (confirm('Approve the selected Downloads?')) { __action.value='ApproveSelectedDownloads';return true; } else {return false;}"/><br /><br />
+				<input type="submit" value="Delete old Downloads" onclick="if (confirm('You are about to delete ALL Downloads. This action is irreversible. Are you sure you want to proceed?')) { __action.value='DeleteOldDownloads';return true; } else {return false;}"/><br /><br />
 			</div>
 		</div>
 	</div>

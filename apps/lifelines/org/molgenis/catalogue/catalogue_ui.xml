@@ -25,7 +25,7 @@
 		
 		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="Catalogue Tree" />  
 		<plugin name="MeasurementsOrderForm" type="plugins.data.MeasurementsOrderForm" label="Your Current Orders" />  
-		<plugin name="OldPlacedOrders" type="plugins.data.OldPlacedOrders" label="Your Old Orders" />  
+		<plugin name="OldPlacedDownloads" type="plugins.data.OldPlacedDownloads" label="Your Old Downloads" />  
 		<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin" label="Generic Importer"/>
 		<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" />  -->
 		<menu name="ImportData" label="Import Data">
@@ -38,7 +38,7 @@
 		
 		
 		<menu name="Admin">
-			<plugin name="ApproveUserOrders" type="plugins.data.ApproveUserOrders" label="Approve User Orders" />  
+			<plugin name="ApproveUserDownloads" type="plugins.data.ApproveUserDownloads" label="Approve User Downloads" />  
 			<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
 		  	<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">

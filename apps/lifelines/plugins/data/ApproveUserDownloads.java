@@ -29,15 +29,15 @@ import plugins.matrix.CatalogueMatrixModel;
 /**
  *
  */
-public class ApproveUserOrders extends PluginModel<Entity>
+public class ApproveUserDownloads extends PluginModel<Entity>
 {
 	
 	private static final long serialVersionUID = -6096870458186217098L;
 	private List<MolgenisUser> arrayUsers = new ArrayList<MolgenisUser>();
 	private String selectedUser;
-	private List<ShoppingCart> UserOrders = new ArrayList<ShoppingCart>();
+	private List<ShoppingCart> UserDownloads = new ArrayList<ShoppingCart>();
 	private List<Integer> shoppingCartIds = new ArrayList<Integer>();
-	public ApproveUserOrders(String name, ScreenController<?> parent)
+	public ApproveUserDownloads(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -45,13 +45,13 @@ public class ApproveUserOrders extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_data_ApproveUserOrders";
+		return "plugins_data_ApproveUserDownloads";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/data/ApproveUserOrders.ftl";
+		return "plugins/data/ApproveUserDownloads.ftl";
 	}
 	
 	public String getCustomHtmlHeaders()
@@ -62,8 +62,8 @@ public class ApproveUserOrders extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception	{
 
-		if ("showOrders".equals(request.getAction())) {
-			UserOrders.clear();
+		if ("showDownloads".equals(request.getAction())) {
+			UserDownloads.clear();
 			selectedUser = request.getString("user");
 			System.out.println(">>" + selectedUser);
 			//arrayUsers.clear();
@@ -74,15 +74,15 @@ public class ApproveUserOrders extends PluginModel<Entity>
 			q.addRules(new QueryRule(ShoppingCart.APPROVED, Operator.EQUALS, false));
 
 			if (!q.find().isEmpty()) {
-				UserOrders.addAll(q.find());
-				for (int i=0; i<UserOrders.size(); i++) 
-					shoppingCartIds.add(UserOrders.get(i).getId());
+				UserDownloads.addAll(q.find());
+				for (int i=0; i<UserDownloads.size(); i++) 
+					shoppingCartIds.add(UserDownloads.get(i).getId());
 				
 			} else {
-				this.getModel().getMessages().add(new ScreenMessage("No orders found!", false));
+				this.getModel().getMessages().add(new ScreenMessage("No Downloads found!", false));
 			}
 			
-		} else if ("ApproveSelectedOrders".equals(request.getAction())) {
+		} else if ("ApproveSelectedDownloads".equals(request.getAction())) {
 			System.out.println("the user has pressed approve , now let's retrieve the selected items ");
 			String selecteditems =  request.getString("approvedItems");
 			
@@ -120,8 +120,8 @@ public class ApproveUserOrders extends PluginModel<Entity>
 		return arrayUsers;
 	}
 	
-	public List<ShoppingCart> getUserOrders() {
-		return UserOrders;
+	public List<ShoppingCart> getUserDownloads() {
+		return UserDownloads;
 	}
 
 	public List<Integer> getShoppingCartIds() {
