@@ -44,7 +44,7 @@
 				
 				<h5>If you want to continue with your Download to checkout:</h5>
 				
-				<input type="image" src="res/img/iconCheckout.png" value="Submit" alt="Checkout" onclick="if (confirm('You are about to complete your Download. Are you sure you want to checkout?')) {__action.value='checkoutDownload';return true;} else {return false;}"/><br /><br />
+				<input type="image" src="res/img/Download-icon.png" value="Submit" alt="Checkout" onclick="if (confirm('You are about to complete your Download. Are you sure you want to checkout?')) {__action.value='checkoutDownload';return true;} else {return false;}"/><br /><br />
 				<input type="submit" value="Review old placed Downloads" onclick="__action.value='seeOldPlacedDownloads';return true; "/><br /><br />
 				
 			</div>
