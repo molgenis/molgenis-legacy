@@ -18,17 +18,17 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
-public class OldPlacedOrders extends PluginModel<Entity>{
+public class OldPlacedDownloads extends PluginModel<Entity>{
 
 
 	private static final long serialVersionUID = -8140222842047905408L;
 	private ShoppingCart shoppingCart = null;
 	private List<ShoppingCart> shoppingCartList = new ArrayList<ShoppingCart>();
-	private boolean ApprovedordersChoice; /*false is for All orders, true for approved*/
-	private String selectedOrdersChoice = null;
+	private boolean ApprovedDownloadsChoice; /*false is for All Downloads, true for approved*/
+	private String selectedDownloadsChoice = null;
 
 	
-	public OldPlacedOrders(String name, ScreenController<?> parent)
+	public OldPlacedDownloads(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -36,13 +36,13 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 	@Override
 	public String getViewName()
 	{
-		return "plugins_data_OldPlacedOrders";
+		return "plugins_data_OldPlacedDownloads";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/data/OldPlacedOrders.ftl";
+		return "plugins/data/OldPlacedDownloads.ftl";
 	}
 	
 	public String getCustomHtmlHeaders()
@@ -54,20 +54,20 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 	@Override
 	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception {
 		
-		if ("showOrders".equals(request.getAction())){
-			selectedOrdersChoice = request.getString("ordersChoice");
-			System.out.println("selected choice : "+request.getString("ordersChoice"));
-			if (selectedOrdersChoice.equals("AllPlacedOrders")) setApprovedordersChoice(false);
-			else if (selectedOrdersChoice.equals("ApprovedOrders")) setApprovedordersChoice(true);
+		if ("showDownloads".equals(request.getAction())){
+			selectedDownloadsChoice = request.getString("DownloadsChoice");
+			System.out.println("selected choice : "+request.getString("DownloadsChoice"));
+			if (selectedDownloadsChoice.equals("AllPlacedDownloads")) setApprovedDownloadsChoice(false);
+			else if (selectedDownloadsChoice.equals("ApprovedDownloads")) setApprovedDownloadsChoice(true);
 			this.reload(db);
-		} else if ("DeleteOldOrders".equals(request.getAction())) {
-			this.DeleteOldOrders(db);
+		} else if ("DeleteOldDownloads".equals(request.getAction())) {
+			this.DeleteOldDownloads(db);
 			this.reload(db);
 			
 		} 
 	}
 
-	public void DeleteOldOrders(Database db) {
+	public void DeleteOldDownloads(Database db) {
 		//empty db table: actually delete the ones that have checkedOut='false' 
 		List<ShoppingCart> resshoppingCart  = new ArrayList<ShoppingCart>();
 		Query<ShoppingCart> q = db.query(ShoppingCart.class);
@@ -81,32 +81,32 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 			e.printStackTrace();
 		}
 		this.reload(db);
-		this.getModel().getMessages().add(new ScreenMessage("Your old orders have been deleted", true));
+		this.getModel().getMessages().add(new ScreenMessage("Your old Downloads have been deleted", true));
 	}
 	
 	@Override
 	public void reload(Database db) {
 		try {
 
-			if (!isApprovedordersChoice()) {
+			if (!isApprovedDownloadsChoice()) {
 					shoppingCartList.clear();
-					System.out.println(">>>>these are all the orders");
+					System.out.println(">>>>these are all the Downloads");
 					//get all the items
 					Query<ShoppingCart> q = db.query(ShoppingCart.class);
 					q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 					q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, true));
 					if (!q.find().isEmpty()) {
 						shoppingCart = q.find().get(0);
-						//Same user could order multiple times
-						for(ShoppingCart order : q.find()){
-							shoppingCartList.add(order);
+						//Same user could Download multiple times
+						for(ShoppingCart Download : q.find()){
+							shoppingCartList.add(Download);
 						}
 					} else {
 						shoppingCart = null;
 						shoppingCartList.clear();
 					}
-			} else if (isApprovedordersChoice()){
-				System.out.println(">>>>these are only the approved all the orders");
+			} else if (isApprovedDownloadsChoice()){
+				System.out.println(">>>>these are only the approved all the Downloads");
 				shoppingCartList.clear();
 				//get only the approved shopping cart 
 				Query<ShoppingCart> aq = db.query(ShoppingCart.class);
@@ -118,9 +118,9 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 					shoppingCart = aq.find().get(0);
 					System.out.println("Gia na douem ti exei mesa >>>"+shoppingCart);
 
-					//Same user could order multiple times
-					for(ShoppingCart order : aq.find()){
-						shoppingCartList.add(order);
+					//Same user could Download multiple times
+					for(ShoppingCart Download : aq.find()){
+						shoppingCartList.add(Download);
 					}
 					
 				} else {
@@ -129,7 +129,7 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 				}
 			}
 		} catch (Exception e) {
-			this.getModel().getMessages().add(new ScreenMessage("No old orders available", false));
+			this.getModel().getMessages().add(new ScreenMessage("No old Downloads available", false));
 			e.printStackTrace();
 		}
 
@@ -142,21 +142,21 @@ public class OldPlacedOrders extends PluginModel<Entity>{
 		return shoppingCartList;
 	}
 	
-	public void setApprovedordersChoice(boolean approvedordersChoice) {
-		ApprovedordersChoice = approvedordersChoice;
+	public void setApprovedDownloadsChoice(boolean approvedDownloadsChoice) {
+		ApprovedDownloadsChoice = approvedDownloadsChoice;
 	}
 
-	public boolean isApprovedordersChoice() {
-		return ApprovedordersChoice;
+	public boolean isApprovedDownloadsChoice() {
+		return ApprovedDownloadsChoice;
 	}
 	
-	public String getselectedOrdersChoice() {
-		return selectedOrdersChoice;
+	public String getselectedDownloadsChoice() {
+		return selectedDownloadsChoice;
 	}
 	
 	public String getChoiceLabel() {
-		if (ApprovedordersChoice) return "Your approved orders";
-		else if (!ApprovedordersChoice) return "All your placed orders";  
+		if (ApprovedDownloadsChoice) return "Your approved Downloads";
+		else if (!ApprovedDownloadsChoice) return "All your placed Downloads";  
 		else return "please make a choice !";
 	}
 
