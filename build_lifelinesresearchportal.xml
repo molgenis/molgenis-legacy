@@ -120,7 +120,7 @@
 		<taskdef name="xmltask" classpathref="molgenis.classpath" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
 
 		<pathconvert property="app_xml" refid="app.class.path" pathsep="&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;">
-			<map from="${user.dir}/" to="" />
+			<map from="${basedir}/" to="" />
 		</pathconvert>
 		
 		<- add generated src as well -

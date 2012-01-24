@@ -8,6 +8,7 @@ It should be used via 'import' plus passing of properties
 	<available file="${app_properties}" property="isFileAvail" />
 	<fail unless="isFileAvail" message="app_properties file not found: ${app_properties}" />
 	<fail unless="app_name">app_name is not set. Did you use the right build_xyz.xml?</fail>
+	<echo>Running Ant for MOLGENIS App "${app_name}" using basedir ${basedir}</echo>
 
 	<!-- static properties shared between all apps-->
 	<property file="${app_properties}" />
@@ -82,7 +83,7 @@ It should be used via 'import' plus passing of properties
 		<!-- copy all ftl files from module folders-->
 		<!-- concat all elements of app_path together separated by /**/*, -->
 		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*," dirsep="/">
-			<map from="${user.dir}/" to="" />
+			<map from="${basedir}/" to="" />
 		</pathconvert>
 		<echo message="copying ftl files from ${app_path} to ${build.dir}" />
 		<fail unless="app_path">app.class.path is not set</fail>
@@ -119,7 +120,7 @@ It should be used via 'import' plus passing of properties
 	<target name="compile">
 
 		<pathconvert property="app_src" refid="app.class.path" pathsep=":">
-			<map from="${user.dir}/" to="" />
+			<map from="${basedir}/" to="" />
 		</pathconvert>
 		<fail unless="app_src">app.class.path is not set. Did you use the right build_xyz.xml?</fail>
 
@@ -223,7 +224,7 @@ It should be used via 'import' plus passing of properties
 	
 	<target name="testcopy">
 		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*," dirsep="/">
-			<map from="${user.dir}/" to="" />
+			<map from="${basedir}/" to="" />
 		</pathconvert>
 		
 		<copy todir="${build.dir}">

@@ -104,7 +104,7 @@
 
 		<!-- copy all ftls -->
 		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*.ftl,">
-			<map from="${user.dir}/" to="" />
+			<map from="${basedir}/" to="" />
 		</pathconvert>
 		<echo message="path: ${app_path}" />
 		<copy todir="${build}" verbose="true">

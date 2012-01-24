@@ -32,13 +32,13 @@
 	<target name="makedistro">
 		
 		<!-- Create folder structure for distro -->
-		<property name="root_distro_dir" value="${user.dir}/dist/"/>
+		<property name="root_distro_dir" value="${basedir}/dist/"/>
 		<property name="app_distro_dir" value="${root_distro_dir}/molgenis_${app_name}/"/>
 		<property name="lib_dir" value="${app_distro_dir}/lib/"/>
 		<property name="templates_dir" value="${app_distro_dir}/templates/"/>
 		<property name="protocols_dir" value="${app_distro_dir}/protocols/"/>
 		<property name="workflows_dir" value="${app_distro_dir}/workflows/"/>
-		<property name="app_module_dir" value="${user.dir}/modules/compute/" />
+		<property name="app_module_dir" value="${basedir}/modules/compute/" />
 		
 		<mkdir dir="${app_distro_dir}"/>
 		
@@ -66,7 +66,7 @@
 		
 		<!-- Copy README to the distro dir -->
 		<copy todir="${app_distro_dir}">
-			<fileset dir="${user.dir}/apps/${app_name}/org/molgenis/${app_name}/">
+			<fileset dir="${basedir}/apps/${app_name}/org/molgenis/${app_name}/">
 				<include name="README*"/>
 			</fileset>
 		</copy>
