@@ -25,6 +25,17 @@ inputs ${qcstatisticscolnames}
 
 mkdir -p ${qcdir}
 
+${getStatisticsScript} \
+--hsmetrics ${csvQuoted(hsmetrics)} \                                                                                                                    
+--alignment ${csvQuoted(alignmentmetrics)} \                                                                                                      
+--insertmetrics ${csvQuoted(recalinsertsizemetrics)} \                                                                                                     
+--dedupmetrics ${csvQuoted(dedupmetrics)} \                                                                                                               
+--concordance ${csvQuoted(concordancefile)} \                                                                                                              
+--sample ${csvQuoted(externalSampleID)} \                                                                                                                  
+--csvout ${qcstatisticscsv} \                                                                                                                              
+--tableout ${qcstatisticstex} \                                                                                                                             
+--descriptionout ${qcstatisticsdescription}
+
 echo "<#include "QCReportTemplate.ftl"/>" > ${qcstatisticstexreport}
 
 pdflatex -output-directory=${qcdir} ${qcstatisticstexreport}
