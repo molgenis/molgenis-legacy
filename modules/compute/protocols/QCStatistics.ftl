@@ -24,17 +24,39 @@ inputs ${ssvQuoted(alignmentmetrics)}
 inputs ${ssvQuoted(recalinsertsizemetrics)}
 inputs ${ssvQuoted(dedupmetrics)}
 inputs ${ssvQuoted(concordancefile)}
-alloutputsexist ${qcstatisticscsv}
+inputs ${qcstatisticscolnames}
 
+#always do step, never skip
+#alloutputsexist ${qcstatisticscsv} ${qcstatisticstex} ${qcstatisticsdescription}
+
+mkdir -p ${qcdir}
 
 ${getStatisticsScript} \
-<#-->runtimelog ${runtimelog} \<-->
---hsmetrics ${csvQuoted(hsmetrics)} \
---alignment ${csvQuoted(alignmentmetrics)} \
---insertmetrics ${csvQuoted(recalinsertsizemetrics)} \
---dedupmetrics ${csvQuoted(dedupmetrics)} \
---concordance ${csvQuoted(concordancefile)} \
---sample ${csvQuoted(externalSampleID)} \
---out ${qcstatisticscsv}
+--runtimelog ${runtimelog} \                                                                                                                               
+--hsmetrics ${csvQuoted(hsmetrics)} \                                                                                                                    
+--alignment ${csvQuoted(alignmentmetrics)} \                                                                                                      
+--insertmetrics ${csvQuoted(recalinsertsizemetrics)} \                                                                                                     
+--dedupmetrics ${csvQuoted(dedupmetrics)} \                                                                                                               
+--concordance ${csvQuoted(concordancefile)} \                                                                                                              
+--sample ${csvQuoted(externalSampleID)} \                                                                                                                  
+--csvout ${qcstatisticscsv} \                                                                                                                              
+--tableout ${qcstatisticstex} \                                                                                                                             
+--descriptionout ${qcstatisticsdescription}
+
+<#-- check out pipeline to build latex file -->
+<#-->svn co http://www.molgenis.org/svn/molgenis_apps/trunk/modules/compute/protocols/<#-->
+<#-- ALSO: svn co QCworkflow -->
+
+<#-- generate QC scripts -->
+<#-->
+${scriptgenerator} \
+--worksheet ${qcstatisticscsv} \
+--protocolsdir ${intermediate}/protocols \
+--workflow  ${intermediate}/workflow_QCStatistics.csv \
+--outputdir ${qcdir}
+<#-->
+
+<#-- submit QC scripts -->
+<#-->sh ${qcdir}/submit.sh <#-->
 
 <@end/>
