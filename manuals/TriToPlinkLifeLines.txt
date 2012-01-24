@@ -1,7 +1,10 @@
 
-Convert from TriTyper to Plink TPED+TFAM format while making a subselection of individuals and appending phenotypes to the FAM file. Additionally:
-The subselection using the first column of the 'slice' file (pseudonymisation+pheno) is made on Individuals.txt, but the output pseudonymized individual names are retrieved from the second column.
-The phenotypes for the FAM file are now the thirst column. See: examples/TriToPlinkLifeLines-exampleSubsetPseudo.txt
+Convert from TriTyper to Plink TPED+TFAM format while making a subselection of individuals and appending 
+phenotypes to the FAM file. Additionally:
+The subselection using the first column of the 'slice' file (pseudonymisation+pheno) is made on 
+Individuals.txt, but the output pseudonymized individual names are retrieved from the second column.
+The phenotypes for the FAM file are now the third column.
+See: examples/TriToPlinkLifeLines-exampleSubsetPseudo.txt
 
 You can also specify whether you want to output:
 - Just the TPED file, use P

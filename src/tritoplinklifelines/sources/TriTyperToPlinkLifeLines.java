@@ -55,6 +55,8 @@ public class TriTyperToPlinkLifeLines
 		}
 		
 		//check if all individuals in the slice file were selected and indexed
+		// TODO: change: keep the matched ones in individualsPseudoAndPhenotypes and remove the unmatched ones
+		// TODO: find out from Joeri how to compile this into a jar
 		if(individualsPseudoAndPhenotypes.size() > 0)
 		{
 			System.err.println("Not matched:");
