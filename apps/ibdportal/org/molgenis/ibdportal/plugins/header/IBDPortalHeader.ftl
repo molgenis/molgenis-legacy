@@ -27,7 +27,7 @@
 
 	<div style="width:100%">
 		<div style="float:left; margin-top:3px; margin-bottom:2px">
-			<img src="res/img/ibdportal/logo.jpg" width="51px" height="49px">
+			<img src="res/img/ibdportal/logo.jpg" width="150px" height="49px">
 		</div>
 
 		<div style="float:right">

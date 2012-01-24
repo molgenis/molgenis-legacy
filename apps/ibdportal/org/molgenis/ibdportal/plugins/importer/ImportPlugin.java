@@ -58,6 +58,7 @@ public class ImportPlugin extends PluginModel<Entity>
 				Importer importer = new Importer(db, this.getLogin());
 				importer.doImport(filename);
 				importer.writeToDb();
+				importer.addPatientsToCohort();
 				this.setSuccess("Imported IBD data successfully");
 			}
 			
