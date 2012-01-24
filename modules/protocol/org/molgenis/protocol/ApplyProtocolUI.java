@@ -41,8 +41,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.ValueLabel;
 
-import commonservice.CommonService;
-
 public class ApplyProtocolUI {
     
     private Container protocolApplicationContainer = null;

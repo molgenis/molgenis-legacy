@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<molgenis name="ibdportal" label="IBD Portal">
+
+	<plugin name="IBDPortalHeader" type="org.molgenis.ibdportal.plugins.header.IBDPortalHeader" />
+
+	<menu name="mainmenu" position="top_left">
+		
+		<plugin name="LoadLegacy" type="org.molgenis.ibdportal.plugins.importer.ImportPlugin"
+			label="Import data" />
+		
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/account settings"/>
+	    
+	</menu>
+
+</molgenis>

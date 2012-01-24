@@ -19,7 +19,6 @@ import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 
-import commonservice.CommonService;
 
 public class ApplyProtocolPluginModel {
 
