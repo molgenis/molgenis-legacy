@@ -59,11 +59,11 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			if ("chooseInvestigation".equals(request.getAction())) {
 				selectedInvestigation = request.getString("investigation");
 				arrayInvestigations.clear();
-			} else if ("OrderMeasurements".equals(request.getAction())) {
+			} else if ("DownloadMeasurements".equals(request.getAction())) {
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 				Date dat = new Date();
-				String dateOfOrder = dateFormat.format(dat);
-				this.addMeasurements(db, request, selectedInvestigation, dateOfOrder);
+				String dateOfDownload = dateFormat.format(dat);
+				this.addMeasurements(db, request, selectedInvestigation, dateOfDownload);
 				
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 				
@@ -74,12 +74,12 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.setError("There was a problem handling yor order: " + e.getMessage());
+			this.setError("There was a problem handling your Download: " + e.getMessage());
 		}
 
 	}
 
-	private void addMeasurements(Database db, Tuple request, String selectedInvestigation, String dateOfOrder) throws DatabaseException, IOException {
+	private void addMeasurements(Database db, Tuple request, String selectedInvestigation, String dateOfDownload) throws DatabaseException, IOException {
 		
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement names,
@@ -94,9 +94,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			}
 		}
 
-		List<Integer> orderedMeasurementIds = new ArrayList<Integer>();
+		List<Integer> DownloadedMeasurementIds = new ArrayList<Integer>();
 		for (Measurement m : this.shoppingCart) {
-			orderedMeasurementIds.add(m.getId());
+			DownloadedMeasurementIds.add(m.getId());
 		}
 		
 		Query<ShoppingCart> q = db.query(ShoppingCart.class);
@@ -107,17 +107,17 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		if (result.isEmpty()) {
 			//Add to database 
 			ShoppingCart shoppingCart = new ShoppingCart();
-			shoppingCart.setMeasurements(orderedMeasurementIds);
+			shoppingCart.setMeasurements(DownloadedMeasurementIds);
 			shoppingCart.setUserID(this.getLogin().getUserName());
 			shoppingCart.setCheckedOut(false);
-			shoppingCart.setDateOfOrder(dateOfOrder);
+			shoppingCart.setDateOfOrder(dateOfDownload);
 			shoppingCart.setApproved(false);
 			db.add(shoppingCart);
 			System.out.println("Shopping cart has been added to the DB");
 			
 		} else {
 			ShoppingCart shoppingCart = result.get(0); // assuming user can have only one shopping cart that's NOT checked out
-			shoppingCart.setMeasurements(orderedMeasurementIds);
+			shoppingCart.setMeasurements(DownloadedMeasurementIds);
 			db.update(shoppingCart);
 			System.out.println("Shopping cart has been updated in the DB");
 		}
@@ -125,7 +125,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 		HttpServletRequest httpRequest   = rt.getRequest();
 		HttpServletResponse httpResponse = rt.getResponse();
-		String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsOrderForm";
+		String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsDownloadForm";
 		
 		httpResponse.sendRedirect(redirectURL);
 	}

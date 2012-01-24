@@ -40,7 +40,7 @@
 					</div><br/>
 					
 					<div id="ShoopingCartButton">
-						<input type="submit" name="orderMeasurementsSubmit" value="Order" onclick="__action.value='OrderMeasurements';"/>
+						<input type="submit" name="DownloadMeasurementsSubmit" value="Download" onclick="__action.value='DownloadMeasurements';"/>
 					</div>
 				</#if>
 					

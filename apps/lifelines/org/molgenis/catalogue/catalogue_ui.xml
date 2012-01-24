@@ -24,7 +24,7 @@
 		</menu>
 		
 		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="Catalogue Tree" />  
-		<plugin name="MeasurementsOrderForm" type="plugins.data.MeasurementsOrderForm" label="Your Current Orders" />  
+		<plugin name="MeasurementsDownloadForm" type="plugins.data.MeasurementsDownloadForm" label="Your Current Downloads" />  
 		<plugin name="OldPlacedDownloads" type="plugins.data.OldPlacedDownloads" label="Your Old Downloads" />  
 		<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin" label="Generic Importer"/>
 		<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" />  -->

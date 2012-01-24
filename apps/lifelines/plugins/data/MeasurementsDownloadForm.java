@@ -25,14 +25,14 @@ import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
 
-public class MeasurementsOrderForm extends PluginModel<Entity>{
+public class MeasurementsDownloadForm extends PluginModel<Entity>{
 
 
 	private static final long serialVersionUID = -8140222842047905408L;
 	private ShoppingCart shoppingCart = null;
 	private MolgenisUser user = null;
 	
-	public MeasurementsOrderForm(String name, ScreenController<?> parent)
+	public MeasurementsDownloadForm(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -40,13 +40,13 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 	@Override
 	public String getViewName()
 	{
-		return "plugins_data_MeasurementsOrderForm";
+		return "plugins_data_MeasurementsDownloadForm";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/data/MeasurementsOrderForm.ftl";
+		return "plugins/data/MeasurementsDownloadForm.ftl";
 	}
 	
 	public String getCustomHtmlHeaders()
@@ -66,7 +66,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 			this.emptyShoppingCart(db);
 			this.reload(db);
 			
-		}else if ("checkoutOrder".equals(request.getAction())) {
+		}else if ("checkoutDownload".equals(request.getAction())) {
 			if (shoppingCart == null){
 				this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is empty. You cannot continue with the checkout! Please visit the Catalog first.", false));
 				this.reload(db);
@@ -76,16 +76,16 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 			}
 			else {
 				this.updateShoppingCartAsCheckedOut(db);
-	    		this.sendOrderEmail(db); 
-				this.getModel().getMessages().add(new ScreenMessage("Your order has been sent!", true));
+	    		this.sendDownloadEmail(db); 
+				this.getModel().getMessages().add(new ScreenMessage("Your Download has been sent!", true));
 				this.reload(db);
 			}
-		} else if("seeOldPlacedOrders".equals(request.getAction())) {
+		} else if("seeOldPlacedDownloads".equals(request.getAction())) {
 			
 			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 			HttpServletRequest httpRequest   = rt.getRequest();
 			HttpServletResponse httpResponse = rt.getResponse();
-			String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=OldPlacedOrders";
+			String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=OldPlacedDownloads";
 			
 			httpResponse.sendRedirect(redirectURL);
 			
@@ -119,10 +119,10 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 				user.getAffiliation() == null);
 	}
 	
-	public void sendOrderEmail(Database db) throws DatabaseException  {
+	public void sendDownloadEmail(Database db) throws DatabaseException  {
 		MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
 		if (StringUtils.isEmpty(admin.getEmail()))
-			throw new DatabaseException("Order failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
+			throw new DatabaseException("Download failed: the administrator has no email address set used to confirm your registration. Please contact your administrator about this.");
 		
 		String emailContents = "Dear LifeLines administrator," + "\n\n"; 
 		emailContents += "The user : "+ this.getLogin().getUserName() +"\n";
@@ -150,7 +150,7 @@ public class MeasurementsOrderForm extends PluginModel<Entity>{
 		//TODO :Institute,	Position
 		
 		try {
-			this.getEmailService().email("New items/measurements ordered", emailContents, admin.getEmail(), true);
+			this.getEmailService().email("New items/measurements Downloaded", emailContents, admin.getEmail(), true);
 		} catch (EmailException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
