@@ -57,7 +57,7 @@
 			var fieldNameOptions = new Array();
 			var map = new HashMap();
 			var count = 0;
-			var index = 0;
+			var index = 1;
 			var headerCount = 0;
 			
 			function changeFieldContent(id)
@@ -251,7 +251,7 @@
 						var max = indexRange[1];
 						alert(indexRange.length);
 						
-						if(max == -1)
+						if(max == "n")
 						{	
 							alert(index);
 							max = index;

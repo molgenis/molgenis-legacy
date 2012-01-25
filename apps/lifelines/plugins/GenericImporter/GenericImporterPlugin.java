@@ -293,7 +293,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			
 			headers = new ArrayList<String>();
 			
-			columnIndex.add(-1);
+			columnIndex.add(0);
 			
 			if(header.equals("UploadFileByColumn"))
 			{
@@ -301,7 +301,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 				
 				for(int i = 0 ; i < columns; i++)
 				{
-					columnIndex.add(i);
+					columnIndex.add(i + 1);
 					headers.add(sheet.getCell(i, 0).getContents().toString().replaceAll(" ", "_"));
 					System.out.println(sheet.getCell(i, 0).getContents().toString());
 					
@@ -417,6 +417,8 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 				
 				for(Integer columnIndex : columnIndexToClassType.keySet())
 				{
+					//columnIndex--;
+					
 					String classType = columnIndexToClassType.get(columnIndex);
 					
 					String fieldName = columnIndexToFieldName.get(columnIndex);
@@ -426,6 +428,8 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 					fieldName = fieldName.toString().split(":")[splitByColon.length - 1];
 					
 					Integer dependedColumn = columnIndexToRelation.get(columnIndex);
+					
+					dependedColumn--;
 					
 					table.setDirection(excelDirection);
 					
