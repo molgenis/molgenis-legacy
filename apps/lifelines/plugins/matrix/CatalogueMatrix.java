@@ -100,7 +100,6 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 			
 			q.addRules(new QueryRule(ShoppingCart.APPROVED, Operator.EQUALS, true));
 			
-			
 			List<String> listMeas = new ArrayList<String>();
 			
 			if(q.find().size() > 0)
