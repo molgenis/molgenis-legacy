@@ -25,9 +25,9 @@
 		<div class="screenbody">
 			<div class="screenpadding">	
 			    <h3> Measurements Download Form  </h3>
-			       <h5>Review you shopping cart:</h5>
+			       <h5>Review you Download list:</h5>
 				
-					<div id="ShoppingCartLabel">Shopping cart</div>
+					<div id="ShoppingCartLabel">Download list</div>
 					<div class="ShoppingCartContents">
 						<ul>
 							<#if screen.getshoppingCart()??>
@@ -37,14 +37,14 @@
 								</#list>
 							</#if>
 						</ul>
-						<input type="submit" value="Empty shopping cart" onclick="if (confirm('You are about to delete all you Downloads. Are you sure you want to proceed?')) { __action.value='EmptyShoppingCart';return true; } else {return false;}"/><br /><br />
+						<input type="submit" value="Empty download list" onclick="if (confirm('You are about to delete all you Downloads. Are you sure you want to proceed?')) { __action.value='EmptyShoppingCart';return true; } else {return false;}"/><br /><br />
 						
 					</div>
 				<h5>Before continuing to checkout, please complete your profile <a href="molgenis.do?__target=main&select=UserLogin"> here </a></h5> 
 				
-				<h5>If you want to continue with your Download to checkout:</h5>
+				<h5>If you want to complete your download press below:</h5>
 				
-				<input type="image" src="res/img/Download-icon.png" value="Submit" alt="Checkout" onclick="if (confirm('You are about to complete your Download. Are you sure you want to checkout?')) {__action.value='checkoutDownload';return true;} else {return false;}"/><br /><br />
+				<input type="image" src="res/img/Download-icon.png" value="Submit" alt="Download" onclick="if (confirm('You are about to complete your Download. Are you sure?')) {__action.value='checkoutDownload';return true;} else {return false;}"/><br /><br />
 				<input type="submit" value="Review old placed Downloads" onclick="__action.value='seeOldPlacedDownloads';return true; "/><br /><br />
 				
 			</div>

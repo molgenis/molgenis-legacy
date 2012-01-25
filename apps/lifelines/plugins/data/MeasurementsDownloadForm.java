@@ -68,7 +68,7 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 			
 		}else if ("checkoutDownload".equals(request.getAction())) {
 			if (shoppingCart == null){
-				this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is empty. You cannot continue with the checkout! Please visit the Catalog first.", false));
+				this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. You cannot continue! Please visit the Catalog first.", false));
 				this.reload(db);
 			}
 			else if (this.checkIfUserDetailsEmpty(db)) {
@@ -99,7 +99,7 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 			db.update(shoppingCart);
 
 		} catch (DatabaseException e) {
-			this.getModel().getMessages().add(new ScreenMessage("A problem with updating your shopping cart has occurred", true));
+			this.getModel().getMessages().add(new ScreenMessage("A problem with updating your download list has occurred", true));
 			e.printStackTrace();
 		}
 	}
@@ -150,7 +150,7 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 		//TODO :Institute,	Position
 		
 		try {
-			this.getEmailService().email("New items/measurements Downloaded", emailContents, admin.getEmail(), true);
+			this.getEmailService().email("New items/measurements downloaded", emailContents, admin.getEmail(), true);
 		} catch (EmailException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -166,10 +166,10 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 		try {
 			List<ShoppingCart> resshoppingCart = q.find();
 			db.remove(resshoppingCart);
-			this.getModel().getMessages().add(new ScreenMessage("Your shopping cart is now empty, you can reload items from the Catalog", true));
+			this.getModel().getMessages().add(new ScreenMessage("Your download list is now empty, you can reload items from the Catalog", true));
 		} catch (DatabaseException e) {
 			e.printStackTrace();
-			this.getModel().getMessages().add(new ScreenMessage("Emptying your shopping cart failed", true));
+			this.getModel().getMessages().add(new ScreenMessage("Emptying your download list failed", true));
 		}
 		this.reload(db);
 	}
@@ -189,7 +189,7 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 			}
 
 		} catch (Exception e) {
-			this.getModel().getMessages().add(new ScreenMessage("No shopping cart available", false));
+			this.getModel().getMessages().add(new ScreenMessage("No download list available", false));
 			e.printStackTrace();
 		}
 

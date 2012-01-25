@@ -1,18 +1,18 @@
 <#macro plugins_data_ApproveUserDownloads screen>
 <style type="text/css">
-#approveShoppingCart {
+#approveDownloadList {
 	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
 	width:100%;
 	border-collapse:collapse;
 }
 
-#approveShoppingCart td, #approveShoppingCart th  {
+#approveDownloadList td, #approveDownloadList th  {
 	font-size:1em;
 	border:1px solid #98bf21;
 	padding:3px 7px 2px 7px;
 }
 
-#approveShoppingCart th {
+#approveDownloadList th {
 	font-size:1.1em;
 	text-align:left;
 	padding-top:5px;
@@ -21,7 +21,7 @@
 	color:#ffffff;
 }
 
-#approveShoppingCart tr.alt td {
+#approveDownloadList tr.alt td {
 	color:#000000;
 	background-color:#EAF2D3;
 }
@@ -61,7 +61,7 @@
 				<input type="submit" name="chooseUser" value="show Downloads" onclick="__action.value='showDownloads';"/>
 				<br/><br/><br/>
 					<#if screen.getUserDownloads()??>
-						<table id="approveShoppingCart">
+						<table id="approveDownloadList">
 							<tr>
 	  							<th>Date & time created</th>
 	  							<th>Measurement details</th>
