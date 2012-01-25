@@ -89,11 +89,20 @@
 <#if model.qmpr??>
 <table cellpadding="30"><tr><td>
 	<h2>Results for "${model.query}"</h2><br>
-	<i>All-in-one plot of search matches, click to enlarge:</i><br>
+	
 	<#if model.qmpr.plot??>
+	<i>All-in-one plot of search matches, click to enlarge:</i><br>
 		<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.qmpr.plot + "></body></html>">
 		<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 			<img src="tmpfile/${model.qmpr.plot}" width="320" height="320">
+		</a><br>
+	</#if>
+	
+	<#if model.qmpr.cisTransPlot??>
+	<br><br><i>Cis-trans plot, click to enlarge:</i><br>
+		<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.qmpr.cisTransPlot + "></body></html>">
+		<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+			<img src="tmpfile/${model.qmpr.cisTransPlot}" width="320" height="320">
 		</a><br>
 	</#if>
 	
@@ -272,7 +281,7 @@
 							</td>
 							<td>
 								<a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a>
-								<#if qtl.markerAnnotations?keys?seq_contains(qtl.peakMarker)>(at bp ${qtl.markerAnnotations[qtl.peakMarker].bpstart?c}, cM ${qtl.markerAnnotations[qtl.peakMarker].cm})</#if>
+								<#if qtl.markerAnnotations?keys?seq_contains(qtl.peakMarker)>(at bp ${qtl.markerAnnotations[qtl.peakMarker].bpstart?c}<#if qtl.markerAnnotations[qtl.peakMarker].cm??>, cM ${qtl.markerAnnotations[qtl.peakMarker].cm}</#if>)</#if>
 							</td>
 						</tr>
 					</table>
@@ -313,7 +322,7 @@
 									${qtl.valuesForMarkers[m_index]}
 							</td>
 							<td>
-									<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].cm}</#if>
+									<#if qtl.markerAnnotations?keys?seq_contains(m)><#if qtl.markerAnnotations[qtl.peakMarker].cm??>${qtl.markerAnnotations[qtl.peakMarker].cm}</#if></#if>
 							</td>
 							<td>
 									<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].bpstart?c}</#if>

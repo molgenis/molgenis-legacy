@@ -7,6 +7,7 @@ import org.molgenis.util.Entity;
 public class QTLMultiPlotResult
 {
 	private String plot;
+	private String cisTransPlot;
 	private HashMap<String, Entity> matches;
 
 	
@@ -29,5 +30,17 @@ public class QTLMultiPlotResult
 	{
 		this.plot = plot;
 	}
+
+	public String getCisTransPlot()
+	{
+		return cisTransPlot;
+	}
+
+	public void setCisTransPlot(String cisTransPlot)
+	{
+		this.cisTransPlot = cisTransPlot;
+	}
+	
+	
 	
 }

@@ -113,7 +113,7 @@ public class MakeRPlot
 		return qtlPlot(plotName, lodscores, bplocs, chromosomes, genePos, width, height);
 	}
 	
-	public static File qtlMultiPlot(List<String> dataPoints, int width, int height) throws RScriptException
+	public static File qtlMultiPlot(File dataPoints, int width, int height, String title) throws RScriptException
 	{
 		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot" + System.nanoTime() + ".png");
 		
@@ -122,20 +122,46 @@ public class MakeRPlot
 		
 		//lines input example:
 		//plotMe <- rbind(plotMe, c(807, "C5M5_2", 66810758, "A_12_P172557", 15184683, 0.0127419530093572))
-		script.append("plotMe <- NULL");
-		for(String line : dataPoints)
-		{
-			script.append(line);
-		}
-		
+		script.append("plotMe <- read.table(\""+dataPoints.getAbsolutePath().replace("\\", "/")+"\")");
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
 		script.append("png(imagefile, width = " + width + ", height = " + height + ")");
 		script.append("op <- par(mai=c(1,2,1,1))");		
-		script.append("plot(as.numeric(plotMe[,3]),as.numeric(as.factor(plotMe[,4])),type='n',yaxt='n',ylab=\"\", xlab=\"Basepair location\")");
-		script.append("for(x in 1:nrow(plotMe)){");
-		script.append("   points(as.numeric(plotMe[x,3]),as.numeric(as.factor(plotMe[,4])[x]),cex=as.numeric(plotMe[x,6]),pch=20)");
-		script.append("}");
-		script.append("axis(2,at=1:length(unique(as.factor(plotMe[,4]))),unique(as.factor(plotMe[,4])),las=1,cex.axis=0.7)");
+		script.append("plot(as.numeric(plotMe[,4]),as.numeric(as.factor(plotMe[,5])),type='n',main=\""+title+"\", yaxt='n',ylab=\"\", xlab=\"Basepair location\")");
+		script.append("points(as.numeric(plotMe[,4]),as.numeric(as.factor(plotMe[,5])),cex=as.numeric(plotMe[,7]), col=as.numeric(plotMe[,3]),pch=20)");
+		script.append("axis(2,at=as.numeric(unique(as.factor(plotMe[,5]))),unique(as.factor(plotMe[,5])),las=1,cex.axis=0.7)");
+		script.append("sub <- plotMe[-which(duplicated(as.factor(plotMe[,5]))),]");
+		script.append("points(sub[,6],unique(as.factor(plotMe[,5])),pch=13,cex=2,lwd=2)");
+		script.append("points(sub[,6],unique(as.factor(plotMe[,5])),pch=13,cex=1,col=\"red\")");
+		
+		//print to file
+		script.append("dev.off()");
+		script.execute();
+				
+		return tmpImg;
+	}
+	
+	public static File qtlCisTransPlot(File dataPoints, int width, int height, String title) throws RScriptException
+	{
+		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot" + System.nanoTime() + ".png");
+		
+		RScript script = new RScript();
+		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
+		
+		//lines input example:
+		//plotMe <- rbind(plotMe, c(807, "C5M5_2", 66810758, "A_12_P172557", 15184683, 0.0127419530093572))
+		script.append("plotMe <- read.table(\""+dataPoints.getAbsolutePath().replace("\\", "/")+"\")");
+		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
+		script.append("png(imagefile, width = " + width + ", height = " + height + ")");
+		
+		script.append("op <- par(mai=c(1,2,1,1))");		
+		script.append("min.qtl <- 2");
+		script.append("my.scale <- 4");
+		script.append("my.offset <- 1000000");
+		script.append("plot(c(0,max(as.numeric(plotMe[,4]))),c(0,max(as.numeric(plotMe[,6]))),type='n',main=\"CisTrans for "+title+"\",ylab=\"\", xlab=\"Basepair location\")");
+		script.append("points(as.numeric(plotMe[,4]),as.numeric(plotMe[,6]),cex=(plotMe[,7]/my.scale) * as.numeric(plotMe[,7] >= min.qtl), col=as.numeric(plotMe[,3]),pch=20)");
+		script.append("abline(-my.offset,1,col=\"green\",lty=2)");
+		script.append("abline(my.offset,1,col=\"green\",lty=2)");
+		script.append("abline(0,1,col=\"black\",lty=2)");
 		
 		//print to file
 		script.append("dev.off()");

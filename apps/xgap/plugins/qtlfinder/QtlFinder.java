@@ -7,7 +7,9 @@
 
 package plugins.qtlfinder;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +18,6 @@ import java.util.TreeMap;
 
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
-import matrix.implementations.memory.MemoryDataMatrixInstance;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
@@ -135,7 +136,7 @@ public class QtlFinder extends PluginModel<Entity>
 						entities.addAll(findInGenesAndProbes(findMe, db));
 					}
 					
-					createQTLMultiPlotReportFor(entities, threshold, dataFilter, db);
+					createQTLMultiPlotReportFor(entities, threshold, dataFilter, query, db);
 					
 					
 				}
@@ -418,7 +419,7 @@ public class QtlFinder extends PluginModel<Entity>
 	
 	
 	
-	private QTLMultiPlotResult createQTLMultiPlotReportFor(List<Entity> entities, Double threshold, QueryRule dataFilter, Database db) throws Exception
+	private QTLMultiPlotResult createQTLMultiPlotReportFor(List<Entity> entities, Double threshold, QueryRule dataFilter, String query, Database db) throws Exception
 	{
 		
 		HashMap<String,Entity> matches = new HashMap<String,Entity>();
@@ -445,6 +446,10 @@ public class QtlFinder extends PluginModel<Entity>
 		}
 		
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
+		
+		//writer for data table
+		File tmpData = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot_data_table_" + System.nanoTime() + ".txt");
+		BufferedWriter bw = new BufferedWriter(new FileWriter(tmpData));
 		
 		for(Data d : allData)
 		{
@@ -517,8 +522,11 @@ public class QtlFinder extends PluginModel<Entity>
 								{
 									if(nameToMarker.containsKey(colNames.get(markerIndex)))
 									{
-										String line = "plotMe <- rbind(plotMe, c(" + overallIndex + ", \"" + colNames.get(markerIndex) + "\", " + nameToMarker.get(colNames.get(markerIndex)).getBpStart() + ", \"" + name + "\", " + locus + ", " + Dvalues[markerIndex] + "))";
-										valueListForR.add(line);
+										//String line = "plotMe <- rbind(plotMe, c(" + overallIndex + ", \"" + colNames.get(markerIndex) + "\", " + nameToMarker.get(colNames.get(markerIndex)).getBpStart() + ", \"" + name + "\", " + locus + ", " + Dvalues[markerIndex] + "))";
+										//valueListForR.add(line);
+										String chrId = nameToMarker.get(colNames.get(markerIndex)).getChromosome_Id() != null ? nameToMarker.get(colNames.get(markerIndex)).getChromosome_Id().toString() : "-";
+										bw.write(overallIndex + " \"" + colNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(colNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex]);
+										bw.newLine();
 										overallIndex++;
 									}
 								}
@@ -543,14 +551,17 @@ public class QtlFinder extends PluginModel<Entity>
 								{
 									if(nameToMarker.containsKey(rowNames.get(markerIndex)))
 									{
-										String line = "plotMe <- rbind(plotMe, c(" + overallIndex + ", \"" + rowNames.get(markerIndex) + "\", " + nameToMarker.get(rowNames.get(markerIndex)).getBpStart() + ", \"" + name + "\", " + locus + ", " + Dvalues[markerIndex] + "))";
-										valueListForR.add(line);
+										//String line = "plotMe <- rbind(plotMe, c(" + overallIndex + ", \"" + rowNames.get(markerIndex) + "\", " + nameToMarker.get(rowNames.get(markerIndex)).getBpStart() + ", \"" + name + "\", " + locus + ", " + Dvalues[markerIndex] + "))";
+										//valueListForR.add(line);
+										String chrId = nameToMarker.get(rowNames.get(markerIndex)).getChromosome_Id() != null ? nameToMarker.get(rowNames.get(markerIndex)).getChromosome_Id().toString() : "-";
+										bw.write(overallIndex + " \"" + rowNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(rowNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex]);
+										bw.newLine();
 										overallIndex++;
 									}
 								}
 							}
 							
-							if(matches.size() > 100)
+							if(matches.size() > 1000)
 							{
 								break;
 							}
@@ -564,15 +575,21 @@ public class QtlFinder extends PluginModel<Entity>
 				//too bad, data matrix failed
 			}
 			
-			if(matches.size() > 100)
+			if(matches.size() > 1000)
 			{
-				throw new Exception("More than 100 matches to your search query. Please be more specific.");
+				throw new Exception("More than 1000 matches to your search query. Please be more specific.");
 			}
 		}
 		
-		File plot = MakeRPlot.qtlMultiPlot(valueListForR, plotWidth, plotHeight);
+		bw.close();
+		
+		File plot = MakeRPlot.qtlMultiPlot(tmpData, plotWidth, (matches.size() * 10), query);
+		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, query);
+		
+		
 		QTLMultiPlotResult result = new QTLMultiPlotResult();
 		result.setPlot(plot.getName());
+		result.setCisTransPlot(cisTransplot.getName());
 		result.setMatches(matches);
 		
 		this.model.setQmpr(result);
