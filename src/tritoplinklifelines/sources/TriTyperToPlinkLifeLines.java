@@ -38,38 +38,43 @@ public class TriTyperToPlinkLifeLines
 		this.tfamDest = tfamDest;
 		this.individuals = data.getIndividuals();
 		this.markers = data.getSNPs();
+		List<String> unmatchedIndividuals = new ArrayList<String>();
+		Map<String, Integer> matchedMap = new HashMap<String, Integer>();
 		
 		//read individuals from slice.txt and match against individuals in TriTyper
 		individualsPseudoAndPhenotypes = readSliceFile(slicePseudo);
-		individualsToBeSelected = new int[individualsPseudoAndPhenotypes.size()];
-		
 		int selectIndex = 0;
 		for (int i = 0; i < individuals.length; i++)
 		{
-			if(individualsPseudoAndPhenotypes.keySet().contains(individuals[i]))
+			if (individualsPseudoAndPhenotypes.keySet().contains(individuals[i]))
 			{
-				individualsToBeSelected[selectIndex] = i;
+				matchedMap.put(individuals[i], selectIndex);
 				selectIndex++;
+			} else {
+				// Don't keep the unmatched ones
 				individualsPseudoAndPhenotypes.remove(individuals[i]);
+				unmatchedIndividuals.add(individuals[i]);
 			}
 		}
 		
-		//check if all individuals in the slice file were selected and indexed
-		// TODO: change: keep the matched ones in individualsPseudoAndPhenotypes and remove the unmatched ones
-		// TODO: find out from Joeri how to compile this into a jar
-		if(individualsPseudoAndPhenotypes.size() > 0)
+		// now we know the number of matches, make array of selected indices
+		int j = 0;
+		individualsToBeSelected = new int[individualsPseudoAndPhenotypes.keySet().size()];
+		for (String s : individualsPseudoAndPhenotypes.keySet()) {
+			selectIndex = matchedMap.get(s);
+			individualsToBeSelected[j] = selectIndex;
+			j++;
+		}
+		
+		// inform user about unmatched individuals
+		if (unmatchedIndividuals.size() > 0)
 		{
-			System.err.println("Not matched:");
-			for(String s : individualsPseudoAndPhenotypes.keySet())
+			System.out.println("Not matched and therefore removed from analysis:");
+			for (String s : unmatchedIndividuals)
 			{
-				System.err.println(s);
+				System.out.println(s);
 			}
-			throw new Exception("ERROR: Not all individuals in your slice file were matched. See above.");
 		}
-		
-		//get them again from the file - since they have now all been removed
-		//not the most efficient but not the most costly process either..
-		individualsPseudoAndPhenotypes = readSliceFile(slicePseudo);
 	}
 	
 	private Map<String,PseudoPheno> readSliceFile(File f) throws FileNotFoundException
