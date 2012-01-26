@@ -13,6 +13,7 @@ import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
@@ -42,14 +43,14 @@ public class MolgenisTmpFileService implements MolgenisService
 			MolgenisResponse response) throws IOException
 	{
 		String url = request.getRequest().getRequestURI();
-		String variant = url.substring(url.indexOf("/")+1,url.indexOf("/tmpfile"));
+		String variant = (StringUtils.isNotEmpty(request.getRequest().getContextPath()) ? request.getRequest().getContextPath() : url.substring(url.indexOf("/")+1,url.indexOf("/tmpfile")));
 		OutputStream out = request.getResponse().getOutputStream();
 		try{
 			InputStream in = null;
 			
 			//get filename from used URL, so this is the only 'parameter'
 			String urlBase = variant + "/tmpfile/";
-			String urlFile = url.substring(urlBase.length()+1); 
+			String urlFile = (StringUtils.isNotEmpty(request.getRequest().getPathInfo()) ? request.getRequest().getPathInfo().substring(1) : url.substring(urlBase.length()+1)); 
 					
 			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 			File filePath =  new File(tmpDir.getAbsolutePath() + File.separatorChar + urlFile);
