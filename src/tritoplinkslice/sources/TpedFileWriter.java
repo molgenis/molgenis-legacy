@@ -29,8 +29,7 @@ public class TpedFileWriter
 	 * Write a single entry.
 	 */
 	public void writeSingle(TpedEntry tped){
-		writer.writeRow(TpedEntry.tpedToTuple(tped));
-		// NB: CsvWriter writes every 10000th tuple to std out, which is undesirable for large genetic data!
+		writer.writeRow(TpedEntry.tpedToTuple(tped), false);
 	}
 	
 	/**
@@ -38,7 +37,7 @@ public class TpedFileWriter
 	 */
 	public void writeMulti(List<TpedEntry> tpeds){
 		for(TpedEntry tped : tpeds){
-			writer.writeRow(TpedEntry.tpedToTuple(tped));
+			writer.writeRow(TpedEntry.tpedToTuple(tped), false);
 		}
 	}
 	
@@ -47,7 +46,7 @@ public class TpedFileWriter
 	 */
 	public void writeAll(List<TpedEntry> tpeds){
 		for(TpedEntry tped : tpeds){
-			writer.writeRow(TpedEntry.tpedToTuple(tped));
+			writer.writeRow(TpedEntry.tpedToTuple(tped), false);
 		}
 		writer.close();
 	}
