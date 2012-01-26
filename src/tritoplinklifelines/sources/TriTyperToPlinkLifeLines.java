@@ -147,7 +147,7 @@ public class TriTyperToPlinkLifeLines
 				}
 				
 				TpedEntry pe = new TpedEntry(chr, name, cM, bpPos, bialleles);
-				tfw.writeSingle(pe);
+				tfw.writeSingle(pe, markers.length);
 			}
 			tfw.close();
 		}

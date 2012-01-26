@@ -122,10 +122,14 @@ public class CsvWriter implements TupleWriter
 	@Override
 	public void writeRow(Tuple t)
 	{
-		writeRow(t, true);
+		writeRow(t, true, -1);
 	}
 	
-	public void writeRow(Tuple t, boolean writeTuples)
+	public void writeRow(Tuple t, boolean writeTuples) {
+		writeRow(t, writeTuples, -1);
+	}
+	
+	public void writeRow(Tuple t, boolean writeTuples, int total)
 	{
 		boolean first = true;
 		for (String col : headers)
@@ -142,8 +146,8 @@ public class CsvWriter implements TupleWriter
 			//print value
 			writeValue(t.getObject(col));
 		}
-		if (count++ % 10000 == 0) System.out.println("wrote tuple to line " + count + 
-				(writeTuples ? (": " + t) : ""));
+		if (count++ % 10000 == 0) System.out.println("wrote tuple to line " + count + " of " + 
+				total + " (" + (int)((count / (double)total) * 100) + "%)" + (writeTuples ? (": " + t) : ""));
 	}
 
 	/* (non-Javadoc)

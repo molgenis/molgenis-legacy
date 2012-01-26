@@ -28,8 +28,8 @@ public class TpedFileWriter
 	/**
 	 * Write a single entry.
 	 */
-	public void writeSingle(TpedEntry tped){
-		writer.writeRow(TpedEntry.tpedToTuple(tped), false);
+	public void writeSingle(TpedEntry tped, int total){
+		writer.writeRow(TpedEntry.tpedToTuple(tped), false, total);
 	}
 	
 	/**
