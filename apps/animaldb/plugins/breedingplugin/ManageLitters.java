@@ -777,6 +777,7 @@ public class ManageLitters extends PluginModel<Entity>
 					throw(new Exception("No father (properties) found - litter not weaned"));
 				}
 				// Keep normal and transgene types, but set type of child from wild parents to normal
+				// TODO: animalType should be based on BOTH mother and father
 				if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop")) {
 					animalType = "A. Gewoon dier";
 				}

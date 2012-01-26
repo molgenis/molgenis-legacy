@@ -58,8 +58,7 @@ public class ConvertRhutDbToPheno
 	private Map<String, String> decMap;
 	private Map<String, Integer> researcherMap;
 	private int highestNr = 0;
-	String lineName = "RHut";
-
+	
 	public ConvertRhutDbToPheno(Database db, Login login) throws Exception
 	{
 		this.db = db;
@@ -81,21 +80,6 @@ public class ConvertRhutDbToPheno
 			invId = newInv.getId();
 		}
 		
-		// Create single line (TODO?)
-		int lineId = ct.makePanel(invId, lineName, login.getUserId());
-		// Label it as line using the (Set)TypeOfGroup protocol and feature
-		Date now = new Date();
-		int featureId = ct.getMeasurementId("TypeOfGroup");
-		int protocolId = ct.getProtocolId("SetTypeOfGroup");
-		db.add(ct.createObservedValueWithProtocolApplication(invId, now, null, protocolId, featureId, lineId, 
-				"Line", 0));
-		// Set the source of the line (always 'Kweek chronobiologie'?)
-		featureId = ct.getMeasurementId("Source");
-		protocolId = ct.getProtocolId("SetSource");
-		int sourceId = ct.getObservationTargetId("Kweek chronobiologie");
-		db.add(ct.createObservedValueWithProtocolApplication(invId, now, null, protocolId, featureId, lineId, 
-				null, sourceId));
-		
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();
 		animalsToAddList = new ArrayList<Individual>();
@@ -110,8 +94,32 @@ public class ConvertRhutDbToPheno
 		litterMap = new HashMap<String, List<String>>();
 		decMap = new HashMap<String, String>();
 		researcherMap = new HashMap<String, Integer>();
+		
+		// Create lines
+		createLine("Per dKO", invId, login.getUserId());
+		createLine("Cry dKO", invId, login.getUserId());
+		createLine("PerCry", invId, login.getUserId());
+		createLine("CBA/CaJ", invId, login.getUserId());
+		createLine("C57bl6", invId, login.getUserId());
+		createLine("C3H/He", invId, login.getUserId());
+		createLine("DBA", invId, login.getUserId());
+		createLine("ICR(CD-1)", invId, login.getUserId());
+		createLine("Swing", invId, login.getUserId());
+		createLine("CK1e", invId, login.getUserId());
 	}
 	
+	private void createLine(String lineName, int invId, int userId) throws DatabaseException, IOException, ParseException
+	{
+		panelsToAddList.add(ct.createPanel(invId, lineName, userId));
+		// Label it as line using the (Set)TypeOfGroup protocol and feature
+		Date now = new Date();
+		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup", lineName, 
+				"Line", null));
+		// Set the source of the line (always 'Kweek chronobiologie')
+		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source", lineName, 
+				null, "Kweek chronobiologie"));
+	}
+
 	public void convertFromZip(String filename) throws Exception {
 		// Path to store files from zip
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -210,6 +218,7 @@ public class ConvertRhutDbToPheno
 						null, "AnimalType", animalName, "B. Transgeen dier", null));
 				
 				// litter nr -> OldRhutDbLitterId
+				// + TODO: if -1 then animaltype=GMO, if 0 then animaltype=WT (Gewoon dier)
 				String litterId = tuple.getString("litter nr");
 				List<String> animalNameList;
 				if (litterMap.get(litterId) != null) {
@@ -315,7 +324,7 @@ public class ConvertRhutDbToPheno
 				//Arjen : Kweek moleculaire neurobiologie (?)
 				//(h/H)arlan : Harlan
 				//Jackson/Charles River) : JacksonCharlesRiver
-				// TODO: sometimes a DoB is mentioned; parse and store?
+				// TODO: sometimes a DoB is mentioned; parse and store (DoB/DOB d-M-y/yy/yyyy)
 				String source = tuple.getString("remarks");
 				if (source != null) {
 					String sourceName = null;
@@ -382,14 +391,16 @@ public class ConvertRhutDbToPheno
 					motherName = null;
 				}
 				// lit mtr -> SKIP
-				// Gen mother -> SKIP
+				// Gen mother -> TODO
+				
 				// ID father -> skip unknown names
 				String fatherName = tuple.getString("ID father");
 				if (!animalNames.contains(fatherName)) {
 					fatherName = null;
 				}
 				// lit ftr -> SKIP
-				// Gen father -> SKIP
+				// Gen father -> TODO
+				
 				// GMO -> SKIP
 				// Pair StartDate -> convert to yyyy-mm-dd format
 				String startDate = tuple.getString("Pair StartDate");
@@ -399,9 +410,10 @@ public class ConvertRhutDbToPheno
 				}
 				// DOB -> convert to yyyy-mm-dd format
 				String dob = tuple.getString("DOB");
+				Date dobDate = null;
 				if (dob != null && !dob.equals("")) {
-					Date tmpDob = dbFormat.parse(dob);
-					dob = newDateOnlyFormat.format(tmpDob);
+					dobDate = dbFormat.parse(dob);
+					dob = newDateOnlyFormat.format(dobDate);
 				}
 				// Wean date -> convert to yyyy-mm-dd format
 				String weanDate = tuple.getString("Wean date");
@@ -427,6 +439,13 @@ public class ConvertRhutDbToPheno
 				// remarks
 				String remark = tuple.getString("remarks");
 				// To be Genotyped -> SKIP
+				
+				// TODO: find out line based on parents' genes
+				// if both (mother+father) WT offspring is WT
+				// if both C57 offspring is C57
+				// else offspring is line of parent who is not WT or C57
+				// Note: WTPer and WRCry are also WT
+				String lineName = "Cry dKO";
 				
 				// Create a parentgroup
 				int parentgroupNr = 1;
@@ -493,9 +512,13 @@ public class ConvertRhutDbToPheno
 						// Link animal to litter
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
 								now, null, "Litter", animalName, null, litterName));
-						// Set line also on animal
+						// Set birth date and line also on animal
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
+								now, null, "Active", animalName, "Alive", null));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
+								now, null, "DateOfBirth", animalName, dob, null));
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
-								now, null, "Line", animalName, null, lineName));
+								dobDate, null, "Line", animalName, null, lineName)); // TODO: find out if there are conflicts with Actives set during parsing of animals table
 					}
 				}
 			}
@@ -527,7 +550,7 @@ public class ConvertRhutDbToPheno
 				}
 				project += decNr;
 				// Title -> name and ExperimentTitle for subproject, DecTitle for project
-				String subproject = expNr + ". " + tuple.getString("Title");
+				String subproject = tuple.getString("Title");
 				// If not added yet, make new DEC app
 				if (!addedDecApps.contains(project)) {
 					addedDecApps.add(project);
@@ -604,7 +627,7 @@ public class ConvertRhutDbToPheno
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
 				// Case -> skip
-				// Exp. -> to relate to Experiments.csv
+				// Exp. or DEC. -> to relate to Experiments.csv TODO also use DEC!
 				String oldId = tuple.getString("Exp.");
 				if (oldId.equals("0")) {
 					return;
@@ -622,8 +645,7 @@ public class ConvertRhutDbToPheno
 				Date startDate = dbFormat.parse(tuple.getString("InExp Date"));
 				// OutExp Date -> end date of Experiment value
 				Date endDate = dbFormat.parse(tuple.getString("OutExp Date"));
-				// DEC. -> doesn't always correspond to Exp. so skip for now
-				// TODO find out from Roelof what this means
+				// DEC. -> TODO use if available; if 0 then use Exp.
 				// Treatment -> skip
 				
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalInSubproject"), 
@@ -648,7 +670,7 @@ public class ConvertRhutDbToPheno
 					// assume default source is eigen kweek
 					sourceType = "Geregistreerde fok/aflevering in Nederland";
 				}
-				// TODO: check for hergebruik?
+				// TODO: check for hergebruik!
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalInSubproject"), 
 						endDate, null, "SourceTypeSubproject", animal, sourceType, null));
 				
@@ -662,6 +684,9 @@ public class ConvertRhutDbToPheno
 	
 	public void populateProtocolApplication() throws Exception
 	{
+		// lines
+		makeProtocolApplication("SetTypeOfGroup");
+		makeProtocolApplication("SetSource");
 		// animals
 		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetAnimalType");
@@ -671,12 +696,10 @@ public class ConvertRhutDbToPheno
 		makeProtocolApplication("SetGenotype", "SetGenotype1");
 		makeProtocolApplication("SetGenotype", "SetGenotype2");
 		makeProtocolApplication("SetActive");
-		makeProtocolApplication("SetSource");
 		makeProtocolApplication("SetEarmark");
 		makeProtocolApplication("SetOldRhutDbSampleDate");
 		makeProtocolApplication("SetOldRhutDbSampleNr");
 		// parent relations
-		makeProtocolApplication("SetTypeOfGroup");
 		makeProtocolApplication("SetMother");
 		makeProtocolApplication("SetFather");
 		makeProtocolApplication("SetLine");
