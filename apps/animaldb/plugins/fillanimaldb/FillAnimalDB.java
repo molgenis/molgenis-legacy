@@ -170,7 +170,7 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "OldAnimalDBPresetID", stringUnitId, null, null, false, "string", "To link a targetgroup to a preset this ID in the old version of AnimalDB.", login.getUserId());
 		// For importing old Uli Eisel DB
 		ct.makeMeasurement(invid, "OldUliDbId", stringUnitId, null, null, false, "string", "To set an animal's ID in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbKuerzel", stringUnitId, null, null, false, "string", "To set an animal's 'Kürzel' in the old Uli Eisel DB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldUliDbKuerzel", stringUnitId, null, null, false, "string", "To set an animal's 'Kuerzel' in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbAktenzeichen", stringUnitId, null, null, false, "string", "To set an animal's 'Aktenzeichen' in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbExperimentator", stringUnitId, null, null, false, "string", "To set an animal's experimenter in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbTierschutzrecht", stringUnitId, null, null, false, "string", "To set an animal's 'Tierschutzrecht' (~ DEC subproject Goal) in the old Uli Eisel DB.", login.getUserId());
