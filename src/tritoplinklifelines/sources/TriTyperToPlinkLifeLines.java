@@ -39,18 +39,13 @@ public class TriTyperToPlinkLifeLines
 		this.individuals = data.getIndividuals();
 		this.markers = data.getSNPs();
 		List<String> unmatchedIndividuals = new ArrayList<String>();
-		Map<String, Integer> matchedMap = new HashMap<String, Integer>();
 		
 		//read individuals from slice.txt and match against individuals in TriTyper
 		individualsPseudoAndPhenotypes = readSliceFile(slicePseudo);
-		int selectIndex = 0;
 		for (int i = 0; i < individuals.length; i++)
 		{
-			if (individualsPseudoAndPhenotypes.keySet().contains(individuals[i]))
+			if (!individualsPseudoAndPhenotypes.keySet().contains(individuals[i]))
 			{
-				matchedMap.put(individuals[i], selectIndex);
-				selectIndex++;
-			} else {
 				// Don't keep the unmatched ones
 				individualsPseudoAndPhenotypes.remove(individuals[i]);
 				unmatchedIndividuals.add(individuals[i]);
@@ -58,12 +53,10 @@ public class TriTyperToPlinkLifeLines
 		}
 		
 		// now we know the number of matches, make array of selected indices
-		int j = 0;
-		individualsToBeSelected = new int[individualsPseudoAndPhenotypes.keySet().size()];
-		for (String s : individualsPseudoAndPhenotypes.keySet()) {
-			selectIndex = matchedMap.get(s);
-			individualsToBeSelected[j] = selectIndex;
-			j++;
+		int selSize = individualsPseudoAndPhenotypes.keySet().size();
+		individualsToBeSelected = new int[selSize];
+		for (int j = 0; j < selSize; j++) {
+			individualsToBeSelected[j] = j;
 		}
 		
 		// inform user about unmatched individuals

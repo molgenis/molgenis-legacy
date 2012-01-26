@@ -102,7 +102,7 @@ public class TriToPlinkLifeLines
 		TriTyperGenotypeData data = new TriTyperGenotypeData();
 		data.load(inputDir);
 
-		//convert to xQTL binary
+		//convert to PLINK
 		TriTyperToPlinkLifeLines toPlink = new TriTyperToPlinkLifeLines(data, tpedDest, tfamDest, slice);
 		boolean success = toPlink.makeTPEDAndFAM(makeWhat);
 		

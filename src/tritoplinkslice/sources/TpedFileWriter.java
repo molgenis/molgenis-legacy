@@ -30,6 +30,7 @@ public class TpedFileWriter
 	 */
 	public void writeSingle(TpedEntry tped){
 		writer.writeRow(TpedEntry.tpedToTuple(tped));
+		// NB: CsvWriter writes every 10000th tuple to std out, which is undesirable for large genetic data!
 	}
 	
 	/**
