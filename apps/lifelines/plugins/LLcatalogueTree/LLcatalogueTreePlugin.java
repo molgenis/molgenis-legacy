@@ -125,8 +125,10 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 		HttpServletRequest httpRequest   = rt.getRequest();
 		HttpServletResponse httpResponse = rt.getResponse();
-		String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsDownloadForm";
-		
+		//System.out.println(">>> " + this.getParent().getName()+ "or >>>  "+ this.getSelected().getLabel());
+		//String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsDownloadForm";
+		String redirectURL = httpRequest.getRequestURL() + "?__target=" + "Downloads" + "&select=MeasurementsDownloadForm";
+
 		httpResponse.sendRedirect(redirectURL);
 	}
 	
