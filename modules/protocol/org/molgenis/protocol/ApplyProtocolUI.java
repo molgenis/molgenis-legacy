@@ -149,11 +149,12 @@ public class ApplyProtocolUI {
 		    } else if (value.getRelation_Name() != null) {
 		    	// Otherwise it must be a relation, so use the xref id as a value...
 		    	valueInput.setValue(value.getRelation_Name());
-		    	if (panelLabel == null) { // If a panel label was set, valueInput has been turned into a selectbox and we cannot do the statement below
-			    	// Because this involves an xref box, set the value and label of the selected option
-		    		throw new RuntimeException("I don't understand the next code line. (Morris). In the new XrefInput it works slightly different...");
-			    	//((XrefInput) valueInput).setValueLabel("name", value.getRelation_Name());
-		    	}
+		    	// TODO: solve problem below!!
+//		    	if (panelLabel == null) { // If a panel label was set, valueInput has been turned into a selectbox and we cannot do the statement below
+//			    	// Because this involves an xref box, set the value and label of the selected option
+//		    		((XrefInput) valueInput).setLabel(value.getRelation_Name());
+//		    		((XrefInput) valueInput).setValue(value.getRelation(db));
+//		    	}
 		    }
 		}
 	

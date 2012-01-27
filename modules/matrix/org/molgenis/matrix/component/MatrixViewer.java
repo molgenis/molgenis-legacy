@@ -512,7 +512,6 @@ public class MatrixViewer extends HtmlWidget
 							if (measr.getId().intValue() == mqr.getDimIndex().intValue())
 							{
 								measurementName = measr.getName();
-
 							}
 						}
 						else
@@ -528,8 +527,8 @@ public class MatrixViewer extends HtmlWidget
 						measurementName = db.findById(Measurement.class, mqr.getDimIndex()).getName();
 					}
 
-					filterRules += "<br />" + measurementName + " " + mqr.getOperator().toString() + " "
-							+ mqr.getValue();
+					filterRules += "<br />" + measurementName + "." + mqr.getField() + " " + 
+							mqr.getOperator().toString() + " " + mqr.getValue();
 					ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
 					removeButton.setIcon("generated-res/img/delete.png");
 					filterRules += removeButton.render();

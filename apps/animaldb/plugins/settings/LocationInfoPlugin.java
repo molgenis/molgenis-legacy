@@ -25,6 +25,7 @@ import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
@@ -111,6 +112,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 		}
 		
 		try {
+			int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 			action = request.getString("__action");
 			
 			if (animalsInLocMatrixViewer != null && action.startsWith(animalsInLocMatrixViewer.getName())) {
@@ -128,7 +130,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 			if (action.equals("Manage")) {
 				int locId = request.getInt("locId");
 				String locName = ct.getObservationTargetLabel(locId);
-				// Prepare matrix with animals in this location
+				// Prepare matrix with animals currently in this location
 				List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserId());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Location");
@@ -138,6 +140,9 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
 						ct.getMeasurementId("Location"), ObservedValue.RELATION_NAME, Operator.EQUALS,
 						locName));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						ct.getMeasurementId("Location"), ObservedValue.ENDTIME, Operator.EQUALS,
+						null));
 				animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX, 
 						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
 						true, true, false, filterRules, 
@@ -147,8 +152,32 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 			}
 			
 			if (action.equals("Move")) {
-				// TODO: read selection from matrix + location selected in 'moveto'
-				// TODO: for selected animals, end current Location value and make new one
+				int newLocationId = request.getInt("moveto");
+				List<ObservationElement> rows = (List<ObservationElement>) animalsInLocMatrixViewer.getSelection(db);
+				int rowCnt = 0;
+				for (ObservationElement row : rows) {
+					if (request.getBool(ANIMALSINLOCMATRIX + "_selected_" + rowCnt) != null) {
+						int animalId = row.getId();
+						// First end existing Location value(s)
+						Query<ObservedValue> q = db.query(ObservedValue.class);
+						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Location"));
+						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
+						List<ObservedValue> valueList = q.find();
+						if (valueList != null) {
+							for (ObservedValue value : valueList) {
+								value.setEndtime(new Date());
+								db.update(value);
+							}
+						}
+						// Then make new one
+						int protocolId = ct.getProtocolId("SetLocation");
+						int featureId = ct.getMeasurementId("Location");
+						db.add(ct.createObservedValueWithProtocolApplication(invid, new Date(), null, 
+								protocolId, featureId, animalId, null, newLocationId));
+					}
+					rowCnt++;
+				}
 			}
 			
 			if (action.equals("importLocations")) {
@@ -166,7 +195,6 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 				Date now = new Date();
 				
 				// Make and add location
-				int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
 				int locid = ct.makeLocation(invid, name, this.getLogin().getUserId());
 				if (slocid > 0) {
 					int protocolId = ct.getProtocolId("SetSublocationOf");
