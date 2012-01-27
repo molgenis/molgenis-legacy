@@ -105,34 +105,13 @@
 			<field name="Structure" label="Structure" type="text" nillable="true"
 				description="The chemical structure of a metabolite (in SMILES representation)." />
 		</entity>
-		<entity name="ClassicalPhenotype" extends="ObservableFeature">
-			<description> Trait annotations specific for classical phenotypes.
-			</description>
-			<!--
-				Question: Is there a specific notation involved that we can create
-				type for?
-			-->
-			<!--
-				field name="Unit" label="Unit" type="xref"
-				xref_entity="MeasurementUnit" xref_field="id" xref_label="name"
-				nillable="true" description="The unit this trait was measured in
-				like centimeters, gram, etc (TODO: make ontology)." /
-			-->
-			<field name="Category" label="Category" type="varchar" length="128"
-				nillable="true" />
-			<!-- 
-			<field name="Description" label="Description" type="varchar"
-				length="512" nillable="true" />
-			 -->
-			<field name="Molecule" label="Molecule" type="varchar"
-				nillable="true" />
-		</entity>
 		<entity name="Marker" extends="ObservableFeature" implements="Locus">
 			<description> Trait annotations specific for markers.</description>
 			<field name="ReportsFor" nillable="true" type="mref" xref_field="id" xref_label="name"
 				xref_entity="Marker" description="The marker (or a subclass like 'SNP') this marker (or a subclass like 'SNP') reports for." />
 		</entity>
 		<entity name="SNP" extends="Marker">
+			<description>A SNP is a special kind of Marker, but can also be seen as a phenotype to map against in some cases. A single-nucleotide polymorphism is a DNA sequence variation occurring when a single nucleotide in the genome (or other shared sequence) differs between members of a biological species or paired chromosomes in an individual.</description>
 			<field name="Status" nillable="true" description="The status of this SNP, eg 'confirmed'."/>
 			<field name="Polymorphism" nillable="true" type="mref" xref_field="id" xref_label="name"
 				xref_entity="Polymorphism" description="The polymorphism that belongs to this SNP." />

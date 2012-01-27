@@ -26,7 +26,6 @@
 			<form label="Job table" name="Jobs" entity="Job">
 				<form name="Subjobs" entity="Subjob" />
 			</form>
-			<plugin label="Archiver" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 		</menu>
 	</menu>
 </molgenis>

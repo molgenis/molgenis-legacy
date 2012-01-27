@@ -339,10 +339,10 @@ public class XqtlSeleniumTest
 			// assert content of enum fields
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
-					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
+					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNP");
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"),
-					"Metabolite\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
+					"Metabolite\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNP");
 
 			// change Individual to Gene and save
 			selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
@@ -355,7 +355,7 @@ public class XqtlSeleniumTest
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
-					"Gene\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
+					"Gene\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNP");
 
 			// change back to Individual and save
 			selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
@@ -367,7 +367,7 @@ public class XqtlSeleniumTest
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
-					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpot");
+					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNP");
 
 		}
 
@@ -532,13 +532,13 @@ public class XqtlSeleniumTest
 			public void userRoleMenuVisibility() throws Exception
 			{
 				//find out if admin can see the correct tabs
-				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse / add data*Import special data*Run QTL mapping*Configure analysis*Search / report*Utilities*Admin panel"));
+				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse data*Upload data*Run QTL mapping*Configure analysis*Search / report*Utilities*Admin panel"));
 				clickAndWait("id=Admin_tab_button");
 				Assert.assertTrue(selenium.isTextPresent("Users and permissions*Database status*File storage*Install R packages*Admin utilities"));
 				clickAndWait("id=OtherAdmin_tab_button");
 				Assert.assertTrue(selenium.isTextPresent("Job table"));
 				
-				String whatBiologistCanSee = "Browse / add data*Import special data*Run QTL mapping*Search / report*Utilities";
+				String whatBiologistCanSee = "Browse data*Upload data*Run QTL mapping*Search / report*Utilities";
 				
 				//logout and see if the correct tabs are visible
 				clickAndWait("id=UserLogin_tab_button");

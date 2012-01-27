@@ -1,22 +1,22 @@
 <molgenis>
-	<form label="Browse / add data" header="Navigate investigations (studies)" name="Investigations" entity="Investigation"
+	<form label="Browse data" header="Navigate investigations (studies)" name="Investigations" entity="Investigation"
 		compact_view="name" group="biologist">
 		<menu name="InvestigationMenu">
 			<plugin name="Overview" label="Investigation overview"
 				type="plugins.investigationoverview.InvestigationOverviewPlugin"
 				group="biologist" />
-			<form name="Datas" label="Browse / add data matrices" header="Navigate data matrices" entity="Data" compact_view="name"
+			<form name="Datas" label="Data matrices" header="Navigate data matrices" entity="Data" compact_view="name"
 				group="biologist">
 				<menu name="Select" group="biologist">
-					<plugin name="Manager" type="plugins.matrix.manager.MatrixManager"
+					<plugin name="View" type="plugins.matrix.manager.MatrixManager"
 						group="biologist" />
-					<plugin name="Inspector" type="plugins.matrix.inspector.MatrixInspector"
+					<plugin name="Inspect" type="plugins.matrix.inspector.MatrixInspector"
 						group="biologist" />
-					<plugin name="MatrixAdmin" label="Delete storage"
+					<plugin name="MatrixAdmin" label="Delete"
 						type="plugins.matrix.admin.MatrixAdmin" group="biologist" />
 				</menu>
 			</form>
-			<menu name="BasicAnnotations" label="Browse / add annotations" header="Navigate annotations"> <!-- header does not work yet for menu -->
+			<menu name="BasicAnnotations" label="Annotations" header="Navigate annotations"> <!-- header does not work yet for menu -->
 				<form name="Individuals" entity="Individual" group="biologist" />
 				<form name="Panels" entity="Panel" group="biologist" />
 				<form name="Chromosomes" entity="Chromosome" group="biologist" />
@@ -42,11 +42,6 @@
 					<form name="Spots" entity="Spot" group="biologist" />
 				</menu>
 			</menu>
-			<form name="Files" entity="InvestigationFile" label="Browse / add files" header="Navigate files"
-				group="biologist">
-				<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager"
-					group="biologist" />
-			</form>
 		</menu>
 	</form>
 </molgenis>
