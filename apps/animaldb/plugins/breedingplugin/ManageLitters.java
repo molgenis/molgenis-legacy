@@ -78,7 +78,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<String> colorList;
 	private List<Category> earmarkList;
 	private int genoLitterId;
-	private List<String> bases = null;
+	//private List<String> bases = null;
 	private String remarks = null;
 	private String status = null;
 	private Table genotypeTable = null;
@@ -530,24 +530,24 @@ public class ManageLitters extends PluginModel<Entity>
 		return lineName;
 	}
 
-	public List<String> getBases() {
-		return bases;
-	}
-
-	public void setBases(List<String> bases) {
-		this.bases = bases;
-	}
+//	public List<String> getBases() {
+//		return bases;
+//	}
+//
+//	public void setBases(List<String> bases) {
+//		this.bases = bases;
+//	}
 	
 	public String getStartNumberHelperContent() {
 		try {
 			String helperContents = "";
 			helperContents += (ct.getHighestNumberForPrefix("") + 1);
-			helperContents += ";1";
-			for (String base : this.bases) {
-				if (!base.equals("")) {
-					helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
-				}
-			}
+//			helperContents += ";1";
+//			for (String base : this.bases) {
+//				if (!base.equals("")) {
+//					helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
+//				}
+//			}
 			return helperContents;
 		} catch (Exception e) {
 			return "";
@@ -645,7 +645,7 @@ public class ManageLitters extends PluginModel<Entity>
 				litterNrPart = ct.prependZeros(litterNrPart, 6);
 				int litterid = ct.makePanel(invid, litterPrefix + litterNrPart, userId);
 				// Make or update name prefix entry
-				ct.updatePrefix(userId, "litter", litterPrefix, litterNr);
+				ct.updatePrefix("litter", litterPrefix, litterNr);
 				// Mark group as a litter
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
@@ -830,7 +830,7 @@ public class ManageLitters extends PluginModel<Entity>
 				db.add(animalsToAddList);
 				
 				// Make or update name prefix entry
-				ct.updatePrefix(userId, "animal", nameBase, startNumber + weanSize - 1);
+				ct.updatePrefix("animal", nameBase, startNumber + weanSize - 1);
 				
 				int animalNumber = 0;
 				for (ObservationTarget animal : animalsToAddList) {
@@ -1474,13 +1474,13 @@ public class ManageLitters extends PluginModel<Entity>
 			// Populate earmark list
 			this.setEarmarkList(ct.getAllCodesForFeature("Earmark"));
 			// Populate name prefixes list for the animals
-			this.bases = new ArrayList<String>();
-			List<String> tmpPrefixes = ct.getPrefixes(userId, "animal");
-			for (String tmpPrefix : tmpPrefixes) {
-				if (!tmpPrefix.equals("")) {
-					this.bases.add(tmpPrefix);
-				}
-			}
+//			this.bases = new ArrayList<String>();
+//			List<String> tmpPrefixes = ct.getPrefixes("animal");
+//			for (String tmpPrefix : tmpPrefixes) {
+//				if (!tmpPrefix.equals("")) {
+//					this.bases.add(tmpPrefix);
+//				}
+//			}
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
 				this.getMessages().clear();

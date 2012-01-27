@@ -1835,14 +1835,14 @@ public class CommonService
 	 * 
 	 * @return
 	 */
-	public List<String> getPrefixes(int userId, String targetType) throws DatabaseException {
+	public List<String> getPrefixes(String targetType) throws DatabaseException {
 		
 		List<String> returnList = new ArrayList<String>();
 		
 		List<NamePrefix> prefixList = db.find(NamePrefix.class);
 		if (prefixList != null && prefixList.size() > 0) {
 			for (NamePrefix prefix : prefixList) {
-				if (prefix.getUserId_Id().intValue() == userId && prefix.getTargetType().equals(targetType)) {
+				if (prefix.getTargetType().equals(targetType)) {
 					returnList.add(prefix.getPrefix());
 				}
 			}
@@ -1905,7 +1905,7 @@ public class CommonService
 //		return maxTrailingNumber;
 	}
 	
-	public void updatePrefix(int userId, String targetType, String prefix, int highestNr) throws DatabaseException {
+	public void updatePrefix(String targetType, String prefix, int highestNr) throws DatabaseException {
 		
 		List<NamePrefix> prefixList = db.find(NamePrefix.class, new QueryRule(NamePrefix.PREFIX, Operator.EQUALS, prefix));
 		if (prefixList != null && prefixList.size() > 0) {
@@ -1916,7 +1916,6 @@ public class CommonService
 		} else {
 			// New
 			NamePrefix namePrefix = new NamePrefix();
-			namePrefix.setUserId_Id(userId);
 			namePrefix.setTargetType(targetType);
 			namePrefix.setPrefix(prefix);
 			namePrefix.setHighestNumber(highestNr);

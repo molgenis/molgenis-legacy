@@ -124,7 +124,6 @@ public class ConvertUliDbToPheno
 		db.add(animalsToAddList);
 		// Make entry in name prefix table with highest animal nr. (Tiernummer)
 		NamePrefix namePrefix = new NamePrefix();
-		namePrefix.setUserId_Name(userName);
 		namePrefix.setTargetType("animal");
 		namePrefix.setPrefix("");
 		namePrefix.setHighestNumber(highestNr);
@@ -135,7 +134,6 @@ public class ConvertUliDbToPheno
 		// Make entries in name prefix table with highest parentgroup nrs.
 		for (String lineName : parentgroupNrMap.keySet()) {
 			namePrefix = new NamePrefix();
-			namePrefix.setUserId_Name(userName);
 			namePrefix.setTargetType("parentgroup");
 			namePrefix.setPrefix("PG_" + lineName + "_");
 			namePrefix.setHighestNumber(parentgroupNrMap.get(lineName));
@@ -144,7 +142,6 @@ public class ConvertUliDbToPheno
 		// Make entries in name prefix table with highest litter nrs.
 		for (String lineName : litterNrMap.keySet()) {
 			namePrefix = new NamePrefix();
-			namePrefix.setUserId_Name(userName);
 			namePrefix.setTargetType("litter");
 			namePrefix.setPrefix("LT_" + lineName + "_");
 			namePrefix.setHighestNumber(litterNrMap.get(lineName));

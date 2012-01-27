@@ -356,7 +356,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				groupNrPart = ct.prependZeros(groupNrPart, 6);
 				int groupId = ct.makePanel(invid, groupPrefix + groupNrPart, userId);
 				// Make or update name prefix entry
-				ct.updatePrefix(userId, "parentgroup", groupPrefix, groupNr);
+				ct.updatePrefix("parentgroup", groupPrefix, groupNr);
 				// Mark group as parent group using a special event
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");

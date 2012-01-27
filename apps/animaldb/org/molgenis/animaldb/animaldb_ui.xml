@@ -111,6 +111,7 @@
 					<form name="protocol" entity="Protocol" view="list" label="Protocols" />
 					<form name="protocolapplication" entity="ProtocolApplication" view="list" label="Protocol applications" />
 					<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
+					<form name="prefix" entity="NamePrefix" view="list" label="Name prefixes" />
 					<form name="news" entity="MolgenisNews" view="list" label="News items" />
 				</menu>
 			</menu>

@@ -179,6 +179,7 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "OldUliDbMotherInfo", stringUnitId, null, null, false, "string", "To set an animal's mother info in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbFatherInfo", stringUnitId, null, null, false, "string", "To set an animal's father info in the old Uli Eisel DB.", login.getUserId());
 		// For importing old Roelof Hut DB
+		ct.makeMeasurement(invid, "OldRhutDbAnimalId", stringUnitId, null, null, false, "string", "To set an animal's ID in Roelof Hut's old DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldRhutDbLitterId", stringUnitId, null, null, false, "string", "To link an animal to a litter with this ID in the old version of Roelof Hut's DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldRhutDbSampleDate", datetimeUnitId, null, null, false, "datetime", "To set the date that an animal was sampled in the old version of Roelof Hut's DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldRhutDbSampleNr", numberUnitId, null, null, false, "int", "To set the sample number in the old version of Roelof Hut's DB.", login.getUserId());
