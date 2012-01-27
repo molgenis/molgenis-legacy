@@ -25,6 +25,9 @@ import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
@@ -54,13 +57,17 @@ public class ConvertRhutDbToPheno
 	private SimpleDateFormat dobFormat = new SimpleDateFormat("d-M-y", Locale.US);
 	private SimpleDateFormat expDbFormat = new SimpleDateFormat("yyyy-M-d H:mm:ss", Locale.US);
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	private SimpleDateFormat yearOnlyFormat = new SimpleDateFormat("yyyy", Locale.US);
 	private Map<String, String> sourceMap;
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
 	private Map<String, List<String>> litterMap;
 	private Map<String, String> decMap;
+	private Map<String, String> alternativeDecMap;
 	private Map<String, Integer> researcherMap;
 	private Map<String, ObservedValue> activeMap;
+	private Map<String, String> animalMap;
+	private Map<String, Date> removalDateMap;
 	private int highestNr = 0;
 	
 	public ConvertRhutDbToPheno(Database db, Login login) throws Exception
@@ -97,16 +104,19 @@ public class ConvertRhutDbToPheno
 		litterNrMap = new HashMap<String, Integer>();
 		litterMap = new HashMap<String, List<String>>();
 		decMap = new HashMap<String, String>();
+		alternativeDecMap = new HashMap<String, String>();
 		researcherMap = new HashMap<String, Integer>();
 		activeMap = new HashMap<String, ObservedValue>();
+		animalMap = new HashMap<String, String>();
+		removalDateMap = new HashMap<String, Date>();
 		
 		// Create lines
 		createLine("WT", invId, login.getUserId());
 		createLine("Per dKO", invId, login.getUserId());
 		createLine("Cry dKO", invId, login.getUserId());
 		createLine("PerCry", invId, login.getUserId());
-		createLine("CBA/CaJ", invId, login.getUserId());
-		createLine("C57bl/6J", invId, login.getUserId());
+		createLine("CBA/CaJ (line)", invId, login.getUserId());
+		createLine("C57BL/6j (line)", invId, login.getUserId());
 		createLine("C3H/He", invId, login.getUserId());
 		createLine("DBA", invId, login.getUserId());
 		createLine("ICR(CD-1)", invId, login.getUserId());
@@ -187,6 +197,9 @@ public class ConvertRhutDbToPheno
 		db.add(prefixList);
 		logger.debug("Prefixes successfully added");
 		
+		// Add remaining Active values to value list
+		valuesToAddList.addAll(activeMap.values());
+		
 		int batchSize = 1000;
 		for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += batchSize) {
 			int valueEnd = Math.min(valuesToAddList.size(), valueStart + batchSize);
@@ -215,6 +228,7 @@ public class ConvertRhutDbToPheno
 				String oldAnimalId = tuple.getString("ID");
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbAnimalId"), 
 						now, null, "OldRhutDbAnimalId", animalName, oldAnimalId, null));
+				animalMap.put(oldAnimalId, animalName);
 				
 				// Species (always Mus musculus)
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, 
@@ -302,19 +316,19 @@ public class ConvertRhutDbToPheno
 				}
 				
 				// arrival date and rem date -> Active start and end time
+				// Don't set DeathDate (to rem date) because we do not know if the animal was terminated or removed
 				String state = "Alive";
 				String startDateString = tuple.getString("arrival date");
 				Date startDate = null;
 				Date remDate = null;
 				if (startDateString != null) {
 					startDate = dbFormat.parse(startDateString);
-					//startDateString = newDateOnlyFormat.format(startDate);
 				}
 				String remDateString = tuple.getString("rem date");
 				if (remDateString != null) {
 					state = "Dead";
 					remDate = dbFormat.parse(remDateString);
-					//remDateString = newDateOnlyFormat.format(remDate);
+					removalDateMap.put(animalName, remDate);
 				}
 				activeMap.put(animalName, ct.createObservedValue(invName, appMap.get("SetActive"), 
 						startDate, remDate, "Active", animalName, state, null));
@@ -338,14 +352,21 @@ public class ConvertRhutDbToPheno
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, 
 							"Source", animalName, null, sourceName));
 					sourceMap.put(animalName, sourceName);
-					if (source.contains("DoB") || source.contains("DOB")) {
-						Pattern p = Pattern.compile("\\d+-\\d+-\\d+");
-						Matcher m = p.matcher(source);
-						String dobDateString = m.group();
-						Date dobDate = dobFormat.parse(dobDateString);
-						dobDateString = newDateOnlyFormat.format(dobDate);
-						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
-								remDate, null, "DateOfBirth", animalName, dobDateString, null));
+					if (source.toUpperCase().contains("DOB")) {
+						int start = source.toUpperCase().indexOf("DOB");
+						Pattern p = Pattern.compile("(\\d+)-(\\d+)-(\\d+)");
+						Matcher m = p.matcher(source.substring(start));
+						if (m.find()) {
+							String year = m.group(3);
+							if (year.length() == 1) {
+								year = "200" + year;
+							}
+							String dobDateString = m.group(1) + "-" + m.group(2) + "-" + year;
+							Date dobDate = dobFormat.parse(dobDateString);
+							dobDateString = newDateOnlyFormat.format(dobDate);
+							valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
+									remDate, null, "DateOfBirth", animalName, dobDateString, null));
+						}
 					}
 				}
 						
@@ -396,20 +417,14 @@ public class ConvertRhutDbToPheno
 				if (litter.equals("-1") || litter.equals("0")) {
 					return;
 				}
-				// ID mother -> skip unknown names
-				String motherName = tuple.getString("ID mother");
-				if (!animalNames.contains(motherName)) {
-					motherName = null;
-				}
+				// ID mother
+				String motherName = animalMap.get(tuple.getString("ID mother"));
 				// lit mtr -> SKIP
 				// Gen mother
 				String genMother = tuple.getString("Gen mother");
 				genMother = extractGene(genMother);
-				// ID father -> skip unknown names
-				String fatherName = tuple.getString("ID father");
-				if (!animalNames.contains(fatherName)) {
-					fatherName = null;
-				}
+				// ID father
+				String fatherName = animalMap.get(tuple.getString("ID father"));
 				// lit ftr -> SKIP
 				// Gen father
 				String genFather = tuple.getString("Gen father");
@@ -466,11 +481,11 @@ public class ConvertRhutDbToPheno
 					if (genMother.equals("WT")) {
 						lineName = genFather;
 					}
-				} else if (genFather.equals("C57bl/6J") || genMother.equals("C57bl/6J")) {
-					if (genFather.equals("C57bl/6J")) {
+				} else if (genFather.equals("C57BL/6j") || genMother.equals("C57BL/6j")) {
+					if (genFather.equals("C57BL/6j")) {
 						lineName = genMother;
 					}
-					if (genMother.equals("C57bl/6J")) {
+					if (genMother.equals("C57BL/6j")) {
 						lineName = genFather;
 					}
 				} else {
@@ -552,6 +567,7 @@ public class ConvertRhutDbToPheno
 						if (activeValue.getTime() == null) {
 							activeValue.setTime(dobDate);
 						}
+						activeMap.remove(animalName);
 						valuesToAddList.add(activeValue);
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
 								now, null, "DateOfBirth", animalName, dob, null));
@@ -607,10 +623,8 @@ public class ConvertRhutDbToPheno
 				// Link to DEC app
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
 						now, null, "DecApplication", subproject, null, project));
-				if (expNr != null) {
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
-							now, null, "ExperimentNr", subproject, expNr, null));
-				}
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
+						now, null, "ExperimentNr", subproject, expNr, null));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
 						now, null, "ExperimentTitle", subproject, subproject, null));
 				// Exp. -> OldRhutDbExperimentId (on the DEC subproject) + 
@@ -619,6 +633,7 @@ public class ConvertRhutDbToPheno
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldRhutDbExperimentId"), 
 						now, null, "OldRhutDbExperimentId", subproject, oldId, null));
 				decMap.put(oldId, subproject);
+				alternativeDecMap.put(decNr + expNr, subproject);
 				// Researcher -> DecApplicantId (on the DEC app)
 				String res = tuple.getString("Researcher");
 				res = res.split("/")[0]; // if multiple names, take first as leading
@@ -665,25 +680,38 @@ public class ConvertRhutDbToPheno
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
 				// Case -> skip
-				// Exp. or DEC. -> to relate to Experiments.csv TODO also use DEC!
+				// Exp. or DEC. -> to relate to Experiments.csv (DEC is leading)
+				String subproject;
 				String oldId = tuple.getString("Exp.");
 				if (oldId.equals("0")) {
 					return;
 				}
-				String subproject = decMap.get(oldId);
+				String dec = tuple.getString("DEC.");
+				if (dec != null && !dec.equals("0")) {
+					subproject = alternativeDecMap.get(dec.toUpperCase());
+				} else {
+					subproject = decMap.get(oldId);
+				}
 				if (subproject == null) {
 					return;
 				}
 				// ID -> animal
-				String animal = tuple.getString("ID");
-				if (!animalNames.contains(animal)) {
+				String animal = animalMap.get(tuple.getString("ID"));
+				if (animal == null) {
 					return;
 				}
 				// InExp Date -> start date of Experiment value
 				Date startDate = dbFormat.parse(tuple.getString("InExp Date"));
 				// OutExp Date -> end date of Experiment value
-				Date endDate = dbFormat.parse(tuple.getString("OutExp Date"));
-				// DEC. -> TODO use if available; if 0 then use Exp.
+				Date endDate = null;
+				if (tuple.getString("OutExp Date") != null) {
+					endDate = dbFormat.parse(tuple.getString("OutExp Date"));
+				} else {
+					// If animal is dead, use death date
+					if (removalDateMap.get(animal) != null) {
+						endDate = removalDateMap.get(animal);
+					}
+				}
 				// Treatment -> skip
 				
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalInSubproject"), 
@@ -708,13 +736,26 @@ public class ConvertRhutDbToPheno
 					// assume default source is eigen kweek
 					sourceType = "Geregistreerde fok/aflevering in Nederland";
 				}
-				// TODO: check for hergebruik!
+				// Check for reuse in the year of this experiment
+				String startOfExpYear = yearOnlyFormat.format(startDate) + "-01-01";
+				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animal));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
+				q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.NOT, subproject));
+				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.GREATER_EQUAL, startOfExpYear));
+				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.LESS_EQUAL, newDateOnlyFormat.format(startDate)));
+				if (q.find().size() == 1) {
+					sourceType = "Hergebruik eerste maal in het registratiejaar";
+				}
+				if (q.find().size() > 1) {
+					sourceType = "Hergebruik tweede, derde enz. maal in het registratiejaar";
+				}
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalInSubproject"), 
 						endDate, null, "SourceTypeSubproject", animal, sourceType, null));
 				
 				if (endDate != null) {
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("AnimalFromSubproject"), 
-							endDate, null, "Experiment", animal, null, subproject));
+							endDate, null, "FromExperiment", animal, null, subproject));
 				}
 			}
 		});
@@ -788,6 +829,9 @@ public class ConvertRhutDbToPheno
 	
 	private String extractGene(String gene)
 	{
+		if (gene == null) {
+			return "unknown";
+		}
 		if (gene.contains("WT")) {
 			return "WT";
 		}
@@ -801,7 +845,7 @@ public class ConvertRhutDbToPheno
 			return "Per dKO";
 		}
 		if (gene.contains("C57")) {
-			return "C57";
+			return "C57BL/6j";
 		}
 		if (gene.contains("C3H/He")) {
 			return "C3H/He";

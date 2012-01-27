@@ -38,7 +38,7 @@ public class ImportAteLocations
 	
 	public void doImport(String filename) throws Exception
 	{
-		final int investigationId = ct.getOwnUserInvestigationId(userId);
+		final int investigationId = ct.getOwnUserInvestigationIds(userId).get(0);
 		
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);

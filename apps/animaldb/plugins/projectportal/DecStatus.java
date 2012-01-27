@@ -9,6 +9,7 @@ package plugins.projectportal;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -131,7 +132,6 @@ public class DecStatus extends GenericPlugin
 	 */
 	private int addStatusRows(ObservationTarget decApp, Table statusTable, int rowCount) throws DatabaseException, ParseException {
 		
-		int rowCountOriginal = rowCount;
 		int nrOfAnimalsAliveCum = 0;
 		int nrOfAnimalsRemovedCum = 0;
 		int budgetCum = 0;
@@ -152,79 +152,88 @@ public class DecStatus extends GenericPlugin
 		featureId = cq.getMeasurementId("EndDate");
 		statusTable.setCell(1, rowCount, cq.getMostRecentValueAsString(decId, featureId));
 		
+		List<ObservationTarget> expInDecList = new ArrayList<ObservationTarget>();
 		List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment", investigationIds);
 		for (ObservationTarget subproject : expList) {
-			int subprojectId = subproject.getId();
-			
 			// Take only Subprojects that belong to the current DEC
-			featureId = cq.getMeasurementId("DecApplication");
-			int decApplicationId = cq.getMostRecentValueAsXref(subprojectId, featureId);
+			int decApplicationId = cq.getMostRecentValueAsXref(subproject.getId(), cq.getMeasurementId("DecApplication"));
 			if (decApplicationId == decId) {
-				
-				rowCount++;
+				expInDecList.add(subproject);
 				statusTable.addRow("");
-				
-				featureId = cq.getMeasurementId("ExperimentNr");
-				statusTable.setCell(2, rowCount, cq.getMostRecentValueAsString(subprojectId, featureId));
-				
-				featureId = cq.getMeasurementId("StartDate");
-				statusTable.setCell(3, rowCount, cq.getMostRecentValueAsString(subprojectId, featureId));
-				
-				featureId = cq.getMeasurementId("EndDate");
-				statusTable.setCell(4, rowCount, cq.getMostRecentValueAsString(subprojectId, featureId));
-				
-				// Calculate numbers of animals alive/used/total
-				int nrOfAnimalsAlive = 0;
-				int nrOfAnimalsRemoved = 0;
-				int nrOfAnimalsTotal = 0;
-				int budget = 100; // TODO: use real budget
-				budgetCum += budget;
-				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
-				featureId = cq.getMeasurementId("Experiment");
-				List<Integer> aliveAnimalIdList = cq.getAllObservationTargetIds("Individual", true, 
-						investigationIds);
-				if (aliveAnimalIdList.size() > 0) {
-					Query<ObservedValue> q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
-					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
-					nrOfAnimalsAlive = q.count();
-				}
-				nrOfAnimalsAliveCum += nrOfAnimalsAlive;
-				List<Integer> totalAnimalIdList = cq.getAllObservationTargetIds("Individual", false, 
-						investigationIds);
-				if (totalAnimalIdList.size() > 0) {
-					Query<ObservedValue> q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, totalAnimalIdList));
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-					nrOfAnimalsTotal = q.count();
-				}
-				nrOfAnimalsRemoved = nrOfAnimalsTotal - nrOfAnimalsAlive;
-				nrOfAnimalsRemovedCum += nrOfAnimalsRemoved;
-				
-				statusTable.setCell(5, rowCount, nrOfAnimalsAlive);
-				statusTable.setCell(6, rowCount, nrOfAnimalsRemoved);
-				statusTable.setCell(7, rowCount, budget);
-				double perc = budget > 0 ? (nrOfAnimalsAlive + nrOfAnimalsRemoved) * 100.0 / budget : 0.0;
-				statusTable.setCell(8, rowCount, f.format(perc));
-				statusTable.setCell(9, rowCount, "&nbsp;");
-				statusTable.setCellStyle(9, rowCount, "border: 1px solid black; background-color: green");
 			}
 		}
 		
-		// Set cells with cumulative values
-		statusTable.setCell(5, rowCountOriginal, nrOfAnimalsAliveCum);
-		statusTable.setCell(6, rowCountOriginal, nrOfAnimalsRemovedCum);
-		statusTable.setCell(7, rowCountOriginal, budgetCum);
-		double perc = budgetCum > 0 ? (nrOfAnimalsAliveCum + nrOfAnimalsRemovedCum) * 100.0 / budgetCum : 0.0;
-		statusTable.setCell(8, rowCountOriginal, f.format(perc));
-		statusTable.setCell(9, rowCountOriginal, "&nbsp;");
-		statusTable.setCellStyle(9, rowCountOriginal, "border: 1px solid black; background-color: green");
+		for (ObservationTarget subproject : expInDecList) {
+			
+			int subprojectId = subproject.getId();
+			featureId = cq.getMeasurementId("ExperimentNr");
+			String subProjectCode = cq.getMostRecentValueAsString(subprojectId, featureId);
+			char codeA = 'A';
+			char code = subProjectCode.toCharArray()[0];
+			int expRow = 1 + code - codeA;
+			if (expRow > expInDecList.size()) {
+				expRow = expInDecList.size();
+			}
+			
+			statusTable.setCell(2, rowCount + expRow, subProjectCode);
+			
+			featureId = cq.getMeasurementId("StartDate");
+			statusTable.setCell(3, rowCount + expRow, cq.getMostRecentValueAsString(subprojectId, featureId));
+			
+			featureId = cq.getMeasurementId("EndDate");
+			statusTable.setCell(4, rowCount + expRow, cq.getMostRecentValueAsString(subprojectId, featureId));
+			
+			// Calculate numbers of animals alive/used/total
+			int nrOfAnimalsAlive = 0;
+			int nrOfAnimalsRemoved = 0;
+			int nrOfAnimalsTotal = 0;
+			int budget = 100; // TODO: use real budget
+			budgetCum += budget;
+			java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
+			featureId = cq.getMeasurementId("Experiment");
+			List<Integer> aliveAnimalIdList = cq.getAllObservationTargetIds("Individual", true, 
+					investigationIds);
+			if (aliveAnimalIdList.size() > 0) {
+				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
+				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
+				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
+				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
+				nrOfAnimalsAlive = q.count();
+			}
+			nrOfAnimalsAliveCum += nrOfAnimalsAlive;
+			List<Integer> totalAnimalIdList = cq.getAllObservationTargetIds("Individual", false, 
+					investigationIds);
+			if (totalAnimalIdList.size() > 0) {
+				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
+				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, totalAnimalIdList));
+				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+				nrOfAnimalsTotal = q.count();
+			}
+			nrOfAnimalsRemoved = nrOfAnimalsTotal - nrOfAnimalsAlive;
+			nrOfAnimalsRemovedCum += nrOfAnimalsRemoved;
+			
+			statusTable.setCell(5, rowCount + expRow, nrOfAnimalsAlive);
+			statusTable.setCell(6, rowCount + expRow, nrOfAnimalsRemoved);
+			statusTable.setCell(7, rowCount + expRow, budget);
+			double perc = budget > 0 ? (nrOfAnimalsAlive + nrOfAnimalsRemoved) * 100.0 / budget : 0.0;
+			statusTable.setCell(8, rowCount + expRow, f.format(perc));
+			statusTable.setCell(9, rowCount + expRow, "&nbsp;");
+			statusTable.setCellStyle(9, rowCount + expRow, "border: 1px solid black; background-color: green");
+		}
 		
-		return rowCount + 1;
+		// Set cells with cumulative values
+		statusTable.setCell(5, rowCount, nrOfAnimalsAliveCum);
+		statusTable.setCell(6, rowCount, nrOfAnimalsRemovedCum);
+		statusTable.setCell(7, rowCount, budgetCum);
+		double perc = budgetCum > 0 ? (nrOfAnimalsAliveCum + nrOfAnimalsRemovedCum) * 100.0 / budgetCum : 0.0;
+		statusTable.setCell(8, rowCount, f.format(perc));
+		statusTable.setCell(9, rowCount, "&nbsp;");
+		statusTable.setCellStyle(9, rowCount, "border: 1px solid black; background-color: green");
+		
+		return rowCount + expInDecList.size() + 1;
 	}
 
 	public String render()

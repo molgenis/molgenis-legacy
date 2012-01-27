@@ -8,10 +8,11 @@
 		
 		<plugin name="AnimalDBWelcomeScreen" type="plugins.welcome.AnimalDBWelcomeScreenPlugin"
 			label="Welcome" />
+		
 		<!-- plugin name="News" type="plugins.news.News" label="News"/ -->
 		
 		<menu name="animalmenu" position="left" label="Animals">
-			<plugin name="ListPlugin" type="plugins.listplugin.ListPlugin"
+			<plugin name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin"
 				label="Data viewer" />
 			<plugin name="EventViewer" type="plugins.protocol.EventViewerPluginMatrix"
 				label="Timeline viewer" />	

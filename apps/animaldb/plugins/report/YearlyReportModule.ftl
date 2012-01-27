@@ -45,7 +45,7 @@
 </div>
 
 <div class='row'>
-	<input type='submit' id='generate' class='addbutton' value='Generate!' onclick="__action.value='generateYearlyReport'" />
+	<input type='submit' id='generate' class='addbutton' value='Generate' onclick="__action.value='generateYearlyReport'" />
 </div>
 
 <#if screen.report?exists>

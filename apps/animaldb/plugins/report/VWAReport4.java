@@ -191,25 +191,30 @@ public class VWAReport4 extends AnimalDBReport
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "FromExperiment"));
 							q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, experimentId));
-							List<ObservedValue> fromSubprojectValueList = q.find(); // safe assumption: contains only one value
-							int protocolApplicationId = fromSubprojectValueList.get(0).getProtocolApplication_Id();
-							q = db.query(ObservedValue.class);
-							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
-							q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
-							List<ObservedValue> endstatusValueList = q.find();
-							if (endstatusValueList.size() == 1) {
-								String endstatus = endstatusValueList.get(0).getValue();
-								if (endstatus.equals("A. Dood in het kader van de proef"))
-									outColumn = 10;
-								if (endstatus.equals("B. Gedood na beeindiging van de proef"))
-									outColumn = 11;
-								// Animal died in given year and was in experiment, so we also have to count it in column 13
-								if (endstatus.equals("C. Na einde proef in leven gelaten"))
-									outColumn = 11;
+							List<ObservedValue> fromSubprojectValueList = q.find();
+							if (fromSubprojectValueList.size() == 1) {
+								int protocolApplicationId = fromSubprojectValueList.get(0).getProtocolApplication_Id();
+								q = db.query(ObservedValue.class);
+								q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+								q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
+								q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
+								List<ObservedValue> endstatusValueList = q.find();
+								if (endstatusValueList.size() == 1) {
+									String endstatus = endstatusValueList.get(0).getValue();
+									if (endstatus.equals("A. Dood in het kader van de proef"))
+										outColumn = 10;
+									if (endstatus.equals("B. Gedood na beeindiging van de proef"))
+										outColumn = 11;
+									// Animal died in given year and was in experiment, so we also have to count it in column 13
+									if (endstatus.equals("C. Na einde proef in leven gelaten"))
+										outColumn = 11;
+								} else {
+									warningsList.add("0 or more than 1 end statuses found for animal with ID " + targetid +
+											" in experiment with ID " + experimentId + ": not counting");
+								}
 							} else {
-								warningsList.add("0 or more than 1 end statuses found for animal with ID " + targetid +
-										" in experiment with ID " + experimentId);
+								warningsList.add("No 'FromExperiment' value found for animal with ID " + targetid +
+										" in experiment with ID " + experimentId + ": not counting");
 							}
 						} else {
 							// No experiments found in the current year, so list as 'dood voor de proef'
