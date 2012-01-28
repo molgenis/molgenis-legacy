@@ -90,7 +90,7 @@ public class Download extends EasyPluginController<DownloadModel>
 			switch (this.getModel().getState())
 			{
 			case DownloadModel.STARTED:
-				httpResponse.setHeader("Refresh", "5; URL=molgenis.do?select=" + this.getName() + "&__target=Download&__action=check&__show=popup");
+				httpResponse.setHeader("Refresh", "5; URL=molgenis.do?__target=" + this.getName() + "&__action=check&__show=popup");
 				this.getModel().setOutput(
 						"<p>Your download is being processed...</p>\n" +
 						"<img src=\"res/img/loading.gif\">");
