@@ -25,31 +25,26 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
-<div>
-	<p><em>Delete selected targets and their values</em></p>
-	<div id="targetselect">
-	<label for="target">Target:</label>
-	<select name="target" id="target" size='20' multiple='multiple'>
-		<#list screen.targetIdList as targetId>
-			<#assign name = screen.getTargetName(targetId)>
-			<option value="${targetId?string.computer}">${name}</option>
-		</#list>
-	</select>
-	</div>
-	<div class='row'>
-		<input type="submit" class='addbutton' value="Delete" onclick="__action.value='remove';return true;"/>
-	</div>
+<h3>Permanently delete selected targets and their observed values</h3>
+<div id="targetselect">
+<label for="target">Target:</label>
+<select name="target" id="target" size='20' multiple='multiple'>
+	<#list screen.targetIdList as targetId>
+		<#assign name = screen.getTargetName(targetId)>
+		<option value="${targetId?string.computer}">${name}</option>
+	</#list>
+</select>
+</div>
+<div class='row'>
+	<input type="submit" class='addbutton' value="Delete" onclick="__action.value='remove';return true;"/>
 </div>
 
 <br />
 <hr />
 <br />
 
-<div>
-	<p><em>Delete all animals and their values</em></p>
-	<div class='row'>
-		<input type="submit" class='addbutton' value="Delete" onclick="__action.value='removeAllAnimals';return true;"/>
-	</div>
+<div class='row'>
+	<input type="submit" class='addbutton' value="Permanently delete ALL animals and their observed values" onclick="__action.value='removeAllAnimals';return true;"/>
 </div>
 
 <#--end of your plugin-->	

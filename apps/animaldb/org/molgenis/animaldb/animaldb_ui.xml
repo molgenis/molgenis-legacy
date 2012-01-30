@@ -96,8 +96,12 @@
 				<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
 				<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
 					label="Make/edit values" />
-				<plugin name="ErrorCorrection" type="plugins.system.ErrorCorrectionPlugin"
-					label="Correct errors" />
+				<menu name="errorcorrectmenu" position="left" label="Correct errors">
+					<plugin name="ErrorCorrection" type="plugins.system.ErrorCorrectionPlugin"
+						label="Values" />
+					<plugin name="ErrorCorrectionTarget" type="plugins.system.ErrorCorrectionTargetPlugin"
+						label="Targets" />
+				</menu>
 				<plugin name="CascadingDeleteAnimals" type="plugins.system.CascadingDeleteAnimalsPlugin"
 					label="Delete targets" />
 				<!-- <plugin name="SetCustomLabelFeature" type="plugins.system.SetCustomLabelFeaturePlugin"

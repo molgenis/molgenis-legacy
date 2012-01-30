@@ -15,20 +15,21 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 //import commonservice.CommonService;
 
-public class ErrorCorrectionPlugin extends PluginModel<Entity>
+public class ErrorCorrectionTargetPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -366762636959036651L;
 	//private CommonService ct = CommonService.getInstance();
-	private List<ObservedValue> valueList = new ArrayList<ObservedValue>();
-	private List<ObservedValue> deletedValueList = new ArrayList<ObservedValue>();
+	private List<ObservationTarget> targetList = new ArrayList<ObservationTarget>();
+	private List<ObservationTarget> deletedTargetList = new ArrayList<ObservationTarget>();
 	
-	public ErrorCorrectionPlugin(String name, ScreenController<?> parent)
+	public ErrorCorrectionTargetPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
@@ -41,13 +42,13 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_system_ErrorCorrectionPlugin";
+		return "plugins_system_ErrorCorrectionTargetPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/system/ErrorCorrectionPlugin.ftl";
+		return "plugins/system/ErrorCorrectionTargetPlugin.ftl";
 	}
 
 	@Override
@@ -58,26 +59,27 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 			String action = request.getString("__action");
 			Date now = new Date();
 			
-			if (action.equals("deleteValues")) {
-				for (int i = 0; i < valueList.size(); i++) {
+			if (action.equals("deleteTargets")) {
+				for (int i = 0; i < targetList.size(); i++) {
 					if (request.getBool(Integer.toString(i)) != null) {
-						valueList.get(i).setDeleted(true);
-						valueList.get(i).setDeletionTime(now);
-						valueList.get(i).setDeletedBy_Id(this.getLogin().getUserId());
+						// TODO: flag values as deleted
+						targetList.get(i).setDeleted(true);
+						targetList.get(i).setDeletionTime(now);
+						targetList.get(i).setDeletedBy_Id(this.getLogin().getUserId());
 					}
 				}
-				db.update(valueList);
+				db.update(targetList);
 			}
 			
-			if (action.equals("undeleteValues")) {
-				for (int i = 0; i < deletedValueList.size(); i++) {
+			if (action.equals("undeleteTargets")) {
+				for (int i = 0; i < deletedTargetList.size(); i++) {
 					if (request.getBool(Integer.toString(i)) != null) {
-						deletedValueList.get(i).setDeleted(false);
-						deletedValueList.get(i).setDeletionTime(null);
-						deletedValueList.get(i).setDeletedBy_Id(null);
+						deletedTargetList.get(i).setDeleted(false);
+						deletedTargetList.get(i).setDeletionTime(null);
+						deletedTargetList.get(i).setDeletedBy_Id(null);
 					}
 				}
-				db.update(deletedValueList);
+				db.update(deletedTargetList);
 			}
 			
 		} catch(Exception e) {
@@ -91,10 +93,8 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 	{
 		try
 		{
-			this.valueList = db.query(ObservedValue.class).sortDESC(ObservedValue.TIME).
-					eq(ObservedValue.DELETED, false).find();
-			this.deletedValueList = db.query(ObservedValue.class).sortDESC(ObservedValue.TIME).
-					eq(ObservedValue.DELETED, true).find();
+			this.targetList = db.query(ObservationTarget.class).eq(ObservedValue.DELETED, false).find();
+			this.deletedTargetList = db.query(ObservationTarget.class).eq(ObservedValue.DELETED, true).find();
 		}
 		catch (DatabaseException e)
 		{
@@ -103,24 +103,24 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 		}
 	}
 
-	public List<ObservedValue> getValueList()
+	public List<ObservationTarget> getTargetList()
 	{
-		return valueList;
+		return targetList;
 	}
 
-	public void setValueList(List<ObservedValue> valueList)
+	public void setValueList(List<ObservationTarget> targetList)
 	{
-		this.valueList = valueList;
+		this.targetList = targetList;
 	}
 
-	public List<ObservedValue> getDeletedValueList()
+	public List<ObservationTarget> getDeletedTargetList()
 	{
-		return deletedValueList;
+		return deletedTargetList;
 	}
 
-	public void setDeletedValueList(List<ObservedValue> deletedValueList)
+	public void setDeletedValueList(List<ObservationTarget> deletedTargetList)
 	{
-		this.deletedValueList = deletedValueList;
+		this.deletedTargetList = deletedTargetList;
 	}
 	
 }

@@ -1,4 +1,4 @@
-<#macro plugins_system_ErrorCorrectionPlugin screen>
+<#macro plugins_system_ErrorCorrectionTargetPlugin screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -25,31 +25,21 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
-<h3>Observed values</h3>
-<#if screen.valueList?size gt 0>
-	<table cellpadding="0" cellspacing="0" border="0" class="display" id="valuetable">
+<h3>Observation targets</h3>
+<#if screen.targetList?size gt 0>
+	<table cellpadding="0" cellspacing="0" border="0" class="display" id="targettable">
 		<thead>
 			<tr>
 				<th>Select</th>
-				<th>Observation target</th>
-				<th>Measurement</th>
-				<th>Value</th>
-				<th>Relation</th>
-				<th>Start date-time</th>
-				<th>End date-time</th>
+				<th>Name</th>
 			</tr>
 		</thead>
 		<tbody>
 		<#assign i = 0>
-		<#list screen.valueList as value>
+		<#list screen.targetList as target>
 			<tr>
 				<td><input type="checkbox" id="${i}" name="${i}" />
-				<td>${value.target_Name}</td>
-				<td>${value.feature_Name}</td>
-				<td><#if value.value??>${value.value}</#if></td>
-				<td><#if value.relation_Name??>${value.relation_Name}</#if></td>
-				<td>${value.time}</td>
-				<td><#if value.endtime??>${value.endtime}</#if></td>
+				<td>${target.name}</td>
 			</tr>
 			<#assign i = i + 1>
 		</#list>
@@ -57,45 +47,39 @@
 	</table>
 </#if>
 
-<input type="submit" class='addbutton' value="Flag as deleted" onclick="__action.value='deleteValues';return true;"/>
+<p><em>Note: observed values set on the selected observation targets will also be flagged as deleted!</em></p>
 
-<#if screen.deletedValueList?size gt 0>
+<input type="submit" class='addbutton' value="Flag as deleted" onclick="__action.value='deleteTargets';return true;"/>
 
-<h3>Observed values flagged as deleted</h3>
-	<table cellpadding="0" cellspacing="0" border="0" class="display" id="delvaluetable">
+<#if screen.deletedTargetList?size gt 0>
+
+<h3>Observation targets flagged as deleted</h3>
+	<table cellpadding="0" cellspacing="0" border="0" class="display" id="deltargettable">
 		<thead>
 			<tr>
 				<th>Select</th>
 				<th>Deleted on</th>
 				<th>Deleted by</th>
-				<th>Observation target</th>
-				<th>Measurement</th>
-				<th>Value</th>
-				<th>Relation</th>
-				<th>Start date-time</th>
-				<th>End date-time</th>
+				<th>Name</th>
 			</tr>
 		</thead>
 		<tbody>
 		<#assign i = 0>
-		<#list screen.deletedValueList as value>
+		<#list screen.deletedTargetList as target>
 			<tr>
 				<td><input type="checkbox" id="${i}" name="${i}" />
-				<td><#if value.deletionTime??>${value.deletionTime}</#if></td>
-				<td><#if value.deletedBy_Name??>${value.deletedBy_Name}</#if></td>
-				<td>${value.target_Name}</td>
-				<td>${value.feature_Name}</td>
-				<td><#if value.value??>${value.value}</#if></td>
-				<td><#if value.relation_Name??>${value.relation_Name}</#if></td>
-				<td>${value.time}</td>
-				<td><#if value.endtime??>${value.endtime}</#if></td>
+				<td><#if target.deletionTime??>${target.deletionTime}</#if></td>
+				<td><#if target.deletedBy_Name??>${target.deletedBy_Name}</#if></td>
+				<td>${target.name}</td>
 			</tr>
 			<#assign i = i + 1>
 		</#list>
 		</tbody>
 	</table>
 
-<input type="submit" class='addbutton' value="Unflag" onclick="__action.value='undeleteValues';return true;"/>
+<p><em>Note: observed values set on the selected observation targets will not be unflagged! You have to do this yourself in the Correct errors Plugin for Observed values.</em></p>
+
+<input type="submit" class='addbutton' value="Unflag" onclick="__action.value='undeleteTargets';return true;"/>
 
 </#if>
 
@@ -106,7 +90,7 @@
 </form>
 
 <script>
-	var oTable = jQuery('#valuetable').dataTable(
+	var oTable = jQuery('#targettable').dataTable(
 	{ "bProcessing": true,
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
@@ -115,7 +99,7 @@
 	  "bJQueryUI" : true }
 	);
 	
-	var oTable = jQuery('#delvaluetable').dataTable(
+	var oTable = jQuery('#deltargettable').dataTable(
 	{ "bProcessing": true,
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
