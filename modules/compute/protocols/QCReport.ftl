@@ -15,7 +15,7 @@
 #MOLGENIS walltime=00:45:00
 #FOREACH project
 
-<#include "helpers.ftl"/>
+<#include "Helpers.ftl"/>
 inputs ${ssvQuoted(hsmetrics)}
 inputs ${ssvQuoted(alignmentmetrics)}
 inputs ${ssvQuoted(recalinsertsizemetrics)}
@@ -26,17 +26,19 @@ inputs ${qcstatisticscolnames}
 mkdir -p ${qcdir}
 
 ${getStatisticsScript} \
---hsmetrics ${csvQuoted(hsmetrics)} \                                                                                                                    
---alignment ${csvQuoted(alignmentmetrics)} \                                                                                                      
---insertmetrics ${csvQuoted(recalinsertsizemetrics)} \                                                                                                     
---dedupmetrics ${csvQuoted(dedupmetrics)} \                                                                                                               
---concordance ${csvQuoted(concordancefile)} \                                                                                                              
---sample ${csvQuoted(externalSampleID)} \                                                                                                                  
---csvout ${qcstatisticscsv} \                                                                                                                              
---tableout ${qcstatisticstex} \                                                                                                                             
---descriptionout ${qcstatisticsdescription}
+--hsmetrics ${csvQuoted(hsmetrics)} \
+--alignment ${csvQuoted(alignmentmetrics)} \
+--insertmetrics ${csvQuoted(recalinsertsizemetrics)} \
+--dedupmetrics ${csvQuoted(dedupmetrics)} \
+--concordance ${csvQuoted(concordancefile)} \
+--sample ${csvQuoted(externalSampleID)} \
+--colnames ${qcstatisticscolnames} \
+--csvout ${qcstatisticscsv} \
+--tableout ${qcstatisticstex} \
+--descriptionout ${qcstatisticsdescription} \
+--baitsetout ${qcbaitset}
 
-echo "<#include "QCReportTemplate.ftl"/>" > ${qcstatisticstexreport}
+echo "<#include "QCReportTemplate.tex"/>" > ${qcstatisticstexreport}
 
 pdflatex -output-directory=${qcdir} ${qcstatisticstexreport}
 

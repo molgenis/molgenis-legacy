@@ -14,7 +14,7 @@
 
 inputs "${sortedrecalbam}"
 alloutputsexist "${fileWithIndexID}.coverage.csv" \
-"${fileWithIndexID}.coverageplot.pdf" \
+"${coverageplotpdf}" \
 "${fileWithIndexID}.coverage.Rdata"
 
 ${coveragescript} \
@@ -22,6 +22,6 @@ ${coveragescript} \
 --chromosome 1 \
 --interval_list ${targetintervals} \
 --csv ${fileWithIndexID}.coverage.csv \
---pdf ${fileWithIndexID}.coverageplot.pdf \
+--pdf ${coverageplotpdf} \
 --Rcovlist ${fileWithIndexID}.coverage.Rdata
 <@end/>

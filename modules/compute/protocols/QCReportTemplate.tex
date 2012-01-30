@@ -1,0 +1,84 @@
+\documentclass[11pt]{article}
+\usepackage{grffile}
+\usepackage{graphicx}
+\usepackage[strings]{underscore}
+\usepackage{verbatim}
+
+\begin{comment}
+#
+# =====================================================
+# $Id$
+# $URL: http://www.molgenis.org/svn/molgenis_apps/trunk/modules/compute/protocols/QCReport.ftl $
+# $LastChangedDate$
+# $LastChangedRevision$
+# $LastChangedBy: mdijkstra $
+# =====================================================
+#
+\end{comment}
+
+\title{Next Generation Sequencing report}
+\author{\small Genome Analysis Facility, Genomics Coordination Centre\\\\
+\small University Medical Centre Groningen}
+\begin{document}
+\maketitle
+\vspace{40mm}
+\begin{table}[h]
+	\centering
+	\begin{tabular}{l l}
+		\hline
+		\multicolumn{2}{l}{\textbf{Project information}} \\\\
+		Name & ${project} \\\\
+		Number of samples & ${externalSampleID?size} \\\\
+		\\\\
+		\multicolumn{2}{l}{\textbf{Customer information}} \\\\
+		PI & ${contact[0]?replace("<", "/ ")?replace(">", "")} \\\\
+		\\\\
+		\multicolumn{2}{l}{\textbf{Contact information GAF and GCC}}\\\\
+		Name & Cleo C. van Diemen \\\\
+		E-mail & c.c.van.diemen@umcg.nl \\\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\clearpage
+\addtolength{\oddsidemargin}{-.875in}
+\addtolength{\evensidemargin}{-.875in}
+\addtolength{\textwidth}{1.75in}
+
+\section*{Project analysis results}
+\subsection*{Overview statistics}
+{\tt To do: remove bait information in table below.}\\
+\input{${qcstatisticstex}}
+\\
+Name of the bait set(s) used in the hybrid selection for this project:\\
+\textbf{\input{${qcbaitset}}}
+
+\addtolength{\oddsidemargin}{.875in}
+\addtolength{\evensidemargin}{.875in}
+\addtolength{\textwidth}{-1.75in}
+
+\clearpage
+\subsection*{Description statistics table}
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{r p{12cm}}
+		\input{${qcstatisticsdescription}}
+	\end{tabular}
+\end{table}
+
+\clearpage
+\subsection*{Evenness of capturing}
+The following figures show the cumulative depth distribution in target regions. The fractions of bases that is covered with at least 10x, 20x and 30x are marked with a dot.
+${figures(coverageplotpdf)}
+
+\clearpage
+\subsection*{GC metrics}
+The following figures show the GC-content distribution per sample.
+${figures(gcbiasmetricspdf)}
+
+\clearpage
+\subsection*{Insert size distribution}
+The following figures show the insert size distribution per sample. Insert refers to the base pairs that are ligated between the adapters.
+${figures(insertsizemetricspdf)}
+
+\end{document}
