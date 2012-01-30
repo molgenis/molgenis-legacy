@@ -6,7 +6,7 @@
 			type="plugins.reportbuilder.ReportBuilder" group="biologist" />
 		<plugin label="QTL Finder" name="QtlFinder"
 			type="plugins.qtlfinder.QtlFinder" group="biologist" />
-		<plugin label="Explore experiments" name="DatasetExplorer"
-			type="plugins.datasetexplorer.DatasetExplorer" group="biologist" />
+		<!--plugin label="Explore experiments" name="DatasetExplorer"
+			type="plugins.datasetexplorer.DatasetExplorer" group="biologist" /-->
 	</menu>
 </molgenis>
