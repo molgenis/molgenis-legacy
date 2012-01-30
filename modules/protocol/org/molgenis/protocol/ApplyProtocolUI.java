@@ -123,13 +123,19 @@ public class ApplyProtocolUI {
 		    // If there are codes for this Measurement, show a selectbox with those
 		    valueInput = new SelectInput(col + "_" + row + "_" + order);
 		    ((SelectInput)valueInput).setOptionsFromStringList(model.getAllCodesForFeatureAsStrings(feature));
+		    if (value != null && value.getValue() != null) {
+		    	valueInput.setValue(value.getValue());
+		    }
 		} else {
 			if (panelLabel != null) {
 				// If there's only a subset of labeled Panels allowed for this Measurement, show a selectbox with those
 				valueInput = new SelectInput(col + "_" + row + "_" + order);
 				List<ObservationTarget> panelList = model.getAllPanelsForFeature(feature);
 				for (ObservationTarget p : panelList) {
-					((SelectInput)valueInput).addOption(p.getName(), p.getName());
+					((SelectInput)valueInput).addOption(p.getId(), p.getName());
+				}
+				if (value != null && value.getRelation_Id() != null) {
+					valueInput.setValue(value.getRelation_Id());
 				}
 			} else {
 				// Normally, show the input belonging to the data type
@@ -138,24 +144,19 @@ public class ApplyProtocolUI {
 				if (dataType.equals("string")) {
 					((StringInput)valueInput).setWidth(20);
 				}
+				if (value != null) {
+					if (value.getValue() != null) {
+						valueInput.setValue(value.getValue());
+					} else {
+						if (dataType.equals("xref")) {
+							ObservationTarget relation = this.model.getDatabase().findById(ObservationTarget.class, value.getRelation_Id());
+							((XrefInput)valueInput).setValue(relation);
+						} else {
+							valueInput.setValue(value.getRelation_Id());
+						}
+					}
+				}
 			}
-		}
-	
-		// If present, set the value of the input
-		if (value != null) {
-		    if (value.getValue() != null) {
-		    	// If there's a literal string value, use that...
-		    	valueInput.setValue(value.getValue());
-		    } else if (value.getRelation_Name() != null) {
-		    	// Otherwise it must be a relation, so use the xref id as a value...
-		    	valueInput.setValue(value.getRelation_Name());
-		    	// TODO: solve problem below!!
-//		    	if (panelLabel == null) { // If a panel label was set, valueInput has been turned into a selectbox and we cannot do the statement below
-//			    	// Because this involves an xref box, set the value and label of the selected option
-//		    		((XrefInput) valueInput).setLabel(value.getRelation_Name());
-//		    		((XrefInput) valueInput).setValue(value.getRelation(db));
-//		    	}
-		    }
 		}
 	
 		return valueInput;

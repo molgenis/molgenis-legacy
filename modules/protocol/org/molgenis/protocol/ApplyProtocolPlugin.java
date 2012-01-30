@@ -298,7 +298,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    ObservedValue newValue = new ObservedValue();
 		    // Put value in appropriate field
 		    if (dataType.equals("xref")) {
-		    	newValue.setRelation_Name(request.getString(colNrInTable + "_0_0"));
+		    	newValue.setRelation_Id(request.getInt(colNrInTable + "_0_0"));
 		    } else {
 		    	newValue.setValue(request.getString(colNrInTable + "_0_0"));
 		    }
@@ -323,10 +323,10 @@ public class ApplyProtocolPlugin extends GenericPlugin
     ScreenMessage handleApplyDefaults(Tuple request, int col) {
 
     	int featureNr = col;
-    	int nrOfCols = model.getFeaturesList().size();
+    	//int nrOfCols = model.getFeaturesList().size();
     	if (model.isTimeInfo()) {
     		featureNr /= 3;
-    		nrOfCols *= 3;
+    		//nrOfCols *= 3;
     	}
     	Measurement measurement = model.getFeaturesList().get(featureNr);
 		int sizeTargets = model.getFullTargetList().size();
@@ -343,7 +343,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		ObservedValue newValue = new ObservedValue();
 		// Put value in appropriate field
 		if (dataType.equals("xref")) {
-		    newValue.setRelation_Name(request.getString(col + "_0_0"));
+		    newValue.setRelation_Id(request.getInt(col + "_0_0"));
 		} else {
 		    newValue.setValue(request.getString(col + "_0_0"));
 		}
