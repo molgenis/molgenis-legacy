@@ -7,6 +7,8 @@
 
 package plugins.settings;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,7 +45,10 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 	private Map<Integer, String> superLocMap;
 	private CommonService ct = CommonService.getInstance();
 	MatrixViewer animalsInLocMatrixViewer = null;
+	MatrixViewer animalsNotInLocMatrixViewer = null;
 	static String ANIMALSINLOCMATRIX = "animalsinlocmatrix";
+	static String ANIMALSNOTINLOCMATRIX = "animalsnotinlocmatrix";
+	private int locId = -1;
 	
 	public LocationInfoPlugin(String name, ScreenController<?> parent)
 	{
@@ -84,8 +89,8 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 		this.action = action;
 	}
 	
-	public String getSuperLocName(int locId) {
-		return superLocMap.get(locId);
+	public String getSuperLocName(int locationId) {
+		return superLocMap.get(locationId);
 	}
 	
 	private String getSuperLoc(Database db, int locId) throws DatabaseException {
@@ -117,10 +122,58 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 			
 			if (animalsInLocMatrixViewer != null && action.startsWith(animalsInLocMatrixViewer.getName())) {
 				animalsInLocMatrixViewer.handleRequest(db, request);
+				action = "Manage";
+				return;
+			}
+			
+			if (animalsNotInLocMatrixViewer != null && action.startsWith(animalsNotInLocMatrixViewer.getName())) {
+				animalsNotInLocMatrixViewer.handleRequest(db, request);
+				action = "AddAnimals";
+				return;
 			}
 			
 			if (action.equals("Add")) {
 				//
+			}
+			
+			if (action.equals("AddAnimals")) {
+				String locName = ct.getObservationTargetLabel(locId);
+				// Prepare matrix with all animals
+//				List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserId());
+				List<String> measurementsToShow = new ArrayList<String>();
+				measurementsToShow.add("Location");
+//				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+//				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+//						Operator.IN, investigationNames));
+//				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+//						ct.getMeasurementId("Location"), ObservedValue.RELATION_NAME, Operator.NOT,
+//						locName));
+//				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+//						ct.getMeasurementId("Location"), ObservedValue.ENDTIME, Operator.EQUALS,
+//						null));
+				// TODO: make MQRs combinable with OR so we can have animals with location NULL OR NOT current
+				animalsNotInLocMatrixViewer = new MatrixViewer(this, ANIMALSNOTINLOCMATRIX, 
+						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
+						true, true, false, null, 
+						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				animalsNotInLocMatrixViewer.setDatabase(db);
+				animalsNotInLocMatrixViewer.setLabel("All animals:");
+			}
+			
+			if (action.equals("ApplyAddAnimals")) {
+				List<ObservationElement> rows = (List<ObservationElement>) animalsNotInLocMatrixViewer.getSelection(db);
+				int rowCnt = 0;
+				for (ObservationElement row : rows) {
+					if (request.getBool(ANIMALSNOTINLOCMATRIX + "_selected_" + rowCnt) != null) {
+						int animalId = row.getId();
+						assignAnimalToLocation(db, invid, animalId, locId);
+					}
+					rowCnt++;
+				}
+				
+				animalsInLocMatrixViewer.reloadMatrix(db, request);
+				action = "Manage";
+				return;
 			}
 			
 			if (action.equals("Import")) {
@@ -128,27 +181,8 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 			}
 			
 			if (action.equals("Manage")) {
-				int locId = request.getInt("locId");
-				String locName = ct.getObservationTargetLabel(locId);
-				// Prepare matrix with animals currently in this location
-				List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserId());
-				List<String> measurementsToShow = new ArrayList<String>();
-				measurementsToShow.add("Location");
-				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
-						Operator.IN, investigationNames));
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Location"), ObservedValue.RELATION_NAME, Operator.EQUALS,
-						locName));
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Location"), ObservedValue.ENDTIME, Operator.EQUALS,
-						null));
-				animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX, 
-						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-						true, true, false, filterRules, 
-						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-				animalsInLocMatrixViewer.setDatabase(db);
-				animalsInLocMatrixViewer.setLabel("Animals in " + locName + ":");
+				locId = request.getInt("locId");
+				prepareInLocMatrix(db, ct.getObservationTargetLabel(locId));
 			}
 			
 			if (action.equals("Move")) {
@@ -158,26 +192,14 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 				for (ObservationElement row : rows) {
 					if (request.getBool(ANIMALSINLOCMATRIX + "_selected_" + rowCnt) != null) {
 						int animalId = row.getId();
-						// First end existing Location value(s)
-						Query<ObservedValue> q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Location"));
-						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
-						List<ObservedValue> valueList = q.find();
-						if (valueList != null) {
-							for (ObservedValue value : valueList) {
-								value.setEndtime(new Date());
-								db.update(value);
-							}
-						}
-						// Then make new one
-						int protocolId = ct.getProtocolId("SetLocation");
-						int featureId = ct.getMeasurementId("Location");
-						db.add(ct.createObservedValueWithProtocolApplication(invid, new Date(), null, 
-								protocolId, featureId, animalId, null, newLocationId));
+						assignAnimalToLocation(db, invid, animalId, newLocationId);
 					}
 					rowCnt++;
 				}
+				
+				prepareInLocMatrix(db, ct.getObservationTargetLabel(newLocationId));
+				action = "Manage";
+				return;
 			}
 			
 			if (action.equals("importLocations")) {
@@ -213,6 +235,49 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 		}
 	}
 
+	private void prepareInLocMatrix(Database db, String locationName) throws Exception
+	{
+		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserId());
+		List<String> measurementsToShow = new ArrayList<String>();
+		measurementsToShow.add("Location");
+		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+				Operator.IN, investigationNames));
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+				ct.getMeasurementId("Location"), ObservedValue.RELATION_NAME, Operator.EQUALS,
+				locationName));
+		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+				ct.getMeasurementId("Location"), ObservedValue.ENDTIME, Operator.EQUALS,
+				null));
+		animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX, 
+				new SliceablePhenoMatrix(Individual.class, Measurement.class), 
+				true, true, false, filterRules, 
+				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+		animalsInLocMatrixViewer.setDatabase(db);
+		animalsInLocMatrixViewer.setLabel("Animals in " + locationName + ":");
+	}
+
+	private void assignAnimalToLocation(Database db, int investigationId, int animalId, int locationId) throws DatabaseException, IOException, ParseException
+	{
+		// First end existing Location value(s)
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Location"));
+		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
+		List<ObservedValue> valueList = q.find();
+		if (valueList != null) {
+			for (ObservedValue value : valueList) {
+				value.setEndtime(new Date());
+				db.update(value);
+			}
+		}
+		// Then make new one
+		int protocolId = ct.getProtocolId("SetLocation");
+		int featureId = ct.getMeasurementId("Location");
+		db.add(ct.createObservedValueWithProtocolApplication(investigationId, new Date(), null, 
+				protocolId, featureId, animalId, null, locationId));
+	}
+
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
@@ -246,6 +311,14 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 		if (animalsInLocMatrixViewer != null) {
 			return "<p>" + animalsInLocMatrixViewer.getLabel() + "</p>" + 
 					animalsInLocMatrixViewer.render();
+		}
+		return "Error - location matrix not initialized";
+	}
+	
+	public String renderAnimalsNotInLocMatrixViewer() {
+		if (animalsNotInLocMatrixViewer != null) {
+			return "<p>" + animalsNotInLocMatrixViewer.getLabel() + "</p>" + 
+					animalsNotInLocMatrixViewer.render();
 		}
 		return "Error - location matrix not initialized";
 	}

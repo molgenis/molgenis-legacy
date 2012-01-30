@@ -41,6 +41,8 @@
 <#elseif screen.action == "Manage">
 	
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
+	
+	<p><a href="molgenis.do?__target=${screen.name}&__action=AddAnimals">Add animals</a></p>
 
 	${screen.renderAnimalsInLocMatrixViewer()}
 	
@@ -53,6 +55,14 @@
 		</select>
 		<input type='submit' class='addbutton' value='Apply' onclick="__action.value='Move'" />
 	</div>
+	
+<#elseif screen.action == "AddAnimals">
+
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
+	
+	${screen.renderAnimalsNotInLocMatrixViewer()}
+	
+	<input type='submit' class='addbutton' value='Add' onclick="__action.value='ApplyAddAnimals'" />
 
 <#elseif screen.action == "Add">
 
