@@ -27,7 +27,8 @@
 	</description>
 	<plugin name="PathoHeader" type="org.molgenis.patho.ui.PathoHeader" />
 	<menu name="PathoDataTables" label="Data Tables" position="left">
-		<form name="PathoSeqFeatures" label="SeqFeatures" entity="SeqFeature">
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Administration"/>
+		<form name="PathoSeqFeatures" label="SeqFeatures" entity="SequenceCharacteristic">
 			<form name="PathoSeqRelationPerFeature" label="SeqRelations"
 				entity="SeqRelation" />
 		</form>
