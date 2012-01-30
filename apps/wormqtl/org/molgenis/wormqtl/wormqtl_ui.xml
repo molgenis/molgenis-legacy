@@ -3,10 +3,6 @@
 	<menu name="main">
 	
 		<plugin label="Find QTLs" name="QtlFinderPublic" type="plugins.qtlfinder.QtlFinder" group="biologist" />
-	
-		<plugin label="Home" name="ClusterDemo" type="org.molgenis.wormqtl.header.HomePage" />
-
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/login.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/runanalysis.xml"/>
@@ -14,6 +10,8 @@
 		<include file="apps/wormqtl/org/molgenis/wormqtl/search.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
+		<plugin label="About" name="ClusterDemo" type="org.molgenis.wormqtl.header.HomePage" />
+		<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
 
 	</menu>
 </molgenis>
