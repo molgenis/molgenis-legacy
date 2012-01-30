@@ -45,10 +45,10 @@
 				<br/>
 				Discussion: should this be an Observation or an ObservationElement?
 			</description>
-			<field name="Feature" type="xref" xref_entity="SeqFeature"
+			<field name="Feature" type="xref" xref_entity="SequenceCharacteristic"
 				xref_field="id" xref_label="name"
 				description="(Overrides Observation.feature) The feature that is being located. Any feature can have zero or more featurelocs." />
-			<field name="Target" type="xref" xref_entity="SeqFeature"
+			<field name="Target" type="xref" xref_entity="SequenceCharacteristic"
 				xref_field="id" xref_label="name" description="(Overrides Observation.target) The source feature which this location is relative to. Every location is relative to another feature (however, this column is nullable, because the srcfeature may not be known). All locations are -proper- that is, nothing should be located relative to itself. No cycles are allowed in the featureloc graph." />
 			<field name="relationType" type="xref" xref_entity="OntologyTerm"
 				nillable="true"
