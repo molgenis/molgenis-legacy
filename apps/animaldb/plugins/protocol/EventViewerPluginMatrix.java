@@ -89,8 +89,8 @@ public class EventViewerPluginMatrix extends GenericPlugin
 		animalInfoHeader = new Paragraph("<h3>Timeline for animal " + cs.getObservationTargetLabel(animalId) + "</h3>");
 		animalInfoHeader.setId("infoheader");
 		
-		List<ObservedValue> valList = db.find(ObservedValue.class, new QueryRule(ObservedValue.TARGET, 
-				Operator.EQUALS, animalId));
+		List<ObservedValue> valList = db.query(ObservedValue.class).eq(ObservedValue.TARGET, 
+				animalId).eq(ObservedValue.DELETED, false).find();
 		if (!valList.isEmpty()) {
 			animalInfo = new Table("AnimalInfoTable");
 			animalInfo.addColumn("Valid from...");
