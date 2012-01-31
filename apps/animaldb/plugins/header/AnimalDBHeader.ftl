@@ -53,7 +53,7 @@
 			<input type="hidden" name="plugin" id="plugin" value="${screen.getActivePlugin()}" />
 			<br /><br />
 			<input type="submit" value="Send" onclick="hideFeedback(); __action.value='sendFeedback'" />
-			<input type="reset" value="cancel" onclick="hideFeedback(); __action.value='sendFeedback'" />
+			<input type="reset" value="Cancel" onclick="hideFeedback(); __action.value='sendFeedback'" />
 			</fieldset>
 		</div>
 		

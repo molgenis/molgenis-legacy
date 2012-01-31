@@ -105,7 +105,8 @@ public class AnimalDBHeader extends PluginModel<Entity>
 		}
 		
 		if ("sendFeedback".equals(request.getAction())) {
-			feedback = "User: " + this.getLogin().getUserName() + " sent: " + request.getString("feedback") + " about: " + request.getString("plugin");
+			feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName() + 
+					") sent: " + request.getString("feedback") + " about: " + request.getString("plugin");
 			
 			// get admin email
 			MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);

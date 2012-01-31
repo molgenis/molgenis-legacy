@@ -208,8 +208,16 @@ public class AnimalDbUsers extends PluginModel<Entity>
 					throw new Exception("No (valid) investigation chosen");
 				}
 				
-				// Give new user write rights on almost all entities, forms, menus and plugins
-				List<String> exclude = Arrays.asList(new String[] { "AdminMenu" });
+				// Give new user write rights on almost all entities, forms, menus and plugins, except everything in the Admin menu
+				List<String> exclude = Arrays.asList(new String[] { "AdminMenu", "securitymenuMenu", "AnimalDbUsersPlugin", 
+						"UserToPersonPluginPlugin", "PermissionManagementPluginPlugin", "secmenuMenu", "MolgenisUserFormController", 
+						"PersonsFormController", "InstitutesFormController", "MolgenisGroupFormController", "MolgenisRoleGroupLinkFormController",
+						"MolgenisEntityFormController", "MolgenisPermissionFormController", "systemmenuMenu", "PreFillDatabasePlugin",
+						"LoadLegacyPlugin", "SimpleArchiverPlugin", "ApplyProtocolPlugin", "CascadingDeleteAnimalsPlugin", "tablemenuMenu",
+						"investigationFormController", "ontologyFormController", "ontologytermFormController", "categoryFormController",
+						"individualFormController", "panelFormController", "locationFormController", "measurementFormController",
+						"protocolFormController", "protocolapplicationFormController", "observedvalueFormController", "prefixFormController",
+						"newsFormController", "contactFormController"});
 				List<MolgenisPermission> permList = new ArrayList<MolgenisPermission>();
 				Query<MolgenisEntity> q = db.query(MolgenisEntity.class);
 				List<MolgenisEntity> entList = q.find();
