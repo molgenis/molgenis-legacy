@@ -8,10 +8,7 @@
 
 <div style="height:10px;">&nbsp;</div>
 
-<div id="sample_div" style="background-image:url(clusterdemo/bg/baner_panacea.png); width: 900px; height: 125px; line-height:7.5em;">
-<div style="position: relative; left: 300px;"><font style="font-family: verdana,arial,sans-serif; font-weight: bold; letter-spacing: 0.15em; font-size: 80px; font-variant: small-caps">
-&nbsp;<a href="#" style="text-decoration:none; color: #13507A;" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='ClusterDemo';document.forms.main.submit();">WormQTL</a></font></div>
-</div>
+<div id="sample_div" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='QtlFinderPublic';document.forms.main.submit();" style="background-image:url(clusterdemo/bg/baner_wf.png); width: 900px; height: 125px; line-height:7.5em;"></div>
 
 <table style="width: 100%;">
 	<tr>
