@@ -39,6 +39,8 @@
 ${screen.contactInfo}
 </p>
 
+<p>Software updates may be done between 5 and 5.30 pm, so please do not do important work during that time.</p>
+
 <#--end of your plugin-->
 			</div>
 		</div>
