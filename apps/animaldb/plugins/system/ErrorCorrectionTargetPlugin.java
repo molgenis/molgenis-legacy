@@ -62,7 +62,7 @@ public class ErrorCorrectionTargetPlugin extends PluginModel<Entity>
 			if (action.equals("deleteTargets")) {
 				for (int i = 0; i < targetList.size(); i++) {
 					if (request.getBool(Integer.toString(i)) != null) {
-						// TODO: flag values as deleted
+						deleteValuesForTarget(db, targetList.get(i).getId());
 						targetList.get(i).setDeleted(true);
 						targetList.get(i).setDeletionTime(now);
 						targetList.get(i).setDeletedBy_Id(this.getLogin().getUserId());
@@ -86,6 +86,19 @@ public class ErrorCorrectionTargetPlugin extends PluginModel<Entity>
 			this.setError("Error: " + e.getMessage());
 			e.printStackTrace();
 		}
+	}
+
+	private void deleteValuesForTarget(Database db, int animalId) throws DatabaseException
+	{
+		Date now = new Date();
+		List<ObservedValue> valDelList = db.query(ObservedValue.class).eq(ObservedValue.TARGET, animalId).
+				or().eq(ObservedValue.RELATION, animalId).find();
+		for (ObservedValue valDel : valDelList) {
+			valDel.setDeleted(true);
+			valDel.setDeletionTime(now);
+			valDel.setDeletedBy_Id(this.getLogin().getUserId());
+		}
+		db.update(valDelList);
 	}
 
 	@Override

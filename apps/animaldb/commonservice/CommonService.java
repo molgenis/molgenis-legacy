@@ -379,6 +379,7 @@ public class CommonService
 		
 		if (isActive == false) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
+			targetQuery.addRules(new QueryRule(ObservationTarget.DELETED, Operator.EQUALS, false));
 			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
 			if (type != null) {
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
@@ -393,6 +394,7 @@ public class CommonService
 			// Find 'Active' target id's
 			int featureId = getMeasurementId(ACTIVE);
 			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
+			valueQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 			valueQuery.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 			valueQuery.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
@@ -405,6 +407,7 @@ public class CommonService
 			List<Integer> typeIdList = new ArrayList<Integer>();
 			if (type != null) {
 				Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
+				targetQuery.addRules(new QueryRule(ObservationTarget.DELETED, Operator.EQUALS, false));
 				targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
 				targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
