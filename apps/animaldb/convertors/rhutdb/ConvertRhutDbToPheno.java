@@ -81,7 +81,7 @@ public class ConvertRhutDbToPheno
 		userName = login.getUserName();
 		
 		// If needed, make investigation
-		invName = "RoelofHutLegacyImport";
+		invName = "FDD";
 		int invId = ct.getInvestigationId(invName);
 		if (invId == -1) {
 			Investigation newInv = new Investigation();

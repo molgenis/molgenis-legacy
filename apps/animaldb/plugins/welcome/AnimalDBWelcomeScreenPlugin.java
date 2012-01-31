@@ -7,7 +7,9 @@
 
 package plugins.welcome;
 
+import org.molgenis.animaldb.ContactInfo;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
@@ -18,6 +20,7 @@ import commonservice.CommonService;
 public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5861419875983400033L;
+	private String contactInfo = null;
 	
 	public AnimalDBWelcomeScreenPlugin(String name, ScreenController<?> parent)
 	{
@@ -64,6 +67,19 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 		CommonService cs = CommonService.getInstance();
 		cs.setDatabase(db);
 		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
+		
+		try
+		{
+			contactInfo = db.query(ContactInfo.class).find().get(0).getText();
+		}
+		catch (Exception e)
+		{
+			contactInfo = "No contact information available in the database!";
+		}
+	}
+	
+	public String getContactInfo() {
+		return contactInfo;
 	}
 	
 }

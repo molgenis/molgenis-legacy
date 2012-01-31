@@ -66,6 +66,12 @@
 				label="Gene modifications" />
 			<plugin name="Backgrounds" type="plugins.settings.BackgroundPlugin"
 				label="Backgrounds" />
+			<menu name="errorcorrectmenu" position="left" label="Correct errors">
+				<plugin name="ErrorCorrection" type="plugins.system.ErrorCorrectionPlugin"
+					label="Values" />
+				<plugin name="ErrorCorrectionTarget" type="plugins.system.ErrorCorrectionTargetPlugin"
+					label="Targets" />
+			</menu>
 		</menu>
 		
 		<menu name="Admin" position="left" label="Admin">
@@ -96,12 +102,6 @@
 				<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
 				<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
 					label="Make/edit values" />
-				<menu name="errorcorrectmenu" position="left" label="Correct errors">
-					<plugin name="ErrorCorrection" type="plugins.system.ErrorCorrectionPlugin"
-						label="Values" />
-					<plugin name="ErrorCorrectionTarget" type="plugins.system.ErrorCorrectionTargetPlugin"
-						label="Targets" />
-				</menu>
 				<plugin name="CascadingDeleteAnimals" type="plugins.system.CascadingDeleteAnimalsPlugin"
 					label="Delete targets" />
 				<!-- <plugin name="SetCustomLabelFeature" type="plugins.system.SetCustomLabelFeaturePlugin"
@@ -120,6 +120,7 @@
 					<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
 					<form name="prefix" entity="NamePrefix" view="list" label="Name prefixes" />
 					<form name="news" entity="MolgenisNews" view="list" label="News items" />
+					<form name="contact" entity="ContactInfo" view="list" label="Contact info" />
 				</menu>
 			</menu>
 		</menu>

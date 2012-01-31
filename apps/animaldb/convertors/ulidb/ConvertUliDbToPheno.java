@@ -71,7 +71,7 @@ public class ConvertUliDbToPheno
 		userName = login.getUserName();
 		
 		// If needed, make investigation
-		invName = "UliEiselLegacyImport";
+		invName = "FDD";
 		if (ct.getInvestigationId(invName) == -1) {
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);

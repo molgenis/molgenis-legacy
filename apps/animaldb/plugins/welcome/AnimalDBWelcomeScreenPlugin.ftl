@@ -33,6 +33,12 @@
 	
 <h1>Welcome to AnimalDB!</h1>
 
+<p>For giving <strong>feedback</strong>, you can use the 'feedback' link that is always visible in the top right corner of the screen.</p>
+
+<p>For <strong>urgent matters</strong>, please contact:<br />
+${screen.contactInfo}
+</p>
+
 <#--end of your plugin-->
 			</div>
 		</div>
