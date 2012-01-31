@@ -301,7 +301,7 @@ public class LoadAnimalDB
 				if (!inloc.equals("NULL")) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-					q.addRules(new QueryRule("value", Operator.EQUALS, inloc));
+					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, inloc));
 					List<ObservedValue> valueList = q.find();
 					ObservedValue tmpValue = valueList.get(0);
 					int newLocationId = tmpValue.getTarget_Id();

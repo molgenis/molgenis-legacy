@@ -113,8 +113,9 @@ public class ViewFamily extends PluginModel<Entity>
 				// Get litter ID
 				int litterId = -1;
 				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Litter")));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
 				List<ObservedValue> valueList = q.find();
 				if (valueList.size() == 1) {
 					litterId = valueList.get(0).getRelation_Id();
@@ -126,9 +127,10 @@ public class ViewFamily extends PluginModel<Entity>
 				// Get siblings
 				String siblings = "";
 				q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.NOT, animalId));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, litterId));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Litter")));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Litter"));
 				valueList = q.find();
 				for (ObservedValue value : valueList) {
 					siblings += (cs.getObservationTargetLabel(value.getTarget_Id()) + ", ");
@@ -140,8 +142,9 @@ public class ViewFamily extends PluginModel<Entity>
 				// Get parentgroup
 				int parentgroupId = -1;
 				q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, litterId));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Parentgroup")));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Parentgroup"));
 				valueList = q.find();
 				if (valueList.size() == 1) {
 					parentgroupId = valueList.get(0).getRelation_Id();
@@ -157,8 +160,9 @@ public class ViewFamily extends PluginModel<Entity>
 				// Get mother(s)
 				String mothers = "";
 				q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Mother")));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Mother"));
 				valueList = q.find();
 				for (ObservedValue value : valueList) {
 					mothers += (cs.getObservationTargetLabel(value.getTarget_Id()) + ", ");
@@ -170,8 +174,9 @@ public class ViewFamily extends PluginModel<Entity>
 				// Get father(s)
 				String fathers = "";
 				q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, cs.getMeasurementId("Father")));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Father"));
 				valueList = q.find();
 				for (ObservedValue value : valueList) {
 					fathers += (cs.getObservationTargetLabel(value.getTarget_Id()) + ", ");

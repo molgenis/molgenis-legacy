@@ -89,6 +89,7 @@ public class SpeciesPlugin extends PluginModel<Entity>
 	private String getSpeciesName(Database db, int speciesId, String measurementName) throws DatabaseException {
 		
 		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, measurementName));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, speciesId));
 		if (q.find().size() == 1) {

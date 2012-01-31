@@ -190,14 +190,14 @@ public class DecStatus extends GenericPlugin
 			int budget = 100; // TODO: use real budget
 			budgetCum += budget;
 			java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
-			featureId = cq.getMeasurementId("Experiment");
 			List<Integer> aliveAnimalIdList = cq.getAllObservationTargetIds("Individual", true, 
 					investigationIds);
 			if (aliveAnimalIdList.size() > 0) {
 				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				nrOfAnimalsAlive = q.count();
@@ -207,9 +207,10 @@ public class DecStatus extends GenericPlugin
 					investigationIds);
 			if (totalAnimalIdList.size() > 0) {
 				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, totalAnimalIdList));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				nrOfAnimalsTotal = q.count();
 			}
 			nrOfAnimalsRemoved = nrOfAnimalsTotal - nrOfAnimalsAlive;

@@ -397,6 +397,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			}
 			
 		} catch (Exception e) {
+			action = "init";
 			String message = "Something went wrong";
 			if (e.getMessage() != null) {
 				message += ": " + e.getMessage();

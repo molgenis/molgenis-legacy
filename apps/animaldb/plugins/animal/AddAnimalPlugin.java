@@ -430,8 +430,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		for (ObservationTarget tmpSource : tmpSourceList)
 		{
 			int featureId = ct.getMeasurementId("SourceType");
-			List<ObservedValue> sourceTypeValueList = db.query(ObservedValue.class).eq(ObservedValue.TARGET,
-					tmpSource.getId()).eq(ObservedValue.FEATURE, featureId).find();
+			List<ObservedValue> sourceTypeValueList = db.query(ObservedValue.class).eq(ObservedValue.DELETED, false).
+					eq(ObservedValue.TARGET, tmpSource.getId()).eq(ObservedValue.FEATURE, featureId).find();
 			if (sourceTypeValueList.size() > 0) {
 				String sourcetype = sourceTypeValueList.get(0).getValue();
 				if (!sourcetype.equals("Eigen fok binnen uw organisatorische werkeenheid")) {

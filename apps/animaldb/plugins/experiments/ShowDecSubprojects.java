@@ -403,10 +403,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					throw(new Exception("No DEC subproject code given - Subproject not added"));
 				}
 				// Check if combination of Project number + Subproject code unique
-				int featureId = ct.getMeasurementId("DecApplication");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, decappId));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "DecApplication"));
 				if (listId != -1) {
 					// If editing existing subproject, don't take existing code(s) for that into account
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.NOT, getSelectedDecSubproject().getId()));
@@ -415,8 +415,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// Iterate through list of values where other subprojects are linked to our master project
 				for (ObservedValue value : valueList) {
 					int subprojectId = value.getTarget_Id();
-					featureId = ct.getMeasurementId("ExperimentNr");
-					String otherCode = ct.getMostRecentValueAsString(subprojectId, featureId);
+					String otherCode = ct.getMostRecentValueAsString(subprojectId, ct.getMeasurementId("ExperimentNr"));
 					if (!otherCode.equals("")) {
 						if (otherCode.equals(expnumber)) {
 							throw(new Exception("DEC subproject code not unique within DEC project - Subproject not added"));
@@ -447,12 +446,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				}
 				
 				// Get most recent Project start and end dates
-				featureId = ct.getMeasurementId("StartDate");
-				String projectStartDateString = ct.getMostRecentValueAsString(decappId, featureId);
+				String projectStartDateString = ct.getMostRecentValueAsString(decappId, ct.getMeasurementId("StartDate"));
 				Date projectStartDate = dbFormat.parse(projectStartDateString);
-				featureId = ct.getMeasurementId("EndDate");
 				Date projectEndDate = null;
-				String projectEndDateString = ct.getMostRecentValueAsString(decappId, featureId);
+				String projectEndDateString = ct.getMostRecentValueAsString(decappId, ct.getMeasurementId("EndDate"));
 				if (!projectEndDateString.equals("")) {
 					projectEndDate = dbFormat.parse(projectEndDateString);
 				}
@@ -601,10 +598,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				
 				// Find all the animals currently in this DEC subproject
 				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
-				int featureId = ct.getMeasurementId("Experiment");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, getSelectedDecSubproject().getId()));
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				List<ObservedValue> valueList = q.find();
@@ -712,11 +709,11 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				
 				for (int animalId : animalRemoveIdList) {
 					// Get DEC subproject
-					int featureId = ct.getMeasurementId("Experiment");
 					Query<ObservedValue> q = db.query(ObservedValue.class);
+					q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, getSelectedDecSubproject().getId()));
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 					List<ObservedValue> valueList = q.find();
 					if (valueList.size() == 1) // if not, no or multiple experiments found, so something terribly wrong
@@ -730,10 +727,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						
 						// If applicable, end status Active and set Death date
 						if (endstatus.equals("A. Dood in het kader van de proef") || endstatus.equals("B. Gedood na beeindiging van de proef")) {
-							featureId = ct.getMeasurementId("Active");
 							Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
+							activeQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 							activeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-							activeQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+							activeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 							List<ObservedValue> activeValueList = activeQuery.find();
 							if (activeValueList.size() > 0) {
 								// Take most recent one and update
@@ -855,9 +852,9 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				}*/
 				
 				// Remove animals from id list that are already in an experiment currently
-				int featureId = ct.getMeasurementId("Experiment");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, animalIdList));
 				List<ObservedValue> valueList = q.find();
@@ -877,18 +874,18 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				for (int animalId : animalIdList) {
 					// Calculate sourceTypeSubproject based on animal's SourceType and DEC Subproject history
 					String sourceTypeSubproject = null;
-					featureId = ct.getMeasurementId("Source");
 					q = db.query(ObservedValue.class);
+					q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Source"));
 					valueList = q.find();
 					if (valueList.size() > 0)
 					{
 						int sourceId = valueList.get(0).getRelation_Id();
-						featureId = ct.getMeasurementId("SourceType");
 						q = db.query(ObservedValue.class);
+						q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, sourceId));
-						q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "SourceType"));
 						valueList = q.find();
 						if (valueList.size() > 0)
 						{
@@ -902,10 +899,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 							}
 							// SourceTypeSubproject 6 is for first reuse, 7 for second etc.
 							String startOfYearString = Calendar.getInstance().get(Calendar.YEAR) + "-01-01 00:00:00";
-							featureId = ct.getMeasurementId("Experiment");
 							q = db.query(ObservedValue.class);
+							q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-							q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 							q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.GREATER_EQUAL, startOfYearString));
 							int nrOfSubprojects = q.count();
 							if (nrOfSubprojects == 1) sourceTypeSubproject = "Hergebruik eerste maal in het registratiejaar";
@@ -1062,15 +1059,15 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				endDate = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
 
 				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
-				featureId = ct.getMeasurementId("Experiment");
 				// Make list of ID's of all animals in this DEC subproject that are alive
 				List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);
 				int nrOfAnimals = 0;
 				if (aliveAnimalIdList.size() > 0) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
+					q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, currentExp.getId()));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 					nrOfAnimals = q.count();

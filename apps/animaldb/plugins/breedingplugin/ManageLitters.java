@@ -390,6 +390,7 @@ public class ManageLitters extends PluginModel<Entity>
 		List<Individual> returnList = new ArrayList<Individual>();
 		try {
 			Query<ObservedValue> q = db.query(ObservedValue.class);
+			q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 			q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, litterId));
 			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("Litter")));
 			List<ObservedValue> valueList = q.find();
@@ -457,6 +458,7 @@ public class ManageLitters extends PluginModel<Entity>
 	
 	public String getAnimalGeneInfo(String measurementName, int animalId, int genoNr, Database db) {
 		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, measurementName));
 		List<ObservedValue> valueList;
@@ -476,6 +478,7 @@ public class ManageLitters extends PluginModel<Entity>
 		ct.setDatabase(db);
 		int measurementId = ct.getMeasurementId(parentSex);
 		Query<ObservedValue> parentQuery = db.query(ObservedValue.class);
+		parentQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		parentQuery.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
 		parentQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
 		List<ObservedValue> parentValueList = parentQuery.find();
@@ -496,6 +499,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 		returnString += ("background: " + animalBackgroundName + "; ");
 		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneModification")));
 		List<ObservedValue> valueList = q.find();
@@ -506,6 +510,7 @@ public class ManageLitters extends PluginModel<Entity>
 				String geneState = "";
 				protocolApplicationId = value.getProtocolApplication_Id();
 				q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GeneState")));
 				q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
@@ -1506,9 +1511,9 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			// Make list of ID's of weaned litters
 			List<Integer> weanedLitterIdList = new ArrayList<Integer>();
-			int featid = ct.getMeasurementId("WeanDate");
 			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+			q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
+			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("WeanDate")));
 			List<ObservedValue> valueList = q.find();
 			for (ObservedValue value : valueList) {
 				int litterId = value.getTarget_Id();
@@ -1518,9 +1523,9 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			// Make list of ID's of genotyped litters
 			List<Integer> genotypedLitterIdList = new ArrayList<Integer>();
-			featid = ct.getMeasurementId("GenotypeDate");
 			q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+			q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
+			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GenotypeDate")));
 			valueList = q.find();
 			for (ObservedValue value : valueList) {
 				int litterId = value.getTarget_Id();
@@ -1544,33 +1549,28 @@ public class ManageLitters extends PluginModel<Entity>
 				// Name
 				litterToAdd.setName(litter.getName());
 				// Parentgroup
-				featid = ct.getMeasurementId("Parentgroup");
-				int parentgroupId = ct.getMostRecentValueAsXref(litterId, featid);
+				int parentgroupId = ct.getMostRecentValueAsXref(litterId, ct.getMeasurementId("Parentgroup"));
 				String parentgroup = ct.getObservationTargetById(parentgroupId).getName();
 				litterToAdd.setParentgroup(parentgroup);
 				// Birth date
-				featid = ct.getMeasurementId("DateOfBirth");
-				String birthDate = ct.getMostRecentValueAsString(litterId, featid);
+				String birthDate = ct.getMostRecentValueAsString(litterId, ct.getMeasurementId("DateOfBirth"));
 				if (birthDate != null && !birthDate.equals("")) {
 					litterToAdd.setBirthDate(birthDate);
 				}
 				// Wean date
-				featid = ct.getMeasurementId("WeanDate");
-				String weanDate = ct.getMostRecentValueAsString(litterId, featid);
+				String weanDate = ct.getMostRecentValueAsString(litterId, ct.getMeasurementId("WeanDate"));
 				if (weanDate != null && !weanDate.equals("")) {
 					litterToAdd.setWeanDate(weanDate);
 				}
 				// Size
-				featid = ct.getMeasurementId("Size");
-				String size = ct.getMostRecentValueAsString(litterId, featid);
+				String size = ct.getMostRecentValueAsString(litterId, ct.getMeasurementId("Size"));
 				if (size.equals("")) {
 					litterToAdd.setSize(-1);
 				} else {
 					litterToAdd.setSize(Integer.parseInt(size));
 				}
 				// Wean size
-				featid = ct.getMeasurementId("WeanSize");
-				String weanSize = ct.getMostRecentValueAsString(litterId, featid);
+				String weanSize = ct.getMostRecentValueAsString(litterId, ct.getMeasurementId("WeanSize"));
 				if (weanSize.equals("")) {
 					litterToAdd.setWeanSize(-1);
 				} else {
@@ -1578,8 +1578,7 @@ public class ManageLitters extends PluginModel<Entity>
 				}
 				// Size approximate
 				String isApproximate = "";
-				featid = ct.getMeasurementId("Certain");
-				String tmpValue = ct.getMostRecentValueAsString(litterId, featid);
+				String tmpValue = ct.getMostRecentValueAsString(litterId, ct.getMeasurementId("Certain"));
 				if (tmpValue.equals("0")) {
 					isApproximate = "No";
 				}
@@ -1597,12 +1596,9 @@ public class ManageLitters extends PluginModel<Entity>
 					remarks = remarks.substring(0, remarks.length() - 4);
 				}
 				litterToAdd.setRemarks(remarks);
-				
 				// Status
-				featid = ct.getMeasurementId("Active");
-				String status = ct.getMostRecentValueAsString(litterId, featid);
+				String status = ct.getMostRecentValueAsString(litterId, ct.getMeasurementId("Active"));
 				litterToAdd.setStatus(status);
-				
 				
 				// Add to the right list
 				if (!weanedLitterIdList.contains(litterId) && !genotypedLitterIdList.contains(litterId)) {

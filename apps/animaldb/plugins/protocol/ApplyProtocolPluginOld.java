@@ -196,9 +196,9 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 				int groupId = request.getInt("group_animal");
 				String featname = "Group";
 				// Is it a labeled targetgroup?
-				int featId = ct.getMeasurementId("TypeOfGroup");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-                q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featId));
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
+                q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "TypeOfGroup"));
                 q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, groupId));
                 List<ObservedValue> valueList = q.find();
                 if (valueList.size() > 0) {
@@ -209,9 +209,9 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
                 	}
                 }
 				
-				featId = ct.getMeasurementId(featname);
-                q = db.query(ObservedValue.class);
-                q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featId));
+				q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
+                q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, featname));
                 q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, groupId));
                 valueList = q.find();
                 

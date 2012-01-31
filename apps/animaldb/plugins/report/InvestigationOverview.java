@@ -107,11 +107,10 @@ public class InvestigationOverview extends PluginModel<Entity>
 				case Show_All_Investigations:
 					// only reload on request of 'refresh'
 					if (investigations.size() == 0) this.refreshInvestigationReport(db);
-
 					break;
 				case Select_Investigation:
-					List<ObservedValue> result = db.query(ObservedValue.class).equals("investigation",
-							selectedInvestigation.getId()).find();
+					List<ObservedValue> result = db.query(ObservedValue.class).eq(ObservedValue.DELETED, false).
+						eq(ObservedValue.INVESTIGATION, selectedInvestigation.getId()).find();
 					for (ObservedValue v : result)
 					{
 						String f = v.getFeature_Name();

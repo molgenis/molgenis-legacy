@@ -17,6 +17,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.Location;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HttpServletRequestTuple;
@@ -85,6 +86,7 @@ public class LocationInformationService extends app.servlet.MolgenisServlet {
 		
 		for (ProtocolApplication e : eventList) {
 			Query<ObservedValue> q = db.query(ObservedValue.class);
+			q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 			q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, e.getId()));
 			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, locid));
 			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));

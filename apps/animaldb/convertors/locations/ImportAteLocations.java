@@ -56,7 +56,8 @@ public class ImportAteLocations
 					newBuilding.setInvestigation(investigationId);
 					buildingId = db.add(newBuilding);
 				} else {
-					buildingId = db.query(Location.class).eq(Location.NAME, buildingNr).find().get(0).getId();
+					buildingId = db.query(Location.class).eq(Location.DELETED, false).
+							eq(Location.NAME, buildingNr).find().get(0).getId();
 				}
 				// etage
 				String floor = tuple.getString("etage");

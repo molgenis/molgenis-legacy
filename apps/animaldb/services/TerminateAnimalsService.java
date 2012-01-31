@@ -53,6 +53,7 @@ public class TerminateAnimalsService implements MolgenisService {
 			} else {
 				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 				Query<ObservedValue> q = db.query(ObservedValue.class);
+				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
@@ -61,24 +62,24 @@ public class TerminateAnimalsService implements MolgenisService {
 				if (valueList.size() == 1) {
 					// Generate selectbox for Actual Discomfort
 					Query<Category> codeQuery = db.query(Category.class);
-					Measurement actualDiscomfort = db.query(Measurement.class).eq(Measurement.NAME,"ActualDiscomfort").find().get(0);
-					//codeQuery.in(Category.ID, )
-					//codeQuery.addRules(new QueryRule(Category.FEATURE_NAME, Operator.EQUALS, "ActualDiscomfort"));
+					Measurement actualDiscomfort = db.query(Measurement.class).eq(Measurement.DELETED, false).
+							eq(Measurement.NAME, "ActualDiscomfort").find().get(0);
 					codeQuery.in(Category.ID, actualDiscomfort.getCategories_Id());
 					List<Category> codeList = codeQuery.find();
 					out.print("<div class='row'>");
 					out.print("<label for='discomfort'>Actual discomfort:</label>");
 					out.print("<select name='discomfort' id='discomfort'>");
 					for (Category code : codeList) {
-						out.print("<option value='" + code.getDescription() + "'>" + code.getCode_String() + " (" + code.getDescription() + ")" + "</option>");
+						out.print("<option value='" + code.getDescription() + "'>" + code.getCode_String() + 
+								" (" + code.getDescription() + ")" + "</option>");
 					}
 					out.print("</select>");
 					out.print("</div>");
 						
 					// Generate selectbox for ActualAnimalEndStatus
 					codeQuery = db.query(Category.class);
-					Measurement actualAnimalEndStatus = db.query(Measurement.class).eq(Measurement.NAME,"ActualAnimalEndStatus").find().get(0);
-					//codeQuery.addRules(new QueryRule(Category.FEATURE_NAME, Operator.EQUALS, ""));
+					Measurement actualAnimalEndStatus = db.query(Measurement.class).eq(Measurement.DELETED, false)
+							.eq(Measurement.NAME, "ActualAnimalEndStatus").find().get(0);
 					codeQuery.in(Category.ID, actualAnimalEndStatus.getCategories_Id());
 					codeList = codeQuery.find();
 					out.print("<div class='row'>");

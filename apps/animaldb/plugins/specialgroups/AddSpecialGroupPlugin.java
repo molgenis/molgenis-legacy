@@ -109,9 +109,9 @@ public class AddSpecialGroupPlugin extends PluginModel<Entity>
 		try {
 			// Populate label list
 			labelList.clear();
-			int featid = ct.getMeasurementId("TypeOfGroup");
 			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
+			q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
+			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "TypeOfGroup"));
 			List<ObservedValue> valueList = q.find();
 			for (ObservedValue v : valueList) {
 				if (!labelList.contains(v.getValue())) {
