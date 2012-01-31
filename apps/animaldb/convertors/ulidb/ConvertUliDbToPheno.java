@@ -305,9 +305,9 @@ public class ConvertUliDbToPheno
 				}
 				
 				//  not needed, skip import (update ate @ 2011-09-20)
-				// K�rzel -> OldUliDbKuerzel
+				// Kuerzel -> OldUliDbKuerzel
 				/*
-				 * String kuerzel = tuple.getString("K�rzel");
+				 * String kuerzel = tuple.getString("Kuerzel");
 				 * if (kuerzel != null) {
 				 * 	valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbKuerzel"), 
 				 * 		now, null, "OldUliDbKuerzel", newAnimalName, kuerzel, null));
@@ -545,14 +545,18 @@ public class ConvertUliDbToPheno
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 							now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
 					
-					// Link parent(s) to parentgroup
+					// Link parent(s) to parentgroup and animal
 					for (String motherName : motherList) {
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
 								now, null, "Mother", motherName, null, parentgroupName));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
+								now, null, "Mother", newAnimalName, null, motherName));
 					}
 					for (String fatherName : fatherList) {
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
 								now, null, "Father", fatherName, null, parentgroupName));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
+								now, null, "Father", newAnimalName, null, fatherName));
 					}
 					
 					// Set line (Linie) of parentgroup
@@ -576,19 +580,15 @@ public class ConvertUliDbToPheno
 							now, null, "WeanDate", litterName, weanDate, null));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotypeDate"), 
 							now, null, "GenotypeDate", litterName, weanDate, null));
-					
 					// Link litter to parentgroup
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
 							now, null, "Parentgroup", litterName, null, parentgroupName));
-					
 					// Link animal to litter
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
 							now, null, "Litter", newAnimalName, null, litterName));
-					
 					// Set litter also on animal
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 							now, null, "Line", newAnimalName, null, lineName));
-					
 					// Add litter to hashmap for reuse with siblings of this animal
 					litterMap.put(litterInfo, litterName);
 				

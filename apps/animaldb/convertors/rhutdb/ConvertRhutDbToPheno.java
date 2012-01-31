@@ -561,6 +561,11 @@ public class ConvertRhutDbToPheno
 						// Link animal to litter
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
 								now, null, "Litter", animalName, null, litterName));
+						// Set parents also on animal
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
+								now, null, "Mother", animalName, null, motherName));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
+								now, null, "Father", animalName, null, fatherName));
 						// Set birth date and line also on animal
 						// Get Active value from map; every animal has one
 						ObservedValue activeValue = activeMap.get(animalName);

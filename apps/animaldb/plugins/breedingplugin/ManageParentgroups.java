@@ -213,7 +213,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	}
 	
 	private void AddParents(Database db, List<Integer> parentIdList, String protocolName, String eventName, 
-			String featureName, String valueName, String valueCertainName, int parentgroupid, Date tmpDate) 
+			String featureName, String valueName, String valueCertainName, int parentgroupid, Date eventDate) 
 			throws DatabaseException, ParseException, IOException {
 		
 		int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
@@ -228,11 +228,10 @@ public class ManageParentgroups extends PluginModel<Entity>
 			// and no longer the Certain feature. Solve this!
 			// Make the event
 			ProtocolApplication app = ct.createProtocolApplication(invid, protocolId);
-			db.add(app);
-			int eventid = app.getId();
+			int eventid = db.add(app);
 			// Make 'Mother'/'Father' feature-value pair and link to event
 			int measurementId = ct.getMeasurementId(featureName);
-			valuesToAddList.add(ct.createObservedValue(invid, eventid, tmpDate, null, measurementId, parentId, 
+			valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, parentId, 
 					null, parentgroupid));		
 			// Make 'Certain' feature-value pair and link to event
 			String valueString;
@@ -242,7 +241,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				valueString = "0"; // ... otherwise, not
 			}
 			measurementId = ct.getMeasurementId("Certain");
-			valuesToAddList.add(ct.createObservedValue(invid, eventid, tmpDate, null, measurementId, parentId, 
+			valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, parentId, 
 					valueString, 0));
 		}
 		// Add everything to DB
