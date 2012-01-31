@@ -113,7 +113,7 @@ public class Settings extends PluginModel
 		}
 	}
 	
-	public ArrayList<String> deleteExampleInvestigation(String name, Database db)
+	public static ArrayList<String> deleteExampleInvestigation(String name, Database db)
 	{
 		
 		ArrayList<String> report = new ArrayList<String>();

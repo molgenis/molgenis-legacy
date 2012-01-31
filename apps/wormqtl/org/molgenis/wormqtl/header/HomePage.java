@@ -7,12 +7,20 @@
 
 package org.molgenis.wormqtl.header;
 
+import java.io.File;
+
+import matrix.general.DataMatrixHandler;
+
 import org.molgenis.auth.MolgenisPermission;
+import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Tuple;
+
+import plugins.system.database.Settings;
+import app.CsvImport;
+import app.ExcelImport;
 
 public class HomePage extends plugins.cluster.demo.ClusterDemo
 {
@@ -43,11 +51,11 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 		if (action.equals("setPathAndLoad"))
 		{
 			setupStorageAndLoadExample(db, request.getString("fileDirPath"));
-			addPanaceaPermissions(db);
+			addPanaceaPermissionsAndTryToImportData(db);
 		}
 	}
 
-	private void addPanaceaPermissions(Database db)
+	private void addPanaceaPermissionsAndTryToImportData(Database db)
 	{
 		try
 		{
@@ -136,6 +144,58 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 				mp.setPermission("read");
 				db.add(mp);
 			}
+			
+			DataMatrixHandler dmh = new DataMatrixHandler(db);
+			
+			if(dmh.hasValidFileStorage(db))
+			{
+				String path = dmh.getFileStorage(true, db).getAbsolutePath();
+				
+				//import WormQTL annotations
+				String importDir = path + File.separator + "imports";
+				File wormQtlAnnotations = new File(importDir + File.separator + "wormqtl_set1_annotations_minusUSAprobes.xls");
+			
+				if(!wormQtlAnnotations.exists())
+				{
+					throw new Exception("Annotation Excel file is missing!");
+				}
+				
+				//original name..
+				File usaProbes = new File(importDir + File.separator + "probes_usa.txt");
+			
+				//if exists, rename for CsvImport on directory (requires 'probe.txt')
+				if(usaProbes.exists())
+				{
+					usaProbes.renameTo(new File(usaProbes.getAbsolutePath().replace("probes_usa.txt", "probe.txt")));
+				}
+				//if not, it should already be there in renamed form
+				else
+				{
+					usaProbes = new File(importDir + File.separator + "probe.txt");
+					if(!usaProbes.exists())
+					{
+						throw new Exception("USA probe file is missing!");
+					}
+				}
+				
+				ExcelImport.importAll(wormQtlAnnotations, db, null);
+				CsvImport.importAll(new File(importDir), db, null);
+				
+				//relink datasets
+				relinkDatasets(db, dmh);
+				
+				//remove clusterdemo example investigation
+				Settings.deleteExampleInvestigation("ClusterDemo", db);
+				
+				//all done
+				this.setMessages(new ScreenMessage("WormQTL specific annotation import and data relink succeeded", true));
+			}
+			else
+			{
+				this.setMessages(new ScreenMessage("WormQTL permissions loaded, but could not import annotations because storagedir setup failed", false));
+			}
+			
+			
 		}
 		catch (Exception e)
 		{
@@ -144,4 +204,38 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 		}
 	}
 
+	/**
+	 * Relink datasets if needed: but expected is that ALL are relinked when the function ends, or else error
+	 * @param db
+	 * @param dmh
+	 * @throws Exception 
+	 */
+	private void relinkDatasets(Database db, DataMatrixHandler dmh) throws Exception
+	{
+		for(Data data : db.find(Data.class))
+		{
+			//find out if the 'Data' has a proper backend
+			boolean hasLinkedStorage = dmh.isDataStoredIn(data, data.getStorage(), db);
+			
+			//if not, it doesn't mean the source file is not there! e.g. after updating your database
+			if(!hasLinkedStorage)
+			{
+				//attempt to relink
+				boolean relinked = dmh.attemptStorageRelink(data, data.getStorage(), db);
+				
+				if(!relinked)
+				{
+					throw new Exception("Could not relink data matrix '" + data.getName() + "'");
+				}
+				
+				if(!dmh.isDataStoredIn(data, data.getStorage(), db))
+				{
+					throw new Exception("SEVERE: Data matrix '" + data.getName() + "' is supposed to be relinked, but the isDataStoredIn check failed!");
+				}
+			
+			}
+		}
+		
+	}	
+	
 }
