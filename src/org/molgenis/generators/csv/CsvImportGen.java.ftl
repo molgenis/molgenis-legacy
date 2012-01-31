@@ -93,7 +93,7 @@ public class CsvImport
 	public static ImportResult importAll(File directory, Database db, Tuple defaults, List<String> components, DatabaseAction dbAction, String missingValue, boolean useDbTransaction) throws Exception
 	{
 		ImportResult result = new ImportResult();
-		boolean intransaction = false;
+		boolean alreadyInTx = false;
 		try
 		{
 			if (useDbTransaction)
@@ -102,7 +102,7 @@ public class CsvImport
 				{
 					db.beginTx();
 				}else{
-					intransaction = true; 
+					alreadyInTx = true; 
 					//throw new DatabaseException("Cannot continue CsvImport: database already in transaction.");
 				}
 			}
@@ -144,10 +144,10 @@ public class CsvImport
 				</#if></#list>
 			}			
 			
-			if (useDbTransaction)
+			if (useDbTransaction &! alreadyInTx)
 			{
 				logger.debug("commiting transactions...");
-				if (db.inTx() && intransaction){
+				if (db.inTx()){
 					db.commitTx();
 				}else{
 					throw new DatabaseException("Cannot commit CsvImport: database not in transaction.");
@@ -157,9 +157,9 @@ public class CsvImport
 		catch (Exception e)
 		{
 			logger.error("Import failed: " + e.getMessage());
-			if (useDbTransaction)
+			if (useDbTransaction &! alreadyInTx)
 			{
-				if (db.inTx() && intransaction){
+				if (db.inTx()){
 					logger.debug("Db in transaction, rolling back...");
 					db.rollbackTx();
 				}else{
