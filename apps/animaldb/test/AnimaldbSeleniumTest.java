@@ -383,45 +383,45 @@ public class AnimaldbSeleniumTest
 		sleepHelper("yearlyReports");
 	}
 	
-	@Test(dependsOnMethods={"yearlyReports"})
-	public void applyProtocol() throws Exception {
-		// Go to Protocol plugin
-		selenium.click("id=Admin_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=systemmenu_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=ApplyProtocol_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Apply 'SetWeight' protocol on animal '000001'
-		selenium.select("id=Protocols", "label=SetWeight");
-		selenium.click("id=targetmatrix_selected_0"); // toggle selectbox for first animal in matrix
-		selenium.click("id=TimeBox");
-		selenium.click("id=Select");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[2]"), "Weight");
-		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[3]"), "Weight start");
-		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[4]"), "Weight end");
-		selenium.type("id=0_1_0", "200");
-		selenium.click("id=ApplyStartTime_1");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=Apply");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Protocol applied successfully"));
-		// Check in Timeline value viewer
-		selenium.click("id=animalmenu_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=EventViewer_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=targetmatrix_selected_0"); // toggle radio button for first animal in list
-		selenium.click("id=select");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Weight"));
-		Assert.assertTrue(selenium.isTextPresent("200"));
-		
-		sleepHelper("applyProtocol");
-	}
+//	@Test(dependsOnMethods={"yearlyReports"})
+//	public void applyProtocol() throws Exception {
+//		// Go to Protocol plugin
+//		selenium.click("id=Admin_tab_button");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		selenium.click("id=systemmenu_tab_button");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		selenium.click("id=ApplyProtocol_tab_button");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		// Apply 'SetWeight' protocol on animal '000001'
+//		selenium.select("id=Protocols", "label=SetWeight");
+//		selenium.click("id=targetmatrix_selected_0"); // toggle selectbox for first animal in matrix
+//		selenium.click("id=TimeBox");
+//		selenium.click("id=Select");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[2]"), "Weight");
+//		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[3]"), "Weight start");
+//		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[4]"), "Weight end");
+//		selenium.type("id=0_1_0", "200");
+//		selenium.click("id=ApplyStartTime_1");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		selenium.click("id=Apply");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		Assert.assertTrue(selenium.isTextPresent("Protocol applied successfully"));
+//		// Check in Timeline value viewer
+//		selenium.click("id=animalmenu_tab_button");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		selenium.click("id=EventViewer_tab_button");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		selenium.click("id=targetmatrix_selected_0"); // toggle radio button for first animal in list
+//		selenium.click("id=select");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		Assert.assertTrue(selenium.isTextPresent("Weight"));
+//		Assert.assertTrue(selenium.isTextPresent("200"));
+//		
+//		sleepHelper("applyProtocol");
+//	}
 	
-	@Test(dependsOnMethods={"applyProtocol"})
+	@Test(dependsOnMethods={"yearlyReports"})
 	public void logoutUser() throws InterruptedException
 	{
 		selenium.click("id=UserLogin_tab_button");
