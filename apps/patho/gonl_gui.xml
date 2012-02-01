@@ -41,5 +41,6 @@
 		<form name="PathoPanels" label="Panels" entity="Panel" />
 		<form name="PathoIndividuals" label="Individuals" entity="Individual" />
 		<form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
+		<plugin name="PathoLoadFromDir" label="DirectoryImport" type="org.molgenis.patho.ui.LoadFromDirectory"/>
 	</menu>
 </molgenis>

@@ -3,10 +3,10 @@ package org.molgenis.patho;
 import java.io.File;
 
 import org.apache.log4j.BasicConfigurator;
-import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Database;
 
 import app.CsvImport;
-import app.JDBCDatabase;
+import app.DatabaseFactory;
 
 public class LoadFromDirectory
 {
@@ -16,7 +16,7 @@ public class LoadFromDirectory
 		
 		File directory = new File("/tmp/");
 		
-		JDBCDatabase db = new JDBCDatabase();
+		Database db = DatabaseFactory.create();
 		
 		CsvImport.importAll(directory, db, null);
 		

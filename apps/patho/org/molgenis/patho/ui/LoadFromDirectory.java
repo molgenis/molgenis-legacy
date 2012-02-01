@@ -3,13 +3,11 @@ package org.molgenis.patho.ui;
 import java.io.File;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
 import app.CsvImport;
-import app.JDBCDatabase;
 
 /**
  * LoadFromDirectoryController takes care of all user requests and application
@@ -25,6 +23,9 @@ import app.JDBCDatabase;
 public class LoadFromDirectory extends
 		EasyPluginController<LoadFromDirectoryModel>
 {
+	// needed for serialization
+	private static final long serialVersionUID = -8519723133998268849L;
+
 	public LoadFromDirectory(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
