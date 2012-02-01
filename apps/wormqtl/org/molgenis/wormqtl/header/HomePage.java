@@ -151,31 +151,21 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 			{
 				String path = dmh.getFileStorage(true, db).getAbsolutePath();
 				
-				//import WormQTL annotations
+				//import WormQTL annotations from 'imports' location
 				String importDir = path + File.separator + "imports";
+				
+				//excel with everything minus USA probes
 				File wormQtlAnnotations = new File(importDir + File.separator + "wormqtl_set1_annotations_minusUSAprobes.xls");
-			
 				if(!wormQtlAnnotations.exists())
 				{
 					throw new Exception("Annotation Excel file is missing!");
 				}
 				
-				//original name..
-				File usaProbes = new File(importDir + File.separator + "probes_usa.txt");
-			
-				//if exists, rename for CsvImport on directory (requires 'probe.txt')
-				if(usaProbes.exists())
+				//USA probes (original name: 'probes_usa.txt', but renamed for CsvImport)
+				File probes = new File(importDir + File.separator + "probe.txt");
+				if(!probes.exists())
 				{
-					usaProbes.renameTo(new File(usaProbes.getAbsolutePath().replace("probes_usa.txt", "probe.txt")));
-				}
-				//if not, it should already be there in renamed form
-				else
-				{
-					usaProbes = new File(importDir + File.separator + "probe.txt");
-					if(!usaProbes.exists())
-					{
-						throw new Exception("USA probe file is missing!");
-					}
+					throw new Exception("USA probe file is missing!");
 				}
 				
 				ExcelImport.importAll(wormQtlAnnotations, db, null);
