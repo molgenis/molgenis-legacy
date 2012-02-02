@@ -55,6 +55,10 @@ public class GenerateN3andRDF extends PluginModel
 	{
 		if ("GenerateN3".equals(request.getAction())) {
 				
+			//./generate-mapping -u root -p root -d com.mysql.jdbc.Driver -o molgenis_rdf_mapping_GCC_30_january.n3 jdbc:mysql://127.0.0.1/LLcatalogue
+			//./d2r-server -p 2020 molgenis_rdf_mapping_GCC_30_january.n3
+
+
 				/*Object d2rq = new D2RQ(); 
 				
 				Object mapping = new Mapping();

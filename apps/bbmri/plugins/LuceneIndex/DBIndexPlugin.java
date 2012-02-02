@@ -467,7 +467,7 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 					//Search the user term in concept wiki 
 					//Ask Christina : the user term that will be searched in concept wiki : 
 					// 1. Needs to be clean up ,Should this be done  by hand or need some specialist ?
-					// 2. Some terms can be found capitaliazed e.g HIV , but not in hiv ..: currently capitaliazing the terms, 
+					// 2. Some terms can be found capitaliazed e.g HIV , but not in hiv ..: currently capitalizing the terms, 
 
 					//One of the below is correct: can concept wiki return some kind of 505/404/...error so I can check that? 
 					result += "<td><a href=http://conceptwiki.org/index.php/Term:"+ userQuery.toUpperCase() + ">ConceptWiki</a> " + "OR..." +
@@ -613,15 +613,5 @@ public class DBIndexPlugin extends PluginModel<org.molgenis.util.Entity>
 		System.out.println("Finished serching... ");
 	
 	}
-	
-	
-	
-  /*
-	public static void main(String[] args){
-		
-		DBIndexPlugin p = new DBIndexPlugin("x", null);
-		
-		
-	}*/
-	
+
 }

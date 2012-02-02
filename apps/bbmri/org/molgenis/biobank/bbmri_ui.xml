@@ -4,7 +4,9 @@
 	<plugin name="MolgenisHeader" type="plugins.header.BbmriHeader" />
 	<menu name="main" position="left" startswith="WelcomeScreen">
 		<plugin name="BbmriWelcomeScreen" type="plugins.welcome.BbmriWelcomeScreenPlugin" label="Welcome" />
-		<plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" />
+		 <plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" /> 
+		<!--<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" /> -->
+		
          <!--  		<menu name="BiobankOverview" label="Biobank Overview">
 			<plugin name="CohortPlugin" type="plugins.listplugin.CohortsPlugin" label="Biobank Overview " />
 		</menu>
@@ -24,7 +26,6 @@
 				<form name="BiobankDataType" entity="BiobankDataType" />
 				<form name="ChangeLog" entity="ChangeLog" />
 			</menu>
-			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
 				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
 				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
@@ -32,9 +33,13 @@
 				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission" />
 				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink"/>
 			</menu>
-			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
-			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"	label="Mapping" />
+			<menu name="ImportMenu" position="left" label="Importing data">
+				<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin" label="Generic Importer"/>
+				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
+			</menu>
+			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
+			<plugin name="Settings" type="plugins.system.settings.Settings" />
 		</menu>
 		<menu name="submenu" position="left" label="Index powered Search">
 			<plugin name="DBIndex" label="DB Index"	type="plugins.LuceneIndex.DBIndexPlugin" />
