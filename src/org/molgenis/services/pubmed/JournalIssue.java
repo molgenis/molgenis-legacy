@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JournalIssue
 {
-	String Volume;
-	String Issue;
-    PubDate PubDate;
+	public String Volume;
+	public String Issue;
+	public PubDate PubDate;
 }
