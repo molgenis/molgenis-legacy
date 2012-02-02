@@ -22,6 +22,7 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.Measurement_Categories;
 import org.molgenis.protocol.Protocol;
@@ -107,16 +108,18 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		if (result.isEmpty()) {
 			//Add to database 
 			ShoppingCart shoppingCart = new ShoppingCart();
+			//shoppingCart.setMeasurements(DownloadedMeasurementIds);
 			shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 			shoppingCart.setUserID(this.getLogin().getUserName());
 			shoppingCart.setCheckedOut(false);
 			shoppingCart.setDateOfOrder(dateOfDownload);
 			shoppingCart.setApproved(false);
 			db.add(shoppingCart);
-			System.out.println("Shopping cart has been added to the DB");
+			System.out.println("Download list has been added to the DB");
 			
 		} else {
 			ShoppingCart shoppingCart = result.get(0); // assuming user can have only one shopping cart that's NOT checked out
+			//shoppingCart.setMeasurements(DownloadedMeasurementIds);
 			shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 			db.update(shoppingCart);
 			System.out.println("Shopping cart has been updated in the DB");
@@ -182,12 +185,19 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					childTree = labelToTree.get(measurement.getName());
 					
 					//get the corresponding Category joined with Measurement_categories
-					List<Measurement_Categories> categoryIds = new ArrayList<Measurement_Categories>();
-					categoryIds = db.find(Measurement_Categories.class, new QueryRule(Measurement_Categories.MEASUREMENT_NAME, Operator.EQUALS, measurement.getId()));
-					System.out.println("category ids for "+ measurement.getId()+ ">>>>: "+ categoryIds);
+					List<Category> categoryIds = new ArrayList<Category>();
+					categoryIds = db.find(Category.class, new QueryRule(Category.NAME, Operator.EQUALS, measurement.getCategories_Name()));
+					System.out.println("category ids for "+ measurement.getName()+ ">>>" +categoryIds);
+					//for (i=0; i< )
+					
 				} else {
 					childTree = new JQueryTreeViewElementObject(measurement, null, null, parentTree); //TODO : fill in the category
 					labelToTree.put(measurement.getName(), childTree);
+
+					List<Category> categoryIds = new ArrayList<Category>();
+					categoryIds = db.find(Category.class, new QueryRule(Category.NAME, Operator.EQUALS, measurement.getCategories_Name()));
+					System.out.println("category ids for "+ measurement.getName()+ ">>>>>>>>>>>>>>>>" +categoryIds);
+					
 				}
 			}
 		} catch (DatabaseException e) {
@@ -224,7 +234,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			List<ShoppingCart> result = q.find();
 			shoppingCart.clear();
 			for(ShoppingCart cart : result){
-				shoppingCart.addAll(cart.getMeasurements());
+				shoppingCart.addAll(cart.getMeasurements(db));
 			}
 			
 			this.arrayInvestigations.clear();
