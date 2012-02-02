@@ -1459,7 +1459,7 @@ public class CommonService
 	}
 
 	/**
-	 * Create a new Measurement and add it to the databases
+	 * Creates a new Measurement and adds it to the databases
 	 * 
 	 * @param investigationId
 	 * @param name
@@ -1496,9 +1496,48 @@ public class CommonService
 		db.add(newFeat);
 		return newFeat.getId();
 	}
+	
+	/**
+	 * Creates a new Measurement but does NOT add it to the database.
+	 * 
+	 * @param investigationName
+	 * @param name
+	 * @param unitName
+	 * @param targettypeAllowedForRelationName
+	 * @param panelLabelAllowedForRelation
+	 * @param temporal
+	 * @param dataType
+	 * @param description
+	 * @param userName
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public Measurement createMeasurement(String investigationName, String name, String unitName,
+			String targettypeAllowedForRelationClassName, String panelLabelAllowedForRelation,
+			boolean temporal, String dataType, String description, String userName)
+	throws DatabaseException, IOException, ParseException
+	{
+		Measurement newFeat = new Measurement();
+		newFeat.setName(name);
+		newFeat.setInvestigation_Name(investigationName);
+		newFeat.setUnit_Name(unitName);
+		if (targettypeAllowedForRelationClassName != null) {
+			newFeat.setTargettypeAllowedForRelation_ClassName(targettypeAllowedForRelationClassName);
+		}
+		if (panelLabelAllowedForRelation != null) {
+			newFeat.setPanelLabelAllowedForRelation(panelLabelAllowedForRelation);
+		}
+		newFeat.setTemporal(temporal);
+		newFeat.setDataType(dataType);
+		newFeat.setDescription(description);
+		newFeat.setOwns_Name(userName);
+		return newFeat;
+	}
 
 	/**
-	 * Creates a new entry in the Code table.
+	 * Creates a new entry in the Category table and updates the Measurement for which it is a Category.
 	 * 
 	 * @param code : the code itself
 	 * @param desc : the description of what the code stands for
@@ -1507,24 +1546,41 @@ public class CommonService
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	public void makeCode(String code, String desc, String feat)
+	public void makeCategory(String code, String desc, String feat)
 			throws DatabaseException, ParseException, IOException
 	{
 		Category newCode = new Category();
-		newCode.setName(feat+"_"+code);
+		newCode.setName(feat + "_" + code);
 		newCode.setCode_String(code);
 		newCode.setLabel(code);
 		newCode.setDescription(desc);
-		List<Integer> locFeatIdList = new ArrayList<Integer>();
-		locFeatIdList.add(getMeasurementId(feat));
-		//TODO this is now done at Measurement newCode.setFeature_Id(locFeatIdList);
-		
 		db.add(newCode);
 		
 		//now add it to the Measurement
-		Measurement m = db.query(Measurement.class).eq(Measurement.NAME,feat).find().get(0);
+		Measurement m = db.query(Measurement.class).eq(Measurement.NAME, feat).find().get(0);
 		m.getCategories_Id().add(newCode.getId());
 		db.update(m);
+	}
+	
+	/**
+	 * Creates a new Category table but does NOT add it to the database 
+	 * and does NOT update the Measurement for which it is a Category.
+	 * 
+	 * @param code : the code itself
+	 * @param desc : the description of what the code stands for
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	public Category createCategory(String code, String desc, String feat)
+			throws DatabaseException, ParseException, IOException
+	{
+		Category newCode = new Category();
+		newCode.setName(feat + "_" + code);
+		newCode.setCode_String(code);
+		newCode.setLabel(code);
+		newCode.setDescription(desc);
+		return newCode;
 	}
 
 	/**
