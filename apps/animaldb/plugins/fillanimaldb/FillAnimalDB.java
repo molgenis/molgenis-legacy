@@ -58,10 +58,8 @@ public class FillAnimalDB {
 		Investigation inv = new Investigation();
 		inv.setName("System");
 		inv.setOwns_Id(login.getUserId());
-		int allUsersId = db.find(MolgenisGroup.class, new QueryRule(MolgenisGroup.NAME, Operator.EQUALS, "AllUsers")).get(0).getId();
-		inv.setCanRead_Id(allUsersId);
-		db.add(inv);
-		int invid = inv.getId();
+		inv.setCanRead_Name("AllUsers");
+		int invid = db.add(inv);
 		
 		// Make ontology 'Units'
 		logger.info("Add ontology entries");
