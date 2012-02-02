@@ -107,7 +107,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		if (result.isEmpty()) {
 			//Add to database 
 			ShoppingCart shoppingCart = new ShoppingCart();
-			shoppingCart.setMeasurements(DownloadedMeasurementIds);
+			shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 			shoppingCart.setUserID(this.getLogin().getUserName());
 			shoppingCart.setCheckedOut(false);
 			shoppingCart.setDateOfOrder(dateOfDownload);
@@ -117,7 +117,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			
 		} else {
 			ShoppingCart shoppingCart = result.get(0); // assuming user can have only one shopping cart that's NOT checked out
-			shoppingCart.setMeasurements(DownloadedMeasurementIds);
+			shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 			db.update(shoppingCart);
 			System.out.println("Shopping cart has been updated in the DB");
 		}
@@ -224,7 +224,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			List<ShoppingCart> result = q.find();
 			shoppingCart.clear();
 			for(ShoppingCart cart : result){
-				shoppingCart.addAll(cart.getMeasurements(db));
+				shoppingCart.addAll(cart.getMeasurements());
 			}
 			
 			this.arrayInvestigations.clear();
