@@ -9,38 +9,28 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.ContactInfo;
-import org.molgenis.animaldb.NamePrefix;
-import org.molgenis.auth.MolgenisGroup;
-import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.Ontology;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
-import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
+import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
@@ -62,10 +52,9 @@ public class PrefillAnimalDB
 	private List<Ontology> ontologiesToAddList = new ArrayList<Ontology>();
 	private List<OntologyTerm> ontologyTermsToAddList = new ArrayList<OntologyTerm>();
 	private List<Category> categoriesToAddList = new ArrayList<Category>();
+	private List<Protocol> protocolsToAddList = new ArrayList<Protocol>();
 	private Map<String, String> appMap = new HashMap<String, String>();
 	private Map<String, Measurement> measMap = new HashMap<String, Measurement>();
-	
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	
 	
 	public PrefillAnimalDB(Database db, Login login) throws Exception
@@ -107,7 +96,12 @@ public class PrefillAnimalDB
 		populateOntologyTerm(path + "ontologyterm.csv");
 		populateMeasurement(path + "measurement.csv");
 		populateCategory(path + "category.csv");
-		
+		populateProtocol(path + "protocol.csv");
+		populateSex(path + "sex.csv");
+		//populateSpecies(path + "species.csv");
+		//populateBackground(path + "background.csv");
+		//populateSource(path + "source.csv");
+		// Add it all to the database
 		writeToDb();
 	}
 
@@ -128,6 +122,9 @@ public class PrefillAnimalDB
 		}
 		db.add(measList);
 		logger.debug("Measurements successfully added");
+		
+		db.add(protocolsToAddList);
+		logger.debug("Protocols successfully added");
 		
 		db.add(protocolAppsToAddList);
 		logger.debug("Protocol applications successfully added");
@@ -227,6 +224,7 @@ public class PrefillAnimalDB
 				String code = tuple.getString("code");
 				String measName = tuple.getString("measurement");
 				Category newCat = ct.createCategory(code, tuple.getString("description"), measName);
+				newCat.setInvestigation_Name(invName);
 				categoriesToAddList.add(newCat);
 				Measurement meas = measMap.get(measName);
 				meas.getCategories_Name().add(measName + "_" + code);
@@ -235,9 +233,80 @@ public class PrefillAnimalDB
 		});
 	}
 	
+	public void populateProtocol(String filename) throws Exception
+	{
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				List<String> measurementNameList = (List<String>) tuple.getList("measurements", ",");
+				protocolsToAddList.add(ct.createProtocol(invName, tuple.getString("name"), 
+						tuple.getString("description"), measurementNameList));
+			}
+		});
+	}
+	
+	public void populateSex(String filename) throws Exception
+	{
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				String sexName = tuple.getString("name");
+				panelsToAddList.add(ct.createPanel(invName, sexName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), 
+						null, "TypeOfGroup", sexName, "Sex", null));
+			}
+		});
+	}
+	
+	public void populateSpecies(String filename) throws Exception
+	{
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				// TODO
+			}
+		});
+	}
+	
+	public void populateBackground(String filename) throws Exception
+	{
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				// TODO
+			}
+		});
+	}
+	
+	public void populateSource(String filename) throws Exception
+	{
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				// TODO
+			}
+		});
+	}
+	
 	public void populateProtocolApplication() throws Exception
 	{
-		// makeProtocolApplication("SetTypeOfGroup"); TODO etc
+		makeProtocolApplication("SetTypeOfGroup");
+		// TODO
 	}
 
 	

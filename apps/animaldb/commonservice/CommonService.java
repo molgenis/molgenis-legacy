@@ -1102,16 +1102,40 @@ public class CommonService
 	 * @throws ParseException
 	 */
 	public int makeProtocol(int investigationId, String protocolName,
-			String description, List<Integer> locFeatIdList)
+			String description, List<Integer> measurementIdList)
 			throws DatabaseException, IOException, ParseException
 	{
 		Protocol newProtocol = new Protocol();
 		newProtocol.setName(protocolName);
 		newProtocol.setInvestigation(investigationId);
-		newProtocol.setFeatures_Id(locFeatIdList);
+		newProtocol.setFeatures_Id(measurementIdList);
 		newProtocol.setDescription(description);
 		db.add(newProtocol);
 		return newProtocol.getId();
+	}
+	
+	/**
+	 * Creates a new protocol but does NOT add it to the database.
+	 * 
+	 * @param investigationName
+	 * @param protocolName
+	 * @param description
+	 * @param measurementNameList
+	 * @return
+	 * @throws DatabaseException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public Protocol createProtocol(String investigationName, String protocolName,
+			String description, List<String> measurementNameList)
+			throws DatabaseException, IOException, ParseException
+	{
+		Protocol newProtocol = new Protocol();
+		newProtocol.setName(protocolName);
+		newProtocol.setInvestigation_Name(investigationName);
+		newProtocol.setFeatures_Name(measurementNameList);
+		newProtocol.setDescription(description);
+		return newProtocol;
 	}
 
 	/**

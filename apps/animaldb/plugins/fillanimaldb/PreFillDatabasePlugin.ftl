@@ -25,8 +25,9 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<h1>Clear and pre-fill database with defaults, needed to make AnimalDB run</h1>
-<em>Caution: all existing database items will be removed!</em>
+<h1>Reset database</h1>
+<em>Caution: all existing database items will be removed! Only items needed for basic login will be put back. 
+Run the Import database Plugin to pre-fill your database with items needed for AnimalDB operation.</em>
 
 <div id='buttons_part1' class='row'>
 	<input type='submit' class='addbutton' value='Reset database' onclick="__action.value='reset'" />
