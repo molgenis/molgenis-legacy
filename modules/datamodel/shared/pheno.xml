@@ -33,6 +33,7 @@
 			<field name="AlternateId" nillable="true" type="mref"
 				xref_entity="AlternateId" label="Alternative identifiers"
 				description="Alternative identifiers or symbols that this element is known by." />
+			<unique fields="name" />
 		</entity>
 		<entity name="ObservationTarget" extends="ObservationElement">
 			<description> An ObservationTarget class defines the subjects of
@@ -41,7 +42,6 @@
 				maps to Page:Abstract_Observation_Target. The name of
 				observationTargets is unique.
 			</description>
-			<unique fields="name" />
 		</entity>
 		<entity name="ObservableFeature" extends="ObservationElement">
 			<description>ObservableFeature defines anything that can be observed
