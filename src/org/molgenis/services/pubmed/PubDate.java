@@ -6,6 +6,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 @XmlAccessorType(XmlAccessType.FIELD) 
 public class PubDate
 {
-	String Year;
-	String Month;
+	public String Year;
+	public String Month;
 }
