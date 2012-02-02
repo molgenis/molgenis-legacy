@@ -494,12 +494,14 @@ Selection:<br><br>
 	
 	
 	
-	<#if model.shortenedQuery??><i>Your query was too specific for any hits, so it was shortened to:</i> <b>${model.shortenedQuery}</b></#if><br>
+	<#if model.shortenedQuery??><i>Your query was too specific for any hits, so it was shortened to:</i> <b>${model.shortenedQuery}</b>. </#if>
 	
-	<#if model.hits?size == 100 && model.shortenedQuery??>
-		<i>The results were limited to the first 100.</i><br><br>
-	<#elseif model.hits?size == 100>
+	<#if model.hits?? && model.hits?size == 100 && model.shortenedQuery??>
+		<i>These results were limited to the first 100.</i><br><br>
+	<#elseif model.hits?? && model.hits?size == 100>
 		<i>Your results were limited to the first 100. Please be more specific.</i><br><br>
+	<#else>
+		<br><br>
 	</#if>
 	
 	<#if model.hits??>
