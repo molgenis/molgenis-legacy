@@ -81,7 +81,7 @@ public class GenePlugin extends PluginModel<Entity>
 			if (action.equals("addGene")) {
 				String geneName = request.getString("name");
 				if (geneName != null) {
-					ct.makeCode(geneName, geneName, "GeneModification");
+					ct.makeCategory(geneName, geneName, "GeneModification");
 				}
 				this.setSuccess("Gene modification successfully added");
 			}

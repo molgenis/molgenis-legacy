@@ -644,7 +644,7 @@ public class ConvertUliDbToPheno
 			{
 				// Every gene becomes a code for the 'GeneModification' feature
 				String geneName = tuple.getString("Gen");
-				ct.makeCode(geneName, geneName, "GeneModification");
+				ct.makeCategory(geneName, geneName, "GeneModification");
 			}
 		});
 	}
