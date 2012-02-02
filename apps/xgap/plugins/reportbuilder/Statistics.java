@@ -44,6 +44,11 @@ public class Statistics
 			elements = transposeMatrix(elements);
 		}
 		
+		if(elements[self].length < 2)
+		{
+			return null;
+		}
+		
 		double[] selfDoubles;
 		if (decimals)
 		{

@@ -145,7 +145,7 @@ public class ReportBuilder extends PluginModel
 		}
 	}
 
-	private Report makeReport(Entity entity, Database db) throws Exception
+	public static Report makeReport(Entity entity, Database db) throws Exception
 	{
 		Report r = new Report(entity);
 		
@@ -172,7 +172,7 @@ public class ReportBuilder extends PluginModel
 					
 					String plotType = d.getValueType().equals("Text") ? "o" : "boxplot";
 					
-					if(rowIndex != -1 && totalRows < 1000)
+					if(rowIndex != -1 && totalCols < 10000)
 					{
 						//make a plot
 						try{
@@ -191,7 +191,7 @@ public class ReportBuilder extends PluginModel
 						}
 					}
 					
-					if(colIndex != -1 && totalCols < 1000)
+					if(colIndex != -1 && totalRows < 10000)
 					{
 						//make a plot
 						try{

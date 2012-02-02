@@ -3,6 +3,7 @@
 	<menu name="main">
 	
 		<plugin label="Find QTLs" name="QtlFinderPublic" type="plugins.qtlfinder.QtlFinder" group="biologist" />
+		<plugin label="beta" name="QtlFinderPublic2" type="plugins.qtlfinder2.QtlFinder2" group="biologist" />
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/runanalysis.xml"/>

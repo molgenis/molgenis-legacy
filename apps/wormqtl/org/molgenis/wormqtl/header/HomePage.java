@@ -65,6 +65,7 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 
 					// allow to see the QTL finder
 					"app.ui.QtlFinderPublicPlugin",
+					"app.ui.QtlFinderPublic2Plugin",
 					
 					// enable the Browse Data menu (minus Inspector and matrix removal)
 					"app.ui.InvestigationsFormController",

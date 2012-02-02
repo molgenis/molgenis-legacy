@@ -1,0 +1,31 @@
+.searchBox{
+	border:none;
+	padding:5px;
+	padding-left:10px;
+	width:224px;
+	height:30px;
+	margin:5px;
+	color:#001225;
+	font-size:13px;
+	text-align:left;
+	font-family:Arial, Helvetica, sans-serif;
+	background:url('icons/invoer.png') top left no-repeat;
+}
+
+.shop{
+	border:none;
+	width:32px;
+	height:32px;
+	background:url('icons/shoppingcart.png');
+	background-size:32px 32px;
+	background-repeat:no-repeat;
+}
+
+.unshop{
+	border:none;
+	width:32px;
+	height:32px;
+	background:url('../generated-res/img/cancel.png');
+	background-size:32px 32px;
+	background-repeat:no-repeat;
+}
