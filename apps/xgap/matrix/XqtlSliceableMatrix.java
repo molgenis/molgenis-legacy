@@ -335,7 +335,7 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public void reset() throws MatrixException
+	public void reset()
 	{
 		this.copiedColNames = this.wrappedMatrix.getColNames();
 		this.copiedRowNames = this.wrappedMatrix.getRowNames();
@@ -427,7 +427,7 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	}
 
 	@Override
-	public void reload() throws MatrixException
+	public void reload()
 	{
 		// TODO Auto-generated method stub
 		
