@@ -95,6 +95,8 @@ It should be used via 'import' plus passing of properties
 			<!--cutdirsmapper dirs="2"/-->
 		</copy>
 
+		<mkdir dir="${output_sql}" />
+		
 		<!-- copy sql and other resources from generate sql -->
 		<copy todir="${build.dir}" verbose="true">
 			<fileset dir="${output_sql}" includes="**/*.sql" />

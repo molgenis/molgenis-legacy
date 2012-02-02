@@ -112,7 +112,12 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 	 * @throws DatabaseException
 	 */
 	public boolean checkIfUserDetailsEmpty(Database db) throws DatabaseException {
-		user = MolgenisUser.findById(db, this.getLogin().getUserId());
+		try {
+			user = MolgenisUser.findById(db, this.getLogin().getUserId());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return (user.getAddress() == null ||
 				user.getCity() == null ||
 				user.getDepartment() == null ||

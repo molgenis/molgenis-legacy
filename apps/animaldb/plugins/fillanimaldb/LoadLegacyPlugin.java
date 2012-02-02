@@ -14,7 +14,6 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import convertors.oldadb.LoadAnimalDB;
-import convertors.prefill.PrefillAnimalDB;
 import convertors.rhutdb.ConvertRhutDbToPheno;
 import convertors.ulidb.ConvertUliDbToPheno;
 
@@ -54,8 +53,7 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 				String filename = request.getString("zip");
 				String legacy = request.getString("source");
 				if (legacy.equals("prefill")) {
-					PrefillAnimalDB myPrefill = new PrefillAnimalDB(db, this.getLogin());
-					myPrefill.prefillFromZip(filename);
+					// TODO
 					this.setSuccess("Pre-filling AnimalDB successful");
 				} else if (legacy.equals("ulidb")) {
 					ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());

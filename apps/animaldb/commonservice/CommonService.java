@@ -1459,7 +1459,7 @@ public class CommonService
 	}
 
 	/**
-	 * Creates a new Measurement and adds it to the databases
+	 * Create a new Measurement and add it to the databases
 	 * 
 	 * @param investigationId
 	 * @param name
@@ -1495,45 +1495,6 @@ public class CommonService
 		newFeat.setOwns_Id(userId);
 		db.add(newFeat);
 		return newFeat.getId();
-	}
-	
-	/**
-	 * Creates a new Measurement but does NOT add it to the database.
-	 * 
-	 * @param investigationName
-	 * @param name
-	 * @param unitName
-	 * @param targettypeAllowedForRelationName
-	 * @param panelLabelAllowedForRelation
-	 * @param temporal
-	 * @param dataType
-	 * @param description
-	 * @param userName
-	 * @return
-	 * @throws DatabaseException
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	public Measurement createMeasurement(String investigationName, String name, String unitName,
-			String targettypeAllowedForRelationClassName, String panelLabelAllowedForRelation,
-			boolean temporal, String dataType, String description, String userName)
-	throws DatabaseException, IOException, ParseException
-	{
-		Measurement newFeat = new Measurement();
-		newFeat.setName(name);
-		newFeat.setInvestigation_Name(investigationName);
-		newFeat.setUnit_Name(unitName);
-		if (targettypeAllowedForRelationClassName != null) {
-			newFeat.setTargettypeAllowedForRelation_ClassName(targettypeAllowedForRelationClassName);
-		}
-		if (panelLabelAllowedForRelation != null) {
-			newFeat.setPanelLabelAllowedForRelation(panelLabelAllowedForRelation);
-		}
-		newFeat.setTemporal(temporal);
-		newFeat.setDataType(dataType);
-		newFeat.setDescription(description);
-		newFeat.setOwns_Name(userName);
-		return newFeat;
 	}
 
 	/**
