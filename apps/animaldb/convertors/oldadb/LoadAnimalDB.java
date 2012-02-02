@@ -269,6 +269,12 @@ public class LoadAnimalDB
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, newanimalid, remarks, 0));
 				
+				// ResponsibleResearcher
+				protocolId = ct.getProtocolId("SetResponsibleResearcher");
+				measurementId = ct.getMeasurementId("ResponsibleResearcher");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+						protocolId, measurementId, newanimalid, "Ate Boerema", 0));
+				
 				// Add everything to DB
 				db.add(valuesToAddList);
 			}

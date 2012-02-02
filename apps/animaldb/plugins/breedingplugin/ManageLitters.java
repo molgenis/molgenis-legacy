@@ -79,7 +79,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private List<String> colorList;
 	private List<Category> earmarkList;
 	private int genoLitterId;
-	//private List<String> bases = null;
+	private List<String> bases = null;
 	private String remarks = null;
 	private String status = null;
 	private Table genotypeTable = null;
@@ -87,6 +87,7 @@ public class ManageLitters extends PluginModel<Entity>
 	MatrixViewer matrixViewer = null;
 	private static String MATRIX = "matrix";
 	private int userId = -1;
+	private String respres = null;
 	
 	//hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
@@ -313,6 +314,7 @@ public class ManageLitters extends PluginModel<Entity>
 
 	private void setUserFields(Tuple request, boolean wean) throws Exception {
 		if (wean == true) {
+			respres = request.getString("respres");
 			if (request.getString("weandate") == null || request.getString("weandate").equals("")) {
 				throw new Exception("Wean date cannot be empty");
 			}
@@ -536,24 +538,24 @@ public class ManageLitters extends PluginModel<Entity>
 		return lineName;
 	}
 
-//	public List<String> getBases() {
-//		return bases;
-//	}
-//
-//	public void setBases(List<String> bases) {
-//		this.bases = bases;
-//	}
+	public List<String> getBases() {
+		return bases;
+	}
+
+	public void setBases(List<String> bases) {
+		this.bases = bases;
+	}
 	
 	public String getStartNumberHelperContent() {
 		try {
 			String helperContents = "";
 			helperContents += (ct.getHighestNumberForPrefix("") + 1);
-//			helperContents += ";1";
-//			for (String base : this.bases) {
-//				if (!base.equals("")) {
-//					helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
-//				}
-//			}
+			helperContents += ";1";
+			for (String base : this.bases) {
+				if (!base.equals("")) {
+					helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
+				}
+			}
 			return helperContents;
 		} catch (Exception e) {
 			return "";
@@ -621,7 +623,8 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			if (action.equals("ApplyAddLitter")) {
 				String litterName = ApplyAddLitter(db, request);
-				
+				this.litterSize = 0;
+				this.remarks = null;
 				this.birthdate = null;
 				this.selectedParentgroup = -1;
 				this.action = "ShowLitters";
@@ -1089,6 +1092,11 @@ public class ManageLitters extends PluginModel<Entity>
 			measurementId = ct.getMeasurementId("Line");
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 					null, protocolId, measurementId, animalId, null, lineId));
+			// Set responsible researcher
+			protocolId = ct.getProtocolId("SetResponsibleResearcher");
+			measurementId = ct.getMeasurementId("ResponsibleResearcher");
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
+					null, protocolId, measurementId, animalId, respres, 0));
 			// Set sex
 			int sexId = ct.getObservationTargetId("Female");
 			if (animalNumber >= weanSizeFemale) {
@@ -1510,13 +1518,13 @@ public class ManageLitters extends PluginModel<Entity>
 			// Populate earmark list
 			this.setEarmarkList(ct.getAllCodesForFeature("Earmark"));
 			// Populate name prefixes list for the animals
-//			this.bases = new ArrayList<String>();
-//			List<String> tmpPrefixes = ct.getPrefixes("animal");
-//			for (String tmpPrefix : tmpPrefixes) {
-//				if (!tmpPrefix.equals("")) {
-//					this.bases.add(tmpPrefix);
-//				}
-//			}
+			this.bases = new ArrayList<String>();
+			List<String> tmpPrefixes = ct.getPrefixes("animal");
+			for (String tmpPrefix : tmpPrefixes) {
+				if (!tmpPrefix.equals("")) {
+					this.bases.add(tmpPrefix);
+				}
+			}
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
 				this.getMessages().clear();

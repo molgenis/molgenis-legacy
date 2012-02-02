@@ -26,6 +26,7 @@ import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.ObservationTarget;
@@ -43,6 +44,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	private List<String> bases = null;
 
 	// inputs
+	public StringInput researcher = null;
 	public SelectInput species = null;
 	public SelectInput sex = null;
 	public SelectInput animaltype = null;
@@ -52,9 +54,9 @@ public class AddAnimalPlugin extends GenericPlugin
 	public List<SelectInput> genestateList = null;
 	public DateInput birthdate = null;
 	public DateInput entrydate = null;
-	//public SelectInput namebase = null;
+	public SelectInput namebase = null;
 	public TextLineInput<String> startnumberhelper = null;
-	//public StringInput newnamebase = null;
+	public StringInput newnamebase = null;
 	public IntInput startnumber = null;
 	public IntInput numberofanimals = null;
 	public SelectInput actor = null;
@@ -167,6 +169,10 @@ public class AddAnimalPlugin extends GenericPlugin
 	}
 	
 	private void handleAddRequest(Database db, Tuple request) throws Exception {
+		String resResearcher = null;
+		if (researcher.getObject() != null) {
+			resResearcher = researcher.getValue();
+		}
 		int speciesId = 0;
 		if (species.getObject() != null) {
 			speciesId = Integer.parseInt(species.getObject().toString());
@@ -240,18 +246,18 @@ public class AddAnimalPlugin extends GenericPlugin
 		// Name
 		String nameBase = "";
 		int startNumber = -1;
-//		if (namebase.getObject() != null) {
-//			nameBase = namebase.getObject().toString();
-//			if (nameBase.equals("New")) {
-//				if (newnamebase.getObject() != null) {
-//					nameBase = newnamebase.getObject().toString();
-//				} else {
-//					nameBase = "";
-//				}	
-//			}
-//		} else {
-//			 nameBase = "";
-//		}
+		if (namebase.getObject() != null) {
+			nameBase = namebase.getObject().toString();
+			if (nameBase.equals("New")) {
+				if (newnamebase.getObject() != null) {
+					nameBase = newnamebase.getObject().toString();
+				} else {
+					nameBase = "";
+				}	
+			}
+		} else {
+			 nameBase = "";
+		}
 		if (startnumber.getObject() != null) {
 			// TODO: Find out why HtmlInput<E>'s getObject() returns a String object and not an
 			// Integer one, as expected!
@@ -303,7 +309,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		protocolIdList.add(ct.getProtocolId("SetBackground"));
 		protocolIdList.add(ct.getProtocolId("SetGenotype"));
 		protocolIdList.add(ct.getProtocolId("SetDateOfBirth"));
-		for (int j = 0; j < 8; j++) {
+		protocolIdList.add(ct.getProtocolId("SetResponsibleResearcher"));
+		for (int j = 0; j < 9; j++) {
 			ProtocolApplication newApp = ct.createProtocolApplication(invid, protocolIdList.get(j));
 			appsToAddList.add(newApp);
 		}
@@ -320,6 +327,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		featureIdList.add(ct.getMeasurementId("GeneModification"));
 		featureIdList.add(ct.getMeasurementId("GeneState"));
 		featureIdList.add(ct.getMeasurementId("DateOfBirth"));
+		featureIdList.add(ct.getMeasurementId("ResponsibleResearcher"));
 		
 		for (ObservationTarget animal : animalsToAddList) {
 			int animalid = animal.getId();
@@ -368,6 +376,12 @@ public class AddAnimalPlugin extends GenericPlugin
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(8), animalid, birthDate, 0));
 			}
+			// Set responsible researcher
+			if (resResearcher != null) {
+				app = appsToAddList.get(8);
+				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
+						featureIdList.get(9), animalid, resResearcher, 0));
+			}
 			
 		}	
 		db.add(valuesToAddList);
@@ -386,6 +400,12 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		// panel for all elements
 		containingPanel = new DivPanel(this.getName() + "panel", "");
+		
+		researcher = new StringInput("researcher");
+		researcher.setLabel("Responsible researcher:");
+		researcher.setNillable(true);
+		researcher.setDescription("Give the responsible researcher.");
+		researcher.setTooltip("Give the responsible researcher.");
 
 		// Populate animal species list
 		species = new SelectInput("species");
@@ -481,38 +501,38 @@ public class AddAnimalPlugin extends GenericPlugin
 		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
 		
 		namePanel = new DivPanel("Name", "Name:");
-//		namebase = new SelectInput("namebase");
-//		namebase.setLabel("Name prefix (may be empty):");
-//		namebase.setId("namebase");
-//		namebase.setDescription("The default prefix string that will be put in front of your name.");
-//		//namebase.addOption("New", "New (specify below)");
-//		for (String base : bases) {
-//			if (!base.equals("")) {
-//				namebase.addOption(base, base);
-//			}
-//		}
-//		namebase.setValue(""); // default empty prefix
-//		namebase.setOnchange("updateStartNumberAndNewNameBase(this.value)");
-//		namePanel.add(namebase);
+		namebase = new SelectInput("namebase");
+		namebase.setLabel("Name prefix (may be empty):");
+		namebase.setId("namebase");
+		namebase.setDescription("The default prefix string that will be put in front of your name.");
+		namebase.addOption("New", "New (specify below)");
+		for (String base : bases) {
+			if (!base.equals("")) {
+				namebase.addOption(base, base);
+			}
+		}
+		namebase.setValue(""); // default empty prefix
+		namebase.setOnchange("updateStartNumberAndNewNameBase(this.value)");
+		namePanel.add(namebase);
 		startnumberhelper = new TextLineInput<String>("startnumberhelper");
 		startnumberhelper.setLabel("");
 		String helperContents = ((ct.getHighestNumberForPrefix("") + 1) + ";"); // start number for empty base (comes first in jQuery select box because default)
-//		helperContents += "1"; // start number for new base
-//		for (String base : bases) {
-//			if (!base.equals("")) {
-//				helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
-//			}
-//		}
+		helperContents += "1"; // start number for new base
+		for (String base : bases) {
+			if (!base.equals("")) {
+				helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
+			}
+		}
 		startnumberhelper.setValue(helperContents);
 		startnumberhelper.setHidden(true);
 		namePanel.add(startnumberhelper);
-//		newnamebase = new StringInput("newnamebase");
-//		newnamebase.setLabel("New name prefix:");
-//		newnamebasePanel = new DivPanel("Namebase", "");
-//		newnamebasePanel.add(newnamebase);
-//		newnamebasePanel.setId("newnamebasePanel");
-//		newnamebasePanel.setHidden(true);
-//		namePanel.add(newnamebasePanel);
+		newnamebase = new StringInput("newnamebase");
+		newnamebase.setLabel("New name prefix:");
+		newnamebasePanel = new DivPanel("Namebase", "");
+		newnamebasePanel.add(newnamebase);
+		newnamebasePanel.setId("newnamebasePanel");
+		newnamebasePanel.setHidden(true);
+		namePanel.add(newnamebasePanel);
 		startnumber = new IntInput("startnumber");
 		startnumber.setLabel("Start numbering at:");
 		startnumber.setId("startnumber");
@@ -529,6 +549,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		addbutton = new ActionInput("Add", "", "Add animal(s)");
 
 		// add everything to the panel
+		containingPanel.add(researcher);
 		containingPanel.add(species);
 		containingPanel.add(background);
 		containingPanel.add(sex);

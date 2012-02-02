@@ -171,6 +171,11 @@
 <#elseif screen.action == "ShowWean">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
+	<!-- Responsible researcher -->
+	<div class='row'>
+		<label for='respres'>Responsible researcher:</label>
+		<input type='text' class='textbox' name='respres' id='respres' value='<#if screen.responsibleResearcher?exists>${screen.getResponsibleResearcher()}</#if>' />
+	</div>
 	<!-- Date and time of weaning -->
 	<div id='weandatediv' class='row'>
 		<label for='weandate'>Wean date:</label>
@@ -200,21 +205,21 @@
 		<input type='text' class='textbox' name='weansizeunknown' id='weansizeunknown' value='<#if screen.weanSizeUnknown?exists>${screen.getWeanSizeUnknown()}</#if>' />
 	</div>
 	<p>Name:</p>
-	<!--div id="divnamebase" class="row">
+	<div id="divnamebase" class="row">
 		<label for="namebase">Name prefix (may be empty):</label>
 		<select id="namebase" name="namebase" onchange="updateStartNumberAndNewNameBase(this.value)">
 			<option value=""></option>
 			<option value="New">New (specify below)</option>
-			<list screen.bases as base>
-				<option value="{base}">{base}</option>
-			</list>
+			<#list screen.bases as base>
+				<option value="${base}">${base}</option>
+			</#list>
 		</select>
-	</div-->
+	</div>
 	<input id="startnumberhelper" type="hidden" value="${screen.getStartNumberHelperContent()}">
-	<!--div id="divnewnamebasePanel" class="row" style="display:none">
+	<div id="divnewnamebasePanel" class="row" style="display:none">
 		<label for="newnamebase">New name prefix:</label>
 		<input type="text" name="newnamebase" id="newnamebase" class="textbox" />
-	</div-->
+	</div>
 	<div id="divstartnumber" class="row">
 		<label for="startnumber">Start numbering at:</label>
 		<input type="text" readonly="true" name="startnumber" id="startnumber" class="textbox" value="${screen.getStartNumberForEmptyBase()?string.computer}" />

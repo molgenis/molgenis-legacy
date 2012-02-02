@@ -172,7 +172,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 					rowCnt++;
 				}
 				
-				animalsInLocMatrixViewer.reloadMatrix(db, request);
+				animalsInLocMatrixViewer.reloadMatrix(null, null);
 				action = "Manage";
 				return;
 			}

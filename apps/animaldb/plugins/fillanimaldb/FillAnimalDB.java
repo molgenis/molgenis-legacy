@@ -158,6 +158,9 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "Article", numberUnitId, null, null, false, "int", "To set an actor's Article status according to the Law, e.g. Article 9.", login.getUserId());
 		ct.makeMeasurement(invid, "MolgenisUserId", numberUnitId, null, null, false, "int", "To set an actor's corresponding MolgenisUser ID.", login.getUserId());
 		ct.makeMeasurement(invid, "TransponderId", stringUnitId, null, null, false, "string", "To set the ID of an animal's transponder.", login.getUserId());
+		ct.makeMeasurement(invid, "Color", stringUnitId, null, null, false, "string", "To set an animal's color.", login.getUserId());
+		ct.makeMeasurement(invid, "Earmark", stringUnitId, null, null, false, "string", "To set an animal's earmark.", login.getUserId());
+		ct.makeMeasurement(invid, "ResponsibleResearcher", stringUnitId, null, null, false, "string", "To set the researcher responsible for this animal.", login.getUserId());
 		// For importing old AnimalDB
 		ct.makeMeasurement(invid, "OldAnimalDBAnimalID", stringUnitId, null, null, false, "string", "To set an animal's ID in the old version of AnimalDB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldAnimalDBAnimalCustomID", stringUnitId, null, null, false, "string", "To set an animal's Custom ID in the old version of AnimalDB.", login.getUserId());
@@ -170,12 +173,6 @@ public class FillAnimalDB {
 		ct.makeMeasurement(invid, "OldAnimalDBPresetID", stringUnitId, null, null, false, "string", "To link a targetgroup to a preset this ID in the old version of AnimalDB.", login.getUserId());
 		// For importing old Uli Eisel DB
 		ct.makeMeasurement(invid, "OldUliDbId", stringUnitId, null, null, false, "string", "To set an animal's ID in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbKuerzel", stringUnitId, null, null, false, "string", "To set an animal's 'Kuerzel' in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbAktenzeichen", stringUnitId, null, null, false, "string", "To set an animal's 'Aktenzeichen' in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbExperimentator", stringUnitId, null, null, false, "string", "To set an animal's experimenter in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbTierschutzrecht", stringUnitId, null, null, false, "string", "To set an animal's 'Tierschutzrecht' (~ DEC subproject Goal) in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "Color", stringUnitId, null, null, false, "string", "To set an animal's color.", login.getUserId());
-		ct.makeMeasurement(invid, "Earmark", stringUnitId, null, null, false, "string", "To set an animal's earmark.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbMotherInfo", stringUnitId, null, null, false, "string", "To set an animal's mother info in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbFatherInfo", stringUnitId, null, null, false, "string", "To set an animal's father info in the old Uli Eisel DB.", login.getUserId());
 		// For importing old Roelof Hut DB

@@ -203,8 +203,8 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetDateOfBirth");
 		makeProtocolApplication("SetDeathDate");
 		makeProtocolApplication("SetSource");
-		//makeProtocolApplication("SetOldUliDbExperimentator");
-		//makeProtocolApplication("SetOldUliDbTierschutzrecht");
+		makeProtocolApplication("SetRemark");
+		makeProtocolApplication("SetResponsibleResearcher");
 		makeProtocolApplication("SetSex");
 		makeProtocolApplication("SetColor");
 		makeProtocolApplication("SetEarmark");
@@ -336,6 +336,9 @@ public class ConvertUliDbToPheno
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbExperimentator"), 
 							now, null, "OldUliDbExperimentator", newAnimalName, experimentator, null));
 				}*/
+				// Instead we do this:
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetResponsibleResearcher"), 
+						now, null, "ResponsibleResearcher", newAnimalName, null, "Uli Eisel"));
 				
 				//  not needed, skip import (update ate @ 2011-09-20)
 				// Tierschutzrecht -> OldUliDbTierschutzrecht

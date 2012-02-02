@@ -398,6 +398,10 @@ public class ConvertRhutDbToPheno
 				//Fenotyped as -> SKIP (not filled in)
 				//To Be Removed -> SKIP
 				//Cage nr -> SKIP (not filled in)
+				
+				// ResponsibleResearcher
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetResponsibleResearcher"), 
+						now, null, "ResponsibleResearcher", animalName, null, "Roelof Hut"));
 			}
 		});
 	}
@@ -786,6 +790,7 @@ public class ConvertRhutDbToPheno
 		makeProtocolApplication("SetEarmark");
 		makeProtocolApplication("SetOldRhutDbSampleDate");
 		makeProtocolApplication("SetOldRhutDbSampleNr");
+		makeProtocolApplication("SetResponsibleResearcher");
 		// parent relations
 		makeProtocolApplication("SetMother");
 		makeProtocolApplication("SetFather");

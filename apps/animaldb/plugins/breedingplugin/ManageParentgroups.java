@@ -266,13 +266,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 		ct.setDatabase(db);
 		action = request.getString("__action");
 		try {
-			Date now = new Date();
-			int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
-			
 			if (action.startsWith(motherMatrixViewer.getName())) {
 				motherMatrixViewer.handleRequest(db, request);
 				this.setAction("addParentgroupScreen2"); // return to mother selection screen
 			}
+			
 			if (action.startsWith(fatherMatrixViewer.getName())) {
 				fatherMatrixViewer.handleRequest(db, request);
 				this.setAction("addParentgroupScreen3"); // return to father selection screen
@@ -339,60 +337,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 			}
 			
 			if (action.equals("addParentgroup")) {
-				// Save start date and remarks that were set in screen 4
-				if (request.getString("startdate") != null) {
-					setStartdate(request.getString("startdate"));
-				}
-				if (request.getString("remarks") != null) {
-					setRemarks(request.getString("remarks"));
-				}
-				Date eventDate = dateOnlyFormat.parse(startdate);
-				int userId = this.getLogin().getUserId();
-				// Make group
-				String groupPrefix = "PG_" + ct.getObservationTargetLabel(line) + "_";
-				int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
-				String groupNrPart = "" + groupNr;
-				groupNrPart = ct.prependZeros(groupNrPart, 6);
-				int groupId = ct.makePanel(invid, groupPrefix + groupNrPart, userId);
-				// Make or update name prefix entry
-				ct.updatePrefix("parentgroup", groupPrefix, groupNr);
-				// Mark group as parent group using a special event
-				int protocolId = ct.getProtocolId("SetTypeOfGroup");
-				int measurementId = ct.getMeasurementId("TypeOfGroup");
-				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, groupId, "Parentgroup", 0));
-				// Add parent(s)
-				AddParents(db, this.selectedMotherIdList, "SetMother", "eventmother", "Mother", "valuemother", 
-						"valuemothercertain", groupId, eventDate);
-				AddParents(db, this.selectedFatherIdList, "SetFather", "eventfather", "Father", "valuefather", 
-						"valuefathercertain", groupId, eventDate);
-				// Set line
-				protocolId = ct.getProtocolId("SetLine");
-				measurementId = ct.getMeasurementId("Line");
-				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, groupId, null, line));
-				// Set start date
-				protocolId = ct.getProtocolId("SetStartDate");
-				measurementId = ct.getMeasurementId("StartDate");
-				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, groupId, dbFormat.format(eventDate), 0));
-				// Set remarks
-				if (remarks != null) {
-					protocolId = ct.getProtocolId("SetRemark");
-					measurementId = ct.getMeasurementId("Remark");
-					db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-							protocolId, measurementId, groupId, remarks, 0));
-				}
-				
-				//Add Set Active, with (start)time = entrydate and endtime = null
-				protocolId = ct.getProtocolId("SetActive");
-				measurementId = ct.getMeasurementId("Active");
-				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, measurementId, groupId, "Active", 0));
-								
-				// Success: empty selected lists and show success message
+				String newPgName = AddParentgroup(db, request);
 				this.setAction("init");
 				this.resetUserFields();
-				this.getMessages().add(new ScreenMessage("Parent group " + (groupPrefix + groupNrPart) + " successfully added", true));
+				this.reloadMatrixViewers(db);
+				this.getMessages().add(new ScreenMessage("Parent group " + newPgName + " successfully added", true));
 			}
 			
 		} catch (Exception e) {
@@ -404,6 +353,62 @@ public class ManageParentgroups extends PluginModel<Entity>
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
+	}
+
+	private String AddParentgroup(Database db, Tuple request) throws Exception {
+		Date now = new Date();
+		int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
+		// Save start date and remarks that were set in screen 4
+		if (request.getString("startdate") != null) {
+			setStartdate(request.getString("startdate"));
+		}
+		if (request.getString("remarks") != null) {
+			setRemarks(request.getString("remarks"));
+		}
+		Date eventDate = dateOnlyFormat.parse(startdate);
+		int userId = this.getLogin().getUserId();
+		// Make group
+		String groupPrefix = "PG_" + ct.getObservationTargetLabel(line) + "_";
+		int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
+		String groupNrPart = "" + groupNr;
+		groupNrPart = ct.prependZeros(groupNrPart, 6);
+		int groupId = ct.makePanel(invid, groupPrefix + groupNrPart, userId);
+		// Make or update name prefix entry
+		ct.updatePrefix("parentgroup", groupPrefix, groupNr);
+		// Mark group as parent group using a special event
+		int protocolId = ct.getProtocolId("SetTypeOfGroup");
+		int measurementId = ct.getMeasurementId("TypeOfGroup");
+		db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, "Parentgroup", 0));
+		// Add parent(s)
+		AddParents(db, this.selectedMotherIdList, "SetMother", "eventmother", "Mother", "valuemother", 
+				"valuemothercertain", groupId, eventDate);
+		AddParents(db, this.selectedFatherIdList, "SetFather", "eventfather", "Father", "valuefather", 
+				"valuefathercertain", groupId, eventDate);
+		// Set line
+		protocolId = ct.getProtocolId("SetLine");
+		measurementId = ct.getMeasurementId("Line");
+		db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, null, line));
+		// Set start date
+		protocolId = ct.getProtocolId("SetStartDate");
+		measurementId = ct.getMeasurementId("StartDate");
+		db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+				protocolId, measurementId, groupId, dbFormat.format(eventDate), 0));
+		// Set remarks
+		if (remarks != null) {
+			protocolId = ct.getProtocolId("SetRemark");
+			measurementId = ct.getMeasurementId("Remark");
+			db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
+					protocolId, measurementId, groupId, remarks, 0));
+		}
+		
+		//Add Set Active, with (start)time = entrydate and endtime = null
+		protocolId = ct.getProtocolId("SetActive");
+		measurementId = ct.getMeasurementId("Active");
+		db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, measurementId, groupId, "Active", 0));
+		
+		return groupPrefix + groupNrPart;
 	}
 
 	@Override

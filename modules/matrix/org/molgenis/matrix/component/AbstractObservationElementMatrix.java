@@ -438,7 +438,7 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	 * Empty filter rules and cached data.
 	 */
 	@Override
-	public void reset() throws MatrixException
+	public void reset()
 	{
 		// first empty the rules
 		this.rules = new ArrayList<MatrixQueryRule>();
@@ -450,10 +450,9 @@ public abstract class AbstractObservationElementMatrix<R extends ObservationElem
 	 * Empty caches and reload matrix data, whilst keeping any
 	 * filters intact.
 	 * 
-	 * @throws MatrixException
 	 */
 	@Override
-	public void reload() throws MatrixException
+	public void reload()
 	{
 		// empty the caches
 		colDirty = true;

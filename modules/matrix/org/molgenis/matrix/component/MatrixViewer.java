@@ -1117,9 +1117,23 @@ public class MatrixViewer extends HtmlWidget
 		return result;
 	}
 	
-	public void reloadMatrix(Database db, Tuple t) throws MatrixException
+	/**
+	 * Empty caches and reload matrix data, whilst keeping any
+	 * filters intact.
+	 * Note: the db and t parameters are there to keep the signature intact for delegation.
+	 * You can set both to null.
+	 * 
+	 */
+	public void reloadMatrix(Database db, Tuple t)
 	{
 		matrix.reload();
+	}
+	
+	/**
+	 * Empty matrix filter rules and cached data.
+	 */
+	public void resetMatrix() {
+		matrix.reset();
 	}
 
 	public void filterCol(Database db, Tuple t) throws Exception
