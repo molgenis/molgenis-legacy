@@ -1,10 +1,12 @@
 package plugins.qtlfinder2;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.molgenis.util.Entity;
 
+import plugins.qtlfinder.QTLInfo;
 import plugins.qtlfinder.QTLMultiPlotResult;
 import plugins.reportbuilder.Report;
 
@@ -33,7 +35,20 @@ public class QtlFinderModel2{
 	
 	//results for a single-entity report, overrules other results but does not remove them
 	private Report report;
+	private List<QTLInfo> qtls;
 	
+	
+	
+	public List<QTLInfo> getQtls()
+	{
+		return qtls;
+	}
+
+	public void setQtls(List<QTLInfo> qtls)
+	{
+		this.qtls = qtls;
+	}
+
 	public String getQuery()
 	{
 		return query;

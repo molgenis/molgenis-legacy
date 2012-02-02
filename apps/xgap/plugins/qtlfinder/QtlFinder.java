@@ -599,7 +599,7 @@ public class QtlFinder extends PluginModel<Entity>
 	
 	//sort the datapoints to bp position to be plottable
 	//use bppos as index to get automatic natural sorting!
-	private TreeMap<Long, QtlPlotDataPoint> sortQtlPlotData(List<String> markers, List<Double> lodscores, HashMap<String, Marker> markerInfo)
+	public static TreeMap<Long, QtlPlotDataPoint> sortQtlPlotData(List<String> markers, List<Double> lodscores, HashMap<String, Marker> markerInfo)
 	{
 		TreeMap<Long, QtlPlotDataPoint> res = new TreeMap<Long, QtlPlotDataPoint>();
 		for(int i=0; i < markers.size(); i++)
@@ -621,7 +621,7 @@ public class QtlFinder extends PluginModel<Entity>
 		return true;
 	}
 
-	private HashMap<String, Marker> getMarkerInfo(List<String> colNames, Database db)
+	public static HashMap<String, Marker> getMarkerInfo(List<String> colNames, Database db)
 	{
 		HashMap<String, Marker> result = new HashMap<String, Marker>();
 		

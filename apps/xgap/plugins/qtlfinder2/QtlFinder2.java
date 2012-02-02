@@ -36,12 +36,12 @@ import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Locus;
 import org.molgenis.xgap.Marker;
 
+import plugins.qtlfinder.QTLInfo;
 import plugins.qtlfinder.QTLMultiPlotResult;
 import plugins.reportbuilder.Report;
 import plugins.reportbuilder.ReportBuilder;
 import plugins.reportbuilder.Statistics;
 import plugins.rplot.MakeRPlot;
-
 import app.JDBCMetaDatabase;
 
 public class QtlFinder2 extends PluginModel<Entity>
@@ -138,6 +138,10 @@ public class QtlFinder2 extends PluginModel<Entity>
 					
 					Report report = ReportBuilder.makeReport(typedResults.get(0), db);
 					this.model.setReport(report);
+					
+					List<QTLInfo> qtls = PlotHelper.createQTLReportFor(typedResults.get(0), plotWidth, plotHeight, db);
+					this.model.setQtls(qtls);
+					
 				}
 				
 				if (action.equals("search"))
@@ -145,6 +149,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 					this.model.setShortenedQuery(null);
 					this.model.setMultiplot(null);
 					this.model.setReport(null);
+					this.model.setQtls(null);
 					
 					if(query == null)
 					{
@@ -317,7 +322,6 @@ public class QtlFinder2 extends PluginModel<Entity>
 							if(rowIndex != -1)
 							{
 								Double[] Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
-								int maxIndex = Statistics.getIndexOfMax(Dvalues);
 		
 								matches.put(name, e);
 								
@@ -338,7 +342,6 @@ public class QtlFinder2 extends PluginModel<Entity>
 							if(rowIndex == -1 && colIndex != -1)
 							{
 								Double[] Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
-								int maxIndex = Statistics.getIndexOfMax(Dvalues);
 								
 								matches.put(name, e);
 								

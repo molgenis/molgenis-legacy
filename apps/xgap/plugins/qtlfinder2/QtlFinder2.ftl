@@ -45,7 +45,7 @@
 
 <#assign allDataTypes = "__ALL__DATATYPES__SEARCH__KEY">
 
-QTL finder v.2<br><br>
+<br><br>
 
 <div style="position:absolute;top:250px;left:100px;">
 		<select class=" ui-widget-content ui-corner-all" id="Phenotype_select" name="dataTypeSelect"  style="width:220px;" name="dataTypeSelect">
@@ -82,15 +82,15 @@ position:absolute;
  width:200px;
  z-index: 5;
 ">
-SHOPPINGCART:<br><br>
+Selection:<br><br>
 <#list model.shoppingCart?keys as name>
 <input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
 <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a><br>
 </#list>
 
 <br><br>
-<input type="submit" value="PLOT" onclick="document.forms.${screen.name}.__action.value = 'plotShoppingCart'; document.forms.${screen.name}.submit();">
-<input type="submit" value="EMPTY" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();">
+<input type="submit" value="Plot" onclick="document.forms.${screen.name}.__action.value = 'plotShoppingCart'; document.forms.${screen.name}.submit();">
+<input type="submit" value="Clear" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();">
 
 
 
@@ -102,23 +102,156 @@ SHOPPINGCART:<br><br>
 
 
 <#if model.report??>
+
+	
+
 	<#import "../reportbuilder/ReportBuilder.ftl" as rb>
 	
 	<#assign r = model.report.entity>
 	
+	<br><h1>${r.get(typefield)} "${r.name}"</h1>
+	<h2>QTL information</h2>
+	
+	<#if model.qtls?? && model.qtls?size gt 0><#-- should have them really -->
+	<br>
+
+	<div id="${r.name}_closeme" style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
+		<#list model.qtls as qtl>
+		
+			${r.get(typefield)} <a href="molgenis.do?__target=${r.get(typefield)}s&__action=filter_set&__filter_attribute=${r.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${r.name}">${r.name}</a>
+			<br>Max. LOD: ${qtl.peakValue}<br><br>
+			<#if qtl.plot??>
+				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
+				<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+					<img src="tmpfile/${qtl.plot}" width="320" height="240">
+				</a><br>
+			</#if>
+			<a href="#QTL${qtl_index+1}">View QTL details <img src="generated-res/img/filter.png" /></a>
+			
+			<#if qtl_has_next>
+			</div><div style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
+			</#if>
+		</#list>
+		</div>
+	</#if>
+	
+	
+	
+	<#list model.qtls as qtl>
+		<table cellpadding="30">
+			<tr>
+				<td>
+					<h3 id="QTL${qtl_index+1}">QTL #${qtl_index+1} - In data matrix <a href="molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${qtl.matrix.id}">${qtl.matrix.name}</a>. Basic information:</h3>
+					<table cellpadding="3" border="1" style="width:700px;">
+						<tr class="form_listrow0">
+							<td colspan="2">
+								<b>Plot<b>
+							</td>
+						</tr>
+						<tr class="form_listrow1">
+							<td align="center"  colspan="2">
+							<i>Click to enlarge</i><br>
+								<#if qtl.plot??>
+									<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
+									<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+										<img src="tmpfile/${qtl.plot}" width="160" height="120">
+									</a>
+								</#if>
+							</td>
+						</tr>
+						<tr class="form_listrow0">
+							<td colspan="2">
+								<b>Highest LOD score<b>
+							</td>
+						</tr>
+						<tr class="form_listrow1">
+							<td>
+								Value: 
+							</td>
+							<td>
+								${qtl.peakValue}
+							</td>
+						</tr>
+						<tr class="form_listrow1">
+							<td>
+								Marker: 
+							</td>
+							<td>
+								<a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a>
+								<#if qtl.markerAnnotations?keys?seq_contains(qtl.peakMarker)>(at bp ${qtl.markerAnnotations[qtl.peakMarker].bpstart?c}<#if qtl.markerAnnotations[qtl.peakMarker].cm??>, cM ${qtl.markerAnnotations[qtl.peakMarker].cm}</#if>)</#if>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><h3>QTL #${qtl_index+1} - Advanced information:</h3>
+				<div style="overflow: auto; max-height: 400px; width: 720px;">
+					<table cellpadding="3" border="1" style="width:700px;">
+						<tr class="form_listrow0">
+							<td colspan="5">
+								<b>All LOD scores</b>
+							</td>
+						</tr>
+						<tr class="form_listrow1">
+							<td>
+								<i>Marker name</i>
+							</td>
+							<td>
+								<i>LOD score</i>
+							</td>
+							<td>
+								<i>Marker cM</i>
+							</td>
+							<td>
+								<i>Marker bp</i>
+							</td>
+							<td>
+								<i>Marker chromosome</i>
+							</td>
+						</tr>
+					<#list qtl.markers as m>
+						<tr class="form_listrow1">
+							<td>
+								<a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${m}">${m}</a>
+							</td>
+							<td>
+									${qtl.valuesForMarkers[m_index]}
+							</td>
+							<td>
+									<#if qtl.markerAnnotations?keys?seq_contains(m)><#if qtl.markerAnnotations[qtl.peakMarker].cm??>${qtl.markerAnnotations[qtl.peakMarker].cm}</#if></#if>
+							</td>
+							<td>
+									<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].bpstart?c}</#if>
+							</td>
+							<td>
+									<#if qtl.markerAnnotations?keys?seq_contains(m) && qtl.markerAnnotations[m].chromosome_name??><a href="molgenis.do?__target=Chromosomes&__action=filter_set&__filter_attribute=Chromosome_name&__filter_operator=EQUALS&__filter_value=${qtl.markerAnnotations[m].chromosome_name}">${qtl.markerAnnotations[m].chromosome_name}</a></#if>
+							</td>
+						</tr>
+					</#list>
+					</table>
+					<h3>Data matrix where this QTL was found:</h3>
+					<@rb.printEntity r=qtl.matrix/>
+				</div>
+				</td>
+			</tr>
+		</table>
+		</#list>
+	
+	
+	
 	<table cellpadding="30">
 		<tr>
 			<td>
-				<h1>${r.get(typefield)} "${r.name}"</h1>
 				<h2>Record information</h2>
 				<@rb.printEntity r=r/>
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<h2>Present in these matrices:</h2>
+				<h3>Present in these matrices:</h3>
 				<#list model.report.matrices as ml>
-					<h2>"${ml.data.name}"</h2>
+					<h3><i>"${ml.data.name}"</i></h3>
 					<@rb.printEntity r=ml.data/>
 					
 					<br>
@@ -159,8 +292,8 @@ SHOPPINGCART:<br><br>
 					</table>
 						
 						
-					<h2>Plot of the values of ${r.name} in "${ml.data.name}"</h2>
-					<h3>Row plot</h3>
+					<h3>Plot of the values of ${r.name} in "${ml.data.name}"</h3>
+					<h4>Row plot</h4>
 					<#if ml.rowImg??>
 					<table>
 						<tr>
@@ -187,7 +320,7 @@ SHOPPINGCART:<br><br>
 						</#if>
 					</#if>
 						
-					<h3>Column plot</h3>
+					<h4>Column plot</h4>
 					<#if ml.colImg??>
 					<table>
 						<tr>
@@ -217,9 +350,9 @@ SHOPPINGCART:<br><br>
 						
 					<br>
 					
-					<h2>Spearman correlation results</h2>
+					<h3>Spearman correlation results</h3>
 					
-					<h3>Row correlations</h3>
+					<h4>Row correlations</h4>
 					
 					<#if ml.rowCorr??>
 					<div style="overflow: auto; max-height: 400px; width: 720px;">
@@ -256,7 +389,7 @@ SHOPPINGCART:<br><br>
 						</#if>
 					</#if>
 					
-					<h3>Column correlations</h3>
+					<h4>Column correlations</h4>
 						
 					<#if ml.colCorr??>
 					<div style="overflow: auto; max-height: 400px; width: 720px;">
@@ -341,8 +474,8 @@ SHOPPINGCART:<br><br>
 		</tr>
 		<tr>
 		<td colspan="2">
-	
-		<i>Details of all matches that are in the plot (hover for details):</i>
+		<br><br>
+		<i>All items that are in the plot (click for details):</i>
 		<div style="overflow: auto; width: 780px; max-height: 400px;">
 		<#list model.multiplot.matches?values as d>
 			<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">${d.name}</a>
@@ -361,14 +494,18 @@ SHOPPINGCART:<br><br>
 	
 	
 	
-	<#if model.shortenedQuery??>SHORETEND QUERY: ${model.shortenedQuery}</#if>   <br><br>
+	<#if model.shortenedQuery??><i>Your query was too specific for any hits, so it was shortened to:</i> <b>${model.shortenedQuery}</b></#if><br>
+	
+	<#if model.hits?size == 100 && model.shortenedQuery??>
+		<i>The results were limited to the first 100.</i><br><br>
+	<#elseif model.hits?size == 100>
+		<i>Your results were limited to the first 100. Please be more specific.</i><br><br>
+	</#if>
 	
 	<#if model.hits??>
-	HITS:   <br><br>
+	Found these hits:<br><br>
 	
-	<#if model.hits?size == 100>
-	results limited to 100  <br><br>
-	</#if>
+	
 	
 	<#list model.hits?keys as name>
 	
@@ -380,7 +517,7 @@ SHOPPINGCART:<br><br>
 		<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
 	</#if>
 		
-	<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a>
+	${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a>
 	<div style="display: inline;"><#if model.hits[name].description??> - <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <a href="molgenis.do?__target=${model.hits[name].get(typefield)}s&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...</a> <#else>${model.hits[name].description}</#if></#if></div><br>
 	
 	
