@@ -98,7 +98,7 @@
 				<plugin name="PreFillDatabase" type="plugins.fillanimaldb.PreFillDatabasePlugin"
 					label="Reset database" />
 				<plugin name="LoadLegacy" type="plugins.fillanimaldb.LoadLegacyPlugin"
-					label="Load legacy data" />
+					label="Import database" />
 				<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
 				<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
 					label="Make/edit values" />

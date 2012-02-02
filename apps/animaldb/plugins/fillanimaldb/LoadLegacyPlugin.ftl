@@ -25,15 +25,17 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->	
 
-<h1>Load data from legacy systems</h1>
+<h1>Import data</h1>
 <p><em>Caution: this might interfere with existing database items!</em></p>
 
 <div class="row">
-	<label for="zip" style="height:2em">ZIP file with CSV exports from your legacy database:</label>
+	<label for="zip" style="height:2em">ZIP with CSV files to be imported:</label>
 	<input type="file" name="zip" id="zip" class="textbox" />
 </div>
-<div class="row" style="height:3em">
-	<label for="source" style="height:3em">Your legacy database:</label>
+<div class="row" style="height:4em">
+	<label for="source" style="height:3em">Type of import:</label>
+	<input type="radio" name="source" value="prefill" />AnimalDB pre-fill
+	<br />
 	<input type="radio" name="source" value="ulidb" />Molecular Neurobiology (Uli Eisel group)
 	<br />
 	<input type="radio" name="source" value="oldadb" />Old AnimalDB (Ate Boerema)

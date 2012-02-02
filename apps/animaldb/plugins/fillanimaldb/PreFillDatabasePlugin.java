@@ -48,25 +48,21 @@ public class PreFillDatabasePlugin extends PluginModel<Entity>
 	{
 		try {
 			String action = request.getString("__action");
-			if (action.equals("fillDB") )
+			if (action.equals("reset") )
 			{
 				// Empty db and run generated sql scripts
-				
-				//OLD
-				//new emptyDatabase(db, true);
-				
-				//NEW
 				new emptyDatabase(db, false);
 				FillMetadata.fillMetadata(db, false);
 				
 				// Populate db with targets, features, values etc. needed to make AnimalDB run
-				FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
-				myFillAnimalDB.populateDB(this.getLogin());
+				// We don't do this here anymore. Use LoadLegacyPlugin instead.
+				//FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
+				//myFillAnimalDB.populateDB(this.getLogin());
 				
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
-			//e.g. show a message in your form
+			this.setError("Something went wrong while resetting your database: " + e.getMessage());
 		}
 	}
 

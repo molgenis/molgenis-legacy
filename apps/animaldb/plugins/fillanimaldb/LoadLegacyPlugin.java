@@ -52,7 +52,10 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 			if (action.equals("load")) {
 				String filename = request.getString("zip");
 				String legacy = request.getString("source");
-				if (legacy.equals("ulidb")) {
+				if (legacy.equals("prefill")) {
+					// TODO
+					this.setSuccess("Pre-filling AnimalDB successful");
+				} else if (legacy.equals("ulidb")) {
 					ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
 					myLoadUliDb.convertFromZip(filename);
 					this.setSuccess("Legacy import from Uli Eisel DB successful");

@@ -29,7 +29,7 @@
 <em>Caution: all existing database items will be removed!</em>
 
 <div id='buttons_part1' class='row'>
-	<input type='submit' class='addbutton' value='Pre-fill database' onclick="__action.value='fillDB'" />
+	<input type='submit' class='addbutton' value='Reset database' onclick="__action.value='reset'" />
 </div>
 	
 <#--end of your plugin-->	
