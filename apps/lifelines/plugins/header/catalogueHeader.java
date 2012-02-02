@@ -13,8 +13,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-
-
+import plugins.autohidelogin.AutoHideLoginModel; 
 
 public class catalogueHeader extends PluginModel<Entity>
 {
@@ -56,6 +55,9 @@ public class catalogueHeader extends PluginModel<Entity>
 	{
 		if ("doLogout".equals(request.getAction())) {
 				getLogin().logout(db);
+				
+				//only for AutoHideLoginSwitchService, but harmless otherwise 
+				AutoHideLoginModel.isVisible = false; 
 		}
 	}
 	
@@ -86,7 +88,48 @@ public class catalogueHeader extends PluginModel<Entity>
 		}
 		
 	}
-
+	
+//	public void setUserLogin()
+//	{
+//		//if the AutoHideLoginSwitchService is enabled, use this style of redirecting in the output URLs
+//		if(this.getApplicationController().getMolgenisContext().getUsedOptions().services.contains("plugins.autohidelogin.AutoHideLoginSwitchService@/autohideloginswitch"))
+//		{
+//			setUserLoginAutoHideService();
+//		}
+//		// else just use the regular one
+//		// AS A FALLBACK ONLY: this header is specific for WormQTL
+//		// and we want to use the auto-hide for this app
+//		// but just keeping the code around doesn't hurt
+//		else
+//		{
+//			setUserLoginRegular();
+//		}
+//	}
+	
+//	public void setUserLoginAutoHideService() {
+//		if (this.getLogin().isAuthenticated()) {
+//			this.userLogin = "<a href='autohideloginswitch'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getUserName() + "</a>";
+//			this.userLogin += " | ";
+//			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
+//		} else {
+//			this.userLogin = "<a href='autohideloginswitch'>" + "Login" + "</a>";
+//		}	
+//	}
+//	
+//	public void setUserLoginRegular() {
+//		if (this.getLogin().isAuthenticated()) {
+//			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
+//			this.userLogin += " | ";
+//			//this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
+//			this.userLogin += "<a href='molgenis.do?__target=catalogueHeader&select=UserLogin&__action=doLogout'>" + " | Logout " + "</a>";
+//
+//		} else {
+//			//this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
+//			this.userLogin = "<a href='molgenis.do?__target=main&select=SimpleUserLogin'>" + "Login" + "</a>";
+//
+//		}	
+//	}
+	
 	public String getUserLogin() {
 		
 		return userLogin;
