@@ -27,11 +27,11 @@
 	\begin{tabular}{l l}
 		\hline
 		\multicolumn{2}{l}{\textbf{Project information}} \\\\
-		Name & ${project} \\\\
+		Project name & ${project} \\\\
 		Number of samples & ${externalSampleID?size} \\\\
 		\\\\
 		\multicolumn{2}{l}{\textbf{Customer information}} \\\\
-		PI & ${contact[0]?replace("<", "/ ")?replace(">", "")} \\\\
+		PI & ${contact?replace("<", "/ ")?replace(">", "")} \\\\
 		\\\\
 		\multicolumn{2}{l}{\textbf{Contact information GAF and GCC}}\\\\
 		Name & Cleo C. van Diemen \\\\
@@ -44,22 +44,22 @@
 \addtolength{\oddsidemargin}{-.875in}
 \addtolength{\evensidemargin}{-.875in}
 \addtolength{\textwidth}{1.75in}
-
 \section*{Project analysis results}
 \subsection*{Overview statistics}
-{\tt To do: remove bait information in table below.}\\
+{\tt To do: remove bait information in table below.}\\\\
 \input{${qcstatisticstex}}
 \\
 Name of the bait set(s) used in the hybrid selection for this project:\\
 \textbf{\input{${qcbaitset}}}
 
+\clearpage
+
 \addtolength{\oddsidemargin}{.875in}
 \addtolength{\evensidemargin}{.875in}
 \addtolength{\textwidth}{-1.75in}
 
-\clearpage
 \subsection*{Description statistics table}
-\begin{table}[ht]
+\begin{table}[h!]
 	\centering
 	\begin{tabular}{r p{12cm}}
 		\input{${qcstatisticsdescription}}
@@ -80,5 +80,17 @@ ${figures(gcbiasmetricspdf)}
 \subsection*{Insert size distribution}
 The following figures show the insert size distribution per sample. Insert refers to the base pairs that are ligated between the adapters.
 ${figures(insertsizemetricspdf)}
+
+\clearpage
+\section*{Appendix 1: Genome Analysis Facility Pipeline}
+\begin{wrapfigure}{r}{0.5\textwidth}
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{${gaffig}}
+	\end{center}
+	\caption{Workflow in the lab}
+	\label{fig:wet}
+\end{wrapfigure}
+
+Figure \ref{fig:wet} illustrated the basic experimental process of exome capture sequencing. The qualified genomic DNA sample was randomly fragmented by Covaris and the size of the library fragments was mainly distributed between 150 to 200bp. Then adapters were ligated to both ends of the resulting fragments. The adapter-ligated templates were purified by the Agencourt AMPure SPRI beads and fragments with insert size about 250bp were excised. Extracted DNA was amplified by ligation-mediated PCR (LM-PCR), purified, and hybridized to the SureSelect Biotiny lated RNA Library (BAITS) for enrichment, hybridized fragments were bound to the strepavidin beads whereas non-hybridized fragments were washed out after 24h. Captured LM-PCR products were subjected to Agilent 2100 Bioanalyzer to estimate the magnitude of enrichment. Each captured library was then loaded on Hiseq2000 platform, and we performed high-throughput sequencing for each captured library to ensure that each sample meets the desired average sequencing depth. Raw image files were processed by Illumina basecalling Software 1.7 for base-calling with default parameters and the sequences of each individual were generated as 90bp pair-end reads.
 
 \end{document}

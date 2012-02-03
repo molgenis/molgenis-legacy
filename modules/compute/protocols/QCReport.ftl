@@ -14,6 +14,7 @@
 <@begin/>
 #MOLGENIS walltime=00:45:00
 #FOREACH project
+#DOCUMENTATION Documentation of QCReport.ftl, ${getStatisticsScript}
 
 <#include "Helpers.ftl"/>
 inputs ${ssvQuoted(hsmetrics)}
@@ -37,6 +38,10 @@ ${getStatisticsScript} \
 --tableout ${qcstatisticstex} \
 --descriptionout ${qcstatisticsdescription} \
 --baitsetout ${qcbaitset}
+
+<#--list workflow as wf>
+
+</#list-->
 
 echo "<#include "QCReportTemplate.tex"/>" > ${qcstatisticstexreport}
 
