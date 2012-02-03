@@ -34,13 +34,13 @@
 </div>
 <div class="row" style="height:5em">
 	<label for="source" style="height:5em">Type of import:</label>
-	<input type="radio" name="source" value="prefill" />AnimalDB pre-fill
+	<input type="radio" name="source" id="source1" value="prefill" />AnimalDB pre-fill
 	<br />
-	<input type="radio" name="source" value="ulidb" />Molecular Neurobiology (Uli Eisel group)
+	<input type="radio" name="source" id="source2" value="ulidb" />Molecular Neurobiology (Uli Eisel group)
 	<br />
-	<input type="radio" name="source" value="oldadb" />Old AnimalDB (Ate Boerema)
+	<input type="radio" name="source" id="source3" value="oldadb" />Old AnimalDB (Ate Boerema)
 	<br />
-	<input type="radio" name="source" value="rhutdb" />Roelof Hut
+	<input type="radio" name="source" id="source4" value="rhutdb" />Roelof Hut
 	<br />
 </div>
 <div class="row">
