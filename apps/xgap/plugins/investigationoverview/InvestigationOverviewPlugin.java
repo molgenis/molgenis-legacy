@@ -228,17 +228,25 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 	{
 		String res = "";
 		
-		DataMatrixHandler dmh = new DataMatrixHandler(db);
-		if(dmh.hasSource(data, db))
-		{
-			DataMatrixInstance matrix = dmh.createInstance(data, db);
-			res += "(";
-			res += matrix.getNumberOfRows();
-			res += " x ";
-			res += matrix.getNumberOfCols();
-			res += ")";
+		try{
+			DataMatrixHandler dmh = new DataMatrixHandler(db);
+			if(dmh.hasSource(data, db))
+			{
+				DataMatrixInstance matrix = dmh.createInstance(data, db);
+				res += "(";
+				res += matrix.getNumberOfRows();
+				res += " x ";
+				res += matrix.getNumberOfCols();
+				res += ")";
+			}
 		}
-		
+		catch(Exception e)
+		{
+			// may not crash or the plugin breaks
+			// in case backend is missing or something else went wrong,
+			// just return an empty string
+			return "";
+		}
 		return res;
 	}
 

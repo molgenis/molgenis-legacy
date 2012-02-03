@@ -2,10 +2,10 @@
 	<menu name="SearchMenu" label="Search / report" group="biologist">
 		<plugin label="Search database" name="SimpleDbSearch"
 			type="plugin.search.SimpleWholeDatabaseSearch" group="biologist" />
-		<plugin label="Build report" name="ReportBuilder"
-			type="plugins.reportbuilder.ReportBuilder" group="biologist" />
-		<plugin label="QTL Finder" name="QtlFinder"
-			type="plugins.qtlfinder.QtlFinder" group="biologist" />
+		<!--plugin label="Build report" name="ReportBuilder"
+			type="plugins.reportbuilder.ReportBuilder" group="biologist" /-->
+		<plugin label="Find QTLs" name="QtlFinderPublic2"
+			type="plugins.qtlfinder2.QtlFinder2" group="biologist" />
 		<!--plugin label="Explore experiments" name="DatasetExplorer"
 			type="plugins.datasetexplorer.DatasetExplorer" group="biologist" /-->
 	</menu>

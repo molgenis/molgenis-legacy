@@ -2,11 +2,10 @@
 	<plugin name="MolgenisHeader" type="org.molgenis.wormqtl.header.MolgenisHeader" />
 	<menu name="main">
 	
-		<plugin label="Find QTLs" name="QtlFinderPublic" type="plugins.qtlfinder.QtlFinder" group="biologist" />
-		<plugin label="beta" name="QtlFinderPublic2" type="plugins.qtlfinder2.QtlFinder2" group="biologist" />
+		<plugin label="Find QTLs" name="QtlFinderPublic2" type="plugins.qtlfinder2.QtlFinder2" group="biologist" />
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml"/>
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/runanalysis.xml"/>
+		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/configureanalysis.xml"/>
 		<include file="apps/wormqtl/org/molgenis/wormqtl/search.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/>

@@ -234,7 +234,7 @@ public class XqtlSeleniumTest
 			// browse to Overview and check links
 			clickAndWait("id=Investigations_tab_button");
 			clickAndWait("id=Overview_tab_button");
-			Assert.assertEquals(selenium.getText("link=Marker (117)"), "Marker (117)");
+			Assert.assertTrue(selenium.isTextPresent("Metabolite (24)"));
 
 			// click link to a matrix and check values
 			clickAndWait("link=metaboliteexpression");
