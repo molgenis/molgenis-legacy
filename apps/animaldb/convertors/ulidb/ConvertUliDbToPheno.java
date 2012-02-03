@@ -21,6 +21,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
+import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
@@ -72,12 +73,19 @@ public class ConvertUliDbToPheno
 		
 		// If needed, make investigation
 		invName = "FDD";
-		if (ct.getInvestigationId(invName) == -1) {
+		int invid = ct.getInvestigationId(invName);
+		if (invid == -1) {
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);
 			newInv.setOwns_Name(userName);
-			db.add(newInv);
+			invid = db.add(newInv);
 		}
+		
+		// Add some measurements that we'll need:
+		int stringUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "String").find().get(0).getId();
+		ct.makeMeasurement(invid, "OldUliDbId", stringUnitId, null, null, false, "string", "To set an animal's ID in the old Uli Eisel DB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldUliDbMotherInfo", stringUnitId, null, null, false, "string", "To set an animal's mother info in the old Uli Eisel DB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldUliDbFatherInfo", stringUnitId, null, null, false, "string", "To set an animal's father info in the old Uli Eisel DB.", login.getUserId());
 		
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();

@@ -98,9 +98,9 @@ public class PrefillAnimalDB
 		populateCategory(path + "category.csv");
 		populateProtocol(path + "protocol.csv");
 		populateSex(path + "sex.csv");
-		//populateSpecies(path + "species.csv");
-		//populateBackground(path + "background.csv");
-		//populateSource(path + "source.csv");
+		populateSpecies(path + "species.csv");
+		populateBackground(path + "background.csv");
+		populateSource(path + "source.csv");
 		// Add it all to the database
 		writeToDb();
 	}
@@ -109,32 +109,24 @@ public class PrefillAnimalDB
 		
 		db.add(ontologiesToAddList);
 		logger.debug("Ontologies successfully added");
-		
 		db.add(ontologyTermsToAddList);
 		logger.debug("Ontology terms successfully added");
-		
 		db.add(categoriesToAddList);
 		logger.debug("Categories successfully added");
-		
 		List<Measurement> measList = new ArrayList<Measurement>();
 		for (Measurement meas : measMap.values()) {
 			measList.add(meas);
 		}
 		db.add(measList);
 		logger.debug("Measurements successfully added");
-		
 		db.add(protocolsToAddList);
 		logger.debug("Protocols successfully added");
-		
 		db.add(protocolAppsToAddList);
 		logger.debug("Protocol applications successfully added");
-		
 		db.add(panelsToAddList);
 		logger.debug("Panels successfully added");
-		
 		db.add(valuesToAddList);
 		logger.debug("Values successfully added");
-
 	}
 	
 	public void populateContactInfo(String filename) throws Exception
@@ -272,7 +264,16 @@ public class PrefillAnimalDB
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				// TODO
+				String specName = tuple.getString("name");
+				panelsToAddList.add(ct.createPanel(invName, specName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), 
+						null, "TypeOfGroup", specName, "Species", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetVWASpecies"), new Date(), 
+						null, "VWASpecies", specName, tuple.getString("VwaSpecies"), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLatinSpecies"), new Date(), 
+						null, "LatinSpecies", specName, tuple.getString("LatinSpecies"), null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDutchSpecies"), new Date(), 
+						null, "DutchSpecies", specName, tuple.getString("DutchSpecies"), null));
 			}
 		});
 	}
@@ -285,7 +286,10 @@ public class PrefillAnimalDB
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				// TODO
+				String bkgName = tuple.getString("name");
+				panelsToAddList.add(ct.createPanel(invName, bkgName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), 
+						null, "TypeOfGroup", bkgName, "Background", null));
 			}
 		});
 	}
@@ -298,7 +302,12 @@ public class PrefillAnimalDB
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				// TODO
+				String sourceName = tuple.getString("name");
+				panelsToAddList.add(ct.createPanel(invName, sourceName, userName));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), 
+						null, "TypeOfGroup", sourceName, "Source", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSourceType"), new Date(), 
+						null, "SourceType", sourceName, tuple.getString("type"), null));
 			}
 		});
 	}
@@ -306,7 +315,10 @@ public class PrefillAnimalDB
 	public void populateProtocolApplication() throws Exception
 	{
 		makeProtocolApplication("SetTypeOfGroup");
-		// TODO
+		makeProtocolApplication("SetVWASpecies");
+		makeProtocolApplication("SetLatinSpecies");
+		makeProtocolApplication("SetDutchSpecies");
+		makeProtocolApplication("SetSourceType");
 	}
 
 	

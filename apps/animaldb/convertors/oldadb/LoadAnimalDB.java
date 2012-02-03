@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -59,6 +60,20 @@ public class LoadAnimalDB
 		newInv.setOwns(login.getUserId());
 		db.add(newInv);
 		invid = newInv.getId();
+		
+		// Add some measurements that we'll need
+		int stringUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "String").find().get(0).getId();
+		int datetimeUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "Datetime").find().get(0).getId();
+		ct.makeMeasurement(invid, "OldAnimalDBAnimalID", stringUnitId, null, null, false, "string", "To set an animal's ID in the old version of AnimalDB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldAnimalDBAnimalCustomID", stringUnitId, null, null, false, "string", "To set an animal's Custom ID in the old version of AnimalDB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldAnimalDBLocationID", stringUnitId, null, null, false, "string", "To set a location's ID in the old version of AnimalDB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldAnimalDBLitterID", stringUnitId, null, null, false, "string", "To link an animal to a litter with this ID in the old version of AnimalDB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldAnimalDBExperimentID", stringUnitId, null, null, false, "string", "To set an experiment's ID in the old version of AnimalDB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldAnimalDBDecApplicationID", stringUnitId, null, null, false, "string", "To link an experiment to a DEC application with this ID in the old version of AnimalDB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldAnimalDBBroughtinDate", datetimeUnitId, null, null, true, "datetime", "To set a target's date of arrival in the system/ on the location in the old version of AnimalDB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldAnimalDBExperimentalManipulationRemark", stringUnitId, null, null, false, "string", "To store Experiment remarks about the animal, from the Experimental manipulation event, from the old version of AnimalDB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldAnimalDBPresetID", stringUnitId, null, null, false, "string", "To link a targetgroup to a preset this ID in the old version of AnimalDB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldAnimalDBRemarks", stringUnitId, null, null, false, "string", "To store remarks about the animal in the animal table, from the old version of AnimalDB.", login.getUserId());
 	}
 	
 	public void convertFromZip(String filename) throws Exception {

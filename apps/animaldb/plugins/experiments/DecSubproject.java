@@ -13,7 +13,7 @@ public class DecSubproject extends DecEntity {
 	private String anaesthesia;
 	private String painManagement;
 	private String animalEndStatus;
-	private String oldAnimalDBRemarks;
+	private String remarks;
 	private int decApplicationId;
 	private String decApplication;
 	private int nrOfAnimals;
@@ -100,14 +100,14 @@ public class DecSubproject extends DecEntity {
 	public String getAnimalEndStatus() {
 		return animalEndStatus;
 	}
-	public void setOldAnimalDBRemarks(String oldAnimalDBRemarks) {
-		this.oldAnimalDBRemarks = oldAnimalDBRemarks;
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
-	public String getOldAnimalDBRemarks() {
-		if (oldAnimalDBRemarks == null) {
+	public String getRemarks() {
+		if (remarks == null) {
 			return "";
 		}
-		return oldAnimalDBRemarks;
+		return remarks;
 	}
 	public void setDecApplicationId(int decApplicationId) {
 		this.decApplicationId = decApplicationId;

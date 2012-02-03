@@ -143,7 +143,7 @@
 	
 	<div class="row">
 		<label for="remarks">Remarks:</label>
-		<input type="text" name="remarks" id="remarks" class="textbox" <#if currentDecSubproject??><#if currentDecSubproject.getOldAnimalDBRemarks()??>value="${currentDecSubproject.oldAnimalDBRemarks}"</#if></#if> />
+		<input type="text" name="remarks" id="remarks" class="textbox" <#if currentDecSubproject??><#if currentDecSubproject.getRemarks()??>value="${currentDecSubproject.oldAnimalDBRemarks}"</#if></#if> />
 	</div>
 	
 	<div class="row">
@@ -408,7 +408,7 @@
 							<td>${expl.anaesthesia}</td>
 							<td>${expl.painManagement}</td>
 							<td>${expl.animalEndStatus}</td>
-							<td>${expl.oldAnimalDBRemarks}</td>
+							<td>${expl.remarks}</td>
 							<td>${expl.nrOfAnimals} [<a href='molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${i}'>Manage</a>]</td>
 							<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${i}">Edit</a>&nbsp;</td>
 						</tr>

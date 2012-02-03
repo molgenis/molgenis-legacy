@@ -49,7 +49,7 @@
 			<br />
 			<label for="name" style="vertical-align: middle">name:</label>
 			<br />
-			<input id="name" type="text" />
+			<input id="name" name="name" type="text" />
 			<input type="hidden" name="plugin" id="plugin" value="${screen.getActivePlugin()}" />
 			<br /><br />
 			<input type="submit" value="Send" onclick="hideFeedback(); __action.value='sendFeedback'" />

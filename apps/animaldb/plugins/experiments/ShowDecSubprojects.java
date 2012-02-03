@@ -14,8 +14,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.molgenis.batch.MolgenisBatch;
-import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
@@ -568,7 +566,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
 						enddate, measurementId, subprojectId, endstatus, 0));
 				if (remarks != null) {
-					measurementId = ct.getMeasurementId("OldAnimalDBRemarks");
+					measurementId = ct.getMeasurementId("Remark");
 					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
 							enddate, measurementId, subprojectId, remarks, 0));
 				}
@@ -1040,8 +1038,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				featureId = ct.getMeasurementId("AnimalEndStatus");
 				String animalEndStatus = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
 				
-				featureId = ct.getMeasurementId("OldAnimalDBRemarks");
-				String oldAnimalDBRemarks = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
+				featureId = ct.getMeasurementId("Remark");
+				String remarks = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
 				
 				featureId = ct.getMeasurementId("DecApplication");
 				int decApplicationId = ct.getMostRecentValueAsXref(currentExp.getId(), featureId);
@@ -1088,7 +1086,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				tmpExp.setAnaesthesia(anaesthesia);
 				tmpExp.setPainManagement(painManagement);
 				tmpExp.setAnimalEndStatus(animalEndStatus);
-				tmpExp.setOldAnimalDBRemarks(oldAnimalDBRemarks);
+				tmpExp.setRemarks(remarks);
 				if (decApplicationId != -1) tmpExp.setDecApplicationId(decApplicationId);
 				tmpExp.setDecApplication(decApplicationName);
 				tmpExp.setNrOfAnimals(nrOfAnimals);

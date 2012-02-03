@@ -21,7 +21,6 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
-import plugins.fillanimaldb.FillAnimalDB;
 import app.FillMetadata;
 
 
@@ -79,12 +78,12 @@ public class AnimalDBHeader extends PluginModel<Entity>
 			// Empty DB and run generated sql scripts
 			new emptyDatabase(db, false);
 			FillMetadata.fillMetadata(db, false);
+			this.getMessages().add(new ScreenMessage("Your database was empty, so it was prefilled with basic security entities", true));
 			
 			// Populate db with targets, features, values etc. needed to make AnimalDB run
-			FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
-			myFillAnimalDB.populateDB(this.getLogin());
-			
-			this.getMessages().add(new ScreenMessage("Your database was empty, so it was prefilled with entities needed to make AnimalDB run", true));
+			// Note: we don't do this here anymore. Use the Import database Plugin instead.
+			//FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
+			//myFillAnimalDB.populateDB(this.getLogin());
 		} catch (Exception e) {
 			String message = "Something went wrong while trying to prefill your database";
 			if (e.getMessage() != null) {
@@ -106,7 +105,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 		
 		if ("sendFeedback".equals(request.getAction())) {
 			feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName() + 
-					") sent: " + request.getString("feedback") + " about: " + request.getString("plugin");
+					") sent:\n" + request.getString("feedback") + " about:\n" + request.getString("plugin");
 			
 			// get admin email
 			MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);

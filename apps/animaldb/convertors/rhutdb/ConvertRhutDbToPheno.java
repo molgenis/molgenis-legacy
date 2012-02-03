@@ -23,6 +23,7 @@ import java.util.zip.ZipFile;
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.auth.MolgenisUser;
+import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -90,6 +91,16 @@ public class ConvertRhutDbToPheno
 			db.add(newInv);
 			invId = newInv.getId();
 		}
+		
+		// Add some measurements that we'll need
+		int stringUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "String").find().get(0).getId();
+		int datetimeUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "Datetime").find().get(0).getId();
+		int numberUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "Number").find().get(0).getId();
+		ct.makeMeasurement(invId, "OldRhutDbAnimalId", stringUnitId, null, null, false, "string", "To set an animal's ID in Roelof Hut's old DB.", login.getUserId());
+		ct.makeMeasurement(invId, "OldRhutDbLitterId", stringUnitId, null, null, false, "string", "To link an animal to a litter with this ID in the old version of Roelof Hut's DB.", login.getUserId());
+		ct.makeMeasurement(invId, "OldRhutDbSampleDate", datetimeUnitId, null, null, false, "datetime", "To set the date that an animal was sampled in the old version of Roelof Hut's DB.", login.getUserId());
+		ct.makeMeasurement(invId, "OldRhutDbSampleNr", numberUnitId, null, null, false, "int", "To set the sample number in the old version of Roelof Hut's DB.", login.getUserId());
+		ct.makeMeasurement(invId, "OldRhutDbExperimentId", numberUnitId, null, null, false, "int", "To set the experiment's ID in the old version of Roelof Hut's DB.", login.getUserId());
 		
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();
