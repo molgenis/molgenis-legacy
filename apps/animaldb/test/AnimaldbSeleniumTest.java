@@ -95,6 +95,8 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=zip", "/data/home/erikroos/20120202_PrefillAnimalDB.zip");
 		selenium.click("value=prefill");
 		selenium.click("id=load");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Pre-filling AnimalDB successful"));
 		
 		sleepHelper("loginAdmin");
 	}
