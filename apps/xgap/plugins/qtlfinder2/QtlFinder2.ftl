@@ -447,7 +447,7 @@ Selection:<br><br>
 	<#if model.multiplot??>
 
 	<table cellpadding="30"><tr><td>
-		<h2>Results for "${model.query}"</h2><br>
+		<h2>Results for "<#if model.query??>${model.query}</#if>"</h2><br>
 		
 		<table><tr>
 		<td>
