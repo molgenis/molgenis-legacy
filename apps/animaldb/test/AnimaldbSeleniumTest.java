@@ -84,6 +84,17 @@ public class AnimaldbSeleniumTest
 		// Now we get to the Welcome screen
 		Assert.assertEquals(selenium.getTitle(), "AnimalDB");
 		Assert.assertTrue(selenium.isTextPresent("Welcome to AnimalDB!"));
+		// Go to Import database plugin
+		selenium.click("id=Admin_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("systemmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("LoadLegacy_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Import database"));
+		selenium.type("id=zip", "/data/home/erikroos/20120202_PrefillAnimalDB.zip");
+		selenium.click("value=prefill");
+		selenium.click("id=load");
 		
 		sleepHelper("loginAdmin");
 	}
@@ -92,8 +103,7 @@ public class AnimaldbSeleniumTest
 	public void makeUser() throws InterruptedException
 	{
 		// Go to AnimalDB user mgmt. plugin (first item in Admin menu)
-		selenium.click("id=Admin_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
+		
 		// Make user 'test'
 		selenium.click("link=Make new user");
 		selenium.waitForPageToLoad(pageLoadTimeout);
