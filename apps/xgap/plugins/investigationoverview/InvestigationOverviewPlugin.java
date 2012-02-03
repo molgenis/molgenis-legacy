@@ -10,6 +10,9 @@ package plugins.investigationoverview;
 import java.util.HashMap;
 import java.util.List;
 
+import matrix.DataMatrixInstance;
+import matrix.general.DataMatrixHandler;
+
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
@@ -19,20 +22,19 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.model.elements.DBSchema;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
 
-import app.JDBCMetaDatabase;
-
 public class InvestigationOverviewPlugin extends PluginModel<Entity>
 {
 
 	private static final long serialVersionUID = -7068554327138233108L;
 	private InvestigationOverviewModel model = new InvestigationOverviewModel();
+	
+	private Integer currentInvId;
 
 	public InvestigationOverviewModel getMyModel()
 	{
@@ -146,70 +148,98 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			FormModel<Investigation> parentForm = (FormModel<Investigation>) ((FormController)parentController).getModel();
 			Investigation inv = parentForm.getRecords().get(0);
 			
-			this.model.setSelectedInv(inv);
-			QueryRule thisInv = new QueryRule("investigation", Operator.EQUALS, inv.getId());
-
-			List<ObservationElement> ofList = db.find(ObservationElement.class, thisInv);
-
-			// first make map of type + amount
-			HashMap<String, Integer> annotationTypeAndNr = new HashMap<String, Integer>();
-			for (ObservationElement of : ofList)
+			boolean reload = false;
+			if(currentInvId == null || !inv.getId().equals(currentInvId))
 			{
-				if (!(of.get__Type().equals("Data") || of.get__Type().equals("ObservationElement")))
+				currentInvId = inv.getId();
+				reload = true;
+			}
+			
+			if(reload)
+			{
+				this.model.setSelectedInv(inv);
+				QueryRule thisInv = new QueryRule("investigation", Operator.EQUALS, inv.getId());
+	
+				List<ObservationElement> ofList = db.find(ObservationElement.class, thisInv);
+	
+				// first make map of type + amount
+				HashMap<String, Integer> annotationTypeAndNr = new HashMap<String, Integer>();
+				for (ObservationElement of : ofList)
 				{
-					if (annotationTypeAndNr.containsKey(of.get__Type()))
+					if (!(of.get__Type().equals("Data") || of.get__Type().equals("ObservationElement")))
 					{
-						annotationTypeAndNr.put(of.get__Type(), annotationTypeAndNr.get(of.get__Type()) + 1);
+						if (annotationTypeAndNr.containsKey(of.get__Type()))
+						{
+							annotationTypeAndNr.put(of.get__Type(), annotationTypeAndNr.get(of.get__Type()) + 1);
+						}
+						else
+						{
+							annotationTypeAndNr.put(of.get__Type(), 1);
+						}
 					}
-					else
-					{
-						annotationTypeAndNr.put(of.get__Type(), 1);
-					}
+	
 				}
-
+	
+				// merge type+amount and add hyperlink instead (note: hyperlink may
+				// NOT actually match!
+				HashMap<String, String> annotationWithLinks = new HashMap<String, String>();
+				for (String key : annotationTypeAndNr.keySet())
+				{
+					annotationWithLinks.put(key, annotationTypeAndNr.get(key)+"");
+				}
+	
+				this.model.setAnnotationList(annotationWithLinks);
+	
+				HashMap<String, Data> expList = new HashMap<String, Data>();
+				HashMap<String, String> expDimensions = new HashMap<String, String>();
+				List<Data> dataList = db.find(Data.class, thisInv);
+				for (Data d : dataList)
+				{
+					String name = d.getName();
+					if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
+					expList.put(name, d);
+					expDimensions.put(name, getDataInfo(d, db));
+				}
+				this.model.setExpList(expList);
+				this.model.setExpDimensions(expDimensions);
+	
+				HashMap<String, String> otherList = new HashMap<String, String>();
+	
+				List<InvestigationFile> ifList = db.find(InvestigationFile.class, thisInv);
+				for (InvestigationFile invFile : ifList)
+				{
+					String name = invFile.getName();
+					if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
+					otherList.put(name + "." + invFile.getExtension(),
+							"?__target=Files&__action=filter_set&__filter_attribute=id&__filter_operator=EQUALS&__filter_value="
+									+ invFile.getId());
+				}
+				this.model.setOtherList(otherList);
 			}
-
-			// merge type+amount and add hyperlink instead (note: hyperlink may
-			// NOT actually match!
-			HashMap<String, String> annotationWithLinks = new HashMap<String, String>();
-			for (String key : annotationTypeAndNr.keySet())
-			{
-				annotationWithLinks.put(key + " (" + annotationTypeAndNr.get(key) + ")", "?select=" + key + "s");
-			}
-
-			this.model.setAnnotationList(annotationWithLinks);
-
-			HashMap<String, Data> expList = new HashMap<String, Data>();
-			List<Data> dataList = db.find(Data.class, thisInv);
-			for (Data d : dataList)
-			{
-				String name = d.getName();
-				if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
-				expList.put(name, d);
-			}
-			this.model.setExpList(expList);
-
-			HashMap<String, String> otherList = new HashMap<String, String>();
-
-			List<InvestigationFile> ifList = db.find(InvestigationFile.class, thisInv);
-			for (InvestigationFile invFile : ifList)
-			{
-				String name = invFile.getName();
-				if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
-				otherList.put(name + "." + invFile.getExtension(),
-						"?__target=Files&__action=filter_set&__filter_attribute=id&__filter_operator=EQUALS&__filter_value="
-								+ invFile.getId());
-
-			}
-			this.model.setOtherList(otherList);
-
-			this.setMessages();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
+	}
+	
+	private String getDataInfo(Data data, Database db) throws Exception
+	{
+		String res = "";
+		
+		DataMatrixHandler dmh = new DataMatrixHandler(db);
+		if(dmh.hasSource(data, db))
+		{
+			DataMatrixInstance matrix = dmh.createInstance(data, db);
+			res += "(";
+			res += matrix.getNumberOfRows();
+			res += " x ";
+			res += matrix.getNumberOfCols();
+			res += ")";
+		}
+		
+		return res;
 	}
 
 }

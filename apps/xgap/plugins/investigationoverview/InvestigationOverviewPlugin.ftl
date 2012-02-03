@@ -58,7 +58,7 @@
 			<#--if a?starts_with("Data")>
 				<a href="?select=Data">${blueSquare} ${a}</a>
 			<#else-->
-				<a href=${model.annotationList[a]}>${blueSquare} ${a}</a>
+				<a href="?select=${a}s">${blueSquare} ${a}</a> (${model.annotationList[a]})
 			<#--if-->
 			</td>
 			
@@ -133,7 +133,7 @@
 		<#else>
 			<#list model.expList?keys as a>
 				<td>
-					<a href="?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.expList[a].id}">${redSquare} ${a}</a>
+					<a href="?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.expList[a].id}">${redSquare} ${a}</a> ${model.expDimensions[a]}
 				</td>
 				
 				<#if !model.showAllExperiments && a_index == 3>

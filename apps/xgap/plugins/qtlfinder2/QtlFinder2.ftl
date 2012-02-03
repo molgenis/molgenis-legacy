@@ -47,7 +47,7 @@
 
 <br><br>
 
-<div style="position:absolute;top:250px;left:100px;">
+<div style="position:absolute;top:250px;left:80px;">
 		<select class=" ui-widget-content ui-corner-all" id="Phenotype_select" name="dataTypeSelect"  style="width:220px;" name="dataTypeSelect">
 			<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All phenotypes (${model.annotationTypeAndNr[allDataTypes]})</option>
 			<#list model.annotationTypeAndNr?keys as key>

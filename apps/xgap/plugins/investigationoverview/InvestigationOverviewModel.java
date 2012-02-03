@@ -13,6 +13,8 @@ public class InvestigationOverviewModel{
 	
 	private HashMap<String, Data> expList;
 	
+	private HashMap<String, String> expDimensions;
+	
 	private HashMap<String, String> otherList;
 	
 	private Boolean showAllAnnotations;
@@ -23,6 +25,21 @@ public class InvestigationOverviewModel{
 	
 	private Boolean viewDataByTags;
 	
+	
+	
+	
+	
+
+	public HashMap<String, String> getExpDimensions()
+	{
+		return expDimensions;
+	}
+
+	public void setExpDimensions(HashMap<String, String> expDimensions)
+	{
+		this.expDimensions = expDimensions;
+	}
+
 	public Boolean getViewDataByTags()
 	{
 		return viewDataByTags;
