@@ -1051,8 +1051,8 @@ public class ManageLitters extends PluginModel<Entity>
 		// change litter status from active to inactive
 		protocolId = ct.getProtocolId("SetActive");
 		measurementId = ct.getMeasurementId("Active");
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, null, measurementId, protocolId, litter, 
-				"Inactive", 0));
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, null, 
+				protocolId, measurementId, litter, "Inactive", 0));
 			
 		// Make animal, link to litter, parents and set wean dates etc.
 		for (int animalNumber = 0; animalNumber < weanSize; animalNumber++) {
