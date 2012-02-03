@@ -102,8 +102,9 @@ public class AnimaldbSeleniumTest
 	@Test(dependsOnMethods={"loginAdmin"})
 	public void makeUser() throws InterruptedException
 	{
-		// Go to AnimalDB user mgmt. plugin (first item in Admin menu)
-		
+		// Go to AnimalDB user mgmt. plugin (first item in Admin -> Security  menu)
+		selenium.click("securitymenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Make user 'test'
 		selenium.click("link=Make new user");
 		selenium.waitForPageToLoad(pageLoadTimeout);
