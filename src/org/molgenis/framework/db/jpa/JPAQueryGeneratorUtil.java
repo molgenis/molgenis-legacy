@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -19,8 +18,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
-
-import org.apache.commons.lang.StringUtils;
 
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.framework.db.DatabaseException;
@@ -169,23 +166,16 @@ public class JPAQueryGeneratorUtil {
 						(String) rule.getValue());
 					break;
 				    case LESS:
-					predicate = cb.lessThan(
-						root.get(attributeName).as(String.class),
-						(Comparable) rule.getValue());
+				    	predicate = cb.lessThan((Expression) root.get(attributeName), (Comparable) rule.getValue());
 					break;
 				    case GREATER:
-					predicate = cb.greaterThan(
-						root.get(attributeName).as(String.class),
-						(Comparable) rule.getValue());
+				    	predicate = cb.greaterThan((Expression) root.get(attributeName), (Comparable) rule.getValue());
 					break;
 				    case LESS_EQUAL:
-					predicate = cb.lessThanOrEqualTo(root.get(attributeName).as(String.class),
-						(Comparable) rule.getValue());
+				    	predicate = cb.lessThanOrEqualTo((Expression) root.get(attributeName), (Comparable) rule.getValue());
 					break;
 				    case GREATER_EQUAL:
-					predicate = cb.greaterThanOrEqualTo(
-						root.get(attributeName).as(String.class),
-						(Comparable) rule.getValue());
+				    	predicate = cb.greaterThanOrEqualTo((Expression) root.get(attributeName), (Comparable) rule.getValue());
 					break;
 				    case NESTED:
 					QueryRule[] nestedrules = rule.getNestedRules();
