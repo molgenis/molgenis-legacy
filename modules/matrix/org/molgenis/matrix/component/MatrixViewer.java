@@ -151,14 +151,7 @@ public class MatrixViewer extends HtmlWidget
 		this.showDownloadOptions = showDownloadOptions;
 		if (filterRules != null)
 		{
-			for (MatrixQueryRule rule : filterRules) {
-				if (rule != null) {
-					this.matrix.getRules().add(rule);
-				}
-				if (rule.getFilterType().equals(MatrixQueryRule.Type.colHeader)) {
-					columnsRestricted = true;
-				}
-			}
+			this.matrix.getRules().addAll(filterRules);
 		}
 	}
 
@@ -178,7 +171,12 @@ public class MatrixViewer extends HtmlWidget
 			boolean showLimitControls, boolean selectMultiple, boolean showDownloadOptions,
 			List<MatrixQueryRule> filterRules, MatrixQueryRule columnRule) throws Exception
 	{
-		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, showDownloadOptions, Arrays.asList(columnRule));
+		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, showDownloadOptions, filterRules);
+		if (columnRule != null && columnRule.getFilterType().equals(MatrixQueryRule.Type.colHeader))
+		{
+			columnsRestricted = true;
+			this.matrix.getRules().add(columnRule);
+		}
 	}
 
 	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
