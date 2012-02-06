@@ -64,6 +64,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 				Date dat = new Date();
 				String dateOfDownload = dateFormat.format(dat);
+				System.out.println("seleced investigaton >>>> " + selectedInvestigation);
 				this.addMeasurements(db, request, selectedInvestigation, dateOfDownload);
 				
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
@@ -96,43 +97,56 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		}
 
 		List<Integer> DownloadedMeasurementIds = new ArrayList<Integer>();
-		for (Measurement m : this.shoppingCart) {
-			DownloadedMeasurementIds.add(m.getId());
-		}
 		
-		Query<ShoppingCart> q = db.query(ShoppingCart.class);
-		q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
-		q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
-		List<ShoppingCart> result = q.find();
-		
-		if (result.isEmpty()) {
-			//Add to database 
-			ShoppingCart shoppingCart = new ShoppingCart();
-			//shoppingCart.setMeasurements(DownloadedMeasurementIds);
-			shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
-			shoppingCart.setUserID(this.getLogin().getUserName());
-			shoppingCart.setCheckedOut(false);
-			shoppingCart.setDateOfOrder(dateOfDownload);
-			shoppingCart.setApproved(false);
-			db.add(shoppingCart);
-			System.out.println("Download list has been added to the DB");
-			
+		if (this.shoppingCart.isEmpty())  {
+			this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. Please select item and proceed to download", true));
+			this.setError("Your download list is empty. Please select item and proceed to download");
+	
 		} else {
-			ShoppingCart shoppingCart = result.get(0); // assuming user can have only one shopping cart that's NOT checked out
-			//shoppingCart.setMeasurements(DownloadedMeasurementIds);
-			shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
-			db.update(shoppingCart);
-			System.out.println("Shopping cart has been updated in the DB");
-		}
-			
-		HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-		HttpServletRequest httpRequest   = rt.getRequest();
-		HttpServletResponse httpResponse = rt.getResponse();
-		//System.out.println(">>> " + this.getParent().getName()+ "or >>>  "+ this.getSelected().getLabel());
-		//String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsDownloadForm";
-		String redirectURL = httpRequest.getRequestURL() + "?__target=" + "Downloads" + "&select=MeasurementsDownloadForm";
+		
+			System.out.println("DownloadedMeasurementIds >>>: " + this.shoppingCart);
 
-		httpResponse.sendRedirect(redirectURL);
+			for (Measurement m : this.shoppingCart) {
+				DownloadedMeasurementIds.add(m.getId());
+				System.out.println("DownloadedMeasurementIds >>>: " + m.getId());
+			}
+			
+			Query<ShoppingCart> q = db.query(ShoppingCart.class);
+			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
+			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
+			List<ShoppingCart> result = q.find();
+			
+			if (result.isEmpty()) {
+				//Add to database 
+				ShoppingCart shoppingCart = new ShoppingCart();
+				//shoppingCart.setMeasurements(DownloadedMeasurementIds);
+				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
+				shoppingCart.setUserID(this.getLogin().getUserName());
+				shoppingCart.setCheckedOut(false);
+				shoppingCart.setDateOfOrder(dateOfDownload);
+				shoppingCart.setApproved(false);
+				db.add(shoppingCart);
+				System.out.println("Download list has been added to the DB");
+				
+			} else {
+				ShoppingCart shoppingCart = result.get(0); // assuming user can have only one shopping cart that's NOT checked out
+				//shoppingCart.setMeasurements(DownloadedMeasurementIds);
+				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
+				db.update(shoppingCart);
+				System.out.println("Shopping cart has been updated in the DB");
+			}
+				
+			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+			HttpServletRequest httpRequest   = rt.getRequest();
+			HttpServletResponse httpResponse = rt.getResponse();
+			//System.out.println(">>> " + this.getParent().getName()+ "or >>>  "+ this.getSelected().getLabel());
+			//String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsDownloadForm";
+			String redirectURL = httpRequest.getRequestURL() + "?__target=" + "Downloads" + "&select=MeasurementsDownloadForm";
+
+			httpResponse.sendRedirect(redirectURL);
+
+		}
+		
 	}
 	
 	private void deleteShoppingItem(String selected) {
