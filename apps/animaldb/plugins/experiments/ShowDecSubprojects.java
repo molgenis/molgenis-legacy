@@ -343,10 +343,12 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 			if (addAnimalsMatrixViewer != null && action.startsWith(addAnimalsMatrixViewer.getName())) {
 				addAnimalsMatrixViewer.handleRequest(db, request);
 				action = "AddAnimalToSubproject";
+				return; // avoid matrix reinitialization
 			}
 			if (remAnimalsMatrixViewer != null && action.startsWith(remAnimalsMatrixViewer.getName())) {
 				remAnimalsMatrixViewer.handleRequest(db, request);
 				action = "EditAnimals";
+				return; // avoid matrix reinitialization
 			}
 		
 			if (action.equals("AddEdit") || action.equals("EditAnimals"))
