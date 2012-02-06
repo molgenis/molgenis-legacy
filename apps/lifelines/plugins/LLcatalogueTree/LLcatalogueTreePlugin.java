@@ -200,7 +200,12 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					
 					//get the corresponding Category joined with Measurement_categories
 					List<Category> categoryIds = new ArrayList<Category>();
-					categoryIds = db.find(Category.class, new QueryRule(Category.NAME, Operator.EQUALS, measurement.getCategories_Name()));
+					System.out.println( "measurement's categories: "+ measurement.getCategories_Name() + "plh8os : " + measurement.getCategories_Name().size());
+
+					//this is a list of categories . 
+					for (int i=0; i<measurement.getCategories_Name().size(); i++) {
+						categoryIds.addAll(i, db.find(Category.class, new QueryRule(Category.NAME, Operator.EQUALS, measurement.getCategories_Name().get(i))));
+					}
 					System.out.println("category ids for "+ measurement.getName()+ ">>>" +categoryIds);
 					//for (i=0; i< )
 					
