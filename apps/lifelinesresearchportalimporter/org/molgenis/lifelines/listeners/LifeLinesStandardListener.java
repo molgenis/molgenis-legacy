@@ -1,5 +1,8 @@
 package org.molgenis.lifelines.listeners;
 
+import static ch.lambdaj.Lambda.index;
+import static ch.lambdaj.Lambda.on;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,8 +15,6 @@ import javax.persistence.EntityManager;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
-import org.molgenis.lifelines.listeners.ImportTupleListener;
-//import org.molgenis.lifelinespheno.LLTarget;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -22,10 +23,6 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
-
-
-import static ch.lambdaj.Lambda.*;
-import static org.hamcrest.Matchers.*;
 
 /**
  * Standard importer for lifelines. Fields with name 'PA_ID' are considered to

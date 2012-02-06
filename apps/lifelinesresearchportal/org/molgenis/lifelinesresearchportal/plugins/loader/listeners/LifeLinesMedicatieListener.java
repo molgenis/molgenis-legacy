@@ -41,12 +41,8 @@ public class LifeLinesMedicatieListener extends ImportTupleListener
 		this.logger = Logger.getLogger("LLimport(" + protocol.getName() + ")");
 		
 		//remove all Measurement for this protocol
-		try {
-			protocol = Protocol.findById(db, protocol.getId());
-		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		protocol = Protocol.findById(db, protocol.getId());
+
 		List<Measurement> mList = db.query(Measurement.class).in(Measurement.ID, protocol.getFeatures()).find();
 		protocol.getFeatures().clear();
 		protocol.getFeatures_Name().clear();
