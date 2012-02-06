@@ -88,6 +88,7 @@ public class ConvertRhutDbToPheno
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);
 			newInv.setOwns_Name(userName);
+			newInv.setCanRead_Name("admin");
 			db.add(newInv);
 			invId = newInv.getId();
 		}

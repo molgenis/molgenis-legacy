@@ -55,11 +55,22 @@ public class LoadAnimalDB
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
 		
-		Investigation newInv = new Investigation();
-		newInv.setName("AnimalDB");
-		newInv.setOwns(login.getUserId());
-		db.add(newInv);
-		invid = newInv.getId();
+//		Investigation newInv = new Investigation();
+//		newInv.setName("AnimalDB");
+//		newInv.setOwns(login.getUserId());
+//		db.add(newInv);
+//		invid = newInv.getId();
+		
+		// If needed, make investigation
+		String invName = "FDD";
+		invid = ct.getInvestigationId(invName);
+		if (invid == -1) {
+			Investigation newInv = new Investigation();
+			newInv.setName(invName);
+			newInv.setOwns_Name(login.getUserName());
+			newInv.setCanRead_Name("admin");
+			invid = db.add(newInv);
+		}
 		
 		// Add some measurements that we'll need
 		int stringUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "String").find().get(0).getId();

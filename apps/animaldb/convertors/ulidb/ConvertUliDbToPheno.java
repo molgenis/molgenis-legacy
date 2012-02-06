@@ -78,6 +78,7 @@ public class ConvertUliDbToPheno
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);
 			newInv.setOwns_Name(userName);
+			newInv.setCanRead_Name("admin");
 			invid = db.add(newInv);
 		}
 		

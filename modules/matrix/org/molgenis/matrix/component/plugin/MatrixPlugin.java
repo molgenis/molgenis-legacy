@@ -66,7 +66,7 @@ public class MatrixPlugin extends GenericPlugin
 			div = new DivPanel();
 			try {
 				List<String> measurementsToShow = new ArrayList<String>();
-				List<Measurement> allMeasurements = db.find(Measurement.class);
+				List<Measurement> allMeasurements = db.query(Measurement.class).sortASC(Measurement.NAME).find();
 				int nr = 0;
 				for (Measurement measurement : allMeasurements) {
 					measurementsToShow.add(measurement.getName());
