@@ -2,9 +2,9 @@
 	<plugin name="molgenis_header" type="plugins.cluster.demo.xwbllheader.MolgenisHeader" />
 	<menu name="main">
 		<plugin label="Home" name="LifeLinesHome" type="plugins.cluster.demo.homepage.LifeLines" />
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/login.xml"/>
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/account settings"/>
 		<plugin label="Data loader" name="LifeLinesLoader" type="org.molgenis.lifelinesresearchportal.plugins.loader.LifeLinesLoaderPlugin" />
-<!--
+		<!--
 		<menu label="Catalog" name="LifeLinesCatalogMenu">
 			<plugin label="Catalog" name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" />
  			<plugin name="MeasurementsDownloadForm" type="plugins.data.MeasurementsDownloadForm" label="Orders" />  
