@@ -78,14 +78,14 @@ public class AnimalDBHeader extends PluginModel<Entity>
 			// Empty DB and run generated sql scripts
 			new emptyDatabase(db, false);
 			FillMetadata.fillMetadata(db, false);
-			this.getMessages().add(new ScreenMessage("Your database was empty, so it was prefilled with basic security entities", true));
+			this.getMessages().add(new ScreenMessage("Your database was empty, so it was reset and prefilled with basic security entities", true));
 			
 			// Populate db with targets, features, values etc. needed to make AnimalDB run
 			// Note: we don't do this here anymore. Use the Import database Plugin instead.
 			//FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
 			//myFillAnimalDB.populateDB(this.getLogin());
 		} catch (Exception e) {
-			String message = "Something went wrong while trying to prefill your database";
+			String message = "Something went wrong while trying to reset and prefill your database";
 			if (e.getMessage() != null) {
 				message += (": " + e.getMessage());
 			}
@@ -105,7 +105,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 		
 		if ("sendFeedback".equals(request.getAction())) {
 			feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName() + 
-					") sent:\n" + request.getString("feedback") + " about:\n" + request.getString("plugin");
+					") sent:\n\n" + request.getString("feedback") + "\n\nabout: " + request.getString("plugin");
 			
 			// get admin email
 			MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
