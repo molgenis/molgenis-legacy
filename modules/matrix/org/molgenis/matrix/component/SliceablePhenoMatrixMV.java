@@ -1,32 +1,35 @@
 package org.molgenis.matrix.component;
 
-//import static ch.lambdaj.Lambda.*;
-//import org.hamcrest.text.*;
-
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
+import org.hibernate.ejb.EntityManagerImpl;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.component.sqlbackend.EAVRelationalBackend;
-import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.BasicMatrix;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.matrix.component.sqlbackend.Backend;
+import org.molgenis.matrix.component.sqlbackend.EAVViewBackend;
 import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
+
+
 
 /**
  * Sliceable version of the PhenoMatrix. This assumes the rows are
@@ -42,51 +45,119 @@ import org.molgenis.protocol.Protocol;
  * 
  */
 
-public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends ObservationElement>
-        extends AbstractObservationElementMatrix<R, C, ObservedValue> implements
-        SliceableMatrix<R, C, ObservedValue>, DatabaseMatrix {
-
+public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends ObservationElement, V extends ObservedValue>
+        extends AbstractObservationElementMatrix<R, C, V> 
+		implements SliceableMatrix<R, C, V>, DatabaseMatrix 
+{
     private final EntityManager em;
     private final Investigation investigation;
-    private final LinkedHashMap<Protocol, List<Measurement>> mesurementsByProtocol;
+    private final LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol;
+    private final Map<Measurement, List<Category>> categoryByMeasurement = new HashMap<Measurement, List<Category>>();
+    
     private final String JOIN_COLUMN = "PA_ID";
     
     private final Backend backend;
-    
-    
-    private transient Database db;
-    
+       
     private Protocol sortProtocol;
     private Measurement sortMeasurement;
     private String sortOrder;
+	private Database db;
         
-    public SliceablePhenoMatrixMV(Database database, 
+    @SuppressWarnings("unchecked")
+	public SliceablePhenoMatrixMV(Database database, 
             Class<R> rowClass, Class<C> colClass, 
-            Investigation investigation, LinkedHashMap<Protocol, List<Measurement>> mesurementByProtocol) {
+            Investigation investigation, LinkedHashMap<Protocol, 
+            List<Measurement>> measurementByProtocol) 
+    	throws MatrixException
+    {
         this.db = database;
         this.rowClass = rowClass;
         this.colClass = colClass;
-        this.valueClass = ObservedValue.class;
+        this.valueClass = (Class<V>) ObservedValue.class;
         this.investigation = investigation;
-        this.mesurementsByProtocol = mesurementByProtocol;
+        this.measurementsByProtocol = measurementByProtocol;
         this.em = database.getEntityManager();
-
-        //this.backend = new EAVViewBackend(this, "TEST001_");
-        this.backend = new EAVRelationalBackend(this);
+        this.backend = new EAVViewBackend(this, "LL_VWM_");
+        try {
+			retrieveCategories();
+		} catch (DatabaseException ex) {
+			throw new MatrixException(ex);
+		}
     }
-	
+
 	public void setDatabase(Database db)
 	{
 		this.db = db;
 	}
 
+	public Database getDatabase() {
+		return db;
+	}
+	
+	private void retrieveCategories() throws DatabaseException {
+		String qlString = "SELECT m, c FROM Measurement m JOIN m.categories c WHERE m.investigation = :investigation";
+		List<Object[]> measCats = em.createQuery(qlString)
+					.setParameter("investigation", investigation)
+					.getResultList();
+		
+		for(Object[] rec : measCats) {
+			Measurement m = (Measurement)rec[0];
+			Category c = (Category)rec[1];
+			
+			if(categoryByMeasurement.containsKey(m)) {
+				categoryByMeasurement.get(m).add(c);
+			} else {				
+				List<Category> cats = new ArrayList<Category>();
+				cats.add(c);
+				categoryByMeasurement.put(m, cats);
+			}
+		}
+		
+		
+//		objects.toString();
+//		List<Category> categories = db.query(Category.class).eq(Category.INVESTIGATION, investigation.getId()).find();
+//		for (Category category : categories) {
+//			Collection<Measurement> measurements = category.getCategoriesCollection();			
+//			for (Measurement measurement : measurements) {
+//				if(categoryByMeasurement.containsKey(measurement)) {
+//					categoryByMeasurement.get(measurement).add(category);
+//				} else {
+//					List<Category> cats = new ArrayList<Category>();
+//					cats.add(category);
+//					categoryByMeasurement.put(measurement, cats);
+//				} 
+//			}
+//		}
+	}
+	
     public void setSort(Protocol protocol, Measurement measurement, String sortOrder) {
         this.sortProtocol = protocol;
         this.sortMeasurement = measurement;
         this.sortOrder = sortOrder;
     }
     
-    
+    public void setColumns(List<String> columNames) throws MatrixException {
+    	for(String colName : columNames) {
+    		String protocolName = StringUtils.substringBefore(colName, "_");
+    		
+    		try {
+				Protocol p = db.query(Protocol.class).eq(Protocol.NAME, protocolName).find().get(0);
+				Measurement m = db.query(Measurement.class).eq(Measurement.NAME, colName).find().get(0);
+				
+				if(getMeasurementsByProtocol().containsKey(p)) {
+					if(!getMeasurementsByProtocol().get(p).contains(m)) {
+						getMeasurementsByProtocol().get(p).add(m);
+					}
+				} else {
+					List<Measurement> ms = new ArrayList<Measurement>();
+					ms.add(m);
+					getMeasurementsByProtocol().put(p, ms);
+				}				
+			} catch (DatabaseException e) {
+				throw new MatrixException(e);
+			}
+    	}
+    }    
     
     @Override
     public List<R> getRowHeaders() throws MatrixException {
@@ -108,7 +179,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
         try {
             String query = createCountQuery();
             System.out.println(query);
-            BigDecimal count = (BigDecimal) em.createNativeQuery(query).getSingleResult();
+            Number count = (Number) em.createNativeQuery(query).getSingleResult();
             return count.intValue();
         } catch (Exception e) {
             throw new MatrixException(e);
@@ -119,20 +190,20 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     public List<String> getColPropertyNames() {
     	final List<String> result = new ArrayList<String>();
     	try {
-			for(final C col : getColHeaders()) {
+    		for(final C col : getColHeaders()) {
 				result.add(col.getName());
 			}
 		} catch (MatrixException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
     	return result;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public List<C> getColHeaders() throws MatrixException {
         List<Measurement> result = new ArrayList<Measurement>();
-        for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
+        for (Map.Entry<Protocol, List<Measurement>> entry : getMeasurementsByProtocol().entrySet()) {
             result.addAll(entry.getValue());
         }
         return (List<C>) result;
@@ -140,9 +211,8 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     
     public List<Column> getColumns() {
         List<Column> result = new ArrayList<Column>();
-        for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
+        for (Map.Entry<Protocol, List<Measurement>> entry : getMeasurementsByProtocol().entrySet()) {
             for(Measurement measurement : entry.getValue()) {
-                String name = measurement.getName();
                 Column c = new Column(entry.getKey(), measurement);
                 result.add(c);
             }
@@ -153,24 +223,15 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     @Override
     public Integer getColCount() throws MatrixException {
     	int count = 0;
-    	for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
+    	for (Map.Entry<Protocol, List<Measurement>> entry : getMeasurementsByProtocol().entrySet()) {
     		count += entry.getValue().size();
     	}
     	return count;
     }
 
     @Override
-    public BasicMatrix<R, C, ObservedValue> getResult() throws Exception {
+    public BasicMatrix<R, C, V> getResult() throws Exception {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Helper method to create a 'count' query. Difference with a normal query
-     * is that there is no limit/offset on it
-     */
-    private <D extends ObservationElement> Query<D> createCountQuery(
-            Class<D> xClass, Database db) throws MatrixException {
-        return this.createQuery(xClass, true, db);
     }
 
     /** Helper method to produce a selection query for columns or rows */
@@ -193,21 +254,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
         // C. filter on rowOffset and rowLimit
 
         try {
-            // parameterize the refresh of the dim, either TARGET or FEATURE
-            MatrixQueryRule.Type xIndexFilterType = MatrixQueryRule.Type.rowIndex;
-            MatrixQueryRule.Type xHeaderFilterType = MatrixQueryRule.Type.rowHeader;
-            MatrixQueryRule.Type xValuesFilterType = MatrixQueryRule.Type.colValues;
-            MatrixQueryRule.Type xValuePropertyFilterType = MatrixQueryRule.Type.colValueProperty;
-            if (xClass.equals(getColClass())) {
-                xIndexFilterType = MatrixQueryRule.Type.colIndex;
-                xHeaderFilterType = MatrixQueryRule.Type.colHeader;
-                xValuesFilterType = MatrixQueryRule.Type.rowValues;
-                xValuePropertyFilterType = MatrixQueryRule.Type.rowValueProperty;
-            }
-
             Query<D> xQuery = db.query(xClass);
-
-
             // add limit and offset, unless count
             if (!countAll) {
                 if (xClass.equals(getColClass())) {
@@ -227,13 +274,13 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
 
     private int getVisableColumnCount() {
         int result = 0;
-        for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
+        for (Map.Entry<Protocol, List<Measurement>> entry : getMeasurementsByProtocol().entrySet()) {
             result += entry.getValue().size();
         }
         return result;
     }
 
-    private String createQuery() throws Exception {
+    public String createQuery() throws Exception {
         return backend.createQuery(false, rules);
     }
 
@@ -242,27 +289,36 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     }
 
     @Override
-    public List<ObservedValue>[][] getValueLists() throws MatrixException {
+    public List<V>[][] getValueLists() throws MatrixException {
         try {
             int columnCount = getVisableColumnCount();
 
+            List<Measurement> colMeasurements = new ArrayList<Measurement>();
+            for (Entry<Protocol, List<Measurement>> entry : measurementsByProtocol.entrySet()) {
+				for (Measurement value : entry.getValue()) {
+					colMeasurements.add(value);
+				}
+			}
+            
             String sql = createQuery();
             System.out.println(sql);
 
-            int offset = getRowLimit() * (getRowOffset()-1);
-            if(offset < 0) {
-                offset = 0;
-            }
-            List<Object[]> data = em.createNativeQuery(sql).setMaxResults(getRowLimit()).setFirstResult(offset).getResultList();
+            @SuppressWarnings("unchecked")
+			List<Object[]> data = em.createNativeQuery(sql).setMaxResults(getRowLimit()).setFirstResult(getRowOffset()).getResultList();
 
-            final List<ObservedValue>[][] valueMatrix = create(data.size(), columnCount);
+            final List<V>[][] valueMatrix = create(data.size(), columnCount);
 
             for (int iRow = 0; iRow < data.size(); ++iRow) {
                 for (int iCol = 0; iCol < columnCount; ++iCol) {
-                    valueMatrix[iRow][iCol] = new ArrayList<ObservedValue>();
-                    ObservedValue ov = new ObservedValue();
-                    if (data.get(iRow)[iCol] != null) {
-                        ov.setValue(data.get(iRow)[iCol].toString());
+                    valueMatrix[iRow][iCol] = new ArrayList<V>();
+                    @SuppressWarnings("unchecked")
+					V ov = (V)new ObservedValue();
+                    if (data.get(iRow)[iCol] != null) {                    	
+                    	String value = data.get(iRow)[iCol].toString();
+                    	
+                    	value = getCategoryLabel(colMeasurements, iCol, value);                    	
+                        
+						ov.setValue(value);
                     } else {
                         ov.setValue("null");
                     }
@@ -276,25 +332,55 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
         }
     }
 
-    public List<ObservedValue>[][] create(int rows, int cols) {
+	private String getCategoryLabel(List<Measurement> colMeasurements, int iCol,
+			String value) {
+		Measurement measurement = colMeasurements.get(iCol); 
+		if(categoryByMeasurement.containsKey(measurement)) {
+			for(Category category : categoryByMeasurement.get(measurement)) {
+				if(category.getCode_String().equalsIgnoreCase(value)) {
+					return category.getLabel();
+				}
+			}
+		}
+		return value;
+	}
+
+    public List<V>[][] create(int rows, int cols) {
         // create all empty rows as well
-        List<ObservedValue>[][] data = new ArrayList[rows][cols];
+        @SuppressWarnings("unchecked")
+		List<V>[][] data = new ArrayList[rows][cols];
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < cols; j++) {
-                data[i][j] = new ArrayList<ObservedValue>();
+                data[i][j] = new ArrayList<V>();
             }
         }
 
         return data;
     }
 
+    public ScrollableResults getScrollableValues(boolean exportVisibleRows) throws Exception {
+    	String sql = createQuery();
+		Session session = ( (EntityManagerImpl) getDatabase().getEntityManager()).getSession();
+		
+		ScrollableResults sr;
+		if(exportVisibleRows) {
+			int offset = getRowOffset();
+			int limit = getRowLimit();
+			sr = session.createSQLQuery(sql).setFirstResult(offset).setMaxResults(limit).scroll();
+		} else {
+			sr = session.createSQLQuery(sql).scroll();
+		}
+		return sr;
+    }
+   
     @Override
-    public ObservedValue[][] getValues() throws MatrixException {
-        List<ObservedValue>[][] values = getValueLists();
+    public V[][] getValues() throws MatrixException {
+        List<V>[][] values = getValueLists();
         
         int rowCnt = values.length;
         int colCnt = values[0].length;
-        ObservedValue[][] result = new ObservedValue[rowCnt][colCnt];
+        @SuppressWarnings("unchecked")
+		V[][] result = (V[][]) new ObservedValue[rowCnt][colCnt];
         for(int i = 0; i < rowCnt; ++i) {
             for(int j = 0; j < colCnt; ++j) {
                 result[i][j] = values[i][j].get(0);
@@ -309,10 +395,6 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
 
     public EntityManager getEm() {
         return em;
-    }
-
-    public LinkedHashMap<Protocol, List<Measurement>> getMesurementsByProtocol() {
-        return mesurementsByProtocol;
     }
 
     public Measurement getSortMeasurement() {
@@ -330,6 +412,14 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     public Investigation getInvestigation() {
         return investigation;
     }
+
+	public LinkedHashMap<Protocol, List<Measurement>> getMeasurementsByProtocol() {
+		return measurementsByProtocol;
+	}
+
+	public String getSqlQuery() throws Exception {
+		return backend.createQuery(false, rules);
+	}
     
     
 }

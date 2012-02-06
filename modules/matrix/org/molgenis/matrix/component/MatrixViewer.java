@@ -3,16 +3,17 @@ package org.molgenis.matrix.component;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -24,6 +25,8 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -44,6 +47,10 @@ import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.Utils.CsvExporter;
+import org.molgenis.matrix.Utils.ExcelExporter;
+import org.molgenis.matrix.Utils.Exporter;
+import org.molgenis.matrix.Utils.SPSSExporter;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
@@ -51,7 +58,9 @@ import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.Observation;
 import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.Protocol;
 import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
@@ -62,6 +71,8 @@ import com.pmstation.spss.SPSSWriter;
 
 public class MatrixViewer extends HtmlWidget
 {
+	private static final int BATCHSIZE = 100;
+
 	ScreenController<?> callingScreenController;
 
 	SliceableMatrix<?, ?, ?> matrix;
@@ -110,8 +121,6 @@ public class MatrixViewer extends HtmlWidget
 	public String REMALLCOLHEADERFILTER = getName() + "_remAllColHeaderFilter";
 	public String MEASUREMENTCHOOSER = getName() + "_measurementChooser";
 	public String OPERATOR = getName() + "_operator";
-	private String stat;
-	private String extension;
 	// hack to pass database to toHtml() via toHtml(db)
 	private Database db;
 
@@ -142,7 +151,14 @@ public class MatrixViewer extends HtmlWidget
 		this.showDownloadOptions = showDownloadOptions;
 		if (filterRules != null)
 		{
-			this.matrix.getRules().addAll(filterRules);
+			for (MatrixQueryRule rule : filterRules) {
+				if (rule != null) {
+					this.matrix.getRules().add(rule);
+				}
+				if (rule.getFilterType().equals(MatrixQueryRule.Type.colHeader)) {
+					columnsRestricted = true;
+				}
+			}
 		}
 	}
 
@@ -158,33 +174,15 @@ public class MatrixViewer extends HtmlWidget
 	 * @throws Exception
 	 */
 	public MatrixViewer(ScreenController<?> callingScreenController, String name,
-			SliceablePhenoMatrix<? extends ObservationElement, ? extends ObservationElement> matrix,
+			SliceablePhenoMatrix<?, ?> matrix,
 			boolean showLimitControls, boolean selectMultiple, boolean showDownloadOptions,
 			List<MatrixQueryRule> filterRules, MatrixQueryRule columnRule) throws Exception
 	{
-		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, showDownloadOptions, filterRules);
-		if (columnRule != null && columnRule.getFilterType().equals(MatrixQueryRule.Type.colHeader))
-		{
-			columnsRestricted = true;
-			this.matrix.getRules().add(columnRule);
-		}
+		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, showDownloadOptions, Arrays.asList(columnRule));
 	}
 
 	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
 	{
-		if (t.getAction().startsWith(REMOVEFILTER))
-		{
-			try
-			{
-				removeFilter(t.getAction());
-			}
-			catch (MatrixException e)
-			{
-				e.printStackTrace();
-				throw new HandleRequestDelegationException();
-			}
-			return;
-		}
 		String action = t.getAction().substring((getName() + "_").length());
 		((DatabaseMatrix) this.matrix).setDatabase(db);
 		this.delegate(action, db, t);
@@ -216,10 +214,10 @@ public class MatrixViewer extends HtmlWidget
 			return result;
 		}
 		catch (Exception e)
-		{
-			((PluginModel) this.callingScreenController).setError(e.getMessage());
+		{			
+			((PluginModel<?>) this.callingScreenController).setError(e.getMessage());
 			e.printStackTrace();
-			return new Paragraph("error", e.getMessage()).render();
+			return new Paragraph("error", ExceptionUtils.getRootCauseMessage(e)).render();
 		}
 	}
 
@@ -298,45 +296,6 @@ public class MatrixViewer extends HtmlWidget
 
 		return divContents;
 	}
-
-	// public String renderVerticalMovers(Database db) throws MatrixException {
-	// String divContents = "";
-	// // move vertical
-	// ActionInput moveUpEnd = new ActionInput(MOVEUPEND, "", "");
-	// moveUpEnd.setIcon("generated-res/img/rowStart.png");
-	// divContents += moveUpEnd.render();
-	// divContents += new Newline().render();
-	// ActionInput moveUp = new ActionInput(MOVEUP, "", "");
-	// moveUp.setIcon("generated-res/img/up.png");
-	// divContents += moveUp.render();
-	// divContents += new Newline().render();
-	// int rowOffset = this.matrix.getRowOffset();
-	// int rowLimit = this.matrix.getRowLimit();
-	// int rowCount = this.matrix.getRowCount(db);
-	// int rowMax = Math.min(rowOffset + rowLimit, rowCount);
-	// divContents += "Showing " + (rowOffset + 1) + " - " + rowMax + " of " +
-	// rowCount;
-	// divContents += new Newline().render();
-	// // rowLimit
-	// if (showLimitControls) {
-	// IntInput rowLimitInput = new IntInput(ROWLIMIT, rowLimit);
-	// divContents += "Row limit:";
-	// divContents += new Newline().render();
-	// divContents += rowLimitInput.render();
-	// divContents += new Newline().render();
-	// divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
-	// divContents += new Newline().render();
-	// }
-	// ActionInput moveDown = new ActionInput(MOVEDOWN, "", "");
-	// moveDown.setIcon("generated-res/img/down.png");
-	// divContents += moveDown.render();
-	// divContents += new Newline().render();
-	// ActionInput moveDownEnd = new ActionInput(MOVEDOWNEND, "", "");
-	// moveDownEnd.setIcon("generated-res/img/rowStop.png");
-	// divContents += moveDownEnd.render();
-	//
-	// return divContents;
-	// }
 
 	public String renderTable() throws MatrixException
 	{
@@ -554,7 +513,21 @@ public class MatrixViewer extends HtmlWidget
 		if (colHeaders != null && colHeaders.size() > 0 && colHeaders.get(0) instanceof Entity)
 		{
 			List<? extends Entity> headers = (List<? extends Entity>) colHeaders;
-			colId.setEntityOptions(headers);
+			if(!headers.isEmpty() && headers.get(0) instanceof Measurement && matrix instanceof SliceablePhenoMatrixMV) {
+				SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue> m = (SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix;
+				
+			    LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol = m.getMeasurementsByProtocol();
+				
+			    for(Entry<Protocol, List<Measurement>> p : measurementsByProtocol.entrySet()) {
+					Protocol protocol = p.getKey();
+					for(Measurement measurement : p.getValue()) {
+						colId.addOption(protocol.getId()+";" +measurement.getId(), measurement.getName());
+					}
+				}
+			} else {
+				colId.setEntityOptions(headers);
+			}
+			//colId.addOption(header., header)
 		}
 		else
 		{
@@ -563,10 +536,16 @@ public class MatrixViewer extends HtmlWidget
 		colId.setNillable(true);
 		divContents += colId.render();
 		SelectInput operator = new SelectInput(OPERATOR);
-		operator.addOption("Like", "Like");
-		operator.addOption("Equals", "Equals");
+		operator.addOption("EQUALS", "EQUALS");
+		operator.addOption("LESS", "LESS");
+		operator.addOption("GREATER", "GREATER");
+		operator.addOption("LIKE", "LIKE");
+		
 		divContents += operator.render();
 		StringInput colValue = new StringInput(COLVALUE);
+		
+		
+		
 		divContents += colValue.render();
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
 		divContents += "</div>";
@@ -575,10 +554,13 @@ public class MatrixViewer extends HtmlWidget
 		{
 			List selectedMeasurements = new ArrayList();
 			selectedMeasurements.addAll(colHeaders);
-			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:",
+			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
 					selectedMeasurements, false, false,
 					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
 					Measurement.class);
+			
+
+			
 			// disable display of button for adding new measurements from here
 			measurementChooser.setIncludeAddButton(false);
 			divContents += new Newline().render();
@@ -641,99 +623,132 @@ public class MatrixViewer extends HtmlWidget
 	
 	public void downloadAllCsv(Database db, Tuple t) throws MatrixException, IOException
 	{
-		// remember old limits and offset
-		int rowOffset = matrix.getRowOffset();
-		int rowLimit = matrix.getRowLimit();
-		int colOffset = matrix.getColOffset();
-		int colLimit = matrix.getColLimit();
+		File file = makeFile("_All", "csv");
 		
-		// max for batching
-		int maxRow = matrix.getRowCount();
-
-		stat = "_All";
-		extension = "csv";
-
-		File file = makeFile(stat,extension);
-		CsvWriter writer = new CsvFileWriter(file);
-		writer.setSeparator(",");
-
-		// batch size = 100
-		matrix.setRowLimit(100);
-		matrix.setColLimit(matrix.getColCount());
-
-		// write headers
-		List<String> headers = new ArrayList<String>();
-		headers.add("Name");
-		for (ObservationElement colHeader : (List<ObservationElement>)matrix.getColHeaders())
-		{
-			headers.add(colHeader.getName());
-		}
-		writer.setHeaders(headers);
-		writer.writeHeader();
-
-		// iterate through all available rows
-		for (int offset = 0; offset < maxRow; offset += 100)
-		{
-			// retrieve a batch
-			matrix.setRowOffset(offset);
-			// retrieve names of targets in batch
-			List<ObservationElement> targets = (List<ObservationElement>)matrix.getRowHeaders();
-			// write lines to file
-			int rowCnt = 0;
-			for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
+		if (matrix instanceof SliceablePhenoMatrixMV) {
+			@SuppressWarnings("unchecked")
+			CsvExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+					new CsvExporter<ObservationTarget, Measurement, ObservedValue>
+					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
+			exportAll(file, exporter);
+		} else {			
+			// remember old limits and offset
+			int rowOffset = matrix.getRowOffset();
+			int rowLimit = matrix.getRowLimit();
+			int colOffset = matrix.getColOffset();
+			int colLimit = matrix.getColLimit();
+			
+			// max for batching
+			int maxRow = matrix.getRowCount();
+	
+	
+			CsvWriter writer = new CsvFileWriter(file);
+			writer.setSeparator(",");
+	
+			// batch size = 100
+			matrix.setRowLimit(BATCHSIZE);
+			matrix.setColLimit(matrix.getColCount());
+	
+			// write headers
+			List<String> headers = new ArrayList<String>();
+			headers.add("Name");
+			for (ObservationElement colHeader : (List<ObservationElement>)matrix.getColHeaders())
 			{
-				writer.writeValue(targets.get(rowCnt).getName());
-				for (int colId = 0; colId < row.length; colId++)
-				{
-					List<? extends ObservedValue> valueList = row[colId];
-					writer.writeSeparator();
-					writer.writeValue(this.valueListToString(valueList));
-				}
-				writer.writeEndOfLine();
-				rowCnt++;
+				headers.add(colHeader.getName());
 			}
+			writer.setHeaders(headers);
+			writer.writeHeader();
+	
+			// iterate through all available rows
+			for (int offset = 0; offset < maxRow; offset += BATCHSIZE)
+			{
+				// retrieve a batch
+				matrix.setRowOffset(offset);
+				// retrieve names of targets in batch
+				List<ObservationElement> targets = (List<ObservationElement>)matrix.getRowHeaders();
+				// write lines to file
+				int rowCnt = 0;
+				for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
+				{
+					writer.writeValue(targets.get(rowCnt).getName());
+					for (int colId = 0; colId < row.length; colId++)
+					{
+						List<? extends ObservedValue> valueList = row[colId];
+						writer.writeSeparator();
+						writer.writeValue(this.valueListToString(valueList));
+					}
+					writer.writeEndOfLine();
+					++rowCnt;
+				}
+			}
+			writer.close();
+	
+			// restore limit and offset
+			matrix.setRowOffset(rowOffset);
+			matrix.setRowLimit(rowLimit);
+			matrix.setColOffset(colOffset);
+			matrix.setColLimit(colLimit);
+	
+			downloadLink = file.getName();
 		}
-		writer.close();
-
-		// restore limit and offset
-		matrix.setRowOffset(rowOffset);
-		matrix.setRowLimit(rowLimit);
-		matrix.setColOffset(colOffset);
-		matrix.setColLimit(colLimit);
-
-		downloadLink = file.getName();
 	}
 
+	private void exportAll(File file, Exporter<ObservationTarget, Measurement, ObservedValue> exporter)
+			throws MatrixException {
+		try {
+			FileOutputStream os = new FileOutputStream(file);
+			exporter.exportAll(os);
+			os.flush();
+			os.close();
+			downloadLink = file.getName();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			throw new MatrixException(e1);
+		}
+	}
 	
-	
+	private void exportVisible(File file, Exporter<ObservationTarget, Measurement, ObservedValue> exporter)
+			throws MatrixException {
+		try {
+			FileOutputStream os = new FileOutputStream(file);
+			exporter.exportVisible(os);
+			os.flush();
+			os.close();
+			downloadLink = file.getName();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			throw new MatrixException(e1);
+		}
+	}
+
 	public void downloadVisibleCsv(Database db, Tuple t) throws MatrixException, IOException
 	{
-		List<?> rows = matrix.getRowHeaders();
-		List<?> cols = matrix.getColHeaders();
-		List<? extends ObservedValue>[][] values = null;
-		stat = "_Visible";
-		extension = "xls";
-
-		File file = makeFile(stat,extension);
-		try
-		{
-			values = (List<? extends ObservedValue>[][]) matrix.getValueLists();
+		File file = makeFile("_Visible", "csv");
+		if (matrix instanceof SliceablePhenoMatrixMV) {
+			@SuppressWarnings("unchecked")
+			CsvExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+					new CsvExporter<ObservationTarget, Measurement, ObservedValue>
+					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
+			exportVisible(file, exporter);
+		} else {	
+			List<?> rows = matrix.getRowHeaders();
+			List<?> cols = matrix.getColHeaders();
+			List<? extends ObservedValue>[][] values = null;
+	
+			try
+			{
+				values = (List<? extends ObservedValue>[][]) matrix.getValueLists();
+			}
+			catch (UnsupportedOperationException ue)
+			{
+				//values = matrix.getValues();
+			}
+			downloadCsv(rows, cols, values,file);
 		}
-		catch (UnsupportedOperationException ue)
-		{
-			//values = matrix.getValues();
-		}
-		downloadCsv(rows, cols, values,file);
 	}
 
 	public void downloadCsv(List<?> rows, List<?> cols, List<? extends ObservedValue>[][] values,File file) throws IOException, MatrixException
 	{
-		if (this.matrix instanceof DatabaseMatrix)
-		{
-			((DatabaseMatrix) this.matrix).setDatabase(db);
-		}
-
-
 		CsvWriter writer = new CsvFileWriter(file);
 		writer.setSeparator(",");
 
@@ -778,328 +793,366 @@ public class MatrixViewer extends HtmlWidget
 
 	public void downloadAllExcel(Database db, Tuple t) throws MatrixException, IOException, RowsExceededException, WriteException
 	{
-		// remember old limits and offset
-		int rowOffset = matrix.getRowOffset();
-		int rowLimit = matrix.getRowLimit();
-		int colOffset = matrix.getColOffset();
-		int colLimit = matrix.getColLimit();
-		
-		// max for batching
-		int maxRow = matrix.getRowCount();
-		String target = "name";
-		
-		/* Create tmp file */
-		stat = "_All";
-		extension = "xls";
+		File excelFile = makeFile("_All", "xls");			
+		if (matrix instanceof SliceablePhenoMatrixMV) {
+			@SuppressWarnings("unchecked")
+			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+					new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
+					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
+			exportAll(excelFile, exporter);
+		} else {
+			// remember old limits and offset
+			int rowOffset = matrix.getRowOffset();
+			int rowLimit = matrix.getRowLimit();
+			int colOffset = matrix.getColOffset();
+			int colLimit = matrix.getColLimit();
+			
+			// max for batching
+			int maxRow = matrix.getRowCount();
+			String target = "name";
 
-		File file = makeFile(stat,extension);
-		System.out.println(file);
-		/* Create new Excel workbook and sheet */
-		WorkbookSettings ws = new WorkbookSettings();
-		ws.setLocale(new Locale("en", "EN"));
-		WritableWorkbook workbook = Workbook.createWorkbook(file, ws);
-		WritableSheet s = workbook.createSheet("Sheet1", 0);
-
-		/* Format the fonts */
-		WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
-		WritableCellFormat headerFormat = new WritableCellFormat(headerFont);
-		headerFormat.setWrap(false);
-		WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
-		WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
-		cellFormat.setWrap(false);
-
-		// batch size = 100
-		matrix.setRowLimit(100);
-		matrix.setColLimit(matrix.getColCount());
-		
-		// write targetheader
-		Label e = new Label(0, 0, target, headerFormat);
-		s.addCell(e);
-
-		// Write column headers
-		int teller =1;
-		for (ObservationElement colHeader : (List<ObservationElement>)matrix.getColHeaders())
-		{
-			Label f = new Label(teller, 0, colHeader.getName(), headerFormat);
-			s.addCell(f);
-			teller++;
-		}
-
-		// iterate through all available rows
-		for (int offset = 0; offset <= maxRow; offset += 100)
-		{
-			// retrieve a batch
-			matrix.setRowOffset(offset);
-			// retrieve names of targets in batch
-			List<ObservationElement> targets = (List<ObservationElement>)matrix.getRowHeaders();
-			// write lines to file
-			int rowCnt = 0;
-			for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
+			File file = makeFile("_All", "xls");
+			System.out.println(file);
+			/* Create new Excel workbook and sheet */
+			WorkbookSettings ws = new WorkbookSettings();
+			ws.setLocale(new Locale("en", "EN"));
+			WritableWorkbook workbook = Workbook.createWorkbook(file, ws);
+			WritableSheet s = workbook.createSheet("Sheet1", 0);
+	
+			/* Format the fonts */
+			WritableCellFormat headerFormat = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD));
+			headerFormat.setWrap(false);
+			WritableCellFormat cellFormat = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD));
+			cellFormat.setWrap(false);
+	
+			// batch size = 100
+			matrix.setRowLimit(BATCHSIZE);
+			matrix.setColLimit(matrix.getColCount());
+			
+			// write targetheader
+			Label e = new Label(0, 0, target, headerFormat);
+			s.addCell(e);
+	
+			// Write column headers
+			int count = 1;
+			for (ObservationElement colHeader : (List<ObservationElement>)matrix.getColHeaders())
 			{
-				Label l = new Label(0, rowCnt+1, targets.get(rowCnt).getName(), cellFormat);
-				s.addCell(l);
-
-				for (int colId = 0; colId < row.length; colId++)
-				{
-					List<? extends ObservedValue> valueList = row[colId];
-					
-					Label m = new Label(colId+1, rowCnt+1, this.valueListToString(valueList), cellFormat);
-					s.addCell(m);
-				}
-
-				rowCnt++;
+				Label f = new Label(count, 0, colHeader.getName(), headerFormat);
+				s.addCell(f);
+				++count;
 			}
+	
+			// iterate through all available rows
+			for (int offset = 0; offset <= maxRow; offset += BATCHSIZE)
+			{
+				// retrieve a batch
+				matrix.setRowOffset(offset);
+				// retrieve names of targets in batch
+				List<ObservationElement> targets = (List<ObservationElement>)matrix.getRowHeaders();
+				// write lines to file
+				int rowCnt = 0;
+				for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
+				{
+					Label l = new Label(0, rowCnt+1, targets.get(rowCnt).getName(), cellFormat);
+					s.addCell(l);
+	
+					for (int colId = 0; colId < row.length; colId++)
+					{
+						List<? extends ObservedValue> valueList = row[colId];
+						
+						Label m = new Label(colId+1, rowCnt+1, this.valueListToString(valueList), cellFormat);
+						s.addCell(m);
+					}
+	
+					rowCnt++;
+				}
+				db.getEntityManager().clear();
+			}
+			
+			workbook.write();
+			workbook.close();
+	
+			// restore limit and offset
+			matrix.setRowOffset(rowOffset);
+			matrix.setRowLimit(rowLimit);
+			matrix.setColOffset(colOffset);
+			matrix.setColLimit(colLimit);
+	
+			downloadLink = file.getName();
 		}
-		workbook.write();
-		workbook.close();
-
-		// restore limit and offset
-		matrix.setRowOffset(rowOffset);
-		matrix.setRowLimit(rowLimit);
-		matrix.setColOffset(colOffset);
-		matrix.setColLimit(colLimit);
-
-		downloadLink = file.getName();
 	}
 	
 	public void downloadVisibleExcel(Database db, Tuple t) throws Exception
 	{
-
-		if (this.matrix instanceof DatabaseMatrix)
-		{
-			((DatabaseMatrix) this.matrix).setDatabase(db);
-		}
-
-		List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
-		List<String> listC = new ArrayList<String>();
-		List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
-		List<String> listR = new ArrayList<String>();
-		List<ObservedValue>[][] listVal = (List<ObservedValue>[][]) this.matrix.getValueLists();
-
-		String target = "name";
-		for (Object col : listCol)
-		{
-			if (col instanceof ObservationElement)
+		File excelFile = makeFile("_Visible","xls");
+		if (matrix instanceof SliceablePhenoMatrixMV) {
+			@SuppressWarnings("unchecked")
+			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+					new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
+					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
+			exportVisible(excelFile, exporter);
+		} else {
+			
+			if (this.matrix instanceof DatabaseMatrix)
 			{
-				ObservationElement colobs = (ObservationElement) col;
-				listC.add(colobs.getName());
+				((DatabaseMatrix) this.matrix).setDatabase(db);
 			}
-		}
-		for (Object m : listRow)
-		{
-			if (m instanceof ObservationElement)
+	
+			List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
+			List<String> listC = new ArrayList<String>();
+			List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
+			List<String> listR = new ArrayList<String>();
+			List<ObservedValue>[][] listVal = (List<ObservedValue>[][]) this.matrix.getValueLists();
+	
+			String target = "name";
+			for (Object col : listCol)
 			{
-				ObservationElement colobs = (ObservationElement) m;
-				listR.add(colobs.getName());
-			}
-		}
-		/* Create tmp file */
-		stat = "_Visible";
-		extension = "xls";
-
-		File file = makeFile(stat,extension);
-		/* Create new Excel workbook and sheet */
-		WorkbookSettings ws = new WorkbookSettings();
-		ws.setLocale(new Locale("en", "EN"));
-		WritableWorkbook workbook = Workbook.createWorkbook(file, ws);
-		WritableSheet s = workbook.createSheet("Sheet1", 0);
-
-		/* Format the fonts */
-		WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
-		WritableCellFormat headerFormat = new WritableCellFormat(headerFont);
-		headerFormat.setWrap(false);
-		WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
-		WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
-		cellFormat.setWrap(false);
-
-		//
-		Label e = new Label(0, 0, target, headerFormat);
-		s.addCell(e);
-
-		// Write column headers
-		for (int i = 0; i < listC.size(); i++)
-		{
-
-			Label l = new Label(i + 1, 0, listC.get(i), headerFormat);
-			s.addCell(l);
-		}
-
-		// Write row headers
-		for (int i = 0; i < listRow.size(); i++)
-		{
-			Object rowobj = listRow.get(i);
-			if (rowobj instanceof ObservationElement)
-			{
-				ObservationElement rowObs = (ObservationElement) rowobj;
-				Label j = new Label(0, i + 1, rowObs.getName(), headerFormat);
-				s.addCell(j);
-
-			}
-			else
-			{
-				Label j = new Label(0, i + 1, rowobj.toString(), headerFormat);
-				s.addCell(j);
-			}
-		}
-
-		// Write elements
-		for (int a = 0; a < listC.size(); a++)
-		{
-			for (int b = 0; b < listR.size(); b++)
-			{
-				if (listVal[b][a] != null)
+				if (col instanceof ObservationElement)
 				{
-					Label l = new Label(a + 1, b + 1, listObsValToString(listVal[b][a]), cellFormat);
-					s.addCell(l);
+					ObservationElement colobs = (ObservationElement) col;
+					listC.add(colobs.getName());
+				}
+			}
+			for (Object m : listRow)
+			{
+				if (m instanceof ObservationElement)
+				{
+					ObservationElement colobs = (ObservationElement) m;
+					listR.add(colobs.getName());
+				}
+			}
+
+	
+			File file = makeFile("_Visible","xls");
+			/* Create new Excel workbook and sheet */
+			WorkbookSettings ws = new WorkbookSettings();
+			ws.setLocale(new Locale("en", "EN"));
+			WritableWorkbook workbook = Workbook.createWorkbook(file, ws);
+			WritableSheet s = workbook.createSheet("Sheet1", 0);
+	
+			/* Format the fonts */
+			WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
+			WritableCellFormat headerFormat = new WritableCellFormat(headerFont);
+			headerFormat.setWrap(false);
+			WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
+			WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
+			cellFormat.setWrap(false);
+	
+			//
+			Label e = new Label(0, 0, target, headerFormat);
+			s.addCell(e);
+	
+			// Write column headers
+			for (int i = 0; i < listC.size(); i++)
+			{
+	
+				Label l = new Label(i + 1, 0, listC.get(i), headerFormat);
+				s.addCell(l);
+			}
+	
+			// Write row headers
+			for (int i = 0; i < listRow.size(); i++)
+			{
+				Object rowobj = listRow.get(i);
+				if (rowobj instanceof ObservationElement)
+				{
+					ObservationElement rowObs = (ObservationElement) rowobj;
+					Label j = new Label(0, i + 1, rowObs.getName(), headerFormat);
+					s.addCell(j);
+	
 				}
 				else
 				{
-					s.addCell(new Label(a + 1, b + 1, "", cellFormat));
+					Label j = new Label(0, i + 1, rowobj.toString(), headerFormat);
+					s.addCell(j);
 				}
-
 			}
+	
+			// Write elements
+			for (int a = 0; a < listC.size(); a++)
+			{
+				for (int b = 0; b < listR.size(); b++)
+				{
+					if (listVal[b][a] != null)
+					{
+						Label l = new Label(a + 1, b + 1, listObsValToString(listVal[b][a]), cellFormat);
+						s.addCell(l);
+					}
+					else
+					{
+						s.addCell(new Label(a + 1, b + 1, "", cellFormat));
+					}
+	
+				}
+			}
+	
+			workbook.write();
+			workbook.close();
+	
+			downloadLink = file.getName();
 		}
-
-		workbook.write();
-		workbook.close();
-
-		downloadLink = file.getName();
 	}
 
 	public void downloadVisibleSPSS(Database db, Tuple t) throws Exception
 	{
-		if (this.matrix instanceof DatabaseMatrix) {
-			((DatabaseMatrix) this.matrix).setDatabase(db);
-		}
-		stat = "_Visible";
-		extension = "sav";
+		File file = makeFile("_All", "sav");
+	
+		if (matrix instanceof SliceablePhenoMatrixMV) {
+			@SuppressWarnings("unchecked")
+			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
+					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
 
-		File file = makeFile(stat,extension);
-		
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
-		spssWriter.setCalculateNumberOfCases(false);
-		spssWriter.addDictionarySection(-1);
-		
-		List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
-		List<String> listC = new ArrayList<String>();
-		List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
-		List<String> listR = new ArrayList<String>();	
-		List<ObservedValue>[][] elements = (List<ObservedValue>[][]) this.matrix.getValueLists();
-		
-		for(Object col: listCol){
-			if(col instanceof ObservationElement) {
-				ObservationElement colobs = (ObservationElement) col;
-				listC.add(colobs.getName());
-			}
-		}
-		for(Object m : listRow){
-			if(m instanceof ObservationElement) {
-				ObservationElement colobs = (ObservationElement) m;
-				listR.add(colobs.getName());
-			}
-		}
-		spssWriter.addStringVar("name", 10, "name");
-		for(String colName : listC){
-			spssWriter.addStringVar(colName, 10, colName);
-		}
-		
-		spssWriter.addDataSection();
-
-		for(int rowIndex = 0; rowIndex < listR.size(); rowIndex++)
-		{
-			Object rowobj = listRow.get(rowIndex);
-			ObservationElement rowObs = (ObservationElement) rowobj;
-			spssWriter.addData(rowObs.getName());
-			for(int colIndex = 0; colIndex < listC.size(); colIndex++)
-			{
-				Object val = listObsValToString(elements[rowIndex][colIndex]);
-				if(val == null)
-				{
-					spssWriter.addData(""); //FIXME: correct?
+			exportVisible(file, exporter);
+		} else {
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+			SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
+			spssWriter.setCalculateNumberOfCases(false);
+			spssWriter.addDictionarySection(-1);
+			
+			List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
+			List<String> listC = new ArrayList<String>();
+			List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
+			List<String> listR = new ArrayList<String>();	
+			List<ObservedValue>[][] elements = (List<ObservedValue>[][]) this.matrix.getValueLists();
+			
+			for(Object col: listCol){
+				if(col instanceof ObservationElement) {
+					ObservationElement colobs = (ObservationElement) col;
+					listC.add(colobs.getName());
 				}
-				else
+			}
+			for(Object m : listRow){
+				if(m instanceof ObservationElement) {
+					ObservationElement colobs = (ObservationElement) m;
+					listR.add(colobs.getName());
+				}
+			}
+			spssWriter.addStringVar("name", 10, "name");
+			for(String colName : listC){
+				spssWriter.addStringVar(colName, 10, colName);
+			}
+			
+			spssWriter.addDataSection();
+	
+			for(int rowIndex = 0; rowIndex < listR.size(); rowIndex++)
+			{
+				Object rowobj = listRow.get(rowIndex);
+				ObservationElement rowObs = (ObservationElement) rowobj;
+				spssWriter.addData(rowObs.getName());
+				for(int colIndex = 0; colIndex < listC.size(); colIndex++)
 				{
-					
-					spssWriter.addData(val.toString());	
+					Object val = listObsValToString(elements[rowIndex][colIndex]);
+					if(val == null)
+					{
+						spssWriter.addData(""); //FIXME: correct?
+					}
+					else
+					{
+						spssWriter.addData(val.toString());	
+					}
+				}
+				
+			}
+			
+			spssWriter.addFinishSection();
+			out.close();
+			downloadLink = file.getName();
+		}
+	}
+		
+	public void downloadAllSPSS(Database db, Tuple t) throws MatrixException, IOException, WriteException
+	{
+		File file = makeFile("_All", "sav");
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+		
+		if (matrix instanceof SliceablePhenoMatrixMV) {
+			@SuppressWarnings("unchecked")
+			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
+					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
+			exportAll(file, exporter);
+		} else {
+			// remember old limits and offset
+			int rowOffset = matrix.getRowOffset();
+			int rowLimit = matrix.getRowLimit();
+			int colOffset = matrix.getColOffset();
+			int colLimit = matrix.getColLimit();
+			
+			// max for batching
+			int maxRow = matrix.getRowCount();
+	
+			SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
+			spssWriter.setCalculateNumberOfCases(false);
+			spssWriter.addDictionarySection(-1);
+	
+			matrix.setRowLimit(BATCHSIZE);
+			matrix.setColLimit(matrix.getColCount());
+	
+			// write headers
+			List<String> headers = new ArrayList<String>();
+			headers.add("Name");
+			for (Measurement colHeader : (List<Measurement>)matrix.getColHeaders())
+			{			
+				headers.add(colHeader.getName());
+				
+				String dataType = colHeader.getDataType();
+				String colName = colHeader.getName();
+				
+				if(dataType == null)
+					spssWriter.addStringVar(colName, 255, colName);
+				if(dataType.startsWith("NUMMER")) {
+					String precision = StringUtils.substringBetween(dataType, "(", ")");
+					int width = 10;
+					int decimal = 2;
+					if(precision != null) {
+						String[] parts = StringUtils.split(precision, ",");
+						width = Integer.parseInt(parts[0]);
+						decimal = Integer.parseInt(parts[1]);
+					} else {
+						spssWriter.addNumericVar(colName, width, decimal, colName);
+					}
+				} if(dataType.startsWith("DATUM")) {
+					spssWriter.addStringVar(colName, 255, colName);
+				} else {
+					spssWriter.addStringVar(colName, 255, colName);
 				}
 			}
 			
-		}
-		
-		spssWriter.addFinishSection();
-		out.close();
-		downloadLink = file.getName();
-	}
-		
-	public void downloadAllSPSS(Database db, Tuple t) throws MatrixException, IOException
-	{
-		// remember old limits and offset
-		int rowOffset = matrix.getRowOffset();
-		int rowLimit = matrix.getRowLimit();
-		int colOffset = matrix.getColOffset();
-		int colLimit = matrix.getColLimit();
-		
-		// max for batching
-		int maxRow = matrix.getRowCount();
-//
-		stat = "_All";
-		extension = "sav";
-
-		File file = makeFile(stat,extension);
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
-		spssWriter.setCalculateNumberOfCases(false);
-		spssWriter.addDictionarySection(-1);
-//
-		// batch size = 100
-		matrix.setRowLimit(100);
-		matrix.setColLimit(matrix.getColCount());
-
-		// write headers
-		List<String> headers = new ArrayList<String>();
-		headers.add("Name");
-		for (ObservationElement colHeader : (List<ObservationElement>)matrix.getColHeaders())
-		{
-			headers.add(colHeader.getName());
-		}
-		for(String colName : headers){
-			spssWriter.addStringVar(colName, 10, colName);
-		}
-		
-		spssWriter.addDataSection();
-		
-		// iterate through all available rows
-		for (int offset = 0; offset < maxRow; offset += 100)
-		{
-			// retrieve a batch
-			matrix.setRowOffset(offset);
-			// retrieve names of targets in batch
-			List<ObservationElement> targets = (List<ObservationElement>)matrix.getRowHeaders();
-			// write lines to file
-			int rowCnt = 0;
-			for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
+			spssWriter.addDataSection();
+			
+			// iterate through all available rows
+			for (int offset = 0; offset < maxRow; offset += BATCHSIZE)
 			{
-				spssWriter.addData(targets.get(rowCnt).getName());
-				for (int colId = 0; colId < row.length; colId++)
+				// retrieve a batch
+				matrix.setRowOffset(offset);
+				// retrieve names of targets in batch
+				List<ObservationElement> targets = (List<ObservationElement>)matrix.getRowHeaders();
+				// write lines to file
+				int rowCnt = 0;
+				for (List<? extends ObservedValue>[] row : (List<? extends ObservedValue>[][])matrix.getValueLists())
 				{
-					List<? extends ObservedValue> valueList = row[colId];
+					spssWriter.addData(targets.get(rowCnt).getName());
+					for (int colId = 0; colId < row.length; colId++)
+					{
+						List<? extends ObservedValue> valueList = row[colId];
+						
+						spssWriter.addData(this.valueListToString(valueList));
+					}
 					
-					spssWriter.addData(this.valueListToString(valueList));
+					rowCnt++;
 				}
-				
-				rowCnt++;
 			}
+			spssWriter.addFinishSection();
+			out.close();
+			downloadLink = file.getName();
+	
+			// restore limit and offset
+			matrix.setRowOffset(rowOffset);
+			matrix.setRowLimit(rowLimit);
+			matrix.setColOffset(colOffset);
+			matrix.setColLimit(colLimit);
 		}
-		spssWriter.addFinishSection();
-		out.close();
-		downloadLink = file.getName();
-
-		// restore limit and offset
-		matrix.setRowOffset(rowOffset);
-		matrix.setRowLimit(rowLimit);
-		matrix.setColOffset(colOffset);
-		matrix.setColLimit(colLimit);
 	} 
 	 
 	private String listObsValToString(List<ObservedValue> values) throws Exception
@@ -1117,23 +1170,9 @@ public class MatrixViewer extends HtmlWidget
 		return result;
 	}
 	
-	/**
-	 * Empty caches and reload matrix data, whilst keeping any
-	 * filters intact.
-	 * Note: the db and t parameters are there to keep the signature intact for delegation.
-	 * You can set both to null.
-	 * 
-	 */
-	public void reloadMatrix(Database db, Tuple t)
+	public void reloadMatrix(Database db, Tuple t) throws MatrixException
 	{
 		matrix.reload();
-	}
-	
-	/**
-	 * Empty matrix filter rules and cached data.
-	 */
-	public void resetMatrix() {
-		matrix.reset();
 	}
 
 	public void filterCol(Database db, Tuple t) throws Exception
@@ -1141,82 +1180,128 @@ public class MatrixViewer extends HtmlWidget
 		// First find out whether to filter on the value or the relation_Name
 		// field
 		String valuePropertyToUse = ObservedValue.VALUE;
-		int measurementId = t.getInt(COLID);
+		String protocolMeasurementIds = t.getString(COLID);
+		String[] values = StringUtils.split(protocolMeasurementIds, ";");
+		int protocolId = Integer.parseInt(values[0]);
+		int measurementId = Integer.parseInt(values[1]);
+
 		Measurement filterMeasurement = db.findById(Measurement.class, measurementId);
 		if (filterMeasurement.getDataType().equals("xref"))
 		{
 			valuePropertyToUse = ObservedValue.RELATION_NAME;
 		}
 		// Find out operator to use
-		QueryRule.Operator op;
-		if (t.getString(OPERATOR).equals("Equals"))
-		{
-			op = QueryRule.Operator.EQUALS;
-		}
-		else
-		{
-			op = QueryRule.Operator.LIKE;
-		}
+		Operator op = Operator.valueOf(t.getString(OPERATOR));
+		//new Operator(t.getString(OPERATOR));
 		// Then do the actual slicing
-		matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
+		matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
 	}
 
+	@SuppressWarnings("unchecked")
 	public void updateColHeaderFilter(Database db, Tuple t) throws Exception
 	{
-		List<?> chosenMeasurementIds;
-		if (t.getList(MEASUREMENTCHOOSER) != null)
-		{
-			chosenMeasurementIds = t.getList(MEASUREMENTCHOOSER);
+		if(matrix instanceof SliceablePhenoMatrixMV) {
+			addColumns((List<Integer>)t.getList(MEASUREMENTCHOOSER));
+		} else {
+			List<?> chosenMeasurementIds;
+			if (t.getList(MEASUREMENTCHOOSER) != null)
+			{
+				chosenMeasurementIds = t.getList(MEASUREMENTCHOOSER);
+			}
+			else
+			{
+				chosenMeasurementIds = new ArrayList<Object>();
+			}
+			List<String> chosenMeasurementNames = new ArrayList<String>();
+			for (Object measurementId : chosenMeasurementIds)
+			{
+				int measId = Integer.parseInt((String) measurementId);
+				chosenMeasurementNames.add(db.findById(Measurement.class, measId).getName());
+			}
+			setColHeaderFilter(chosenMeasurementNames);	
 		}
-		else
-		{
-			chosenMeasurementIds = new ArrayList<Object>();
+		
+
+	}
+
+	private void addColumns(List<Integer> columnIds) throws DatabaseException {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		LinkedHashMap<Protocol, List<Measurement>> pms = ((SliceablePhenoMatrixMV) matrix).getMeasurementsByProtocol();
+		
+		List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, columnIds).find();
+		for(Measurement measurement : measurements) {
+			List<Protocol> protocols = (List<Protocol>) measurement.getFeaturesCollection();
+			if(protocols.size() > 1) {
+				
+				;
+			} else  {
+				Protocol p = protocols.get(0);
+				if(pms.containsKey(p)) {
+					if(!pms.get(p).contains(measurement)) {
+						pms.get(p).add(measurement);
+					} 
+				} else {
+					List<Measurement> ms = new ArrayList<Measurement>();
+					ms.add(measurement);
+					pms.put(p, ms);
+				}
+			}
 		}
-		List<String> chosenMeasurementNames = new ArrayList<String>();
-		for (Object measurementId : chosenMeasurementIds)
-		{
-			int measId = Integer.parseInt((String) measurementId);
-			chosenMeasurementNames.add(db.findById(Measurement.class, measId).getName());
-		}
-		setColHeaderFilter(chosenMeasurementNames);
 	}
 
 	public void addAllColHeaderFilter(Database db, Tuple t) throws Exception
 	{
-		List<Measurement> allMeasurements = db.find(Measurement.class);
-		List<String> chosenMeasurementNames = new ArrayList<String>();
-		for (Measurement measurement : allMeasurements)
-		{
-			chosenMeasurementNames.add(measurement.getName());
+		if(matrix instanceof SliceablePhenoMatrixMV) {
+			List<Measurement> allMeasurements = db.find(Measurement.class);
+			List<Integer> measruementIds = new ArrayList<Integer>();
+			for(Measurement m : allMeasurements) {
+				measruementIds.add(m.getId());
+			}
+			addColumns(measruementIds);
+		} else {
+			List<Measurement> allMeasurements = db.find(Measurement.class);
+			List<String> chosenMeasurementNames = new ArrayList<String>();
+			for (Measurement measurement : allMeasurements)
+			{
+				chosenMeasurementNames.add(measurement.getName());
+			}
+			setColHeaderFilter(chosenMeasurementNames);
 		}
-		setColHeaderFilter(chosenMeasurementNames);
 	}
 
 	public void setColHeaderFilter(List<String> chosenMeasurements) throws DatabaseException, MatrixException
 	{
-		// Find and update col header filter rule
-		boolean hasRule = false;
-		for (MatrixQueryRule mqr : matrix.getRules())
-		{
-			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colHeader))
-			{
-				if (chosenMeasurements.size() > 0)
-				{
-					mqr.setValue(chosenMeasurements); // update
-					hasRule = true;
-				}
-				else
-				{
-					matrix.getRules().remove(mqr);
-				}
-				break;
+		if(matrix instanceof SliceablePhenoMatrixMV) {
+			List<Integer> measurementIds = new ArrayList<Integer>(chosenMeasurements.size());
+			for(String mId : chosenMeasurements) {
+				measurementIds.add(Integer.parseInt(mId));
 			}
-		}
-		if (hasRule == false && chosenMeasurements.size() > 0)
-		{
-			matrix.getRules().add(
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
-							chosenMeasurements));
+			addColumns(measurementIds);
+		} else { 
+			// Find and update col header filter rule
+			boolean hasRule = false;
+			for (MatrixQueryRule mqr : matrix.getRules())
+			{
+				if (mqr.getFilterType().equals(MatrixQueryRule.Type.colHeader))
+				{
+					if (chosenMeasurements.size() > 0)
+					{
+						mqr.setValue(chosenMeasurements); // update
+						hasRule = true;
+					}
+					else
+					{
+						matrix.getRules().remove(mqr);
+					}
+					break;
+				}
+			}
+			if (!hasRule && chosenMeasurements.size() > 0)
+			{
+				matrix.getRules().add(
+						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN,
+								chosenMeasurements));
+			}
 		}
 		matrix.setColLimit(chosenMeasurements.size()); // grow with selected
 														// measurements
@@ -1247,11 +1332,6 @@ public class MatrixViewer extends HtmlWidget
 	{
 		this.matrix.setRowLimit(t.getInt(ROWLIMIT));
 	}
-
-	// public void changeColLimit(Database db, Tuple t)
-	// {
-	// this.matrix.setColLimit(t.getInt(COLLIMIT));
-	// }
 
 	public void moveLeftEnd(Database db, Tuple t) throws MatrixException
 	{
@@ -1333,53 +1413,34 @@ public class MatrixViewer extends HtmlWidget
 				.intValue()) * matrix.getRowLimit());
 	}
 
-	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
-	{
-		// automatically calls functions with same name as action (ommiting
-		// widget specific prefix)
-		delegate(request.getAction(), db, request);
-	}
-
 	public void delegate(String action, Database db, Tuple request) throws HandleRequestDelegationException
 	{
 		// try/catch for db.rollbackTx
+		// try/catch for method calling
 		try
 		{
-			// try/catch for method calling
-			try
-			{
-				// db.beginTx();
-				System.out.println("trying to use reflection to call ######## " + this.getClass().getName() + "."
-						+ action);
-				Method m = this.getClass().getMethod(action, Database.class, Tuple.class);
-				m.invoke(this, db, request);
-				logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
-						+ " completed");
-				// if(db.inTx())
-				// db.commitTx();
-			}
-			catch (NoSuchMethodException e1)
-			{
-				this.callingScreenController.getModel().setMessages(
-						new ScreenMessage("Unknown action: " + action, false));
-				logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
-						+ "(db,tuple) failed: " + e1.getMessage());
-				// db.rollbackTx();
-			}
-			catch (Exception e)
-			{
-				logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
-						+ " failed: " + e.getMessage());
-				e.printStackTrace();
-				this.callingScreenController.getModel()
-						.setMessages(new ScreenMessage(e.getCause().getMessage(), false));
-				// db.rollbackTx();
-			}
+			System.out.println("trying to use reflection to call ######## " + this.getClass().getName() + "."
+					+ action);
+			Method m = this.getClass().getMethod(action, Database.class, Tuple.class);
+			m.invoke(this, db, request);
+			logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+					+ " completed");
+		}
+		catch (NoSuchMethodException e1)
+		{
+			this.callingScreenController.getModel().setMessages(
+					new ScreenMessage("Unknown action: " + action, false));
+			logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+					+ "(db,tuple) failed: " + e1.getMessage());
 		}
 		catch (Exception e)
 		{
+			logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+					+ " failed: " + e.getMessage());
 			e.printStackTrace();
-		}
+			this.callingScreenController.getModel()
+					.setMessages(new ScreenMessage(e.getCause().getMessage(), false));
+		}		
 	}
 
 	public List<?> getSelection(Database db) throws MatrixException
@@ -1387,7 +1448,7 @@ public class MatrixViewer extends HtmlWidget
 		return matrix.getRowHeaders();
 	}
 
-	public SliceableMatrix getMatrix()
+	public SliceableMatrix<?, ?, ?> getMatrix()
 	{
 		return matrix;
 	}

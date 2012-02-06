@@ -17,7 +17,7 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 	Category category;
 	Institute institute;
 
-	private JQueryTreeViewMeasurement treeView;
+	private JQueryTreeViewMeasurement<JQueryTreeViewElementObject> treeView;
 	
 	public JQueryTreeViewElementObject(Measurement measurement,Category category,Institute institute, JQueryTreeViewElementObject parent){
 		super(measurement.getName(), parent);
@@ -39,9 +39,9 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 	
 	public JQueryTreeViewElementObject(String name, JQueryTreeViewElementObject parent, String url, String category)
 	{
-		super(name, parent, url, category);
+		super(name, parent, url);
 		measurement = null;
-		category = null;
+//		this.category = category;
 		institute = null;
 	}
 
@@ -71,6 +71,10 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 	
 	public void setTreeView (JQueryTreeViewMeasurement<JQueryTreeViewElementObject> treeView) {
 		this.treeView = treeView;
+	}
+
+	private JQueryTreeViewMeasurement<JQueryTreeViewElementObject> getTreeView() {
+		return treeView;
 	}
 	
 	

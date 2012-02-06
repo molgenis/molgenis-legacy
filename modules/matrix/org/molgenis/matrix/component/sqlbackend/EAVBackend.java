@@ -169,7 +169,7 @@ public class EAVBackend {
 //  FROM observedvalue 
 //  WHERE feature = 53 AND CAST(value as NUMBER) < 168.4  
     
-    public String createWhereForProtocol(List<MatrixQueryRule> rules) {
+     public String createWhereForProtocol(List<MatrixQueryRule> rules) {
         StringBuilder where = new StringBuilder();
         boolean prev = false;
         for (MatrixQueryRule rule : rules) {

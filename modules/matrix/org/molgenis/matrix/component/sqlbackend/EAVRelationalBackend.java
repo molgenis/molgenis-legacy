@@ -22,10 +22,10 @@ import org.molgenis.protocol.Protocol;
  */
 public class EAVRelationalBackend implements Backend {
     private final String joinColumn;
-    private final LinkedHashMap<Protocol, List<Measurement>> mesurementsByProtocol;
+    private final LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol;
     private final Investigation investigation;
     private final EntityManager em;
-    private HashMap<String, List<String>> ambiguityTable;    
+    private final HashMap<String, List<String>> ambiguityTable;    
     
     private final SliceablePhenoMatrixMV matrix;
     
@@ -34,10 +34,10 @@ public class EAVRelationalBackend implements Backend {
         
         this.em = matrix.getEm();
         this.joinColumn = matrix.getJOIN_COLUMN();
-        this.mesurementsByProtocol = matrix.getMesurementsByProtocol();
+        this.measurementsByProtocol = matrix.getMeasurementsByProtocol();
         this.investigation = matrix.getInvestigation();
         
-        ambiguityTable = BackendUtils.buildAmbiguityTable(mesurementsByProtocol);  
+        ambiguityTable = BackendUtils.buildAmbiguityTable(measurementsByProtocol);  
     }
     
     @Override
@@ -46,12 +46,12 @@ public class EAVRelationalBackend implements Backend {
         
         boolean first = true;
 
-        String orderByColumn = null;
         String prevAliasName = null;
+        String prevProtocolName = null;
 
         StringBuilder fields = new StringBuilder();
         
-        for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
+        for (Map.Entry<Protocol, List<Measurement>> entry : measurementsByProtocol.entrySet()) {
             List<Measurement> measurements = entry.getValue();
 
             boolean firstM = first;
@@ -61,10 +61,9 @@ public class EAVRelationalBackend implements Backend {
                 } else {
                     firstM = false;
                 }
-                
-                
-                
-                //do something with ambugity table
+                                
+                //do something with ambiguity table
+
                 //fields.append(String.format("%s.%s", entry.getKey().getName(), m.getName()));
                 if(!count) {
                     fields.append(String.format("%s_%s", entry.getKey().getName(), m.getName()));
@@ -91,27 +90,32 @@ public class EAVRelationalBackend implements Backend {
             }
 
             List<Measurement> ms = (List<Measurement>)(List)entry.getKey().getFeatures();
-            ms.toString();
             if (!paIDExists) {
-                Measurement paIdMes = em.createQuery("SELECT m FROM Measurement m JOIN m.featuresCollection p WHERE m.name = :name and p = :protocol", Measurement.class).setParameter("name", joinColumn).setParameter("protocol", entry.getKey()).getSingleResult();
+                Measurement paIdMes = em.createQuery("SELECT DISTINCT m FROM Measurement m JOIN m.featuresCollection p WHERE m.name = :name and p = :protocol", Measurement.class)
+                	.setParameter("name", joinColumn)
+                	.setParameter("protocol", entry.getKey())
+                	.getSingleResult();
                 measurements.add(paIdMes);
             }
 
-            String aliasName = entry.getKey().getName();
+            String protocolName = entry.getKey().getName();
             String sql = BackendUtils.createQuery(investigation, entry.getKey(), measurements, em, true);
 
-
             if (first) {
-                orderByColumn = aliasName;
                 first = false;
-                query.append(String.format("(%s) %s", sql, aliasName));
+                query.append(String.format("(%s) %s", sql, protocolName));
             } else {
-                query.append(
-                        String.format(" left join (%s) %s on (%s = %s)",
-                        sql, aliasName, aliasName + "_" + "PA_ID", prevAliasName + "_" +"PA_ID"));
+            	String columName = StringUtils.substring(String.format("%s_%s", protocolName, "PA_ID"), 0, 30); 
+            	String aliasName = String.format("%s.%s", protocolName, columName);
 
+            	String prevColumName = StringUtils.substring(String.format("%s_%s", prevProtocolName, "PA_ID"), 0, 30);
+            	String prevJoinColumn = String.format("%s.%s", prevProtocolName, prevColumName);
+
+            	query.append(
+                        String.format(" left join (%s) %s on (%s = %s)",
+                        sql, protocolName, prevJoinColumn, aliasName));
             }
-            prevAliasName = aliasName;
+            prevProtocolName = entry.getKey().getName();
         }
 
         String whereFilter = BackendUtils.getFilterCondition(rules, em);
@@ -154,6 +158,7 @@ public class EAVRelationalBackend implements Backend {
         }
         return result.toString();
     }
+
     
   
 }

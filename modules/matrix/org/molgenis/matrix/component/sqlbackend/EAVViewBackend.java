@@ -4,14 +4,13 @@
  */
 package org.molgenis.matrix.component.sqlbackend;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
+
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -28,38 +27,38 @@ public class EAVViewBackend implements Backend {
 
     private final String joinColumn;
     private final String tablePrefix;
-    private final LinkedHashMap<Protocol, List<Measurement>> mesurementsByProtocol;
+    private final LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol;
     private HashMap<String, List<String>> ambiguityTable;
     private final EntityManager em;
 
-    private final SliceablePhenoMatrixMV matrix;
+    private final SliceablePhenoMatrixMV<?, ?, ?> matrix;
     
-    public EAVViewBackend(SliceablePhenoMatrixMV matrix, String tablePrefix) {
+    public EAVViewBackend(SliceablePhenoMatrixMV<?, ?, ?> matrix, String tablePrefix) {
         this.matrix = matrix;
         this.em = matrix.getEm();
-        this.mesurementsByProtocol = matrix.getMesurementsByProtocol();
+        this.measurementsByProtocol = matrix.getMeasurementsByProtocol();
         this.tablePrefix = tablePrefix;
         this.joinColumn = matrix.getJOIN_COLUMN();
         
-        ambiguityTable = BackendUtils.buildAmbiguityTable(mesurementsByProtocol);        
+        ambiguityTable = BackendUtils.buildAmbiguityTable(measurementsByProtocol);        
     }
 
     @Override
     public String createQuery(boolean count, List<MatrixQueryRule> rules) throws Exception {
         StringBuilder sql = new StringBuilder("SELECT ");
-        String firstTableName = tablePrefix + mesurementsByProtocol.keySet().toArray(new Protocol[1])[0].getName();
+        String firstTableName = tablePrefix + measurementsByProtocol.keySet().toArray(new Protocol[1])[0].getName();
 
         if (count) {
             sql.append(" COUNT(*) ");
         } else {
             //Select part
             int cnt = 0;
-            for (Map.Entry<Protocol, List<Measurement>> entry : mesurementsByProtocol.entrySet()) {
+            for (Map.Entry<Protocol, List<Measurement>> entry : measurementsByProtocol.entrySet()) {
                 for (Measurement m : entry.getValue()) {
                     String tableName = String.format("%s%s", tablePrefix, entry.getKey().getName());
                     
                     String column = String.format("%s.%s", tableName, m.getName());
-                    if(ambiguityTable.get(m.getName()).size() > 1)
+                    if(ambiguityTable.containsKey(m.getName()) && ambiguityTable.get(m.getName()).size() > 1)
                     {
                         column = String.format("%s %s_%s", column, tableName, m.getName());
                     }
@@ -79,7 +78,7 @@ public class EAVViewBackend implements Backend {
 
         //From part
         int cnt = 0;
-        for (Protocol p : mesurementsByProtocol.keySet()) {
+        for (Protocol p : measurementsByProtocol.keySet()) {
             String tableName = String.format("%s%s", tablePrefix, p.getName());
             if (cnt > 0) {
                 sql.append(String.format(" JOIN %s ON (%s.%s = %s.%s)",

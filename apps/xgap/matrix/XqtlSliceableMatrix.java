@@ -3,8 +3,6 @@ package matrix;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -431,6 +429,14 @@ public class XqtlSliceableMatrix implements SliceableMatrix<String, String, Obje
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public SliceableMatrix<String, String, Object> sliceByColValueProperty(
+			int protocolId, int measurementId, String valuePropertyToUse,
+			Operator op, Object object) throws MatrixException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method in XqtlSliceableMatrix");
 	}
 
 

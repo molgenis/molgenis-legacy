@@ -1,6 +1,5 @@
 package org.molgenis.matrix.component.interfaces;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
@@ -236,7 +235,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * SliceableMatrix to a fresh state where slice actions are once again
 	 * performed on the original matrix data instead of a sliced subset.
 	 */
-	public void reset();
+	public void reset() throws MatrixException;
 	
 	/**
 	 * Empty caches and reload matrix data, whilst keeping any
@@ -244,7 +243,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	 * 
 	 * @throws MatrixException
 	 */
-	public void reload();
+	public void reload() throws MatrixException;
 	
 	public int getRowLimit();
 
@@ -268,4 +267,7 @@ public interface SliceableMatrix<R, C, V> extends BasicMatrix<R, C, V>
 	SliceableMatrix<R, C, V> sliceByRowValueProperty(int rowIndex,
 			String property, Operator operator, Object value)
 			throws MatrixException;
+
+	SliceableMatrix<R, C, V> sliceByColValueProperty(int protocolId, int measurementId,
+			String valuePropertyToUse, Operator op, Object object) throws MatrixException;
 }

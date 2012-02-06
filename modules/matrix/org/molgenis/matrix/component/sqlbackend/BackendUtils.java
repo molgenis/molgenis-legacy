@@ -6,10 +6,11 @@ package org.molgenis.matrix.component.sqlbackend;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang.StringUtils;
@@ -78,17 +79,17 @@ public class BackendUtils {
             return "to_date(substr(value,1, 19), 'yyyy-mm-dd hh24:mi:ss') ";
         } else if (dataType.equals("decimal")) {
             return "cast(%s as number)";
-        } else if (dataType.equals("string") || dataType.equals("text")) {
+        } else if (dataType.equals("string") || dataType.equals("text") || dataType.equals("tekst")) {
             return "%s";
         } else if(dataType.equals("long")) {
         	return "cast(%s as number)";
         } else if(dataType.equals("number") || dataType.equals("nummer")) {
-            return "cast(%s as number)";
+            return "cast(%s as number)";            
+            
         } else {
             throw new Exception("DataType not supported!" + dataType);
         }        
-    }
-    
+    }    
     
     public static String getFilterCondition(List<MatrixQueryRule> rules, EntityManager em) {
         return getFilterCondition(rules, em, false, null);
@@ -106,7 +107,12 @@ public class BackendUtils {
 
                 Measurement m = em.find(Measurement.class, rule.getDimIndex());
                 Protocol p = em.find(Protocol.class, rule.getProtocolId());
-                Column.ColumnType ct = Column.getColumnType(m.getDataType());
+                
+                String dataType = m.getDataType();
+                //remove precision
+                dataType = StringUtils.substringBefore(dataType, "(");
+                Column.ColumnType ct = Column.getColumnType(dataType); 
+                	//Column.getColumnType(dataType);
                 String value = rule.getValue().toString();
                 if (ct.isQuote()) {
                     value = "'" + value + "'";

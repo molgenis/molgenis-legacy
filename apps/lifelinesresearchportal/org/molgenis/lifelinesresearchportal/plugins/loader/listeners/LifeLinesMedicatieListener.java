@@ -41,12 +41,12 @@ public class LifeLinesMedicatieListener extends ImportTupleListener
 		this.logger = Logger.getLogger("LLimport(" + protocol.getName() + ")");
 		
 		//remove all Measurement for this protocol
-//		try {
+		try {
 			protocol = Protocol.findById(db, protocol.getId());
-//		} catch (ParseException e) {
+		} catch (ParseException e) {
 //			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+			e.printStackTrace();
+		}
 		List<Measurement> mList = db.query(Measurement.class).in(Measurement.ID, protocol.getFeatures()).find();
 		protocol.getFeatures().clear();
 		protocol.getFeatures_Name().clear();
@@ -133,13 +133,13 @@ public class LifeLinesMedicatieListener extends ImportTupleListener
 	private void storeValuesInDatabase() throws DatabaseException, ParseException
 	{
 		// add protocol applications
-		db.add(new ArrayList(protocolApps.values()));
+		db.add(new ArrayList<ProtocolApplication>(protocolApps.values()));
 				
 		// only add targets if they are not already there
-		db.update(new ArrayList(targets.values()), DatabaseAction.ADD_IGNORE_EXISTING, Individual.NAME);
+		db.update(new ArrayList<Individual>(targets.values()), DatabaseAction.ADD_IGNORE_EXISTING, Individual.NAME);
 
 		// only add measurements if they are not already there
-		db.update(new ArrayList(measurements.values()), DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
+		db.update(new ArrayList<Measurement>(measurements.values()), DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
 		
 		//update the mref (using name so we need to clear ids)
 		protocol.getFeatures().clear();
