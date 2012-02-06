@@ -99,30 +99,29 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	{
 		try
 		{
-		if ("doLogout".equals(request.getAction())) {
-			getLogin().logout(db);
-		}
-		
-		if ("sendFeedback".equals(request.getAction())) {
-			feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName() + 
-					") sent:\n\n" + request.getString("feedback") + "\n\nabout: " + request.getString("plugin");
+			if ("doLogout".equals(request.getAction())) {
+				getLogin().logout(db);
+			}
 			
-			// get admin email
-			MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
-			if (StringUtils.isEmpty(admin.getEmail()))
-				throw new DatabaseException("Sending feedback failed: the administrator has no email address set. Please contact your administrator about this.");
+			if ("sendFeedback".equals(request.getAction())) {
+				feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName() + 
+						") sent:\n\n" + request.getString("feedback") + "\n\nabout: " + request.getString("plugin");
+				
+				// get admin email
+				MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
+				if (StringUtils.isEmpty(admin.getEmail()))
+					throw new DatabaseException("Sending feedback failed: the administrator has no email address set. Please contact your administrator about this.");
+				
+				EmailService ses = this.getEmailService();
+				ses.email("New feedback on AnimalDB", feedback, admin.getEmail(), true);
+				
+				this.getMessages().add(new ScreenMessage(feedback, true));
+			}
 			
-			EmailService ses = this.getEmailService();
-			ses.email("New feedback on AnimalDB", feedback, admin.getEmail(), true);
-			
-			this.getMessages().add(new ScreenMessage(feedback, true));
-		}
-		
-		if ("resetFeedbackForm".equals(request.getAction())) {
-			feedback = null;
-		}
-		} catch (Exception e)
-		{
+			if ("resetFeedbackForm".equals(request.getAction())) {
+				feedback = null;
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage(e.getMessage(), false));
 			//this.setError(e.getMessage());

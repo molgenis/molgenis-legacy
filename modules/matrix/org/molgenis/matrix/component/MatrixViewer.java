@@ -1175,26 +1175,50 @@ public class MatrixViewer extends HtmlWidget
 		matrix.reload();
 	}
 
-	public void filterCol(Database db, Tuple t) throws Exception
+	public void filterCol(Database db, Tuple t) throws MatrixException
 	{
-		// First find out whether to filter on the value or the relation_Name
-		// field
-		String valuePropertyToUse = ObservedValue.VALUE;
-		String protocolMeasurementIds = t.getString(COLID);
-		String[] values = StringUtils.split(protocolMeasurementIds, ";");
-		int protocolId = Integer.parseInt(values[0]);
-		int measurementId = Integer.parseInt(values[1]);
-
-		Measurement filterMeasurement = db.findById(Measurement.class, measurementId);
-		if (filterMeasurement.getDataType().equals("xref"))
-		{
-			valuePropertyToUse = ObservedValue.RELATION_NAME;
+		if(matrix instanceof SliceablePhenoMatrixMV) {
+			String valuePropertyToUse = ObservedValue.VALUE;
+			String protocolMeasurementIds = t.getString(COLID);
+			String[] values = StringUtils.split(protocolMeasurementIds, ";");
+			int protocolId = Integer.parseInt(values[0]);
+			int measurementId = Integer.parseInt(values[1]);
+			// First find out whether to filter on the value or the relation_Name field
+			Measurement filterMeasurement;
+			try {
+				filterMeasurement = db.findById(Measurement.class, measurementId);
+			} catch (DatabaseException e) {
+				throw new MatrixException(e);
+			}
+			if (filterMeasurement.getDataType().equals("xref"))
+			{
+				valuePropertyToUse = ObservedValue.RELATION_NAME;
+			}
+			// Find out operator to use
+			Operator op = Operator.valueOf(t.getString(OPERATOR));
+			//new Operator(t.getString(OPERATOR));
+			// Then do the actual slicing
+			matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
+		} else {
+			String valuePropertyToUse = ObservedValue.VALUE;
+			int measurementId = t.getInt(COLID);
+			// First find out whether to filter on the value or the relation_Name field
+			Measurement filterMeasurement;
+			try {
+				filterMeasurement = db.findById(Measurement.class, measurementId);
+			} catch (DatabaseException e) {
+				throw new MatrixException(e);
+			}
+			if (filterMeasurement.getDataType().equals("xref"))
+			{
+				valuePropertyToUse = ObservedValue.RELATION_NAME;
+			}
+			// Find out operator to use
+			Operator op = Operator.valueOf(t.getString(OPERATOR));
+			//new Operator(t.getString(OPERATOR));
+			// Then do the actual slicing
+			matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
 		}
-		// Find out operator to use
-		Operator op = Operator.valueOf(t.getString(OPERATOR));
-		//new Operator(t.getString(OPERATOR));
-		// Then do the actual slicing
-		matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
 	}
 
 	@SuppressWarnings("unchecked")
