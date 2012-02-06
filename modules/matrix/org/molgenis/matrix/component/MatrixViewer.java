@@ -181,6 +181,19 @@ public class MatrixViewer extends HtmlWidget
 
 	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
 	{
+		if (t.getAction().startsWith(REMOVEFILTER))
+		{
+			try
+			{
+				removeFilter(t.getAction()); // in case of a remove filter action, take the whole action, as the filter number is encoded therein
+			}
+			catch (MatrixException e)
+			{
+				e.printStackTrace();
+				throw new HandleRequestDelegationException();
+			}
+			return;
+		}
 		String action = t.getAction().substring((getName() + "_").length());
 		((DatabaseMatrix) this.matrix).setDatabase(db);
 		this.delegate(action, db, t);
