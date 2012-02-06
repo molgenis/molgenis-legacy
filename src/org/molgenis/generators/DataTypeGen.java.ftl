@@ -89,6 +89,16 @@ import ${impl_entity.namespace}.${JavaName(impl_entity)};
 </#if>	
  
 
+<#-- inverse relations -->
+<#list model.entities as e><#if !e.abstract && !e.isAssociation()>
+	<#list e.allFields as f>
+		<#if (f.type=="xref" || f.type == "mref") && f.getXrefEntityName() == entity.name>
+			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
+import ${e.namespace}.${JavaName(e)};	
+		</#if>
+	</#list></#if>
+</#list>
+
 /**
  * ${Name(entity)}: ${entity.description}.
  * @version ${date} 
@@ -758,6 +768,29 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		return e;
 	}
 </#if>
+//reverse relations for JPA, should be implemented for JDBC as well
+<#list model.entities as e>
+	<#if !e.abstract && !e.isAssociation()>
+		<#list e.implementedFields as f>
+			<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
+				<#assign multipleXrefs = e.getNumberOfMrefTo(entity)/>
+	//${multipleXrefs}
+
+	@XmlTransient
+	public java.util.Collection<${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection()
+	{
+        throw new UnsupportedOperationException();
+	}
+
+    public void set${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(java.util.Collection<${Name(f.entity)}> collection)
+    {
+    	throw new UnsupportedOperationException();
+    }	
+			</#if>
+		</#list>
+	</#if>
+</#list>
+
 
 <#if !entity.abstract>
 	@Override
