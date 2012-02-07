@@ -23,9 +23,8 @@ IndelGenotyper,IndelGenotyper,SamSortRecal
 FilterIndels,FilterIndels,IndelGenotyper
 UnifiedGenotyper,UnifiedGenotyper,SamSortRecal
 MakeIndelMask,MakeIndelMask,FilterIndels
-VariantAnnotator,VariantAnnotator,"SamSortRecal, UnifiedGenotyper"
-GenomicAnnotator,GenomicAnnotator,VariantAnnotator
-VariantFiltration,VariantFiltration,"GenomicAnnotator, MakeIndelMask"
-VcfToTable,VcfToTable,VariantFiltration
+GenomicAnnotator,GenomicAnnotator,UnifiedGenotyper
+VariantAnnotator,VariantAnnotator,GenomicAnnotator
+VcfToTable,VcfToTable,VariantAnnotator
 ConcordanceCheck,ConcordanceCheck,"SamSortRecal, UnifiedGenotyper"
 QCReport,QCReport,"PicardQC, ConcordanceCheck"
