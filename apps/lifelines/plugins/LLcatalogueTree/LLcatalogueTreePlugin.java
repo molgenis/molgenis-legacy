@@ -253,7 +253,8 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			List<ShoppingCart> result = q.find();
 			shoppingCart.clear();
 			for(ShoppingCart cart : result){
-				shoppingCart.addAll(cart.getMeasurements());
+				//shoppingCart.addAll(cart.getMeasurements());
+				shoppingCart.addAll(cart.getMeasurements(db));
 			}
 			
 			this.arrayInvestigations.clear();

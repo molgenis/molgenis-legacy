@@ -13,7 +13,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import plugins.autohidelogin.AutoHideLoginModel; 
+//import plugins.autohidelogin.AutoHideLoginModel; 
 
 public class catalogueHeader extends PluginModel<Entity>
 {
@@ -57,7 +57,7 @@ public class catalogueHeader extends PluginModel<Entity>
 				getLogin().logout(db);
 				
 				//only for AutoHideLoginSwitchService, but harmless otherwise 
-				AutoHideLoginModel.isVisible = false; 
+				//AutoHideLoginModel.isVisible = false; //TODO 
 		}
 	}
 	

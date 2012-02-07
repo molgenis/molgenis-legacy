@@ -39,7 +39,7 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 	
 	public JQueryTreeViewElementObject(String name, JQueryTreeViewElementObject parent, String url, String category)
 	{
-		super(name, parent, url);
+		super(name, parent, url, category);
 		measurement = null;
 //		this.category = category;
 		institute = null;
