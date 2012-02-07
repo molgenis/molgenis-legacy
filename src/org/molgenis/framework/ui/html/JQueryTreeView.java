@@ -55,6 +55,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 		if (node.hasChildren()) {
 			returnString = "<li class=\"" + (nodeOpen(node, selectedLabels) ? "opened" : "closed") + 
 					"\"><span class=\"folder\">" + node.getLabel() + "</span>";
+			returnString += " <b>details: </b>"+ node;
 			returnString += "<ul>";
 			Vector<JQueryTreeViewElement> children = node.getChildren();
 			for (JQueryTreeViewElement child : children) {
@@ -65,7 +66,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 			returnString = "<li><span class=\"point\"><input type=\"checkbox\" id=\"" + 
 				node.getLabel() + "\" name=\"" + node.getLabel() + "\"" + 
 				(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") + 
-				" />" + node.getLabel() + "</span></li>";
+				" />" + node.getLabel() + "<b>details: </b>"+ node + "</span></li>";
 		}
 		return returnString;
 	}
