@@ -139,7 +139,8 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		dataTypeOptions.add("int");
 		dataTypeOptions.add("datetime");
 		dataTypeOptions.add("categorical");
-		
+		dataTypeOptions.add("decimal");
+	
 	}
 
 
