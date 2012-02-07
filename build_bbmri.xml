@@ -9,6 +9,7 @@
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/bbmri" />
+		<pathelement location="apps/lifelines" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/file" />
@@ -20,6 +21,7 @@
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
 		<pathelement location="modules/webserver" />
+		<pathelement location="modules/matrix" />
 	</path>
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->

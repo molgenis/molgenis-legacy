@@ -1,6 +1,5 @@
 package plugins.data;
 
-
 import gcc.catalogue.ShoppingCart;
 
 import java.util.ArrayList;
@@ -15,16 +14,8 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.matrix.component.MatrixViewer;
-import org.molgenis.matrix.component.SliceablePhenoMatrix;
-import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-
-import plugins.matrix.CatalogueMatrixModel;
 
 /**
  *
