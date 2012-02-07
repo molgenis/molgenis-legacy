@@ -171,11 +171,6 @@
 <#elseif screen.action == "ShowWean">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
-	<!-- Responsible researcher -->
-	<div class='row'>
-		<label for='respres'>Responsible researcher:</label>
-		<input type='text' class='textbox' name='respres' id='respres' value='<#if screen.responsibleResearcher?exists>${screen.getResponsibleResearcher()}</#if>' />
-	</div>
 	<!-- Date and time of weaning -->
 	<div id='weandatediv' class='row'>
 		<label for='weandate'>Wean date:</label>
@@ -228,6 +223,21 @@
 	<div class='row'>
 		<label for='remarks'>Weaning remarks:</label>
 		<input type='text' class='textbox' name='remarks' id='remarks' />
+	</div>
+	<!-- Responsible researcher -->
+	<div class='row'>
+		<label for='respres'>Responsible researcher:</label>
+		<input type='text' class='textbox' name='respres' id='respres' value='<#if screen.responsibleResearcher?exists>${screen.getResponsibleResearcher()}</#if>' />
+	</div>
+	<!-- Optional location -->
+	<div class="row">
+		<label for="location">Location (optional):</label>
+		<select id="location" name="location">
+			<option value="-1"></option>
+			<#list screen.locationList as loc>
+				<option value="${loc.id}">${loc.name}</option>
+			</#list>
+		</select>
 	</div>
 	<!-- Add button -->
 	<div id='addlitter' class='row'>

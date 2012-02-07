@@ -567,6 +567,10 @@ public class CommonService
 		db.add(locationToAdd);
 		return locationToAdd.getId();
 	}
+	
+	public List<Location> getAllLocations() throws DatabaseException {
+		return db.find(Location.class);
+	}
 
 	/**
 	 * Creates a Panel and adds it to the database.

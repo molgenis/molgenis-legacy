@@ -29,6 +29,7 @@ import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.pheno.Category;
+import org.molgenis.pheno.Location;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
@@ -63,6 +64,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	public ActionInput addbutton = null;
 	public ActionInput savebutton = null;
 	private boolean genesSaved = false;
+	public SelectInput location = null;
 	
 	// container that renders whole form as divs (left labels, right inputs)
 	public DivPanel containingPanel = null;
@@ -169,45 +171,36 @@ public class AddAnimalPlugin extends GenericPlugin
 	}
 	
 	private void handleAddRequest(Database db, Tuple request) throws Exception {
-		String resResearcher = null;
-		if (researcher.getObject() != null) {
-			resResearcher = researcher.getValue();
-		}
 		int speciesId = 0;
 		if (species.getObject() != null) {
 			speciesId = Integer.parseInt(species.getObject().toString());
 		} else {
 			throw(new Exception("No species given - animal(s) not added"));
 		}
-		
 		int backgroundId = 0;
 		if (background.getObject() != null) {
 			backgroundId = Integer.parseInt(background.getObject().toString());
 		} else {
 			throw(new Exception("No background given - animal(s) not added"));
 		}
-		
 		int sexId = 0;
 		if (sex.getObject() != null) {
 			sexId = Integer.parseInt(sex.getObject().toString());
 		} else {
 			throw(new Exception("No sex given - animal(s) not added"));
 		}
-		
 		int sourceId = 0;
 		if (source.getObject() != null) {
 			sourceId = Integer.parseInt(source.getObject().toString());
 		} else {
 			throw(new Exception("No source given - animal(s) not added"));
 		}
-		
 		String animalType = null;
 		if (animaltype.getObject() != null) {
 			animalType = animaltype.getObject().toString();
 		} else {
 			throw(new Exception("No animal type given - animal(s) not added"));
 		}
-		
 		// GMO info
 		List<String> genes = new ArrayList<String>();
 		List<String> genestates = new ArrayList<String>();
@@ -225,15 +218,12 @@ public class AddAnimalPlugin extends GenericPlugin
 			// GMO panel already made invisible through JavaScript, now make permanent
 			gmoPanel.setHidden(true);
 		}
-		
 		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-		
 		// Birth date
 		String birthDate = null;
 		if (!birthdate.getValue().equals("")) {
 			birthDate = birthdate.getValue();
 		}
-		
 		// Entry date
 		Date entryDate = null;
 		if (!entrydate.getValue().equals("")) {
@@ -241,8 +231,7 @@ public class AddAnimalPlugin extends GenericPlugin
 			entryDate = dateOnlyFormat.parse(entryDateString);
 		} else {
 			throw(new Exception("No entry date given - animal(s) not added"));
-		}
-						
+		}			
 		// Name
 		String nameBase = "";
 		int startNumber = -1;
@@ -265,7 +254,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		} else {
 			startNumber = 1; // standard start at 1
 		}
-		
 		// Number of animals
 		int nrOfAnimals = 1;
 		if (numberofanimals.getObject() != null) {
@@ -275,7 +263,16 @@ public class AddAnimalPlugin extends GenericPlugin
 		} else {
 			throw(new Exception("No number given - animal(s) not added"));
 		}
-		
+		// Researcher
+		String resResearcher = null;
+		if (researcher.getObject() != null) {
+			resResearcher = researcher.getValue();
+		}
+		// Location
+		int locId = -1;
+		if (location.getObject() != null) {
+			locId = Integer.parseInt(location.getObject().toString());
+		}
 		// Investigation
 		int userId = this.getLogin().getUserId();
 		int invid = ct.getOwnUserInvestigationIds(userId).get(0);
@@ -310,13 +307,13 @@ public class AddAnimalPlugin extends GenericPlugin
 		protocolIdList.add(ct.getProtocolId("SetGenotype"));
 		protocolIdList.add(ct.getProtocolId("SetDateOfBirth"));
 		protocolIdList.add(ct.getProtocolId("SetResponsibleResearcher"));
-		for (int j = 0; j < 9; j++) {
+		protocolIdList.add(ct.getProtocolId("SetLocation"));
+		for (int j = 0; j < 10; j++) {
 			ProtocolApplication newApp = ct.createProtocolApplication(invid, protocolIdList.get(j));
 			appsToAddList.add(newApp);
 		}
 		db.add(appsToAddList);
-		
-		// Make all values
+		// Get all measurements
 		List<Integer> featureIdList = new ArrayList<Integer>();
 		featureIdList.add(ct.getMeasurementId("Active"));
 		featureIdList.add(ct.getMeasurementId("Species"));
@@ -328,10 +325,10 @@ public class AddAnimalPlugin extends GenericPlugin
 		featureIdList.add(ct.getMeasurementId("GeneState"));
 		featureIdList.add(ct.getMeasurementId("DateOfBirth"));
 		featureIdList.add(ct.getMeasurementId("ResponsibleResearcher"));
-		
+		featureIdList.add(ct.getMeasurementId("Location"));
+		// Make all values
 		for (ObservationTarget animal : animalsToAddList) {
 			int animalid = animal.getId();
-			
 			// Set Active, with (start)time = entrydate and endtime = null
 			ProtocolApplication app = appsToAddList.get(0);
 	 		valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
@@ -382,16 +379,19 @@ public class AddAnimalPlugin extends GenericPlugin
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(9), animalid, resResearcher, 0));
 			}
-			
+			// Set location
+			if (locId != -1) {
+				app = appsToAddList.get(9);
+				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
+						featureIdList.get(10), animalid, null, locId));
+			}
 		}	
 		db.add(valuesToAddList);
 		
 		// Update custom label map now new animals have been added
 		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 		
-		// Add success message to the screen
-		this.getMessages().clear();
-		this.getMessages().add(new ScreenMessage(animalsToAddList.size() + " animal(s) successfully added", true));
+		this.setSuccess(animalsToAddList.size() + " animal(s) successfully added");
 	}
 	
 	private void populateTablePanel(Database db) throws DatabaseException, ParseException {
@@ -400,12 +400,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		// panel for all elements
 		containingPanel = new DivPanel(this.getName() + "panel", "");
-		
-		researcher = new StringInput("researcher");
-		researcher.setLabel("Responsible researcher:");
-		researcher.setNillable(true);
-		researcher.setDescription("Give the responsible researcher.");
-		researcher.setTooltip("Give the responsible researcher.");
 
 		// Populate animal species list
 		species = new SelectInput("species");
@@ -538,6 +532,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		startnumber.setId("startnumber");
 		startnumber.setValue(ct.getHighestNumberForPrefix("") + 1); // start with highest number for empty prefix (default selected)
 		startnumber.setDescription("Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected.");
+		startnumber.setReadonly(true);
 		namePanel.add(startnumber);
 		
 		numberofanimals = new IntInput("numberofanimals");
@@ -545,11 +540,27 @@ public class AddAnimalPlugin extends GenericPlugin
 		numberofanimals.setValue(1);
 		numberofanimals.setNillable(false);
 		numberofanimals.setDescription("Give the number of animals to add to the database.");
-
+		
+		researcher = new StringInput("researcher");
+		researcher.setLabel("Responsible researcher:");
+		researcher.setNillable(true);
+		researcher.setDescription("Give the responsible researcher.");
+		researcher.setTooltip("Give the responsible researcher.");
+		
+		// Populate locations list
+		location = new SelectInput("location");
+		location.setLabel("Location (optional):");
+		location.addOption("","");
+		for (Location l : ct.getAllLocations()) {
+			location.addOption(l.getId(), l.getName());
+		}
+		location.setDescription("Give the location of the new animal(s).");
+		location.setTooltip("Give the location of the new animal(s).");
+		location.setNillable(true);
+		
 		addbutton = new ActionInput("Add", "", "Add animal(s)");
 
 		// add everything to the panel
-		containingPanel.add(researcher);
 		containingPanel.add(species);
 		containingPanel.add(background);
 		containingPanel.add(sex);
@@ -558,12 +569,11 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel.add(gmoPanel);
 		containingPanel.add(birthdate);
 		containingPanel.add(entrydate);
+		containingPanel.add(researcher);
+		containingPanel.add(location);
 		containingPanel.add(namePanel);
-		
-		Newline newline = new Newline();
-		Newline newline2 = new Newline();
-		containingPanel.add(newline);
-		containingPanel.add(newline2);
+		containingPanel.add(new Newline());
+		containingPanel.add(new Newline());
 		containingPanel.add(numberofanimals);
 		containingPanel.add(addbutton);
 	}

@@ -34,6 +34,7 @@ import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.Location;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
@@ -88,6 +89,8 @@ public class ManageLitters extends PluginModel<Entity>
 	private static String MATRIX = "matrix";
 	private int userId = -1;
 	private String respres = null;
+	private List<Location> locationList;
+	private int locId = -1;
 	
 	//hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
@@ -314,6 +317,7 @@ public class ManageLitters extends PluginModel<Entity>
 
 	private void setUserFields(Tuple request, boolean wean) throws Exception {
 		if (wean == true) {
+			locId = request.getInt("location");
 			respres = request.getString("respres");
 			if (request.getString("weandate") == null || request.getString("weandate").equals("")) {
 				throw new Exception("Wean date cannot be empty");
@@ -591,6 +595,14 @@ public class ManageLitters extends PluginModel<Entity>
 	}
 	
 
+	public List<Location> getLocationList() {
+		return locationList;
+	}
+
+	public void setLocationList(List<Location> locationList) {
+		this.locationList = locationList;
+	}
+
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
@@ -628,10 +640,9 @@ public class ManageLitters extends PluginModel<Entity>
 				this.birthdate = null;
 				this.selectedParentgroup = -1;
 				this.action = "ShowLitters";
-				reload(db);
 				reloadLitterLists(db, false);
-				this.getMessages().clear();
-				this.getMessages().add(new ScreenMessage("Litter " + litterName + " successfully added", true));
+				reload(db);
+				this.setSuccess("Litter " + litterName + " successfully added");
 			}
 			
 			if (action.equals("ShowWean")) {
@@ -1097,6 +1108,13 @@ public class ManageLitters extends PluginModel<Entity>
 			measurementId = ct.getMeasurementId("ResponsibleResearcher");
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
 					null, protocolId, measurementId, animalId, respres, 0));
+			// Set location
+			if (locId != -1) {
+				protocolId = ct.getProtocolId("SetLocation");
+				measurementId = ct.getMeasurementId("Location");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
+						null, protocolId, measurementId, animalId, null, locId));
+			}
 			// Set sex
 			int sexId = ct.getObservationTargetId("Female");
 			if (animalNumber >= weanSizeFemale) {
@@ -1525,6 +1543,8 @@ public class ManageLitters extends PluginModel<Entity>
 					this.bases.add(tmpPrefix);
 				}
 			}
+			// Populate location list
+			this.setLocationList(ct.getAllLocations());
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
 				this.getMessages().clear();
