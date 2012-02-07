@@ -340,7 +340,7 @@ seconds.
 			<#assign found = false>
 			<#list model.getJobToOutputLink()?keys as key>
 				<#if key == t.id?c>
-					<nobr><#if t.outputDataName?length gt 10><a href="/${model.deployName}${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName?substring(0, 10)}...</a><#else><a href="/${model.deployName}${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName}</a></#if></nobr>			
+					<nobr><#if t.outputDataName?length gt 10><a href="${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName?substring(0, 10)}...</a><#else><a href="${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName}</a></#if></nobr>			
 					<#assign found = true>
 					<#break>
 				</#if>
@@ -350,7 +350,7 @@ seconds.
 			</#if>
 		</td>
 		<td style="vertical-align:middle;">
-			<nobr>${t.computeResource} <#if t.computeResource == 'local'><a target="_blank" href="/${model.deployName}/getlogs?job=${t.getId()?c}">[view logs]</a></#if></nobr>
+			<nobr>${t.computeResource} <#if t.computeResource == 'local'><a target="_blank" href="getlogs?job=${t.getId()?c}">[view logs]</a></#if></nobr>
 		</td>
 		<td style="vertical-align:middle;">
 			<nobr>${t.timeStamp}</nobr>
@@ -405,7 +405,7 @@ seconds.
 
 <!--font color="red"><i>Resubmission of subjobs on cluster not possible due to demo constraints</i></font-->
 <br>
-<a target="_blank" href="/${model.deployName}/getlogs">[view all local logs]</a>
+<a target="_blank" href="getlogs">[view all local logs]</a>
 <br>
 <br>
 <input type="submit" value="Go back" id="back_to_start" onclick="__action.value='goBack';return true;"/>

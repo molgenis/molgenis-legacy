@@ -617,10 +617,6 @@ public class ClusterPlugin extends PluginModel<Entity>
 	{
 		try
 		{
-			if(this.model.getDeployName() == null)
-			{
-				this.model.setDeployName(this.getApplicationController().getMolgenisContext().getVariant());
-			}
 	
 			if (djm == null)
 			{
@@ -751,7 +747,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 					{
 						if(j.getOutputDataName().equals(d.getName()))
 						{
-							jobToOutputLink.put(j.getId().toString(), "/molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=");
+							jobToOutputLink.put(j.getId().toString(), "?__target=Datas&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=");
 							dataFound = true;
 							break;
 						}
@@ -761,7 +757,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 						{
 							if(j.getOutputDataName().equals(f.getName()))
 							{
-								jobToOutputLink.put(j.getId().toString(), "/molgenis.do?__target=Files&__action=filter_set&__filter_attribute=InvestigationFile_name&__filter_operator=EQUALS&__filter_value=");
+								jobToOutputLink.put(j.getId().toString(), "?__target=Files&__action=filter_set&__filter_attribute=InvestigationFile_name&__filter_operator=EQUALS&__filter_value=");
 								break;
 							}
 						}

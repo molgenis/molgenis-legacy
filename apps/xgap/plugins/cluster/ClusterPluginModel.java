@@ -25,8 +25,6 @@ import plugins.cluster.helper.LoginSettings;
 public class ClusterPluginModel
 {
 	
-	String deployName;
-	
 	int maxSubjobs;
 	int nrOfJobs;
 	
@@ -68,14 +66,6 @@ public class ClusterPluginModel
 	public void setSelectedAnalysis(Analysis selectedAnalysis)
 	{
 		this.selectedAnalysis = selectedAnalysis;
-	}
-	public String getDeployName()
-	{
-		return deployName;
-	}
-	public void setDeployName(String deployName)
-	{
-		this.deployName = deployName;
 	}
 	public String getRefreshRate()
 	{
