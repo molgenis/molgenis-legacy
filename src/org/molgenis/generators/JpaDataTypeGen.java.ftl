@@ -129,7 +129,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	/**
 	 * 
 	 */
-	public static ${JavaName(entity)} findBy<#list key.fields as f>${JavaName(f)}</#list>(org.molgenis.framework.db.Database db<#list key.fields as f>, ${type(f)} ${name(f)}</#list>) throws org.molgenis.framework.db.DatabaseException, java.text.ParseException
+	public static ${JavaName(entity)} findBy<#list key.fields as f>${JavaName(f)}</#list>(org.molgenis.framework.db.Database db<#list key.fields as f>, ${type(f)} ${name(f)}</#list>) throws org.molgenis.framework.db.DatabaseException
 	{
 		org.molgenis.framework.db.Query<${JavaName(entity)}> q = db.query(${JavaName(entity)}.class);
 		<#list key.fields as f>q.eq(${JavaName(entity)}.${f.name?upper_case}, ${name(f)});</#list>
