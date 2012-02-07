@@ -81,7 +81,7 @@ public class MrefField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new MrefInput(name, xrefEntityClassName);
 	}
@@ -97,6 +97,12 @@ public class MrefField extends FieldType
 	public String getCppJavaPropertyType() throws MolgenisModelException
 	{
 		return "Ljava/util/List;";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return java.util.List.class;
 	}
 
 }

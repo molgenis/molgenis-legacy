@@ -78,7 +78,7 @@ public class MolgenisFieldTypes
 		// ft.setRegistry();
 	}
 	
-	public static HtmlInput createInput(String type, String name, String xrefEntityClassName) throws HtmlInputException
+	public static HtmlInput<?> createInput(String type, String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return getType(type).createInput(name, xrefEntityClassName);
 	}

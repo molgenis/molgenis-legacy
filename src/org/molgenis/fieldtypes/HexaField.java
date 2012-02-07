@@ -56,7 +56,7 @@ public class HexaField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new HexaInput(name);
 	}
@@ -71,6 +71,12 @@ public class HexaField extends FieldType
 	public String getCppJavaPropertyType()
 	{
 		return "Ljava/lang/String;";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return HexaInput.class;
 	}
 
 }
