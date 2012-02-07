@@ -66,6 +66,18 @@ public class XqtlSeleniumTest
 					+ dbDir.list().toString());
 		}
 	}
+	
+	/** Waits for an element to be present */
+	public void waitForElementToBePresent(String locator) {
+	    selenium.waitForCondition("var value = selenium.isElementPresent('" + locator.replace("'", "\\'") + "'); value == true", pageLoadTimeout);
+	}
+
+	/** Waits for an element to be visible */
+	public void waitForElementToBeVisible(String locator) {
+	    waitForElementToBePresent(locator);
+	    selenium.waitForCondition("var value = selenium.isVisible('" + locator.replace("'", "\\'") + "'); value == true", pageLoadTimeout);
+	}
+
 
 	public static void deleteStorage(String appName) throws Exception
 	{
@@ -148,7 +160,8 @@ public class XqtlSeleniumTest
 	{ "startup" })
 	public void login() throws InterruptedException
 	{
-		clickAndWait("id=UserLogin_tab_button");
+		clickAndWait("link=Login");
+		waitForElementToBePresent("link=Register");
 		Assert.assertEquals(selenium.getText("link=Register"), "Register");
 		selenium.type("id=username", "admin");
 		selenium.type("id=password", "admin");
@@ -532,7 +545,7 @@ public class XqtlSeleniumTest
 			public void userRoleMenuVisibility() throws Exception
 			{
 				//find out if admin can see the correct tabs
-				Assert.assertTrue(selenium.isTextPresent("Home*Login*Browse data*Upload data*Run QTL mapping*Configure analysis*Search / report*Utilities*Admin panel"));
+				Assert.assertTrue(selenium.isTextPresent("Home*Browse data*Upload data*Run QTL mapping*Configure analysis*Search / report*Utilities*Admin panel"));
 				clickAndWait("id=Admin_tab_button");
 				Assert.assertTrue(selenium.isTextPresent("Users and permissions*Database status*File storage*Install R packages*Admin utilities"));
 				clickAndWait("id=OtherAdmin_tab_button");
@@ -541,16 +554,18 @@ public class XqtlSeleniumTest
 				String whatBiologistCanSee = "Browse data*Upload data*Run QTL mapping*Search / report*Utilities";
 				
 				//logout and see if the correct tabs are visible
-				clickAndWait("id=UserLogin_tab_button");
-				clickAndWait("id=Logout");
-				Assert.assertTrue(selenium.isTextPresent("Home*Login"));
+				clickAndWait("link=Logout");
+				Assert.assertTrue(selenium.isTextPresent("Home"));
 				Assert.assertFalse(selenium.isTextPresent(whatBiologistCanSee));
 				
 				//login as biologist and see if the correct tabs are visible
+				clickAndWait("link=Login");
+				waitForElementToBePresent("link=Register");
 				selenium.type("id=username", "bio-user");
 				selenium.type("id=password", "bio");
 				clickAndWait("id=Login");
-				Assert.assertTrue(selenium.isTextPresent("Home*Login*" + whatBiologistCanSee));
+				waitForElementToBePresent("link=Logout");
+				Assert.assertTrue(selenium.isTextPresent("Home*" + whatBiologistCanSee));
 				Assert.assertFalse(selenium.isTextPresent("Configure analysis"));
 				Assert.assertFalse(selenium.isTextPresent("Admin panel"));
 				
@@ -561,12 +576,16 @@ public class XqtlSeleniumTest
 				Assert.assertFalse(selenium.isTextPresent("ROnline"));
 
 				//login as bioinformatician and see if the correct tabs are visible
-				clickAndWait("id=UserLogin_tab_button");
-				clickAndWait("id=Logout");
+				//clickAndWait("id=UserLogin_tab_button");
+				clickAndWait("link=Logout");
+				waitForElementToBePresent("link=Login");
+				clickAndWait("link=Login");
+				waitForElementToBePresent("link=Register");
 				selenium.type("id=username", "bioinfo-user");
 				selenium.type("id=password", "bioinfo");
 				clickAndWait("id=Login");
-				Assert.assertTrue(selenium.isTextPresent("Home*Login*" + whatBiologistCanSee));
+				waitForElementToBePresent("link=Logout");
+				Assert.assertTrue(selenium.isTextPresent("Home*" + whatBiologistCanSee));
 				Assert.assertTrue(selenium.isTextPresent("Configure analysis"));
 				Assert.assertFalse(selenium.isTextPresent("Admin panel"));
 				
@@ -575,8 +594,10 @@ public class XqtlSeleniumTest
 				Assert.assertTrue(selenium.isTextPresent("Format names*Rename duplicates*KEGG converter*ROnline"));
 				
 				//log back in as admin
-				clickAndWait("id=UserLogin_tab_button");
-				clickAndWait("id=Logout");
+				clickAndWait("link=Logout");
+				waitForElementToBePresent("link=Login");
+				clickAndWait("link=Login");
+				waitForElementToBePresent("link=Register");
 				selenium.type("id=username", "admin");
 				selenium.type("id=password", "admin");
 				clickAndWait("id=Login");

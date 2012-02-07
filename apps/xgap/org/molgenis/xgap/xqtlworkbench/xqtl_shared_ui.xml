@@ -1,5 +1,5 @@
 <molgenis>
-	<plugin label="Login" name="UserLogin" type="org.molgenis.auth.ui.UserLogin" />
+	<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
 	<include file="apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml"/>
 	<include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml"/>
 	<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />

@@ -7,14 +7,7 @@
 
 package org.molgenis.wormqtl.header;
 
-import org.molgenis.auth.DatabaseLogin;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
-
-import plugins.autohidelogin.AutoHideLoginModel;
 
 
 /**
@@ -24,7 +17,7 @@ import plugins.autohidelogin.AutoHideLoginModel;
  * 
  * @author Morris Swertz
  */
-public class MolgenisHeader extends PluginModel<Entity>
+public class MolgenisHeader extends org.molgenis.xgap.xqtlworkbench.header.MolgenisHeader
 {
 	private static final long serialVersionUID = 7628452789847569319L;
 
@@ -43,74 +36,6 @@ public class MolgenisHeader extends PluginModel<Entity>
 	public String getViewTemplate()
 	{
 		return "org/molgenis/wormqtl/header/MolgenisHeader.ftl";
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request) throws Exception
-	{
-		if ("doLogout".equals(request.getAction())) {
-
-			getLogin().logout(db);
-			
-			//only for AutoHideLoginSwitchService, but harmless otherwise
-			AutoHideLoginModel.isVisible = false;
-		}
-	}
-
-	@Override
-	public void reload(Database db)
-	{
-		setUserLogin();
-	}
-
-	@Override
-	public boolean isVisible()
-	{
-		return true;
-	}
-	
-	private String userLogin;
-	
-	public String getUserLogin() {
-		
-		return userLogin;
-	}
-	
-	public void setUserLogin()
-	{
-		//if the AutoHideLoginSwitchService is enabled, use this style of redirecting in the output URLs
-		if(this.getApplicationController().getMolgenisContext().getUsedOptions().services.contains("plugins.autohidelogin.AutoHideLoginSwitchService@/autohideloginswitch"))
-		{
-			setUserLoginAutoHideService();
-		}
-		// else just use the regular one
-		// AS A FALLBACK ONLY: this header is specific for WormQTL
-		// and we want to use the auto-hide for this app
-		// but just keeping the code around doesn't hurt
-		else
-		{
-			setUserLoginRegular();
-		}
-	}
-	
-	public void setUserLoginAutoHideService() {
-		if (this.getLogin().isAuthenticated()) {
-			this.userLogin = "<a href='autohideloginswitch'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getUserName() + "</a>";
-			this.userLogin += " | ";
-			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
-		} else {
-			this.userLogin = "<a href='autohideloginswitch'>" + "Login" + "</a>";
-		}	
-	}
-	
-	public void setUserLoginRegular() {
-		if (this.getLogin().isAuthenticated()) {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: " + ((DatabaseLogin)this.getLogin()).getUserName() + "</a>";
-			this.userLogin += " | ";
-			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>" + "Logout " + "</a>";
-		} else {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Login" + "</a>";
-		}	
 	}
 	
 	@Override
