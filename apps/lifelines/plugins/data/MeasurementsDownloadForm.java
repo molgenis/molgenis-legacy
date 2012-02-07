@@ -2,8 +2,6 @@ package plugins.data;
 
 import gcc.catalogue.ShoppingCart;
 
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -112,12 +110,7 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 	 * @throws DatabaseException
 	 */
 	public boolean checkIfUserDetailsEmpty(Database db) throws DatabaseException {
-		try {
-			user = MolgenisUser.findById(db, this.getLogin().getUserId());
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		user = MolgenisUser.findById(db, this.getLogin().getUserId());
 		return (user.getAddress() == null ||
 				user.getCity() == null ||
 				user.getDepartment() == null ||
