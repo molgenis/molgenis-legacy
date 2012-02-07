@@ -60,7 +60,7 @@ public class UnknownField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return null;
 	}
@@ -75,6 +75,12 @@ public class UnknownField extends FieldType
 	public String getCppJavaPropertyType()
 	{
 		return "";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return null;
 	}
 
 }

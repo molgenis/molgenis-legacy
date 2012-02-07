@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import java.io.File;
+
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -56,7 +58,7 @@ public class FileField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new FileInput(name);
 	}
@@ -71,5 +73,11 @@ public class FileField extends FieldType
 	public String getCppJavaPropertyType()
 	{
 		return "Ljava/lang/String;";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return File.class;
 	}
 }

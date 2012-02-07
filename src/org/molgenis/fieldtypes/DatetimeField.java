@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import java.util.Date;
+
 import org.molgenis.framework.ui.html.DatetimeInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -64,7 +66,7 @@ public class DatetimeField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new DatetimeInput(name);
 	}
@@ -72,7 +74,6 @@ public class DatetimeField extends FieldType
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException
 	{
-		// TODO Auto-generated method stub
 		return "time_t";
 	}
 	
@@ -80,5 +81,11 @@ public class DatetimeField extends FieldType
 	public String getCppJavaPropertyType()
 	{
 		return "Ljava/util/Date;";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return Date.class;
 	}
 }

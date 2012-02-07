@@ -91,6 +91,13 @@ public abstract class FieldType
 			throws MolgenisModelException;
 
 	/**
+	 * Produce the Java class corresponding to the value
+	 * @return Java class
+	 * @throws MolgenisModelException
+	 */
+	public abstract Class<?> getJavaType(String value) throws MolgenisModelException;
+	
+	/**
 	 * Produce a valid mysql snippet indicating the mysql type. E.g. "BOOL".
 	 * 
 	 * @return mysql type string
@@ -149,12 +156,12 @@ public abstract class FieldType
 				.toLowerCase();
 	}
 	
-	public HtmlInput createInput(String name) throws HtmlInputException
+	public HtmlInput<?> createInput(String name) throws HtmlInputException
 	{
 		return this.createInput(name,null);
 	}
 
-	public abstract HtmlInput createInput(String name, String xrefEntityClassNames) throws HtmlInputException;
+	public abstract HtmlInput<?> createInput(String name, String xrefEntityClassNames) throws HtmlInputException;
 
 	public abstract String getCppJavaPropertyType() throws MolgenisModelException;
 

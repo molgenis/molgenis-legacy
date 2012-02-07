@@ -66,7 +66,7 @@ public class ListField extends FieldType
 	 * Since this class is deprecated, this method is not implemented.
 	 */
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		throw new HtmlInputException("Class deprecated, will not return input.");
 	}
@@ -81,5 +81,11 @@ public class ListField extends FieldType
 	public String getCppJavaPropertyType()
 	{
 		return "Ljava/util/List;";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return java.util.List.class;
 	}
 }

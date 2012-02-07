@@ -57,7 +57,7 @@ public class BoolField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new BoolInput(name);
 	}
@@ -71,7 +71,12 @@ public class BoolField extends FieldType
 	@Override
 	public String getCppJavaPropertyType()
 	{
-		// TODO Auto-generated method stub
 		return "Ljava/lang/Boolean;";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return Boolean.class;
 	}
 }

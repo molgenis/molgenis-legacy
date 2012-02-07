@@ -56,7 +56,7 @@ public class HyperlinkField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new HyperlinkInput(name);
 	}
@@ -71,5 +71,11 @@ public class HyperlinkField extends FieldType
 	public String getCppJavaPropertyType()
 	{
 		return "Ljava/lang/String;";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return String.class;
 	}
 }

@@ -46,7 +46,6 @@ public class CharField extends FieldType
 	@Override
 	public String getXsdType() throws MolgenisModelException
 	{
-		// TODO Auto-generated method stub
 		return "string";
 	}
 
@@ -57,7 +56,7 @@ public class CharField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws  HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws  HtmlInputException
 	{
 		return new StringInput(name);
 	}
@@ -72,6 +71,12 @@ public class CharField extends FieldType
 	public String getCppJavaPropertyType()
 	{
 		return "Ljava/lang/String;";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return String.class;
 	}
 
 }

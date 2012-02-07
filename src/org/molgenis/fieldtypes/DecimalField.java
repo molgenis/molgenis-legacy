@@ -57,7 +57,7 @@ public class DecimalField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new DecimalInput(name);
 	}
@@ -72,5 +72,11 @@ public class DecimalField extends FieldType
 	public String getCppPropertyType() throws MolgenisModelException
 	{
 		return "double";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return Double.class;
 	}
 }

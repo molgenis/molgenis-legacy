@@ -66,7 +66,7 @@ public class XrefField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new XrefInput(name, xrefEntityClassName);
 	}
@@ -85,7 +85,9 @@ public class XrefField extends FieldType
 		return getFieldType(f_ref).getCppJavaPropertyType();
 	}
 
-
-
-	
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return null;
+	}	
 }

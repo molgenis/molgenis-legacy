@@ -61,7 +61,7 @@ public class IntField extends FieldType
 	}
 
 	@Override
-	public HtmlInput createInput(String name, String xrefEntityClassName) throws HtmlInputException
+	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return new IntInput(name);
 	}
@@ -76,5 +76,11 @@ public class IntField extends FieldType
 	public String getCppJavaPropertyType()
 	{
 		return "Ljava/lang/Integer;";
+	}
+
+	@Override
+	public Class<?> getJavaType(String value) throws MolgenisModelException
+	{
+		return Integer.class;
 	}
 }
