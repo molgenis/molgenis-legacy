@@ -39,12 +39,13 @@ ${getStatisticsScript} \
 --descriptionout ${qcstatisticsdescription} \
 --baitsetout ${qcbaitset}
 
-<#--list workflow as wf>
+<#-- create workflow figure -->
+echo "${workflowtext}" | dot -Tpng > ${workflowpng}
 
-</#list-->
-
+<#-- save latex template in file -->
 echo "<#include "QCReportTemplate.tex"/>" > ${qcstatisticstexreport}
 
 pdflatex -output-directory=${qcdir} ${qcstatisticstexreport}
+pdflatex -output-directory=${qcdir} ${qcstatisticstexreport} <#--do twice to fill all cross references-->
 
 <@end/>

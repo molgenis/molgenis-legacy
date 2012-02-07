@@ -1,8 +1,9 @@
-\documentclass[11pt]{article}
+\documentclass[a4paper,12pt]{article}
 \usepackage{grffile}
 \usepackage{graphicx}
 \usepackage[strings]{underscore}
 \usepackage{verbatim}
+\usepackage{wrapfig}
 
 \begin{comment}
 #
@@ -16,12 +17,26 @@
 #
 \end{comment}
 
+\newenvironment{narrow}[2]{
+  \begin{list}{}{
+    \setlength{\leftmargin}{#1}
+    \setlength{\rightmargin}{#2}
+    \setlength{\listparindent}{\parindent}
+    \setlength{\itemindent}{\parindent}
+    \setlength{\parsep}{\parskip}
+  }
+  \item[]
+}{\end{list}}
+
 \title{Next Generation Sequencing report}
 \author{\small Genome Analysis Facility, Genomics Coordination Centre\\\\
 \small University Medical Centre Groningen}
+
 \begin{document}
 \maketitle
+\thispagestyle{empty}
 \vspace{40mm}
+
 \begin{table}[h]
 	\centering
 	\begin{tabular}{l l}
@@ -31,34 +46,44 @@
 		Number of samples & ${externalSampleID?size} \\\\
 		\\\\
 		\multicolumn{2}{l}{\textbf{Customer information}} \\\\
-		PI & ${contact?replace("<", "/ ")?replace(">", "")} \\\\
+		Principal investigator & ${contact?replace("<", "/ ")?replace(">", "")} \\\\
 		\\\\
-		\multicolumn{2}{l}{\textbf{Contact information GAF and GCC}}\\\\
+		\multicolumn{2}{l}{\textbf{Contact information GAF and GCC}} \\\\
 		Name & Cleo C. van Diemen \\\\
 		E-mail & c.c.van.diemen@umcg.nl \\\\
+		\\\\
+		\multicolumn{2}{l}{\textbf{Data approval for submission}} \\\\
+		Name & ${DataShippedBy} \\\\
+		Date & ${DataShippedDate} \\\\
 		\hline
 	\end{tabular}
 \end{table}
 
 \clearpage
-\addtolength{\oddsidemargin}{-.875in}
-\addtolength{\evensidemargin}{-.875in}
-\addtolength{\textwidth}{1.75in}
-\section*{Project analysis results}
-\subsection*{Overview statistics}
-{\tt To do: remove bait information in table below.}\\\\
-\input{${qcstatisticstex}}
-\\
-Name of the bait set(s) used in the hybrid selection for this project:\\
-\textbf{\input{${qcbaitset}}}
+\tableofcontents
 
 \clearpage
+\section*{Project analysis results}
+\addcontentsline{toc}{section}{Project analysis results}
 
-\addtolength{\oddsidemargin}{.875in}
-\addtolength{\evensidemargin}{.875in}
-\addtolength{\textwidth}{-1.75in}
+\subsection*{Overview statistics}
+\addcontentsline{toc}{subsection}{Overview statistics}
 
+\begin{table}[h!]
+	\caption{Overview statistics}
+	\begin{narrow}{-1in}{-1in}
+		\centering
+		\input{${qcstatisticstex}}
+	\end{narrow}
+\end{table}
+\begin{minipage}{\textwidth}
+	Name of the bait set(s) used in the hybrid selection for this project:\\\\
+	\textbf{\input{${qcbaitset}}}
+\end{minipage}
+
+\clearpage
 \subsection*{Description statistics table}
+\addcontentsline{toc}{subsection}{Description statistics table}
 \begin{table}[h!]
 	\centering
 	\begin{tabular}{r p{12cm}}
@@ -67,22 +92,28 @@ Name of the bait set(s) used in the hybrid selection for this project:\\
 \end{table}
 
 \clearpage
-\subsection*{Evenness of capturing}
+\subsection*{Capturing}
+\addcontentsline{toc}{subsection}{Capturing}
 The following figures show the cumulative depth distribution in target regions. The fractions of bases that is covered with at least 10x, 20x and 30x are marked with a dot.
 ${figures(coverageplotpdf)}
 
 \clearpage
-\subsection*{GC metrics}
-The following figures show the GC-content distribution per sample.
-${figures(gcbiasmetricspdf)}
-
-\clearpage
 \subsection*{Insert size distribution}
+\addcontentsline{toc}{subsection}{Insert size distribution}
 The following figures show the insert size distribution per sample. Insert refers to the base pairs that are ligated between the adapters.
 ${figures(insertsizemetricspdf)}
 
 \clearpage
+\subsection*{GC metrics}
+\addcontentsline{toc}{subsection}{GC metrics}
+The following figures show the GC-content distribution per sample.
+${figures(gcbiasmetricspdf)}
+
+\clearpage
 \section*{Appendix 1: Genome Analysis Facility Pipeline}
+\addcontentsline{toc}{section}{Appendix 1: Genome Analysis Facility Pipeline}
+\subsection*{Exome sequencing}
+\addcontentsline{toc}{subsection}{Exome sequencing}
 \begin{wrapfigure}{r}{0.5\textwidth}
 	\begin{center}
 		\includegraphics[width=.5\textwidth]{${gaffig}}
@@ -90,7 +121,18 @@ ${figures(insertsizemetricspdf)}
 	\caption{Workflow in the lab}
 	\label{fig:wet}
 \end{wrapfigure}
+Figure \ref{fig:wet} illustrated the basic experimental process of exome capture sequencing. The Genomic DNA sample was randomly fragmented using Nebulisation. Then barcoded adapters were ligated to both ends of the resulting fragments, according the standard New England Biolabs protocol. Fragments with an insert size of 220 bp on average were excised using the Caliper XT gel system and the extracted DNA was amplified with PCR.
 
-Figure \ref{fig:wet} illustrated the basic experimental process of exome capture sequencing. The qualified genomic DNA sample was randomly fragmented by Covaris and the size of the library fragments was mainly distributed between 150 to 200bp. Then adapters were ligated to both ends of the resulting fragments. The adapter-ligated templates were purified by the Agencourt AMPure SPRI beads and fragments with insert size about 250bp were excised. Extracted DNA was amplified by ligation-mediated PCR (LM-PCR), purified, and hybridized to the SureSelect Biotiny lated RNA Library (BAITS) for enrichment, hybridized fragments were bound to the strepavidin beads whereas non-hybridized fragments were washed out after 24h. Captured LM-PCR products were subjected to Agilent 2100 Bioanalyzer to estimate the magnitude of enrichment. Each captured library was then loaded on Hiseq2000 platform, and we performed high-throughput sequencing for each captured library to ensure that each sample meets the desired average sequencing depth. Raw image files were processed by Illumina basecalling Software 1.7 for base-calling with default parameters and the sequences of each individual were generated as 90bp pair-end reads.
+The quality of the product was verified on the BioRad Experion instrument. If the quality of the product meets the criteria, the product is multiplexed in an equimolar pool of 4 simular products. This pool is hybridized to the Agilent SureSelect 50 MB Exome library, according the provided protocol. After amplification of the enriched products with PCR the quality of the products is verified on the BioRad Experion instrument and Paired End sequenced on the HiSeq2000 with 100 bp reads. Image Files were processed using standard Illumina basecalling software and the generated reads are ready for downstream processing after demultiplexing.
 
+\section*{Appendix 2: Bioinformatics pipeline}
+\addcontentsline{toc}{section}{Appendix 2: Bioinformatics pipeline}
+\begin{wrapfigure}{r}{0.5\textwidth}
+	\begin{center}
+		\includegraphics[width=.5\textwidth]{${workflowpng}}
+	\end{center}
+	\caption{Bioinformatics pipeline}
+	\label{fig:dry}
+\end{wrapfigure}
+Description of Figure \ref{fig:wet}...
 \end{document}

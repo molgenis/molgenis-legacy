@@ -10,37 +10,26 @@
 
 <#include "macros.ftl"/>
 <@begin/>
-#MOLGENIS walltime=45:00:00 mem=10
+#MOLGENIS walltime=24:00:00 mem=10
 inputs "${indexfile}"
-inputs "${baitintervals}"
-inputs "${snpsvariantannotatedvcf}"
+inputs "${baitsbed}"
 inputs "${dbsnpSNPstxt}"
-inputs "${refGeneTabletxt}"
-inputs "${knownGeneTabletxt}"
-inputs "${refLinktxt}"
+inputs "${baitsbed}"
 alloutputsexist "${snpsgenomicannotatedvcf}"
 
+#####Annotate with dbSNP132 SNPs only#####
 java -Xmx10g -jar ${genomeAnalysisTKjar} \
 -T GenomicAnnotator \
 -l info \
 -R ${indexfile} \
--B:variant,vcf ${snpsvariantannotatedvcf} \
--B:dbsnp,AnnotatorInputTable ${dbsnpSNPstxt} \
--B:refseq,AnnotatorInputTable ${refGeneTabletxt} \
--B:knowngene,AnnotatorInputTable ${knownGeneTabletxt} \
--J reflink,${refLinktxt},reflink.mrnaAcc=refseq.name \
--s dbsnp.haplotypeReference,dbsnp.haplotypeAlternate,dbsnp.haplotypeStrand,\
-dbsnp.chromStart,dbsnp.chromEnd,dbsnp.name,dbsnp.score,dbsnp.strand,dbsnp.refNCBI,\
-dbsnp.refUCSC,dbsnp.observed,dbsnp.molType,dbsnp.class,dbsnp.valid,dbsnp.avHet,\
-dbsnp.avHeSE,dbsnp.func,dbsnp.locType,dbsnp.weight,refseq.name,refseq.name2,\
-refseq.transcriptStrand,refseq.positionType,refseq.frame,refseq.mrnaCoord,\
-refseq.codonCoord,refseq.spliceDist,refseq.referenceCodon,refseq.referenceAA,\
-refseq.variantCodon,refseq.variantAA,refseq.changesAA,refseq.functionalClass,\
-refseq.codingCoordStr,refseq.proteinCoordStr,refseq.inCodingRegion,refseq.spliceInfo,\
-refseq.uorfChange,knowngene.transcriptStrand,knowngene.positionType,knowngene.mrnaCoord,\
-knowngene.codonCoord,knowngene.spliceDist,knowngene.referenceCodon,knowngene.referenceAA,\
-knowngene.variantCodon,knowngene.variantAA,knowngene.changesAA,knowngene.functionalClass,\
-knowngene.codingCoordStr,knowngene.proteinCoordStr,knowngene.inCodingRegion,\
-knowngene.spliceInfo,knowngene.uorfChange \
--o ${snpsgenomicannotatedvcf}
+-B:variant,vcf ${snpsvcf} \
+-B:dbSNP132,AnnotatorInputTable ${dbsnpSNPstxt} \
+-s dbSNP132.AF,dbSNP132.ASP,dbSNP132.ASS,dbSNP132.CDA,dbSNP132.CFL,dbSNP132.CLN,dbSNP132.DSS,dbSNP132.G5,\
+dbSNP132.G5A,dbSNP132.GCF,dbSNP132.GMAF,dbSNP132.GNO,dbSNP132.HD,dbSNP132.INT,dbSNP132.KGPROD,dbSNP132.KGPilot1,dbSNP132.KGPilot123,\
+dbSNP132.KGVAL,dbSNP132.LSD,dbSNP132.MTP,dbSNP132.MUT,dbSNP132.NOC,dbSNP132.NOV,dbSNP132.NS,dbSNP132.NSF,dbSNP132.NSM,dbSNP132.OM,\
+dbSNP132.OTH,dbSNP132.PH1,dbSNP132.PH2,dbSNP132.PH3,dbSNP132.PM,dbSNP132.PMC,dbSNP132.R3,dbSNP132.R5,dbSNP132.REF,dbSNP132.RSPOS,\
+dbSNP132.RV,dbSNP132.S3D,dbSNP132.SAO,dbSNP132.SCS,dbSNP132.SLO,dbSNP132.SSR,dbSNP132.SYN,dbSNP132.TPA,dbSNP132.U3,dbSNP132.U5,dbSNP132.VC,\
+dbSNP132.VLD,dbSNP132.VP,dbSNP132.WGT,dbSNP132.WTD,dbSNP132.dbSNPBuildID \
+-o ${snpsgenomicannotatedvcf} \
+-L ${baitsbed}
 <@end />
