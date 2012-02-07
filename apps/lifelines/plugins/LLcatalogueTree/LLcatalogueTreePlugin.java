@@ -34,7 +34,7 @@ import plugins.LLcatalogueTree.JQueryTreeViewElementObject;
 import plugins.LLcatalogueTree.JQueryTreeViewMeasurement;
 
 public class LLcatalogueTreePlugin extends PluginModel<Entity> {
-	
+
 	private static final long serialVersionUID = -6143910771849972946L;
 	private JQueryTreeViewMeasurement<JQueryTreeViewElementObject> treeView = null;
 	private HashMap<String, Protocol> nameToProtocol;
@@ -44,18 +44,18 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	private String selectedInvestigation = null;
 	private boolean isSelectedInv = false; 
 
-	
+
 	public LLcatalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
-	
+
 	public String getCustomHtmlHeaders()
-    {
-        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/shopping_cart.css\">";
-    }
-	
+	{
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/shopping_cart.css\">";
+	}
+
 	public void handleRequest(Database db, Tuple request) {
-		
+
 		try {
 			if ("chooseInvestigation".equals(request.getAction())) {
 				selectedInvestigation = request.getString("investigation");
@@ -66,14 +66,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				String dateOfDownload = dateFormat.format(dat);
 				System.out.println("seleced investigaton >>>> " + selectedInvestigation);
 				this.addMeasurements(db, request, selectedInvestigation, dateOfDownload);
-				
+
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
-				
+
 				String measurementName  =  request.getString("measurementName"); //TODO :  this is not working
 				measurementName = request.getAction().substring("DeleteMeasurement".length()+2+"measurementName".length(), request.getAction().length());
 				this.deleteShoppingItem(measurementName);
 			} 
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.setError("There was a problem handling your Download: " + e.getMessage());
@@ -82,13 +82,13 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	}
 
 	private void addMeasurements(Database db, Tuple request, String selectedInvestigation, String dateOfDownload) throws DatabaseException, IOException {
-		
+
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement names,
 		// so we can easily get them from the request
-		
+
 		this.shoppingCart.clear();
-		
+
 		List<Measurement> allMeasList  = db.find(Measurement.class);
 		for (Measurement m : allMeasList) {
 			if (request.getBool(m.getName()) != null) {
@@ -97,25 +97,25 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		}
 
 		List<Integer> DownloadedMeasurementIds = new ArrayList<Integer>();
-		
+
 		if (this.shoppingCart.isEmpty())  {
 			this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. Please select item and proceed to download", true));
 			this.setError("Your download list is empty. Please select item and proceed to download");
 	
 		} else {
-		
+
 			System.out.println("DownloadedMeasurementIds >>>: " + this.shoppingCart);
 
 			for (Measurement m : this.shoppingCart) {
 				DownloadedMeasurementIds.add(m.getId());
 				System.out.println("DownloadedMeasurementIds >>>: " + m.getId());
 			}
-			
+
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
 			List<ShoppingCart> result = q.find();
-			
+
 			if (result.isEmpty()) {
 				//Add to database 
 				ShoppingCart shoppingCart = new ShoppingCart();
@@ -148,7 +148,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		}
 		
 	}
-	
+
 	private void deleteShoppingItem(String selected) {
 		//search the item
 		for (int i=0; i<this.shoppingCart.size(); i++) {
@@ -190,14 +190,16 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 	public void addingTotree(List<String> childNode, JQueryTreeViewElementObject parentTree, Database db) {
 
-		 try {
+		try {
+
 			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode));
+
 			for (Measurement measurement : measurementList) {
 
 				JQueryTreeViewElementObject childTree;
 				if (labelToTree.containsKey(measurement.getName())) {
 					childTree = labelToTree.get(measurement.getName());
-					
+
 					//get the corresponding Category joined with Measurement_categories
 					List<Category> categoryIds = new ArrayList<Category>();
 					System.out.println( "measurement's categories: "+ measurement.getCategories_Name() + "plh8os : " + measurement.getCategories_Name().size());
@@ -210,7 +212,36 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					//for (i=0; i< )
 					
 				} else {
-					childTree = new JQueryTreeViewElementObject(measurement, null, null, parentTree); //TODO : fill in the category
+					
+					List<String> categoryNames = measurement.getCategories_Name();
+					
+					String measurementDescription = measurement.getDescription();
+					
+					String measurementDataType = measurement.getDataType();
+					
+					String htmlValue = "<table id = 'detailInformation'  border = 2>" +
+							"<tr><th>Display name</th><td>" + measurement.getName() +
+							"</td></tr><tr><th>Category</th><td><table border=1>";
+					
+					
+					for(String string : categoryNames){
+						htmlValue += "<tr><td>";
+						htmlValue += string;
+						htmlValue += "</td></tr>";
+						
+					}
+					htmlValue += "</table></td></tr>";
+					
+					htmlValue += "<tr><th>Description</th><td>" +
+							measurementDescription + "</td></tr>";
+					
+					htmlValue += "<tr><th>Data type</th><td>" +
+							measurementDataType + "</td></tr></table>";
+					//htmlValue = "<p>why?</p>";
+					
+					
+					
+					childTree = new JQueryTreeViewElementObject(measurement,parentTree, htmlValue); //TODO : fill in the category
 					labelToTree.put(measurement.getName(), childTree);
 
 					List<Category> categoryIds = new ArrayList<Category>();
@@ -234,7 +265,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		return "plugins/LLcatalogueTree/LLcatalogueTreePlugin.ftl";
 	}
 
-	
+
 
 	@Override
 	public void reload(Database db) {
@@ -246,7 +277,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		nameToProtocol = new HashMap<String, Protocol>();
 
 		try {
-			
+
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
@@ -256,14 +287,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				//shoppingCart.addAll(cart.getMeasurements());
 				shoppingCart.addAll(cart.getMeasurements(db));
 			}
-			
+
 			this.arrayInvestigations.clear();
 			for (Investigation i: db.find(Investigation.class)) {
 				this.arrayInvestigations.add(i);
 			}
-			
+
 			for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation))) {
-				
+
 				setSelectedInv(true);
 				List<String> subNames = p.getSubprotocols_Name();
 

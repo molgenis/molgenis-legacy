@@ -1,5 +1,7 @@
 package plugins.LLcatalogueTree;
 
+import java.util.List;
+
 import org.molgenis.auth.Institute;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.pheno.Category;
@@ -20,6 +22,7 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 	private JQueryTreeViewMeasurement<JQueryTreeViewElementObject> treeView;
 	
 	public JQueryTreeViewElementObject(Measurement measurement,Category category,Institute institute, JQueryTreeViewElementObject parent){
+		
 		super(measurement.getName(), parent);
 		
 		//this.setLabel("<a href=\"#\" onclick=\"$('#leftSide').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); $('#plugins_LLcatalogueTree_LLcatalogueTreePlugin').submit();\" >"+ name +"</a>");
@@ -29,6 +32,16 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 		setInstituteObject(institute);
 	}
 
+public JQueryTreeViewElementObject(Measurement measurement, JQueryTreeViewElementObject parent, String htmlValue){
+		
+		super(measurement.getName(), parent, htmlValue);
+		
+		//this.setLabel("<a href=\"#\" onclick=\"$('#leftSide').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); $('#plugins_LLcatalogueTree_LLcatalogueTreePlugin').submit();\" >"+ name +"</a>");
+		this.setLabel(name);
+		setMeasurementObject(measurement);
+		setCategoryObject(category);
+		setInstituteObject(institute);
+	}
 	
 	public JQueryTreeViewElementObject(String name, JQueryTreeViewElementObject parent) {
 		super(name, parent);
