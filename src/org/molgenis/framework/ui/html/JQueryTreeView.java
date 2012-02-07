@@ -1,5 +1,7 @@
 package org.molgenis.framework.ui.html;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,7 +11,9 @@ import org.molgenis.util.Tree;
 public class JQueryTreeView<E> extends HtmlWidget
 {
 	private SimpleTree<JQueryTreeViewElement> treeData;
-
+	
+	private List<String> listOfMeasurements = new ArrayList<String>();
+			
 	public JQueryTreeView(String name, SimpleTree treeData)
 	{
 		super(name);
@@ -55,7 +59,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 		if (node.hasChildren()) {
 			returnString = "<li class=\"" + (nodeOpen(node, selectedLabels) ? "opened" : "closed") + 
 					"\"><span class=\"folder\">" + node.getLabel() + "</span>";
-			returnString += " <b>details: </b>"+ node;
+			//returnString += " <b>details: </b>"+ node;
 			returnString += "<ul>";
 			Vector<JQueryTreeViewElement> children = node.getChildren();
 			for (JQueryTreeViewElement child : children) {
@@ -63,39 +67,62 @@ public class JQueryTreeView<E> extends HtmlWidget
 			}
 			returnString += "</ul></li>";
 		} else {
-			returnString = "<li><span class=\"point\"><input type=\"checkbox\" id=\"" + 
+			returnString = "<li id = \"" + node.getLabel().replaceAll(" ", "_") + "\"><span class=\"point\"><input type=\"checkbox\" id=\"" + 
 				node.getLabel() + "\" name=\"" + node.getLabel() + "\"" + 
 				(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") + 
-				" />" + node.getLabel() + "<b>details: </b>"+ node + "</span></li>";
+				" />" + node.getLabel() + "</span></li>" +
+				"<script>createHashMap(\"" + node.getLabel() + "\",\"" + node.getHtmlValue() + "\")</script>";
+				
+			listOfMeasurements.add(node.getLabel());
 		}
 		return returnString;
 	}
 	
 	public String toHtml(List<String> selected){
 		
-		String html = "<div id=\"masstoggler\">	<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | ";
+		String html = "<script>var map = new HashMap();</script><div id=\"masstoggler\">	<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | ";
 		html += "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>" ;
 		//html += " | <a title=\"Toggle the tree below\" href=\"#\">Toggle all</a></div> ";
 		html += "<ul id=\"browser\" class=\"pointtree\">";
 		html += renderTree(treeData.getRoot(), selected);
 		html += "</ul>";
-	    html += "<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n"
+		html += "<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n"
 		+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n" 
 		+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>"
 		+ " <style type=\"text/css\">\n"
+		+ " li {cursor:pointer; width:200px;}\n"
+		+ " li.highlight { background:red; }\n"
 		+ "#browser {\n"
 		+ "font-family: Verdana, helvetica, arial, sans-serif;\n"
 		+ "font-size: 68.75%;\n"
 		+"}\n"
+		+ "#details{position:absolute;right:100px;top:200px;}\n"
+		+ "#leftSideTree{width:300px;}\n"
 		+"</style>\n"
 		+"<script>\n"
+		+ "$(\"li > span\").hover(function () {"
+        + "$(this).addClass(\"highlight\");"
+        + "}, function () {"
+        + "$(this).removeClass(\"highlight\");"
+        + "});"
 		+"$(document).ready(function(){\n"
 		+"$(\"#browser\").treeview({control: \"#masstoggler\"});" 
 		+"});\n"
 //		+ "$(document).unload(function() {"
 //		+ "alert('Handler for .unload() called.');"
 //		+ "});"
-		+"</script>\n";
+		+ "</script>\n";
+	    
+	    String measurementClickEvent = "<script>";
+	    
+	    for(String eachMeasurement : listOfMeasurements){
+	    	measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
+						    			+ "getHashMapContent(\"" + eachMeasurement + "\");});"
+						    			+ "";
+	    }
+	    measurementClickEvent += "</script>";
+	    
+	    html += measurementClickEvent;
 	    
 	    return html;
 	}

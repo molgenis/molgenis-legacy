@@ -10,6 +10,8 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 	String label;
 	
 	String nodeName;
+	
+	String htmlValue;
 
 	private String category;
 
@@ -18,7 +20,12 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 		super(name, parent);
 		this.setLabel(name);
 	}
-	
+	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent, String htmlValue)
+	{
+		super(name, parent);
+		this.setLabel(name);
+		this.htmlValue = htmlValue;
+	}
 	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent, String url, String category)
 	{
 		super(name, parent);
@@ -76,6 +83,11 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 	public String getCategory()
 	{
 		return category;
+	}
+	
+	public String getHtmlValue()
+	{
+		return htmlValue;
 	}
 	
 }
