@@ -5,6 +5,9 @@ import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.molgenis.MolgenisOptions;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.StdSchedulerFactory;
 
 public class MolgenisContext
 {
@@ -13,6 +16,7 @@ public class MolgenisContext
 	private MolgenisOptions usedOptions;
 	private String variant;
 	private TokenFactory tokenFactory;
+	private Scheduler scheduler;
 	
 	// other "static" variables here, eg.
 	// molgenis version
@@ -26,6 +30,27 @@ public class MolgenisContext
 		this.usedOptions = usedOptions;
 		this.variant = variant;
 		this.tokenFactory = new TokenFactory();
+
+		//start Quartz scheduler
+		try
+		{
+			this.scheduler = StdSchedulerFactory.getDefaultScheduler();
+			this.scheduler.start();
+			System.out.println("Quartz scheduler started");
+		}
+		catch (SchedulerException e)
+		{
+			System.err.println("FATAL EXCEPTION: failure for starting scheduler in MolgenisContext.");
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
+
+	
+	
+	public Scheduler getScheduler()
+	{
+		return scheduler;
 	}
 
 	public TokenFactory getTokenFactory()
