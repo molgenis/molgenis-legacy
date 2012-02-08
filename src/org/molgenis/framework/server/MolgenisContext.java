@@ -32,18 +32,18 @@ public class MolgenisContext
 		this.tokenFactory = new TokenFactory();
 
 		//start Quartz scheduler
-		try
-		{
-			this.scheduler = StdSchedulerFactory.getDefaultScheduler();
-			this.scheduler.start();
-			System.out.println("Quartz scheduler started");
-		}
-		catch (SchedulerException e)
-		{
-			System.err.println("FATAL EXCEPTION: failure for starting scheduler in MolgenisContext.");
-			e.printStackTrace();
-			System.exit(0);
-		}
+//		try
+//		{
+//			this.scheduler = StdSchedulerFactory.getDefaultScheduler();
+//			this.scheduler.start();
+//			System.out.println("Quartz scheduler started");
+//		}
+//		catch (SchedulerException e)
+//		{
+//			System.err.println("FATAL EXCEPTION: failure for starting scheduler in MolgenisContext.");
+//			e.printStackTrace();
+//			System.exit(0);
+//		}
 	}
 
 	
