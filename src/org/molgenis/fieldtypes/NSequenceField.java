@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
+
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.NsequenceInput;
@@ -77,11 +79,15 @@ public class NSequenceField extends FieldType
 		return "Ljava/lang/String;";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return String.class;
 	}
 
+	@Override
+	public Object getTypedValue(String value) throws ParseException
+	{
+		return value;
+	}
 
 }

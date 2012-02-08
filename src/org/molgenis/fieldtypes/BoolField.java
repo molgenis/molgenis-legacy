@@ -74,9 +74,12 @@ public class BoolField extends FieldType
 		return "Ljava/lang/Boolean;";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return Boolean.class;
+	}
+	
+	public Boolean getTypedValue(String value) {
+		return Boolean.parseBoolean(value);
 	}
 }

@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
+
 import org.molgenis.framework.ui.html.HexaInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -73,10 +75,15 @@ public class HexaField extends FieldType
 		return "Ljava/lang/String;";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return HexaInput.class;
+	}
+
+	@Override
+	public Object getTypedValue(String value) throws ParseException
+	{
+		throw new UnsupportedOperationException("Unable to convert hexa field " + value);
 	}
 
 }

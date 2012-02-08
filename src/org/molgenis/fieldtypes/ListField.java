@@ -1,5 +1,9 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
+import java.util.Arrays;
+
+import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.model.MolgenisModelException;
@@ -83,9 +87,14 @@ public class ListField extends FieldType
 		return "Ljava/util/List;";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return java.util.List.class;
+	}
+
+	@Override
+	public java.util.List<?> getTypedValue(String value) throws ParseException
+	{
+		return Arrays.asList(StringUtils.split(value, ","));
 	}
 }

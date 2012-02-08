@@ -1,5 +1,6 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.molgenis.MolgenisFieldTypes;
@@ -95,7 +96,7 @@ public abstract class FieldType
 	 * @return Java class
 	 * @throws MolgenisModelException
 	 */
-	public abstract Class<?> getJavaType(String value) throws MolgenisModelException;
+	public abstract Class<?> getJavaType() throws MolgenisModelException;
 	
 	/**
 	 * Produce a valid mysql snippet indicating the mysql type. E.g. "BOOL".
@@ -166,4 +167,6 @@ public abstract class FieldType
 	public abstract String getCppJavaPropertyType() throws MolgenisModelException;
 
 	public abstract String getOracleType() throws MolgenisModelException;
+	
+	public abstract Object getTypedValue(String value) throws ParseException;
 }
