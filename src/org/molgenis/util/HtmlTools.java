@@ -52,7 +52,7 @@ public class HtmlTools
 		String host = null;
 		try
 		{
-			URL u = new URL("http://gbic.target.rug.nl:8080/user/ip");
+			URL u = new URL("http://gbicdev.target.rug.nl:8080/user/ip");
 			InputStream is = u.openStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(new BufferedInputStream(is)));
 			host = br.readLine();
