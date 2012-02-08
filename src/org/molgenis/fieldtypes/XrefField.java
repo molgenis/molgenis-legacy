@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
+
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.XrefInput;
@@ -86,8 +88,14 @@ public class XrefField extends FieldType
 	}
 
 	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return null;
+	}
+
+	@Override
+	public Object getTypedValue(String value) throws ParseException
+	{
+		throw new UnsupportedOperationException("Xref conversion not supported.");
 	}	
 }

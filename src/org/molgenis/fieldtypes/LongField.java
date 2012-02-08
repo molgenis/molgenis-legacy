@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
+
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.LongInput;
@@ -74,10 +76,15 @@ public class LongField extends FieldType
 		return "Ljava/lang/Long;";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return Long.class;
+	}
+
+	@Override
+	public Long getTypedValue(String value) throws ParseException
+	{
+		return Long.parseLong(value);
 	}
 
 }

@@ -1,5 +1,8 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import org.molgenis.framework.ui.html.DecimalInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -74,9 +77,13 @@ public class DecimalField extends FieldType
 		return "double";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
-		return Double.class;
+		return Date.class;
+	}
+
+	public Double getTypedValue(String value) throws ParseException
+	{
+		return Double.parseDouble(value);
 	}
 }

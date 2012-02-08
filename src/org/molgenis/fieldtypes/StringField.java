@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
+
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.StringInput;
@@ -73,9 +75,16 @@ public class StringField extends FieldType
 		return "Ljava/lang/String;";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return String.class;
 	}
+
+	@Override
+	public String getTypedValue(String value) throws ParseException
+	{
+		return value;
+	}
+
+
 }

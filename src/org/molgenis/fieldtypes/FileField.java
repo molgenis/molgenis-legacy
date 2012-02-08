@@ -1,6 +1,7 @@
 package org.molgenis.fieldtypes;
 
 import java.io.File;
+import java.text.ParseException;
 
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.HtmlInput;
@@ -75,9 +76,18 @@ public class FileField extends FieldType
 		return "Ljava/lang/String;";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return File.class;
+	}
+
+	public File getTypedValue(String value) throws ParseException
+	{
+		File file = new File(value);
+		if (file.exists()) {
+			return file;
+		} else {
+			throw new ParseException("File " + value + " not found.", 0);
+		}
 	}
 }

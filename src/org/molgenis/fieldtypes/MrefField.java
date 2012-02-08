@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
+
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.MrefInput;
@@ -99,10 +101,15 @@ public class MrefField extends FieldType
 		return "Ljava/util/List;";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return java.util.List.class;
+	}
+
+	@Override
+	public Object getTypedValue(String value) throws ParseException
+	{
+		throw new UnsupportedOperationException("Conversion of MRef not supported.");
 	}
 
 }

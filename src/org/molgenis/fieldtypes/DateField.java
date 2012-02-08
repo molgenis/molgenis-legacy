@@ -1,5 +1,7 @@
 package org.molgenis.fieldtypes;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.molgenis.framework.ui.html.DateInput;
@@ -82,9 +84,13 @@ public class DateField extends FieldType
 		return "Ljava/util/Date;";
 	}
 
-	@Override
-	public Class<?> getJavaType(String value) throws MolgenisModelException
+	public Class<?> getJavaType() throws MolgenisModelException
 	{
 		return Date.class;
+	}
+
+	public Date getTypedValue(String value) throws ParseException
+	{
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(value);
 	}
 }
