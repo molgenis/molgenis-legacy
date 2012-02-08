@@ -1,0 +1,9 @@
+
+A tiny WAR file that acts as a service to tell a user which exposed ('real') IP is requesting it. Simply deploy on Tomcat and you're done.
+
+How it works:
+
+* Deploy on Tomcat (i.e. just drag into the /webapps folder)
+* Access the service by requesting this URL: {server}{port}/user/ip, for example http://gbicdev.target.rug.nl:8080/user/ip
+* The service will now tell you what IP adress was used for this request
+* Very handy when you need to know the IP adress of your application when running a process on another location, e.g. cluster computation via xQTL workbench
