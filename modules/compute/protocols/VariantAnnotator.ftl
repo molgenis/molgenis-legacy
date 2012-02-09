@@ -8,13 +8,17 @@
 # =====================================================
 #
 
+<#assign runtimelog = runtimelog[0] />
+<#assign fileprefix = "externalSampleID " + externalSampleID>
 <#include "macros.ftl"/>
 <@begin/>
 #MOLGENIS walltime=45:00:00 mem=10
+#FOREACH externalSampleID
+
 inputs "${snpeffjar}"
 inputs "${snpeffconfig}" 
 inputs "${snpsgenomicannotatedvcf}"
-inputs "${sortedrecalbam}"
+inputs "${mergedbam}"
 inputs "${dbsnpvcf}"
 inputs "${indexfile}"
 alloutputsexist "${snpeffsummaryhtml}" "${snpeffintermediate}" "${snpsfinalvcf}"
@@ -38,7 +42,7 @@ java -jar -Xmx4g ${genomeAnalysisTKjar1411} \
 --useAllAnnotations \
 --excludeAnnotation MVLikelihoodRatio \
 --excludeAnnotation TechnologyComposition \
--I ${sortedrecalbam} \
+-I ${mergedbam} \
 --snpEffFile ${snpeffintermediate} \
 -D ${dbsnpvcf} \
 -R ${indexfile} \

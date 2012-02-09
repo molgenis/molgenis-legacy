@@ -8,11 +8,14 @@
 # =====================================================
 #
 
+<#assign runtimelog = runtimelog[0] />
+<#assign fileprefix = "externalSampleID " + externalSampleID>
 <#include "macros.ftl"/>
 <@begin/>
 #MOLGENIS walltime=33:00:00 mem=8
+#FOREACH externalSampleID
 
-inputs "${sortedrecalbam}"
+inputs "${mergedbam}"
 inputs "${indexfile}"
 alloutputsexist \
  "${indelsvcf}" \
@@ -22,7 +25,7 @@ alloutputsexist \
 java -Xmx8g -jar ${genomeAnalysisTKjar} \
 -l INFO \
 -T IndelGenotyperV2 \
--I ${sortedrecalbam} \
+-I ${mergedbam} \
 -o ${indelsvcf} \
 --bedOutput ${indelsbed} \
 -R ${indexfile} \

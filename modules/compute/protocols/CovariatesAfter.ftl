@@ -8,6 +8,9 @@
 # =====================================================
 #
 
+
+###### Renaming because we call another protocol:
+
 #input:
 <#assign matefixedbam=sortedrecalbam />
 

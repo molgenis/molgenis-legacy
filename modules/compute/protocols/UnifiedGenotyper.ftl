@@ -8,10 +8,14 @@
 # =====================================================
 #
 
+<#assign runtimelog = runtimelog[0] />
+<#assign fileprefix = "externalSampleID " + externalSampleID>
 <#include "macros.ftl"/>
 <@begin/>
 #MOLGENIS walltime=46:00:00 mem=8 cores=5
-inputs "${sortedrecalbam}" 
+#FOREACH externalSampleID
+
+inputs "${mergedbam}" 
 inputs "${indexfile}"
 inputs "${dbsnprod}"
 alloutputsexist \
@@ -22,12 +26,12 @@ java -Xmx8g -Djava.io.tmpdir=${tempdir} -XX:+UseParallelGC -XX:ParallelGCThreads
 ${genomeAnalysisTKjar} \
 -l INFO \
 -T UnifiedGenotyper \
--I ${sortedrecalbam} \
---out ${fileWithIndexID}.snps.vcf \
+-I ${mergedbam} \
+--out ${sample}.snps.vcf \
 -R ${indexfile} \
 -D ${dbsnprod} \
 -stand_call_conf 30.0 \
 -stand_emit_conf 10.0 \
 -nt 4 \
---metrics_file ${fileWithIndexID}.snps.vcf.metrics
+--metrics_file ${sample}.snps.vcf.metrics
 <@end />

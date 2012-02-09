@@ -46,13 +46,15 @@
 	<#return result>
 </#function>
 
-<#function graph nodes>
-	<#local result = "graph G {">
-	<#assign n2=node?split(",")[2]>
-	<#assign n0=node?split(",")[0]>
-	<#list nodes as node>
-		<#local result = result + "${n2} -> ${n0}; ">
-	</#list>
+<#function graph workflowElements>
+
+	<#local result = "digraph G {">
+	<#-- first nodes -->
+	<#list workflowElements as el>
+      <#local result = result + el.name + "; "/>
+      <#-- edges -->
+      <#list el.previousSteps_Name as other><#local result = result + other + "->" + el.name + ";"/> </#list>
+    </#list>
 	<#local result = result + "}">
 	<#return result>
 </#function>

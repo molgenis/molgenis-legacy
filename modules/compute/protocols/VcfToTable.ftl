@@ -8,9 +8,13 @@
 # =====================================================
 #
 
+<#assign runtimelog = runtimelog[0] />
+<#assign fileprefix = "externalSampleID " + externalSampleID>
 <#include "macros.ftl"/>
 <@begin/>
 #MOLGENIS walltime=00:40:00
+#FOREACH externalSampleID
+
 inputs "${snpsgenomicannotatedfilteredvcf}"
 inputs "${snpsgenomicannotatedvcf}"
 alloutputsexist \
@@ -35,9 +39,14 @@ sumGLbyD,\
 FORMAT,${externalSampleID} \
 -o ${snpsfinalvcftable}
 
+# get SNP statistics
 perl ${snpannotationstatspl} \
 -vcf_table ${snpsfinalvcftable} \
 -typefile ${snpsfinalvcftabletype} \
 -classfile ${snpsfinalvcftableclass} \
 -impactfile	${snpsfinalvcftableimpact}
+-snptypes DOWNSTREAM,INTERGENIC,INTRAGENIC,INTRON,NON_SYNONYMOUS_CODING,NON_SYNONYMOUS_START,SPLICE_SITE_ACCEPTOR,SPLICE_SITE_DONOR,START_GAINED,START_LOST,STOP_GAINED,STOP_LOST,SYNONYMOUS_CODING,SYNONYMOUS_STOP,UPSTREAM,UTR_3_PRIME,UTR_5_PRIME \
+-snpclasses MISSENSE,NONSENSE,NONE,SILENT \
+-snpimpacts HIGH,LOW,MODERATE,MODIFIER
+
 <@end />

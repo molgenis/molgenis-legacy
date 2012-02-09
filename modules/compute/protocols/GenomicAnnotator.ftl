@@ -8,9 +8,13 @@
 # =====================================================
 #
 
+<#assign runtimelog = runtimelog[0] />
+<#assign fileprefix = "externalSampleID " + externalSampleID>
 <#include "macros.ftl"/>
 <@begin/>
 #MOLGENIS walltime=24:00:00 mem=10
+#FOREACH externalSampleID
+
 inputs "${indexfile}"
 inputs "${baitsbed}"
 inputs "${dbsnpSNPstxt}"

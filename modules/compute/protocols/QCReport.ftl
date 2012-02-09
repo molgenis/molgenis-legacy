@@ -19,7 +19,7 @@
 <#include "Helpers.ftl"/>
 inputs ${ssvQuoted(hsmetrics)}
 inputs ${ssvQuoted(alignmentmetrics)}
-inputs ${ssvQuoted(recalinsertsizemetrics)}
+inputs ${ssvQuoted(sampleinsertsizemetrics)}
 inputs ${ssvQuoted(dedupmetrics)}
 inputs ${ssvQuoted(concordancefile)}
 inputs ${qcstatisticscolnames}
@@ -29,7 +29,7 @@ mkdir -p ${qcdir}
 ${getStatisticsScript} \
 --hsmetrics ${csvQuoted(hsmetrics)} \
 --alignment ${csvQuoted(alignmentmetrics)} \
---insertmetrics ${csvQuoted(recalinsertsizemetrics)} \
+--insertmetrics ${csvQuoted(sampleinsertsizemetrics)} \
 --dedupmetrics ${csvQuoted(dedupmetrics)} \
 --concordance ${csvQuoted(concordancefile)} \
 --sample ${csvQuoted(externalSampleID)} \
@@ -39,10 +39,10 @@ ${getStatisticsScript} \
 --descriptionout ${qcstatisticsdescription} \
 --baitsetout ${qcbaitset}
 
-<#-- create workflow figure -->
-echo "${workflowtext}" | dot -Tpng > ${workflowpng}
+# create workflow figure
+echo "${graph(workflowElements)}" | ${dot} -Tpng > ${workflowpng}
 
-<#-- save latex template in file -->
+# save latex template in file
 echo "<#include "QCReportTemplate.tex"/>" > ${qcstatisticstexreport}
 
 pdflatex -output-directory=${qcdir} ${qcstatisticstexreport}

@@ -8,20 +8,23 @@
 # =====================================================
 #
 
+<#assign runtimelog = runtimelog[0] />
+<#assign fileprefix = "externalSampleID " + externalSampleID>
 <#include "macros.ftl"/>
 <@begin/>
 #MOLGENIS walltime=65:59:00 mem=12 cores=1
+#FOREACH externalSampleID
 
-inputs "${sortedrecalbam}"
-alloutputsexist "${fileWithIndexID}.coverage.csv" \
+inputs "${mergedbam}"
+alloutputsexist "${sample}.coverage.csv" \
 "${coverageplotpdf}" \
-"${fileWithIndexID}.coverage.Rdata"
+"${sample}.coverage.Rdata"
 
 ${coveragescript} \
---bam ${sortedrecalbam} \
+--bam ${mergedbam} \
 --chromosome 1 \
 --interval_list ${targetintervals} \
---csv ${fileWithIndexID}.coverage.csv \
+--csv ${sample}.coverage.csv \
 --pdf ${coverageplotpdf} \
---Rcovlist ${fileWithIndexID}.coverage.Rdata
+--Rcovlist ${sample}.coverage.Rdata
 <@end/>
