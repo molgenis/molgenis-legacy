@@ -54,7 +54,8 @@ public class ImportAteLocations
 					Location newBuilding = new Location();
 					newBuilding.setName(buildingNr);
 					newBuilding.setInvestigation(investigationId);
-					buildingId = db.add(newBuilding);
+					db.add(newBuilding);
+					buildingId = newBuilding.getId();
 				} else {
 					buildingId = db.query(Location.class).eq(Location.DELETED, false).
 							eq(Location.NAME, buildingNr).find().get(0).getId();

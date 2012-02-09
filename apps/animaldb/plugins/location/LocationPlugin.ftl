@@ -1,4 +1,4 @@
-<#macro plugins_settings_LocationInfoPlugin screen>
+<#macro plugins_location_LocationPlugin screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -25,49 +25,33 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
-<#if screen.action == "Import">
+<#if screen.action == "Manage">
+	
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
+	
+	<p><a href="molgenis.do?__target=${screen.name}&__action=AddAnimals">Add animals</a></p>
+
+	${screen.renderAnimalsInLocMatrixViewer()}
+	
+	<div class='row'>
+		<label for="moveto">Move selected to:</label>
+		<select name="moveto" id="moveto" class="selectbox">
+			<#list screen.locationList as ll>
+				<option value="${ll.id?string.computer}">${ll.name}</option>
+			</#list>
+		</select>
+		<input type='submit' class='addbutton' value='Apply' onclick="__action.value='Move'" />
+	</div>
+	
+<#elseif screen.action == "AddAnimals">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 	
-	<div class="row">
-		<label for="csv">CSV file:</label>
-		<input type="file" name="csv" id="csv" class="textbox" />
-	</div>
-
-	<div id='buttons_part' class='row'>
-		<input type='submit' class='addbutton' value='Import' onclick="__action.value='importLocations'" />
-	</div>
+	${screen.renderAnimalsNotInLocMatrixViewer()}
 	
-<#elseif screen.action == "Add">
-
-	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
-
-	<div id="name" class="row">
-	<label for="name">Name:</label>
-	<input type="text" name="name" id="name" class="textbox" />
-	</div>
-	
-	<div id="superlocation" class="row">
-	<label for="superlocation">Sublocation of:</label>
-	<select name="superlocation" id="superlocation" class="selectbox">
-		<option value="0">&nbsp;</option>
-		<#list screen.locationList as ll>
-			<option value="${ll.id?string.computer}">${ll.name}</option>
-		</#list>
-	</select>
-	</div>
-	
-	<div id='buttons_part' class='row'>
-		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addLocation'" />
-	</div>
+	<input type='submit' class='addbutton' value='Add' onclick="__action.value='ApplyAddAnimals'" />
 
 <#else>
-
-	<p>
-		<a href="molgenis.do?__target=${screen.name}&__action=Add">Make new location</a>
-		<br />
-		<a href="molgenis.do?__target=${screen.name}&__action=Import">Import locations</a>
-	</p>
 
 	<#if screen.locationList?size gt 0>
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="loctable">
@@ -75,6 +59,7 @@
 				<tr>
 					<th>Name</th>
 					<th>Part of</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -83,6 +68,7 @@
 				<tr>
 					<td>${loc.name}</td>
 					<td>${screen.getSuperLocName(locId)}</td>
+					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId?string.computer}">Manage animals in ${loc.name}</a></td>
 				</tr>
 			</#list>
 			</tbody>

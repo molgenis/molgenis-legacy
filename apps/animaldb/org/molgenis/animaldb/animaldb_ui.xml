@@ -30,6 +30,8 @@
 			</menu>
 			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />	
+			<plugin name="LocationPlugin" type="plugins.location.LocationPlugin"
+				label="Locations" />
 			<plugin name="PrintLabels" type="plugins.output.PrintLabelPlugin"
 				label="Make (cage) labels" />
 		</menu>
