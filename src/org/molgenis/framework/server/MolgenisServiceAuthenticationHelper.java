@@ -48,7 +48,7 @@ public class MolgenisServiceAuthenticationHelper
 	 * @return
 	 * @throws IOException
 	 */
-	public static boolean handleAuthentication(MolgenisRequest req, PrintWriter out) throws IOException
+	public static AuthStatus handleAuthentication(MolgenisRequest req, PrintWriter out) throws IOException
 	{
 
 		
@@ -66,27 +66,27 @@ public class MolgenisServiceAuthenticationHelper
 			if(login == LoginStatus.ALREADY_LOGGED_IN)
 			{
 				// reach this by using the 'back' button of the browser and click Login again :)
-				out.println("<table><tr><td colspan=\"2\">You are already logged in.</td></tr>");
-				out.println("<tr><td>" + displayLogoutForm() + "</td>");
-				out.println("<td><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>");
-				return false;
+				String printMe = "<table><tr><td colspan=\"2\">You are already logged in.</td></tr>";
+				printMe += "<tr><td>" + displayLogoutForm() + "</td>";
+				printMe += "<td><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>";
+				return new AuthStatus(false, printMe);
 			}
 			else if(login == LoginStatus.SUCCESSFULLY_LOGGED_IN)
 			{
-				out.println("<table><tr><td>Welcome, " + username + "!</td></tr>");
-				out.println("<tr><td align=\"right\"><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>");
-				return false;
+				String printMe = "<table><tr><td>Welcome, " + username + "!</td></tr>";
+				printMe += "<tr><td align=\"right\"><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>";
+				return new AuthStatus(false, printMe);
 			}
 			else if(login == LoginStatus.AUTHENTICATION_FAILURE)
 			{
-				out.println("<table><tr><td>User or password unknown.</td></tr>");
-				out.println("<tr><td align=\"right\"><form><input type=\"submit\" value=\"Retry\"></form></td></tr></table>");
-				return false;
+				String printMe = "<table><tr><td>User or password unknown.</td></tr>";
+				printMe += "<tr><td align=\"right\"><form><input type=\"submit\" value=\"Retry\"></form></td></tr></table>";
+				return new AuthStatus(false, printMe);
 			}
 			else if(login == LoginStatus.EXCEPTION_THROWN)
 			{
-				out.println("An error occurred. Contact your administrator.");
-				return false;
+				String printMe = "An error occurred. Contact your administrator.";
+				return new AuthStatus(false, printMe);
 			}
 			else
 			{
@@ -104,21 +104,21 @@ public class MolgenisServiceAuthenticationHelper
 			if(logout == LogoutStatus.ALREADY_LOGGED_OUT)
 			{
 				// reach this by using the 'back' button of the browser and click Logout again :)
-				out.println("<table><tr><td>You already logged out.</td></tr>");
-				out.println("<tr><td align=\"right\"><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>");
-				return false;
+				String printMe = "<table><tr><td>You already logged out.</td></tr>";
+				printMe += "<tr><td align=\"right\"><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>";
+				return new AuthStatus(false, printMe);
 			}
 			else if(logout == LogoutStatus.SUCCESSFULLY_LOGGED_OUT)
 			{
-				out.println("<table><tr><td>You are successfully logged out.</td></tr>");
-				out.println("<tr><td align=\"right\"><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>");
-				return false;
+				String printMe = "<table><tr><td>You are successfully logged out.</td></tr>";
+				printMe += "<tr><td align=\"right\"><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>";
+				return new AuthStatus(false, printMe);
 				
 			}
 			else if(logout == LogoutStatus.EXCEPTION_THROWN)
 			{
-				out.println("An error occurred. Contact your administrator.");
-				return false;
+				String printMe = "An error occurred. Contact your administrator.";
+				return new AuthStatus(false, printMe);
 			}
 			else
 			{
@@ -129,16 +129,16 @@ public class MolgenisServiceAuthenticationHelper
 		// regular request: check if user is authenticated, and if not, display login box
 		if(!req.getDatabase().getSecurity().isAuthenticated())
 		{
-			out.println("<form name=\"input\" action=\"\" method=\"post\">");
-			out.println("<table><tr><td colspan=\"2\">Please log in:</td></tr>");
-			out.println("<tr><td>Username:</td><td><input type=\"text\" name=\"" + LOGIN_USER_NAME + "\"></td></tr>");
-			out.println("<tr><td>Password:</td><td><input type=\"text\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>");
-			out.println("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Login\"></td></tr></table>");
-			out.println("</form>");
-			return true;
+			String printMe = "<form name=\"input\" action=\"\" method=\"post\">";
+			printMe += "<table><tr><td colspan=\"2\">Please log in:</td></tr>";
+			printMe += "<tr><td>Username:</td><td><input type=\"text\" name=\"" + LOGIN_USER_NAME + "\"></td></tr>";
+			printMe += "<tr><td>Password:</td><td><input type=\"text\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>";
+			printMe += "<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Login\"></td></tr></table>";
+			printMe += "</form>";
+			return new AuthStatus(true, printMe);
 		}
 		
-		return true;
+		return new AuthStatus(true, "");
 	}
 	
 	/**
@@ -152,5 +152,4 @@ public class MolgenisServiceAuthenticationHelper
 		logoutForm += "</form>";
 		return logoutForm;
 	}
-	
 }
