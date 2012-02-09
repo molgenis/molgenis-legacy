@@ -160,7 +160,15 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		}
 	}
 
-	public void recursiveAddingTree(List<String> parentNode,
+	/**
+	 * This function is recursively nodes in the tree except form the last measurement . 
+	 * The last measurement is added by addingLastMeasurementToTree() because we add two different class : Protocol & Measurement, 
+	 * so basically we need to recursivley traverse all the Protocols and in the end we have one measurement.  
+	 * @param parentNode
+	 * @param parentTree
+	 * @param db
+	 */
+	public void recursiveAddingNodesToTree(List<String> parentNode,
 			JQueryTreeViewElementObject parentTree, Database db) {
 
 		for (String protocolName : parentNode) {
@@ -180,16 +188,22 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				}
 
 				if (protocol.getSubprotocols_Name() != null	&& protocol.getSubprotocols_Name().size() > 0) {
-					recursiveAddingTree(protocol.getSubprotocols_Name(), childTree, db);
+					recursiveAddingNodesToTree(protocol.getSubprotocols_Name(), childTree, db);
 				}
 				if (protocol.getFeatures_Name() != null	&& protocol.getFeatures_Name().size() > 0) {
-					addingTotree(protocol.getFeatures_Name(), childTree, db);
+					addingLastMeasurementToTree(protocol.getFeatures_Name(), childTree, db);
 				}
 			}
 		}
 	}
 
-	public void addingTotree(List<String> childNode, JQueryTreeViewElementObject parentTree, Database db) {
+	/**
+	 * this is adding the last measurement as references in recursiveAddingNodesToTree().
+	 * @param childNode
+	 * @param parentTree
+	 * @param db
+	 */
+	public void addingLastMeasurementToTree(List<String> childNode, JQueryTreeViewElementObject parentTree, Database db) {
 
 		try {
 
@@ -198,20 +212,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			for (Measurement measurement : measurementList) {
 
 				JQueryTreeViewElementObject childTree;
+				
+				System.out.println(">>>>>>>"+labelToTree);
+				
+				
+				//This control checks whether the measurement multiple parent . 
+				//This happens in case a measurement is contained in more that one protocols. 
 				if (labelToTree.containsKey(measurement.getName())) {
-					childTree = labelToTree.get(measurement.getName());
-
-					//get the corresponding Category joined with Measurement_categories
-					List<Category> categoryIds = new ArrayList<Category>();
-					System.out.println( "measurement's categories: "+ measurement.getCategories_Name() + "plh8os : " + measurement.getCategories_Name().size());
-
-					//this is a list of categories . 
-					for (int i=0; i<measurement.getCategories_Name().size(); i++) {
-						categoryIds.addAll(i, db.find(Category.class, new QueryRule(Category.NAME, Operator.EQUALS, measurement.getCategories_Name().get(i))));
-					}
-					System.out.println("category ids for "+ measurement.getName()+ ">>>" +categoryIds);
-					//for (i=0; i< )
-					
+					childTree = labelToTree.get(measurement.getName());				
 				} else {
 					
 					List<String> categoryNames = measurement.getCategories_Name();
@@ -245,6 +253,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					queryDisplayNames.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
 					queryDisplayNames.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "display name"));
 					
+					childTree = new JQueryTreeViewElementObject(measurement,parentTree, htmlValue);
 					String displayName = "";
 					
 					if(!queryDisplayNames.find().isEmpty()){
@@ -253,9 +262,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					}
 					
 					if(displayName.equals("")){
-						childTree = new JQueryTreeViewElementObject(measurement.getName(),parentTree, htmlValue); //TODO : fill in the category
+						childTree = new JQueryTreeViewElementObject(measurement.getName(),parentTree, htmlValue); 
 					}else{
-						childTree = new JQueryTreeViewElementObject(displayName,parentTree, htmlValue); //TODO : fill in the category
+						childTree = new JQueryTreeViewElementObject(displayName,parentTree, htmlValue); 
 					}
 					
 					labelToTree.put(measurement.getName(), childTree);
@@ -348,10 +357,10 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				"Protocols", null);
 
 		if(topProtocols.size() == 0){
-			recursiveAddingTree(bottomProtocols, protocolsTree, db);
+			recursiveAddingNodesToTree(bottomProtocols, protocolsTree, db);
 
 		}else{
-			recursiveAddingTree(topProtocols, protocolsTree, db);
+			recursiveAddingNodesToTree(topProtocols, protocolsTree, db);
 		}
 
 		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementObject>(
