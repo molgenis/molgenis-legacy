@@ -2,11 +2,11 @@ package plugins.GenericImporter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+//import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+//import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,17 +21,17 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationElement;
+//import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.Entity;
+//import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
-import org.openqa.jetty.util.Observed;
-import org.springframework.validation.DataBinder;
+//import org.openqa.jetty.util.Observed;
+//import org.springframework.validation.DataBinder;
 
-import com.googlecode.charts4j.Data;
+//import com.googlecode.charts4j.Data;
 
 import app.DatabaseFactory;
 
