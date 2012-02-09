@@ -19,8 +19,8 @@ import org.molgenis.framework.server.FrontControllerAuthenticator.LogoutStatus;
 public class MolgenisServiceAuthenticationHelper
 {
 	
-	static String LOGIN_USER_NAME = "usr";
-	static String LOGIN_PASSWORD = "pwd";
+	public static String LOGIN_USER_NAME = "usr";
+	public static String LOGIN_PASSWORD = "pwd";
 	static String LOGOUT_REQUEST = "logout";
 
 	/**
@@ -48,12 +48,9 @@ public class MolgenisServiceAuthenticationHelper
 	 * @return
 	 * @throws IOException
 	 */
-	public static boolean handleAuthentication(MolgenisRequest req, MolgenisResponse res) throws IOException
+	public static boolean handleAuthentication(MolgenisRequest req, PrintWriter out) throws IOException
 	{
-		PrintWriter out = res.getResponse().getWriter();
-		
-		res.getResponse().setBufferSize(10000);
-		res.getResponse().setContentType("text/html; charset=UTF-8");
+
 		
 		//login request
 		if(req.getString(LOGIN_USER_NAME) != null && req.getString(LOGIN_PASSWORD) != null )
@@ -69,38 +66,26 @@ public class MolgenisServiceAuthenticationHelper
 			if(login == LoginStatus.ALREADY_LOGGED_IN)
 			{
 				// reach this by using the 'back' button of the browser and click Login again :)
-				out.println("<html><body>");
 				out.println("<table><tr><td colspan=\"2\">You are already logged in.</td></tr>");
 				out.println("<tr><td>" + displayLogoutForm() + "</td>");
 				out.println("<td><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>");
-				out.println("</body></html>");
-				out.close();
 				return false;
 			}
 			else if(login == LoginStatus.SUCCESSFULLY_LOGGED_IN)
 			{
-				out.println("<html><body><table>");
-				out.println("<tr><td>Welcome, " + username + "!</td></tr>");
+				out.println("<table><tr><td>Welcome, " + username + "!</td></tr>");
 				out.println("<tr><td align=\"right\"><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>");
-				out.println("</body></html>");
-				out.close();
 				return false;
 			}
 			else if(login == LoginStatus.AUTHENTICATION_FAILURE)
 			{
-				out.println("<html><body><table>");
-				out.println("<tr><td>User or password unknown.</td></tr>");
+				out.println("<table><tr><td>User or password unknown.</td></tr>");
 				out.println("<tr><td align=\"right\"><form><input type=\"submit\" value=\"Retry\"></form></td></tr></table>");
-				out.println("</body></html>");
-				out.close();
 				return false;
 			}
 			else if(login == LoginStatus.EXCEPTION_THROWN)
 			{
-				out.println("<html><body>");
 				out.println("An error occurred. Contact your administrator.");
-				out.println("</body></html>");
-				out.close();
 				return false;
 			}
 			else
@@ -114,34 +99,25 @@ public class MolgenisServiceAuthenticationHelper
 		if(req.getString(LOGOUT_REQUEST) != null && req.getString(LOGOUT_REQUEST).equals(LOGOUT_REQUEST) )
 		{
 
-			LogoutStatus logout = FrontControllerAuthenticator.logout(req, res);
+			LogoutStatus logout = FrontControllerAuthenticator.logout(req);
 
 			if(logout == LogoutStatus.ALREADY_LOGGED_OUT)
 			{
 				// reach this by using the 'back' button of the browser and click Logout again :)
-				out.println("<html><body><table>");
-				out.println("<tr><td>You already logged out.</td></tr>");
+				out.println("<table><tr><td>You already logged out.</td></tr>");
 				out.println("<tr><td align=\"right\"><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>");
-				out.println("</body></html>");
-				out.close();
 				return false;
 			}
 			else if(logout == LogoutStatus.SUCCESSFULLY_LOGGED_OUT)
 			{
-				out.println("<html><body><table>");
-				out.println("<tr><td>You are successfully logged out.</td></tr>");
+				out.println("<table><tr><td>You are successfully logged out.</td></tr>");
 				out.println("<tr><td align=\"right\"><form><input type=\"submit\" value=\"Continue\"></form></td></tr></table>");
-				out.println("</body></html>");
-				out.close();
 				return false;
 				
 			}
 			else if(logout == LogoutStatus.EXCEPTION_THROWN)
 			{
-				out.println("<html><body>");
 				out.println("An error occurred. Contact your administrator.");
-				out.println("</body></html>");
-				out.close();
 				return false;
 			}
 			else
@@ -150,20 +126,17 @@ public class MolgenisServiceAuthenticationHelper
 			}
 		}
 		
-		// regular request: check if user is authenticated
-//		if(!req.getDatabase().getSecurity().isAuthenticated())
-//		{
-//			out.println("<html><body>");
-//			out.println("<form name=\"input\" action=\"\" method=\"post\">");
-//			out.println("<table><tr><td colspan=\"2\">Please log in:</td></tr>");
-//			out.println("<tr><td>Username:</td><td><input type=\"text\" name=\"" + LOGIN_USER_NAME + "\"></td></tr>");
-//			out.println("<tr><td>Password:</td><td><input type=\"text\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>");
-//			out.println("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Login\"></td></tr></table>");
-//			out.println("</form>");
-//			out.println("</body></html>");
-//			out.close();
-//			return false;
-//		}
+		// regular request: check if user is authenticated, and if not, display login box
+		if(!req.getDatabase().getSecurity().isAuthenticated())
+		{
+			out.println("<form name=\"input\" action=\"\" method=\"post\">");
+			out.println("<table><tr><td colspan=\"2\">Please log in:</td></tr>");
+			out.println("<tr><td>Username:</td><td><input type=\"text\" name=\"" + LOGIN_USER_NAME + "\"></td></tr>");
+			out.println("<tr><td>Password:</td><td><input type=\"text\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>");
+			out.println("<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Login\"></td></tr></table>");
+			out.println("</form>");
+			return true;
+		}
 		
 		return true;
 	}
