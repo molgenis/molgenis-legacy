@@ -11,12 +11,10 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.AuthStatus;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
@@ -26,7 +24,6 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleWriter;
@@ -69,14 +66,22 @@ public class MolgenisUploadService implements MolgenisService
 
 		try
 		{
-			boolean showTheApi = MolgenisServiceAuthenticationHelper.handleAuthentication(req, out);
 			
-			if (showTheApi)
+			AuthStatus authStatus = MolgenisServiceAuthenticationHelper.handleAuthentication(req, out);
+			
+			if (!authStatus.isShowApi())
+			{
+				out.println("<html><body>");
+				out.println(authStatus.getPrintMe());
+				out.println("</body></html>");
+			}
+			else
 			{
 				// if no type selected: show data type choice
 				if (req.getString(INPUT_DATATYPE) == null)
 				{
 					out.println("<html><body>");
+					authStatus.getPrintMe();
 					if(req.getDatabase().getSecurity().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
@@ -89,6 +94,7 @@ public class MolgenisUploadService implements MolgenisService
 						&& req.getObject(INPUT_FILE) == null)
 				{
 					out.println("<html><body>");
+					authStatus.getPrintMe();
 					if(req.getDatabase().getSecurity().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());

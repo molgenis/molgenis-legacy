@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.server.AuthStatus;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
@@ -56,9 +57,15 @@ public class MolgenisDownloadService implements MolgenisService
 		try
 		{
 
-			boolean showTheApi = MolgenisServiceAuthenticationHelper.handleAuthentication(req, out);
+			AuthStatus authStatus = MolgenisServiceAuthenticationHelper.handleAuthentication(req, out);
 			
-			if (showTheApi)
+			if (!authStatus.isShowApi())
+			{
+				out.println("<html><body>");
+				out.println(authStatus.getPrintMe());
+				out.println("</body></html>");
+			}
+			else
 			{
 	
 				String entityName = req.getRequest().getPathInfo().substring(req.getServicePath().length());
@@ -71,6 +78,7 @@ public class MolgenisDownloadService implements MolgenisService
 				if (entityName.equals(""))
 				{
 					out.println("<html><body>");
+					out.println(authStatus.getPrintMe());
 					if(req.getDatabase().getSecurity().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
@@ -82,6 +90,7 @@ public class MolgenisDownloadService implements MolgenisService
 						&& req.getRequest().getQueryString().equals("__showQueryDialogue=true"))
 				{
 					out.println("<html><body>");
+					out.println(authStatus.getPrintMe());
 					if(req.getDatabase().getSecurity().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
