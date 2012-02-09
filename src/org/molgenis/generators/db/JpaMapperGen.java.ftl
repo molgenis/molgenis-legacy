@@ -75,7 +75,7 @@ import ${xref_entity.namespace}.db.${JavaName(xref_entity)}JpaMapper;
 <#if !e.isAssociation()>
 	<#list e.implementedFields as f>
 		<#if (f.type=="xref" || f.type == "mref") && f.getXrefEntityName() == entity.name>
-			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
+			 <#assign multipleXrefs = model.getNumberOfReferencesTo(entity)/>
 import ${e.namespace}.${JavaName(e)};	
 import ${e.namespace}.db.*;
 		</#if>
@@ -269,7 +269,7 @@ public class ${JavaName(entity)}JpaMapper extends AbstractJpaMapper<${JavaName(e
 <#if !e.abstract && !e.isAssociation()>
 	<#list e.implementedFields as f>
 		<#if f.type=="mref" && Name(f.getXrefEntityName()) == Name(entity) >
-		<#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
+		<#assign multipleXrefs = model.getNumberOfReferencesTo(entity)/>
 		//${multipleXrefs}
 			if(${name(entity)}.get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(e)}</#if>Collection().contains(${name(entity)})) {	
 				${name(entity)}.get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(e)}</#if>Collection().remove(${name(entity)});
@@ -298,12 +298,11 @@ public class ${JavaName(entity)}JpaMapper extends AbstractJpaMapper<${JavaName(e
 			${JavaName(entity)} persistent${JavaName(entity)} = em.find(${JavaName(entity)}.class, ${name(entity)}.getIdValue());
 
 
-
-<#foreach field in entity.getAllFields()>
+<#foreach field in entity.getImplementedFields()>
 	<#assign type_label = field.getType().toString()>
 
 	<#if type_label == "xref" || type_label == "mref">
-		<#assign numRef = entity.getNumberOfReferencesTo(field.getXrefEntity())>
+		<#assign numRef = model.getNumberOfReferencesTo(field.getXrefEntity())>
 			<#assign fieldName = name(field) />
 	<#--		
 			<#if numRef &gt; 1 >
@@ -372,7 +371,7 @@ public class ${JavaName(entity)}JpaMapper extends AbstractJpaMapper<${JavaName(e
 <#foreach field in entity.getAllFields()>
 	<#assign type_label = field.getType().toString()>
 	<#if type_label == "xref">
-		<#assign numRef = entity.getNumberOfReferencesTo(field.getXrefEntity())>
+		<#assign numRef = model.getNumberOfReferencesTo(field.getXrefEntity())>
 
 			<#assign fieldName = name(field.getXrefEntity()) />
 			<#assign methodName = Name(entity) />

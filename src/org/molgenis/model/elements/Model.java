@@ -542,4 +542,22 @@ public class Model
 			throw new MolgenisModelException("field with name '" + f + "' is unknown: ");
 		}
 	}
+
+	public int getNumberOfReferencesTo(Entity e) throws MolgenisModelException
+	{
+		int count = 0;
+
+		for (Entity entity : this.getEntities())
+		{
+			for (Field field : entity.getImplementedFields())
+			{
+				if (field.isXRef() || field.isMRef())
+				{
+					String xrefEntity = field.getXrefEntityName();
+					if (xrefEntity != null && xrefEntity.equals(e.getName())) count++;
+				}
+			}
+		}
+		return count;
+	}
 }
