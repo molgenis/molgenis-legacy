@@ -192,7 +192,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
     @javax.persistence.Temporal(javax.persistence.TemporalType.TIMESTAMP)
     	</#if>
         <#if field.type == "mref">
-			<#assign multipleXrefs = entity.getNumberOfReferencesTo(field.xrefEntity)/>
+			<#assign multipleXrefs = model.getNumberOfReferencesTo(field.xrefEntity)/>
     @javax.persistence.ManyToMany(<#if field.jpaCascade??>fetch=javax.persistence.FetchType.LAZY, cascade={${field.jpaCascade}}<#else>fetch=javax.persistence.FetchType.LAZY /*cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/</#if>)
     @javax.persistence.JoinColumn(name="${SqlName(field)}", insertable=true, updatable=true, nullable=${field.isNillable()?string})
 			<#if multipleXrefs &gt; 1>
@@ -754,7 +754,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 <#list model.entities as e><#if !e.abstract && !e.isAssociation()>
 	<#list e.implementedFields as f>
 		<#if f.type=="xref" && f.getXrefEntityName() == entity.name>
-			 <#assign multipleXrefs = e.getNumberOfReferencesTo(entity)/>
+			 <#assign multipleXrefs = model.getNumberOfReferencesTo(entity)/>
 //${multipleXrefs}
 	@javax.persistence.OneToMany(fetch=javax.persistence.FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/)
     private java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new java.util.ArrayList<${f.entity.namespace}.${JavaName(f.entity)}>();
@@ -779,7 +779,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	<#if !e.abstract && !e.isAssociation()>
 		<#list e.implementedFields as f>
 			<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
-				<#assign multipleXrefs = e.getNumberOfMrefTo(entity)/>
+				<#assign multipleXrefs = model.getNumberOfReferencesTo(entity)/>
 	//${multipleXrefs}
     @javax.persistence.ManyToMany(fetch=javax.persistence.FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/)
     private java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection = new java.util.ArrayList<${f.entity.namespace}.${Name(f.entity)}>();
