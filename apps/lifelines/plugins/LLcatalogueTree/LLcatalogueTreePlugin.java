@@ -25,6 +25,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.Measurement_Categories;
+import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
@@ -239,9 +240,24 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 							measurementDataType + "</td></tr></table>";
 					//htmlValue = "<p>why?</p>";
 					
+					Query<ObservedValue> queryDisplayNames = db.query(ObservedValue.class);
 					
+					queryDisplayNames.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
+					queryDisplayNames.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "display name"));
 					
-					childTree = new JQueryTreeViewElementObject(measurement,parentTree, htmlValue); //TODO : fill in the category
+					String displayName = "";
+					
+					if(!queryDisplayNames.find().isEmpty()){
+						
+						displayName = queryDisplayNames.find().get(0).getValue();
+					}
+					
+					if(displayName.equals("")){
+						childTree = new JQueryTreeViewElementObject(measurement.getName(),parentTree, htmlValue); //TODO : fill in the category
+					}else{
+						childTree = new JQueryTreeViewElementObject(displayName,parentTree, htmlValue); //TODO : fill in the category
+					}
+					
 					labelToTree.put(measurement.getName(), childTree);
 
 					List<Category> categoryIds = new ArrayList<Category>();

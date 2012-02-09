@@ -102,6 +102,8 @@ public class TableModel {
 
 	private String excelDirection = "UploadFileByColumn";
 
+	private HashMap<String, String> measurementWithSameLabels = new HashMap<String, String>();;
+
 	public TableModel(int i,  Database db) {
 		this.db = db;
 		this.columnSize = i;
@@ -437,11 +439,19 @@ public class TableModel {
 						if(rowIndex == 0){
 
 							if(field.getClassType().equalsIgnoreCase(ObservedValue.class.getSimpleName())){
-
+								
 								Measurement measurement = new Measurement();
-
+								
+								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).size() != 0){
+									Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
+									if(!measure.getInvestigation_Name().equals(investigationName)){
+										cellValue += "_" + investigationName;
+										measurementWithSameLabels .put(measure.getName(), cellValue);
+									}
+								}
+								
 								measurement.setName(cellValue);
-
+									
 								headerMeasurements.add(measurement);
 								
 								if(investigationName != null)
@@ -457,7 +467,13 @@ public class TableModel {
 								String headerName = sheet.getCell(colIndex, 0).getContents().replaceAll("'", "").trim().toLowerCase();
 
 								String targetName = sheet.getCell(field.getObservationTarget(), rowIndex).getContents().replaceAll("'", "").trim().toLowerCase();
-
+								
+								//TODO: import measurements then import individual data. The measurement has to be consistent.
+								
+								if(measurementWithSameLabels.keySet().contains(headerName)){
+									headerName = measurementWithSameLabels.get(headerName);
+								}
+								
 								observedValue.setFeature_Name(headerName);
 
 								observedValue.setTarget_Name(targetName);
@@ -516,8 +532,54 @@ public class TableModel {
 
 			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
 
+			
+			//Resolving importing the measurements with the same name. In the different studies, measurements with the same name could
+			//have different definitions, so we need to distinguish this kind of variables. Therefore a display name meta-measurement is created
+			//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
+			
+			Measurement displayNameMeasurement;
+			
+			if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
+				
+				displayNameMeasurement = new Measurement();
+				
+				displayNameMeasurement.setName("display name");
+				
+				db.add(displayNameMeasurement);
+				
+			}else{
+				displayNameMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).get(0);
+			}
+			
+			
+			HashMap<String, InvestigationElement> displayNameToMeasurement = new HashMap<String, InvestigationElement>();
+			
 			for(InvestigationElement m : measurementList){
+				
+				
+				String measurementName = m.getName();
+				
+				//prevent the measurement with the same name from importing twice. Therefore check the database whether the 
+				//measurement already existed, if there is, make a unique measurement name by combining it with investigation
+				//name. such as weight_study_KORA. In order to display the measurement with its original name such as "weight"
+				//a meta-measurement "display name" is created to describe the measurements as a label (measurement becomes observationElement
+				//in Molgenis) such as weight_study_KORA (ObservationElement) --------->"weight" (value) <-----------diaplay name (measurement)
+				if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).size() != 0){
+					
+					ObservedValue ob = new ObservedValue();
+					ob.setValue(measurementName);
+					measurementName += "_" + m.get(Measurement.INVESTIGATION_NAME);
+					m.setName(measurementName);
+					ob.setTarget_Name(measurementName);
+					ob.setFeature_Name(displayNameMeasurement.getName());
+					ob.setInvestigation_Name(m.getInvestigation_Name());
+					observedValueList.add(ob);
+					displayNameToMeasurement.put(ob.getValue(), m);
+				}
+				
+				//After Category has been added in the db. Set the category to Measurement by ID. 
 				List<String> categories_name = (List<String>) m.get(Measurement.CATEGORIES_NAME);
+				
 				if(categories_name.size() > 0)
 				{
 					List<Category> categories = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categories_name));
@@ -534,10 +596,13 @@ public class TableModel {
 				}
 			}
 			
+			
 			db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 			
 			HashMap<String, List<String>> subProtocolAndProtocol = new HashMap<String, List<String>>();
 			
+			//mref is not working for the name. We can`t do protocol.setFeatures_name(""). Therefore we need to 
+			//add features in db first, afterwards we could use protocol.setFeatures_ID(). Mref for ID is working fine
 			for(InvestigationElement p : protocolList)
 			{
 
@@ -551,8 +616,15 @@ public class TableModel {
 					{
 						List<Integer> featuresId = new ArrayList<Integer>();
 						for(Measurement m : features){
-							if(!featuresId.contains(m.getId()))
-								featuresId.add(m.getId());
+							
+							if(displayNameToMeasurement.keySet().contains(m.getName())){
+								InvestigationElement measurementElement = (Measurement) displayNameToMeasurement.get(m.getName());
+								if(!featuresId.contains(measurementElement.getId()))
+									featuresId.add(measurementElement.getId());
+							}else{
+								if(!featuresId.contains(m.getId()))
+									featuresId.add(m.getId());
+							}
 						}
 						p.set(Protocol.FEATURES, featuresId);
 					}
