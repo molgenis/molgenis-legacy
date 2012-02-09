@@ -201,14 +201,13 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		// TODO Auto-generated constructor stub
 	}
 
-    public ComputeBundleFromDirectory(File parametersfile, File workflowfile, File worksheetfile, File protocoldir) throws Exception
-    {
-        this.setComputeParameters(parametersfile);
+	public ComputeBundleFromDirectory(File parametersfile, File workflowfile, File worksheetfile, File protocoldir) throws Exception
+	{
+		this.setComputeParameters(parametersfile);
 		this.setWorkflowElements(workflowfile);
 		this.setWorksheet(worksheetfile);
 		this.setComputeProtocols(protocoldir);
-    }
-
+	}
 
 	public void setComputeProtocols(File templateFolder) throws IOException
 	{
@@ -274,6 +273,14 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 							{
 								p.getIterateOver_Name().add(target.trim());
 							}
+						}
+					}
+					else if (line.trim().startsWith("#DOCUMENTATION"))
+					{
+						line = line.substring("#DOCUMENTATION".length()).trim();
+						if (0 < line.length())
+						{
+							p.setDescription(line.trim());
 						}
 					}
 					else if (line.trim().startsWith("#PBS"))

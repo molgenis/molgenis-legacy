@@ -73,10 +73,24 @@ public class ComputeCommandLine
 				targets.add("line_number");
 			}
 
+
+			// add path to loader
+			// FileTemplateLoader ftl1 = new FileTemplateLoader(this.workflowdir);
+
+//			Configuration cfg = new Configuration();
+//			cfg.setDirectoryForTemplateLoading(this.protocoldir);
+//			String documentation = protocol.getDescription();
+//			Template template = new Template("a template", new StringReader(documentation), cfg);
+//			StringWriter filledtemplate = new StringWriter();
+//			template.process(parameters, filledtemplate);
+			
+//			System.out.println(">>> " + documentation);
+//			System.out.println(">>> " + filledtemplate.toString());
+			
 			this.worksheet.foldWorksheet(targets);
 			this.worksheet.reduceTargets(targets);
-			print("folded worksheet: " + this.worksheet.folded.size() + ":" + this.worksheet.folded.toString());
-			print("reduced worksheet: " + this.worksheet.reduced.size() + ":" + this.worksheet.reduced.toString());
+//			print("folded worksheet: " + this.worksheet.folded.size() + ":" + this.worksheet.folded.toString());
+//			print("reduced worksheet: " + this.worksheet.reduced.size() + ":" + this.worksheet.reduced.toString());
 
 			// each element of reduced worksheet produces one protocolApplication (i.e. a script)
 			for (Tuple work : this.worksheet.reduced)
@@ -136,6 +150,8 @@ public class ComputeCommandLine
 					job.getPrevSteps_Name().addAll(dependencies);
 				}
 
+				work.set("workflowElements", computeBundle.getWorkflowElements());
+				
 				// add the script
 				job.setComputeScript(filledtemplate(scripttemplate, work));
 
