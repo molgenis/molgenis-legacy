@@ -230,9 +230,9 @@ public class TableModel {
 					String cellValue;
 					
 					if(excelDirection.equals("UploadFileByRow"))
-						cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("'", "").trim().toLowerCase();
+						cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("'", "").trim();
 					else
-						cellValue = sheet.getCell(colIndex, rowIndex).getContents().replaceAll("'", "").trim().toLowerCase();
+						cellValue = sheet.getCell(colIndex, rowIndex).getContents().replaceAll("'", "").trim();
 					System.out.println("The cell value is " + cellValue);
 					System.out.println("The size is =========== " + configuration.size());
 
@@ -298,7 +298,13 @@ public class TableModel {
 
 											//Category entity couldn`t have empty property in name, description, code_string, label
 											//therefore it`s separated from other entites.
-											entity.set(Category.NAME, value);
+											String categoryName = value;
+											
+											if(value.split("=").length > 1){
+												categoryName = value.split("=")[1].trim();
+											}
+											
+											entity.set(Category.NAME, categoryName);
 											entity.set(Category.DESCRIPTION, value);
 											entity.set(Category.CODE_STRING, value);
 											entity.set(Category.LABEL, value);
@@ -322,7 +328,7 @@ public class TableModel {
 						}
 
 						if(field.getDependentColumnIndex()[0] != -1){
-
+							
 							for(int index = 0; index < field.getDependentColumnIndex().length; index++){
 
 								int dependentColumn = field.getDependentColumnIndex()[index];
@@ -336,11 +342,27 @@ public class TableModel {
 								String multipleValues[] = cellValue.split(dependendField.getValueSplitter());
 
 								List<Object> values = new ArrayList<Object>();
-
-								for(int i = 0; i < multipleValues.length; i++){
-									values.add(multipleValues[i].trim());
+								
+								if(field.getClassType().equals(Category.class.getSimpleName())){
+									
+									for(int i = 0; i < multipleValues.length; i++){
+										
+										String categoryCodeString = multipleValues[i];
+										
+										if(categoryCodeString.split("=").length > 1)
+										{	
+											multipleValues[i] = categoryCodeString.split("=")[1];
+										}
+										
+										values.add(multipleValues[i].trim());
+									
+									}
+								}else{
+									for(int i = 0; i < multipleValues.length; i++){
+										values.add(multipleValues[i].trim());
+									}
 								}
-
+								
 								//Due to using generic method get() property of the Pheno Entity, so we don`t know which Object data
 								//the field would be. We need to check the field type first. It could be list, boolean, string
 								if(addingPropertyToEntity.get(field.getRelationString()) != null)
@@ -464,9 +486,9 @@ public class TableModel {
 
 								ObservedValue observedValue = new ObservedValue();
 
-								String headerName = sheet.getCell(colIndex, 0).getContents().replaceAll("'", "").trim().toLowerCase();
+								String headerName = sheet.getCell(colIndex, 0).getContents().replaceAll("'", "").trim();
 
-								String targetName = sheet.getCell(field.getObservationTarget(), rowIndex).getContents().replaceAll("'", "").trim().toLowerCase();
+								String targetName = sheet.getCell(field.getObservationTarget(), rowIndex).getContents().replaceAll("'", "").trim();
 								
 								//TODO: import measurements then import individual data. The measurement has to be consistent.
 								
@@ -528,7 +550,7 @@ public class TableModel {
 			
 			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING,ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
 			
-			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME, OntologyTerm.TERMPATH);
 
 			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
 
