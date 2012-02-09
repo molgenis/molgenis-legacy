@@ -14,10 +14,5 @@
 			<field name="prefix" type="string" nillable="true" />
 			<field name="highestNumber" type="int" />
 		</entity>
-		<entity name="ContactInfo">
-			<description>Stores the contact information for the Welcome page.</description>
-			<field name="id" type="autoid" description="automatically generated id" />
-			<field name="text" type="text" description="the contact information itself" />
-		</entity>
 	</module>
 </molgenis>

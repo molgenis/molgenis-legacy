@@ -33,13 +33,12 @@
 	
 <h1>Welcome to AnimalDB!</h1>
 
-<p>For giving <strong>feedback</strong>, you can use the 'feedback' link that is always visible in the top right corner of the screen.</p>
-
-<p>For <strong>urgent matters</strong>, please contact:<br />
-${screen.contactInfo}
-</p>
-
-<p><strong>Software updates may be done between 17.00 and 17.30</strong>, so please do not do important work during that time.</p>
+<#list screen.news as newsItem>
+	<h3>${newsItem.getTitle()}</h3>
+	<p>${newsItem.getText()}</p>
+	<p><em>Posted on <#if newsItem.getDate()??>${newsItem.getDate()}</#if> by ${newsItem.getAuthor()}</em></p>
+	<br />
+</#list>
 
 <#--end of your plugin-->
 			</div>

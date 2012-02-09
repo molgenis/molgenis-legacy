@@ -119,8 +119,7 @@
 					<form name="protocolapplication" entity="ProtocolApplication" view="list" label="Protocol applications" />
 					<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
 					<form name="prefix" entity="NamePrefix" view="list" label="Name prefixes" />
-					<form name="news" entity="MolgenisNews" view="list" label="News items" />
-					<form name="contact" entity="ContactInfo" view="list" label="Contact info" />
+					<form name="news" entity="MolgenisNews" view="list" label="Frontpage items" />
 				</menu>
 			</menu>
 		</menu>

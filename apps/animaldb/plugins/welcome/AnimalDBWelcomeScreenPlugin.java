@@ -7,11 +7,15 @@
 
 package plugins.welcome;
 
-import org.molgenis.animaldb.ContactInfo;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.news.MolgenisNews;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -20,7 +24,7 @@ import commonservice.CommonService;
 public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -5861419875983400033L;
-	private String contactInfo = null;
+	List<MolgenisNews> news;
 	
 	public AnimalDBWelcomeScreenPlugin(String name, ScreenController<?> parent)
 	{
@@ -68,18 +72,28 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 		cs.setDatabase(db);
 		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 		
-		try
-		{
-			contactInfo = db.query(ContactInfo.class).find().get(0).getText();
-		}
-		catch (Exception e)
-		{
-			contactInfo = "No contact information available in the database!";
+		news = new ArrayList<MolgenisNews>();
+		List<MolgenisNews> tmpNews;
+		try {
+			tmpNews = db.query(MolgenisNews.class).sortDESC(MolgenisNews.DATE_).find();
+			for (MolgenisNews newsItem : tmpNews)
+			{
+				//newsItem.setText(StringUtils.abbreviate(newsItem.getText(), 100));
+				news.add(newsItem);
+			}
+		} catch (DatabaseException e) {
+			MolgenisNews tmpItem = new MolgenisNews();
+			tmpItem.setAuthor("Administrator");
+			tmpItem.setDate(new Date());
+			tmpItem.setTitle("No frontpage items in database");
+			tmpItem.setSubtitle("");
+			tmpItem.setText("");
+			news.add(tmpItem);
 		}
 	}
 	
-	public String getContactInfo() {
-		return contactInfo;
+	public List<MolgenisNews> getNews() {
+		return news;
 	}
 	
 }

@@ -7,24 +7,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
-import org.molgenis.animaldb.ContactInfo;
 import org.molgenis.core.Ontology;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
+import org.molgenis.news.MolgenisNews;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
@@ -91,7 +89,7 @@ public class PrefillAnimalDB
 		}
 		// Run convertor steps
 		populateProtocolApplication();
-		populateContactInfo(path + "contactinfo.csv");
+		populateNews(path + "news.csv");
 		populateOntology(path + "ontology.csv");
 		populateOntologyTerm(path + "ontologyterm.csv");
 		populateMeasurement(path + "measurement.csv");
@@ -129,7 +127,7 @@ public class PrefillAnimalDB
 		logger.debug("Values successfully added");
 	}
 	
-	public void populateContactInfo(String filename) throws Exception
+	public void populateNews(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
@@ -137,9 +135,13 @@ public class PrefillAnimalDB
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				ContactInfo ci = new ContactInfo();
-				ci.setText(tuple.getString("text"));
-				db.add(ci); // this one goes directly into the db, not through a list, because nothing links to it
+				MolgenisNews mn = new MolgenisNews();
+				mn.setAuthor("Administrator");
+				mn.setDate(new Date());
+				mn.setSubtitle("");
+				mn.setTitle(tuple.getString("title"));
+				mn.setText(tuple.getString("text"));
+				db.add(mn); // this one goes directly into the db, not through a list, because nothing links to it
 			}
 		});
 	}
