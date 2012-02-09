@@ -58,7 +58,7 @@ public class FrontControllerAuthenticator
 		}
 	}
 
-	public static LogoutStatus logout(MolgenisRequest request, MolgenisResponse response)
+	public static LogoutStatus logout(MolgenisRequest request)
 	{
 		//System.out.println("FrontControllerAuthenticator LOGOUT called");
 		try

@@ -46,7 +46,7 @@ MOLGENIS.login = function(username, password)
 {
 	if(missing(password)) password <- username
 	servlet <- paste( .MOLGENIS$servletURL, "/api/R", sep="" )
-	curlParams = list(usr = username, pw = password)
+	curlParams = list(usr = username, pwd = password)
 	response <- postForm( servlet, .params = curlParams, curl = ch )
 	handle <- textConnection(response)
 	status <- readLines(handle, 1)
