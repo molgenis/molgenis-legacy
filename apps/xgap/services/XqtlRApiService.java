@@ -26,8 +26,9 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
+import org.molgenis.framework.server.MolgenisServiceAuthenticationHelper;
 
-import app.servlet.MolgenisServlet;
+import app.servlet.UsedMolgenisOptions;
 import decorators.MolgenisFileHandler;
 
 /**Use seperate servlet because of the custom R script that needs to be added*/
@@ -45,16 +46,21 @@ public class XqtlRApiService implements MolgenisService
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
 	{
+		
+		 //as used in /molgenis/src/org/molgenis/generators/R/RApiGen.R.ftl, must match!
+		String pwdString = MolgenisServiceAuthenticationHelper.LOGIN_PASSWORD;
+		String usrString = MolgenisServiceAuthenticationHelper.LOGIN_USER_NAME;
+		
 		//Utils.console("starting RApiServlet");
 		OutputStream outs = response.getResponse().getOutputStream();
 		PrintStream out = new PrintStream(new BufferedOutputStream(outs), false, "UTF8"); // 1.4
 		
-		if(request.getString("usr") != null && request.getString("pw") != null )
+		if(request.getString(usrString) != null && request.getString(pwdString) != null )
 		{
-			String usr = request.getString("usr");
-			String pw = request.getString("pw");
+			String usr = request.getString(usrString);
+			String pwd = request.getString(pwdString);
 
-			LoginStatus login = FrontControllerAuthenticator.login(request, usr, pw);
+			LoginStatus login = FrontControllerAuthenticator.login(request, usr, pwd);
 			
 			String responseLine;
 			if(login == LoginStatus.ALREADY_LOGGED_IN)
@@ -85,7 +91,7 @@ public class XqtlRApiService implements MolgenisService
 		if(request.getString("logout") != null && request.getString("logout").equals("logout"))
 		{
 			
-			LogoutStatus logout = FrontControllerAuthenticator.logout(request, response);
+			LogoutStatus logout = FrontControllerAuthenticator.logout(request);
 			
 			String responseLine;
 			if(logout == LogoutStatus.ALREADY_LOGGED_OUT)
@@ -131,7 +137,7 @@ public class XqtlRApiService implements MolgenisService
 		} else if (filename.equals(""))
 		{
 			//Utils.console("getting default file");
-			String server = "http://" + request.getRequest().getLocalName() + ":" + request.getRequest().getLocalPort() + "/"+MolgenisServlet.getMolgenisVariantID();
+			String server = "http://" + request.getRequest().getLocalName() + ":" + request.getRequest().getLocalPort() + "/"+new UsedMolgenisOptions().appName;
 			String rSource = server + "/api/R/";
 			// getRequestURL omits port!
 			s +=("#first time only: install RCurl and bitops\n");
