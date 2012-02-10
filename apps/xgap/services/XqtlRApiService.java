@@ -186,7 +186,10 @@ public class XqtlRApiService implements MolgenisService
 				s +=("#connect to the server\n");
 				s +=("MOLGENIS.connect(\"" + server + "\")\n");
 				s +=("\n");
-				s +=("#Use 'MOLGENIS.login(\"username\",\"password\")' to authenticate.\n");
+				s +=("#--> login/logout using:\n");
+				s +=("# MOLGENIS.login(\"username\",\"password\")\n");
+				s +=("# MOLGENIS.logout()\n");
+				s +=("\n");
 			}
 			catch (Exception e)
 			{
