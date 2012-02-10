@@ -29,20 +29,28 @@ public class DecEntity {
 	
 	public void setStartDate(String startDate) throws ParseException
 	{
-		this.startDate = dbFormat.parse(startDate);
+		if (startDate != null && !startDate.equals("")) {
+			this.startDate = dbFormat.parse(startDate);
+		} else {
+			this.startDate = null;
+		}
 	}
 	public String getStartDate()
 	{
-		if (startDate == null) return "";
+		if (startDate == null) {
+			return "";
+		}
 		return newDateOnlyFormat.format(startDate);
 	}
 	
 	public void setEndDate(String endDate) throws ParseException
 	{
-		if (endDate.equals("")) {
+		if (endDate != null && !endDate.equals("")) {
+			this.endDate = dbFormat.parse(endDate);
+		} else {
 			this.endDate = null;
 		}
-		this.endDate = dbFormat.parse(endDate);
+		
 	}
 	public String getEndDate()
 	{

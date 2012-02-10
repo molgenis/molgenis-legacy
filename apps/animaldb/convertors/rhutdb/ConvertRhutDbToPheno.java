@@ -56,7 +56,7 @@ public class ConvertRhutDbToPheno
 	private Map<String, String> appMap;
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
 	private SimpleDateFormat dobFormat = new SimpleDateFormat("d-M-y", Locale.US);
-	private SimpleDateFormat expDbFormat = new SimpleDateFormat("yyyy-M-d H:mm:ss", Locale.US);
+	//private SimpleDateFormat expDbFormat = new SimpleDateFormat("yyyy-M-d H:mm:ss", Locale.US);
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private SimpleDateFormat yearOnlyFormat = new SimpleDateFormat("yyyy", Locale.US);
 	private Map<String, String> sourceMap;
@@ -80,6 +80,8 @@ public class ConvertRhutDbToPheno
 		logger = Logger.getLogger("LoadUliDb");
 		
 		userName = login.getUserName();
+		
+		highestNr = ct.getHighestNumberForPrefix("") + 1;
 		
 		// If needed, make investigation
 		invName = "FDD";
@@ -622,10 +624,16 @@ public class ConvertRhutDbToPheno
 				if (decNr.length() == 5) {
 					expNr = decNr.substring(4).toUpperCase();
 					decNr = decNr.substring(0, 4);
+				} else if (decNr.length() == 6) {
+					expNr = decNr.substring(5).toUpperCase();
+					decNr = decNr.substring(0, 5);
 				}
 				project += decNr;
 				// Title -> name and ExperimentTitle for subproject, DecTitle for project
 				String subproject = tuple.getString("Title");
+				if (subproject == null) {
+					subproject = decNr + expNr;
+				}
 				// If not added yet, make new DEC app
 				if (!addedDecApps.contains(project)) {
 					addedDecApps.add(project);
@@ -673,20 +681,24 @@ public class ConvertRhutDbToPheno
 						now, null, "DecApplicantId", project, resId.toString(), null));
 				// DECStartDate -> StartDate (on both)
 				String startDate = tuple.getString("DECStartDate");
-				Date tmpDate = expDbFormat.parse(startDate);
-				startDate = newDateOnlyFormat.format(tmpDate);
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
-						now, null, "StartDate", project, startDate, null));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
-						now, null, "StartDate", subproject, startDate, null));
+				if (startDate != null) {
+					Date tmpDate = dbFormat.parse(startDate);
+					startDate = newDateOnlyFormat.format(tmpDate);
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
+							now, null, "StartDate", project, startDate, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
+							now, null, "StartDate", subproject, startDate, null));
+				}
 				// DECEndDate -> EndDate (on both)
 				String endDate = tuple.getString("DECEndDate");
-				tmpDate = expDbFormat.parse(endDate);
-				endDate = newDateOnlyFormat.format(tmpDate);
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
-						now, null, "EndDate", project, endDate, null));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
-						now, null, "EndDate", subproject, endDate, null));
+				if (endDate != null) {
+					Date tmpDate = dbFormat.parse(endDate);
+					endDate = newDateOnlyFormat.format(tmpDate);
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
+							now, null, "EndDate", project, endDate, null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
+							now, null, "EndDate", subproject, endDate, null));
+				}
 				// Room . -> skip
 			}
 		});

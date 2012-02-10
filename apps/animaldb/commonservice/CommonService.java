@@ -628,6 +628,9 @@ public class CommonService
 	public Panel createPanel(String investigationName, String panelName, String userName)
 			throws DatabaseException, IOException, ParseException
 	{
+		if (panelName == null) {
+			throw new DatabaseException("Panel name cannot be null!");
+		}
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
 		newGroup.setInvestigation_Name(investigationName);
