@@ -155,7 +155,11 @@ public class MolgenisRapiService implements MolgenisService
 				s +=("#connect to the server\n");
 				s +=("MOLGENIS.connect(\"" + server + "\")\n");
 				s +=("\n");
-				s +=("#Use 'MOLGENIS.login(\"username\",\"password\")' to authenticate.\n");
+				s +=("#--> login/logout using:\n");
+				s +=("# MOLGENIS.login(\"username\",\"password\")\n");
+				s +=("# MOLGENIS.logout()\n");
+				s +=("\n");
+				
 			}
 			else{
 				// otherwise return the default R code to source all
