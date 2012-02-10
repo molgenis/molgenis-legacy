@@ -184,7 +184,7 @@ public class TestDataSet
 	@Override
 	public boolean equals(Object other)
 	{
-		if (!this.getClass().equals(other.getClass()))
+		if (other == null || !this.getClass().equals(other.getClass()))
 			return false;
 		TestDataSet set = (TestDataSet) other;
 		
