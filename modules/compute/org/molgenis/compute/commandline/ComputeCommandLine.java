@@ -101,6 +101,8 @@ public class ComputeCommandLine
 				job.setInterpreter(protocol.getInterpreter());
 
 				// if walltime, cores, mem not specified in protocol, then use value from worksheet
+				String queue = (protocol.getClusterQueue() == null ? worksheet.getdefaultvalue("queue") : protocol.getClusterQueue());
+				job.setClusterQueue(queue);
 				String walltime = (protocol.getWalltime() == null ? worksheet.getdefaultvalue("walltime") : protocol.getWalltime());
 				job.setWalltime(walltime);
 				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
@@ -423,7 +425,7 @@ public class ComputeCommandLine
 				// write headers (depends on backend)
 				jobWriter.println("#!/bin/bash");
 				jobWriter.println("#PBS -N " + job.getName());
-				jobWriter.println("#PBS -q umcg");
+				jobWriter.println("#PBS -q " + job.getClusterQueue());
 				jobWriter.println("#PBS -l nodes=1:ppn=" + job.getCores());
 				jobWriter.println("#PBS -l walltime=" + job.getWalltime());
 				jobWriter.println("#PBS -l mem=" + job.getMem() + "gb");
