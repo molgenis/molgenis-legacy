@@ -19,25 +19,25 @@
 				</menu>
 			</form>
 			<menu name="BasicAnnotations" label="Annotations" header="Navigate annotations"> <!-- header does not work yet for menu -->
-				<form name="Individuals" entity="Individual" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-				<form name="Panels" entity="Panel" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-				<form name="Chromosomes" entity="Chromosome" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-				<form name="Markers" entity="Marker" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-				<form name="Genes" entity="Gene" group="biologist" hide_fields="deleted,deletionTime,deletedBy">
-					<form name="Transcripts" entity="Transcript" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
+				<form name="Individuals" entity="Individual" group="biologist" />
+				<form name="Panels" entity="Panel" group="biologist" />
+				<form name="Chromosomes" entity="Chromosome" group="biologist" />
+				<form name="Markers" entity="Marker" group="biologist" />
+				<form name="Genes" entity="Gene" group="biologist">
+					<form name="Transcripts" entity="Transcript" group="biologist" />
 				</form>
-				<form name="Measurements" entity="Measurement" hide_fields="targettypeAllowedForRelation,panelLabelAllowedForRelation,deleted,deletionTime,deletedBy" group="biologist" />
+				<form name="Measurements" entity="Measurement" hide_fields="targettypeAllowedForRelation,panelLabelAllowedForRelation" group="biologist" />
 				<menu name="AdvancedAnnotations" label="More annotations" group="biologist">
-					<form name="DerivedTraits" entity="DerivedTrait" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-					<form name="EnvironmentalFactors" entity="EnvironmentalFactor" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-					<form name="MassPeaks" entity="MassPeak" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-					<form name="Metabolites" entity="Metabolite" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-					<form name="Probes" entity="Probe" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-					<form name="ProbeSets" entity="ProbeSet" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-					<form name="SNPs" entity="SNP" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-					<form name="Polymorphisms" entity="Polymorphism" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-					<form name="Samples" entity="Sample" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
-					<form name="Spots" entity="Spot" group="biologist" hide_fields="deleted,deletionTime,deletedBy" />
+					<form name="DerivedTraits" entity="DerivedTrait" group="biologist" />
+					<form name="EnvironmentalFactors" entity="EnvironmentalFactor" group="biologist" />
+					<form name="MassPeaks" entity="MassPeak" group="biologist" />
+					<form name="Metabolites" entity="Metabolite" group="biologist" />
+					<form name="Probes" entity="Probe" group="biologist" />
+					<form name="ProbeSets" entity="ProbeSet" group="biologist" />
+					<form name="SNPs" entity="SNP" group="biologist" />
+					<form name="Polymorphisms" entity="Polymorphism" group="biologist" />
+					<form name="Samples" entity="Sample" group="biologist" />
+					<form name="Spots" entity="Spot" group="biologist" />
 				</menu>
 			</menu>
 		</menu>
