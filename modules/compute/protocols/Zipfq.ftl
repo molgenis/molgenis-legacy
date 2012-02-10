@@ -10,11 +10,7 @@
 
 <#include "macros.ftl"/>
 <@begin/>
-#MOLGENIS walltime=10:00:00 nodes=1 cores=1 mem=10 clusterQueue=cluster
-#INPUTS 
-#OUTPUTS
-#EXEC
-#FOREACH
+#MOLGENIS walltime=10:00:00 nodes=1 cores=1 mem=10
 
 alloutputsexist \
  ${leftfilegz} \

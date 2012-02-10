@@ -11,10 +11,6 @@
 <#include "macros.ftl"/>
 <@begin/>
 #MOLGENIS walltime=35:59:00 mem=4
-#INPUTS 
-#OUTPUTS
-#EXEC
-#FOREACH
 
 inputs "${bamfile}"
 alloutputsexist \
