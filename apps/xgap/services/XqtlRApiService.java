@@ -28,7 +28,6 @@ import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.server.MolgenisServiceAuthenticationHelper;
 
-import app.servlet.UsedMolgenisOptions;
 import decorators.MolgenisFileHandler;
 
 /**Use seperate servlet because of the custom R script that needs to be added*/
@@ -137,7 +136,7 @@ public class XqtlRApiService implements MolgenisService
 		} else if (filename.equals(""))
 		{
 			//Utils.console("getting default file");
-			String server = "http://" + request.getRequest().getLocalName() + ":" + request.getRequest().getLocalPort() + "/"+new UsedMolgenisOptions().appName;
+			String server = "http://" + request.getRequest().getLocalName() + ":" + request.getRequest().getLocalPort() + "/"+mc.getVariant();
 			String rSource = server + "/api/R/";
 			// getRequestURL omits port!
 			s +=("#first time only: install RCurl and bitops\n");
