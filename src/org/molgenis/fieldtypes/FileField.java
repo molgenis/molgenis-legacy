@@ -3,6 +3,7 @@ package org.molgenis.fieldtypes;
 import java.io.File;
 import java.text.ParseException;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -89,5 +90,10 @@ public class FileField extends FieldType
 		} else {
 			throw new ParseException("File " + value + " not found.", 0);
 		}
+	}
+	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.FILE;
 	}
 }

@@ -2,6 +2,7 @@ package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HexaInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -85,5 +86,9 @@ public class HexaField extends FieldType
 	{
 		throw new UnsupportedOperationException("Unable to convert hexa field " + value);
 	}
-
+	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.HEXA;
+	}
 }

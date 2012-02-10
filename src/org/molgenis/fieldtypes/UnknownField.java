@@ -2,6 +2,7 @@ package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.model.MolgenisModelException;
@@ -89,6 +90,11 @@ public class UnknownField extends FieldType
 	public Object getTypedValue(String value) throws ParseException
 	{
 		throw new UnsupportedOperationException("Attempted conversion of unknown type, value " + value);
+	}
+
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.UNKNOWN;
 	}
 
 }

@@ -2,6 +2,7 @@ package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.NsequenceInput;
@@ -88,6 +89,11 @@ public class NSequenceField extends FieldType
 	public Object getTypedValue(String value) throws ParseException
 	{
 		return value;
+	}
+	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.NSEQUENCE;
 	}
 
 }

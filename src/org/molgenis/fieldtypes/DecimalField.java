@@ -1,8 +1,11 @@
 package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.DecimalInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -85,5 +88,16 @@ public class DecimalField extends FieldType
 	public Double getTypedValue(String value) throws ParseException
 	{
 		return Double.parseDouble(value);
+	}
+	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.DECIMAL;
+	}
+	
+	@Override
+	public List<String> getAllowedOperators()
+	{
+		return Arrays.asList("EQUALS", "NOT EQUALS", "LESS", "GREATER");
 	}
 }

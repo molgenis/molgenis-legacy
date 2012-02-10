@@ -41,13 +41,6 @@ public class SelectInput extends OptionInput<Object>
 		super(name, null);
 	}
 	
-//  removed! want ambiguous with SelectInput(String name, Object value)	
-//	public SelectInput(String name, String label)
-//	{
-//		this(name);
-//		this.setLabel(label);
-//	}
-
 	public SelectInput(String name, Object value)
 	{
 		super(name, value);

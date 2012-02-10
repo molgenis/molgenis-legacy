@@ -2,6 +2,7 @@ package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.EnumInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -87,5 +88,9 @@ public class EnumField extends FieldType
 	{
 		throw new UnsupportedOperationException("Unable to cast enum type");
 	}
-
+	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.ENUM;
+	}
 }

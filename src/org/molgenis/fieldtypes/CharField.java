@@ -1,7 +1,10 @@
 package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.StringInput;
@@ -81,10 +84,19 @@ public class CharField extends FieldType
 		return String.class;
 	}
 
-	@Override
-	public Object getTypedValue(String value) throws ParseException
+	public String getTypedValue(String value) throws ParseException
 	{
 		return value;
 	}
 
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.CHAR;
+	}
+	
+	@Override
+	public List<String> getAllowedOperators()
+	{
+		return Arrays.asList("EQUALS", "NOT EQUALS", "LESS", "GREATER", "LIKE");
+	}
 }

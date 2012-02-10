@@ -1,6 +1,7 @@
 package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.MolgenisFieldTypes;
@@ -169,4 +170,10 @@ public abstract class FieldType
 	public abstract String getOracleType() throws MolgenisModelException;
 	
 	public abstract Object getTypedValue(String value) throws ParseException;
+	
+	public abstract MolgenisFieldTypes.FieldTypeEnum getEnumType();
+
+	public List<String> getAllowedOperators() {
+		return Arrays.asList("EQUALS", "NOT EQUALS");
+	}
 }

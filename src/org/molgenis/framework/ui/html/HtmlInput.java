@@ -1,12 +1,9 @@
 package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.molgenis.framework.ui.html.render.LinkoutRenderDecorator;
 import org.molgenis.framework.ui.html.render.RenderDecorator;
 import org.molgenis.util.Tuple;
 
@@ -256,7 +253,6 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	{
 		//we render all tags, but we stop rendering text outside tags after maxLength
 		String result = "";
-		List<String> tags = new ArrayList<String>();
 		boolean inTag = false;
 		int count = 0;
 		for(char c: this.getHtmlValue().toCharArray())

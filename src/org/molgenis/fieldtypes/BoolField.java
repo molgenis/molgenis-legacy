@@ -1,5 +1,6 @@
 package org.molgenis.fieldtypes;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.BoolInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -81,5 +82,10 @@ public class BoolField extends FieldType
 	
 	public Boolean getTypedValue(String value) {
 		return Boolean.parseBoolean(value);
+	}
+
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.BOOL;
 	}
 }
