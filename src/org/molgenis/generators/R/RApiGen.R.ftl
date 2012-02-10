@@ -21,7 +21,7 @@ if( !exists("molgenispath") ) molgenispath <- ""
 #allows source the script while passing another path, e.g. to the web server
 
 #entities
-<#list model.entities as entity><#if !entity.abstract && !entity.association>
+<#list model.entities as entity><#if !entity.abstract && !entity.association && !entity.system>
 source(paste(molgenispath,"${entity.namespace?replace(".","/")}/R/${Name(entity)}.R", sep=""))
 </#if></#list>
 
