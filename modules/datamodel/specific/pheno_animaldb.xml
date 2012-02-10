@@ -6,6 +6,13 @@
 			needs to be preserved! Add changelog special section.
 		</description>
 		
+		<entity name="Deletable" abstract="true">
+			<description>Interface for flagging items as deleted</description>
+			<field name="deleted" type="boolean" default="false" nillable="true"/>
+			<field name="deletionTime" type="datetime" nillable="true"/>
+			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
+				xref_label="name" nillable="true"  />
+		</entity>
 		<entity name="Species" extends="OntologyTerm">
 			<description>Ontology terms for species. E.g. Arabidopsis thaliana.
 				DISCUSSION: should we avoid subclasses of OntologyTerm and instead
@@ -18,7 +25,7 @@
 				An external identifier for an annotation. For example: name='R13H8.1', ontology='ensembl' or name='WBgene00000912', ontology='wormbase'.
 			</description>
 		</entity>
-		<entity name="ObservationElement" implements="InvestigationElement"
+		<entity name="ObservationElement" implements="InvestigationElement,Deletable"
 			xref_label="name">
 			<description> Elements that are the targets or features we are
 				looking at of our research.
@@ -155,7 +162,7 @@
 				xref_entity="Panel" xref_field="id" xref_label="name"
 				description="The panel(s) that were used to create this panel." />
 		</entity>
-		<entity name="Observation" abstract="true" implements="Identifiable">
+		<entity name="Observation" abstract="true" implements="Identifiable,Deletable">
 			<description>
 				Generic model for observations, that is, the observed value on a
 				feature-target pair given a protocol. See the 'data' package for all
