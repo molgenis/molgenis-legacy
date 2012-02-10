@@ -1,2 +1,3 @@
 name,protocol_name,PreviousSteps_name
-QCReport,QCReport,
+VcfToTable,VcfToTable,
+QCReport,QCReport,VcfToTable

@@ -17,14 +17,15 @@ Recalibrate,Recalibrate,"Fixmates, CovariatesBefore"
 SamSortRecal,SamSortRecal,Recalibrate
 CovariatesAfter,CovariatesAfter,SamSortRecal
 AnalyzeCovariates,AnalyzeCovariates,"CovariatesBefore, CovariatesAfter"
-PicardQCrecal,PicardQCrecal,SamSortRecal
-Coverage,Coverage,SamSortRecal
-IndelGenotyper,IndelGenotyper,SamSortRecal
+MergeBam,MergeBam,SamSortRecal
+PicardQCrecal,PicardQCrecal,MergeBam
+Coverage,Coverage,MergeBam
+IndelGenotyper,IndelGenotyper,MergeBam
 FilterIndels,FilterIndels,IndelGenotyper
-UnifiedGenotyper,UnifiedGenotyper,SamSortRecal
+UnifiedGenotyper,UnifiedGenotyper,MergeBam
 MakeIndelMask,MakeIndelMask,FilterIndels
 GenomicAnnotator,GenomicAnnotator,UnifiedGenotyper
 VariantAnnotator,VariantAnnotator,GenomicAnnotator
 VcfToTable,VcfToTable,VariantAnnotator
-ConcordanceCheck,ConcordanceCheck,"SamSortRecal, UnifiedGenotyper"
+ConcordanceCheck,ConcordanceCheck,"MergeBam, UnifiedGenotyper"
 QCReport,QCReport,"PicardQC, ConcordanceCheck"

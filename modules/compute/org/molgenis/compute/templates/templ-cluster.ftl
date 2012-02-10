@@ -15,4 +15,4 @@ ${actualcommand}
 ${verificationcommand}
 printf "${scriptID}_finished " >>${location}/log_${jobID}.txt
 date "+finish time: %m/%d/%y%t %H:%M:%S" >>${location}/extra/${scriptID}.txt
-date "+DATE: %m/%d/%y%tTIME: %H:%M:%S" >>${location}/log_${jobID}.txt
+date "+DATE: %m/%d/%y%tTIME: %H:%M:%S" >>${location}/log_${jobID}.txt 
