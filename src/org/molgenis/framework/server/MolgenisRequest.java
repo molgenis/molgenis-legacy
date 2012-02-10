@@ -73,7 +73,7 @@ public class MolgenisRequest extends HttpServletRequestTuple
 			}
 			
 			//print name + value
-			if (name.contains("password") || name.equals(MolgenisServiceAuthenticationHelper.LOGIN_PASSWORD))
+			if (name.toLowerCase().contains("password") || name.equals(MolgenisServiceAuthenticationHelper.LOGIN_PASSWORD))
 			{
 				result += name + "='*****' ";
 			}
