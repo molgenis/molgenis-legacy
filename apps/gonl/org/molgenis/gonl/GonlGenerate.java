@@ -1,4 +1,4 @@
-package org.molgenis.patho;
+package org.molgenis.gonl;
 
 
 
@@ -9,6 +9,6 @@ public class GonlGenerate
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Molgenis("apps/patho/gonl.properties").generate();
+		new Molgenis("apps/gonl/gonl.properties").generate();
 	}
 }
