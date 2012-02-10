@@ -1,4 +1,4 @@
-package org.molgenis.patho;
+package org.molgenis.load.cmdline;
 
 import java.io.File;
 

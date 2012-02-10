@@ -1,4 +1,4 @@
-package org.molgenis.patho.ui;
+package org.molgenis.load.ui;
 
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
