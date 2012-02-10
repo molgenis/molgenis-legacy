@@ -1,7 +1,10 @@
 package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.IntInput;
@@ -88,5 +91,16 @@ public class IntField extends FieldType
 	public Object getTypedValue(String value) throws ParseException
 	{
 		return Integer.parseInt(value);
+	}
+	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.INT;
+	}
+	
+	@Override
+	public List<String> getAllowedOperators()
+	{
+		return Arrays.asList("EQUALS", "NOT EQUALS", "LESS", "GREATER");
 	}
 }

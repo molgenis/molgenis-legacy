@@ -2,6 +2,7 @@ package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.XrefInput;
@@ -19,7 +20,6 @@ public class XrefField extends FieldType
 	@Override
 	public String getJavaPropertyType() throws MolgenisModelException
 	{
-		//Entity e_ref = f.getXrefEntity();
 		Field f_ref = f.getXrefField();
 		return getFieldType(f_ref).getJavaPropertyType();
 	}
@@ -97,5 +97,11 @@ public class XrefField extends FieldType
 	public Object getTypedValue(String value) throws ParseException
 	{
 		throw new UnsupportedOperationException("Xref conversion not supported.");
-	}	
+	}
+	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.XREF;
+	}
+
 }

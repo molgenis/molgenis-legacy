@@ -2,8 +2,11 @@ package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -92,5 +95,16 @@ public class DateField extends FieldType
 	public Date getTypedValue(String value) throws ParseException
 	{
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(value);
+	}
+
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.DATE;
+	}
+	
+	@Override
+	public List<String> getAllowedOperators()
+	{
+		return Arrays.asList("EQUALS", "NOT EQUALS", "LESS", "GREATER", "LIKE");
 	}
 }

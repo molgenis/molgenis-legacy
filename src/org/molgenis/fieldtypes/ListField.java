@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.model.MolgenisModelException;
@@ -92,9 +93,13 @@ public class ListField extends FieldType
 		return java.util.List.class;
 	}
 
-	@Override
 	public java.util.List<?> getTypedValue(String value) throws ParseException
 	{
 		return Arrays.asList(StringUtils.split(value, ","));
+	}
+	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.LIST;
 	}
 }

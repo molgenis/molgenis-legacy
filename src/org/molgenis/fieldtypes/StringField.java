@@ -2,6 +2,7 @@ package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.StringInput;
@@ -86,5 +87,10 @@ public class StringField extends FieldType
 		return value;
 	}
 
+
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.STRING;
+	}
 
 }

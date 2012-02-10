@@ -1,7 +1,10 @@
 package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.LongInput;
@@ -81,10 +84,20 @@ public class LongField extends FieldType
 		return Long.class;
 	}
 
-	@Override
 	public Long getTypedValue(String value) throws ParseException
 	{
 		return Long.parseLong(value);
+	}
+	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.LONG;
+	}
+	
+	@Override
+	public List<String> getAllowedOperators()
+	{
+		return Arrays.asList("EQUALS", "NOT EQUALS", "LESS", "GREATER");
 	}
 
 }

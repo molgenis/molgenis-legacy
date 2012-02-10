@@ -2,6 +2,7 @@ package org.molgenis.fieldtypes;
 
 import java.text.ParseException;
 
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.HyperlinkInput;
@@ -86,5 +87,8 @@ public class HyperlinkField extends FieldType
 		return value;
 	}
 	
-	
+	public FieldTypeEnum getEnumType()
+	{
+		return FieldTypeEnum.HYPERLINK;
+	}
 }

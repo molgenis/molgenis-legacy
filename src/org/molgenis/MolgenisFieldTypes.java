@@ -42,6 +42,31 @@ public class MolgenisFieldTypes
 	private static Logger logger = Logger.getLogger(MolgenisFieldTypes.class);
 	private static boolean init = false;
 	
+	public enum FieldTypeEnum {
+		BOOL,
+		CHAR,
+		DATE,
+		DATE_TIME,
+		DECIMAL,
+		ENUM,
+		FILE,
+		FREEMARKER,
+		HEXA,
+		HYPERLINK,
+		IMAGE,
+		INT,
+		LIST,
+		LONG,
+		MREF,
+		NSEQUENCE,
+		ON_OFF,
+		RICHTEXT,
+		STRING,
+		TEXT,
+		XREF,
+		UNKNOWN
+	}
+	
 	/** Initialize default field types */
 	private static void init()
 	{
@@ -75,7 +100,6 @@ public class MolgenisFieldTypes
 	public static void addType(FieldType ft)
 	{
 		types.put(ft.getClass().getSimpleName().toLowerCase(), ft);
-		// ft.setRegistry();
 	}
 	
 	public static HtmlInput<?> createInput(String type, String name, String xrefEntityClassName) throws HtmlInputException
@@ -88,12 +112,7 @@ public class MolgenisFieldTypes
 		init();
 		try
 		{
-			String fieldType = name + "field";
-			FieldType ft = types.get(fieldType);
-			ft = ft.getClass().newInstance();
-			// ft.setField(f);
-			// ft.setRegistry();
-			return ft;
+			return types.get(name + "field").getClass().newInstance();
 		}
 		catch (Exception e)
 		{
