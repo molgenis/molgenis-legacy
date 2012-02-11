@@ -227,7 +227,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 					if (subQueries.get(rule.getDimIndex()) == null)
 					{
 						Query<ObservedValue> subQuery = (Query<ObservedValue>) db.query(this.getValueClass());
-						subQuery.eq(ObservedValue.DELETED, false);
+//						subQuery.eq(ObservedValue.DELETED, false);
 						// filter on data
 						// if(data != null)
 						// subQuery.eq(TextDataElement.DATA, data.getIdValue());
@@ -304,7 +304,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 
 			// retrieve values matching the selected indexes
 			Query<ObservedValue> query = (Query<ObservedValue>) db.query(valueClass);
-			query.eq(ObservedValue.DELETED, false);
+//			query.eq(ObservedValue.DELETED, false);
 			query.in(ObservedValue.FEATURE, this.getColIndices());
 			query.in(ObservedValue.TARGET, this.getRowIndices());
 

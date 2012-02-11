@@ -51,7 +51,7 @@ public class PhenoMemoryMatrix<E extends ObservationElement, A extends Observati
 		// retrieve observed values for this matrix, on duplicate, sorted by
 		// timestamp
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.eq(ObservedValue.DELETED, false);
+//		q.eq(ObservedValue.DELETED, false);
 		q.in(ObservedValue.FEATURE, colIds);
 		q.in(ObservedValue.TARGET, rowIds);
 		q.sortASC(ObservedValue.TIME);

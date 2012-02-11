@@ -76,8 +76,8 @@ public class MatrixPlugin extends GenericPlugin
 					nr++;
 				}
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.DELETED, 
-						Operator.EQUALS, false));
+//				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.DELETED, 
+//						Operator.EQUALS, false));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
 						true, true, true, filterRules, 
