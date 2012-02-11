@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.molgenis.animaldb.DeletedObservedValue;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
@@ -26,7 +27,7 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 	private static final long serialVersionUID = -366762636959036651L;
 	//private CommonService ct = CommonService.getInstance();
 	private List<ObservedValue> valueList = new ArrayList<ObservedValue>();
-	private List<ObservedValue> deletedValueList = new ArrayList<ObservedValue>();
+	private List<DeletedObservedValue> deletedValueList = new ArrayList<DeletedObservedValue>();
 	
 	public ErrorCorrectionPlugin(String name, ScreenController<?> parent)
 	{
@@ -59,25 +60,55 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 			Date now = new Date();
 			
 			if (action.equals("deleteValues")) {
+				List<ObservedValue> removalList = new ArrayList<ObservedValue>();
+				List<DeletedObservedValue> addList = new ArrayList<DeletedObservedValue>();
 				for (int i = 0; i < valueList.size(); i++) {
 					if (request.getBool(Integer.toString(i)) != null) {
-						valueList.get(i).setDeleted(true);
-						valueList.get(i).setDeletionTime(now);
-						valueList.get(i).setDeletedBy_Id(this.getLogin().getUserId());
+						ObservedValue val = valueList.get(i);
+						removalList.add(val);
+						
+						DeletedObservedValue delVal = new DeletedObservedValue();
+						delVal.setEndtime(val.getEndtime());
+						delVal.setFeature_Id(val.getFeature_Id());
+						delVal.setInvestigation_Id(val.getInvestigation_Id());
+						delVal.setOntologyReference_Id(val.getOntologyReference_Id());
+						delVal.setProtocolApplication_Id(val.getProtocolApplication_Id());
+						delVal.setRelation_Id(val.getRelation_Id());
+						delVal.setTarget_Id(val.getTarget_Id());
+						delVal.setTime(val.getTime());
+						delVal.setValue(val.getValue());
+						delVal.setDeletionTime(now);
+						delVal.setDeletedBy_Id(this.getLogin().getUserId());
+						addList.add(delVal);
 					}
 				}
-				db.update(valueList);
+				db.remove(removalList);
+				db.add(addList);
 			}
 			
 			if (action.equals("undeleteValues")) {
+				List<DeletedObservedValue> removalList = new ArrayList<DeletedObservedValue>();
+				List<ObservedValue> addList = new ArrayList<ObservedValue>();
 				for (int i = 0; i < deletedValueList.size(); i++) {
 					if (request.getBool(Integer.toString(i)) != null) {
-						deletedValueList.get(i).setDeleted(false);
-						deletedValueList.get(i).setDeletionTime(null);
-						deletedValueList.get(i).setDeletedBy_Id(null);
+						DeletedObservedValue val = deletedValueList.get(i);
+						removalList.add(val);
+						
+						ObservedValue addVal = new ObservedValue();
+						addVal.setEndtime(val.getEndtime());
+						addVal.setFeature_Id(val.getFeature_Id());
+						addVal.setInvestigation_Id(val.getInvestigation_Id());
+						addVal.setOntologyReference_Id(val.getOntologyReference_Id());
+						addVal.setProtocolApplication_Id(val.getProtocolApplication_Id());
+						addVal.setRelation_Id(val.getRelation_Id());
+						addVal.setTarget_Id(val.getTarget_Id());
+						addVal.setTime(val.getTime());
+						addVal.setValue(val.getValue());
+						addList.add(addVal);
 					}
 				}
-				db.update(deletedValueList);
+				db.remove(removalList);
+				db.add(addList);
 			}
 			
 		} catch(Exception e) {
@@ -91,10 +122,8 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 	{
 		try
 		{
-			this.valueList = db.query(ObservedValue.class).sortDESC(ObservedValue.TIME).
-					eq(ObservedValue.DELETED, false).find();
-			this.deletedValueList = db.query(ObservedValue.class).sortDESC(ObservedValue.TIME).
-					eq(ObservedValue.DELETED, true).find();
+			this.valueList = db.query(ObservedValue.class).sortDESC(ObservedValue.TIME).find();
+			this.deletedValueList = db.query(DeletedObservedValue.class).sortDESC(DeletedObservedValue.TIME).find();
 		}
 		catch (DatabaseException e)
 		{
@@ -113,12 +142,12 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 		this.valueList = valueList;
 	}
 
-	public List<ObservedValue> getDeletedValueList()
+	public List<DeletedObservedValue> getDeletedValueList()
 	{
 		return deletedValueList;
 	}
 
-	public void setDeletedValueList(List<ObservedValue> deletedValueList)
+	public void setDeletedValueList(List<DeletedObservedValue> deletedValueList)
 	{
 		this.deletedValueList = deletedValueList;
 	}

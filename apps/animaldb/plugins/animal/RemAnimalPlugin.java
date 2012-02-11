@@ -122,7 +122,6 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 				// Check if animal in experiment
 				int featureId = ct.getMeasurementId("Experiment");
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, dbFormat.format(deathDate)));
@@ -154,7 +153,6 @@ public class RemAnimalPlugin extends PluginModel<Entity>
 				// Report as dead/removed by setting the endtime of the Active value
 				featureId = ct.getMeasurementId("Active");
 				Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
-				activeQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				activeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 				activeQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 				List<ObservedValue> activeValueList = activeQuery.find();

@@ -109,7 +109,7 @@ public class InvestigationOverview extends PluginModel<Entity>
 					if (investigations.size() == 0) this.refreshInvestigationReport(db);
 					break;
 				case Select_Investigation:
-					List<ObservedValue> result = db.query(ObservedValue.class).eq(ObservedValue.DELETED, false).
+					List<ObservedValue> result = db.query(ObservedValue.class).
 						eq(ObservedValue.INVESTIGATION, selectedInvestigation.getId()).find();
 					for (ObservedValue v : result)
 					{

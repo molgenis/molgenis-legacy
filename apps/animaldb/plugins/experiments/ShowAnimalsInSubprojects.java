@@ -242,7 +242,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				// Find all the animals currently in this DEC subproject
 				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
@@ -304,7 +303,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				for (int animalId : animalRemoveIdList) {
 					// Get DEC subproject
 					Query<ObservedValue> q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subproject.getId()));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
@@ -322,7 +320,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 						// If applicable, end status Active and set Death date
 						if (endstatus.equals("A. Dood in het kader van de proef") || endstatus.equals("B. Gedood na beeindiging van de proef")) {
 							Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
-							activeQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 							activeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 							activeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 							List<ObservedValue> activeValueList = activeQuery.find();
@@ -435,7 +432,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 				}
 				// Remove animals from id list that are already in an experiment currently
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, animalIdList));
@@ -457,7 +453,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 					// Calculate sourceTypeSubproject based on animal's SourceType and DEC Subproject history
 					String sourceTypeSubproject = null;
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Source"));
 					valueList = q.find();
@@ -465,7 +460,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 					{
 						int sourceId = valueList.get(0).getRelation_Id();
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, sourceId));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "SourceType"));
 						valueList = q.find();
@@ -482,7 +476,6 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 							// SourceTypeSubproject 6 is for first reuse, 7 for second etc.
 							String startOfYearString = Calendar.getInstance().get(Calendar.YEAR) + "-01-01 00:00:00";
 							q = db.query(ObservedValue.class);
-							q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 							q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.GREATER_EQUAL, startOfYearString));

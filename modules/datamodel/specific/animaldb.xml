@@ -14,5 +14,32 @@
 			<field name="prefix" type="string" nillable="true" />
 			<field name="highestNumber" type="int" />
 		</entity>
+		<entity name="DeletedObservedValue" implements="Identifiable,Observation">
+			<description>Alternative for ObservedValue containing extra fields stating
+				when it was deleted and by whom.</description>
+			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
+				nillable="true"
+				description="(Optional) Reference to the
+				ontology definition or 'code' for this value (recommended for non-numeric
+				values such as codes)" />
+			<field nillable="true" name="value" description="The value observed" />
+			<field nillable="true" name="relation" type="xref"
+				xref_entity="ObservationElement"
+				description="Reference to other end of the relationship, if any. For example to a 'brother' or from 'sample' to 'derivedSample'." />
+			<field nillable="true" auto="false" name="time" type="datetime"
+				description="(Optional) Time when the value was observed. For example in time series or if feature is time-dependent like 'age'" />
+			<field nillable="true" auto="false" name="endtime" type="datetime"
+				description="(Optional) Time when the value's validity ended" />
+			<field name="deletionTime" type="datetime" nillable="true"/>
+			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
+				xref_label="name" nillable="true"  />
+		</entity>
+		<entity name="DeletedObservationTarget" extends="ObservationElement">
+			<description>Alternative for ObservationTarget containing extra fields stating
+				when it was deleted and by whom.</description>
+			<field name="deletionTime" type="datetime" nillable="true"/>
+			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
+				xref_label="name" nillable="true"  />
+		</entity>
 	</module>
 </molgenis>

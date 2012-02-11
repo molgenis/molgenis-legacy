@@ -90,7 +90,7 @@ public class EventViewerPluginMatrix extends GenericPlugin
 		animalInfoHeader.setId("infoheader");
 		
 		List<ObservedValue> valList = db.query(ObservedValue.class).eq(ObservedValue.TARGET, 
-				animalId).eq(ObservedValue.DELETED, false).find();
+				animalId).find();
 		if (!valList.isEmpty()) {
 			animalInfo = new Table("AnimalInfoTable");
 			animalInfo.addColumn("Valid from...");
@@ -152,8 +152,6 @@ public class EventViewerPluginMatrix extends GenericPlugin
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.DELETED, 
-						Operator.EQUALS, false));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
 						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
 						true, false, false, filterRules, 

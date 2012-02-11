@@ -150,7 +150,6 @@ public class ManageLines extends PluginModel<Entity>
 			for (ObservationTarget tmpSource : tmpSourceList) {
 				int featid = cs.getMeasurementId("SourceType");
 				Query<ObservedValue> sourceTypeQuery = db.query(ObservedValue.class);
-				sourceTypeQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				sourceTypeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, tmpSource.getId()));
 				sourceTypeQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featid));
 				List<ObservedValue> sourceTypeValueList = sourceTypeQuery.find();

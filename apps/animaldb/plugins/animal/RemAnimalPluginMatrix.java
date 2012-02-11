@@ -137,7 +137,6 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 					// Report as dead/removed by setting the endtime of the Active value
 					measurementId = cs.getMeasurementId("Active");
 					Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
-					activeQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					activeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 					activeQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
 					List<ObservedValue> activeValueList = activeQuery.find();
@@ -190,8 +189,6 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.DELETED, 
-						Operator.EQUALS, false));
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
 						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
 						"Alive"));
@@ -224,7 +221,6 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 	private boolean inExperiment(Database db, int animalId, Date deathDate) throws DatabaseException, ParseException {
 		int featureId = cs.getMeasurementId("Experiment");
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 		q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, dbFormat.format(deathDate)));

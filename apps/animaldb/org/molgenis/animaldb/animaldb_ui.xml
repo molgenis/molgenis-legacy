@@ -123,6 +123,10 @@
 					<form name="prefix" entity="NamePrefix" view="list" label="Name prefixes" />
 					<form name="news" entity="MolgenisNews" view="list" label="Frontpage items" />
 				</menu>
+				<menu name="deltablemenu" position="left" label="Deletion tables">
+					<form name="delobservedvalue" entity="DeletedObservedValue" view="list" label="Observed values" />
+					<form name="delobservationtarget" entity="DeletedObservationTarget" view="list" label="Observation targets" />
+				</menu>
 			</menu>
 		</menu>
 

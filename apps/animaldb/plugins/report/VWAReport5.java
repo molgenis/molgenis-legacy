@@ -70,7 +70,6 @@ public class VWAReport5 extends AnimalDBReport {
 				// Find the experiments belonging to this DEC
 				List<Integer> experimentIdList = new ArrayList<Integer>();
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, d.getId()));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "DecApplication"));
 				List<ObservedValue> valueList = q.find();
@@ -96,7 +95,6 @@ public class VWAReport5 extends AnimalDBReport {
 					
 					// Get the animals that were in the experiment this year
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, expid));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.LESS_EQUAL, endOfYearString));
@@ -129,7 +127,6 @@ public class VWAReport5 extends AnimalDBReport {
 						int normalSpeciesId = ct.getMostRecentValueAsXref(animalId, ct.getMeasurementId("Species"));
 						// Get VWA species
 						Query<ObservedValue> vwaSpeciesQuery = db.query(ObservedValue.class);
-						vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
 						vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "VWASpecies"));
 						List<ObservedValue> vwaSpeciesValueList = vwaSpeciesQuery.find();
@@ -138,7 +135,6 @@ public class VWAReport5 extends AnimalDBReport {
 						}
 						// Get scientific (Latin) species
 						Query<ObservedValue> latinSpeciesQuery = db.query(ObservedValue.class);
-						latinSpeciesQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						latinSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
 						latinSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "LatinSpecies"));
 						List<ObservedValue> latinSpeciesValueList = latinSpeciesQuery.find();
@@ -149,7 +145,6 @@ public class VWAReport5 extends AnimalDBReport {
 						// Herkomst en hergebruik (animal's SourceTypeSubproject, which includes reuse)
 						String sourceType = "";
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "SourceTypeSubproject"));
 						q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
@@ -162,7 +157,6 @@ public class VWAReport5 extends AnimalDBReport {
 						// Anesthesie (animal's Anaesthesia)
 						String anaesthesia = "";
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Anaesthesia"));
 						q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
@@ -174,7 +168,6 @@ public class VWAReport5 extends AnimalDBReport {
 						// Pijnbestrijding, postoperatief (animal's PainManagement)
 						String painManagement = "";
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "PainManagement"));
 						q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
@@ -187,7 +180,6 @@ public class VWAReport5 extends AnimalDBReport {
 						String actualAnimalEndStatus = "";	
 						// Find protocol application ID for the removing of this animal from this DEC subproject
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 						q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, expid));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "FromExperiment"));
@@ -197,7 +189,6 @@ public class VWAReport5 extends AnimalDBReport {
 							
 							// Ongerief (animal's ActualDiscomfort)
 							q = db.query(ObservedValue.class);
-							q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ActualDiscomfort"));
 							q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, removalProtocolApplicationId));
@@ -212,7 +203,6 @@ public class VWAReport5 extends AnimalDBReport {
 							
 							// Toestand dier na beeindiging proef (animal's most recent ActualAnimalEndStatus)
 							q = db.query(ObservedValue.class);
-							q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
 							q.sortDESC(ObservedValue.TIME);
@@ -225,7 +215,6 @@ public class VWAReport5 extends AnimalDBReport {
 									// change to 'dood ihkv de proef' because that's how the law wants it...
 									if (actualAnimalEndStatus.equals("C. Na einde proef in leven gelaten")) {
 										q = db.query(ObservedValue.class);
-										q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 										q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 										q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 										q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.GREATER_EQUAL, startOfYearString));

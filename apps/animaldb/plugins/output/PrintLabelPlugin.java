@@ -242,8 +242,6 @@ public class PrintLabelPlugin extends GenericPlugin
 		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 				Operator.IN, investigationNames));
-		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.DELETED, 
-				Operator.EQUALS, false));
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
 				cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
 				"Alive"));

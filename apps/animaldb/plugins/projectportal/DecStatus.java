@@ -194,7 +194,6 @@ public class DecStatus extends GenericPlugin
 					investigationIds);
 			if (aliveAnimalIdList.size() > 0) {
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
@@ -207,7 +206,6 @@ public class DecStatus extends GenericPlugin
 					investigationIds);
 			if (totalAnimalIdList.size() > 0) {
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, totalAnimalIdList));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));

@@ -80,7 +80,7 @@ public class InvestigationReport extends PluginModel<Entity>
 			FormModel<Investigation> parentForm = (FormModel<Investigation>)getParent().getParent();
 			selectedInvestigation = parentForm.getRecords().get(0);
 			
-			List<ObservedValue> result = db.query(ObservedValue.class).eq(ObservedValue.DELETED, false).
+			List<ObservedValue> result = db.query(ObservedValue.class).
 					eq(ObservedValue.INVESTIGATION, selectedInvestigation.getId()).find();
 			for (ObservedValue v : result)
 			{
@@ -91,9 +91,9 @@ public class InvestigationReport extends PluginModel<Entity>
 				values.put(f + "_" + t, v.getValue());
 			}
 			
-			features = db.query(Measurement.class).eq(Measurement.DELETED, false).in(Measurement.NAME, featureNames).
+			features = db.query(Measurement.class).in(Measurement.NAME, featureNames).
 					eq(Measurement.INVESTIGATION, selectedInvestigation.getId()).find();
-			targets = db.query(ObservationTarget.class).eq(ObservationTarget.DELETED, false).in(ObservationTarget.NAME, targetNames).
+			targets = db.query(ObservationTarget.class).in(ObservationTarget.NAME, targetNames).
 					eq(ObservationTarget.INVESTIGATION, selectedInvestigation.getId()).find();
 		}
 		catch (Exception e)

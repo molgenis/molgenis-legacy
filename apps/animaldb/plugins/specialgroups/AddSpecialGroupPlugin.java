@@ -110,7 +110,6 @@ public class AddSpecialGroupPlugin extends PluginModel<Entity>
 			// Populate label list
 			labelList.clear();
 			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "TypeOfGroup"));
 			List<ObservedValue> valueList = q.find();
 			for (ObservedValue v : valueList) {

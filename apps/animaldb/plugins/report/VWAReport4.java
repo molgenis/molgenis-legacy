@@ -55,7 +55,6 @@ public class VWAReport4 extends AnimalDBReport
 				// Check AnimalType
 				String animalType = "";
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "AnimalType"));
 				List<ObservedValue> valueList = q.find();
@@ -81,7 +80,6 @@ public class VWAReport4 extends AnimalDBReport
 				boolean activeEndOfPrevYear = false;
 				boolean activeEndOfThisYear = false;
 				q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.NOT, null));
@@ -129,7 +127,6 @@ public class VWAReport4 extends AnimalDBReport
 				if (activeEndOfPrevYear == false)
 				{
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Source"));
 					valueList = q.find();
@@ -137,7 +134,6 @@ public class VWAReport4 extends AnimalDBReport
 					{
 						int sourceid = valueList.get(0).getRelation_Id();
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, sourceid));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "SourceType"));
 						valueList = q.find();
@@ -174,7 +170,6 @@ public class VWAReport4 extends AnimalDBReport
 				{
 					// Not in an experiment at all - ever?
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 					if (q.count() == 0) {
@@ -183,7 +178,6 @@ public class VWAReport4 extends AnimalDBReport
 					} else {
 						// Died while in or after experiment this year?
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.GREATER_EQUAL, startOfYearString));
@@ -194,7 +188,6 @@ public class VWAReport4 extends AnimalDBReport
 							// find 'FromExperiment' value for most recently ended experiment
 							int experimentId = subprojectValueList.get(0).getRelation_Id();
 							q = db.query(ObservedValue.class);
-							q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "FromExperiment"));
 							q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, experimentId));
@@ -202,7 +195,6 @@ public class VWAReport4 extends AnimalDBReport
 							if (fromSubprojectValueList.size() == 1) {
 								int protocolApplicationId = fromSubprojectValueList.get(0).getProtocolApplication_Id();
 								q = db.query(ObservedValue.class);
-								q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 								q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 								q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
 								q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
@@ -232,7 +224,6 @@ public class VWAReport4 extends AnimalDBReport
 
 					// Handle 'afgevoerde' animals (col 14-17)
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Removal"));
 					q.addRules(new QueryRule(ObservedValue.TIME, Operator.GREATER_EQUAL, startOfYearString));
@@ -252,7 +243,6 @@ public class VWAReport4 extends AnimalDBReport
 
 				// Get species and store values in the corresponding "bin"
 				q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Species"));
 				valueList = q.find();
@@ -262,7 +252,6 @@ public class VWAReport4 extends AnimalDBReport
 					String vwaSpecies = "";
 					int normalSpeciesId = valueList.get(0).getRelation_Id();
 					Query<ObservedValue> vwaSpeciesQuery = db.query(ObservedValue.class);
-					vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
 					vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "VWASpecies"));
 					List<ObservedValue> vwaSpeciesValueList = vwaSpeciesQuery.find();
@@ -272,7 +261,6 @@ public class VWAReport4 extends AnimalDBReport
 					// Get scientific (Latin) species
 					String latinSpecies = "";
 					Query<ObservedValue> latinSpeciesQuery = db.query(ObservedValue.class);
-					latinSpeciesQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 					latinSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
 					latinSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "LatinSpecies"));
 					List<ObservedValue> latinSpeciesValueList = latinSpeciesQuery.find();

@@ -377,7 +377,6 @@ public class CommonService
 		
 		if (isActive == false) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
-			targetQuery.addRules(new QueryRule(ObservationTarget.DELETED, Operator.EQUALS, false));
 			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
 			if (type != null) {
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
@@ -392,7 +391,6 @@ public class CommonService
 			// Find 'Active' target id's
 			int featureId = getMeasurementId(ACTIVE);
 			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-			valueQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
 			valueQuery.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 			valueQuery.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
@@ -405,7 +403,6 @@ public class CommonService
 			List<Integer> typeIdList = new ArrayList<Integer>();
 			if (type != null) {
 				Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
-				targetQuery.addRules(new QueryRule(ObservationTarget.DELETED, Operator.EQUALS, false));
 				targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
 				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
 				targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
@@ -432,7 +429,6 @@ public class CommonService
 	public List<ObservedValue> getAllObservedValues(int measurementId, List<Integer> investigationIds) 
 		throws DatabaseException, ParseException {
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
 		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
@@ -446,8 +442,8 @@ public class CommonService
 	 */
 	public List<ObservationTarget> getAllObservationTargets(List<Integer> investigationIds) {
 		try {
-		    return db.query(ObservationTarget.class).eq(ObservationTarget.DELETED, false).
-		    		in(ObservationTarget.INVESTIGATION, investigationIds).find();
+		    return db.query(ObservationTarget.class).in(ObservationTarget.INVESTIGATION, 
+		    		investigationIds).find();
 		} catch (Exception e) {
 		    return new ArrayList<ObservationTarget>();
 		}
@@ -500,7 +496,6 @@ public class CommonService
 	public List<ObservationTarget> getObservationTargets(List<Integer> idList) throws DatabaseException, ParseException {
 		if (idList.size() > 0) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
-			targetQuery.addRules(new QueryRule(ObservationTarget.DELETED, Operator.EQUALS, false));
 			targetQuery.addRules(new QueryRule(ObservationTarget.ID, Operator.IN, idList));
 			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
 			return targetQuery.find();
@@ -653,7 +648,6 @@ public class CommonService
 		List<Integer> panelIdList = new ArrayList<Integer>();
 
 		Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-		valueQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, getMeasurementId("TypeOfGroup")));
 		valueQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, mark));
 		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
@@ -688,7 +682,6 @@ public class CommonService
 		// First, check is target is already in this Panel
 		int featureid = getMeasurementId("Group");
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 		q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, groupid));
@@ -739,7 +732,6 @@ public class CommonService
 	public int getActorId(int userId) throws DatabaseException, ParseException {
 		int measurementId = getMeasurementId("MolgenisUserId");
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, Integer.toString(userId)));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
 		List<ObservedValue> valueList = q.find();
@@ -989,7 +981,6 @@ public class CommonService
 			throws DatabaseException, ParseException
 	{
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
 		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
@@ -1039,7 +1030,6 @@ public class CommonService
 			throws DatabaseException, ParseException
 	{
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
 		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
@@ -1348,7 +1338,6 @@ public class CommonService
 			throws DatabaseException, ParseException
 	{
 		Query<Measurement> q = db.query(Measurement.class);
-		q.addRules(new QueryRule(Measurement.DELETED, Operator.EQUALS, false));
 		q.sortASC(Measurement.ID);
 		if (investigationIds.size() > 0) {
 			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
@@ -1374,7 +1363,6 @@ public class CommonService
 		String sortOrder, List<Integer> investigationIds) throws DatabaseException, ParseException
 	{
 		Query<Measurement> q = db.query(Measurement.class);
-		q.addRules(new QueryRule(Measurement.DELETED, Operator.EQUALS, false));
 		if (sortOrder.equals("ASC")) {
 			q.sortASC(sortField);
 		} else {
@@ -1402,7 +1390,6 @@ public class CommonService
 			throws DatabaseException, ParseException
 	{
 		Query<ObservableFeature> q = db.query(ObservableFeature.class);
-		q.addRules(new QueryRule(ObservableFeature.DELETED, Operator.EQUALS, false));
 		q.sortASC(ObservableFeature.ID);
 		if (investigationIds.size() > 0) {
 			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
@@ -1736,7 +1723,6 @@ public class CommonService
 		for (Measurement m : measurements)
 		{ // for each feature, find/make value(s)
 			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
 			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, m.getId()));
 			q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
@@ -1907,7 +1893,6 @@ public class CommonService
 		if (customNameFeatureId != -1) {
 			try {
 				Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-				valueQuery.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 				valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, 
 						customNameFeatureId));
 				valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, 
@@ -2049,7 +2034,6 @@ public class CommonService
 	 */
 	public List<String> getRemarks(int targetId) throws DatabaseException {
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Remark"));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
 		List<ObservedValue> valueList = q.find();

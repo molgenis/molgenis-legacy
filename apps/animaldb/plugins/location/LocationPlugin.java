@@ -96,7 +96,6 @@ public class LocationPlugin extends PluginModel<Entity>
 	private String getSuperLoc(Database db, int locId) throws DatabaseException {
 		
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Location"));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, locId));
 		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null)); // only active one!
@@ -229,7 +228,6 @@ public class LocationPlugin extends PluginModel<Entity>
 	{
 		// First end existing Location value(s)
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.DELETED, Operator.EQUALS, false));
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Location"));
 		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
