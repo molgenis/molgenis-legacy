@@ -77,7 +77,7 @@
 		</tbody>
 	</table>
 
-<p><em>Note: observed values set on or related to the selected observation targets will not be unflagged! You have to do this yourself in the Correct errors Plugin for Observed values.</em></p>
+<p><em>Note: observed values set on or related to the selected observation targets will also be unflagged!</em></p>
 
 <input type="submit" class='addbutton' value="Unflag" onclick="__action.value='undeleteTargets';return true;"/>
 

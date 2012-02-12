@@ -32,7 +32,14 @@
 				description="(Optional) Time when the value's validity ended" />
 			<field name="deletionTime" type="datetime" nillable="true"/>
 			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
-				xref_label="name" nillable="true"  />
+				xref_label="name" nillable="true" />
+			<field name="DeletedTarget" type="xref" xref_entity="DeletedObservationTarget"
+				xref_field="id" xref_label="name" nillable="true" 
+				description="References the deleted ObservationTarget that this feature was made on." />
+			<field nillable="true" name="DeletedRelation" type="xref"
+				xref_entity="DeletedObservationTarget"
+				description="Reference to other, deleted end of the relationship, if any." />
+			<nillable fields="Target" /> <!-- This doesn't seem to work! TODO: find out why... -->
 		</entity>
 		<entity name="DeletedObservationTarget" extends="ObservationElement">
 			<description>Alternative for ObservationTarget containing extra fields stating

@@ -64,6 +64,9 @@ public class ErrorCorrectionTargetPlugin extends PluginModel<Entity>
 			if (action.equals("deleteTargets")) {
 				List<ObservationTarget> removalList = new ArrayList<ObservationTarget>();
 				List<DeletedObservationTarget> addList = new ArrayList<DeletedObservationTarget>();
+				List<ObservedValue> valRemovalList = new ArrayList<ObservedValue>();
+				List<DeletedObservedValue> valAddList = new ArrayList<DeletedObservedValue>();
+				
 				for (int i = 0; i < targetList.size(); i++) {
 					if (request.getBool(Integer.toString(i)) != null) {
 						ObservationTarget tgt = targetList.get(i);
@@ -81,16 +84,45 @@ public class ErrorCorrectionTargetPlugin extends PluginModel<Entity>
 						delTgt.setDeletedBy_Id(this.getLogin().getUserId());
 						addList.add(delTgt);
 						
-						deleteValuesForTarget(db, tgt.getId());
+						List<ObservedValue> valList = db.query(ObservedValue.class).eq(ObservedValue.TARGET, tgt.getId()).
+								or().eq(ObservedValue.RELATION, tgt.getId()).find();
+						valRemovalList.addAll(valList);
+						for (ObservedValue val : valList) {
+							DeletedObservedValue valDel = new DeletedObservedValue();
+							valDel.setEndtime(val.getEndtime());
+							valDel.setFeature_Id(val.getFeature_Id());
+							valDel.setInvestigation_Id(val.getInvestigation_Id());
+							valDel.setOntologyReference_Id(val.getOntologyReference_Id());
+							valDel.setProtocolApplication_Id(val.getProtocolApplication_Id());
+							valDel.setTime(val.getTime());
+							valDel.setValue(val.getValue());
+							if (val.getTarget_Id().intValue() == tgt.getId().intValue()) {
+								// Attach to deleted Target
+								valDel.setDeletedTarget_Name(delTgt.getName());
+								valDel.setTarget_Id(1); // Hack because override making Target field nillable doesn't seem to work! TODO: solve.
+								valDel.setRelation_Id(val.getRelation_Id()); // Relation we can keep as-is because this target wasn't deleted
+							} else {
+								// Attach to deleted Relation
+								valDel.setDeletedRelation_Name(delTgt.getName());
+								valDel.setTarget_Id(val.getTarget_Id()); // Target we can keep as-is because this target wasn't deleted
+							}
+							valDel.setDeletionTime(now);
+							valDel.setDeletedBy_Id(this.getLogin().getUserId());
+							valAddList.add(valDel);
+						}
 					}
 				}
+				db.remove(valRemovalList);
 				db.remove(removalList);
 				db.add(addList);
+				db.add(valAddList);
 			}
 			
 			if (action.equals("undeleteTargets")) {
 				List<DeletedObservationTarget> removalList = new ArrayList<DeletedObservationTarget>();
 				List<ObservationTarget> addList = new ArrayList<ObservationTarget>();
+				List<DeletedObservedValue> valRemovalList = new ArrayList<DeletedObservedValue>();
+				List<ObservedValue> valAddList = new ArrayList<ObservedValue>();
 				for (int i = 0; i < deletedTargetList.size(); i++) {
 					if (request.getBool(Integer.toString(i)) != null) {
 						DeletedObservationTarget tgt = deletedTargetList.get(i);
@@ -105,42 +137,42 @@ public class ErrorCorrectionTargetPlugin extends PluginModel<Entity>
 						addTgt.setCanWrite_Id(tgt.getCanWrite_Id());
 						addTgt.setOwns_Id(tgt.getOwns_Id());
 						addList.add(addTgt);
+						
+						List<DeletedObservedValue> valList = db.query(DeletedObservedValue.class).eq(DeletedObservedValue.DELETEDTARGET, tgt.getId()).
+								or().eq(DeletedObservedValue.DELETEDRELATION, tgt.getId()).find();
+						valRemovalList.addAll(valList);
+						for (DeletedObservedValue val : valList) {
+							ObservedValue addVal = new ObservedValue();
+							addVal.setEndtime(val.getEndtime());
+							addVal.setFeature_Id(val.getFeature_Id());
+							addVal.setInvestigation_Id(val.getInvestigation_Id());
+							addVal.setOntologyReference_Id(val.getOntologyReference_Id());
+							addVal.setProtocolApplication_Id(val.getProtocolApplication_Id());
+							addVal.setTime(val.getTime());
+							addVal.setValue(val.getValue());
+							if (val.getTarget_Id().intValue() == tgt.getId().intValue()) {
+								// Attach to undeleted Target
+								addVal.setTarget_Name(addTgt.getName());
+								addVal.setRelation_Id(val.getRelation_Id()); // Relation we can keep as-is because it wasn't (un)deleted
+							} else {
+								// Attach to undeleted Relation
+								addVal.setRelation_Name(addTgt.getName());
+								addVal.setTarget_Id(val.getTarget_Id()); // Target we can keep as-is because it wasn't (un)deleted
+							}
+							valAddList.add(addVal);
+						}
 					}
 				}
+				db.remove(valRemovalList);
 				db.remove(removalList);
 				db.add(addList);
+				db.add(valAddList);
 			}
 			
 		} catch(Exception e) {
 			this.setError("Error: " + e.getMessage());
 			e.printStackTrace();
 		}
-	}
-
-	private void deleteValuesForTarget(Database db, int animalId) throws DatabaseException
-	{
-		Date now = new Date();
-		List<ObservedValue> valList = db.query(ObservedValue.class).eq(ObservedValue.TARGET, animalId).
-				or().eq(ObservedValue.RELATION, animalId).find();
-		db.remove(valList);
-		
-		List<DeletedObservedValue> valDelList = new ArrayList<DeletedObservedValue>();
-		for (ObservedValue val : valList) {
-			DeletedObservedValue valDel = new DeletedObservedValue();
-			valDel.setEndtime(val.getEndtime());
-			valDel.setFeature_Id(val.getFeature_Id());
-			valDel.setInvestigation_Id(val.getInvestigation_Id());
-			valDel.setOntologyReference_Id(val.getOntologyReference_Id());
-			valDel.setProtocolApplication_Id(val.getProtocolApplication_Id());
-			valDel.setRelation_Id(val.getRelation_Id());
-			//valDel.setTarget_Id(val.getTarget_Id()); TODO: solve how to retain link between ObsVal and ObsTgt!
-			valDel.setTime(val.getTime());
-			valDel.setValue(val.getValue());
-			valDel.setDeletionTime(now);
-			valDel.setDeletedBy_Id(this.getLogin().getUserId());
-			valDelList.add(valDel);
-		}
-		db.add(valDelList);
 	}
 
 	@Override
