@@ -214,6 +214,27 @@ It should be used via 'import' plus passing of properties
 			<insert path="classpath" position="under" xml="${app_xml3}"/>
 		</xmltask>
 		
+		<echo>Restoring .setting/sorg.eclipse.wst.common.component from template file ${basedir}/.settings/template.org.eclipse.wst.common.component</echo>
+		<copy file="${basedir}/.settings/template.org.eclipse.wst.common.component" tofile="${basedir}/.settings/org.eclipse.wst.common.component" overwrite="true"/>
+		
+		<!-- <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/src"/> -->
+		
+		<pathconvert property="app_xml4" refid="app.class.path" pathsep="&quot;/&gt;&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;">
+			<!--<map from="${user.dir}/" to="" />-->
+			<map from="${basedir}/" to="" />
+		</pathconvert>
+		
+		<!-- add generated src as well -->
+		<property name="app_xml5" value="&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;${app_xml4}&quot;/&gt;"/>
+		<property name="app_xml6" value="&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;${output_src}&quot;/&gt;${app_xml5}"/>
+		<property name="app_xml7" value="&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;${output_sql}&quot;/&gt;${app_xml6}"/>
+	
+		<echo message="eclipse .classpath xml: ${app_xml5}"/>
+	
+		<xmltask source=".settings/template.org.eclipse.wst.common.component" dest=".settings/org.eclipse.wst.common.component" outputter="simple">
+			<insert path="project-modules/wb-module" position="under" xml="${app_xml7}"/>
+		</xmltask>
+		
 	</target>
 
 	<target name="generate-compile" depends="generate,compile"/>
