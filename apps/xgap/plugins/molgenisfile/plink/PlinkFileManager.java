@@ -29,7 +29,6 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
 
-import decorators.MolgenisFileHandler;
 import decorators.NameConvention;
 import filehandling.generic.PerformUpload;
 
@@ -50,7 +49,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 		return model;
 	}
 
-	private MolgenisFileHandler mfh = null;
+	//private MolgenisFileHandler mfh = null;
 
 	@Override
 	public String getViewName()
@@ -142,7 +141,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 						PerformUpload.doUpload(db, famInvFile, famFile, false);
 						PerformUpload.doUpload(db, bedInvFile, bedFile, false);
 						
-						boolean tagged = tagParameter("Plink_params", "inputname", fileSetName);
+						boolean tagged = tagParameter("Plink_params", "inputname", fileSetName, db);
 						
 						if(tagged)
 						{
@@ -212,7 +211,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 						PerformUpload.doUpload(db, mapInvFile, mapFile, false);
 						PerformUpload.doUpload(db, pedInvFile, pedFile, false);
 						
-						boolean tagged = tagParameter("Plink_params", "inputname", fileSetName);
+						boolean tagged = tagParameter("Plink_params", "inputname", fileSetName, db);
 						
 						if(tagged)
 						{
@@ -242,17 +241,17 @@ public class PlinkFileManager extends PluginModel<Entity>
 		}
 	}
 	
-	private boolean tagParameter(String paramSet, String paramName, String paramValue) throws DatabaseException,
+	private boolean tagParameter(String paramSet, String paramName, String paramValue, Database db) throws DatabaseException,
 	ParseException, IOException
 	{
-		List<ParameterSet> plinkParams = this.getDatabase().find(ParameterSet.class, new QueryRule(ParameterSet.NAME, Operator.EQUALS, paramSet));
+		List<ParameterSet> plinkParams = db.find(ParameterSet.class, new QueryRule(ParameterSet.NAME, Operator.EQUALS, paramSet));
 		if(plinkParams.size() == 0)
 		{
 			//Trying to tag Plink fileset as '"+paramValue+"', but no ParameterSet found with name '"+paramSet+"'.
 			return false;
 		}
 		
-		Query<ParameterName> q = this.getDatabase().query(ParameterName.class);
+		Query<ParameterName> q = db.query(ParameterName.class);
 		q.addRules(new QueryRule(ParameterName.NAME, Operator.EQUALS, paramName));
 		q.addRules(new QueryRule(ParameterName.PARAMETERSET, Operator.EQUALS, plinkParams.get(0).getId()));
 		List<ParameterName> inputName = q.find();
@@ -267,7 +266,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 		val.setParameterName(inputName.get(0));
 		val.setValue(paramValue);
 		val.setName("Plink_"+paramValue);
-		this.getDatabase().add(val);
+		db.add(val);
 	
 		//Tagged '"+paramValue+"' in ParameterSet '"+paramSet+"' under ParameterName '"+paramName+"'.
 		
@@ -290,7 +289,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 			extensions.add("fam");
 			extensions.add("bed");
 			
-			List<InvestigationFile> invFiles = db.find(InvestigationFile.class, new QueryRule(InvestigationFile.EXTENSION, Operator.IN, extensions));
+			//List<InvestigationFile> invFiles = db.find(InvestigationFile.class, new QueryRule(InvestigationFile.EXTENSION, Operator.IN, extensions));
 			
 			if (this.getMyModel().getUploadMode() == null)
 			{
