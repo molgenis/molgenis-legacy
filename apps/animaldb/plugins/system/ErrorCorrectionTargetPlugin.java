@@ -15,6 +15,9 @@ import org.molgenis.animaldb.DeletedObservationTarget;
 import org.molgenis.animaldb.DeletedObservedValue;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.pheno.ObservationTarget;
@@ -138,8 +141,13 @@ public class ErrorCorrectionTargetPlugin extends PluginModel<Entity>
 						addTgt.setOwns_Id(tgt.getOwns_Id());
 						addList.add(addTgt);
 						
-						List<DeletedObservedValue> valList = db.query(DeletedObservedValue.class).eq(DeletedObservedValue.DELETEDTARGET, tgt.getId()).
-								or().eq(DeletedObservedValue.DELETEDRELATION, tgt.getId()).find();
+						Query<DeletedObservedValue> q = db.query(DeletedObservedValue.class);
+						QueryRule qrTarget = new QueryRule(DeletedObservedValue.DELETEDTARGET, Operator.EQUALS, tgt.getId());
+						QueryRule qrRelation = new QueryRule(DeletedObservedValue.DELETEDRELATION, Operator.EQUALS, tgt.getId());
+						q.addRules(new QueryRule(qrTarget, new QueryRule(Operator.OR), qrRelation));
+						java.sql.Date targetDeletionTime = new java.sql.Date(tgt.getDeletionTime().getTime());
+						q.addRules(new QueryRule(DeletedObservedValue.DELETIONTIME, Operator.EQUALS, targetDeletionTime));
+						List<DeletedObservedValue> valList = q.find();
 						valRemovalList.addAll(valList);
 						for (DeletedObservedValue val : valList) {
 							ObservedValue addVal = new ObservedValue();

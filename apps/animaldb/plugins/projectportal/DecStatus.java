@@ -27,7 +27,6 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
-import com.ibm.icu.util.Calendar;
 import commonservice.CommonService;
 
 public class DecStatus extends GenericPlugin

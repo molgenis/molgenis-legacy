@@ -31,7 +31,7 @@
 		<thead>
 			<tr>
 				<th>Select</th>
-				<th>Observation target</th>
+				<th>Target</th>
 				<th>Measurement</th>
 				<th>Value</th>
 				<th>Relation</th>
@@ -68,12 +68,10 @@
 				<th>Select</th>
 				<th>Deleted on</th>
 				<th>Deleted by</th>
-				<th>Observation target</th>
-				<th>Deleted observation target</th>
+				<th>Target</th>
 				<th>Measurement</th>
 				<th>Value</th>
 				<th>Relation</th>
-				<th>Deleted relation</th>
 				<th>Start date-time</th>
 				<th>End date-time</th>
 			</tr>
@@ -85,13 +83,10 @@
 				<td><input type="checkbox" id="${i}" name="${i}" />
 				<td><#if value.deletionTime??>${value.deletionTime}</#if></td>
 				<td><#if value.deletedBy_Name??>${value.deletedBy_Name}</#if></td>
-				<#assign t = value.targetId>
-				<td><#if value.target_Name??>${value.target_Name}</#if></td>
-				<td><#if value.deletedTarget_Name??>${value.deletedTarget_Name}</#if></td>
+				<td><#if value.deletedTarget_Name??>${value.deletedTarget_Name}<#else>${value.target_Name}</#if></td>
 				<td>${value.feature_Name}</td>
 				<td><#if value.value??>${value.value}</#if></td>
-				<td><#if value.relation_Name??>${value.relation_Name}</#if></td>
-				<td><#if value.deletedRelation_Name??>${value.deletedRelation_Name}</#if></td>
+				<td><#if value.deletedRelation_Name??>${value.deletedRelation_Name}<#else><#if value.relation_Name??>${value.relation_Name}</#if></#if></td>
 				<td>${value.time}</td>
 				<td><#if value.endtime??>${value.endtime}</#if></td>
 			</tr>
