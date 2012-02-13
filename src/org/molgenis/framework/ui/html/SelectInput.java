@@ -174,16 +174,21 @@ public class SelectInput extends OptionInput<Object>
 		}
 	}
 	
-	public void setEntityOptions(List<? extends Entity> entities)
+	public void addEntityOptions(List<? extends Entity> entities)
 	{
-		// clear list
-		this.getOptions().clear();
-
 		// add new values and labels
 		for (Entity e : entities)
 		{
 			this.addOption(e.getIdValue(), e.getLabelValue());
 		}
+	}
+	
+	public void setEntityOptions(List<? extends Entity> entities)
+	{
+		// first clear list
+		this.getOptions().clear();
+
+		addEntityOptions(entities);
 	}
 
 	@Override
