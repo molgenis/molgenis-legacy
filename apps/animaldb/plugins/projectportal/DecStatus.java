@@ -90,9 +90,10 @@ public class DecStatus extends GenericPlugin
 		tablePanel = new TablePanel(this.getName() + "panel", null);
 		
 		Table statusTable = new JQueryDataTable("StatusTable", "");
+		statusTable.addColumn("DEC");
 		statusTable.addColumn("Start");
 		statusTable.addColumn("End");
-		statusTable.addColumn("DEC subproject");
+		statusTable.addColumn("Subproject");
 		statusTable.addColumn("Start");
 		statusTable.addColumn("End");
 		statusTable.addColumn("Nr. of animals alive");
@@ -141,24 +142,27 @@ public class DecStatus extends GenericPlugin
 		
 		List<Integer> investigationIds = cq.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
-		int featureId = cq.getMeasurementId("DecNr");
-		String decNr = cq.getMostRecentValueAsString(decId, featureId);
-		statusTable.addRow(decNr);
+		statusTable.addRow("" + (rowCount + 1));
 		
-		featureId = cq.getMeasurementId("StartDate");
+		int featureId = cq.getMeasurementId("DecNr");
 		statusTable.setCell(0, rowCount, cq.getMostRecentValueAsString(decId, featureId));
 		
-		featureId = cq.getMeasurementId("EndDate");
+		featureId = cq.getMeasurementId("StartDate");
 		statusTable.setCell(1, rowCount, cq.getMostRecentValueAsString(decId, featureId));
+		
+		featureId = cq.getMeasurementId("EndDate");
+		statusTable.setCell(2, rowCount, cq.getMostRecentValueAsString(decId, featureId));
 		
 		List<ObservationTarget> expInDecList = new ArrayList<ObservationTarget>();
 		List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment", investigationIds);
+		int extraRow = 1;
 		for (ObservationTarget subproject : expList) {
 			// Take only Subprojects that belong to the current DEC
 			int decApplicationId = cq.getMostRecentValueAsXref(subproject.getId(), cq.getMeasurementId("DecApplication"));
 			if (decApplicationId == decId) {
 				expInDecList.add(subproject);
-				statusTable.addRow("");
+				statusTable.addRow("" + (rowCount + 1 + extraRow));
+				extraRow++;
 			}
 		}
 		
@@ -174,13 +178,13 @@ public class DecStatus extends GenericPlugin
 				expRow = expInDecList.size();
 			}
 			
-			statusTable.setCell(2, rowCount + expRow, subProjectCode);
+			statusTable.setCell(3, rowCount + expRow, subProjectCode);
 			
 			featureId = cq.getMeasurementId("StartDate");
-			statusTable.setCell(3, rowCount + expRow, cq.getMostRecentValueAsString(subprojectId, featureId));
+			statusTable.setCell(4, rowCount + expRow, cq.getMostRecentValueAsString(subprojectId, featureId));
 			
 			featureId = cq.getMeasurementId("EndDate");
-			statusTable.setCell(4, rowCount + expRow, cq.getMostRecentValueAsString(subprojectId, featureId));
+			statusTable.setCell(5, rowCount + expRow, cq.getMostRecentValueAsString(subprojectId, featureId));
 			
 			// Calculate numbers of animals alive/used/total
 			int nrOfAnimalsAlive = 0;
@@ -213,23 +217,23 @@ public class DecStatus extends GenericPlugin
 			nrOfAnimalsRemoved = nrOfAnimalsTotal - nrOfAnimalsAlive;
 			nrOfAnimalsRemovedCum += nrOfAnimalsRemoved;
 			
-			statusTable.setCell(5, rowCount + expRow, nrOfAnimalsAlive);
-			statusTable.setCell(6, rowCount + expRow, nrOfAnimalsRemoved);
-			statusTable.setCell(7, rowCount + expRow, budget);
+			statusTable.setCell(6, rowCount + expRow, nrOfAnimalsAlive);
+			statusTable.setCell(7, rowCount + expRow, nrOfAnimalsRemoved);
+			statusTable.setCell(8, rowCount + expRow, budget);
 			double perc = budget > 0 ? (nrOfAnimalsAlive + nrOfAnimalsRemoved) * 100.0 / budget : 0.0;
-			statusTable.setCell(8, rowCount + expRow, f.format(perc));
-			statusTable.setCell(9, rowCount + expRow, "&nbsp;");
-			statusTable.setCellStyle(9, rowCount + expRow, "border: 1px solid black; background-color: green");
+			statusTable.setCell(9, rowCount + expRow, f.format(perc));
+			statusTable.setCell(10, rowCount + expRow, "&nbsp;");
+			statusTable.setCellStyle(10, rowCount + expRow, "border: 1px solid black; background-color: green");
 		}
 		
 		// Set cells with cumulative values
-		statusTable.setCell(5, rowCount, nrOfAnimalsAliveCum);
-		statusTable.setCell(6, rowCount, nrOfAnimalsRemovedCum);
-		statusTable.setCell(7, rowCount, budgetCum);
+		statusTable.setCell(6, rowCount, nrOfAnimalsAliveCum);
+		statusTable.setCell(7, rowCount, nrOfAnimalsRemovedCum);
+		statusTable.setCell(8, rowCount, budgetCum);
 		double perc = budgetCum > 0 ? (nrOfAnimalsAliveCum + nrOfAnimalsRemovedCum) * 100.0 / budgetCum : 0.0;
-		statusTable.setCell(8, rowCount, f.format(perc));
-		statusTable.setCell(9, rowCount, "&nbsp;");
-		statusTable.setCellStyle(9, rowCount, "border: 1px solid black; background-color: green");
+		statusTable.setCell(9, rowCount, f.format(perc));
+		statusTable.setCell(10, rowCount, "&nbsp;");
+		statusTable.setCellStyle(10, rowCount, "border: 1px solid black; background-color: green");
 		
 		return rowCount + expInDecList.size() + 1;
 	}
