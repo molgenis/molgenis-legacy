@@ -69,10 +69,10 @@
 			<plugin name="Backgrounds" type="plugins.settings.BackgroundPlugin"
 				label="Backgrounds" />
 			<menu name="errorcorrectmenu" position="left" label="Correct errors">
-				<plugin name="ErrorCorrection" type="plugins.system.ErrorCorrectionPlugin"
+			<plugin name="ErrorCorrectionIndividual" type="plugins.system.ErrorCorrectionIndividualPlugin"
+					label="Animals" />
+			<plugin name="ErrorCorrectionValue" type="plugins.system.ErrorCorrectionPlugin"
 					label="Values" />
-				<plugin name="ErrorCorrectionTarget" type="plugins.system.ErrorCorrectionTargetPlugin"
-					label="Targets" />
 			</menu>
 		</menu>
 		
@@ -124,8 +124,8 @@
 					<form name="news" entity="MolgenisNews" view="list" label="Frontpage items" />
 				</menu>
 				<menu name="deltablemenu" position="left" label="Deletion tables">
-					<form name="delobservedvalue" entity="DeletedObservedValue" view="list" label="Observed values" />
-					<form name="delobservationtarget" entity="DeletedObservationTarget" view="list" label="Observation targets" />
+					<form name="delindividual" entity="DeletedIndividual" view="list" label="Individuals" />
+					<form name="delobservedvalue" entity="DeletedObservedValue" view="list" label="Values" />
 				</menu>
 			</menu>
 		</menu>

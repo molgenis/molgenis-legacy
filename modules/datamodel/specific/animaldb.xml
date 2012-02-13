@@ -30,20 +30,32 @@
 				description="(Optional) Time when the value was observed. For example in time series or if feature is time-dependent like 'age'" />
 			<field nillable="true" auto="false" name="endtime" type="datetime"
 				description="(Optional) Time when the value's validity ended" />
-			<field name="deletionTime" type="datetime" nillable="true"/>
+			<!-- Deletion fields from here -->
+			<field name="deletionTime" type="datetime" nillable="false" />
 			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
-				xref_label="name" nillable="true" />
+				xref_label="name" nillable="false" />
 			<field name="DeletedTarget" type="xref" xref_entity="DeletedObservationTarget"
 				xref_field="id" xref_label="name" nillable="true" 
 				description="References the deleted ObservationTarget that this feature was made on." />
 			<field nillable="true" name="DeletedRelation" type="xref"
 				xref_entity="DeletedObservationTarget"
 				description="Reference to other, deleted end of the relationship, if any." />
-			<nillable fields="Target" /> <!-- This doesn't seem to work! TODO: find out why... -->
 		</entity>
 		<entity name="DeletedObservationTarget" extends="ObservationElement">
 			<description>Alternative for ObservationTarget containing extra fields stating
 				when it was deleted and by whom.</description>
+			<field name="deletionTime" type="datetime" nillable="true"/>
+			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
+				xref_label="name" nillable="true"  />
+		</entity>
+		<entity name="DeletedIndividual" extends="DeletedObservationTarget">
+			<description>Alternative for Individual containing extra fields stating
+				when it was deleted and by whom.</description>
+				<field name="Mother" type="xref" nillable="true" xref_entity="Individual"
+				xref_field="id" xref_label="name" description="Refers to the mother of the individual." />
+			<field name="Father" type="xref" nillable="true" xref_entity="Individual"
+				xref_field="id" xref_label="name" description="Refers to the father of the individual." />
+			<!-- Deletion fields from here -->
 			<field name="deletionTime" type="datetime" nillable="true"/>
 			<field name="deletedBy" type="xref" xref_entity="MolgenisRole" xref_field="id" 
 				xref_label="name" nillable="true"  />

@@ -1,4 +1,4 @@
-<#macro plugins_system_ErrorCorrectionTargetPlugin screen>
+<#macro plugins_system_ErrorCorrectionIndividualPlugin screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -25,8 +25,8 @@
 			<div class="screenpadding">	
 <#--begin your plugin-->
 
-<h3>Observation targets</h3>
-<#if screen.targetList?size gt 0>
+<h3>Animals</h3>
+<#if screen.individualList?size gt 0>
 	<table cellpadding="0" cellspacing="0" border="0" class="display" id="targettable">
 		<thead>
 			<tr>
@@ -36,7 +36,7 @@
 		</thead>
 		<tbody>
 		<#assign i = 0>
-		<#list screen.targetList as target>
+		<#list screen.individualList as target>
 			<tr>
 				<td><input type="checkbox" id="${i}" name="${i}" />
 				<td>${target.name}</td>
@@ -47,13 +47,13 @@
 	</table>
 </#if>
 
-<p><em>Note: observed values set on or related to the selected observation targets will also be flagged as deleted!</em></p>
+<p><em>Note: values set on or related to the selected animals will also be flagged as deleted!</em></p>
 
-<input type="submit" class='addbutton' value="Flag as deleted" onclick="__action.value='deleteTargets';return true;"/>
+<input type="submit" class='addbutton' value="Flag as deleted" onclick="__action.value='deleteIndividuals';return true;"/>
 
-<#if screen.deletedTargetList?size gt 0>
+<#if screen.deletedIndividualList?size gt 0>
 
-<h3>Observation targets flagged as deleted</h3>
+<h3>Individuals flagged as deleted</h3>
 	<table cellpadding="0" cellspacing="0" border="0" class="display" id="deltargettable">
 		<thead>
 			<tr>
@@ -65,7 +65,7 @@
 		</thead>
 		<tbody>
 		<#assign i = 0>
-		<#list screen.deletedTargetList as target>
+		<#list screen.deletedIndividualList as target>
 			<tr>
 				<td><input type="checkbox" id="${i}" name="${i}" />
 				<td><#if target.deletionTime??>${target.deletionTime}</#if></td>
@@ -77,7 +77,7 @@
 		</tbody>
 	</table>
 
-<p><em>Note: observed values set on or related to the selected observation targets will also be unflagged!</em></p>
+<p><em>Note: values set on or related to the selected individuals, deleted at the same time as the animal, will also be unflagged!</em></p>
 
 <input type="submit" class='addbutton' value="Unflag" onclick="__action.value='undeleteTargets';return true;"/>
 

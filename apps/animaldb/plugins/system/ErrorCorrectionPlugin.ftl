@@ -48,7 +48,7 @@
 				<td>${value.feature_Name}</td>
 				<td><#if value.value??>${value.value}</#if></td>
 				<td><#if value.relation_Name??>${value.relation_Name}</#if></td>
-				<td>${value.time}</td>
+				<td><#if value.time??>${value.time}</#if></td>
 				<td><#if value.endtime??>${value.endtime}</#if></td>
 			</tr>
 			<#assign i = i + 1>
@@ -87,7 +87,7 @@
 				<td>${value.feature_Name}</td>
 				<td><#if value.value??>${value.value}</#if></td>
 				<td><#if value.deletedRelation_Name??>${value.deletedRelation_Name}<#else><#if value.relation_Name??>${value.relation_Name}</#if></#if></td>
-				<td>${value.time}</td>
+				<td><#if value.time??>${value.time}</#if></td>
 				<td><#if value.endtime??>${value.endtime}</#if></td>
 			</tr>
 			<#assign i = i + 1>
