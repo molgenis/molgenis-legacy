@@ -160,6 +160,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 		}
 	}
 
+	
 	/**
 	 * This function is recursively nodes in the tree except form the last measurement . 
 	 * The last measurement is added by addingLastMeasurementToTree() because we add two different class : Protocol & Measurement, 
@@ -212,14 +213,10 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			for (Measurement measurement : measurementList) {
 
 				JQueryTreeViewElementObject childTree;
-				
-				System.out.println(">>>>>>>"+labelToTree);
-				
-				
-				//This control checks whether the measurement multiple parent . 
-				//This happens in case a measurement is contained in more that one protocols. 
 				if (labelToTree.containsKey(measurement.getName())) {
-					childTree = labelToTree.get(measurement.getName());				
+
+					childTree = labelToTree.get(measurement.getName());
+
 				} else {
 					
 					List<String> categoryNames = measurement.getCategories_Name();
@@ -253,7 +250,6 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					queryDisplayNames.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
 					queryDisplayNames.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "display name"));
 					
-					childTree = new JQueryTreeViewElementObject(measurement,parentTree, htmlValue);
 					String displayName = "";
 					
 					if(!queryDisplayNames.find().isEmpty()){
@@ -262,9 +258,9 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					}
 					
 					if(displayName.equals("")){
-						childTree = new JQueryTreeViewElementObject(measurement.getName(),parentTree, htmlValue); 
+						childTree = new JQueryTreeViewElementObject(measurement.getName(),parentTree, htmlValue);
 					}else{
-						childTree = new JQueryTreeViewElementObject(displayName,parentTree, htmlValue); 
+						childTree = new JQueryTreeViewElementObject(displayName,parentTree, htmlValue);
 					}
 					
 					labelToTree.put(measurement.getName(), childTree);
