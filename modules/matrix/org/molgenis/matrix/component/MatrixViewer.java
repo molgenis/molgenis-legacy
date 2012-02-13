@@ -475,11 +475,15 @@ public class MatrixViewer extends HtmlWidget
 			int filterCnt = 0;
 			for (MatrixQueryRule mqr : this.matrix.getRules())
 			{
-				// Show only column value filters to user
-				if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty))
+				// Show only column value + row header filters to user
+				if (!mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty) &&
+					!mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader))
 				{
+					continue;
+				}
+				String measurementName = "name";
+				if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)) {
 					// Try to retrieve measurement name
-					String measurementName = "";
 					for (Object meas : matrix.getColHeaders())
 					{
 						if (meas instanceof ObservationElement)
@@ -495,20 +499,20 @@ public class MatrixViewer extends HtmlWidget
 							measurementName = meas.toString();
 						}
 					}
-
+	
 					// Name not in column headers, so retrieve via DB (if
 					// available)
 					if (measurementName.equals("") && this.matrix instanceof DatabaseMatrix)
 					{
 						measurementName = db.findById(Measurement.class, mqr.getDimIndex()).getName();
 					}
-
-					filterRules += "<br />" + measurementName + "." + mqr.getField() + " " + 
-							mqr.getOperator().toString() + " " + mqr.getValue();
-					ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
-					removeButton.setIcon("generated-res/img/delete.png");
-					filterRules += removeButton.render();
 				}
+
+				filterRules += "<br />" + measurementName + (measurementName.equals("name") ? "" : "." + mqr.getField()) + " " + 
+						mqr.getOperator().toString() + " " + mqr.getValue();
+				ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
+				removeButton.setIcon("generated-res/img/delete.png");
+				filterRules += removeButton.render();
 				System.out.println("(mqr.getFilterType() " + mqr.getFilterType());
 				filterCnt++;
 			}
@@ -525,6 +529,7 @@ public class MatrixViewer extends HtmlWidget
 		// "Clear all filters").render();
 		// add column filter
 		SelectInput colId = new SelectInput(COLID);
+		colId.addOption(-1, "name");
 		divContents += "<div style=\"vertical-align:middle\">Add filter:";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		if (colHeaders != null && colHeaders.size() > 0 && colHeaders.get(0) instanceof Entity)
@@ -532,9 +537,7 @@ public class MatrixViewer extends HtmlWidget
 			List<? extends Entity> headers = (List<? extends Entity>) colHeaders;
 			if(!headers.isEmpty() && headers.get(0) instanceof Measurement && matrix instanceof SliceablePhenoMatrixMV) {
 				SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue> m = (SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix;
-				
 			    LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol = m.getMeasurementsByProtocol();
-				
 			    for(Entry<Protocol, List<Measurement>> p : measurementsByProtocol.entrySet()) {
 					Protocol protocol = p.getKey();
 					for(Measurement measurement : p.getValue()) {
@@ -542,9 +545,8 @@ public class MatrixViewer extends HtmlWidget
 					}
 				}
 			} else {
-				colId.setEntityOptions(headers);
+				colId.addEntityOptions(headers);
 			}
-			//colId.addOption(header., header)
 		}
 		else
 		{
@@ -560,8 +562,6 @@ public class MatrixViewer extends HtmlWidget
 		
 		divContents += operator.render();
 		StringInput colValue = new StringInput(COLVALUE);
-		
-		
 		
 		divContents += colValue.render();
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
@@ -1197,7 +1197,7 @@ public class MatrixViewer extends HtmlWidget
 		matrix.reload();
 	}
 
-	public void filterCol(Database db, Tuple t) throws MatrixException
+	public void filterCol(Database db, Tuple t) throws Exception
 	{
 		if(matrix instanceof SliceablePhenoMatrixMV) {
 			String valuePropertyToUse = ObservedValue.VALUE;
@@ -1224,22 +1224,26 @@ public class MatrixViewer extends HtmlWidget
 		} else {
 			String valuePropertyToUse = ObservedValue.VALUE;
 			int measurementId = t.getInt(COLID);
-			// First find out whether to filter on the value or the relation_Name field
-			Measurement filterMeasurement;
-			try {
-				filterMeasurement = db.findById(Measurement.class, measurementId);
-			} catch (DatabaseException e) {
-				throw new MatrixException(e);
+			if (measurementId == -1) { // Filter on name
+				matrix.sliceByRowProperty(Individual.NAME, Operator.EQUALS, t.getObject(COLVALUE));
+			} else {
+				// First find out whether to filter on the value or the relation_Name field
+				Measurement filterMeasurement;
+				try {
+					filterMeasurement = db.findById(Measurement.class, measurementId);
+				} catch (DatabaseException e) {
+					throw new MatrixException(e);
+				}
+				if (filterMeasurement.getDataType().equals("xref"))
+				{
+					valuePropertyToUse = ObservedValue.RELATION_NAME;
+				}
+				// Find out operator to use
+				Operator op = Operator.valueOf(t.getString(OPERATOR));
+				//new Operator(t.getString(OPERATOR));
+				// Then do the actual slicing
+				matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
 			}
-			if (filterMeasurement.getDataType().equals("xref"))
-			{
-				valuePropertyToUse = ObservedValue.RELATION_NAME;
-			}
-			// Find out operator to use
-			Operator op = Operator.valueOf(t.getString(OPERATOR));
-			//new Operator(t.getString(OPERATOR));
-			// Then do the actual slicing
-			matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
 		}
 	}
 

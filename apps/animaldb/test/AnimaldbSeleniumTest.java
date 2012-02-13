@@ -356,10 +356,10 @@ public class AnimaldbSeleniumTest
 		selenium.click("DecStatus_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC status portal"));
-		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[1]/th"), "12345");
-		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[3]"), "A");
-		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[6]"), "3");
-		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[7]"), "2");
+		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[1]/td[1]"), "12345");
+		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[4]"), "A");
+		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[7]"), "3");
+		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[8]"), "2");
 		
 		sleepHelper("decWorkflow");
 	}
