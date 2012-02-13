@@ -20,15 +20,8 @@ import plugins.cluster.interfaces.JobManager;
 public class DatabaseJobManager implements JobManager
 {
 
-	Database db;
-
-	public DatabaseJobManager(Database db)
-	{
-		this.db = db;
-	}
-
 	@Override
-	public void deleteJob(int jobID) throws Exception
+	public void deleteJob(int jobID, Database db) throws Exception
 	{
 
 		Job j = db.find(Job.class, new QueryRule("id", Operator.EQUALS, jobID)).get(0);

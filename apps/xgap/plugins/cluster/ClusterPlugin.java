@@ -263,7 +263,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 		int jobID = Integer.parseInt(request.getString("jobToDelete"));
 
 		cr.cleanupJob(jobID);
-		djm.deleteJob(jobID);
+		djm.deleteJob(jobID, db);
 
 	}
 
@@ -620,7 +620,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 	
 			if (djm == null)
 			{
-				djm = new DatabaseJobManager(db);
+				djm = new DatabaseJobManager();
 			}
 			
 			if (dmh == null)
