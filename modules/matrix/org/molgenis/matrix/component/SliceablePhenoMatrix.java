@@ -269,6 +269,9 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 					xQuery.offset(rowOffset);
 				}
 			}
+			
+			// sort on name
+			xQuery.sortASC(ObservationElement.NAME);
 
 			// check for empty column filters
 			if (xClass.equals(getColClass()))

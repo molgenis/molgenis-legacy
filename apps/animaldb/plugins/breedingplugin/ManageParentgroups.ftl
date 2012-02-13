@@ -109,6 +109,8 @@
 				<tr>
 					<th>Name</th>
 					<th>Start date</th>
+					<th>Mother(s)</th>
+					<th>Father(s)</th>
 					<th>Remarks</th>
 					<th>Status</th>
 				</tr>
@@ -119,6 +121,8 @@
 				<tr>
 					<td>${pg.name}</td>
 					<td>${screen.getPgStartDate(pgId)}</td>
+					<td>${screen.getPgParents(pgId, "Mother")}</td>
+					<td>${screen.getPgParents(pgId, "Father")}</td>
 					<td>${screen.getPgRemarks(pgId)}</td>
 					<td>${screen.getPgStatus(pgId)}</td>
 				</tr>

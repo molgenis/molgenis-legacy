@@ -12,9 +12,9 @@
 		<!-- plugin name="News" type="plugins.news.News" label="News"/ -->
 		
 		<menu name="animalmenu" position="left" label="Animals">
-			<plugin name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin"
+			<plugin name="DataViewer" type="plugins.listplugin.ListPluginMatrix"
 				label="Data viewer" />
-			<plugin name="EventViewer" type="plugins.protocol.EventViewerPluginMatrix"
+			<plugin name="TimelineViewer" type="plugins.protocol.EventViewerPluginMatrix"
 				label="Timeline viewer" />	
 			<plugin name="AddAnimal" type="plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
@@ -31,7 +31,7 @@
 			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />	
 			<plugin name="LocationPlugin" type="plugins.location.LocationPlugin"
-				label="Locations" />
+				label="Animals in locations" />
 			<plugin name="PrintLabels" type="plugins.output.PrintLabelPlugin"
 				label="Make (cage) labels" />
 		</menu>
@@ -47,14 +47,14 @@
 				label="Yearly report" />
 		</menu>
 		
-		<menu name="batches" position="left" label="Batches">	
+		<!-- menu name="batches" position="left" label="Batches">	
 			<form name="ManageBatches" entity="MolgenisBatch" label="Batches" />
 			<form name="ManageBatchEntities" entity="MolgenisBatchEntity" label="Batch entities" />
 			<plugin name="Batch" type="plugins.batch.BatchPlugin"
 				label="Batch management" />
 			<plugin name="BatchView" type="plugins.batch.BatchViewPlugin"
 				label="Batch viewer" />
-		</menu>
+		</menu -->
 		
 		<!-- plugin name="AddSpecialGroup" type="plugins.specialgroups.AddSpecialGroupPlugin"
 			label="Groups" /-->

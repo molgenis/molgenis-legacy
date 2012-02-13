@@ -17,6 +17,8 @@ import java.util.Locale;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -55,6 +57,9 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private static String FATHERMATRIX = "fathermatrix";
 	private String action = "init";
 	private int userId = -1;
+	private String motherMatrixViewerString;
+	private String fatherMatrixViewerString;
+	private Database db;
 	
 	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
@@ -166,6 +171,18 @@ public class ManageParentgroups extends PluginModel<Entity>
 		}
 	}
 	
+	public String getPgParents(int pgId, String parentSex) throws DatabaseException {
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, parentSex));
+		q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, pgId));
+		List<ObservedValue> vals = q.find();
+		String result = "";
+		for (ObservedValue val : vals) {
+			result += val.getTarget_Name() + " ";
+		}
+		return result;
+	}
+	
 	public String getAction() {
 		return action;
 	}
@@ -173,12 +190,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 		this.action = action;
 	}
 	
-	private String motherMatrixViewerString;
 	public String getMotherMatrixViewer()
 	{
 		return motherMatrixViewerString;
 	}
-	public void renderMotherMatrixViewer(Database db) {
+	
+	public void loadMotherMatrixViewer(Database db) {
 		try {
 			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
 			
@@ -217,20 +234,14 @@ public class ManageParentgroups extends PluginModel<Entity>
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
-		if (motherMatrixViewer != null) {
-			motherMatrixViewer.setDatabase(db);
-			motherMatrixViewerString =  motherMatrixViewer.render();
-		} else {
-			motherMatrixViewerString = "No viewer available, matrix for selecting mother(s) cannot be rendered.";
-		}
 	}
 	
-	private String fatherMatrixViewerString;
 	public String getFatherMatrixViewer()
 	{
 		return fatherMatrixViewerString;
 	}
-	public void renderFatherMatrixViewer(Database db) {
+	
+	public void loadFatherMatrixViewer(Database db) {
 		try {
 			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
 			
@@ -268,13 +279,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 			}
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
-		}
-		
-		if (fatherMatrixViewer != null) {
-			fatherMatrixViewer.setDatabase(db);
-			fatherMatrixViewerString = fatherMatrixViewer.render();
-		} else {
-			fatherMatrixViewerString = "No viewer available, matrix for selecting father(s) cannot be rendered.";
 		}
 	}
 
@@ -340,18 +344,25 @@ public class ManageParentgroups extends PluginModel<Entity>
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
-	{	
+	{
+		this.db = db;
 		ct.setDatabase(db);
 		action = request.getString("__action");
 		try {
 			if (motherMatrixViewer != null && action.startsWith(motherMatrixViewer.getName())) {
+				motherMatrixViewer.setDatabase(db);
 				motherMatrixViewer.handleRequest(db, request);
+				motherMatrixViewerString = motherMatrixViewer.render();
 				this.setAction("addParentgroupScreen2"); // return to mother selection screen
+				return;
 			}
 			
 			if (fatherMatrixViewer != null && action.startsWith(fatherMatrixViewer.getName())) {
+				fatherMatrixViewer.setDatabase(db);
 				fatherMatrixViewer.handleRequest(db, request);
+				fatherMatrixViewerString = fatherMatrixViewer.render();
 				this.setAction("addParentgroupScreen3"); // return to father selection screen
+				return;
 			}
 			
 			if (action.equals("init")) {
@@ -369,7 +380,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 				}
 				this.getMessages().add(new ScreenMessage("Line successfully set", true));
 				
-				renderMotherMatrixViewer(db);
+				if (motherMatrixViewer == null) {
+					loadMotherMatrixViewer(db);
+				}
+				motherMatrixViewer.setDatabase(db);
+				motherMatrixViewerString = motherMatrixViewer.render();
 			}
 			
 			if (action.equals("addParentgroupScreen3")) {
@@ -393,7 +408,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 				}
 				this.getMessages().add(new ScreenMessage("Mother(s) " + motherNames + "successfully added", true));
 				
-				renderFatherMatrixViewer(db);
+				if (fatherMatrixViewer == null) {
+					loadFatherMatrixViewer(db);
+				}
+				fatherMatrixViewer.setDatabase(db);
+				fatherMatrixViewerString = fatherMatrixViewer.render();
 			}
 			
 			if (action.equals("addParentgroupScreen4")) {
@@ -422,6 +441,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 				String newPgName = AddParentgroup(db, request);
 				this.setAction("init");
 				this.resetUserFields();
+				fatherMatrixViewer = null;
+				motherMatrixViewer = null;
 				this.getMessages().add(new ScreenMessage("Parent group " + newPgName + " successfully added", true));
 			}
 			
@@ -495,6 +516,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
+		this.db = db;
 		ct.setDatabase(db);
 		// Populate lists (do this on every reload so they keep fresh, and do it here
 		// because we need the lineList in the init part that comes after)

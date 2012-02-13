@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -382,6 +382,7 @@ public class MatrixViewer extends HtmlWidget
 				Object valueObject = values[row][0];
 				if (valueObject instanceof List)
 				{
+					@SuppressWarnings("unchecked")
 					List<Observation>[] rowValues = (List<Observation>[]) values[row];
 					for (int col = 0; col < rowValues.length; col++)
 					{
@@ -458,6 +459,7 @@ public class MatrixViewer extends HtmlWidget
 		return dataTable.toHtml();
 	}
 
+	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
 		String divContents = "";
@@ -563,14 +565,12 @@ public class MatrixViewer extends HtmlWidget
 		// column header filter
 		if (columnsRestricted && colHeaders != null)
 		{
-			List selectedMeasurements = new ArrayList();
-			selectedMeasurements.addAll(colHeaders);
+			List<Entity> selectedMeasurements = new ArrayList<Entity>();
+			selectedMeasurements.addAll((Collection<? extends Entity>) colHeaders);
 			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
 					selectedMeasurements, false, false,
 					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
 					Measurement.class);
-			
-
 			
 			// disable display of button for adding new measurements from here
 			measurementChooser.setIncludeAddButton(false);
@@ -632,12 +632,12 @@ public class MatrixViewer extends HtmlWidget
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public void downloadAllCsv(Database db, Tuple t) throws MatrixException, IOException
 	{
 		File file = makeFile("_All", "csv");
 		
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			@SuppressWarnings("unchecked")
 			CsvExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
 					new CsvExporter<ObservationTarget, Measurement, ObservedValue>
 					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
@@ -732,11 +732,11 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void downloadVisibleCsv(Database db, Tuple t) throws MatrixException, IOException
 	{
 		File file = makeFile("_Visible", "csv");
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			@SuppressWarnings("unchecked")
 			CsvExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
 					new CsvExporter<ObservationTarget, Measurement, ObservedValue>
 					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
@@ -758,6 +758,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void downloadCsv(List<?> rows, List<?> cols, List<? extends ObservedValue>[][] values,File file) throws IOException, MatrixException
 	{
 		CsvWriter writer = new CsvFileWriter(file);
@@ -802,11 +803,11 @@ public class MatrixViewer extends HtmlWidget
 		downloadLink = file.getName();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void downloadAllExcel(Database db, Tuple t) throws MatrixException, IOException, RowsExceededException, WriteException
 	{
 		File excelFile = makeFile("_All", "xls");			
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			@SuppressWarnings("unchecked")
 			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
 					new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
 					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
@@ -909,10 +910,13 @@ public class MatrixViewer extends HtmlWidget
 				((DatabaseMatrix) this.matrix).setDatabase(db);
 			}
 	
+			@SuppressWarnings("unchecked")
 			List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
 			List<String> listC = new ArrayList<String>();
+			@SuppressWarnings("unchecked")
 			List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
 			List<String> listR = new ArrayList<String>();
+			@SuppressWarnings("unchecked")
 			List<ObservedValue>[][] listVal = (List<ObservedValue>[][]) this.matrix.getValueLists();
 	
 			String target = "name";
@@ -1021,10 +1025,13 @@ public class MatrixViewer extends HtmlWidget
 			spssWriter.setCalculateNumberOfCases(false);
 			spssWriter.addDictionarySection(-1);
 			
+			@SuppressWarnings("unchecked")
 			List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
 			List<String> listC = new ArrayList<String>();
+			@SuppressWarnings("unchecked")
 			List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
 			List<String> listR = new ArrayList<String>();	
+			@SuppressWarnings("unchecked")
 			List<ObservedValue>[][] elements = (List<ObservedValue>[][]) this.matrix.getValueLists();
 			
 			for(Object col: listCol){
@@ -1072,13 +1079,13 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 		
+	@SuppressWarnings("unchecked")
 	public void downloadAllSPSS(Database db, Tuple t) throws MatrixException, IOException, WriteException
 	{
 		File file = makeFile("_All", "sav");
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			@SuppressWarnings("unchecked")
 			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
 					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
 					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
