@@ -69,7 +69,7 @@ public class ConvertRhutDbToPheno
 	private Map<String, ObservedValue> activeMap;
 	private Map<String, String> animalMap;
 	private Map<String, Date> removalDateMap;
-	private int highestNr = 0;
+	private int highestNr;
 	
 	public ConvertRhutDbToPheno(Database db, Login login) throws Exception
 	{
@@ -81,7 +81,7 @@ public class ConvertRhutDbToPheno
 		
 		userName = login.getUserName();
 		
-		highestNr = ct.getHighestNumberForPrefix("") + 1;
+		highestNr = ct.getHighestNumberForPrefix("mm_") + 1;
 		
 		// If needed, make investigation
 		invName = "FDD";
@@ -184,7 +184,7 @@ public class ConvertRhutDbToPheno
 		// Make entry in name prefix table with highest animal nr.
 		NamePrefix namePrefix = new NamePrefix();
 		namePrefix.setTargetType("animal");
-		namePrefix.setPrefix("");
+		namePrefix.setPrefix("mm_");
 		namePrefix.setHighestNumber(highestNr);
 		db.add(namePrefix);
 		
@@ -233,7 +233,7 @@ public class ConvertRhutDbToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				String animalName = ct.prependZeros(Integer.toString(highestNr++), 6);
+				String animalName = "mm_" + ct.prependZeros(Integer.toString(highestNr++), 6);
 				animalNames.add(animalName);
 				Individual newAnimal = ct.createIndividual(invName, animalName, userName);
 				animalsToAddList.add(newAnimal);

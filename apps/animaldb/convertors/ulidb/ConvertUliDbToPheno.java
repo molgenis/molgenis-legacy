@@ -50,13 +50,14 @@ public class ConvertUliDbToPheno
 	private List<ObservedValue> valuesToAddList;
 	private List<Panel> panelsToAddList;
 	private Map<String, String> oldUliDbIdMap;
+	private Map<String, String> oldUliDbTiernummerMap;
 	private Map<String, String> appMap;
 	private Calendar calendar;
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("d-M-yyyy H:mm", Locale.US);
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
-	private int highestNr = 0;
+	private int highestNr;
 
 	public ConvertUliDbToPheno(Database db, Login login) throws Exception
 	{
@@ -71,6 +72,8 @@ public class ConvertUliDbToPheno
 		
 		userName = login.getUserName();
 		
+		highestNr = ct.getHighestNumberForPrefix("mm_") + 1;
+		
 		// If needed, make investigation
 		invName = "FDD";
 		int invid = ct.getInvestigationId(invName);
@@ -84,7 +87,8 @@ public class ConvertUliDbToPheno
 		
 		// Add some measurements that we'll need:
 		int stringUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "String").find().get(0).getId();
-		ct.makeMeasurement(invid, "OldUliDbId", stringUnitId, null, null, false, "string", "To set an animal's ID in the old Uli Eisel DB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldUliDbTiernummer", stringUnitId, null, null, false, "string", "To set an animal's Tiernummer in the old Uli Eisel DB.", login.getUserId());
+		ct.makeMeasurement(invid, "OldUliDbId", stringUnitId, null, null, false, "string", "To set an animal's ID (laufende Nummer) in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbMotherInfo", stringUnitId, null, null, false, "string", "To set an animal's mother info in the old Uli Eisel DB.", login.getUserId());
 		ct.makeMeasurement(invid, "OldUliDbFatherInfo", stringUnitId, null, null, false, "string", "To set an animal's father info in the old Uli Eisel DB.", login.getUserId());
 		
@@ -96,6 +100,7 @@ public class ConvertUliDbToPheno
 		panelsToAddList = new ArrayList<Panel>();
 		
 		oldUliDbIdMap = new HashMap<String, String>();
+		oldUliDbTiernummerMap = new HashMap<String, String>();
 		appMap = new HashMap<String, String>();
 		parentgroupNrMap = new HashMap<String, Integer>();
 		litterNrMap = new HashMap<String, Integer>();
@@ -131,10 +136,10 @@ public class ConvertUliDbToPheno
 		logger.debug("Protocols successfully added");
 		
 		db.add(animalsToAddList);
-		// Make entry in name prefix table with highest animal nr. (Tiernummer)
+		// Make entry in name prefix table with highest animal nr.
 		NamePrefix namePrefix = new NamePrefix();
 		namePrefix.setTargetType("animal");
-		namePrefix.setPrefix("");
+		namePrefix.setPrefix("mm_");
 		namePrefix.setHighestNumber(highestNr);
 		db.add(namePrefix);
 		logger.debug("Animals successfully added");
@@ -174,28 +179,7 @@ public class ConvertUliDbToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				// Tiernummer -> make new animal
-				String animalName = tuple.getString("Tiernummer");
-				// Store highest animal nr. for later storage in name prefix table
-				try {
-					int animalNr = Integer.parseInt(animalName);
-					if (animalNr > highestNr) {
-						highestNr = animalNr;
-					}
-				} catch (NumberFormatException e) {
-					// Not a parseable animal nr.: ignore
-				}
-				// Deal with empty names (of which there are a few in Uli's DB
-				if (animalName == null) {
-					animalName = "OldUliId_" + tuple.getString("laufende Nr");
-				} else {
-					// Prepend 0's to name
-					animalName = ct.prependZeros(animalName, 6);
-				}
-				// Make sure we have a unique name
-				while (animalNames.contains(animalName)) {
-					animalName = ("Dup_" + animalName);
-				}
+				String animalName = "mm_" + ct.prependZeros(Integer.toString(highestNr++), 6);
 				animalNames.add(animalName);
 				Individual newAnimal = ct.createIndividual(invName, animalName, userName);
 				animalsToAddList.add(newAnimal);
@@ -205,6 +189,7 @@ public class ConvertUliDbToPheno
 	
 	public void populateProtocolApplication() throws Exception
 	{
+		makeProtocolApplication("SetOldUliDbTiernummer");
 		makeProtocolApplication("SetOldUliDbId");
 		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetAnimalType");
@@ -225,7 +210,7 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetTypeOfGroup");
 		makeProtocolApplication("SetMother");
 		makeProtocolApplication("SetFather");
-		//makeProtocolApplication("SetLine");
+		makeProtocolApplication("SetLine");
 		makeProtocolApplication("SetParentgroup");
 		makeProtocolApplication("SetLitter");
 		makeProtocolApplication("SetLine");
@@ -246,6 +231,12 @@ public class ConvertUliDbToPheno
 				Date now = calendar.getTime();
 				
 				String newAnimalName = animalsToAddList.get(line_number - 1).getName();
+				
+				// Tiernummer -> OldUliDbTiernummer
+				String tiernummer = tuple.getString("Tiernummer");
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetOldUliDbTiernummer"), now, 
+						null, "OldUliDbTiernummer", newAnimalName, tiernummer, null));
+				oldUliDbTiernummerMap.put(tiernummer, newAnimalName);
 				
 				// laufende Nr -> OldUliDbId
 				String oldUliDbId = tuple.getString("laufende Nr");
@@ -487,15 +478,12 @@ public class ConvertUliDbToPheno
 							now, null, "OldUliDbMotherInfo", newAnimalName, motherIdsString, null));
 					for (Integer oldMotherId : SplitParentIdsString(motherIdsString)) {
 						// Find corresponding animal
-						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (name)
+						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (OldUliDbTiernummer)
 						String motherName = null;
 						if (oldMotherId.toString().length() == 5) {
 							motherName = oldUliDbIdMap.get(oldMotherId.toString());
 						} else {
-							int idx = animalNames.indexOf(oldMotherId.toString());
-							if (idx != -1) {
-								motherName = animalNames.get(idx);
-							}
+							motherName = oldUliDbTiernummerMap.get(oldMotherId.toString());
 						}
 						if (motherName != null) {
 							motherList.add(motherName);
@@ -512,15 +500,12 @@ public class ConvertUliDbToPheno
 							now, null, "OldUliDbFatherInfo", newAnimalName, fatherIdsString, null));
 					for (Integer oldFatherId : SplitParentIdsString(fatherIdsString)) {
 						// Find corresponding animal
-						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (name)
+						// If 5 digits, it's a laufende Nr (OldUliDbId); if fewer, it's a Tiernummer (OldUliDbTiernummer)
 						String fatherName = null;
 						if (oldFatherId.toString().length() == 5) {
 							fatherName = oldUliDbIdMap.get(oldFatherId.toString());
 						} else {
-							int idx = animalNames.indexOf(oldFatherId.toString());
-							if (idx != -1) {
-								fatherName = animalNames.get(idx);
-							}
+							fatherName = oldUliDbTiernummerMap.get(oldFatherId.toString());
 						}
 						if (fatherName != null) {
 							fatherList.add(fatherName);
@@ -533,10 +518,14 @@ public class ConvertUliDbToPheno
 				String litterInfo = birthDateString + motherList.toString() + fatherList.toString();
 				if (litterMap.containsKey(litterInfo)) {
 					
-					// This combination of birth date and parents has  been seen before,
+					// This combination of birth date and parents has been seen before,
 					// so retrieve litter and link animal directly to it
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
 							now, null, "Litter", newAnimalName, null, litterMap.get(litterInfo)));
+					// Set line also on animal
+					String lineName = tuple.getString("Linie");
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
+							now, null, "Line", newAnimalName, null, lineName));
 					
 				} else {
 					
@@ -598,7 +587,7 @@ public class ConvertUliDbToPheno
 					// Link animal to litter
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
 							now, null, "Litter", newAnimalName, null, litterName));
-					// Set litter also on animal
+					// Set line also on animal
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 							now, null, "Line", newAnimalName, null, lineName));
 					// Add litter to hashmap for reuse with siblings of this animal

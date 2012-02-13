@@ -1042,7 +1042,7 @@ public class CommonService
 			ObservedValue returnValue = valueList.get(0); // default is first one
 			Date storedTime = null;
 			for (ObservedValue currentValue : valueList) {
-				if (currentValue.getProtocolApplication_Id() == null) {
+				if (currentValue.getProtocolApplication_Id() != null) {
 					int protappId = currentValue.getProtocolApplication_Id();
 					ProtocolApplication protapp = getProtocolApplicationById(protappId);
 					Date protappTime = protapp.getTime();

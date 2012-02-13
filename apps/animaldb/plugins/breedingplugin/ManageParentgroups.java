@@ -47,7 +47,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private List<ObservationTarget> lineList;
 	private int line = -1;
 	private String remarks = null;
-	private String pgStatus = null;
+	//private String pgStatus = null;
 	private List<ObservationTarget> pgList;
 	MatrixViewer motherMatrixViewer = null;
 	MatrixViewer fatherMatrixViewer = null;
@@ -119,9 +119,10 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
-	public void setPgStatus(String status) {
-		this.pgStatus = status;
-	}
+	
+//	public void setPgStatus(String status) {
+//		this.pgStatus = status;
+//	}
 
 	public List<ObservationTarget> getPgList() {
 		return pgList;
@@ -178,6 +179,44 @@ public class ManageParentgroups extends PluginModel<Entity>
 		return motherMatrixViewerString;
 	}
 	public void renderMotherMatrixViewer(Database db) {
+		try {
+			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
+			
+			List<String> measurementsToShow = new ArrayList<String>();
+			measurementsToShow.add("Species");
+			measurementsToShow.add("Sex");
+			measurementsToShow.add("Active");
+			measurementsToShow.add("Line");
+			measurementsToShow.add("Background");
+			// Mother matrix viewer
+			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+					Operator.IN, investigationNames));
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
+					ObservedValue.RELATION_NAME, Operator.EQUALS, "Female"));
+			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+			if (line != -1) {
+				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
+						ct.getObservationTargetLabel(line)));
+				// Setting filter on the RELATION field with value = line would be more efficient,
+				// but gives a very un-userfriendly toString value when shown in the UI
+			}
+			
+			SliceablePhenoMatrix<Individual, Measurement> SPMM = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
+			SPMM.setDatabase(db);
+			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, SPMM, 
+					true, true, false, motherFilterRules, 
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+		} catch (Exception e) {
+			String message = "Something went wrong while loading mother matrix viewer";
+			if (e.getMessage() != null) {
+				message += (": " + e.getMessage());
+			}
+			this.getMessages().add(new ScreenMessage(message, false));
+			e.printStackTrace();
+		}
 		if (motherMatrixViewer != null) {
 			motherMatrixViewer.setDatabase(db);
 			motherMatrixViewerString =  motherMatrixViewer.render();
@@ -192,6 +231,45 @@ public class ManageParentgroups extends PluginModel<Entity>
 		return fatherMatrixViewerString;
 	}
 	public void renderFatherMatrixViewer(Database db) {
+		try {
+			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
+			
+			List<String> measurementsToShow = new ArrayList<String>();
+			measurementsToShow.add("Species");
+			measurementsToShow.add("Sex");
+			measurementsToShow.add("Active");
+			measurementsToShow.add("Line");
+			measurementsToShow.add("Background");
+			
+			// Father matrix viewer
+			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+					Operator.IN, investigationNames));
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
+					ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
+			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+			if (line != -1) {
+				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
+						ct.getObservationTargetLabel(line)));
+				// Setting filter on the RELATION field with value = line would be more efficient,
+				// but gives a very un-userfriendly toString value when shown in the UI
+			}
+			SliceablePhenoMatrix<Individual, Measurement> SPMF = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
+			SPMF.setDatabase(db);
+			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, SPMF, 
+					true, true, false, fatherFilterRules, 
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+		} catch (Exception e) {
+			String message = "Something went wrong while loading father matrix viewer";
+			if (e.getMessage() != null) {
+				message += (": " + e.getMessage());
+			}
+			this.getMessages().add(new ScreenMessage(message, false));
+			e.printStackTrace();
+		}
+		
 		if (fatherMatrixViewer != null) {
 			fatherMatrixViewer.setDatabase(db);
 			fatherMatrixViewerString = fatherMatrixViewer.render();
@@ -266,12 +344,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 		ct.setDatabase(db);
 		action = request.getString("__action");
 		try {
-			if (action.startsWith(motherMatrixViewer.getName())) {
+			if (motherMatrixViewer != null && action.startsWith(motherMatrixViewer.getName())) {
 				motherMatrixViewer.handleRequest(db, request);
 				this.setAction("addParentgroupScreen2"); // return to mother selection screen
 			}
 			
-			if (action.startsWith(fatherMatrixViewer.getName())) {
+			if (fatherMatrixViewer != null && action.startsWith(fatherMatrixViewer.getName())) {
 				fatherMatrixViewer.handleRequest(db, request);
 				this.setAction("addParentgroupScreen3"); // return to father selection screen
 			}
@@ -290,11 +368,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 					this.line = request.getInt("line");
 				}
 				this.getMessages().add(new ScreenMessage("Line successfully set", true));
+				
 				renderMotherMatrixViewer(db);
 			}
 			
 			if (action.equals("addParentgroupScreen3")) {
 				String motherNames = "";
+				@SuppressWarnings("unchecked")
 				List<ObservationElement> rows = (List<ObservationElement>) motherMatrixViewer.getSelection(db);
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
@@ -312,11 +392,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 					throw new Exception("No mother(s) selected");
 				}
 				this.getMessages().add(new ScreenMessage("Mother(s) " + motherNames + "successfully added", true));
+				
 				renderFatherMatrixViewer(db);
 			}
 			
 			if (action.equals("addParentgroupScreen4")) {
 				String fatherNames = "";
+				@SuppressWarnings("unchecked")
 				List<ObservationElement> rows = (List<ObservationElement>) fatherMatrixViewer.getSelection(db);
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
@@ -340,7 +422,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 				String newPgName = AddParentgroup(db, request);
 				this.setAction("init");
 				this.resetUserFields();
-				this.reloadMatrixViewers(db);
 				this.getMessages().add(new ScreenMessage("Parent group " + newPgName + " successfully added", true));
 			}
 			
@@ -448,70 +529,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 			ct.setDatabase(db);
 			ct.makeObservationTargetNameMap(userId, false);
 			this.setStartdate(dateOnlyFormat.format(new Date()));
-			
-			reloadMatrixViewers(db);
 		}
 	}
-	
-	private void reloadMatrixViewers(Database db) {
-		try {
-			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
-			
-			List<String> measurementsToShow = new ArrayList<String>();
-			measurementsToShow.add("Species");
-			measurementsToShow.add("Sex");
-			measurementsToShow.add("Active");
-			measurementsToShow.add("Line");
-			measurementsToShow.add("Background");
-			// Mother matrix viewer
-			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
-					Operator.IN, investigationNames));
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
-					ObservedValue.RELATION_NAME, Operator.EQUALS, "Female"));
-			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
-					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-			if (line != -1) {
-				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
-						ct.getObservationTargetLabel(line)));
-				// Setting filter on the RELATION field with value = line would be more efficient,
-				// but gives a very un-userfriendly toString value when shown in the UI
-			}
-			
-			SliceablePhenoMatrix SPMM = new SliceablePhenoMatrix(Individual.class, Measurement.class);
-			SPMM.setDatabase(db);
-			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, SPMM, 
-					true, true, false, motherFilterRules, 
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-			// Father matrix viewer
-			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
-					Operator.IN, investigationNames));
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Sex"),
-					ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
-			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
-					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-			if (line != -1) {
-				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
-						ct.getObservationTargetLabel(line)));
-				// Setting filter on the RELATION field with value = line would be more efficient,
-				// but gives a very un-userfriendly toString value when shown in the UI
-			}
-			SliceablePhenoMatrix SPMF = new SliceablePhenoMatrix(Individual.class, Measurement.class);
-			SPMF.setDatabase(db);
-			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, SPMF, 
-					true, true, false, fatherFilterRules, 
-					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
-		} catch (Exception e) {
-			String message = "Something went wrong while loading matrix viewers";
-			if (e.getMessage() != null) {
-				message += (": " + e.getMessage());
-			}
-			this.getMessages().add(new ScreenMessage(message, false));
-			e.printStackTrace();
-		}
-	}
-	
 }
