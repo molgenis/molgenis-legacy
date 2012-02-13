@@ -32,7 +32,7 @@ public class JQueryDataTable extends Table
 				"\n\"bPaginate\": false," +
 				"\n\"bLengthChange\": true," +
 				"\n\"bFilter\": false," +
-				"\n\"bSort\": false," +
+				"\n\"bSort\": true," +
 				"\n\"bInfo\": false," +
 				"\n\"bAutoWidth\": false," +
 				"\n\"bJQueryUI\": true})" +
