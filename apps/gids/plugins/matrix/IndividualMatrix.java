@@ -178,7 +178,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 							Operator.EQUALS, getModel().getInvestigation()));
 					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIX, 
 							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, true, filterRules, 
+							true, true, true, false, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				}
 				if(getModel().getListIndividuals()!=null && getModel().matrixViewerSample == null){
@@ -197,7 +197,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 										
 					 getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
 								new SliceablePhenoMatrix(GidsSample.class, Measurement.class), 
-								true, true, true, showTheseIndividuals, 
+								true, true, true, false, showTheseIndividuals, 
 								new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShowSamples));
 				}	
 				getModel().setLastInvest(getModel().getInvestigation());

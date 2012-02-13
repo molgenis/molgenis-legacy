@@ -139,7 +139,8 @@ public class MatrixViewer extends HtmlWidget
 	 */
 	public MatrixViewer(ScreenController<?> callingScreenController, String name,
 			SliceableMatrix<?, ?, ?> matrix,
-			boolean showLimitControls, boolean selectMultiple, boolean showDownloadOptions,
+			boolean showLimitControls, boolean selectMultiple, 
+			boolean showDownloadOptions, boolean showValueValidRange,
 			List<MatrixQueryRule> filterRules)
 	{
 		super(name);
@@ -149,6 +150,7 @@ public class MatrixViewer extends HtmlWidget
 		this.showLimitControls = showLimitControls;
 		this.selectMultiple = selectMultiple;
 		this.showDownloadOptions = showDownloadOptions;
+		this.showValueValidRange = showValueValidRange;
 		if (filterRules != null)
 		{
 			this.matrix.getRules().addAll(filterRules);
@@ -168,10 +170,12 @@ public class MatrixViewer extends HtmlWidget
 	 */
 	public MatrixViewer(ScreenController<?> callingScreenController, String name,
 			SliceablePhenoMatrix<?, ?> matrix,
-			boolean showLimitControls, boolean selectMultiple, boolean showDownloadOptions,
+			boolean showLimitControls, boolean selectMultiple, 
+			boolean showDownloadOptions, boolean showValueValidRange,
 			List<MatrixQueryRule> filterRules, MatrixQueryRule columnRule) throws Exception
 	{
-		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, showDownloadOptions, filterRules);
+		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, 
+				showDownloadOptions, showValueValidRange, filterRules);
 		if (columnRule != null && columnRule.getFilterType().equals(MatrixQueryRule.Type.colHeader))
 		{
 			columnsRestricted = true;

@@ -23,13 +23,12 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.HorizontalRuler;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
-import org.molgenis.framework.ui.html.OptionInput;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.RadioInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
@@ -38,7 +37,6 @@ import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.Protocol;
 import org.molgenis.util.ValueLabel;
 
 public class ApplyProtocolUI {
@@ -51,7 +49,7 @@ public class ApplyProtocolUI {
     MatrixViewer targetMatrixViewer = null;
 	static String TARGETMATRIX = "targetmatrix";
     private SelectMultipleInput batches;
-    private OptionInput newOrEditButtons;
+    private RadioInput newOrEditButtons;
     private CheckboxInput timeBox;
     private CheckboxInput allValuesBox;
     
@@ -68,7 +66,7 @@ public class ApplyProtocolUI {
     	this.service = service;
     }
     
-    public void initScreen(Database db, ScreenController plugin, int userId, String userName) throws Exception {
+    public void initScreen(Database db, ScreenController<?> plugin, int userId, String userName) throws Exception {
     	model.setNewProtocolApplication(false);
     	model.setTimeInfo(false);
 		protocolApplicationContainer = new Container();
@@ -99,7 +97,8 @@ public class ApplyProtocolUI {
      * @param value the value to insert
      * @throws Exception 
      */
-    private HtmlInput makeInput(int featureNr, int col, int row, int order, ObservedValue value) throws Exception {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private HtmlInput makeInput(int featureNr, int col, int row, int order, ObservedValue value) throws Exception {
     	
 		HtmlInput valueInput;
 		Measurement feature = model.getFeaturesList().get(featureNr);
@@ -174,6 +173,7 @@ public class ApplyProtocolUI {
      * @param value
      * @throws Exception
      */
+	@SuppressWarnings("rawtypes")
 	public void makeInputAndSetCell(int featureNr, int col, int row, int order, ObservedValue value) throws Exception {
 		HtmlInput input = makeInput(featureNr, col, row, order, value);
 		valueTable.setCell(col, row, input);
@@ -236,7 +236,7 @@ public class ApplyProtocolUI {
 //		}
 //    }
     
-    public void makeTargetsMatrix(Database db, ScreenController plugin, int userId) throws Exception {
+    public void makeTargetsMatrix(Database db, ScreenController<?> plugin, int userId) throws Exception {
     	
     	List<String> investigationNames = service.getAllUserInvestigationNames(userId);
 		List<String> measurementsToShow = new ArrayList<String>();
@@ -247,8 +247,8 @@ public class ApplyProtocolUI {
 		filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 				Operator.IN, investigationNames));
 		targetMatrixViewer = new MatrixViewer(plugin, TARGETMATRIX, 
-				new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-				true, true, false, filterRules, 
+				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+				true, true, false, false, filterRules, 
 				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		targetMatrixViewer.setDatabase(db);
 		targetMatrixViewer.setLabel("Choose animals:");
@@ -411,7 +411,8 @@ public class ApplyProtocolUI {
      * @throws DatabaseException
      * @throws ParseException
      */
-    public void fillTableCells() throws DatabaseException, ParseException {
+    @SuppressWarnings("rawtypes")
+	public void fillTableCells() throws DatabaseException, ParseException {
 		try {
 			int sizeFeatures = model.getFeaturesList().size();
 			 
@@ -562,6 +563,7 @@ public class ApplyProtocolUI {
      * @param row
      * @param value
      */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void fixCellValue(int col, int row, Object value) {
 		HtmlInput input = (HtmlInput) valueTable.getCell(col, row);
 		input.setValue(value);

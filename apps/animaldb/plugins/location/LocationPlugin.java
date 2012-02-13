@@ -35,8 +35,6 @@ import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
 
-import convertors.locations.ImportAteLocations;
-
 public class LocationPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 6637437260773077373L;
@@ -108,6 +106,7 @@ public class LocationPlugin extends PluginModel<Entity>
 		return "";
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
@@ -133,7 +132,7 @@ public class LocationPlugin extends PluginModel<Entity>
 			}
 			
 			if (action.equals("AddAnimals")) {
-				String locName = ct.getObservationTargetLabel(locId);
+//				String locName = ct.getObservationTargetLabel(locId);
 				// Prepare matrix with all animals
 //				List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserId());
 				List<String> measurementsToShow = new ArrayList<String>();
@@ -150,7 +149,7 @@ public class LocationPlugin extends PluginModel<Entity>
 				// TODO: make MQRs combinable with OR so we can have animals with location NULL OR NOT current
 				animalsNotInLocMatrixViewer = new MatrixViewer(this, ANIMALSNOTINLOCMATRIX, 
 						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-						true, true, false, null, 
+						true, true, false, true, null, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				animalsNotInLocMatrixViewer.setDatabase(db);
 				animalsNotInLocMatrixViewer.setLabel("All animals:");
@@ -217,8 +216,8 @@ public class LocationPlugin extends PluginModel<Entity>
 				ct.getMeasurementId("Location"), ObservedValue.ENDTIME, Operator.EQUALS,
 				null));
 		animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX, 
-				new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-				true, true, false, filterRules, 
+				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+				true, true, false, true, filterRules, 
 				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		animalsInLocMatrixViewer.setDatabase(db);
 		animalsInLocMatrixViewer.setLabel("Animals in " + locationName + ":");

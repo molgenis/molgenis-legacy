@@ -145,7 +145,7 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 					
 					getModel().matrixViewerCat = new MatrixViewer(this, getModel().getCATMATRIX(), 
 							new SliceablePhenoMatrix(ObservationTarget.class, Measurement.class), 
-							true, true, true, filterRules, 
+							true, true, true, false, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, listMeas));
 					
 					getModel().matrixViewerCat.setDatabase(db);

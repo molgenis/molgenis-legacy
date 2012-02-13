@@ -224,7 +224,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			SliceablePhenoMatrix<Individual, Measurement> SPMM = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
 			SPMM.setDatabase(db);
 			motherMatrixViewer = new MatrixViewer(this, MOTHERMATRIX, SPMM, 
-					true, true, false, motherFilterRules, 
+					true, true, false, false, motherFilterRules, 
 					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		} catch (Exception e) {
 			String message = "Something went wrong while loading mother matrix viewer";
@@ -270,7 +270,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			SliceablePhenoMatrix<Individual, Measurement> SPMF = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
 			SPMF.setDatabase(db);
 			fatherMatrixViewer = new MatrixViewer(this, FATHERMATRIX, SPMF, 
-					true, true, false, fatherFilterRules, 
+					true, true, false, false, fatherFilterRules, 
 					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		} catch (Exception e) {
 			String message = "Something went wrong while loading father matrix viewer";

@@ -8,11 +8,9 @@
 package plugins.breedingplugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -82,7 +80,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private int genoLitterId;
 	private List<String> bases = null;
 	private String remarks = null;
-	private String status = null;
+	//private String status = null;
 	private Table genotypeTable = null;
 	private int nrOfGenotypes = 1;
 	MatrixViewer matrixViewer = null;
@@ -577,18 +575,18 @@ public class ManageLitters extends PluginModel<Entity>
 		this.remarks = remarks;
 	}
 	
-	public String getStatus(int litterId) throws DatabaseException {
-		try {
-			return ct.getMostRecentValueAsString(litterId, ct.getMeasurementId("Active"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "Error while retrieving status";
-		}
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
+//	public String getStatus(int litterId) throws DatabaseException {
+//		try {
+//			return ct.getMostRecentValueAsString(litterId, ct.getMeasurementId("Active"));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return "Error while retrieving status";
+//		}
+//	}
+//	
+//	public void setStatus(String status) {
+//		this.status = status;
+//	}
 
 	public List<Location> getLocationList() {
 		return locationList;
@@ -1677,10 +1675,10 @@ public class ManageLitters extends PluginModel<Entity>
 		return genotypeTable.render();
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void storeGenotypeTable(Database db, Tuple request) {
 		HtmlInput input;
-		int animalCount = 0;
-		for (Individual animal : this.getAnimalsInLitter(db)) {
+		for (int animalCount = 0; animalCount < this.getAnimalsInLitter(db).size(); animalCount++) {
 			
 			if (request.getString("0_" + animalCount) != null) {
 				String dob = request.getString("0_" + animalCount); // already in new format
@@ -1755,8 +1753,8 @@ public class ManageLitters extends PluginModel<Entity>
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
 					ObservedValue.VALUE, Operator.EQUALS, "Active"));
 			matrixViewer = new MatrixViewer(this, MATRIX, 
-					new SliceablePhenoMatrix(Panel.class, Measurement.class), 
-					true, false, false, filterRules, 
+					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), 
+					true, false, false, false, filterRules, 
 					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		} catch (Exception e) {
 			String message = "Something went wrong while loading matrix viewer";

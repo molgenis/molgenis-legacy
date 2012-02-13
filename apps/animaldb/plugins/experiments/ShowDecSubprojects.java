@@ -326,6 +326,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		return experimentList.get(listId);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
@@ -619,7 +620,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// TODO: find a way to filter out only the animals that are CURRENTLY in this DEC subproject
 				remAnimalsMatrixViewer = new MatrixViewer(this, REMANIMALSMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, true, false, filterRules, 
+						true, true, false, false, filterRules, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				remAnimalsMatrixViewer.setDatabase(db);
 				
@@ -669,7 +670,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// TODO: find a way to filter out only the animals that are CURRENTLY NOT in THIS DEC subproject
 				addAnimalsMatrixViewer = new MatrixViewer(this, ADDANIMALSMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, true, false, filterRules, 
+						true, true, false, false, filterRules, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				addAnimalsMatrixViewer.setDatabase(db);
 			}

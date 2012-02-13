@@ -78,7 +78,7 @@ public class MatrixPlugin extends GenericPlugin
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, true, true, filterRules, 
+						true, true, true, false, filterRules, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
 				div.add(targetMatrixViewer);

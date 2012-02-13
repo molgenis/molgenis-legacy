@@ -157,6 +157,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	 */
 	private List<ObservationTarget> getIndividualsFromUi(Database db, Tuple request) throws DatabaseException, ParseException, MatrixException {
 		List<ObservationTarget> individualList = new ArrayList<ObservationTarget>();
+		@SuppressWarnings("unchecked")
 		List<ObservationElement> rows = (List<ObservationElement>) targetMatrixViewer.getSelection(db);
 		int rowCnt = 0;
 		for (ObservationElement row : rows) {
@@ -246,8 +247,8 @@ public class PrintLabelPlugin extends GenericPlugin
 				cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
 				"Alive"));
 		targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
-				new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-				true, true, false, filterRules, 
+				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+				true, true, false, false, filterRules, 
 				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		targetMatrixViewer.setDatabase(db);
 		targetMatrixViewer.setLabel("Choose animals:");

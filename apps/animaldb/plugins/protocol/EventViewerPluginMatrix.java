@@ -16,7 +16,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.GenericPlugin;
-import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
@@ -32,7 +31,6 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 import commonservice.CommonService;
@@ -153,8 +151,8 @@ public class EventViewerPluginMatrix extends GenericPlugin
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
-						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-						true, false, false, filterRules, 
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+						true, false, false, false, filterRules, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);
 				targetMatrixViewer.setLabel("Choose animal:");

@@ -64,7 +64,7 @@ public class MatrixTestsMV extends EasyPluginController<MatrixTestsModelMV>
                     
 			matrixViewer = new MatrixViewer(this, "mymatrix", 
 					new SliceablePhenoMatrixMV(DatabaseFactory.create(), ObservationTarget.class, Measurement.class, investigation, measurementByProtocol), 
-					true, true, false, null);
+					true, true, false, false, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.setError(e.getMessage());
