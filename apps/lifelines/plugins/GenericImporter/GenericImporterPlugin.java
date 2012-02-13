@@ -11,6 +11,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
+import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
@@ -134,6 +135,8 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		chooseClassType.add(ObservationTarget.class.getSimpleName());
 		chooseClassType.add(Individual.class.getSimpleName());
 		chooseClassType.add(Panel.class.getSimpleName());
+		chooseClassType.add(OntologyTerm.class.getSimpleName());
+		
 		
 		dataTypeOptions.add("string");
 		dataTypeOptions.add("int");

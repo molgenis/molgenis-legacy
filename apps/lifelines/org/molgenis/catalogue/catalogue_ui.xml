@@ -18,6 +18,9 @@
 				<form name="observationTarget" entity="ObservationTarget" label="Observation Target" >
 					<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
 				</form>
+				<form name="computeProtocol" entity="ComputeProtocol" label="Compute Protocol">
+					<form name="computeParameter" entity="ComputeParameter" label="Compute Parameter"/>
+				</form>
 			</form>
 		</menu>
 		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="Catalogue Tree" />  

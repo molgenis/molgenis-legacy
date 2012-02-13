@@ -290,7 +290,7 @@ public class TableModel {
 										//create the entity
 										entity = (InvestigationElement) DatabaseFactory.create().getClassForName(field.getClassType()).newInstance();
 									}
-
+									
 
 									if(!value.equalsIgnoreCase("")){
 
@@ -558,7 +558,6 @@ public class TableModel {
 			//Resolving importing the measurements with the same name. In the different studies, measurements with the same name could
 			//have different definitions, so we need to distinguish this kind of variables. Therefore a display name meta-measurement is created
 			//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
-			
 			Measurement displayNameMeasurement;
 			
 			if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
