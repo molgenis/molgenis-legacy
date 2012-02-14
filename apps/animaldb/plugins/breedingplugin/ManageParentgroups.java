@@ -200,11 +200,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
 			
 			List<String> measurementsToShow = new ArrayList<String>();
-			measurementsToShow.add("Species");
 			measurementsToShow.add("Sex");
 			measurementsToShow.add("Active");
 			measurementsToShow.add("Line");
 			measurementsToShow.add("Background");
+			measurementsToShow.add("GeneModification");
+			measurementsToShow.add("GeneState");
 			// Mother matrix viewer
 			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
 			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
@@ -246,12 +247,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
 			
 			List<String> measurementsToShow = new ArrayList<String>();
-			measurementsToShow.add("Species");
 			measurementsToShow.add("Sex");
 			measurementsToShow.add("Active");
 			measurementsToShow.add("Line");
 			measurementsToShow.add("Background");
-			
+			measurementsToShow.add("GeneModification");
+			measurementsToShow.add("GeneState");
 			// Father matrix viewer
 			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
 			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 

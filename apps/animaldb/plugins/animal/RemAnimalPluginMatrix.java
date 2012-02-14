@@ -74,6 +74,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 			if (action.equals("Select")) {
 				targetList = new ArrayList<Integer>();
 				// Get targets from matrix
+				@SuppressWarnings("unchecked")
 				List<ObservationElement> rows = (List<ObservationElement>) targetMatrixViewer.getSelection(db);
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
@@ -193,7 +194,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
 						"Alive"));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
-						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
 						true, true, false, false, filterRules, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				targetMatrixViewer.setDatabase(db);

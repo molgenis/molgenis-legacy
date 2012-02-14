@@ -22,7 +22,10 @@ import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
+
+import commonservice.CommonService;
 
 public class ListPluginMatrix extends GenericPlugin
 {
@@ -32,6 +35,7 @@ public class ListPluginMatrix extends GenericPlugin
 	private Container container = null;
 	private DivPanel div = null;
 	private String action = "init";
+	private CommonService cs = CommonService.getInstance();
 	
 	public ListPluginMatrix(String name, ScreenController<?> parent)
 	{
@@ -61,10 +65,13 @@ public class ListPluginMatrix extends GenericPlugin
 	@Override
 	public void reload(Database db)
 	{
+		cs.setDatabase(db);
+		
 		if (container == null) {
 			container = new Container();
 			div = new DivPanel();
 			try {
+				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
 				List<String> measurementsToShow = new ArrayList<String>();
 				// Some measurements that we think AnimalDB users like to see most:
 				measurementsToShow.add("Active");
@@ -74,6 +81,11 @@ public class ListPluginMatrix extends GenericPlugin
 				measurementsToShow.add("OldUliDbTiernummer");
 				measurementsToShow.add("OldRhutDbAnimalId");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+						Operator.IN, investigationNames));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
+						"Alive"));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
 						true, true, true, false, filterRules, 

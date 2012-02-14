@@ -330,7 +330,7 @@ public class MatrixViewer extends HtmlWidget
 		List<?> cols = matrix.getColHeaders();
 
 		// print colHeaders
-		dataTable.addColumn("Select"); // for checkbox / radio input
+		dataTable.addColumn("select"); // for checkbox / radio input
 
 		for (Object col : cols)
 		{
@@ -472,12 +472,13 @@ public class MatrixViewer extends HtmlWidget
 		String filterRules = "";
 		if (this.matrix.getRules().size() > 0)
 		{
-			int filterCnt = 0;
+			int filterCnt = -1;
 			for (MatrixQueryRule mqr : this.matrix.getRules())
 			{
-				// Show only column value + row header filters to user
+				filterCnt++;
+				// Show only column value + row header filters on name to user
 				if (!mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty) &&
-					!mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader))
+				    !(mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name")))
 				{
 					continue;
 				}
@@ -507,16 +508,14 @@ public class MatrixViewer extends HtmlWidget
 						measurementName = db.findById(Measurement.class, mqr.getDimIndex()).getName();
 					}
 				}
-
-				filterRules += "<br />" + measurementName + (measurementName.equals("name") ? "" : "." + mqr.getField()) + " " + 
-						mqr.getOperator().toString() + " " + mqr.getValue();
+				
+				String leftPart = measurementName + "." + mqr.getField();
+				filterRules += "<br />" + leftPart + " " + mqr.getOperator().toString() + " " + mqr.getValue();
 				ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
 				removeButton.setIcon("generated-res/img/delete.png");
 				filterRules += removeButton.render();
 				System.out.println("(mqr.getFilterType() " + mqr.getFilterType());
-				filterCnt++;
 			}
-
 		}
 
 		if (filterRules.equals(""))
@@ -1225,7 +1224,9 @@ public class MatrixViewer extends HtmlWidget
 			String valuePropertyToUse = ObservedValue.VALUE;
 			int measurementId = t.getInt(COLID);
 			if (measurementId == -1) { // Filter on name
-				matrix.sliceByRowProperty(Individual.NAME, Operator.EQUALS, t.getObject(COLVALUE));
+				matrix.getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS, 
+						t.getObject(COLVALUE)));
+				matrix.reload();
 			} else {
 				// First find out whether to filter on the value or the relation_Name field
 				Measurement filterMeasurement;
