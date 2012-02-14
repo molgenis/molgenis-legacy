@@ -106,6 +106,10 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 				{
 					this.model.setViewDataByTags(false);
 				}
+				else if(action.equals("refresh"))
+				{
+					currentInvId = null;
+				}
 				
 				this.setMessages();
 			}

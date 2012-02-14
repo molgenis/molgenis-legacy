@@ -43,6 +43,10 @@
 			
 <h2>Overview of investigation '${model.selectedInv.name}'</h2>
 
+<table><tr><td onMouseOver="this.style.background='#CCCCCC'" onMouseOut="this.style.background='#EAEAEA'" onclick="if( window.name == '' ){ window.name = 'molgenis'+Math.random();}document.forms.${screen.name}.__target.value='${screen.name}';document.forms.${screen.name}.__action.value = 'refresh';document.forms.${screen.name}.submit();" style="text-align:center;width:75px">
+	<img width="32" height="32" src="clusterdemo/icons/reset64.png"/><br/>Refresh
+</td></tr></table>
+
 <h3>Annotations</h3>
 
 <table width=500 style='table-layout:fixed'>
@@ -109,7 +113,7 @@
 					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllAnnotations'; document.forms.${screen.name}.submit();"/>
 				</#if>
 			</#if>
-			<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=BasicAnnotations'">
+			<input type="button" value="Browse" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=BasicAnnotations'">
 		</td>
 	</tr>
 </table>
@@ -183,7 +187,7 @@
 						<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllExperiments'; document.forms.${screen.name}.submit();"/>
 					</#if>
 				</#if>
-				<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=Datas'">
+				<input type="button" value="Browse" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=Datas'">
 			</td>
 		</tr>
 	
@@ -224,7 +228,7 @@
 			</td>
 			<td>
 				<br>
-				<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=BasicAnnotations'">
+				<input type="button" value="Browse" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=BasicAnnotations'">
 			</td>
 		<tr>
 		
@@ -294,7 +298,7 @@
 					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllOther'; document.forms.${screen.name}.submit();"/>
 				</#if>
 			</#if>
-			<input type="button" value="Browse / Add" onclick="window.location.href='molgenis.do?__target=InvestigationMenu&select=Files'">
+			<input type="button" value="Browse" onclick="window.location.href='molgenis.do?__target=ImportDataMenu&select=Files'">
 		</td>
 	</tr>
 </table>
