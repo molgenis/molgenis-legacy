@@ -165,14 +165,14 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	 * @param parentTree
 	 * @param db
 	 */
-	public void recursiveAddingNodesToTree(List<String> parentNode,
+	public void recursiveAddingNodesToTree(List<String> nextNodes, String parentClassName,
 			JQueryTreeViewElementObject parentTree, Database db) {
 
-		for (String protocolName : parentNode) {
+		for (String protocolName : nextNodes) {
 
 			Protocol protocol = nameToProtocol.get(protocolName);
-
-			if (protocol != null) {
+			
+			if (!protocolName.equals(parentClassName) && protocol != null) {
 
 				JQueryTreeViewElementObject childTree;
 
@@ -185,7 +185,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				}
 
 				if (protocol.getSubprotocols_Name() != null	&& protocol.getSubprotocols_Name().size() > 0) {
-					recursiveAddingNodesToTree(protocol.getSubprotocols_Name(), childTree, db);
+					recursiveAddingNodesToTree(protocol.getSubprotocols_Name(), protocol.getName(), childTree, db);
 				}
 				if (protocol.getFeatures_Name() != null	&& protocol.getFeatures_Name().size() > 0) {
 					addingLastMeasurementToTree(protocol.getFeatures_Name(), childTree, db);
@@ -209,6 +209,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			for (Measurement measurement : measurementList) {
 
 				JQueryTreeViewElementObject childTree;
+				
 				if (labelToTree.containsKey(measurement.getName())) {
 
 					childTree = labelToTree.get(measurement.getName());
@@ -222,7 +223,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					String measurementDataType = measurement.getDataType();
 					
 					String htmlValue = "<table id = 'detailInformation'  border = 2>" +
-							"<tr><th>Display name</th><td>" + measurement.getName() +
+							"<tr><th>Item name</th><td>" + measurement.getName() +
 							"</td></tr><tr><th>Category</th><td><table border=1>";
 					
 					
@@ -238,20 +239,33 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 							measurementDescription + "</td></tr>";
 					
 					htmlValue += "<tr><th>Data type</th><td>" +
-							measurementDataType + "</td></tr></table>";
+							measurementDataType + "</td></tr>";
 					//htmlValue = "<p>why?</p>";
 					
 					Query<ObservedValue> queryDisplayNames = db.query(ObservedValue.class);
 					
 					queryDisplayNames.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
-					queryDisplayNames.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "display name"));
 					
 					String displayName = "";
 					
 					if(!queryDisplayNames.find().isEmpty()){
 						
-						displayName = queryDisplayNames.find().get(0).getValue();
+						for(ObservedValue ov : queryDisplayNames.find()){
+							
+							String featureName = ov.getFeature_Name();
+							String value = ov.getValue();
+							
+							if(featureName.equals("display name_" + selectedInvestigation)){
+								displayName = queryDisplayNames.find().get(0).getValue();
+							}
+							
+							htmlValue += "<tr><th>" + featureName + "</th><td>" +
+									 value + "</td></tr>";
+						}
+						
 					}
+					
+					htmlValue += "</table>";
 					
 					if(displayName.equals("")){
 						childTree = new JQueryTreeViewElementObject(measurement.getName(),parentTree, htmlValue);
@@ -348,10 +362,10 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 				"Protocols", null);
 
 		if(topProtocols.size() == 0){
-			recursiveAddingNodesToTree(bottomProtocols, protocolsTree, db);
+			recursiveAddingNodesToTree(bottomProtocols,"Protocols", protocolsTree, db);
 
 		}else{
-			recursiveAddingNodesToTree(topProtocols, protocolsTree, db);
+			recursiveAddingNodesToTree(topProtocols, "Protocols", protocolsTree, db);
 		}
 
 		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementObject>(

@@ -51,56 +51,17 @@ public class TableModel {
 
 	private HashMap<String, String> InputToMolgenisDataType = new HashMap<String, String>();
 
-	private HashMap<Integer, Integer> protocolSubprotocolIndex = new HashMap<Integer, Integer>();
-
-	private HashMap<Integer, Integer> protocolSubProtocol = new HashMap<Integer, Integer>();
-
 	private HashMap<Integer, TableField> columnIndexToTableField = new HashMap<Integer, TableField>();
-
-	private HashMap<TableField, TableField> referenceField = new HashMap<TableField, TableField>();
-
-	//	private int protocolIndex = -1;
-	//
-	//	private int featureIndex = -1;
-
-	//	private String protocolName = null;
-	//
-	//	private String subProtocolName = null;
-	//
-	//	private int unitsIndex = -1;
-	//
-	//	private int temporalIndex = -1;
-	//
-	//	private int measurementIndex = -1;
-	//
-	//	private int categoryIndex = -1;
-	//
-	//	private int missingCategoryIndex = -1;
 
 	private List<Integer> missingCategoryList = new ArrayList<Integer>();
 
-	private HashMap<Integer, List<Integer>> categoryAddToMeasurement = new HashMap<Integer, List<Integer>>();
-
-	//OntologyTerm Parameters
-	//	private int ontologyTermIndex = -1;
-	//
-	//	private int ontologyNameIndex = -1;
-	//
-	//	private int ontologyTermAccessIndex = -1;
-	//
-	//	private int ontologyDefinitionIndex = -1;
-	//
-	//	private int ontologyTermPathIndex = -1;
 	private HashMap<Integer, List<Integer>> relationIndex = new HashMap<Integer, List<Integer>>();
-	private String[] updateMeasurementDatabaseRules = {Measurement.NAME, Measurement.DESCRIPTION, 
-			Measurement.DATATYPE, Measurement.CATEGORIES_NAME, Measurement.UNIT_NAME,Measurement.INVESTIGATION_NAME};
-	private String[] updateProtocolDatabaseRules = {Protocol.NAME, Protocol.FEATURES_NAME, Protocol.SUBPROTOCOLS_NAME, Protocol.INVESTIGATION_NAME};
-	private String[] updateCategoryDatabaseRules = {Category.NAME, Category.CODE_STRING, Category.DESCRIPTION, Category.LABEL, Category.ISMISSING, Category.INVESTIGATION_NAME};
-	private String[] updateObservedValuesDatabaseRules = {ObservedValue.VALUE, ObservedValue.TARGET_NAME, ObservedValue.FEATURE_NAME, ObservedValue.INVESTIGATION_NAME};
 
 	private String investigationName = null;
 
 	private String excelDirection = "UploadFileByColumn";
+
+	private Measurement displayNameMeasurement = null;
 
 	private HashMap<String, String> measurementWithSameLabels = new HashMap<String, String>();;
 
@@ -205,15 +166,15 @@ public class TableModel {
 		int column = sheet.getColumns();
 
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
-		
+
 		List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
-		
+
 		if(excelDirection.equals("UploadFileByRow"))
 		{
 			row = sheet.getColumns();
 			column = sheet.getRows();
 		}
-		
+
 		//three dimensional matrix of<colIndex, rowIndex, valueIndex>
 		//third dimension of valueIndex is to deal with multiple values in one cell
 		//we made colIndex key because not all colIndexes are used
@@ -228,7 +189,7 @@ public class TableModel {
 				for(int colIndex = 0; colIndex < column; colIndex++){
 
 					String cellValue;
-					
+
 					if(excelDirection.equals("UploadFileByRow"))
 						cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("'", "").trim();
 					else
@@ -290,7 +251,7 @@ public class TableModel {
 										//create the entity
 										entity = (InvestigationElement) DatabaseFactory.create().getClassForName(field.getClassType()).newInstance();
 									}
-									
+
 
 									if(!value.equalsIgnoreCase("")){
 
@@ -299,11 +260,11 @@ public class TableModel {
 											//Category entity couldn`t have empty property in name, description, code_string, label
 											//therefore it`s separated from other entites.
 											String categoryName = value;
-											
+
 											if(value.split("=").length > 1){
 												categoryName = value.split("=")[1].trim();
 											}
-											
+
 											entity.set(Category.NAME, categoryName);
 											entity.set(Category.DESCRIPTION, value);
 											entity.set(Category.CODE_STRING, value);
@@ -318,7 +279,7 @@ public class TableModel {
 
 										if(investigationName != null)
 											entity.set("Investigation_name", investigationName);
-										
+
 										colValues.get(colIndex).get(rowIndex - 1).add(entity);
 
 										//field.setEntity(entity);
@@ -328,7 +289,7 @@ public class TableModel {
 						}
 
 						if(field.getDependentColumnIndex()[0] != -1){
-							
+
 							for(int index = 0; index < field.getDependentColumnIndex().length; index++){
 
 								int dependentColumn = field.getDependentColumnIndex()[index];
@@ -342,27 +303,27 @@ public class TableModel {
 								String multipleValues[] = cellValue.split(dependendField.getValueSplitter());
 
 								List<Object> values = new ArrayList<Object>();
-								
+
 								if(field.getClassType().equals(Category.class.getSimpleName())){
-									
+
 									for(int i = 0; i < multipleValues.length; i++){
-										
+
 										String categoryCodeString = multipleValues[i];
-										
+
 										if(categoryCodeString.split("=").length > 1)
 										{	
 											multipleValues[i] = categoryCodeString.split("=")[1];
 										}
-										
+
 										values.add(multipleValues[i].trim());
-									
+
 									}
 								}else{
 									for(int i = 0; i < multipleValues.length; i++){
 										values.add(multipleValues[i].trim());
 									}
 								}
-								
+
 								//Due to using generic method get() property of the Pheno Entity, so we don`t know which Object data
 								//the field would be. We need to check the field type first. It could be list, boolean, string
 								if(addingPropertyToEntity.get(field.getRelationString()) != null)
@@ -394,7 +355,7 @@ public class TableModel {
 											}else{
 												values.add(false);
 											}
-											
+
 										}else{
 											if(cellValue.equalsIgnoreCase("yes"))
 												values.add(true);
@@ -417,7 +378,7 @@ public class TableModel {
 										}
 									}
 								}
-								
+
 								if(field.getRelationString().equals(Measurement.UNIT_NAME)){
 
 									for(int i = 0; i < multipleValues.length; i++)
@@ -461,23 +422,31 @@ public class TableModel {
 						if(rowIndex == 0){
 
 							if(field.getClassType().equalsIgnoreCase(ObservedValue.class.getSimpleName())){
-								
+
 								Measurement measurement = new Measurement();
-								
+
 								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).size() != 0){
+
 									Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
 									if(!measure.getInvestigation_Name().equals(investigationName)){
 										cellValue += "_" + investigationName;
 										measurementWithSameLabels.put(measure.getName(), cellValue);
 									}
+
 								}
-								
+
+
+								if(cellValue.equals("display name")){
+									cellValue += "display name_" + investigationName;
+									measurementWithSameLabels.put("display name", cellValue);
+								}
+
 								measurement.setName(cellValue);
-									
 								headerMeasurements.add(measurement);
-								
+
 								if(investigationName != null)
 									measurement.set("Investigation_name", investigationName);
+
 							}
 							//The rest of the column is observedValue!
 						}else{
@@ -489,13 +458,13 @@ public class TableModel {
 								String headerName = sheet.getCell(colIndex, 0).getContents().replaceAll("'", "").trim();
 
 								String targetName = sheet.getCell(field.getObservationTarget(), rowIndex).getContents().replaceAll("'", "").trim();
-								
+
 								//TODO: import measurements then import individual data. The measurement has to be consistent.
-								
+
 								if(measurementWithSameLabels.keySet().contains(headerName)){
 									headerName = measurementWithSameLabels.get(headerName);
 								}
-								
+
 								observedValue.setFeature_Name(headerName);
 
 								observedValue.setTarget_Name(targetName);
@@ -503,7 +472,7 @@ public class TableModel {
 								observedValue.setValue(cellValue);
 
 								observedValueList.add(observedValue);
-								
+
 								if(investigationName != null)
 									observedValue.set("Investigation_name", investigationName);
 							}
@@ -547,50 +516,45 @@ public class TableModel {
 				}
 
 			}
-			
+
 			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING,ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
-			
+
 			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME, OntologyTerm.TERMPATH);
 
 			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
 
-			
-			//Resolving importing the measurements with the same name. In the different studies, measurements with the same name could
-			//have different definitions, so we need to distinguish this kind of variables. Therefore a display name meta-measurement is created
-			//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
-			Measurement displayNameMeasurement;
-			
-			if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name_" + investigationName)).size() == 0){
-				
-				displayNameMeasurement = new Measurement();
-				
-				displayNameMeasurement.setName("display name_" + investigationName);
-				
-				db.add(displayNameMeasurement);
-				
-			}else{
-				displayNameMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name_" + investigationName)).get(0);
-			}
-			
-			
 			HashMap<String, InvestigationElement> displayNameToMeasurement = new HashMap<String, InvestigationElement>();
-			
+
 			for(InvestigationElement m : measurementList){
-				
-				
+
+
 				String measurementName = m.getName();
-				
+
 				//prevent the measurement with the same name from importing twice. Therefore check the database whether the 
 				//measurement already existed, if there is, make a unique measurement name by combining it with investigation
 				//name. such as weight_study_KORA. In order to display the measurement with its original name such as "weight"
 				//a meta-measurement "display name" is created to describe the measurements as a label (measurement becomes observationElement
 				//in Molgenis) such as weight_study_KORA (ObservationElement) --------->"weight" (value) <-----------diaplay name (measurement)
 				if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).size() != 0){
-					
+
 					//if the existing measurement comes from the same investigation, that means they are the same measurement, don`t import
 					Measurement existingMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).get(0);
-					
+
 					if(!existingMeasurement.getInvestigation_Name().equals(investigationName)){
+
+						//Resolving importing the measurements with the same name. In the different studies, measurements with the same name could
+						//have different definitions, so we need to distinguish this kind of variables. Therefore a display name meta-measurement is created
+						//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
+						if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name_" + investigationName)).size() == 0){
+
+							displayNameMeasurement = new Measurement();
+
+							displayNameMeasurement.setName("display name_" + investigationName);
+
+						}else{
+							displayNameMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name_" + investigationName)).get(0);
+						}
+
 						//else the measurement comes from different investigation, that means there are duplicated measurements, import with investigation name
 						ObservedValue ob = new ObservedValue();
 						ob.setValue(measurementName);
@@ -602,18 +566,19 @@ public class TableModel {
 						ob.setInvestigation_Name(m.getInvestigation_Name());
 						observedValueList.add(ob);
 						displayNameToMeasurement.put(ob.getValue(), m);
+
 					}
 				}
-				
+
 				//After Category has been added in the db. Set the category to Measurement by ID. 
 				List<String> categories_name = (List<String>) m.get(Measurement.CATEGORIES_NAME);
-				
+
 				if(categories_name.size() > 0)
 				{
 					List<Category> categories = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categories_name));
 					List<Integer> categoryId = new ArrayList<Integer>();
 					for(Category c : categories){
-						
+
 						if(m.get(Measurement.NAME).equals(c.getName())){
 							c.setName(c.getName() + "_code");
 							db.update(c);
@@ -623,12 +588,12 @@ public class TableModel {
 					m.set(Measurement.CATEGORIES, categoryId);
 				}
 			}
-			
-			
+
+
 			db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
-			
+
 			HashMap<String, List<String>> subProtocolAndProtocol = new HashMap<String, List<String>>();
-			
+
 			//mref is not working for the name. We can`t do protocol.setFeatures_name(""). Therefore we need to 
 			//add features in db first, afterwards we could use protocol.setFeatures_ID(). Mref for ID is working fine
 			for(InvestigationElement p : protocolList)
@@ -644,17 +609,17 @@ public class TableModel {
 					{
 						List<Integer> featuresId = new ArrayList<Integer>();
 						for(Measurement m : features){
-							
+
 							if(displayNameToMeasurement.keySet().contains(m.getName())){
-								
+
 								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).size() > 0){
-									
+
 									m = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).get(0);
-									
+
 									if(!featuresId.contains(m.getId()))
 										featuresId.add(m.getId());
 								}
-								
+
 							}else{
 								if(!featuresId.contains(m.getId()))
 									featuresId.add(m.getId());
@@ -663,9 +628,9 @@ public class TableModel {
 						p.set(Protocol.FEATURES, featuresId);
 					}
 				}
-				
+
 				if(p.get(Protocol.SUBPROTOCOLS_NAME) != null){
-					
+
 					if(!subProtocolAndProtocol.containsKey(p.getName())){
 						subProtocolAndProtocol.put(p.getName(), (List<String>) p.get(Protocol.SUBPROTOCOLS_NAME));
 					}
@@ -677,8 +642,6 @@ public class TableModel {
 			db.update(protocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.INVESTIGATION_NAME);
 
 			List<InvestigationElement> subProtocols = new ArrayList<InvestigationElement>();
-
-			List<InvestigationElement> noneDuplicatedElements = new ArrayList<InvestigationElement>();
 
 			for(InvestigationElement p : protocolList)
 			{
@@ -709,11 +672,10 @@ public class TableModel {
 			}
 
 
-
 			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
-			
+
 			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
-			
+
 			//put all in the database, using right order
 			//TODO
 
@@ -749,15 +711,15 @@ public class TableModel {
 	}
 
 	public void setInvestigation(String investigationName) throws DatabaseException {
-		
+
 		Investigation investigation = new Investigation();
-		
+
 		if(investigationName != null && db.query(Investigation.class).eq(Investigation.NAME, investigationName).count() == 0){
 
 			investigation.setName(investigationName);
-			
+
 			db.add(investigation);
-			
+
 		}
 		if(investigationName != null)
 		{
@@ -766,8 +728,8 @@ public class TableModel {
 	}
 
 	public void setDirection(String excelDirection) {
-		
+
 		this.excelDirection  = excelDirection;
-		
+
 	}
 }
