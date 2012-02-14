@@ -206,7 +206,7 @@ public class AnimaldbSeleniumTest
 		// Go to Parentgroup plugin
 		selenium.click("id=ManageParentgroups_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Parentgroups"));
+		Assert.assertTrue(selenium.isTextPresent("Existing parentgroups"));
 		// Add a parent group
 		selenium.click("id=createpg");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -237,7 +237,6 @@ public class AnimaldbSeleniumTest
 		selenium.click("ManageLitters_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Litters"));
-		Assert.assertTrue(selenium.isTextPresent("Create new litter"));
 		// Add a litter
 		selenium.click("id=addlitter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -274,9 +273,10 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=showdone");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
-		selenium.click("link=Create definitive cage labels");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
+		// TODO: fix below by creating a button to make cage labels for the selected litter
+		//selenium.click("link=Create definitive cage labels");
+		//selenium.waitForPageToLoad(pageLoadTimeout);
+		//Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		

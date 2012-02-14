@@ -695,6 +695,7 @@ public class ManageLitters extends PluginModel<Entity>
 				this.selectedParentgroup = -1;
 				reload(db);
 				reloadLitterLists(db);
+				reloadLitterMatrixViewer();
 				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals successfully genotyped", true));
 			}
 			
@@ -718,11 +719,11 @@ public class ManageLitters extends PluginModel<Entity>
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
 		// Set genotype date on litter -> this is how we mark a litter as genotyped
-		// TODO: use proper date from field instead of 'weandate' which is undefined here!!
 		int protocolId = ct.getProtocolId("SetGenotypeDate");
 		int measurementId = ct.getMeasurementId("GenotypeDate");
+		String genodate = newDateOnlyFormat.format(new Date()); // TODO: take from field in UI!
 		db.add(ct.createObservedValueWithProtocolApplication(invid, now, 
-				null, protocolId, measurementId, this.genoLitterId, weandate, 0));
+				null, protocolId, measurementId, this.genoLitterId, genodate, 0));
 		
 		// Set genotyping remarks on litter
 		if (request.getString("remarks") != null) {
