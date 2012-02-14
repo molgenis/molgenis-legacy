@@ -47,7 +47,7 @@
 
 <br><br>
 
-<div style="position:absolute;top:250px;left:80px;">
+<div style="position:relative;left:80px;top:20px;">
 		<select class=" ui-widget-content ui-corner-all" id="Phenotype_select" name="dataTypeSelect"  style="width:220px;" name="dataTypeSelect">
 			<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All phenotypes (${model.annotationTypeAndNr[allDataTypes]})</option>
 			<#list model.annotationTypeAndNr?keys as key>
@@ -57,16 +57,15 @@
 			</#list>
 		</select><script>$("#Phenotype_select").chosen();</script>
 </div>
-<div style="position:absolute;top:245px;left:300px;">
+<div style="position:relative;left:300px;top:-15px;">
 
 	<input type="text" name="query" class="searchBox" value="${query}" >
 </div>
 
-<div style="position:absolute;top:245px;left:550px;">
+<div style="position:relative;left:580px;top:-65px;">
 	<@action name="search" label="Search"/>
 </div>
 
-<br><br>
 
 
 
@@ -77,7 +76,7 @@
 
 <div style="
 position:absolute;
- top:200px;
+ top:275px;
  right:-200px;
  width:200px;
  z-index: 5;
@@ -490,7 +489,6 @@ Selection:<br><br>
 	<#else>
 	
 	
-	<br><br>
 	
 	
 	
@@ -501,7 +499,7 @@ Selection:<br><br>
 	<#elseif model.hits?? && model.hits?size == 100>
 		<i>Your results were limited to the first 100. Please be more specific.</i><br><br>
 	<#else>
-		<br><br>
+
 	</#if>
 	
 	<#if model.hits??>
