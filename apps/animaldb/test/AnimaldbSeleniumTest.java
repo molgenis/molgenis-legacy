@@ -206,7 +206,7 @@ public class AnimaldbSeleniumTest
 		// Go to Parentgroup plugin
 		selenium.click("id=ManageParentgroups_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Parent groups"));
+		Assert.assertTrue(selenium.isTextPresent("Parentgroups"));
 		// Add a parent group
 		selenium.click("id=createpg");
 		selenium.waitForPageToLoad(pageLoadTimeout);
