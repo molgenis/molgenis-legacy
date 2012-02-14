@@ -52,7 +52,7 @@ public class ListPluginMatrix extends GenericPlugin
 		action = request.getAction();
 		
 		try {
-			if (action.startsWith(targetMatrixViewer.getName())) {
+			if (action != null && action.startsWith(targetMatrixViewer.getName())) {
 	    		targetMatrixViewer.handleRequest(db, request);
 			}
 			
