@@ -283,31 +283,37 @@ public class MatrixViewer extends HtmlWidget
 			MenuInput menu = new MenuInput(DOWNLOAD, "Download");
 			ActionInput downloadAllCsv = new ActionInput(DOWNLOADALLCSV, "", "All to CSV");
 			downloadAllCsv.setIcon("generated-res/img/download.png");
+			downloadAllCsv.setWidth(180);
 			menu.AddAction(downloadAllCsv);
 			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			//		+ downloadAllCsv.render() + "</div>";
 			ActionInput downloadVisCsv = new ActionInput(DOWNLOADVISCSV, "", "Visible to CSV");
 			downloadVisCsv.setIcon("generated-res/img/download.png");
+			downloadVisCsv.setWidth(180);
 			menu.AddAction(downloadVisCsv);
 			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			//		+ downloadVisCsv.render() + "</div>";
 			ActionInput downloadAllExcel = new ActionInput(DOWNLOADALLEXCEL, "", "All to Excel");
 			downloadAllExcel.setIcon("generated-res/img/download.png");
+			downloadAllExcel.setWidth(180);
 			menu.AddAction(downloadAllExcel);
 			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			//		+ downloadAllExcel.render() + "</div>";
 			ActionInput downloadVisExcel = new ActionInput(DOWNLOADVISEXCEL, "", "Visible to Excel");
 			downloadVisExcel.setIcon("generated-res/img/download.png");
+			downloadVisExcel.setWidth(180);
 			menu.AddAction(downloadVisExcel);
 			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			//		+ downloadVisExcel.render() + "</div>";
 			ActionInput downloadAllSPSS = new ActionInput(DOWNLOADALLSPSS, "", "All to SPSS");
 			downloadAllSPSS.setIcon("generated-res/img/download.png");
+			downloadAllSPSS.setWidth(180);
 			menu.AddAction(downloadAllSPSS);
 			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			//		+ downloadAllSPSS.render() + "</div>";
 			ActionInput downloadVisSPSS = new ActionInput(DOWNLOADVISSPSS, "", "Visible to SPSS");
 			downloadVisSPSS.setIcon("generated-res/img/download.png");
+			downloadVisSPSS.setWidth(180);
 			menu.AddAction(downloadVisSPSS);
 			//divContents += "<div style=\"padding-left:10px; float:left; vertical-align:middle\">"
 			//		+ downloadVisSPSS.render() + "</div>";
