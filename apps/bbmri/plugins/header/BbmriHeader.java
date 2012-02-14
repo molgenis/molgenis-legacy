@@ -7,16 +7,16 @@
 package plugins.header;
 
 import org.molgenis.auth.DatabaseLogin;
-import org.molgenis.auth.MolgenisUser;
+//import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
+//import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import plugins.emptydb.emptyDatabase;
-import app.FillMetadata;
+//import plugins.emptydb.emptyDatabase;
+//import app.FillMetadata;
 
 
 
