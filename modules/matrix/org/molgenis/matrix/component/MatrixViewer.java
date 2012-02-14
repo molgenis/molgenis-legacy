@@ -101,6 +101,7 @@ public class MatrixViewer extends HtmlWidget
 	public String MOVEUP = getName() + "_moveUp";
 	public String MOVEDOWN = getName() + "_moveDown";
 	public String MOVEDOWNEND = getName() + "_moveDownEnd";
+	public String DOWNLOAD = getName() + "_download";
 	public String DOWNLOADALLCSV = getName() + "_downloadAllCsv";
 	public String DOWNLOADALLEXCEL = getName() + "_downloadAllExcel";
 	public String DOWNLOADALLSPSS = getName() + "_downloadAllSPSS";	
@@ -272,7 +273,7 @@ public class MatrixViewer extends HtmlWidget
 		// download options
 		if (showDownloadOptions)
 		{
-			MenuInput menu = new MenuInput("Download", "Download");
+			MenuInput menu = new MenuInput(DOWNLOAD, "Download");
 			ActionInput downloadAllCsv = new ActionInput(DOWNLOADALLCSV, "", "All to CSV");
 			downloadAllCsv.setIcon("generated-res/img/download.png");
 			menu.AddAction(downloadAllCsv);
@@ -634,6 +635,9 @@ public class MatrixViewer extends HtmlWidget
 		return file; 
 	}
 	
+	public void download(Database db, Tuple t) {
+		// to prevent nullpointer error when clicking the Download menu button
+	}
 	
 	@SuppressWarnings("unchecked")
 	public void downloadAllCsv(Database db, Tuple t) throws MatrixException, IOException
