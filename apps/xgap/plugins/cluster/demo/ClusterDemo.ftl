@@ -71,7 +71,7 @@
 					 <li>KEGG: K06560 K00134 K29897</li>
 				</ul>")}
 			</li>
-			<li>Fully <b>open</b> user management and permission system</li>
+			<li>Fully <b>configurable</b> user management and permission system</li>
 			<li>Created using <b>software generation</b> allowing for quick tailoring to your needs</li>
 			</ul>
 			</div>
@@ -80,24 +80,15 @@
 	</tr>
 	<tr>
 	
-	<td align="center"
-		<#if screen.loggedIn>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Investigations';document.forms.main.submit();">
-		<#else>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
-		</#if>
+		<td align="center">
 			<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
 				<tr>
-
 					<td align="center">
-						<font style='font-size:15px; font-weight:bold;'>Browse</font> <font style='font-size:15px;'>data</font>
-					</td>
-				</tr>
-			</table>
-			<table>
-				<tr>
-					<td align="center">
-						<font style='font-size:10px;'>(login as user <b>bio-user</b>, password <b>bio</b>)</font>
+						<#if screen.loggedIn>
+							<a href="?__target=main&select=Investigations"><font style='font-size:15px; font-weight:bold;'>Browse</font> <font style='font-size:15px;'>data</font></a>
+						<#else>
+							<a href="?__target=UserLogin&__action=Login&username=bio-user&password=bio"><nobr>Demo: login as <b>biologist</b></nobr></a> <br> <font style='font-size:12px;'>(<i>bio-user</i>, password <i>bio</i>)</font>
+						</#if>
 					</td>
 				</tr>
 			</table>
@@ -105,78 +96,47 @@
 	
 		<td width="20px">&nbsp;</td>
 		
-		<td align="center"
-		<#if screen.loggedIn>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='ImportDataMenu';document.forms.main.submit();">
-		<#else>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
-		</#if>
+		<td align="center">
+			<#if screen.loggedIn>
 			<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
-
 				<tr>
 					<td align="center">
-						<font style='font-size:15px; font-weight:bold;'>Import</font> <font style='font-size:15px;'>data</font>
+						<a href="?__target=main&select=ImportDataMenu"><font style='font-size:15px; font-weight:bold;'>Import</font> <font style='font-size:15px;'>data</font></a>
 					</td>
 				</tr>
 			</table>
-			<table>
-				<tr>
-					<td align="center">
-						<font style='font-size:10px;'>(login as user <b>bio-user</b>, password <b>bio</b>)</font>
-					</td>
-				</tr>
-			</table>
+			</#if>
 		</td>
 		
 		<td width="20px">&nbsp;</td>
 
-		<td valign="top" align="center"
-		<#if screen.loggedIn>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='Cluster';document.forms.main.submit();">
-		<#else>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
-		</#if>
+		<td valign="top" align="center">
+			<#if screen.loggedIn>
 			<table bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
 				<tr>
 					<td align="center">
-						<font style='font-size:15px; font-weight:bold;'>Run</font> <font style='font-size:15px;'>QTL mapping</font>
+						<a href="?__target=main&select=Cluster"><font style='font-size:15px; font-weight:bold;'>Run</font> <font style='font-size:15px;'>QTL mapping</font></a>
 					</td>
 				</tr>
 			</table>
-			<table>
-				<tr>
-					<td align="center">
-						<font style='font-size:10px;'>(login as user <b>bio-user</b>, password <b>bio</b>)</font>
-					</td>
-				</tr>
-			</table>
+			</#if>
 		</td>
 		
 		<td width="20px">&nbsp;</td>
 		
-		<td align="center"
-		<#if screen.loggedIn>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='AnalysisSettings';document.forms.main.submit();">
-		<#else>
-			onClick="document.forms.main.__target.value='main';document.forms.main.select.value='UserLogin';document.forms.main.submit();">
-		</#if>
-			<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
+		<td align="center">
+			<table bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
 				<tr>
 					<td align="center">
-						<font style='font-size:15px; font-weight:bold;'>Add</font> <font style='font-size:15px;'>analysis</font>
+						<#if screen.loggedIn>
+							<a href="?__target=main&select=AnalysisSettings"><font style='font-size:15px; font-weight:bold;'>Add</font> <font style='font-size:15px;'>analysis</font></a> <font style='font-size:10px;'><br>(must be logged in as a bioinformatician)</font>
+						<#else>
+							<a href="?__target=UserLogin&__action=Login&username=bioinfo-user&password=bioinfo"><nobr>Demo: login as <b>bioinformatician</b></nobr></a> <br> <font style='font-size:12px;'>(<i>bioinfo-user</i>, password <i>bioinfo</i>)</font>
+						</#if>
 					</td>
 				</tr>
 			</table>
-			<table>
-				<tr>
-					<td align="center">
-						<font style='font-size:10px;'>(login as user <b>bioinfo-user</b>, password <b>bioinfo</b>)</font>
-					</td>
-				</tr>
-			</table>
-			&nbsp;
 		</td>
-		
 	</tr>
 	
 	<tr>
