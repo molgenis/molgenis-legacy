@@ -468,7 +468,7 @@ public class TableModel {
 									Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
 									if(!measure.getInvestigation_Name().equals(investigationName)){
 										cellValue += "_" + investigationName;
-										measurementWithSameLabels .put(measure.getName(), cellValue);
+										measurementWithSameLabels.put(measure.getName(), cellValue);
 									}
 								}
 								
@@ -560,16 +560,16 @@ public class TableModel {
 			//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
 			Measurement displayNameMeasurement;
 			
-			if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
+			if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name_" + investigationName)).size() == 0){
 				
 				displayNameMeasurement = new Measurement();
 				
-				displayNameMeasurement.setName("display name");
+				displayNameMeasurement.setName("display name_" + investigationName);
 				
 				db.add(displayNameMeasurement);
 				
 			}else{
-				displayNameMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).get(0);
+				displayNameMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name_" + investigationName)).get(0);
 			}
 			
 			
@@ -587,15 +587,22 @@ public class TableModel {
 				//in Molgenis) such as weight_study_KORA (ObservationElement) --------->"weight" (value) <-----------diaplay name (measurement)
 				if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).size() != 0){
 					
-					ObservedValue ob = new ObservedValue();
-					ob.setValue(measurementName);
-					measurementName += "_" + m.get(Measurement.INVESTIGATION_NAME);
-					m.setName(measurementName);
-					ob.setTarget_Name(measurementName);
-					ob.setFeature_Name(displayNameMeasurement.getName());
-					ob.setInvestigation_Name(m.getInvestigation_Name());
-					observedValueList.add(ob);
-					displayNameToMeasurement.put(ob.getValue(), m);
+					//if the existing measurement comes from the same investigation, that means they are the same measurement, don`t import
+					Measurement existingMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).get(0);
+					
+					if(!existingMeasurement.getInvestigation_Name().equals(investigationName)){
+						//else the measurement comes from different investigation, that means there are duplicated measurements, import with investigation name
+						ObservedValue ob = new ObservedValue();
+						ob.setValue(measurementName);
+						measurementName += "_" + m.get(Measurement.INVESTIGATION_NAME);
+						m.setName(measurementName);
+						m.setInvestigation_Name(investigationName);
+						ob.setTarget_Name(measurementName);
+						ob.setFeature_Name(displayNameMeasurement.getName());
+						ob.setInvestigation_Name(m.getInvestigation_Name());
+						observedValueList.add(ob);
+						displayNameToMeasurement.put(ob.getValue(), m);
+					}
 				}
 				
 				//After Category has been added in the db. Set the category to Measurement by ID. 
@@ -639,9 +646,15 @@ public class TableModel {
 						for(Measurement m : features){
 							
 							if(displayNameToMeasurement.keySet().contains(m.getName())){
-								InvestigationElement measurementElement = (Measurement) displayNameToMeasurement.get(m.getName());
-								if(!featuresId.contains(measurementElement.getId()))
-									featuresId.add(measurementElement.getId());
+								
+								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).size() > 0){
+									
+									m = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).get(0);
+									
+									if(!featuresId.contains(m.getId()))
+										featuresId.add(m.getId());
+								}
+								
 							}else{
 								if(!featuresId.contains(m.getId()))
 									featuresId.add(m.getId());
