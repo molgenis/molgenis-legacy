@@ -497,8 +497,6 @@ public class MatrixViewer extends HtmlWidget
 					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
 					Measurement.class);
 			
-	
-			
 			// disable display of button for adding new measurements from here
 			measurementChooser.setIncludeAddButton(false);
 			divContents += new Newline().render();
@@ -514,6 +512,10 @@ public class MatrixViewer extends HtmlWidget
 	}
 
 	private HtmlInput<?> buildFilterInput(Measurement selectedMeasurement) {
+		// At this moment, selectedMeasurement is always null. Temp. fix:
+		if (selectedMeasurement == null) {
+			return new StringInput(COLVALUE);
+		}
 		switch (MolgenisFieldTypes.getType(selectedMeasurement.getDataType()).getEnumType()) {
 			// date/datetime
 		case DATE:
@@ -537,9 +539,17 @@ public class MatrixViewer extends HtmlWidget
 	}
 	private SelectInput buildFilterOperator(Measurement selectedMeasurement) {
 		SelectInput operatorInput = new SelectInput(OPERATOR);
+		// At this moment, selectedMeasurement is always null. Temp. fix:
 		if (selectedMeasurement == null) {
+			operatorInput.addOption(Operator.EQUALS.name(), Operator.EQUALS.name());
+			operatorInput.addOption(Operator.LIKE.name(), Operator.LIKE.name());
+			operatorInput.addOption(Operator.LESS.name(), Operator.LESS.name());
+			operatorInput.addOption(Operator.LESS_EQUAL.name(), Operator.LESS_EQUAL.name());
+			operatorInput.addOption(Operator.GREATER.name(), Operator.GREATER.name());
+			operatorInput.addOption(Operator.GREATER_EQUAL.name(), Operator.GREATER_EQUAL.name());
 			return operatorInput;
 		}
+		
 		for (String operator : MolgenisFieldTypes.getType(selectedMeasurement.getDataType()).getAllowedOperators()) {
 			operatorInput.addOption(operator, operator);
 		}
@@ -581,7 +591,8 @@ public class MatrixViewer extends HtmlWidget
 		for (MatrixQueryRule mqr : this.matrix.getRules())
 		{
 			// Show only column value filters to user
-			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty))
+			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty) ||
+				(mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name")))
 			{
 				outStr += generateFilterRule(filterCnt, mqr);
 			}
@@ -590,7 +601,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 
 		// Show applied filter rules
-		return outStr.equals("") ? "none" : outStr;
+		return outStr.equals("") ? " none" : outStr;
 	}
 
 	private String generateFilterRule(int filterCnt, MatrixQueryRule mqr) throws MatrixException, DatabaseException {
@@ -598,7 +609,7 @@ public class MatrixViewer extends HtmlWidget
 		// Try to retrieve measurement name
 		String measurementName = findMeasurementName(mqr);
 
-		outStr += "<br />" + measurementName + "." + mqr.getField() + " " + 
+		outStr += "<br />" + (measurementName.equals("name") ? "" : measurementName + ".") + mqr.getField() + " " + 
 				mqr.getOperator().toString() + " " + mqr.getValue();
 		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
 		removeButton.setIcon("generated-res/img/delete.png");
@@ -607,13 +618,13 @@ public class MatrixViewer extends HtmlWidget
 	}
 
 	private String findMeasurementName(MatrixQueryRule mqr) throws MatrixException, DatabaseException {
-		String measurementName = "";
+		String measurementName = "name";
 		for (Object meas : matrix.getColHeaders())
 		{
 			if (meas instanceof ObservationElement)
 			{
 				ObservationElement measr = (ObservationElement) meas;
-				if (measr.getId().intValue() == mqr.getDimIndex().intValue())
+				if (measr.getId() != null && mqr.getDimIndex() != null && measr.getId().intValue() == mqr.getDimIndex().intValue())
 				{
 					measurementName = measr.getName();
 				}
