@@ -1,30 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
 <project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="molgenis_apps">
-        <wb-resource deploy-path="/" source-path="/WebContent"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/lifelinesresearchportal"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/xgap"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/apps/lifelines"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/datamodel"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/auth"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/file"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/import"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/webserver"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/settings"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/pheno"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/search"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/matrix"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/core"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/auth"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/pheno"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/modules/decorators/data"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/publicdata"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/sql"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/java"/>
-        <property name="java-output-path"/>
-        <property name="context-root" value="molgenis_apps"/>
-        <dependent-module archiveName="molgenis.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/molgenis/molgenis">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-    </wb-module>
+  <wb-module deploy-name="molgenis_apps">
+    <property name="java-output-path" value="build/classes"></property>
+    <property name="context-root" value="molgenis_apps"></property>
+    <dependent-module archiveName="molgenis.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/molgenis/molgenis">
+      <dependency-type>uses</dependency-type>
+    </dependent-module>
+    <wb-resource deploy-path="/" source-path="/WebContent"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="generated/sql"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="generated/java"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="apps\bbmri"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="apps\lifelines"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\auth"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\pheno"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\file"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\datamodel"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\settings"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\import"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\search"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\decorators\core"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\decorators\auth"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\decorators\pheno"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\webserver"></wb-resource>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="modules\matrix"></wb-resource>
+  </wb-module>
 </project-modules>
+

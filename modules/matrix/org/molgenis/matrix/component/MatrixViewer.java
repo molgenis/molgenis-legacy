@@ -267,6 +267,7 @@ public class MatrixViewer extends HtmlWidget
 		if (showLimitControls)
 		{
 			IntInput rowLimitInput = new IntInput(ROWLIMIT, rowLimit);
+			rowLimitInput.setWidth(1);
 			divContents += "|&nbsp;Page limit:";
 			divContents += rowLimitInput.render();
 			divContents += new ActionInput(CHANGEROWLIMIT, "", "Change").render();
