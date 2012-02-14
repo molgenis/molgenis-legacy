@@ -1,12 +1,10 @@
 package org.molgenis.framework.ui.html;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
 import org.molgenis.util.SimpleTree;
-import org.molgenis.util.Tree;
 
 public class JQueryTreeView<E> extends HtmlWidget
 {
@@ -14,7 +12,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 	
 	private List<String> listOfMeasurements = new ArrayList<String>();
 			
-	public JQueryTreeView(String name, SimpleTree treeData)
+	public JQueryTreeView(String name, SimpleTree<JQueryTreeViewElement> treeData)
 	{
 		super(name);
 		this.treeData = treeData;

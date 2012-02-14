@@ -213,7 +213,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 				</#if>
 			<#else>
 				<#if field.type == "text" >			
-	@javax.persistence.Lob()
+//	@javax.persistence.Lob()
 	@javax.persistence.Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
 				<#else>
         <#if SqlName(field) == '__Type'>

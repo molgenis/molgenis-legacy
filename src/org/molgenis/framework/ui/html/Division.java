@@ -1,7 +1,6 @@
 package org.molgenis.framework.ui.html;
 
 import java.text.ParseException;
-import java.util.UUID;
 
 import org.molgenis.util.Tuple;
 

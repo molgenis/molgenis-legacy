@@ -51,7 +51,7 @@ public class TablePanel extends HtmlWidget
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public HtmlInput get(String name)
 	{
 		return this.inputs.get(name);

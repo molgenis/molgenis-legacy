@@ -33,7 +33,7 @@ public class TextField extends FieldType
 	public String getOracleType()
 	{
 		// TODO Auto-generated method stub
-		return "BLOB";
+		return "VARCHAR";
 	}
 
 	@Override

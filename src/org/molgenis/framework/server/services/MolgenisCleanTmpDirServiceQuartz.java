@@ -53,7 +53,8 @@ public class MolgenisCleanTmpDirServiceQuartz implements MolgenisService
 	    	job.setName("cleanTmpDirJob");
 	    	job.setJobClass(CleanTmpDirJob.class);
 	 
-	    	Map dataMap = job.getJobDataMap();
+	    	@SuppressWarnings("unchecked")
+			Map<String, CleanTmpDirTask> dataMap = job.getJobDataMap();
 	    	dataMap.put("cleanTmpDirTask", task);
 	 
 	    	//configure the scheduler time
@@ -102,8 +103,9 @@ class CleanTmpDirJob implements Job
 {
 	public void execute(JobExecutionContext context) throws JobExecutionException
 	{
-		Map dataMap = context.getJobDetail().getJobDataMap();
-		CleanTmpDirTask task = (CleanTmpDirTask) dataMap.get("cleanTmpDirTask");
+		@SuppressWarnings("unchecked")
+		Map<String, CleanTmpDirTask> dataMap = context.getJobDetail().getJobDataMap();
+		CleanTmpDirTask task = dataMap.get("cleanTmpDirTask");
 		try
 		{
 			task.cleanTmpDir();

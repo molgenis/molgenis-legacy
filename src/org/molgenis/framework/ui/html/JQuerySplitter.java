@@ -1,8 +1,5 @@
 package org.molgenis.framework.ui.html;
 
-import java.util.Vector;
-
-import org.molgenis.util.Tree;
 
 public class JQuerySplitter<E> extends HtmlWidget
 {
