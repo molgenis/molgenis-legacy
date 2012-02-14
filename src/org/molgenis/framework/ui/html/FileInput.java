@@ -14,7 +14,7 @@ import org.molgenis.util.Tuple;
 /**
  * Input for upload of files.
  */
-public class FileInput extends HtmlInput
+public class FileInput extends HtmlInput<Object>
 {
 	public static final String INPUT_CURRENT_DOWNLOAD = "__filename";
 	public static final String ACTION_DOWNLOAD = "download";

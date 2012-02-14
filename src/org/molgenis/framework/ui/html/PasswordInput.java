@@ -1,6 +1,5 @@
 package org.molgenis.framework.ui.html;
 
-import org.molgenis.framework.ui.html.HtmlElement.UiToolkit;
 import org.molgenis.util.Tuple;
 
 /**

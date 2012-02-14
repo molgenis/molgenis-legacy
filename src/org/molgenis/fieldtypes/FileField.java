@@ -39,7 +39,7 @@ public class FileField extends FieldType
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
-		return "CLOB";
+		return "VARCHAR(1024)";
 	}
 
 	@Override

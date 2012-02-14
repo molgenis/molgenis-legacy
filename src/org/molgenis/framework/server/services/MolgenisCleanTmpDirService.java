@@ -6,7 +6,6 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.taskdefs.Sleep;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
