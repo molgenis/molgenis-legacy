@@ -84,11 +84,12 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 		}
 
 		if (this.equals(root)) {
-			String result = "<div style=\"vertical-align:middle\"><input type=\"button\" value=\"Download\" " +
+			String result = "<div style=\"vertical-align:middle\"><input id=\"downloadButton\" type=\"button\" value=\"Download\" " +
 					"onclick=\"if (document.getElementById('" + getId() + "').style.display=='none') {document.getElementById('" + getId() + "').style.display='block';} else {document.getElementById('" + getId() + "').style.display='none';} \" " +
-					//"onmouseout=\"document.getElementById('" + getId() + "').style.display='none'\" " + 
-					"/></div>";
-			result += ("<div id=\"" + getId() + "\" style=\"position:absolute; z-index:1; background-color:white; padding:2px; display:none\">" + items + "</div>");
+					"/>" +
+					"<script>$(\"#downloadButton\").button();</script>" +
+					"</div>" +
+					"<div id=\"" + getId() + "\" style=\"position:absolute; z-index:1; background-color:white; padding:2px; display:none\">" + items + "</div>";
 			return result;
 		} else {
 			return "<ul>" + items + "</ul>";
