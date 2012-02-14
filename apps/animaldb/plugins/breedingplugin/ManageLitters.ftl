@@ -29,8 +29,8 @@
 
 <#if screen.action == "ShowLitters">
 
-	<p><a href="molgenis.do?__target=${screen.name}&__action=AddLitter">Create new litter</a></p>
-	
+	<input type='submit' id='addlitter' class='addbutton' value='Create new litter' onclick="__action.value='AddLitter'" />
+	<br />
 	<#if screen.litterList?exists>
 		<#if screen.litterList?size gt 0>
 			<h2>Unweaned litters</h2>
@@ -102,8 +102,8 @@
 			</table>
 		</#if>
 	</#if>
-	
-	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowDoneLitters">Show weaned and genotyped litters</a></p>
+	<br />
+	<input type='submit' id='showdone' class='addbutton' value='Show weaned and genotyped litters' onclick="__action.value='ShowDoneLitters'" />
 	
 <#elseif screen.action == "MakeTmpLabels">
 
@@ -256,117 +256,11 @@
 	
 	<input type='submit' id='addgenocol' class='addbutton' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
 	<input type='submit' id='remgenocol' class='addbutton' value='Remove Gene modification + state' onclick="__action.value='RemGenoCol'" />
-	
-	<#--
-	<p>OLD TABLE</p>
-	<table>
-		<tr>
-			<th><strong>Animal name</strong></th>
-			<th><strong>Birth date</strong></th>
-			<th><strong>Sex</strong></th>
-			<th><strong>Color</strong></th>
-			<th><strong>Earmark</strong></th>
-			<th><strong>Background</strong></th>
-			<th><strong>Gene name</strong></th>
-			<th><strong>Gene state</strong></th>
-		</tr>
-	<#assign animalCount = 0>
-	<#list screen.getAnimalsInLitter() as animal>
-		<#assign animalId = animal.id>
-		<tr>
-			<td>${animal.name}</td>
-			<td>
-				<input type='text' id='dob_${animalCount}' name='dob_${animalCount}' value='${screen.getAnimalBirthDateAsString(animalId)}' onclick='showDateInput(this)' autocomplete='off' />
-			</td>
-			<td>
-				<select id='sex_${animalCount}' name='sex_${animalCount}'>
-				<#if screen.sexList?exists>
-					<#list screen.sexList as sex>
-						<option value='${sex.id?string.computer}'
-						<#if screen.getAnimalSex(animalId) = sex.id>
-							selected="selected"
-						</#if>
-						>${sex.name}</option>
-					</#list>
-				</#if>
-				</select>
-			</td>
-			<td>
-				<select id='color_${animalCount}' name='color_${animalCount}'>
-				<#if screen.colorList?exists>
-					<#list screen.colorList as color>
-						<option value='${color}'
-						<#if screen.getAnimalColor(animalId) = color>
-							selected="selected"
-						</#if>
-						>${color}</option>
-					</#list>
-				</#if>
-				</select>
-			</td>
-			<td>
-				<select id='earmark_${animalCount}' name='earmark_${animalCount}'>
-				<#if screen.earmarkList?exists>
-					<#list screen.earmarkList as earmark>
-						<option value='${earmark.code_String}'
-						<#if screen.getAnimalEarmark(animalId) = earmark.code_String>
-							selected="selected"
-						</#if>
-						>${earmark.code_String}</option>
-					</#list>
-				</#if>
-				</select>
-			</td>
-			<td>
-				<select id='background_${animalCount}' name='background_${animalCount}'>
-				<#if screen.backgroundList?exists>
-					<#list screen.backgroundList as background>
-						<option value='${background.id?string.computer}'
-						<#if screen.getAnimalBackground(animalId) = background.id>
-							selected="selected"
-						</#if>
-						>${background.name}</option>
-					</#list>
-				</#if>
-				</select>
-			</td>
-			<td>
-				<select id='geneName_${animalCount}' name='geneName_${animalCount}'>
-				<#if screen.geneNameList?exists>
-					<#list screen.geneNameList as geneName>
-						<option value='${geneName}'
-						<#if screen.getAnimalGeneName(animalId) = geneName>
-							selected="selected"
-						</#if>
-						>${geneName}</option>
-					</#list>
-				</#if>
-				</select>
-			</td>
-			<td>
-				<select id='geneState_${animalCount}' name='geneState_${animalCount}'>
-				<#if screen.geneStateList?exists>
-					<#list screen.geneStateList as geneState>
-						<option value='${geneState}'
-						<#if screen.getAnimalGeneState(animalId) = geneState>
-							selected="selected"
-						</#if>
-						>${geneState}</option>
-					</#list>
-				</#if>
-				</select>
-			</td>
-		</tr>
-		<#assign animalCount = animalCount + 1>
-	</#list>
-	</table -->
-	
 	<!-- Remarks -->
 	<div class='row'>
 		<label for='remarks'>Genotyping remarks:</label>
 		<input type='text' class='textbox' name='remarks' id='remarks' />
 	</div>
-	
 	<!-- Save button -->
 	<div class='row'>
 		<input type='submit' id='save' class='addbutton' value='Save' onclick="__action.value='Genotype'" />
@@ -376,43 +270,7 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 	
-	<#if screen.doneLitterList?exists>
-		<#if screen.doneLitterList?size gt 0>
-			<h2>Weaned and genotyped litters</h2>
-			<table cellpadding="0" cellspacing="0" border="0" class="display" id="donelitterstable">
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Parentgroup</th>
-						<th>Birth date</th>
-						<th>Wean date</th>
-						<th>Size at birth</th>
-						<th>Size at weaning</th>
-						<th>Remarks</th>
-						<th>Status</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-				<#list screen.doneLitterList as litter>
-					<tr>
-						<td>${litter.name}</td>
-						<td>${litter.parentgroup}</td>
-						<td>${litter.birthDate}</td>
-						<td>${litter.weanDate}</td>
-						<td>${litter.size}</td>
-						<td>${litter.weanSize}</td>
-						<td>${litter.remarks}</td>
-						<td>${litter.status}</td>
-						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeDefLabels&id=${litter.id?string.computer}">Create definitive cage labels</a></td>
-					</tr>
-				</#list>
-				</tbody>
-			</table>
-		<#else>
-			<p>There are currently no litters that have been weaned and genotyped.</p>
-		</#if>
-	</#if>
+	${screen.renderDoneLitterMatrix()}
 	
 </#if>
 	

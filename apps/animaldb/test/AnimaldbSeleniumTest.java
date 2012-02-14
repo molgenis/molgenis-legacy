@@ -208,7 +208,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Parent groups"));
 		// Add a parent group
-		selenium.click("link=Create new parent group");
+		selenium.click("id=createpg");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Screen 1: line
 		selenium.click("id=from1to2");
@@ -239,7 +239,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Litters"));
 		Assert.assertTrue(selenium.isTextPresent("Create new litter"));
 		// Add a litter
-		selenium.click("link=Create new litter");
+		selenium.click("id=addlitter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=matrix_selected_0"); // toggle selectbox for first parent group in list
 		selenium.type("id=littersize", "5");
@@ -271,7 +271,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully genotyped"));
 		// Check definitive cage labels link
-		selenium.click("link=Show weaned and genotyped litters");
+		selenium.click("id=showdone");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		selenium.click("link=Create definitive cage labels");

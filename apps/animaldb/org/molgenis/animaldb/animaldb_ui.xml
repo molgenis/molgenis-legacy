@@ -22,7 +22,7 @@
 				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
 					label="Breeding lines" />
 				<plugin name="ManageParentgroups" type="plugins.breedingplugin.ManageParentgroups"
-					label="Parent groups" />
+					label="Parentgroups" />
 				<plugin name="ManageLitters" type="plugins.breedingplugin.ManageLitters"
 					label="Litters" />
 				<plugin name="ViewFamily" type="plugins.breedingplugin.ViewFamily"

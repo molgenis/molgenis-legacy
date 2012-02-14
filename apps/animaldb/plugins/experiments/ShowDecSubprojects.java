@@ -991,73 +991,42 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 			// decApplicationList
 			this.setDecApplicationList(ct.getAllMarkedPanels("DecApplication", investigationIds));
 			
+			// Make list of ID's of all animals in this DEC subproject that are alive
+			List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);
 			// Populate subprojects list
 			experimentList.clear();
 			List<ObservationTarget> expList = ct.getAllMarkedPanels("Experiment", investigationIds);
 			int pos = 0;
 			for (ObservationTarget currentExp : expList) {
-				String name = currentExp.getName();
+				int expId = currentExp.getId();
+				String expName = currentExp.getName();
 								
-				int featureId = ct.getMeasurementId("ExperimentNr");
-				String experimentNr = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				String ExperimentTitle = "";
-				featureId = ct.getMeasurementId("ExperimentTitle");
-				ExperimentTitle = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				String DecSubprojectApplicationPDF = "";
-				featureId = ct.getMeasurementId("DecSubprojectApplicationPdf");
-				DecSubprojectApplicationPDF = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("Concern");
-				String concern = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("Goal");
-				String goal = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("SpecialTechn");
-				String specialTechn = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("LawDef");
-				String lawDef = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("ToxRes");
-				String toxRes = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("Anaesthesia");
-				String anaesthesia = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("PainManagement");
-				String painManagement = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("AnimalEndStatus");
-				String animalEndStatus = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("Remark");
-				String remarks = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
-				featureId = ct.getMeasurementId("DecApplication");
-				int decApplicationId = ct.getMostRecentValueAsXref(currentExp.getId(), featureId);
+				String experimentNr = ct.getMostRecentValueAsString(expId, "ExperimentNr");
+				String experimentTitle = ct.getMostRecentValueAsString(expId, "ExperimentTitle");
+				String decSubprojectApplicationPDF = ct.getMostRecentValueAsString(expId, "DecSubprojectApplicationPdf");
+				String concern = ct.getMostRecentValueAsString(expId, "Concern");
+				String goal = ct.getMostRecentValueAsString(expId, "Goal");
+				String specialTechn = ct.getMostRecentValueAsString(expId, "SpecialTechn");
+				String lawDef = ct.getMostRecentValueAsString(expId, "LawDef");
+				String toxRes = ct.getMostRecentValueAsString(expId, "ToxRes");
+				String anaesthesia = ct.getMostRecentValueAsString(expId, "Anaesthesia");
+				String painManagement = ct.getMostRecentValueAsString(expId, "PainManagement");
+				String animalEndStatus = ct.getMostRecentValueAsString(expId, "AnimalEndStatus");
+				String remarks = ct.getMostRecentValueAsString(expId, "Remark");
+				int decApplicationId = ct.getMostRecentValueAsXref(expId, "DecApplication");
 				String decApplicationName = "";
 				if (decApplicationId != -1) {
 					decApplicationName = ct.getObservationTargetById(decApplicationId).getName();
 				}
-				
 				String startDate = null;
-				featureId = ct.getMeasurementId("StartDate");
-				startDate = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-				
+				startDate = ct.getMostRecentValueAsString(expId, "StartDate");
 				String endDate = null;
-				featureId = ct.getMeasurementId("EndDate");
-				endDate = ct.getMostRecentValueAsString(currentExp.getId(), featureId);
-
+				endDate = ct.getMostRecentValueAsString(expId, "EndDate");
 				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
-				// Make list of ID's of all animals in this DEC subproject that are alive
-				List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);
 				int nrOfAnimals = 0;
 				if (aliveAnimalIdList.size() > 0) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, currentExp.getId()));
+					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, expId));
 					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
@@ -1066,12 +1035,12 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				}
 				
 				DecSubproject tmpExp = new DecSubproject();
-				tmpExp.setId(currentExp.getId());
+				tmpExp.setId(expId);
 				tmpExp.setDecExpListId(pos);
-				tmpExp.setName(name);
-				tmpExp.setExperimentTitle(ExperimentTitle);
+				tmpExp.setName(expName);
+				tmpExp.setExperimentTitle(experimentTitle);
 				tmpExp.setExperimentNr(experimentNr);
-				tmpExp.setDecSubprojectApplicationPDF(DecSubprojectApplicationPDF);
+				tmpExp.setDecSubprojectApplicationPDF(decSubprojectApplicationPDF);
 				tmpExp.setConcern(concern);
 				tmpExp.setGoal(goal);
 				tmpExp.setSpecialTechn(specialTechn);

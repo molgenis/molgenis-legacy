@@ -624,30 +624,39 @@ public class MatrixViewer extends HtmlWidget
 		return outStr;
 	}
 
-	private String findMeasurementName(MatrixQueryRule mqr) throws MatrixException, DatabaseException {
-		String measurementName = "name";
-		for (Object meas : matrix.getColHeaders())
-		{
-			if (meas instanceof ObservationElement)
+	private String findMeasurementName(MatrixQueryRule mqr) {
+		String measurementName = "";
+		try {
+			for (Object meas : matrix.getColHeaders())
 			{
-				ObservationElement measr = (ObservationElement) meas;
-				if (measr.getId() != null && mqr.getDimIndex() != null && measr.getId().intValue() == mqr.getDimIndex().intValue())
+				if (meas instanceof ObservationElement)
 				{
-					measurementName = measr.getName();
+					ObservationElement measr = (ObservationElement) meas;
+					if (measr.getId() != null && mqr.getDimIndex() != null && measr.getId().intValue() == mqr.getDimIndex().intValue())
+					{
+						measurementName = measr.getName();
+					}
+				}
+				else
+				{
+					measurementName = meas.toString();
 				}
 			}
-			else
-			{
-				measurementName = meas.toString();
-			}
+		} catch (MatrixException e1) {
 		}
-
-		// If name not in column headers, retrieve via DB (if
-		// available)
+		// If name not in column headers, retrieve via DB (if available)
 		if (measurementName.equals("") && this.matrix instanceof DatabaseMatrix)
 		{
-			measurementName = db.findById(Measurement.class, mqr.getDimIndex()).getName();
+			try {
+				measurementName = db.findById(Measurement.class, mqr.getDimIndex()).getName();
+			} catch (DatabaseException e) {
+			}
 		}
+		// If still unknown, assume "name"
+		if (measurementName.equals("")) {
+			measurementName = "name";
+		}
+		
 		return measurementName;
 	}
 

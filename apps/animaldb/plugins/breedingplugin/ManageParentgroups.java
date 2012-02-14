@@ -17,8 +17,6 @@ import java.util.Locale;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -31,6 +29,7 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -50,16 +49,17 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private int line = -1;
 	private String remarks = null;
 	//private String pgStatus = null;
-	private List<ObservationTarget> pgList;
 	MatrixViewer motherMatrixViewer = null;
 	MatrixViewer fatherMatrixViewer = null;
+	MatrixViewer pgMatrixViewer = null;
 	private static String MOTHERMATRIX = "mothermatrix";
 	private static String FATHERMATRIX = "fathermatrix";
+	private static String PGMATRIX = "pgmatrix";
 	private String action = "init";
 	private int userId = -1;
 	private String motherMatrixViewerString;
 	private String fatherMatrixViewerString;
-	private Database db;
+	private String pgMatrixViewerString;
 	
 	public ManageParentgroups(String name, ScreenController<?> parent)
 	{
@@ -123,64 +123,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 	}
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
-	}
-	
-//	public void setPgStatus(String status) {
-//		this.pgStatus = status;
-//	}
-
-	public List<ObservationTarget> getPgList() {
-		return pgList;
-	}
-	public void setPgList(List<ObservationTarget> pgList) {
-		this.pgList = pgList;
-	}
-	
-	public String getPgStartDate(int pgId) {
-		try {
-			String result = ct.getMostRecentValueAsString(pgId, ct.getMeasurementId("StartDate"));
-			if (result != null) {
-				return result;
-			} else {
-				return "";
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "Error when retrieving start date";
-		}
-	}
-	
-	public String getPgRemarks(int pgId) throws DatabaseException {
-		List<String> remarksList = ct.getRemarks(pgId);
-		String returnString = "";
-		for (String remark : remarksList) {
-			returnString += (remark + "<br>");
-		}
-		if (returnString.length() > 0) {
-			returnString = returnString.substring(0, returnString.length() - 4);
-		}
-		return returnString;
-	}
-	
-	public String getPgStatus(int pgId) throws DatabaseException {
-		try {
-			return ct.getMostRecentValueAsString(pgId, ct.getMeasurementId("Active"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "Error while retrieving status";
-		}
-	}
-	
-	public String getPgParents(int pgId, String parentSex) throws DatabaseException {
-		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, parentSex));
-		q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, pgId));
-		List<ObservedValue> vals = q.find();
-		String result = "";
-		for (ObservedValue val : vals) {
-			result += val.getTarget_Name() + " ";
-		}
-		return result;
 	}
 	
 	public String getAction() {
@@ -282,6 +224,37 @@ public class ManageParentgroups extends PluginModel<Entity>
 			e.printStackTrace();
 		}
 	}
+	
+	public String getPgMatrixViewer()
+	{
+		return pgMatrixViewerString;
+	}
+	
+	public void loadPgMatrixViewer(Database db) {
+		try {
+			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
+			
+			List<String> measurementsToShow = new ArrayList<String>();
+			measurementsToShow.add("StartDate");
+			measurementsToShow.add("Remark");
+			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, 
+					Operator.IN, investigationNames));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("TypeOfGroup"),
+					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
+			pgMatrixViewer = new MatrixViewer(this, PGMATRIX, 
+					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), 
+					true, false, false, false, filterRules, 
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+		} catch (Exception e) {
+			String message = "Something went wrong while loading parentgroup matrix viewer";
+			if (e.getMessage() != null) {
+				message += (": " + e.getMessage());
+			}
+			this.getMessages().add(new ScreenMessage(message, false));
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public String getViewName()
@@ -346,7 +319,6 @@ public class ManageParentgroups extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
-		this.db = db;
 		ct.setDatabase(db);
 		action = request.getString("__action");
 		try {
@@ -363,6 +335,14 @@ public class ManageParentgroups extends PluginModel<Entity>
 				fatherMatrixViewer.handleRequest(db, request);
 				fatherMatrixViewerString = fatherMatrixViewer.render();
 				this.setAction("addParentgroupScreen3"); // return to father selection screen
+				return;
+			}
+			
+			if (pgMatrixViewer != null && action.startsWith(pgMatrixViewer.getName())) {
+				pgMatrixViewer.setDatabase(db);
+				pgMatrixViewer.handleRequest(db, request);
+				pgMatrixViewerString = pgMatrixViewer.render();
+				this.setAction("init"); // return to start screen
 				return;
 			}
 			
@@ -517,14 +497,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 	@Override
 	public void reload(Database db)
 	{
-		this.db = db;
 		ct.setDatabase(db);
 		// Populate lists (do this on every reload so they keep fresh, and do it here
 		// because we need the lineList in the init part that comes after)
 		try {
 			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
-			// Populate existing PG list
-			pgList =  ct.getAllMarkedPanels("Parentgroup", investigationIds);
 			// Populate line list
 			lineList = ct.getAllMarkedPanels("Line", investigationIds);
 			// Default selected is first line
@@ -549,9 +526,14 @@ public class ManageParentgroups extends PluginModel<Entity>
 		// Some init that only needs to be done once after login
 		if (userId != this.getLogin().getUserId().intValue()) {
 			userId = this.getLogin().getUserId().intValue();
-			ct.setDatabase(db);
 			ct.makeObservationTargetNameMap(userId, false);
 			this.setStartdate(dateOnlyFormat.format(new Date()));
+			// Prepare pg matrix
+			if (pgMatrixViewer == null) {
+				loadPgMatrixViewer(db);
+			}
+			pgMatrixViewer.setDatabase(db);
+			pgMatrixViewerString = pgMatrixViewer.render();
 		}
 	}
 }

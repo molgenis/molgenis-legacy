@@ -993,7 +993,7 @@ public class CommonService
 			ObservedValue returnValue = valueList.get(0); // default is first one
 			Date storedTime = null;
 			for (ObservedValue currentValue : valueList) {
-				if (currentValue.getProtocolApplication_Id() == null) {
+				if (currentValue.getProtocolApplication_Id() != null) {
 					int protappId = currentValue.getProtocolApplication_Id();
 					ProtocolApplication protapp = getProtocolApplicationById(protappId);
 					Date protappTime = protapp.getTime();
@@ -1042,7 +1042,7 @@ public class CommonService
 			ObservedValue returnValue = valueList.get(0); // default is first one
 			Date storedTime = null;
 			for (ObservedValue currentValue : valueList) {
-				if (currentValue.getProtocolApplication_Id() == null) {
+				if (currentValue.getProtocolApplication_Id() != null) {
 					int protappId = currentValue.getProtocolApplication_Id();
 					ProtocolApplication protapp = getProtocolApplicationById(protappId);
 					Date protappTime = protapp.getTime();
@@ -1081,6 +1081,55 @@ public class CommonService
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
+		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
+		// Discussion: if you uncomment the previous line, only values are retrieved
+		// that have endtime 'null', i.e. values that are still valid.
+		// Is this desirable? Maybe we could use a boolean to switch this behavior on and off?
+		//q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
+		List<ObservedValue> valueList = q.find();
+		if (valueList.size() > 0) {
+			ObservedValue returnValue = valueList.get(0); // default is first one
+			Date storedTime = null;
+			for (ObservedValue currentValue : valueList) {
+				if (currentValue.getProtocolApplication_Id() != null) {
+					int protappId = currentValue.getProtocolApplication_Id();
+					ProtocolApplication protapp = getProtocolApplicationById(protappId);
+					Date protappTime = protapp.getTime();
+					if (storedTime == null || protappTime.after(storedTime)) {
+						returnValue = currentValue;
+						storedTime = protappTime;
+					}
+				}
+			}
+			return returnValue.getRelation_Id();
+		} else {
+			return -1;
+			// Discussion: I'm unhappy with the solution below (commented out) because
+			// it's perfectly normal for a target-feature combination not to have a value,
+			// so this should not cause an exception but just return a dummy xref id.
+		    //throw new DatabaseException("No valid values were found for targetid: " + 
+			//	targetid + " and featureid: " + featureid);
+		}
+	}
+	
+	/**
+	 * For a given ObservationTarget and ObservableFeature, returns
+	 * the ID of the ObservationTarget related to in the most recent ObservedValue,
+	 * based on the timestamp of its ProtocolApplication.
+	 * Returns -1 if none found.
+	 * 
+	 * @param targetid
+	 * @param featureName
+	 * @return int: ID of relation in most recent value for given feature and target
+	 * @throws DatabaseException
+	 * @throws ParseException
+	 */
+	public int getMostRecentValueAsXref(int targetid, String featureName)
+			throws DatabaseException, ParseException
+	{
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, featureName));
 		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 		// Discussion: if you uncomment the previous line, only values are retrieved
 		// that have endtime 'null', i.e. values that are still valid.

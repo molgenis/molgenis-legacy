@@ -62,7 +62,7 @@
 	</div>
 	
 </div>
-
+<br />
 <div>
 	<p><h2>Existing breeding lines</h2></p>
 	<#if screen.lineList?size gt 0>

@@ -100,38 +100,10 @@
 <#else>
 
 <div>
-	<p><a href="molgenis.do?__target=${screen.name}&__action=addParentgroupScreen1">Create new parent group</a></p>
-	
-	<#if screen.pgList?size gt 0>
-		<p><h2>Existing parent groups</h2></p>
-		<table cellpadding="0" cellspacing="0" border="0" class="display" id="pgstable">
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Start date</th>
-					<th>Mother(s)</th>
-					<th>Father(s)</th>
-					<th>Remarks</th>
-					<th>Status</th>
-				</tr>
-			</thead>
-			<tbody>
-			<#list screen.pgList as pg>
-				<#assign pgId = pg.getId()>
-				<tr>
-					<td>${pg.name}</td>
-					<td>${screen.getPgStartDate(pgId)}</td>
-					<td>${screen.getPgParents(pgId, "Mother")}</td>
-					<td>${screen.getPgParents(pgId, "Father")}</td>
-					<td>${screen.getPgRemarks(pgId)}</td>
-					<td>${screen.getPgStatus(pgId)}</td>
-				</tr>
-			</#list>
-			</tbody>
-		</table>
-	<#else>
-		<p>There are no parent groups yet.</p>
-	</#if>
+	<input type='submit' id='createpg' class='addbutton' value='Create new parentgroup' onclick="__action.value='addParentgroupScreen1'" />
+	<br />
+	<p><h2>Existing parentgroups</h2></p>
+	${screen.pgMatrixViewer}
 
 </div>
 

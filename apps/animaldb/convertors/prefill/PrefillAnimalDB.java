@@ -235,6 +235,7 @@ public class PrefillAnimalDB
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
+				@SuppressWarnings("unchecked")
 				List<String> measurementNameList = (List<String>) tuple.getList("measurements", ",");
 				protocolsToAddList.add(ct.createProtocol(invName, tuple.getString("name"), 
 						tuple.getString("description"), measurementNameList));
