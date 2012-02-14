@@ -3,7 +3,9 @@ package org.molgenis.compute.commandline;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,27 +23,27 @@ public class Worksheet
 {
 	// The worksheet variable
 	public List<Tuple> worksheet = new ArrayList<Tuple>();
-	public List<Tuple> folded = new ArrayList<Tuple>();
-	public List<Tuple> reduced = new ArrayList<Tuple>();
+	//public List<Tuple> folded = new ArrayList<Tuple>();
+	//public List<Tuple> reduced = new ArrayList<Tuple>();
 	List<ComputeParameter> parameterlist; // parameters.txt
 	List<Tuple> userworksheet; // original user worksheet
-	public Set<String> reducedfields = new HashSet<String>(); // fields (lists) that are reduced to a single value
-	public Set<String> foldon = new HashSet<String>(); // fields on which we folded
-	public Set<String> list; // fields that remain a list
+	//public Set<String> reducedfields = new HashSet<String>(); // fields (lists) that are reduced to a single value
+	//public Set<String> foldon = new HashSet<String>(); // fields on which we folded
+	//public Set<String> list; // fields that remain a list
 
-	public Set<String> getConstants()
-	{
-		Set<String> constants = new HashSet<String>();
-		for (String field : reducedfields)
-		{
-			if (!foldon.contains(field))
-			{
-				constants.add(field);
-			}
-		}
-
-		return (constants);
-	}
+//	public Set<String> getConstants()
+//	{
+//		Set<String> constants = new HashSet<String>();
+//		for (String field : reducedfields)
+//		{
+//			if (!foldon.contains(field))
+//			{
+//				constants.add(field);
+//			}
+//		}
+//
+//		return (constants);
+//	}
 
 	// map with (parameter name, parameter object) tuples
 	// public Map<String, ComputeParameter> computeparameters = new HashMap<String, ComputeParameter>();
@@ -180,7 +182,8 @@ public class Worksheet
 		this.worksheet = ws;
 	}
 
-	public void foldWorksheet(List<String> targets)
+	/** Returns the folded list, based on folding targets */
+	public static List<Tuple> foldWorksheet(List<Tuple> worksheet, List<ComputeParameter> parameterlist, List<String> targets)
 	{
 		/*
 		 * Fold worksheet based on targets. Example (targets = lane, sequencer): lane, barcode, sequencer (1, a, x); (1, b, x); (2, a, x)
@@ -190,26 +193,28 @@ public class Worksheet
 		 * Use reduceTargets(worksheet, targets) to reduce the instances of the targets (for easy use in FTL templates): (1, [a, b], x); (2, [a], x)
 		 */
 
-//		if(0 == targets.size())
-//		{
-//			this.folded = this.cloneWorksheet(this.worksheet);
-//			return;
-//		}
+		// if(0 == targets.size())
+		// {
+		// this.folded = this.cloneWorksheet(this.worksheet);
+		// return;
+		// }
 
 		Map<String, ArrayList<Object>> tupleset = null; // [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]
 		Map<String, Map<String, ArrayList<Object>>> wsset = new HashMap<String, Map<String, ArrayList<Object>>>(); // Suppose target is lane: [1: [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]]
 
-		for (Tuple t : this.worksheet)
+		for (Tuple t : worksheet)
 		{
 			// fill ws
 
 			String key = "";// t.getString(targets);
 
+			//create unique key based on concat of folding targets
 			for (String target : targets)
 			{
 				key += t.getString(target) + "_";
 			}
 
+			// get existing folding set or creeate new
 			if (!key.equals("") && wsset != null && wsset.containsKey(key))
 			{
 				// we already have a tupleset corresponding to this key
@@ -238,7 +243,7 @@ public class Worksheet
 		}
 
 		// put folded tuples in 'folded worksheet'
-		this.folded.clear();
+		List<Tuple> folded = new ArrayList<Tuple>();
 		for (String key : wsset.keySet())
 		{
 			tupleset = wsset.get(key);
@@ -252,27 +257,28 @@ public class Worksheet
 
 			SimpleTuple st = new SimpleTuple(m);
 
-			this.folded.add(st);
+			folded.add(st);
 		}
 
 		// check: is the worksheet (ws) that we want to return, after expansion, equal to the original worksheet?
 		// if not, throw exception
-		
-		List<Tuple> expWs = expandWorksheet(this.folded);
-		print("this.folded: " + this.folded);
-		print("expWs: " + expWs);
-		print("worksheet: " + worksheet);
-		
-		if (!equalWorksheets(expandWorksheet(this.folded), worksheet))
+
+		//List<Tuple> expWs = unfoldWorksheet(folded);
+		// print("this.folded: " + folded);
+		// print("expWs: " + expWs);
+		// print("worksheet: " + worksheet);
+
+		if (!equalWorksheets(unfoldWorksheet(folded), worksheet))
 		{
 			throw new RuntimeException(">> Error: worksheets should be equal but are not!");
 		}
+		return reduceTargets(folded, parameterlist, targets);
 	}
 
 	private List<Tuple> cloneWorksheet(List<Tuple> otherWorksheet)
 	{
 		List<Tuple> result = new ArrayList<Tuple>();
-		for(Tuple t: worksheet)
+		for (Tuple t : worksheet)
 		{
 			result.add(this.cloneTuple(t));
 		}
@@ -280,18 +286,18 @@ public class Worksheet
 		return result;
 	}
 
-	private Set<String> reduceFieldSet(List<String> targets)
+	private static Set<String> reduceFieldSet(List<ComputeParameter> parameterlist, List<String> targets)
 	{
-//		if (targets.size() == 0)
-//		{
-//			Set<String> reduceParams = new HashSet<String>();
-//			for (ComputeParameter cp : parameterlist)
-//			{
-//				reduceParams.add(cp.getName());
-//			}			
-//			this.list = new HashSet<String>();
-//			return(reduceParams);
-//		}
+		// if (targets.size() == 0)
+		// {
+		// Set<String> reduceParams = new HashSet<String>();
+		// for (ComputeParameter cp : parameterlist)
+		// {
+		// reduceParams.add(cp.getName());
+		// }
+		// this.list = new HashSet<String>();
+		// return(reduceParams);
+		// }
 
 		// Let R and L be two sets. R contains 'reduce' parameters, L contains 'list' parameters.
 		Set<String> reduceParams = new HashSet<String>();
@@ -330,10 +336,10 @@ public class Worksheet
 		}
 
 		// put targets and hasOnes also in global list that we print in header of script
-		for (String field : reduceParams)
-		{
-			foldon.add(field);
-		}
+//		for (String field : reduceParams)
+//		{
+//			foldon.add(field);
+//		}
 
 		// (iii) put all empty parameters that are not in R, in L
 		for (ComputeParameter cp : parameterlist)
@@ -430,9 +436,9 @@ public class Worksheet
 			allp.add(cp.getName());
 		}
 
-		print("R: " + reduceParams);
-		print("L: " + listParams);
-		print("allp: " + allp);
+		// print("R: " + reduceParams);
+		// print("L: " + listParams);
+		// print("allp: " + allp);
 
 		if (!allp.containsAll(reduceParams) || !allp.containsAll(listParams)) throw new RuntimeException("You just found a bug!");
 		allp.removeAll(reduceParams);
@@ -441,29 +447,34 @@ public class Worksheet
 				"You just found a bug! There are parameters for which it is unclear whether you want to reduce on them.");
 
 		// make L global
-		this.list = listParams;
+//		this.list = listParams;
 		return (reduceParams);
 	}
 
-	public void reduceTargets(List<String> targets)
+	public static List<Tuple> reduceTargets(List<Tuple> folded, List<ComputeParameter> parameterlist, List<String> targets)
 	{
-		if(1 == targets.size() && "line_number".equals(targets.get(0))) 
-		{
-			this.reduced = cloneWorksheet(this.folded);
-			this.reducedfields.clear();
-			for (ComputeParameter cp : parameterlist)
-			{
-				this.reducedfields.add(cp.getName());
-			}
-			return;
-		}
-		
+//		if (1 == targets.size() && "line_number".equals(targets.get(0)))
+//		{
+////			List<Tuple> reduced = cloneWorksheet(folded);
+////			List<String> reducedfields = new ArrayList<String>();
+////			for (ComputeParameter cp : parameterlist)
+////			{
+////				reducedfields.add(cp.getName());
+////			}
+//			return folded;
+//		}
+
 		// reduce the targets in worksheet (eg lane = 1, 1, 1, 1) to one single value (lane = 1) for easy use in freemarker
 
-		this.reducedfields = reduceFieldSet(targets);
+		Set<String> reducedfields = reduceFieldSet(parameterlist, targets);
+		if (1 == targets.size() && "line_number".equals(targets.get(0)))
+		{
+			reducedfields.addAll(folded.get(0).getFields());
+		}
 
 		// clear data that is now in reduced worksheet
-		this.reduced.clear();
+		//this.reduced.clear();
+		List<Tuple> reduced = new ArrayList<Tuple>();
 
 		for (Tuple t : folded)
 		{
@@ -498,48 +509,12 @@ public class Worksheet
 
 				}
 			}
-			this.reduced.add(tclone);
-			// for (String target : targets)
-			// {
-			// // get the 'hasOne' list
-			// ComputeParameter cp = this.computeparameters.get(target);
-			// List<String> hasOne_names = cp.getHasOne_Name();
-			// hasOne_names.add(target);
-			//
-			// if (!tclone.getFields().contains(target))
-			// {
-			// throw new RuntimeException("target: " + target + " is not known");
-			// }
-			// else
-			// {
-			// for (String hasOne : hasOne_names)
-			// {
-			// if (!tclone.isNull(hasOne))
-			// { // tclone has a value
-			// List<String> ls = (List<String>) tclone.getList(hasOne);
-			//
-			// // check: all values should be equal
-			// String value = ls.get(0);
-			// for (int i = 1; i < ls.size(); i++)
-			// {
-			// if (!ls.get(i).equalsIgnoreCase(value))
-			// {
-			// throw new RuntimeException("Cannot reduce field " + hasOne
-			// + " because it contains different values!");
-			// }
-			// }
-			//
-			// // reduce to one value
-			// tclone.set(hasOne, value);
-			// }
-			// }
-			// }
-			// }
-			// this.reduced.add(tclone);
+			reduced.add(tclone);
 		}
+		return reduced;
 	}
 
-	private Tuple cloneTuple(Tuple t)
+	private static Tuple cloneTuple(Tuple t)
 	{
 		Tuple tclone = new SimpleTuple();
 
@@ -560,15 +535,25 @@ public class Worksheet
 		return tclone;
 	}
 
-	public static List<Tuple> expandWorksheet(List<Tuple> worksheet)
+	public static List<Tuple> unfoldWorksheet(List<Tuple> worksheet)
 	{
 		// Remark: works on 'non-reduced' worksheets
 
 		List<Tuple> ws = new ArrayList<Tuple>();
 
+		int nelements = 0;
 		for (Tuple t : worksheet)
 		{
-			int nelements = t.getList(t.getFields().get(0)).size();
+			// find a list that is longer than 1?
+			for (int i = 0; i < t.getNrColumns(); i++)
+			{
+				if (t.getList(i).size() > nelements)
+				{
+					nelements = t.getList(i).size();
+				}
+			}
+
+			System.out.println(nelements +" in t "+t);
 
 			List<String> fields = t.getFields();
 			for (int i = 0; i < nelements; i++)
@@ -578,7 +563,11 @@ public class Worksheet
 				// fill this new tuple, based on i'th elements in the tupleset
 				for (String field : fields)
 				{
-					st.set(field, t.getList(field).get(i));
+					// also 'unfold' fields that were already folded to a value to a list
+					Integer index = t.getList(field).size() - 1;
+					if (i <= index) index = i;
+
+					st.set(field, t.getList(field).get(index));
 				}
 
 				ws.add(st);
@@ -694,7 +683,7 @@ public class Worksheet
 			}
 		}
 	}
-	
+
 	public String getdefaultvalue(String parameter)
 	{
 		for (ComputeParameter cp : parameterlist)
@@ -704,7 +693,7 @@ public class Worksheet
 				return cp.getDefaultValue();
 			}
 		}
-		
+
 		return null;
 	}
 }

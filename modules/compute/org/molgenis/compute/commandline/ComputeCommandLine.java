@@ -26,6 +26,8 @@ import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
 
+import bsh.This;
+
 // This dependency needs to go when we upgrade to Java 7+
 //import com.google.common.io.Files;
 
@@ -87,13 +89,13 @@ public class ComputeCommandLine
 //			System.out.println(">>> " + documentation);
 //			System.out.println(">>> " + filledtemplate.toString());
 			
-			this.worksheet.foldWorksheet(targets);
-			this.worksheet.reduceTargets(targets);
+			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet, this.computeBundle.getComputeParameters(),targets);
+//			Worksheet.reduceTargets(targets);
 //			print("folded worksheet: " + this.worksheet.folded.size() + ":" + this.worksheet.folded.toString());
 //			print("reduced worksheet: " + this.worksheet.reduced.size() + ":" + this.worksheet.reduced.toString());
 
 			// each element of reduced worksheet produces one protocolApplication (i.e. a script)
-			for (Tuple work : this.worksheet.reduced)
+			for (Tuple work : folded)
 			{
 				// fill template with work and put in script
 				ComputeJob job = new ComputeJob();
@@ -152,7 +154,7 @@ public class ComputeCommandLine
 					job.getPrevSteps_Name().addAll(dependencies);
 				}
 
-				work.set("workflowElements", computeBundle.getWorkflowElements());
+				//work.set("workflowElements", computeBundle.getWorkflowElements());
 				
 				// add the script
 				job.setComputeScript(filledtemplate(scripttemplate, work));
@@ -236,6 +238,12 @@ public class ComputeCommandLine
 		// first create map
 		Map<String, Object> parameters = new HashMap<String, Object>();
 
+		// add the helper
+		parameters.put("freemarkerHelper", new FreemarkerHelper(this.computeBundle));
+		parameters.put("parameters",work);
+		parameters.put("workflowElements", this.computeBundle.getWorkflowElements());
+		
+		
 		for (String field : work.getFields())
 		{
 			parameters.put(field, work.getObject(field));
@@ -256,11 +264,11 @@ public class ComputeCommandLine
 
 		// put debug info in script
 		String script = "\n#####\n";
-		script = script + "## The following ${parameters} are values:\n";
-		script = script + "##   - " + worksheet.foldon + " " + worksheet.getConstants() + "\n";
-		script = script + "## The following parameters are lists, <#list parameters as p>${p}</#list> \n";
-		script = script + "##   - " + worksheet.list + "\n";
-		script = script + "#####\n\n";
+//		script = script + "## The following ${parameters} are values:\n";
+//		script = script + "##   - " + worksheet.foldon + " " + worksheet.getConstants() + "\n";
+//		script = script + "## The following parameters are lists, <#list parameters as p>${p}</#list> \n";
+//		script = script + "##   - " + worksheet.list + "\n";
+//		script = script + "#####\n\n";
 		script = script + filledtemplate.toString();
 
 		return script;
@@ -417,7 +425,7 @@ public class ComputeCommandLine
 				submitWriter.println("#" + job.getName());
 				submitWriter.println(job.getName() + "=$(qsub -N " + job.getName() + " " + dependency + " " + job.getName() + ".sh)");
 				submitWriter.println("echo $" + job.getName());
-				submitWriter.println("sleep 5");
+				submitWriter.println("sleep 1");
 
 				// produce .sh file in outputdir for each job
 				PrintWriter jobWriter = new PrintWriter(new File(outputdir + File.separator + job.getName() + ".sh"));
