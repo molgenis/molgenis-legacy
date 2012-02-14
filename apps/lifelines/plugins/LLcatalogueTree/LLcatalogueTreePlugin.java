@@ -24,15 +24,11 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.Measurement_Categories;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
-
-import plugins.LLcatalogueTree.JQueryTreeViewElementObject;
-import plugins.LLcatalogueTree.JQueryTreeViewMeasurement;
 
 public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
@@ -306,7 +302,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 			shoppingCart.clear();
 			for(ShoppingCart cart : result){
 				//shoppingCart.addAll(cart.getMeasurements());
-				shoppingCart.addAll(cart.getMeasurements(db));
+				shoppingCart.addAll(cart.getMeasurements());
 			}
 
 			this.arrayInvestigations.clear();

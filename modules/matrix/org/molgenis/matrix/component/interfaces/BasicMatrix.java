@@ -2,11 +2,7 @@ package org.molgenis.matrix.component.interfaces;
 
 import java.util.List;
 
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.pheno.Observation;
-import org.molgenis.pheno.ObservedValue;
 
 /**
  * Basic abstraction to deal with matrix formed data.

@@ -93,7 +93,7 @@ public class VwDictListener extends ImportTupleListener {
 	{
 		db.add(measurements);
 		
-		List<Protocol> protocolList = new ArrayList(protocols.values());
+		List<Protocol> protocolList = new ArrayList<Protocol>(protocols.values());
 		db.add(protocolList);
 		for(Protocol p: protocolList) protocols.put(p.getName(), p); 
 	}

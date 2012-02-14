@@ -460,6 +460,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void populateUserAreaForm(Database db)
 	{
 		try

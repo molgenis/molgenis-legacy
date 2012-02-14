@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +27,7 @@ import jxl.write.biff.RowsExceededException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -37,15 +37,21 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.CheckboxInput;
+import org.molgenis.framework.ui.html.DateInput;
+import org.molgenis.framework.ui.html.DatetimeInput;
+import org.molgenis.framework.ui.html.DecimalInput;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.JQueryDataTable;
+import org.molgenis.framework.ui.html.LongInput;
 import org.molgenis.framework.ui.html.MenuInput;
 import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
+import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.Utils.CsvExporter;
 import org.molgenis.matrix.Utils.ExcelExporter;
@@ -88,6 +94,7 @@ public class MatrixViewer extends HtmlWidget
 	private boolean showDownloadOptions = false;
 
 	private String downloadLink = null;
+	private Measurement d_selectedMeasurement = null;
 
 	public String ROWLIMIT = getName() + "_rowLimit";
 	public String CHANGEROWLIMIT = getName() + "_changeRowLimit";
@@ -468,70 +475,81 @@ public class MatrixViewer extends HtmlWidget
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
 		String divContents = "";
+		divContents += new Paragraph("filterRules", "Applied filters:" + generateFilterRules()).render();
 
-		// Show applied filter rules
-		String filterRules = "";
-		if (this.matrix.getRules().size() > 0)
-		{
-			int filterCnt = -1;
-			for (MatrixQueryRule mqr : this.matrix.getRules())
-			{
-				filterCnt++;
-				// Show only column value + row header filters on name to user
-				if (!mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty) &&
-				    !(mqr.getFilterType().equals(MatrixQueryRule.Type.rowHeader) && mqr.getField().equals("name")))
-				{
-					continue;
-				}
-				String measurementName = "name";
-				if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty)) {
-					// Try to retrieve measurement name
-					for (Object meas : matrix.getColHeaders())
-					{
-						if (meas instanceof ObservationElement)
-						{
-							ObservationElement measr = (ObservationElement) meas;
-							if (measr.getId().intValue() == mqr.getDimIndex().intValue())
-							{
-								measurementName = measr.getName();
-							}
-						}
-						else
-						{
-							measurementName = meas.toString();
-						}
-					}
-	
-					// Name not in column headers, so retrieve via DB (if
-					// available)
-					if (measurementName.equals("") && this.matrix instanceof DatabaseMatrix)
-					{
-						measurementName = db.findById(Measurement.class, mqr.getDimIndex()).getName();
-					}
-				}
-				
-				String leftPart = measurementName + "." + mqr.getField();
-				filterRules += "<br />" + leftPart + " " + mqr.getOperator().toString() + " " + mqr.getValue();
-				ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
-				removeButton.setIcon("generated-res/img/delete.png");
-				filterRules += removeButton.render();
-				System.out.println("(mqr.getFilterType() " + mqr.getFilterType());
-			}
-		}
-
-		if (filterRules.equals(""))
-		{
-			filterRules = " none";
-		}
-		divContents += new Paragraph("filterRules", "Applied filters:" + filterRules).render();
-		// button to clear all value filter rules
-		// divContents += new ActionInput(CLEARFILTERS, "",
-		// "Clear all filters").render();
 		// add column filter
-		SelectInput colId = new SelectInput(COLID);
-		colId.addOption(-1, "name");
 		divContents += "<div style=\"vertical-align:middle\">Add filter:";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
+		divContents += buildFilterChoices(colHeaders).render();
+		divContents += buildFilterOperator(d_selectedMeasurement).render();
+		divContents += buildFilterInput(d_selectedMeasurement).render();
+
+		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
+		divContents += "</div>";
+		
+		// column header filter
+		if (columnsRestricted && colHeaders != null)
+		{
+			@SuppressWarnings("rawtypes")
+			List selectedMeasurements = new ArrayList(colHeaders);
+			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
+					selectedMeasurements, false, false,
+					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
+					Measurement.class);
+			
+	
+			
+			// disable display of button for adding new measurements from here
+			measurementChooser.setIncludeAddButton(false);
+			divContents += new Newline().render();
+			divContents += new Newline().render();
+			divContents += "<div style=\"vertical-align:middle\">Add/remove columns:";
+			divContents += measurementChooser.render();
+			divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
+			divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
+			divContents += new ActionInput(REMALLCOLHEADERFILTER, "", "Remove all").render();
+			divContents += "</div>";
+		}
+		return divContents;
+	}
+
+	private HtmlInput<?> buildFilterInput(Measurement selectedMeasurement) {
+		switch (MolgenisFieldTypes.getType(selectedMeasurement.getDataType()).getEnumType()) {
+			// date/datetime
+		case DATE:
+			return new DateInput(COLVALUE);
+		case DATE_TIME:
+			return new DatetimeInput(COLVALUE);
+		case DECIMAL:
+			return new DecimalInput(COLVALUE);
+		case INT:
+			return new IntInput(COLVALUE);
+		case LONG:
+			return new LongInput(COLVALUE);
+		case STRING:
+			return new StringInput(COLVALUE);
+		case TEXT:
+			return new TextInput(COLVALUE);
+			// unknown/none of the above gives regular text box (FIXME: Is this desired behaviour?)
+		default:
+			return new StringInput(COLVALUE);
+		}
+	}
+	private SelectInput buildFilterOperator(Measurement selectedMeasurement) {
+		SelectInput operatorInput = new SelectInput(OPERATOR);
+		if (selectedMeasurement == null) {
+			return operatorInput;
+		}
+		for (String operator : MolgenisFieldTypes.getType(selectedMeasurement.getDataType()).getAllowedOperators()) {
+			operatorInput.addOption(operator, operator);
+		}
+		return operatorInput;
+	}
+
+	@SuppressWarnings("unchecked")
+	private SelectInput buildFilterChoices(List<? extends Object> colHeaders) {
+		SelectInput colId = new SelectInput(COLID);
+		colId.addOption(-1, "name");
 		if (colHeaders != null && colHeaders.size() > 0 && colHeaders.get(0) instanceof Entity)
 		{
 			List<? extends Entity> headers = (List<? extends Entity>) colHeaders;
@@ -553,41 +571,66 @@ public class MatrixViewer extends HtmlWidget
 			// TODO!!!!!
 		}
 		colId.setNillable(true);
-		divContents += colId.render();
-		SelectInput operator = new SelectInput(OPERATOR);
-		operator.addOption("EQUALS", "EQUALS");
-		operator.addOption("LESS", "LESS");
-		operator.addOption("GREATER", "GREATER");
-		operator.addOption("LIKE", "LIKE");
-		
-		divContents += operator.render();
-		StringInput colValue = new StringInput(COLVALUE);
-		
-		divContents += colValue.render();
-		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
-		divContents += "</div>";
-		// column header filter
-		if (columnsRestricted && colHeaders != null)
+		return colId;
+	}
+
+	private String generateFilterRules() throws MatrixException, DatabaseException {
+		String outStr = "";
+
+		int filterCnt = 0;
+		for (MatrixQueryRule mqr : this.matrix.getRules())
 		{
-			List<Entity> selectedMeasurements = new ArrayList<Entity>();
-			selectedMeasurements.addAll((Collection<? extends Entity>) colHeaders);
-			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
-					selectedMeasurements, false, false,
-					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
-					Measurement.class);
-			
-			// disable display of button for adding new measurements from here
-			measurementChooser.setIncludeAddButton(false);
-			divContents += new Newline().render();
-			divContents += new Newline().render();
-			divContents += "<div style=\"vertical-align:middle\">Add/remove columns:";
-			divContents += measurementChooser.render();
-			divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
-			divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
-			divContents += new ActionInput(REMALLCOLHEADERFILTER, "", "Remove all").render();
-			divContents += "</div>";
+			// Show only column value filters to user
+			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colValueProperty))
+			{
+				outStr += generateFilterRule(filterCnt, mqr);
+			}
+			System.out.println("(mqr.getFilterType() " + mqr.getFilterType());
+			++filterCnt;
 		}
-		return divContents;
+
+		// Show applied filter rules
+		return outStr.equals("") ? "none" : outStr;
+	}
+
+	private String generateFilterRule(int filterCnt, MatrixQueryRule mqr) throws MatrixException, DatabaseException {
+		String outStr = "";
+		// Try to retrieve measurement name
+		String measurementName = findMeasurementName(mqr);
+
+		outStr += "<br />" + measurementName + "." + mqr.getField() + " " + 
+				mqr.getOperator().toString() + " " + mqr.getValue();
+		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
+		removeButton.setIcon("generated-res/img/delete.png");
+		outStr += removeButton.render();
+		return outStr;
+	}
+
+	private String findMeasurementName(MatrixQueryRule mqr) throws MatrixException, DatabaseException {
+		String measurementName = "";
+		for (Object meas : matrix.getColHeaders())
+		{
+			if (meas instanceof ObservationElement)
+			{
+				ObservationElement measr = (ObservationElement) meas;
+				if (measr.getId().intValue() == mqr.getDimIndex().intValue())
+				{
+					measurementName = measr.getName();
+				}
+			}
+			else
+			{
+				measurementName = meas.toString();
+			}
+		}
+
+		// If name not in column headers, retrieve via DB (if
+		// available)
+		if (measurementName.equals("") && this.matrix instanceof DatabaseMatrix)
+		{
+			measurementName = db.findById(Measurement.class, mqr.getDimIndex()).getName();
+		}
+		return measurementName;
 	}
 
 	public void removeFilter(String action) throws MatrixException
@@ -901,11 +944,11 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void downloadVisibleExcel(Database db, Tuple t) throws Exception
 	{
 		File excelFile = makeFile("_Visible","xls");
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			@SuppressWarnings("unchecked")
 			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
 					new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
 					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
@@ -917,13 +960,10 @@ public class MatrixViewer extends HtmlWidget
 				((DatabaseMatrix) this.matrix).setDatabase(db);
 			}
 	
-			@SuppressWarnings("unchecked")
 			List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
 			List<String> listC = new ArrayList<String>();
-			@SuppressWarnings("unchecked")
 			List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
 			List<String> listR = new ArrayList<String>();
-			@SuppressWarnings("unchecked")
 			List<ObservedValue>[][] listVal = (List<ObservedValue>[][]) this.matrix.getValueLists();
 	
 			String target = "name";
@@ -1015,12 +1055,12 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void downloadVisibleSPSS(Database db, Tuple t) throws Exception
 	{
 		File file = makeFile("_All", "sav");
 	
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			@SuppressWarnings("unchecked")
 			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
 					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
 					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
@@ -1032,13 +1072,10 @@ public class MatrixViewer extends HtmlWidget
 			spssWriter.setCalculateNumberOfCases(false);
 			spssWriter.addDictionarySection(-1);
 			
-			@SuppressWarnings("unchecked")
 			List<?> listCol = (List<Measurement>) this.matrix.getColHeaders();
 			List<String> listC = new ArrayList<String>();
-			@SuppressWarnings("unchecked")
 			List<?> listRow = (List<Individual>) this.matrix.getRowHeaders();
 			List<String> listR = new ArrayList<String>();	
-			@SuppressWarnings("unchecked")
 			List<ObservedValue>[][] elements = (List<ObservedValue>[][]) this.matrix.getValueLists();
 			
 			for(Object col: listCol){
@@ -1285,21 +1322,16 @@ public class MatrixViewer extends HtmlWidget
 		
 		List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, columnIds).find();
 		for(Measurement measurement : measurements) {
-			List<Protocol> protocols = (List<Protocol>) measurement.getFeaturesCollection();
-			if(protocols.size() > 1) {
-				
-				;
-			} else  {
-				Protocol p = protocols.get(0);
-				if(pms.containsKey(p)) {
-					if(!pms.get(p).contains(measurement)) {
-						pms.get(p).add(measurement);
-					} 
-				} else {
-					List<Measurement> ms = new ArrayList<Measurement>();
-					ms.add(measurement);
-					pms.put(p, ms);
-				}
+			List<Protocol> protocols = (List<Protocol>) measurement.getFeaturesProtocolCollection();
+			Protocol p = protocols.get(0);
+			if(pms.containsKey(p)) {
+				if(!pms.get(p).contains(measurement)) {
+					pms.get(p).add(measurement);
+				} 
+			} else {
+				List<Measurement> ms = new ArrayList<Measurement>();
+				ms.add(measurement);
+				pms.put(p, ms);
 			}
 		}
 	}
