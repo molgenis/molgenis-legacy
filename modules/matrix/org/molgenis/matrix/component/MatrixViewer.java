@@ -1322,7 +1322,8 @@ public class MatrixViewer extends HtmlWidget
 		
 		List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, columnIds).find();
 		for(Measurement measurement : measurements) {
-			List<Protocol> protocols = (List<Protocol>) measurement.getFeaturesProtocolCollection();
+		//	List<Protocol> protocols = (List<Protocol>) measurement.getFeaturesProtocolCollection();
+			List<Protocol> protocols = null;
 			Protocol p = protocols.get(0);
 			if(pms.containsKey(p)) {
 				if(!pms.get(p).contains(measurement)) {
