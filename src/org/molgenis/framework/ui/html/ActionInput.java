@@ -9,6 +9,7 @@ import org.molgenis.util.Tuple;
  * The ActionInput defines action buttons. When clicked, it will result in a new
  * request(__action=&lt;name&gt;)
  */
+@SuppressWarnings("deprecation")
 public class ActionInput extends HtmlInput<Object>
 {
 	public enum Type
@@ -41,6 +42,8 @@ public class ActionInput extends HtmlInput<Object>
 			return tag;
 		}
 	}
+	
+	private int width = 0;
 
 	/** Path to an icon image */
 	private String icon;
@@ -340,6 +343,7 @@ public class ActionInput extends HtmlInput<Object>
 		String result = iconClassCss + "<button id=\"" + this.getId() + "\"" + " onClick=\""
 				+ this.getJavaScriptAction() + "\">" + this.getButtonValue()
 				+ "</button>" + "<script>$(\"#" + this.getId() + "\")"
+				+ (width > 0 ? ".width(" + width + ")" : "")
 				//+ (getIcon() != null ? ".height(" + (this.getIconHeight() + 10) + ").width(" + (this.getIconWidth() + 10) + ")" : "")
 				+ ".button(" + icons + ");</script>\n";
 
@@ -393,6 +397,16 @@ public class ActionInput extends HtmlInput<Object>
 	
 	public int getIconWidth() {
 		return iconWidth;
+	}
+
+	public int getWidth()
+	{
+		return width;
+	}
+
+	public void setWidth(int width)
+	{
+		this.width = width;
 	}
 
 }
