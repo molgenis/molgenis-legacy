@@ -16,19 +16,19 @@
 inputs "${indexfile}"
 inputs "${leftbwaout}"
 inputs "${rightbwaout}"
-inputs "${leftfilegz}"
-inputs "${rightfilegz}"
+inputs "${leftbarcodefqgz}"
+inputs "${rightbarcodefqgz}"
 alloutputsexist "${samfile}"
 
-${bwasampejar} sampe -P \
+<#if seqType == "PE">${bwasampejar} sampe -P \<#else>${bwasampejar} samse \</#if>
 -p illumina \
 -i ${lane} \
 -m ${externalSampleID} \
 -l ${library} \
 ${indexfile} \
 ${leftbwaout} \
-${rightbwaout} \
-${leftfilegz} \
-${rightfilegz} \
--f ${samfile}
+<#if seqType == "PE">${rightbwaout} \
+</#if>${leftbarcodefqgz} \
+<#if seqType == "PE">${rightbarcodefqgz} \
+</#if>-f ${samfile}
 <@end/>

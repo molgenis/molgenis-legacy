@@ -13,14 +13,14 @@
 #MOLGENIS walltime=15:00:00 nodes=1 cores=4 mem=6
 
 inputs "${indexfile}" 
-inputs "${leftfilegz}"
+inputs "${leftbarcodefqgz}"
 alloutputsexist "${leftbwaout}"
 
 mkdir -p "${intermediatedir}"
 
 ${bwaalignjar} aln \
 ${indexfile} \
-${leftfilegz} \
+${leftbarcodefqgz} \
 -t ${bwaaligncores} \
 -f ${leftbwaout}
 <@end/>

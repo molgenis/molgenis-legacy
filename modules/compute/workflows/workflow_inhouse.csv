@@ -28,4 +28,4 @@ GenomicAnnotator,GenomicAnnotator,UnifiedGenotyper
 VariantAnnotator,VariantAnnotator,GenomicAnnotator
 VcfToTable,VcfToTable,VariantAnnotator
 ConcordanceCheck,ConcordanceCheck,"MergeBam, UnifiedGenotyper"
-QCReport,QCReport,"PicardQC, ConcordanceCheck"
+QCReport,QCReport,"PicardQCrecal, Markduplicates, ConcordanceCheck, Coverage, VcfToTable"

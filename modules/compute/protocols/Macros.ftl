@@ -1,3 +1,4 @@
+<#include "helpers.ftl"/>
 <#macro begin>
 <#--
 Make sure this template is put at the _top_ of the generated scripts!
@@ -16,7 +17,7 @@ echo "Begin job ${jobname} for ${fileprefix} at $(date)" >> ${runtimelog}
 
 echo Running on node: `hostname`
 
-sleep 2
+sleep 3
 ###### MAIN ######
 </#macro>
 

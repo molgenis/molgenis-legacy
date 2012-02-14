@@ -51,10 +51,6 @@
 		\multicolumn{2}{l}{\textbf{Contact information GAF and GCC}} \\\\
 		Name & Cleo C. van Diemen \\\\
 		E-mail & c.c.van.diemen@umcg.nl \\\\
-		\\\\
-		\multicolumn{2}{l}{\textbf{Data approval for submission}} \\\\
-		Name & ${DataShippedBy} \\\\
-		Date & ${DataShippedDate} \\\\
 		\hline
 	\end{tabular}
 \end{table}
@@ -100,8 +96,8 @@ ${figures(coverageplotpdf)}
 \clearpage
 \subsection*{Insert size distribution}
 \addcontentsline{toc}{subsection}{Insert size distribution}
-The following figures show the insert size distribution per sample. Insert refers to the base pairs that are ligated between the adapters.
-${figures(insertsizemetricspdf)}
+The following figures show the insert size distribution per sample \textit{per flowcell/lane}. Insert refers to the base pairs that are ligated between the adapters.
+${figuresInsertSize(insertsizemetricspdf)}
 
 \clearpage
 \subsection*{GC metrics}

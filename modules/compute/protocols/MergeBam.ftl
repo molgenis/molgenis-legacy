@@ -16,7 +16,8 @@
 #FOREACH externalSampleID
 
 java -jar -Xmx6g ${mergesamfilesjar} \
-<#list sortedrecalbam as srb>INPUT=${srb} </#list> \
+<#list sortedrecalbam as srb>INPUT=${srb} \
+</#list>
 ASSUME_SORTED=true USE_THREADING=true \
 TMP_DIR=${tempdir} MAX_RECORDS_IN_RAM=6000000 \
 OUTPUT=${mergedbam} \

@@ -8,6 +8,7 @@
 # =====================================================
 #
 
+#MOLGENIS walltime=00:45:00
 
 ###### Renaming because we call another protocol:
 

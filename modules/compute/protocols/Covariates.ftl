@@ -1,5 +1,3 @@
-#MOLGENIS walltime=00:45:00
-
 <#include "macros.ftl"/>
 <@begin/>
 
