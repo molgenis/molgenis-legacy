@@ -9,20 +9,12 @@ import org.molgenis.util.Tuple;
 /**
  * Menu can contain a bunch of action inputs. Optionally, MenuInput can be
  * nested in a submenu.
- * 
- * Based on http://www.nexul.com/prototypes/toolbar/demo.html
  */
 public class MenuInput extends AbstractHtmlElement implements HtmlElement
 {
-	public enum Style
-	{
-		BREADCRUMPS, FLYOUT
-	};
-
 	private List<HtmlElement> menusAndButtons = new ArrayList<HtmlElement>();
 	private String label;
-	private Style style = Style.FLYOUT;
-
+	
 	public MenuInput(String name, String label)
 	{
 		super(name);
@@ -49,16 +41,6 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 		this.label = label;
 	}
 
-	public void setStyle(Style style)
-	{
-		this.style = style;
-	}
-
-	public Style getStyle()
-	{
-		return this.style;
-	}
-
 	@Override
 	public String render()
 	{
@@ -77,7 +59,7 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 				ActionInput action = (ActionInput) item;
 				if(this.equals(root))
 				{
-					items += action.render();
+					items += action.render() + "<br />";
 				}
 				else
 				{
@@ -101,33 +83,13 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 			}
 		}
 
-		if (this.equals(root))
-		{
-			return "<div id=\""+getId()+"\" class=\"ui-widget ui-widget-content ui-corner-all\">" + 
-				items + "</div><script>$('#" + getId() + "').menubar();</script>";
-			
-//			String result = "<ul id=\""+getId()+"\">" + items
-//					+ "</ul>" + "<script>$('#" + this.getId()
-//					+ "').menu();</script>";
-//			return result;
-			
-//			String result = "<a href=\"#"
-//					+ this.getId()
-//					+ "_menuitems\" class=\"fg-button fg-button-icon-right ui-widget ui-state-default ui-corner-all\" id=\""
-//					+ this.getId() + "\">"
-//					+ "<span class=\"ui-icon ui-icon-triangle-1-s\"></span>"
-//					+ getLabel() + "</a>" + "<div id=\"" + this.getId()
-//					+ "_menuitems\" class=\"hidden\">" + "<ul>" + items
-//					+ "</ul>" + "</div><script>$('#" + this.getId()
-//					+ "').menu({content: $('#" + this.getId()
-//					+ "').next().html(),";
-//			if(Style.BREADCRUMPS.equals(this.getStyle()))
-//				result += "backLink: false";
-//			if(Style.FLYOUT.equals(this.getStyle()))
-//				result += "flyOut: true";
-//			result +="});</script>";
-//			return result;
-			
+		if (this.equals(root)) {
+			String result = "<div style=\"vertical-align:middle\"><input type=\"button\" value=\"Download\" " +
+					"onclick=\"if (document.getElementById('" + getId() + "').style.display=='none') {document.getElementById('" + getId() + "').style.display='block';} else {document.getElementById('" + getId() + "').style.display='none';} \" " +
+					//"onmouseout=\"document.getElementById('" + getId() + "').style.display='none'\" " + 
+					"/></div>";
+			result += ("<div id=\"" + getId() + "\" style=\"position:absolute; z-index:1; background-color:white; padding:2px; display:none\">" + items + "</div>");
+			return result;
 		} else {
 			return "<ul>" + items + "</ul>";
 		}
@@ -137,8 +99,8 @@ public class MenuInput extends AbstractHtmlElement implements HtmlElement
 	public String render(Tuple params) throws ParseException,
 			HtmlInputException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		MenuInput root = null;
+		return render(root);
 	}
 
 }
