@@ -2,7 +2,7 @@ package org.molgenis.catalogue;
 
 
 import org.molgenis.Molgenis;
-import org.molgenis.generators.server.UsedMolgenisOptionsGen;
+//import org.molgenis.generators.server.UsedMolgenisOptionsGen;
 
 
 public class catalogueGenerate
