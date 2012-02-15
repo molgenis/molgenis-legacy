@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis name="gcc" label="Lifelines Catalogue">
-	<module name="catalogue" label="Lifelines Catalogue"><!-- 
+<molgenis name="gcc" label="Catalogue">
+	<module name="catalogue" label="Catalogue"><!-- 
 		<entity name="datashapermeasurement">
 			<description>This entity includes the dictionary from lifelines </description>
 		    <field name="id" type="autoid" description="automatically generated id" />
