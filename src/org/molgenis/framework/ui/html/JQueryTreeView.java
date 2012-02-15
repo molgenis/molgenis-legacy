@@ -89,7 +89,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>"
 		+ " <style type=\"text/css\">\n"
 		+ " li {cursor:pointer; width:200px;}\n"
-		+ " li.highlight { background:red; }\n"
+		+ " li.highlight {margin:0px;border:0px;padding:0px;background-image:none;background-color:transparent;padding-left:3px;}\n"
 		+ "#browser {\n"
 		+ "font-family: Verdana, helvetica, arial, sans-serif;\n"
 		+ "font-size: 68.75%;\n"
