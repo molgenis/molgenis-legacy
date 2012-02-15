@@ -7,7 +7,9 @@
 		username="${db_user}"
 		password="${db_password}" 
 		driverClassName="${db_driver}" 
-		url="${db_uri}" 
+		url="${db_uri}?autoReconnect=true"
+		validationQuery="select now()"
+		maxWait="1000"
 		removeAbandoned="true"
 		maxActive="8" 
 		maxIdle="4"/>		
