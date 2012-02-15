@@ -1,6 +1,6 @@
 	@Override
 	//Resolve
-	public void resolveForeignKeys(List<${JavaName(entity)}> entities)  throws DatabaseException, ParseException
+	public void resolveForeignKeys(java.util.List<${entity.namespace}.${JavaName(entity)}> entities)  throws org.molgenis.framework.db.DatabaseException, java.text.ParseException
 	{
 <#assign has_xrefs=false>	
 <#list allFields(entity) as f>
@@ -8,12 +8,12 @@
   		<#assign has_xrefs=true>	
 		//create foreign key map for field '${name(f)}' to ${name(f.xrefEntity)}.${name(f.xrefField)} using ${csv(f.xrefLabelNames)})	
 		//we will use a hash of the values to ensure that entities are only queried once	
-		final Map<String, QueryRule> ${name(f)}Rules = new LinkedHashMap<String, QueryRule>();
+		final java.util.Map<String, org.molgenis.framework.db.QueryRule> ${name(f)}Rules = new java.util.LinkedHashMap<String, org.molgenis.framework.db.QueryRule>();
 	</#if>
 </#list>	
 <#if has_xrefs>		
 		//create all query rules	
-		for(${JavaName(entity)} object: entities)
+		for(${entity.namespace}.${JavaName(entity)} object: entities)
 		{
 <#list allFields(entity) as f>
 	<#if (f.type == 'xref' || f.type == 'mref') && f.xrefLabelNames[0] != f.xrefFieldName>
@@ -25,7 +25,7 @@
 			if(object.get${JavaName(f)}().size() == 0 && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size() > 0)
 			</#if>
 			{
-				List<QueryRule> rules = new ArrayList<QueryRule>();
+				java.util.List<org.molgenis.framework.db.QueryRule> rules = new java.util.ArrayList<org.molgenis.framework.db.QueryRule>();
 				String key = "";
 
 				<#if f.type == 'xref'>
@@ -35,14 +35,14 @@
 				</#if>
 				{
 					<#list f.xrefLabelNames as label>
-					rules.add(new QueryRule("${label}", Operator.EQUALS, label));	
+					rules.add(new org.molgenis.framework.db.QueryRule("${label}", org.molgenis.framework.db.QueryRule.Operator.EQUALS, label));	
 					key += 	label;
 					</#list>			
-					QueryRule complexRule = new QueryRule(rules);
+					org.molgenis.framework.db.QueryRule complexRule = new org.molgenis.framework.db.QueryRule(rules);
 					if(!${name(f)}Rules.containsKey(key))
 					{
 						${name(f)}Rules.put(key, complexRule);
-						${name(f)}Rules.put(key+"_OR_", new QueryRule(Operator.OR));
+						${name(f)}Rules.put(key+"_OR_", new org.molgenis.framework.db.QueryRule(org.molgenis.framework.db.QueryRule.Operator.OR));
 					}
 				}
 			}
@@ -60,12 +60,12 @@
 				for(String label: object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}())
 				</#if>
 				{
-					QueryRule xrefFilter = new QueryRule("${f.xrefLabelNames[0]}", Operator.EQUALS, label);
+					org.molgenis.framework.db.QueryRule xrefFilter = new org.molgenis.framework.db.QueryRule("${f.xrefLabelNames[0]}", org.molgenis.framework.db.QueryRule.Operator.EQUALS, label);
 					
 					if(label != null && !${name(f)}Rules.containsKey(label))
 					{
 						${name(f)}Rules.put(""+label, xrefFilter);
-						${name(f)}Rules.put(""+label+"_OR_", new QueryRule(Operator.OR));
+						${name(f)}Rules.put(""+label+"_OR_", new org.molgenis.framework.db.QueryRule(org.molgenis.framework.db.QueryRule.Operator.OR));
 					}
 				}
 			}		
@@ -78,27 +78,27 @@
 <#if (f.type == 'xref' || f.type == 'mref') && f.xrefLabelNames[0] != f.xrefFieldName>
 		//resolve foreign key field '${name(f)}' to ${name(f.xrefEntity)}.${name(f.xrefField)} using ${csv(f.xrefLabelNames)})
 <#if databaseImp = 'JPA'>	
-		final java.util.Map<String,${JavaName(f.xrefEntity)}> ${name(f)}_Labels_to_IdMap = new java.util.TreeMap<String,${JavaName(f.xrefEntity)}>();
+		final java.util.Map<String, ${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)}> ${name(f)}_Labels_to_IdMap = new java.util.TreeMap<String, ${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)}>();
 <#else>		
 		final java.util.Map<String,${JavaType(f.xrefField)}> ${name(f)}_Labels_to_IdMap = new java.util.TreeMap<String,${JavaType(f.xrefField)}>();
 </#if>
 		if(${name(f)}Rules.size() > 0)
 		{		
 		
-			List<${JavaName(f.xrefEntity)}> ${name(f)}List = null;
+			java.util.List<${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)}> ${name(f)}List = null;
 			try
 			{
-				${name(f)}List = getDatabase().find(${JavaName(f.xrefEntity)}.class, ${name(f)}Rules.values().toArray(new QueryRule[${name(f)}Rules.values().size()]));
+				${name(f)}List = getDatabase().find(${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)}.class, ${name(f)}Rules.values().toArray(new org.molgenis.framework.db.QueryRule[${name(f)}Rules.values().size()]));
 			}
 			catch(Exception e)
 			{
 				// something went wrong while querying for this entities' name field
 				// we assume it has no such field, which should have been checked earlier ofcourse
 				// regardless, just quit the function now
-				throw new DatabaseException(e);
+				throw new org.molgenis.framework.db.DatabaseException(e);
 			}
 		
-			for(${JavaName(f.xrefEntity)} xref :  ${name(f)}List)
+			for(${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)} xref :  ${name(f)}List)
 			{
 				String key = "";
 				<#list f.xrefLabelNames as label>
@@ -117,7 +117,7 @@
 		//update objects with the keys
 		for(int i = 0; i < entities.size(); i++)
 		{
-			${JavaName(entity)} object = entities.get(i);		
+			${entity.namespace}.${JavaName(entity)} object = entities.get(i);		
 			<#list allFields(entity) as f>
 			<#if (f.type == 'xref'  || f.type == 'mref') && f.xrefLabelNames[0] != f.xrefFieldName && f.xrefLabelNames[0]?exists>
 			//update object using label fields ${csv(f.xrefLabelNames)}
@@ -146,12 +146,12 @@
 	}	
 	
 	@Override
-	public FieldType getFieldType(String fieldName)
+	public org.molgenis.fieldtypes.FieldType getFieldType(String fieldName)
 	{
 		<#list viewFields(entity) as f>
 			if("${name(f)}".equalsIgnoreCase(fieldName) || "${name(f.entity)}.${name(f)}".equalsIgnoreCase(fieldName)) 
-				return new ${JavaName(f.type.toString())}Field();
+				return new org.molgenis.fieldtypes.${JavaName(f.type.toString())}Field();
 		</#list>
-		return new UnknownField();
+		return new org.molgenis.fieldtypes.UnknownField();
 	}		
 	
