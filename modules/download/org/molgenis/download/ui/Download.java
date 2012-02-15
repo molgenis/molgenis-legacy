@@ -7,6 +7,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.molgenis.download.ui.DownloadModel;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
@@ -15,6 +16,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.services.SchedulingService;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
+import org.quartz.Scheduler;
 
 public class Download extends EasyPluginController<DownloadModel>
 {
@@ -58,7 +60,9 @@ public class Download extends EasyPluginController<DownloadModel>
 			this.init(db, request);
 
 			//schedule the job
-			this.getModel().getSchedulingService().schedule(this.getModel().getJobData(), this.getModel().getKlazz());
+			Scheduler scheduler = this.getApplicationController().getMolgenisContext().getScheduler();
+			System.out.println(">>> scheduler==" + scheduler);
+			this.getModel().getSchedulingService().scheduleOnce(scheduler, this.getModel().getJobData(), this.getModel().getKlazz());
 			this.getModel().setState(DownloadModel.STARTED);
 
 			this.check(db, request);
@@ -81,7 +85,6 @@ public class Download extends EasyPluginController<DownloadModel>
 			if (file.exists() && file.length() > 0L)
 			{
 				this.getModel().setState(DownloadModel.FINISHED);
-				this.getModel().getSchedulingService().shutdown();
 			}
 			
 			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
