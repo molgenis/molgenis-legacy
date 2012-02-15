@@ -578,7 +578,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	@Override
 	public boolean equals(Object other)
 	{
-		if (other == null || !${JavaName(entity)}.class.equals(other.getClass()))
+		if (other == null || !this.getClass().equals(other.getClass()))
 			return false;
 		${JavaName(entity)} e = (${JavaName(entity)}) other;
 		
