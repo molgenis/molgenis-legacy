@@ -16,7 +16,7 @@ public class MolgenisContext
 	private MolgenisOptions usedOptions;
 	private String variant;
 	private TokenFactory tokenFactory;
-	private Scheduler scheduler;
+//	private Scheduler scheduler;
 	
 	// other "static" variables here, eg.
 	// molgenis version
@@ -48,9 +48,13 @@ public class MolgenisContext
 
 	
 	
-	public Scheduler getScheduler()
+	public Scheduler getScheduler() throws SchedulerException
 	{
-		return scheduler;
+		StdSchedulerFactory ssf = (StdSchedulerFactory) this.sc.getServletContext().getAttribute("org.quartz.impl.StdSchedulerFactory.KEY");
+		if (ssf != null)
+			return ssf.getScheduler();
+		else
+			throw new SchedulerException("Scheduler not started");
 	}
 
 	public TokenFactory getTokenFactory()
