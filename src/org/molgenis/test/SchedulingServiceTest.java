@@ -34,7 +34,8 @@ public class SchedulingServiceTest implements Job
 			System.out.println("Main: Starting scheduler: " + new Date());
 
 			hs = new SchedulingService();
-			hs.schedule(new HashMap<Object, Object>(), SchedulingServiceTest.class);
+			hs.start();
+			hs.scheduleOnce(new HashMap<Object, Object>(), SchedulingServiceTest.class);
 
 			try
 			{

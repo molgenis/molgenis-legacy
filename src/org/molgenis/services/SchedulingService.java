@@ -15,18 +15,20 @@ import org.quartz.impl.StdSchedulerFactory;
 public class SchedulingService
 {
 	private Scheduler scheduler;
-	private SimpleTrigger simpleTrigger;
 
-	public SchedulingService() throws SchedulerException
+	public void start() throws SchedulerException
 	{
 		SchedulerFactory sf = new StdSchedulerFactory();
 		this.scheduler      = sf.getScheduler();
 		this.scheduler.start();
-		
-		this.simpleTrigger  = new SimpleTrigger("simpletrigger", Scheduler.DEFAULT_GROUP, new Date(), null, 0, 0L);
 	}
 
-	public void schedule(HashMap<Object, Object> jobData, Class<?> klazz) throws SchedulerException
+	public void scheduleOnce(HashMap<Object, Object> jobData, Class<?> klazz) throws SchedulerException
+	{
+		this.scheduleOnce(this.scheduler, jobData, klazz);
+	}
+
+	public void scheduleOnce(Scheduler scheduler, HashMap<Object, Object> jobData, Class<?> klazz) throws SchedulerException
 	{
 		JobDetail jobDetail = new JobDetail();
 		jobDetail.setName("molgenis_" + UUID.randomUUID().toString());
@@ -34,7 +36,9 @@ public class SchedulingService
 		jobDetail.setJobClass(klazz);
 		jobDetail.setJobDataMap(new JobDataMap(jobData));
 
-		this.scheduler.scheduleJob(jobDetail, this.simpleTrigger);
+		SimpleTrigger simpleTrigger = new SimpleTrigger("simpletrigger", Scheduler.DEFAULT_GROUP, new Date(), null, 0, 0L);
+
+		scheduler.scheduleJob(jobDetail, simpleTrigger);
 	}
 
 	public void shutdown() throws SchedulerException, InterruptedException
