@@ -7,12 +7,12 @@
 
 package plugins.matrix;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import org.molgenis.framework.db.Database;
+//import java.util.ArrayList;
+//import java.util.Arrays;
+//import java.util.Date;
+//import java.util.List;
+//
+//import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.matrix.component.MatrixViewer;
 

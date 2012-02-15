@@ -1,9 +1,7 @@
 package plugins.LLcatalogueTree;
 
-import java.util.Vector;
 
 import org.molgenis.framework.ui.html.JQueryTreeView;
-import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.util.SimpleTree;
 
 public class JQueryTreeViewMeasurement<E> extends JQueryTreeView<E>{

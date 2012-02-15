@@ -143,8 +143,9 @@ public class CatalogueMatrix extends EasyPluginController<CatalogueMatrixModel>
 					
 					System.out.println("ADFADSFNADIS:F DSIFN DSAF OADS FONDS F DS::: " + listMeas.size());
 					
-					getModel().matrixViewerCat = new MatrixViewer(this, getModel().getCATMATRIX(), 
-							new SliceablePhenoMatrix(ObservationTarget.class, Measurement.class), 
+					getModel();
+					getModel().matrixViewerCat = new MatrixViewer(this, CatalogueMatrixModel.getCATMATRIX(), 
+							new SliceablePhenoMatrix<ObservationTarget, Measurement>(ObservationTarget.class, Measurement.class), 
 							true, true, true, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, listMeas));
 					

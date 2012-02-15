@@ -1,6 +1,5 @@
 package plugins.LLcatalogueTree;
 
-import java.util.List;
 
 import org.molgenis.auth.Institute;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
