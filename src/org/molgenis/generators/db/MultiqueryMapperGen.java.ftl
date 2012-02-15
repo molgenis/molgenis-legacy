@@ -118,7 +118,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 		{			
 			stmt = conn.createStatement();
 			//logger.debug("created statement: "+sql.toString());
-			int updatedRows = stmt.executeUpdate(sql.toString());
+			int updatedRows = stmt.executeUpdate(sql.toString(), Statement.RETURN_GENERATED_KEYS);
 			getGeneratedKeys(entities, stmt, 0);
 			return updatedRows;			
 		} catch (SQLException sqlEx) {
