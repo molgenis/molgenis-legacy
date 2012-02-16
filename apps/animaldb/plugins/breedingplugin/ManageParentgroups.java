@@ -237,6 +237,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("StartDate");
 			measurementsToShow.add("Remark");
+			measurementsToShow.add("Line");
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, 
 					Operator.IN, investigationNames));
@@ -420,6 +421,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("addParentgroup")) {
 				String newPgName = AddParentgroup(db, request);
+				pgMatrixViewer.setDatabase(db);
+				pgMatrixViewerString = pgMatrixViewer.render();
 				this.setAction("init");
 				this.resetUserFields();
 				fatherMatrixViewer = null;

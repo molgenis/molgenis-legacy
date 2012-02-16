@@ -67,7 +67,7 @@ public class ListPluginMatrix extends GenericPlugin
 	{
 		cs.setDatabase(db);
 		
-		if (container == null) {
+		if (targetMatrixViewer == null) {
 			container = new Container();
 			div = new DivPanel();
 			try {

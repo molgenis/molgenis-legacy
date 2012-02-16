@@ -125,7 +125,7 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 	
-	
+	<p>Parentgroup:</p>
 	${screen.renderMatrixViewer()}
 	<hr />
 	
@@ -256,6 +256,11 @@
 	
 	<input type='submit' id='addgenocol' class='addbutton' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
 	<input type='submit' id='remgenocol' class='addbutton' value='Remove Gene modification + state' onclick="__action.value='RemGenoCol'" />
+	<!-- Remarks -->
+	<div class='row'>
+		<label for='genodate'>Genotyping date:</label>
+		<input type='text' class='textbox' name='genodate' id='genodate' onclick='showDateInput(this)' autocomplete='off' />
+	</div>
 	<!-- Remarks -->
 	<div class='row'>
 		<label for='remarks'>Genotyping remarks:</label>

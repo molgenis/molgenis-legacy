@@ -721,7 +721,11 @@ public class ManageLitters extends PluginModel<Entity>
 		// Set genotype date on litter -> this is how we mark a litter as genotyped
 		int protocolId = ct.getProtocolId("SetGenotypeDate");
 		int measurementId = ct.getMeasurementId("GenotypeDate");
-		String genodate = newDateOnlyFormat.format(new Date()); // TODO: take from field in UI!
+		if (request.getString("genodate") == null) {
+			throw new Exception("Genotype date not filled in - litter not genotyped");
+		}
+		Date genoDate = oldDateOnlyFormat.parse(request.getString("genodate"));
+		String genodate = newDateOnlyFormat.format(genoDate);
 		db.add(ct.createObservedValueWithProtocolApplication(invid, now, 
 				null, protocolId, measurementId, this.genoLitterId, genodate, 0));
 		
@@ -1009,12 +1013,12 @@ public class ManageLitters extends PluginModel<Entity>
 		int motherId;
 		try {
 			motherId = findParentForParentgroup(parentgroupId, "Mother", db);
-			speciesId = ct.getMostRecentValueAsXref(motherId, ct.getMeasurementId("Species"));
-			animalType = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("AnimalType"));
-			color = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("Color"));
-			motherBackgroundId = ct.getMostRecentValueAsXref(motherId, ct.getMeasurementId("Background"));
-			geneName = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("GeneModification"));
-			geneState = ct.getMostRecentValueAsString(motherId, ct.getMeasurementId("GeneState"));
+			speciesId = ct.getMostRecentValueAsXref(motherId, "Species");
+			animalType = ct.getMostRecentValueAsString(motherId, "AnimalType");
+			color = ct.getMostRecentValueAsString(motherId, "Color");
+			motherBackgroundId = ct.getMostRecentValueAsXref(motherId, "Background");
+			geneName = ct.getMostRecentValueAsString(motherId, "GeneModification");
+			geneState = ct.getMostRecentValueAsString(motherId, "GeneState");
 		} catch (Exception e) {
 			throw(new Exception("No mother (properties) found - litter not weaned"));
 		}
@@ -1022,7 +1026,7 @@ public class ManageLitters extends PluginModel<Entity>
 		int fatherId;
 		try {
 			fatherId = findParentForParentgroup(parentgroupId, "Father", db);
-			fatherBackgroundId = ct.getMostRecentValueAsXref(fatherId, ct.getMeasurementId("Background"));
+			fatherBackgroundId = ct.getMostRecentValueAsXref(fatherId, "Background");
 		} catch (Exception e) {
 			throw(new Exception("No father (properties) found - litter not weaned"));
 		}
@@ -1054,6 +1058,11 @@ public class ManageLitters extends PluginModel<Entity>
 		measurementId = ct.getMeasurementId("WeanDate");
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 				null, protocolId, measurementId, litter, newDateOnlyFormat.format(weanDate), 0));
+		// Set line on litter
+		protocolId = ct.getProtocolId("SetLine");
+		measurementId = ct.getMeasurementId("Line");
+		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+				null, protocolId, measurementId, litter, null, lineId));
 		// Set weaning remarks on litter
 		if (remarks != null) {
 			protocolId = ct.getProtocolId("SetRemark");
@@ -1162,7 +1171,7 @@ public class ManageLitters extends PluginModel<Entity>
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 					null, protocolId, measurementId, animalId, null, sourceId));
 			// Set color based on mother's (can be changed during genotyping)
-			if (!color.equals("")) {
+			if (color != null && !color.equals("")) {
 				protocolId = ct.getProtocolId("SetColor");
 				measurementId = ct.getMeasurementId("Color");
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
@@ -1199,7 +1208,7 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			// Set genotype
 			// TODO: Set based on mother's X father's and ONLY if you can know the outcome
-			if (!geneName.equals("") && !geneState.equals("")) {
+			if (geneName != null && !geneName.equals("") && geneState != null && !geneState.equals("")) {
 				protocolId = ct.getProtocolId("SetGenotype");
 				int paId = ct.makeProtocolApplication(invid, protocolId);
 				// Set gene mod name based on mother's (can be changed during genotyping)
@@ -1777,6 +1786,7 @@ public class ManageLitters extends PluginModel<Entity>
 			measurementsToShow.add("WeanDate");
 			measurementsToShow.add("GenotypeDate");
 			measurementsToShow.add("Remark");
+			measurementsToShow.add("Line");
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, 
 					Operator.IN, investigationNames));
