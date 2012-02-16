@@ -1,3 +1,4 @@
 name,protocol_name,PreviousSteps_name
-VcfToTable,VcfToTable,
+VariantAnnotator,VariantAnnotator,
+VcfToTable,VcfToTable,VariantAnnotator
 QCReport,QCReport,VcfToTable

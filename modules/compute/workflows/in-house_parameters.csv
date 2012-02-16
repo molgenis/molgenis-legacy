@@ -18,7 +18,7 @@ targetintervals,${intervallistdir}/${capturingKit}_exons_${genome}_${indexfileID
 baitsbed,${intervallistdir}/${capturingKit}_baits_${genome}_${indexfileID}.bed,,,
 tempdir,/target/gpfs2/gcc/tmp,,,
 genome,hg19,,,
-indexfileID,human_g1k_v37,,,
+indexfileID,human_g1k_v37.chr1,,,
 indexfile,${resdir}/${genome}/indices/${indexfileID}.fa,,,
 demultiplexscript,${tooldir}/demultiplex_18oct2011/demultiplex.sh,script for demultiplexing,string,
 datadir,${root}/groups/in-house,root dir for data,string,
