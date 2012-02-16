@@ -5,6 +5,7 @@ import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.molgenis.MolgenisOptions;
+import org.molgenis.services.SchedulingService;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
@@ -17,6 +18,7 @@ public class MolgenisContext
 	private String variant;
 	private TokenFactory tokenFactory;
 //	private Scheduler scheduler;
+	private SchedulingService schedulingService;
 	
 	// other "static" variables here, eg.
 	// molgenis version
@@ -44,10 +46,24 @@ public class MolgenisContext
 //			e.printStackTrace();
 //			System.exit(0);
 //		}
+
+		this.schedulingService = new SchedulingService();
+//		try
+//		{
+//			this.schedulingService.start();
+//		}
+//		catch (SchedulerException e)
+//		{
+//			System.err.println("FATAL EXCEPTION: failure for starting scheduler in MolgenisContext.");
+//			e.printStackTrace();
+//		}
 	}
 
-	
-	
+	public SchedulingService getSchedulingService()
+	{
+		return schedulingService;
+	}
+
 	public Scheduler getScheduler() throws SchedulerException
 	{
 		StdSchedulerFactory ssf = (StdSchedulerFactory) this.sc.getServletContext().getAttribute("org.quartz.impl.StdSchedulerFactory.KEY");
