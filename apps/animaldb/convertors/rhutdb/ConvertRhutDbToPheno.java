@@ -193,19 +193,26 @@ public class ConvertRhutDbToPheno
 		logger.debug("Animals successfully added");
 		
 		// Make entry in name prefix table with highest animal nr.
-		NamePrefix namePrefix = new NamePrefix();
-		namePrefix.setTargetType("animal");
-		namePrefix.setPrefix("mm_");
-		namePrefix.setHighestNumber(highestNr);
-		db.add(namePrefix);
+		List<NamePrefix> prefixList = db.query(NamePrefix.class).eq(NamePrefix.TARGETTYPE, "animal").eq(NamePrefix.PREFIX, "mm_").find();
+		if (prefixList.size() == 1) {
+			NamePrefix namePrefix = prefixList.get(0);
+			namePrefix.setHighestNumber(highestNr);
+			db.update(namePrefix);
+		} else {
+			NamePrefix namePrefix = new NamePrefix();
+			namePrefix.setTargetType("animal");
+			namePrefix.setPrefix("mm_");
+			namePrefix.setHighestNumber(highestNr);
+			db.add(namePrefix);
+		}
 		
 		db.add(panelsToAddList);
 		logger.debug("Panels successfully added");
 		
 		// Make entries in name prefix table with highest parentgroup nrs.
-		List<NamePrefix> prefixList = new ArrayList<NamePrefix>();
+		prefixList = new ArrayList<NamePrefix>();
 		for (String lineName : parentgroupNrMap.keySet()) {
-			namePrefix = new NamePrefix();
+			NamePrefix namePrefix = new NamePrefix();
 			namePrefix.setTargetType("parentgroup");
 			namePrefix.setPrefix("PG_" + lineName + "_");
 			namePrefix.setHighestNumber(parentgroupNrMap.get(lineName));
@@ -213,7 +220,7 @@ public class ConvertRhutDbToPheno
 		}
 		// Make entries in name prefix table with highest litter nrs.
 		for (String lineName : litterNrMap.keySet()) {
-			namePrefix = new NamePrefix();
+			NamePrefix namePrefix = new NamePrefix();
 			namePrefix.setTargetType("litter");
 			namePrefix.setPrefix("LT_" + lineName + "_");
 			namePrefix.setHighestNumber(litterNrMap.get(lineName));
