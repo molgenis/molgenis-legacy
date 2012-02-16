@@ -11,7 +11,7 @@
 	<path id="app.class.path">
 		<pathelement location="apps/lifelinesresearchportal" />
 		<pathelement location="apps/xgap" />
-		<pathelement location="apps/lifelines" />
+		<pathelement location="apps/catalogue" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />

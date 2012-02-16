@@ -9,7 +9,7 @@
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/bbmri" />
-		<pathelement location="apps/lifelines" />
+		<pathelement location="apps/catalogue" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/file" />
