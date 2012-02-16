@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
+import org.molgenis.services.SchedulingService;
 import org.molgenis.util.TarGz;
 import org.quartz.Job;
 import org.quartz.JobDetail;
@@ -69,15 +71,20 @@ public class MolgenisCleanTmpDirServiceQuartz implements MolgenisService
 			t.setName("MolgenisCleanTmpDirServiceTrigger");
 	 
 	    	//schedule it
-	    	Scheduler scheduler = mc.getScheduler();
+			SchedulingService schedulingService = mc.getSchedulingService();
+//	    	Scheduler scheduler = mc.getScheduler();
 	    	
-			if(!scheduler.isStarted())
-			{
-				throw new SchedulerException("Scheduler is not active");
-			}
-	    	
-	    	scheduler.start();
-	    	scheduler.scheduleJob(job, t);
+//			if(!scheduler.isStarted())
+//			{
+//				throw new SchedulerException("Scheduler is not active");
+//			}
+//	    	
+//	    	scheduler.start();
+//	    	scheduler.scheduleJob(job, t);
+			HashMap dataMap2 = new HashMap();
+//	    	dataMap2.put("cleanTmpDirTask", task);
+			schedulingService.scheduleOnce(dataMap2, CleanTmpDirJob.class);
+//			schedulingService.shutdown();
 			
 			System.out.println("MolgenisCleanTmpDirService initialized.");
 
