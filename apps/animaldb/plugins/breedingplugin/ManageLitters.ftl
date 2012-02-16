@@ -259,7 +259,7 @@
 	<!-- Remarks -->
 	<div class='row'>
 		<label for='genodate'>Genotyping date:</label>
-		<input type='text' class='textbox' name='genodate' id='genodate' onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' class='textbox' name='genodate' id='genodate' value='<#if screen.genodate?exists>${screen.getGenodate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
 	<!-- Remarks -->
 	<div class='row'>

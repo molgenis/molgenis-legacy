@@ -545,6 +545,10 @@ public class ManageLitters extends PluginModel<Entity>
 		this.bases = bases;
 	}
 	
+	public String getGenodate() {
+		return oldDateOnlyFormat.format(new Date());
+	}
+	
 	public String getStartNumberHelperContent() {
 		try {
 			String helperContents = "";
