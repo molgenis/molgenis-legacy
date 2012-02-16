@@ -52,7 +52,7 @@ public class CheckboxInput extends OptionInput<List<String>>
 	{
 		super(name, value);
 		if (optionLabels != null && optionLabels.size() > 0
-				& optionLabels.size() != options.size()) throw new IllegalArgumentException(
+				&& optionLabels.size() != options.size()) throw new IllegalArgumentException(
 				"optionLabels, if set, must be of same size as options");
 
 		List<ValueLabel> result = new ArrayList<ValueLabel>();
