@@ -78,8 +78,11 @@ public class JQueryTreeView<E> extends HtmlWidget
 	
 	public String toHtml(List<String> selected){
 		
-		String html = "<script>var map = new HashMap();</script><div id=\"masstoggler\">	<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | ";
-		html += "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>" ;
+		String html = "<script>var map = new HashMap();" +
+				"</script>" +
+				"<div id=\"masstoggler\">" +
+				"<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | ";
+		html += "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>";
 		//html += " | <a title=\"Toggle the tree below\" href=\"#\">Toggle all</a></div> ";
 		html += "<ul id=\"browser\" class=\"pointtree\">";
 		html += renderTree(treeData.getRoot(), selected);
@@ -87,23 +90,49 @@ public class JQueryTreeView<E> extends HtmlWidget
 		html += "<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n"
 		+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n" 
 		+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>"
-		+ " <style type=\"text/css\">\n"
+		+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>"
+		+ "<style type=\"text/css\" media=\"all\">\n"
+		//Splitter css
+		+ ".simple { "
+		+ "		height: 200px;"
+		+ "		width: 500px;"
+		+ "		border: 5px solid #aaa;"
+		+ "}"
+		+ "	.simple div {"
+		+ "		overflow: auto;"
+		+ "	}"
+		+ ".vsplitbar {"
+		+ "		width: 5px;"
+		+ "		background: #cab;"
+		+ "}"
+		// highlighting styling
 		+ " li {cursor:pointer; width:200px;}\n"
 		+ " li.highlight {margin:0px;border:0px;padding:0px;background-image:none;background-color:transparent;padding-left:3px;}\n"
+		+ " li.active {margin:0px;border:0px;padding:0px;background-image:none;background-color:transparent;padding-left:3px; } \n"
 		+ "#browser {\n"
 		+ "font-family: Verdana, helvetica, arial, sans-serif;\n"
-		+ "font-size: 68.75%;\n"
+		+ "font-size: 100.75%;\n"
 		+"}\n"
 		+ "#details{position:absolute;right:100px;top:200px;}\n"
 		+ "#leftSideTree{width:300px;}\n"
 		+"</style>\n"
-		+"<script>\n"
-		+ "$(\"li > span\").hover(function () {"
+		//Javascript-jquery
+		+"<script type=\"text/javascript\">\n"
+		//+ "debugger;"
+		//adding css styling on click 
+		+ "$(\"ul\").delegate(\"li\", \"click\", function() {"
+		+ "$(this).addClass(\"active\");"
+		//+ "$(this).addClass(\"active\").siblings().removeClass(\"active\");"
+		+"	});"
+		//adding css styling on hover 
+		+ "$(\"li>span\").hover(function(){"
         + "$(this).addClass(\"highlight\");"
-        + "}, function () {"
+        + "},function() {"
         + "$(this).removeClass(\"highlight\");"
         + "});"
+        //Jquery
 		+"$(document).ready(function(){\n"
+		+"$(\".simple\").splitter();"
 		+"$(\"#browser\").treeview({control: \"#masstoggler\"});" 
 		+"});\n"
 //		+ "$(document).unload(function() {"
@@ -130,4 +159,3 @@ public class JQueryTreeView<E> extends HtmlWidget
 		return "";
 	}
 }
-
