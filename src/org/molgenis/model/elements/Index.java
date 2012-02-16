@@ -10,6 +10,7 @@
 package org.molgenis.model.elements;
 
 // jdk
+import java.io.Serializable;
 import java.util.Vector;
 
 import org.molgenis.model.MolgenisModelException;
@@ -27,8 +28,10 @@ import org.molgenis.model.MolgenisModelException;
  * @author RA Scheltema
  * @version 1.0.0
  */
-public class Index
+public class Index implements Serializable
 {
+	private static final long serialVersionUID = 8774987474903369117L;
+
 	// constructor(s)
 	/**
 	 * Default constructor, which sets the name of the index. The fields vector

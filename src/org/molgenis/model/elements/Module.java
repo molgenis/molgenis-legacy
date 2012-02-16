@@ -1,5 +1,6 @@
 package org.molgenis.model.elements;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +10,9 @@ import java.util.List;
  * @author Morris Swertz
  *
  */
-public class Module
+public class Module implements Serializable
 {
+	private static final long serialVersionUID = 6755412239260236656L;
 	String name;
 	String label;
 	String description;
