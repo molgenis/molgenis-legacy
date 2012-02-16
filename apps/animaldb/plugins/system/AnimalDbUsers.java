@@ -190,6 +190,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 						chosenInv = new Investigation();
 						chosenInv.setName(newinv);
 						chosenInv.setOwns_Id(userId);
+						chosenInv.setCanRead_Name("admin");
 						db.add(chosenInv);
 						
 					} else {
@@ -202,6 +203,7 @@ public class AnimalDbUsers extends PluginModel<Entity>
 							throw new Exception("No (valid) investigation chosen");
 						}
 						chosenInv.setOwns_Id(userId);
+						chosenInv.setCanRead_Name("admin");
 						db.update(chosenInv);
 					}
 				} else {
