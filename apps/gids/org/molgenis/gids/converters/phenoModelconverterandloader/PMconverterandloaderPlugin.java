@@ -24,6 +24,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.cxf.binding.corba.wsdl.Array;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -33,6 +36,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
@@ -81,6 +85,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	private String TAB = "\t";
 	private String COMMA = ",";
 	private String SEMICOLON = ";";
+	public String checkNewData = "";
 	private String delimeter;
 	private String [] arrayDelimeter = {",","tab",";"};
 	private String [] arrayChooseTable = {"Individuals", "Samples"};
@@ -92,6 +97,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	private HashMap<String,String> hashChangeMeas = new HashMap<String, String>();
 	private String existinv;
 	private String newinv;
+	private List<Conflicts> listConflicts = new ArrayList<Conflicts>();
 	
 	public String[] getArrayChooseTable() {
 		return arrayChooseTable;
@@ -165,7 +171,13 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			if(action.equals("goToStep2")){		
 				fileData = request.getFile("convertData");	
 				String fileName = fileData.toString();
-
+				if(request.getString("checkNewData")!=null){
+					checkNewData = "true";
+					System.out.println("TRUE TRUE TRUE");
+				}else{
+					System.out.println("FALSE FALSE FALSE");
+					checkNewData = "false";
+				}
 				BufferedReader buffy = new BufferedReader(new FileReader (fileName));
 				delimeter = request.getString("delimeter");
 				
@@ -236,8 +248,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				father = hashStep2.get("father");
 				mother = hashStep2.get("mother");
 				sampleMeasList.add(individualName);
-				String knownMeas = "";
-				try{
+				String knownMeas = "";			
 					if(listNewMeas.size()!=0){
 						for (String e : listNewMeas){
 							
@@ -257,39 +268,60 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 							}
 						}
 					}
-					
-					runGenerConver(fileData,invName,db,individualName, father, mother,sampleName,sampleMeasList,indvMeasList,hashChangeMeas);		    
-					//state = "pipeline";
-					state = "start";
-					//get the server path
-					File dir = gc.getDir();
-					System.out.println("ABSOLUTE PATH: "  +dir.getAbsolutePath());
-					//import the data into database
-					try{
-						CsvImport.importAll(dir, db, null);
-						dir = null;
-						redirectToInvestigationPage(request);
-					}catch(Exception e){
-						if(e.getMessage().startsWith("Tried to add existing Individual elements as new insert:")){
-							this.setMessages(new ScreenMessage("The individuals already exist in the database", false));
+					gc = new GidsConvertor();
+					listConflicts = gc.converter(fileData,invName,db,individualName, father, mother,sampleName,sampleMeasList,indvMeasList,hashChangeMeas,this,checkNewData);		   									
+					if(!state.equals("error")){
+						if(listConflicts.size()==0){
+							state = "xxxx";
+						}else{
+							state = "updating";
 						}
 					}
-				}
-				catch(Exception e){
-					this.setMessages(new ScreenMessage(e.getMessage(), false));
-				}	
-				
-			} catch (Exception e) {
-				db.rollbackTx();
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+			}	
+			catch(Exception e){
+				this.setMessages(new ScreenMessage(e.getMessage(), false));
 			}
 		}
+		String b = "";
+
 		
+		if(action.equals("runUpdated")){
+			if(listConflicts.size()!=0){
+				for(Conflicts con : listConflicts){
+					b = request.getString(con.getTarget()+con.getFeatureName());
+					if(b.equals("oldValue")){
+					
+					}
+					else{
+						Query<ObservedValue> testValue = db.query(ObservedValue.class);
+						testValue.addRules(new QueryRule(ObservedValue.ID, Operator.EQUALS, con.getId()));
+						ObservedValue newValue = testValue.find().get(0);
+						newValue.setValue(con.getNewValue());
+						db.update(newValue);
+					}
+				}
+			}
+			state = "xxxx";
+
+		}
+		if(state.equals("xxxx")){
+			File dir = gc.getDir();
+			System.out.println("ABSOLUTE PATH: "  +dir.getAbsolutePath());
+			state = "start";
+			try{
+				CsvImport.importAll(dir, db, null);
+				dir = null;
+				redirectToInvestigationPage(request);
+			}catch(Exception e){
+				if(e.getMessage().startsWith("Tried to add existing Individual elements as new insert:")){
+					this.setMessages(new ScreenMessage("The individuals already exist in the database", false));
+				}
+			}
+		}
+					
 		if (action.equals("emptyDB") ){
 			try {
 				if(db.count(Investigation.class)!=0){
-
 					new emptyDatabase(db, false);
 					FillMetadata.fillMetadata(db, false);
 					
@@ -301,8 +333,7 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			} catch (Exception e) {
 				e.printStackTrace();
 			}	
-		}
-						
+		}					
 	}
 	
 	public String getExistinv() {
@@ -332,11 +363,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 
 			e.printStackTrace();
 		} 
-		
-//		
 	}
 	
-
 	public void checkInvestigation(Database db, Tuple request) throws DatabaseException{
 
 		if (!request.getString("investigation").equals("") && !request.getString("investigation").equals("select investigation")) {
@@ -354,22 +382,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 			prot.setInvestigation(inve);
 	
 			db.add(prot);
-//			inve.setOwns_Name("admin"); default pheno.xml does not have authorizable for Investigation anymore
-
-			
 
 		}
-	}
-
-	public void runGenerConver(File file, String invName, Database db,String target, String father, String mother, String sample, List<String> samplemeaslist,List<String> indvmeaslist,HashMap<String,String> hashChangeMeas){
-		try {
-			gc = new GidsConvertor();
-			gc.converter(file, invName, db, target,father,mother, sample, samplemeaslist,indvmeaslist,hashChangeMeas);				
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}			
-		
 	}
 	
 	public void redirectToInvestigationPage(Tuple request){
@@ -389,10 +403,14 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 		}
 	}
 	
+	public void setError(String error){
+		this.setMessages(new ScreenMessage(error, false));
+		state="error";
+	}
+	
 	public GidsConvertor getGc() {
 		return gc;
 	}
-
 
 	public String getInvName() {
 		return invName;
@@ -402,7 +420,6 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	public String[] getArrayMeasurements() {
 		return arrayMeasurements;
 	}
-
 
 	public List<String> getListNewMeas() {
 		return listNewMeas;
@@ -444,8 +461,14 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 	public void setMeasInDb(List<String> measInDb) {
 		this.measInDb = measInDb;
 	}
-	
-	
- 
+
+	public List<Conflicts> getListConflicts() {
+		return listConflicts;
+	}
+
+	public void setListConflicts(List<Conflicts> listConflicts) {
+		this.listConflicts = listConflicts;
+	}
 	
 }
+

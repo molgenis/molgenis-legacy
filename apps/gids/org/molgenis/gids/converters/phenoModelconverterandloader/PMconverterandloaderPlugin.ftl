@@ -88,9 +88,44 @@
 					</#list>		
 				</select>
 			<label>(default is semicolon) </label>
-			<br / ><br / ><br / >
+			
+			<br / >
+			<input type="checkbox" name="checkNewData" value="check"><label>new data?</label>
+			<br / ><br / >
 			<input type='submit' class='addbutton' value='go to step2' onclick="__action.value='goToStep2'; createNew.getText()"/>
-			<input type='submit' class='addbutton' value='upload your files' onclick="__action.value='skip'"/>
+			<br / >
+		 	
+
+			
+		<#elseif screen.state = "error">
+			Every sample needs an id_sample	
+		
+		<#elseif screen.state = "updating">
+			<div id="updatescreen">
+				<#if screen.listConflicts?has_content>
+				<table border=1>
+					
+					<tr align="center" >
+					<td style="font-weight:bold">target</td>
+					<td style="font-weight:bold">measurement</td>
+					<td style="font-weight:bold">value in db</td>
+					<td style="font-weight:bold">value in file</td>
+					</b></tr>
+					<#list screen.listConflicts as conflicts>
+							<tr>
+							    <td> ${conflicts.target}</td>
+							    <td> ${conflicts.featureName}</td>
+							    <td align="left"><input type="radio" name="${conflicts.target}${conflicts.featureName}"  id="radiob${conflicts.target}" checked="true" value="oldValue">${conflicts.oldValue}</td>
+				 				<td align="left"><input type="radio" name="${conflicts.target}${conflicts.featureName}" id="radioc${conflicts.target}" value="newValue">${conflicts.newValue}</td>						
+						    </tr>
+						</#list>
+				</table>
+				<input type='submit' class='addbutton' value='update' onclick="__action.value='runUpdated'"/>
+				<#else>
+					<a> There are no conflicts.</a>
+					<input type='submit' class='addbutton' value='continue' onclick="__action.value='runUpdated'"/>
+				</#if>
+			</div>	
 		
 		<#-- select individual, father and mother -->
 		<#elseif screen.state = "inStep2">	
@@ -205,6 +240,7 @@
 				<input type='submit' class='addbutton' value='next' onclick="__action.value='step4'"/>
 			</#if>
 			
+			
 		<#--select Individuals or Samples -->
 		<#elseif screen.state = "inStep3">	
 			<table border="1">
@@ -221,7 +257,9 @@
 					<#list screen.listNewMeas as target>
 					<tr> 		
 	 					<td>${target}</td> 	 		
-				 		<#if target?contains("sample") || 
+				 		<#if target?contains("sample") ||
+				 			 target?contains("sampling") ||
+				 			 target?contains("work_up") || 
 				 			 target?contains("isolat") ||
 				 			 target?contains("hla") ||
 				 			 target?contains("rna") ||
