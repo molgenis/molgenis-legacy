@@ -9,9 +9,11 @@ package plugins.projectportal;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -20,6 +22,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.TablePanel;
@@ -89,6 +92,8 @@ public class DecStatus extends GenericPlugin
 	private void populateTablePanel(Database db) {
 		tablePanel = new TablePanel(this.getName() + "panel", null);
 		
+		tablePanel.add(new Paragraph("<h2>Active DECs and their subprojects</h2>"));
+		
 		Table statusTable = new JQueryDataTable("StatusTable", "");
 		statusTable.addColumn("DEC");
 		statusTable.addColumn("Start");
@@ -146,10 +151,19 @@ public class DecStatus extends GenericPlugin
 		DecimalFormat f = new DecimalFormat("0.##");
 		int decId = decApp.getId();
 		
+		// First check: bail out if DEC no longer active
+		SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+		String endDateString = cq.getMostRecentValueAsString(decId, "EndDate");
+		Date endDate = newDateOnlyFormat.parse(endDateString);
+		Date now = new Date();
+		if (endDate.before(now)) {
+			return rowCount;
+		}
+		
 		statusTable.addRow("" + (rowCount + 1));
 		statusTable.setCell(0, rowCount, cq.getMostRecentValueAsString(decId, "DecNr"));
 		statusTable.setCell(1, rowCount, cq.getMostRecentValueAsString(decId, "StartDate"));
-		statusTable.setCell(2, rowCount, cq.getMostRecentValueAsString(decId, "EndDate"));
+		statusTable.setCell(2, rowCount, endDateString);
 		
 		List<ObservationTarget> expInDecList = new ArrayList<ObservationTarget>();
 		int extraRow = 1;

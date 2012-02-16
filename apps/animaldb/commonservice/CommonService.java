@@ -100,9 +100,8 @@ public class CommonService
 	}
 	
 	/**
-	 * Gets the ID of the investigation owned by the user with ID 'userId'.
-	 * Assumption: a user can only own one investigation.
-	 * Returns -1 if no or multiple investigations found.
+	 * Gets the ID of the first investigation owned by the user with ID 'userId'.
+	 * Returns -1 if no investigations found.
 	 * 
 	 * @param userId
 	 * @return
@@ -118,7 +117,7 @@ public class CommonService
 		} catch (Exception e) {
 			return -1;
 		}
-		if (invList.size() == 1) {
+		if (invList.size() > 0) {
 			return invList.get(0).getId();
 		} else {
 			return -1;
@@ -598,6 +597,7 @@ public class CommonService
 	 * @throws IOException
 	 * @throws ParseException
 	 */
+	@Deprecated
 	public Panel createPanel(int investigationId, String panelName, int userId)
 			throws DatabaseException, IOException, ParseException
 	{

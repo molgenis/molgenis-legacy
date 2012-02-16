@@ -23,7 +23,6 @@ import java.util.zip.ZipFile;
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.auth.MolgenisUser;
-import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -32,6 +31,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.ProtocolApplication;
@@ -48,6 +48,7 @@ public class ConvertRhutDbToPheno
 	private Logger logger;
 	private String userName;
 	private String invName;
+	private List<Measurement> measurementsToAddList;
 	private List<ProtocolApplication> protocolAppsToAddList;
 	private List<Individual> animalsToAddList;
 	private List<String> animalNames;
@@ -67,6 +68,8 @@ public class ConvertRhutDbToPheno
 	private Map<String, String> alternativeDecMap;
 	private Map<String, Integer> researcherMap;
 	private Map<String, ObservedValue> activeMap;
+	private Map<String, ObservedValue> projectStartDateMap;
+	private Map<String, ObservedValue> projectEndDateMap;
 	private Map<String, String> animalMap;
 	private Map<String, Date> removalDateMap;
 	private int highestNr;
@@ -96,14 +99,17 @@ public class ConvertRhutDbToPheno
 		}
 		
 		// Add some measurements that we'll need
-		int stringUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "String").find().get(0).getId();
-		int datetimeUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "Datetime").find().get(0).getId();
-		int numberUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "Number").find().get(0).getId();
-		ct.makeMeasurement(invId, "OldRhutDbAnimalId", stringUnitId, null, null, false, "string", "To set an animal's ID in Roelof Hut's old DB.", login.getUserId());
-		ct.makeMeasurement(invId, "OldRhutDbLitterId", stringUnitId, null, null, false, "string", "To link an animal to a litter with this ID in the old version of Roelof Hut's DB.", login.getUserId());
-		ct.makeMeasurement(invId, "OldRhutDbSampleDate", datetimeUnitId, null, null, false, "datetime", "To set the date that an animal was sampled in the old version of Roelof Hut's DB.", login.getUserId());
-		ct.makeMeasurement(invId, "OldRhutDbSampleNr", numberUnitId, null, null, false, "int", "To set the sample number in the old version of Roelof Hut's DB.", login.getUserId());
-		ct.makeMeasurement(invId, "OldRhutDbExperimentId", numberUnitId, null, null, false, "int", "To set the experiment's ID in the old version of Roelof Hut's DB.", login.getUserId());
+		measurementsToAddList = new ArrayList<Measurement>();
+		measurementsToAddList.add(ct.createMeasurement(invName, "OldRhutDbAnimalId", "String", null, null, 
+				false, "string", "To set an animal's ID in Roelof Hut's old DB.", userName));
+		measurementsToAddList.add(ct.createMeasurement(invName, "OldRhutDbLitterId", "String", null, null, 
+				false, "string", "To link an animal to a litter with this ID in the old version of Roelof Hut's DB.", userName));
+		measurementsToAddList.add(ct.createMeasurement(invName, "OldRhutDbSampleDate", "Datetime", null, null, 
+				false, "datetime", "To set the date that an animal was sampled in the old version of Roelof Hut's DB.", userName));
+		measurementsToAddList.add(ct.createMeasurement(invName, "OldRhutDbSampleNr", "Number", null, null, 
+				false, "int", "To set the sample number in the old version of Roelof Hut's DB.", userName));
+		measurementsToAddList.add(ct.createMeasurement(invName, "OldRhutDbExperimentId", "Number", null, null, 
+				false, "int", "To set the experiment's ID in the old version of Roelof Hut's DB.", userName));
 		
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();
@@ -123,24 +129,26 @@ public class ConvertRhutDbToPheno
 		activeMap = new HashMap<String, ObservedValue>();
 		animalMap = new HashMap<String, String>();
 		removalDateMap = new HashMap<String, Date>();
+		projectStartDateMap = new HashMap<String, ObservedValue>();
+		projectEndDateMap = new HashMap<String, ObservedValue>();
 		
 		// Create lines
-		createLine("WT", invId, login.getUserId());
-		createLine("Per dKO", invId, login.getUserId());
-		createLine("Cry dKO", invId, login.getUserId());
-		createLine("PerCry", invId, login.getUserId());
-		createLine("CBA/CaJ (line)", invId, login.getUserId());
-		createLine("C57BL/6j (line)", invId, login.getUserId());
-		createLine("C3H/He", invId, login.getUserId());
-		createLine("DBA", invId, login.getUserId());
-		createLine("ICR(CD-1)", invId, login.getUserId());
-		createLine("Swing", invId, login.getUserId());
-		createLine("CK1e", invId, login.getUserId());
+		createLine("WT");
+		createLine("Per dKO");
+		createLine("Cry dKO");
+		createLine("PerCry");
+		createLine("CBA/CaJ (line)");
+		createLine("C57BL/6j (line)");
+		createLine("C3H/He");
+		createLine("DBA");
+		createLine("ICR(CD-1)");
+		createLine("Swing");
+		createLine("CK1e");
 	}
 	
-	private void createLine(String lineName, int invId, int userId) throws DatabaseException, IOException, ParseException
+	private void createLine(String lineName) throws DatabaseException, IOException, ParseException
 	{
-		panelsToAddList.add(ct.createPanel(invId, lineName, userId));
+		panelsToAddList.add(ct.createPanel(invName, lineName, userName));
 		// Label it as line using the (Set)TypeOfGroup protocol and feature
 		Date now = new Date();
 		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), now, null, "TypeOfGroup", lineName, 
@@ -174,6 +182,9 @@ public class ConvertRhutDbToPheno
 	}
 
 	public void writeToDb() throws Exception {
+		
+		db.add(measurementsToAddList);
+		logger.debug("Measurements successfully added");
 		
 		db.add(protocolAppsToAddList);
 		logger.debug("Protocol applications successfully added");
@@ -211,8 +222,10 @@ public class ConvertRhutDbToPheno
 		db.add(prefixList);
 		logger.debug("Prefixes successfully added");
 		
-		// Add remaining Active values to value list
+		// Add remaining Active, Project StartDate and Project EndDate values to value list
 		valuesToAddList.addAll(activeMap.values());
+		valuesToAddList.addAll(projectStartDateMap.values());
+		valuesToAddList.addAll(projectEndDateMap.values());
 		
 		int batchSize = 1000;
 		for (int valueStart = 0; valueStart < valuesToAddList.size(); valueStart += batchSize) {
@@ -680,24 +693,48 @@ public class ConvertRhutDbToPheno
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
 						now, null, "DecApplicantId", project, resId.toString(), null));
 				// DECStartDate -> StartDate (on both)
-				String startDate = tuple.getString("DECStartDate");
-				if (startDate != null) {
-					Date tmpDate = dbFormat.parse(startDate);
-					startDate = newDateOnlyFormat.format(tmpDate);
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
-							now, null, "StartDate", project, startDate, null));
+				String startDateString = tuple.getString("DECStartDate");
+				if (startDateString != null) {
+					Date startDate = dbFormat.parse(startDateString);
+					startDateString = newDateOnlyFormat.format(startDate);
+					// Project: set new if none known yet, otherwise update existing value
+					if (projectStartDateMap.containsKey(project)) {
+						ObservedValue startDateVal = projectStartDateMap.get(project);
+						Date storedStartDate = newDateOnlyFormat.parse(startDateVal.getValue());
+						if (startDate.before(storedStartDate)) {
+							startDateVal.setValue(startDateString);
+							projectStartDateMap.put(project, startDateVal);
+						}
+					} else {
+						ObservedValue startDateVal = ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
+								now, null, "StartDate", project, startDateString, null);
+						projectStartDateMap.put(project, startDateVal);
+					}
+					// Always set on subproject
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
-							now, null, "StartDate", subproject, startDate, null));
+							now, null, "StartDate", subproject, startDateString, null));
 				}
 				// DECEndDate -> EndDate (on both)
-				String endDate = tuple.getString("DECEndDate");
-				if (endDate != null) {
-					Date tmpDate = dbFormat.parse(endDate);
-					endDate = newDateOnlyFormat.format(tmpDate);
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
-							now, null, "EndDate", project, endDate, null));
+				String endDateString = tuple.getString("DECEndDate");
+				if (endDateString != null) {
+					Date endDate = dbFormat.parse(endDateString);
+					endDateString = newDateOnlyFormat.format(endDate);
+					// Project: set new if none known yet, otherwise update existing value
+					if (projectEndDateMap.containsKey(project)) {
+						ObservedValue endDateVal = projectEndDateMap.get(project);
+						Date storedEndDate = newDateOnlyFormat.parse(endDateVal.getValue());
+						if (endDate.after(storedEndDate)) {
+							endDateVal.setValue(endDateString);
+							projectEndDateMap.put(project, endDateVal);
+						}
+					} else {
+						ObservedValue endDateVal = ct.createObservedValue(invName, appMap.get("SetDecProjectSpecs"), 
+								now, null, "EndDate", project, endDateString, null);
+						projectEndDateMap.put(project, endDateVal);
+					}
+					// Always set on subproject
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDecSubprojectSpecs"), 
-							now, null, "EndDate", subproject, endDate, null));
+							now, null, "EndDate", subproject, endDateString, null));
 				}
 				// Room . -> skip
 			}
