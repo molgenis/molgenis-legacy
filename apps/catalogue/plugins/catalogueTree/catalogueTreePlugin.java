@@ -101,11 +101,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	
 		} else {
 
-			System.out.println("DownloadedMeasurementIds >>>: " + this.shoppingCart);
+			//System.out.println("DownloadedMeasurementIds >>>: " + this.shoppingCart);
 
 			for (Measurement m : this.shoppingCart) {
 				DownloadedMeasurementIds.add(m.getId());
-				System.out.println("DownloadedMeasurementIds >>>: " + m.getId());
+				//System.out.println("DownloadedMeasurementIds >>>: " + m.getId());
 			}
 
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
@@ -123,14 +123,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				shoppingCart.setDateOfOrder(dateOfDownload);
 				shoppingCart.setApproved(false);
 				db.add(shoppingCart);
-				System.out.println("Download list has been added to the DB");
+				//System.out.println("Download list has been added to the DB");
 				
 			} else {
 				ShoppingCart shoppingCart = result.get(0); // assuming user can have only one shopping cart that's NOT checked out
 				//shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				db.update(shoppingCart);
-				System.out.println("Shopping cart has been updated in the DB");
+				//System.out.println("Shopping cart has been updated in the DB");
 			}
 				
 			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
@@ -277,7 +277,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					List<Category> categoryIds = new ArrayList<Category>();
 					categoryIds = db.find(Category.class, new QueryRule(Category.NAME, Operator.EQUALS, measurement.getCategories_Name()));
-					System.out.println("category ids for "+ measurement.getName()+ ">>>>>>>>>>>>>>>>" +categoryIds);
+					//System.out.println("category ids for "+ measurement.getName()+ ">>>>>>>>>>>>>>>>" +categoryIds);
 					
 				}
 			}
