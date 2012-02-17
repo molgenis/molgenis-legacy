@@ -26,62 +26,14 @@
 <#--begin your plugin-->
 
 <h3>Animals</h3>
-<#if screen.individualList?size gt 0>
-	<table cellpadding="0" cellspacing="0" border="0" class="display" id="targettable">
-		<thead>
-			<tr>
-				<th>Select</th>
-				<th>Name</th>
-			</tr>
-		</thead>
-		<tbody>
-		<#assign i = 0>
-		<#list screen.individualList as target>
-			<tr>
-				<td><input type="checkbox" id="${i}" name="${i}" />
-				<td>${target.name}</td>
-			</tr>
-			<#assign i = i + 1>
-		</#list>
-		</tbody>
-	</table>
-</#if>
-
+${screen.getIndividualMatrix()}
 <p><em>Note: values set on or related to the selected animals will also be flagged as deleted!</em></p>
-
 <input type="submit" class='addbutton' value="Flag as deleted" onclick="__action.value='deleteIndividuals';return true;"/>
 
-<#if screen.deletedIndividualList?size gt 0>
-
 <h3>Individuals flagged as deleted</h3>
-	<table cellpadding="0" cellspacing="0" border="0" class="display" id="deltargettable">
-		<thead>
-			<tr>
-				<th>Select</th>
-				<th>Deleted on</th>
-				<th>Deleted by</th>
-				<th>Name</th>
-			</tr>
-		</thead>
-		<tbody>
-		<#assign i = 0>
-		<#list screen.deletedIndividualList as target>
-			<tr>
-				<td><input type="checkbox" id="${i}" name="${i}" />
-				<td><#if target.deletionTime??>${target.deletionTime}</#if></td>
-				<td><#if target.deletedBy_Name??>${target.deletedBy_Name}</#if></td>
-				<td>${target.name}</td>
-			</tr>
-			<#assign i = i + 1>
-		</#list>
-		</tbody>
-	</table>
-
+${screen.getDeletedIndividualMatrix()}
 <p><em>Note: values set on or related to the selected individuals, deleted at the same time as the animal, will also be unflagged!</em></p>
-
-<input type="submit" class='addbutton' value="Unflag" onclick="__action.value='undeleteTargets';return true;"/>
-
-</#if>
+<input type="submit" class='addbutton' value="Unflag" onclick="__action.value='undeleteIndividuals';return true;"/>
 
 <#--end of your plugin-->	
 			</div>
