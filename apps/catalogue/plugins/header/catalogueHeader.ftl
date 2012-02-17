@@ -9,7 +9,7 @@
 <div align="right" style="color: maroon; font: 12px Arial;">
    	${screen.setUserLogin()}
    	${screen.getUserLogin()}
-   	<a href="api/R">R-project API</a>
+   	<a href="api/R"> | R-project API</a>
 <!--<a href="about.html">About</a>   	  | <a href="generated-doc/objectmodel.html">Object model</a>  |--> 
     <!--| <a href="molgenis.do?__target=main&select=BbmriHelp"> Help </a> 
     | <a href="molgenis.do?__target=main&select=BbmriContact"> Contact </a>-->
