@@ -238,7 +238,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					htmlValue += "<tr><th>Description</th><td>" +
 							measurementDescription + "</td></tr>";
 					
-					htmlValue += "<tr><th>Data type</th><td>" +
+					htmlValue += "<tr><th>Data type</th><td width=40>" +
 							measurementDataType + "</td></tr>" ;
 					//htmlValue = "<p>why?</p>";
 					

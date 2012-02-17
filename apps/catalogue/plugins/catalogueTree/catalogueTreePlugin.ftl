@@ -10,8 +10,6 @@
 	
 <!-- this shows a title and border -->
 	<div class="formscreen">
-	
-		
 		<div class="form_header" id="${screen.getName()}">
 			${screen.label}
 			${screen.getName()}
@@ -37,27 +35,32 @@
 				<input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"/>
 				
 			   <#if screen.isSelectedInv() == true>
-				<table class="box" width="100%" cellpadding="0" cellspacing="0">
-			    <tr><td class="box-header"> Catalogue </td></tr>
-			    <tr><td class="box-body">
-						<div id="leftSideTree">  
-							${screen.getTreeView()}
-						</div><br/>
-				    </td>
-				    <td class="box-body">
-						<div id="details"></div>
-				   </td></tr>
-				</table>
-					<div id="ShoopingCartButton">
-						<input type="submit" name="DownloadMeasurementsSubmit" value="Download" onclick="__action.value='DownloadMeasurements';"/>
-					</div>
-					
-				</#if>
-					
+					<table class="box" width="100%" cellpadding="0" cellspacing="0">
+					    <tr><td class="box-header"> Catalogue </td></tr>
+					    <tr><td class="box-body">
+								<div id="leftSideTree">  
+									${screen.getTreeView()}
+								</div><br/>
+						    </td>
+						    <td class="box-body">
+								<div id="details"></div> <br/><br/>
+								<div id="ShoopingCartButton" style="float: right;">
+									<input type="submit" name="DownloadMeasurementsSubmit" value="Download" onclick="__action.value='DownloadMeasurements';"/>
+								</div>
+								
+						   </td>
+						</tr>
+						<tr><td class="box-body"></td>
+							<td class="box-body"></td>
+							<td class="box-body">
+
+							</td>
+						</tr>
+					</table>
+			   </#if>	
 			</div>
 		</div>
 	</div>
-
 </form>
 
 </#macro>
