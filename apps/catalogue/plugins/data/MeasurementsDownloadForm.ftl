@@ -25,9 +25,9 @@
 		<div class="screenbody">
 			<div class="screenpadding">	
 			<table class="box_withoutBorder" width="100%" cellpadding="0" cellspacing="0">
-			   <tr><td class="box_withoutBorder-header"> <h3> Measurements Download Form  </h3> </td></tr>
+			   <!--tr><td class="box-header"> <h4> Measurements Download Form  </h4> </td></tr-->
 			
-			    
+			    <h3> Measurements Download Form  </h3>
 			       <h5>Review you Download list:</h5>
 				   <tr><td class="box_withoutBorder-body">
 					
@@ -51,7 +51,7 @@
 				
 						<h5>If you want to complete your download press below:</h5>
 				   </td></tr>		
-				   <tr><td class="bo_withoutBorderx-body"></td>	<td class="box_withoutBorder-body"></td><td class="box_withoutBorder-body">
+				   <tr><td class="box_withoutBorderx-body"></td>	<td class="box_withoutBorder-body">
 						<input type="image" src="res/img/Download-icon.png" value="Submit" alt="Download" onclick="if (confirm('You are about to complete your Download. Are you sure?')) {__action.value='checkoutDownload';return true;} else {return false;}"/><br /><br />
 						<input type="submit" value="Review old placed Downloads" onclick="__action.value='seeOldPlacedDownloads';return true; "/><br /><br />
 				   </td></tr>		
