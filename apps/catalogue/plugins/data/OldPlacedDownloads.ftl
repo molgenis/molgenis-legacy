@@ -57,7 +57,6 @@
 								</#list>
 							</table>
 					  	</#if>
-				   
 			</div>
 		</div>
 	</div>

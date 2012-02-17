@@ -16,6 +16,23 @@
 		     border:  solid  1px  #BBBBBB ;
 		     border-top: none;
 		 }
+		 
+		 div.box_withoutBorder, table.box_withoutBorder
+		 {
+		     padding: 10px 1000px 10px 10px;
+		 }
+		 div.box_withoutBorder-header, td.box_withoutBorder-header
+		 {
+		     font-size: larger;
+		     padding: 4px;
+		     background-color: #DDDDDD;
+		 }
+		 div.box_withoutBorder-body, td.box_withoutBorder-body
+		 {
+		     padding: 6px;
+		     border-top: none;
+		 }
+		 
 		// highlighting styling
 		  li {cursor:pointer; width:200px;}
 		  li.highlight {margin:0px;border:0px;padding:0px;background-image:none;background-color:transparent;padding-left:3px;}

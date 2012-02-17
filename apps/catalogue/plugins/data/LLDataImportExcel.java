@@ -1,6 +1,5 @@
 package plugins.data;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,8 +28,6 @@ import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
 import app.FillMetadata;
-
-
 
 
 public class LLDataImportExcel extends PluginModel<Entity>
