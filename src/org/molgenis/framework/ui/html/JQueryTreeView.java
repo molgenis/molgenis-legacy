@@ -54,6 +54,8 @@ public class JQueryTreeView<E> extends HtmlWidget
 	 */
 	private String renderTree(JQueryTreeViewElement node, List<String> selectedLabels) {
 		String returnString;
+		
+		 
 		if (node.hasChildren()) {
 			returnString = "<li class=\"" + (nodeOpen(node, selectedLabels) ? "opened" : "closed") + 
 					"\"><span class=\"folder\">" + node.getLabel() + "</span>";
@@ -73,6 +75,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 				
 			listOfMeasurements.add(node.getLabel());
 		}
+		
 		return returnString;
 	}
 	
@@ -80,30 +83,55 @@ public class JQueryTreeView<E> extends HtmlWidget
 		
 		String html = "<script>var map = new HashMap();" +
 				"</script>" +
+//				"<div id=\"splitter\">" + //this div is used for the splitter
+//				"   <div> Left content goes here </div>"+
+//				"   <div> Right content goes here </div>"+
+//				" </div> "+
 				"<div id=\"masstoggler\">" +
 				"<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | ";
-		html += "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>";
+		html += "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>" +
+				"</div>";
 		//html += " | <a title=\"Toggle the tree below\" href=\"#\">Toggle all</a></div> ";
+		
+
 		html += "<ul id=\"browser\" class=\"pointtree\">";
 		html += renderTree(treeData.getRoot(), selected);
-		html += "</ul>";
+		html += "</ul>";	
 		html += "<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n"
 		+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n" 
 		+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>"
 		+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>"
 		+ "<style type=\"text/css\" media=\"all\">\n"
 		//Splitter css
-		+ ".simple { "
+		+ "#splitter { "
 		+ "		height: 200px;"
 		+ "		width: 500px;"
 		+ "		border: 5px solid #aaa;"
 		+ "}"
-		+ "	.simple div {"
+		+ "	#splitter div {"
 		+ "		overflow: auto;"
 		+ "	}"
 		+ ".vsplitbar {"
 		+ "		width: 5px;"
 		+ "		background: #cab;"
+		+ "}"
+		//Css for making div NOT overlap
+		+ "div.box, table.box"
+		+ "{"
+		+ "    padding: 10px 1000px 10px 10px;"
+		+ "}"
+		+ "div.box-header, td.box-header"
+		+ "{"
+		+ "    border:  solid  1px  #BBBBBB ;"
+		+ "    font-size: larger;"
+		+ "    padding: 4px;"
+		+ "    background-color: #DDDDDD;"
+		+ "}"
+		+ "div.box-body, td.box-body"
+		+ "{"
+		+ "    padding: 6px;"
+		+ "    border:  solid  1px  #BBBBBB ;"
+		+ "    border-top: none;"
 		+ "}"
 		// highlighting styling
 		+ " li {cursor:pointer; width:200px;}\n"
@@ -113,7 +141,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 		+ "font-family: Verdana, helvetica, arial, sans-serif;\n"
 		+ "font-size: 100.75%;\n"
 		+"}\n"
-		+ "#details{position:absolute;right:100px;top:200px;}\n"
+		+ "#details{right:100px;top:200px;}\n"
 		+ "#leftSideTree{width:300px;}\n"
 		+"</style>\n"
 		//Javascript-jquery
@@ -132,13 +160,15 @@ public class JQueryTreeView<E> extends HtmlWidget
         + "});"
         //Jquery
 		+"$(document).ready(function(){\n"
-		+"$(\".simple\").splitter();"
+		+"$(\"#splitter\").splitter();"
 		+"$(\"#browser\").treeview({control: \"#masstoggler\"});" 
 		+"});\n"
 //		+ "$(document).unload(function() {"
 //		+ "alert('Handler for .unload() called.');"
 //		+ "});"
 		+ "</script>\n";
+		
+	    
 	    
 	    String measurementClickEvent = "<script>";
 	    
@@ -150,7 +180,6 @@ public class JQueryTreeView<E> extends HtmlWidget
 	    measurementClickEvent += "</script>";
 	    
 	    html += measurementClickEvent;
-	    
 	    return html;
 	}
 	
