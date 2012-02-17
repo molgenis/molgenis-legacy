@@ -107,8 +107,17 @@ public class ManageParentgroups extends PluginModel<Entity>
 	public void setLine(int line) {
 		this.line = line;
 	}
+	
 	public int getLine() {
 		return line;
+	}
+	
+	public String getLineName() {
+		try {
+			return ct.getObservationTargetLabel(line);
+		} catch (Exception e) {
+			return "No line selected";
+		}
 	}
 
 	public List<ObservationTarget> getLineList() {
@@ -360,7 +369,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 				if (request.getInt("line") != null) {
 					this.line = request.getInt("line");
 				}
-				this.getMessages().add(new ScreenMessage("Line successfully set", true));
+				this.getMessages().add(new ScreenMessage("Line " + ct.getObservationTargetLabel(line) + " successfully set", true));
 				
 				if (motherMatrixViewer == null) {
 					loadMotherMatrixViewer(db);

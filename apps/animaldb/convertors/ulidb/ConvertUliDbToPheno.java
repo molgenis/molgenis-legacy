@@ -520,6 +520,13 @@ public class ConvertUliDbToPheno
 					}
 				}
 				
+				String lineName = tuple.getString("Linie");
+				if (ct.getObservationTargetId(lineName) == -1) {
+					// Some line names have ' (line)' added to them to distinguish them from backgrounds with the same name!
+					lineName += " (line)";
+				}
+				// TODO: get source (from Map?) and set on PG+Litter+Animal
+				
 				// Put date of birth, mother info and father info into one string and check if we've
 				// seen this combination before
 				String litterInfo = birthDateString + motherList.toString() + fatherList.toString();
@@ -530,7 +537,6 @@ public class ConvertUliDbToPheno
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
 							now, null, "Litter", newAnimalName, null, litterMap.get(litterInfo)));
 					// Set line also on animal
-					String lineName = tuple.getString("Linie");
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 							now, null, "Line", newAnimalName, null, lineName));
 					
@@ -538,10 +544,6 @@ public class ConvertUliDbToPheno
 					
 					// This combination of birth date and parents has not been seen before,
 					// so start a new parentgroup and litter
-					
-					String lineName = tuple.getString("Linie");
-				
-					// Create a parentgroup
 					int parentgroupNr = 1;
 					if (parentgroupNrMap.containsKey(lineName)) {
 						parentgroupNr = parentgroupNrMap.get(lineName) + 1;

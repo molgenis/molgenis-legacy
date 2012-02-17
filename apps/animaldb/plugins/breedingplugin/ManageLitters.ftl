@@ -39,6 +39,7 @@
 					<tr>
 						<th>Name</th>
 						<th>Parentgroup</th>
+						<th>Line</th>
 						<th>Birth date</th>
 						<th>Size</th>
 						<th>Size approximate?</th>
@@ -52,6 +53,7 @@
 					<tr>
 						<td>${litter.name}</td>
 						<td>${litter.parentgroup}</td>
+						<td>${litter.line}</td>
 						<td>${litter.birthDate}</td>
 						<td>${litter.size}</td>
 						<td>${litter.isSizeApproximate}</td>
@@ -73,6 +75,7 @@
 					<tr>
 						<th>Name</th>
 						<th>Parentgroup</th>
+						<th>Line</th>
 						<th>Birth date</th>
 						<th>Wean date</th>
 						<th>Size at birth</th>
@@ -88,6 +91,7 @@
 					<tr>
 						<td>${litter.name}</td>
 						<td>${litter.parentgroup}</td>
+						<td>${litter.line}</td>
 						<td>${litter.birthDate}</td>
 						<td>${litter.weanDate}</td>
 						<td>${litter.size}</td>
@@ -171,6 +175,9 @@
 <#elseif screen.action == "ShowWean">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
+	
+	<h2>Weaning litter ${screen.getLitterName()}</h2>
+	
 	<!-- Date and time of weaning -->
 	<div id='weandatediv' class='row'>
 		<label for='weandate'>Wean date:</label>

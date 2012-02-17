@@ -55,7 +55,7 @@
 
 <#elseif screen.action == "addParentgroupScreen2">
 
-	<p><h2>Make new parentgroup, step 2/4: select mother(s)</h2></p>
+	<p><h2>Make new parentgroup in line ${screen.lineName}, step 2/4: select mother(s)</h2></p>
 
 	${screen.motherMatrixViewer}<br />
 	
@@ -67,7 +67,7 @@
 
 <#elseif screen.action == "addParentgroupScreen3">
 	
-	<p><h2>Make new parentgroup, step 3/4: select father(s)</h2></p>
+	<p><h2>Make new parentgroup in line ${screen.lineName}, step 3/4: select father(s)</h2></p>
 	
 	${screen.fatherMatrixViewer}<br />
 	
@@ -79,7 +79,7 @@
 
 <#elseif screen.action == "addParentgroupScreen4">
 
-	<p><h2>Make new parentgroup, step 4/4: set start date and remarks</h2></p>
+	<p><h2>Make new parentgroup in line ${screen.lineName}, step 4/4: set start date and remarks</h2></p>
 	
 	<div style='clear:left'>
 		<label for='startdate'>Start date:</label>

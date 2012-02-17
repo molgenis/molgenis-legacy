@@ -13,10 +13,11 @@ public class Litter {
 	private int size;
 	private String isSizeApproximate;
 	private int weanSize;
-	private String parentgroup;
+	private String parentgroup = "";
 	private String remarks;
 	private String status;
-	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
+	private String line = "";
+	//private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	
 	public void setId(int id) {
@@ -102,5 +103,13 @@ public class Litter {
 	
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	public String getLine() {
+		return line;
+	}
+	
+	public void setLine(String line) {
+		this.line = line;
 	}
 }

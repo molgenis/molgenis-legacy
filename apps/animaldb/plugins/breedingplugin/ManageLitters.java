@@ -213,8 +213,17 @@ public class ManageLitters extends PluginModel<Entity>
 	public void setLitter(int litter) {
 		this.litter = litter;
 	}
+	
 	public int getLitter() {
 		return litter;
+	}
+	
+	public String getLitterName() {
+		try {
+			return ct.getObservationTargetLabel(litter);
+		} catch (Exception e) {
+			return "No litter selected";
+		}
 	}
 
 	public boolean getLitterSizeApproximate() {
@@ -485,7 +494,7 @@ public class ManageLitters extends PluginModel<Entity>
 		if (parentValueList.size() > 0) {
 			return parentValueList.get(0).getTarget_Id();
 		} else {
-			throw new DatabaseException("No " + parentSex + " found for parentgroup " + parentgroupName);
+			throw new DatabaseException("Fatal error: no " + parentSex + " found for parentgroup " + parentgroupName);
 		}
 	}
 	
@@ -989,58 +998,27 @@ public class ManageLitters extends PluginModel<Entity>
 		List<ObservationTarget> animalsToAddList = new ArrayList<ObservationTarget>();
 		
 		// Source (take from litter)
-		int sourceId;
-		try {
-			sourceId = ct.getMostRecentValueAsXref(litter, "Source");
-		} catch (Exception e) {
-			throw(new Exception("No source found - litter not weaned"));
-		}
+		int sourceId = ct.getMostRecentValueAsXref(litter, "Source");
 		// Get litter birth date
-		String litterBirthDateString;
-		Date litterBirthDate;
-		try {
-			litterBirthDateString = ct.getMostRecentValueAsString(litter, "DateOfBirth");
-			litterBirthDate = newDateOnlyFormat.parse(litterBirthDateString);
-		} catch (Exception e) {
-			throw(new Exception("No litter birth date found - litter not weaned"));
-		}
+		String litterBirthDateString = ct.getMostRecentValueAsString(litter, "DateOfBirth");
+		Date litterBirthDate = newDateOnlyFormat.parse(litterBirthDateString);
 		// Find Parentgroup for this litter
-		int parentgroupId;
-		try {
-			parentgroupId = ct.getMostRecentValueAsXref(litter, "Parentgroup");
-		} catch (Exception e) {
-			throw(new Exception("No parentgroup found - litter not weaned"));
-		}
+		int parentgroupId = ct.getMostRecentValueAsXref(litter, "Parentgroup");
 		String parentgroupName = db.findById(Panel.class, parentgroupId).getName();
 		// Find Line for this Parentgroup
 		int lineId = ct.getMostRecentValueAsXref(parentgroupId, "Line");
-		// Find first mother, plus her animal type, species, color, background, gene name and gene state
-		int speciesId;
-		String animalType;
-		String color;
-		int motherBackgroundId;
-		String geneName;
-		String geneState;
-		int motherId;
-		try {
-			motherId = findParentForParentgroup(parentgroupName, "Mother", db);
-			speciesId = ct.getMostRecentValueAsXref(motherId, "Species");
-			animalType = ct.getMostRecentValueAsString(motherId, "AnimalType");
-			color = ct.getMostRecentValueAsString(motherId, "Color");
-			motherBackgroundId = ct.getMostRecentValueAsXref(motherId, "Background");
-			geneName = ct.getMostRecentValueAsString(motherId, "GeneModification");
-			geneState = ct.getMostRecentValueAsString(motherId, "GeneState");
-		} catch (Exception e) {
-			throw(new Exception("No mother (properties) found - litter not weaned"));
-		}
-		int fatherBackgroundId;
-		int fatherId;
-		try {
-			fatherId = findParentForParentgroup(parentgroupName, "Father", db);
-			fatherBackgroundId = ct.getMostRecentValueAsXref(fatherId, "Background");
-		} catch (Exception e) {
-			throw(new Exception("No father (properties) found - litter not weaned"));
-		}
+		// Find first mother, plus her animal type, species, color, background, gene modification and gene state
+		// TODO: find ALL gene info
+		int motherId = findParentForParentgroup(parentgroupName, "Mother", db);
+		int speciesId = ct.getMostRecentValueAsXref(motherId, "Species");
+		String animalType = ct.getMostRecentValueAsString(motherId, "AnimalType");
+		String color = ct.getMostRecentValueAsString(motherId, "Color");
+		int motherBackgroundId = ct.getMostRecentValueAsXref(motherId, "Background");
+		String geneName = ct.getMostRecentValueAsString(motherId, "GeneModification");
+		String geneState = ct.getMostRecentValueAsString(motherId, "GeneState");
+		// Find father and his background
+		int fatherId = findParentForParentgroup(parentgroupName, "Father", db);
+		int fatherBackgroundId = ct.getMostRecentValueAsXref(fatherId, "Background");
 		// Keep normal and transgene types, but set type of child from wild parents to normal
 		// TODO: animalType should be based on BOTH mother and father
 		if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop")) {
@@ -1070,10 +1048,12 @@ public class ManageLitters extends PluginModel<Entity>
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 				null, protocolId, measurementId, litter, newDateOnlyFormat.format(weanDate), 0));
 		// Set line on litter
-		protocolId = ct.getProtocolId("SetLine");
-		measurementId = ct.getMeasurementId("Line");
-		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-				null, protocolId, measurementId, litter, null, lineId));
+		if (lineId != -1) {
+			protocolId = ct.getProtocolId("SetLine");
+			measurementId = ct.getMeasurementId("Line");
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+					null, protocolId, measurementId, litter, null, lineId));
+		}
 		// Set weaning remarks on litter
 		if (remarks != null) {
 			protocolId = ct.getProtocolId("SetRemark");
@@ -1113,24 +1093,32 @@ public class ManageLitters extends PluginModel<Entity>
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 					null, protocolId, measurementId, animalId, null, litter));
 			// Link to parents
-			protocolId = ct.getProtocolId("SetMother");
-			measurementId = ct.getMeasurementId("Mother");
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-					null, protocolId, measurementId, animalId, null, motherId));
-			protocolId = ct.getProtocolId("SetFather");
-			measurementId = ct.getMeasurementId("Father");
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-					null, protocolId, measurementId, animalId, null, fatherId));
+			if (motherId != -1) {
+				protocolId = ct.getProtocolId("SetMother");
+				measurementId = ct.getMeasurementId("Mother");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+						null, protocolId, measurementId, animalId, null, motherId));
+			}
+			if (fatherId != -1) {
+				protocolId = ct.getProtocolId("SetFather");
+				measurementId = ct.getMeasurementId("Father");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+						null, protocolId, measurementId, animalId, null, fatherId));
+			}
 			// Set line also on animal itself
-			protocolId = ct.getProtocolId("SetLine");
-			measurementId = ct.getMeasurementId("Line");
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-					null, protocolId, measurementId, animalId, null, lineId));
+			if (lineId != -1) {
+				protocolId = ct.getProtocolId("SetLine");
+				measurementId = ct.getMeasurementId("Line");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+						null, protocolId, measurementId, animalId, null, lineId));
+			}
 			// Set responsible researcher
-			protocolId = ct.getProtocolId("SetResponsibleResearcher");
-			measurementId = ct.getMeasurementId("ResponsibleResearcher");
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
-					null, protocolId, measurementId, animalId, respres, 0));
+			if (respres != null) {
+				protocolId = ct.getProtocolId("SetResponsibleResearcher");
+				measurementId = ct.getMeasurementId("ResponsibleResearcher");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, now, 
+						null, protocolId, measurementId, animalId, respres, 0));
+			}
 			// Set location
 			if (locId != -1) {
 				protocolId = ct.getProtocolId("SetLocation");
@@ -1167,20 +1155,24 @@ public class ManageLitters extends PluginModel<Entity>
 	 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate,
 	 				null, protocolId, measurementId, animalId, litterBirthDateString, 0));
 			// Set species
-	 		protocolId = ct.getProtocolId("SetSpecies");
-			measurementId = ct.getMeasurementId("Species");
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-					null, protocolId, measurementId, animalId, null, speciesId));
+	 		if (speciesId != -1) {
+		 		protocolId = ct.getProtocolId("SetSpecies");
+				measurementId = ct.getMeasurementId("Species");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+						null, protocolId, measurementId, animalId, null, speciesId));
+	 		}
 			// Set animal type
 			protocolId = ct.getProtocolId("SetAnimalType");
 			measurementId = ct.getMeasurementId("AnimalType");
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 					null, protocolId, measurementId, animalId, animalType, 0));
 			// Set source
-			protocolId = ct.getProtocolId("SetSource");
-			measurementId = ct.getMeasurementId("Source");
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-					null, protocolId, measurementId, animalId, null, sourceId));
+			if (sourceId != -1) {
+				protocolId = ct.getProtocolId("SetSource");
+				measurementId = ct.getMeasurementId("Source");
+				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
+						null, protocolId, measurementId, animalId, null, sourceId));
+			}
 			// Set color based on mother's (can be changed during genotyping)
 			if (color != null && !color.equals("")) {
 				protocolId = ct.getProtocolId("SetColor");
@@ -1251,15 +1243,14 @@ public class ManageLitters extends PluginModel<Entity>
 			this.selectedParentgroup = ((ObservationElement) rows.get(row)).getId();
 		} catch (Exception e) {	
 			this.setAction("AddLitter");
-			throw new Exception("No parent group selected - litter not added");
+			throw new Exception("No parentgroup selected - litter not added");
 		}
 		
 		int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
 		setUserFields(request, false);
 		Date eventDate = newDateOnlyFormat.parse(birthdate);
 		int userId = this.getLogin().getUserId();
-		
-		int lineId = ct.getMostRecentValueAsXref(selectedParentgroup, ct.getMeasurementId("Line"));
+		int lineId = ct.getMostRecentValueAsXref(selectedParentgroup, "Line");
 		
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
@@ -1287,6 +1278,12 @@ public class ManageLitters extends PluginModel<Entity>
 		measurementId = ct.getMeasurementId("Parentgroup");
 		valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, 
 				litterid, null, selectedParentgroup));
+		// Set Line also on Litter
+		if (lineId != -1) {
+			measurementId = ct.getMeasurementId("Line");
+			valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, 
+				litterid, null, lineId));
+		}
 		// Date of Birth
 		measurementId = ct.getMeasurementId("DateOfBirth");
 		valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, 
@@ -1310,15 +1307,13 @@ public class ManageLitters extends PluginModel<Entity>
 			db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 					protocolId, measurementId, litterid, remarks, 0));
 		}
-		// Get Source via Line
-		measurementId = ct.getMeasurementId("Source");
-		try {
-			int sourceId = ct.getMostRecentValueAsXref(lineId, measurementId);
+		// Try to get Source via Line
+		int sourceId = ct.getMostRecentValueAsXref(lineId, "Source");
+		if (sourceId != -1) {
+			measurementId = ct.getMeasurementId("Source");
 			protocolId = ct.getProtocolId("SetSource");
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
-				eventDate, null, protocolId, measurementId, litterid, null, sourceId));
-		} catch(Exception e) {
-			//
+					eventDate, null, protocolId, measurementId, litterid, null, sourceId));
 		}
 		// Active
 		measurementId = ct.getMeasurementId("Active");
@@ -1593,7 +1588,7 @@ public class ManageLitters extends PluginModel<Entity>
 			// Make list of ID's of weaned litters
 			List<Integer> weanedLitterIdList = new ArrayList<Integer>();
 			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("WeanDate")));
+			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "WeanDate"));
 			List<ObservedValue> valueList = q.find();
 			for (ObservedValue value : valueList) {
 				int litterId = value.getTarget_Id();
@@ -1604,7 +1599,7 @@ public class ManageLitters extends PluginModel<Entity>
 			// Make list of ID's of genotyped litters
 			List<Integer> genotypedLitterIdList = new ArrayList<Integer>();
 			q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, ct.getMeasurementId("GenotypeDate")));
+			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GenotypeDate"));
 			valueList = q.find();
 			for (ObservedValue value : valueList) {
 				int litterId = value.getTarget_Id();
@@ -1629,8 +1624,16 @@ public class ManageLitters extends PluginModel<Entity>
 				litterToAdd.setName(litter.getName());
 				// Parentgroup
 				int parentgroupId = ct.getMostRecentValueAsXref(litterId, "Parentgroup");
-				String parentgroup = ct.getObservationTargetById(parentgroupId).getName();
-				litterToAdd.setParentgroup(parentgroup);
+				if (parentgroupId != -1) {
+					String parentgroup = ct.getObservationTargetLabel(parentgroupId);
+					litterToAdd.setParentgroup(parentgroup);
+				}
+				// Line
+				int lineId = ct.getMostRecentValueAsXref(litterId, "Line");
+				if (lineId != -1) {
+					String line = ct.getObservationTargetLabel(lineId);
+					litterToAdd.setLine(line);
+				}
 				// Birth date
 				String birthDate = ct.getMostRecentValueAsString(litterId, "DateOfBirth");
 				if (birthDate != null && !birthDate.equals("")) {
@@ -1770,6 +1773,7 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Line");
+			measurementsToShow.add("StartDate");
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 					Operator.IN, investigationNames));

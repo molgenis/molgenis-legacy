@@ -649,7 +649,7 @@ public class MatrixViewer extends HtmlWidget
 		{
 			try {
 				measurementName = db.findById(Measurement.class, mqr.getDimIndex()).getName();
-			} catch (DatabaseException e) {
+			} catch (Exception e) {
 			}
 		}
 		// If still unknown, assume "name"
