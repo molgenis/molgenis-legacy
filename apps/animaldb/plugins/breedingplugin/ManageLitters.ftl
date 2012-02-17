@@ -277,6 +277,10 @@
 	
 	${screen.renderDoneLitterMatrix()}
 	
+	<div class='row'>
+		<input type='submit' id='makedeflabels' class='addbutton' value='Make definitive cage labels' onclick="__action.value='MakeDefLabels'" />
+	</div>
+	
 </#if>
 	
 <#--end of your plugin-->	
