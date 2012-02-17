@@ -223,7 +223,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					String measurementDataType = measurement.getDataType();
 					
 					String htmlValue = 	"<table id = 'detailInformation'  border = 2>" +
-							"<tr><th>Item name</th><td>" + measurement.getName() +
+							"<tr><th width=40>Item name</th><td>" + measurement.getName() +
 							"</td></tr><tr><th>Category</th><td><table border=1>";
 					
 					
