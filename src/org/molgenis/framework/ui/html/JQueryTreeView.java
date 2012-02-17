@@ -57,21 +57,21 @@ public class JQueryTreeView<E> extends HtmlWidget
 		
 		 
 		if (node.hasChildren()) {
-			returnString = "<li class=\"" + (nodeOpen(node, selectedLabels) ? "opened" : "closed") + 
-					"\"><span class=\"folder\">" + node.getLabel() + "</span>";
-			//returnString += " <b>details: </b>"+ node;
-			returnString += "<ul>";
+			returnString = "<li class=\"" + (nodeOpen(node, selectedLabels) ? "opened" : "closed") 
+			 			+  "\"><span class=\"folder\">" + node.getLabel() + "</span>"
+			 			+  "<ul>";
+			
 			Vector<JQueryTreeViewElement> children = node.getChildren();
 			for (JQueryTreeViewElement child : children) {
 				returnString += renderTree(child, selectedLabels);
 			}
 			returnString += "</ul></li>";
 		} else {
-			returnString = "<li id = \"" + node.getLabel().replaceAll(" ", "_") + "\"><span class=\"point\"><input type=\"checkbox\" id=\"" + 
-				node.getLabel() + "\" name=\"" + node.getLabel() + "\"" + 
-				(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") + 
-				" />" + node.getLabel() + "</span></li>" +
-				"<script>createHashMap(\"" + node.getLabel() + "\",\"" + node.getHtmlValue() + "\")</script>";
+			returnString = "<li id = \"" + node.getLabel().replaceAll(" ", "_") + "\"><span class=\"point\"><input type=\"checkbox\" id=\"" 
+						  +	node.getLabel() + "\" name=\"" + node.getLabel() + "\"" 
+						  +	(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
+						  +	" />" + node.getLabel() + "</span></li>" 
+						  +	"<script>createHashMap(\"" + node.getLabel() + "\",\"" + node.getHtmlValue() + "\")</script>";
 				
 			listOfMeasurements.add(node.getLabel());
 		}
@@ -88,10 +88,10 @@ public class JQueryTreeView<E> extends HtmlWidget
 			+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>"
 			+ "<script>var map = new HashMap();" 
 			+ "</script>" 
-//				"<div id=\"splitter\">" + //this div is used for the splitter
-//				"   <div> Left content goes here </div>"+
-//				"   <div> Right content goes here </div>"+
-//				" </div> "+
+			//		"<div id=\"splitter\">" + //this div is used for the splitter
+			//		"   <div> Left content goes here </div>"+
+			//		"   <div> Right content goes here </div>"+
+			//		" </div> "+
 			+ "<div id=\"masstoggler\">" 
 			+ "<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | "
 			+ "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>" 
