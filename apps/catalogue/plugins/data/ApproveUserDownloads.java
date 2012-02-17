@@ -47,7 +47,7 @@ public class ApproveUserDownloads extends PluginModel<Entity>
 	
 	public String getCustomHtmlHeaders()
     {
-        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/shopping_cart.css\">" +
+        return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/download_list.css\">" +
         		"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/catalogue.css\">";
     }
 
