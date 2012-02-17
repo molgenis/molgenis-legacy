@@ -1,6 +1,6 @@
-<#macro plugins_LLcatalogueTree_LLcatalogueTreePlugin screen>
+<#macro plugins_catalogueTree_catalogueTreePlugin screen>
 <!-- normally you make one big form for the whole plugin-->
-<form method="post" enctype="multipart/form-data" id="plugins_LLcatalogueTree_LLcatalogueTreePlugin" name="${screen.name}" action="">
+<form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
 	<input type="hidden" name="__target" value="${screen.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
@@ -82,13 +82,17 @@
 				<input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"/>
 				
 			   <#if screen.isSelectedInv() == true>
-					
-					<div id="leftSideTree">
-						${screen.getTreeView()}
-					</div><br/>
-					
-					<div id="details"></div>
-					
+				<table class="box" width="100%" cellpadding="0" cellspacing="0">
+			    <tr><td class="box-header"> Catalogue </td></tr>
+			    <tr><td class="box-body">
+						<div id="leftSideTree">  
+							${screen.getTreeView()}
+						</div><br/>
+				    </td>
+				    <td class="box-body">
+						<div id="details"></div>
+				   </td></tr>
+				</table>
 					<div id="ShoopingCartButton">
 						<input type="submit" name="DownloadMeasurementsSubmit" value="Download" onclick="__action.value='DownloadMeasurements';"/>
 					</div>

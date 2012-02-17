@@ -23,7 +23,7 @@
 				</form>
 			</form>
 		</menu>
-		<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="Catalogue Tree" />  
+		<plugin name="catalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Catalogue Tree" />  
 		<menu name="Downloads" label="Downloads">
 			<plugin name="MeasurementsDownloadForm" type="plugins.data.MeasurementsDownloadForm" label="Your Current Downloads" />  
 			<plugin name="OldPlacedDownloads" type="plugins.data.OldPlacedDownloads" label="Your Old Downloads" />  

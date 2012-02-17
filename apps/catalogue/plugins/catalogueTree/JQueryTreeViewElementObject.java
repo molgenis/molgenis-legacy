@@ -1,4 +1,4 @@
-package plugins.LLcatalogueTree;
+package plugins.catalogueTree;
 
 
 import org.molgenis.auth.Institute;
@@ -22,7 +22,7 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 
 		super(measurement.getName(), parent);
 
-		//this.setLabel("<a href=\"#\" onclick=\"$('#leftSide').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); $('#plugins_LLcatalogueTree_LLcatalogueTreePlugin').submit();\" >"+ name +"</a>");
+		//this.setLabel("<a href=\"#\" onclick=\"$('#leftSide').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); $('#plugins_catalogueTree_catalogueTreePlugin').submit();\" >"+ name +"</a>");
 		this.setLabel(name);
 		setMeasurementObject(measurement);
 	}
@@ -31,7 +31,7 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 
 		super(measurement.getName(), parent, htmlValue);
 
-		//this.setLabel("<a href=\"#\" onclick=\"$('#leftSide').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); $('#plugins_LLcatalogueTree_LLcatalogueTreePlugin').submit();\" >"+ name +"</a>");
+		//this.setLabel("<a href=\"#\" onclick=\"$('#leftSide').attr('value','selectNode'); jQuery('#measureId').attr('value','"+measurement.getId()+"'); $('#plugins_catalogueTree_catalogueTreePlugin').submit();\" >"+ name +"</a>");
 		this.setLabel(name);
 		setMeasurementObject(measurement);
 	}

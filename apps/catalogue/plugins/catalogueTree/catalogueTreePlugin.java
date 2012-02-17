@@ -1,4 +1,4 @@
-package plugins.LLcatalogueTree;
+package plugins.catalogueTree;
 
 import gcc.catalogue.ShoppingCart;
 
@@ -30,7 +30,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
-public class LLcatalogueTreePlugin extends PluginModel<Entity> {
+public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	private static final long serialVersionUID = -6143910771849972946L;
 	private JQueryTreeViewMeasurement<JQueryTreeViewElementObject> treeView = null;
@@ -42,7 +42,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 	private boolean isSelectedInv = false; 
 
 
-	public LLcatalogueTreePlugin(String name, ScreenController<?> parent) {
+	public catalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 
@@ -222,7 +222,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 					
 					String measurementDataType = measurement.getDataType();
 					
-					String htmlValue = "<table id = 'detailInformation'  border = 2>" +
+					String htmlValue = 	"<table id = 'detailInformation'  border = 2>" +
 							"<tr><th>Item name</th><td>" + measurement.getName() +
 							"</td></tr><tr><th>Category</th><td><table border=1>";
 					
@@ -239,7 +239,7 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 							measurementDescription + "</td></tr>";
 					
 					htmlValue += "<tr><th>Data type</th><td>" +
-							measurementDataType + "</td></tr>";
+							measurementDataType + "</td></tr>" ;
 					//htmlValue = "<p>why?</p>";
 					
 					Query<ObservedValue> queryDisplayNames = db.query(ObservedValue.class);
@@ -288,12 +288,12 @@ public class LLcatalogueTreePlugin extends PluginModel<Entity> {
 
 	@Override
 	public String getViewName() {
-		return "plugins_LLcatalogueTree_LLcatalogueTreePlugin";
+		return "plugins_catalogueTree_catalogueTreePlugin";
 	}
 
 	@Override
 	public String getViewTemplate() {
-		return "plugins/LLcatalogueTree/LLcatalogueTreePlugin.ftl";
+		return "plugins/catalogueTree/catalogueTreePlugin.ftl";
 	}
 
 

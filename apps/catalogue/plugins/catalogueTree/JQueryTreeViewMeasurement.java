@@ -1,4 +1,4 @@
-package plugins.LLcatalogueTree;
+package plugins.catalogueTree;
 
 
 import org.molgenis.framework.ui.html.JQueryTreeView;
