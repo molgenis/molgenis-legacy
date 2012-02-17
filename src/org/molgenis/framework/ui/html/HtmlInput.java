@@ -226,10 +226,10 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	 * Get the value of the input as a String, optionally replacing special
 	 * characters like \\n and &gt;
 	 * 
-	 * @param replaceSpechialChars
+	 * @param replaceSpecialChars
 	 * @return
 	 */
-	public String getValue(boolean replaceSpechialChars)
+	public String getValue(boolean replaceSpecialChars)
 	{
 		if (getObject() == null)
 		{
