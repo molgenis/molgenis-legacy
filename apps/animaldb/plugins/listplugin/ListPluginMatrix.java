@@ -36,6 +36,8 @@ public class ListPluginMatrix extends GenericPlugin
 	private DivPanel div = null;
 	private String action = "init";
 	private CommonService cs = CommonService.getInstance();
+	private boolean reload = true;
+	private int userId = -1;
 	
 	public ListPluginMatrix(String name, ScreenController<?> parent)
 	{
@@ -49,11 +51,13 @@ public class ListPluginMatrix extends GenericPlugin
 			targetMatrixViewer.setDatabase(db);
 		}
 		
+		reload = true;
 		action = request.getAction();
 		
 		try {
 			if (action != null && action.startsWith(targetMatrixViewer.getName())) {
 	    		targetMatrixViewer.handleRequest(db, request);
+	    		reload = false;
 			}
 			
 		} catch(Exception e) {
@@ -67,7 +71,9 @@ public class ListPluginMatrix extends GenericPlugin
 	{
 		cs.setDatabase(db);
 		
-		if (targetMatrixViewer == null) {
+		// If a non-matrix related request was handled or if a new user has logged in, reload the matrix
+		if (reload == true || userId != this.getLogin().getUserId().intValue()) {
+			userId = this.getLogin().getUserId().intValue();
 			container = new Container();
 			div = new DivPanel();
 			try {
