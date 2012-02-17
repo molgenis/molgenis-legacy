@@ -80,37 +80,28 @@ public class JQueryTreeView<E> extends HtmlWidget
 	}
 	
 	public String toHtml(List<String> selected){
-		
-		String html = "<script>var map = new HashMap();" +
-				"</script>" +
+		String html ="<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n" 
+			+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>"
+			+ "<script src=\"res/scripts/catalogue.js\" language=\"javascript\"></script>"
+			+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n" 
+			+ "<link rel=\"stylesheet\" href=\"res/css/catalogue.css\" type=\"text/css\" media=\"screen\" />\n" 
+			+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>"
+			+ "<script>var map = new HashMap();" 
+			+ "</script>" 
 //				"<div id=\"splitter\">" + //this div is used for the splitter
 //				"   <div> Left content goes here </div>"+
 //				"   <div> Right content goes here </div>"+
 //				" </div> "+
-				"<div id=\"masstoggler\">" +
-				"<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | ";
-		html += "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>" +
-				"</div>";
-		//html += " | <a title=\"Toggle the tree below\" href=\"#\">Toggle all</a></div> ";
-		
-
-		html += "<ul id=\"browser\" class=\"pointtree\">";
-		html += renderTree(treeData.getRoot(), selected);
-		html += "</ul>";	
-		html += "<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n"
-		+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n" 
-		+ "<link rel=\"stylesheet\" href=\"res/css/catalogue.css\" type=\"text/css\" media=\"screen\" />\n" 
-		+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>"
-		+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>"
-		+ "<script src=\"res/scripts/catalogue.js\" language=\"javascript\"></script>"
-		
-		//Javascript-jquery
-		+"<script type=\"text/javascript\">\n"
-		
-		+ "</script>\n";
+			+ "<div id=\"masstoggler\">" 
+			+ "<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | "
+			+ "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>" 
+			+ "</div>"
+			+ "<ul id=\"browser\" class=\"pointtree\">"
+			+ renderTree(treeData.getRoot(), selected)
+			+ "</ul>";	
 		
 	    
-	    
+		// This piece of javascript need to be here because some java calls are needed.  
 	    String measurementClickEvent = "<script>";
 	    
 	    for(String eachMeasurement : listOfMeasurements){
