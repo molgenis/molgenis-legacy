@@ -119,7 +119,7 @@
 		<p>${screen.labelDownloadLink}</p>
 	</#if>
 	
-	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowDoneLitters">Back to overview of weaned and genotyped litters</a></p>
 
 <#elseif screen.action == "AddLitter">
 

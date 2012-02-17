@@ -629,6 +629,7 @@ public class ManageLitters extends PluginModel<Entity>
 					int row = request.getInt(LITTERMATRIX + "_selected");
 					this.litter = ((ObservationElement) rows.get(row)).getId();
 					makeDefCageLabels(db);
+					this.setSuccess("Definitive cage labels created successfully");
 				} catch (Exception e) {	
 					this.setAction("ShowDoneLitters");
 					this.setError("Something went wrong while making definitive cage labels: " + e.getMessage());
