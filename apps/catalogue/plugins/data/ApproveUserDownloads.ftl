@@ -1,32 +1,4 @@
 <#macro plugins_data_ApproveUserDownloads screen>
-<style type="text/css">
-#approveDownloadList {
-	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
-	width:100%;
-	border-collapse:collapse;
-}
-
-#approveDownloadList td, #approveDownloadList th  {
-	font-size:1em;
-	border:1px solid #98bf21;
-	padding:3px 7px 2px 7px;
-}
-
-#approveDownloadList th {
-	font-size:1.1em;
-	text-align:left;
-	padding-top:5px;
-	padding-bottom:4px;
-	background-color:#A7C942;
-	color:#ffffff;
-}
-
-#approveDownloadList tr.alt td {
-	color:#000000;
-	background-color:#EAF2D3;
-}
-
-</style>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
