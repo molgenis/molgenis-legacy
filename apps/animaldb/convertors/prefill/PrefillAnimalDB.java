@@ -290,9 +290,12 @@ public class PrefillAnimalDB
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
 				String bkgName = tuple.getString("name");
+				String speciesName = tuple.getString("species");
 				panelsToAddList.add(ct.createPanel(invName, bkgName, userName));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), 
 						null, "TypeOfGroup", bkgName, "Background", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), new Date(), 
+						null, "Species", bkgName, null, speciesName));
 			}
 		});
 	}
@@ -321,6 +324,7 @@ public class PrefillAnimalDB
 		makeProtocolApplication("SetVWASpecies");
 		makeProtocolApplication("SetLatinSpecies");
 		makeProtocolApplication("SetDutchSpecies");
+		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetSourceType");
 	}
 

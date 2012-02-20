@@ -35,13 +35,22 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 
-	<div id="name" class="row">
-	<label for="name">Name:</label>
-	<input type="text" name="name" id="name" class="textbox" />
+	<div class="row">
+		<label for="name">Name:</label>
+		<input type="text" name="name" id="name" class="textbox" />
 	</div>
-	
-	<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Add' onclick="__action.value='addBackground'" />
+	<div class="row">
+		<label for="species">Species:</label>
+		<select name="species" id="species" class="selectbox">
+			<#if screen.speciesList??>
+				<#list screen.speciesList as species>
+					<option value="${species.id?string.computer}">${species.name}</option>
+				</#list>
+			</#if>
+		</select>
+	</div>
+	<div class='row'>
+		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addBackground'" />
 	</div>
 
 <#else>
@@ -55,12 +64,15 @@
 			<thead>
 				<tr>
 					<th>Name</th>
+					<th>Species</th>
 				</tr>
 			</thead>
 			<tbody>
 			<#list screen.backgroundList as bkg>
+				<#assign bkgId = bkg.getId()>
 				<tr>
 					<td>${bkg.name}</td>
+					<td><#if screen.getSpecies(bkgId)??>${screen.getSpecies(bkgId)}</#if></td>
 				</tr>
 			</#list>
 			</tbody>

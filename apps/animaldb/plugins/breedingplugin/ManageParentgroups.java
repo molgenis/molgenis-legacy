@@ -157,6 +157,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			measurementsToShow.add("Background");
 			measurementsToShow.add("GeneModification");
 			measurementsToShow.add("GeneState");
+			measurementsToShow.add("Species");
 			// Mother matrix viewer
 			List<MatrixQueryRule> motherFilterRules = new ArrayList<MatrixQueryRule>();
 			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
@@ -171,6 +172,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 						ct.getObservationTargetLabel(line)));
 				// Setting filter on the RELATION field with value = line would be more efficient,
 				// but gives a very un-userfriendly toString value when shown in the UI
+				int speciesId = ct.getMostRecentValueAsXref(line, "Species");
+				String speciesName = ct.getObservationTargetLabel(speciesId);
+				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, 
+						speciesName));
 			}
 			
 			SliceablePhenoMatrix<Individual, Measurement> SPMM = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
@@ -204,6 +210,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			measurementsToShow.add("Background");
 			measurementsToShow.add("GeneModification");
 			measurementsToShow.add("GeneState");
+			measurementsToShow.add("Species");
 			// Father matrix viewer
 			List<MatrixQueryRule> fatherFilterRules = new ArrayList<MatrixQueryRule>();
 			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
@@ -218,6 +225,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 						ct.getObservationTargetLabel(line)));
 				// Setting filter on the RELATION field with value = line would be more efficient,
 				// but gives a very un-userfriendly toString value when shown in the UI
+				int speciesId = ct.getMostRecentValueAsXref(line, "Species");
+				String speciesName = ct.getObservationTargetLabel(speciesId);
+				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, 
+						speciesName));
 			}
 			SliceablePhenoMatrix<Individual, Measurement> SPMF = new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class);
 			SPMF.setDatabase(db);

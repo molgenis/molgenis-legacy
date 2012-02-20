@@ -159,6 +159,9 @@ public class ConvertRhutDbToPheno
 		// Set the source of the line (always 'Kweek chronobiologie')
 		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, "Source", lineName, 
 				null, "Kweek chronobiologie"));
+		// Set the species of the line (always 'House mouse')
+		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, null, "Species", lineName, 
+				null, "House mouse"));
 	}
 
 	public void convertFromZip(String filename) throws Exception {
@@ -600,8 +603,10 @@ public class ConvertRhutDbToPheno
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetWeanSizeFemale"), 
 						now, null, "WeanSizeFemale", litterName, Integer.toString(femWeaned), null));
 				// Set Remark
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), 
+				if (remark != null && !remark.equals("")) {
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetRemark"), 
 						now, null, "Remark", litterName, remark, null));
+				}
 				// Set line also on litter
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 						now, null, "Line", litterName, null, lineName));
@@ -862,9 +867,9 @@ public class ConvertRhutDbToPheno
 		// lines
 		makeProtocolApplication("SetTypeOfGroup");
 		makeProtocolApplication("SetSource");
+		makeProtocolApplication("SetSpecies");
 		// animals
 		makeProtocolApplication("SetOldRhutDbAnimalId");
-		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetAnimalType");
 		makeProtocolApplication("SetOldRhutDbLitterId");
 		makeProtocolApplication("SetSex");

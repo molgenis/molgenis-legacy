@@ -15,14 +15,11 @@
 		<#--optional: mechanism to show messages-->
 		<#list screen.getMessages() as message>
 			<#if message.success>
-			<script>$.ctNotify("${message.text}", {type: 'confirmation', delay: 5000});</script>
-		<!-- <p class="successmessage">${message.text}</p> -->
-			
+				<script>$.ctNotify("${message.text}", {type: 'confirmation', delay: 5000});</script>
+				<!-- <p class="successmessage">${message.text}</p> -->
 			<#else>
-			<script>$.ctNotify("${message.text}", {type: 'error', delay: 7000});</script>	        	
-		<!-- <p class="errormessage">${message.text}</p> -->
-			
-		
+				<script>$.ctNotify("${message.text}", {type: 'error', delay: 7000});</script>	        	
+				<!-- <p class="errormessage">${message.text}</p> -->
 			</#if>
 		</#list>
 		
@@ -37,9 +34,19 @@
 		<label for='linename'>Line name:</label>
 		<input type='text' class='textbox' name='linename' id='linename' value='<#if screen.lineName?exists>${screen.getLineName()}</#if>' />
 	</div>
-	
+	<!-- Species -->
+	<div class="row">
+		<label for="species">Species:</label>
+		<select name="species" id="species" class="selectbox">
+			<#if screen.speciesList??>
+				<#list screen.speciesList as species>
+					<option value="${species.id?string.computer}" <#if species.id == screen.species>selected="selected"</#if>>${species.name}</option>
+				</#list>
+			</#if>
+		</select>
+	</div>
 	<!-- Source -->
-	<div id="sourceselect" class="row" style='clear:left'>
+	<div class="row">
 		<label for="source">Source:</label>
 		<select name="source" id="source" class="selectbox">
 			<#if screen.sourceList??>
@@ -49,13 +56,11 @@
 			</#if>
 		</select>
 	</div>
-	
 	<!-- Remarks -->
 	<div class='row'>
 		<label for='remarks'>Remarks:</label>
 		<input type='text' class='textbox' name='remarks' id='remarks' />
 	</div>
-	
 	<!-- Add button -->
 	<div id='buttons_part' class='row'>
 		<input type='submit' id='add' class='addbutton' value='Add' onclick="__action.value='addLine'" />
@@ -70,6 +75,7 @@
 			<thead>
 				<tr>
 					<th>Name</th>
+					<th>Species</th>
 					<th>Source</th>
 					<th>Remarks</th>
 				</tr>
@@ -79,6 +85,7 @@
 				<#assign lineId = line.getId()>
 				<tr>
 					<td>${line.name}</td>
+					<td>${screen.getSpeciesName(lineId)}</td>
 					<td>${screen.getSourceName(lineId)}</td>
 					<td>${screen.getRemarks(lineId)}</td>
 				</tr>

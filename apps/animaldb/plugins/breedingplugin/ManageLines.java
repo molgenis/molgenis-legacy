@@ -35,8 +35,10 @@ public class ManageLines extends PluginModel<Entity>
 	
 	private String lineName;
 	private int source;
+	private int species;
 	private List<ObservationTarget> sourceList;
 	private List<ObservationTarget> lineList;
+	private List<ObservationTarget> speciesList;
 
 	public ManageLines(String name, ScreenController<?> parent)
 	{
@@ -52,7 +54,6 @@ public class ManageLines extends PluginModel<Entity>
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.rounded.css\">" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/ctnotify/lib/jquery.ctNotify.roundedBr.css\">" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
-				
 	}
 
 	@Override
@@ -70,13 +71,23 @@ public class ManageLines extends PluginModel<Entity>
 	public String getSourceName(int lineId) {
 		String sourceName;
 		try {
-			int sourceId = cs.getMostRecentValueAsXref(lineId, cs.getMeasurementId("Source"));
+			int sourceId = cs.getMostRecentValueAsXref(lineId, "Source");
 			sourceName = cs.getObservationTargetLabel(sourceId);
 		} catch (Exception e) {
-			e.printStackTrace();
 			sourceName = "Error when retrieving source";
 		}
 		return sourceName;
+	}
+	
+	public String getSpeciesName(int lineId) {
+		String speciesName;
+		try {
+			int speciesId = cs.getMostRecentValueAsXref(lineId, "Species");
+			speciesName = cs.getObservationTargetLabel(speciesId);
+		} catch (Exception e) {
+			speciesName = "Error when retrieving species";
+		}
+		return speciesName;
 	}
 	
 	public String getRemarks(int lineId) throws DatabaseException {
@@ -108,6 +119,12 @@ public class ManageLines extends PluginModel<Entity>
 				int measurementId = cs.getMeasurementId("TypeOfGroup");
 				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, lineId, "Line", 0));
+				// Set species
+				this.setSpecies(request.getInt("species"));
+				protocolId = cs.getProtocolId("SetSpecies");
+				measurementId = cs.getMeasurementId("Species");
+				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
+						protocolId, measurementId, lineId, null, species));
 				// Set source
 				this.setSource(request.getInt("source"));
 				protocolId = cs.getProtocolId("SetSource");
@@ -161,6 +178,8 @@ public class ManageLines extends PluginModel<Entity>
 					}
 				}
 			}
+			// Populate species list
+			speciesList = cs.getAllMarkedPanels("Species", investigationIds);
 			// Populate existing lines list
 			lineList = cs.getAllMarkedPanels("Line", investigationIds);
 			
@@ -190,6 +209,14 @@ public class ManageLines extends PluginModel<Entity>
 	public void setSource(int source) {
 		this.source = source;
 	}
+	
+	public int getSpecies() {
+		return species;
+	}
+
+	public void setSpecies(int species) {
+		this.species = species;
+	}
 
 	public void setSourceList(List<ObservationTarget> sourceList) {
 		this.sourceList = sourceList;
@@ -197,6 +224,14 @@ public class ManageLines extends PluginModel<Entity>
 
 	public List<ObservationTarget> getSourceList() {
 		return sourceList;
+	}
+	
+	public void setSpeciesList(List<ObservationTarget> speciesList) {
+		this.speciesList = speciesList;
+	}
+
+	public List<ObservationTarget> getSpeciesList() {
+		return speciesList;
 	}
 
 	public List<ObservationTarget> getLineList() {

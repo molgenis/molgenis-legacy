@@ -524,7 +524,7 @@ public class ConvertUliDbToPheno
 				}
 				
 				String lineName = tuple.getString("Linie");
-				if (ct.getObservationTargetId(lineName) == -1) {
+				if (lineName != null && ct.getObservationTargetId(lineName) == -1) {
 					// Some line names have ' (line)' added to them to distinguish them from backgrounds with the same name!
 					lineName += " (line)";
 				}
@@ -597,6 +597,11 @@ public class ConvertUliDbToPheno
 					// Set source also on litter
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), 
 							now, null, "Source", litterName, null, sourceName));
+					// Set line also on litter
+					if (lineName != null) {
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
+								now, null, "Line", litterName, null, lineName));
+					}
 					// Link litter to parentgroup
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
 							now, null, "Parentgroup", litterName, null, parentgroupName));
@@ -644,6 +649,12 @@ public class ConvertUliDbToPheno
 				int sourceId = ct.getObservationTargetId(sourceName);
 				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
 						null, sourceId));
+				// Set the species of the line (always House mouse)
+				featureId = ct.getMeasurementId("Species");
+				protocolId = ct.getProtocolId("SetSpecies");
+				int speciesId = ct.getObservationTargetId("House mouse");
+				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
+						null, speciesId));
 			}
 		});
 	}
@@ -665,8 +676,6 @@ public class ConvertUliDbToPheno
 	
 	public void populateBackground(String filename) throws Exception
 	{
-		final int featureId = ct.getMeasurementId("TypeOfGroup");
-		final int protocolId = ct.getProtocolId("SetTypeOfGroup");
 		final int invid = ct.getInvestigationId(invName);
 		
 		File file = new File(filename);
@@ -683,8 +692,16 @@ public class ConvertUliDbToPheno
 					// Make background panel
 					int bkgId = ct.makePanel(invid, bkgName, login.getUserId());
 					// Label it as background using the (Set)TypeOfGroup protocol and feature
+					int featureId = ct.getMeasurementId("TypeOfGroup");
+					int protocolId = ct.getProtocolId("SetTypeOfGroup");
 					db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, bkgId, 
 							"Background", 0));
+					// Set the species of the background (always House mouse)
+					featureId = ct.getMeasurementId("Species");
+					protocolId = ct.getProtocolId("SetSpecies");
+					int speciesId = ct.getObservationTargetId("House mouse");
+					db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, bkgId, 
+							null, speciesId));
 				}
 			}
 		});
