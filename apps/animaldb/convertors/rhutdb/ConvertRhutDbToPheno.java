@@ -73,6 +73,7 @@ public class ConvertRhutDbToPheno
 	private Map<String, String> animalMap;
 	private Map<String, Date> removalDateMap;
 	private int highestNr;
+	private String defaultSourceName;
 	
 	public ConvertRhutDbToPheno(Database db, Login login) throws Exception
 	{
@@ -85,6 +86,8 @@ public class ConvertRhutDbToPheno
 		userName = login.getUserName();
 		
 		highestNr = ct.getHighestNumberForPrefix("mm_") + 1;
+		
+		defaultSourceName = "Kweek moleculaire neurobiologie"; // for breeding, it's always this source; TODO: check
 		
 		// If needed, make investigation
 		invName = "FDD";
@@ -379,8 +382,8 @@ public class ConvertRhutDbToPheno
 				if (source != null) {
 					String sourceName = null;
 					if (source.contains("Erasmus")) sourceName = "ErasmusMC";
-					if (source.contains("Jaap")) sourceName = "Kweek moleculaire neurobiologie";
-					if (source.contains("Arjen")) sourceName = "Kweek moleculaire neurobiologie";
+					if (source.contains("Jaap")) sourceName = defaultSourceName;
+					if (source.contains("Arjen")) sourceName = defaultSourceName;
 					if (source.contains("arlan")) sourceName = "Harlan";
 					if (source.contains("Jackson")) sourceName = "JacksonCharlesRiver";
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, 
@@ -402,6 +405,10 @@ public class ConvertRhutDbToPheno
 									remDate, null, "DateOfBirth", animalName, dobDateString, null));
 						}
 					}
+				} else {
+					// Default source:
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), now, null, 
+							"Source", animalName, null, defaultSourceName));
 				}
 						
 				// Ear Code -> Earmark (R -> 1 r, L -> 1 l, RL -> 1 r 1 l)
@@ -562,7 +569,7 @@ public class ConvertRhutDbToPheno
 						now, null, "Line", parentgroupName, null, lineName));
 				// Set source of parentgroup
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), 
-						now, null, "Source", parentgroupName, null, "Kweek chronobiologie"));
+						now, null, "Source", parentgroupName, null, defaultSourceName));
 				// Set StartDate
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetStartDate"), 
 						now, null, "StartDate", parentgroupName, startDate, null));
@@ -600,7 +607,7 @@ public class ConvertRhutDbToPheno
 						now, null, "Line", litterName, null, lineName));
 				// Set source also on litter
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), 
-						now, null, "Source", litterName, null, "Kweek chronobiologie"));
+						now, null, "Source", litterName, null, defaultSourceName));
 				// Link litter to parentgroup
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
 						now, null, "Parentgroup", litterName, null, parentgroupName));
@@ -616,7 +623,7 @@ public class ConvertRhutDbToPheno
 								now, null, "Mother", animalName, null, motherName));
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
 								now, null, "Father", animalName, null, fatherName));
-						// Set birth date, line and source also on animal
+						// Set birth date, line also on animal
 						// Get Active value from map; every animal has one
 						ObservedValue activeValue = activeMap.get(animalName);
 						if (activeValue.getTime() == null) {
@@ -628,8 +635,6 @@ public class ConvertRhutDbToPheno
 								now, null, "DateOfBirth", animalName, dob, null));
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 								now, null, "Line", animalName, null, lineName));
-						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), 
-								now, null, "Source", animalName, null, "Kweek chronobiologie"));
 					}
 				}
 			}

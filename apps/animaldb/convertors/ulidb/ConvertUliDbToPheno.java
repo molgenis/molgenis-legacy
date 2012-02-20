@@ -58,6 +58,7 @@ public class ConvertUliDbToPheno
 	private Map<String, Integer> parentgroupNrMap;
 	private Map<String, Integer> litterNrMap;
 	private int highestNr;
+	private String sourceName;
 
 	public ConvertUliDbToPheno(Database db, Login login) throws Exception
 	{
@@ -73,6 +74,8 @@ public class ConvertUliDbToPheno
 		userName = login.getUserName();
 		
 		highestNr = ct.getHighestNumberForPrefix("mm_") + 1;
+		
+		sourceName = "Kweek moleculaire neurobiologie"; // for breeding, it's always this source
 		
 		// If needed, make investigation
 		invName = "FDD";
@@ -525,7 +528,6 @@ public class ConvertUliDbToPheno
 					// Some line names have ' (line)' added to them to distinguish them from backgrounds with the same name!
 					lineName += " (line)";
 				}
-				// TODO: get source (from Map?) and set on PG+Litter+Animal
 				
 				// Put date of birth, mother info and father info into one string and check if we've
 				// seen this combination before
@@ -569,11 +571,13 @@ public class ConvertUliDbToPheno
 								now, null, "Father", newAnimalName, null, fatherName));
 					}
 					
-					// Set line (Linie) of parentgroup
+					// Set line (Linie) and Source of parentgroup
 					if (lineName != null) {
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 								now, null, "Line", parentgroupName, null, lineName));
 					}
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), 
+							now, null, "Source", parentgroupName, null, sourceName));
 					
 					// Make a litter and set wean and genotype dates
 					int litterNr = 1;
@@ -590,6 +594,9 @@ public class ConvertUliDbToPheno
 							now, null, "WeanDate", litterName, weanDate, null));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetGenotypeDate"), 
 							now, null, "GenotypeDate", litterName, weanDate, null));
+					// Set source also on litter
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), 
+							now, null, "Source", litterName, null, sourceName));
 					// Link litter to parentgroup
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroup"), 
 							now, null, "Parentgroup", litterName, null, parentgroupName));
@@ -631,10 +638,10 @@ public class ConvertUliDbToPheno
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
 						"Line", 0));
-				// Set the source of the line (always 'Kweek moleculaire neurobiologie')
+				// Set the source of the line
 				featureId = ct.getMeasurementId("Source");
 				protocolId = ct.getProtocolId("SetSource");
-				int sourceId = ct.getObservationTargetId("Kweek moleculaire neurobiologie");
+				int sourceId = ct.getObservationTargetId(sourceName);
 				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
 						null, sourceId));
 			}
