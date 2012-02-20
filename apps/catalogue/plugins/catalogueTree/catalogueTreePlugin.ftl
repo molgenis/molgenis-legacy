@@ -7,12 +7,10 @@
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
-	
 <!-- this shows a title and border -->
 	<div class="formscreen">
 		<div class="form_header" id="${screen.getName()}">
 			${screen.label}
-			${screen.getName()}
 		</div>
 		
 		<#--optional: mechanism to show messages-->
@@ -23,8 +21,10 @@
 		<p class="errormessage">${message.text}</p>
 			</#if>
 		</#list>
+		
 		<div class="screenbody">
 			<div class="screenpadding">
+			
 				<h4> Choose an investigation</h4> 
 				<select name="investigation" id="investigation"> 
 					<#list screen.arrayInvestigations as inv>
