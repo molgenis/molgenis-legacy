@@ -72,6 +72,7 @@ public class VwDictListener extends ImportTupleListener {
 			measurmentName = protocolName + "_" +tuple.getString("VELD");	
 		}
 			
+		
 		Measurement m = null;
 		List<Measurement> ms = db.query(Measurement.class).eq(Measurement.NAME, measurmentName).find();
 		if(!ms.isEmpty()) {
@@ -84,6 +85,8 @@ public class VwDictListener extends ImportTupleListener {
 			m.setInvestigation(investigation);
 		}
 		p.getFeatures().add(m);	
+		
+		System.out.println("Protocol: " +p.getName() +" Mn: " + m.getName());
 		
 		em.persist(p);
 	}

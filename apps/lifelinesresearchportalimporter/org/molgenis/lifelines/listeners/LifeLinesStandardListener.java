@@ -1,8 +1,5 @@
 package org.molgenis.lifelines.listeners;
 
-import static ch.lambdaj.Lambda.index;
-import static ch.lambdaj.Lambda.on;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +12,8 @@ import javax.persistence.EntityManager;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
+import org.molgenis.lifelines.listeners.ImportTupleListener;
+//import org.molgenis.lifelinespheno.LLTarget;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -23,6 +22,10 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+
+
+import static ch.lambdaj.Lambda.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Standard importer for lifelines. Fields with name 'PA_ID' are considered to
@@ -120,39 +123,50 @@ public class LifeLinesStandardListener extends ImportTupleListener {
 		}
 	}
 
-	private void storeValuesInDatabase() {		
-		em.getTransaction().begin();
-		investigation = em.find(Investigation.class, investigation.getId());
-		protocol = em.find(Protocol.class, protocol.getId());
-		
-		Map<Integer, Measurement> nameMeasurements = index(protocol.getFeatures(), 				
-				on(Measurement.class).getId());
-		
-		Map<String, ObservationTarget> dbTargets = retrieveTargets(targets.keySet());		
-		
-		for(ObservedValue ov : values) {
-			String targetName = ov.getTarget().getName();
-			if(dbTargets.containsKey(targetName)) {
-				ov.setTarget(dbTargets.get(targetName));
-			} else {
-				ObservationTarget target = targets.get(targetName);
-				ov.setTarget(target);
-			}
-			ov.setInvestigation(investigation);
-			ov.getTarget().setInvestigation(investigation);			
-			ov.setFeature(nameMeasurements.get(ov.getFeature_Id()));			
-			ov.getProtocolApplication().setInvestigation(investigation);
-			ov.getProtocolApplication().setProtocol(protocol);
-			em.persist(ov);
+	private void storeValuesInDatabase() {	
+		ObservedValue logValue = null;
+		try {
+			em.getTransaction().begin();
+			investigation = em.find(Investigation.class, investigation.getId());
+			protocol = em.find(Protocol.class, protocol.getId());
 			
-		}	
-		em.flush();
-		em.getTransaction().commit();
-		em.clear();
-		
-		values.clear();
-		targetNames.clear();
-		targets.clear();
+			Map<Integer, Measurement> nameMeasurements = index(protocol.getFeatures(), 				
+					on(Measurement.class).getId());
+			
+			Map<String, ObservationTarget> dbTargets = retrieveTargets(targets.keySet());		
+			
+			for(ObservedValue ov : values) {
+				String targetName = ov.getTarget().getName();
+				if(dbTargets.containsKey(targetName)) {
+					ov.setTarget(dbTargets.get(targetName));
+				} else {
+					ObservationTarget target = targets.get(targetName);
+					ov.setTarget(target);
+				}
+				ov.setInvestigation(investigation);
+				ov.getTarget().setInvestigation(investigation);			
+				ov.setFeature(nameMeasurements.get(ov.getFeature_Id()));			
+				ov.getProtocolApplication().setInvestigation(investigation);
+				ov.getProtocolApplication().setProtocol(protocol);
+				logValue = ov;
+				em.persist(ov);
+				
+			}
+			em.flush();
+			em.getTransaction().commit();
+			em.clear();
+			
+			values.clear();
+			targetNames.clear();
+			targets.clear();
+		} catch (Exception ex) {
+			System.out.println("Exception in Loading");
+			System.out.println(String.format("Protocol: %s", protocol.getName()));
+			System.out.println(logValue.toString());
+			System.out.println();
+			System.out.println(logValue.getTarget().toString());
+			System.exit(1);
+		}
 	}
 	
 	private Map<String, ObservationTarget> retrieveTargets(Set<String> paids) {
