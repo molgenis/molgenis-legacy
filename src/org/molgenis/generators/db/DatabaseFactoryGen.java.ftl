@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Map;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import org.molgenis.MolgenisOptions;
@@ -207,6 +208,14 @@ public class DatabaseFactory
 <#else>
             throw new UnsupportedOperationException();
 </#if>
+	}
+
+	public static Database create(Map<String, Object> configOverrides) throws DatabaseException {
+<#if databaseImp == "jpa">
+		return new app.JpaDatabase(configOverrides);
+<#else>
+		throw new UnsupportedOperationException();
+</#if> 
 	}
 
 

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -108,6 +109,8 @@ public abstract class AbstractJpaMapper<E extends Entity> implements Mapper<E> {
         }
         catch (Exception sqle)
         {
+        	System.out.println(ExceptionUtils.getRootCause(sqle));
+        	
                 database.rollbackPrivateTx(TX_TICKET);
                 logger.error("ADD failed on " + this.create().getClass().getSimpleName() + ": " + sqle.getMessage());
                 throw new DatabaseException(sqle);

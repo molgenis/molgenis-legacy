@@ -51,12 +51,18 @@ public class JpaDatabase extends AbstractDatabase implements Database {
         private static EMFactory instance = null;
 
         private EMFactory(String persistenceUnit) {
-            addEntityManagerFactory(persistenceUnit);
+            addEntityManagerFactory(persistenceUnit, null);
         }
 
-        private static void addEntityManagerFactory(String persistenceUnit) {
-            if (!emfs.containsKey(persistenceUnit)) {
-                emfs.put(persistenceUnit, Persistence.createEntityManagerFactory(persistenceUnit));
+        private static void addEntityManagerFactory(String persistenceUnitName, Map<String, Object> configOverwrite) {
+            if (!emfs.containsKey(persistenceUnitName)) {
+            	EntityManagerFactory emFactory = null;
+            	if(configOverwrite != null) {
+            		emFactory = Persistence.createEntityManagerFactory(persistenceUnitName, configOverwrite);
+            	} else {
+            		emFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
+            	}            	
+                emfs.put(persistenceUnitName, emFactory);
             }
         }
 
@@ -65,7 +71,7 @@ public class JpaDatabase extends AbstractDatabase implements Database {
                 instance = new EMFactory(persistenceUnit);
             }
             if (!emfs.containsKey(persistenceUnit)) {
-                addEntityManagerFactory(persistenceUnit);
+                addEntityManagerFactory(persistenceUnit, null);
             }
             EntityManager result = emfs.get(persistenceUnit).createEntityManager();
             return result;
@@ -82,6 +88,19 @@ public class JpaDatabase extends AbstractDatabase implements Database {
         public static EntityManagerFactory getEntityManagerFactoryByName(String name) {
             return emfs.get(name);
         }
+
+		public static EntityManager createEntityManager(String persistenceUnitName,
+				Map<String, Object> configOverrides)
+		{
+			if (instance == null) {
+                instance = new EMFactory(persistenceUnitName);
+            }
+            if (!emfs.containsKey(persistenceUnitName)) {
+                addEntityManagerFactory(persistenceUnitName, configOverrides);
+            }
+            EntityManager result = emfs.get(persistenceUnitName).createEntityManager();
+            return result;
+		}
     }
     private EntityManager em = null;
     private FullTextEntityManager ftem = null;
@@ -103,6 +122,8 @@ public class JpaDatabase extends AbstractDatabase implements Database {
         this.em = EMFactory.createEntityManager();
     }
 
+    
+    
     public JpaDatabase(EntityManager em, Model model) {
         this.em = em;
         this.model = model;

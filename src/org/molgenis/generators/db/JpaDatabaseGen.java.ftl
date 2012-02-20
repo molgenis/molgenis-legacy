@@ -2,6 +2,8 @@
 
 package app;
 
+import java.util.Map;
+
 @org.springframework.stereotype.Repository
 public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 {
@@ -25,6 +27,8 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 			</#if>
 		</#if></#list>	
 	}
+	
+	private String persistenceUnitName = null;
 	
 	//TODO: Does not function - Connection conn should be an EntityManager instance or so?
 	//TODO: What about decorator overriders?
@@ -59,7 +63,15 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
         }
         initMappers(this);
     }
-    private String persistenceUnitName = null;
+    
+    public JpaDatabase(Map<String, Object> configOverwrites) throws org.molgenis.framework.db.DatabaseException {
+        super(EMFactory.createEntityManager("molgenis", configOverwrites), new JDBCMetaDatabase());
+        persistenceUnitName = "molgenis";     
+        initMappers(this);
+    }    
+    
+    
+    
 
     public javax.persistence.EntityManagerFactory getEntityManagerFactory() {
         return EMFactory.getEntityManagerFactoryByName(persistenceUnitName);
