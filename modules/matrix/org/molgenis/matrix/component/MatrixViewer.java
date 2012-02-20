@@ -450,7 +450,7 @@ public class MatrixViewer extends HtmlWidget
 						}
 						else
 						{
-							dataTable.setCell(col + 1, row, "NA");
+							dataTable.setCell(col + 1, row, "NA"); // NA means Not Available, so there is no ObservedValue for this target-feature combination
 						}
 					}
 
@@ -550,6 +550,7 @@ public class MatrixViewer extends HtmlWidget
 		if (selectedMeasurement == null) {
 			operatorInput.addOption(Operator.EQUALS.name(), Operator.EQUALS.name());
 			operatorInput.addOption(Operator.LIKE.name(), Operator.LIKE.name());
+			//operatorInput.addOption(Operator.ISNA, Operator.ISNA.name()); TODO: implement! Find a way to filter on ObservedValues that are NOT present
 			operatorInput.addOption(Operator.LESS.name(), Operator.LESS.name());
 			operatorInput.addOption(Operator.LESS_EQUAL.name(), Operator.LESS_EQUAL.name());
 			operatorInput.addOption(Operator.GREATER.name(), Operator.GREATER.name());
@@ -617,7 +618,7 @@ public class MatrixViewer extends HtmlWidget
 		String measurementName = findMeasurementName(mqr);
 
 		outStr += "<br />" + (measurementName.equals("name") ? "" : measurementName + ".") + mqr.getField() + " " + 
-				mqr.getOperator().toString() + " " + mqr.getValue();
+				mqr.getOperator().toString() + " " + (mqr.getValue() != null ? mqr.getValue() : "NULL");
 		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
 		removeButton.setIcon("generated-res/img/delete.png");
 		outStr += removeButton.render();
@@ -1350,6 +1351,7 @@ public class MatrixViewer extends HtmlWidget
 		List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, columnIds).find();
 		for(Measurement measurement : measurements) {
 		//	List<Protocol> protocols = (List<Protocol>) measurement.getFeaturesProtocolCollection();
+			// TODO Joris/Daan: fix
 			List<Protocol> protocols = null;
 			Protocol p = protocols.get(0);
 			if(pms.containsKey(p)) {
