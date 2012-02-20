@@ -259,8 +259,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 								displayName = queryDisplayNames.find().get(0).getValue();
 							}
 							
-							htmlValue += "<tr><th>" + featureName + "</th><td>" +
-									 value + "</td></tr>";
+							String link =" http://www.google.com";
+							htmlValue += "<tr><th>" + featureName + "</th><td><a href=" + link + ">" +
+									 value + "</a></td></tr>";
 						}
 						
 					}
