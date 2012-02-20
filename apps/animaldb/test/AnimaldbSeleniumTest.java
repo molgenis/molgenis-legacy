@@ -193,7 +193,7 @@ public class AnimaldbSeleniumTest
 	@Test(dependsOnMethods={"addAnimals"})
 	public void breedingWorkflow() throws Exception {
 		// Go to Breeding line plugin
-		selenium.click("id=breedingmodule_tab_button");
+		selenium.click("id=Settings_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=ManageLines_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -205,6 +205,10 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Line successfully added"));
 		// Go to Parentgroup plugin
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=breedingmodule_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=ManageParentgroups_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Existing parentgroups"));

@@ -19,8 +19,6 @@
 			<plugin name="AddAnimal" type="plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
 			<menu name="breedingmodule" position="left" label="Breeding">
-				<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
-					label="Breeding lines" />
 				<plugin name="ManageParentgroups" type="plugins.breedingplugin.ManageParentgroups"
 					label="Parentgroups" />
 				<plugin name="ManageLitters" type="plugins.breedingplugin.ManageLitters"
@@ -60,6 +58,8 @@
 			label="Groups" /-->
 			
 		<menu name="Settings" position="left" label="Settings">
+			<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
+				label="Breeding lines" />
 			<plugin name="Locations" type="plugins.settings.LocationInfoPlugin"
 				label="Locations" />
 			<plugin name="Species" type="plugins.settings.SpeciesPlugin"
