@@ -93,13 +93,13 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Import database"));
 		// First try and see if we're on Erik's laptop
-		selenium.type("id=zip", "C:\\Users\\Erik\\Dropbox\\GCC\\AnimalDB\\Data\\legacy\\20120209_PrefillAnimalDB\\20120209_PrefillAnimalDB.zip");
+		selenium.type("id=zip", "C:\\Users\\Erik\\Dropbox\\GCC\\AnimalDB\\Data\\legacy\\20120220_PrefillAnimalDB\\20120220_PrefillAnimalDB.zip");
 		selenium.click("id=source1");
 		selenium.click("id=load");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		if (!selenium.isTextPresent("Pre-filling AnimalDB successful")) {
 			// If not, let's assume we're on the Hudson server
-			selenium.type("id=zip", "/data/home/erikroos/20120209_PrefillAnimalDB.zip");
+			selenium.type("id=zip", "/data/home/erikroos/20120220_PrefillAnimalDB.zip");
 			selenium.click("id=source1");
 			selenium.click("id=load");
 			selenium.waitForPageToLoad(pageLoadTimeout);
@@ -166,9 +166,9 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=AddAnimal_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
-		// Add 10 female Syrian hamsters
-		selenium.select("id=species", "label=Syrian hamster");
-		selenium.select("id=background", "label=C57BL/6j"); // TODO: add useful Hamster background
+		// Add 10 female House mice
+		selenium.select("id=species", "label=House mouse");
+		selenium.select("id=background", "label=C57BL/6j");
 		selenium.select("id=sex", "label=Female");
 		selenium.select("id=source", "label=Harlan");
 		selenium.select("id=animaltype", "label=A. Gewoon dier");
@@ -176,8 +176,8 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=Add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("10 animal(s) successfully added"));
-		// Add 10 male Syrian hamsters
-		selenium.select("id=species", "label=Syrian hamster");
+		// Add 10 male House mice
+		selenium.select("id=species", "label=House mouse");
 		selenium.select("id=background", "label=C57BL/6j");
 		selenium.select("id=sex", "label=Male");
 		selenium.select("id=source", "label=Harlan");
@@ -200,6 +200,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Breeding lines"));
 		// Add a breeding line
 		selenium.type("id=linename", "MyLine");
+		selenium.select("id=species", "label=House mouse");
 		selenium.click("id=add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Line successfully added"));
@@ -273,11 +274,11 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=showdone");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
-		// TODO: fix below by creating a button to make cage labels for the selected litter
-		//selenium.click("link=Create definitive cage labels");
-		//selenium.waitForPageToLoad(pageLoadTimeout);
-		//Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
-		selenium.click("link=Back to overview");
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("makedeflabels");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
+		selenium.click("link=Back to overview of weaned and genotyped litters");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		
 		sleepHelper("breedingWorkflow");
@@ -372,7 +373,7 @@ public class AnimaldbSeleniumTest
 		// Report 4A (default)
 		selenium.click("id=generate");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertEquals(selenium.getTable("css=#reporttablediv > table.2.0"), "Hamsters");
+		Assert.assertEquals(selenium.getTable("css=#reporttablediv > table.2.0"), "Muizen");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[2]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "5");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[4]"), "0");
@@ -398,7 +399,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[6]"), "2");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[15]"), "A. Dood in het kader van de proef");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[16]"), "12345A");
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[17]"), "Mesocricetus auratus");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[17]"), "Mus musculus");
 		
 		sleepHelper("yearlyReports");
 	}

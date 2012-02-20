@@ -522,10 +522,10 @@ public class ManageLitters extends PluginModel<Entity>
 				if (geneStateValueList != null && geneStateValueList.size() > 0) {
 					geneState = geneStateValueList.get(0).getValue();
 				}
-				if (geneName.equals("null") || geneName.equals("")) {
+				if (geneName == null || geneName.equals("null") || geneName.equals("")) {
 					geneName = "unknown";
 				}
-				if (geneState.equals("null") || geneState.equals("")) {
+				if (geneState == null || geneState.equals("null") || geneState.equals("")) {
 					geneState = "unknown";
 				}
 				returnString += ("gene: " + geneName + ": " + geneState + "; ");
@@ -1367,7 +1367,7 @@ public class ManageLitters extends PluginModel<Entity>
 			// Color + Sex
 			elementLabelList.add("Color and Sex:");
 			String color = ct.getMostRecentValueAsString(animalId, "Color");
-			if (color.equals("null") || color.equals("")) {
+			if (color == null || color.equals("null") || color.equals("")) {
 				color = "unknown";
 			}
 			int sexId = ct.getMostRecentValueAsXref(animalId, "Sex");
