@@ -617,7 +617,7 @@ public class MatrixViewer extends HtmlWidget
 		// Try to retrieve measurement name
 		String measurementName = findMeasurementName(mqr);
 
-		outStr += "<br />" + (measurementName.equals("name") ? "" : measurementName + ".") + mqr.getField() + " " + 
+		outStr += "<br />" + measurementName + " " + 
 				mqr.getOperator().toString() + " " + (mqr.getValue() != null ? mqr.getValue() : "NULL");
 		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
 		removeButton.setIcon("generated-res/img/delete.png");
