@@ -1047,13 +1047,6 @@ public class ManageLitters extends PluginModel<Entity>
 		measurementId = ct.getMeasurementId("WeanDate");
 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 				null, protocolId, measurementId, litter, newDateOnlyFormat.format(weanDate), 0));
-		// Set line on litter
-		if (lineId != -1) {
-			protocolId = ct.getProtocolId("SetLine");
-			measurementId = ct.getMeasurementId("Line");
-			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
-					null, protocolId, measurementId, litter, null, lineId));
-		}
 		// Set weaning remarks on litter
 		if (remarks != null) {
 			protocolId = ct.getProtocolId("SetRemark");
