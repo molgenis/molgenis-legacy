@@ -91,19 +91,19 @@
 \subsection*{Capturing}
 \addcontentsline{toc}{subsection}{Capturing}
 The following figures show the cumulative depth distribution in target regions. The fractions of bases that is covered with at least 10x, 20x and 30x are marked with a dot.
-${figures(coverageplotpdf)}
+${figures(samplecoverageplotpdf)}
 
 \clearpage
 \subsection*{Insert size distribution}
 \addcontentsline{toc}{subsection}{Insert size distribution}
-The following figures show the insert size distribution per sample \textit{per flowcell/lane}. Insert refers to the base pairs that are ligated between the adapters.
-${figuresInsertSize(insertsizemetricspdf)}
+The following figures show the insert size distribution per sample. Insert refers to the base pairs that are ligated between the adapters.
+${figures(sampleinsertsizemetricspdf)}
 
 \clearpage
 \subsection*{GC metrics}
 \addcontentsline{toc}{subsection}{GC metrics}
 The following figures show the GC-content distribution per sample.
-${figures(gcbiasmetricspdf)}
+${figures(samplegcbiasmetricspdf)}
 
 \clearpage
 \section*{Appendix 1: Genome Analysis Facility Pipeline}
@@ -124,12 +124,12 @@ The quality of the product was verified on the BioRad Experion instrument. If th
 \clearpage
 \section*{Appendix 2: Bioinformatics pipeline}
 \addcontentsline{toc}{section}{Appendix 2: Bioinformatics pipeline}
-\begin{wrapfigure}{r}{0.5\textwidth}
+Your samples have been anlayzed with bioinformatics pipeline shown in Figure \ref{fig:dry}.
+\begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=.5\textwidth]{${workflowpng}}
+		\includegraphics{${workflowpng}}
 	\end{center}
 	\caption{Bioinformatics pipeline}
 	\label{fig:dry}
-\end{wrapfigure}
-Your samples have been anlayzed with bioinformatics pipeline shown in Figure \ref{fig:dry}.
+\end{figure}
 \end{document}

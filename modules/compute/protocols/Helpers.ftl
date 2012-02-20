@@ -73,14 +73,13 @@
 	<#return result>
 </#function>
 
-<#function helloWorld name>
-  <#return freemarkerHelper.helloWorld(name)/>
-</#function>
-
 <#function foldParameters tuple on>
 	<#return freemarkerHelper.foldOn(tuple, on)/>
 </#function>
 
+<#function stringList parameters var>
+	<#return freemarkerHelper.stringList(parameters, var)/>
+</#function>
 
 
 
