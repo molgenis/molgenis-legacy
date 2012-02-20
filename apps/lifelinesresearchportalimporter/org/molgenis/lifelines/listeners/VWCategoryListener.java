@@ -58,7 +58,7 @@ public class VWCategoryListener extends ImportTupleListener {
 		category.setCode_String(tuple.getString("VALLABELVAL"));
 		category.setLabel(tuple.getString("VALLABELABEL"));
 		category.setDescription(tuple.getString("VALLABELABEL"));
-		category.getCategoriesCollection().add(measurement); // add to
+		category.getCategoriesMeasurementCollection().add(measurement); // add to
 		measurement.getCategories().add(category);
 																// measurment
 		category.setName(fieldName);

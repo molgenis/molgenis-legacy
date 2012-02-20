@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
+import org.molgenis.lifelines.ListUtils;
 import org.molgenis.lifelines.listeners.VWCategoryListener;
 import org.molgenis.lifelines.listeners.VwDictListener;
 import org.molgenis.lifelines.utils.EAVToView;
@@ -51,7 +52,7 @@ import app.DatabaseFactory;
 import app.FillMetadata;
 import au.com.bytecode.opencsv.CSVReader;
 
-public class NewImporter {
+public class OracleImporter {
 	private static final boolean SHARED_MEASUREMENTS = true;
 	private static final String DICT = "VW_DICT";
 	private static final String CATE = "VW_DICT_VALUESETS";
@@ -70,7 +71,7 @@ public class NewImporter {
 	private final Map<String, Integer> measurementDBId = new HashMap<String, Integer>();
 	private final Map<Integer, Integer> protocolAppDBId = new HashMap<Integer, Integer>();
 	
-	public NewImporter(String path, String userName, String password, String dbUrl) throws Exception {
+	public OracleImporter(String path, String userName, String password, String dbUrl) throws Exception {
 		this.path = path;
 		this.username = userName;
 		//this.outputPath = outputPath;
@@ -439,7 +440,7 @@ public class NewImporter {
 		final String outputPath = "/Users/jorislops/Desktop/LLOutput/";
 		
 		long begin = System.currentTimeMillis();
-		new NewImporter(inputPath, "MOLGENIS1", "armin1us", "jdbc:oracle:thin:@//localhost:2000/llpacc");
+		new OracleImporter(inputPath, "MOLGENIS1", "armin1us", "jdbc:oracle:thin:@//localhost:2000/llpacc");
 		long end = System.currentTimeMillis();
 		long time = (end - begin) / 1000;
 		System.out.println("total Time to load dataset: " +time);

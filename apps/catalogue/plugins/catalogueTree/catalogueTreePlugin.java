@@ -315,7 +315,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			List<ShoppingCart> result = q.find();
 			shoppingCart.clear();
 			for(ShoppingCart cart : result){
-				shoppingCart.addAll(cart.getMeasurements(db));
+				shoppingCart.addAll(cart.getMeasurements());
 			}
 
 			this.arrayInvestigations.clear();

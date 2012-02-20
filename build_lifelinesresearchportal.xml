@@ -10,6 +10,7 @@
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/lifelinesresearchportal" />
+		<pathelement location="apps/lifelinesresearchportalimporter" />
 		<pathelement location="apps/xgap" />
 		<pathelement location="apps/catalogue" />
 		<pathelement location="modules/datamodel" />
