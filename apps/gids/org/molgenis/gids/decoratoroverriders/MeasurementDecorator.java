@@ -8,10 +8,10 @@
 package org.molgenis.gids.decoratoroverriders;
 
 import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.db.MapperDecorator;
 import org.molgenis.pheno.Measurement;
 
-public class MeasurementDecorator<E extends Measurement> extends MappingDecorator<E> {
+public class MeasurementDecorator<E extends Measurement> extends MapperDecorator<E> {
 
 	public MeasurementDecorator(Mapper<E> generatedMapper)
 	{
