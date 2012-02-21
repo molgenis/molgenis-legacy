@@ -10,10 +10,9 @@ package decorators;
 import java.util.List;
 
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.db.MapperDecorator;
 
-public class DBIndexUpdateDecorator<E extends org.molgenis.bbmri.Biobank> extends MappingDecorator<E>
+public class DBIndexUpdateDecorator<E extends org.molgenis.bbmri.Biobank> extends MapperDecorator<E>
 {
 	//JDBCMapper is the generate thing
 	//TODO: Danny Parameterize the JDBCMapper object <Object> ??

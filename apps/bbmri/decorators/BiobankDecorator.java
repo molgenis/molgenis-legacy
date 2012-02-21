@@ -12,17 +12,15 @@ import java.util.List;
 
 import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.auth.MolgenisUser;
-import org.molgenis.bbmri.Biobank;
-import org.molgenis.bbmri.ChangeLog;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
+import org.molgenis.framework.db.MapperDecorator;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.security.SimpleLogin;
 
-public class BiobankDecorator<E extends Biobank> extends MappingDecorator<E>
+public class BiobankDecorator<E extends Biobank> extends MapperDecorator<E>
 {
 	//JDBCMapper is the generate thing
 //	public BiobankDecorator(JDBCMapper generatedMapper)
