@@ -388,9 +388,8 @@ public class CommonService
 			return returnList;
 		} else {
 			// Find 'Active' target id's
-			int featureId = getMeasurementId(ACTIVE);
 			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 			valueQuery.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 			valueQuery.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
 			List<ObservedValue> valueList = valueQuery.find();

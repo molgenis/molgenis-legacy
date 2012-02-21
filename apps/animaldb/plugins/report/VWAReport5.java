@@ -46,7 +46,7 @@ public class VWAReport5 extends AnimalDBReport {
 			for (ObservationTarget d : decappList) {
 				// Check if the DEC application was (partly) in this year
 				Date startOfDec = null;
-				String startOfDecString = ct.getMostRecentValueAsString(d.getId(), ct.getMeasurementId("StartDate"));
+				String startOfDecString = ct.getMostRecentValueAsString(d.getId(), "StartDate");
 				if (startOfDecString != null && !startOfDecString.equals("")) {
 					startOfDec = dbFormat.parse(startOfDecString);
 					if (startOfDec.after(endOfYear)) {
@@ -56,7 +56,7 @@ public class VWAReport5 extends AnimalDBReport {
 					continue;
 				}
 				Date endOfDec = null;
-				String endOfDecString = ct.getMostRecentValueAsString(d.getId(), ct.getMeasurementId("EndDate"));
+				String endOfDecString = ct.getMostRecentValueAsString(d.getId(), "EndDate");
 				if (endOfDecString != null && !endOfDecString.equals("")) {
 					endOfDec = dbFormat.parse(endOfDecString);
 					if (endOfDec.before(startOfYear)) {
@@ -65,7 +65,7 @@ public class VWAReport5 extends AnimalDBReport {
 				}
 				
 				// Get DEC number
-				String decNr = ct.getMostRecentValueAsString(d.getId(), ct.getMeasurementId("DecNr"));
+				String decNr = ct.getMostRecentValueAsString(d.getId(), "DecNr");
 				
 				// Find the experiments belonging to this DEC
 				List<Integer> experimentIdList = new ArrayList<Integer>();
@@ -80,18 +80,19 @@ public class VWAReport5 extends AnimalDBReport {
 					}
 				}
 				for (int expid : experimentIdList) {
+					String expName = ct.getObservationTargetLabel(expid);
 					// Get the experiment subcode
-					String expCode = ct.getMostRecentValueAsString(expid, ct.getMeasurementId("ExperimentNr"));
+					String expCode = ct.getMostRecentValueAsString(expid, "ExperimentNr");
 					// Doel vd proef (experiment's Goal)
-					String goal = ct.getMostRecentValueAsString(expid, ct.getMeasurementId("Goal"));
+					String goal = ct.getMostRecentValueAsString(expid, "Goal");
 					// Belang van de proef (experiment's Concern)
-					String concern = ct.getMostRecentValueAsString(expid, ct.getMeasurementId("Concern"));
+					String concern = ct.getMostRecentValueAsString(expid, "Concern");
 					// Wettelijke bepalingen (experiment's LawDef)
-					String lawDef = ct.getMostRecentValueAsString(expid, ct.getMeasurementId("LawDef"));
+					String lawDef = ct.getMostRecentValueAsString(expid, "LawDef");
 					// Toxicologisch / veiligheidsonderzoek	(experiment's ToxRes)
-					String toxRes = ct.getMostRecentValueAsString(expid, ct.getMeasurementId("ToxRes"));
+					String toxRes = ct.getMostRecentValueAsString(expid, "ToxRes");
 					// Technieken byzondere	(experiment's SpecialTechn)
-					String specialTechn = ct.getMostRecentValueAsString(expid, ct.getMeasurementId("SpecialTechn"));
+					String specialTechn = ct.getMostRecentValueAsString(expid, "SpecialTechn");
 					
 					// Get the animals that were in the experiment this year
 					q = db.query(ObservedValue.class);
@@ -105,6 +106,7 @@ public class VWAReport5 extends AnimalDBReport {
 						int protocolApplicationId = animalInExpValue.getProtocolApplication_Id();
 						// Get animal ID
 						int animalId = animalInExpValue.getTarget_Id();
+						String animalName = animalInExpValue.getTarget_Name();
 						// Get dates
 						Date entryDate = animalInExpValue.getTime();
 						Date exitDate = animalInExpValue.getEndtime();
@@ -120,11 +122,11 @@ public class VWAReport5 extends AnimalDBReport {
 						
 						// Get the data about the animal in the experiment
 						// Bijzonderheid dier (animal's AnimalType)
-						String animalType = ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("AnimalType"));
+						String animalType = ct.getMostRecentValueAsString(animalId, "AnimalType");
 						// Diersoort (animal's Species -> VWASpecies and LatinSpecies)
 						String vwaSpecies = "";
 						String latinSpecies = "";
-						int normalSpeciesId = ct.getMostRecentValueAsXref(animalId, ct.getMeasurementId("Species"));
+						int normalSpeciesId = ct.getMostRecentValueAsXref(animalId, "Species");
 						// Get VWA species
 						Query<ObservedValue> vwaSpeciesQuery = db.query(ObservedValue.class);
 						vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
@@ -197,8 +199,8 @@ public class VWAReport5 extends AnimalDBReport {
 								actualDiscomfort = valueList.get(0).getValue();
 							} else {
 								// Something's wrong here...
-								warningsList.add("No 'ActualDiscomfort' value found for target " + animalId + 
-										" in experiment " + expid);
+								warningsList.add("No 'ActualDiscomfort' value found for Animal " + animalName + 
+										" in DEC subproject " + expName);
 							}
 							
 							// Toestand dier na beeindiging proef (animal's most recent ActualAnimalEndStatus)
@@ -236,13 +238,13 @@ public class VWAReport5 extends AnimalDBReport {
 								}
 							} else {
 								// Something's wrong here...
-								warningsList.add("No 'ActualAnimalEndStatus' value(s) found for target " + animalId + 
-										" in experiment " + expid);
+								warningsList.add("No 'ActualAnimalEndStatus' value(s) found for Animal " + animalName + 
+										" in DEC subproject " + expName);
 							}
 						} else {
 							// Something's wrong here...
-							warningsList.add("No 'FromExperiment' value found for target " + animalId + 
-									" in experiment " + expid);
+							warningsList.add("No 'FromExperiment' value found for Animal " + animalName + 
+									" in DEC subproject " + expName);
 						}
 						
 						ArrayList<String> newRow = new ArrayList<String>();

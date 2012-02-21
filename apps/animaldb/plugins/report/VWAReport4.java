@@ -52,6 +52,8 @@ public class VWAReport4 extends AnimalDBReport
 			List<Integer> targetIdList = ct.getAllObservationTargetIds("Individual", false, investigationIds);
 			for (Integer targetid : targetIdList)
 			{
+				String animalName = ct.getObservationTargetLabel(targetid);
+				
 				// Check AnimalType
 				String animalType = "";
 				Query<ObservedValue> q = db.query(ObservedValue.class);
@@ -72,7 +74,7 @@ public class VWAReport4 extends AnimalDBReport
 				}
 				else
 				{
-					warningsList.add("Target " + targetid + " has no AnimalType");
+					warningsList.add("Animal " + animalName + " has no AnimalType, not counted in report");
 					continue; // Ignore animals that have no type
 				}
 
@@ -118,7 +120,7 @@ public class VWAReport4 extends AnimalDBReport
 				else
 				{
 					// Don't consider animals that have no  'Active' values
-					warningsList.add("Animal with ID " + targetid + " has no 'Active' value(s), not counted in report");
+					warningsList.add("Animal " + animalName + " has no 'Active' value(s), not counted in report");
 					continue;
 				}
 
@@ -160,7 +162,7 @@ public class VWAReport4 extends AnimalDBReport
 							}
 						}
 					} else {
-						warningsList.add("Animal with ID " + targetid + " has no Source");
+						warningsList.add("Animal " + animalName + " has no Source, not counted in incoming section");
 					}
 				}
 
@@ -187,6 +189,7 @@ public class VWAReport4 extends AnimalDBReport
 						if (subprojectValueList.size() > 0) {
 							// find 'FromExperiment' value for most recently ended experiment
 							int experimentId = subprojectValueList.get(0).getRelation_Id();
+							String expName = ct.getObservationTargetLabel(experimentId);
 							q = db.query(ObservedValue.class);
 							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
 							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "FromExperiment"));
@@ -209,12 +212,12 @@ public class VWAReport4 extends AnimalDBReport
 									if (endstatus.equals("C. Na einde proef in leven gelaten"))
 										outColumn = 11;
 								} else {
-									warningsList.add("0 or more than 1 end statuses found for animal with ID " + targetid +
-											" in experiment with ID " + experimentId + ": not counting");
+									warningsList.add("0 or more than 1 end statuses found for Animal " + animalName +
+											" in DEC subproject " + expName + ", not counting in outgoing section");
 								}
 							} else {
-								warningsList.add("No 'FromExperiment' value found for animal with ID " + targetid +
-										" in experiment with ID " + experimentId + ": not counting");
+								warningsList.add("0 or more than 1 'FromExperiment' values found for Animal " + animalName +
+										" in DEC subproject " + expName + ", not counting in outgoing section");
 							}
 						} else {
 							// No experiments found in the current year, so list as 'dood voor de proef'
@@ -237,7 +240,7 @@ public class VWAReport4 extends AnimalDBReport
 						if (removal.equals("levend afgevoerd gereg. onderzoeksinstelling EU")) outColumn = 14;
 						if (removal.equals("levend afgevoerd andere bestemming")) outColumn = 15;
 					} else if (removalValueList.size() > 1) {
-						warningsList.add("Animal with ID " + targetid + " has multiple removal events");
+						warningsList.add("Animal " + animalName + " has multiple removal events, not counting in outgoing section");
 					}
 				}
 
@@ -402,7 +405,7 @@ public class VWAReport4 extends AnimalDBReport
 						rowList.set(vwaIndex, tmpRow);
 					}
 				} else {
-					warningsList.add("Animal with ID " + targetid + " has no Species");
+					warningsList.add("Animal " + animalName + " has no Species, not counting in correct category");
 				}
 			} // end of loop through all animals
 

@@ -1302,7 +1302,6 @@ public class MatrixViewer extends HtmlWidget
 			if (measurementId == -1) { // Filter on name
 				matrix.getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.NAME, Operator.EQUALS, 
 						t.getObject(COLVALUE)));
-				matrix.reload();
 			} else {
 				// First find out whether to filter on the value or the relation_Name field
 				Measurement filterMeasurement;
