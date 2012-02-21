@@ -27,6 +27,7 @@ import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.SelectInput;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -100,6 +101,13 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 				deathdate.setValue(new Date());
 				deathdate.setNillable(false);
 				div.add(deathdate);
+				
+				// show a Remarks field
+				StringInput remarks = new StringInput("remarks");
+				remarks.setLabel("Remarks:");
+				remarks.setNillable(true);
+				div.add(remarks);
+				
 				// show apply button
 				ActionInput applyButton = new ActionInput("Apply", "", "Apply");
 				div.add(applyButton);
@@ -159,6 +167,14 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 						db.add(cs.createObservedValueWithProtocolApplication(investigationId, 
 								deathDate, null, protocolId, measurementId, animalId, 
 								newDateOnlyFormat.format(deathDate), 0));
+					}
+					
+					// Set remark
+					if (request.getString("remarks") != null) {
+						protocolId = cs.getProtocolId("SetRemark");
+						measurementId = cs.getMeasurementId("Remark");
+						db.add(cs.createObservedValueWithProtocolApplication(investigationId, deathDate, null, 
+								protocolId, measurementId, animalId, request.getString("remarks"), 0));
 					}
 				}
 				
