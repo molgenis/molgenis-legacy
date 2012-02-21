@@ -20,18 +20,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
-
+import org.molgenis.auth.MolgenisUser;
+import org.molgenis.core.Publication;
+import org.molgenis.core.service.PublicationService;
+import org.molgenis.core.vo.PublicationVO;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
-
 import org.molgenis.mutation.Exon;
-import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.Mutation;
+import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.Patient;
 import org.molgenis.mutation.ProteinDomain;
 import org.molgenis.mutation.util.SequenceUtils;
@@ -45,10 +46,6 @@ import org.molgenis.mutation.vo.PatientSummaryVO;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.submission.Submission;
-import org.molgenis.auth.MolgenisUser;
-import org.molgenis.core.Publication;
-import org.molgenis.core.service.PublicationService;
-import org.molgenis.core.vo.PublicationVO;
 
 public class MutationService implements Serializable
 {
