@@ -122,12 +122,16 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 				
 				int investigationId = cs.getOwnUserInvestigationId(this.getLogin().getUserId());
 				String notRemoved = "";
+				String removed = "";
 				for (Integer animalId : targetList) {
 					
 					if (inExperiment(db, animalId, deathDate)) {
 						notRemoved += animalId + " ";
 						continue;
 					}
+					
+					// add animals to stringlist for report
+					removed += animalId + " ";
 					
 					// Set 'Removal' feature
 					int protocolId = cs.getProtocolId("SetRemoval");
@@ -158,11 +162,12 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 					}
 				}
 				
-				String message = "Animal(s) successfully removed";
-				if (!notRemoved.equals("")) {
-					message += "; animal(s) " + notRemoved + "not removed because they are still in a DEC subproject";
-				}
+				String message = "Animal(s) " + removed +  "successfully removed";
 				this.getMessages().add(new ScreenMessage(message, true));
+				if (!notRemoved.equals("")) {
+					message = "Animal(s) " + notRemoved + "not removed because they are still in a DEC subproject: ";
+					this.getMessages().add(new ScreenMessage(message, false));
+				}
 				
 				container = null;
 			}
