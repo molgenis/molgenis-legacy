@@ -3,10 +3,10 @@
 	<!--
 	# =====================================================
 	# $Id$
-	# $URL: $
+	# $URL$
 	# $LastChangedDate$ 
 	# $LastChangedRevision$
-	# $LastChangedBy: $
+	# $LastChangedBy$
 	# =====================================================
 	#-->
 	
@@ -29,6 +29,7 @@
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/pheno" />
+		<pathelement location="modules/webserver" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
