@@ -18,9 +18,7 @@
 				<form name="observationTarget" entity="ObservationTarget" label="Observation Target" >
 					<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
 				</form>
-				<form name="computeProtocol" entity="ComputeProtocol" label="Compute Protocol">
-					<form name="computeParameter" entity="ComputeParameter" label="Compute Parameter"/>
-				</form>
+				<form name="mappingMeasurement" entity="MappingMeasurement" label="Mapping Measurement"/>
 			</form>
 		</menu>
 		<plugin name="catalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Catalogue Tree" />  
