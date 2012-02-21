@@ -124,4 +124,6 @@ $*
 	
 	<target name="clean-generate-compile-test-makedistro" depends="clean,generate,compile,test,makedistro"/>
 	
+	<target name="clean-generate-compile-makedistro" depends="clean,generate,compile,makedistro"/>
+	
 </project>
