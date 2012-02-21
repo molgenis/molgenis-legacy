@@ -170,7 +170,7 @@ public class DataElementImportByFile
 			final FinalInteger row_index = new FinalInteger(0);
 
 			final Investigation inv = db.find(Investigation.class,
-					new QueryRule("id", Operator.EQUALS, selectedMatrix.getInvestigation())).get(0);
+					new QueryRule("id", Operator.EQUALS, selectedMatrix.getInvestigation_Id())).get(0);
 
 			CsvReaderListener crl = new CsvReaderListener()
 			{
@@ -337,7 +337,7 @@ public class DataElementImportByFile
 			// we search the instances of klass, with name 'name', within
 			// investigation i?
 			List availableInvestigationElements = db.query(klass).in("name", batchCopyNeededNames).equals(
-					"investigation", selectedMatrix.getInvestigation()).find();
+					"investigation", selectedMatrix.getInvestigation_Id()).find();
 
 			// create a list of available names
 			List<String> presentNames = new ArrayList<String>();
@@ -364,7 +364,7 @@ public class DataElementImportByFile
 		{
 			InvestigationElement absent = (InvestigationElement) klass.newInstance();
 			
-			absent.setInvestigation(selectedMatrix.getInvestigation());
+			absent.setInvestigation(selectedMatrix.getInvestigation_Id());
 			absent.setName(absentNames.get(i));
 			absentObjects.add(absent);
 
@@ -406,7 +406,7 @@ public class DataElementImportByFile
 			// we search the instances of klass, with name 'name', within
 			// study i?
 			List availableInvestigationElements = db.query(klass).in("name", batchCopyNeededNames).equals(
-					"investigation", selectedMatrix.getInvestigation()).find();
+					"investigation", selectedMatrix.getInvestigation_Id()).find();
 
 			// create a list of available names
 			for (Object present : availableInvestigationElements)
