@@ -174,5 +174,11 @@ public class MapperDecorator<E extends Entity> implements Mapper<E>
 		return this.mapper.executeRemove(entities);
 	}
 
+	@Override
+	public List<E> createList(int i)
+	{
+		return this.mapper.createList(i);
+	}
+
 
 }

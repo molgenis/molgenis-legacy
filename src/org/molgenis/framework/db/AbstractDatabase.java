@@ -578,7 +578,9 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int add(E entity) throws DatabaseException
 	{
-		return ((AbstractMapper)getMapperFor((Class<E>) entity.getClass())).add(entity);
+		List<E> entities = getMapperFor((Class<E>) entity.getClass()).createList(1);
+		entities.add(entity);
+		return add(entities);
 	}
 
 	@Override
@@ -603,7 +605,9 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int update(E entity) throws DatabaseException
 	{
-		return ((AbstractMapper)getMapperFor((Class<E>) entity.getClass())).update(entity);
+		List<E> entities = getMapperFor((Class<E>) entity.getClass()).createList(1);
+		entities.add(entity);
+		return update(entities);
 	}
 
 	@Override
@@ -628,7 +632,9 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int remove(E entity) throws DatabaseException
 	{
-		return ((AbstractMapper)getMapperFor((Class<E>) entity.getClass())).remove(entity);
+		List<E> entities = getMapperFor((Class<E>) entity.getClass()).createList(1);
+		entities.add(entity);
+		return remove(entities);
 	}
 
 	@Override
