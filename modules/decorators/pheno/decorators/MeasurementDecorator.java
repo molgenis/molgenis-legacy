@@ -14,19 +14,13 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.db.MapperDecorator;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 
-public class MeasurementDecorator<E extends Measurement> extends MappingDecorator<E> {
+public class MeasurementDecorator<E extends Measurement> extends MapperDecorator<E> {
 	Logger logger  = Logger.getLogger("MeasurementDecorator");
-	
-	// JDBCMapper is the generate thing
-	public MeasurementDecorator(JDBCMapper<E> generatedMapper) {
-		super(generatedMapper);
-	}
 	
 	//new kind of constructor to work with latest DB changes
 	public MeasurementDecorator(Mapper<E> generatedMapper)

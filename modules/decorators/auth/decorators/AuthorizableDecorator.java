@@ -11,10 +11,10 @@ import java.util.List;
 
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.db.MapperDecorator;
 import org.molgenis.util.Entity;
 
-public class AuthorizableDecorator<E extends Entity> extends MappingDecorator<E>
+public class AuthorizableDecorator<E extends Entity> extends MapperDecorator<E>
 {
 	// JDBCMapper is the generate thing
 	// public AuthorizableDecorator(JDBCMapper generatedMapper)

@@ -17,23 +17,17 @@ import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.util.PasswordHasher;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
+import org.molgenis.framework.db.MapperDecorator;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
+
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.security.SimpleLogin;
 
 
-public class MolgenisUserDecorator<E extends MolgenisUser> extends MappingDecorator<E>
+public class MolgenisUserDecorator<E extends MolgenisUser> extends MapperDecorator<E>
 {
 	//JDBCMapper is the generate thing
-	public MolgenisUserDecorator(JDBCMapper<E> generatedMapper)
-	{
-		super(generatedMapper);
-	}
-	
-	//new kind of constructor to work with latest DB changes
 	public MolgenisUserDecorator(Mapper<E> generatedMapper)
 	{
 		super(generatedMapper);
