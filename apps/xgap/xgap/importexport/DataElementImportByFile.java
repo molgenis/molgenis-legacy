@@ -146,7 +146,7 @@ public class DataElementImportByFile
 				// actually in the database (identified by 'name' plus
 				// 'investigation')
 				if (db.find(Data.class, new QueryRule("name", Operator.EQUALS, selectedMatrix.getName()),
-						new QueryRule("investigation", Operator.EQUALS, selectedMatrix.getInvestigation())).size() > 0)
+						new QueryRule("investigation", Operator.EQUALS, selectedMatrix.getInvestigation_Id())).size() > 0)
 				{
 					// it's present in the database
 				}
