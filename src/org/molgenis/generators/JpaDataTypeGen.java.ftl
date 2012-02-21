@@ -73,11 +73,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	<#foreach field in entity.getImplementedFields()>
 		<#assign type_label = field.getType().toString()>
 		<#if (field.name != typefield()) || !entity.hasAncestor()>
-	public <#if field.type = "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}();//NEW
+	public <#if type_label == "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}();
 	public void set${JavaName(field)}(<#if field.type = "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> ${name(field)});//NEW
 		<#if type_label == "enum">
 	public java.util.List<org.molgenis.util.ValueLabel> get${JavaName(field)}Options();
-		<#elseif type_label="xref">			
+		<#elseif type_label == "xref">			
         public ${type(field.xrefField)} get${JavaName(field)}_${JavaName(field.xrefField)}();
         public void set${JavaName(field)}_${JavaName(field.xrefField)}(${type(field.xrefField)} ${name(field)});
 
@@ -751,10 +751,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 		return e;
 	}
 	
-<#list model.entities as e><#if !e.abstract && !e.isAssociation()>
-	<#list e.implementedFields as f>
-		<#if f.type=="xref" && f.getXrefEntityName() == entity.name>
-			 <#assign multipleXrefs = model.getNumberOfReferencesTo(entity)/>
+<#list model.entities as e>
+	<#if !e.abstract && !e.isAssociation()>
+		<#list e.implementedFields as f>
+			<#if f.type=="xref" && f.getXrefEntityName() == entity.name>
+				<#assign multipleXrefs = model.getNumberOfReferencesTo(entity)/>
 //${multipleXrefs}
 	@javax.persistence.OneToMany(fetch=javax.persistence.FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/)
     private java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new java.util.ArrayList<${f.entity.namespace}.${JavaName(f.entity)}>();
@@ -788,6 +789,12 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	public java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection()
 	{
         return ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection;
+	}
+
+	@javax.xml.bind.annotation.XmlTransient
+	public java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(org.molgenis.framework.db.Database db)
+	{
+        return get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection();
 	}
 
     public void set${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> collection)

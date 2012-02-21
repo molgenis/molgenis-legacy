@@ -93,7 +93,12 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 				sql.append("(");			
 <#list addFields(entity) as f>
 				//${name(f)}
+				<#if f.type == "xref" || f.type == "mref">
+				if(e.get${JavaName(f)}_${JavaName(f.xrefField)}() != null){
+				<#else>
 				if(e.get${JavaName(f)}() != null){
+				</#if>
+								
 				<#if f.type == "datetime">
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					String mysqlDateTime = dateFormat.format(e.get${JavaName(f)}());
@@ -102,6 +107,8 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 					sql.append("'"+new java.sql.Date(e.get${JavaName(f)}().getTime()).toString()+"'"
 				<#elseif f.type == "bool">
 					sql.append(e.get${JavaName(f)}()
+				<#elseif f.type == "xref" || f.type == "mref">					
+					sql.append("'"+this.escapeSql(e.get${JavaName(f)}_${JavaName(f.xrefField)}().toString())+"'"
 				<#else>
 					sql.append("'"+this.escapeSql(e.get${JavaName(f)}().toString())+"'"
 				</#if>

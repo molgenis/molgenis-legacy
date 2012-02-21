@@ -175,6 +175,8 @@ public class TestDatabase
 	<#elseif f.type == "datetime">
 			//check formatted because of milliseconds rounding
 			assertEquals(dateTimeFormat.format(entities.get(i).get${JavaName(f)}()),dateTimeFormat.format(entitiesDb.get(i).get${JavaName(f)}()));
+	<#elseif f.type == "xref" || f.type == "mref">
+			assertEquals(entities.get(i).get${JavaName(f)}_${JavaName(f.xrefField)}(), entitiesDb.get(i).get${JavaName(f)}_${JavaName(f.xrefField)}());
 	<#else>
 			assertEquals(entities.get(i).get${JavaName(f)}(), entitiesDb.get(i).get${JavaName(f)}());
 	</#if>
@@ -196,7 +198,11 @@ public class TestDatabase
 </#if>			
 				for(${JavaName(entity)} r: results)
 				{
+					<#if f.type == "xref" || f.type == "mref">
+					assertEquals(r.get${JavaName(f)}_${JavaName(f.xrefField)}(), entity.get${JavaName(f)}_${JavaName(f.xrefField)}());
+					<#else>
 					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
+					</#if>
 				}
 			}
 </#if></#list>

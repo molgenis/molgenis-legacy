@@ -117,14 +117,14 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	<#foreach field in entity.getImplementedFields()>
 		<#assign type_label = field.getType().toString()>
 		<#if (field.name != typefield()) || !entity.hasAncestor()>
-	public ${type(field)} get${JavaName(field)}();
+	public <#if type_label == "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}();	
 	public void set${JavaName(field)}(${type(field)} _${name(field)});
 		<#if type_label == "enum">
 	public java.util.List<ValueLabel> get${JavaName(field)}Options();
 		<#elseif type_label="xref">		
     public ${type(field.xrefField)} get${JavaName(field)}_${JavaName(field.xrefField)}();
     public void set${JavaName(field)}_${JavaName(field.xrefField)}(${type(field.xrefField)} ${name(field)});
-			
+	public void set${JavaName(field)}(<#if type_label == "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> ${name(field)});			
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	public ${type(field.xrefLabels[label_index])} get${JavaName(field)}_${JavaName(label)}();
 	public void set${JavaName(field)}_${JavaName(label)}(${type(field.xrefLabels[label_index])} ${name(field)}_${label});
@@ -278,6 +278,15 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 * @return ${name(field)}.
 	 */
 	<#if type_label == "xref" || type_label == "mref">@Deprecated</#if>
+	<#if type_label == "xref">
+	public ${JavaName(field.xrefEntity)} get${JavaName(field)}() {
+		throw new UnsupportedOperationException();
+	}
+	<#elseif type_label == "mref">
+	public java.util.Collection<${JavaName(field.xrefEntity)}> get${JavaName(field)}() {
+		throw new UnsupportedOperationException();
+	}	
+	<#else>
 	public ${type(field)} get${JavaName(field)}()
 	{
 		<#if type_label == "xref">
@@ -295,6 +304,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		</#if>
 		return this._${name(field)};
 	}
+	</#if>
 	
 	<#if type_label="xref" || type_label="mref">
 	public ${type(field)} get${JavaName(field)}_${JavaName(field.xrefField)}()
@@ -359,8 +369,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	}	
 	</#if>
 	
-	
-	
+
+
 	/**
 	 * Set the ${field.description}.
 	 * @param _${name(field)}
@@ -404,6 +414,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		</#if>
 		</#if>
 	}
+	
 	
 	<#-- data type specific methods -->
 	<#if type_label =="date">
@@ -542,8 +553,13 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public Object get(String name)
 	{
 	<#foreach field in allFields(entity)>
+		<#if field.type == "xref" || field.type == "mref">
+		if (name.equalsIgnoreCase("${name(field)}"))
+			return get${JavaName(field)}_${JavaName(field.xrefField)}();
+		<#else>
 		if (name.equalsIgnoreCase("${name(field)}"))
 			return get${JavaName(field)}();
+		</#if>
 		<#if field.type == "enum" >	
 		if(name.equalsIgnoreCase("${name(field)}_label"))
 			return get${JavaName(field)}Label();
@@ -562,7 +578,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	public void validate() throws DatabaseException
 	{
 	<#list allFields(entity) as field><#if field.nillable == false>
+		<#if field.type == "xref" || field.type == "mref">
+		if(this.get${JavaName(field)}_${JavaName(field.xrefField)}() == null) throw new DatabaseException("required field ${name(field)} is null");
+		<#else>
 		if(this.get${JavaName(field)}() == null) throw new DatabaseException("required field ${name(field)} is null");
+		</#if>
 	</#if></#list>
 	}
 	
@@ -772,17 +792,54 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 <#list model.entities as e>
 	<#if !e.abstract && !e.isAssociation()>
 		<#list e.implementedFields as f>
-			<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
-				<#assign multipleXrefs = e.getNumberOfMrefTo(entity)/>
-	//${multipleXrefs}
+			<#if f.type=="xref" && f.getXrefEntityName() == entity.name>
+				<#assign multipleXrefs = model.getNumberOfReferencesTo(entity)/>
+//Number of Reference(s) with same Class: ${multipleXrefs}
+	//@javax.persistence.OneToMany(fetch=javax.persistence.FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/)
+    private java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection = new java.util.ArrayList<${f.entity.namespace}.${JavaName(f.entity)}>();
 
-	@XmlTransient
-	public java.util.Collection<${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection()
+
+	@javax.xml.bind.annotation.XmlTransient
+	public java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> get${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection(org.molgenis.framework.db.Database db)
 	{
         throw new UnsupportedOperationException();
 	}
 
-    public void set${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(java.util.Collection<${Name(f.entity)}> collection)
+	@javax.xml.bind.annotation.XmlTransient
+	public java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> get${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection()
+	{
+        throw new UnsupportedOperationException();
+	}
+
+    public void set${JavaName(f)}<#if multipleXrefs &gt; 0 >${JavaName(f.entity)}</#if>Collection(java.util.Collection<${f.entity.namespace}.${JavaName(f.entity)}> collection)
+    {
+		throw new UnsupportedOperationException();
+    }	
+		</#if>
+	</#list></#if>
+</#list>
+<#list model.entities as e>
+	<#if !e.abstract && !e.isAssociation()>
+		<#list e.implementedFields as f>
+			<#if f.type=="mref" && f.getXrefEntityName() == entity.name>
+				<#assign multipleXrefs = model.getNumberOfReferencesTo(entity)/>
+//Number of Reference(s) with same Class: ${multipleXrefs}
+    //@javax.persistence.ManyToMany(fetch=javax.persistence.FetchType.LAZY, mappedBy="${name(f)}"/*, cascade={javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH}*/)
+    private java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> ${name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection = new java.util.ArrayList<${f.entity.namespace}.${Name(f.entity)}>();
+
+	@javax.xml.bind.annotation.XmlTransient
+	public java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection()
+	{
+        throw new UnsupportedOperationException();
+	}
+
+	@javax.xml.bind.annotation.XmlTransient
+	public java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> get${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(org.molgenis.framework.db.Database db)
+	{
+        throw new UnsupportedOperationException();
+	}
+
+    public void set${Name(f)}<#if multipleXrefs &gt; 1 >${Name(f.entity)}</#if>Collection(java.util.Collection<${f.entity.namespace}.${Name(f.entity)}> collection)
     {
     	throw new UnsupportedOperationException();
     }	

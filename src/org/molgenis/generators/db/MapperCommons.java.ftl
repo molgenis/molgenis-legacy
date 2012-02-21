@@ -38,9 +38,9 @@
 		<#if f.xrefLabelNames?size &gt; 1>
 			//create xref/mref rule filtering ${f.xrefEntityName} on the combination of labels ${csv(f.xrefLabelNames)} if xref(id)==null and xref(name) exists
 			<#if f.type == 'xref'>
-			if(object.get${JavaName(f)}() == null && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}() != null)
+			if(object.get${JavaName(f)}_${JavaName(f.xrefField)}() == null && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}() != null)
 			<#else>
-			if(object.get${JavaName(f)}().size() == 0 && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size() > 0)
+			if(object.get${JavaName(f)}_${JavaName(f.xrefField)}().size() == 0 && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size() > 0)
 			</#if>
 			{
 				java.util.List<org.molgenis.framework.db.QueryRule> rules = new java.util.ArrayList<org.molgenis.framework.db.QueryRule>();
@@ -67,9 +67,9 @@
 		<#else>
 			//create xref/mref rule filtering ${f.xrefEntityName} on the label ${csv(f.xrefLabelNames)}
 			<#if f.type == 'xref'>
-			if(object.get${JavaName(f)}() == null && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}() != null)
+			if(object.get${JavaName(f)}_${JavaName(f.xrefField)}() == null && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}() != null)
 			<#else>
-			if(object.get${JavaName(f)}().size() == 0 && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size() > 0)
+			if(object.get${JavaName(f)}_${JavaName(f.xrefField)}().size() == 0 && object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size() > 0)
 			</#if>
 			{
 				<#if f.type == 'xref'>
@@ -95,11 +95,7 @@
 <#list allFields(entity) as f>
 <#if (f.type == 'xref' || f.type == 'mref') && f.xrefLabelNames[0] != f.xrefFieldName>
 		//resolve foreign key field '${name(f)}' to ${name(f.xrefEntity)}.${name(f.xrefField)} using ${csv(f.xrefLabelNames)})
-<#if databaseImp = 'JPA'>	
-		final java.util.Map<String, ${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)}> ${name(f)}_Labels_to_IdMap = new java.util.TreeMap<String, ${f.xrefEntity.namespace}.${JavaName(f.xrefEntity)}>();
-<#else>		
 		final java.util.Map<String,${JavaType(f.xrefField)}> ${name(f)}_Labels_to_IdMap = new java.util.TreeMap<String,${JavaType(f.xrefField)}>();
-</#if>
 		if(${name(f)}Rules.size() > 0)
 		{		
 		
@@ -122,11 +118,7 @@
 				<#list f.xrefLabelNames as label>
 				key += 	xref.get${JavaName(label)}();
 				</#list>	
-<#if databaseImp = 'JPA'>	
-				${name(f)}_Labels_to_IdMap.put(key, xref);
-<#else>		
 				${name(f)}_Labels_to_IdMap.put(key, xref.get${JavaName(f.xrefField)}());
-</#if>	
 			}
 		}
 </#if>
@@ -139,7 +131,7 @@
 			<#list allFields(entity) as f>
 			<#if (f.type == 'xref'  || f.type == 'mref') && f.xrefLabelNames[0] != f.xrefFieldName && f.xrefLabelNames[0]?exists>
 			//update object using label fields ${csv(f.xrefLabelNames)}
-			if(object.get${JavaName(f)}() == null <#if f.type == 'mref'>|| object.get${JavaName(f)}().size() == 0</#if>)
+			if(object.get${JavaName(f)}_${JavaName(f.xrefField)}() == null <#if f.type == 'mref'>|| object.get${JavaName(f)}_${JavaName(f.xrefField)}().size() == 0</#if>)
 			{
 				<#if f.type == 'mref'>
 				for(int j = 0; j < object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size(); j++)
@@ -149,11 +141,8 @@
 					<#list f.xrefLabelNames as label>
 					key += 	object.get${JavaName(f)}_${JavaName(label)}()<#if f.type=='mref'>.get(j)</#if>;
 					</#list>
-					<#if f.type == 'xref'>
-					object.set${JavaName(f)}(${name(f)}_Labels_to_IdMap.get(key));
-					<#else>
-					object.get${JavaName(f)}().add(${name(f)}_Labels_to_IdMap.get(key));
-					</#if>
+
+					object.set${JavaName(f)}_${JavaName(f.xrefField)}(${name(f)}_Labels_to_IdMap.get(key));
 				}
 			}
 			</#if>

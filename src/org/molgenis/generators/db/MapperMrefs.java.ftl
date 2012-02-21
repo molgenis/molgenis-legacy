@@ -30,11 +30,11 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 			
 			for(${JavaName(mref_entity)} ref: ${name(f)}_mrefs)
 			{
-				if(${name(f)}_${name(mref_remote_field)}_map.get(ref.get${JavaName(mref_local_field)}()) == null) ${name(f)}_${name(mref_remote_field)}_map.put(ref.get${JavaName(mref_local_field)}_${JavaName(pkey(f.xrefEntity))}(),new ArrayList<${pkeyJavaType(f.xrefEntity)}>()); 
-				${name(f)}_${name(mref_remote_field)}_map.get(ref.get${JavaName(mref_local_field)}()).add(ref.get${JavaName(mref_remote_field)}_${JavaName(pkey(f.xrefEntity))}());
+				if(${name(f)}_${name(mref_remote_field)}_map.get(ref.get${JavaName(mref_local_field)}_${JavaName(f.xrefField)}()) == null) ${name(f)}_${name(mref_remote_field)}_map.put(ref.get${JavaName(mref_local_field)}_${JavaName(pkey(f.xrefEntity))}(),new ArrayList<${pkeyJavaType(f.xrefEntity)}>()); 
+				${name(f)}_${name(mref_remote_field)}_map.get(ref.get${JavaName(mref_local_field)}_${JavaName(f.xrefField)}()).add(ref.get${JavaName(mref_remote_field)}_${JavaName(pkey(f.xrefEntity))}());
 				<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
-				if(${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}()) == null)	${name(f)}_${label}_map.put(ref.get${JavaName(mref_local_field)}_${JavaName(pkey(f.xrefEntity))}(),new ArrayList<${JavaType(f.xrefLabels[label_index])}>());
-				${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}()).add(ref.get${JavaName(mref_remote_field)}_${JavaName(label)}());
+				if(${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}_${JavaName(f.xrefField)}()) == null)	${name(f)}_${label}_map.put(ref.get${JavaName(mref_local_field)}_${JavaName(pkey(f.xrefEntity))}(),new ArrayList<${JavaType(f.xrefLabels[label_index])}>());
+				${name(f)}_${label}_map.get(ref.get${JavaName(mref_local_field)}_${JavaName(f.xrefField)}()).add(ref.get${JavaName(mref_remote_field)}_${JavaName(label)}());
 				</#list></#if>
 			}
 </#list>
@@ -98,7 +98,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 <#assign mref_remote_field = f.mrefRemoteid/>
 <#assign mref_local_field = f.mrefLocalid/>		
 			//remove duplicates using Set
-			entity.set${JavaName(f)}(new ArrayList(new LinkedHashSet(entity.get${JavaName(f)}())));
+			entity.set${JavaName(f)}(new ArrayList(new LinkedHashSet(entity.get${JavaName(f)}_${JavaName(f.xrefField)}())));
 			for(${pkeyJavaType(f.xrefEntity)} id: entity.get${JavaName(f)}_${JavaName(pkey(f.xrefEntity))}())
 			{
 				${JavaName(mref_entity)} new_mref = new ${JavaName(mref_entity)}();
