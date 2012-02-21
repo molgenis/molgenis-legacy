@@ -78,7 +78,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			//XrefInput input = new XrefInput("${entity.name}_${field.name}", getEntity().get${JavaName(field)}());
 			//create xref dummy object
 			${JavaName(xref_entity)} dummy = null;
-			if(getEntity().get${JavaName(field)}_Id() != null)
+			if(getEntity().get${JavaName(field)}_${Javaname(field.xrefFieldName)}() != null)
 			{
 			 	dummy = new ${JavaName(xref_entity)}();
 				dummy.set${JavaName(field.xrefFieldName)}(getEntity().get${JavaName(field)}_${JavaName(field.xrefFieldName)}());
@@ -95,7 +95,7 @@ public class ${JavaName(entity)}Form extends EntityForm<${JavaName(entity)}>
 			//MrefInput input = new MrefInput("${entity.name}_${field.name}", getEntity().get${JavaName(field)}());
 			//create xref dummy list of references
 			List<${JavaName(xref_entity)}> dummyList = new ArrayList<${JavaName(xref_entity)}>();
-			if(getEntity().get${JavaName(field)}_Id() != null) for(int i = 0; i < getEntity().get${JavaName(field)}_Id().size(); i++ )
+			if(getEntity().get${JavaName(field)}_${Javaname(field.xrefFieldName)}() != null) for(int i = 0; i < getEntity().get${JavaName(field)}${Javaname(field.xrefFieldName)}().size(); i++ )
 			{
 				${JavaName(xref_entity)} dummy = new ${JavaName(xref_entity)}();
 				dummy.set${JavaName(field.xrefFieldName)}(getEntity().get${JavaName(field)}_${JavaName(field.xrefFieldName)}().get(i));
