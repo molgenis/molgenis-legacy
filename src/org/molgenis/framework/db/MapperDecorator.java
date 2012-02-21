@@ -1,22 +1,19 @@
-package org.molgenis.framework.db.jdbc;
+package org.molgenis.framework.db;
 
 import java.text.ParseException;
 import java.util.List;
 
 import org.molgenis.fieldtypes.FieldType;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
+import org.molgenis.util.TupleReader;
 import org.molgenis.util.TupleWriter;
 
-public class MappingDecorator<E extends Entity> implements Mapper<E>
+public class MapperDecorator<E extends Entity> implements Mapper<E>
 {
 	private Mapper<E> mapper;
 
-	public MappingDecorator(Mapper<E> generatedMapper)
+	public MapperDecorator(Mapper<E> generatedMapper)
 	{
 		this.mapper = generatedMapper;
 	}
@@ -40,7 +37,7 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public int add(CsvReader reader, TupleWriter writer) throws DatabaseException
+	public int add(TupleReader reader, TupleWriter writer) throws DatabaseException
 	{
 		return mapper.add(reader, writer);
 	}
@@ -70,19 +67,19 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public int remove(CsvReader reader) throws DatabaseException
+	public int remove(TupleReader reader) throws DatabaseException
 	{
 		return mapper.remove(reader);
 	}
 
 	@Override
-	public List<E> toList(CsvReader reader, int limit) throws DatabaseException
+	public List<E> toList(TupleReader reader, int limit) throws DatabaseException
 	{
 		return mapper.toList(reader, limit);
 	}
 
 	@Override
-	public int update(CsvReader reader) throws DatabaseException
+	public int update(TupleReader reader) throws DatabaseException
 	{
 		return mapper.update(reader);
 	}
@@ -124,6 +121,57 @@ public class MappingDecorator<E extends Entity> implements Mapper<E>
 	public String createFindSqlInclRules(QueryRule[] rules) throws DatabaseException
 	{
 		return mapper.createFindSqlInclRules(rules);
+	}
+
+//	@Override
+//	public int add(E entity) throws DatabaseException
+//	{
+//		return this.mapper.add(entity);
+//	}
+//
+//	@Override
+//	public int update(E entity) throws DatabaseException
+//	{
+//		// TODO Auto-generated method stub
+//		return this.mapper.update(entity);
+//	}
+//
+//	@Override
+//	public int remove(E entity) throws DatabaseException
+//	{
+//		return this.mapper.remove(entity);
+//	}
+
+	@Override
+	public E findById(Object id) throws DatabaseException
+	{
+		return this.mapper.findById(id);
+	}
+
+	@Override
+	public List<E> findByExample(E example) throws DatabaseException
+	{
+		return this.mapper.findByExample(example);
+	}
+
+	@Override
+	public final int executeAdd(List<? extends E> entities) throws DatabaseException
+	{
+		return this.mapper.executeAdd(entities);
+	}
+
+	@Override
+	public final int executeUpdate(List<? extends E> entities) throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		return this.mapper.executeUpdate(entities);
+	}
+
+	@Override
+	public final int executeRemove(List<? extends E> entities) throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		return this.mapper.executeRemove(entities);
 	}
 
 

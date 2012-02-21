@@ -1,28 +1,28 @@
 package org.molgenis.framework.db.jdbc;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.FieldType;
+import org.molgenis.fieldtypes.IntField;
+import org.molgenis.fieldtypes.LongField;
+import org.molgenis.framework.db.AbstractMapper;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.TupleWriter;
-import org.molgenis.util.Tuple;
 
 /**
  * Factory for creating SQL statements
@@ -30,251 +30,69 @@ import org.molgenis.util.Tuple;
  * @author Morris Swertz
  * 
  */
-public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper<E>
+public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMapper<E>
 {
-	/** database */
-	JDBCDatabase database;
 	/** log messages */
-	private static transient final Logger logger = Logger.getLogger(AbstractJDBCMapper.class.getSimpleName());
-	/** batch size */
-	public static final int BATCH_SIZE = 5000;
+	public static transient final Logger logger = Logger.getLogger(AbstractJDBCMapper.class.getSimpleName());
 
-	public AbstractJDBCMapper(JDBCDatabase database)
+
+	public AbstractJDBCMapper(Database database)
 	{
-		this.database = database;
+		super(database);
 	}
-
-	public JDBCDatabase getDatabase()
+	
+	@Override
+	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule... rules)
+			throws DatabaseException
 	{
-		return database;
-	}
-
-	@SuppressWarnings("unchecked")
-	public int add(List<E> entities) throws DatabaseException
-	{
-		int updatedRows = 0;
-		final String TX_TICKET = "ADD_" + this.getClass().getSimpleName();
 		try
 		{
-			// begin transaction for all batches
-			database.beginPrivateTx(TX_TICKET);
-
-			// prepare all file attachments
-			this.prepareFileAttachements(entities, database.getFilesource());
-
-			// add to superclass first
-			int superUpdatedRows = 0;
-			if (this.getSuperTypeMapper() != null)
-			{
-				superUpdatedRows = getSuperTypeMapper().add(entities);
-			}
+			//streaming result!!!!
+			ResultSetTuple rs = new ResultSetTuple(executeSelect(rules));
 			
-			// attempt to resolve foreign keys by label (ie. 'name')
-			this.resolveForeignKeys(entities);
+			/*logger.debug("executeSelect(rules)");
+			for(QueryRule q : rules){
+				logger.debug("rule: " + q.toString());
+			}*/
+			// transform result set in writer
+			E entity = create();				
+			List<String> fields = fieldsToExport; 
+			if(fieldsToExport == null) fields = entity.getFields();
+			
+			writer.setHeaders(fields);
+			writer.writeHeader();
+			int i = 0;
+			List<E> entityBatch = new ArrayList<E>();
+			while (rs.next())
+			{
+				entity = create();
+				entity.set(rs);
+				entityBatch.add(entity);
+				i++;
 				
-			// insert this class in batches
-			for (int i = 0; i < entities.size(); i += BATCH_SIZE)
-			{
-				int endindex = Math.min(i + BATCH_SIZE, entities.size());
-				List<E> sublist = entities.subList(i, endindex);
-				updatedRows += Math.max(this.executeAdd(sublist), superUpdatedRows);
 			}
-
-			// update any mrefs for this entity
-			this.storeMrefs(entities);
-
-			// store file attachments and then update the file paths to them
-			if (this.saveFileAttachements(entities, database.fileSource))
+			// write remaining
+			// load mrefs
+			logger.debug("*** mapMrefs -> LEFTOVERS"); //program does NOT crash after this
+			mapMrefs(entityBatch);
+			for (E e : entityBatch)
 			{
-				this.update(entities);
+				writer.writeRow(e);
 			}
-
-			// commit all batches
-			database.commitPrivateTx(TX_TICKET);
-
-			logger.info(updatedRows + " " + this.create().getClass().getSimpleName() + " objects added");
-			return updatedRows;
-		}
-		catch (Exception sqle)
-		{
-			sqle.printStackTrace();
-			database.rollbackPrivateTx(TX_TICKET);
-			logger.error("ADD failed on " + this.create().getClass().getSimpleName() + ": " + sqle.getMessage());
-			throw new DatabaseException(sqle);
-		}
-	}
-
-	// FIXME: can we merge the two add functions by wrapping list/reader into an
-	// iterator of some kind?
-	public int add(CsvReader reader, TupleWriter writer) throws DatabaseException
-	{
-		int rowsAffected = 0;
-		final String TX_TICKET = "ADD+" + this.create().getClass().getCanonicalName() + "_CSV";
-		try
-		{
-			database.beginPrivateTx(TX_TICKET);
-
-			List<E> entities = toList(reader, BATCH_SIZE);
-
-			if (writer != null)
-			{
-				writer.setHeaders(entities.get(0).getFields());
-				writer.writeHeader();
-			}
-
-			while (entities.size() > 0)
-			{
-				// resolve foreign keys
-				this.resolveForeignKeys(entities);
-
-				// add to the database
-				rowsAffected += database.add(entities);
-				if (writer != null)
-				{
-					for (E entity : entities)
-					{
-						writer.writeRow(entity);
-					}
-				}
-				entities = toList(reader, BATCH_SIZE);
-			}
-
-			database.commitPrivateTx(TX_TICKET);
+			entityBatch.clear();
+			rs.close();
+			writer.close();
+	
+			logger.debug("find(" + create().getClass().getSimpleName() + ", TupleWriter, " + 
+					Arrays.asList(rules) + "): wrote " + i + " lines.");
 		}
 		catch (Exception e)
 		{
-			database.rollbackPrivateTx(TX_TICKET);
 			throw new DatabaseException(e);
 		}
-		return rowsAffected;
-	}
-
-	@SuppressWarnings("unchecked")
-	public int update(List<E> entities) throws DatabaseException
-	{
-		int updatedRows = 0;
-		final String TX_TICKET = "UPDATE" + this.getClass().getSimpleName();
-		try
+		finally
 		{
-			// start anonymous transaction for the batched update
-			database.beginPrivateTx(TX_TICKET);
-
-			// prepare file attachments
-			this.prepareFileAttachements(entities, database.fileSource);
-
-			// update the superclass first
-			int superUpdatedRows = 0;
-			if (this.getSuperTypeMapper() != null)
-			{
-				superUpdatedRows = getSuperTypeMapper().update(entities);
-			}
-			
-			// attempt to resolve foreign keys by label (ie. 'name')
-			this.resolveForeignKeys(entities);
-
-			// update in batches
-			for (int i = 0; i < entities.size(); i += BATCH_SIZE)
-			{
-				int endindex = Math.min(i + BATCH_SIZE, entities.size());
-				List<E> sublist = entities.subList(i, endindex);
-
-				// put the files in their place
-				this.saveFileAttachements(sublist, database.fileSource);
-
-				updatedRows += Math.max(this.executeUpdate(sublist), superUpdatedRows);
-			}
-
-			// rename file attachments with right name and update database
-			this.storeMrefs(entities);
-
-			database.commitPrivateTx(TX_TICKET);
-
-			logger.info(updatedRows + " " + this.create().getClass().getSimpleName() + " objects updated");
-			return updatedRows;
-		}
-		catch (Exception sqle)
-		{
-			database.rollbackPrivateTx(TX_TICKET);
-			logger.error("update failed on " + this.create().getClass().getSimpleName() + ": " + sqle.getMessage());
-			throw new DatabaseException(sqle);
-		}
-	}
-
-	public int update(CsvReader reader) throws DatabaseException
-	{
-		int rowsAffected = 0;
-		final String TX_TICKET = "ADD+" + this.create().getClass().getCanonicalName() + "_CSV";
-		try
-		{
-			database.beginPrivateTx(TX_TICKET);
-			List<E> entities = toList(reader, BATCH_SIZE);
-			while (entities.size() > 0)
-			{
-				// resolve foreign keys
-				this.resolveForeignKeys(entities);
-
-				// update to the database
-				rowsAffected += database.update(entities);
-				entities = toList(reader, BATCH_SIZE);
-			}
-
-			database.commitPrivateTx(TX_TICKET);
-		}
-		catch (Exception e)
-		{
-			database.rollbackPrivateTx(TX_TICKET);
-			throw new DatabaseException(e);
-		}
-		return rowsAffected;
-	}
-
-	@SuppressWarnings("unchecked")
-	public int remove(List<E> entities) throws DatabaseException
-	{
-		int updatedRows = 0;
-		final String TX_TICKET = "REMOVE_" + this.getClass().getSimpleName();
-		try
-		{
-			// start anonymous transaction for the batched remove
-			database.beginPrivateTx(TX_TICKET);
-
-			// prepare file attachments
-			this.prepareFileAttachements(entities, database.fileSource);
-			
-			// attempt to resolve foreign keys by label (ie. 'name')
-			this.resolveForeignKeys(entities);
-
-			// remove in batches
-			for (int i = 0; i < entities.size(); i += BATCH_SIZE)
-			{
-				int endindex = Math.min(i + BATCH_SIZE, entities.size());
-				List<E> sublist = entities.subList(i, endindex);
-
-				// remove mrefs before the entity itself
-				this.removeMrefs(sublist);
-				updatedRows += this.executeRemove(sublist);
-			}
-			// store mrefs
-			// ConnectionHelper.storeMrefs(this, connection,entities);
-
-			// if delete, delete supertype after subtype
-			// delete super type if necessary
-			if (this.getSuperTypeMapper() != null)
-			{
-				updatedRows = Math.max(getSuperTypeMapper().remove(entities), updatedRows);
-			}
-
-			database.commitPrivateTx(TX_TICKET);
-
-			logger.info(updatedRows + " " + this.create().getClass().getSimpleName() + " objects removed");
-			return updatedRows;
-		}
-		catch (Exception sqle)
-		{
-			database.rollbackPrivateTx(TX_TICKET);
-			logger.error("remove failed on " + this.create().getClass().getSimpleName() + ": " + sqle.getMessage());
-			sqle.printStackTrace();
-			throw new DatabaseException(sqle);
+			((JDBCDatabase)getDatabase()).closeConnection();
 		}
 	}
 
@@ -286,7 +104,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	 * @param stmt
 	 * @throws DatabaseException
 	 */
-	public void getGeneratedKeys(List<E> entities, Statement stmt, int fromIndex) throws DatabaseException
+	public void getGeneratedKeys(List<? extends E> entities, Statement stmt, int fromIndex) throws DatabaseException
 	{
 		E entity = null;
 		ResultSet rs_keys = null;
@@ -298,7 +116,6 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			{
 				entity = entities.get(fromIndex + i);
 				setAutogeneratedKey(rs_keys.getInt(1), entity);
-				entities.set(fromIndex + i, entity); // put it back again...
 				i++;
 			}
 		}
@@ -320,46 +137,6 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 			rs_keys = null;
 		}
 	}
-
-	/**
-	 * Maps to another mapping strategy for superclasses
-	 */
-	@SuppressWarnings("rawtypes")
-	public abstract JDBCMapper getSuperTypeMapper();
-
-	/**
-	 * helper method create a new instance of E
-	 */
-	public abstract E create();
-
-	/**
-	 * Method to build a list for Entity E. This allows the finder to pick a
-	 * more efficient list implementation than the generic lists.
-	 * 
-	 * @param size
-	 *            of the list
-	 * @return list
-	 */
-	public abstract List<E> createList(int size);
-
-	/**
-	 * maps {@link org.molgenis.framework.db.Database#add(List)}
-	 * 
-	 * @throws DatabaseException
-	 */
-	public abstract int executeAdd(List<E> entities) throws DatabaseException;
-
-	/**
-	 * maps {@link org.molgenis.framework.db.Database#update(List)}
-	 * 
-	 * @throws DatabaseException
-	 */
-	public abstract int executeUpdate(List<E> entities) throws DatabaseException;
-
-	/**
-	 * maps {@link org.molgenis.framework.db.Database#remove(List)}
-	 */
-	public abstract int executeRemove(List<E> entities) throws DatabaseException;
 
 	/**
 	 * maps {@link org.molgenis.framework.db.Database#find(Class, QueryRule[])}
@@ -395,23 +172,6 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	public abstract void setAutogeneratedKey(int key, E entity);
 
 	/**
-	 * helper method to prepares file for saving.
-	 * 
-	 * @throws IOException
-	 */
-	public abstract void prepareFileAttachements(List<E> entities, File dir) throws IOException;
-
-	/**
-	 * helper method to do some actions after the transaction. For example:
-	 * write files to disk. FIXME make a listener?
-	 * 
-	 * @return true if files were saved (will cause additional update to the
-	 *         database)
-	 * @throws IOException
-	 */
-	public abstract boolean saveFileAttachements(List<E> entities, File dir) throws IOException;
-
-	/**
 	 * helper method for mapping multiplicative references (mref). This function
 	 * is used when retrieving the entity. It should retrieve the mref elements
 	 * and add them to each mref field.
@@ -436,99 +196,16 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	 */
 	protected abstract QueryRule rewriteMrefRule(Database db, QueryRule user_rule) throws DatabaseException;
 
-	/**
-	 * Helper method for storing multiplicative references. This function should
-	 * check wether any mref values have been newly selected or deselected. The
-	 * newly selected elements should be added, the deselected elements should
-	 * be removed (from the entity that holds the mrefs).
-	 * 
-	 * @param entities
-	 * @throws DatabaseException
-	 * @throws IOException
-	 * @throws ParseException 
-	 */
-	public abstract void storeMrefs(List<E> entities) throws DatabaseException, IOException, ParseException;
-
-	/**
-	 * Foreign key values may be only given via the 'label'. This function
-	 * allows resolves the underlying references for a list of entities.
-	 * 
-	 * @param entities
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public abstract void resolveForeignKeys(List<E> entities) throws DatabaseException, ParseException;
-
-	/**
-	 * Helper method for removing multiplicative references ('mrefs')
-	 * 
-	 * @param entities
-	 * @throws SQLException
-	 * @throws IOException
-	 * @throws DatabaseException
-	 * @throws ParseException 
-	 */
-	public abstract void removeMrefs(List<E> entities) throws SQLException, IOException, DatabaseException, ParseException;
-
-	public int remove(CsvReader reader) throws DatabaseException
-	{
-		int rowsAffected = 0;
-		final String TX_TICKET = "REMOVE+" + this.create().getClass().getCanonicalName() + "_CSV";
-		try
-		{
-			database.beginPrivateTx(TX_TICKET);
-			List<E> entities = toList(reader, BATCH_SIZE);
-			while (entities.size() > 0)
-			{
-				// resolve foreign keys
-				this.resolveForeignKeys(entities);
-
-				// update to the database
-				rowsAffected += database.remove(entities);
-				entities = toList(reader, BATCH_SIZE);
-			}
-
-			database.commitPrivateTx(TX_TICKET);
-		}
-		catch (Exception e)
-		{
-			database.rollbackPrivateTx(TX_TICKET);
-			throw new DatabaseException(e);
-		}
-		return rowsAffected;
-	}
-
-	public List<E> toList(CsvReader reader, int limit) throws DatabaseException
-	{
-		final List<E> entities = createList(10);
-		try
-		{
-			reader.parse(limit, new CsvReaderListener()
-			{
-				public void handleLine(int line_number, Tuple line) throws Exception
-				{
-					E e = create();
-					e.set(line, false); // parse the tuple
-					entities.add(e);
-				}
-			});
-		}
-		catch (Exception ex)
-		{
-			throw new DatabaseException(ex);
-		}
-		return entities;
-	}
-
 	public int count(QueryRule... rules) throws DatabaseException
 	{
 		try
 		{
 			String sql = createCountSql(rules)
-					+ JDBCDatabase.createWhereSql(this, false, true,
+					+ createWhereSql(false, true,
 							this.rewriteRules(getDatabase(), rules));
 			// + createWhereSql(getMapperFor(klazz), false, true, rules);
-			ResultSet rs = getDatabase().executeQuery(sql);
+			@SuppressWarnings("deprecation")
+			ResultSet rs = getDatabase().executeQuery(sql, null);
 			rs.next();
 			int result = rs.getInt("num_rows");
 			logger.debug("counted " + this.create().getClass().getSimpleName() + " objects");
@@ -542,7 +219,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		}
 		finally
 		{
-			getDatabase().closeConnection();
+			((JDBCDatabase)getDatabase()).closeConnection();
 		}
 	}
 
@@ -577,33 +254,8 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		}
 		finally
 		{
-			getDatabase().closeConnection();
+			((JDBCDatabase)getDatabase()).closeConnection();
 		}
-	}
-
-	public void find(TupleWriter writer, QueryRule... rules) throws DatabaseException
-	{
-		// default should be false for regular behaviour
-		// FIXME: java warning? "Varargs methods should only override or be
-		// overridden by other varargs methods"
-		this.find(writer, null, rules);
-	}
-	
-	/**
-	 * Helper function to write an already known list of entites to a TupleWriter.
-	 * @param entities
-	 * @param writer
-	 * @param fieldsToExport
-	 * @throws Exception 
-	 */
-	public static void find(List<? extends Entity> entities, TupleWriter writer, List<String> fieldsToExport) throws Exception
-	{	
-		writer.setHeaders(fieldsToExport);
-		writer.writeHeader();
-		for(Entity e : entities){
-			writer.writeRow(e);
-		}
-		writer.close();
 	}
 	
 	private boolean hasXrefByNameEquivalent(String field, Vector<String> fields){
@@ -618,140 +270,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		}
 		return false;
 	}
-
-	/**
-	 * Reason for backup: function needs to be looked at - possible bug
-	 * See other find() function below for explanation!
-	 */
-	public void findBACKUP(TupleWriter writer, boolean skipIdFields, QueryRule... rules) throws DatabaseException
-	{
-		try
-		{
-			logger.debug("new ResultSetTuple(executeSelect(rules)....");
-			ResultSetTuple rs = new ResultSetTuple(executeSelect(rules));
-			logger.debug("executeSelect(rules)");
-			for(QueryRule q : rules){
-				logger.debug("rule: " + q.toString());
-			}
-			// transform result set in writer
-			E entity = create();
-			Vector<String> fields;
-			
-			if (skipIdFields)
-			{
-				fields = entity.getFields();
-				Vector<String> fieldsCopy = entity.getFields();
-				fieldsCopy.remove("id");
-				for(String field : fields){
-					if(hasXrefByNameEquivalent(field, fields)){
-						fieldsCopy.remove(field);
-					}
-				}
-				fields = fieldsCopy;
-			}
-			else
-			{
-				fields = entity.getFields();
-			}
-			writer.setHeaders(fields);
-			writer.writeHeader();
-			int i = 0;
-			List<E> entityBatch = new ArrayList<E>();
-			while (rs.next())
-			{
-				entity = create();
-				entity.set(rs);
-				entityBatch.add(entity);
-				i++;
-
-				// write batch
-				if (i % BATCH_SIZE == 0)
-				{
-					// load mrefs
-					mapMrefs(entityBatch);
-					for (E e : entityBatch)
-					{
-						writer.writeRow(e);
-					}
-					entityBatch.clear();
-				}
-			}
-			// write remaining
-			// load mrefs
-			mapMrefs(entityBatch);
-			for (E e : entityBatch)
-			{
-				writer.writeRow(e);
-			}
-			entityBatch.clear();
-
-			rs.close();
-
-			logger.debug("find(" + create().getClass().getSimpleName() + ", CsvWriter, " + Arrays.asList(rules)
-					+ "): wrote " + i + " lines.");
-		}
-		catch (Exception e)
-		{
-			throw new DatabaseException(e);
-		}
-		finally
-		{
-			getDatabase().closeConnection();
-		}
-	}
 	
-	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule... rules) throws DatabaseException
-	{
-		try
-		{
-			//logger.debug("new ResultSetTuple(executeSelect(rules)....");
-			ResultSetTuple rs = new ResultSetTuple(executeSelect(rules));
-			/*logger.debug("executeSelect(rules)");
-			for(QueryRule q : rules){
-				logger.debug("rule: " + q.toString());
-			}*/
-			// transform result set in writer
-			E entity = create();				
-			List<String> fields = fieldsToExport; 
-			if(fieldsToExport == null) fields = entity.getFields();
-			
-			writer.setHeaders(fields);
-			writer.writeHeader();
-			int i = 0;
-			List<E> entityBatch = new ArrayList<E>();
-			while (rs.next())
-			{
-				entity = create();
-				entity.set(rs);
-				entityBatch.add(entity);
-				i++;
-				
-			}
-			// write remaining
-			// load mrefs
-			logger.debug("*** mapMrefs -> LEFTOVERS"); //program does NOT crash after this
-			mapMrefs(entityBatch);
-			for (E e : entityBatch)
-			{
-				writer.writeRow(e);
-			}
-			entityBatch.clear();
-			rs.close();
-			writer.close();
-
-			logger.debug("find(" + create().getClass().getSimpleName() + ", TupleWriter, " + 
-					Arrays.asList(rules) + "): wrote " + i + " lines.");
-		}
-		catch (Exception e)
-		{
-			throw new DatabaseException(e);
-		}
-		finally
-		{
-			getDatabase().closeConnection();
-		}
-	}
-
 	/**
 	 * Helper function of various find functions.
 	 * 
@@ -762,7 +281,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 	 * @throws DatabaseException
 	 * @throws SQLException
 	 */
-	private ResultSet executeSelect(QueryRule... rules) throws DatabaseException, SQLException
+	public ResultSet executeSelect(QueryRule... rules) throws DatabaseException, SQLException
 	{
 		String sql = createFindSqlInclRules(rules);
 		if(rules != null){
@@ -772,26 +291,46 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 				if (rule.getOperator() == Operator.LAST)
 				{
 					sql = "select * from (" + sql + ") as " + this.getClass().getSimpleName().toLowerCase() + " "
-							+ JDBCDatabase.createSortSql(null, true, rules);
+							+ createSortSql(true, rules);
 					break;
 				}
 			}
 		}
 		// execute the query
 		//logger.info("TEST\n"+sql);
-		return getDatabase().executeQuery(sql);
+		return getDatabase().executeQuery(sql, null);
 	}
 	
-	public String escapeSql(Object value)
+	/**
+	 * Helper method for creating an escaped sql string for a value.
+	 * <p>
+	 * This can be used by createXXXsql methods to prevend sql-injection in data
+	 * values.
+	 * 
+	 * @param value
+	 *            to be escaped
+	 */
+	public static String escapeSql(Object value)
 	{
-		return this.getDatabase().escapeSql(value);
+		if (value != null)
+		{
+			String result = StringEscapeUtils.escapeSql(value.toString());
+			// odd case: if ends with \ we are in trouble
+			if (result.endsWith("\\"))
+			{
+				result += "\\";
+			}
+			return result;
+		}
+		return null;
+		// return sql.toString().replace("'", "''");
 	}
 	
 	@Override
 	public String createFindSqlInclRules(QueryRule ... rules) throws DatabaseException
 	{
 		 return createFindSql()
-			+ JDBCDatabase.createWhereSql((JDBCMapper<?>) this, false, true, this.rewriteRules(getDatabase(), rules));
+			+ createWhereSql(false, true, this.rewriteRules(getDatabase(), rules));
 	}
 
 	/**
@@ -844,4 +383,408 @@ public abstract class AbstractJDBCMapper<E extends Entity> implements JDBCMapper
 		}
 		return rules;
 	}
+	
+	/**
+	 * Helper method for creating a where clause from QueryRule...rules.
+	 * 
+	 * @param mapper
+	 *            mapper that is used to extract metadata to create the
+	 * @param isNested
+	 *            wether this whereclause will be nested inside another clause,
+	 *            e.g (A AND B) OR C. If nested then the word "where" will not
+	 *            be included in the returned string so this method can be used
+	 *            recursively.
+	 * @param withOffset
+	 *            whether this whereclause should be calculated including offset
+	 *            and limit
+	 * @param rules
+	 *            query rules to be translated into sql where clause.
+	 * @return sql where clause. FIXME: remove the 'withOffset' part?
+	 * @throws DatabaseException
+	 */
+	public String createWhereSql(boolean isNested,
+			boolean withOffset, QueryRule... rules) throws DatabaseException
+	{
+		StringBuilder where_clause = new StringBuilder("");
+		QueryRule previousRule = new QueryRule(Operator.AND);
+		if (rules != null)
+		{
+			for (QueryRule r : rules)
+			{
+				// logger.debug(r);
+				// skip OR and AND operators
+				if (r.getOperator().equals(Operator.OR)
+						|| r.getOperator().equals(Operator.AND))
+				{
+					previousRule = r;
+				}
+				else
+				{
+					QueryRule rule = new QueryRule(r); // copy because of side
+					// effects
+					// logger.debug(rule);
+
+					// String tablePrefix = "";
+					rule.setField(
+							getTableFieldName(rule.getField()));
+
+					if (rule.getOperator() == Operator.LAST
+							|| rule.getOperator() == Operator.LIMIT
+							|| rule.getOperator() == Operator.OFFSET
+							|| rule.getOperator() == Operator.SORTASC
+							|| rule.getOperator() == Operator.SORTDESC)
+					{
+
+					}
+					else if (rule.getOperator() == QueryRule.Operator.NESTED)
+					{
+						QueryRule[] nestedrules = rule.getNestedRules();
+						if (nestedrules.length > 0)
+						{
+							if (where_clause.length() > 0)
+							{
+								if (previousRule != null
+										&& Operator.OR.equals(previousRule
+												.getOperator()))
+								{
+									where_clause.append(" OR ");
+								}
+								else
+								{
+									where_clause.append(" AND ");
+								}
+							}
+							where_clause.append("(");
+							where_clause.append(createWhereSql(true,
+									false, nestedrules));
+							where_clause.append(")");
+						}
+					}
+					// experimental: subqery
+					else if (rule.getOperator() == QueryRule.Operator.IN_SUBQUERY)
+					{
+						if (where_clause.length() > 0)
+						{
+							if (previousRule != null
+									&& Operator.OR.equals(previousRule
+											.getOperator()))
+							{
+								where_clause.append(" OR ");
+							}
+							else
+							{
+								where_clause.append(" AND ");
+							}
+						}
+						where_clause.append(rule.getField() + " IN("
+								+ rule.getValue() + ")");
+					}
+					else if (rule.getOperator() == QueryRule.Operator.IN)
+					{
+						// only add if nonempty condition???
+						if (rule.getValue() == null
+								|| (rule.getValue() instanceof List<?> && ((List<?>) rule
+										.getValue()).size() == 0)
+								|| (rule.getValue() instanceof Object[] && ((Object[]) rule
+										.getValue()).length == 0)) throw new DatabaseException(
+								"empty 'in' clause for rule " + rule);
+						{
+							if (where_clause.length() > 0)
+							{
+								if (previousRule != null
+										&& Operator.OR.equals(previousRule
+												.getOperator()))
+								{
+									where_clause.append(" OR ");
+								}
+								else
+								{
+									where_clause.append(" AND ");
+								}
+							}
+
+							// where_clause.append(tablePrefix + rule.getField()
+							// +
+							// " IN(");
+							where_clause.append(rule.getField() + " IN(");
+
+							Object[] values = new Object[0];
+							if (rule.getValue() instanceof List<?>)
+							{
+								values = ((List<?>) rule.getValue()).toArray();
+							}
+							else
+							{
+								values = (Object[]) rule.getValue();
+							}
+
+							for (int i = 0; i < values.length; i++)
+							{
+								if (i > 0) where_clause.append(",");
+								if (omitQuotes(getFieldType(rule
+												.getField())))
+								{
+									// where_clause.append(values[i]
+									// .toString());
+									where_clause.append(""
+											+ escapeSql(values[i]) + "");
+								}
+								else
+								{
+									where_clause.append("'"
+											+ escapeSql(values[i]) + "'");
+								}
+							}
+							where_clause.append(") ");
+						}
+					}
+					else
+					// where clause
+					{
+						// check validity of the rule
+						// if(rule.getField() == null ||
+						// columnInfoMap.get(rule.getField()) == null )
+						// {
+						// throw new DatabaseException("Invalid rule: field '"+
+						// rule.getField() + "' not known.");
+						// }
+
+						String operator = "";
+						switch (rule.getOperator())
+						{
+							case EQUALS:
+								operator = "=";
+								break;
+							case JOIN:
+								operator = "=";
+								break;
+							case NOT:
+								operator = "!=";
+								break;
+							case LIKE:
+								operator = "LIKE";
+								break;
+							case LESS:
+								operator = "<";
+								break;
+							case GREATER:
+								operator = ">";
+								break;
+							case LESS_EQUAL:
+								operator = "<=";
+								break;
+							case GREATER_EQUAL:
+								operator = ">=";
+								break;
+						}
+						// if (rule.getField() != "" && operator != "" &&
+						// rule.getValue() != "")
+						// {
+						if (where_clause.length() > 0)
+						{
+							if (previousRule != null
+									&& Operator.OR.equals(previousRule
+											.getOperator()))
+							{
+								where_clause.append(" OR ");
+							}
+							else
+							{
+								where_clause.append(" AND ");
+							}
+						}
+						if (Boolean.TRUE.equals(rule.getValue())) rule
+								.setValue("1");
+						if (Boolean.FALSE.equals(rule.getValue())) rule
+								.setValue("0");
+						Object value = rule.getValue() == null ? "NULL"
+								: escapeSql(rule.getValue());
+
+						if (!value.equals("NULL")
+								&& rule.getOperator() == Operator.LIKE
+								&& (!omitQuotes(
+										getFieldType(rule.getField()))))
+						{
+							if (!value.toString().trim().startsWith("%")
+									&& !value.toString().trim().endsWith("%"))
+							{
+								value = "%" + value + "%";
+							}
+						}
+
+						// if
+						// (omitQuotes(columnInfoMap.get(rule.getField()).getType()))
+						// where_clause.append(tablePrefix + rule.getField() +
+						// " " +
+						// operator + " " + value + "");
+						// else
+						// where_clause.append(tablePrefix + rule.getField() +
+						// " " +
+						// operator + " '" + value + "'");
+						if (rule.getOperator().equals(Operator.JOIN))
+						{
+							where_clause.append(rule.getField() + " "
+									+ operator + " " + value + "");
+						}
+						else
+						{
+							if ("NULL".equals(value) && operator.equals("="))
+							{
+								where_clause.append(rule.getField()
+										+ " IS NULL");
+							}
+							else if ("NULL".equals(value)
+									&& operator.equals("!="))
+							{
+								where_clause.append(rule.getField()
+										+ " IS NOT NULL");
+							}
+							else
+							{
+								where_clause.append(rule.getField() + " "
+										+ operator + " '" + value + "'");
+							}
+						}
+					}
+					previousRule = null;
+				}
+			}
+		}
+		String result = where_clause.toString();
+		if (!isNested && where_clause.length() > 0) result = " WHERE " + result;
+		return result + createSortSql(false,rules)
+				+ createLimitSql(withOffset, rules);
+	}
+	
+	/**
+	 * Helper method for creating a limit clause
+	 * 
+	 * @param withOffset
+	 *            Indicate whether offset is to be used. If false the limit
+	 *            clause is kept empty.
+	 * @param rules
+	 *            query rules to be translated into sql order by clause.
+	 * @return sql for limit,offset
+	 */
+	public static String createLimitSql(boolean withOffset, QueryRule[] rules)
+	{
+		String limit_clause = "";
+		String offset_clause = "";
+		if (rules != null)
+		{
+			for (QueryRule rule : rules)
+			{
+				// limit clause
+				if (rule.getOperator() == QueryRule.Operator.LIMIT)
+				{
+					limit_clause = " LIMIT " + rule.getValue();
+				}
+				else if (rule.getOperator() == QueryRule.Operator.OFFSET)
+				{
+					offset_clause = " OFFSET " + rule.getValue();
+				}
+			}
+		}
+		if (withOffset || offset_clause.equals("")) return limit_clause
+				+ offset_clause;
+		return "";
+	}
+	
+	/**
+	 * Helper method for creating a sort clause
+	 * 
+	 * @param mapper
+	 *            mapper that is used to extract metadata to create the
+	 * @param reverseSorting
+	 *            to reverese sorting order. This is used when trying to find
+	 *            the "last records" in a sorted list by instead finding the
+	 *            "first records" in the reversly ordered list.
+	 * @param rules
+	 *            query rules to be translated into sql order by clause.
+	 * @return sql with sort clause
+	 */
+	public String createSortSql(
+			boolean reverseSorting, QueryRule rules[])
+	{
+		// copy parameter into local temp so we can change it
+		String sort_clause = "";
+		if (rules != null)
+		{
+			Boolean revSort = reverseSorting;
+			for (QueryRule rule : rules)
+			{
+				if (rule.getOperator() == Operator.LAST)
+				{
+					revSort = !revSort;
+					break;
+				}
+			}
+
+			for (QueryRule r : rules)
+			{
+				QueryRule rule = new QueryRule(r); // copy because of
+													// sideeffects
+
+				// limit clause
+				if ((rule.getOperator() == Operator.SORTASC && !revSort)
+						|| (revSort && rule.getOperator() == Operator.SORTDESC))
+				{
+					rule.setValue(getTableFieldName(rule.getValue().toString()));
+					sort_clause += rule.getValue().toString() + " ASC,";
+				}
+				else if ((rule.getOperator() == QueryRule.Operator.SORTDESC && !revSort)
+						|| (revSort && rule.getOperator() == Operator.SORTASC))
+				{
+					rule.setValue(getTableFieldName(rule.getValue().toString()));
+					sort_clause += rule.getValue().toString() + " DESC,";
+				}
+			}
+		}
+		if (sort_clause.length() > 0) return " ORDER BY "
+				+ sort_clause.substring(0, sort_clause.lastIndexOf(","));
+		return sort_clause;
+	}
+	
+	private static boolean omitQuotes(FieldType t)
+	{
+		return t instanceof LongField || t instanceof IntField
+				|| t instanceof DecimalField;
+
+		// t.equals(Type.LONG) || t.equals(Type.INT) || t.equals(Type.DECIMAL);
+		// return t instanceof LongField || t instanceof IntField|| t instanceof
+		// DecimalField;
+
+	}
+	
+	@Override
+	public List<E> findByExample(E example) throws DatabaseException
+	{
+		Query<E> q = (Query<E>) getDatabase().query(example.getClass());
+		// add first security rules
+		// q.addRules(this.getSecurity().getRowlevelSecurityFilters(example.getClass()));
+
+		for (String field : example.getFields())
+		{
+			if (example.get(field) != null)
+			{
+				if (example.get(field) instanceof List<?>)
+				{
+					if (((List<?>) example.get(field)).size() > 0) q.in(field,
+							(List<?>) example.get(field));
+				}
+				else
+					q.equals(field, example.get(field));
+			}
+		}
+
+		return q.find();
+	}
+	
+	@Override
+	public E findById(Object id) throws DatabaseException
+	{
+		List<E> result = find(new QueryRule(create().getIdField(), Operator.EQUALS, id));
+		if(result.size()>0) return result.get(0);
+		return null;
+	}	
 }

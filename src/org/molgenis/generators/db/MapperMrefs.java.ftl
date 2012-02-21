@@ -72,7 +72,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 	 */		
 	public void storeMrefs( List<${JavaName(entity)}> entities ) throws DatabaseException, IOException, ParseException	
 	{
-<#if entity.getImplementedFieldsOf("mref")?size &gt; 0>		
+<#if entity.getAllFieldsOf("mref")?size &gt; 0>		
 		//create an List of ${JavaName(entity)} ids to query for
 		List<${pkeyJavaType(entity)}> entityIds = new ArrayList<${pkeyJavaType(entity)}>(); 
 		for (${JavaName(entity)} entity : entities) 
@@ -123,7 +123,7 @@ Common parts for saving multiplicative references (mrefs) to an entity.
 	
 	public void removeMrefs( List<${JavaName(entity)}> entities ) throws DatabaseException, IOException, ParseException
 	{
-<#if entity.getImplementedFieldsOf("mref")?size &gt; 0>		
+<#if entity.getAllFieldsOf("mref")?size &gt; 0>		
 		//create an list of ${JavaName(entity)} ids to query for
 		List<${pkeyJavaType(entity)}> entityIds = new ArrayList<${pkeyJavaType(entity)}>(); 
 		for (${JavaName(entity)} entity : entities) 

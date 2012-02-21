@@ -1,3 +1,21 @@
+	public java.util.List<${entity.namespace}.${JavaName(entity)}> createList(int size)
+	{
+<#if !entity.abstract>
+		return new java.util.ArrayList<${entity.namespace}.${JavaName(entity)}>(size); 
+<#else>
+		return null;
+</#if>
+	}			
+
+	public ${entity.namespace}.${JavaName(entity)} create()
+	{
+<#if !entity.abstract>	
+		return new ${entity.namespace}.${JavaName(entity)}();
+<#else>
+		return null; //abstract type, cannot be instantiated
+</#if>
+	}
+
 	@Override
 	//Resolve
 	public void resolveForeignKeys(java.util.List<${entity.namespace}.${JavaName(entity)}> entities)  throws org.molgenis.framework.db.DatabaseException, java.text.ParseException

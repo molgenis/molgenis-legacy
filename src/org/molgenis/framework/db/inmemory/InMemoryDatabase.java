@@ -1,6 +1,7 @@
 package org.molgenis.framework.db.inmemory;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -12,18 +13,18 @@ import javax.persistence.EntityManager;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.JoinQuery;
+import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
-import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.TupleReader;
+import org.molgenis.util.TupleWriter;
 
 /***
  * Naieve implementation of an in-memory database. Usefull, not terribly
@@ -79,7 +80,7 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> int add(Class<E> klazz, CsvReader reader,
+	public <E extends Entity> int add(Class<E> klazz, TupleReader reader,
 			TupleWriter writer)
 	{
 		throw new UnsupportedOperationException();
@@ -254,7 +255,7 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> int remove(Class<E> klazz, CsvReader reader)
+	public <E extends Entity> int remove(Class<E> klazz, TupleReader reader)
 			throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
@@ -267,7 +268,7 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader,
+	public <E extends Entity> List<E> toList(Class<E> klazz, TupleReader reader,
 			int noEntities) throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
@@ -289,7 +290,7 @@ public class InMemoryDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> int update(Class<E> klazz, CsvReader reader)
+	public <E extends Entity> int update(Class<E> klazz, TupleReader reader)
 			throws DatabaseException
 	{
 		// needs to know primary key for this...and that needs to be set...
@@ -328,12 +329,6 @@ public class InMemoryDatabase implements Database
 
 	@Override
 	public Class<? extends Entity> getClassForName(String name)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public JoinQuery join(Class<? extends Entity> ... classes) throws DatabaseException
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -390,21 +385,6 @@ public class InMemoryDatabase implements Database
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void beginPrivateTx(String ticket) throws DatabaseException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void commitPrivateTx(String ticket) throws DatabaseException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void rollbackPrivateTx(String ticket) throws DatabaseException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
 	@Override
 	public <E extends Entity> void find(Class<E> entityClass,
 			TupleWriter writer, List<String> fieldsToExport, QueryRule... rules)
@@ -426,5 +406,42 @@ public class InMemoryDatabase implements Database
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Login getLogin()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void flush()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Connection getConnection() throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <E extends Entity> Mapper<E> getMapper(String name)
+			throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <E extends Entity> Mapper<E> getMapperFor(Class<E> klazz)
+			throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

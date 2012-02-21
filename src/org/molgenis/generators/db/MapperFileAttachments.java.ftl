@@ -1,7 +1,7 @@
 <#--
 Common parts for saving files to an entity.
 -->
-	public void prepareFileAttachements(List<${JavaName(entity)}> entities, File baseDir) throws IOException
+	public void prepareFileAttachements(java.util.List<${entity.namespace}.${JavaName(entity)}> entities, java.io.File baseDir) throws java.io.IOException
 	{
 <#if hasFiles(entity)>		
 		for(${JavaName(entity)} entity: entities)
@@ -19,7 +19,7 @@ Common parts for saving files to an entity.
 </#if>
 	}
 
-	public boolean saveFileAttachements(List<${JavaName(entity)}> entities, File baseDir) throws IOException
+	public boolean saveFileAttachements(java.util.List<${entity.namespace}.${JavaName(entity)}> entities, java.io.File baseDir) throws java.io.IOException
 	{
 <#if hasFiles(entity)>		
 		for(${JavaName(entity)} entity: entities)

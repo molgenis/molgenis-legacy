@@ -18,16 +18,10 @@ import java.util.List;
 
 import org.molgenis.framework.db.DatabaseException;
 
-<#if databaseImp = 'jpa'>
-import org.molgenis.framework.db.jpa.JpaMappingDecorator;
-<#else>
-import org.molgenis.framework.db.jdbc.MappingDecorator;
-</#if>
-
 import org.molgenis.framework.db.Mapper;
 
 
-public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = 'jpa'>JpaMappingDecorator<E><#else>MappingDecorator<E></#if>
+public class ${clazzName}<E extends ${entityClass}> extends MappingDecorator<E>
 {
 	//Mapper is the generate thing
 	public ${clazzName}(Mapper generatedMapper)

@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import javax.persistence.EntityManager;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.common.util.StringUtils;

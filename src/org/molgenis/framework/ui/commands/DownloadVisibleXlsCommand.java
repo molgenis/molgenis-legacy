@@ -51,7 +51,9 @@ public class DownloadVisibleXlsCommand extends SimpleCommand
 	{
 		FormModel<?> view = this.getFormScreen();
 		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
-		AbstractJDBCMapper.find(view.getRecords(), new XlsWriter(xlsDownload), fieldsToExport);
+		XlsWriter writer = new XlsWriter(xlsDownload, fieldsToExport);
+		for(Entity e: view.getRecords()) writer.writeRow(e);
+		writer.close();
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 
