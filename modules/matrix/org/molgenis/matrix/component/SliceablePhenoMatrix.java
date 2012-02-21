@@ -316,11 +316,11 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 
 			for (ObservedValue value : values)
 			{
-				if (valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes.indexOf(value.getFeature())] == null)
+				if (valueMatrix[rowIndexes.indexOf(value.getTarget_Id())][colIndexes.indexOf(value.getFeature_Id())] == null)
 				{
-					valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes.indexOf(value.getFeature())] = new ArrayList<ObservedValue>();
+					valueMatrix[rowIndexes.indexOf(value.getTarget_Id())][colIndexes.indexOf(value.getFeature_Id())] = new ArrayList<ObservedValue>();
 				}
-				valueMatrix[rowIndexes.indexOf(value.getTarget())][colIndexes.indexOf(value.getFeature())].add(value);
+				valueMatrix[rowIndexes.indexOf(value.getTarget_Id())][colIndexes.indexOf(value.getFeature_Id())].add(value);
 			}
 
 			return valueMatrix;
