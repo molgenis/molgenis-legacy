@@ -145,4 +145,5 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 			throw new DatabaseException(e);
 		}
 	}
+
 }
