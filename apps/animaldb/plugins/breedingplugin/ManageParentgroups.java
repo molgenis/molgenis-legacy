@@ -443,6 +443,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 			if (action.equals("addParentgroup")) {
 				String newPgName = AddParentgroup(db, request);
 				pgMatrixViewer.setDatabase(db);
+				pgMatrixViewer.reloadMatrix(db, null);
 				pgMatrixViewerString = pgMatrixViewer.render();
 				this.setAction("init");
 				this.resetUserFields();

@@ -677,7 +677,13 @@ public class ManageLitters extends PluginModel<Entity>
 				ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
 				
 				this.weandate = null;
+				this.weanSizeFemale = 0;
+				this.weanSizeMale = 0;
+				this.weanSizeUnknown = 0;
+				this.remarks = null;
+				this.respres = null;
 				this.selectedParentgroup = -1;
+				this.locId = -1;
 				this.action = "ShowLitters";
 				reload(db);
 				reloadLitterLists(db);
