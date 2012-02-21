@@ -16,13 +16,6 @@
 
 package ${package};
 
-<#if databaseImp = 'jpa'>
-import app.JpaDatabase;
-import org.molgenis.framework.db.jpa.JpaMapper;
-<#else>	
-import app.JDBCDatabase;
-</#if>
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,13 +42,6 @@ import org.testng.annotations.Test;
 
 
 <#list model.entities as entity>
-<#if !entity.isAbstract()>
-	<#if entity.decorator?exists >
-import ${entity.decorator};		
-        <#else>
-import ${entity.namespace}.db.${JavaName(entity)}<#if databaseImp = 'jpa'>Jpa</#if>Mapper;
-	</#if>
-</#if>
 import ${entity.namespace}.${JavaName(entity)};
 </#list>
 
@@ -78,12 +64,8 @@ public class TestDataSet
 	}
 		
 	
-        <#if databaseImp = 'jpa'>
-            public TestDataSet(int size, int mrefSize, app.JpaDatabase db)  
-            throws org.molgenis.framework.db.DatabaseException
-        <#else>
-            public TestDataSet(int size, int mrefSize)  
-        </#if>
+
+    public TestDataSet(int size, int mrefSize) 
 	{
 		<#list entities as entity><#if !entity.abstract && !entity.association>
 		//generating ${entity.name} data:
@@ -142,18 +124,7 @@ public class TestDataSet
 			e.set${JavaName(f)}("${entity.name?lower_case}_${f.name?lower_case}"+i);
 			</#if></#if></#list>
 			this.${name(entity)}.add(e);
-		}
-
-
-
-<#if databaseImp = 'jpa'>
-			JpaMapper ${name(entity)}Save = (JpaMapper)db.getMapper("${entity.namespace}.${JavaName(entity)}");	
-        
-            //((JpaDatabase)db).getEntityManager().getTransaction().begin();
-            db.add(this.${name(entity)});
-            //((JpaDatabase)db).getEntityManager().getTransaction().commit();
-</#if>		
-		
+		}		
 		</#if></#list>
 	}	 
 	

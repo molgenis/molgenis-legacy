@@ -2,8 +2,6 @@
 
 package app;
 
-import java.util.Map;
-
 @org.springframework.stereotype.Repository
 public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 {
@@ -28,52 +26,32 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 		</#if></#list>	
 	}
 	
-	private String persistenceUnitName = null;
-	
 	//TODO: Does not function - Connection conn should be an EntityManager instance or so?
 	//TODO: What about decorator overriders?
 	public JpaDatabase(java.sql.Connection conn) throws org.molgenis.framework.db.DatabaseException
 	{
-		super("molgenis", EMFactory.createEntityManager(), new JDBCMetaDatabase());
-		this.persistenceUnitName = "molgenis";
+		super(EMFactory.createEntityManager(), new JDBCMetaDatabase());
 		initMappers(this);
 	}
 
 	@org.springframework.beans.factory.annotation.Autowired
     public JpaDatabase() throws org.molgenis.framework.db.DatabaseException {
-        super("molgenis", EMFactory.createEntityManager(), new JDBCMetaDatabase());
-        this.persistenceUnitName = "molgenis";
+        super(EMFactory.createEntityManager(), new JDBCMetaDatabase());
         initMappers(this);
     }
 
     public JpaDatabase(String persistenceUnitName) throws org.molgenis.framework.db.DatabaseException {
-        super(persistenceUnitName, EMFactory.createEntityManager(persistenceUnitName), new JDBCMetaDatabase());
-        this.persistenceUnitName = persistenceUnitName;
+        super(EMFactory.createEntityManager(persistenceUnitName), new JDBCMetaDatabase());
         initMappers(this);
     }
 
-    public JpaDatabase(boolean testDatabase) throws org.molgenis.framework.db.DatabaseException {
-        super(testDatabase ? "molgenis_test" : "molgenis", new JDBCMetaDatabase());
-        persistenceUnitName = testDatabase ? "molgenis_test" : "molgenis";
-        if (testDatabase) {
-            super.setEntityManager(EMFactory.createEntityManager("molgenis_test"));
-            this.setLogin(new org.molgenis.framework.security.SimpleLogin());
-        } else {
-            super.setEntityManager(EMFactory.createEntityManager());
-        }
-        initMappers(this);
+	public JpaDatabase(boolean testDatabase) throws org.molgenis.framework.db.DatabaseException {
+		super(EMFactory.createEntityManager(), new JDBCMetaDatabase());
+        throw new UnsupportedOperationException();
     }
-    
-    public JpaDatabase(Map<String, Object> configOverwrites) throws org.molgenis.framework.db.DatabaseException {
-        super(EMFactory.createEntityManager("molgenis", configOverwrites), new JDBCMetaDatabase());
-        persistenceUnitName = "molgenis";     
-        initMappers(this);
-    }    
-    
-    
-    
 
-    public javax.persistence.EntityManagerFactory getEntityManagerFactory() {
+
+    <#--public javax.persistence.EntityManagerFactory getEntityManagerFactory() {
         return EMFactory.getEntityManagerFactoryByName(persistenceUnitName);
     }
 
@@ -87,5 +65,5 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
         } else {
             return EMFactory.getEntityManagerFactoryByName("molgenis");    
         }            
-    }
+    }-->
 }

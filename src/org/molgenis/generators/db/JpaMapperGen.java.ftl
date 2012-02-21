@@ -317,7 +317,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 	}
 
 	@Override
-	public int executeAdd(java.util.List<${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
+	public int executeAdd(java.util.List<? extends ${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
 	{	
 		int count = 0;
 		
@@ -337,7 +337,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 	}
 
 	@Override
-	public int executeUpdate(java.util.List<${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
+	public int executeUpdate(java.util.List<? extends ${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
 	{
 		int count = 0;
 
@@ -357,7 +357,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 	}
 
 	@Override
-	public int executeRemove(java.util.List<${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
+	public int executeRemove(java.util.List<? extends ${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
 	{
 		int count = 0;		
 		try 

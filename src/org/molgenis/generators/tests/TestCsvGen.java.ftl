@@ -127,7 +127,7 @@ public class TestCsv
 		
 		//create a test set1
 		<#if databaseImp = 'jpa'>
-        TestDataSet set1 = new TestDataSet(50,5, (app.JpaDatabase)db);		
+        TestDataSet set1 = new TestDataSet(50,5);		
         JpaUtil.dropAndCreateTables((JpaDatabase)db);
 <#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
 			app.FillMetadata.fillMetadata(db);
