@@ -50,6 +50,10 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
         throw new UnsupportedOperationException();
     }
 
+	public JpaDatabase(java.util.Map<String, Object> configOverwrites) throws org.molgenis.framework.db.DatabaseException {
+		super(EMFactory.createEntityManager("molgenis", configOverwrites), new JDBCMetaDatabase());  
+		initMappers(this);
+	}
 
     <#--public javax.persistence.EntityManagerFactory getEntityManagerFactory() {
         return EMFactory.getEntityManagerFactoryByName(persistenceUnitName);
