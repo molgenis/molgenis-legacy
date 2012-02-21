@@ -1295,6 +1295,7 @@ public class MatrixViewer extends HtmlWidget
 			//new Operator(t.getString(OPERATOR));
 			// Then do the actual slicing
 			matrix.sliceByColValueProperty(protocolId, measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
+			
 		} else {
 			String valuePropertyToUse = ObservedValue.VALUE;
 			int measurementId = t.getInt(COLID);
@@ -1321,6 +1322,7 @@ public class MatrixViewer extends HtmlWidget
 				matrix.sliceByColValueProperty(measurementId, valuePropertyToUse, op, t.getObject(COLVALUE));
 			}
 		}
+		matrix.reload(); // to make sure the paging info is correctly updated
 	}
 
 	@SuppressWarnings("unchecked")
