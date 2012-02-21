@@ -86,4 +86,6 @@ public interface Mapper<E extends Entity>
 	int executeUpdate(List<? extends E> entities) throws DatabaseException;
 
 	int executeRemove(List<? extends E> entities) throws DatabaseException;
+
+	public List<E> createList(int i);
 }
