@@ -4,37 +4,6 @@
 		super(database);
 	}
 	
-	
-	@Override
-	public JDBCMapper<#if entity.hasAncestor()><${JavaName(entity.getAncestor())}><#else><${JavaName(entity)}></#if> getSuperTypeMapper()
-	{
-<#if entity.hasAncestor()>
-		//${JavaName(entity)} is a subclass of ${JavaName(entity.getAncestor())}
-		return (JDBCMapper<#if entity.hasAncestor()><${JavaName(entity.getAncestor())}><#else><${JavaName(entity)}></#if>) new ${JavaName(entity.getAncestor())}Mapper(this.getDatabase());
-<#else>
-		//${JavaName(entity)} has no superclass
-		return null;
-</#if>	
-	}	
-	
-	public List<${JavaName(entity)}> createList(int size)
-	{
-<#if !entity.abstract>
-		return new ArrayList<${JavaName(entity)}>(size); 
-<#else>
-		return null;
-</#if>
-	}			
-
-	public ${JavaName(entity)} create()
-	{
-<#if !entity.abstract>	
-		return new ${JavaName(entity)}();
-<#else>
-		return null; //abstract type, cannot be instantiated
-</#if>
-	}
-	
 	public String createFindSql(QueryRule ... rules) throws DatabaseException
 	{	
 	

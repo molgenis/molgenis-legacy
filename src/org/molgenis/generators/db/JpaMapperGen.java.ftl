@@ -17,22 +17,11 @@
 
 package ${package};
 
-public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.AbstractJpaMapper<${entity.namespace}.${JavaName(entity)}> implements org.molgenis.framework.db.jpa.JpaMapper<${entity.namespace}.${JavaName(entity)}>
+public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.AbstractJpaMapper<${entity.namespace}.${JavaName(entity)}>
 {
-	public ${JavaName(entity)}JpaMapper() {}
-
-	public ${JavaName(entity)}JpaMapper(javax.persistence.EntityManager em) {
-		this.em = em;
-	}
-
-	@Deprecated
-	public ${JavaName(entity)}JpaMapper(org.molgenis.framework.db.Database db) {
-            this.database = (org.molgenis.framework.db.jpa.JpaDatabase) db;
-            this.em = ((org.molgenis.framework.db.jpa.JpaDatabase)db).getEntityManager();
-        }
-
-	public void setEntityManager(javax.persistence.EntityManager em) {
-		this.em = em;
+	public ${JavaName(entity)}JpaMapper(org.molgenis.framework.db.Database db) 
+	{
+		super(db);
 	}
 	
 	@Override
@@ -42,10 +31,11 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 	}	
 
 
-	@Override
-	public java.util.List<${entity.namespace}.${JavaName(entity)}> findAll() {
+<#--	@Override
+	public java.util.List<${entity.namespace}.${JavaName(entity)}> findAll() 
+	{
 		java.util.List<${entity.namespace}.${JavaName(entity)}> result =
-			em.createNamedQuery("${JavaName(entity)}.findAll", ${entity.namespace}.${JavaName(entity)}.class)
+			getEntityManager().createNamedQuery("${JavaName(entity)}.findAll", ${entity.namespace}.${JavaName(entity)}.class)
 									.getResultList();
 		return result;
 	}
@@ -53,7 +43,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 	@Override
 	public java.util.List<${entity.namespace}.${JavaName(entity)}> find(String qlWhereClause, Integer limit, Integer offset) {
 		String ql = "SELECT ${name(entity)} FROM ${JavaName(entity)} ${name(entity)} " + qlWhereClause;
-		javax.persistence.TypedQuery<${entity.namespace}.${JavaName(entity)}> query = em.createQuery(ql, ${entity.namespace}.${JavaName(entity)}.class);
+		javax.persistence.TypedQuery<${entity.namespace}.${JavaName(entity)}> query = getEntityManager().createQuery(ql, ${entity.namespace}.${JavaName(entity)}.class);
 		if(offset != null) {
 			query.setFirstResult(offset);
 		}
@@ -71,15 +61,15 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 		Long result = new Long(-1);
 
 		if(qlWhereClause == null || qlWhereClause.trim().equals("")) {
-			result = (Long)em.createNamedQuery("${JavaName(entity)}.count")
+			result = (Long)getEntityManager().createNamedQuery("${JavaName(entity)}.count")
 								.getSingleResult();
 		} else {
 			String qlQuery = QUERY_COUNT + qlWhereClause;
-			result = (Long)em.createQuery(qlQuery)
+			result = (Long)getEntityManager().createQuery(qlQuery)
 								.getSingleResult();
 		}
 		return result.intValue();
-	}
+	}-->
 
 	/** This method first saves the objects that are being refered to by entity, 
 	then the entity itself and 
@@ -96,20 +86,20 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 			{
 				//if object has been added as xref, but not yet stored (has no id) -> add the refered object
 				if(entity.get${JavaName(field)}().getIdValue() == null)
-					new ${field.getXrefEntity().namespace}.db.${JavaName(field.getXrefEntity())}JpaMapper(em).create(entity.get${JavaName(field)}());
+					new ${field.getXrefEntity().namespace}.db.${JavaName(field.getXrefEntity())}JpaMapper(getDatabase()).create(entity.get${JavaName(field)}());
 				//if object has id (so is stored) but not in this em -> retrieve proper reference reference
-				else if (!em.contains(entity.get${JavaName(field)}()) && entity.get${JavaName(field)}().getIdValue() != null)
-					entity.set${JavaName(field)}(em.getReference(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, entity.get${JavaName(field)}().getIdValue()));
+				else if (!getEntityManager().contains(entity.get${JavaName(field)}()) && entity.get${JavaName(field)}().getIdValue() != null)
+					entity.set${JavaName(field)}(getEntityManager().getReference(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, entity.get${JavaName(field)}().getIdValue()));
 			} else { //object is reference by xref	
 				if(entity.get${JavaName(field)}_${JavaName(field.getXrefField())}() != null) {
-					entity.set${JavaName(field)}((${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())})em.find(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, entity.get${JavaName(field)}_${JavaName(field.getXrefField())}()));
+					entity.set${JavaName(field)}((${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())})getEntityManager().find(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, entity.get${JavaName(field)}_${JavaName(field.getXrefField())}()));
 				}
 			}
 	<#elseif type_label == "mref">
 	    java.util.List<${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}> ${name(field)}List = entity.get${JavaName(field)}();
 	    java.util.List<Integer> ${name(field)}Ids = entity.get${JavaName(field)}_Id();
 	    for(Integer ${name(field)}Id : ${name(field)}Ids) {
-		${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())} ${name(field.getXrefEntity())} = em.getReference(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, ${name(field)}Id);
+		${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())} ${name(field.getXrefEntity())} = getEntityManager().getReference(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, ${name(field)}Id);
 		if(!${name(field)}List.contains(${name(field.getXrefEntity())}))
 		    ${name(field)}List.add(${name(field.getXrefEntity())});
 	    }
@@ -120,9 +110,9 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 			//prevents uncontrolled recursion call of create (stack overflow)
           
           if(entity.getIdValue() != null) {
-            entity = em.merge(entity);            
+            entity = getEntityManager().merge(entity);            
           } else {
-            em.persist(entity);
+            getEntityManager().persist(entity);
           }
 //inverse association relation
 <#list model.entities as e>
@@ -151,13 +141,13 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 						new ${f.entity.namespace}.db.${Name(f.entity)}JpaMapper(em).create(${name(entityName)});
 					} else {
 						//check if the object realy exists!
-						${f.entity.namespace}.${Name(f.entity)} db${Name(entityName)} = em.getReference(${xref_entity.namespace}.${name(entityName)}.getClass(), ${name(entityName)}.getIdValue());
+						${f.entity.namespace}.${Name(f.entity)} db${Name(entityName)} = getEntityManager().getReference(${xref_entity.namespace}.${name(entityName)}.getClass(), ${name(entityName)}.getIdValue());
 					}
 					attached${entityName}Collection.add(${name(entityName)});
 				}
 			}
             entity.set${entityName}Collection( attached${entityName}Collection);
-            em.persist(entity);
+            getEntityManager().persist(entity);
 
 			//remove object references that link to a different object than entity
             if (entity.get${entityName}Collection() != null) {
@@ -167,11 +157,11 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 					if(!old${JavaName(entity)}Collection.getIdValue().equals(entity.getIdValue()))
 					{
 						${name(entityName)}.set${Name(f)}(entity);
-						${name(entityName)} = em.merge(${name(entityName)});
+						${name(entityName)} = getEntityManager().merge(${name(entityName)});
 						if(old${JavaName(entity)}Collection != null)
 						{
 							old${JavaName(entity)}Collection.get${entityName}Collection().remove(${name(entityName)});
-							old${JavaName(entity)}Collection = em.merge(old${JavaName(entity)}Collection);
+							old${JavaName(entity)}Collection = getEntityManager().merge(old${JavaName(entity)}Collection);
 						}
 					}
 				}
@@ -183,7 +173,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 
         } catch (Exception ex) {
             try {
-				em.getTransaction().rollback();
+				getEntityManager().getTransaction().rollback();
             } catch (Exception re) {
                 throw new org.molgenis.framework.db.DatabaseException("An error occurred attempting to roll back the transaction: "+re.getMessage());
             }
@@ -194,7 +184,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 	public void destroy(${entity.namespace}.${JavaName(entity)} ${name(entity)}) throws org.molgenis.framework.db.DatabaseException {
 		try {
 			try {
-				${name(entity)} = em.getReference(${entity.namespace}.${JavaName(entity)}.class, ${name(entity)}.getIdValue());
+				${name(entity)} = getEntityManager().getReference(${entity.namespace}.${JavaName(entity)}.class, ${name(entity)}.getIdValue());
 			} catch (javax.persistence.EntityNotFoundException enfe) {
 				throw new org.molgenis.framework.db.DatabaseException("The ${name(entity)} with id " + ${name(entity)}.getIdField().toString() + " no longer exists: " + enfe.getMessage());
 			}
@@ -213,10 +203,10 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 </#if>	
 </#list>
 
-			em.remove(${name(entity)});
+			getEntityManager().remove(${name(entity)});
 		} catch (Exception ex) {
 			try {
-				em.getTransaction().rollback();
+				getEntityManager().getTransaction().rollback();
 			} catch (Exception re) {
 				throw new org.molgenis.framework.db.DatabaseException("An error occurred attempting to roll back the transaction: "+re.getMessage());
 			}
@@ -229,7 +219,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 		try {
 
 			//Fixme: getReference??
-			${entity.namespace}.${JavaName(entity)} persistent${JavaName(entity)} = em.find(${entity.namespace}.${JavaName(entity)}.class, ${name(entity)}.getIdValue());
+			${entity.namespace}.${JavaName(entity)} persistent${JavaName(entity)} = getEntityManager().find(${entity.namespace}.${JavaName(entity)}.class, ${name(entity)}.getIdValue());
 
 
 <#foreach field in entity.getImplementedFields()>
@@ -249,23 +239,23 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 			${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())} ${fieldName}New = ${name(entity)}.get${JavaName(field)}();
 
 			if (${fieldName}New != null) {
-				${fieldName}New = em.getReference(${fieldName}New.getClass(), ${fieldName}New.getIdValue());
+				${fieldName}New = getEntityManager().getReference(${fieldName}New.getClass(), ${fieldName}New.getIdValue());
 				${name(entity)}.set${JavaName(field)}(${fieldName}New);
 			} else { //object is reference by xref		
                             if(${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}() != null) {
-                                ${name(entity)}.set${JavaName(field)}((${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())})em.find(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, ${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}()));
+                                ${name(entity)}.set${JavaName(field)}((${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())})getEntityManager().find(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, ${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}()));
                             }
 			}
     	<#elseif type_label == "mref">
 			for(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())} m : ${name(entity)}.get${JavaName(field)}()) {
 				if(m.get${Name(pkey(field.getXrefEntity()))}() == null) {
-					em.persist(m);
+					getEntityManager().persist(m);
 				}
 				m.get${JavaName(fieldName)}<#if numRef &gt; 1 >${Name(entity)}</#if>Collection().add(${name(entity)});
 			}
 			
 			for(${pkeyJavaType(field.getXrefEntity())} id : ${name(entity)}.get${JavaName(fieldName)}_Id()) {
-				${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())} mref = em.find(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, id);
+				${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())} mref = getEntityManager().find(${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())}.class, id);
 				if(!${name(entity)}.get${JavaName(fieldName)}().contains(mref)) {
 					${name(entity)}.get${JavaName(fieldName)}().add(mref);
 				}
@@ -273,8 +263,8 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 		</#if>
 	</#if>
 </#foreach>
-			if(!em.contains(${name(entity)})) {
-				${name(entity)} = em.merge(${name(entity)});
+			if(!getEntityManager().contains(${name(entity)})) {
+				${name(entity)} = getEntityManager().merge(${name(entity)});
 			}
 <#--	what does this do? FIXIT		
 <#list model.entities as e>
@@ -288,12 +278,12 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 			 
 			if (${fieldName}Old != null && !${fieldName}Old.equals(${fieldName}New)) {
 				${fieldName}Old.get${f.getXrefEntityName()}Collection().remove(${name(entity)});
-				${fieldName}Old = em.merge(${fieldName}Old);
+				${fieldName}Old = getEntityManager().merge(${fieldName}Old);
 			}
 
 			if (${fieldName}New != null && !${fieldName}New.equals(${fieldName}Old)) {
 				${fieldName}New.get${f.getXrefEntityName()}Collection().add(${name(entity)});
-				${fieldName}New = em.merge(${fieldName}New);
+				${fieldName}New = getEntityManager().merge(${fieldName}New);
 			}			 
 			
 			</#if>
@@ -318,7 +308,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 </#foreach>
 		} catch (Exception ex) {
 			try {
-				em.getTransaction().rollback();
+				getEntityManager().getTransaction().rollback();
 			} catch (Exception re) {
 				throw new org.molgenis.framework.db.DatabaseException("An error occurred attempting to roll back the transaction: " + re.getMessage());
 			}
@@ -326,70 +316,65 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 		} 
 	}
 
-/*
 	@Override
-	public int add(java.util.List<${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
+	public int executeAdd(java.util.List<${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
 	{	
 		int count = 0;
 		
-		try {
-                    this.resolveForeignKeys(entities);
-                    for (${entity.namespace}.${JavaName(entity)} ${name(entity)} : entities) {
-                            create(${name(entity)});
-                            ++count;
-                    }
-		} catch (Exception ex) {
-            try {
-                em.getTransaction().rollback();
-            } catch (Exception re) {
-                throw new org.molgenis.framework.db.DatabaseException( "An error occurred attempting to roll back the transaction: "+  re.getMessage() );
-            }
+		try 
+		{
+			for (${entity.namespace}.${JavaName(entity)} ${name(entity)} : entities) 
+			{
+				create(${name(entity)});
+				++count;
+			}
+		} 
+		catch (Exception ex) 
+		{
             throw new org.molgenis.framework.db.DatabaseException(ex);
         }
 		return count;
 	}
 
 	@Override
-	public int update(java.util.List<${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
+	public int executeUpdate(java.util.List<${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
 	{
 		int count = 0;
-		try {
-                    this.resolveForeignKeys(entities);
-                    for (${entity.namespace}.${JavaName(entity)} ${name(entity)} : entities) {
-                            edit(${name(entity)});
-                            ++count;
-                    }
-		} catch (Exception ex) {
-            try {
-                em.getTransaction().rollback();
-            } catch (Exception re) {
-                throw new org.molgenis.framework.db.DatabaseException( "An error occurred attempting to roll back the transaction: " + re.getMessage());
-            }
+
+		try
+		{
+			for (${entity.namespace}.${JavaName(entity)} ${name(entity)} : entities) 
+			{
+				edit(${name(entity)});
+				++count;
+			} 
+			return count;
+		}
+		catch (Exception ex) 
+		{
             throw new org.molgenis.framework.db.DatabaseException(ex);
-        } 
-		return count;
+        }		
 	}
 
 	@Override
-	public int remove(java.util.List<${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
+	public int executeRemove(java.util.List<${entity.namespace}.${JavaName(entity)}> entities) throws org.molgenis.framework.db.DatabaseException
 	{
 		int count = 0;		
-		try {
-                    for (${entity.namespace}.${JavaName(entity)} ${name(entity)} : entities) {
-                            destroy(${name(entity)}, em);
-                            ++count;
-                    }
-		} catch (Exception ex) {
-            try {
-                em.getTransaction().rollback();
-            } catch (Exception re) {
-                throw new org.molgenis.framework.db.DatabaseException( "An error occurred attempting to roll back the transaction.");
-            }
+		try 
+		{
+			for (${entity.namespace}.${JavaName(entity)} ${name(entity)} : entities) 
+			{
+				destroy(${name(entity)});
+				++count;
+			}
+		} 
+		catch (Exception ex) 
+		{
             throw new org.molgenis.framework.db.DatabaseException(ex);
         }
 		return count;
 	}
-*/	
+
 <#--	public ${JavaName(entity)} create()
 	{
 <#if !entity.abstract>	
@@ -427,67 +412,9 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 		-->		  		
 		return fieldName;
 	}
-
-
-
-	@Override
-	public int add(org.molgenis.util.CsvReader reader, org.molgenis.util.TupleWriter writer)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public int update(org.molgenis.util.CsvReader reader)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public int count(org.molgenis.framework.db.QueryRule... rules)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public java.util.List<${entity.namespace}.${JavaName(entity)}> find(org.molgenis.framework.db.QueryRule... rules)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void find(org.molgenis.util.TupleWriter writer, org.molgenis.framework.db.QueryRule[] rules)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void find(org.molgenis.util.TupleWriter writer, java.util.List<String> fieldsToExport, org.molgenis.framework.db.QueryRule[] rules)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public int remove(org.molgenis.util.CsvReader reader)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public java.util.List<${entity.namespace}.${JavaName(entity)}> toList(org.molgenis.util.CsvReader reader, int limit)
-	{
-		throw new UnsupportedOperationException();
-	}
-	
-	public ${entity.namespace}.${JavaName(entity)} create()
-	{
-<#if !entity.abstract>	
-		return new ${entity.namespace}.${JavaName(entity)}();
-<#else>
-		return null; //abstract type, cannot be instantiated
-</#if>
-	}	
 	
 	<#include "MapperCommons.java.ftl">
 	
-<#--   <#include "MapperFileAttachments.java.ftl"> -->
+	<#include "MapperFileAttachments.java.ftl">
+	
 }

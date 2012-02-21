@@ -5,11 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
@@ -18,15 +16,10 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.AbstractDatabase;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.Entity;
-import org.molgenis.util.SimpleTuple;
-import org.molgenis.util.TupleWriter;
-import org.molgenis.util.Tuple;
 
 /**
  * JDBC implementation of Database to query relational databases.
@@ -51,23 +44,25 @@ import org.molgenis.util.Tuple;
  * }
  * </pre>
  */
-public abstract class JDBCDatabase extends JDBCConnectionHelper implements Database
+public class JDBCDatabase extends AbstractDatabase
 {
 	/** Logger for this database */
 	private static final transient Logger logger = Logger
 			.getLogger(JDBCDatabase.class.getSimpleName());
-
+	
 	/**
-	 * Construct a JDBCDatabase using this connection alone.
-	 * There is no DataSource, which is used for checks in getConnection and closeConnection.
-	 * Used by the FrontController which manages the database connections itself.
+	 * Construct a JDBCDatabase using this connection alone. There is no
+	 * DataSource, which is used for checks in getConnection and
+	 * closeConnection. Used by the FrontController which manages the database
+	 * connections itself.
+	 * 
 	 * @param conn
 	 */
 	public JDBCDatabase(Connection conn)
 	{
 		this.connection = conn;
 	}
-	
+
 	/**
 	 * Construct a JDBCDatabase to query relational database.
 	 * 
@@ -80,7 +75,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	public JDBCDatabase(DataSource data_src, File file_source)
 			throws DatabaseException
 	{
-		super(new SimpleDataSourceWrapper(data_src));
+		this(new SimpleDataSourceWrapper(data_src));
 
 		// optional: requires a fileSource
 		if (file_source == null) logger
@@ -90,7 +85,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 	public JDBCDatabase(DataSourceWrapper data_src, File file_source)
 	{
-		super(data_src);
+		this(data_src);
 
 		// optional: requires a fileSource
 		if (file_source == null) logger
@@ -101,7 +96,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	public JDBCDatabase(MolgenisOptions options)
 	{
 		this.options = options;
-		
+
 		BasicDataSource dSource = new BasicDataSource();
 		dSource.setDriverClassName(options.db_driver);
 		dSource.setUsername(options.db_user);
@@ -112,7 +107,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 		File file_source = new File(options.db_filepath);
 		this.fileSource = file_source;
-		
+
 		logger.debug("JDBCDatabase(uri=" + options.db_uri + ") created");
 	}
 
@@ -124,7 +119,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	public JDBCDatabase(File propertiesFilePath) throws FileNotFoundException,
 			IOException
 	{
-        super();
+		super();
 		Properties p = new Properties();
 		p.load(new FileInputStream(propertiesFilePath));
 
@@ -144,7 +139,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 	public JDBCDatabase(String propertiesFilePath)
 			throws FileNotFoundException, IOException
 	{
-        super();
+		super();
 		Properties p = new Properties();
 		try
 		{
@@ -163,7 +158,7 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 
 		this.source = new SimpleDataSourceWrapper(dSource);
 
-		if(p.getProperty("db_filepath") != null)
+		if (p.getProperty("db_filepath") != null)
 		{
 			File file_source = new File(p.getProperty("db_filepath"));
 			this.fileSource = file_source;
@@ -173,95 +168,84 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 			this.logger.warn("db_filepath is missing");
 		}
 	}
-
+	
 	@Override
-	public <E extends Entity> int count(Class<E> klazz, QueryRule... rules)
-			throws DatabaseException
+	public void beginTx() throws DatabaseException
 	{
-		return getMapperFor(klazz).count(rules);
-	}
-    
-	@Override
-	public <E extends Entity> List<E> findByExample(E example)
-			throws DatabaseException
-	{
-		Query<E> q = this.query(getClassForEntity(example));
-		// add first security rules
-		// q.addRules(this.getSecurity().getRowlevelSecurityFilters(example.getClass()));
-
-		for (String field : example.getFields())
+		getConnection();
+		try
 		{
-			if (example.get(field) != null)
+			if (inTransaction)
 			{
-				if (example.get(field) instanceof List<?>)
-				{
-					if (((List<?>) example.get(field)).size() > 0) q.in(
-							field, (List<?>) example.get(field));
-				}
-				else
-					q.equals(field, example.get(field));
+				logger.error("BeginTx failed: transaction already begun");
+				throw new DatabaseException(
+						"BeginTx failed: transaction already begun");
 			}
+			connection.setAutoCommit(false);
+			inTransaction = true;
+			logger.debug("begin transaction");
 		}
-
-		return q.find();
+		catch (SQLException sqle)
+		{
+			logger.error("beginTx failed: " + sqle.getMessage());
+			throw new DatabaseException(sqle);
+		}
 	}
 
-
-
-//	private <E extends Entity> QueryRule[] addSecurityFilters(Class<E> klazz,
-//			QueryRule... rules)
-//	{
-//		// add security filters
-//		QueryRule securityRules = null;
-//
-//		// if there is a security system, create the security rules
-//		if (getSecurity() != null)
-//		{
-//			securityRules = getSecurity().getRowlevelSecurityFilters(klazz);
-//		}
-//		// if the security system returned filters then merge with user rules
-//		if (securityRules != null)
-//		{
-//			// if user rules, merge user rules with security rules
-//			if (rules != null && rules.length >= 1)
-//			{
-//				List<QueryRule> all = new ArrayList<QueryRule>();
-//				all.add(securityRules);
-//				all.addAll(Arrays.asList(rules));
-//				return all.toArray(new QueryRule[all.size()]);
-//			}
-//			// if no user rules than only return security rules
-//			else
-//			{
-//				return new QueryRule[]
-//				{ securityRules };
-//			}
-//		}
-//		// if the security system
-//		else
-//		{
-//			return rules;
-//		}
-//	}
-        
-
-
-
-
+	@Override
+	public boolean inTx()
+	{
+		return inTransaction;
+	}
+	
 	// @Override
-	public <E extends Entity> void find(Class<E> klazz, TupleWriter writer,
-			List<String> fieldsToExport, QueryRule... rules)
-			throws DatabaseException
+	public void commitTx() throws DatabaseException
 	{
-		getMapperFor(klazz).find(writer, fieldsToExport, rules);
+		try
+		{
+			if (!inTransaction) throw new DatabaseException(
+					"commitTx failed: no active transaction");
+			connection.commit();
+			connection.setAutoCommit(true);
+			inTransaction = false;
+			// FIXME in case of hsqldb we need to checkpoint
+			// if(this.source.getDriverClassName().contains("hsql"))
+			// this.executeQuery("checkpoint");
+			logger.info("commited transaction");
+		}
+		catch (SQLException sqle)
+		{
+			logger.error("commitTx failed: " + sqle.getMessage());
+			throw new DatabaseException(sqle);
+		}
+		finally
+		{
+			closeConnection();
+		}
 	}
 
-
-
-	@Deprecated
-	public File getFilesource()
+	@Override
+	public void rollbackTx() throws DatabaseException
 	{
-		return this.fileSource;
+		try
+		{
+			if (!inTransaction) throw new DatabaseException(
+					"rollbackTx failed: no active transaction");
+			connection.rollback();
+			connection.setAutoCommit(true);
+			inTransaction = false;
+			logger.info("rolled back transaction on "
+					+ this.connection.getMetaData().getURL());
+		}
+		catch (SQLException sqle)
+		{
+			logger.error("rollbackTx failed: " + sqle.getMessage());
+			throw new DatabaseException(sqle);
+		}
+		finally
+		{
+			closeConnection();
+		}
 	}
 
 	@Override
@@ -270,435 +254,146 @@ public abstract class JDBCDatabase extends JDBCConnectionHelper implements Datab
 		closeConnection();
 	}
 
-	/**
-	 * Used to put large transactions in batches while containing transaction
-	 * integrity.
-	 * 
-	 * @param ticket
-	 *            name for the private transaction (to make sure the tx owner
-	 *            commits it)
-	 * @throws DatabaseException
-	 */
-	public void beginPrivateTx(String ticket) throws DatabaseException
-	{
-		if (!this.inTransaction)
-		{
-			this.privateTransaction = ticket;
-			this.beginTx();
-			// logger.debug("Begin private TX '" + ticket + "'");
-		}
-		else
-		{
-			// logger.debug("Trying to start private TX '"+ticket+
-			// "' but already started with '"+this.privateTransaction+"'");
-		}
-	}
 
-	/**
-	 * Used to put large transactions in batches while containing transaction
-	 * integrity.
-	 * 
-	 * @param ticket
-	 *            name for the private transaction (to make sure the tx owner
-	 *            commits it)
-	 * @throws DatabaseException
-	 */
-	public void commitPrivateTx(String ticket) throws DatabaseException
-	{
-            if (ticket != null && ticket.equals(this.privateTransaction))
-            {
-                this.commitTx();
-                this.privateTransaction = null;
-            }
-            else
-            {
-                    // logger.debug("Trying to commit private TX '"+ticket+"' but
-                    // another still running with '"+this.privateTransaction+"'");
-            }
-	}
-
-	/**
-	 * Used to put large transactions in batches while containing transaction
-	 * integrity.
-	 * 
-	 * @param ticket
-	 *            name for the private transaction (to make sure the tx owner
-	 *            commits it)
-	 * @throws DatabaseException
-	 */
-	public void rollbackPrivateTx(String ticket) throws DatabaseException
-	{
-		if (ticket != null && ticket.equals(this.privateTransaction))
-		{
-			this.rollbackTx();
-			this.privateTransaction = null;
-			// logger.debug("Rollback private TX '" + ticket + "'");
-		}
-		else
-		{
-			// logger.debug("Trying to rollback private TX '"+ticket+"' but
-			// another still running with '"+this.privateTransaction+"'");
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Class<? extends Entity>> getEntityClasses()
-	{
-            List<Class<? extends Entity>> classes = new ArrayList<Class<? extends Entity>>();
-            try
-            {
-                    for (String klazz : this.getEntityNames())
-                    {
-                            classes.add((Class<? extends Entity>) Class.forName(klazz));
-                    }
-            }
-            catch (Exception e)
-            {
-                    e.printStackTrace();
-            }
-            return classes;
-	}
-
-	@Override
-	public Class<? extends Entity> getClassForName(String name)
-	{
-		for (Class<? extends Entity> c : this.getEntityClasses())
-		{
-			if (c.getSimpleName().toLowerCase().equals(name.toLowerCase())) return c;
-		}
-		return null;
-	}
-
-	@Override
-	public <E extends Entity> E findById(Class<E> klazz, Object id)
-			throws DatabaseException
-	{
-            Mapper<E> mapper = getMapperFor(klazz);
-            List<E> result = mapper.find(new QueryRule(mapper.create()
-                            .getIdField(), QueryRule.Operator.EQUALS, id));
-            if (result.size() > 0) {
-                return result.get(0);
-            }
-            return null;
-	}
-
-	public <E extends Entity> void matchByNameAndUpdateFields(
-			List<E> existingEntities, List<E> entities) throws DatabaseException
-	{
-		// List<E> updatedDbEntities = new ArrayList<E>();
-		for (E entityInDb : existingEntities)
-		{
-			for (E newEntity : entities)
-			{
-				// FIXME very wrong! this assumes every data model has 'name' as
-				// secondary key.
-				boolean match = false;
-				// check if there are any label fields otherwise check
-				// impossible
-				if (entityInDb.getLabelFields().size() > 0) match = true;
-				for (String labelField : entityInDb.getLabelFields())
-				{
-					if (!entityInDb.get(labelField).equals(
-							newEntity.get(labelField)))
-					{
-						match = false;
-						break;
-					}
-				}
-				if (match)
-				{
-					Tuple newValues = new SimpleTuple();
-					for (String field : newEntity.getFields())
-					{
-						// as they are new entities, should include 'id'
-						if (!(newEntity.get(field) == null))
-						{
-							// logger.debug("entity name = " +
-							// newEntity.get("name") + " has null field: " +
-							// field);
-							newValues.set(field, newEntity.get(field));
-
-						}
-					}
-					try
-					{
-						entityInDb.set(newValues, false);
-					}
-					catch (Exception ex)
-					{
-						throw new DatabaseException(ex);
-					}
-				}
-			}
-		}
-		// return entities;
-	}
-
-	@Override
-	/**
-	 * Requires the keys to be set. In case of ADD we don't require the primary key if autoid.
-	 */
-	public <E extends Entity> int update(List<E> entities,
-			DatabaseAction dbAction, String... keyNames)
-			throws DatabaseException
-	{
-		if(keyNames.length == 0) throw new DatabaseException("At least one key must be provided, e.g. 'name'");
-		
-		// nothing todo?
-		if (entities.size() == 0) return 0;
-
-		// retrieve entity class and name
-		Class<E> entityClass = getClassForEntity(entities.get(0));
-		String entityName = entityClass.getSimpleName();
-
-		// create maps to store key values and entities
-		// key is a concat of all key values for an entity
-		Map<String, E> entityIndex = new LinkedHashMap<String, E>();
-		// list of all keys, each list item a map of a (composite) key for one
-		// entity e.g. investigation_name + name
-		List<Map<String, Object>> keyIndex = new ArrayList<Map<String, Object>>();
-
-		// select existing for update, only works if one (composit key allows
-		// for nulls) the key values are set
-		// otherwise skipped
-		boolean keysMissing = false;
-		for (E entity : entities)
-		{
-			// get all the value of all keys (composite key)
-			// use an index to hash the entities
-			String combinedKey = "";
-
-			// extract its key values and put in map
-			Map<String, Object> keyValues = new LinkedHashMap<String, Object>();
-			boolean incompleteKey = true;
-
-			// note: we can expect null values in composite keys but need at
-			// least one key value.
-			for (String key : keyNames)
-			{
-				// create a hash that concats all key values into one string
-				combinedKey += ";"
-						+ (entity.get(key) == null ? "" : entity.get(key));
-
-				// if (entity.get(key) == null || entity.get(key).equals(""))
-				// {
-				// if (dbAction.equals(DatabaseAction.UPDATE) ||
-				// dbAction.equals(DatabaseAction.REMOVE))
-				// {
-				// throw new DatabaseException(
-				// entityName + " is missing key '" + key + "' in line " +
-				// entity.toString());
-				// }
-				// }
-				if (entity.get(key) != null)
-				{
-					incompleteKey = false;
-					keyValues.put(key, entity.get(key));
-				}
-			}
-			// check if we have missing key
-			if (incompleteKey) keysMissing = true;
-
-			// add the keys to the index, if exists
-			if (!keysMissing)
-			{
-				keyIndex.add(keyValues);
-				// create the entity index using the hash
-				entityIndex.put(combinedKey, entity);
-			}
-			else
-			{
-				if ((dbAction.equals(DatabaseAction.ADD)
-						|| dbAction.equals(DatabaseAction.ADD_IGNORE_EXISTING) || dbAction
-						.equals(DatabaseAction.ADD_UPDATE_EXISTING))
-						&& keyNames.length == 1
-						&& keyNames[0].equals(entity.getIdField()))
-				{
-					// don't complain is 'id' field is emptyr
-				}
-				else
-				{
-					throw new DatabaseException("keys are missing: "
-							+ entityClass.getSimpleName() + "."
-							+ Arrays.asList(keyNames));
-				}
-			}
-		}
-
-		// split lists in new and existing entities, but only if keys are set
-		List<E> newEntities = entities;
-		List<E> existingEntities = new ArrayList<E>();
-		if (!keysMissing && keyIndex.size() > 0)
-		{
-			newEntities = new ArrayList<E>();
-			Query<E> q = this.query(getClassForEntity(entities.get(0)));
-
-			// in case of one field key, simply query
-			if (keyNames.length == 1)
-			{
-				List<Object> values = new ArrayList<Object>();
-				for (Map<String, Object> keyValues : keyIndex)
-				{
-					values.add(keyValues.get(keyNames[0]));
-				}
-				q.in(keyNames[0], values);
-			}
-			// in case of composite key make massive 'OR' query
-			// form (key1 = x AND key2 = X) OR (key1=y AND key2=y)
-			else
-			{
-				// very expensive!
-				for (Map<String, Object> keyValues : keyIndex)
-				{
-					for (int i = 0; i < keyNames.length; i++)
-					{
-						if (i > 0) q.or();
-						q.equals(keyNames[i], keyValues.get(keyNames[i]));
-					}
-				}
-			}
-			List<E> selectForUpdate = q.find();
-
-			// separate existing from new entities
-			for (E p : selectForUpdate)
-			{
-				// reconstruct composite key so we can use the entityIndex
-				String combinedKey = "";
-				for (String key : keyNames)
-				{
-					combinedKey += ";" + p.get(key);
-				}
-				// copy existing from entityIndex to existingEntities
-				entityIndex.remove(combinedKey);
-				existingEntities.add(p);
-			}
-			// copy remaining to newEntities
-			newEntities = new ArrayList<E>(entityIndex.values());
-		}
-
-		// if existingEntities are going to be updated, they will need to
-		// receive new values from 'entities' in addition to be mapped to the
-		// database as is the case at this point
-		if (existingEntities.size() > 0
-				&& (dbAction == DatabaseAction.ADD_UPDATE_EXISTING
-						|| dbAction == DatabaseAction.UPDATE || dbAction == DatabaseAction.UPDATE_IGNORE_MISSING))
-		{
-			logger.info("existingEntities[0] before: "
-					+ existingEntities.get(0).toString());
-			matchByNameAndUpdateFields(existingEntities, entities);
-			logger.info("existingEntities[0] after: "
-					+ existingEntities.get(0).toString());
-		}
-
-		switch (dbAction)
-		{
-
-			// will test for existing entities before add
-			// (so only add if existingEntities.size == 0).
-			case ADD:
-				if (existingEntities.size() == 0)
-				{
-					return add(newEntities);
-				}
-				else
-				{
-					throw new DatabaseException("Tried to add existing "
-							+ entityName
-							+ " elements as new insert: "
-							+ Arrays.asList(keyNames)
-							+ "="
-							+ existingEntities.subList(0, Math.min(5,
-									existingEntities.size()))
-							+ (existingEntities.size() > 5 ? " and "
-									+ (existingEntities.size() - 5) + "more"
-									: "" + existingEntities));
-				}
-
-				// will not test for existing entities before add
-				// (so will ignore existingEntities)
-			case ADD_IGNORE_EXISTING:
-				logger.debug("updateByName(List<" + entityName + "," + dbAction
-						+ ">) will skip " + existingEntities.size()
-						+ " existing entities");
-				return add(newEntities);
-
-				// will try to update(existingEntities) entities and
-				// add(missingEntities)
-				// so allows user to be sloppy in adding/updating
-			case ADD_UPDATE_EXISTING:
-				logger.debug("updateByName(List<" + entityName + "," + dbAction
-						+ ">)  will try to update " + existingEntities.size()
-						+ " existing entities and add " + newEntities.size()
-						+ " new entities");
-				return add(newEntities) + update(existingEntities);
-
-				// update while testing for newEntities.size == 0
-			case UPDATE:
-				if (newEntities.size() == 0)
-				{
-					return update(existingEntities);
-				}
-				else
-				{
-					throw new DatabaseException("Tried to update non-existing "
-							+ entityName + "elements "
-							+ Arrays.asList(keyNames) + "="
-							+ entityIndex.values());
-				}
-
-				// update that doesn't test for newEntities but just ignores
-				// those
-				// (so only updates exsiting)
-			case UPDATE_IGNORE_MISSING:
-				logger.debug("updateByName(List<" + entityName + "," + dbAction
-						+ ">) will try to update " + existingEntities.size()
-						+ " existing entities and skip " + newEntities.size()
-						+ " new entities");
-				return update(existingEntities);
-
-				// remove all elements in list, test if no elements are missing
-				// (so test for newEntities == 0)
-			case REMOVE:
-				if (newEntities.size() == 0)
-				{
-					logger.debug("updateByName(List<" + entityName + ","
-							+ dbAction + ">) will try to remove "
-							+ existingEntities.size() + " existing entities");
-					return remove(existingEntities);
-				}
-				else
-				{
-					throw new DatabaseException("Tried to remove non-existing "
-							+ entityName + " elements "
-							+ Arrays.asList(keyNames) + "="
-							+ entityIndex.values());
-
-				}
-
-				// remove entities that are in the list, ignore if they don't
-				// exist in database
-				// (so don't check the newEntities.size == 0)
-			case REMOVE_IGNORE_MISSING:
-				logger.debug("updateByName(List<" + entityName + "," + dbAction
-						+ ">) will try to remove " + existingEntities.size()
-						+ " existing entities and skip " + newEntities.size()
-						+ " new entities");
-				return remove(existingEntities);
-
-				// unexpected error
-			default:
-				throw new DatabaseException(
-						"updateByName failed because of unknown dbAction "
-								+ dbAction);
-		}
-	}
 
 	@Override
 	public EntityManager getEntityManager()
 	{
 		throw new UnsupportedOperationException();
 	}
-	
+
+	/** The jndi to a data source */
+	DataSourceWrapper source = null;
+
+	/** The current JDBC connection of this database (only when in transaction) */
+	Connection connection;
+
+	/** Flag to indicate whether the database is in a transaction */
+	boolean inTransaction = false;
+
+	int openconnections = 0;
+
+	/** Ticket to indicate a private transaction */
+	String privateTransaction = null;
+
+	public JDBCDatabase(DataSourceWrapper source)
+	{
+		this.source = source;
+	}
+
+	/** open the connection (if not already) */
+	public Connection getConnection() throws DatabaseException
+	{
+		if (source == null)
+		{
+			// this JDBCDatabase has been created with just a connection and no
+			// source
+			// so, there should be exactly 1 active connection that is handled
+			// by the FrontController
+			// System.out.println("No datasource, immediatly returning connection");
+			return connection;
+		}
+
+		try
+		{
+			if (connection == null || connection.isClosed())
+			{
+				openconnections++;
+				connection = source.getConnection();
+				logger.debug(this
+						+ "opened database connection, connectioncount="
+						+ openconnections + ", count in pool: "
+						+ this.source.countOpenConnections() + "/"
+						+ source.getMaxActive());
+				connection.setAutoCommit(true); // restore default
+			}
+			return connection;
+		}
+		catch (Exception sqle)
+		{
+			logger.error("Cannot open connection: " + sqle.getMessage());
+			throw new DatabaseException(sqle);
+		}
+	}
+
+	public DataSourceWrapper getSource()
+	{
+		return source;
+	}
+
+	/**
+	 * close the connection (if not in transaction)
+	 * 
+	 * @throws DatabaseException
+	 */
+	protected void closeConnection()
+	{
+		if (source == null)
+		{
+			// this JDBCDatabase has been created with just a connection and no
+			// source
+			// so, there should be exactly 1 active connection that is handled
+			// by the FrontController
+			// do not close this connection here!
+			// System.out.println("No datasource, not closing connection");
+			return;
+		}
+
+		if (inTransaction)
+		{
+			// logger.debug("Didn't close connection: transaction active");
+		}
+		else
+		{
+			if (connection != null)
+			{
+				try
+				{
+					connection.setAutoCommit(true); // restore default
+					if (!connection.isClosed()) connection.close();
+					connection = null;
+					openconnections--;
+					logger.debug(this
+							+ "closed connection back to pool, connectioncount="
+							+ openconnections + ", open connections in pool: "
+							+ source.countOpenConnections() + "/"
+							+ source.getMaxActive());
+				}
+				catch (Exception sqle)
+				{
+					// System.err.println(this+"Cannot close connection: " +
+					// sqle.getMessage());
+					logger.error(this + "Cannot close connection: "
+							+ sqle.getMessage());
+				}
+			}
+		}
+	}
+
+	/**
+	 * Closes a statement.
+	 * 
+	 * @param stmt
+	 */
+	public static void closeStatement(Statement stmt)
+	{
+		try
+		{
+			if (stmt != null) stmt.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			logger.warn("closeStatement(): " + e);
+		}
+	}
+
+	@Override
+	public void flush()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

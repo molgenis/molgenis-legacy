@@ -60,7 +60,6 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jdbc.AbstractJDBCMapper;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
 import org.molgenis.fieldtypes.*;
 
 <#list allFields(entity) as f><#if f.type == "file">
@@ -112,8 +111,13 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 <#include "MapperCommons.subclass_per_table.java.ftl">	
 	
 	@Override
-	public int executeAdd(List<${JavaName(entity)}> entities) throws DatabaseException
+	public int executeAdd(List<? extends ${JavaName(entity)}> entities) throws DatabaseException
 	{	
+		<#if entity.hasAncestor()>
+		//add superclass first
+		this.getDatabase().getMapperFor(${entity.ancestor.namespace}.${JavaName(entity.ancestor)}.class).executeAdd(entities);
+		</#if>
+	
 		Connection conn = getDatabase().getConnection();
 		PreparedStatement pstmt = null;
 		try
@@ -157,8 +161,13 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 	}
 
 	@Override
-	public int executeUpdate(List<${JavaName(entity)}> entities) throws DatabaseException
+	public int executeUpdate(List<? extends ${JavaName(entity)}> entities) throws DatabaseException
 	{
+		<#if entity.hasAncestor()>
+		//add superclass first
+		this.getDatabase().getMapperFor(${entity.ancestor.namespace}.${JavaName(entity.ancestor)}.class).executeUpdate(entities);
+		</#if>
+		
 		Connection conn = getDatabase().getConnection();
 		PreparedStatement pstmt = null;
 		try
@@ -197,14 +206,14 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 	}
 
 	@Override
-	public int executeRemove(List<${JavaName(entity)}> entities) throws DatabaseException
+	public int executeRemove(List<? extends ${JavaName(entity)}> entities) throws DatabaseException
 	{
 		Connection conn = getDatabase().getConnection();
 		PreparedStatement pstmt = null;
+		int updatedRows = 0;
 		try
 		{
 			pstmt = conn.prepareStatement("DELETE FROM ${name(entity)} WHERE <#list keyFields(entity) as f>${name(f)}=?<#if f_has_next> AND </#if></#list>");
-			int updatedRows = 0;
 					
 			for( ${JavaName(entity)} e : entities )	
 			{	
@@ -216,14 +225,22 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 </#list>	
 				updatedRows += pstmt.executeUpdate();
 			}
-	
-			return updatedRows;
-		} catch (SQLException sqlEx) {
-                    throw new DatabaseException(sqlEx);
-                } finally
+		} 
+		catch (SQLException sqlEx) 
+		{
+			throw new DatabaseException(sqlEx);
+        } 
+        finally
 		{
 			JDBCDatabase.closeStatement(pstmt);
 		}
+		
+		<#if entity.hasAncestor()>
+		//add superclass first
+		this.getDatabase().getMapperFor(${entity.ancestor.namespace}.${JavaName(entity.ancestor)}.class).executeRemove(entities);
+		</#if>
+		
+		return updatedRows;
 	}
 
 

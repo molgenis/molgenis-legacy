@@ -28,7 +28,7 @@ import org.molgenis.framework.db.jdbc.SimpleDataSourceWrapper;
 import org.molgenis.model.elements.Model;
 <#if decorator_overriders != ''>
 import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.db.MapperDecorator;
 import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -151,7 +151,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 						//logger.info("${entity.decorator} overwritten for ${JavaName(entity)} entity.");
 						try{
 							Constructor constr = Class.forName("${decorator_overriders}." + s).getDeclaredConstructor(Mapper.class);
-							MappingDecorator mapdec = (MappingDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
+							MapperDecorator mapdec = (MapperDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
 							<#if auth_loginclass?ends_with("SimpleLogin")>
 							this.putMapper(${entity.namespace}.${JavaName(entity)}.class, mapdec);
 							<#else>
@@ -185,7 +185,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 					//logger.info("Overriding decorator: ${entity.decorator} with ${decorator_overriders}." + overrideDecName);
 					try{
 						Constructor constr = Class.forName("${decorator_overriders}." + overrideDecName).getDeclaredConstructor(Mapper.class);
-						MappingDecorator mapdec = (MappingDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
+						MapperDecorator mapdec = (MapperDecorator) constr.newInstance(new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));
 						<#if auth_loginclass?ends_with("SimpleLogin")>
 						this.putMapper(${entity.namespace}.${JavaName(entity)}.class, mapdec);
 						<#else>

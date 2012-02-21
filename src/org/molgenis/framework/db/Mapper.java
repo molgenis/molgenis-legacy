@@ -1,61 +1,89 @@
 package org.molgenis.framework.db;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
 import org.molgenis.fieldtypes.FieldType;
-import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
+import org.molgenis.util.TupleReader;
 import org.molgenis.util.TupleWriter;
 
-public interface Mapper<E extends Entity> {
+/**
+ * Interface for the Molgenis mappers. Mappers are an intermediate between
+ * Molgenis and the database and provide many useful helper methods.
+ */
+public interface Mapper<E extends Entity>
+{
+	/**
+	 * Get the database this mapper is attached to.
+	 * @return database
+	 */
 	public Database getDatabase();
-	
-	public int add(List<E> entities) throws DatabaseException;
 
-	// FIXME: can we merge the two add functions by wrapping list/reader into an
-	// iterator of some kind?
 	public E create();
 	
-	public int add(CsvReader reader, TupleWriter writer) throws DatabaseException;
+	/** Implementation of {@link Database#count(Class, QueryRule...)} */
+	public int count(QueryRule... rules) throws DatabaseException;
+
+	/** Implementation of {@link Database#find(Class, QueryRule...)}*/
+	public List<E> find(QueryRule... rules) throws DatabaseException;
+
+	/** Implementation of {@link Database#find(Class, TupleWriter, QueryRule...)}*/
+	public void find(TupleWriter writer, QueryRule... rules)
+			throws DatabaseException;
+
+	/** Implementation of {@link Database#find(Class, TupleWriter, List, QueryRule...)*/
+	public void find(TupleWriter writer, List<String> fieldsToExport,
+			QueryRule[] rules) throws DatabaseException;
+
+	/** Implementation of {@link Database#add(Entity)} */
+	//public int add(E entity) throws DatabaseException;	
 	
+	/** Implementation of {@link Database#add(List)} */
+	public int add(List<E> entities) throws DatabaseException;
+
+	/** Implementation of {@link Database#add(Class, TupleReader, TupleWriter)}*/
+	public int add(TupleReader reader, TupleWriter writer)
+			throws DatabaseException;
+
+	/** Implementation of {@link Database#add(Entity)}*/
+	//public int update(E entity) throws DatabaseException;
+	
+	/** Implementation of {@link Database#update(List)}*/
 	public int update(List<E> entities) throws DatabaseException;
+
+	/** Implementation of {@link Database#update(TupleReader)}*/
+	public int update(TupleReader reader) throws DatabaseException;
+
+	/** Implementation of {@link Database#remove(Entity)}*/
+	//public int remove(E entity) throws DatabaseException;
 	
-	public int update(CsvReader reader) throws DatabaseException;
-	
+	/** Implementation of {@link Database#remove(List)}*/
 	public int remove(List<E> entities) throws DatabaseException;
-	
-	public int count(QueryRule ...rules) throws DatabaseException;
 
-	public List<E> find(QueryRule ...rules) throws DatabaseException;
+	/** Implementation of {@link Database#remove(Class, TupleReader)*/
+	public int remove(TupleReader reader) throws DatabaseException;
 
-	public void find(TupleWriter writer, QueryRule[] rules) throws DatabaseException;
-	
-	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule[] rules) throws DatabaseException;
-
-	public int remove(CsvReader reader) throws DatabaseException;
-
-	public List<E> toList(CsvReader reader, int limit) throws DatabaseException;
+	public List<E> toList(TupleReader reader, int limit)
+			throws DatabaseException;
 
 	public String getTableFieldName(String field);
 
 	public FieldType getFieldType(String field);
-	
-	public void resolveForeignKeys(List<E> enteties) throws ParseException, DatabaseException;
 
-	public String createFindSqlInclRules(QueryRule[] rules) throws DatabaseException;
-        
-        
-//        public abstract int executeAdd(List<E> entities) throws DatabaseException;
-//
-//	public abstract int executeUpdate(List<E> entities) throws DatabaseException;
-//
-//	public abstract int executeRemove(List<E> entities) throws DatabaseException;
-        
-//        public void prepareFileAttachements(List<E> entities, File dir) throws IOException;
-//        
-//        public boolean saveFileAttachements(List<E> entities, File dir) throws IOException;
-        
+	public void resolveForeignKeys(List<E> enteties) throws ParseException,
+			DatabaseException;
+
+	public String createFindSqlInclRules(QueryRule[] rules)
+			throws DatabaseException;
+
+	public E findById(Object id) throws DatabaseException;
+
+	List<E> findByExample(E example) throws DatabaseException;
+
+	int executeAdd(List<? extends E> entities) throws DatabaseException;
+
+	int executeUpdate(List<? extends E> entities) throws DatabaseException;
+
+	int executeRemove(List<? extends E> entities) throws DatabaseException;
 }

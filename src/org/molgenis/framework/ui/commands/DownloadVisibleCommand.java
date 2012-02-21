@@ -22,6 +22,7 @@ import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.XlsWriter;
 
 /**
  * This command downloads the records currently shown as csv.
@@ -48,7 +49,9 @@ public class DownloadVisibleCommand extends SimpleCommand
 	{
 		FormModel<?> view = this.getFormScreen();
 		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
-		AbstractJDBCMapper.find(view.getRecords(), new CsvWriter(csvDownload), fieldsToExport);
+		CsvWriter writer = new CsvWriter(csvDownload, fieldsToExport);
+		for(Entity e: view.getRecords()) writer.writeRow(e);
+		writer.close();
 		return ScreenModel.Show.SHOW_MAIN;
 	}
 

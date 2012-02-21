@@ -1,6 +1,6 @@
 /**
- * File: org.molgenis.framework.data.Database Copyright: Inventory 2000-2007, GBIC
- * 2005, all rights reserved <br>
+ * File: org.molgenis.framework.data.Database Copyright: Inventory 2000-2007,
+ * GBIC 2005, all rights reserved <br>
  * Changelog:
  * <ul>
  * <li>2005-05-03; 1.0.0; MA Swertz; Creation.
@@ -17,9 +17,8 @@
 package org.molgenis.framework.db;
 
 import java.io.File;
-import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -27,36 +26,36 @@ import javax.persistence.EntityManager;
 
 import org.molgenis.framework.security.Login;
 import org.molgenis.model.elements.Model;
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.Tuple;
-import org.molgenis.util.XlsWriter;
+import org.molgenis.util.TupleReader;
+import org.molgenis.util.TupleWriter;
 
 /**
- * Interface to manage and search persistent data Entity objects.
- * <p>
- * Database provides a facade around data storage solutions such as relational
- * databases (implemented using JDBC), XML (planned) and even flat files
- * (planned). It wraps basic functionality such as find, count, add, update and
- * delete. It also has batch functions to add data in vast amount, especially
- * added to support large scale data storage such as needed in life sciences.
- * Furthermore, it has transaction capabilities, i.e., to add, update, and
- * remove many entities as if it was one operation (ensuring all actions are
- * executed or none are executed).
- * <p>
- * In MOLGENIS, it has been decided not to load complete aggregates of objects
- * like a "pure" object database. This is motivated by the large datasets that
- * would require many "lazy load" mechanisms to prevent complete
- * genome/transcriptome databases to be loaded in memory. Instead, data
- * navigation methods have been implemented such as the
- * {@link org.molgenis.framework.db.paging.DatabasePager DatabasePager} to give
- * programmers more control on data loading.
+ * Interface to manage and search persistent data Entity objects. It wraps basic
+ * functionality such as find, count, add, update and delete. It also has batch
+ * functions to add data in vast amount, especially added to support large scale
+ * data storage such as needed in life sciences. Furthermore, it has transaction
+ * capabilities, i.e., to add, update, and remove many entities as if it was one
+ * operation (ensuring all actions are complete succesfully or if it fails
+ * halfway, it gets undone).
  */
 public interface Database
 {
-
+//	/**
+//	 * Create tables based on annotations.
+//	 * 
+//	 * @param persistenceUnitName
+//	 */
+//    public void createTables();
+//    
+//    /**
+//     * Drop tables based on annotations
+//     * 
+//     * @param persistenceUnitName
+//     */
+//    public void dropTables(); 
+    
 	/**
 	 * Retrieve meta data describing data structure in this Database.
 	 * 
@@ -73,22 +72,18 @@ public interface Database
 	 * that all changes are rolled back, thus ensuring consistent database
 	 * state.
 	 * 
-	 * @throws SQLException
-	 */
-	public void beginTx() throws DatabaseException;
-
-        
-	/**
-	 * Used to put large transactions in batches while containing transaction
-	 * integrity.
-	 * 
-	 * @param ticket
-	 *            name for the private transaction (to make sure the tx owner
-	 *            commits it)
 	 * @throws DatabaseException
 	 */
-	 public void beginPrivateTx(String ticket) throws DatabaseException;        
-        
+	public void beginTx() throws DatabaseException;
+	
+	/**
+	 * Check whether the database is currently in a transaction. Returns true if
+	 * beginTx() was called before.
+	 * 
+	 * @return true if in transaction
+	 */
+	public boolean inTx();
+
 	/**
 	 * Commit transaction.
 	 * <p>
@@ -101,29 +96,6 @@ public interface Database
 	public void commitTx() throws DatabaseException;
 
 	/**
-	 * Used to put large transactions in batches while containing transaction
-	 * integrity.
-	 * 
-	 * @param ticket
-	 *            name for the private transaction (to make sure the tx owner
-	 *            commits it)
-	 * @throws DatabaseException
-	 */
-	public void commitPrivateTx(String ticket) throws DatabaseException;        
-        
-        
-	/**
-	 * Used to put large transactions in batches while containing transaction
-	 * integrity.
-	 * 
-	 * @param ticket
-	 *            name for the private transaction (to make sure the tx owner
-	 *            commits it)
-	 * @throws DatabaseException
-	 */
-	public void rollbackPrivateTx(String ticket) throws DatabaseException;        
-        
-	/**
 	 * Rollback transaction.
 	 * <p>
 	 * All additions, updates and removals that have been executed since beginTx
@@ -133,14 +105,6 @@ public interface Database
 	 * @throws DatabaseException
 	 */
 	public void rollbackTx() throws DatabaseException;
-       
-	/**
-	 * Check whether the database is currently in a transaction. Returns true if
-	 * beginTx() was called before.
-	 * 
-	 * @return true if in transaction
-	 */
-	public boolean inTx();
 
 	/**
 	 * Count the entities of type entityClass. Optionally, additional filtering
@@ -153,8 +117,26 @@ public interface Database
 	 *            to filter or otherwise change the result
 	 * @return count of entities.
 	 */
-	public <E extends Entity> int count(Class<E> entityClass, QueryRule... rules) throws DatabaseException;
-
+	public <E extends Entity> int count(Class<E> entityClass,
+			QueryRule... rules) throws DatabaseException;
+	
+	/**
+	 * Find all entities of type entityClass and return them as list. Optionally
+	 * filtering rules can be provided.
+	 * 
+	 * @param <E>
+	 *            type of entity to be retrieved
+	 * @param entityClass
+	 *            type of entity to be retrieved
+	 * @param rules
+	 *            to filter or otherwise change result
+	 * @return List of entity objects.
+	 * @throws ParseException
+	 *             as result of incompatible QueryRules
+	 */
+	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules)
+			throws DatabaseException;
+	
 	/**
 	 * Find all entities of type entityClass and write them to a csv file.
 	 * 
@@ -170,8 +152,8 @@ public interface Database
 	 *            to filter or otherwise change result
 	 * @throws DatabaseException
 	 */
-	public <E extends Entity> void find(Class<E> entityClass, TupleWriter writer, QueryRule... rules)
-			throws DatabaseException;
+	public <E extends Entity> void find(Class<E> entityClass,
+			TupleWriter writer, QueryRule... rules) throws DatabaseException;
 
 	/**
 	 * Find all entities of type entityClass and write them to a csv file.
@@ -181,7 +163,8 @@ public interface Database
 	 * Optionally the auto id's are not exported.
 	 * 
 	 */
-	public <E extends Entity> void find(Class<E> entityClass, TupleWriter writer, List<String> fieldsToExport, QueryRule... rules)
+	public <E extends Entity> void find(Class<E> entityClass,
+			TupleWriter writer, List<String> fieldsToExport, QueryRule... rules)
 			throws DatabaseException;
 
 	/**
@@ -196,22 +179,8 @@ public interface Database
 	 * @return list of entities that match the example
 	 * @throws DatabaseException
 	 */
-	//public <E extends Entity> void find(Class<E> entityClass, XlsWriter writer, List<String> fieldsToExport, QueryRule... rules)
-	//throws DatabaseException;
-
-	/**
-	* Find all entity objects matching the not-null properties of one example
-	* object.
-	* 
-	* @param <E>
-	*            type of entity
-	* @param example
-	*            object which not-null properties will be used as QueryRules
-	*            for search
-	* @return list of entities that match the example
-	* @throws DatabaseException
-	*/
-	public <E extends Entity> List<E> findByExample(E example) throws DatabaseException;
+	public <E extends Entity> List<E> findByExample(E example)
+			throws DatabaseException;
 
 	/**
 	 * Find one entity object of type entityClass by using its primary id.
@@ -223,7 +192,8 @@ public interface Database
 	 * @return entity object or null of not found.
 	 * @throws DatabaseException
 	 */
-	public <E extends Entity> E findById(Class<E> entityClass, Object id) throws DatabaseException;
+	public <E extends Entity> E findById(Class<E> entityClass, Object id)
+			throws DatabaseException;
 
 	/**
 	 * Create a Query to easily search the entities of type entityClass.
@@ -239,8 +209,7 @@ public interface Database
 	 */
 	public <E extends Entity> Query<E> query(Class<E> entityClass);
 
-
-        /**
+	/**
 	 * Create a Query to easily to search the entities by an example.
 	 * 
 	 * @see Query
@@ -252,37 +221,7 @@ public interface Database
 	 * @return query object for this entityClass. Optionally one can add
 	 *         additional filtering rules on this Query.
 	 */
-        public <E extends Entity> Query<E> queryByExample(E entity);
-        
-        
-	/**
-	 * Create a JoinQuery to freely search across any entity.field within the
-	 * database. Joins between entityClasses are automated although explicit
-	 * join rules can also be provided. Status: experimental!
-	 * 
-	 * @param classes
-	 *            list of classes, e.g. Individual.class, Sample.class
-	 * @return query object for custom querying of the list of fields. On this
-	 *         object one can add additional filter rules.
-	 * @throws DatabaseException
-	 */
-	public JoinQuery join(Class<? extends Entity> ... classes) throws DatabaseException;
-
-	/**
-	 * Find all entities of type entityClass and return them as list. Optionally
-	 * filtering rules can be provided.
-	 * 
-	 * @param <E>
-	 *            type of entity to be retrieved
-	 * @param entityClass
-	 *            type of entity to be retrieved
-	 * @param rules
-	 *            to filter or otherwise change result
-	 * @return List of entity objects.
-	 * @throws ParseException
-	 *             as result of incompatible QueryRules
-	 */
-	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules) throws DatabaseException;
+	public <E extends Entity> Query<E> queryByExample(E entity);
 
 	/**
 	 * Add one entity object to the database.
@@ -304,7 +243,8 @@ public interface Database
 	 *            to be added
 	 * @return number of entity objects that have been added
 	 */
-	public <E extends Entity> int add(List<E> entities) throws DatabaseException;
+	public <E extends Entity> int add(List<E> entities)
+			throws DatabaseException;
 
 	/**
 	 * Add a list of entity objects to the database by parsing them from a csv
@@ -319,15 +259,19 @@ public interface Database
 	 * @return number of entities added
 	 * @throws Exception
 	 */
-	public <E extends Entity> int add(Class<E> klazz, CsvReader reader, TupleWriter writer) throws DatabaseException;
+	public <E extends Entity> int add(Class<E> klazz, TupleReader reader,
+			TupleWriter writer) throws DatabaseException;
 
 	/**
-	 * Update one entity object in the database.
-	 * <p>
-	 * Note: each entity has a "primary key" that cannot be updated. If you want
-	 * to change a primary key, you have to remove the previous, and add the new
-	 * record. Otherwise this will result in a DatabaseException or unexpected
-	 * behaviour.
+	 * Update one entity object in the database. In JPA the entity will be
+	 * automatically merged if not attached to EntityManager, and the xref/mref
+	 * proxies set based on xref_ids.
+	 * 
+	 * @TODO <p>
+	 *       Note: each entity has a "primary key" that cannot be updated. If
+	 *       you want to change a primary key, you have to remove the previous,
+	 *       and add the new record. Otherwise this will result in a
+	 *       DatabaseException or unexpected behaviour.
 	 * 
 	 * @param <E>
 	 *            type of entity
@@ -337,14 +281,17 @@ public interface Database
 	public <E extends Entity> int update(E entity) throws DatabaseException;
 
 	/**
-	 * Update a list of entity objects in batch from the database
+	 * Update a list of entity objects in batch from the database. In JPA the
+	 * entity will be automatically merged if not attached to EntityManager, and
+	 * the xref/mref proxies set based on xref_ids.
 	 * 
 	 * @param <E>
 	 *            type of entity
 	 * @param entities
 	 *            to be updated
 	 */
-	public <E extends Entity> int update(List<E> entities) throws DatabaseException;
+	public <E extends Entity> int update(List<E> entities)
+			throws DatabaseException;
 
 	/**
 	 * Update a list of entity objects in the database by reading the new values
@@ -359,10 +306,12 @@ public interface Database
 	 * @return number of entities update
 	 * @throws Exception
 	 */
-	public <E extends Entity> int update(Class<E> klazz, CsvReader reader) throws DatabaseException;
+	public <E extends Entity> int update(Class<E> klazz, TupleReader reader)
+			throws DatabaseException;
 
 	/**
-	 * Remove one particular entity from the database.
+	 * Remove one particular entity from the database (and remove from
+	 * EntityManager cache).
 	 * 
 	 * @param <E>
 	 *            type of entity
@@ -372,14 +321,16 @@ public interface Database
 	public <E extends Entity> int remove(E entity) throws DatabaseException;
 
 	/**
-	 * Remove a list of entity objects in batch from the database
+	 * Remove a list of entity objects in batch from the database (and remove
+	 * from EntityManager cache).
 	 * 
 	 * @param <E>
 	 *            type of entity
 	 * @param entities
 	 *            to be removed
 	 */
-	public <E extends Entity> int remove(List<E> entities) throws DatabaseException;
+	public <E extends Entity> int remove(List<E> entities)
+			throws DatabaseException;
 
 	/**
 	 * Remove a list of entity objects from the database by parsing the
@@ -394,7 +345,8 @@ public interface Database
 	 * @return number of entities that have been removed
 	 * @throws Exception
 	 */
-	public <E extends Entity> int remove(Class<E> entityClass, CsvReader reader) throws DatabaseException;
+	public <E extends Entity> int remove(Class<E> entityClass,
+			TupleReader reader) throws DatabaseException;
 
 	/**
 	 * Enumeration of complex database update actions supported by updateByName
@@ -436,7 +388,8 @@ public interface Database
 	 *            key field name, or list of composite key fields, you want to
 	 *            use. For example: experiment, name
 	 */
-	public <E extends Entity> int update(List<E> entities, DatabaseAction dbAction, String... keyName)
+	public <E extends Entity> int update(List<E> entities,
+			DatabaseAction dbAction, String... keyName)
 			throws DatabaseException;
 
 	/**
@@ -454,6 +407,13 @@ public interface Database
 	 * @throws DatabaseException
 	 */
 	public void close() throws DatabaseException;
+
+	/**
+	 * Return a list of the classes of the entities managed.
+	 * 
+	 * @return list of entity classes managed in this database
+	 */
+	public List<Class<? extends Entity>> getEntityClasses();
 
 	/**
 	 * Get a list of entities managed in this database.
@@ -475,21 +435,24 @@ public interface Database
 	 * @return list of entity objects of type=klazz
 	 * @throws Exception
 	 */
-	public <E extends Entity> List<E> toList(Class<E> klazz, CsvReader reader, int noEntities) throws DatabaseException;
-
-	/**
-	 * Return a list of the classes of the entities managed.
-	 * 
-	 * @return list of entity classes managed in this database
-	 */
-	public List<Class<? extends Entity>> getEntityClasses();
+	public <E extends Entity> List<E> toList(Class<E> klazz,
+			TupleReader reader, int noEntities) throws DatabaseException;
 
 	/**
 	 * Return the security strategy object that takes care of authorization in
-	 * this Database
+	 * this Database.
+	 * 
+	 * Deprecated, use getLogin() instead
 	 */
-	public Login getSecurity();	
-	
+	public Login getLogin();
+
+	/**
+	 * Set the Login.
+	 * 
+	 * @param login
+	 */
+	public void setLogin(Login login);
+
 	/**
 	 * Retrieve the full class object for an entity name. For example:
 	 * "Experiment" may produce a "my.package.Experiment" class. This works
@@ -500,31 +463,69 @@ public interface Database
 	 * @return entity class
 	 */
 	public Class<? extends Entity> getClassForName(String simpleName);
-	
+
 	/**
-	 * Get the entityManager, if JPA isn't supported a UnsupportedOperations exceptions
-	 * is thrown.
+	 * Get the entityManager, if JPA isn't supported a UnsupportedOperations
+	 * exceptions is thrown. 
+	 * 
+	 * Deprecated: Database should become entityManager itself ;-)
+	 * 
 	 * @return EntityManager
 	 */
+	@Deprecated
 	public EntityManager getEntityManager();
+	
+	public void flush();
 
 	/**
 	 * Executes a query and get back a List of (Molgenis)Tuples
+	 * 
 	 * @return List<Tuple>
 	 */
-	public List<Tuple> sql(String query, QueryRule ...queryRules) throws DatabaseException;
-	
+	@Deprecated
+	public List<Tuple> sql(String query, QueryRule... queryRules)
+			throws DatabaseException;
+
 	/**
-	 * Executes a query and get back a List of (Molgenis)Tuples, rules are added to where
+	 * Executes a query and get back a List of (Molgenis)Tuples, rules are added
+	 * to where
+	 * 
 	 * @return ResultSetTuple
 	 */
-	@Deprecated	
-	public ResultSet executeQuery(String query, QueryRule ... queryRules) throws DatabaseException;
-
+	@Deprecated
+	public ResultSet executeQuery(String query, QueryRule... queryRules)
+			throws DatabaseException;
+	
 	/**
 	 * Generate the find SQL (use with caution!)
 	 */
-	public <E extends Entity>  String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException;
-
-	public void setLogin(Login login);
+	@Deprecated
+	public <E extends Entity> String createFindSql(Class<E> entityClass,
+			QueryRule... rules) throws DatabaseException;
+	
+	/**
+	 * Return the security strategy object that takes care of authorization in
+	 * this Database.
+	 * 
+	 * Deprecated, use getLogin() instead
+	 */
+	@Deprecated
+	public Login getSecurity();
+	
+	@Deprecated
+	public Connection getConnection() throws DatabaseException;
+	
+	public <E extends Entity> Mapper<E> getMapper(String name)
+			throws DatabaseException;
+	
+	/**
+	 * Find the mapper from this.mappers
+	 * 
+	 * @param klazz
+	 *            the entity class to get the mapper from
+	 * @return a mapper or a exception
+	 * @throws DatabaseException
+	 */
+	public <E extends Entity> Mapper<E> getMapperFor(Class<E> klazz)
+			throws DatabaseException;
 }

@@ -1,12 +1,6 @@
 package org.molgenis.framework.db.jpa;
 
 import java.sql.Connection;
-
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.Search;
-import org.hibernate.search.query.dsl.QueryBuilder;
-import org.molgenis.framework.db.AbstractDatabase;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,381 +8,249 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
-import javax.persistence.metamodel.EntityType;
 
-import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.QueryBuilder;
+import org.molgenis.framework.db.AbstractDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.JoinQuery;
-import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryImp;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Model;
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
-import org.molgenis.util.TupleWriter;
-import org.molgenis.util.Tuple;
 
 /**
  * Java Persistence API (JPA) implementation of Database to query relational
  * databases.
  * <p>
- * In order to function, {@link org.molgenis.assets.data.jdbc_old.JpaMapper}
- * must be added for each {@link org.molgenis.assets.data.Entity} E that can be
+ * In order to function, {@link org.molgenis.framework.db.JpaMapper} must be
+ * added for each {@link org.molgenis.framework.util.Entity} E that can be
  * queried. These mappers take care of the interaction with a database.
  * 
  * @author Morris Swertz
  * @author Joris Lops
  */
-public class JpaDatabase extends AbstractDatabase implements Database {
+public class JpaDatabase extends AbstractDatabase implements Database
+{
 
-    protected static class EMFactory {
+	protected static class EMFactory
+	{
 
-        private static Map<String, EntityManagerFactory> emfs = new HashMap<String, EntityManagerFactory>();
-        private static EMFactory instance = null;
+		private static Map<String, EntityManagerFactory> emfs = new HashMap<String, EntityManagerFactory>();
+		private static EMFactory instance = null;
 
-        private EMFactory(String persistenceUnit) {
-            addEntityManagerFactory(persistenceUnit, null);
-        }
-
-        private static void addEntityManagerFactory(String persistenceUnitName, Map<String, Object> configOverwrite) {
-            if (!emfs.containsKey(persistenceUnitName)) {
-            	EntityManagerFactory emFactory = null;
-            	if(configOverwrite != null) {
-            		emFactory = Persistence.createEntityManagerFactory(persistenceUnitName, configOverwrite);
-            	} else {
-            		emFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
-            	}            	
-                emfs.put(persistenceUnitName, emFactory);
-            }
-        }
-
-        public static EntityManager createEntityManager(String persistenceUnit) {
-            if (instance == null) {
-                instance = new EMFactory(persistenceUnit);
-            }
-            if (!emfs.containsKey(persistenceUnit)) {
-                addEntityManagerFactory(persistenceUnit, null);
-            }
-            EntityManager result = emfs.get(persistenceUnit).createEntityManager();
-            return result;
-        }
-
-        public static EntityManager createEntityManager() {
-            if (instance == null) {
-                instance = new EMFactory("molgenis");
-            }
-            EntityManager result = emfs.get("molgenis").createEntityManager();
-            return result;
-        }
-
-        public static EntityManagerFactory getEntityManagerFactoryByName(String name) {
-            return emfs.get(name);
-        }
-
-		public static EntityManager createEntityManager(String persistenceUnitName,
-				Map<String, Object> configOverrides)
+		private EMFactory(String persistenceUnit)
 		{
-			if (instance == null) {
-                instance = new EMFactory(persistenceUnitName);
-            }
-            if (!emfs.containsKey(persistenceUnitName)) {
-                addEntityManagerFactory(persistenceUnitName, configOverrides);
-            }
-            EntityManager result = emfs.get(persistenceUnitName).createEntityManager();
-            return result;
+			addEntityManagerFactory(persistenceUnit, null);
 		}
-    }
-    private EntityManager em = null;
-    private FullTextEntityManager ftem = null;
-    private String persistenceUnitName;
 
-    protected JpaDatabase(String persistenceUnitName, EntityManager em, Model jdbcMetaDatabase) {
-        this.persistenceUnitName = persistenceUnitName;
-        this.em = em;
-        this.model = jdbcMetaDatabase;
-    }
+		private static void addEntityManagerFactory(String persistenceUnitName,
+				Map<String, Object> configOverwrite)
+		{
+			if (!emfs.containsKey(persistenceUnitName))
+			{
+				EntityManagerFactory emFactory = null;
+				if (configOverwrite != null)
+				{
+					emFactory = Persistence.createEntityManagerFactory(
+							persistenceUnitName, configOverwrite);
+				}
+				else
+				{
+					emFactory = Persistence
+							.createEntityManagerFactory(persistenceUnitName);
+				}
+				emfs.put(persistenceUnitName, emFactory);
+			}
+		}
 
-    protected JpaDatabase(String persistenceUnitName, Model jdbcMetaDatabase) {
-        this.persistenceUnitName = persistenceUnitName;
-        this.model = jdbcMetaDatabase;
-    }
+		public static EntityManager createEntityManager(String persistenceUnit)
+		{
+			if (instance == null)
+			{
+				instance = new EMFactory(persistenceUnit);
+			}
+			if (!emfs.containsKey(persistenceUnit))
+			{
+				addEntityManagerFactory(persistenceUnit, null);
+			}
+			EntityManager result = emfs.get(persistenceUnit)
+					.createEntityManager();
+			return result;
+		}
 
-    protected JpaDatabase(String persistenceUnitName) {
-        this.persistenceUnitName = persistenceUnitName;
-        this.em = EMFactory.createEntityManager();
-    }
+		public static EntityManager createEntityManager()
+		{
+			if (instance == null)
+			{
+				instance = new EMFactory("molgenis");
+			}
+			EntityManager result = emfs.get("molgenis").createEntityManager();
+			return result;
+		}
 
-    
-    
-    public JpaDatabase(EntityManager em, Model model) {
-        this.em = em;
-        this.model = model;
-    }
+		public static EntityManagerFactory getEntityManagerFactoryByName(
+				String name)
+		{
+			return emfs.get(name);
+		}
 
-    public JpaDatabase(Model model) {
-        this.model = model;
-    }
+		public static EntityManager createEntityManager(
+				String persistenceUnitName, Map<String, Object> configOverrides)
+		{
+			if (instance == null)
+			{
+				instance = new EMFactory(persistenceUnitName);
+			}
+			if (!emfs.containsKey(persistenceUnitName))
+			{
+				addEntityManagerFactory(persistenceUnitName, configOverrides);
+			}
+			EntityManager result = emfs.get(persistenceUnitName)
+					.createEntityManager();
+			return result;
+		}
+	}
 
-    protected void setEntityManager(EntityManager em) {
-        this.em = em;
-    }
+	private EntityManager em = null;
+	private FullTextEntityManager ftem = null;
+	private String persistenceUnitName;
 
-    @Override
-    public EntityManager getEntityManager() {
-        return em;
-    }
-    private int transactionCount = 0;
+	protected JpaDatabase(String persistenceUnitName)
+	{
+		this.persistenceUnitName = persistenceUnitName;
+		this.em = EMFactory.createEntityManager();
+	}
 
-    @Override
-    public void beginTx() throws DatabaseException {
-        if (transactionCount == 0) {
-            beginTransaction();
-        }
-        ++transactionCount;
-    }
+	public JpaDatabase(EntityManager em, Model model)
+	{
+		this.em = em;
+		this.model = model;
+	}
 
-    /*
-     * Jpa doesn't support Nested Transactions
-     */
-    @Override
-    public void beginPrivateTx(String ticket) throws DatabaseException {
-        beginTx();
-    }
+	public JpaDatabase(Model model)
+	{
+		this.model = model;
+	}
 
-    @Override
-    public void commitTx() throws DatabaseException {
-        --transactionCount;
-        if (transactionCount == 0) {
-            commitTransaction();
-        }
-    }
+	private int transactionCount = 0;
 
-    /*
-     * Jpa doesn't support Nested Transactions
-     */
-    @Override
-    public void commitPrivateTx(String ticket) throws DatabaseException {
-        commitTx();
-    }
+	protected void setEntityManager(EntityManager em)
+	{
+		this.em = em;
+	}
 
-    private void beginTransaction() throws DatabaseException {
-        try {
-            if (em.getTransaction() != null && !em.getTransaction().isActive()) {
-                em.getTransaction().begin();
-            }
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-    }
+	@Override
+	public EntityManager getEntityManager()
+	{
+		return em;
+	}
 
-    @Override
-    public void rollbackPrivateTx(String ticket) throws DatabaseException {
-        try {
-            em.getTransaction().rollback();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-    }
+	@Override
+	public void beginTx() throws DatabaseException
+	{
+		try
+		{
+			if (em.getTransaction() != null && !em.getTransaction().isActive())
+			{
+				em.getTransaction().begin();
+			}
+		}
+		catch (Exception e)
+		{
+			throw new DatabaseException(e);
+		}
+	}
 
-    @Override
-    public void close() throws DatabaseException {
-        try {
-            em.close();
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-    }
+	@Override
+	public boolean inTx()
+	{
+		return em.getTransaction().isActive();
+	}
 
-    private void commitTransaction() throws DatabaseException {
-        try {
-            if (em.getTransaction() != null && em.getTransaction().isActive()) {
-                em.getTransaction().commit();
-            }
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-    }
+	@Override
+	public void commitTx() throws DatabaseException
+	{
+		try
+		{
+			if (em.getTransaction() != null && em.getTransaction().isActive())
+			{
+				em.getTransaction().commit();
+			}
+		}
+		catch (Exception e)
+		{
+			throw new DatabaseException(e);
+		}
+	}
 
-    @Override
-    public <E extends Entity> int count(Class<E> entityClass,
-            QueryRule... rules) throws DatabaseException {
-        TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(this, entityClass, (Mapper<E>) getMapperFor(entityClass), em, rules);
-        Long result = query.getSingleResult();
-        return result.intValue();
-    }
+	@Override
+	public void rollbackTx() throws DatabaseException
+	{
+		try
+		{
+			if (em.getTransaction().isActive())
+			{
+				em.getTransaction().rollback();
+			}
+		}
+		catch (Exception e)
+		{
+			throw new DatabaseException(e);
+		}
+	}
 
-    @Override
-    public <E extends Entity> E findById(Class<E> klazz, Object id)
-            throws DatabaseException {
-        return em.find(klazz, id);
-    }
+	@Override
+	public void close() throws DatabaseException
+	{
+		try
+		{
+			em.close();
+		}
+		catch (Exception e)
+		{
+			throw new DatabaseException(e);
+		}
+	}
 
-    @Override
-    public <E extends Entity> void find(Class<E> entityClass, TupleWriter writer,
-            List<String> fieldsToExport, QueryRule... rules)
-            throws DatabaseException {
-        boolean first = true;
-        int count = 0;
-        for (Entity e : find(entityClass, rules)) {
-            if (first) {
-                writer.setHeaders(fieldsToExport);
-                try {
-                    writer.writeHeader();
-                } catch (Exception e1) {
-                    throw new DatabaseException(e1);
-                }
-                first = false;
-            }
-            try {
-                writer.writeRow(e);
-            } catch (Exception e1) {
-                throw new DatabaseException(e1);
-            }
-            count++;
-        }
-        logger.debug(String.format("find(%s, writer) wrote %s lines", entityClass.getSimpleName(), count));
-    }
+	@Override
+	@Deprecated
+	public Connection getConnection() throws DatabaseException
+	{
+		return JpaFrameworkFactory.createFramework().getConnection(em);
+	}
 
-    @Override
-    public <E extends Entity> List<E> find(Class<E> entityClass,
-            QueryRule... rules) throws DatabaseException {
-        TypedQuery<E> query = JPAQueryGeneratorUtil.createQuery(this, entityClass, (Mapper<E>) getMapperFor(entityClass), em, rules);
-        return query.getResultList();
-    }
+	@Override
+	public void flush()
+	{
+		em.flush();
+	}
 
-    @Override
-    public <E extends Entity> List<E> findByExample(E example) {
-        return JpaFrameworkFactory.createFramework().findByExample(em, example);
-    }
+	public List executeSQLQuery(String sqlQuery)
+	{
+		return em.createNativeQuery(sqlQuery).getResultList();
+	}
 
-    @Override
-    public Class<? extends Entity> getClassForName(String simpleName) {
-        for (Class<? extends Entity> c : getEntityClasses()) {
-            if (c.getSimpleName().equalsIgnoreCase(simpleName)) {
-                return c;
-            }
-        }
-        return null;
-    }
+	public String getPersistenceUnitName()
+	{
+		return persistenceUnitName;
+	}
 
-    @Override
-    public List<Class<? extends Entity>> getEntityClasses() {
-        List<Class<? extends Entity>> result = new ArrayList<Class<? extends Entity>>();
-        for (EntityType t : em.getMetamodel().getEntities()) {
-            result.add(t.getJavaType());
-        }
-        return result;
-    }
-
-    @Override
-    public List<String> getEntityNames() {
-        List<String> result = new ArrayList<String>();
-        for (Class c : this.getEntityClasses()) {
-            result.add(c.getName());
-        }
-        return result;
-    }
-
-    @Override
-    public boolean inTx() {
-        if (transactionCount == 0) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public <E extends Entity> Query<E> query(Class<E> entityClass) {
-        return new QueryImp<E>(this, entityClass);
-    }
-
-    @Override
-    public JoinQuery join(Class<? extends Entity>[] classes) throws DatabaseException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void rollbackTx() throws DatabaseException {
-        try {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-        } catch (Exception e) {
-            throw new DatabaseException(e);
-        }
-    }
-
-    @Override
-    public <E extends Entity> int update(final Class<E> entityClass,
-            final CsvReader reader) throws DatabaseException {
-        // batch of entities
-        final List<E> entityBatch = new ArrayList<E>();
-        // counter
-        final IntegerWrapper count = new IntegerWrapper(0);
-
-        try {
-            beginTransaction();
-            reader.parse(new CsvReaderListener() {
-
-                @Override
-                public void handleLine(int lineNumber, Tuple tuple)
-                        throws Exception {
-                    E e = entityClass.newInstance();
-                    e.set(tuple);
-                    entityBatch.add(e);
-
-                    if (entityBatch.size() > BATCH_SIZE) {
-                        for (E entity : entityBatch) {
-                            em.merge(entity);
-                        }
-
-                        count.set(count.get() + 1);
-                        em.flush();
-                    }
-                }
-            });
-            commitTransaction();
-        } catch (Exception e) {
-            rollbackTx();
-            throw new DatabaseException(e);
-        }
-        return count.get();
-    }
-
-    public void flush() {
-        em.flush();
-    }
-
-    public List executeSQLQuery(String sqlQuery) {
-        return em.createNativeQuery(sqlQuery).getResultList();
-    }
-
-    public String getPersistenceUnitName() {
-        return persistenceUnitName;
-    }
-
-    @Override
-    @Deprecated
-    public Connection getConnection() throws DatabaseException {
-        return JpaFrameworkFactory.createFramework().getConnection(em);
-    }
-    
-    public void initFullTextSearch() throws InterruptedException
-    {
+	public void initFullTextSearch() throws InterruptedException
+	{
 		this.ftem = Search.getFullTextEntityManager(this.em);
 		this.ftem.createIndexer().startAndWait();
-    }
-    
-    public <E extends Entity> List<E> findByFullTextSearch(String searchString, Class<E> entityClass, String... fieldList)
-    {
-    	QueryBuilder qb = this.ftem.getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
-    	org.apache.lucene.search.Query query = qb.keyword().onFields(fieldList).matching(searchString).createQuery();
-    	javax.persistence.Query persistenceQuery = this.ftem.createFullTextQuery(query, entityClass);
-    	List result = persistenceQuery.getResultList();
-    	return result;
-    }
+	}
+
+	public <E extends Entity> List<E> findByFullTextSearch(String searchString,
+			Class<E> entityClass, String... fieldList)
+	{
+		QueryBuilder qb = this.ftem.getSearchFactory().buildQueryBuilder()
+				.forEntity(entityClass).get();
+		org.apache.lucene.search.Query query = qb.keyword().onFields(fieldList)
+				.matching(searchString).createQuery();
+		javax.persistence.Query persistenceQuery = this.ftem
+				.createFullTextQuery(query, entityClass);
+		List result = persistenceQuery.getResultList();
+		return result;
+	}
 }

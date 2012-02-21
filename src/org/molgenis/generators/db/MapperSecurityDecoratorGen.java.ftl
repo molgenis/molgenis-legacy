@@ -17,7 +17,7 @@ import java.util.List;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.util.CsvReader;
+import org.molgenis.util.TupleReader;
 import org.molgenis.util.TupleWriter;
 
 import java.text.ParseException;
@@ -26,13 +26,9 @@ import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.service.MolgenisUserService;
 import org.molgenis.framework.security.SimpleLogin;
 
-<#if databaseImp = 'jpa'>
-import org.molgenis.framework.db.jpa.JpaMappingDecorator;
-<#else>
-import org.molgenis.framework.db.jdbc.MappingDecorator;
-</#if>
+import org.molgenis.framework.db.MapperDecorator;
 
-public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = 'jpa'>JpaMappingDecorator<E><#else>MappingDecorator<E></#if>
+public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 {
 	public ${clazzName}(Mapper<E> generatedMapper)
 	{
@@ -87,7 +83,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	}
 
 	@Override
-	public int add(CsvReader reader, TupleWriter writer) throws DatabaseException
+	public int add(TupleReader reader, TupleWriter writer) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
@@ -152,7 +148,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	}
 
 	@Override
-	public int remove(CsvReader reader) throws DatabaseException
+	public int remove(TupleReader reader) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
@@ -165,7 +161,7 @@ public class ${clazzName}<E extends ${entityClass}> extends <#if databaseImp = '
 	}
 
 	@Override
-	public int update(CsvReader reader) throws DatabaseException
+	public int update(TupleReader reader) throws DatabaseException
 	{
 		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
 		{
