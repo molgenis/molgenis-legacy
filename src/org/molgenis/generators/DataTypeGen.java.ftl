@@ -636,7 +636,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		result+= "${name(field)}='" + (get${JavaName(field)}() == null ? "" : new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US).format(get${JavaName(field)}()))+"'<#if field_has_next> </#if>";
 		result+= "${name(field)}='" + (get${JavaName(field)}() == null ? "" : new SimpleDateFormat("MMMM d, yyyy", Locale.US).format(get${JavaName(field)}()))+"'<#if field_has_next> </#if>";		
 		<#else>
-		result+= "${name(field)}='" + get${JavaName(field)}()+"'<#if field_has_next> </#if>";
+		result+= "${name(field)}='" + get${JavaName(field)}<#if field.type="xref" || field.type="mref">_${JavaName(field.xrefField)}</#if>()+"'<#if field_has_next> </#if>";
 			<#if field.type == "xref" || field.type == "mref">
 				<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 		result+= " ${name(field)}_${name(label)}='" + get${JavaName(field)}_${JavaName(label)}()+"' ";

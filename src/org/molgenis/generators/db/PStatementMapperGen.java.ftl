@@ -7,6 +7,8 @@
 	<#--postgresql doesn't have enum, instead we use a custom type-->
 	<#elseif field.type="enum" && db_driver?contains("postgresql")>
 		<#return "new EnumObject(\"enum_"+name(entity)?lower_case+"_"+name(field)?lower_case+"\", e.get"+JavaName(field)+"())">
+	<#elseif field.type = "xref" || field.type = "mref">
+		<#return "e.get"+JavaName(field)+"_"+JavaName(field.xrefField)+"()">		
 	<#else>
 		<#return "e.get"+JavaName(field)+"()">
 	</#if>
@@ -130,7 +132,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 <#list addFields(entity) as f>	
 				//${f}
 				//if(e.get${JavaName(f)}() == null) pstmt.setNull(${f_index + 1},Types.${SqlType(model,f)});	
-				if(e.get${JavaName(f)}() == null) pstmt.setNull(${f_index + 1},Types.OTHER);
+				if(e.get${JavaName(f)}<#if f.type="xref" || f.type="mref">_${JavaName(f.xrefField)}</#if>() == null) pstmt.setNull(${f_index + 1},Types.OTHER);
 				else pstmt.${pstmtSetter(f)}(${f_index + 1},${convertToJdbc(f)});
 </#list>
 	
@@ -181,14 +183,14 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 <#list updateFields(entity) as f>	
 				//${f}
 				//if(e.get${JavaName(f)}() == null) pstmt.setNull(${index},Types.${SqlType(model,f)}); 
-				if(e.get${JavaName(f)}() == null) pstmt.setNull(${index},Types.OTHER);
+				if(e.get${JavaName(f)}<#if f.type="xref" || f.type="mref">_${JavaName(f.xrefField)}</#if>() == null) pstmt.setNull(${index},Types.OTHER);
 				else pstmt.${pstmtSetter(f)}(${index},${convertToJdbc(f)});
 <#assign index = index+1>				
 </#list>
 <#list keyFields(entity) as f>
 				//where ${f}
 				//if(e.get${JavaName(f)}() == null) pstmt.setNull(${index},Types.${SqlType(model,f)});
-				if(e.get${JavaName(f)}() == null) pstmt.setNull(${index},Types.OTHER);
+				if(e.get${JavaName(f)}<#if f.type="xref" || f.type="mref">_${JavaName(f.xrefField)}</#if>() == null) pstmt.setNull(${index},Types.OTHER);
 				else pstmt.${pstmtSetter(f)}(${index},${convertToJdbc(f)});			
 <#assign index = index+1>				
 </#list>	
@@ -220,7 +222,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 <#list keyFields(entity) as f>
 				//${f}
 				//if(e.get${JavaName(f)}() == null) pstmt.setNull(${f_index + 1},Types.${SqlType(model,f)}); 
-				if(e.get${JavaName(f)}() == null) pstmt.setNull(${f_index + 1},Types.OTHER);
+				if(e.get${JavaName(f)}<#if f.type="xref" || f.type="mref">_${JavaName(f.xrefField)}</#if>() == null) pstmt.setNull(${f_index + 1},Types.OTHER);
 				else pstmt.${pstmtSetter(f)}(${f_index + 1},${convertToJdbc(f)});
 </#list>	
 				updatedRows += pstmt.executeUpdate();
