@@ -134,7 +134,7 @@
 			if(object.get${JavaName(f)}_${JavaName(f.xrefField)}() == null <#if f.type == 'mref'>|| object.get${JavaName(f)}_${JavaName(f.xrefField)}().size() == 0</#if>)
 			{
 				<#if f.type == 'mref'>
-				List<Integer> idList = new ArrayList<Integer>();
+				java.util.List<Integer> idList = new java.util.ArrayList<Integer>();
 				for(int j = 0; j < object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size(); j++)
 				{
 				</#if>
