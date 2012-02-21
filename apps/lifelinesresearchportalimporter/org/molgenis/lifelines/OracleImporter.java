@@ -159,9 +159,10 @@ public class OracleImporter {
 		db.executeQuery(trigger, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void createViews(final Protocol protocol) throws Exception {
-		final List<Measurement> measurements = (List<Measurement>) (List) protocol
-				.getFeatures();
+		@SuppressWarnings("deprecation")
+		final List<Measurement> measurements = (List<Measurement>) (List) protocol.getFeatures();
 		final String selectOfView = EAVToView.createQuery(inv, protocol,
 				measurements, db.getEntityManager(), DATABASE_TYPE);
 

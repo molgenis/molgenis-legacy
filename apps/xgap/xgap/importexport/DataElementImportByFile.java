@@ -363,6 +363,7 @@ public class DataElementImportByFile
 		for (int i = 0; i < absentNames.size(); i++)
 		{
 			InvestigationElement absent = (InvestigationElement) klass.newInstance();
+			
 			absent.setInvestigation(selectedMatrix.getInvestigation());
 			absent.setName(absentNames.get(i));
 			absentObjects.add(absent);

@@ -47,7 +47,7 @@ public class VWCategoryListener extends ImportTupleListener {
 			fieldName = tableName + "_" + tuple.getString("VELD");
 		}
 
-		List<ObservableFeature> measurements = protocol.getFeatures();
+		List<ObservableFeature> measurements = (List<ObservableFeature>) protocol.getFeatures();
 		List<ObservableFeature> filterMeasurements = filter(
 				having(on(Measurement.class).getName(),
 						equalToIgnoringCase(fieldName)), measurements);
@@ -59,6 +59,8 @@ public class VWCategoryListener extends ImportTupleListener {
 		category.setLabel(tuple.getString("VALLABELABEL"));
 		category.setDescription(tuple.getString("VALLABELABEL"));
 		category.getCategoriesMeasurementCollection().add(measurement); // add to
+		//measurement.getCategories(db)
+
 		measurement.getCategories().add(category);
 																// measurment
 		category.setName(fieldName);

@@ -43,7 +43,7 @@ public class LifeLinesMedicatieListener extends ImportTupleListener
 		//remove all Measurement for this protocol
 		protocol = Protocol.findById(db, protocol.getId());
 
-		List<Measurement> mList = db.query(Measurement.class).in(Measurement.ID, protocol.getFeatures()).find();
+		List<Measurement> mList = db.query(Measurement.class).in(Measurement.ID, protocol.getFeatures_Id()).find();
 		protocol.getFeatures().clear();
 		protocol.getFeatures_Name().clear();
 		
