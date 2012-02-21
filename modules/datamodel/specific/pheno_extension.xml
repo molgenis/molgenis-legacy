@@ -20,6 +20,7 @@
 		</entity>
 		<entity name="Characteristic" extends="ObservationElement">
 			<description>
+			Characteristics are yes-no statements - will not be used as features, use as answers to questions
 			</description>
 		</entity>
 		<entity name="ObservationTarget" extends="ObservationElement">
@@ -48,13 +49,14 @@
 				There may be many alternative protocols to measure a feature. See
 				Protocol section.
 			</description>
-			<field name="permitValues" type="mref" xref_entity="PermittedValue" />
+			
 			<field name="chars" type="mref" xref_entity="Characteristic" />
 		</entity>
 		<entity name="Measurement" extends="ObservableFeature"
 			decorator="decorators.MeasurementDecorator">
-			<description>Generic obserable feature to flexibly define a
+			<description>Generic observable feature to flexibly define a
 				measurement
+				Open-ended continuous value
 			</description>
 			<field name="unit" type="xref" xref_entity="OntologyTerm"
 				nillable="true"
@@ -69,7 +71,8 @@
 				description="Whether this feature is time dependent and can have different values when measured 
 					on different times (e.g. weight, temporal=true) or generally only measured once (e.g. birth date, 
 					temporal=false) "/>
-			<field name="permitValues" type="mref" xref_entity="PermittedValue" nillable="true" description="Translation of codes into categories if applicable"/>
+			<!--  field name="permitValues" type="mref" xref_entity="PermittedValue" nillable="true" description="Translation of codes into categories if applicable"/>-->
+			<field name="categories" type="mref" xref_entity="Category" nillable="true" description="Translation of codes into categories if applicable"/>
 			<field name="description" type="text" nillable="true"
 				description="(Optional) Rudimentary meta data about the observable feature. Use of ontology 
 					terms references to establish unambigious descriptions is recommended" />
@@ -87,7 +90,8 @@
 					in ObservedValues that have relations to Panels labeled as 'Species')"
 				nillable="true" label="Panel label allowed for relation" />
 		</entity>
-		<entity name="PermittedValue" extends="ObservationElement">
+		
+		<entity name="Category" extends="ObservationElement">
 		
 			<description>Special kind of ObservationElement to define categorical answer codes such as are
 				often used in Questionaires. A list of categories can be attached to an
@@ -233,7 +237,9 @@
 				description="(Optional) Reference to the
 				ontology definition or 'code' for this value (recommended for non-numeric
 				values such as codes)" />
-			<field nillable="true" name="value" description="The value observed" />
+			<field nillable="true" name="value" description="The value observed, free text" />
+			<field name="characteristicValue" label="Characteristic value" nillable="true" type="xref" xref_entity="Characteristic" 
+				description="The value observed, selected from available Characteristics" />
 			<field nillable="true" name="relation" type="xref"
 				xref_entity="ObservationElement"
 				description="Reference to other end of the relationship, if any. For example to a 'brother' or from 'sample' to 'derivedSample'." />
@@ -241,7 +247,8 @@
 				description="(Optional) Time when the value was observed. For example in time series or if feature is time-dependent like 'age'" />
 			<field nillable="true" auto="false" name="endtime" type="datetime"
 				description="(Optional) Time when the value's validity ended" />
-			<field name="permittedValues" type="xref" xref_entity="PermittedValue" nillable="true" />
+			
+			<!--  field name="permittedValues" type="xref" xref_entity="PermittedValue" nillable="true" /-->
 			<!-- JORIS CODE THAT SHOULD NOT BE IN THE SHARED STUFF! <indices> <index 
 				name="valueIdx"> <indexfield name="value"/> </index> <index name="featureIdx"> 
 				<indexfield name="Feature"/> </index> <index name="targetIdx"> <indexfield 
