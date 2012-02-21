@@ -61,7 +61,7 @@ public class ComputeCommandLine
 		// process workflow elements
 		for (WorkflowElement wfe : computeBundle.getWorkflowElements())
 		{
-			print("Workflow element: " + wfe.getName());
+			print("Starting generation of workflow element: " + wfe.getName());
 
 			// get protocol and find its targets
 			ComputeProtocol protocol = findProtocol(wfe.getProtocol_Name(), protocollist);
@@ -165,8 +165,7 @@ public class ComputeCommandLine
 
 				this.jobs.add(job);
 
-				System.out.println("============================ new job: ");
-				System.out.println(job.getName() + " depends on " + job.getPrevSteps_Name());
+				print("Generated " + job.getName() + ", depending on " + job.getPrevSteps_Name());
 			}
 		}
 

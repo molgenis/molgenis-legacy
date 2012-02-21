@@ -270,7 +270,7 @@ public class Worksheet
 
 		if (!equalWorksheets(unfoldWorksheet(folded), worksheet))
 		{
-			throw new RuntimeException(">> Error: worksheets should be equal but are not!");
+			throw new RuntimeException(">> Error: folded and unfolded worksheets should be equal but are not!");
 		}
 		return reduceTargets(folded, parameterlist, targets);
 	}
@@ -552,8 +552,6 @@ public class Worksheet
 					nelements = t.getList(i).size();
 				}
 			}
-
-			System.out.println(nelements +" in t "+t);
 
 			List<String> fields = t.getFields();
 			for (int i = 0; i < nelements; i++)
