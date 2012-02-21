@@ -134,16 +134,24 @@
 			if(object.get${JavaName(f)}_${JavaName(f.xrefField)}() == null <#if f.type == 'mref'>|| object.get${JavaName(f)}_${JavaName(f.xrefField)}().size() == 0</#if>)
 			{
 				<#if f.type == 'mref'>
+				List<Integer> idList = new ArrayList<Integer>();
 				for(int j = 0; j < object.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().size(); j++)
-				</#if>
 				{
+				</#if>
 					String key = "";
 					<#list f.xrefLabelNames as label>
 					key += 	object.get${JavaName(f)}_${JavaName(label)}()<#if f.type=='mref'>.get(j)</#if>;
 					</#list>
-
+					
+					<#if f.type == 'mref'>
+					idList.add(${name(f)}_Labels_to_IdMap.get(key));
+					<#else>
 					object.set${JavaName(f)}_${JavaName(f.xrefField)}(${name(f)}_Labels_to_IdMap.get(key));
+					</#if>
+				<#if f.type == 'mref'>
 				}
+				object.set${JavaName(f)}_${JavaName(f.xrefField)}(idList);
+				</#if>
 			}
 			</#if>
 			</#list>	
