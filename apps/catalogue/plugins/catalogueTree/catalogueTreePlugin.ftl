@@ -8,6 +8,8 @@
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
 <!-- this shows a title and border -->
+
+
 	<div class="formscreen">
 		<div class="form_header" id="${screen.getName()}">
 			${screen.label}
@@ -22,9 +24,10 @@
 			</#if>
 		</#list>
 		
+		
+		
 		<div class="screenbody">
 			<div class="screenpadding">
-			
 				<h4> Choose an investigation</h4> 
 				<select name="investigation" id="investigation"> 
 					<#list screen.arrayInvestigations as inv>
@@ -43,7 +46,9 @@
 								</div><br/>
 						    </td>
 						    <td class="box-body">
-								<div id="details"></div> <br/><br/>
+						    	<div id="scrollingDiv"> 
+      								<div id="details"></div> <br/><br/>
+      							</div>
 								<div id="ShoopingCartButton" style="float: right;">
 									<input type="submit" name="DownloadMeasurementsSubmit" value="Download" onclick="__action.value='DownloadMeasurements';"/>
 								</div>

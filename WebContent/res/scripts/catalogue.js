@@ -55,11 +55,23 @@ function createHashMap(key, content)	{
 	$(document).ready(function(){
 		$("#splitter").splitter();
 		$("#browser").treeview({control: "#masstoggler"});
+		
+		var $scrollingDiv = $("#scrollingDiv");
+		 
+		$(window).scroll(function(){			
+			$scrollingDiv
+				.stop()
+				.animate({"marginTop": ($(window).scrollTop() + 30) + "px"}, "slow" );			
+		});
+
+
 	});
 
 	$(document).unload(function() {
 //		alert('Handler for .unload() called.');"
 	});
+	
+	
 	
 	
 	
