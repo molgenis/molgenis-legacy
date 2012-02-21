@@ -366,6 +366,7 @@ public class ConvertRhutDbToPheno
 				}
 				String remDateString = tuple.getString("rem date");
 				if (remDateString != null) {
+					// TODO: end date most times not set in Roelof DB! This is a problem with the Yearly Reports. How to solve?
 					state = "Dead";
 					remDate = dbFormat.parse(remDateString);
 					removalDateMap.put(animalName, remDate);

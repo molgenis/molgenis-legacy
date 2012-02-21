@@ -275,6 +275,7 @@ public class ConvertUliDbToPheno
 				String endDateString = tuple.getString("Abgangsdatum");
 				Date endDate = null;
 				if (endDateString != null) {
+					// TODO: end date most times not set in Uli DB! This is a problem with the Yearly Reports. How to solve?
 					endDate = dbFormat.parse(endDateString);
 					String dateOfDeath = newDateOnlyFormat.format(endDate);
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), 
@@ -282,21 +283,28 @@ public class ConvertUliDbToPheno
 				}
 				String state = tuple.getString("Status");
 				if (state != null) {
+					// Set state from Uli DB if available
 					if (state.equals("lebt")) {
 						state = "Alive";
 					} else {
 						state = "Dead";
 					}
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
-							startDate, endDate, "Active", newAnimalName, state, null));
+				} else {
+					// Else look if death date set or not
+					state = "Alive";
+					if (endDate != null) {
+						state = "Dead";
+					}
 				}
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
+						startDate, endDate, "Active", newAnimalName, state, null));
 				
 				// Herkunft -> Source
 				Integer uliSourceId = tuple.getInt("Herkunft");
 				if (uliSourceId != null) {
 					String sourceName = null;
 					if (uliSourceId == 51 || uliSourceId == 52) {
-						// 51: Zucht- oder Liefereinrichtung innerhalb Deutschlands, die f�r ihre T�tigkeit eine Erlaubnis nach � 11 Abs. 1 Satz 1 Nr. 1 des Tierschutzgesetzes erhalten hat
+						// 51: Zucht- oder Liefereinrichtung innerhalb Deutschlands, die fuer ihre Taetigkeit eine Erlaubnis nach Par. 11 Abs. 1 Satz 1 Nr. 1 des Tierschutzgesetzes erhalten hat
 						// 52: andere amtlich registrierte oder zugelassene Einrichtung innerhalb der EU
 						// --> SourceType for both: Van EU-lid-staten
 						//sourceName = "UliEisel51and52";

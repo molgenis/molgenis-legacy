@@ -88,7 +88,6 @@ public class MatrixViewer extends HtmlWidget
 	// Configuration parameters. TODO: solve in a nicer way; use a plugin
 	// strategy?
 	private boolean showLimitControls = true;
-	private boolean columnsRestricted = false;
 	private int selectMultiple = 0;
 	private boolean showValueValidRange = false;
 	private boolean showDownloadOptions = false;
@@ -186,7 +185,6 @@ public class MatrixViewer extends HtmlWidget
 				showDownloadOptions, showValueValidRange, filterRules);
 		if (columnRule != null && columnRule.getFilterType().equals(MatrixQueryRule.Type.colHeader))
 		{
-			columnsRestricted = true;
 			this.matrix.getRules().add(columnRule);
 		}
 	}
@@ -501,26 +499,24 @@ public class MatrixViewer extends HtmlWidget
 		divContents += "</div>";
 		
 		// column header filter
-		if (columnsRestricted && colHeaders != null)
-		{
-			@SuppressWarnings("rawtypes")
-			List selectedMeasurements = new ArrayList(colHeaders);
-			MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
-					selectedMeasurements, false, false,
-					"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
-					Measurement.class);
-			
-			// disable display of button for adding new measurements from here
-			measurementChooser.setIncludeAddButton(false);
-			divContents += new Newline().render();
-			divContents += new Newline().render();
-			divContents += "<div style=\"vertical-align:middle\">Add/remove columns:";
-			divContents += measurementChooser.render();
-			divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
-			divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
-			divContents += new ActionInput(REMALLCOLHEADERFILTER, "", "Remove all").render();
-			divContents += "</div>";
-		}
+		@SuppressWarnings("rawtypes")
+		List selectedMeasurements = new ArrayList(colHeaders);
+		MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
+				selectedMeasurements, false, false,
+				"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
+				Measurement.class);
+		
+		// disable display of button for adding new measurements from here
+		measurementChooser.setIncludeAddButton(false);
+		divContents += new Newline().render();
+		divContents += new Newline().render();
+		divContents += "<div style=\"vertical-align:middle\">Add/remove columns:";
+		divContents += measurementChooser.render();
+		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
+		divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
+		divContents += new ActionInput(REMALLCOLHEADERFILTER, "", "Remove all").render();
+		divContents += "</div>";
+		
 		return divContents;
 	}
 

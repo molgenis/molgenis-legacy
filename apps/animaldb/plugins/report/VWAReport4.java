@@ -89,9 +89,15 @@ public class VWAReport4 extends AnimalDBReport
 				valueList = q.find();
 				if (valueList.size() > 0)
 				{
+					ObservedValue activeValue = valueList.get(0);
 					// get the info from the most recent Active value.
-					Date activeStartDate = valueList.get(0).getTime();
-					Date activeEndDate = valueList.get(0).getEndtime();
+					Date activeStartDate = activeValue.getTime();
+					Date activeEndDate = activeValue.getEndtime();
+					// Check on end date
+					if (activeValue.getValue().equals("Dead") && activeEndDate == null) {
+						warningsList.add("Animal " + animalName + " is marked as 'dead' but has no end date on its 'Active' value, not counted in report");
+						continue;
+					}
 					// Remove animals that came in after the given year
 					if (activeStartDate.after(endOfYear)) {
 						continue;
@@ -119,8 +125,8 @@ public class VWAReport4 extends AnimalDBReport
 				}
 				else
 				{
-					// Don't consider animals that have no  'Active' values
-					warningsList.add("Animal " + animalName + " has no 'Active' value(s), not counted in report");
+					// Don't consider animals that have no 'Active' values
+					warningsList.add("Animal " + animalName + " has no 'Active' value with a start date, not counted in report");
 					continue;
 				}
 
