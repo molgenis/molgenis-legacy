@@ -258,12 +258,12 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 						Operator.IN, investigationNames));
 				indMatrixViewer = new MatrixViewer(this, INDMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, true, false, true, filterRules, null);
+						true, 2, false, true, filterRules, null);
 				indMatrixViewer.setDatabase(db);
 				indMatrixRendered = indMatrixViewer.render();
 				delIndMatrixViewer = new MatrixViewer(this, DELINDMATRIX, 
 						new SliceablePhenoMatrix<DeletedIndividual, Measurement>(DeletedIndividual.class, Measurement.class), 
-						true, true, false, true, filterRules, null);
+						true, 2, false, true, filterRules, null);
 				delIndMatrixViewer.setDatabase(db);
 				delIndMatrixRendered = delIndMatrixViewer.render();
 			} catch(Exception e) {

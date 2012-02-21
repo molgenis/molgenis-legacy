@@ -149,7 +149,7 @@ public class LocationPlugin extends PluginModel<Entity>
 				// TODO: make MQRs combinable with OR so we can have animals with location NULL OR NOT current
 				animalsNotInLocMatrixViewer = new MatrixViewer(this, ANIMALSNOTINLOCMATRIX, 
 						new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-						true, true, false, true, null, 
+						true, 2, false, true, null, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				animalsNotInLocMatrixViewer.setDatabase(db);
 				animalsNotInLocMatrixViewer.setLabel("All animals:");
@@ -217,7 +217,7 @@ public class LocationPlugin extends PluginModel<Entity>
 				null));
 		animalsInLocMatrixViewer = new MatrixViewer(this, ANIMALSINLOCMATRIX, 
 				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-				true, true, false, true, filterRules, 
+				true, 2, false, true, filterRules, 
 				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		animalsInLocMatrixViewer.setDatabase(db);
 		animalsInLocMatrixViewer.setLabel("Animals in " + locationName + ":");

@@ -1774,7 +1774,7 @@ public class ManageLitters extends PluginModel<Entity>
 					ObservedValue.VALUE, Operator.EQUALS, "Parentgroup"));
 			matrixViewer = new MatrixViewer(this, MATRIX, 
 					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), 
-					true, false, false, false, filterRules, 
+					true, 1, false, false, filterRules, 
 					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		} catch (Exception e) {
 			String message = "Something went wrong while loading matrix viewer";
@@ -1807,7 +1807,7 @@ public class ManageLitters extends PluginModel<Entity>
 					ObservedValue.VALUE, Operator.NOT, null));
 			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX, 
 					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), 
-					true, false, false, false, filterRules, 
+					true, 1, false, false, filterRules, 
 					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		} catch (Exception e) {
 			String message = "Something went wrong while loading matrix viewer";

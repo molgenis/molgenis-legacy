@@ -85,11 +85,11 @@ public class MatrixViewer extends HtmlWidget
 	Logger logger = Logger.getLogger(this.getClass());
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
-	// Configuration booleans. TODO: solve in a nicer way; use a plugin
+	// Configuration parameters. TODO: solve in a nicer way; use a plugin
 	// strategy?
 	private boolean showLimitControls = true;
 	private boolean columnsRestricted = false;
-	private boolean selectMultiple = true;
+	private int selectMultiple = 0;
 	private boolean showValueValidRange = false;
 	private boolean showDownloadOptions = false;
 
@@ -147,7 +147,7 @@ public class MatrixViewer extends HtmlWidget
 	 */
 	public MatrixViewer(ScreenController<?> callingScreenController, String name,
 			SliceableMatrix<?, ?, ?> matrix,
-			boolean showLimitControls, boolean selectMultiple, 
+			boolean showLimitControls, int selectMultiple, 
 			boolean showDownloadOptions, boolean showValueValidRange,
 			List<MatrixQueryRule> filterRules)
 	{
@@ -178,7 +178,7 @@ public class MatrixViewer extends HtmlWidget
 	 */
 	public MatrixViewer(ScreenController<?> callingScreenController, String name,
 			SliceablePhenoMatrix<?, ?> matrix,
-			boolean showLimitControls, boolean selectMultiple, 
+			boolean showLimitControls, int selectMultiple, 
 			boolean showDownloadOptions, boolean showValueValidRange,
 			List<MatrixQueryRule> filterRules, MatrixQueryRule columnRule) throws Exception
 	{
@@ -345,7 +345,10 @@ public class MatrixViewer extends HtmlWidget
 		List<?> cols = matrix.getColHeaders();
 
 		// print colHeaders
-		dataTable.addColumn("select"); // for checkbox / radio input
+		
+		if (selectMultiple > 0) {
+			dataTable.addColumn("select"); // for checkbox / radio input
+		}
 
 		for (Object col : cols)
 		{
@@ -375,9 +378,8 @@ public class MatrixViewer extends HtmlWidget
 			{
 				dataTable.addRow(rowobj.toString());
 			}
-			// print checkbox or radio input for this row
-			if (selectMultiple)
-			{
+			// print checkbox or radio input for this row (if selectMultiple > 0)
+			if (selectMultiple > 1) {
 				List<String> options = new ArrayList<String>();
 				options.add("" + row);
 				List<String> optionLabels = new ArrayList<String>();
@@ -387,8 +389,7 @@ public class MatrixViewer extends HtmlWidget
 				rowCheckbox.setId(SELECTED + "_" + row);
 				dataTable.setCell(0, row, rowCheckbox);
 			}
-			else
-			{
+			if (selectMultiple == 1) {
 				// When the user may select only one, use a radio button group,
 				// which is mutually exclusive
 				String radioButtonCode = "<input type='radio' name='" + SELECTED + "' id='" + (SELECTED + "_" + row)
@@ -405,6 +406,11 @@ public class MatrixViewer extends HtmlWidget
 					List<Observation>[] rowValues = (List<Observation>[]) values[row];
 					for (int col = 0; col < rowValues.length; col++)
 					{
+						int pos = col;
+						if (selectMultiple > 0) {
+							pos += 1; // Shift cells one to the right if we have a select radio button / checkbox
+						}
+						
 						if (rowValues[col] != null && rowValues[col].size() > 0)
 						{
 							boolean first = true;
@@ -438,19 +444,19 @@ public class MatrixViewer extends HtmlWidget
 								if (first)
 								{
 									first = false;
-									dataTable.setCell(col + 1, row, valueToShow);
+									dataTable.setCell(pos, row, valueToShow);
 								}
 								else
 								{
 									// Append to contents of cell, on new line
-									dataTable.setCell(col + 1, row, dataTable.getCell(col + 1, row) + "<br />"
+									dataTable.setCell(pos, row, dataTable.getCell(pos, row) + "<br />"
 											+ valueToShow);
 								}
 							}
 						}
 						else
 						{
-							dataTable.setCell(col + 1, row, "NA"); // NA means Not Available, so there is no ObservedValue for this target-feature combination
+							dataTable.setCell(pos, row, "NA"); // NA means Not Available, so there is no ObservedValue for this target-feature combination
 						}
 					}
 

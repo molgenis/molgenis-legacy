@@ -95,7 +95,7 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 				DataMatrixInstance matrix = new DataMatrixHandler(db).createInstance(data, db);
 				XqtlSliceableMatrix xs = new XqtlSliceableMatrix(matrix);
 				
-				matrixViewer = new MatrixViewer(this, "mymatrix", xs, true, true, true, false, null);
+				matrixViewer = new MatrixViewer(this, "mymatrix", xs, true, 0, true, false, null);
 			}
 			
 

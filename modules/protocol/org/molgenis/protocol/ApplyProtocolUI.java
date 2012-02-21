@@ -248,7 +248,7 @@ public class ApplyProtocolUI {
 				Operator.IN, investigationNames));
 		targetMatrixViewer = new MatrixViewer(plugin, TARGETMATRIX, 
 				new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-				true, true, false, false, filterRules, 
+				true, 2, false, false, filterRules, 
 				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		targetMatrixViewer.setDatabase(db);
 		targetMatrixViewer.setLabel("Choose animals:");

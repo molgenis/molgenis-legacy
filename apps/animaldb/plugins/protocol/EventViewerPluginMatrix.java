@@ -145,15 +145,12 @@ public class EventViewerPluginMatrix extends GenericPlugin
 			div = new DivPanel();
 			try {
 				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
-				List<String> measurementsToShow = new ArrayList<String>();
-				measurementsToShow.add("Active"); // TODO: find a way to show zero measurements instead of one or more or ALL
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));
 				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, false, false, false, filterRules, 
-						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+						true, 1, false, false, filterRules);
 				targetMatrixViewer.setDatabase(db);
 				targetMatrixViewer.setLabel("Choose animal:");
 				div.add(targetMatrixViewer);

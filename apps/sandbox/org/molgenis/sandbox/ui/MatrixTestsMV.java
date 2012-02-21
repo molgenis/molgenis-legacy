@@ -16,6 +16,7 @@ import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -44,6 +45,7 @@ public class MatrixTestsMV extends EasyPluginController<MatrixTestsModelMV>
 	MolgenisForm form = null;
 	Paragraph selection = null;
 
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public MatrixTestsMV(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
@@ -63,8 +65,9 @@ public class MatrixTestsMV extends EasyPluginController<MatrixTestsModelMV>
 //                    List<Column> columns = getColumnsFromMeasurementByProtocol(measurementByProtocol);
                     
 			matrixViewer = new MatrixViewer(this, "mymatrix", 
-					new SliceablePhenoMatrixMV(DatabaseFactory.create(), ObservationTarget.class, Measurement.class, investigation, measurementByProtocol), 
-					true, true, false, false, null);
+					new SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>(DatabaseFactory.create(), 
+							ObservationTarget.class, Measurement.class, investigation, measurementByProtocol), 
+							true, 0, false, false, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.setError(e.getMessage());

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -36,6 +35,8 @@ import org.molgenis.util.Tuple;
  */
 public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 {
+	private static final long serialVersionUID = -5556163045713936557L;
+
 	public SampleMatrix(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
@@ -58,7 +59,7 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 			getModel().error =true;
 		}
 		else{
-			if (!getModel().action.startsWith(getModel().SAMPLEMATRIXS)) {
+			if (!getModel().action.startsWith(SampleMatrixModel.SAMPLEMATRIXS)) {
 				getModel().setCheckForPaging(false);
 			}
 			if (getModel().getCheckForPaging()==false){
@@ -148,7 +149,8 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 					getModel().setCheckIfInvestchanges(true);
 				}
 				else{
-					if (!getModel().action.startsWith(getModel().SAMPLEMATRIXS)) {
+					getModel();
+					if (!getModel().action.startsWith(SampleMatrixModel.SAMPLEMATRIXS)) {
 						getModel().setCheckIfInvestchanges(false);						
 					} 
 				}
@@ -163,9 +165,10 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 					filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, GidsSample.INVESTIGATION_NAME, 
 							Operator.EQUALS, getModel().getInvestigation()));
 					
-					getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIXS, 
-							new SliceablePhenoMatrix(GidsSample.class, Measurement.class), 
-							true, true, true, false, filterRules, 
+					getModel();
+					getModel().matrixViewerSample = new MatrixViewer(this, SampleMatrixModel.SAMPLEMATRIXS, 
+							new SliceablePhenoMatrix<GidsSample, Measurement>(GidsSample.class, Measurement.class), 
+							true, 2, true, false, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				}
 				// if samples are chosen, individualmatrix will be filled with chosenProtocol
@@ -187,9 +190,9 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 					filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.ID, 
 							Operator.IN, individIdList));
 					
-					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIXS, 
-							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, true, false, filterRules, 
+					getModel().matrixViewerIndv = new MatrixViewer(this, SampleMatrixModel.INDVMATRIXS, 
+							new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+							true, 2, true, false, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShowIndividuals));
 				}
 				
@@ -241,11 +244,12 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 	
 				if (getModel().action.equals("setSelection")) {		
 					getModel().selection = "";
+					@SuppressWarnings("unchecked")
 					List<ObservationElement> rows = (List<ObservationElement>) getModel().matrixViewerSample.getSelection(db);
 					int rowCnt = 0;
 					List<Integer> listSampleIds = new ArrayList<Integer>();
 					for (ObservationElement row : rows) {
-						if (request.getBool(getModel().SAMPLEMATRIXS + "_selected_" + rowCnt) != null) {
+						if (request.getBool(SampleMatrixModel.SAMPLEMATRIXS + "_selected_" + rowCnt) != null) {
 							listSampleIds.add(row.getId());
 						}
 						rowCnt++;

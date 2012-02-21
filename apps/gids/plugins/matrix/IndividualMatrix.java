@@ -1,26 +1,13 @@
 
 package plugins.matrix;
 
-import java.io.File;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
-
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.Label;
-
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
@@ -30,13 +17,10 @@ import org.molgenis.gids.GidsSample;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
-import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -52,6 +36,9 @@ import org.molgenis.util.Tuple;
  */
 public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel>
 {
+	private static final long serialVersionUID = 4513824752877779376L;
+
+
 	public IndividualMatrix(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
@@ -76,7 +63,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 			getModel().error=true;
 		}
 		else{
-			if (!getModel().action.startsWith(getModel().INDVMATRIX)) {
+			if (!getModel().action.startsWith(IndividualMatrixModel.INDVMATRIX)) {
 				getModel().setCheckForPaging(false);
 			}		
 			if (getModel().getCheckForPaging()==false){
@@ -164,7 +151,7 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 					getModel().setCheckIfInvestchanges(true);
 				}
 				else{
-					if (!getModel().action.startsWith(getModel().INDVMATRIX)) {
+					if (!getModel().action.startsWith(IndividualMatrixModel.INDVMATRIX)) {
 						getModel().setCheckIfInvestchanges(false);						
 					} 
 				}
@@ -176,9 +163,9 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 					List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 					filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 							Operator.EQUALS, getModel().getInvestigation()));
-					getModel().matrixViewerIndv = new MatrixViewer(this, getModel().INDVMATRIX, 
-							new SliceablePhenoMatrix(Individual.class, Measurement.class), 
-							true, true, true, false, filterRules, 
+					getModel().matrixViewerIndv = new MatrixViewer(this, IndividualMatrixModel.INDVMATRIX, 
+							new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+							true, 2, true, false, filterRules, 
 							new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				}
 				if(getModel().getListIndividuals()!=null && getModel().matrixViewerSample == null){
@@ -195,9 +182,9 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 					 showTheseIndividuals.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, GidsSample.INDIVIDUALID, 
 								Operator.IN, sampleidList));
 										
-					 getModel().matrixViewerSample = new MatrixViewer(this, getModel().SAMPLEMATRIX, 
-								new SliceablePhenoMatrix(GidsSample.class, Measurement.class), 
-								true, true, true, false, showTheseIndividuals, 
+					getModel().matrixViewerSample = new MatrixViewer(this, IndividualMatrixModel.SAMPLEMATRIX, 
+								new SliceablePhenoMatrix<GidsSample, Measurement>(GidsSample.class, Measurement.class), 
+								true, 2, true, false, showTheseIndividuals, 
 								new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShowSamples));
 				}	
 				getModel().setLastInvest(getModel().getInvestigation());
@@ -245,12 +232,13 @@ public class IndividualMatrix extends EasyPluginController<IndividualMatrixModel
 
 			if (getModel().action.equals("setSelection")) {
 				getModel().selection = "";
+				@SuppressWarnings("unchecked")
 				List<ObservationElement> rows = (List<ObservationElement>) getModel().matrixViewerIndv.getSelection(db);
 				int rowCnt = 0;
 				List<Integer> listIndividualIds = new ArrayList<Integer>();
 				for (ObservationElement row : rows) {
 
-					if (request.getBool(getModel().INDVMATRIX + "_selected_" + rowCnt) != null) {
+					if (request.getBool(IndividualMatrixModel.INDVMATRIX + "_selected_" + rowCnt) != null) {
 						listIndividualIds.add(row.getId());
 
 					}
