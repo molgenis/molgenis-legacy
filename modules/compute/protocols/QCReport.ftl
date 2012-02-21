@@ -8,10 +8,6 @@
 # =====================================================
 #
 
-<#assign runtimelog = runtimelog[0] />
-<#assign fileprefix = "project " + project>
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=00:01:00
 #FOREACH project
 #DOCUMENTATION Documentation of QCReport.ftl, ${getStatisticsScript}
@@ -72,5 +68,3 @@ ${row.getString("samplehsmetrics")}
 </#list>
 <#list foldedStringList(parameters, "project,externalSampleID", "samplehsmetrics") as val> ${val}, </#list
 -->
-
-<@end/>

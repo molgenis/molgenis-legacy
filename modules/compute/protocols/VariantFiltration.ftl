@@ -8,8 +8,6 @@
 # =====================================================
 #
 
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=45:00:00 mem=10
 inputs "${snpsgenomicannotatedvcf}"
 inputs "${indelsmaskbed}"
@@ -58,4 +56,3 @@ java -jar -Xmx10g ${genomeAnalysisTKjar} \
 --filterName "HARD_TO_VALIDATE" \
 --filterExpression "DP > 10" \
 --filterName "DEPTH_10"
-<@end />

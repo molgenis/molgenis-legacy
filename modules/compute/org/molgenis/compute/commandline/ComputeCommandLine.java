@@ -65,7 +65,9 @@ public class ComputeCommandLine
 
 			// get protocol and find its targets
 			ComputeProtocol protocol = findProtocol(wfe.getProtocol_Name(), protocollist);
-			String scripttemplate = protocol.getScriptTemplate();
+
+			// get template + insert header and footer
+			String scripttemplate = addHeaderFooter(protocol.getScriptTemplate(), protocol.getInterpreter());
 
 			// fold and reduce worksheet
 			// String[] targets = parseHeaderElement(FOREACH, scripttemplate);
@@ -112,6 +114,8 @@ public class ComputeCommandLine
 				Integer mem = (protocol.getMem() == null ? Integer.parseInt(worksheet.getdefaultvalue("mem")) : protocol.getMem());
 				job.setMem(mem);
 
+				job.setInterpreter(protocol.getInterpreter() == null ? worksheet.getdefaultvalue("interpreter") : protocol.getInterpreter());
+				
 				// set jobname. If a job starts/completes, we put this in a logfile
 				work.set("jobname", job.getName());
 
@@ -155,9 +159,9 @@ public class ComputeCommandLine
 				}
 
 				//work.set("workflowElements", computeBundle.getWorkflowElements());
-				
+
 				// add the script
-				job.setComputeScript(filledtemplate(scripttemplate, work));
+				job.setComputeScript(filledtemplate(scripttemplate, work, job.getName()));
 
 				this.jobs.add(job);
 
@@ -194,6 +198,22 @@ public class ComputeCommandLine
 		// print("user parameters: " + computeBundle.getUserParameters());
 		// print("full worksheet: " + computeBundle.getWorksheet());
 */
+	}
+
+	private String addHeaderFooter(String scripttemplate, String interpreter)
+	{
+		// THIS SHOULD BE REPLACED WITH TEMPLATES:
+		
+		String ls = System.getProperty("line.separator");
+
+		scripttemplate = "<#include \"macros.ftl\"/>" + ls
+					   + "<@begin/>" + ls
+					   + (interpreter.equalsIgnoreCase("R") ? "<@Rbegin/>" + ls : "")
+					   + scripttemplate
+					   + (interpreter.equalsIgnoreCase("R") ? "<@Rend/>" + ls : "")
+					   + "<@end/>" + ls;
+			
+		return(scripttemplate);
 	}
 
 	private String stepnr(String wfeName)
@@ -233,7 +253,7 @@ public class ComputeCommandLine
 		return stepnr(wfe.getName()) + jobName;
 	}
 
-	private String filledtemplate(String scripttemplate, Tuple work) throws IOException, TemplateException
+	private String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException, TemplateException
 	{
 		// first create map
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -258,7 +278,7 @@ public class ComputeCommandLine
 		// FileTemplateLoader ftl1 = new FileTemplateLoader(this.workflowdir);
 		cfg.setDirectoryForTemplateLoading(this.protocoldir);
 
-		Template template = new Template("a template", new StringReader(scripttemplate), cfg);
+		Template template = new Template(jobname, new StringReader(scripttemplate), cfg);
 		StringWriter filledtemplate = new StringWriter();
 		template.process(parameters, filledtemplate);
 

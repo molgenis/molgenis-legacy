@@ -8,17 +8,13 @@
 # =====================================================
 #
 
-<#assign runtimelog = runtimelog[0] />
-<#assign fileprefix = "externalSampleID " + externalSampleID>
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=24:00:00 mem=10
 #FOREACH externalSampleID
 
 inputs "${indexfile}"
 inputs "${baitsbed}"
 inputs "${dbsnpSNPstxt}"
-inputs "${baitsbed}"
+inputs "${snpsvcf}"
 alloutputsexist "${snpsgenomicannotatedvcf}"
 
 #####Annotate with dbSNP132 SNPs only#####
@@ -36,4 +32,3 @@ dbSNP132.RV,dbSNP132.S3D,dbSNP132.SAO,dbSNP132.SCS,dbSNP132.SLO,dbSNP132.SSR,dbS
 dbSNP132.VLD,dbSNP132.VP,dbSNP132.WGT,dbSNP132.WTD,dbSNP132.dbSNPBuildID \
 -o ${snpsgenomicannotatedvcf} \
 -L ${baitsbed}
-<@end />

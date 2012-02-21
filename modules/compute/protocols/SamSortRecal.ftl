@@ -5,5 +5,3 @@
 <#assign sortedbamindex=sortedrecalbamindex />
 
 <#include "samSort.ftl" />
-
-<@end />

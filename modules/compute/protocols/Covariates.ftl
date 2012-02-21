@@ -1,5 +1,12 @@
-<#include "macros.ftl"/>
-<@begin/>
+#
+# =====================================================
+# $Id$
+# $URL$
+# $LastChangedDate$
+# $LastChangedRevision$
+# $LastChangedBy$
+# =====================================================
+#
 
 inputs "${matefixedbam}"
 inputs "${indexfile}" 
@@ -18,4 +25,3 @@ ${genomeAnalysisTKjar} -l INFO \
 -cov CycleCovariate \
 -cov DinucCovariate \
 -recalFile ${matefixedcovariatecsv}
-<@end />

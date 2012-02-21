@@ -8,9 +8,6 @@
 # =====================================================
 #
 
-
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=23:59:00
 
 inputs "${indexfile}"
@@ -31,4 +28,3 @@ ${leftbwaout} \
 </#if>${leftbarcodefqgz} \
 <#if seqType == "PE">${rightbarcodefqgz} \
 </#if>-f ${samfile}
-<@end/>

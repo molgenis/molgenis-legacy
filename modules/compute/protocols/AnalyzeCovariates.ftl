@@ -10,8 +10,6 @@
 
 #MOLGENIS walltime=00:45:00
 
-<#include "macros.ftl"/>
-<@begin/>
 inputs "${matefixedcovariatecsv}"
 inputs "${sortedrecalcovariatecsv}"
 alloutputsexist \
@@ -31,4 +29,3 @@ java -jar -Xmx4g ${analyzecovariatesjar} -l INFO \
 -outputDir ${recalstatsafterdir} \
 -Rscript ${rscript} \
 -ignoreQ 5
-<@end />

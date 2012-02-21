@@ -8,8 +8,6 @@
 # =====================================================
 #
 
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=45:59:00 mem=4 cores=1
 
 inputs "${indexfile}" 
@@ -26,4 +24,3 @@ ${genomeAnalysisTKjar} \
 -I ${matefixedbam} \
 --recal_file ${matefixedcovariatecsv} \
 --out ${recalbam}
-<@end />

@@ -8,8 +8,6 @@
 # =====================================================
 #
 
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=08:00:00 nodes=1 cores=1 mem=1
 
 <#if seqType == "SR">
@@ -45,4 +43,3 @@ ${fastqcjar} ${rightbarcodefqgz} \
 -Dfastqc.output_dir=${intermediatedir} \
 -Dfastqc.unzip=false
 </#if>
-<@end/>

@@ -8,10 +8,6 @@
 # =====================================================
 #
 
-<#assign runtimelog = runtimelog[0] />
-<#assign fileprefix = "externalSampleID " + externalSampleID>
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=46:00:00 mem=8 cores=5
 #FOREACH externalSampleID
 
@@ -34,4 +30,3 @@ ${genomeAnalysisTKjar} \
 -stand_emit_conf 10.0 \
 -nt 4 \
 --metrics_file ${sample}.snps.vcf.metrics
-<@end />

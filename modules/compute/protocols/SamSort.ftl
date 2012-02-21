@@ -8,8 +8,6 @@
 # =====================================================
 #
 
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=35:59:00 mem=4
 
 inputs "${bamfile}"
@@ -31,5 +29,3 @@ OUTPUT=${sortedbamindex} \
 VALIDATION_STRINGENCY=LENIENT \
 MAX_RECORDS_IN_RAM=1000000 \
 TMP_DIR=${tempdir}
-<@end />
-

@@ -8,8 +8,6 @@
 # =====================================================
 #
 
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=10:00:00 nodes=1 cores=1 mem=10
 
 <#if seqType == "SR">
@@ -28,4 +26,3 @@
 <#if seqType == "PE">
 	gzip -f ${rightbarcodefq}
 </#if>
-<@end/>

@@ -8,15 +8,14 @@
 # =====================================================
 #
 
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=35:59:00 mem=4
 
 inputs "${sortedbam}"
 inputs "${sortedbamindex}"
 alloutputsexist \
  "${dedupbam}" \
- "${dedupmetrics}"
+ "${dedupmetrics}" \
+ "${dedupbamindex}"
 
 java -Xmx4g -jar ${markduplicatesjar} \
 INPUT=${sortedbam} \
@@ -33,4 +32,3 @@ OUTPUT=${dedupbamindex} \
 VALIDATION_STRINGENCY=LENIENT \
 MAX_RECORDS_IN_RAM=1000000 \
 TMP_DIR=${tempdir}
-<@end />

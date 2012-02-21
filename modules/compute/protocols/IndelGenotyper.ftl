@@ -8,10 +8,6 @@
 # =====================================================
 #
 
-<#assign runtimelog = runtimelog[0] />
-<#assign fileprefix = "externalSampleID " + externalSampleID>
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=33:00:00 mem=8
 #FOREACH externalSampleID
 
@@ -31,4 +27,3 @@ java -Xmx8g -jar ${genomeAnalysisTKjar} \
 -R ${indexfile} \
 -verbose ${indelsverboseoutput} \
 --window_size 300
-<@end />

@@ -8,10 +8,7 @@
 # =====================================================
 #
 
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=35:59:00 mem=4
-
 inputs "${sortedbam}"
 inputs "${indexfile}"
 alloutputsexist \
@@ -76,4 +73,3 @@ INPUT=${sortedbam} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir} \
 > ${bamindexstats}
-<@end />

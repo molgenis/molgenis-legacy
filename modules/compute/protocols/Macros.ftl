@@ -1,19 +1,10 @@
 <#include "helpers.ftl"/>
 <#macro begin>
-<#--
-Make sure this template is put at the _top_ of the generated scripts!
-#!/bin/bash 
-#PBS -N ${jobname}
-#PBS -q ${queue}
-#PBS -l nodes=1:ppn=${ppn}
-#PBS -l mem=${memory}
-#PBS -l walltime=${walltime}
--->
 ##### BEFORE #####
 touch $PBS_O_WORKDIR/${jobname}.out
 source ${importscript}
 before="$(date +%s)"
-echo "Begin job ${jobname} for ${fileprefix} at $(date)" >> ${runtimelog}
+echo "Begin job ${jobname} at $(date)" >> $PBS_O_WORKDIR/RUNTIME.log
 
 echo Running on node: `hostname`
 
@@ -23,13 +14,18 @@ sleep 3
 
 
 <#macro end >
-
-
 ###### AFTER ######
 after="$(date +%s)"
 elapsed_seconds="$(expr $after - $before)"
-echo Completed ${jobname} for ${fileprefix} at $(date) in $elapsed_seconds seconds >> ${runtimelog}
+echo Completed ${jobname} at $(date) in $elapsed_seconds seconds >> $PBS_O_WORKDIR/RUNTIME.log
 touch $PBS_O_WORKDIR/${jobname}.finished
 ######## END ########
+</#macro>
 
+<#macro Rbegin>
+${R} --vanilla <<RSCRIPT
+</#macro>
+
+<#macro Rend>
+RSCRIPT
 </#macro>

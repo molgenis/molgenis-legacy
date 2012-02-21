@@ -8,9 +8,6 @@
 # =====================================================
 #
 
-<#assign runtimelog=runtimelogdemultiplex />
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=20:00:00 nodes=1 cores=1 mem=10
 #FOREACH flowcell, lane
 
@@ -26,7 +23,6 @@
 
 inputs "${leftinputfile}"
 inputs "${rightinputfile}"
-<#include "helpers.ftl"/>
 alloutputsexist ${ssvQuoted(leftbarcodefq)} ${ssvQuoted(rightbarcodefq)}
 
 
@@ -65,7 +61,3 @@ mkdir -p ${demultiplexinfodir}
 	<#list rightbarcodefq as rfq>rm ${rfq}
 	</#list>
 </#if>
-
-
-
-<@end/>

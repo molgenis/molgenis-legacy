@@ -8,10 +8,6 @@
 # =====================================================
 #
 
-<#assign runtimelog = runtimelog[0] />
-<#assign fileprefix = "externalSampleID " + externalSampleID>
-<#include "macros.ftl"/>
-<@begin/>
 #MOLGENIS walltime=45:00:00 mem=10
 #FOREACH externalSampleID
 
@@ -49,5 +45,3 @@ java -jar -Xmx4g ${genomeAnalysisTKjar1411} \
 --variant ${snpsgenomicannotatedvcf} \
 -o ${snpsfinalvcf} \
 -L ${baitsbed}
-
-<@end />

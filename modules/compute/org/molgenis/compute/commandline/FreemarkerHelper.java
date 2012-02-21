@@ -33,4 +33,15 @@ public class FreemarkerHelper
 		
 		return folded;
 	}
+	
+	public List<String> stringList(List<Tuple> folded, String var)
+	{
+		List<String> lst = new ArrayList<String>();
+		for (int i = 0; i < folded.size(); i ++)
+		{
+			lst.add(folded.get(i).getString(var));
+		}
+		
+		return lst;
+	}
 }

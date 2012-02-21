@@ -265,10 +265,10 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 					}
 					else if (line.trim().startsWith("#FOREACH"))
 					{
-						line = line.substring("#FOREACH".length()).trim();
-						if (line.length() > 0)
+						String thisline = line.substring("#FOREACH".length()).trim();
+						if (thisline.length() > 0)
 						{
-							String[] targets = line.split(",");
+							String[] targets = thisline.split(",");
 							for (String target : targets)
 							{
 								p.getIterateOver_Name().add(target.trim());
@@ -277,10 +277,18 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 					}
 					else if (line.trim().startsWith("#DOCUMENTATION"))
 					{
-						line = line.substring("#DOCUMENTATION".length()).trim();
-						if (0 < line.length())
+						String thisline = line.substring("#DOCUMENTATION".length()).trim();
+						if (0 < thisline.length())
 						{
-							p.setDescription(line.trim());
+							p.setDescription(thisline.trim());
+						}
+					}
+					else if (line.trim().startsWith("#INTERPRETER"))
+					{
+						String thisline = line.substring("#INTERPRETER".length()).trim();
+						if (0 < thisline.length())
+						{
+							p.setInterpreter(thisline.trim());
 						}
 					}
 					else if (line.trim().startsWith("#PBS"))
@@ -327,10 +335,11 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 						// logger.error("parsing "+f.getName()+", line: "+line);
 						// }
 					}
-					else
-					{
+//					else
+//					{
+					// also add the #LINES to the code!
 						scriptTemplate += line + ls;
-					}
+//					}
 				}
 				reader.close();
 
