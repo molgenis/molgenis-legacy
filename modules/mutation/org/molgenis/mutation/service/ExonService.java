@@ -18,23 +18,21 @@ import org.apache.regexp.RESyntaxException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
-import org.molgenis.util.Tuple;
-import org.molgenis.xgap.Gene;
-
 import org.molgenis.mutation.Exon;
 import org.molgenis.mutation.MutationGene;
 import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.mutation.vo.ExonSearchCriteriaVO;
 import org.molgenis.mutation.vo.ExonSummaryVO;
+import org.molgenis.util.Tuple;
+import org.molgenis.xgap.Gene;
 
 public class ExonService implements Serializable
 {
 	private static final long serialVersionUID    = -6713716877840714621L;
 	private Database db;
-	private static final transient Logger logger  = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	private static final transient Logger logger  = Logger.getLogger(ExonService.class.getSimpleName());
 	private HashMap<Integer, ExonSummaryVO> cache = new HashMap<Integer, ExonSummaryVO>();
 
 	public void setDatabase(Database db)

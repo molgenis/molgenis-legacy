@@ -55,7 +55,7 @@ public class MutationService implements Serializable
 	private static final long serialVersionUID        = -5234460093223923754L;
 	private Database db                               = null;
 	private HashMap<Integer, MutationSummaryVO> cache = new HashMap<Integer, MutationSummaryVO>();
-	private static final transient Logger logger      = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	private static final transient Logger logger      = Logger.getLogger(MutationService.class.getSimpleName());
 
 	public void setDatabase(Database db)
 	{

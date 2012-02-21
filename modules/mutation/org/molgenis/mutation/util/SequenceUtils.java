@@ -4,13 +4,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
-import org.molgenis.framework.db.jdbc.JDBCConnectionHelper;
-
 import org.molgenis.mutation.Exon;
 
 public class SequenceUtils
 {
-	private static final transient Logger logger = Logger.getLogger(JDBCConnectionHelper.class.getSimpleName());
+	private static final transient Logger logger = Logger.getLogger(SequenceUtils.class.getSimpleName());
 	public static enum AminoAcid
 	{
 		GCT ("A", "Ala"),
