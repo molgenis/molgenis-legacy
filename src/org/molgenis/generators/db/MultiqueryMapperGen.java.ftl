@@ -195,7 +195,7 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 				<#elseif f.type == "datetime">
 					"'"+new java.sql.Timestamp(e.get${JavaName(f)}().getTime()).toString()+"'"
 				<#elseif f.type == "bool">
-					"'"+this.escapeSql(e.get${JavaName(f)}()).toString()+"'"
+					e.get${JavaName(f)}()
                 <#elseif f.type == "xref" || f.type == "mref">					
 					"'"+this.escapeSql(e.get${JavaName(f)}_${JavaName(f.xrefField)}()).toString()+"'"
 				<#else>
