@@ -181,8 +181,12 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 		<#else>
 
 
-			if(e.get${JavaName(f)}() != null) {
-                            sql.append(<@compress single_line=true>
+			<#if f.type == "xref" || f.type == "mref">
+			if(e.get${JavaName(f)}_${JavaName(f.xrefField)}() != null){
+			<#else>
+			if(e.get${JavaName(f)}() != null){
+			</#if>
+                sql.append(<@compress single_line=true>
 				<#if f.type == "enum">
 					<#-->"'${f.getEnumOptions()?first}'" causes fail -->
 					"'"+this.escapeSql(e.get${JavaName(f)}())+"'"
@@ -190,13 +194,17 @@ public class ${JavaName(entity)}Mapper extends AbstractJDBCMapper<${JavaName(ent
 					"'"+new java.sql.Date(e.get${JavaName(f)}().getTime()).toString()+"'"
 				<#elseif f.type == "datetime">
 					"'"+new java.sql.Timestamp(e.get${JavaName(f)}().getTime()).toString()+"'"
+				<#elseif f.type == "bool">
+					"'"+this.escapeSql(e.get${JavaName(f)}()).toString()+"'"
+                <#elseif f.type == "xref" || f.type == "mref">					
+					"'"+this.escapeSql(e.get${JavaName(f)}_${JavaName(f.xrefField)}()).toString()+"'"
 				<#else>
-                                    <#if f.type == "bool">e.get${JavaName(f)}()<#else>"'"+this.escapeSql(e.get${JavaName(f)}().toString())+"'"</#if>
-                                </#if>
-                            <#if f_has_next>+","</#if></@compress>);
+					"'"+this.escapeSql(e.get${JavaName(f)}()).toString()+"'"
+				</#if>
+                <#if f_has_next>+","</#if></@compress>);
 			} else {
 				sql.append("null<#if f_has_next>,</#if>");
-                        }
+            }
 		</#if>
 		
 </#list>				
