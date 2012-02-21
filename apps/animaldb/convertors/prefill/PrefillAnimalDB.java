@@ -221,7 +221,11 @@ public class PrefillAnimalDB
 				newCat.setInvestigation_Name(invName);
 				categoriesToAddList.add(newCat);
 				Measurement meas = measMap.get(measName);
-				meas.getCategories_Name().add(measName + "_" + code);
+				List<String> catNamesForMeas = meas.getCategories_Name();
+				catNamesForMeas.add(measName + "_" + code);
+				// FIXME: the statement below doesn't work anymore
+				// No mref between Measurement and Category results after DB insert
+				meas.setCategories_Name(catNamesForMeas);
 				measMap.put(measName, meas);
 			}
 		});
