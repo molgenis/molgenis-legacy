@@ -138,7 +138,7 @@ public class PermissionManagementService {
 	    
 	    for(MolgenisPermission m : perms) {
 	    	Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-		    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS, m.getEntity()));
+		    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS, m.getEntity_Id()));
 		    if(!includeOwnership) {
 		    	q.addRules(new QueryRule(MolgenisPermission.PERMISSION, Operator.NOT, "own"));
 		    }
@@ -163,7 +163,7 @@ public class PermissionManagementService {
 	    
 	    if(perm != null) {
 	    	Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-		    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS, perm.getEntity()));
+		    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS, perm.getEntity_Id()));
 		    return q.find();
 	    }
 	    return new ArrayList<MolgenisPermission>();
@@ -242,11 +242,11 @@ public class PermissionManagementService {
 	public boolean exists(MolgenisPermission mp) throws DatabaseException, ParseException {
 	    Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
 	    q.addRules(new QueryRule(MolgenisPermission.ENTITY, Operator.EQUALS,
-		    mp.getEntity()));
+		    mp.getEntity_Id()));
 	    q.addRules(new QueryRule(MolgenisPermission.PERMISSION, Operator.EQUALS,
 		    mp.getPermission()));
 	    q.addRules(new QueryRule(MolgenisPermission.ROLE_, Operator.EQUALS,
-		    mp.getRole()));
+		    mp.getRole_Id()));
 	    
 	    if(!q.find().isEmpty()) {
 	    	return true;

@@ -175,13 +175,13 @@ public class MatrixWizard extends PluginModel<Entity>
 				//FIXME: not very pretty.....
 				for(DataValue dv : dataValueList){
 					//match reference to matrix
-					if(dv.getValue().equals(data.getId())){
+					if(dv.getValue_Id().equals(data.getId())){
 						//find the DataName
 						for(DataName dn : dataNameList){
-							if(dv.getDataName().equals(dn.getId())){
+							if(dv.getDataName_Id().equals(dn.getId())){
 								//find the DataSet
 								for(DataSet ds : dataSetList){
-									if(dn.getDataSet().equals(ds.getId())){
+									if(dn.getDataSet_Id().equals(ds.getId())){
 										tags.add(ds.getName() + " -> " + dn.getName());
 									}
 								}
@@ -200,7 +200,7 @@ public class MatrixWizard extends PluginModel<Entity>
 			ArrayList<String> combinations = new ArrayList<String>();
 			for(DataSet ds : dataSetList){
 				for(DataName dn : dataNameList){
-					if(dn.getDataSet().equals(ds.getId())){
+					if(dn.getDataSet_Id().equals(ds.getId())){
 						combinations.add(ds.getName() + " -> " + dn.getName());
 					}
 				}

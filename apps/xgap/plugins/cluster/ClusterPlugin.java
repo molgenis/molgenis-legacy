@@ -191,7 +191,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 		sj.setStatusText("Resubmitted");
 		db.update(sj);
 
-		Job parent = db.find(Job.class, new QueryRule("id", Operator.EQUALS, sj.getJob())).get(0);
+		Job parent = db.find(Job.class, new QueryRule("id", Operator.EQUALS, sj.getJob_Id())).get(0);
 
 		Command command = null;
 
@@ -200,16 +200,16 @@ public class ClusterPlugin extends PluginModel<Entity>
 		if (parent.getComputeResource().equals("local"))
 		{
 			cr = new LocalComputationResource();
-			// commands.add(new Command("R CMD BATCH ./run" + sj.getJob() +
+			// commands.add(new Command("R CMD BATCH ./run" + sj.getJob_Id() +
 			// "/run"+sj.getNr()+".R", false, false));
-			command = new Command("R CMD BATCH ./run" + sj.getJob() + "/subjob" + sj.getNr() + ".R", false, false, true);
+			command = new Command("R CMD BATCH ./run" + sj.getJob_Id() + "/subjob" + sj.getNr() + ".R", false, false, true);
 		}
 		else if (parent.getComputeResource().equals("cluster"))
 		{
 			cr = new ClusterComputationResource(this.model.getLs());
-			// commands.add(new Command("nohup qsub ~/run" + sj.getJob() +
+			// commands.add(new Command("nohup qsub ~/run" + sj.getJob_Id() +
 			// "/run" + sj.getNr() + ".sh &", false, false));
-			command = new Command("nohup qsub ~/run" + sj.getJob() + "/run" + sj.getNr() + ".sh &", false, false, true);
+			command = new Command("nohup qsub ~/run" + sj.getJob_Id() + "/run" + sj.getNr() + ".sh &", false, false, true);
 		}
 		else if (parent.getComputeResource().equals("cloud"))
 		{
@@ -287,7 +287,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 			jobId = startedJob.getId();
 
 			// used later on...
-			analysis = db.find(Analysis.class, new QueryRule("id", Operator.EQUALS, startedJob.getAnalysis())).get(0);
+			analysis = db.find(Analysis.class, new QueryRule("id", Operator.EQUALS, startedJob.getAnalysis_Id())).get(0);
 
 			// subjobs aanmaken
 			for (int i = 0; i <= model.getNrOfJobs(); i++)
@@ -509,7 +509,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 			List<Job> tmp = new ArrayList<Job>();
 			for (Subjob sj : subjobs)
 			{
-				if (sj.getJob().equals(sj.getId()))
+				if (sj.getJob_Id().equals(sj.getId()))
 				{
 
 					tmp.add(j);
@@ -641,12 +641,12 @@ public class ClusterPlugin extends PluginModel<Entity>
 			else if (model.getState().equals("newjob2"))
 			{
 				Analysis analysis = db.find(Analysis.class,
-						new QueryRule("id", Operator.EQUALS, model.getCandidateJob().getAnalysis())).get(0);
+						new QueryRule("id", Operator.EQUALS, model.getCandidateJob().getAnalysis_Id())).get(0);
 				model.setSelectedAnalysis(analysis);
 				
 				ParameterSet paramset = db.find(ParameterSet.class,
-						new QueryRule("id", Operator.EQUALS, analysis.getParameterSet())).get(0);
-				DataSet dataset = db.find(DataSet.class, new QueryRule("id", Operator.EQUALS, analysis.getDataSet()))
+						new QueryRule("id", Operator.EQUALS, analysis.getParameterSet_Id())).get(0);
+				DataSet dataset = db.find(DataSet.class, new QueryRule("id", Operator.EQUALS, analysis.getDataSet_Id()))
 						.get(0);
 
 				List<ParameterName> parameternames = db.find(ParameterName.class, new QueryRule("parameterset",
@@ -697,25 +697,25 @@ public class ClusterPlugin extends PluginModel<Entity>
 				for (SelectedParameter s : sp)
 				{
 					String value = s.getParameterName() + " = " + s.getParameterValue() + "<br>";
-					if (jobParamMap.get(s.getJob().toString()) == null)
+					if (jobParamMap.get(s.getJob_Id().toString()) == null)
 					{
-						jobParamMap.put(s.getJob().toString(), value);
+						jobParamMap.put(s.getJob_Id().toString(), value);
 					}
 					else
 					{
-						jobParamMap.put(s.getJob().toString(), jobParamMap.get(s.getJob().toString()) + value);
+						jobParamMap.put(s.getJob_Id().toString(), jobParamMap.get(s.getJob_Id().toString()) + value);
 					}
 				}
 				for (SelectedData s : sd)
 				{
 					String value = s.getDataName() + " = " + s.getDataValue() + "<br>";
-					if (jobParamMap.get(s.getJob().toString()) == null)
+					if (jobParamMap.get(s.getJob_Id().toString()) == null)
 					{
-						jobParamMap.put(s.getJob().toString(), value);
+						jobParamMap.put(s.getJob_Id().toString(), value);
 					}
 					else
 					{
-						jobParamMap.put(s.getJob().toString(), jobParamMap.get(s.getJob().toString()) + value);
+						jobParamMap.put(s.getJob_Id().toString(), jobParamMap.get(s.getJob_Id().toString()) + value);
 					}
 				}
 
