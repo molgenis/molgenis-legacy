@@ -239,7 +239,8 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 			${field.getXrefEntity().namespace}.${JavaName(field.getXrefEntity())} ${fieldName}New = ${name(entity)}.get${JavaName(field)}();
 
 			if (${fieldName}New != null) {
-				${fieldName}New = getEntityManager().getReference(org.hibernate.proxy.HibernateProxyHelper.getClassWithoutInitializingProxy(${fieldName}New), ${fieldName}New.getIdValue());
+//				${fieldName}New = getEntityManager().getReference(org.hibernate.proxy.HibernateProxyHelper.getClassWithoutInitializingProxy(${fieldName}New), ${fieldName}New.getIdValue());
+				${fieldName}New = getEntityManager().getReference(${fieldName}New.getClass(), ${fieldName}New.getIdValue());
 				${name(entity)}.set${JavaName(field)}(${fieldName}New);
 			} else { //object is reference by xref		
                             if(${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}() != null) {
