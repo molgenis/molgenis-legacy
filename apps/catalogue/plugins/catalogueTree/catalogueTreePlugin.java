@@ -40,6 +40,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 	private String selectedInvestigation = null;
 	private boolean isSelectedInv = false; 
+	private String InputToken;
+	
+	private String selectedField = null;
+	//private boolean isSelectedField = false;
+	private List<String> arraySearchFields = new ArrayList<String>();
 
 
 	public catalogueTreePlugin(String name, ScreenController<?> parent) {
@@ -61,7 +66,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 				Date dat = new Date();
 				String dateOfDownload = dateFormat.format(dat);
-				System.out.println("seleced investigaton >>>> " + selectedInvestigation);
+				System.out.println("selected investigaton >>>> " + selectedInvestigation);
 				this.addMeasurements(db, request, selectedInvestigation, dateOfDownload);
 
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
@@ -69,7 +74,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				String measurementName  =  request.getString("measurementName"); //TODO :  this is not working
 				measurementName = request.getAction().substring("DeleteMeasurement".length()+2+"measurementName".length(), request.getAction().length());
 				this.deleteShoppingItem(measurementName);
-			} 
+			} //else if ("SearchCatalogueTree".equals(request.getAction())) {
+				this.setInputToken(request.getString("InputToken").trim());
+				this.setSelectedField(request.getString("selectedField"));
+
+				System.out.println("Input token: >>>>>>"+ this.getInputToken() + ">>> selectedField>>"+ selectedField);
+			//}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -308,6 +318,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		labelToTree = new HashMap<String, JQueryTreeViewElementObject>();
 		nameToProtocol = new HashMap<String, Protocol>();
 
+		arraySearchFields.add("Protocol/measurement name");
+		arraySearchFields.add("Details");
+		
 		try {
 
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
@@ -403,6 +416,30 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	public String getSelectedInvestigation() {
 		return selectedInvestigation;
+	}
+
+	public void setArraySearchFields(List<String> arraySearchFields) {
+		this.arraySearchFields = arraySearchFields;
+	}
+
+	public List<String> getArraySearchFields() {
+		return arraySearchFields;
+	}
+
+	public void setInputToken(String inputToken) {
+		InputToken = inputToken;
+	}
+
+	public String getInputToken() {
+		return InputToken;
+	}
+
+	public void setSelectedField(String selectedField) {
+		this.selectedField = selectedField;
+	}
+
+	public String getSelectedField() {
+		return selectedField;
 	}
 
 }

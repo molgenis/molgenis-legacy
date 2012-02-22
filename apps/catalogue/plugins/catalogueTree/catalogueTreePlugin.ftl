@@ -24,7 +24,24 @@
 			</#if>
 		</#list>
 		
+		<div align="right">
+				<label>Search:</label>
+				<select id="selectedField" name="selectedField" title="choose field" name="chooseField" style="display:none"> 
+					<#list screen.arraySearchFields as field>
+								<!--#assign FieldName = field.name-->
+						<option value="${field}" <#if screen.selectedField??>
+							<#if screen.selectedField == field>selected="selected"</#if></#if> >${field}</option>			
+					</#list>
+					 <option value="all">Any field</option>
+				</select>		
+				<input title="fill in search term" type="text" name="InputToken" 
+					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
+					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
+									
+				<img class="navigation_button" src="generated-res/img/filter.png" alt="Add filter"	onclick="__action.value='SearchCatalogueTree';return true;""/>		
 		
+		</div>
+
 		
 		<div class="screenbody">
 			<div class="screenpadding">
