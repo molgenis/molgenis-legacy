@@ -64,6 +64,14 @@ public class TestDatabase
 	DateFormat dateFormat = new SimpleDateFormat(SimpleTuple.DATEFORMAT, Locale.US);
 	DateFormat dateTimeFormat = new SimpleDateFormat(SimpleTuple.DATETIMEFORMAT, Locale.US);	 
 
+<#if databaseImp = 'jpa'>
+	private static java.util.Map<String, Object> configOverrides = new java.util.HashMap<String, Object>();
+	static {
+		configOverrides.put("javax.persistence.jdbc.url", "${options.dbUri}_test");
+		configOverrides.put("hibernate.hbm2ddl.auto", "create-drop");		
+	}
+</#if>
+
 	/*
 	 * Create a database to use
 	 */
@@ -76,8 +84,7 @@ public class TestDatabase
 		//this means the previous test will need to end with e.g.
 		//new emptyDatabase(new MolgenisServlet().getDatabase(), false);	
 		<#if databaseImp = 'jpa'>		
-			db = DatabaseFactory.createTest();
-                        JpaUtil.dropAndCreateTables( (JpaDatabase)db);
+			db = DatabaseFactory.create(configOverrides);
 		<#else>
 			<#if db_mode = 'standalone'>
 			//db = new MolgenisServlet().getDatabase();
@@ -98,7 +105,7 @@ public class TestDatabase
 <#if databaseImp = 'jpa'>		
 	@AfterTest
 	public static void destory() {
-		JpaUtil.dropTables((JpaDatabase)db);
+		JpaUtil.dropTables((JpaDatabase)db, configOverrides);
 	}	
 </#if>		
 		

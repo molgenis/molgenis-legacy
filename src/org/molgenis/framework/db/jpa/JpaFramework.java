@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 
 import org.molgenis.framework.db.Database;
@@ -26,14 +28,14 @@ public interface JpaFramework {
 	 * 
 	 * @param persistenceUnitName
 	 */
-    public void createTables(String persistenceUnitName);
+    public void createTables(final String persistenceUnitName, final Map<String, Object> configOverwrites);
     
     /**
      * Drop tables based on annotations
      * 
      * @param persistenceUnitName
      */
-    public void dropTables(String persistenceUnitName);  
+    public void dropTables(final String persistenceUnitName, final Map<String, Object> configOverwrites);  
     
     @Deprecated
     public Connection getConnection(EntityManager em);
