@@ -84,8 +84,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				this.setSelectedField(request.getString("selectedField"));
 
 				System.out.println("Input token: >>>>>>"+ this.getInputToken() + ">>> selectedField>>"+ selectedField + "comparison >>>" + this.getComparison()+ "searchingInvestigation>>"+ this.getSearchingInvestigation());
-				this.SearchTree(db, this.getInputToken(), this.getSearchingInvestigation(), this.getComparison());
-				
+				if (this.getSelectedField().equals("Protocols")) 
+					RetrieveProtocols(db,2); 
+				else if (this.getSelectedField().equals("Measurements")) {}
+				else if (this.getSelectedField().equals("Details")) {}
+						 
 			}
 
 		} catch (Exception e) {
@@ -318,56 +321,57 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 //				this.SearchTree(db, this.getInputToken(), this.getSearchingInvestigation(), this.getComparison());
 
-	public void SearchTree(Database db, String inputToken,String searchingInvestigation, String comparison) {
+	public void RetrieveProtocols(Database db, Integer mode) {
 		List<String> topProtocols = new ArrayList<String>();
 		List<String> bottomProtocols = new ArrayList<String>();
 		List<String> middleProtocols = new ArrayList<String>();
 		labelToTree = new HashMap<String, JQueryTreeViewElementObject>();
 		nameToProtocol = new HashMap<String, Protocol>();
 
-		
+		List<QueryRule> queryRule = new ArrayList<QueryRule>();
 		try {
 
-			for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, searchingInvestigation))) {
-
-				setSelectedInv(true);
-				List<String> allSubNames = p.getSubprotocols_Name();
-				List<String> subNames = new ArrayList<String>();
-
-				System.out.println("protocol names BEFORE search>>> "+allSubNames);
-				//filter out only the protocol names that contain inputToken
-				//IF contains 
-				if (comparison.equals("contains")) {
-					for (int i=0; i<allSubNames.size(); i++) {
-						if (allSubNames.get(i).contains(inputToken)) 
-								subNames.add(allSubNames.get(i)); 
-					}	
-				}
-				System.out.println("protocol names AFTER search>>> "+subNames);
-
-				if (!nameToProtocol.containsKey(p.getName())) {
-					nameToProtocol.put(p.getName(), p);
-				}
-
-				if (!subNames.isEmpty()) {
-
-					if (!topProtocols.contains(p.getName())) {
-						topProtocols.add(p.getName());
+			
+			
+			Query<Protocol> q = db.query(Protocol.class);
+			
+			
+			if (mode ==1) { //reload is calling
+				queryRule.add(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
+			} else if (mode==2) {
+				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, searchingInvestigation));
+				q.addRules(new QueryRule(Protocol.NAME, Operator.LIKE, InputToken));
+			}
+				for (Protocol p : q.find()) {
+					setSelectedInv(true);
+					List<String> subNames = p.getSubprotocols_Name();
+					System.out.println(">>>"+ p);
+					
+					if (!nameToProtocol.containsKey(p.getName())) {
+						nameToProtocol.put(p.getName(), p);
 					}
-					for (String subProtocol : subNames) {
-						if (!middleProtocols.contains(subProtocol)) {
-							middleProtocols.add(subProtocol);
+	
+					if (!subNames.isEmpty()) {
+	
+						if (!topProtocols.contains(p.getName())) {
+							topProtocols.add(p.getName());
+						}
+						for (String subProtocol : subNames) {
+							if (!middleProtocols.contains(subProtocol)) {
+								middleProtocols.add(subProtocol);
+							}
+						}
+	
+					} else {
+	
+						if (!bottomProtocols.contains(p.getName())) {
+							bottomProtocols.add(p.getName());
 						}
 					}
-
-				} else {
-
-					if (!bottomProtocols.contains(p.getName())) {
-						bottomProtocols.add(p.getName());
-					}
+				
+					
 				}
-			}
-
+			
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 		}
@@ -387,83 +391,44 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementObject>(
 				"Protocols", protocolsTree);
+		
 	}
 	
+
 	@Override
 	public void reload(Database db) {
 
-		List<String> topProtocols = new ArrayList<String>();
-		List<String> bottomProtocols = new ArrayList<String>();
-		List<String> middleProtocols = new ArrayList<String>();
-		labelToTree = new HashMap<String, JQueryTreeViewElementObject>();
-		nameToProtocol = new HashMap<String, Protocol>();
-
-		arraySearchFields.add("Protocol/measurement name");
-		arraySearchFields.add("Details");
+		arraySearchFields.clear();
+		this.searchingInvestigation = null;
+		this.selectedInvestigation = null;
 		
-		try {
-
+		arraySearchFields.add("Protocols");
+		arraySearchFields.add("Measurements");
+		arraySearchFields.add("Details");
+	
 			Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
 			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
-			List<ShoppingCart> result = q.find();
-			shoppingCart.clear();
-			for(ShoppingCart cart : result){
-				shoppingCart.addAll(cart.getMeasurements(db));
-			}
-
-			this.arrayInvestigations.clear();
-			for (Investigation i: db.find(Investigation.class)) {
-				this.arrayInvestigations.add(i);
-			}
-
-			for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation))) {
-
-				setSelectedInv(true);
-				List<String> subNames = p.getSubprotocols_Name();
-
-				if (!nameToProtocol.containsKey(p.getName())) {
-					nameToProtocol.put(p.getName(), p);
+			try {
+				List<ShoppingCart> result = q.find();
+				shoppingCart.clear();
+				for(ShoppingCart cart : result){
+					shoppingCart.addAll(cart.getMeasurements(db));
 				}
-
-				if (!subNames.isEmpty()) {
-
-					if (!topProtocols.contains(p.getName())) {
-						topProtocols.add(p.getName());
+	
+				this.arrayInvestigations.clear();
+			
+					for (Investigation i: db.find(Investigation.class)) {
+						this.arrayInvestigations.add(i);
 					}
-					for (String subProtocol : subNames) {
-						if (!middleProtocols.contains(subProtocol)) {
-							middleProtocols.add(subProtocol);
-						}
-					}
-
-				} else {
-
-					if (!bottomProtocols.contains(p.getName())) {
-						bottomProtocols.add(p.getName());
-					}
-				}
+			} catch (DatabaseException e) {
+				e.printStackTrace();
 			}
+			
+			if (this.getInputToken() == null) RetrieveProtocols(db,1); //mode 1: gets all protocols without filters!
+			
+			this.setInputToken(null);
 
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}
-
-		middleProtocols.removeAll(bottomProtocols);
-		topProtocols.removeAll(middleProtocols);
-
-		JQueryTreeViewElementObject protocolsTree = new JQueryTreeViewElementObject(
-				"Protocols", null);
-
-		if(topProtocols.size() == 0){
-			recursiveAddingNodesToTree(bottomProtocols,"Protocols", protocolsTree, db);
-
-		}else{
-			recursiveAddingNodesToTree(topProtocols, "Protocols", protocolsTree, db);
-		}
-
-		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementObject>(
-				"Protocols", protocolsTree);
 	}
 
 	public String getTreeView() {

@@ -36,8 +36,8 @@
 				</select>
 				<select name="searchingInvestigation" id="searchingInvestigation" style="display:none"> 
 					<#list screen.arrayInvestigations as inv>
-						<#assign invName = inv.name>
-						<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+						<#assign searchingInvName = inv.name>
+						<option value="${searchingInvName}" <#if screen.searchingInvestigation??><#if screen.searchingInvestigation == searchingInvName>selected="selected"</#if></#if> >${searchingInvName}</option>			
 					</#list>
 				</select>		
 				<input title="fill in search term" type="text" name="InputToken" 
