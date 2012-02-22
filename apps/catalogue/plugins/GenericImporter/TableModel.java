@@ -167,7 +167,7 @@ public class TableModel {
 
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
 
-		List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
+		HashMap<String, OntologyTerm> ontologyTermOfList = new HashMap<String, OntologyTerm>();
 
 		if(excelDirection.equals("UploadFileByRow"))
 		{
@@ -383,21 +383,25 @@ public class TableModel {
 
 									for(int i = 0; i < multipleValues.length; i++)
 									{
-										List<String> eachValues = new ArrayList<String>();
 
-										eachValues.add(multipleValues[i]);
+										if(!multipleValues[i].equals("")){
+											
+											List<String> eachValues = new ArrayList<String>();
 
-										List<OntologyTerm> existingOntologyTermList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, eachValues));
+											eachValues.add(multipleValues[i]);
 
-										if(existingOntologyTermList.size() == 0 && !multipleValues[i].equals("")){
-											OntologyTerm unitOntologyTerm = new OntologyTerm();
-											unitOntologyTerm.set(OntologyTerm.NAME, multipleValues[i]);
+											List<OntologyTerm> existingOntologyTermList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, eachValues));
 
-											if(!ontologyTermList.contains(unitOntologyTerm)){
-												ontologyTermList.add(unitOntologyTerm);
+											if(existingOntologyTermList.size() == 0){
+												
+												OntologyTerm unitOntologyTerm = new OntologyTerm();
+												unitOntologyTerm.set(OntologyTerm.NAME, multipleValues[i]);
+
+												if(!ontologyTermOfList.keySet().contains(unitOntologyTerm.getName())){
+													ontologyTermOfList.put(unitOntologyTerm.getName(), unitOntologyTerm);
+												}
 											}
 										}
-
 									}
 								}
 
@@ -516,10 +520,19 @@ public class TableModel {
 				}
 
 			}
+			
 
+			List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
+			
+			for(String ontologyTermName : ontologyTermOfList.keySet()){
+				
+				ontologyTermList.add(ontologyTermOfList.get(ontologyTermName));
+				
+			}
+			
 			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING,ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
 
-			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME, OntologyTerm.TERMPATH);
+			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
 
 			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
 
