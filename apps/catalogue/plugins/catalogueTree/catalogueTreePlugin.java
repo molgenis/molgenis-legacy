@@ -40,7 +40,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 	private String selectedInvestigation = null;
 	private boolean isSelectedInv = false; 
-	private String InputToken;
+	private String InputToken=null;
+	private String searchingInvestigation=null;
+	private String comparison=null;
 	
 	private String selectedField = null;
 	//private boolean isSelectedField = false;
@@ -74,12 +76,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				String measurementName  =  request.getString("measurementName"); //TODO :  this is not working
 				measurementName = request.getAction().substring("DeleteMeasurement".length()+2+"measurementName".length(), request.getAction().length());
 				this.deleteShoppingItem(measurementName);
-			} //else if ("SearchCatalogueTree".equals(request.getAction())) {
+			} if (request.getAction().startsWith("SearchCatalogueTree")) {
 				this.setInputToken(request.getString("InputToken").trim());
+				this.setSearchingInvestigation(request.getString("searchingInvestigation").trim());
+				//this.setComparison(request.getString("comparison").trim());
+				this.setComparison("contains");
 				this.setSelectedField(request.getString("selectedField"));
 
-				System.out.println("Input token: >>>>>>"+ this.getInputToken() + ">>> selectedField>>"+ selectedField);
-			//}
+				System.out.println("Input token: >>>>>>"+ this.getInputToken() + ">>> selectedField>>"+ selectedField + "comparison >>>" + this.getComparison()+ "searchingInvestigation>>"+ this.getSearchingInvestigation());
+				this.SearchTree(db, this.getInputToken(), this.getSearchingInvestigation(), this.getComparison());
+				
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -87,6 +94,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		}
 
 	}
+
+	
 
 	private void addMeasurements(Database db, Tuple request, String selectedInvestigation, String dateOfDownload) throws DatabaseException, IOException {
 
@@ -307,8 +316,79 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return "plugins/catalogueTree/catalogueTreePlugin.ftl";
 	}
 
+//				this.SearchTree(db, this.getInputToken(), this.getSearchingInvestigation(), this.getComparison());
 
+	public void SearchTree(Database db, String inputToken,String searchingInvestigation, String comparison) {
+		List<String> topProtocols = new ArrayList<String>();
+		List<String> bottomProtocols = new ArrayList<String>();
+		List<String> middleProtocols = new ArrayList<String>();
+		labelToTree = new HashMap<String, JQueryTreeViewElementObject>();
+		nameToProtocol = new HashMap<String, Protocol>();
 
+		
+		try {
+
+			for (Protocol p : db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, searchingInvestigation))) {
+
+				setSelectedInv(true);
+				List<String> allSubNames = p.getSubprotocols_Name();
+				List<String> subNames = new ArrayList<String>();
+
+				System.out.println("protocol names BEFORE search>>> "+allSubNames);
+				//filter out only the protocol names that contain inputToken
+				//IF contains 
+				if (comparison.equals("contains")) {
+					for (int i=0; i<allSubNames.size(); i++) {
+						if (allSubNames.get(i).contains(inputToken)) 
+								subNames.add(allSubNames.get(i)); 
+					}	
+				}
+				System.out.println("protocol names AFTER search>>> "+subNames);
+
+				if (!nameToProtocol.containsKey(p.getName())) {
+					nameToProtocol.put(p.getName(), p);
+				}
+
+				if (!subNames.isEmpty()) {
+
+					if (!topProtocols.contains(p.getName())) {
+						topProtocols.add(p.getName());
+					}
+					for (String subProtocol : subNames) {
+						if (!middleProtocols.contains(subProtocol)) {
+							middleProtocols.add(subProtocol);
+						}
+					}
+
+				} else {
+
+					if (!bottomProtocols.contains(p.getName())) {
+						bottomProtocols.add(p.getName());
+					}
+				}
+			}
+
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+
+		middleProtocols.removeAll(bottomProtocols);
+		topProtocols.removeAll(middleProtocols);
+
+		JQueryTreeViewElementObject protocolsTree = new JQueryTreeViewElementObject(
+				"Protocols", null);
+
+		if(topProtocols.size() == 0){
+			recursiveAddingNodesToTree(bottomProtocols,"Protocols", protocolsTree, db);
+
+		}else{
+			recursiveAddingNodesToTree(topProtocols, "Protocols", protocolsTree, db);
+		}
+
+		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementObject>(
+				"Protocols", protocolsTree);
+	}
+	
 	@Override
 	public void reload(Database db) {
 
@@ -442,4 +522,20 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return selectedField;
 	}
 
+	private String getComparison() {
+		return comparison;
+	}
+
+	private void setComparison(String comparison) {
+		this.comparison = comparison;
+		
+	}
+
+	public void setSearchingInvestigation(String searchingInvestigation) {
+		this.searchingInvestigation = searchingInvestigation;
+	}
+
+	public String getSearchingInvestigation() {
+		return searchingInvestigation;
+	}
 }

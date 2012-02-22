@@ -33,11 +33,18 @@
 							<#if screen.selectedField == field>selected="selected"</#if></#if> >${field}</option>			
 					</#list>
 					 <option value="all">Any field</option>
+				</select>
+				<select name="searchingInvestigation" id="searchingInvestigation" style="display:none"> 
+					<#list screen.arrayInvestigations as inv>
+						<#assign invName = inv.name>
+						<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+					</#list>
 				</select>		
 				<input title="fill in search term" type="text" name="InputToken" 
-					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
+					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';searchingInvestigation.style.display='inline'; searchingInvestigation.style.display='inline'; " 
 					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
-									
+				
+				<input type="submit" name="SearchCatalogueTree" value="search" onclick="__action.value='SearchCatalogueTree';"/>
 				<img class="navigation_button" src="generated-res/img/filter.png" alt="Add filter"	onclick="__action.value='SearchCatalogueTree';return true;""/>		
 		
 		</div>
