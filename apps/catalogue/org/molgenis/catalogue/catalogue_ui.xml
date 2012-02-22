@@ -12,24 +12,29 @@
     
     
 		<menu name="catalogueOverview" label="Catalogue Overview">
+
 			<form name="investigation" entity="Investigation" label="Investigation">
+				<form name="computeProtocol" entity="ComputeProtocol" label="Compute Protocol"/>
 				<form name="measurement" entity="Measurement" label="Measurement" />
+				<form name="mappingMeasurement" entity="MappingMeasurement" label="Mapping Measurement"/>
 				<form name="protocol" entity="Protocol" label="Protocol" />
 				<form name="observationTarget" entity="ObservationTarget" label="Observation Target" >
 					<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
 				</form>
-				<form name="mappingMeasurement" entity="MappingMeasurement" label="Mapping Measurement"/>
 			</form>
 		</menu>
 		<plugin name="catalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Catalogue Tree" />  
+		
+		<menu name="selectionModel" label="Select prediction model">
+			<plugin name="predictionModelSelection" type="plugins.predictionSelection.predictionSelectionPlugin" label="Validate Prediction Model" />
+		</menu>
+		
 		<menu name="Downloads" label="Downloads">
 			<plugin name="MeasurementsDownloadForm" type="plugins.data.MeasurementsDownloadForm" label="Your Current Downloads" />  
 			<plugin name="OldPlacedDownloads" type="plugins.data.OldPlacedDownloads" label="Your Old Downloads" />  
 			<plugin label="Matrix Viewer" name="MatrixViewer" type="plugins.matrix.CatalogueMatrix" />
 			<plugin name="ApproveUserDownloads" type="plugins.data.ApproveUserDownloads" label="Approve User Downloads" />  
 		</menu>	
-		
-		
 		
 		<menu name="Admin">
 			<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" />  -->
