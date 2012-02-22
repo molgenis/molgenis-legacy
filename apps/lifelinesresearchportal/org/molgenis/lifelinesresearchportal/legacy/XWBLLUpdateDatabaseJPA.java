@@ -15,7 +15,7 @@ public class XWBLLUpdateDatabaseJPA
 	 */
 	public static void main(String[] args) throws DatabaseException
 	{
-		JpaUtil.dropAndCreateTables(DatabaseFactory.create());
+		JpaUtil.dropAndCreateTables(DatabaseFactory.create(), null);
 	}
 
 }
