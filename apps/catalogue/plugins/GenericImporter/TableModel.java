@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import jxl.Sheet;
 
+import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -493,6 +494,8 @@ public class TableModel {
 			List<InvestigationElement> categoryList = new ArrayList<InvestigationElement>();
 			List<InvestigationElement> protocolList = new ArrayList<InvestigationElement>();
 			List<InvestigationElement> observationTargetList = new ArrayList<InvestigationElement>();
+			List<InvestigationElement> computeProtocolList = new ArrayList<InvestigationElement>();
+			
 
 			for(Integer colIndex: colValues.keySet())
 			{
@@ -516,6 +519,10 @@ public class TableModel {
 					if(columnIndexToTableField.get(colIndex).getClassType().equals("ObservationTarget"))
 					{
 						observationTargetList.addAll(list);
+					}
+					if(columnIndexToTableField.get(colIndex).getClassType().equals("ComputeProtocol"))
+					{
+						computeProtocolList.addAll(list);
 					}
 				}
 
@@ -684,7 +691,48 @@ public class TableModel {
 				}
 			}
 
+			for(InvestigationElement p :computeProtocolList){
+				
+				List<String> feature_names = (List<String>) p.get(ComputeProtocol.FEATURES_NAME);
 
+				String templateScript = (String) p.get(ComputeProtocol.SCRIPTTEMPLATE);
+				
+				if(templateScript == null){
+					p.set(ComputeProtocol.SCRIPTTEMPLATE, "N/A");
+				}
+				
+				if(feature_names.size() > 0)
+				{
+					List<Measurement> features = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, feature_names));
+
+					if(features.size() > 0)
+					{
+						List<Integer> featuresId = new ArrayList<Integer>();
+						for(Measurement m : features){
+
+							if(displayNameToMeasurement.keySet().contains(m.getName())){
+
+								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).size() > 0){
+
+									m = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).get(0);
+
+									if(!featuresId.contains(m.getId()))
+										featuresId.add(m.getId());
+								}
+
+							}else{
+								if(!featuresId.contains(m.getId()))
+									featuresId.add(m.getId());
+							}
+						}
+						p.set(ComputeProtocol.FEATURES, featuresId);
+					}
+				}
+			}
+			
+			
+			db.update(computeProtocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ComputeProtocol.NAME, ComputeProtocol.INVESTIGATION_NAME);
+			
 			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 
 			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);

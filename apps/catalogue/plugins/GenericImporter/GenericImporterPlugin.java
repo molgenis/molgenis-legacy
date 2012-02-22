@@ -11,6 +11,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
+import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -119,6 +120,10 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		chooseFieldName.add(Protocol.class.getSimpleName() + ":" + Protocol.INVESTIGATION_NAME);
 		chooseFieldName.add(Protocol.class.getSimpleName() + ":" + Protocol.SUBPROTOCOLS_NAME);
 		chooseFieldName.add(Protocol.class.getSimpleName() + ":" + Protocol.DESCRIPTION);
+		chooseClassType.add(ComputeProtocol.class.getSimpleName());
+		chooseFieldName.add(ComputeProtocol.class.getSimpleName() + ":" + ComputeProtocol.NAME);
+		chooseFieldName.add(ComputeProtocol.class.getSimpleName() + ":" + ComputeProtocol.FEATURES_NAME);
+		chooseFieldName.add(ComputeProtocol.class.getSimpleName() + ":" + ComputeProtocol.SCRIPTTEMPLATE);
 		chooseClassType.add(Category.class.getSimpleName());
 		chooseClassType.add(Category.class.getSimpleName() + ":" + Category.ISMISSING);
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.NAME);
@@ -135,7 +140,6 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		chooseClassType.add(ObservationTarget.class.getSimpleName());
 		chooseClassType.add(Individual.class.getSimpleName());
 		chooseClassType.add(Panel.class.getSimpleName());
-		chooseClassType.add(OntologyTerm.class.getSimpleName());
 		
 		
 		dataTypeOptions.add("string");
