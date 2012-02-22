@@ -72,6 +72,14 @@ public class TestCsv
 	public static final transient Logger logger = Logger.getLogger(TestCsv.class);
 	DateFormat dateFormat = new SimpleDateFormat(SimpleTuple.DATEFORMAT, Locale.US);
 	DateFormat dateTimeFormat = new SimpleDateFormat(SimpleTuple.DATETIMEFORMAT, Locale.US);	 
+
+<#if databaseImp = 'jpa'>	
+	private static java.util.Map<String, Object> configOverrides = new java.util.HashMap<String, Object>();
+	static {
+		configOverrides.put("javax.persistence.jdbc.url", "${options.dbUri}_test");
+		configOverrides.put("hibernate.hbm2ddl.auto", "create-drop");
+	}
+</#if>
 	
 <#if databaseImp = 'jpa'>		
 	@BeforeTest
@@ -79,8 +87,7 @@ public class TestCsv
 	{
 		try
 		{		
-			db = DatabaseFactory.createTest();
-                        JpaUtil.createTables((JpaDatabase)db);
+            db = DatabaseFactory.create(configOverrides);
 <#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
 			app.FillMetadata.fillMetadata(db);
 </#if>			
@@ -93,7 +100,7 @@ public class TestCsv
 	}
 	@AfterTest
 	public static void destory() {
-            JpaUtil.dropTables((JpaDatabase)db);		
+            JpaUtil.dropTables((JpaDatabase)db, configOverrides);		
 	}	
 <#else>
 	@BeforeTest
@@ -102,7 +109,7 @@ public class TestCsv
 		try
 		{
         		
-			db = DatabaseFactory.createTest("${options.molgenis_properties}");
+			db = DatabaseFactory.create(configOverrides);
 			new Molgenis("${options.molgenis_properties}");
 		}
 		catch (Exception e)
@@ -128,7 +135,7 @@ public class TestCsv
 		//create a test set1
 		<#if databaseImp = 'jpa'>
         TestDataSet set1 = new TestDataSet(50,5);		
-        JpaUtil.dropAndCreateTables((JpaDatabase)db);
+        JpaUtil.dropAndCreateTables((JpaDatabase)db, configOverrides);
 <#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
 			app.FillMetadata.fillMetadata(db);
 </#if>			
@@ -159,7 +166,7 @@ public class TestCsv
 	
 		//clean database
 		<#if databaseImp = 'jpa'>
-            JpaUtil.dropAndCreateTables((JpaDatabase)db);
+            JpaUtil.dropAndCreateTables((JpaDatabase)db, configOverrides);
 <#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
 			app.FillMetadata.fillMetadata(db);
 </#if>			
@@ -182,7 +189,7 @@ public class TestCsv
 		
 		//clean database
 		<#if databaseImp = 'jpa'>
-            JpaUtil.dropAndCreateTables((JpaDatabase)db);
+            JpaUtil.dropAndCreateTables((JpaDatabase)db, configOverrides);
 <#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
 			app.FillMetadata.fillMetadata(db);
 </#if>			

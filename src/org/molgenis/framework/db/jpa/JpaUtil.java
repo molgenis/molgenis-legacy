@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
@@ -18,75 +19,75 @@ public class JpaUtil
 	/** Logger */
 	protected final static Log logger = LogFactory.getLog(JpaUtil.class);
 
-	public static void createTables(Database db)
+	public static void createTables(final Database db, final Map<String, Object> configOverwrites)
 	{
-		JpaUtil.createTables((JpaDatabase) db, true);
+		JpaUtil.createTables((JpaDatabase) db, true, configOverwrites);
 	}
 
-	public static void createTables(Database db, boolean clearEm)
+	public static void createTables(final Database db, final boolean clearEm, final Map<String, Object> configOverwrites)
 	{
-		JpaUtil.createTables((JpaDatabase) db, clearEm);
+		JpaUtil.createTables((JpaDatabase) db, clearEm, configOverwrites);
 	}
 
-	public static void createTables(JpaDatabase db, boolean clearEm)
+	public static void createTables(final JpaDatabase db, final boolean clearEm, final Map<String, Object> configOverwrites)
 	{
 		if (clearEm)
 		{
 			db.getEntityManager().clear();
 		}
 		JpaFrameworkFactory.createFramework().createTables(
-				db.getPersistenceUnitName());
+				db.getPersistenceUnitName(), configOverwrites);
 	}
 
-	public static void dropAndCreateTables(Database db)
+	public static void dropAndCreateTables(final Database db, final Map<String, Object> configOverwrites)
 	{
-		JpaUtil.dropAndCreateTables((JpaDatabase) db, true);
+		JpaUtil.dropAndCreateTables((JpaDatabase) db, true, configOverwrites);
 	}
 
-	public static void dropAndCreateTables(Database db, boolean clear)
+	public static void dropAndCreateTables(final Database db, final boolean clear, final Map<String, Object> configOverwrites)
 	{
-		JpaUtil.dropAndCreateTables((JpaDatabase) db, clear);
+		JpaUtil.dropAndCreateTables((JpaDatabase) db, clear, configOverwrites);
 	}
 
-	public static void dropAndCreateTables(JpaDatabase db, boolean clear)
+	public static void dropAndCreateTables(final JpaDatabase db, final boolean clear, final Map<String, Object> configOverwrites)
 	{
 		if (clear)
 		{
 			db.getEntityManager().clear();
 		}
 		JpaFrameworkFactory.createFramework().dropTables(
-				db.getPersistenceUnitName());
+				db.getPersistenceUnitName(), configOverwrites);
 		JpaFrameworkFactory.createFramework().createTables(
-				db.getPersistenceUnitName());
+				db.getPersistenceUnitName(), configOverwrites);
 	}
 
-	public static void dropTables(Database db)
+	public static void dropTables(Database db, final Map<String, Object> configOverwrites)
 	{
-		JpaUtil.dropTables((JpaDatabase) db, true);
+		JpaUtil.dropTables((JpaDatabase) db, true, configOverwrites);
 	}
 
-	public static void dropTables(Database db, boolean clear)
+	public static void dropTables(Database db, boolean clear, final Map<String, Object> configOverwrites)
 	{
-		JpaUtil.dropTables((JpaDatabase) db, clear);
+		JpaUtil.dropTables((JpaDatabase) db, clear, configOverwrites);
 	}
 
-	public static void dropTables(JpaDatabase db, boolean clear)
+	public static void dropTables(final JpaDatabase db, final boolean clear, final Map<String, Object> configOverwrites)
 	{
 		if (clear)
 		{
 			db.getEntityManager().clear();
 		}
-		JpaFrameworkFactory.createFramework().createTables(
-				db.getPersistenceUnitName());
+		JpaFrameworkFactory.createFramework().dropTables(db.getPersistenceUnitName(), configOverwrites);
+
 	}
 
-	public static void executeSQLScript(String path, Database db)
+	public static void executeSQLScript(final String path, final Database db)
 			throws IOException
 	{
 		executeSQLScript(new File(path), db);
 	}
 
-	public static void executeSQLScript(File file, Database db)
+	public static void executeSQLScript(final File file, final Database db)
 			throws IOException
 	{
 		if (!(db instanceof JpaDatabase))

@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.hibernate.ejb.util.PersistenceUtilHelper;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
@@ -38,10 +39,12 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		private static Map<String, EntityManagerFactory> emfs = new HashMap<String, EntityManagerFactory>();
 		private static EMFactory instance = null;
 
-		private EMFactory(String persistenceUnit)
+		private EMFactory(String persistenceUnit, Map<String, Object> configOverrides)
 		{
-			addEntityManagerFactory(persistenceUnit, null);
+			addEntityManagerFactory(persistenceUnit, configOverrides);
 		}
+		
+		
 
 		private static void addEntityManagerFactory(String persistenceUnitName,
 				Map<String, Object> configOverwrite)
@@ -67,7 +70,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		{
 			if (instance == null)
 			{
-				instance = new EMFactory(persistenceUnit);
+				instance = new EMFactory(persistenceUnit, null);
 			}
 			if (!emfs.containsKey(persistenceUnit))
 			{
@@ -82,7 +85,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		{
 			if (instance == null)
 			{
-				instance = new EMFactory("molgenis");
+				instance = new EMFactory("molgenis", null);
 			}
 			EntityManager result = emfs.get("molgenis").createEntityManager();
 			return result;
@@ -99,7 +102,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		{
 			if (instance == null)
 			{
-				instance = new EMFactory(persistenceUnitName);
+				instance = new EMFactory(persistenceUnitName, configOverrides);
 			}
 			if (!emfs.containsKey(persistenceUnitName))
 			{
@@ -113,7 +116,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 
 	private EntityManager em = null;
 	private FullTextEntityManager ftem = null;
-	private String persistenceUnitName;
+	private String persistenceUnitName = "molgenis"; //default
 
 	protected JpaDatabase(String persistenceUnitName)
 	{

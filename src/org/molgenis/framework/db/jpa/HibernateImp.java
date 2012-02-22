@@ -2,6 +2,7 @@ package org.molgenis.framework.db.jpa;
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
@@ -30,20 +31,20 @@ class HibernateImp implements JpaFramework {
     }
 
     @Override
-    public void createTables(String persistenceUnitName) {
-        Ejb3Configuration cfg = new Ejb3Configuration();
-        cfg.configure(persistenceUnitName, null);
-        SchemaExport schemaExport = new SchemaExport(
+    public void createTables(final String persistenceUnitName, final Map<String, Object> configOverwrites) {
+        final Ejb3Configuration cfg = new Ejb3Configuration();
+        cfg.configure(persistenceUnitName, configOverwrites);
+        final SchemaExport schemaExport = new SchemaExport(
                 cfg.getHibernateConfiguration());
         schemaExport.setOutputFile("schema.sql");
         schemaExport.create(true, true);
     }
 
     @Override
-    public void dropTables(String persistenceUnitName) {
-        Ejb3Configuration cfg = new Ejb3Configuration();
-        cfg.configure(persistenceUnitName, null);
-        SchemaExport schemaExport = new SchemaExport(
+    public void dropTables(String persistenceUnitName, final Map<String, Object> configOverwrites) {
+        final Ejb3Configuration cfg = new Ejb3Configuration();
+        cfg.configure(persistenceUnitName, configOverwrites);
+        final SchemaExport schemaExport = new SchemaExport(
                 cfg.getHibernateConfiguration());
         schemaExport.setOutputFile("schema.sql");
         schemaExport.drop(true, true);

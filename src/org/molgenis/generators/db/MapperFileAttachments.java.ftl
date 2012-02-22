@@ -4,7 +4,7 @@ Common parts for saving files to an entity.
 	public void prepareFileAttachements(java.util.List<${entity.namespace}.${JavaName(entity)}> entities, java.io.File baseDir) throws java.io.IOException
 	{
 <#if hasFiles(entity)>		
-		for(${JavaName(entity)} entity: entities)
+		for(${entity.namespace}.${JavaName(entity)} entity: entities)
 		{	
 <#list updateFields(entity) as field>
 	<#if field.type.toString() == "file" || field.type.toString() == "image">
@@ -22,7 +22,7 @@ Common parts for saving files to an entity.
 	public boolean saveFileAttachements(java.util.List<${entity.namespace}.${JavaName(entity)}> entities, java.io.File baseDir) throws java.io.IOException
 	{
 <#if hasFiles(entity)>		
-		for(${JavaName(entity)} entity: entities)
+		for(${entity.namespace}.${JavaName(entity)} entity: entities)
 		{		
 <#list updateFields(entity) as field>
 <#if field.type.toString() == "file" || field.type.toString() == "image">
@@ -34,7 +34,7 @@ Common parts for saving files to an entity.
 				filename = "${JavaName(entity)}/${JavaName(field)}"+<#list keyFields(entity) as f>entity.get${JavaName(f)}()<#if f_has_next>+"_"+</#if></#list>+extension;	
 				entity.set${JavaName(field)}(filename);
 		
-				FileUtils.copyFile( entity.get${JavaName(field)}AttachedFile(), new File( baseDir.toString()+"/"+ entity.get${JavaName(field)}() ) );
+				org.apache.commons.io.FileUtils.copyFile( entity.get${JavaName(field)}AttachedFile(), new java.io.File( baseDir.toString()+"/"+ entity.get${JavaName(field)}() ) );
 			}
 </#if>
 </#list>
