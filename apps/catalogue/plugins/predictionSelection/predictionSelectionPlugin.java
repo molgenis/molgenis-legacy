@@ -81,7 +81,7 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 		{	
 			setComputeInvestigationName("Prediction Model");
 			
-			setValidationInvestigationName("Validation Studies");
+			setValidationInvestigationName("Validation Study");
 			
 			preidctionModel.clear();
 			
