@@ -88,9 +88,9 @@ public class TestCsv
 		try
 		{		
             db = DatabaseFactory.create(configOverrides);
-<#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
+	<#if !options.getAuthLoginclass()?ends_with("SimpleLogin")>
 			app.FillMetadata.fillMetadata(db);
-</#if>			
+	</#if>			
 		}
 		catch (Exception e)
 		{
@@ -109,7 +109,7 @@ public class TestCsv
 		try
 		{
         		
-			db = DatabaseFactory.create(configOverrides);
+			db = DatabaseFactory.createTest("${options.molgenis_properties}");
 			new Molgenis("${options.molgenis_properties}");
 		}
 		catch (Exception e)
