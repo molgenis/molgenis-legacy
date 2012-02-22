@@ -209,10 +209,10 @@ You have selected: <b>${model.selectedAnalysis.name}</b><br><br>
 				<#--select name="dataNameID${d_n.getId()}"-->
 				<select name="${d_n.getName()}">
 					<#list model.datavalues as d_v>
-						<#if d_v.getValue()??>
+						<#if d_v.getValue_Id()??>
 						<#if d_v.dataname == d_n.getId()>
 							<#--option value="dataValueID${d_v.getId()}">${d_v.getName()}</option-->
-							<option value="${d_v.getValue()?c}">${d_v.getName()}</option>
+							<option value="${d_v.getValue_Id()?c}">${d_v.getName()}</option>
 						</#if>
 						</#if>
 					</#list>
@@ -363,7 +363,7 @@ seconds.
 		</td>
 		<#assign countJobs = 0>
 		<#list model.subjobs as j>
-			<#if j.job == t.getId()>
+			<#if j.getJob_Id() == t.getId()>
 				<#assign countJobs = countJobs+1>
 					<#if j.statuscode == -1>
 						<#if j.statustext == "undefined columns selected">
