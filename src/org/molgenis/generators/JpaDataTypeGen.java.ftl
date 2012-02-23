@@ -292,21 +292,27 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	 * Get the ${field.description}.
 	 * @return ${name(field)}.
 	 */
-	public <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}()//NEW
+	public <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}()
 	{
 		return this.${name(field)};
-	}	
+	}
+	
 				</#if>
 			<#else>
 	/**
 	 * Get the ${field.description}.
 	 * @return ${name(field)}.
 	 */
-
-	public <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> get${JavaName(field)}()//NEW
+	public <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> get${JavaName(field)}()
 	{
 		return this.${name(field)};
 	}
+	
+	@Deprecated
+	public <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> get${JavaName(field)}(org.molgenis.framework.db.Database db)
+	{
+		throw new UnsupportedOperationException();
+	}	
 			</#if>
 	
 			<#if isPrimaryKey(field,entity)>
