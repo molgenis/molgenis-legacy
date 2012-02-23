@@ -12,6 +12,7 @@
 		<pathelement location="apps/catalogue" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/compute" />
+		<pathelement location="apps/ngs" /><!--todo: compute should not depend on ngs!-->
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/file" />
 		<pathelement location="modules/datamodel" />
