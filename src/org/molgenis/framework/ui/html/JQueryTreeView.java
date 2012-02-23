@@ -67,13 +67,13 @@ public class JQueryTreeView<E> extends HtmlWidget
 			}
 			returnString += "</ul></li>";
 		} else {
-			returnString = "<li id = \"" + node.getLabel().replaceAll(" ", "_") + "\"><span class=\"point\"><input type=\"checkbox\" id=\"" 
+			returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\"><span class=\"point\"><input type=\"checkbox\" id=\"" 
 						  +	node.getLabel() + "\" name=\"" + node.getLabel() + "\"" 
 						  +	(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
 						  +	" />" + node.getLabel() + "</span></li>" 
-						  +	"<script>createHashMap(\"" + node.getLabel() + "\",\"" + node.getHtmlValue() + "\")</script>";
+						  +	"<script>createHashMap(\"" + node.getName() + "\",\"" + node.getHtmlValue() + "\")</script>";
 				
-			listOfMeasurements.add(node.getLabel());
+			listOfMeasurements.add(node.getName());
 		}
 		
 		return returnString;
