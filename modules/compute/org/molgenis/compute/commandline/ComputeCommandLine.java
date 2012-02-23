@@ -205,7 +205,7 @@ public class ComputeCommandLine
 		
 		String ls = System.getProperty("line.separator");
 
-		scripttemplate = "<#include \"macros.ftl\"/>" + ls
+		scripttemplate = "<#include \"Macros.ftl\"/>" + ls
 					   + "<@begin/>" + ls
 					   + (interpreter.equalsIgnoreCase("R") ? "<@Rbegin/>" + ls : "")
 					   + scripttemplate
