@@ -74,8 +74,9 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		// into one file, called worksheet
 		// this.fillWorksheet();
 
-		// load the protocol templates
+		// load the protocols
 		this.setComputeProtocols(options.protocoldir);
+		
 	}
 
 	// private void fillWorksheet()

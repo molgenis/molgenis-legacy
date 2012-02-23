@@ -105,14 +105,18 @@ public class ComputeCommandLine
 				job.setInterpreter(protocol.getInterpreter());
 
 				// if walltime, cores, mem not specified in protocol, then use value from worksheet
-				String queue = (protocol.getClusterQueue() == null ? worksheet.getdefaultvalue("queue") : protocol.getClusterQueue());
-				job.setClusterQueue(queue);
+				String queue = (protocol.getClusterQueue() == null ? worksheet.getdefaultvalue("clusterQueue") : protocol.getClusterQueue());
+				work.set("clusterQueue", queue);
+//				job.setClusterQueue(queue);
 				String walltime = (protocol.getWalltime() == null ? worksheet.getdefaultvalue("walltime") : protocol.getWalltime());
-				job.setWalltime(walltime);
+//				job.setWalltime(walltime);
+				work.set("walltime", walltime);
 				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
-				job.setCores(cores);
+//				job.setCores(cores);
+				work.set("cores", cores);
 				Integer mem = (protocol.getMem() == null ? Integer.parseInt(worksheet.getdefaultvalue("mem")) : protocol.getMem());
-				job.setMem(mem);
+//				job.setMem(mem);
+				work.set("mem", mem);
 
 				job.setInterpreter(protocol.getInterpreter() == null ? worksheet.getdefaultvalue("interpreter") : protocol.getInterpreter());
 				
@@ -157,8 +161,6 @@ public class ComputeCommandLine
 					}
 					job.getPrevSteps_Name().addAll(dependencies);
 				}
-
-				//work.set("workflowElements", computeBundle.getWorkflowElements());
 
 				// add the script
 				job.setComputeScript(filledtemplate(scripttemplate, work, job.getName()));
@@ -205,7 +207,8 @@ public class ComputeCommandLine
 		
 		String ls = System.getProperty("line.separator");
 
-		scripttemplate = "<#include \"Macros.ftl\"/>" + ls
+		scripttemplate = "<#include \"PBSHeader.ftl\"/>" + ls + ls
+					   + "<#include \"Macros.ftl\"/>" + ls
 					   + "<@begin/>" + ls
 					   + (interpreter.equalsIgnoreCase("R") ? "<@Rbegin/>" + ls : "")
 					   + scripttemplate
@@ -450,6 +453,7 @@ public class ComputeCommandLine
 				PrintWriter jobWriter = new PrintWriter(new File(outputdir + File.separator + job.getName() + ".sh"));
 
 				// write headers (depends on backend)
+/*
 				jobWriter.println("#!/bin/bash");
 				jobWriter.println("#PBS -N " + job.getName());
 				jobWriter.println("#PBS -q " + job.getClusterQueue());
@@ -458,7 +462,7 @@ public class ComputeCommandLine
 				jobWriter.println("#PBS -l mem=" + job.getMem() + "gb");
 				jobWriter.println("#PBS -e " + job.getName() + ".err");
 				jobWriter.println("#PBS -o " + job.getName() + ".out");
-
+*/
 				// write the script
 				jobWriter.println(job.getComputeScript());
 

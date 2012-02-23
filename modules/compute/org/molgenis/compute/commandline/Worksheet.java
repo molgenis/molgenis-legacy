@@ -491,10 +491,16 @@ public class Worksheet
 					if (!tclone.isNull(rfield))
 					{ // tclone has a value, which should be a list
 						@SuppressWarnings("unchecked")
-						List<String> ls = (List<String>) tclone.getList(rfield);
-
+						//List<String> ls = (List<String>) tclone.getList(rfield);
+						List<?> lstmp = tclone.getList(rfield);
+						List<String> ls = new ArrayList<String>();
+						for (Object x : lstmp)
+						{
+							ls.add(x.toString());
+						}
+						
 						// check: all values should be equal
-						String value = ls.get(0);
+						String value = (ls.get(0) + "");
 						for (int i = 1; i < ls.size(); i++)
 						{
 							if (!ls.get(i).equalsIgnoreCase(value))
