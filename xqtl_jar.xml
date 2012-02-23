@@ -59,7 +59,7 @@
 		<unjar src="${mlibs}wsdl4j-1.6.2.jar" dest="${jarme}" overwrite="false"/><!-- RUNTIME AbstractServlet only??: WSDL Locator -->
 		<unjar src="${mlibs}quartz-1.6.0.jar" dest="${jarme}" overwrite="false"/><!-- Scheduling -->
 		<!-- Application jars -->
-		<unjar src="${alibs}selenium-server-standalone-2.2.0.jar" dest="${jarme}" overwrite="false" /> <!-- Selenium webtests -->
+		<unjar src="${alibs}selenium-server-standalone-2.19.0.jar" dest="${jarme}" overwrite="false" /> <!-- Selenium webtests -->
 		<unjar src="${alibs}jaxrpc.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
 		<unjar src="${alibs}axis.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
 		<unjar src="${alibs}keggapi.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
