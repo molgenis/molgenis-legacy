@@ -1,4 +1,4 @@
-<#include "helpers.ftl"/>
+<#include "Helpers.ftl"/>
 <#macro begin>
 ##### BEFORE #####
 touch $PBS_O_WORKDIR/${jobname}.out
