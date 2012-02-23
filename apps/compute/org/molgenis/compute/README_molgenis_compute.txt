@@ -28,7 +28,7 @@ To run the MOLGENIS/compute script generator
 
 	$> sh molgenis_compute.sh \
 			-parametersfile=workflows/in-house_parameters.csv \
-			-workflowfile=workflows/workflow_inhouse.csv \
+			-workflowfile=workflows/in-house_workflow.csv \
 			-worksheet=workflows/worksheetTest.csv \
 			-protocoldir=protocols \
 			-outputscriptsdir=scripts \
