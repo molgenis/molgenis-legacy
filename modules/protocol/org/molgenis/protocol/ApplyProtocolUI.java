@@ -72,6 +72,7 @@ public class ApplyProtocolUI {
 		protocolApplicationContainer = new Container();
 		protocolDiv = new DivPanel("ProtocolPanel", null);
 		tableDiv = new DivPanel("TablePanel", null);
+		tableDiv.setStyle("width:0");
 		makeProtocolSelect();
 		makeTargetsMatrix(db, plugin, userId);
 		makeBatchSelect();
