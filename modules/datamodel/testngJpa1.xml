@@ -12,9 +12,4 @@ So the tests are dependent on each other, which is wrong.
        <class name="test.TestCsv" />
     </classes>
   </test>
-  <test name="Second test">
-    <classes>
-       <class name="test.TestDatabase" />
-    </classes>
-  </test>
 </suite>
