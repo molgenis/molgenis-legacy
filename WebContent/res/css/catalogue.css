@@ -15,24 +15,10 @@
 		     padding: 6px;
 		     border:  solid  1px  #BBBBBB ;
 		     border-top: none;
+		     
 		 }
 		 
-		 div.box_withoutBorder, table.box_withoutBorder
-		 {
-		     padding: 10px 1000px 10px 10px;
-		 }
-		 div.box_withoutBorder-header, td.box_withoutBorder-header
-		 {
-		     font-size: larger;
-		     padding: 4px;
-		     background-color: #DDDDDD;
-		 }
-		 div.box_withoutBorder-body, td.box_withoutBorder-body
-		 {
-		     padding: 6px;
-		     border-top: none;
-		     width: 150%;
-		 }
+		 
 		 
 		// highlighting styling
 		  li {cursor:pointer; width:200px;}
@@ -42,8 +28,14 @@
 		 font-family: Verdana, helvetica, arial, sans-serif;
 		 font-size: 100.75%;
 		}
-		 #details{right:100px;top:200px;}
-		 #leftSideTree{width:300px;}
+		 #details {
+		 	right:100px;
+		 	top:200px;
+		 	}
+		 #leftSideTree{
+		 	height:500px;
+			overflow:auto;
+		 	}
 		
 		
 		//Splitter css

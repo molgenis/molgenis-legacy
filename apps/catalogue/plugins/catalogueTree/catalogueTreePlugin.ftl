@@ -32,7 +32,7 @@
 						<option value="${field}" <#if screen.selectedField??>
 							<#if screen.selectedField == field>selected="selected"</#if></#if> >${field}</option>			
 					</#list>
-					 <option value="all">Any field</option>
+					 <!--option value="All fields">All fields</option-->
 				</select>
 				<select name="searchingInvestigation" id="searchingInvestigation" style="display:none"> 
 					<#list screen.arrayInvestigations as inv>
@@ -60,7 +60,10 @@
 					</#list>
 				</select>
 				<input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"/>
-				
+				<div id="masstoggler"> 
+					<a title="Collapse entire tree" href="#">Collapse all</a> | 
+					<a title="Expand entire tree" href="#">Expand all</a> 
+				</div>
 			   <#if screen.isSelectedInv() == true>
 					<table class="box" width="100%" cellpadding="0" cellspacing="0">
 					    <tr><td class="box-header"> Catalogue </td></tr>
@@ -70,9 +73,9 @@
 								</div><br/>
 						    </td>
 						    <td class="box-body">
-						    	<div id="scrollingDiv"> 
+						    	<!--div id="scrollingDiv"--> 
       								<div id="details"></div> <br/><br/>
-      							</div>
+      							<!--/div-->
 								<div id="ShoopingCartButton" style="float: right;">
 									<input type="submit" name="DownloadMeasurementsSubmit" value="Download" onclick="__action.value='DownloadMeasurements';"/>
 								</div>
