@@ -25,6 +25,8 @@ public class Table extends HtmlWidget
 	String style = null;
 	protected String defaultCellStyle = "border: 1px solid black; padding:2px";
 	protected String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4; color: white";
+	boolean headerColumn = true;
+	boolean headerRow = true;
 	
 	/**
 	 * Constructor with empty label.
@@ -42,6 +44,21 @@ public class Table extends HtmlWidget
 		this.setLabel(label);
 	}
 	
+	/**
+	 * Constructor used to control the presence of the header column and row 
+	 * 
+	 * @param name
+	 * @param label
+	 * @param headerColumn specify the presence of header column and row, defaults to true
+	 */
+	public Table(String name, String label, boolean headerColumn, boolean headerRow){
+		super(name, label);
+		this.setLabel(label);
+		this.headerColumn = headerColumn;
+		this.headerRow = headerRow;
+		
+	}
+	
 	@Override
 	/**
 	 * Renders the table.
@@ -56,7 +73,9 @@ public class Table extends HtmlWidget
 		
 		
 		result += " width=\"400\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"display\" id=\"" + this.getId() + "\">";
-		result += printHeaders();
+		if(headerRow){
+			result += printHeaders();
+		}
 		result += printBody();
 		result += "</table>";
 		
@@ -64,12 +83,16 @@ public class Table extends HtmlWidget
 	}
 	
 	private String printHeaders() {
-		String result = "<thead><tr><th></th>";
+		
+		String result = "<thead><tr>";
+		if(headerColumn){
+			result+= "<th></th>";
+		}
 		for (String col : cols) {
 			result += ("<th style=\"" + getHeaderCellStyle() + "\">" + col + "</th>");
 		}
 		result += "</tr></thead>";
-		return result;
+		return 		result;
 	}
 	
 	private String printBody() {
@@ -85,7 +108,10 @@ public class Table extends HtmlWidget
 	
 	private String printRow(String row, int rowCount) {
 		String result = "<tr>";
-		result += ("<th style=\"" + getHeaderCellStyle() + "\">" + row + "</th>");
+		if(headerColumn){
+			result += ("<th style=\"" + getHeaderCellStyle() + "\">" + row + "</th>");
+		}
+		
 		for (int colCount = 0; colCount < cols.size(); colCount++) {
 			result += ("<td style=\"" + getCellStyle(colCount, rowCount) + "\">" + 
 					getCellString(colCount, rowCount) + "</td>");
