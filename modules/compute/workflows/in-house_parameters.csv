@@ -1,7 +1,7 @@
 Name,defaultValue,description,dataType,hasOne_name
 insilicorun,testMerge,increment each time you repeat in silico analysis,string,
-queue,test,,,
-mem,4,Momory in GB,,
+clusterQueue,test,,,
+mem,4gb,Momory in GB,,
 walltime,23:59:00,,,
 cores,1,,,
 defaultInterpreter,#!/bin/bash,,,
