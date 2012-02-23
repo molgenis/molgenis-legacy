@@ -158,7 +158,6 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	private ${type(field)} _${name(field)} = ${default(field)};
 		<#if type_label == "enum">
 	private String _${name(field)}_label = null;
-	private java.util.List<ValueLabel> _${name(field)}_options = new ArrayList<ValueLabel>();
 		<#elseif type_label == "xref">
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	private ${type(field.xrefLabels[label_index])} _${name(field)}_${label} = null;						
@@ -184,16 +183,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		set__Type(this.getClass().getSimpleName());
 	<#else>
 		super();
-	</#if>	
-	
-	<#list entity.getFields() as f>
-		<#if f.type == "enum">
-		//options for enum ${JavaName(f)}
-			<#list f.getEnumOptions() as option>
-		_${name(f)}_options.add(new ValueLabel("${option}","${option}"));
-			</#list>
-		</#if>	
-	</#list>
+	</#if>
 	}
 	
 <#assign numFields = 0/>
@@ -440,6 +430,11 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 	 */
 	public java.util.List<ValueLabel> get${JavaName(field)}Options()
 	{
+		//options for enum ${JavaName(field)}
+		java.util.List<ValueLabel> _${name(field)}_options = new ArrayList<ValueLabel>();
+		<#list field.getEnumOptions() as option>
+		_${name(field)}_options.add(new ValueLabel("${option}","${option}"));
+		</#list>
 		return _${name(field)}_options;
 	}	
 	
