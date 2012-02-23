@@ -48,6 +48,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	//private boolean isSelectedField = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
 
+	//Multiple inheritance: some measurements might have multiple parents, therefore it
+	//will complain about the branch already exists when constructing the tree, cheating by
+	//changing the name of the branch but keeping display name the same
+	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
+	
 
 	public catalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -205,7 +210,16 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				JQueryTreeViewElementObject childTree;
 
 				if (labelToTree.containsKey(protocolName)) {
-					childTree = labelToTree.get(protocolName);
+					if(!multipleInheritance.containsKey(protocolName)){
+						multipleInheritance.put(protocolName, 1);
+					}else{
+						int number = multipleInheritance.get(protocolName);
+						multipleInheritance.put(protocolName, number++);
+					}
+
+					JQueryTreeViewElementObject previousChildTree = labelToTree.get(protocolName);
+
+					childTree = new JQueryTreeViewElementObject(protocolName + multipleInheritance.get(protocolName),protocolName, parentTree);
 				} else {
 					childTree = new JQueryTreeViewElementObject(protocolName, parentTree);
 					childTree.setCollapsed(true);
@@ -240,7 +254,16 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				
 				if (labelToTree.containsKey(measurement.getName())) {
 
-					childTree = labelToTree.get(measurement.getName());
+					if(!multipleInheritance.containsKey(measurement.getName())){
+						multipleInheritance.put(measurement.getName(), 1);
+					}else{
+						int number = multipleInheritance.get(measurement.getName());
+						multipleInheritance.put(measurement.getName(), number++);
+					}
+
+					JQueryTreeViewElementObject previousChildTree = labelToTree.get(measurement.getName());
+
+					childTree = new JQueryTreeViewElementObject(measurement.getName() + multipleInheritance.get(measurement.getName()), measurement.getName(), parentTree, previousChildTree.getHtmlValue());
 
 				} else {
 					
