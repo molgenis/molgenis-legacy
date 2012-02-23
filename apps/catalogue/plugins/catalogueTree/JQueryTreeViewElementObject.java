@@ -42,6 +42,18 @@ public class JQueryTreeViewElementObject extends JQueryTreeViewElement{
 
 	}
 	
+	public JQueryTreeViewElementObject(String branchName, String displayName, JQueryTreeViewElementObject parent, String htmlValue){
+
+		super(branchName, displayName, parent, htmlValue);
+
+	}
+	
+	public JQueryTreeViewElementObject(String branchName, String displayName, JQueryTreeViewElementObject parent){
+
+		super(branchName, displayName, parent);
+
+	}
+	
 	public JQueryTreeViewElementObject(String name, JQueryTreeViewElementObject parent) {
 		super(name, parent);
 		measurement = null;
