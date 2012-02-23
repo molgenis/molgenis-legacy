@@ -20,6 +20,11 @@ public class FreemarkerHelper
 		return "hello "+name;
 	}
 	
+	public List<String> unfoldCSV(Tuple tuple)
+	{
+		return Worksheet.unfoldWorksheetCSV(Arrays.asList(new Tuple[]{tuple}));
+	}
+	
 	/**
 	 * We want to re-fold one tuple
 	 */

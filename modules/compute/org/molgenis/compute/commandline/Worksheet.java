@@ -580,6 +580,24 @@ public class Worksheet
 		return ws;
 	}
 
+	public static List<String> unfoldWorksheetCSV(List<Tuple> worksheet)
+	{
+		List<Tuple> w = unfoldWorksheet(worksheet);
+		List<String> ws = new ArrayList<String>();
+		
+		for (Tuple t : w)
+		{
+			String row = "";
+			for (String field : t.getFields())
+			{
+				row = row + (row.equalsIgnoreCase("") ? "" : ", ") + field + "=\'" + t.getObject(field).toString() + "\'"; 
+			}
+			ws.add(row);
+		}
+		
+		return ws;
+	}
+	
 	private static boolean equalTuples(Tuple t1, Tuple t2)
 	{
 

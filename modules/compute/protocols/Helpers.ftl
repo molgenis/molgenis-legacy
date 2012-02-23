@@ -73,6 +73,10 @@
 	<#return result>
 </#function>
 
+<#function unfoldParametersCSV tuple>
+	<#return freemarkerHelper.unfoldCSV(tuple) />
+</#function>
+
 <#function foldParameters tuple on>
 	<#return freemarkerHelper.foldOn(tuple, on)/>
 </#function>
@@ -80,11 +84,3 @@
 <#function stringList parameters var>
 	<#return freemarkerHelper.stringList(parameters, var)/>
 </#function>
-
-
-
-
-
-
-
-
