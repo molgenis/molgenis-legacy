@@ -21,8 +21,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import oracle.jdbc.OraclePreparedStatement;
 
@@ -30,14 +28,12 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
-import org.molgenis.lifelines.ListUtils;
 import org.molgenis.lifelines.listeners.VWCategoryListener;
 import org.molgenis.lifelines.listeners.VwDictListener;
 import org.molgenis.lifelines.utils.EAVToView;
 import org.molgenis.lifelines.utils.LoaderUtils;
 import org.molgenis.lifelines.utils.LoaderUtils.eDatabase;
 import org.molgenis.lifelines.utils.MyMonitorThread;
-import org.molgenis.lifelinesresearchportal.LifelinesPortalCreateDatabase;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -478,7 +474,7 @@ public class OracleImporter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		final String inputPath = "/Users/jorislops/Desktop/lifelines1/";
+		final String inputPath = "/Users/jorislops/Desktop/LLTest/";
 		final String outputPath = "/Users/jorislops/Desktop/LLOutput/";
 
 		final Properties props = new Properties();

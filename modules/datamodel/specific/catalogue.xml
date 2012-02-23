@@ -7,7 +7,7 @@
 				nillable="true" />
 			<field name="protocolApplication" type="xref" xref_entity="ProtocolApplication"
 				nillable="true"
-				jpaCascade="CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH"
+				jpaCascade="javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH"
 				description="Reference to the protocol application that was used to produce this observation. For example a particular patient visit or the application of a microarray or the calculation of a QTL model" />
 			<description>FIXME: change to ObservableFeature?</description>
 			<field name="Feature" type="mref" xref_entity="ObservationElement" nillable="false"
