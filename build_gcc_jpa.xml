@@ -48,23 +48,26 @@
 
 	</path>
 
-
-	
-	<!-- copied from build_common but added animaldb specific tests -->
-	<target name="test">
+	<target name="jpaTest" depends="clean-generate-compile">
 		<!-- combine classpaths -->
-		<path id="combined.class.path">
-			<path refid="molgenis.classpath"/>
-			<path refid="app.class.path"/>
-			<path location="${output_src}"/>
-		</path>
-		<!-- run the tests -->
-		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
-			<xmlfileset dir="${build.dir}" includes="**/*testngJpa.xml" />
-			<jvmarg value="-ea" />
-			<jvmarg value="-Xmx1024m" />
-		</testng>			
+				<path id="combined.class.path">
+					<path refid="molgenis.classpath"/>
+					<path refid="app.class.path"/>
+					<path location="${output_src}"/>
+				</path>
+				<!-- run the tests -->
+				<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
+					<xmlfileset dir="${build.dir}" includes="**/*testngJpa1.xml" />
+					<jvmarg value="-ea" />
+					<jvmarg value="-Xmx1024m" />
+				</testng>
+				<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
+					<xmlfileset dir="${build.dir}" includes="**/*testngJpa2.xml" />
+					<jvmarg value="-ea" />
+					<jvmarg value="-Xmx1024m" />
+				</testng>	
 	</target>
+
 	
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml" />
