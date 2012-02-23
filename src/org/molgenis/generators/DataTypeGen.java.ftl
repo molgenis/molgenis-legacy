@@ -657,24 +657,26 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${JavaName(en
 		
 	<#list allFields(entity) as field>
 		<#if (field.type = "int" && field.auto)>
-		//ignoring automatic primary key ${field.name}		
+			//ignoring automatic primary key ${field.name}		
 		<#elseif field.type = "xref" || field.type = "mref">
-		//compare on xref labels if they are set
-		<#if field.xrefLabelNames[0] != field.xrefFieldName>if(<#list field.xrefLabelNames as label>get${JavaName(field)}_${JavaName(label)}() != null <#if label_has_next> && </#if></#list>)
-		{
-			<#list field.xrefLabelNames as label>
-			if ( get${JavaName(field)}_${JavaName(label)}() == null ? e.get${JavaName(field)}_${JavaName(label)}()!= null : !get${JavaName(field)}_${JavaName(label)}().equals( e.get${JavaName(field)}_${JavaName(label)}()))
-				return false;			
-			</#list>
-		}
-		else</#if>
-		{
+			//compare on ref labels if they are set
+			<#if field.xrefLabelNames[0] != field.xrefFieldName>if(<#list field.xrefLabelNames as label>get${JavaName(field)}_${JavaName(label)}() != null <#if label_has_next> && </#if></#list>)
+			{
+				<#list field.xrefLabelNames as label>
+				if ( get${JavaName(field)}_${JavaName(label)}() == null ? e.get${JavaName(field)}_${JavaName(label)}()!= null : !get${JavaName(field)}_${JavaName(label)}().equals( e.get${JavaName(field)}_${JavaName(label)}()))
+					return false;			
+				</#list>
+			}
+			else
+			</#if>
+			{
+				if ( get${JavaName(field)}_Id() == null ? e.get${JavaName(field)}_Id()!= null : !get${JavaName(field)}_Id().equals( e.get${JavaName(field)}_Id()))
+					return false;		
+			}
+		<#else>
+			// compare on non-ref field
 			if ( get${JavaName(field)}() == null ? e.get${JavaName(field)}()!= null : !get${JavaName(field)}().equals( e.get${JavaName(field)}()))
 				return false;		
-		}
-		<#else>
-		if ( get${JavaName(field)}() == null ? e.get${JavaName(field)}()!= null : !get${JavaName(field)}().equals( e.get${JavaName(field)}()))
-			return false;		
 		</#if>
 	</#list>
 		
