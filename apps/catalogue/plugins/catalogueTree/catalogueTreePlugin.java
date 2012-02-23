@@ -43,15 +43,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private String InputToken=null;
 	private String searchingInvestigation=null;
 	private String comparison=null;
-
+	
 	private String selectedField = null;
 	//private boolean isSelectedField = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
-
-	//Multiple inheritance: some measurements might have multiple parents, therefore it
-	//will complain about the branch already exists when constructing the tree, cheating by
-	//changing the name of the branch but keeping display name the same
-	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
 
 
 	public catalogueTreePlugin(String name, ScreenController<?> parent) {
@@ -68,6 +63,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		try {
 			if ("chooseInvestigation".equals(request.getAction())) {
 				selectedInvestigation = request.getString("investigation");
+				this.setSelectedInvestigation(selectedInvestigation);
+				System.out.println("The selected investigation is : "+ selectedInvestigation);
+
 				arrayInvestigations.clear();
 			} else if ("DownloadMeasurements".equals(request.getAction())) {
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
@@ -75,7 +73,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				String dateOfDownload = dateFormat.format(dat);
 				System.out.println("selected investigaton >>>> " + selectedInvestigation);
 				this.addMeasurements(db, request, selectedInvestigation, dateOfDownload);
-				RetrieveProtocols(db,1); 
+
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
 				String measurementName  =  request.getString("measurementName"); //TODO :  this is not working
@@ -83,7 +81,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				this.deleteShoppingItem(measurementName);
 			} if (request.getAction().startsWith("SearchCatalogueTree")) {
 				this.setInputToken(request.getString("InputToken").trim());
+				
+				System.out.println("The searching investigation is : "+ request.getString("searchingInvestigation").trim());
 				this.setSearchingInvestigation(request.getString("searchingInvestigation").trim());
+				searchingInvestigation = request.getString("searchingInvestigation").trim();
 				//this.setComparison(request.getString("comparison").trim());
 				this.setComparison("contains");
 				this.setSelectedField(request.getString("selectedField"));
@@ -93,7 +94,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					RetrieveProtocols(db,2); 
 				else if (this.getSelectedField().equals("Measurements")) {}
 				else if (this.getSelectedField().equals("Details")) {}
-
+						 
 			}
 
 		} catch (Exception e) {
@@ -103,7 +104,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	}
 
-
+	
 
 	private void addMeasurements(Database db, Tuple request, String selectedInvestigation, String dateOfDownload) throws DatabaseException, IOException {
 
@@ -125,7 +126,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		if (this.shoppingCart.isEmpty())  {
 			this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. Please select item and proceed to download", true));
 			this.setError("Your download list is empty. Please select item and proceed to download");
-
+	
 		} else {
 
 			//System.out.println("DownloadedMeasurementIds >>>: " + this.shoppingCart);
@@ -151,7 +152,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				shoppingCart.setApproved(false);
 				db.add(shoppingCart);
 				//System.out.println("Download list has been added to the DB");
-
+				
 			} else {
 				ShoppingCart shoppingCart = result.get(0); // assuming user can have only one shopping cart that's NOT checked out
 				//shoppingCart.setMeasurements(DownloadedMeasurementIds);
@@ -159,7 +160,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				db.update(shoppingCart);
 				//System.out.println("Shopping cart has been updated in the DB");
 			}
-
+				
 			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 			HttpServletRequest httpRequest   = rt.getRequest();
 			HttpServletResponse httpResponse = rt.getResponse();
@@ -170,7 +171,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			httpResponse.sendRedirect(redirectURL);
 
 		}
-
+		
 	}
 
 	private void deleteShoppingItem(String selected) {
@@ -183,7 +184,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		}
 	}
 
-
+	
 	/**
 	 * This function is recursively nodes in the tree except form the last measurement . 
 	 * The last measurement is added by addingLastMeasurementToTree() because we add two different class : Protocol & Measurement, 
@@ -198,24 +199,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		for (String protocolName : nextNodes) {
 
 			Protocol protocol = nameToProtocol.get(protocolName);
-
+			
 			if (!protocolName.equals(parentClassName) && protocol != null) {
 
 				JQueryTreeViewElementObject childTree;
 
 				if (labelToTree.containsKey(protocolName)) {
-
-					if(!multipleInheritance.containsKey(protocolName)){
-						multipleInheritance.put(protocolName, 1);
-					}else{
-						int number = multipleInheritance.get(protocolName);
-						multipleInheritance.put(protocolName, number++);
-					}
-
-					JQueryTreeViewElementObject previousChildTree = labelToTree.get(protocolName);
-
-					childTree = new JQueryTreeViewElementObject(protocolName + multipleInheritance.get(protocolName),protocolName, parentTree);
-
+					childTree = labelToTree.get(protocolName);
 				} else {
 					childTree = new JQueryTreeViewElementObject(protocolName, parentTree);
 					childTree.setCollapsed(true);
@@ -247,86 +237,77 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			for (Measurement measurement : measurementList) {
 
 				JQueryTreeViewElementObject childTree;
-
+				
 				if (labelToTree.containsKey(measurement.getName())) {
 
-					if(!multipleInheritance.containsKey(measurement.getName())){
-						multipleInheritance.put(measurement.getName(), 1);
-					}else{
-						int number = multipleInheritance.get(measurement.getName());
-						multipleInheritance.put(measurement.getName(), number++);
-					}
-
-					JQueryTreeViewElementObject previousChildTree = labelToTree.get(measurement.getName());
-
-					childTree = new JQueryTreeViewElementObject(measurement.getName() + multipleInheritance.get(measurement.getName()), measurement.getName(), parentTree, previousChildTree.getHtmlValue());
+					childTree = labelToTree.get(measurement.getName());
 
 				} else {
-
+					
 					List<String> categoryNames = measurement.getCategories_Name();
-
+					
 					String measurementDescription = measurement.getDescription();
-
+					
 					String measurementDataType = measurement.getDataType();
-
+					
 					String htmlValue = 	"<table id = 'detailInformation'  border = 2>" +
 							"<tr><th width=40>Item name</th><td>" + measurement.getName() +
 							"</td></tr><tr><th>Category</th><td><table border=1>";
-
-
+					
+					
 					for(String string : categoryNames){
 						htmlValue += "<tr><td>";
 						htmlValue += string;
 						htmlValue += "</td></tr>";
-
+						
 					}
 					htmlValue += "</table></td></tr>";
-
+					
 					htmlValue += "<tr><th>Description</th><td>" +
 							measurementDescription + "</td></tr>";
-
+					
 					htmlValue += "<tr><th>Data type</th><td width=40>" +
 							measurementDataType + "</td></tr>" ;
 					//htmlValue = "<p>why?</p>";
-
+					
 					Query<ObservedValue> queryDisplayNames = db.query(ObservedValue.class);
-
+					
 					queryDisplayNames.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
-
+					
 					String displayName = "";
-
+					
 					if(!queryDisplayNames.find().isEmpty()){
-
+						
 						for(ObservedValue ov : queryDisplayNames.find()){
-
+							
 							String featureName = ov.getFeature_Name();
 							String value = ov.getValue();
-
+							
 							if(featureName.equals("display name_" + selectedInvestigation)){
 								displayName = queryDisplayNames.find().get(0).getValue();
 							}
-
+							
 							String link =" http://www.google.com";
 							htmlValue += "<tr><th>" + featureName + "</th><td><a href=" + link + ">" +
-									value + "</a></td></tr>";
+									 value + "</a></td></tr>";
 						}
-
+						
 					}
-
+					
 					htmlValue += "</table>";
-
+					
 					if(displayName.equals("")){
 						childTree = new JQueryTreeViewElementObject(measurement.getName(),parentTree, htmlValue);
 					}else{
 						childTree = new JQueryTreeViewElementObject(displayName,parentTree, htmlValue);
 					}
-
+					
 					labelToTree.put(measurement.getName(), childTree);
 
 					List<Category> categoryIds = new ArrayList<Category>();
 					categoryIds = db.find(Category.class, new QueryRule(Category.NAME, Operator.EQUALS, measurement.getCategories_Name()));
 					//System.out.println("category ids for "+ measurement.getName()+ ">>>>>>>>>>>>>>>>" +categoryIds);
-
+					
 				}
 			}
 		} catch (DatabaseException e) {
@@ -344,7 +325,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return "plugins/catalogueTree/catalogueTreePlugin.ftl";
 	}
 
-	//				this.SearchTree(db, this.getInputToken(), this.getSearchingInvestigation(), this.getComparison());
+//				this.SearchTree(db, this.getInputToken(), this.getSearchingInvestigation(), this.getComparison());
 
 	public void RetrieveProtocols(Database db, Integer mode) {
 		List<String> topProtocols = new ArrayList<String>();
@@ -352,48 +333,50 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		List<String> middleProtocols = new ArrayList<String>();
 		labelToTree = new HashMap<String, JQueryTreeViewElementObject>();
 		nameToProtocol = new HashMap<String, Protocol>();
-		
+
+		//List<QueryRule> queryRule = new ArrayList<QueryRule>();
 		try {
-
+			
 			Query<Protocol> q = db.query(Protocol.class);
-
-
+			
+			
 			if (mode ==1) { //reload is calling
-				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
+				//queryRule.add(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.getSelectedInvestigation()));
+				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.getSelectedInvestigation()));
 			} else if (mode==2) {
-				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, searchingInvestigation));
+				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.getSearchingInvestigation()));
 				q.addRules(new QueryRule(Protocol.NAME, Operator.LIKE, InputToken));
 			}
 			for (Protocol p : q.find()) {
-				setSelectedInv(true);
-				List<String> subNames = p.getSubprotocols_Name();
-				System.out.println(">>>"+ p);
-
-				if (!nameToProtocol.containsKey(p.getName())) {
-					nameToProtocol.put(p.getName(), p);
-				}
-
-				if (!subNames.isEmpty()) {
-
-					if (!topProtocols.contains(p.getName())) {
-						topProtocols.add(p.getName());
+					setSelectedInv(true);
+					List<String> subNames = p.getSubprotocols_Name();
+					System.out.println(">>>"+ p);
+					
+					if (!nameToProtocol.containsKey(p.getName())) {
+						nameToProtocol.put(p.getName(), p);
 					}
-					for (String subProtocol : subNames) {
-						if (!middleProtocols.contains(subProtocol)) {
-							middleProtocols.add(subProtocol);
+	
+					if (!subNames.isEmpty()) {
+	
+						if (!topProtocols.contains(p.getName())) {
+							topProtocols.add(p.getName());
+						}
+						for (String subProtocol : subNames) {
+							if (!middleProtocols.contains(subProtocol)) {
+								middleProtocols.add(subProtocol);
+							}
+						}
+	
+					} else {
+	
+						if (!bottomProtocols.contains(p.getName())) {
+							bottomProtocols.add(p.getName());
 						}
 					}
-
-				} else {
-
-					if (!bottomProtocols.contains(p.getName())) {
-						bottomProtocols.add(p.getName());
-					}
+				
+					
 				}
-
-
-			}
-
+			
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 		}
@@ -413,43 +396,43 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementObject>(
 				"Protocols", protocolsTree);
-
+		
 	}
-
+	
 
 	@Override
 	public void reload(Database db) {
 
 		arraySearchFields.clear();
-		this.searchingInvestigation = null;
+		//this.searchingInvestigation = null;
 		//this.selectedInvestigation = null;
-
+		
 		arraySearchFields.add("Protocols");
 		arraySearchFields.add("Measurements");
 		arraySearchFields.add("Details");
-
-		Query<ShoppingCart> q = db.query(ShoppingCart.class);
-		q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
-		q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
-		try {
-			List<ShoppingCart> result = q.find();
-			shoppingCart.clear();
-			for(ShoppingCart cart : result){
-				shoppingCart.addAll(cart.getMeasurements(db));
+	
+			Query<ShoppingCart> q = db.query(ShoppingCart.class);
+			q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));
+			q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
+			try {
+				List<ShoppingCart> result = q.find();
+				shoppingCart.clear();
+				for(ShoppingCart cart : result){
+					shoppingCart.addAll(cart.getMeasurements(db));
+				}
+	
+				this.arrayInvestigations.clear();
+			
+					for (Investigation i: db.find(Investigation.class)) {
+						this.arrayInvestigations.add(i);
+					}
+			} catch (DatabaseException e) {
+				e.printStackTrace();
 			}
-
-			this.arrayInvestigations.clear();
-
-			for (Investigation i: db.find(Investigation.class)) {
-				this.arrayInvestigations.add(i);
-			}
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}
-
-		if (this.getInputToken() == null) RetrieveProtocols(db,1); //mode 1: gets all protocols without filters!
-
-		this.setInputToken(null);
+			
+			if (this.getInputToken() == null) RetrieveProtocols(db,1); //mode 1: gets all protocols without filters!
+			
+			this.setInputToken(null);
 
 	}
 
@@ -484,6 +467,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	public String getSelectedInvestigation() {
 		return selectedInvestigation;
 	}
+	
+	public void setSelectedInvestigation(String selectedInvestigation) {
+		this.selectedInvestigation = selectedInvestigation;
+	}
 
 	public void setArraySearchFields(List<String> arraySearchFields) {
 		this.arraySearchFields = arraySearchFields;
@@ -515,7 +502,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	private void setComparison(String comparison) {
 		this.comparison = comparison;
-
+		
 	}
 
 	public void setSearchingInvestigation(String searchingInvestigation) {
