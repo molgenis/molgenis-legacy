@@ -37,7 +37,7 @@
 				label="Make (cage) labels" />
 		</menu>
 		
-		<menu name="decmenu" position="left" label="DEC and VWA">
+		<menu name="decmenu" position="left" label="DEC and NVWA">
 			<plugin name="DecStatus" type="plugins.projectportal.DecStatus"
 				label="DEC status portal" />
 			<plugin name="AddProject" type="plugins.experiments.ShowDecProjects"

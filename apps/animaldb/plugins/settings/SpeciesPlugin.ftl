@@ -67,7 +67,7 @@
 					<th>Name</th>
 					<th>Latin name</th>
 					<th>Dutch name</th>
-					<th>VWA category</th>
+					<th>NVWA category</th>
 				</tr>
 			</thead>
 			<tbody>
