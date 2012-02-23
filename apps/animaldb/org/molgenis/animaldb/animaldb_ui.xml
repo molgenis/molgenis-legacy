@@ -8,6 +8,9 @@
 		
 		<plugin name="AnimalDBWelcomeScreen" type="plugins.welcome.AnimalDBWelcomeScreenPlugin"
 			label="Welcome" />
+			
+		<plugin name="Manual" type="plugins.welcome.ManualPlugin"
+			label="Manuals" />
 		
 		<!-- plugin name="News" type="plugins.news.News" label="News"/ -->
 		

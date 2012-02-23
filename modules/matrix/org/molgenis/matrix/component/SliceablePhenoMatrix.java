@@ -287,7 +287,6 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public List<? extends ObservedValue>[][] getValueLists() throws MatrixException
 	{
