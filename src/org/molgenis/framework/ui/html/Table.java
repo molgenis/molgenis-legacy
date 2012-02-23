@@ -22,6 +22,7 @@ public class Table extends HtmlWidget
 	LinkedHashMap<Pair<Integer, Integer>, String> cellStyles = new LinkedHashMap<Pair<Integer, Integer>, String>();
 	List<String> cols = new ArrayList<String>();
 	List<String> rows = new ArrayList<String>();
+	String style = null;
 	protected String defaultCellStyle = "border: 1px solid black; padding:2px";
 	protected String headerCellStyle = "border: 1px solid black; padding:2px; background-color: #5B82A4; color: white";
 	
@@ -47,7 +48,14 @@ public class Table extends HtmlWidget
 	 */
 	public String toHtml()
 	{
-		String result = "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"display\" id=\"" + this.getId() + "\">";
+		String result = "<table";
+		
+		if (style != null) {
+			result += " style=\"clear:both;" + style + "\"";
+		}
+		
+		
+		result += " width=\"400\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"display\" id=\"" + this.getId() + "\">";
 		result += printHeaders();
 		result += printBody();
 		result += "</table>";
@@ -85,6 +93,14 @@ public class Table extends HtmlWidget
 		result += "</tr>";
 		return result;
 	}
+	
+	/**
+	 * Set the containing div's css style.
+	 */
+	public void setStyle(String style) {
+		this.style = style;
+	}
+
 	
 	/**
 	 * Add a column to the Table.
