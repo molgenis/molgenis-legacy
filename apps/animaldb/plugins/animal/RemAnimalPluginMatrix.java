@@ -133,13 +133,13 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 				String removed = "";
 				for (Integer animalId : targetList) {
 					
-					if (inExperiment(db, animalId, deathDate)) {
-						notRemoved += animalId + " ";
+					// add animals to stringlist for report
+					String animalName = cs.getObservationTargetLabel(animalId);
+					if (inExperiment(db, animalName, deathDate)) {
+						notRemoved += animalName + " ";
 						continue;
 					}
-					
-					// add animals to stringlist for report
-					removed += animalId + " ";
+					removed += animalName + " ";
 					
 					// Set 'Removal' feature
 					int protocolId = cs.getProtocolId("SetRemoval");
@@ -240,11 +240,10 @@ public class RemAnimalPluginMatrix extends GenericPlugin
     	return container.toHtml();
     }
 	
-	private boolean inExperiment(Database db, int animalId, Date deathDate) throws DatabaseException, ParseException {
-		int featureId = cs.getMeasurementId("Experiment");
+	private boolean inExperiment(Database db, String animalName, Date deathDate) throws DatabaseException, ParseException {
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 		q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, dbFormat.format(deathDate)));
 		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 		if (q.find().size() == 1) {

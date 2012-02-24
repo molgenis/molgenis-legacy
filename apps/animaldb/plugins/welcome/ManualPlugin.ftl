@@ -33,7 +33,10 @@
 	
 <h2>AnimalDB manuals</h2>
 
-<p><a href="animaldb/AddingAnimals.pdf" target="_blank">Manual 1: Adding animals</a></p>
+<p>
+<a href="animaldb/AddingAnimals.pdf" target="_blank">Manual 1: Adding animals [NL]</a><br />
+<a href="animaldb/RemovingAnimals.pdf" target="_blank">Manual 2: Removing animals, using the matrix [NL]</a>
+</p>
 
 
 <#--end of your plugin-->

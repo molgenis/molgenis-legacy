@@ -12,8 +12,6 @@
 		<plugin name="Manual" type="plugins.welcome.ManualPlugin"
 			label="Manuals" />
 		
-		<!-- plugin name="News" type="plugins.news.News" label="News"/ -->
-		
 		<menu name="animalmenu" position="left" label="Animals">
 			<plugin name="DataViewer" type="plugins.listplugin.ListPluginMatrix"
 				label="Data viewer" />
@@ -56,9 +54,6 @@
 			<plugin name="BatchView" type="plugins.batch.BatchViewPlugin"
 				label="Batch viewer" />
 		</menu -->
-		
-		<!-- plugin name="AddSpecialGroup" type="plugins.specialgroups.AddSpecialGroupPlugin"
-			label="Groups" /-->
 			
 		<menu name="Settings" position="left" label="Settings">
 			<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
@@ -136,7 +131,9 @@
 		<!-- menu name="searchmenu" position="left" label="Search">
 			<plugin name="SimpleDbSearch" label="Simple search" type="plugin.search.SimpleWholeDatabaseSearch" />
 		</menu -->
+		
 	    <plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/account settings"/>
+	    
 	</menu>
 
 </molgenis>

@@ -615,18 +615,18 @@ public class MatrixViewer extends HtmlWidget
 
 	private String generateFilterRule(int filterCnt, MatrixQueryRule mqr) throws MatrixException, DatabaseException {
 		String measurementName = findMeasurementName(mqr);
-		String value = mqr.getValue().toString();
+		Object value = mqr.getValue();
 		try {
 			Measurement meas = db.query(Measurement.class).eq(Measurement.NAME, measurementName).find().get(0);
-			if (meas.getUnit_Name().equals("TargetLink")) {
-				int relationId = Integer.parseInt(value);
+			if (value != null && meas.getUnit_Name().equals("TargetLink")) {
+				int relationId = Integer.parseInt(value.toString());
 				value = db.findById(ObservationTarget.class, relationId).getName();
 			}
 		} catch (Exception e) {
 			// No measurement or relation could be retrieved, stick with value
 		}
 		String outStr = "<br />" + measurementName + " " + mqr.getOperator().toString() + " " + 
-				(value != null ? value : "NULL");
+				(value != null ? value.toString() : "NULL");
 		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
 		removeButton.setIcon("generated-res/img/delete.png");
 		outStr += removeButton.render();
