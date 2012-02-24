@@ -25,8 +25,8 @@
 		  li.highlight {margin:0px;border:0px;padding:0px;background-image:none;background-color:transparent;padding-left:3px;}
 		  li.active {margin:0px;border:0px;padding:0px;background-image:none;background-color:transparent;padding-left:3px; } 
 		 #browser {
-		 font-family: Verdana, helvetica, arial, sans-serif;
-		 font-size: 100.75%;
+		 /*font-family: Verdana, helvetica, arial, sans-serif;
+		 font-size: 100.75%;*/
 		}
 		 #details {
 		 	right:100px;
@@ -53,7 +53,7 @@
 		 }
 		 
 #approveDownloadList {
-	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	/*font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;*/
 	width:100%;
 	border-collapse:collapse;
 }
@@ -79,7 +79,7 @@
 }
 
 #oldDownloads {
-	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	/*font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;*/
 	width:100%;
 	border-collapse:collapse;
 }

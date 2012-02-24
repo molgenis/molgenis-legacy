@@ -60,12 +60,16 @@
 					</#list>
 				</select>
 				<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
-				<input type="image" src="res/img/refresh.png" alt="Submit" name="chooseInvestigation" style="vertical-align: middle;" value="refresh tree" onclick="__action.value='chooseInvestigation';" />	
+				<input type="image" src="res/img/refresh.png" alt="Submit" 
+					name="chooseInvestigation" style="vertical-align: middle;" 
+					value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
+					DownloadMeasurementsSubmit.style.display='inline';"	/>	
 					
 			   <#if screen.isSelectedInv() == true>
 					<table class="box" width="100%" cellpadding="0" cellspacing="0">
-					    <tr><td class="box-header"> Catalogue 
+					    <tr><td class="box-header">  
 					        <div id="masstoggler"> 
+					        	Catalogue
 			 					<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 			 					<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
 			 				</div>
@@ -80,7 +84,8 @@
       								<div id="details"></div> <br/><br/>
       							<!--/div-->
 								<div id="ShoopingCartButton" style="float: right;">
-									<input type="submit" name="DownloadMeasurementsSubmit" value="Download" onclick="__action.value='DownloadMeasurements';"/>
+									<input type="submit" style="display:none" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Download" 
+									onclick="__action.value='DownloadMeasurements';"/>
 								</div>
 								
 						   </td>
