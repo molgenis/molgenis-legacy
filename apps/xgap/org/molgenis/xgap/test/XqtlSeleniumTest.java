@@ -33,7 +33,7 @@ import filehandling.storage.StorageHandler;
 public class XqtlSeleniumTest
 {
 	
-//	boolean gbicdev_dontrunthis = false;
+	boolean gbicdev_dontrunthis = false;
 	
 	
 	/**
@@ -447,7 +447,7 @@ public class XqtlSeleniumTest
 			Assert.assertEquals(selenium.getTable("css=table.listtable.1.4"),
 					"This is a basic QTL analysis performed in the R environment for statistical computing, powered by th...");
 
-//			if(gbicdev_dontrunthis){
+			if(gbicdev_dontrunthis){
 			
 			// browse to R scripts and add a script
 			clickAndWait("id=RScripts_tab_button");
@@ -478,7 +478,7 @@ public class XqtlSeleniumTest
 			selenium.waitForPageToLoad(pageLoadTimeout);
 			Assert.assertTrue(selenium.isTextPresent("REMOVE SUCCESS: affected 1"));
 			
-//			}
+			}
 			
 			// browse to Tag data and click the hide/show buttons
 			clickAndWait("id=MatrixWizard_tab_button");
