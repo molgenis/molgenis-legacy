@@ -15,6 +15,7 @@ public class DivPanel extends HtmlWidget
 {
 	LinkedHashMap<String, HtmlInput<?>> inputs = new LinkedHashMap<String, HtmlInput<?>>();
 	String style = null;
+	boolean makeNewDiv = true;
 
 	public DivPanel()
 	{
@@ -25,6 +26,13 @@ public class DivPanel extends HtmlWidget
 	{
 		super(name, label);
 		this.setLabel(label);
+	}
+	
+	public DivPanel(String name, boolean makeNewDiv)
+	{	
+		super(name, name);
+		this.setLabel(name);
+		this.makeNewDiv = makeNewDiv;
 	}
 	
 	/**
@@ -75,27 +83,35 @@ public class DivPanel extends HtmlWidget
 	{
 		String result = "<div";
 		if (style != null) {
-			result += " style=\"" + style + "\"";
+			result += " style=\"clear:both;" + style + "\"";
 		}
 		result += ">";
-		for (HtmlInput<?> i : this.inputs.values())
-		{
-			result += "<div style=\"clear:both; ";
-			if (i.isHidden())
-			{
-				result += "display:none\"";
+		for (HtmlInput<?> i : this.inputs.values()){		
+			if(makeNewDiv){
+				result += "<div style=\" ";
+				
+				if (i.isHidden())
+				{
+					result += "display:none\"";
+				}
+				else
+				{
+					result += "display:block\"";
+				}
+				if (i.getId() != null)
+				{
+					result += (" id=\"div" + i.getId() + "\">");
+				}
+				
 			}
-			else
-			{
-				result += "display:block\"";
-			}
-			if (i.getId() != null)
-			{
-				result += (" id=\"div" + i.getId() + "\"");
-			}
-			result += "><label style=\"width:16em;float:left;\" for=\""
+			result += "<label style=\"width:16em;float:left;\" for=\""
 					+ i.getName() + "\">" + i.getLabel() + "</label>"
-					+ i.toHtml() + (!i.isNillable() ? " *" : "") + "</div>";
+					+ i.toHtml() + (!i.isNillable() ? " *" : "");
+			
+			if(makeNewDiv){
+				result+= "</div>";
+			}
+			
 		}
 		result += "</div>";
 		return result;
