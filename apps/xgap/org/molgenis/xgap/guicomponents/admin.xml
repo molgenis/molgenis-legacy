@@ -18,6 +18,8 @@
 		</menu>
 		<plugin label="Database status" name="DatabaseSettings"
 			type="plugins.system.database.Settings" />
+		<plugin label="Customize app" name="AppCustomizer"
+			type="plugins.system.appcustomizer.AppCustomizer" />
 		<plugin label="File storage" name="FileStorage"
 			type="plugins.system.settings.Settings" />
 		<plugin label="Install R packages" name="DependencyManager"
@@ -26,6 +28,8 @@
 			<form label="Job table" name="Jobs" entity="Job">
 				<form name="Subjobs" entity="Subjob" />
 			</form>
+			<plugin label="ROnline" name="ROnline"
+				type="plugins.ronline.ROnline" />
 		</menu>
 	</menu>
 </molgenis>

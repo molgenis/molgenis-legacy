@@ -8,10 +8,7 @@
 
 <div style="height:10px;">&nbsp;</div>
 
-<div id="sample_div" style="background-image:url(clusterdemo/bg/bc_fog4.png); width: 900px; height: 125px; line-height:7.5em;">
-<font style="color: white; font-family: verdana,arial,sans-serif; font-weight: bold; letter-spacing: 0.25em; font-size:50px; font-variant: small-caps">
-&nbsp;<a href="#" style="text-decoration:none; color: #FFFFFF;" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='ClusterDemo';document.forms.main.submit();">xQTL workbench</a></font>
-</div>
+<img src="clusterdemo/bg/xqtl_default_banner.png" />
 
 <table style="width: 100%;">
 	<tr>
