@@ -2,11 +2,12 @@ package org.molgenis.framework.ui.html;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * (incomplete) Helper for creating forms for entities.
  */
-public class HtmlForm
+public class HtmlForm extends HtmlWidget
 {
 	/** Some columns can be hidden from view, using the name */
 	private List<String> hiddenColumns = new ArrayList<String>();
@@ -29,7 +30,7 @@ public class HtmlForm
 
 	public HtmlForm()
 	{
-
+		super(UUID.randomUUID().toString());
 	}
 
 	public boolean isNewRecord()
@@ -114,6 +115,19 @@ public class HtmlForm
 	public void setCompactView(List<String> compactView)
 	{
 		this.compactView = compactView;
+	}
+
+	@Override
+	public String toHtml()
+	{
+		String htmlTable = "<table>";
+		for(HtmlInput<?> i: this.getInputs())
+		{
+			htmlTable += "<tr><td>" + i.getLabel() + "</td><td>"+ i.getHtml() +"</td></tr>";
+		}
+		htmlTable += "</table>";
+		return htmlTable;
+
 	}
 
 }
