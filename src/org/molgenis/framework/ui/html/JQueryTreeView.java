@@ -92,10 +92,11 @@ public class JQueryTreeView<E> extends HtmlWidget
 			//		"   <div> Left content goes here </div>"+
 			//		"   <div> Right content goes here </div>"+
 			//		" </div> "+
-			//+ "<div id=\"masstoggler\">" 
-			//+ "<a title=\"Collapse entire tree\" href=\"#\">Collapse all</a> | "
-			//+ "<a title=\"Expand entire tree\" href=\"#\">Expand all</a>" 
-			//+ "</div>"
+//			+ "<div id=\"masstoggler\">" 
+//			+ "<a title=\"Collapse entire tree\" href=\"#\"><img src=\"res/img/toggle_collapse_tiny.png\"  style=\"vertical-align: bottom;\"></a> "
+//			+ "<a title=\"Expand entire tree\" href=\"#\"><img src=\"res/img/toggle_expand_tiny.png\"  style=\"vertical-align: bottom;\"></a>" 
+//			+ "</div><br/>"
+			
 			+ "<ul id=\"browser\" class=\"pointtree\">"
 			+ renderTree(treeData.getRoot(), selected)
 			+ "</ul>";	
