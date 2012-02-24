@@ -59,14 +59,17 @@
 						<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
 					</#list>
 				</select>
-				<input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"/>
-				<div id="masstoggler"> 
-					<a title="Collapse entire tree" href="#">Collapse all</a> | 
-					<a title="Expand entire tree" href="#">Expand all</a> 
-				</div>
+				<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
+				<input type="image" src="res/img/refresh.png" alt="Submit" name="chooseInvestigation" style="vertical-align: middle;" value="refresh tree" onclick="__action.value='chooseInvestigation';" />	
+					
 			   <#if screen.isSelectedInv() == true>
 					<table class="box" width="100%" cellpadding="0" cellspacing="0">
-					    <tr><td class="box-header"> Catalogue </td></tr>
+					    <tr><td class="box-header"> Catalogue 
+					        <div id="masstoggler"> 
+			 					<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
+			 					<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
+			 				</div>
+					    </td></tr>
 					    <tr><td class="box-body">
 								<div id="leftSideTree">  
 									${screen.getTreeView()}
