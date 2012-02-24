@@ -178,14 +178,14 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 					}
 				}
 				
-				String message = "Animal(s) " + removed +  "successfully removed";
-				this.getMessages().add(new ScreenMessage(message, true));
+				if (!removed.equals("")) {
+					this.getMessages().add(new ScreenMessage("Animal(s) " + removed +  "successfully removed", true));
+				}
 				if (!notRemoved.equals("")) {
-					message = "Animal(s) " + notRemoved + "not removed because they are still in a DEC subproject: ";
-					this.getMessages().add(new ScreenMessage(message, false));
+					this.getMessages().add(new ScreenMessage("Animal(s) " + notRemoved + "not removed because they are still in a DEC subproject - remove them using the 'DEC subprojects' screen", false));
 				}
 				
-				container = null;
+				container = null; // force refresh
 			}
 			
 		} catch(Exception e) {

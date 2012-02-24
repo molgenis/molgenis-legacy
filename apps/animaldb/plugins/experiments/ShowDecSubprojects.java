@@ -67,6 +67,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	MatrixViewer remAnimalsMatrixViewer = null;
 	static String REMANIMALSMATRIX = "remanimalsmatrix";
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	private boolean refresh = true;
+	private int userId = -1;
 	
 	//hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
@@ -82,7 +84,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	
 		public String getCustomHtmlHeaders() {
 		return "<script type=\"text/javascript\" src=\"res/jquery-plugins/datatables/js/jquery.dataTables.js\"></script>\n" +
-				"<script src=\"res/scripts/custom/addingajax.js\" language=\"javascript\"></script>\n" +
+				"<script src=\"res/scripts/custom/animalterm.js\" language=\"javascript\"></script>\n" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/jquery-plugins/datatables/css/demo_table_jui.css\">\n" +
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
@@ -584,10 +586,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// Add everything to DB
 				db.add(valuesToAddList);
 				
-				// Reload, so list is refreshed
-				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("DEC subproject successfully added", true));
-				this.reload(db);
+				refresh = true;
 			}
 			
 			if (action.equals("EditAnimals"))
@@ -623,8 +623,6 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						true, 2, false, false, filterRules, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				remAnimalsMatrixViewer.setDatabase(db);
-				
-				this.reload(db);
 			}
 			
 			if (action.equals("RemoveAnimalsFromSubproject"))
@@ -648,8 +646,6 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					}
 					rowCnt++;
 				}
-				
-				this.reload(db);
 			}
 			
 			if (action.equals("AddAnimalToSubproject"))
@@ -770,9 +766,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// Add everything to DB
 				db.add(valuesToAddList);
 				
-				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("Animal(s) successfully removed", true));
-				this.reload(db);
+				refresh = true;
 			}
 			
 			if (action.equals("ApplyAddAnimalToSubproject"))
@@ -780,10 +775,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				int subprojectId = getSelectedDecSubproject().getId();
 				
 				// Get Subproject start and end dates
-				String subprojectStartDateString = ct.getMostRecentValueAsString(subprojectId, ct.getMeasurementId("StartDate"));
+				String subprojectStartDateString = ct.getMostRecentValueAsString(subprojectId, "StartDate");
 				Date subprojectStartDate = newDateOnlyFormat.parse(subprojectStartDateString);
 				Date subprojectEndDate = null;
-				String subprojectEndDateString = ct.getMostRecentValueAsString(subprojectId, ct.getMeasurementId("EndDate"));
+				String subprojectEndDateString = ct.getMostRecentValueAsString(subprojectId, "EndDate");
 				if (!subprojectEndDateString.equals("")) {
 					subprojectEndDate = newDateOnlyFormat.parse(subprojectEndDateString);
 				}
@@ -935,7 +930,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				db.add(valuesToAddList);
 				
 				this.getMessages().add(new ScreenMessage("Animal(s) successfully added", true));
-				this.reload(db);
+				refresh = true;
 			}
 			
 		} catch (Exception e) {
@@ -953,121 +948,122 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		ct.setDatabase(db);
 		this.toHtmlDb = db;
 		
-		try {
-			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
-			
-			// Populate batch list
-			//setBatchList(ct.getAllBatches());
-			
-			// Populate list of all animals
-			allAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);			
-			
-			// Populate expected discomfort code list
-			this.setExpectedDiscomfortCodeList(ct.getAllCodesForFeature("ExpectedDiscomfort"));
-			// Populate expected endstatus code list
-			this.setExpectedEndstatusCodeList(ct.getAllCodesForFeature("ExpectedAnimalEndStatus"));
-			// Populate actual discomfort code list
-			this.setActualDiscomfortCodeList(ct.getAllCodesForFeature("ActualDiscomfort"));
-			// Populate actual endstatus code list
-			this.setActualEndstatusCodeList(ct.getAllCodesForFeature("ActualAnimalEndStatus"));
-			// Experimentnrs
-			this.setExperimentNrCodeList(ct.getAllCodesForFeature("ExperimentNr"));
-			// Concern
-			this.setConcernCodeList(ct.getAllCodesForFeature("Concern"));
-			// Goal
-			this.setGoalCodeList(ct.getAllCodesForFeature("Goal"));
-			// SpecialTechn
-			this.setSpecialTechnCodeList(ct.getAllCodesForFeature("SpecialTechn"));
-			// LawDef
-			this.setLawDefCodeList(ct.getAllCodesForFeature("LawDef"));
-			// ToxRes
-			this.setToxResCodeList(ct.getAllCodesForFeature("ToxRes"));
-			// Anaesthesia
-			this.setAnaesthesiaCodeList(ct.getAllCodesForFeature("Anaesthesia"));
-			// PainManagement
-			this.setPainManagementCodeList(ct.getAllCodesForFeature("PainManagement"));
-			// AnimalEndStatus
-			this.setAnimalEndStatusCodeList(ct.getAllCodesForFeature("AnimalEndStatus"));
-			// decApplicationList
-			this.setDecApplicationList(ct.getAllMarkedPanels("DecApplication", investigationIds));
-			
-			// Make list of ID's of all animals in this DEC subproject that are alive
-			List<Integer> aliveAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);
-			// Populate subprojects list
-			experimentList.clear();
-			List<ObservationTarget> expList = ct.getAllMarkedPanels("Experiment", investigationIds);
-			int pos = 0;
-			for (ObservationTarget currentExp : expList) {
-				int expId = currentExp.getId();
-				String expName = currentExp.getName();
-								
-				String experimentNr = ct.getMostRecentValueAsString(expId, "ExperimentNr");
-				String experimentTitle = ct.getMostRecentValueAsString(expId, "ExperimentTitle");
-				String decSubprojectApplicationPDF = ct.getMostRecentValueAsString(expId, "DecSubprojectApplicationPdf");
-				String concern = ct.getMostRecentValueAsString(expId, "Concern");
-				String goal = ct.getMostRecentValueAsString(expId, "Goal");
-				String specialTechn = ct.getMostRecentValueAsString(expId, "SpecialTechn");
-				String lawDef = ct.getMostRecentValueAsString(expId, "LawDef");
-				String toxRes = ct.getMostRecentValueAsString(expId, "ToxRes");
-				String anaesthesia = ct.getMostRecentValueAsString(expId, "Anaesthesia");
-				String painManagement = ct.getMostRecentValueAsString(expId, "PainManagement");
-				String animalEndStatus = ct.getMostRecentValueAsString(expId, "AnimalEndStatus");
-				String remarks = ct.getMostRecentValueAsString(expId, "Remark");
-				int decApplicationId = ct.getMostRecentValueAsXref(expId, "DecApplication");
-				String decApplicationName = "";
-				if (decApplicationId != -1) {
-					decApplicationName = ct.getObservationTargetById(decApplicationId).getName();
-				}
-				String startDate = null;
-				startDate = ct.getMostRecentValueAsString(expId, "StartDate");
-				String endDate = null;
-				endDate = ct.getMostRecentValueAsString(expId, "EndDate");
-				java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
-				int nrOfAnimals = 0;
-				if (aliveAnimalIdList.size() > 0) {
-					Query<ObservedValue> q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, expId));
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
-					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
-					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
-					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
-					nrOfAnimals = q.count();
+		if (refresh == true || this.getLogin().getUserId().intValue() != userId) {
+			userId = this.getLogin().getUserId().intValue();
+			refresh = false;
+			try {
+				List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
+				
+				// Populate batch list
+				//setBatchList(ct.getAllBatches());
+				
+				// Populate list of all animals
+				allAnimalIdList = ct.getAllObservationTargetIds("Individual", true, investigationIds);			
+				
+				// Populate expected discomfort code list
+				this.setExpectedDiscomfortCodeList(ct.getAllCodesForFeature("ExpectedDiscomfort"));
+				// Populate expected endstatus code list
+				this.setExpectedEndstatusCodeList(ct.getAllCodesForFeature("ExpectedAnimalEndStatus"));
+				// Populate actual discomfort code list
+				this.setActualDiscomfortCodeList(ct.getAllCodesForFeature("ActualDiscomfort"));
+				// Populate actual endstatus code list
+				this.setActualEndstatusCodeList(ct.getAllCodesForFeature("ActualAnimalEndStatus"));
+				// Experimentnrs
+				this.setExperimentNrCodeList(ct.getAllCodesForFeature("ExperimentNr"));
+				// Concern
+				this.setConcernCodeList(ct.getAllCodesForFeature("Concern"));
+				// Goal
+				this.setGoalCodeList(ct.getAllCodesForFeature("Goal"));
+				// SpecialTechn
+				this.setSpecialTechnCodeList(ct.getAllCodesForFeature("SpecialTechn"));
+				// LawDef
+				this.setLawDefCodeList(ct.getAllCodesForFeature("LawDef"));
+				// ToxRes
+				this.setToxResCodeList(ct.getAllCodesForFeature("ToxRes"));
+				// Anaesthesia
+				this.setAnaesthesiaCodeList(ct.getAllCodesForFeature("Anaesthesia"));
+				// PainManagement
+				this.setPainManagementCodeList(ct.getAllCodesForFeature("PainManagement"));
+				// AnimalEndStatus
+				this.setAnimalEndStatusCodeList(ct.getAllCodesForFeature("AnimalEndStatus"));
+				// decApplicationList
+				this.setDecApplicationList(ct.getAllMarkedPanels("DecApplication", investigationIds));
+				// Populate subprojects list
+				experimentList.clear();
+				List<ObservationTarget> expList = ct.getAllMarkedPanels("Experiment", investigationIds);
+				int pos = 0;
+				for (ObservationTarget currentExp : expList) {
+					int expId = currentExp.getId();
+					String expName = currentExp.getName();
+									
+					String experimentNr = ct.getMostRecentValueAsString(expId, "ExperimentNr");
+					String experimentTitle = ct.getMostRecentValueAsString(expId, "ExperimentTitle");
+					String decSubprojectApplicationPDF = ct.getMostRecentValueAsString(expId, "DecSubprojectApplicationPdf");
+					String concern = ct.getMostRecentValueAsString(expId, "Concern");
+					String goal = ct.getMostRecentValueAsString(expId, "Goal");
+					String specialTechn = ct.getMostRecentValueAsString(expId, "SpecialTechn");
+					String lawDef = ct.getMostRecentValueAsString(expId, "LawDef");
+					String toxRes = ct.getMostRecentValueAsString(expId, "ToxRes");
+					String anaesthesia = ct.getMostRecentValueAsString(expId, "Anaesthesia");
+					String painManagement = ct.getMostRecentValueAsString(expId, "PainManagement");
+					String animalEndStatus = ct.getMostRecentValueAsString(expId, "AnimalEndStatus");
+					String remarks = ct.getMostRecentValueAsString(expId, "Remark");
+					int decApplicationId = ct.getMostRecentValueAsXref(expId, "DecApplication");
+					String decApplicationName = "";
+					if (decApplicationId != -1) {
+						decApplicationName = ct.getObservationTargetById(decApplicationId).getName();
+					}
+					String startDate = null;
+					startDate = ct.getMostRecentValueAsString(expId, "StartDate");
+					String endDate = null;
+					endDate = ct.getMostRecentValueAsString(expId, "EndDate");
+					java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
+					int nrOfAnimals = 0;
+					if (allAnimalIdList.size() > 0) {
+						Query<ObservedValue> q = db.query(ObservedValue.class);
+						q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, expId));
+						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, allAnimalIdList));
+						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
+						q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
+						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
+						nrOfAnimals = q.count();
+					}
+					
+					DecSubproject tmpExp = new DecSubproject();
+					tmpExp.setId(expId);
+					tmpExp.setDecExpListId(pos);
+					tmpExp.setName(expName);
+					tmpExp.setExperimentTitle(experimentTitle);
+					tmpExp.setExperimentNr(experimentNr);
+					tmpExp.setDecSubprojectApplicationPDF(decSubprojectApplicationPDF);
+					tmpExp.setConcern(concern);
+					tmpExp.setGoal(goal);
+					tmpExp.setSpecialTechn(specialTechn);
+					tmpExp.setLawDef(lawDef);
+					tmpExp.setToxRes(toxRes);
+					tmpExp.setAnaesthesia(anaesthesia);
+					tmpExp.setPainManagement(painManagement);
+					tmpExp.setAnimalEndStatus(animalEndStatus);
+					tmpExp.setRemarks(remarks);
+					if (decApplicationId != -1) tmpExp.setDecApplicationId(decApplicationId);
+					tmpExp.setDecApplication(decApplicationName);
+					tmpExp.setNrOfAnimals(nrOfAnimals);
+					if (startDate != null) tmpExp.setStartDate(startDate);
+					if (endDate != null) tmpExp.setEndDate(endDate);
+					experimentList.add(tmpExp);
+					
+					pos++;
 				}
 				
-				DecSubproject tmpExp = new DecSubproject();
-				tmpExp.setId(expId);
-				tmpExp.setDecExpListId(pos);
-				tmpExp.setName(expName);
-				tmpExp.setExperimentTitle(experimentTitle);
-				tmpExp.setExperimentNr(experimentNr);
-				tmpExp.setDecSubprojectApplicationPDF(decSubprojectApplicationPDF);
-				tmpExp.setConcern(concern);
-				tmpExp.setGoal(goal);
-				tmpExp.setSpecialTechn(specialTechn);
-				tmpExp.setLawDef(lawDef);
-				tmpExp.setToxRes(toxRes);
-				tmpExp.setAnaesthesia(anaesthesia);
-				tmpExp.setPainManagement(painManagement);
-				tmpExp.setAnimalEndStatus(animalEndStatus);
-				tmpExp.setRemarks(remarks);
-				if (decApplicationId != -1) tmpExp.setDecApplicationId(decApplicationId);
-				tmpExp.setDecApplication(decApplicationName);
-				tmpExp.setNrOfAnimals(nrOfAnimals);
-				if (startDate != null) tmpExp.setStartDate(startDate);
-				if (endDate != null) tmpExp.setEndDate(endDate);
-				experimentList.add(tmpExp);
-				
-				pos++;
+			} catch (Exception e) {
+				this.getMessages().clear();
+				String message = "Something went wrong while loading lists";
+				if (e.getMessage() != null) {
+					message += (": " + e.getMessage());
+				}
+				this.getMessages().add(new ScreenMessage(message, false));
+				e.printStackTrace();
 			}
-			
-		} catch (Exception e) {
-			this.getMessages().clear();
-			String message = "Something went wrong while loading lists";
-			if (e.getMessage() != null) {
-				message += (": " + e.getMessage());
-			}
-			this.getMessages().add(new ScreenMessage(message, false));
-			e.printStackTrace();
 		}
 	}
 	

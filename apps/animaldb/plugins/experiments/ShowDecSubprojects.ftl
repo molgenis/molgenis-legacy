@@ -258,7 +258,7 @@
 		</select>
 	</div>
 	
-	<div class="row" style="display:block">
+	<div id="deathdatediv" class="row" style="display:block">
 		<label for="deathdate">Date of death:</label>
 		<input type='text' class='textbox' id='deathdate' name='deathdate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
 	</div>
