@@ -118,6 +118,9 @@
 				<#list f.xrefLabelNames as label>
 				key += 	xref.get${JavaName(label)}();
 				</#list>	
+				
+				if(${name(f)}_Labels_to_IdMap.get(key) == null) throw new DatabaseException("<#list f.xrefLabelNames as label>${f.name}_${label}<#if label_has_next>,</#if></#list> cannot be resolved: unknown xref='"+key+"'");
+				
 				${name(f)}_Labels_to_IdMap.put(key, xref.get${JavaName(f.xrefField)}());
 			}
 		}
