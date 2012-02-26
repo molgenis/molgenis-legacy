@@ -119,8 +119,6 @@
 				key += 	xref.get${JavaName(label)}();
 				</#list>	
 				
-				if(${name(f)}_Labels_to_IdMap.get(key) == null) throw new org.molgenis.framework.db.DatabaseException("<#list f.xrefLabelNames as label>${f.name}_${label}<#if label_has_next>,</#if></#list> cannot be resolved: unknown xref='"+key+"'");
-				
 				${name(f)}_Labels_to_IdMap.put(key, xref.get${JavaName(f.xrefField)}());
 			}
 		}
@@ -143,14 +141,22 @@
 				</#if>
 					String key = "";
 					<#list f.xrefLabelNames as label>
-					key += 	object.get${JavaName(f)}_${JavaName(label)}()<#if f.type=='mref'>.get(j)</#if>;
+					if(object.get${JavaName(f)}_${JavaName(label)}()<#if f.type=='mref'>.get(j)</#if> != null)
+						key += 	object.get${JavaName(f)}_${JavaName(label)}()<#if f.type=='mref'>.get(j)</#if>;
 					</#list>
 					
-					<#if f.type == 'mref'>
-					idList.add(${name(f)}_Labels_to_IdMap.get(key));
-					<#else>
-					object.set${JavaName(f)}_${JavaName(f.xrefField)}(${name(f)}_Labels_to_IdMap.get(key));
-					</#if>
+					if(!"".equals(key) && ${name(f)}_Labels_to_IdMap.get(key) == null) 
+					{
+						throw new org.molgenis.framework.db.DatabaseException("<#list f.xrefLabelNames as label>${f.name}_${label}<#if label_has_next>,</#if></#list> cannot be resolved: unknown xref='"+key+"'");
+					}
+					else
+					{
+						<#if f.type == 'mref'>
+						idList.add(${name(f)}_Labels_to_IdMap.get(key));
+						<#else>
+						object.set${JavaName(f)}_${JavaName(f.xrefField)}(${name(f)}_Labels_to_IdMap.get(key));
+						</#if>
+					}
 				<#if f.type == 'mref'>
 				}
 				object.set${JavaName(f)}_${JavaName(f.xrefField)}(idList);
