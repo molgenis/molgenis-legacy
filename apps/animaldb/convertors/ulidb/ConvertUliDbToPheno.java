@@ -156,19 +156,19 @@ public class ConvertUliDbToPheno
 		
 		db.add(panelsToAddList);
 		// Make entries in name prefix table with highest parentgroup nrs.
-		for (String lineName : parentgroupNrMap.keySet()) {
+		for (String pgName : parentgroupNrMap.keySet()) {
 			NamePrefix namePrefix = new NamePrefix();
 			namePrefix.setTargetType("parentgroup");
-			namePrefix.setPrefix("PG_" + lineName + "_");
-			namePrefix.setHighestNumber(parentgroupNrMap.get(lineName));
+			namePrefix.setPrefix("PG_" + pgName + "_");
+			namePrefix.setHighestNumber(parentgroupNrMap.get(pgName));
 			db.add(namePrefix);
 		}
 		// Make entries in name prefix table with highest litter nrs.
-		for (String lineName : litterNrMap.keySet()) {
+		for (String litterName : litterNrMap.keySet()) {
 			NamePrefix namePrefix = new NamePrefix();
 			namePrefix.setTargetType("litter");
-			namePrefix.setPrefix("LT_" + lineName + "_");
-			namePrefix.setHighestNumber(litterNrMap.get(lineName));
+			namePrefix.setPrefix("LT_" + litterName + "_");
+			namePrefix.setHighestNumber(litterNrMap.get(litterName));
 			db.add(namePrefix);
 		}
 		logger.debug("Panels successfully added");
@@ -356,7 +356,7 @@ public class ConvertUliDbToPheno
 				}*/
 				// Instead we do this:
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetResponsibleResearcher"), 
-						now, null, "ResponsibleResearcher", newAnimalName, null, "Uli Eisel"));
+						now, null, "ResponsibleResearcher", newAnimalName, "Uli Eisel", null));
 				
 				//  not needed, skip import (update ate @ 2011-09-20)
 				// Tierschutzrecht -> OldUliDbTierschutzrecht
@@ -536,6 +536,9 @@ public class ConvertUliDbToPheno
 					// Some line names have ' (line)' added to them to distinguish them from backgrounds with the same name!
 					lineName += " (line)";
 				}
+				if (lineName != null && ct.getObservationTargetId(lineName) == -1) { // if still not found, create line
+					createLine(lineName, ct.getInvestigationId(invName));
+				}
 				
 				// Put date of birth, mother info and father info into one string and check if we've
 				// seen this combination before
@@ -637,34 +640,39 @@ public class ConvertUliDbToPheno
 		{
 			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
 			{
-				Calendar calendar = Calendar.getInstance();
-				Date now = calendar.getTime();
-				
 				String lineName = tuple.getString("Linie");
-				// Make line panel (append 'line' if there is already a background with this name)
-				if (ct.getObservationTargetId(lineName) != -1) {
-					lineName += " (line)";
-				}
-				int lineId = ct.makePanel(invid, lineName, login.getUserId());
-				// Label it as line using the (Set)TypeOfGroup protocol and feature
-				int featureId = ct.getMeasurementId("TypeOfGroup");
-				int protocolId = ct.getProtocolId("SetTypeOfGroup");
-				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
-						"Line", 0));
-				// Set the source of the line
-				featureId = ct.getMeasurementId("Source");
-				protocolId = ct.getProtocolId("SetSource");
-				int sourceId = ct.getObservationTargetId(sourceName);
-				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
-						null, sourceId));
-				// Set the species of the line (always House mouse)
-				featureId = ct.getMeasurementId("Species");
-				protocolId = ct.getProtocolId("SetSpecies");
-				int speciesId = ct.getObservationTargetId("House mouse");
-				db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, featureId, lineId, 
-						null, speciesId));
+				createLine(lineName, invid);
 			}
 		});
+	}
+	
+	private void createLine(String lineName, int investigationId) throws DatabaseException, IOException, ParseException
+	{
+		Calendar calendar = Calendar.getInstance();
+		Date now = calendar.getTime();
+		
+		// Make line panel (append 'line' if there is already a background with this name)
+		if (ct.getObservationTargetId(lineName) != -1) {
+			lineName += " (line)";
+		}
+		int lineId = ct.makePanel(investigationId, lineName, login.getUserId());
+		// Label it as line using the (Set)TypeOfGroup protocol and feature
+		int featureId = ct.getMeasurementId("TypeOfGroup");
+		int protocolId = ct.getProtocolId("SetTypeOfGroup");
+		db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
+				"Line", 0));
+		// Set the source of the line
+		featureId = ct.getMeasurementId("Source");
+		protocolId = ct.getProtocolId("SetSource");
+		int sourceId = ct.getObservationTargetId(sourceName);
+		db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
+				null, sourceId));
+		// Set the species of the line (always House mouse)
+		featureId = ct.getMeasurementId("Species");
+		protocolId = ct.getProtocolId("SetSpecies");
+		int speciesId = ct.getObservationTargetId("House mouse");
+		db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
+				null, speciesId));
 	}
 	
 	public void populateGene(String filename) throws Exception

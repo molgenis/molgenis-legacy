@@ -149,7 +149,7 @@ public class ConvertRhutDbToPheno
 		createLine("ICR(CD-1)");
 		createLine("Swing");
 		createLine("CK1e");
-		createLine("unknown");
+		createLine("unknown (line)");
 	}
 	
 	private void createLine(String lineName) throws DatabaseException, IOException, ParseException
@@ -552,7 +552,7 @@ public class ConvertRhutDbToPheno
 						}
 					}
 				}
-				if (lineName.equals("CBA/CaJ") || lineName.equals("C57BL/6j")) {
+				if (lineName.equals("CBA/CaJ") || lineName.equals("C57BL/6j") || lineName.equals("unknown")) {
 					lineName += " (line)";
 				}
 				
