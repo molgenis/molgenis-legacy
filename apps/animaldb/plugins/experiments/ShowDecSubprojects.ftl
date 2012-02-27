@@ -143,7 +143,7 @@
 	
 	<div class="row">
 		<label for="remarks">Remarks:</label>
-		<input type="text" name="remarks" id="remarks" class="textbox" <#if currentDecSubproject??><#if currentDecSubproject.getRemarks()??>value="${currentDecSubproject.oldAnimalDBRemarks}"</#if></#if> />
+		<input type="text" name="remarks" id="remarks" class="textbox" <#if currentDecSubproject??><#if currentDecSubproject.getRemarks()??>value="${currentDecSubproject.remarks}"</#if></#if> />
 	</div>
 	
 	<div class="row">

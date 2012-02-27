@@ -74,6 +74,7 @@ public class ConvertRhutDbToPheno
 	private Map<String, Date> removalDateMap;
 	private int highestNr;
 	private String defaultSourceName;
+	private List<String> lineNamesList;
 	
 	public ConvertRhutDbToPheno(Database db, Login login) throws Exception
 	{
@@ -120,6 +121,7 @@ public class ConvertRhutDbToPheno
 		animalNames = new ArrayList<String>();
 		valuesToAddList = new ArrayList<ObservedValue>();
 		panelsToAddList = new ArrayList<Panel>();
+		lineNamesList = new ArrayList<String>();
 		
 		appMap = new HashMap<String, String>();
 		sourceMap = new HashMap<String, String>();
@@ -147,6 +149,7 @@ public class ConvertRhutDbToPheno
 		createLine("ICR(CD-1)");
 		createLine("Swing");
 		createLine("CK1e");
+		createLine("unknown");
 	}
 	
 	private void createLine(String lineName) throws DatabaseException, IOException, ParseException
@@ -162,6 +165,7 @@ public class ConvertRhutDbToPheno
 		// Set the species of the line (always 'House mouse')
 		valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), now, null, "Species", lineName, 
 				null, "House mouse"));
+		lineNamesList.add(lineName);
 	}
 
 	public void convertFromZip(String filename) throws Exception {
@@ -446,7 +450,7 @@ public class ConvertRhutDbToPheno
 				
 				// ResponsibleResearcher
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetResponsibleResearcher"), 
-						now, null, "ResponsibleResearcher", animalName, null, "Roelof Hut"));
+						now, null, "ResponsibleResearcher", animalName, "Roelof Hut", null));
 			}
 		});
 	}
@@ -542,6 +546,10 @@ public class ConvertRhutDbToPheno
 						lineName = genFather;
 					} else {
 						lineName = genMother + " X " + genFather;
+						// Check if exists and add if needed
+						if (!lineNamesList.contains(lineName)) {
+							createLine(lineName);
+						}
 					}
 				}
 				if (lineName.equals("CBA/CaJ") || lineName.equals("C57BL/6j")) {
