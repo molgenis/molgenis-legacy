@@ -63,7 +63,7 @@ public class emptyDatabase
 		Connection conn = null;
 		try
 		{
-			conn = ((JDBCDatabase) db).getConnection();
+			conn = db.getConnection();
 			String create_tables_sql = "";
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(sqlFile));

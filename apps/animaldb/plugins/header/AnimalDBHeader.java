@@ -12,6 +12,8 @@ import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.jpa.JpaDatabase;
+import org.molgenis.framework.db.jpa.JpaUtil;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -76,7 +78,11 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	private void prefillDb(Database db) {
 		try {
 			// Empty DB and run generated sql scripts
-			new emptyDatabase(db, false);
+			if(db instanceof JpaDatabase) {
+				JpaUtil.dropAndCreateTables(db, null);
+			} else {
+				new emptyDatabase(db, false);
+			}
 			FillMetadata.fillMetadata(db, false);
 			this.getMessages().add(new ScreenMessage("Your database was empty, so it was reset and prefilled with basic security entities", true));
 			

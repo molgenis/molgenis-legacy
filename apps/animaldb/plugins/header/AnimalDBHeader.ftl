@@ -34,14 +34,7 @@
 			<a href="http://www.molgenis.org" target="_blank"><img src="generated-res/img/logo_molgenis.gif" height="49px"></a>
 		</div>
 		
-		<!-- div id="buttonDiv" style="float:right; display:block; padding-right:75px;">
-			<span style="font-size: 35%; font-family: arial, sans-serif; font-style: italic;" >provide feedback:</span> 
-			<a href=# onclick="showFeedback();"><img src="res/img/feedback.jpeg" align="middle" height="35px" alt="Give feedback or comments on the active page." title="Give feedback or comments on the active page."></a>
-			<!-- input type="button" value="Give feedback" onclick="showFeedback();" / -->
-		
-		
 		<div id="feedbackDiv" style="float:right; padding-right:75px; font-size: 75%; font-family: arial, sans-serif; font-style: italic; display:none; ">
-			
 			<fieldset><legend style="font-size: 75%; font-family: arial, sans-serif; font-style: italic;">Provide here your feedback on the ${screen.getActivePlugin()} screen:</legend>
 			<label for="feedback" style="vertical-align: middle">feedback text:</label>
 			<br />
@@ -58,7 +51,9 @@
 		</div>
 		
 	</div>
+	
 	<div style="clear:both"></div>
+	
 	<div class="form_header" id="headermenu" style="width:100%" >
 		<div style="float:right; font-size: 75%; font-family: arial, sans-serif; font-style: italic;">
 	   		<div style="float:right; font-size: 75%; font-family: arial, sans-serif; font-style: italic;">
@@ -74,9 +69,10 @@
 			</div>
 		</div>
 	</div>
+	
 	<div style="clear:both"></div>
 	
-	<!-- if screen.loggedIn == true> APIs
+	<#-- if screen.loggedIn == true> APIs
 		<div align="right" style="color: maroon; font: 12px Arial;margin-right: 10px;">| <a href="about.html">About</a>  | <a href="doc/objectmodel.html">Object model</a>  | <a href="api/R">R-project API</a> | <a href="api/find">HTTP API</a> | <a href="api/rest/?_wadl">REST API</a> | <a href="api/soap?wsdl">Web Services API</a></div>
 	</if -->
 	

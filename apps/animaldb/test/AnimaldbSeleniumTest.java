@@ -2,6 +2,9 @@ package test;
 
 import java.util.Calendar;
 
+import org.molgenis.MolgenisOptions.MapperImplementation;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.jpa.JpaUtil;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
@@ -11,6 +14,8 @@ import org.testng.annotations.Test;
 
 import plugins.emptydb.emptyDatabase;
 import app.DatabaseFactory;
+import app.FillMetadata;
+import app.servlet.UsedMolgenisOptions;
 import boot.RunStandalone;
 
 import com.thoughtworks.selenium.DefaultSelenium;
@@ -57,9 +62,14 @@ public class AnimaldbSeleniumTest
 		selenium.start();
 		selenium.setTimeout(pageLoadTimeout);
 		
-		// To be sure, empty db and don't add MolgenisUsers etc.
-		if(!this.tomcat) new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
-		else new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+		if(new UsedMolgenisOptions().mapper_implementation == MapperImplementation.JPA) { 
+			Database db = DatabaseFactory.create();
+			JpaUtil.dropAndCreateTables(db, null);
+			FillMetadata.fillMetadata(db, false);
+		} else {
+			// To be sure, empty db and don't add MolgenisUsers etc.
+			new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
+		}
 		if(!this.tomcat) new RunStandalone(webserverPort);
 	}
 
@@ -464,12 +474,15 @@ public class AnimaldbSeleniumTest
 		
 		//added to fix TestDatabase which runs after this one...
 		//see comment in TestDatabase!
-		if (!this.tomcat) {
-			new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
-		} else {
+		
+		UsedMolgenisOptions usedMolgenisOptions = new UsedMolgenisOptions(); 
+		if(usedMolgenisOptions.mapper_implementation == MapperImplementation.JPA) {
+			Database db = DatabaseFactory.create();
+			JpaUtil.dropAndCreateTables(db, null);
+			FillMetadata.fillMetadata(db, false);
+		} else {		
 			new emptyDatabase(DatabaseFactory.create("apps/animaldb/org/molgenis/animaldb/animaldb.properties"), false);
 		}
-
 		//Helper.deleteStorage();
 		//Helper.deleteDatabase();
 	}
