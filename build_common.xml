@@ -16,7 +16,7 @@ It should be used via 'import' plus passing of properties
 	<property name="build.dir" value="dist/classes" />
 	<property name="testng.report.dir" value="dist/test-output" />
 	<property name="war.dir" value="dist/war" />
-	<property name="war.name" value="${appname}.war" />
+	<property name="war.name" value="${app_name}.war" />
 	<property name="webxml.dir" value="WebContent/WEB-INF/web.xml" />
 
 	<!-- path to MOLGENIS toolkit -->
@@ -32,7 +32,7 @@ It should be used via 'import' plus passing of properties
 
 	<!-- path to app src -->
 	<taskdef resource="testngtasks" classpathref="molgenis.classpath" />
-	<taskdef name="xmltask" classpathref="molgenis.classpath" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
+	<taskdef name="xmltask" classpathref="molgenis.classpath" classname="com.oopsconsultancy.xmltask.ant.XmlTask" />
 
 	<!-- clean out generated and build folders -->
 	<target name="clean">
@@ -69,7 +69,7 @@ It should be used via 'import' plus passing of properties
 		</javac>
 
 		<!-- copy resources to build dir -->
-		<copy todir="${build.dir}"> 
+		<copy todir="${build.dir}">
 			<fileset dir="${molgenis.dir}/src" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico,**/*.js,**/*.css,**/*.jpg,**/*.png,**/*.gif,**/*.ftl" />
 		</copy>
 
@@ -89,36 +89,36 @@ It should be used via 'import' plus passing of properties
 		<fail unless="app_path">app.class.path is not set</fail>
 		<copy todir="${build.dir}">
 			<!-- watch the trailing /**/*.ftl"-->
-			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java"/>
+			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java" />
 			<!-- cut the two leading directories from path -->
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*[/\\][-_a-zA-Z0-9]*[/\\](.*)" to="\1" />
 			<!--cutdirsmapper dirs="2"/-->
 		</copy>
 
 		<mkdir dir="${output_sql}" />
-		
+
 		<!-- copy sql and other resources from generate sql -->
 		<copy todir="${build.dir}" verbose="true">
 			<fileset dir="${output_sql}" includes="**/*.sql" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
-		
+
 		<!-- Copy persistence.xml to rigth location if it's specified in *.properties as persistence_xml_location-->
-		<antcall target="copy-persistence.xml"/>			
+		<antcall target="copy-persistence.xml" />
 	</target>
 
 	<target name="check_persistence_xml_locaton">
 		<echo>${persistence_xml_location}</echo>
-	    <condition property="condition">
-	    	 <isset property="persistence_xml_location"/>
-	    </condition>
+		<condition property="condition">
+			<isset property="persistence_xml_location" />
+		</condition>
 	</target>
-	
+
 	<target name="copy-persistence.xml" depends="check_persistence_xml_locaton" if="condition">
-		<copy file="${persistence_xml_location}" todir="${build.dir}/META-INF/" overwrite="true"/>
+		<copy file="${persistence_xml_location}" todir="${build.dir}/META-INF/" overwrite="true" />
 		<echo>persistence.xml copied from ${persistence_xml_location} to ${build.dir}/META-INF/</echo>
 	</target>
-	
+
 	<target name="compile">
 
 		<pathconvert property="app_src" refid="app.class.path" pathsep=":">
@@ -139,17 +139,17 @@ It should be used via 'import' plus passing of properties
 	<target name="test">
 		<!-- combine classpaths -->
 		<path id="combined.class.path">
-			<path refid="molgenis.classpath"/>
-			<path refid="app.class.path"/>
-			<path location="${output_src}"/>
+			<path refid="molgenis.classpath" />
+			<path refid="app.class.path" />
+			<path location="${output_src}" />
 		</path>
-		
-		
+
+
 		<!-- run the tests -->
 		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
 			<xmlfileset dir="${build.dir}" includes="**/*testng.xml" />
 			<jvmarg value="-ea" />
-			<jvmarg value="-Xmx1512m"/>
+			<jvmarg value="-Xmx1512m" />
 		</testng>
 
 		<!--junitreport todir="${testng.report.dir}">
@@ -192,68 +192,68 @@ It should be used via 'import' plus passing of properties
 		</war>
 	</target>
 	-->
-	
+
 	<target name="update-eclipse">
-				
+
 		<echo>Restoring .classpath from template file ${basedir}/.classpath.template.xml</echo>
-		<copy file="${basedir}/.classpath.template.xml" tofile="${basedir}/.classpath" overwrite="true"/>
+		<copy file="${basedir}/.classpath.template.xml" tofile="${basedir}/.classpath" overwrite="true" />
 		<echo>Customizing .classpath for ${app_name} ...</echo>
-		
+
 		<pathconvert property="app_xml" refid="app.class.path" pathsep="&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;">
 			<!--<map from="${user.dir}/" to="" />-->
 			<map from="${basedir}/" to="" />
 		</pathconvert>
-		
+
 		<!-- add generated src as well -->
-		<property name="app_xml2" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${app_xml}&quot;/&gt;"/>
-		<property name="app_xml3" value="${app_xml2}&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_sql}&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_src}&quot;/&gt;"/>
-		<echo message="eclipse .classpath xml: ${app_xml3}"/>
-	
+		<property name="app_xml2" value="&lt;classpathentry kind=&quot;src&quot; path=&quot;${app_xml}&quot;/&gt;" />
+		<property name="app_xml3" value="${app_xml2}&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_sql}&quot;/&gt;&lt;classpathentry kind=&quot;src&quot; path=&quot;${output_src}&quot;/&gt;" />
+		<echo message="eclipse .classpath xml: ${app_xml3}" />
+
 		<xmltask source=".classpath" dest=".classpath" outputter="simple">
-			<remove path="classpath/classpathentry[@kind='src' and not(@exported)]"/>
-			<insert path="classpath" position="under" xml="${app_xml3}"/>
+			<remove path="classpath/classpathentry[@kind='src' and not(@exported)]" />
+			<insert path="classpath" position="under" xml="${app_xml3}" />
 		</xmltask>
-		
+
 		<echo>Restoring .setting/sorg.eclipse.wst.common.component from template file ${basedir}/.settings/template.org.eclipse.wst.common.component</echo>
-		<copy file="${basedir}/.settings/template.org.eclipse.wst.common.component" tofile="${basedir}/.settings/org.eclipse.wst.common.component" overwrite="true"/>
-		
+		<copy file="${basedir}/.settings/template.org.eclipse.wst.common.component" tofile="${basedir}/.settings/org.eclipse.wst.common.component" overwrite="true" />
+
 		<!-- <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/src"/> -->
-		
+
 		<pathconvert property="app_xml4" refid="app.class.path" pathsep="&quot;/&gt;&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;">
 			<!--<map from="${user.dir}/" to="" />-->
 			<map from="${basedir}/" to="" />
 		</pathconvert>
-		
+
 		<!-- add generated src as well -->
-		<property name="app_xml5" value="&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;${app_xml4}&quot;/&gt;"/>
-		<property name="app_xml6" value="&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;${output_src}&quot;/&gt;${app_xml5}"/>
-		<property name="app_xml7" value="&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;${output_sql}&quot;/&gt;${app_xml6}"/>
-	
-		<echo message="eclipse .classpath xml: ${app_xml5}"/>
-	
+		<property name="app_xml5" value="&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;${app_xml4}&quot;/&gt;" />
+		<property name="app_xml6" value="&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;${output_src}&quot;/&gt;${app_xml5}" />
+		<property name="app_xml7" value="&lt;wb-resource deploy-path=&quot;/WEB-INF/classes&quot; source-path=&quot;${output_sql}&quot;/&gt;${app_xml6}" />
+
+		<echo message="eclipse .classpath xml: ${app_xml5}" />
+
 		<xmltask source=".settings/template.org.eclipse.wst.common.component" dest=".settings/org.eclipse.wst.common.component" outputter="simple">
-			<insert path="project-modules/wb-module" position="under" xml="${app_xml7}"/>
+			<insert path="project-modules/wb-module" position="under" xml="${app_xml7}" />
 		</xmltask>
-		
+
 	</target>
 
-	<target name="generate-compile" depends="generate,compile"/>
-	
-	<target name="clean-generate-compile" depends="clean,generate,compile"/>
-	
-	<target name="clean-generate-compile-run" depends="clean,generate,compile,run"/>
-	
-	<target name="clean-generate-compile-test" depends="clean,generate,compile,test"/>
-	
+	<target name="generate-compile" depends="generate,compile" />
+
+	<target name="clean-generate-compile" depends="clean,generate,compile" />
+
+	<target name="clean-generate-compile-run" depends="clean,generate,compile,run" />
+
+	<target name="clean-generate-compile-test" depends="clean,generate,compile,test" />
+
 	<target name="testcopy">
 		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*," dirsep="/">
 			<map from="${basedir}/" to="" />
 		</pathconvert>
-		
+
 		<copy todir="${build.dir}">
 			<!-- watch the trailing /**/*.ftl"-->
-			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java"/>
-			<fileset dir="${app_path}/handwritten/java/META-INF"/>
+			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java" />
+			<fileset dir="${app_path}/handwritten/java/META-INF" />
 			<!-- cut the two leading directories from path -->
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
 			<!--cutdirsmapper dirs="2"/-->
@@ -265,7 +265,7 @@ It should be used via 'import' plus passing of properties
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
 	</target>
-	
+
 	<target name="run" description="Start the application">
 		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<classpath>
@@ -275,5 +275,28 @@ It should be used via 'import' plus passing of properties
 			</classpath>
 		</java>
 	</target>
-	
+
+	<target name="makeWar">
+		<war destfile="${war.dir}/${war.name}" webxml="${webxml.dir}">
+			<classes dir="${build.dir}">
+				<include name="**/*" />
+			</classes>
+			<fileset dir="WebContent">
+				<exclude name="WebContent/META-INF/*" />
+				<exclude name="WebContent/WEB-INF/*" />
+				<include name="**/*.*" />
+			</fileset>
+			<lib dir="../molgenis/lib">
+				<include name="**/*.jar" />
+			</lib>
+			<lib dir="WebContent/WEB-INF/lib">
+				<include name="**/*.jar" />
+			</lib>
+			<metainf dir="WebContent/META-INF">
+			</metainf>
+		</war>
+	</target>
+
+	<target name="clean-generate-compile-war" depends="clean,generate,compile,makeWar" />
+
 </project>
