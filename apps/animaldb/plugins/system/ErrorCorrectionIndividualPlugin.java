@@ -88,11 +88,13 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 			if (action != null && action.startsWith(indMatrixViewer.getName())) {
 	    		indMatrixViewer.handleRequest(db, request);
 	    		reload = false;
+	    		return;
 			}
 			
 			if (action != null && action.startsWith(delIndMatrixViewer.getName())) {
 	    		delIndMatrixViewer.handleRequest(db, request);
 	    		reload = false;
+	    		return;
 			}
 			
 			if (action.equals("deleteIndividuals")) {
@@ -250,6 +252,7 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 		
 		// If a non-matrix related request was handled or if a new user has logged in, reload the matrix
 		if (reload == true || userId != this.getLogin().getUserId().intValue()) {
+			reload = false;
 			userId = this.getLogin().getUserId().intValue();
 			try {
 				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
@@ -259,21 +262,18 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 				indMatrixViewer = new MatrixViewer(this, INDMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
 						true, 2, false, true, filterRules, null);
-				indMatrixViewer.setDatabase(db);
-				indMatrixRendered = indMatrixViewer.render();
 				delIndMatrixViewer = new MatrixViewer(this, DELINDMATRIX, 
 						new SliceablePhenoMatrix<DeletedIndividual, Measurement>(DeletedIndividual.class, Measurement.class), 
 						true, 2, false, true, filterRules, null);
-				delIndMatrixViewer.setDatabase(db);
-				delIndMatrixRendered = delIndMatrixViewer.render();
 			} catch(Exception e) {
 				e.printStackTrace();
 				this.setError("Something went wrong while loading individuals matrix: " + e.getMessage());
 			}
-		} else {
-			indMatrixViewer.setDatabase(db);
-			delIndMatrixViewer.setDatabase(db);
 		}
+		indMatrixViewer.setDatabase(db);
+		indMatrixRendered = indMatrixViewer.render();
+		delIndMatrixViewer.setDatabase(db);
+		delIndMatrixRendered = delIndMatrixViewer.render();
 	}
 
 	public String getIndividualMatrix() {

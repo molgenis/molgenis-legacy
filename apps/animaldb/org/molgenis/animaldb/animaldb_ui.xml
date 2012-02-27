@@ -67,10 +67,10 @@
 			<plugin name="Backgrounds" type="plugins.settings.BackgroundPlugin"
 				label="Backgrounds" />
 			<menu name="errorcorrectmenu" position="left" label="Correct errors">
-			<plugin name="ErrorCorrectionIndividual" type="plugins.system.ErrorCorrectionIndividualPlugin"
-					label="Animals" />
-			<plugin name="ErrorCorrectionValue" type="plugins.system.ErrorCorrectionPlugin"
-					label="Values" />
+				<plugin name="ErrorCorrectionIndividual" type="plugins.system.ErrorCorrectionIndividualPlugin"
+						label="Animals" />
+				<!-- plugin name="ErrorCorrectionValue" type="plugins.system.ErrorCorrectionPlugin"
+						label="Values" /-->
 			</menu>
 		</menu>
 		
