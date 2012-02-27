@@ -27,7 +27,6 @@ public class EAVViewBackend implements Backend {
 
     private final String joinColumn;
     private final String tablePrefix;
-    private final LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol;
     private HashMap<String, List<String>> ambiguityTable;
     private final EntityManager em;
 
@@ -36,24 +35,32 @@ public class EAVViewBackend implements Backend {
     public EAVViewBackend(SliceablePhenoMatrixMV<?, ?, ?> matrix, String tablePrefix) {
         this.matrix = matrix;
         this.em = matrix.getEm();
-        this.measurementsByProtocol = matrix.getMeasurementsByProtocol();
         this.tablePrefix = tablePrefix;
         this.joinColumn = matrix.getJOIN_COLUMN();
         
-        ambiguityTable = BackendUtils.buildAmbiguityTable(measurementsByProtocol);        
+                
     }
 
     @Override
     public String createQuery(boolean count, List<MatrixQueryRule> rules) throws Exception {
         StringBuilder sql = new StringBuilder("SELECT ");
+        
+        LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol = matrix.getMeasurementsByProtocol();
+        
         String firstTableName = tablePrefix + measurementsByProtocol.keySet().toArray(new Protocol[1])[0].getName();
 
+        
+        
         if (count) {
             sql.append(" COUNT(*) ");
         } else {
             //Select part
+        	
+        	ambiguityTable = BackendUtils.buildAmbiguityTable(measurementsByProtocol);
+        	
             int cnt = 0;
-            for (Map.Entry<Protocol, List<Measurement>> entry : measurementsByProtocol.entrySet()) {
+            
+			for (Map.Entry<Protocol, List<Measurement>> entry : measurementsByProtocol.entrySet()) {
                 for (Measurement m : entry.getValue()) {
                     String tableName = String.format("%s%s", tablePrefix, entry.getKey().getName());
                     

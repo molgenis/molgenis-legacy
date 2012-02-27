@@ -96,7 +96,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
 	
 	private void retrieveCategories() throws DatabaseException {
 		String qlString = "SELECT m, c FROM Measurement m JOIN m.categories c WHERE m.investigation = :investigation";
-		List<Object[]> measCats = em.createQuery(qlString)
+		List<Object[]> measCats = em.createQuery(qlString, Object[].class)
 					.setParameter("investigation", investigation)
 					.getResultList();
 		
