@@ -28,6 +28,9 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 	//private CommonService ct = CommonService.getInstance();
 	private List<ObservedValue> valueList = new ArrayList<ObservedValue>();
 	private List<DeletedObservedValue> deletedValueList = new ArrayList<DeletedObservedValue>();
+	private int offset = 0;
+	private int limit = 10;
+	private int nrOfValues;
 	
 	public ErrorCorrectionPlugin(String name, ScreenController<?> parent)
 	{
@@ -58,6 +61,19 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 		{
 			String action = request.getString("__action");
 			Date now = new Date();
+			
+			if (action.equals("moveUpEnd")) {
+				offset = 0;
+			}
+			if (action.equals("moveUp")) {
+				offset = Math.max(0, offset - limit);
+			}
+			if (action.equals("moveDown")) {
+				offset = Math.min(nrOfValues - limit, offset + limit);
+			}
+			if (action.equals("moveDownEnd")) {
+				offset = nrOfValues - limit;
+			}
 			
 			if (action.equals("deleteValues")) {
 				List<ObservedValue> removalList = new ArrayList<ObservedValue>();
@@ -122,7 +138,8 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 	{
 		try
 		{
-			this.valueList = db.query(ObservedValue.class).sortDESC(ObservedValue.TIME).find();
+			this.nrOfValues = db.query(ObservedValue.class).count();
+			this.valueList = db.query(ObservedValue.class).sortDESC(ObservedValue.TIME).limit(limit).offset(offset).find();
 			this.deletedValueList = db.query(DeletedObservedValue.class).sortDESC(DeletedObservedValue.TIME).find();
 		}
 		catch (DatabaseException e)
@@ -150,6 +167,30 @@ public class ErrorCorrectionPlugin extends PluginModel<Entity>
 	public void setDeletedValueList(List<DeletedObservedValue> deletedValueList)
 	{
 		this.deletedValueList = deletedValueList;
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+
+	public int getNrOfValues() {
+		return nrOfValues;
+	}
+
+	public void setNrOfValues(int nrOfValues) {
+		this.nrOfValues = nrOfValues;
 	}
 	
 }

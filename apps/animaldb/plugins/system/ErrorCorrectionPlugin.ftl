@@ -27,6 +27,15 @@
 
 <h3>Observed values</h3>
 <#if screen.valueList?size gt 0>
+
+	<img class="edit_button" src="generated-res/img/first.png" alt="" onclick="$(this).closest('form').find('input[name=__action]').val('moveUpEnd');; $(this).closest('form').submit();" title="" id="moveUpEnd" style="null"  />
+	<img class="edit_button" src="generated-res/img/prev.png" alt="" onclick="$(this).closest('form').find('input[name=__action]').val('moveUp');; $(this).closest('form').submit();" title="" id="moveUp" style="null"  />
+	<#assign lowest = screen.offset + 1>
+	<#assign highest = screen.offset + screen.limit>
+	&nbsp;Showing ${lowest} - ${highest} of ${screen.nrOfValues}&nbsp;
+	<img class="edit_button" src="generated-res/img/next.png" alt="" onclick="$(this).closest('form').find('input[name=__action]').val('moveDown');; $(this).closest('form').submit();" title="" id="moveDown" style="null"  />
+	<img class="edit_button" src="generated-res/img/last.png" alt="" onclick="$(this).closest('form').find('input[name=__action]').val('moveDownEnd');; $(this).closest('form').submit();" title="" id="moveDownEnd" style="null"  />
+	
 	<table cellpadding="0" cellspacing="0" border="0" class="display" id="valuetable">
 		<thead>
 			<tr>
@@ -108,8 +117,11 @@
 <script>
 	var oTable = jQuery('#valuetable').dataTable(
 	{ "bProcessing": true,
+	  "bFilter" : false,
+	  "bLengthChange": false,
 	  "bServerSide": false,
-	  "sPaginationType": "full_numbers",
+	  "bInfo" : false,
+	  "sPaginate": "false",
 	  "bSaveState": true,
 	  "bAutoWidth": false,
 	  "bJQueryUI" : true }
