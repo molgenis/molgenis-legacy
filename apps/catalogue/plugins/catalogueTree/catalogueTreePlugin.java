@@ -65,6 +65,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	public void handleRequest(Database db, Tuple request) {
 
+		System.out.println("InputToken" + InputToken);
 		try {
 			if ("chooseInvestigation".equals(request.getAction())) {
 				selectedInvestigation = request.getString("investigation");
@@ -77,7 +78,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				Date dat = new Date();
 				String dateOfDownload = dateFormat.format(dat);
 				System.out.println("selected investigaton >>>> " + selectedInvestigation);
-				this.addMeasurements(db, request, selectedInvestigation, dateOfDownload);
+				this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload);
 
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
@@ -87,6 +88,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			} if (request.getAction().startsWith("SearchCatalogueTree")) {
 				this.setInputToken(request.getString("InputToken").trim());
 				
+				System.out.println("The request string : "+ request);
 				System.out.println("The searching investigation is : "+ request.getString("searchingInvestigation").trim());
 				this.setSearchingInvestigation(request.getString("searchingInvestigation").trim());
 				searchingInvestigation = request.getString("searchingInvestigation").trim();
@@ -100,6 +102,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				if (this.getSelectedField().equals("Protocols")) 
 					RetrieveProtocols(db,2); 
 				//Search "Any field" ==> All fields LIKE input token 
+				if (this.getSelectedField().equals("Measurements")) 
+					RetrieveProtocols(db,3); 
+			
 				//if (this.getSelectedField().equals("All fields")) 
 					//RetrieveProtocols(db,3); //too complicated to start the search from this function .  This filter is applied in addingLastMeasurementToTree()
 				//else if (this.getSelectedField().equals("Measurements")) {}
@@ -116,7 +121,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	
 
-	private void addMeasurements(Database db, Tuple request, String selectedInvestigation, String dateOfDownload) throws DatabaseException, IOException {
+	private void addMeasurementsForDownload(Database db, Tuple request, String selectedInvestigation, String dateOfDownload) throws DatabaseException, IOException {
 
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement names,
@@ -196,15 +201,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	
 	/**
-	 * This function is recursively nodes in the tree except form the last measurement . 
-	 * The last measurement is added by addingLastMeasurementToTree() because we add two different class : Protocol & Measurement, 
-	 * so basically we need to recursivley traverse all the Protocols and in the end we have one measurement.  
 	 * @param parentNode
 	 * @param parentTree
 	 * @param db
 	 */
-	public void recursiveAddingNodesToTree(List<String> nextNodes, String parentClassName,
-			JQueryTreeViewElementObject parentTree, Database db) {
+	public void recursiveAddingNodesToTree(List<String> nextNodes, String parentClassName, JQueryTreeViewElementObject parentTree, Database db, Integer mode) {
 
 		for (String protocolName : nextNodes) {
 
@@ -232,31 +233,41 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				}
 
 				if (protocol.getSubprotocols_Name() != null	&& protocol.getSubprotocols_Name().size() > 0) {
-					recursiveAddingNodesToTree(protocol.getSubprotocols_Name(), protocol.getName(), childTree, db);
+					recursiveAddingNodesToTree(protocol.getSubprotocols_Name(), protocol.getName(), childTree, db, mode);
 				}
 				if (protocol.getFeatures_Name() != null	&& protocol.getFeatures_Name().size() > 0) { //error checking 
-					addingLastMeasurementToTree(protocol.getFeatures_Name(), childTree, db); //.. so normally it goes always this way
+					addingMeasurementsToTree(protocol.getFeatures_Name(), childTree, db, mode); //.. so normally it goes always this way
 				}
 			}
 		}
 	}
 
 	/**
-	 * this is adding the last measurement as references in recursiveAddingNodesToTree().
+	 * this is adding the measurements as references in recursiveAddingNodesToTree().
 	 * @param childNode
 	 * @param parentTree
 	 * @param db
 	 */
-	public void addingLastMeasurementToTree(List<String> childNode, JQueryTreeViewElementObject parentTree, Database db) {
+	public void addingMeasurementsToTree(List<String> childNode, JQueryTreeViewElementObject parentTree, Database db, Integer mode) {
 
+		List<Measurement> measurementList  = new ArrayList<Measurement>();
 		try {
 
-			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode));
+			if (mode == 3) {
+				System.out.println("Searching  MEasurements");
+				measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.LIKE, InputToken));
+				System.out.println("measurementList>>>>"+measurementList);
 
+			} else {
+				System.out.println("returning ALL MEasurements");
+				measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode));
+			}
+			
 			for (Measurement measurement : measurementList) {
 
 				JQueryTreeViewElementObject childTree;
 				
+				 
 				if (protocolsAndMeasurementsinTree.containsKey(measurement.getName())) {
 
 					if(!multipleInheritance.containsKey(measurement.getName())){
@@ -377,17 +388,16 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			} else if (mode==2) { 	//Search input token --> LIKE protocols
 				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.getSearchingInvestigation()));
 				q.addRules(new QueryRule(Protocol.NAME, Operator.LIKE, InputToken));
-			} else if (mode==3) {
+			} else if (mode==3) { // Search Input token --> LIKE measurements. 
+								  // In order to filter the measurement , we keep just the investigation filtering and later on recursiveAddingNodesToTree()--> we filter the emasurements 
 				System.out.println("Searhcing all fields for "+ InputToken);
 				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.getSearchingInvestigation()));
-				q.addRules(new QueryRule(Protocol.NAME, Operator.LIKE, InputToken), new QueryRule(Protocol.NAME, Operator.OR, InputToken) );
-
-				
+			
 			}
 			for (Protocol p : q.find()) {
 					setSelectedInv(true);
 					List<String> subNames = p.getSubprotocols_Name();
-					System.out.println(">>>"+ p);
+					//System.out.println(">>>"+ p);
 					
 					if (!nameToProtocol.containsKey(p.getName())) {
 						nameToProtocol.put(p.getName(), p);
@@ -424,19 +434,18 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		JQueryTreeViewElementObject protocolsTree = new JQueryTreeViewElementObject(
 				"Protocols", null);
 
-		if(topProtocols.size() == 0){
-			recursiveAddingNodesToTree(bottomProtocols,"Protocols", protocolsTree, db);
+		
+		if(topProtocols.size() == 0){ //no subprotocols
+			recursiveAddingNodesToTree(bottomProtocols,"Protocols", protocolsTree, db, mode);
 
 		}else{
-			recursiveAddingNodesToTree(topProtocols, "Protocols", protocolsTree, db);
+			recursiveAddingNodesToTree(topProtocols, "Protocols", protocolsTree, db, mode);
 		}
 
-		//the flow ALWAYS ends here :
-		System.out.println("YOU WILL ALWAYS SEE ME !!!");
+
 
 		//this is the last reference of protocolsTree(NOT  :protocolsAndMeasurementsinTree) , so the table is READY(?) for filtering TODO: confirm. 
-		if (this.getSelectedField() != null && 
-				this.getSelectedField().equals("All fields")) {
+		if (this.getSelectedField() != null && this.getSelectedField().equals("All fields")) {
 			//search inside protocolsTree NOT :protocolsAndMeasurementsinTree
 			System.out.println("protocolsAndMeasurementsinTree BEFORE filtering : " + protocolsAndMeasurementsinTree);
 			System.out.println("protocolsTree BEFORE filtering : " + protocolsTree);
@@ -446,9 +455,23 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			System.out.println("protocolsTree AFTER filtering : " + protocolsTree);
 				
 	    }
+		if (mode == 3 ) {
+			JQueryTreeViewMeasurement<JQueryTreeViewElementObject> fullTreeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementObject>("Protocols", protocolsTree);
 		
-		treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementObject>(
-				"Protocols", protocolsTree);
+			List<JQueryTreeViewElementObject> allChildrenFromTheTree = fullTreeView.getTree().getAllChildren();
+			
+			for(JQueryTreeViewElementObject eachChild : allChildrenFromTheTree){
+				
+				String eachName = eachChild.getLabel();
+				System.out.println(">>>>>>>>eachName >"+ eachName + "Inpugt token"+ InputToken);
+
+				if(eachName.matches(InputToken)){
+					System.out.println(">>>>>>>>>"+ protocolsTree);
+				}
+			}
+		} else {
+			treeView = new JQueryTreeViewMeasurement<JQueryTreeViewElementObject>("Protocols", protocolsTree);
+		}
 		
 		
 	}
