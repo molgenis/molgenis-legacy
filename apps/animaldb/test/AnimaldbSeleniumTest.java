@@ -103,13 +103,13 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Import database"));
 		// First try and see if we're on Erik's laptop
-		selenium.type("id=zip", "C:\\Users\\Erik\\Dropbox\\GCC\\AnimalDB\\Data\\legacy\\20120220_PrefillAnimalDB\\20120220_PrefillAnimalDB.zip");
+		selenium.type("id=zip", "C:\\Users\\Erik\\Dropbox\\GCC\\AnimalDB\\Data\\legacy\\PrefillAnimalDB.zip");
 		selenium.click("id=source1");
 		selenium.click("id=load");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		if (!selenium.isTextPresent("Pre-filling AnimalDB successful")) {
 			// If not, let's assume we're on the Hudson server
-			selenium.type("id=zip", "/data/home/erikroos/20120220_PrefillAnimalDB.zip");
+			selenium.type("id=zip", "/data/home/erikroos/PrefillAnimalDB.zip");
 			selenium.click("id=source1");
 			selenium.click("id=load");
 			selenium.waitForPageToLoad(pageLoadTimeout);
