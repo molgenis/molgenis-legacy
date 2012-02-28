@@ -758,7 +758,7 @@ public class XqtlSeleniumTest
 				clickAndWait("id=OtherAdmin_tab_button");
 				clickAndWait("id=Jobs_tab_button");
 				
-				Assert.assertEquals(selenium.getText("css=span"), "Rqtl_analysis");
+				Assert.assertTrue(selenium.isTextPresent("Rqtl_analysis"));
 				Assert.assertEquals(selenium.getText("css=#Job_ComputeResource_chzn > a.chzn-single > span"), "local");
 				Assert.assertTrue(selenium.isTextPresent("MyOutput*Subjobs*1 - 6 of 6"));
 
@@ -770,6 +770,15 @@ public class XqtlSeleniumTest
 			{
 				// page around in the matrix and see if the correct
 				// values are displayed in the viewer
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void dataXrefOptions() throws Exception
+			{
+				//check if the XREF options for Dataset / DataName / DataValue are correct
+				//behaviour: currently not well defined: but DataValue shows XREF options outside
+				//of the DataName scope.. weird
 			}
 			
 			@Test(dependsOnMethods =
