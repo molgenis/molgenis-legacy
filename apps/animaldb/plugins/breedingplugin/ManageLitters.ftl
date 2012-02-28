@@ -133,7 +133,7 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 	
-	<p>Parentgroup:</p>
+	<label for="matrix">Parentgroup:</label>
 	${screen.renderMatrixViewer()}
 	<hr />
 	
