@@ -65,6 +65,14 @@ MOLGENIS.logout = function()
 	close( handle )
 }
 
+downloadFileViaCurl <- function(url = "www.dannyarends.nl/apps/genotypes.txt", filename = "out.txt"){
+  mydata <- getURLContent(url, binary=T, curl = ch)
+  fin <- file(filename,"wb")
+  writeBin(mydata[1:length(mydata)],con=fin)
+  close(fin)
+  invisible(mydata)
+}
+
 #upload wrapper to pass the curl handle with the session
 #untested
 MOLGENIS.upload <- function(url, Investigation_name, name, type, filename, style = 'HTTPPOST'){
