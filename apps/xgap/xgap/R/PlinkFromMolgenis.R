@@ -32,8 +32,8 @@
 
 #PlinkFromMolgenis <- function(DBmarker="", DBtrait="", verbose=TRUE){
 PlinkFromMolgenis <- function(investigationname="",phenotypematrixname="", verbose=FALSE){
-	library("RCurl")
-	library("qtl")
+	#library("RCurl")
+	#library("qtl")
 	if(!("RCurl" %in% names( getLoadedDLLs()))){
 		stop("Please install the package RCurl from bioconductor to use the molgenis interface\n")
 	}
@@ -56,14 +56,12 @@ PlinkFromMolgenis <- function(investigationname="",phenotypematrixname="", verbo
 	if(trait_row != "Individual" && trait_col != "Individual"){
 		stop("No Individuals found in DBtraitID")
 	}
-	if(marker_row != "Marker" && marker_col != "Marker"){
-		stop("No markers found in DBmarkerID")
-	}
 	
 	if(verbose) cat(DBtraitID,"\n")
 	trait_data <- downloadmatrixascsvCURL(DBtraitID)
 	
 	temp <- matrix(as.numeric(as.matrix(trait_data)),c(dim(trait_data)[1],dim(trait_data)[2]))
+	temp[,1] <- trait_data[,1]
 	rownames(temp) <- rownames(trait_data)
 	colnames(temp) <- colnames(trait_data)
 	trait_data <- temp

@@ -205,6 +205,15 @@ public class AddClusterMetaModel
 			ParameterSet plinkParams = new ParameterSet();
 			plinkParams.setName("Plink_params");
 			db.add(plinkParams);
+			
+			DataSet plinkDataSet = new DataSet();
+			plinkDataSet.setName("PlinkPhenotypes");
+			db.add(plinkDataSet);
+			
+			DataName plinkPhenotypes = new DataName();
+			plinkPhenotypes.setName("phenotypes");
+			plinkPhenotypes.setDataSet(plinkDataSet);
+			db.add(plinkPhenotypes);
 
 			ParameterName plinkName = new ParameterName();
 			plinkName.setName("inputname");
@@ -221,7 +230,7 @@ public class AddClusterMetaModel
 			Analysis plink = new Analysis();
 			plink.setName("Plink_analysis");
 			plink.setDescription("This is a basic PLINK association analysis. The input parameter 'inputname' must correspond to files in your database: 'inputname'_map.map and 'inputname'_ped.ped. Use 'Import data' -> 'Plink' for convenience. For more information, please visit the <a target=\"_blank\" href=\"http://pngu.mgh.harvard.edu/~purcell/plink/\">Plink website</a>.");
-			plink.setDataSet(emptyDataSet);
+			plink.setDataSet(plinkDataSet);
 			plink.setParameterSet(plinkParams);
 			plink.setTargetFunctionName("PLINK");
 			db.add(plink);

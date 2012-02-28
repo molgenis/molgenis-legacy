@@ -93,8 +93,8 @@ DownloadnSavePLINK <- function(investigationname, token, DBtraitID = "", dbpath 
   cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
 	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 	#Downloading of Cross object (secured)
-	cat(Generate_Statement(paste("plink <- PlinkFromMolgenis(genotypematrixname='",DBmarkerID,"',phenotypematrixname='",DBtraitID,"',investigationname='",investigationname,"')","\n",sep="")),file=qtlfile,append=T)
-	cat(Generate_Statement(paste("write.table(plink,file=\"./run",jobid,"/phenotypes.txt\")","\n",sep="")),file=qtlfile,append=T)
+	cat(Generate_Statement(paste("plink <- PlinkFromMolgenis(phenotypematrixname='",DBtraitID,"',investigationname='",investigationname,"')","\n",sep="")),file=qtlfile,append=T)
+	cat(Generate_Statement(paste("write.table(plink,file=\"./run",jobid,"/phenotypes.txt\",quote=FALSE,row.names=FALSE)","\n",sep="")),file=qtlfile,append=T)
 	cat("q(\"no\")","\n",sep="",file=qtlfile,append=T)
 }
 
@@ -205,22 +205,23 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
   doDownload <- FALSE
   if(job=="QTL"){
     tryCatch(DownloadnSave(investigationname=investigation, token, genotypes, phenotypes, dbpath=dbpath,jobid,njobs,libraryloc)
-      ,error =  function(e){report(dbpath,jobid,0,-1,"Downloadscript")}
+      ,error =  function(e){cat(e[[1]],"\n");report(dbpath,jobid,0,-1,"Downloadscript")}
     )
     cat("debug: R/qtl Downloadfile generated\n")
     doDownload <- TRUE
   }
   if(job=="PLINK"){
-    tryCatch(DownloadnSavePLINK(investigationname=investigation, token, genotypes, phenotypes, dbpath=dbpath,jobid,njobs,libraryloc)
-      ,error =  function(e){report(dbpath,jobid,0,-1,"Downloadscript")}
+    tryCatch(DownloadnSavePLINK(investigationname=investigation, token, phenotypes, dbpath=dbpath,jobid,njobs,libraryloc)
+      ,error =  function(e){cat(e[[1]],"\n");report(dbpath,jobid,0,-1,"Downloadscript")}
     )
+    totalitems <- (totalitems-2)
     doDownload <- TRUE
     cat("debug: PLINK Downloadfile generated\n")
   }
   if(doDownload){
     report(dbpath,jobid,0,2,"GeneratedDownload")
     tryCatch(system(paste("R CMD BATCH ./run",jobid,"/download.R",sep=""))
-      ,error =  function(e){report(dbpath,jobid,0,-1,"DownloadingCrossobject")}
+      ,error =  function(e){cat(e[[1]],"\n");report(dbpath,jobid,0,-1,"DownloadingCrossobject")}
     )
     cat("Debug: Finished downloading datasets\n")
     report(dbpath,jobid,0,2,"FinishedDownloadingDatasets")
@@ -274,7 +275,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 		cat("Submitting: ",x,".3/",njobs,":",runfile,"\n",sep="")
 #		OLD call to sh to compute on the Sceduler
 		tryCatch(system(paste("qsub ",runfile,sep=""))
-			,error =  function(e){report(dbpath,jobid,x,-1,"SubmissionPBS:")}
+			,error =  function(e){cat(e[[1]],"\n");report(dbpath,jobid,x,-1,"SubmissionPBS:")}
 		)
 		report(dbpath,jobid,0,2,paste("Submitted_",x,sep=""))	
 		report(dbpath,jobid,x,1,"Taskqueued")
