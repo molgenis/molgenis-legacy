@@ -73,7 +73,7 @@ PlinkFromMolgenis <- function(investigationname="",phenotypematrixname="", verbo
 		trait_data <- t(trait_data)
 	}
 	if(verbose)cat("INFO: Number of individuals in Phenotype set:",dim(trait_data)[1],"\n")
-  write.table(trait_data,file="phenotypes.txt",row.names = FALSE)
+  return(trait_data)
 }
  
 # end of PlinkFromMolgenis.R

@@ -66,13 +66,35 @@ DownloadnSave <- function(investigationname, token, DBmarkerID = "", DBtraitID =
 	cat("library(qtl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-    cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+  cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
 	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 	#Downloading of Cross object (secured)
 	cat(Generate_Statement(paste("cross <- CrossFromMolgenis(genotypematrixname='",DBmarkerID,"',phenotypematrixname='",DBtraitID,"',investigationname='",investigationname,"')","\n",sep="")),file=qtlfile,append=T)
 	cat(Generate_Statement(paste("save(cross,file=\"./run",jobid,"/cross.RData\")","\n",sep="")),file=qtlfile,append=T)
 	cat(Generate_Statement(paste("dir.create(\"./run",jobid,"/run",jobid,"/\")","\n",sep="")),file=qtlfile,append=T)	
 	cat(Generate_Statement(paste("save(cross,file=\"./run",jobid,"/run",jobid,"/cross.RData\")","\n",sep="")),file=qtlfile,append=T)
+	cat("q(\"no\")","\n",sep="",file=qtlfile,append=T)
+}
+
+DownloadnSavePLINK <- function(investigationname, token, DBtraitID = "", dbpath = "",jobid,njobs,libraryloc=NULL){
+	#Generates a R-script to download all the information and build a cross object
+	qtlfile <- paste("./run",jobid,"/download.R",sep="")
+	#Print our report function
+	cat("\nreport <- function(status,text){\n",file=qtlfile)
+	cat("\ttask <- ",jobid,"\n",file=qtlfile,append=T)
+	cat("\ttext <- substr(URLencode(text),0,100)\n",file=qtlfile,append=T)
+	cat("\tlink <- paste(\"",dbpath,"/taskreporter?job=\",task,\"&subjob=0&statuscode=\",status,\"&statustext=\",text,sep=\"\")\n",sep="",file=qtlfile,append=T)
+	cat("\tgetURL(link, curl = ch)\n",file=qtlfile,append=T)
+	cat("\tif(status==-1){\n\t\tcat(\"!!!\",text,\"!!!\")\n\t\t\n\t\tq(\"no\")\n\t}\n",file=qtlfile,append=T)
+	cat("}\n\n",file=qtlfile,append=T)
+	#load needed libraries
+	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
+	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
+  cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
+	#Downloading of Cross object (secured)
+	cat(Generate_Statement(paste("plink <- PlinkFromMolgenis(genotypematrixname='",DBmarkerID,"',phenotypematrixname='",DBtraitID,"',investigationname='",investigationname,"')","\n",sep="")),file=qtlfile,append=T)
+	cat(Generate_Statement(paste("write.table(plink,file=\"./run",jobid,"/phenotypes.txt\")","\n",sep="")),file=qtlfile,append=T)
 	cat("q(\"no\")","\n",sep="",file=qtlfile,append=T)
 }
 
@@ -155,8 +177,8 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 #	--Generate a QTLfile
 #	--Generate runfile for cluster
 #	--Sends the runfile as a job to the cluster
-    dbpath <- as.character(.MOLGENIS$servletURL) #now that we now the DNS name, use this! so replace eg "http://129.125.132.49:8080/xqtl" by "http://fwn-biol-132-49.biol.rug.nl:8080/xqtl"
-    report(dbpath,jobid,0,2,"TETSING1")
+  dbpath <- as.character(.MOLGENIS$servletURL) #now that we now the DNS name, use this! so replace eg "http://129.125.132.49:8080/xqtl" by "http://fwn-biol-132-49.biol.rug.nl:8080/xqtl"
+  report(dbpath,jobid,0,2,"TETSING1")
 	genotypes <- getparameter("genotypes",jobparams)
 	phenotypes <- getparameter("phenotypes",jobparams)
 	totalitems <- as.integer(totalitems)
@@ -180,16 +202,29 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 	}
 	nprun <- ceiling(totalitems/njobs)
 	cat("# of Traits:",totalitems,"\n# of Jobs",njobs,"# per run",nprun,"\n")
-	tryCatch(DownloadnSave(investigationname=investigation, token, genotypes, phenotypes, dbpath=dbpath,jobid,njobs,libraryloc)
-		,error =  function(e){report(dbpath,jobid,0,-1,"Downloadscript")}
-	)
-  cat("debug: Downloadfile generated\n")
-	report(dbpath,jobid,0,2,"GeneratedDownload")
-	tryCatch(system(paste("R CMD BATCH ./run",jobid,"/download.R",sep=""))
-		,error =  function(e){report(dbpath,jobid,0,-1,"DownloadingCrossobject")}
-	)
-	cat("Debug: Finished downloading datasets\n")
-  report(dbpath,jobid,0,2,"FinishedDownloadingDatasets")	
+  doDownload <- FALSE
+  if(job=="QTL"){
+    tryCatch(DownloadnSave(investigationname=investigation, token, genotypes, phenotypes, dbpath=dbpath,jobid,njobs,libraryloc)
+      ,error =  function(e){report(dbpath,jobid,0,-1,"Downloadscript")}
+    )
+    cat("debug: R/qtl Downloadfile generated\n")
+    doDownload <- TRUE
+  }
+  if(job=="PLINK"){
+    tryCatch(DownloadnSavePLINK(investigationname=investigation, token, genotypes, phenotypes, dbpath=dbpath,jobid,njobs,libraryloc)
+      ,error =  function(e){report(dbpath,jobid,0,-1,"Downloadscript")}
+    )
+    doDownload <- TRUE
+    cat("debug: PLINK Downloadfile generated\n")
+  }
+  if(doDownload){
+    report(dbpath,jobid,0,2,"GeneratedDownload")
+    tryCatch(system(paste("R CMD BATCH ./run",jobid,"/download.R",sep=""))
+      ,error =  function(e){report(dbpath,jobid,0,-1,"DownloadingCrossobject")}
+    )
+    cat("Debug: Finished downloading datasets\n")
+    report(dbpath,jobid,0,2,"FinishedDownloadingDatasets")
+  }
 	tryCatch(est <- est_runtime_new_new(token, njobs, totalitems, dbpath=dbpath, nprun, jobid, job=job, investigation, jobparams=jobparams, libraryloc)
 		,error =  function(e){cat(e[[1]],"\n");report(dbpath,jobid,0,-1,"EstimatingTime")}
 	)
