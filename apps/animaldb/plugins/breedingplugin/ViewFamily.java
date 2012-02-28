@@ -1,6 +1,7 @@
 
 package plugins.breedingplugin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
@@ -11,6 +12,12 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.matrix.component.MatrixViewer;
+import org.molgenis.matrix.component.SliceablePhenoMatrix;
+import org.molgenis.matrix.component.general.MatrixQueryRule;
+import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -32,6 +39,9 @@ public class ViewFamily extends PluginModel<Entity>
 	private String action = "init";
 	private String info = "";
 	private CommonService cs = CommonService.getInstance();
+	MatrixViewer animalMatrixViewer = null;
+	static String ANIMALMATRIX = "animalmatrix";
+	private String animalMatrixRendered;
 
 	public ViewFamily(String name, ScreenController<?> parent)
 	{
@@ -64,6 +74,13 @@ public class ViewFamily extends PluginModel<Entity>
 		}
 	}
 	
+	public String getAnimalMatrix() {
+		if (animalMatrixRendered != null) {
+			return animalMatrixRendered;
+		}
+		return "Error - animal matrix not initialized";
+	}
+	
 	/**
 	 * At each page view: reload data from database into model and/or change.
 	 *
@@ -75,17 +92,36 @@ public class ViewFamily extends PluginModel<Entity>
 	{	
 		cs.setDatabase(db);
 		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
-
-		try {
-			// Populate animal list
-			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
-			this.setAnimalIdList(cs.getAllObservationTargetIds("Individual", true, investigationIds));
-		} catch (Exception e) {
-			e.printStackTrace();
-			if (e.getMessage() != null) {
-				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
+		if (animalMatrixViewer != null) {
+			animalMatrixViewer.setDatabase(db);
+		} else {
+			try {
+				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
+				List<String> measurementsToShow = new ArrayList<String>();
+				measurementsToShow.add("Active");
+				measurementsToShow.add("Mother");
+				measurementsToShow.add("Father");
+				measurementsToShow.add("Parentgroup");
+				measurementsToShow.add("Litter");
+				measurementsToShow.add("Line");
+				measurementsToShow.add("Sex");
+				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
+						Operator.IN, investigationNames));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
+						"Alive"));
+				animalMatrixViewer = new MatrixViewer(this, ANIMALMATRIX, 
+						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+						true, 1, false, false, filterRules, 
+						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				animalMatrixViewer.setDatabase(db);
+				animalMatrixViewer.setLabel("Choose animal:");
+			} catch (Exception e) {
+				this.setError("Could not initialize matrix");
 			}
 		}
+		animalMatrixRendered = animalMatrixViewer.render();
 	}
 
 	@Override
@@ -101,13 +137,28 @@ public class ViewFamily extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request) {
 		cs.setDatabase(db);
+		if (animalMatrixViewer != null) {
+			animalMatrixViewer.setDatabase(db);
+		}
 		try
 		{
 			action = request.getString("__action");
+			
+			if (action.startsWith(animalMatrixViewer.getName())) {
+	    		animalMatrixViewer.handleRequest(db, request);
+			}
+			
 			if (action.equals("reqInfo"))
 			{
-				// Get animal ID
-				int animalId = request.getInt("animal");
+				// Get animal ID from matrix
+				int animalId;
+				List<?> rows = animalMatrixViewer.getSelection(db);
+				try { 
+					int row = request.getInt(ANIMALMATRIX + "_selected");
+					animalId = ((ObservationElement) rows.get(row)).getId();
+				} catch (Exception e) {
+					throw new Exception("No animal selected");
+				}
 				String animalName = cs.getObservationTargetLabel(animalId);
 				
 				// Get litter ID
@@ -157,11 +208,11 @@ public class ViewFamily extends PluginModel<Entity>
 				// Get mother(s)
 				String mothers = "";
 				q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Mother"));
+				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, parentgroupId));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ParentgroupMother"));
 				valueList = q.find();
 				for (ObservedValue value : valueList) {
-					mothers += (cs.getObservationTargetLabel(value.getTarget_Id()) + ", ");
+					mothers += (cs.getObservationTargetLabel(value.getRelation_Id()) + ", ");
 				}
 				if (mothers.length() > 0) {
 					mothers = mothers.substring(0, mothers.length() - 2);
@@ -170,22 +221,22 @@ public class ViewFamily extends PluginModel<Entity>
 				// Get father(s)
 				String fathers = "";
 				q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, parentgroupId));
-				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Father"));
+				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, parentgroupId));
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ParentgroupFather"));
 				valueList = q.find();
 				for (ObservedValue value : valueList) {
-					fathers += (cs.getObservationTargetLabel(value.getTarget_Id()) + ", ");
+					fathers += (cs.getObservationTargetLabel(value.getRelation_Id()) + ", ");
 				}
 				if (fathers.length() > 0) {
 					fathers = fathers.substring(0, fathers.length() - 2);
 				}
 				
-				info = "Animal " + animalName +
-					" is from litter: " + litterName + "<br />" +
-					" which came from parentgroup: " + parentgroupName + "<br />" +
-					" with mother(s): " + mothers + "<br />" + 
-					" and father(s): " + fathers + "<br />" +
-					" and with sibling(s): " + siblings;
+				info = "<h2>Animal " + animalName + "</h2>" +
+					"is from litter: " + litterName + "<br />" +
+					"which came from parentgroup: " + parentgroupName + "<br />" +
+					"with mother(s): " + mothers + "<br />" + 
+					"and father(s): " + fathers + "<br />" +
+					"and with sibling(s): " + siblings;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

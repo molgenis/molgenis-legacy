@@ -403,15 +403,14 @@ public class LoadAnimalDB
 				int motherid = 0;
 				if (!motherName.equals("NULL")) {
 					motherid = Integer.parseInt(motherName);
-					int featureId = ct.getMeasurementId("OldAnimalDBAnimalID");
 					Query<ObservedValue> q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBAnimalID"));
 					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, motherid));
 					List<ObservedValue> valueList = q.find();
 					ObservedValue tmpValue = valueList.get(0);
 					int newmotherid = tmpValue.getTarget_Id();
-					protocolId = ct.getProtocolId("SetMother");
-					measurementId = ct.getMeasurementId("Mother");
+					protocolId = ct.getProtocolId("SetParentgroupMother");
+					measurementId = ct.getMeasurementId("ParentgroupMother");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 							pairStartDate, pairEndDate, protocolId, measurementId, parentgroupid, null, 
 							newmotherid));
@@ -422,15 +421,14 @@ public class LoadAnimalDB
 				int fatherid = 0;
 				if (!fatherName.equals("NULL")) {
 					fatherid = Integer.parseInt(fatherName);
-					int featureId = ct.getMeasurementId("OldAnimalDBAnimalID");
 					Query<ObservedValue> q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureId));
-					q.addRules(new QueryRule("value", Operator.EQUALS, fatherid));
+					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "OldAnimalDBAnimalID"));
+					q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, fatherid));
 					List<ObservedValue> valueList = q.find();
 					ObservedValue tmpValue = valueList.get(0);
 					int newfatherid = tmpValue.getTarget_Id();
-					protocolId = ct.getProtocolId("SetFather");
-					measurementId = ct.getMeasurementId("Father");
+					protocolId = ct.getProtocolId("SetParentgroupFather");
+					measurementId = ct.getMeasurementId("ParentgroupFather");
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, 
 							pairStartDate, pairEndDate, protocolId, measurementId, parentgroupid, null, 
 							newfatherid));

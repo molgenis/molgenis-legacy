@@ -111,22 +111,21 @@ public class PrintLabelPlugin extends GenericPlugin
         	
         	List<String> lineList = new ArrayList<String>();
         	List<String> lineLabelList = new ArrayList<String>();
-        	
-        	lineLabelList.add("Database ID:");
-        	lineList.add(ind.getId().toString());
         	lineLabelList.add("Name:");
         	lineList.add(ind.getName());
         	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getId(), measurementList,
         			investigationIds, ownInvId);
         	for (ObservedValue value : valueList) {
-        		String featName = cs.getMeasurementById(value.getFeature_Id()).getName();
         		String actualValue;
         		if (value.getValue() != null) {
         			actualValue = value.getValue();
         		} else {
         			actualValue = value.getRelation_Name();
         		}
-        		lineLabelList.add(featName);
+        		if (actualValue == null) {
+        			actualValue = "NA";
+        		}
+        		lineLabelList.add(value.getFeature_Name());
         		lineList.add(actualValue);
         	}
         	

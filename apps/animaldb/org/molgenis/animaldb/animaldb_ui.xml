@@ -123,7 +123,7 @@
 				</menu>
 				<menu name="deltablemenu" position="left" label="Deletion tables">
 					<form name="delindividual" entity="DeletedIndividual" view="list" label="Individuals" />
-					<!-- form name="delobservedvalue" entity="DeletedObservedValue" view="list" label="Values" /-->
+					<form name="delobservedvalue" entity="DeletedObservedValue" view="list" label="Values" />
 				</menu>
 			</menu>
 		</menu>

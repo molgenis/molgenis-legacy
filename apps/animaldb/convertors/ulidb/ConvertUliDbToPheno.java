@@ -218,6 +218,8 @@ public class ConvertUliDbToPheno
 		makeProtocolApplication("SetOldUliDbMotherInfo");
 		makeProtocolApplication("SetOldUliDbFatherInfo");
 		makeProtocolApplication("SetTypeOfGroup");
+		makeProtocolApplication("SetParentgroupMother");
+		makeProtocolApplication("SetParentgroupFather");
 		makeProtocolApplication("SetMother");
 		makeProtocolApplication("SetFather");
 		makeProtocolApplication("SetLine");
@@ -552,6 +554,15 @@ public class ConvertUliDbToPheno
 					// Set line also on animal
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 							now, null, "Line", newAnimalName, null, lineName));
+					// Set parents also on animal
+					for (String motherName : motherList) {
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
+								now, null, "Mother", newAnimalName, null, motherName));
+					}
+					for (String fatherName : fatherList) {
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
+								now, null, "Father", newAnimalName, null, fatherName));
+					}
 					
 				} else {
 					
@@ -570,14 +581,14 @@ public class ConvertUliDbToPheno
 					
 					// Link parent(s) to parentgroup and animal
 					for (String motherName : motherList) {
-						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
-								now, null, "Mother", motherName, null, parentgroupName));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupMother"), 
+								now, null, "ParentgroupMother", parentgroupName, null, motherName));
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
 								now, null, "Mother", newAnimalName, null, motherName));
 					}
 					for (String fatherName : fatherList) {
-						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
-								now, null, "Father", fatherName, null, parentgroupName));
+						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupFather"), 
+								now, null, "ParentgroupFather", parentgroupName, null, fatherName));
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
 								now, null, "Father", newAnimalName, null, fatherName));
 					}

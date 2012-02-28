@@ -348,14 +348,14 @@ public class CommonService
 	}
 
 	/**
-	 * Return a list of all observation targets of a certain type in the nvestigations with ID's in investigationIds
+	 * Return a list of all observation targets of a certain type in the investigations with ID's in investigationIds
 	 * or in the System investigation.
 	 * If desired, filtered down to only the currently active ones.
 	 * 
 	 * @param type
-	 *            : observation target type (Animal, Actor, Group, Location) to filter on, may be null
+	 *            : observation target type (Individual, Panel, Location etc.) to filter on, may be null
 	 * @param isActive
-	 *            : whether or not to filter on Active state
+	 *            : whether or not to filter on Active state (endtime is null)
 	 * @return List of ObservationTargets, if desired of a certain type
 	 * @throws DatabaseException
 	 * @throws ParseException
@@ -374,12 +374,14 @@ public class CommonService
 			investigationIds.add(systemId);
 		}
 		
+		Class targetClass = db.getClassForName("ObservationTarget");
+		if (type != null) {
+			targetClass = db.getClassForName(type);
+		}
+		
 		if (isActive == false) {
-			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
+			Query<ObservationTarget> targetQuery = db.query(targetClass);
 			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
-			if (type != null) {
-				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
-			}
 			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
 			List<ObservationTarget> targetList = targetQuery.find();
 			for (ObservationTarget target : targetList) {
@@ -395,17 +397,18 @@ public class CommonService
 			List<ObservedValue> valueList = valueQuery.find();
 			List<Integer> activeIdList = new ArrayList<Integer>();
 			for (ObservedValue value : valueList) {
-				activeIdList.add(value.getTarget_Id());
+				if (!activeIdList.contains(value.getTarget_Id())) {
+					activeIdList.add(value.getTarget_Id());
+				}
 			}
 			// Find target id's of right type
 			List<Integer> typeIdList = new ArrayList<Integer>();
-			if (type != null) {
-				Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
-				targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
-				targetQuery.addRules(new QueryRule(ObservationTarget.__TYPE, Operator.EQUALS, type));
-				targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
-				List<ObservationTarget> targetList = targetQuery.find();
-				for (ObservationTarget target : targetList) {
+			Query<ObservationTarget> targetQuery = db.query(targetClass);
+			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
+			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
+			List<ObservationTarget> targetList = targetQuery.find();
+			for (ObservationTarget target : targetList) {
+				if (!typeIdList.contains(target.getId())) {
 					typeIdList.add(target.getId());
 				}
 			}

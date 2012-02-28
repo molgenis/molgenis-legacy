@@ -171,7 +171,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
 						ct.getObservationTargetLabel(line)));
 				// Setting filter on the RELATION field with value = line would be more efficient,
-				// but gives a very un-userfriendly toString value when shown in the UI
+				// but gives a very un-userfriendly toString value when shown in the MatrixViewer UI
 				int speciesId = ct.getMostRecentValueAsXref(line, "Species");
 				String speciesName = ct.getObservationTargetLabel(speciesId);
 				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
@@ -224,7 +224,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
 						ct.getObservationTargetLabel(line)));
 				// Setting filter on the RELATION field with value = line would be more efficient,
-				// but gives a very un-userfriendly toString value when shown in the UI
+				// but gives a very un-userfriendly toString value when shown in the MatrixViewer UI
 				int speciesId = ct.getMostRecentValueAsXref(line, "Species");
 				String speciesName = ct.getObservationTargetLabel(speciesId);
 				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
@@ -259,6 +259,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 			measurementsToShow.add("StartDate");
 			measurementsToShow.add("Remark");
 			measurementsToShow.add("Line");
+			measurementsToShow.add("ParentgroupMother");
+			measurementsToShow.add("ParentgroupFather");
 			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, 
 					Operator.IN, investigationNames));
@@ -290,8 +292,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 		return "plugins/breedingplugin/ManageParentgroups.ftl";
 	}
 	
-	private void AddParents(Database db, List<Integer> parentIdList, String protocolName, String eventName, 
-			String featureName, String valueName, String valueCertainName, int parentgroupid, Date eventDate) 
+	private void AddParents(Database db, List<Integer> parentIdList, String protocolName, String featureName, int parentgroupid, Date eventDate) 
 			throws DatabaseException, ParseException, IOException {
 		
 		int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
@@ -301,16 +302,16 @@ public class ManageParentgroups extends PluginModel<Entity>
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 		
 		for (int parentId : parentIdList) {
-			// Find the 'SetMother'/'SetFather' event type
-			// TODO: SetMother/SetFather are now plain event types with only the Mother/Father feature
+			// Find the 'SetParentgroupMother'/'SetParentgroupFather' event type
+			// TODO: SetParentgroupMother/SetParentgroupFather are now plain event types with only the ParentgroupMother/ParentgroupFather feature
 			// and no longer the Certain feature. Solve this!
 			// Make the event
 			ProtocolApplication app = ct.createProtocolApplication(invid, protocolId);
 			int eventid = db.add(app);
-			// Make 'Mother'/'Father' feature-value pair and link to event
+			// Make 'ParentgroupMother'/'ParentgroupFather' feature-value pair and link to event
 			int measurementId = ct.getMeasurementId(featureName);
-			valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, parentId, 
-					null, parentgroupid));		
+			valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, parentgroupid, 
+					null, parentId));		
 			// Make 'Certain' feature-value pair and link to event
 			String valueString;
 			if (parentIdList.size() == 1) {
@@ -475,7 +476,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 		}
 		Date eventDate = dateOnlyFormat.parse(startdate);
 		int userId = this.getLogin().getUserId();
-		// Make group
+		// Make parentgroup
 		String groupPrefix = "PG_" + ct.getObservationTargetLabel(line) + "_";
 		int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
 		String groupNrPart = "" + groupNr;
@@ -489,10 +490,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 		db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
 				protocolId, measurementId, groupId, "Parentgroup", 0));
 		// Add parent(s)
-		AddParents(db, this.selectedMotherIdList, "SetMother", "eventmother", "Mother", "valuemother", 
-				"valuemothercertain", groupId, eventDate);
-		AddParents(db, this.selectedFatherIdList, "SetFather", "eventfather", "Father", "valuefather", 
-				"valuefathercertain", groupId, eventDate);
+		AddParents(db, this.selectedMotherIdList, "SetParentgroupMother", "ParentgroupMother", groupId, eventDate);
+		AddParents(db, this.selectedFatherIdList, "SetParentgroupFather", "ParentgroupFather", groupId, eventDate);
 		// Set line
 		protocolId = ct.getProtocolId("SetLine");
 		measurementId = ct.getMeasurementId("Line");

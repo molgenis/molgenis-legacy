@@ -28,31 +28,12 @@
 			
 <#--begin your plugin-->	
 
-<#if screen.action == "init">
+<label for="animalmatrix">Choose animal:</label>
+${screen.animalMatrix}
+<br />
+<input type='submit' class='addbutton' value='Show family info' onclick="__action.value='reqInfo'" />
 
-<div id="animalselect" class="row">
-<label for="animal">Animal:</label>
-<select name="animal" id="animal" class="selectbox">
-	<#list screen.animalIdList as animalId>
-		<#assign name = screen.getAnimalName(animalId)>
-		<option value="${animalId?string.computer}">${name}</option>
-	</#list>
-</select>
-</div>
-
-<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Show family info' onclick="__action.value='reqInfo'" />
-</div>
-
-<#else>
-
-<p>${screen.info}</p>
-
-<div id='buttons_part' class='row'>
-	<input type='submit' class='addbutton' value='Reset' onclick="__action.value='init'" />
-</div>
-
-</#if>
+<#if screen.info??><p>${screen.info}</p></#if>
 	
 <#--end of your plugin-->	
 			</div>

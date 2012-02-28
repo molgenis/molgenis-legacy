@@ -569,12 +569,12 @@ public class ConvertRhutDbToPheno
 						now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
 				// Link parents to parentgroup (if known)
 				if (motherName != null) {
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
-						now, null, "Mother", motherName, null, parentgroupName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupMother"), 
+						now, null, "ParentgroupMother", parentgroupName, null, motherName));
 				}
 				if (fatherName != null) {
-					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
-						now, null, "Father", fatherName, null, parentgroupName));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupFather"), 
+						now, null, "ParentgroupFather", parentgroupName, null, fatherName));
 				}
 				// Set line of parentgroup
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
@@ -632,7 +632,7 @@ public class ConvertRhutDbToPheno
 						// Link animal to litter
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLitter"), 
 								now, null, "Litter", animalName, null, litterName));
-						// Set parents also on animal
+						// Set parents also on animal, using the Mother and Father measurements
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetMother"), 
 								now, null, "Mother", animalName, null, motherName));
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetFather"), 
@@ -893,6 +893,8 @@ public class ConvertRhutDbToPheno
 		makeProtocolApplication("SetOldRhutDbSampleNr");
 		makeProtocolApplication("SetResponsibleResearcher");
 		// parent relations
+		makeProtocolApplication("SetParentgroupMother");
+		makeProtocolApplication("SetParentgroupFather");
 		makeProtocolApplication("SetMother");
 		makeProtocolApplication("SetFather");
 		makeProtocolApplication("SetLine");

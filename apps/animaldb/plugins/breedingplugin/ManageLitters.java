@@ -488,11 +488,11 @@ public class ManageLitters extends PluginModel<Entity>
 	private int findParentForParentgroup(String parentgroupName, String parentSex, Database db) throws DatabaseException, ParseException {
 		ct.setDatabase(db);
 		Query<ObservedValue> parentQuery = db.query(ObservedValue.class);
-		parentQuery.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, parentgroupName));
-		parentQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, parentSex));
+		parentQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, parentgroupName));
+		parentQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Parentgroup" + parentSex));
 		List<ObservedValue> parentValueList = parentQuery.find();
 		if (parentValueList.size() > 0) {
-			return parentValueList.get(0).getTarget_Id();
+			return parentValueList.get(0).getRelation_Id();
 		} else {
 			throw new DatabaseException("Fatal error: no " + parentSex + " found for parentgroup " + parentgroupName);
 		}
@@ -722,10 +722,6 @@ public class ManageLitters extends PluginModel<Entity>
 				reloadLitterLists(db);
 				reloadLitterMatrixViewer();
 				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals successfully genotyped", true));
-			}
-			
-			if (action.equals("ShowDoneLitters")) {
-				reloadLitterMatrixViewer();
 			}
 			
 		} catch (Exception e) {
@@ -1091,7 +1087,7 @@ public class ManageLitters extends PluginModel<Entity>
 			measurementId = ct.getMeasurementId("Litter");
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invid, weanDate, 
 					null, protocolId, measurementId, animalId, null, litter));
-			// Link to parents
+			// Link to parents using the Mother and Father measurements
 			if (motherId != -1) {
 				protocolId = ct.getProtocolId("SetMother");
 				measurementId = ct.getMeasurementId("Mother");
@@ -1402,7 +1398,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 		
 		labelgenerator.finishDocument();
-		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\">Download definitive cage labels as pdf</a>");
+		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download definitive cage labels as pdf</a>");
 	}
 
 	private void makeTempCageLabels(Database db) throws Exception {
@@ -1521,7 +1517,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 		
 		labelgenerator.finishDocument();
-		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\">Download temporary wean labels as pdf</a>");
+		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download temporary wean labels as pdf</a>");
 	}
 
 	@Override

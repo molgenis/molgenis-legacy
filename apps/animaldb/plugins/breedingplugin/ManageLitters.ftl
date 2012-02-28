@@ -106,8 +106,12 @@
 			</table>
 		</#if>
 	</#if>
-	<br />
-	<input type='submit' id='showdone' class='addbutton' value='Show weaned and genotyped litters' onclick="__action.value='ShowDoneLitters'" />
+	
+	<h2>Weaned and genotyped litters</h2>
+	${screen.renderDoneLitterMatrix()}
+	<div class='row'>
+		<input type='submit' id='makedeflabels' class='addbutton' value='Make definitive cage labels' onclick="__action.value='MakeDefLabels'" />
+	</div>
 	
 <#elseif screen.action == "MakeTmpLabels">
 
@@ -123,7 +127,7 @@
 		<p>${screen.labelDownloadLink}</p>
 	</#if>
 	
-	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowDoneLitters">Back to overview of weaned and genotyped litters</a></p>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 
 <#elseif screen.action == "AddLitter">
 
@@ -276,16 +280,6 @@
 	<!-- Save button -->
 	<div class='row'>
 		<input type='submit' id='save' class='addbutton' value='Save' onclick="__action.value='Genotype'" />
-	</div>
-
-<#elseif screen.action == "ShowDoneLitters">
-
-	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
-	
-	${screen.renderDoneLitterMatrix()}
-	
-	<div class='row'>
-		<input type='submit' id='makedeflabels' class='addbutton' value='Make definitive cage labels' onclick="__action.value='MakeDefLabels'" />
 	</div>
 	
 </#if>
