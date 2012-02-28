@@ -32,6 +32,7 @@
 				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity" />
 				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission" />
 				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink"/>
+				<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
 			</menu>
 			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"	label="Mapping" />
 			<menu name="ImportMenu" position="left" label="Importing data">
