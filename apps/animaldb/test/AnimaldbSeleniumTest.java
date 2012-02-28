@@ -285,14 +285,12 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully genotyped"));
 		// Check definitive cage labels link
-		selenium.click("id=showdone");
-		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		selenium.click("id=littermatrix_selected_0");
 		selenium.click("makedeflabels");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
-		selenium.click("link=Back to overview of weaned and genotyped litters");
+		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		
 		sleepHelper("breedingWorkflow");
