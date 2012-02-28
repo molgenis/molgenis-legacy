@@ -23,7 +23,6 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.IntInput;
-import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.framework.ui.html.StringInput;
@@ -73,7 +72,6 @@ public class AddAnimalPlugin extends GenericPlugin
 	// sub-subpanel to conditionally show the genetic modification questions (gene, genestate)
 	public DivPanel genePanel = null;
 	// subpanel to conditionally show the custom name questions (base, start number)
-	public DivPanel namePanel = null;
 	public DivPanel newnamebasePanel = null;
 
 	public AddAnimalPlugin(String name, ScreenController<?> parent)
@@ -402,6 +400,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel = new DivPanel(this.getName() + "panel", "");
 
 		// Populate animal species list
+		// TODO: present user first only with Species box. Then show the rest, adjusting Background and Name Prefix options according to Species
 		species = new SelectInput("species");
 		species.setLabel("Species:");
 		species.addOption("","");
@@ -411,11 +410,13 @@ public class AddAnimalPlugin extends GenericPlugin
 		species.setNillable(false);
 		species.setDescription("Give the species.");
 		species.setTooltip("Give the species.");
+		species.setId("species");
+		species.setOnchange("updateNamePrefixBox();");
 		
 		background = new SelectInput("background");
 		background.setLabel("Background:");
-		background.setDescription("Give the genetic background of the animal, for instance C57black6/j.");
-		background.setTooltip("Give the genetic background of the animal, for instance C57black6/j.");
+		background.setDescription("Give the genetic background of the animal.");
+		background.setTooltip("Give the genetic background of the animal.");
 		background.addOption("","");
 		background.addOption("0", "no background");
 		for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationIds)) {
@@ -443,9 +444,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		List<ObservationTarget> tmpSourceList = ct.getAllMarkedPanels("Source", investigationIds);
 		for (ObservationTarget tmpSource : tmpSourceList)
 		{
-			int featureId = ct.getMeasurementId("SourceType");
 			List<ObservedValue> sourceTypeValueList = db.query(ObservedValue.class).
-					eq(ObservedValue.TARGET, tmpSource.getId()).eq(ObservedValue.FEATURE, featureId).find();
+					eq(ObservedValue.TARGET, tmpSource.getId()).eq(ObservedValue.FEATURE_NAME, "SourceType").find();
 			if (sourceTypeValueList.size() > 0) {
 				String sourcetype = sourceTypeValueList.get(0).getValue();
 				if (!sourcetype.equals("Eigen fok binnen uw organisatorische werkeenheid")) {
@@ -494,7 +494,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		entrydate.setNillable(false);
 		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
 		
-		namePanel = new DivPanel("Name", "Name:");
 		namebase = new SelectInput("namebase");
 		namebase.setLabel("Name prefix (may be empty):");
 		namebase.setId("namebase");
@@ -507,7 +506,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		namebase.setValue(""); // default empty prefix
 		namebase.setOnchange("updateStartNumberAndNewNameBase(this.value)");
-		namePanel.add(namebase);
 		startnumberhelper = new TextLineInput<String>("startnumberhelper");
 		startnumberhelper.setLabel("");
 		String helperContents = ((ct.getHighestNumberForPrefix("") + 1) + ";"); // start number for empty base (comes first in jQuery select box because default)
@@ -519,21 +517,18 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		startnumberhelper.setValue(helperContents);
 		startnumberhelper.setHidden(true);
-		namePanel.add(startnumberhelper);
 		newnamebase = new StringInput("newnamebase");
 		newnamebase.setLabel("New name prefix:");
 		newnamebasePanel = new DivPanel("Namebase", "");
 		newnamebasePanel.add(newnamebase);
 		newnamebasePanel.setId("newnamebasePanel");
 		newnamebasePanel.setHidden(true);
-		namePanel.add(newnamebasePanel);
 		startnumber = new IntInput("startnumber");
 		startnumber.setLabel("Start numbering at:");
 		startnumber.setId("startnumber");
 		startnumber.setValue(ct.getHighestNumberForPrefix("") + 1); // start with highest number for empty prefix (default selected)
 		startnumber.setDescription("Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected.");
 		startnumber.setReadonly(true);
-		namePanel.add(startnumber);
 		
 		numberofanimals = new IntInput("numberofanimals");
 		numberofanimals.setLabel("Number of animals to add:");
@@ -571,9 +566,10 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel.add(entrydate);
 		containingPanel.add(researcher);
 		containingPanel.add(location);
-		containingPanel.add(namePanel);
-		containingPanel.add(new Newline());
-		containingPanel.add(new Newline());
+		containingPanel.add(namebase);
+		containingPanel.add(startnumberhelper);
+		containingPanel.add(newnamebasePanel);
+		containingPanel.add(startnumber);
 		containingPanel.add(numberofanimals);
 		containingPanel.add(addbutton);
 	}
