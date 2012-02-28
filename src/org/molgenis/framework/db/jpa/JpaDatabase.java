@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.hibernate.ejb.util.PersistenceUtilHelper;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
@@ -32,10 +31,8 @@ import org.molgenis.util.Entity;
  */
 public class JpaDatabase extends AbstractDatabase implements Database
 {
-
 	protected static class EMFactory
 	{
-
 		private static Map<String, EntityManagerFactory> emfs = new HashMap<String, EntityManagerFactory>();
 		private static EMFactory instance = null;
 
@@ -44,8 +41,6 @@ public class JpaDatabase extends AbstractDatabase implements Database
 			addEntityManagerFactory(persistenceUnit, configOverrides);
 		}
 		
-		
-
 		private static void addEntityManagerFactory(String persistenceUnitName,
 				Map<String, Object> configOverwrite)
 		{
@@ -114,7 +109,7 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		}
 	}
 
-	private EntityManager em = null;
+	private final EntityManager em;
 	private FullTextEntityManager ftem = null;
 	private String persistenceUnitName = "molgenis"; //default
 
@@ -128,18 +123,6 @@ public class JpaDatabase extends AbstractDatabase implements Database
 	{
 		this.em = em;
 		this.model = model;
-	}
-
-	public JpaDatabase(Model model)
-	{
-		this.model = model;
-	}
-
-	private int transactionCount = 0;
-
-	protected void setEntityManager(EntityManager em)
-	{
-		this.em = em;
 	}
 
 	@Override
@@ -228,10 +211,18 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		em.flush();
 	}
 
+	@SuppressWarnings("rawtypes")
 	public List executeSQLQuery(String sqlQuery)
 	{
 		return em.createNativeQuery(sqlQuery).getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> executeSQLQuery(String sqlQuery, Class<T> resultClass)
+	{
+		return em.createNativeQuery(sqlQuery, resultClass).getResultList();
+	}
+	
 
 	public String getPersistenceUnitName()
 	{
@@ -253,7 +244,8 @@ public class JpaDatabase extends AbstractDatabase implements Database
 				.matching(searchString).createQuery();
 		javax.persistence.Query persistenceQuery = this.ftem
 				.createFullTextQuery(query, entityClass);
-		List result = persistenceQuery.getResultList();
+		@SuppressWarnings("unchecked")
+		List<E> result = persistenceQuery.getResultList();
 		return result;
 	}
 }

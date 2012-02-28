@@ -29,38 +29,31 @@ import org.molgenis.framework.db.jdbc.DataSourceWrapper;
 
 public class DatabaseFactory
 {
-
+	@Deprecated
 	public static Database create(Connection conn) throws DatabaseException
 	{
 		return new app.<#if databaseImp == "jpa">Jpa<#else>JDBC</#if>Database(conn);
 	}
 
 <#if databaseImp == "jpa">
-    private static Database createJpaDatabase(boolean test) throws DatabaseException {
-        try {
-            return new app.JpaDatabase(test); 
-        } catch (Exception ex) {
-            throw new DatabaseException(ex);
-        }
-    }   
-    
-    // ignore parameters, everything is declared in persistence.xml
-    private static Database createJpaDatabase() throws DatabaseException {
-        try {            
-            return new app.JpaDatabase(); 
-        } catch (Exception ex) {
-            throw new DatabaseException(ex);
-        }
-    }       
-
     private static Database createJpaDatabase(String propertiesFilePath) throws DatabaseException {
         try {
             return new app.JpaDatabase(propertiesFilePath); 
         } catch (Exception ex) {
             throw new DatabaseException(ex);
         }
-    }  
+    } 
+    
+    private static Database createJpaDatabase() throws DatabaseException {
+        try {
+        	return new app.JpaDatabase();
+        } catch (Exception ex) {
+            throw new DatabaseException(ex);
+        }
+    }     
 </#if>
+
+		@Deprecated
         public static Database createInsecure(DataSource data_src, File file_src) throws DatabaseException {
 <#if databaseImp == "jdbc">
             try {
@@ -68,13 +61,12 @@ public class DatabaseFactory
             } catch (Exception ex) {
                 throw new DatabaseException(ex);
             }
-<#elseif databaseImp == "jpa">
-            return createJpaDatabase();
 <#else>
             throw new UnsupportedOperationException();
-</#if>
+</#if>            
         }
         
+        @Deprecated
         public static Database createInsecure() throws DatabaseException {
 <#if databaseImp == "jdbc">
             try {
@@ -89,6 +81,7 @@ public class DatabaseFactory
 </#if>
         }        
 
+	@Deprecated
 	public static Database create(DataSource data_src, File file_source) throws DatabaseException
 	{
 <#if databaseImp == "jdbc">
@@ -98,12 +91,13 @@ public class DatabaseFactory
                 throw new DatabaseException(ex);
             }
 <#elseif databaseImp == "jpa">
-            return createJpaDatabase();
+            throw new UnsupportedOperationException();
 <#else>
             throw new UnsupportedOperationException();
 </#if>
 	}
 
+	@Deprecated
 	public static Database create(DataSourceWrapper data_src, File file_src) throws DatabaseException
 	{
 <#if databaseImp == "jdbc">
@@ -119,6 +113,7 @@ public class DatabaseFactory
 </#if>
 	}
 
+	@Deprecated
 	public static Database create(Properties p) throws DatabaseException
 	{
 <#if databaseImp == "jdbc">
@@ -164,6 +159,7 @@ public class DatabaseFactory
 </#if>
 	}
 
+	@Deprecated
 	public static Database create(boolean test) throws DatabaseException
 	{
 <#if databaseImp == "jdbc">
@@ -173,25 +169,29 @@ public class DatabaseFactory
                 throw new DatabaseException(ex);
             }
 <#elseif databaseImp == "jpa">
-            return createJpaDatabase(test);
+			throw new UnsupportedOperationException();
 <#else>
             throw new UnsupportedOperationException();
 </#if>
 	}       
 
+	@Deprecated
 	public static Database create(String propertiesFilePath) throws DatabaseException
 	{
-            return create(propertiesFilePath, false);
-        }
+        return create(propertiesFilePath, false);
+    }
 
-        public static Database createTest() throws DatabaseException {
-            return create(true);
-        }
+	@Deprecated
+    public static Database createTest() throws DatabaseException {
+		throw new UnsupportedOperationException();
+    }
 
-        public static Database createTest(String propertiesFilePath) throws DatabaseException {
-            return create(propertiesFilePath, true);
-        }
+	@Deprecated
+    public static Database createTest(String propertiesFilePath) throws DatabaseException {
+        return create(propertiesFilePath, true);
+    }
 
+	@Deprecated
 	private static Database create(String propertiesFilePath, boolean test) throws DatabaseException
 	{
 <#if databaseImp == "jdbc">
