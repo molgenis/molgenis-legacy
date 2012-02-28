@@ -363,7 +363,8 @@ public class MatrixViewer extends HtmlWidget
 		}
 
 		// print rowHeader + colValues
-		for (int row = 0; row < values.length; row++)
+		int row;
+		for (row = 0; row < values.length; row++)
 		{
 			// print rowHeader
 			Object rowobj = rows.get(row);
@@ -477,6 +478,16 @@ public class MatrixViewer extends HtmlWidget
 
 				}
 			}
+		}
+		
+		if (selectMultiple > 1) {
+			dataTable.addRow("");
+			String selectAll = "<input type=\"button\" id=\"selectAllButton\" value=\"Select all visible\" onclick=\"";
+			for (int i = 0; i < row; i++) { // putting for-loop inside javascript failed so we do it in this ugly manner...
+				selectAll += "document.getElementById('" + SELECTED + "_" + i + "').checked=true; ";
+			}
+			selectAll += "\" /><script>$(\"#selectAllButton\").button();</script>";
+			dataTable.setCell(0, row, selectAll);
 		}
 
 		return dataTable.toHtml();
@@ -668,7 +679,7 @@ public class MatrixViewer extends HtmlWidget
 		
 		return measurementName;
 	}
-
+	
 	public void removeFilter(String action) throws MatrixException
 	{
 		int filterNr = Integer.parseInt(action.substring(action.lastIndexOf("_") + 1));

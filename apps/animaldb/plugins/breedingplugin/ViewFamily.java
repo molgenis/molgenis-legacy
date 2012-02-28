@@ -111,6 +111,9 @@ public class ViewFamily extends PluginModel<Entity>
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
 						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
 						"Alive"));
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
+						cs.getMeasurementId("Litter"), ObservedValue.RELATION, Operator.NOT,
+						null));
 				animalMatrixViewer = new MatrixViewer(this, ANIMALMATRIX, 
 						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
 						true, 1, false, false, filterRules, 

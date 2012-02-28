@@ -104,7 +104,6 @@
 	<br />
 	<p><h2>Existing parentgroups</h2></p>
 	${screen.pgMatrixViewer}
-
 </div>
 
 </#if>
