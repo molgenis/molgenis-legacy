@@ -106,20 +106,21 @@ public class FrontController extends MolgenisFrontController
 		//Database db = (Database)request.getRequest().getSession().getAttribute("database");
 		
 		//get a connection and keep track of it
-		Connection conn = context.getDataSource().getConnection();
+		
 		UUID id = UUID.randomUUID();
-		connections.put(id, conn);
+		
 	<#if databaseImp = 'jpa'>
-		//Database db = DatabaseFactory.create();
-		Database db = DatabaseFactory.create(conn);
+		Database db = DatabaseFactory.create();
 	<#else>
+		Connection conn = context.getDataSource().getConnection();
 		<#if db_mode != 'standalone'>
 		Database db = DatabaseFactory.create(conn);
 		<#else>
 		//Database db = new ${package}.JDBCDatabase(conn);
 		Database db = DatabaseFactory.create(conn);	
 		</#if>
-	</#if>	
+		connections.put(id, conn);
+	</#if>
 		request.setDatabase(db);
 		return id;
 	}
@@ -128,7 +129,8 @@ public class FrontController extends MolgenisFrontController
 	public DataSource createDataSource()
 	{
 	<#if databaseImp = 'jpa'>
-		// ??? jpa magic
+		//JPA datasource is provided/managed by server or configured in persistence.xml
+		//The application code is shielded from connection/datasource pool details! 
 		return null;
 	<#else>
 		<#if db_mode != 'standalone'>

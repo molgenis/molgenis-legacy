@@ -18,6 +18,7 @@
           <property name="javax.persistence.validation.mode" value="none"/>    
           <property name="hibernate.dialect" value="org.hibernate.dialect.${options.hibernateDialect}"/>
           <property name="hibernate.show_sql" value="false"/>
+          <property name="hibernate.format_sql" value="true"/>
           <property name="hibernate.query.substitutions" value="true=1, false=0"/>
           <property name="hibernate.search.default.directory_provider" value="filesystem"/>
           <property name="hibernate.search.default.indexBase" value="/var/lucene/indexes"/>
@@ -31,34 +32,4 @@
            
 	    </properties>
 	</persistence-unit>
-	
-	
-	<#-- refactor out in next sprint? -->
-	<persistence-unit name="molgenis_test" transaction-type="RESOURCE_LOCAL">
-<#list model.entities as entity>
-	<#if !entity.isAbstract()>
-            <class>${entity.namespace}.${JavaName(entity)}</class>
-	</#if>
-</#list>
-	    <properties>
-	      <property name="javax.persistence.jdbc.url" value="${options.dbUri}_test"/>
-	      <property name="javax.persistence.jdbc.password" value="${options.dbPassword}"/>
-	      <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
-	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
-          <property name="javax.persistence.validation.mode" value="none"/>    
-          <property name="hibernate.dialect" value="org.hibernate.dialect.${options.hibernateDialect}"/>
-          <property name="hibernate.show_sql" value="false"/>
-          <property name="hibernate.query.substitutions" value="true=1, false=0"/>
-          <property name="hibernate.search.default.directory_provider" value="filesystem"/>
-          <property name="hibernate.search.default.indexBase" value="/var/lucene/indexes"/>
-	    
-          <!--
-          Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
-          With create-drop, the database schema will be dropped when the SessionFactory is closed explicitly.
-		e.g. validate | update | create | create-drop
-           -->
-            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>	    
-	    
-	    </properties>
-	</persistence-unit>		
 </persistence>
