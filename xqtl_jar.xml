@@ -161,8 +161,11 @@
 		
 		<copy todir="${dist}/WebContent">
 			<fileset dir="WebContent">
-				<exclude name="WebContent/doc/*" />
-				<exclude name="WebContent/VAADIN/*" />
+				<exclude name="META-INF/**" />
+				<exclude name="WEB-INF/**" />
+				<exclude name="VAADIN/**" />
+				<exclude name="animaldb/**" />
+				<exclude name="designgg/**" />
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
@@ -188,8 +191,11 @@
 		<!-- copy resources to ZIP specific locations -->
 		<copy todir="${jarme}/WebContent">
 			<fileset dir="WebContent">
-				<exclude name="WebContent/doc/*" />
-				<exclude name="WebContent/VAADIN/*" />
+				<exclude name="META-INF/**" />
+				<exclude name="WEB-INF/**" />
+				<exclude name="VAADIN/**" />
+				<exclude name="animaldb/**" />
+				<exclude name="designgg/**" />
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
