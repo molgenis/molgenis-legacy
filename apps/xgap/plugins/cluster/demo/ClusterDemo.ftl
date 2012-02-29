@@ -167,15 +167,22 @@
 		</tr>
 		<tr>
 			<td colspan="7" width="675">
+				<i>Citation:</i>
+				<br><br>
+				<i>xQTL workbench: a scalable web environment for multi-level QTL analysis</i><br>
+				Danny Arends; K. Joeri van der Velde; Pjotr Prins; Karl W. Broman; Steffen Moller; Ritsert C. Jansen; Morris A. Swertz - <b>Bioinformatics</b> 2012; doi: <a href="http://dx.doi.org/10.1093/bioinformatics/bts049" target="_blank">10.1093/bioinformatics/bts049</a>
+				<br><br>
 				<i>References:</i>
 				<br><br>
-				<a href="http://www.ncbi.nlm.nih.gov/pubmed/20214801">XGAP: a uniform and extensible data model and software platform for genotype and phenotype experiments.</a> Swertz MA, Velde KJ, Tesson BM, Scheltema RA, Arends D, Vera G, Alberts R, Dijkstra M, Schofield P, Schughart K, Hancock JM, Smedley D, Wolstencroft K, Goble C, de Brock EO, Jones AR, Parkinson HE; Coordination of Mouse Informatics Resources (CASIMIR); Genotype-To-Phenotype (GEN2PHEN) Consortiums, Jansen RC.
+				<a href="http://www.ncbi.nlm.nih.gov/pubmed/20214801">XGAP: a uniform and extensible data model and software platform for genotype and phenotype experiments</a> - Swertz MA, Velde KJ, Tesson BM, Scheltema RA, Arends D, Vera G, Alberts R, Dijkstra M, Schofield P, Schughart K, Hancock JM, Smedley D, Wolstencroft K, Goble C, de Brock EO, Jones AR, Parkinson HE; Coordination of Mouse Informatics Resources (CASIMIR); Genotype-To-Phenotype (GEN2PHEN) Consortiums, Jansen RC.
 				<br><br>
-				<a href="http://www.ncbi.nlm.nih.gov/pubmed/12724300">R/qtl: QTL mapping in experimental crosses.</a> Broman KW, Wu H, Sen S, Churchill GA.
+				<a href="http://www.ncbi.nlm.nih.gov/pubmed/12724300">R/qtl: QTL mapping in experimental crosses</a> - Broman KW, Wu H, Sen S, Churchill GA.
 				<br><br>
-				<a href="http://bioinformatics.oxfordjournals.org/content/early/2010/10/21/bioinformatics.btq565.abstract">R/qtl: high throughput Multiple QTL mapping.</a> Danny Arends, Pjotr Prins, Ritsert C. Jansen and Karl W. Broman
+				<a href="http://bioinformatics.oxfordjournals.org/content/early/2010/10/21/bioinformatics.btq565.abstract">R/qtl: high throughput Multiple QTL mapping</a> - Danny Arends, Pjotr Prins, Ritsert C. Jansen and Karl W. Broman
 				<br><br>
-				<a href="http://www.ncbi.nlm.nih.gov/pubmed/15059831">Molecular Genetics Information System (MOLGENIS): alternatives in developing local experimental genomics databases.</a> Swertz MA, De Brock EO, Van Hijum SA, De Jong A, Buist G, Baerends RJ, Kok J, Kuipers OP, Jansen RC.
+				<a href="http://www.ncbi.nlm.nih.gov/pubmed/15059831">Molecular Genetics Information System (MOLGENIS): alternatives in developing local experimental genomics databases</a> - Swertz MA, De Brock EO, Van Hijum SA, De Jong A, Buist G, Baerends RJ, Kok J, Kuipers OP, Jansen RC.
+				<br><br>
+				<a href="http://www.biomedcentral.com/1471-2105/11/S12/S12">The MOLGENIS toolkit: rapid prototyping of biosoftware at the push of a button</a> - Morris A Swertz, Martijn Dijkstra, Tomasz Adamusiak, Joeri K van der Velde, Alexandros Kanterakis, Erik T Roos, Joris Lops, Gudmundur A Thorisson, Danny Arends, George Byelas, Juha Muilu, Anthony J Brookes, Engbert O de Brock, Ritsert C Jansen and Helen Parkinson
 			</td>
 		</tr>	
 		<tr>
