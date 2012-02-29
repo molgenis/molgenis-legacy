@@ -54,20 +54,20 @@ generateRunfile <- function(job, est,jobid,libraryloc=NULL){
 DownloadnSave <- function(investigationname, token, DBmarkerID = "", DBtraitID = "", dbpath = "",jobid,njobs,libraryloc=NULL){
 	#Generates a R-script to download all the information and build a cross object
 	qtlfile <- paste("./run",jobid,"/download.R",sep="")
+	#load needed libraries
+	cat("library(qtl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile)
+	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
+	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
+    cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 	#Print our report function
-	cat("\nreport <- function(status,text){\n",file=qtlfile)
+	cat("\nreport <- function(status,text){\n",file=qtlfile,append=T)
 	cat("\ttask <- ",jobid,"\n",file=qtlfile,append=T)
 	cat("\ttext <- substr(URLencode(text),0,100)\n",file=qtlfile,append=T)
 	cat("\tlink <- paste(\"",dbpath,"/taskreporter?job=\",task,\"&subjob=0&statuscode=\",status,\"&statustext=\",text,sep=\"\")\n",sep="",file=qtlfile,append=T)
 	cat("\tgetURL(link, curl = ch)\n",file=qtlfile,append=T)
 	cat("\tif(status==-1){\n\t\tcat(\"!!!\",text,\"!!!\")\n\t\t\n\t\tq(\"no\")\n\t}\n",file=qtlfile,append=T)
 	cat("}\n\n",file=qtlfile,append=T)
-	#load needed libraries
-	cat("library(qtl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-  cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
-	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 	#Downloading of Cross object (secured)
 	cat(Generate_Statement(paste("cross <- CrossFromMolgenis(genotypematrixname='",DBmarkerID,"',phenotypematrixname='",DBtraitID,"',investigationname='",investigationname,"')","\n",sep="")),file=qtlfile,append=T)
 	cat(Generate_Statement(paste("save(cross,file=\"./run",jobid,"/cross.RData\")","\n",sep="")),file=qtlfile,append=T)
@@ -79,19 +79,19 @@ DownloadnSave <- function(investigationname, token, DBmarkerID = "", DBtraitID =
 DownloadnSavePLINK <- function(investigationname, token, DBtraitID = "", inputname, dbpath = "",jobid,njobs,libraryloc=NULL){
 	#Generates a R-script to download all the information and build a cross object
 	qtlfile <- paste("./run",jobid,"/download.R",sep="")
+	#load needed libraries
+	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile)
+	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
+    cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 	#Print our report function
-	cat("\nreport <- function(status,text){\n",file=qtlfile)
+	cat("\nreport <- function(status,t=\"\"){\n",file=qtlfile,append=T)
 	cat("\ttask <- ",jobid,"\n",file=qtlfile,append=T)
-	cat("\ttext <- substr(URLencode(text),0,100)\n",file=qtlfile,append=T)
+	cat("\ttext <- URLencode(substring(t,1,100))\n",file=qtlfile,append=T)
 	cat("\tlink <- paste(\"",dbpath,"/taskreporter?job=\",task,\"&subjob=0&statuscode=\",status,\"&statustext=\",text,sep=\"\")\n",sep="",file=qtlfile,append=T)
 	cat("\tgetURL(link, curl = ch)\n",file=qtlfile,append=T)
 	cat("\tif(status==-1){\n\t\tcat(\"!!!\",text,\"!!!\")\n\t\t\n\t\tq(\"no\")\n\t}\n",file=qtlfile,append=T)
 	cat("}\n\n",file=qtlfile,append=T)
-	#load needed libraries
-	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-  cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
-	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 	#Downloading of Cross object (secured)
 	cat(Generate_Statement(paste("plink <- PlinkFromMolgenis(phenotypematrixname='",DBtraitID,"',investigationname='",investigationname,"')","\n",sep="")),file=qtlfile,append=T)
 	cat(Generate_Statement(paste("write.table(plink,file=\"./run",jobid,"/phenotypes.txt\",quote=FALSE,row.names=FALSE)","\n",sep="")),file=qtlfile,append=T)
@@ -160,20 +160,15 @@ prepare_cluster <- function(jobid){
 	#setwd(paste("./run",jobid,sep=""))
 }
 
-report <- function(dbpath,task,job,status,text){
+report <- function(dbpath,task,job,status,t = ""){
 	progress <- 0
-	text <- substr(URLencode(text),0,100)
+	text <- URLencode(substr(t,1,100))
 	link <- paste(.MOLGENIS$servletURL,"/taskreporter?job=",task,"&subjob=",job,"&statuscode=",status,"&statustext=",text,"&statusprogress=",progress,sep="")
 	getURL(link,curl=ch)
 	if(status==-1){
 		q("no")
 	}
 }
-
-#run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token = "", totalitems=24, njobs=2, dbpath="http://gbic.target.rug.nl:8080/clusterdemo", jobid=1, job="QTL", libraryloc="C:/Program Files/R/R-2.10.1/library", jobparams=list( c("genotypes", "genotypes"), c("phenotypes", "metaboliteexpression"),c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0"))){
-#	Initializes the cluster
-#  report(dbpath,jobid,0,2,"TEST")
-#}
 
 run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token = "", totalitems=24, njobs=2, dbpath="http://gbic.target.rug.nl:8080/clusterdemo", jobid=1, job="QTL", libraryloc="C:/Program Files/R/R-2.10.1/library", jobparams=list( c("genotypes", "genotypes"), c("phenotypes", "metaboliteexpression"),c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0"))){
 #	Initializes the cluster
@@ -216,7 +211,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
     doDownload <- TRUE
   }
   if(job=="PLINK"){
-    tryCatch(DownloadnSavePLINK(investigationname=investigation, token, phenotypes, getParameter("inputname",jobparams), dbpath=dbpath,jobid,njobs,libraryloc)
+    tryCatch(DownloadnSavePLINK(investigationname=investigation, token, phenotypes, getparameter("inputname",jobparams), dbpath=dbpath,jobid,njobs,libraryloc)
       ,error =  function(e){cat(e[[1]],"\n");report(dbpath,jobid,0,-1,"Downloadscript")}
     )
     totalitems <- (totalitems-2)
