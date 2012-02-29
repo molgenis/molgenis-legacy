@@ -9,6 +9,7 @@ package plugins.system.appcustomizer;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -55,12 +56,12 @@ public class AppCustomizer extends PluginModel
 				
 				TarGz.delete(oldBanner, true);
 				
-				boolean success = newBanner.renameTo(oldBanner);
+				FileUtils.copyFile(newBanner, oldBanner);
 				
-				if(!success)
-				{
-					throw new Exception("Putting the new banner in place failed.");
-				}
+//				if(!success)
+//				{
+//					throw new Exception("Putting the new banner in place failed.");
+//				}
 				
 				this.setMessages(new ScreenMessage("New banner uploaded.", true));
 			
@@ -78,12 +79,12 @@ public class AppCustomizer extends PluginModel
 				
 				TarGz.delete(oldCss, true);
 				
-				boolean success = newCss.renameTo(oldCss);
+				FileUtils.copyFile(newCss, oldCss);
 				
-				if(!success)
-				{
-					throw new Exception("Putting the new CSS in place failed.");
-				}
+//				if(!success)
+//				{
+//					throw new Exception("Putting the new CSS in place failed.");
+//				}
 				
 				this.setMessages(new ScreenMessage("New CSS uploaded.", true));
 			}
