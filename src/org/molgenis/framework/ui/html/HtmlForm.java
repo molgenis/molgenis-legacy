@@ -116,14 +116,18 @@ public class HtmlForm extends HtmlWidget
 	{
 		this.compactView = compactView;
 	}
-
+	
+	/**
+	 * A simple method to create a edited view for one entity. 
+	 */
 	@Override
 	public String toHtml()
 	{
 		String htmlTable = "<table>";
 		for(HtmlInput<?> i: this.getInputs())
 		{
-			htmlTable += "<tr><td>" + i.getLabel() + "</td><td>"+ i.getHtml() +"</td></tr>";
+			htmlTable += "<tr><td name=\"" + i.getLabel() + "\">" + 
+		                 i.getLabel() + "</td><td>"+ i.getHtml() +"</td></tr>";
 		}
 		htmlTable += "</table>";
 		return htmlTable;
