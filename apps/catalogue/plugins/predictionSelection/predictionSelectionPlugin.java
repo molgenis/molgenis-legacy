@@ -7,7 +7,7 @@
 package plugins.predictionSelection;
 
 import gcc.catalogue.MappingMeasurement;
-import gcc.catalogue.excel.MappingMeasurementExcelReader;
+import gcc.catalogue.ui.MappingMeasurementForm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +20,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.html.EntityTable;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -29,9 +30,9 @@ import org.molgenis.util.Tuple;
 
 public class predictionSelectionPlugin extends PluginModel<Entity>
 {
-	
+
 	private static final long serialVersionUID = -4576352827620517694L;
-	
+
 	//A list that contains all the prediction model name
 	private List<String> preidctionModel = new ArrayList<String>();
 	//A list that contains all the validation study name
@@ -52,13 +53,13 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 	private String editAndViewFlag = "viewData";
 
 	//This hashMap takes the entity Id as key and its corresponding entity as content.
-	private HashMap<String, MappingMeasurement> mappingMeasurementIdToEntity = new HashMap<String, MappingMeasurement>();;
-	
+	private HashMap<Integer, MappingMeasurement> mappingMeasurementIdToEntity = new HashMap<Integer, MappingMeasurement>();;
+
 	public predictionSelectionPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 	}
-	
+
 	@Override
 	public String getViewName()
 	{
@@ -75,65 +76,55 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request) throws Exception
 	{
 		if(request.getAction().equals("refreshSelection")){
-			
+
 			selectedComputeProtocolName = request.getString("selectPredictionModel");
-			
+
 			selectedStudyProtocolName = request.getString("selectValidationStudy");
-			
+
 			mappingMeasurementIdToEntity.clear();
-			
+
 			makeHtmlTable(db, request);
-			
+
 		}else if(request.getAction().equals("editData")){
-			
+
 			editAndViewFlag  = request.getAction();
-			
-			String selectedRow = request.getString("clickedRow");
-			
+
+			int selectedRow = request.getInt("clickedRow");
+
 			makeEditableTable(selectedRow);
-			
+
+			//this.setView(this.getParent().getParent().get("mappingMeasurement").getApplicationController().getView());
+
 		}else if(request.getAction().equals("viewData")){
-			
-			String entityName = request.getString(MappingMeasurement.MAPPING_NAME);
-			
-			MappingMeasurement entity = mappingMeasurementIdToEntity.get(entityName);
-			
+
+			String entityName = request.getString(MappingMeasurement.class.getSimpleName() + "_" + MappingMeasurement.ID);
+
+			MappingMeasurement entity = mappingMeasurementIdToEntity.get(Integer.parseInt(entityName));
+
 			//Before reload the table, the database needs to be updated by the changes that users have made.
 			for(String eachField : entity.getFields()){
-				
-				
-				if(eachField.equals(MappingMeasurement.FEATURE_NAME)){
-					
-					List<String> listOfFeatureNames = new ArrayList<String>();
-					
-					for(Object eachFeatureName : request.getList(eachField)){
-						String textValue = eachFeatureName.toString();
-						textValue = eachFeatureName.toString().replaceAll("\\[", "");
-						textValue = textValue.toString().replaceAll("\\]", "");
-						listOfFeatureNames.add(textValue);
-					}
-					entity.setFeature_Name(listOfFeatureNames);
-					
-				}else if(eachField.equals(MappingMeasurement.FEATURE)){
-					
+
+				eachField = MappingMeasurement.class.getSimpleName() + "_" + eachField;
+
+				if(eachField.equals(MappingMeasurement.class.getSimpleName() + "_" + MappingMeasurement.FEATURE)){
+
 					List<Integer> listOfFeatureIds = new ArrayList<Integer>();
-					
+
 					for(Object eachFeatureName : request.getList(eachField)){
 						String textValue = eachFeatureName.toString();
-						textValue = eachFeatureName.toString().replaceAll("\\[", "");
-						textValue = textValue.replaceAll("\\]", "");
 						System.out.println(textValue);
 						listOfFeatureIds.add(Integer.parseInt(textValue));
 					}
 					entity.setFeature_Id(listOfFeatureIds);
-					
+
 				}else{
-			
-					if(!request.getString(eachField).equals("N/A")){
-						entity.set(eachField, request.getString(eachField));
-					}
+
+					entity.set(eachField, request.getString(eachField));
+
 				}
+
 			}
+
 			db.update(entity);
 			editAndViewFlag  = request.getAction();
 			makeHtmlTable(db, request);
@@ -146,52 +137,52 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 		try
 		{	
 			setComputeInvestigationName("Prediction Model");
-			
+
 			setValidationInvestigationName("Validation Study");
-			
+
 			preidctionModel.clear();
-			
+
 			validationStudy.clear();
-			
+
 			if(selectedComputeProtocolName != null)
 				preidctionModel.add(selectedComputeProtocolName);
-			
-			
+
+
 			if(selectedStudyProtocolName != null)
 				validationStudy.add(selectedStudyProtocolName);
-			
-			
-			
+
+
+
 			List<ComputeProtocol> listOfComputeProtocol = db.find(ComputeProtocol.class, new QueryRule(ComputeProtocol.INVESTIGATION_NAME, Operator.EQUALS, getComputeInvestigationName()));
-			
+
 			if(listOfComputeProtocol.size() > 0){
-				
+
 				for(ComputeProtocol compute : listOfComputeProtocol){
-					
+
 					if(!preidctionModel.contains(compute.getName()))
 						preidctionModel.add(compute.getName());
 				}
 			}
-			
+
 			List<Protocol> listOfValidationProtocol = db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, getValidationInvestigationName()));
-			
+
 			if(listOfValidationProtocol.size() > 0){
-				
+
 				for(Protocol study : listOfValidationProtocol){
-					
+
 					if(!validationStudy.contains(study.getName()))
 						validationStudy.add(study.getName());
 				}
-				
+
 			}
-			
+
 		}catch (DatabaseException e){
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	/**
 	 * This method gets the selected prediction model and validation study from GUI. It gets back all the variables
 	 * in the prediction model from DB. It also searches for the corresponding variables in the validation study.
@@ -206,90 +197,36 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 	private void makeHtmlTable(Database db, Tuple request) throws DatabaseException
 	{
 		if(selectedComputeProtocolName != null && selectedStudyProtocolName != null){
-			
+
 			List<ComputeProtocol> selectedComputeProtocol = db.find(ComputeProtocol.class, new QueryRule(ComputeProtocol.NAME, Operator.EQUALS, selectedComputeProtocolName));
-			
+
 			if(selectedComputeProtocol.size() > 0){
 				featureNamesInModel = selectedComputeProtocol.get(0).getFeatures_Name();
 			}else{
 				this.getModel().setError("The prediction model dose not contain any variables");
 			}
-			
+
 			//Search for the corresponding variables in a new study
 			List<MappingMeasurement> listOfMappings = db.find(MappingMeasurement.class, 
 					new QueryRule(MappingMeasurement.INVESTIGATION_NAME, Operator.EQUALS, validationInvestigationName));
-			
-			HashMap<String, String> variableModelToStudy = new HashMap<String, String>();
-			HashMap<String, String> dataConversionScript = new HashMap<String, String>();
-			HashMap<String, String> variableModelLinkToOriginals = new HashMap<String, String>();
-			
-			
-			if(listOfMappings.size() > 0){
-				
-				//TODO what several derived variables map to the same variable in the model?
-				for(MappingMeasurement mapping : listOfMappings){
-					
-					if(featureNamesInModel.contains(mapping.getMapping_Name())){
-						mappingMeasurementIdToEntity.put(mapping.getMapping_Name(), mapping);
-						variableModelToStudy.put(mapping.getMapping_Name(), mapping.getTarget_Name());
-						dataConversionScript.put(mapping.getMapping_Name(), mapping.getValue());
-						variableModelLinkToOriginals.put(mapping.getMapping_Name(), mapping.getFeature_Name().toString());
-					}
-				}
-				
+
+			for(MappingMeasurement mapping : listOfMappings){
+				mappingMeasurementIdToEntity.put(mapping.getId(), mapping);
 			}
-			
-			htmlTable  = "<table class=\"predictionTable\"><tr id='tableHeader'><th>" +
-					 selectedComputeProtocol.get(0).getName()  + "</th><th>" +
-					 selectedStudyProtocolName + "</th><th>Algorithm</th><th>Original variables in " + 
-					 selectedStudyProtocolName + "</th><th>Edit</th></tr>";
-			
-			for(String eachFeatureName : featureNamesInModel){
-				
-				String derivedMeasurement = "N/A";
-				String scriptForDataConversion = "N/A";
-				String originalSources = "N/A";
-				
-				if(variableModelToStudy.containsKey(eachFeatureName)){
-					derivedMeasurement = variableModelToStudy.get(eachFeatureName);
-					scriptForDataConversion = dataConversionScript.get(eachFeatureName);
-					originalSources = variableModelLinkToOriginals.get(eachFeatureName);
-				}
-				
-				htmlTable += "<tr id='" + eachFeatureName + "'><td>" + eachFeatureName + "</td><td>" +
-						     derivedMeasurement  + "</td><td>" +
-						     scriptForDataConversion + "</td><td>" +
-						     originalSources + "</td><td>";
-				htmlTable += "<img class=\"edit_button\" src=\"generated-res/img/editview.gif\" title=\"edit record\"" +
-						     "onclick=\"submitFormMethod('" + eachFeatureName + "');\"" +
-						     "></td></tr>";
-			}
-			
-			htmlTable += "</table>";
+
+			htmlTable = new EntityTable(listOfMappings, true, MappingMeasurement.MAPPING_NAME, MappingMeasurement.FEATURE_NAME, MappingMeasurement.VALUE).toHtml();
+			return;
 		}
-		
+
 	}
-	
-	private void makeEditableTable(String selectedRow)
+
+	private void makeEditableTable(int selectedRow)
 	{
 		MappingMeasurement mapping = mappingMeasurementIdToEntity.get(selectedRow);
-		
-		htmlTable  = "<table class=\"predictionTable\">";
-		
-		for(String field : mapping.getFields()){
-			
-			if(mapping.get(field) != null){
-				htmlTable += "<tr><td>" + field + "</td><td><textarea rows=\"2\" cols=\"20\" name='"+ field +"'>"+
-					     mapping.get(field).toString() + "</textarea></td></tr>";
-			}else{
-				htmlTable += "<tr><td>" + field + "</td><td><textarea rows=\"2\" cols=\"20\" name='"+ 
-			                 field +"'>N/A</textarea></td></tr>";
-			}
-		}
-		
-		htmlTable += "</table>";
+
+		htmlTable = new MappingMeasurementForm(mapping).getHtml();
 	}
-	
+
 	public List<String> getValidationStudy()
 	{
 		return validationStudy;
@@ -299,7 +236,7 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 	{
 		return preidctionModel;
 	}
-	
+
 	public String getComputeInvestigationName()
 	{
 		return computeInvestigationName;
@@ -309,7 +246,7 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 	{
 		this.computeInvestigationName = investigationName;
 	}
-	
+
 	public String getValidationInvestigationName()
 	{
 		return validationInvestigationName;
@@ -319,14 +256,15 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 	{
 		this.validationInvestigationName = investigationName;
 	}
-	
+
 	public String getHtmlTable()
 	{
 		return htmlTable;
 	}
-	
+
 	public String getEditAndViewFlag()
 	{
 		return editAndViewFlag;
 	}
+
 }
