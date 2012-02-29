@@ -76,7 +76,7 @@ DownloadnSave <- function(investigationname, token, DBmarkerID = "", DBtraitID =
 	cat("q(\"no\")","\n",sep="",file=qtlfile,append=T)
 }
 
-DownloadnSavePLINK <- function(investigationname, token, DBtraitID = "", dbpath = "",jobid,njobs,libraryloc=NULL){
+DownloadnSavePLINK <- function(investigationname, token, DBtraitID = "", inputname, dbpath = "",jobid,njobs,libraryloc=NULL){
 	#Generates a R-script to download all the information and build a cross object
 	qtlfile <- paste("./run",jobid,"/download.R",sep="")
 	#Print our report function
@@ -95,7 +95,12 @@ DownloadnSavePLINK <- function(investigationname, token, DBtraitID = "", dbpath 
 	#Downloading of Cross object (secured)
 	cat(Generate_Statement(paste("plink <- PlinkFromMolgenis(phenotypematrixname='",DBtraitID,"',investigationname='",investigationname,"')","\n",sep="")),file=qtlfile,append=T)
 	cat(Generate_Statement(paste("write.table(plink,file=\"./run",jobid,"/phenotypes.txt\",quote=FALSE,row.names=FALSE)","\n",sep="")),file=qtlfile,append=T)
-	cat("q(\"no\")","\n",sep="",file=qtlfile,append=T)
+	cat("report(2,\"PhenotypesDownloaded\")\n",file=qtlfile,append=T)
+  cat(Generate_Statement(paste("downloadFileViaCurl('",paste(dbpath,"/downloadfile",sep=""),"?name=",inputname,"_ped','run",jobid,"/",inputname,".ped')\n",sep="")),file=qtlfile,append=T)
+  cat("report(2,\"PEDDownloaded\")\n",file=qtlfile,append=T)
+  cat(Generate_Statement(paste("downloadFileViaCurl('",paste(dbpath,"/downloadfile",sep=""),"?name=",inputname,"_map','run",jobid,"/",inputname,".map')\n",sep="")),file=qtlfile,append=T)
+  cat("report(2,\"MAPDownloaded\")\n",file=qtlfile,append=T)
+  cat("q(\"no\")","\n",sep="",file=qtlfile,append=T)
 }
 
 getparameter <- function(searchterm,jobparams){unlist(lapply(jobparams,function(x){if(x[1]==searchterm){x[2]}}))}
@@ -143,7 +148,7 @@ startcode <- function(token, dbpath,jobid,item,libraryloc=NULL,name="subjob"){
 
 Generate_Statement <- function(statement){
 	#printing a secured statement (just means we report a 3 if we fail)
-	secured <- paste("tryCatch(\n\t",statement,"\t,error =  function(e){report(-1,e$message)}\n)\n",sep="")
+	secured <- paste("tryCatch(\n\t",statement,"\t,error =  function(e){cat(\"!!!!!!\",e[[1]],\"\n\"); report(-1,e$message)}\n)\n",sep="")
 	secured
 }
 
@@ -194,7 +199,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 	library(qtl,lib.loc=libraryloc)
 	cat("debug: qtl loaded\n")
 	#source(paste(dbpath,"/api/R",sep=""))
-	report(dbpath,jobid,0,2,"R%20libraries%20loaded")
+	report(dbpath, jobid, 0, 2,"R%20libraries%20loaded")
 	est = NULL
 	runfile = NULL
 	if(totalitems < njobs){
@@ -211,7 +216,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
     doDownload <- TRUE
   }
   if(job=="PLINK"){
-    tryCatch(DownloadnSavePLINK(investigationname=investigation, token, phenotypes, dbpath=dbpath,jobid,njobs,libraryloc)
+    tryCatch(DownloadnSavePLINK(investigationname=investigation, token, phenotypes, getParameter("inputname",jobparams), dbpath=dbpath,jobid,njobs,libraryloc)
       ,error =  function(e){cat(e[[1]],"\n");report(dbpath,jobid,0,-1,"Downloadscript")}
     )
     totalitems <- (totalitems-2)
@@ -281,7 +286,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 		report(dbpath,jobid,x,1,"Taskqueued")
 #		system(paste("sh ",runfile,sep=""))
 	}
-	report(dbpath,jobid,0,3,"PreparationDone")
+	report(dbpath,jobid,0,3,"Preparation done")
 }
 
 #time execution of executing 1 trait
