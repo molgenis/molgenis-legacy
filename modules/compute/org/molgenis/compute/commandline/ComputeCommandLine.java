@@ -114,9 +114,9 @@ public class ComputeCommandLine
 				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
 //				job.setCores(cores);
 				work.set("cores", cores);
-				Integer mem = (protocol.getMem() == null ? Integer.parseInt(worksheet.getdefaultvalue("mem")) : protocol.getMem());
+				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem") : protocol.getMem());
 //				job.setMem(mem);
-				work.set("mem", mem);
+				work.set("mem", mem + "gb");
 
 				job.setInterpreter(protocol.getInterpreter() == null ? worksheet.getdefaultvalue("interpreter") : protocol.getInterpreter());
 				
@@ -207,13 +207,15 @@ public class ComputeCommandLine
 		
 		String ls = System.getProperty("line.separator");
 
-		scripttemplate = "<#include \"PBSHeader.ftl\"/>" + ls + ls
-					   + "<#include \"Macros.ftl\"/>" + ls
-					   + "<@begin/>" + ls
-					   + (interpreter.equalsIgnoreCase("R") ? "<@Rbegin/>" + ls : "")
-					   + scripttemplate
-					   + (interpreter.equalsIgnoreCase("R") ? "<@Rend/>" + ls : "")
-					   + "<@end/>" + ls;
+		scripttemplate = "<#include \"Header.ftl\"/>" 
+						+ scripttemplate + ls
+						+ "<#include \"Footer.ftl\"/>";
+//					   + "<#include \"Macros.ftl\"/>" + ls
+//					   + "<@begin/>" + ls
+//					   + (interpreter.equalsIgnoreCase("R") ? "<@Rbegin/>" + ls : "")
+//					   + scripttemplate
+//					   + (interpreter.equalsIgnoreCase("R") ? "<@Rend/>" + ls : "")
+//					   + "<@end/>" + ls;
 			
 		return(scripttemplate);
 	}
@@ -285,15 +287,15 @@ public class ComputeCommandLine
 		template.process(parameters, filledtemplate);
 
 		// put debug info in script
-		String script = "\n#####\n";
+//		String script = "\n#####\n";
 //		script = script + "## The following ${parameters} are values:\n";
 //		script = script + "##   - " + worksheet.foldon + " " + worksheet.getConstants() + "\n";
 //		script = script + "## The following parameters are lists, <#list parameters as p>${p}</#list> \n";
 //		script = script + "##   - " + worksheet.list + "\n";
 //		script = script + "#####\n\n";
-		script = script + filledtemplate.toString();
+//		script = script + filledtemplate.toString();
 
-		return script;
+		return filledtemplate.toString();
 	}
 
 	private ComputeProtocol findProtocol(String protocol_name, List<ComputeProtocol> protocollist)
@@ -427,9 +429,16 @@ public class ComputeCommandLine
 			// and produce submit.sh
 			PrintWriter submitWriter = new PrintWriter(new File(outputdir + File.separator + "submit.sh"));
 
+			// also produce a submitlocal.sh
+			PrintWriter submitWriterLocal = new PrintWriter(new File(outputdir + File.separator + "submitlocal.sh"));
+			
 			// touch "workflow file name".started in same directory as submit.sh, when starting submit.sh
-			submitWriter.println("DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd )\"");
-			submitWriter.println("touch $DIR" + File.separator + getworkflowfilename() + ".started");
+			String cmd = "DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd )\"";
+			submitWriter.println(cmd);
+			submitWriterLocal.println(cmd);
+			cmd = "touch $DIR" + File.separator + getworkflowfilename() + ".started";
+			submitWriter.println(cmd);
+			submitWriterLocal.println(cmd);
 
 			for (ComputeJob job : this.jobs)
 			{
@@ -444,34 +453,30 @@ public class ComputeCommandLine
 						dependency += ":$" + previous;
 					}
 				}
+				
+				// do stuff for submit.sh
 				submitWriter.println("#" + job.getName());
 				submitWriter.println(job.getName() + "=$(qsub -N " + job.getName() + " " + dependency + " " + job.getName() + ".sh)");
 				submitWriter.println("echo $" + job.getName());
 				submitWriter.println("sleep 1");
 
+				// do stuff for submitlocal.sh
+				submitWriterLocal.println("echo Starting with " + job.getName() + "...");
+				submitWriterLocal.println("sh " + job.getName() + ".sh");
+				submitWriterLocal.println("#Dependencies: " + dependency);
+				submitWriterLocal.println("");
+				
 				// produce .sh file in outputdir for each job
 				PrintWriter jobWriter = new PrintWriter(new File(outputdir + File.separator + job.getName() + ".sh"));
 
-				// write headers (depends on backend)
-/*
-				jobWriter.println("#!/bin/bash");
-				jobWriter.println("#PBS -N " + job.getName());
-				jobWriter.println("#PBS -q " + job.getClusterQueue());
-				jobWriter.println("#PBS -l nodes=1:ppn=" + job.getCores());
-				jobWriter.println("#PBS -l walltime=" + job.getWalltime());
-				jobWriter.println("#PBS -l mem=" + job.getMem() + "gb");
-				jobWriter.println("#PBS -e " + job.getName() + ".err");
-				jobWriter.println("#PBS -o " + job.getName() + ".out");
-*/
 				// write the script
 				jobWriter.println(job.getComputeScript());
-
-				// write footers
 
 				jobWriter.close();
 			}
 
 			submitWriter.close();
+			submitWriterLocal.close();
 		}
 		catch (FileNotFoundException e)
 		{

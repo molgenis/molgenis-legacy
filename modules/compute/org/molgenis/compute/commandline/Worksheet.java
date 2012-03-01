@@ -3,9 +3,7 @@ package org.molgenis.compute.commandline;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,27 +21,28 @@ public class Worksheet
 {
 	// The worksheet variable
 	public List<Tuple> worksheet = new ArrayList<Tuple>();
-	//public List<Tuple> folded = new ArrayList<Tuple>();
-	//public List<Tuple> reduced = new ArrayList<Tuple>();
+	// public List<Tuple> folded = new ArrayList<Tuple>();
+	// public List<Tuple> reduced = new ArrayList<Tuple>();
 	List<ComputeParameter> parameterlist; // parameters.txt
 	List<Tuple> userworksheet; // original user worksheet
-	//public Set<String> reducedfields = new HashSet<String>(); // fields (lists) that are reduced to a single value
-	//public Set<String> foldon = new HashSet<String>(); // fields on which we folded
-	//public Set<String> list; // fields that remain a list
 
-//	public Set<String> getConstants()
-//	{
-//		Set<String> constants = new HashSet<String>();
-//		for (String field : reducedfields)
-//		{
-//			if (!foldon.contains(field))
-//			{
-//				constants.add(field);
-//			}
-//		}
-//
-//		return (constants);
-//	}
+	// public Set<String> reducedfields = new HashSet<String>(); // fields (lists) that are reduced to a single value
+	// public Set<String> foldon = new HashSet<String>(); // fields on which we folded
+	// public Set<String> list; // fields that remain a list
+
+	// public Set<String> getConstants()
+	// {
+	// Set<String> constants = new HashSet<String>();
+	// for (String field : reducedfields)
+	// {
+	// if (!foldon.contains(field))
+	// {
+	// constants.add(field);
+	// }
+	// }
+	//
+	// return (constants);
+	// }
 
 	// map with (parameter name, parameter object) tuples
 	// public Map<String, ComputeParameter> computeparameters = new HashMap<String, ComputeParameter>();
@@ -199,6 +198,7 @@ public class Worksheet
 		// return;
 		// }
 
+		;
 		Map<String, ArrayList<Object>> tupleset = null; // [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]
 		Map<String, Map<String, ArrayList<Object>>> wsset = new HashMap<String, Map<String, ArrayList<Object>>>(); // Suppose target is lane: [1: [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]]
 
@@ -208,7 +208,7 @@ public class Worksheet
 
 			String key = "";// t.getString(targets);
 
-			//create unique key based on concat of folding targets
+			// create unique key based on concat of folding targets
 			for (String target : targets)
 			{
 				key += t.getString(target) + "_";
@@ -263,7 +263,7 @@ public class Worksheet
 		// check: is the worksheet (ws) that we want to return, after expansion, equal to the original worksheet?
 		// if not, throw exception
 
-		//List<Tuple> expWs = unfoldWorksheet(folded);
+		// List<Tuple> expWs = unfoldWorksheet(folded);
 		// print("this.folded: " + folded);
 		// print("expWs: " + expWs);
 		// print("worksheet: " + worksheet);
@@ -336,10 +336,10 @@ public class Worksheet
 		}
 
 		// put targets and hasOnes also in global list that we print in header of script
-//		for (String field : reduceParams)
-//		{
-//			foldon.add(field);
-//		}
+		// for (String field : reduceParams)
+		// {
+		// foldon.add(field);
+		// }
 
 		// (iii) put all empty parameters that are not in R, in L
 		for (ComputeParameter cp : parameterlist)
@@ -447,22 +447,22 @@ public class Worksheet
 				"You just found a bug! There are parameters for which it is unclear whether you want to reduce on them.");
 
 		// make L global
-//		this.list = listParams;
+		// this.list = listParams;
 		return (reduceParams);
 	}
 
 	public static List<Tuple> reduceTargets(List<Tuple> folded, List<ComputeParameter> parameterlist, List<String> targets)
 	{
-//		if (1 == targets.size() && "line_number".equals(targets.get(0)))
-//		{
-////			List<Tuple> reduced = cloneWorksheet(folded);
-////			List<String> reducedfields = new ArrayList<String>();
-////			for (ComputeParameter cp : parameterlist)
-////			{
-////				reducedfields.add(cp.getName());
-////			}
-//			return folded;
-//		}
+		// if (1 == targets.size() && "line_number".equals(targets.get(0)))
+		// {
+		// // List<Tuple> reduced = cloneWorksheet(folded);
+		// // List<String> reducedfields = new ArrayList<String>();
+		// // for (ComputeParameter cp : parameterlist)
+		// // {
+		// // reducedfields.add(cp.getName());
+		// // }
+		// return folded;
+		// }
 
 		// reduce the targets in worksheet (eg lane = 1, 1, 1, 1) to one single value (lane = 1) for easy use in freemarker
 
@@ -473,7 +473,7 @@ public class Worksheet
 		}
 
 		// clear data that is now in reduced worksheet
-		//this.reduced.clear();
+		// this.reduced.clear();
 		List<Tuple> reduced = new ArrayList<Tuple>();
 
 		for (Tuple t : folded)
@@ -491,19 +491,22 @@ public class Worksheet
 					if (!tclone.isNull(rfield))
 					{ // tclone has a value, which should be a list
 						@SuppressWarnings("unchecked")
-						//List<String> ls = (List<String>) tclone.getList(rfield);
+						// List<String> ls = (List<String>) tclone.getList(rfield);
 						List<?> lstmp = tclone.getList(rfield);
 						List<String> ls = new ArrayList<String>();
 						for (Object x : lstmp)
 						{
-							ls.add(x.toString());
+							if (x == null) 
+								ls.add(null);
+							else
+								ls.add(x.toString());
 						}
-						
+
 						// check: all values should be equal
-						String value = (ls.get(0) + "");
+						String value = ls.get(0);
 						for (int i = 1; i < ls.size(); i++)
 						{
-							if (!ls.get(i).equalsIgnoreCase(value))
+							if (value != null && !value.equalsIgnoreCase(ls.get(i)) || value == null && ls.get(i) != null)
 							{
 								throw new RuntimeException("Cannot reduce field " + rfield + " because it contains different values!");
 							}
@@ -543,21 +546,18 @@ public class Worksheet
 
 	public static List<Tuple> unfoldWorksheet(List<Tuple> worksheet)
 	{
-		// Remark: works on 'non-reduced' worksheets
-
 		List<Tuple> ws = new ArrayList<Tuple>();
 
 		int nelements = 0;
 		for (Tuple t : worksheet)
 		{
-			// find a list that is longer than 1?
-			for (int i = 0; i < t.getNrColumns(); i++)
+			if (t.getString("line_number").contains("8"))
 			{
-				if (t.getList(i).size() > nelements)
-				{
-					nelements = t.getList(i).size();
-				}
+				System.out.println("doh");
 			}
+
+			// check lenght of line_number field
+			nelements = t.getList("line_number").size();
 
 			List<String> fields = t.getFields();
 			for (int i = 0; i < nelements; i++)
@@ -567,11 +567,18 @@ public class Worksheet
 				// fill this new tuple, based on i'th elements in the tupleset
 				for (String field : fields)
 				{
-					// also 'unfold' fields that were already folded to a value to a list
-					Integer index = t.getList(field).size() - 1;
-					if (i <= index) index = i;
-
-					st.set(field, t.getList(field).get(index));
+					if (t.isNull(field))
+					{
+						st.set(field, null);
+					}
+					else if (nelements > t.getList(field).size())
+					{
+						st.set(field, t.getList(field).get(0));
+					}
+					else
+					{
+						st.set(field, t.getList(field).get(i));
+					}
 				}
 
 				ws.add(st);
@@ -584,20 +591,20 @@ public class Worksheet
 	{
 		List<Tuple> w = unfoldWorksheet(worksheet);
 		List<String> ws = new ArrayList<String>();
-		
+
 		for (Tuple t : w)
 		{
 			String row = "";
 			for (String field : t.getFields())
 			{
-				row = row + (row.equalsIgnoreCase("") ? "" : ", ") + field + "=\'" + t.getObject(field).toString() + "\'"; 
+				row = row + (row.equalsIgnoreCase("") ? "" : ", ") + field + "=\'" + t.getObject(field).toString() + "\'";
 			}
 			ws.add(row);
 		}
-		
+
 		return ws;
 	}
-	
+
 	private static boolean equalTuples(Tuple t1, Tuple t2)
 	{
 
@@ -612,26 +619,11 @@ public class Worksheet
 
 		for (String field : fields1)
 		{
-			// does t2 also contain this field
-			if (!fields2.contains(field)) return false;
-
-			// is content equal for this field?
-			Object o1 = t1.getObject(field);
-			Object o2 = t2.getObject(field);
-
-			if (!(o1 == null && o2 == null))
-			{ // if not both o1 and o2 are null
-				if (o1 == null || o2 == null)
-				{ // if one of the two is null, then return false
-					return false;
-				}
-				// both o1 and o2 are not null
-
-				if (!o1.equals(o2))
-				{ // if value of o1 is different from value of o2 then return false
-					return false;
-				}
+			if (t1.isNull(field))
+			{
+				if (!t2.isNull(field)) return false;
 			}
+			else if (!t1.getString(field).equals(t2.getString(field))) return false;
 		}
 
 		return true;
@@ -639,37 +631,57 @@ public class Worksheet
 
 	private static boolean equalWorksheets(List<Tuple> ws1, List<Tuple> ws2)
 	{
-		// if each tuple in ws1 matches a different tuple in ws2
-		// and each tuple in ws2 is matched to a tuple in ws1,
-		// then two worksheets are considered equal
-
-		// create a list with all indices of tuples in ws2
-		List<Integer> li = new ArrayList<Integer>();
-		for (int i = 0; i < ws2.size(); i++)
+		if (ws1.size() != ws2.size())
 		{
-			li.add(i);
+			Set<String> lineNumbers = new HashSet();
+			for (Tuple t1 : ws1)
+			{
+				System.out.println(t1.getString("line_number"));
+				if (lineNumbers.contains(t1.getString("line_number"))) System.out.println("DUPLICATE!");
+				else
+					lineNumbers.add(t1.getString("line_number"));
+			}
+			System.out.println("worksheets of unequal lengths");
+			return false;
 		}
 
 		// for each tuple in ws1, find a matching tuple in ws2 and remove the 'matching index' from li
 		for (Tuple t1 : ws1)
 		{
-
 			boolean match = false;
-			for (int index = 0; index < li.size(); index++)
+			for (Tuple t2 : ws2)
 			{
-				if (equalTuples(t1, ws2.get(li.get(index))))
+				if (equalTuples(t1, t2))
 				{
 					match = true; // match found!
-					li.remove(index); // remove tuple i from list li
 					break;
 				}
 			}
 
-			if (!match) return (false);
-		}
+			if (!match)
+			{
+				System.err.println("Folded not correctly: " + t1);
+				System.err.println("testing fields:");
 
-		// list li should be empty now!
-		if (0 < li.size()) return (false);
+				// find a matching tuple in ws2 based on line number
+				for (Tuple t : ws2)
+				{
+					if (t.getString("line_number").equals(t1.getString("line_number")))
+					{
+						for (String field : t.getFields())
+						{
+							if ((t.isNull(field) && !t1.isNull(field)) || !t.getString(field).equals(t1.getString(field)))
+							{
+								System.err.println("differences in field '" + field + "': " + t.getString(field) + "!="
+										+ t1.getString(field));
+							}
+						}
+					}
+				}
+
+				return (false);
+			}
+		}
 
 		return true;
 	}
