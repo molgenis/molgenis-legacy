@@ -28,10 +28,10 @@ public class DivPanel extends HtmlWidget
 		this.setLabel(label);
 	}
 	
-	public DivPanel(String name, boolean makeNewDiv)
+	public DivPanel(String name, String label, boolean makeNewDiv)
 	{	
-		super(name, name);
-		this.setLabel(name);
+		super(name, label);
+		this.setLabel(label);
 		this.makeNewDiv = makeNewDiv;
 	}
 	
