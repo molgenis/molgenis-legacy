@@ -6,3 +6,7 @@
 #PBS -l mem=${mem}
 #PBS -e ${jobname}.err
 #PBS -o ${jobname}.out
+
+<#include "Macros.ftl">
+<@begin/>
+<#if defaultInterpreter = "R"><@Rbegin/></#if>

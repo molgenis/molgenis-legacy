@@ -61,10 +61,3 @@ echo "<#include "QCReportTemplate.tex"/>" > ${qcstatisticstexreport}
 
 pdflatex -output-directory=${qcdir} ${qcstatisticstexreport}
 pdflatex -output-directory=${qcdir} ${qcstatisticstexreport} <#--do twice to fill all cross references-->
-
-<#--
-list foldParameters(parameters,"externalSampleID") as row>
-${row.getString("samplehsmetrics")}
-</#list>
-<#list foldedStringList(parameters, "project,externalSampleID", "samplehsmetrics") as val> ${val}, </#list
--->
