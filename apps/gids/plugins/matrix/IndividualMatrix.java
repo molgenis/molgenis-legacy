@@ -13,6 +13,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.gids.GidsSample;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import javax.persistence.criteria.From;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,6 +32,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.gids.converters.GidsConvertor;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
@@ -251,7 +253,6 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 				String knownMeas = "";			
 					if(listNewMeas.size()!=0){
 						for (String e : listNewMeas){
-							
 							Boolean c = request.getBoolean("checker"+teller);
 							if(c!=null){
 								knownMeas = request.getString("dropbox"+teller);
@@ -266,6 +267,8 @@ public class PMconverterandloaderPlugin extends PluginModel<Entity>
 								}
 							teller++;
 							}
+							
+							
 						}
 					}
 					gc = new GidsConvertor();

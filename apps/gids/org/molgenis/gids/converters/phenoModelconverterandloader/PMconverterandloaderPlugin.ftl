@@ -252,6 +252,7 @@
 					<td><b>Individuals</b></td>
 					<td><b>Samples</b></td>
 					<td><b>Already in database?</b></td>
+
 					
 				</tr>
 					<#list screen.listNewMeas as target>
@@ -288,17 +289,18 @@
 					 		<td align="center"><input type="radio" name="${target}" id="radioc${target_index}" value="Samples" ></td>
 				 		</#if>
 				 		<div id="radio">
-					 	<td><input type="checkbox" name="checker${target_index}" id="checker${target_index}" value="check" onclick="controleer('${target_index}');"></td>
-					 	</div>	
-					 		<td>
-					 		<select disabled="true" name="dropbox${target_index}" id="dropbox${target_index}" style="margin-right:5px">
+					 	<td><input type="checkbox" name="checker${target_index}" id="checker${target_index}" value="check" onclick="controleer('${target_index}');">
+					 	<select disabled="true" name="dropbox${target_index}" id="dropbox${target_index}" style="margin-right:5px">
 							
 					 		<option value="select measurement">select measurement</option>	
 					 		<#list screen.measInDb as measInDb>
 								<option value="${measInDb}">${measInDb}</option>			
 							</#list>
 							</select></td>
-							
+					 	</div>	
+					 		
+					 		
+						
 					</tr>
 					</#list>
 				<#else>

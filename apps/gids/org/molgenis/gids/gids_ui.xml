@@ -11,7 +11,8 @@
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login"/>
 		
 		<menu name="ImportData" label="Import Data">
-			
+			<plugin name="AddIndividual" type="plugins.AddIndividual.AddIndividual" label="Add new Individual"/>
+			<plugin name="EditIndividual" type="plugins.EditIndividual.EditIndividual" label="Edit new Individual"/>
 			<plugin name="ConvertDataIntoPheno" type="org.molgenis.gids.converters.phenoModelconverterandloader.PMconverterandloaderPlugin" label="Convert data"/>
 			<!-- plugin name="FillDatabase" type="plugins.fillgids.FillDatabasePlugin" label="Load data" />-->
 			<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
