@@ -95,7 +95,7 @@ public class ComputeCommandLine
 				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
 //				job.setCores(cores);
 				work.set("cores", cores);
-				String mem = (String)(protocol.getMem() == null ? worksheet.getdefaultvalue("mem") : protocol.getMem());
+				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol.getMem().toString());
 //				job.setMem(mem);
 				work.set("mem", mem + "gb");
 
