@@ -194,7 +194,7 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 	 * @param request
 	 * @throws DatabaseException
 	 */
-	private void makeHtmlTable(Database db, Tuple request) throws DatabaseException
+	private String makeHtmlTable(Database db, Tuple request) throws DatabaseException
 	{
 		if(selectedComputeProtocolName != null && selectedStudyProtocolName != null){
 
@@ -208,16 +208,18 @@ public class predictionSelectionPlugin extends PluginModel<Entity>
 
 			//Search for the corresponding variables in a new study
 			List<MappingMeasurement> listOfMappings = db.find(MappingMeasurement.class, 
-					new QueryRule(MappingMeasurement.INVESTIGATION_NAME, Operator.EQUALS, validationInvestigationName));
+					new QueryRule(MappingMeasurement.MAPPING_NAME, Operator.IN, featureNamesInModel));
 
 			for(MappingMeasurement mapping : listOfMappings){
+				System.out.println(mapping.getMapping_Name());
 				mappingMeasurementIdToEntity.put(mapping.getId(), mapping);
 			}
-
-			htmlTable = new EntityTable(listOfMappings, true, MappingMeasurement.MAPPING_NAME, MappingMeasurement.FEATURE_NAME, MappingMeasurement.VALUE).toHtml();
-			return;
+			
+			htmlTable = new EntityTable(listOfMappings, true, MappingMeasurement.MAPPING_NAME, MappingMeasurement.TARGET_NAME, MappingMeasurement.FEATURE_NAME).toHtml();
+			
+			
 		}
-
+		return htmlTable;
 	}
 
 	private void makeEditableTable(int selectedRow)
