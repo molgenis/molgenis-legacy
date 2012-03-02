@@ -114,10 +114,10 @@ public class PlinkDownload extends GenericPlugin
 			int sexMeasId;
 			try
 			{
-				sexMeasId = db.query(Measurement.class).eq(Measurement.NAME, "PATIENT_GESLACHT").find().get(0).getId();
+				sexMeasId = db.query(Measurement.class).eq(Measurement.NAME, "GESLACHT").find().get(0).getId();
 			}
 			catch (Exception e) {
-				this.setError("Something went wrong while finding the Sex phenotype: " + e.getMessage());
+				this.setError("Something went wrong while finding the Sex(GESLACHT) phenotype: " + e.getMessage());
 				e.printStackTrace();
 				return;
 			}
