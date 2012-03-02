@@ -166,12 +166,10 @@ public class PlinkbinToCsv {
 		
 		//now write the genotype matrix
 		
-		//check: genotypes must be equal to individuals x snps
+		//check for amount of padding bit pairs per SNP 'row'
 		long nrOfGenotypes = bedfd.getNrOfElements();
-		if(nrOfIndividuals * nrOfSnps != nrOfGenotypes)
-		{
-			throw new Exception("Problem with BED file: Number of genotypes (" + nrOfGenotypes + ") is not equal to the number of individuals (" + nrOfIndividuals + ") times number of SNPs ("+nrOfSnps+")");
-		}  
+		int paddingPerSnp = (int)((nrOfGenotypes - (nrOfIndividuals * nrOfSnps)) / nrOfSnps);
+		System.out.println("\nNr. of padding bit pairs after each 'row' of SNP values: " + paddingPerSnp);
 		
 		Writer genotypesOut = new OutputStreamWriter(new FileOutputStream(genotypes), "UTF-8");
 		
@@ -184,12 +182,12 @@ public class PlinkbinToCsv {
 		
 		//elements: snp name + genotypes
 		int snpCounter = 0;
-		for(int individual = 0; individual < nrOfGenotypes; individual += nrOfIndividuals)
+		for(int genotypeStart = 0; genotypeStart < nrOfGenotypes; genotypeStart += nrOfIndividuals)
 		{
 			System.out.print(".");
 			
 			String snpName = snpNames.get(snpCounter);
-			String[] allIndividualsForThisSNP = bedfd.getElements(individual, individual + nrOfIndividuals);
+			String[] allIndividualsForThisSNP = bedfd.getElements(genotypeStart, genotypeStart + nrOfIndividuals, paddingPerSnp, snpCounter);
 			String a1 = Character.toString(snpCoding.get(snpName).getAllele1());
 			String a2 = Character.toString(snpCoding.get(snpName).getAllele2());
 			String hom1 = a1+a1;
