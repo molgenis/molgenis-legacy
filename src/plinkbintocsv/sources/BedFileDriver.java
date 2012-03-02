@@ -155,16 +155,12 @@ public class BedFileDriver
 	 */
 	public String[] getElements(long from, long to, int paddingBitpairs, int pass) throws IOException
 	{
-		long start = (from / 4) + 3; // bytes, corrected for first 3 info bytes of BED file
-		long stop = (to / 4) + 3; // bytes, corrected for first 3 info bytes of BED file
-		if (paddingBitpairs > 0) { // shift if there are padding bit pairs
-			stop += 1;
-			if (from > 0) {
-				start += 1; // TODO: not always!
-			}
-		}
+		double paddingFraction = paddingBitpairs / 4.0;
+		// Start byte = byte position of start individual, corrected for padding 0's that get added at every SNP:
+		long start = (long)((from / 4.0) - (pass * paddingFraction) + pass + 3);
+		// Stop byte = byte position after last individual, corrected for padding 0's that get added at every SNP:
+		long stop = (long)((to / 4.0) - ((pass + 1) * paddingFraction) + (pass + 1) + 3);
 		byte[] res = new byte[(int) (stop - start)];
-		System.out.println("Bytes: " + (stop - start));
 		int res_index = 0;
 		String[] result = new String[(int) (to - from)]; // to - from = nr. of individuals
 		
