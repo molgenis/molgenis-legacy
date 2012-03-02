@@ -13,6 +13,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -499,6 +500,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					htmlValue += "<tr><th>Data type</th><td width=40>" +
 							measurementDataType + "</td></tr>" ;
 					//htmlValue = "<p>why?</p>";
+					
+//					Query<MolgenisFile> queryDisplayNamesFile = db.query(MolgenisFile.class);
+//
+//					System.out.println("Files : >>>>>>>>" + queryDisplayNamesFile);
 
 					Query<ObservedValue> queryDisplayNames = db.query(ObservedValue.class);
 
@@ -517,12 +522,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 								displayName = queryDisplayNames.find().get(0).getValue();
 							}
 
-							String link =" http://www.google.com";
-							htmlValue += "<tr><th>" + featureName + "</th><td><a href=" + link + ">" +
-									value + "</a></td></tr>";
+							System.out.println("value featureName "+ value + featureName);
+							if (featureName.startsWith("SOP")) {
+								htmlValue += "<tr><th>" + featureName + "</th><td><a href=" + value + ">" + value + "</a></td></tr>";
+							} else {
+								htmlValue += "<tr><th>" + featureName + "</th><td> " + value + "</td></tr>";
+							}
 						}
 
 					}
+					
+
 
 					htmlValue += "</table>";
 
