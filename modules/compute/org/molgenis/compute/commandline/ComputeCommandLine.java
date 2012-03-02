@@ -1,24 +1,8 @@
 package org.molgenis.compute.commandline;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeProtocol;
@@ -26,14 +10,11 @@ import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
 
-import bsh.This;
+import java.io.*;
+import java.util.*;
 
 // This dependency needs to go when we upgrade to Java 7+
 //import com.google.common.io.Files;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 public class ComputeCommandLine
 {
@@ -114,7 +95,7 @@ public class ComputeCommandLine
 				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
 //				job.setCores(cores);
 				work.set("cores", cores);
-				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem") : protocol.getMem());
+				String mem = (String)(protocol.getMem() == null ? worksheet.getdefaultvalue("mem") : protocol.getMem());
 //				job.setMem(mem);
 				work.set("mem", mem + "gb");
 
