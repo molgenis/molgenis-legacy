@@ -84,8 +84,11 @@
       								<div id="details"></div> <br/><br/>
       							<!--/div-->
 								<div id="ShoopingCartButton" style="float: right;">
+									<!--input type="submit" style="display:none" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Download" 
+									onclick="__action.value='DownloadMeasurements';"/-->
 									<input type="submit" style="display:none" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Download" 
 									onclick="__action.value='DownloadMeasurements';"/>
+									
 								</div>
 								
 						   </td>
