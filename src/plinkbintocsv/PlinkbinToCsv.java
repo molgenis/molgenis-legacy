@@ -167,8 +167,8 @@ public class PlinkbinToCsv {
 		//now write the genotype matrix
 		
 		//check for amount of padding bit pairs per SNP 'row'
-		long nrOfGenotypes = bedfd.getNrOfElements();
-		int paddingPerSnp = (int)((nrOfGenotypes - (nrOfIndividuals * nrOfSnps)) / nrOfSnps);
+		long nrOfGenotypes = nrOfIndividuals * nrOfSnps;
+		int paddingPerSnp = (int)((bedfd.getNrOfElements() - nrOfGenotypes) / nrOfSnps);
 		System.out.println("\nNr. of padding bit pairs after each 'row' of SNP values: " + paddingPerSnp);
 		
 		Writer genotypesOut = new OutputStreamWriter(new FileOutputStream(genotypes), "UTF-8");
@@ -184,7 +184,7 @@ public class PlinkbinToCsv {
 		int snpCounter = 0;
 		for(int genotypeStart = 0; genotypeStart < nrOfGenotypes; genotypeStart += nrOfIndividuals)
 		{
-			System.out.print(".");
+			System.out.println((int)((genotypeStart / (double)nrOfGenotypes) * 100) + "% of genotypes done");
 			
 			String snpName = snpNames.get(snpCounter);
 			String[] allIndividualsForThisSNP = bedfd.getElements(genotypeStart, genotypeStart + nrOfIndividuals, paddingPerSnp, snpCounter);
