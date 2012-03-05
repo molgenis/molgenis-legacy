@@ -345,6 +345,14 @@
 				}
 			}
 			
+			function insertInvestigation(investigationName){
+				
+				if(investigationName != null){
+				
+					document.getElementsByName('investigation')[0].value = investigationName;
+				}
+			}
+			
 		</script>
 			<div class="screenpadding" id = "screenpadding">	
 			    <h3 id="test"> Import dataShaper data to pheno model  </h3>
@@ -356,9 +364,7 @@
 		        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
 		        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
 		        
-		        
-				
-				<!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
+		        <!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
  				
 				<#list screen.getDataTypeOptions() as dataTypeOptions>
 					<script type="text/javascript">
@@ -380,7 +386,7 @@
 				</#list>
 				
 				<#if screen.isImportingFinished() == false>
-				Please enter your investigation: <input type="text" name="investigation" size="15" value=""> <br/><br/>
+				Please enter your investigation: <input type="text" name="investigation" size="15" value="${screen.getInvestigationName()}"> <br/><br/>
 				
 				
 				Enter column numbers  <input type="text" id="shortcut" size="15" value=""> 

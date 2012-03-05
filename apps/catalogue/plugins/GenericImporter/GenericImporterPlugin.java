@@ -54,7 +54,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 	private File file = null;
 
-	private String investigation = null;
+	private String investigationName = "";
 
 	private boolean importingFinished = true;
 
@@ -109,6 +109,10 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		}
 	}
 
+	public String getInvestigationName(){
+		return investigationName;
+	}
+	
 	public boolean isImportingFinished() {
 		return importingFinished;
 	}
@@ -175,7 +179,6 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 	}
 
-
 	public List<String> getChooseFieldName() {
 		return chooseFieldName;
 	}
@@ -209,6 +212,8 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 
 		mappingForMolgenisEntity.clear();
+		
+		investigationName = "";
 
 		if ("UploadFileByColumn".equals(request.getAction())) 
 		{
@@ -235,12 +240,24 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 				int columns = sheet.getColumns();
 
 				int rows = sheet.getRows();
-
+				
+				int startingRow = 0;
+				
+				if(sheet.getCell(0, 0).getContents().toString().equals("InvestigationName")){
+					
+					investigationName = sheet.getCell(1, 0).getContents().toString();
+					
+					startingRow = 1;
+					
+				}else{
+					investigationName = "";
+				}
+				
 				for(int j = 0; j < columns; j++){
 
 					List<String> mappingForEachColumn = new ArrayList<String>();
 
-					for(int i = 0; i < rows; i++){
+					for(int i = startingRow; i < rows; i++){
 
 						mappingForEachColumn.add(sheet.getCell(j, i).getContents().toString());
 
@@ -278,12 +295,12 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			
 			int startingRow = 0;
 			
-//			if(request.getString("investigation") != null){
-//				investigationName = request.getString("investigation");
-//				outputExcel.addCell(new Label(1, 0, investigationName));
-//				outputExcel.addCell(new Label(0, 0, "InvestigationName"));
-//				startingRow++;
-//			}
+			if(request.getString("investigation") != null){
+				investigationName = request.getString("investigation");
+				outputExcel.addCell(new Label(1, 0, investigationName));
+				outputExcel.addCell(new Label(0, 0, "InvestigationName"));
+				startingRow++;
+			}
 			
 			
 			if(headers != null)
@@ -308,7 +325,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 					for(int j = 0; j < twoDimensionalTable.get(0).size(); j++){
 
-						outputExcel.addCell(new Label(i, j + 1, twoDimensionalTable.get(i).get(j)));
+						outputExcel.addCell(new Label(i, j + 1 + startingRow, twoDimensionalTable.get(i).get(j)));
 					}
 
 					if(twoDimensionalTable.get(i).get(1).equals(Measurement.class.getSimpleName() + ":" + Measurement.DATATYPE)){
@@ -328,28 +345,11 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 								{
 									String userInputDatType = request.getString(member + "_input_" + index);
 									String dataType = MolgenisDataTypeOption + ";" + userInputDatType;
-									outputExcel.addCell(new Label(i, twoDimensionalTable.get(0).size() + index + 1 - addedNumberOfDataType, dataType));
+									outputExcel.addCell(new Label(i, twoDimensionalTable.get(0).size() + index + 1 - addedNumberOfDataType + startingRow, dataType));
 								}
 								previousAddingDataType++;
 							}
 						}
-						//int count = 0; 
-//						while(request.getString(member + "_options_" + count) != null)
-//						{
-//							String eachMember = request.getString(member + "_options_" + count);
-//							System.out.println(eachMember.toString() + " Molgenis option!");
-//							String MolgenisDataTypeOption = eachMember.toString();
-//
-//							if(request.getString(member + "_input_" + count) != null)
-//							{
-//								String userInputDatType = request.getString(member + "_input_" + count);
-//								String dataType = MolgenisDataTypeOption + ";" + userInputDatType;
-//								outputExcel.addCell(new Label(i, twoDimensionalTable.get(0).size() + count + 1, dataType));
-//							}
-//							count++;
-//						}
-
-
 					}
 				}
 			}
@@ -428,7 +428,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 				if(request.getString("investigation") != null)
 				{
-					investigation = request.getString("investigation");
+					investigationName = request.getString("investigation");
 
 				}
 
@@ -601,7 +601,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 					}
 				}
 
-				table.setInvestigation(investigation);
+				table.setInvestigation(investigationName);
 
 				table.convertIntoPheno(dictionaryCategory);
 
