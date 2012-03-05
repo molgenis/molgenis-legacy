@@ -86,7 +86,7 @@
 								<div id="ShoopingCartButton" style="float: right;">
 									<!--input type="submit" style="display:none" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Download" 
 									onclick="__action.value='DownloadMeasurements';"/-->
-									<input type="submit" style="display:none" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Download" 
+									<input type="submit" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Download" 
 									onclick="__action.value='DownloadMeasurements';"/>
 									
 								</div>
