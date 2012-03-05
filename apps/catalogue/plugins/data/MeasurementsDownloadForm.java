@@ -129,10 +129,15 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 		for (String name : shoppingCart.getMeasurements_Name()) {
 			emailContents += name + "\n";
 		}
-		emailContents += "\n User details: \n"; 
-		emailContents += "Title: ";
-		if (user != null) {
 		
+		if (user == null) {
+			emailContents += "\n No user details available \n "; 
+		}
+		else {
+		
+			emailContents += "\n User details: \n"; 
+			emailContents += "Title: ";
+			
 			if (user.getTitle() != null) emailContents += " emailContents\n";
 			emailContents += "First Name: "+ user.getFirstName() +"\n";
 			emailContents += "Last Name: "+ user.getLastName() +"\n";
