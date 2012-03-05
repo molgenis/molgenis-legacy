@@ -178,6 +178,8 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
 		// Add 10 female House mice
 		selenium.select("id=species", "label=House mouse");
+		selenium.click("id=SaveSpecies");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.select("id=background", "label=C57BL/6j");
 		selenium.select("id=sex", "label=Female");
 		selenium.select("id=source", "label=Harlan");
@@ -188,6 +190,8 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("10 animal(s) successfully added"));
 		// Add 10 male House mice
 		selenium.select("id=species", "label=House mouse");
+		selenium.click("id=SaveSpecies");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.select("id=background", "label=C57BL/6j");
 		selenium.select("id=sex", "label=Male");
 		selenium.select("id=source", "label=Harlan");

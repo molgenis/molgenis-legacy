@@ -40,10 +40,6 @@ public class AddAnimalPlugin extends GenericPlugin
 {
 	private static final long serialVersionUID = -4185405160313262242L;
 	private CommonService ct = CommonService.getInstance();
-	
-	private List<String> bases = null;
-
-	// inputs
 	public StringInput researcher = null;
 	public SelectInput species = null;
 	public SelectInput sex = null;
@@ -64,7 +60,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	public ActionInput savebutton = null;
 	private boolean genesSaved = false;
 	public SelectInput location = null;
-	
+	private int speciesId = -1;
 	// container that renders whole form as divs (left labels, right inputs)
 	public DivPanel containingPanel = null;
 	// subpanel to conditionally show the genetic modification questions (background, genotype)
@@ -99,13 +95,11 @@ public class AddAnimalPlugin extends GenericPlugin
 			ct.setDatabase(db);
 			ct.makeObservationTargetNameMap(userId, false);
 			
-			bases = ct.getPrefixes("animal");
-			
-			if (!genesSaved) {
-				populateTablePanel(db);
+			if (speciesId == -1) {
+				populateFirstTablePanel(db);
+			} else if (!genesSaved) {
+				populateSecondTablePanel(db);
 			}
-			
-			genesSaved = false;
 		}
 		catch (Exception e)
 		{
@@ -128,9 +122,14 @@ public class AddAnimalPlugin extends GenericPlugin
 			containingPanel.setValuesFromRequest(request);
 			if (action.equals("Add")) {
 				handleAddRequest(db, request);
+				speciesId = -1;
+				genesSaved = false;
 			}
 			if (action.equals("Save")) {
 				handleSaveRequest(db, request);
+			}
+			if (action.equals("SaveSpecies")) {
+				handleSaveSpeciesRequest(db, request);
 			}
 		} catch (Exception e) {
 			try {
@@ -158,7 +157,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		List<String> geneList = gene.getObject();
 		for (String geneName : geneList) {
 			SelectInput genestateBox = new SelectInput("genestate_" + geneName);
-			genestateBox.setLabel("State for gene modification " + geneName + ":");
+			genestateBox.setLabel("State for " + geneName + ":");
 			for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
 				genestateBox.addOption(option, option);
 			}
@@ -168,13 +167,15 @@ public class AddAnimalPlugin extends GenericPlugin
 		gmoPanel.setHidden(false);
 	}
 	
-	private void handleAddRequest(Database db, Tuple request) throws Exception {
-		int speciesId = 0;
+	private void handleSaveSpeciesRequest(Database db, Tuple request) throws Exception {
 		if (species.getObject() != null) {
 			speciesId = Integer.parseInt(species.getObject().toString());
 		} else {
-			throw(new Exception("No species given - animal(s) not added"));
+			this.setError("No species given - animal(s) not added");
 		}
+	}
+	
+	private void handleAddRequest(Database db, Tuple request) throws Exception {
 		int backgroundId = 0;
 		if (background.getObject() != null) {
 			backgroundId = Integer.parseInt(background.getObject().toString());
@@ -392,15 +393,13 @@ public class AddAnimalPlugin extends GenericPlugin
 		this.setSuccess(animalsToAddList.size() + " animal(s) successfully added");
 	}
 	
-	private void populateTablePanel(Database db) throws DatabaseException, ParseException {
-		
+	private void populateFirstTablePanel(Database db) throws DatabaseException, ParseException {
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
 		// panel for all elements
 		containingPanel = new DivPanel(this.getName() + "panel", "");
 
 		// Populate animal species list
-		// TODO: present user first only with Species box. Then show the rest, adjusting Background and Name Prefix options according to Species
 		species = new SelectInput("species");
 		species.setLabel("Species:");
 		species.addOption("","");
@@ -413,13 +412,26 @@ public class AddAnimalPlugin extends GenericPlugin
 		species.setId("species");
 		species.setOnchange("updateNamePrefixBox();");
 		
+		ActionInput contbutton = new ActionInput("SaveSpecies", "", "Continue");
+		
+		containingPanel.add(species);
+		containingPanel.add(contbutton);
+	}
+	
+	private void populateSecondTablePanel(Database db) throws DatabaseException, ParseException {
+		
+		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+		
+		// panel for all elements
+		containingPanel = new DivPanel(this.getName() + "panel", "");
+		
 		background = new SelectInput("background");
 		background.setLabel("Background:");
 		background.setDescription("Give the genetic background of the animal.");
 		background.setTooltip("Give the genetic background of the animal.");
 		background.addOption("","");
 		background.addOption("0", "no background");
-		for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationIds)) {
+		for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationIds)) { // TODO base on species
 			background.addOption(b.getId(), b.getName());
 		}
 		background.setNillable(false);
@@ -494,7 +506,8 @@ public class AddAnimalPlugin extends GenericPlugin
 		entrydate.setNillable(false);
 		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
 		
-		namebase = new SelectInput("namebase");
+		List<String> bases = ct.getPrefixes("animal");
+		namebase = new SelectInput("namebase"); // TODO base on species
 		namebase.setLabel("Name prefix (may be empty):");
 		namebase.setId("namebase");
 		namebase.setDescription("The default prefix string that will be put in front of your name.");
@@ -556,7 +569,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		addbutton = new ActionInput("Add", "", "Add animal(s)");
 
 		// add everything to the panel
-		containingPanel.add(species);
 		containingPanel.add(background);
 		containingPanel.add(sex);
 		containingPanel.add(source);
@@ -577,14 +589,6 @@ public class AddAnimalPlugin extends GenericPlugin
 	public String render()
 	{
 		return this.containingPanel.toHtml();
-	}
-
-	public List<String> getBases() {
-		return bases;
-	}
-
-	public void setBases(List<String> bases) {
-		this.bases = bases;
 	}
 	
 }
