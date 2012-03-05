@@ -70,9 +70,9 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 				this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. You cannot continue! Please visit the Catalog first.", false));
 				this.reload(db);
 			}
-			else if (this.checkIfUserDetailsEmpty(db)) {
-				this.getModel().getMessages().add(new ScreenMessage("Please complete your profile first!", false));
-			}
+//			else if (this.checkIfUserDetailsEmpty(db)) {
+//				this.getModel().getMessages().add(new ScreenMessage("Please complete your profile first!", false));
+//			}
 			else {
 				this.updateShoppingCartAsCheckedOut(db);
 	    		this.sendDownloadEmail(db); 
@@ -130,23 +130,28 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 			emailContents += name + "\n";
 		}
 		emailContents += "\n User details: \n"; 
-		emailContents += "Title: "+ user.getTitle() +"\n";
-		emailContents += "First Name: "+ user.getFirstName() +"\n";
-		emailContents += "Last Name: "+ user.getLastName() +"\n";
+		emailContents += "Title: ";
+		if (user != null) {
 		
-		emailContents += "Email: "+ user.getEmail() +"\n";
-		emailContents += "Phone: "+ user.getPhone() +"\n";
-		emailContents += "Fax: "+ user.getFax() +"\n";
-		emailContents += "TollFreePhone: "+ user.getTollFreePhone() +"\n";
-		emailContents += "Address: "+ user.getAddress() +"\n"; 
-		emailContents += "Phone: "+ user.getPhone() +"\n";
+			if (user.getTitle() != null) emailContents += " emailContents\n";
+			emailContents += "First Name: "+ user.getFirstName() +"\n";
+			emailContents += "Last Name: "+ user.getLastName() +"\n";
+			
+			emailContents += "Email: "+ user.getEmail() +"\n";
+			emailContents += "Phone: "+ user.getPhone() +"\n";
+			emailContents += "Fax: "+ user.getFax() +"\n";
+			emailContents += "TollFreePhone: "+ user.getTollFreePhone() +"\n";
+			emailContents += "Address: "+ user.getAddress() +"\n"; 
+			emailContents += "Phone: "+ user.getPhone() +"\n";
 
-		emailContents += "Department: "+ user.getDepartment() +"\n";
-		emailContents += "Affiliation: "+ user.getAffiliation() +"\n";
-		emailContents += "City: "+ user.getCity() +"\n";
-		emailContents += "Country: "+ user.getCountry() +"\n";
-		
-		//TODO :Institute,	Position
+			emailContents += "Department: "+ user.getDepartment() +"\n";
+			emailContents += "Affiliation: "+ user.getAffiliation() +"\n";
+			emailContents += "City: "+ user.getCity() +"\n";
+			emailContents += "Country: "+ user.getCountry() +"\n";
+			//TODO :Institute,	Position
+
+		}
+				
 		
 		try {
 			this.getEmailService().email("New items/measurements downloaded", emailContents, admin.getEmail(), true);
