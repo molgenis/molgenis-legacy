@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.MolgenisUser;
+import org.molgenis.auth.Person;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -28,7 +29,7 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 
 	private static final long serialVersionUID = -8140222842047905408L;
 	private ShoppingCart shoppingCart = null;
-	private MolgenisUser user = null;
+	private Person user = null;
 	
 	public MeasurementsDownloadForm(String name, ScreenController<?> parent)
 	{
@@ -70,9 +71,9 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 				this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. You cannot continue! Please visit the Catalog first.", false));
 				this.reload(db);
 			}
-//			else if (this.checkIfUserDetailsEmpty(db)) {
-//				this.getModel().getMessages().add(new ScreenMessage("Please complete your profile first!", false));
-//			}
+			else if (this.checkIfUserDetailsEmpty(db)) {
+				this.getModel().getMessages().add(new ScreenMessage("Please complete your profile first!", false));
+			}
 			else {
 				this.updateShoppingCartAsCheckedOut(db);
 	    		this.sendDownloadEmail(db); 
@@ -112,10 +113,15 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 	 */
 	public boolean checkIfUserDetailsEmpty(Database db) throws DatabaseException {
 		user = MolgenisUser.findById(db, this.getLogin().getUserId());
-		return (user.getAddress() == null ||
-				user.getCity() == null ||
+		user = Person.findById(db,  this.getLogin().getUserId()); 
+		return (user.getEmail() == null ||
+				//user.getAffiliation(db) == null ||
 				user.getDepartment() == null ||
-				user.getAffiliation() == null);
+				user.getFirstName() == null ||
+				user.getLastName() == null ||
+				//user.getAddress() == null ||
+				user.getCity() == null );
+				//user.getAffiliation() == null);
 	}
 	
 	public void sendDownloadEmail(Database db) throws DatabaseException  {
@@ -150,7 +156,7 @@ public class MeasurementsDownloadForm extends PluginModel<Entity>{
 			emailContents += "Phone: "+ user.getPhone() +"\n";
 
 			emailContents += "Department: "+ user.getDepartment() +"\n";
-			emailContents += "Affiliation: "+ user.getAffiliation() +"\n";
+			//emailContents += "Affiliation: "+ user.getAffiliation() +"\n";
 			emailContents += "City: "+ user.getCity() +"\n";
 			emailContents += "Country: "+ user.getCountry() +"\n";
 			//TODO :Institute,	Position
