@@ -8,7 +8,7 @@
 
 <div style="height:10px;">&nbsp;</div>
 
-<img src="clusterdemo/bg/xqtl_default_banner.png" />
+<a href="?__target=main&select=ClusterDemo"><img src="clusterdemo/bg/xqtl_default_banner.png" /></a>
 
 <table style="width: 100%;">
 	<tr>

@@ -8,7 +8,7 @@
 
 <div style="height:10px;">&nbsp;</div>
 
-<div id="sample_div" onClick="document.forms.main.__target.value='main';document.forms.main.select.value='QtlFinderPublic';document.forms.main.submit();" style="background-image:url(clusterdemo/bg/baner_wf.png); width: 900px; height: 125px; line-height:7.5em;"></div>
+<a href="?__target=main&select=QtlFinderPublic2"><img src="clusterdemo/bg/baner_wf.png" /></a>
 
 <table style="width: 100%;">
 	<tr>

@@ -1,5 +1,8 @@
 <molgenis name="xqtl_panacea" label="Panacea xQTL workbench">
+
 	<plugin name="MolgenisHeader" type="org.molgenis.wormqtl.header.MolgenisHeader" />
+	<plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" />
+
 	<menu name="main">
 	
 		<plugin label="Find QTLs" name="QtlFinderPublic2" type="plugins.qtlfinder2.QtlFinder2" group="biologist" />
