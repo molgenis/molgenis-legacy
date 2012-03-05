@@ -7,6 +7,8 @@
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action">
 	
+	<input type="hidden" name="__dataTypeCount">
+	
 <!-- this shows a title and border -->
 	<div class="formscreen">
 		<div class="form_header" id="${screen.getName()}">
@@ -200,6 +202,10 @@
 				document.getElementById(id).appendChild(tab);
 				
 				count++;
+				
+				document.getElementsByName('__dataTypeCount')[0].value = count;
+				
+				return (count - 1);
 			}
 			
 			function createSelection(option)
@@ -309,6 +315,36 @@
 				div.innerHTML = "The column index is " + headerCount;
 			}
 			
+			function readInMappingFile(header, fieldValue, rowIndex, colIndex){
+				
+				var select = document.getElementsByName(header);
+				
+				rowIndex = rowIndex - 1;
+				
+				select = select[rowIndex];
+				
+				if(fieldValue != ""){
+					
+					if(rowIndex > 2){
+						
+						var localCount = makeTable(header);
+						
+						var molgenisDataType = document.getElementsByName(header + "_options_" + localCount);
+						
+						var inputOriginaldataType = document.getElementsByName(header + "_input_" + localCount);
+						
+						var array = fieldValue.split(";");
+						
+						molgenisDataType[0].value = array[0];
+						
+						inputOriginaldataType[0].value = array[1];
+						
+					}else{
+						select.value = fieldValue;
+					}
+				}
+			}
+			
 		</script>
 			<div class="screenpadding" id = "screenpadding">	
 			    <h3 id="test"> Import dataShaper data to pheno model  </h3>
@@ -362,6 +398,10 @@
 				<button type="button" onclick="updateTableContent();">Update</button> 
 				<br/><br/>
 				
+				<!-- this is the code for uploading the mapping file -->				
+				<p> You could upload a mapping file if you have it already </p>
+		        <input type="file" name = "uploadMapping"/>
+		        <input type="submit" value="upload mapping" onclick="__action.value='uploadMapping';return true;"/><br/><br/>
 					
 				<table id="table" border="1">
 					<tr>
@@ -371,8 +411,8 @@
 					</tr>
 					<tr>
 						<#list screen.getSpreadSheetHeanders() as header>
-							<td><div id='${header}'>lalala</div></td>
-							<script type="text/javascript">getCount('${header}');</script>
+							<td><div id='${header}_count'></div></td>
+							<script type="text/javascript">getCount('${header}_count');</script>
 						</#list>
 					</tr>
 					
@@ -414,6 +454,24 @@
 						</#list>
 					</tr>
 				</table>
+				
+				<#assign colIndex = 0>
+				<#list screen.getMappingForMolgenisEntity() as eachColumn>
+					<#assign rowIndex = 0>
+					<#assign header = "">
+					<#list eachColumn as eachElement>
+						<#if (rowIndex > 0)>
+							<script>readInMappingFile('${header}' ,'${eachElement}', '${rowIndex}', '${colIndex}');</script>
+						<#elseif rowIndex == 0>
+							<#assign header = eachElement>
+						</#if>
+						<#assign rowIndex = rowIndex + 1>
+					</#list>
+					<#assign colIndex = colIndex + 1>
+				</#list>
+				
+				<br />
+				<input type="submit" value="save mapping" onclick="__action.value='saveMapping';return true;"/><br />
 				<h4> ...now you can finish with choosing import: </h4>
 		        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/><br /><br />			
 				<#else>
