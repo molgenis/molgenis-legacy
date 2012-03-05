@@ -41,6 +41,9 @@ public class VWCategoryListener extends ImportTupleListener {
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
 		String tableName = tuple.getString("TABNAAM");
 		Protocol protocol = protocols.get(tableName);
+		if(protocol == null) {
+			return;
+		}
 
 		String fieldName = tuple.getString("VELD");
 		if (!shareMeasurements) {
@@ -63,17 +66,21 @@ public class VWCategoryListener extends ImportTupleListener {
 
 		measurement.getCategories().add(category);
 																// measurment
-		category.setName(fieldName);
+		category.setName(fieldName + "_" + category.getLabel());
 		categories.add(category);
 	}
 
 	@Override
 	public void commit() throws Exception {
-		em.getTransaction().begin();
-		for (Category c : categories) {
-			em.persist(c);
+		try {
+			em.getTransaction().begin();
+			for (Category c : categories) {
+				em.persist(c);
+			}
+			em.flush();
+			em.getTransaction().commit();
+		} catch (Exception ex) {
+			throw ex;
 		}
-		em.flush();
-		em.getTransaction().commit();
 	}
 }

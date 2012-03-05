@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import oracle.jdbc.OraclePreparedStatement;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.PropertyConfigurator;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
@@ -120,7 +121,17 @@ public class OracleImporter {
 		createOracleTrigger();
 
 		loadTargets(dicListener.getProtocols().values());
-
+		
+		for (final Protocol protocol : dicListener.getProtocols().values()) {
+			final String fileName = getFileName(protocol);
+			if(!new File(path + fileName).exists()) {
+				System.out.println(String.format("File: '%s' doesn't exists", fileName));
+				System.exit(1);
+			}
+		}
+			
+		
+		long beginTime = System.currentTimeMillis();
 		for (final Protocol protocol : dicListener.getProtocols().values()) {
 			System.out.println("loading data for Protocol: "
 					+ protocol.getName());
@@ -128,14 +139,21 @@ public class OracleImporter {
 			loadMeasurements(protocol);
 			loadProtocolApplications(protocol);
 
+			long beginTable = System.currentTimeMillis();			
 			storeObservedValuesInDatabase(protocol);
-
+			long endTable = System.currentTimeMillis();
+			
+			System.out.println(String.format("Table %s loaded in %d", protocol.getName(), (endTable - beginTable / 1000)));
+			
+			
+			
 			// final BufferedWriter outputFile = new BufferedWriter(new
 			// FileWriter(outputPath + getFileName(protocol)));
 			// storeCsv(protocol, outputFile);
 			// outputFile.close();
 		}
-
+		long endTime = System.currentTimeMillis();
+		System.out.println(String.format("All tables loaded in %d", (endTime - beginTime / 1000)));
 		for (final Protocol protocol : dicListener.getProtocols().values()) {
 			createViews(protocol);
 		}
@@ -375,7 +393,7 @@ public class OracleImporter {
 				protocolApplications.add(protocolApplication);
 			}
 		});
-		saveEntitiesToDatabase((List<Entity>) (List) protocolApplications);
+		saveEntitiesToDatabase((List<Entity>) (List) protocolApplications, protocol.getName());
 		int idx = 0;
 		for (final ProtocolApplication protocolApplication : protocolApplications) {
 			protocolAppDBId.put(idx++, protocolApplication.getId());
@@ -422,7 +440,7 @@ public class OracleImporter {
 			});
 			reader.close();
 		}
-		saveEntitiesToDatabase((List<Entity>) (List) targets);
+		saveEntitiesToDatabase((List<Entity>) (List) targets, "Loading all Targets");
 		for (final ObservationTarget target : targets) {
 			targetDBId.put(target.getName(), target.getId());
 		}
@@ -438,10 +456,15 @@ public class OracleImporter {
 
 	// static int rowCount = 0;
 
-	private void saveEntitiesToDatabase(final List<Entity> entities)
+	private void saveEntitiesToDatabase(final List<Entity> entities, String protocolName)
 			throws Exception {
+		int number = Math.round((float) entities.size() / (float) RECORDS_THREAD);
+		if(number <= 0) {
+			System.out.println(String.format("Protocol: %s has not records!", protocolName));
+			return;
+		}
 		final BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(
-				Math.round((float) entities.size() / (float) RECORDS_THREAD));
+				number);
 		final ThreadPoolExecutor executor = new ThreadPoolExecutor(MAX_THREADS,
 				MAX_THREADS, THREAD_TIME_OUT_TIME, TimeUnit.SECONDS, workQueue);
 		final List<List<Entity>> split = ListUtils.split(entities,
@@ -474,8 +497,10 @@ public class OracleImporter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		final String inputPath = "/Users/jorislops/Desktop/LLTest/";
-		final String outputPath = "/Users/jorislops/Desktop/LLOutput/";
+		PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
+		
+		final String inputPath = "/Users/jorislops/Desktop/ExaData/";
+		//final String outputPath = "/Users/jorislops/Desktop/LLOutput/";
 
 		final Properties props = new Properties();
 		final FileInputStream in = new FileInputStream("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/db.properties");
