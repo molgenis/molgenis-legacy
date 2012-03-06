@@ -27,16 +27,23 @@ public class JQueryDataTable extends Table
 	public String toHtml() {
 		String result = super.toHtml();
 		result += "<script>$('#"+getId()+"')" +
-				".css('min-height','10px')" +
-				".dataTable({" +
-				"\n\"bPaginate\": false," +
-				"\n\"bLengthChange\": true," +
-				"\n\"bFilter\": false," +
-				"\n\"bSort\": true," +
-				"\n\"bInfo\": false," +
-				"\n\"bAutoWidth\": false," +
-				"\n\"bJQueryUI\": true})" +
-				"</script>";
+				  ".css('min-height','10px')" +
+				  ".dataTable({" +
+				  "\n\"bPaginate\": false," +
+				  "\n\"bLengthChange\": true," +
+				  "\n\"bFilter\": false," +
+				  "\n\"bInfo\": false," +
+				  "\n\"bAutoWidth\": false," +
+				  "\n\"bJQueryUI\": true," +
+				  "\n\"bSort\": true," +
+				  "\n\"aoColumns\": [";
+		// Prevent fancy auto-detected sorting types by hard-setting to 'string' for every column
+		for (int i = 0; i < super.cols.size() + 1; i++) {
+			result += "\n{ \"sType\": \"string\" },";
+		}
+		result = result.substring(0, result.length() - 1); // chop off last ,
+		result += "\n]";
+		result += "\n})</script>";
 		return result;
 	}
 
