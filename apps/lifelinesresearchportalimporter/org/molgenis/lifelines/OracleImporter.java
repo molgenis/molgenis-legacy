@@ -107,14 +107,14 @@ public class OracleImporter {
 		VwDictListener dicListener = new VwDictListener(inv, DICT,
 				SHARED_MEASUREMENTS, db);
 		CsvReader reader = new CsvFileReader(
-				new File(path + DICT + "_DATA.csv"));
+				new File(path + DICT + "_DATA_VIEW.csv"));
 		reader.parse(dicListener);
 		dicListener.commit();
 
 		// load categories
 		VWCategoryListener catListener = new VWCategoryListener(
 				dicListener.getProtocols(), inv, CATE, db, SHARED_MEASUREMENTS);
-		reader = new CsvFileReader(new File(path + CATE + "_DATA.csv"));
+		reader = new CsvFileReader(new File(path + CATE + "_DATA_VIEW.csv"));
 		reader.parse(catListener);
 		catListener.commit();
 
@@ -447,7 +447,7 @@ public class OracleImporter {
 	}
 
 	private String getFileName(final Protocol protocol) {
-		return "VW_" + protocol.getName() + "_DATA.csv";
+		return "VW_" + protocol.getName() + "_DATA_VIEW.csv";
 	}
 
 	private final static int RECORDS_THREAD = 1000;
@@ -497,10 +497,11 @@ public class OracleImporter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
-		
-		final String inputPath = "/Users/jorislops/Desktop/ExaData/";
-		//final String outputPath = "/Users/jorislops/Desktop/LLOutput/";
+		final String inputPath = "D:/LifelinesData/LL1/";
+		final String outputPath = "/Users/jorislops/Desktop/LLOutput/";
+
+		//PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
+
 
 		final Properties props = new Properties();
 		final FileInputStream in = new FileInputStream("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/db.properties");
