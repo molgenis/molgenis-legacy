@@ -21,6 +21,7 @@ import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -35,6 +36,7 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Locus;
 import org.molgenis.xgap.Marker;
+import org.molgenis.xgap.Probe;
 
 import plugins.qtlfinder.QTLInfo;
 import plugins.qtlfinder.QTLMultiPlotResult;
@@ -50,9 +52,6 @@ public class QtlFinder2 extends PluginModel<Entity>
 	private static final long serialVersionUID = 1L;
 
 	private QtlFinderModel2 model = new QtlFinderModel2();
-	
-	
-	int searchResultLimit = 100;
 	
 	static String __ALL__DATATYPES__SEARCH__KEY = "__ALL__DATATYPES__SEARCH__KEY";
 	
@@ -166,51 +165,15 @@ public class QtlFinder2 extends PluginModel<Entity>
 						entityClass = db.getClassForName(dataType);
 					}
 					
-					Query<?> q = db.query(entityClass);
 					
-					List<? extends Entity> result = allFieldMatch(q.find(), query, searchResultLimit);
+					Map<String, Entity> hits = query(entityClass, db, query, 100);
 					
-					if(result.size() == 0)
-					{
-						boolean noResults = true;
-						String shortenedQuery = query;
-						
-						while(noResults && shortenedQuery.length() > 0)
-						{
-							shortenedQuery = shortenedQuery.substring(0, shortenedQuery.length()-1);
-							System.out.println("TRYING: " + shortenedQuery);
-							
-							result = allFieldMatch(q.find(), shortenedQuery, searchResultLimit);
-							System.out.println("RESULTS: " + result.size());
-							
-							if(result.size() > 0)
-							{
-								noResults = false;
-								this.model.setShortenedQuery(shortenedQuery);
-							}
-						}
-						
-						if(noResults)
-						{
-							throw new Exception("No results found");
-						}
-						
-					}
+					System.out.println("initial number of hits: " + hits.size());
 					
-					int nrOfResults = 0;
-					Map<String, Entity> hits = new HashMap<String, Entity>();
+					hits = genesToProbes(db, 100, hits);
 					
-					for(Entity e : result)
-					{
-						hits.put(e.get(ObservationElement.NAME).toString(), e);
-						
-						nrOfResults++;
-						
-						if(nrOfResults == searchResultLimit)
-						{
-							break;
-						}
-					}
+					System.out.println("after converting genes to probes, number of hits: " + hits.size());
+
 					
 					this.model.setHits(hits);
 					
@@ -224,6 +187,109 @@ public class QtlFinder2 extends PluginModel<Entity>
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
+	}
+	
+	
+	private Map<String, Entity> genesToProbes(Database db, int limit, Map<String, Entity> hits) throws DatabaseException{
+		Map<String, Entity> result = new HashMap<String, Entity>();
+		int nrOfResults = 0;
+		
+		outer:
+		for(String name : hits.keySet())
+		{
+			Entity e = hits.get(name);
+			
+			//System.out.println("looking at " + e.get(Field.TYPE_FIELD).toString() + " " + e.get(ObservationElement.NAME).toString());
+			
+			if(e.get(Field.TYPE_FIELD).equals("Gene"))
+			{
+				QueryRule r = new QueryRule(Probe.REPORTSFOR_NAME, Operator.EQUALS, name);
+				QueryRule o = new QueryRule(Operator.OR);
+				QueryRule s = new QueryRule(Probe.SYMBOL, Operator.EQUALS, name);
+				List<Probe> probes = db.find(Probe.class, r, o, s);
+				
+				//System.out.println("RESULT WITH JUST REPORTSFOR: " +db.find(Probe.class, r).size());
+				//System.out.println("RESULT WITH JUST SYMBOL: " +db.find(Probe.class, s).size());
+				
+				for(Probe p : probes)
+				{
+					result.put(p.getName(), p);
+					//System.out.println("GENE2PROBE SEARCH HIT: " +p.getName());
+					nrOfResults++;
+					if(nrOfResults == limit)
+					{
+						//System.out.println("breaking genesToProbes on adding probes");
+						break outer;
+					}
+				}
+			}
+			else
+			{
+				result.put(e.get(ObservationElement.NAME).toString(), e);
+				//System.out.println("GENE2PROBE ADDING ALSO: " +e.get(ObservationElement.NAME).toString());
+				nrOfResults++;
+				if(nrOfResults == limit)
+				{
+					//System.out.println("breaking genesToProbes on other entities");
+					break outer;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	private Map<String, Entity> query(Class entityClass, Database db, String query, int limit) throws DatabaseException
+	{
+		Query<?> q = db.query(entityClass);
+		
+		List<? extends Entity> result = allFieldMatch(q.find(), query, limit);
+		
+		if(result.size() == 0)
+		{
+			boolean noResults = true;
+			String shortenedQuery = query;
+			
+			while(noResults && shortenedQuery.length() > 0)
+			{
+				shortenedQuery = shortenedQuery.substring(0, shortenedQuery.length()-1);
+				//System.out.println("TRYING: " + shortenedQuery);
+				
+				result = allFieldMatch(q.find(), shortenedQuery, limit);
+				//System.out.println("RESULTS: " + result.size());
+				
+				if(result.size() > 0)
+				{
+					noResults = false;
+					this.model.setShortenedQuery(shortenedQuery);
+				}
+			}
+			
+			if(noResults)
+			{
+				throw new DatabaseException("No results found");
+			}
+			
+		}
+		
+		int nrOfResults = 0;
+		Map<String, Entity> hits = new HashMap<String, Entity>();
+		
+		for(Entity e : result)
+		{
+			hits.put(e.get(ObservationElement.NAME).toString(), e);
+			
+			//System.out.println("REGULAR SEARCH HIT: " + e.get(ObservationElement.NAME));
+			
+			nrOfResults++;
+			
+			if(nrOfResults == limit)
+			{
+				break;
+			}
+		}
+		
+		return hits;
 	}
 	
 	private List<Entity> allFieldMatch(List<? extends Entity> entities, String searchTerm, int limit)

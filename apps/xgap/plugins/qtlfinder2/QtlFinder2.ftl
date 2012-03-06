@@ -518,8 +518,11 @@ Selection:<br><br>
 	</#if>
 		
 	${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a>
-	<div style="display: inline;"><#if model.hits[name].description??> - <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <a href="molgenis.do?__target=${model.hits[name].get(typefield)}s&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...</a> <#else>${model.hits[name].description}</#if></#if></div><br>
+	<#if model.hits[name].reportsFor_name??>reports for <a href="molgenis.do?__target=Genes&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol??>(${model.hits[name].symbol})</#if>
 	
+	<div style="display: inline;font-size:100%"><#if model.hits[name].description??> <br> <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <#else>${model.hits[name].description}</#if> <a href="molgenis.do?__target=${model.hits[name].get(typefield)}s&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...more</a> </#if></div>
+	<br>
+	<br>
 	
 	</#list>
 	
