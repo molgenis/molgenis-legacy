@@ -142,14 +142,13 @@ public class ConvertRhutDbToPheno
 		createLine("Per dKO");
 		createLine("Cry dKO");
 		createLine("PerCry");
-		createLine("CBA/CaJ (line)");
-		createLine("C57BL/6j (line)");
+		createLine("CBA/CaJ WT_breeding");
+		createLine("C57BL/6j WT_breeding");
 		createLine("C3H/He");
 		createLine("DBA");
 		createLine("ICR(CD-1)");
 		createLine("Swing");
 		createLine("CK1e");
-		createLine("unknown (line)");
 	}
 	
 	private void createLine(String lineName) throws DatabaseException, IOException, ParseException
@@ -370,7 +369,6 @@ public class ConvertRhutDbToPheno
 				}
 				String remDateString = tuple.getString("rem date");
 				if (remDateString != null) {
-					// TODO: end date most times not set in Roelof DB! This is a problem with the Yearly Reports. How to solve?
 					state = "Dead";
 					remDate = dbFormat.parse(remDateString);
 					removalDateMap.put(animalName, remDate);
@@ -552,8 +550,8 @@ public class ConvertRhutDbToPheno
 						}
 					}
 				}
-				if (lineName.equals("CBA/CaJ") || lineName.equals("C57BL/6j") || lineName.equals("unknown")) {
-					lineName += " (line)";
+				if (lineName.equals("CBA/CaJ") || lineName.equals("C57BL/6j")) {
+					lineName += " WT_breeding";
 				}
 				
 				// Create a parentgroup
@@ -617,8 +615,10 @@ public class ConvertRhutDbToPheno
 						now, null, "Remark", litterName, remark, null));
 				}
 				// Set line also on litter
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
+				if (!lineName.equals("unknown")) {
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 						now, null, "Line", litterName, null, lineName));
+				}
 				// Set source also on litter
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSource"), 
 						now, null, "Source", litterName, null, defaultSourceName));
@@ -647,8 +647,10 @@ public class ConvertRhutDbToPheno
 						valuesToAddList.add(activeValue);
 						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
 								now, null, "DateOfBirth", animalName, dob, null));
-						valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
+						if (!lineName.equals("unknown")) {
+							valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 								now, null, "Line", animalName, null, lineName));
+						}
 					}
 				}
 			}

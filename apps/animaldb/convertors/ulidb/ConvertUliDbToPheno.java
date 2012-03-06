@@ -274,29 +274,29 @@ public class ConvertUliDbToPheno
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDateOfBirth"), 
 							startDate, null, "DateOfBirth", newAnimalName, dateOfBirth, null));
 				}
+				// Default end date is 31-12-2011
+				Calendar cal = Calendar.getInstance();
+				cal.set(2011, Calendar.DECEMBER, 31);
+				Date endDate = cal.getTime();
 				String endDateString = tuple.getString("Abgangsdatum");
-				Date endDate = null;
 				if (endDateString != null) {
-					// TODO: end date most times not set in Uli DB! This is a problem with the Yearly Reports. How to solve?
 					endDate = dbFormat.parse(endDateString);
-					String dateOfDeath = newDateOnlyFormat.format(endDate);
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), 
-							startDate, null, "DeathDate", newAnimalName, dateOfDeath, null));
+							startDate, null, "DeathDate", newAnimalName, newDateOnlyFormat.format(endDate), null));
 				}
+				cal.set(2009, Calendar.JANUARY, 10);
+				Date cutoffDate = cal.getTime();
 				String state = tuple.getString("Status");
 				if (state != null) {
-					// Set state from Uli DB if available
-					if (state.equals("lebt")) {
+					if (state.equals("lebt") && startDate.after(cutoffDate)) {
 						state = "Alive";
+						endDate = null;
 					} else {
 						state = "Dead";
 					}
 				} else {
-					// Else look if death date set or not
-					state = "Alive";
-					if (endDate != null) {
-						state = "Dead";
-					}
+					// Assume Dead if state not set
+					state = "Dead";
 				}
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
 						startDate, endDate, "Active", newAnimalName, state, null));
