@@ -83,61 +83,6 @@ public class TableField {
 		this.defaults = defaults;
 		this.dependentColumnIndex = dependentColumnIndex;
 	}
-	
-	
-//	public TableField(String ClassType,int columnIndex, Boolean Vertical) {
-//		this.classType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.vertical = Vertical;
-//	}
-	
-//	public TableField(Panel panel, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.panel = panel;
-////		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//		
-//	}
-//	
-//	public TableField(Measurement measurement, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.measurement = measurement;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;	
-//	}
-//	public TableField(ObservedValue observedValue, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.observedValue = observedValue;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//	}
-//	
-//	public TableField(Protocol protocol, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.protocol  = protocol;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//	}
-//	
-//	public TableField(ProtocolApplication protocolApplication, String ClassType,int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.protocolApplication   = protocolApplication;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//	}
-//
-//	public TableField(Category category, String ClassType, int columnIndex, Boolean Vertical) {
-//		this(ClassType, columnIndex,  Vertical);
-//		this.category  = category;
-//		this.ClassType = ClassType;
-//		this.columnIndex = columnIndex;
-//		this.Vertical = Vertical;
-//	}
 
 
 	public Tuple getDefaults() {
@@ -174,10 +119,6 @@ public class TableField {
 	public int getColumnIndex(){
 		return columnIndex;
 	}
-	
-//	public Prediction getPrediction(){
-//		return prediction;
-//	}
 	
 	public void setRelation(TableField Target, TableField Feature){
 		

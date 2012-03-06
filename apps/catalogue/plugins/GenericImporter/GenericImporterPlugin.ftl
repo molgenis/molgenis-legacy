@@ -62,56 +62,66 @@
 			var index = 1;
 			var headerCount = 0;
 			
-			function changeFieldContent(id)
+			function changeFieldContent(columnName)
 			{
-				var classType = document.getElementsByName(id);
+			
+				var classType = document.getElementsByName(columnName);
 				
 				if(classType[1].value.toString() == "Measurement:dataType")
-				{
-					makeTable(id);
+				{	
+					makeTable(columnName);
 				}else{
-					destroyTable(id);
+					destroyTable(columnName);
 				}
 				
-				if(classType[0].value.toString() == "ObservedValue")
-				{
-					
-					var select = document.getElementsByName(id);
-					
-					select = select[1];
-					
-					var observedValue = document.createElement('option');
-					
-					observedValue.innerHTML = "ObservedValue";
-					
-					var length = select.length;
-					
-					for(var i = 0; i < length; i++){
-						select.options[0] = null
-					}
-					
-					select.add(observedValue, 0);
-					
+				if(classType[0].value.toString() == "ObservedValue"){
+					dynamicOption(columnName, "ObservedValue");
+				}else if(classType[0].value.toString() == "NULL"){
+					dynamicOption(columnName, "NULL");
 				}else{
+					resumeTheOptions(columnName)
+				}
+			}
+			
+			function dynamicOption(columnName, changedContext){
+				
+				var select = document.getElementsByName(columnName);
 					
-					var select = document.getElementsByName(id);
+				select = select[1];
 					
-					select = select[1];
+				var newOption = document.createElement('option');
 					
-					if(select.length != fieldNameOptions.length)
-					{
-						select.options[0] = null
+				newOption.innerHTML = changedContext;
 					
-						var option = document.createElement('option');
+				var length = select.length;
+					
+				for(var i = 0; i < length; i++){
+					select.options[0] = null;
+				}
+					
+				select.add(newOption, 0);
+			}
+			
+			function resumeTheOptions(columnName){
+				
+				var select = document.getElementsByName(columnName);
+					
+				select = select[1];
+					
+				if(select.length != fieldNameOptions.length)
+				{
+					select.options[0] = null;
+					
+					var option = document.createElement('option');
 						
-						for(var i = 0; i < fieldNameOptions.length; i++)
-						{	
-							var option = document.createElement('option');
-							option.innerHTML = fieldNameOptions[i];
-							select.add(option, i);
-						}
+					for(var i = 0; i < fieldNameOptions.length; i++)
+					{	
+						var option = document.createElement('option');
+						option.innerHTML = fieldNameOptions[i];
+						select.add(option, i);
 					}
 				}
+				
 			}
 			
 			function destroyTable(id) {
@@ -255,11 +265,9 @@
 						var indexRange = arrayIndex[i].split(">");
 						
 						var max = indexRange[1];
-						alert(indexRange.length);
 						
 						if(max == "n")
 						{	
-							alert(index);
 							max = index;
 						}else{
 						
@@ -366,6 +374,16 @@
 		        
 		        <!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
  				
+ 				<script>
+ 					var dataTypeOptions = new Array();
+					var fieldName = "";
+					var fieldNameOptions = new Array();
+					var map = new HashMap();
+					var count = 0;
+					var index = 1;
+					var headerCount = 0;
+ 				</script>
+ 				
 				<#list screen.getDataTypeOptions() as dataTypeOptions>
 					<script type="text/javascript">
 						createSelection("${dataTypeOptions}");
@@ -390,12 +408,12 @@
 				
 				
 				Enter column numbers  <input type="text" id="shortcut" size="15" value=""> 
-				<select id='shortcutClassType' name='shortcut'>
+				<select id='shortcutClassType' name='shortcut' onchange="changeFieldContent('shortcut');">
 						<#list screen.getChooseClassType() as options>
 							<option id="">${options}</option>
 						</#list>
 				</select>
-				<select id='shortcutFieldName' name='shortcut'>
+				<select id='shortcutFieldName' name='shortcut' onchange="changeFieldContent('shortcut');">
 					<#list screen.getChooseFieldName() as options>
 						<option id="">${options}</option>
 					</#list>
@@ -407,8 +425,9 @@
 				<!-- this is the code for uploading the mapping file -->				
 				<p> You could upload a mapping file if you have it already </p>
 		        <input type="file" name = "uploadMapping"/>
-		        <input type="submit" value="upload mapping" onclick="__action.value='uploadMapping';return true;"/><br/><br/>
-					
+		        <input type="submit" value="upload mapping" onclick="__action.value='uploadMapping';return true;"/>
+		        <input type="submit" value="save mapping" onclick="__action.value='saveMapping';return true;"/><br /><br/><br/>
+				
 				<table id="table" border="1">
 					<tr>
 						<#list screen.getSpreadSheetHeanders() as header>
@@ -476,8 +495,6 @@
 					<#assign colIndex = colIndex + 1>
 				</#list>
 				
-				<br />
-				<input type="submit" value="save mapping" onclick="__action.value='saveMapping';return true;"/><br />
 				<h4> ...now you can finish with choosing import: </h4>
 		        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/><br /><br />			
 				<#else>

@@ -169,6 +169,8 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		chooseClassType.add(ObservationTarget.class.getSimpleName());
 		chooseClassType.add(Individual.class.getSimpleName());
 		chooseClassType.add(Panel.class.getSimpleName());
+		chooseClassType.add("NULL");
+		
 
 
 		dataTypeOptions.add("string");
@@ -221,7 +223,11 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			System.out.println(request);
 			uploadFileName  = request.getString("uploadFile");
 			filePath = request.getString("uploadFileOriginalFileName");
-			readHeaders(request.getAction());
+			if(uploadFileName != null && !uploadFileName.equals("")){
+				readHeaders(request.getAction());
+			}else{
+				this.setStatus("Please select a file to import!");
+			}
 			this.setStepsFlag(1);
 
 
@@ -272,7 +278,13 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			excelDirection = "UploadFileByRow";
 			System.out.println(request);
 			uploadFileName  = request.getString("uploadFile");
-			readHeaders(request.getAction());
+			
+			if(uploadFileName != null && !uploadFileName.equals("")){
+				readHeaders(request.getAction());
+			}else{
+				this.setStatus("Please select a file to import!");
+			}
+			
 			this.setStepsFlag(1);
 
 		} else if("saveMapping".equals(request.getAction())){
@@ -452,7 +464,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
 		filePath = tmpDir.getAbsolutePath() + "/" + filePath;
-
+		
 		file = new File(uploadFileName); 
 
 		importingFinished = false;
