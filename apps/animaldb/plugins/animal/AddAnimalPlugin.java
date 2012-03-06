@@ -18,16 +18,17 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.IntInput;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 import org.molgenis.pheno.Category;
+import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Location;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -40,6 +41,7 @@ public class AddAnimalPlugin extends GenericPlugin
 {
 	private static final long serialVersionUID = -4185405160313262242L;
 	private CommonService ct = CommonService.getInstance();
+	// Screen components:
 	public StringInput researcher = null;
 	public SelectInput species = null;
 	public SelectInput sex = null;
@@ -54,21 +56,23 @@ public class AddAnimalPlugin extends GenericPlugin
 	public TextLineInput<String> startnumberhelper = null;
 	public StringInput newnamebase = null;
 	public IntInput startnumber = null;
-	public IntInput numberofanimals = null;
+	public IntInput numberofmales = null;
+	public IntInput numberoffemales = null;
+	public IntInput numberofunknowns = null;
 	public SelectInput actor = null;
-	public ActionInput addbutton = null;
-	public ActionInput savebutton = null;
-	private boolean genesSaved = false;
 	public SelectInput location = null;
-	private int speciesId = -1;
-	// container that renders whole form as divs (left labels, right inputs)
 	public DivPanel containingPanel = null;
-	// subpanel to conditionally show the genetic modification questions (background, genotype)
-	public DivPanel gmoPanel = null;
-	// sub-subpanel to conditionally show the genetic modification questions (gene, genestate)
-	public DivPanel genePanel = null;
-	// subpanel to conditionally show the custom name questions (base, start number)
-	public DivPanel newnamebasePanel = null;
+	// Variables for holding form values between wizard steps:
+	private int speciesId = -1;
+	private int backgroundId;
+	private int sourceId;
+	private int locId = -1;
+	private String birthDate;
+	private Date entryDate;
+	private String animalType;
+	private String resResearcher;
+	private List<String> genes;
+	private List<String> genestates;
 
 	public AddAnimalPlugin(String name, ScreenController<?> parent)
 	{
@@ -90,27 +94,34 @@ public class AddAnimalPlugin extends GenericPlugin
 	{
 		try
 		{
-			int userId = this.getLogin().getUserId();
-			
 			ct.setDatabase(db);
-			ct.makeObservationTargetNameMap(userId, false);
-			
+			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
 			if (speciesId == -1) {
+				resetAllFormValues();
 				populateFirstTablePanel(db);
-			} else if (!genesSaved) {
-				populateSecondTablePanel(db);
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.getMessages().clear();
 			String message = "Something went wrong while reloading";
 			if (e.getMessage() != null) {
 				message += (": " + e.getMessage());
 			}
-			this.getMessages().add(new ScreenMessage(message, false));
+			this.setError(message);
 		}
+	}
+
+	private void resetAllFormValues() {
+		backgroundId = -1;
+		sourceId = -1;
+		locId = -1;
+		birthDate = null;
+		entryDate = null;
+		animalType = null;
+		resResearcher = null;
+		genes = null;
+		genestates = null;
 	}
 
 	@Override
@@ -120,118 +131,98 @@ public class AddAnimalPlugin extends GenericPlugin
 		try {
 			String action = request.getAction();
 			containingPanel.setValuesFromRequest(request);
-			if (action.equals("Add")) {
-				handleAddRequest(db, request);
-				speciesId = -1;
-				genesSaved = false;
+			
+			if (action.equals("Cont1")) {
+				handleFirstScreenRequest(db, request);
+				populateSecondTablePanel(db);
+			}
+			if (action.equals("Cont2")) {
+				handleSecondScreenRequest(db, request);
+				if (animalType.equals("B. Transgeen dier")) {
+					populateThirdTablePanel(db);
+				} else {
+					// Skip third screen if animals are non-GMO
+					populateFourthTablePanel(db);
+				}
+			}
+			if (action.equals("Cont3")) {
+				handleThirdScreenRequest(db, request);
+				populateFourthTablePanel(db);
 			}
 			if (action.equals("Save")) {
-				handleSaveRequest(db, request);
-			}
-			if (action.equals("SaveSpecies")) {
-				handleSaveSpeciesRequest(db, request);
+				handleAddRequest(db, request);
+				speciesId = -1; // trigger for reload() to render first screen again
 			}
 		} catch (Exception e) {
-			try {
-				db.rollbackTx();
-			} catch (DatabaseException e1) {
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
 			if (e.getMessage() != null) {
-				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
+				this.setError("Error: " + e.getMessage());
 			}
 		}
 	}
 	
-	private void handleSaveRequest(Database db, Tuple request) throws Exception {
-		genesSaved = true;
-		// first remove existing gene state boxes
-		if (genestateList != null) {
-			for (SelectInput genestateBox : genestateList) {
-				gmoPanel.remove(genestateBox);
-			}
-		}
-		genestateList = new ArrayList<SelectInput>();
-		// then make fresh new gene state boxes for every gene selected
-		List<String> geneList = gene.getObject();
-		for (String geneName : geneList) {
-			SelectInput genestateBox = new SelectInput("genestate_" + geneName);
-			genestateBox.setLabel("State for " + geneName + ":");
-			for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
-				genestateBox.addOption(option, option);
-			}
-			gmoPanel.add(genestateBox);
-			genestateList.add(genestateBox);
-		}
-		gmoPanel.setHidden(false);
-	}
-	
-	private void handleSaveSpeciesRequest(Database db, Tuple request) throws Exception {
+	private void handleFirstScreenRequest(Database db, Tuple request) throws Exception {
 		if (species.getObject() != null) {
 			speciesId = Integer.parseInt(species.getObject().toString());
 		} else {
 			this.setError("No species given - animal(s) not added");
 		}
-	}
-	
-	private void handleAddRequest(Database db, Tuple request) throws Exception {
-		int backgroundId = 0;
-		if (background.getObject() != null) {
-			backgroundId = Integer.parseInt(background.getObject().toString());
-		} else {
-			throw(new Exception("No background given - animal(s) not added"));
-		}
-		int sexId = 0;
-		if (sex.getObject() != null) {
-			sexId = Integer.parseInt(sex.getObject().toString());
-		} else {
-			throw(new Exception("No sex given - animal(s) not added"));
-		}
-		int sourceId = 0;
-		if (source.getObject() != null) {
-			sourceId = Integer.parseInt(source.getObject().toString());
-		} else {
-			throw(new Exception("No source given - animal(s) not added"));
-		}
-		String animalType = null;
 		if (animaltype.getObject() != null) {
 			animalType = animaltype.getObject().toString();
 		} else {
 			throw(new Exception("No animal type given - animal(s) not added"));
 		}
-		// GMO info
-		List<String> genes = new ArrayList<String>();
-		List<String> genestates = new ArrayList<String>();
-		// User may have filled in fields and then switched the AnimalType from GMO again,
-		// so we need to check first what the AnimalType is.
-		if (animalType.equals("B. Transgeen dier")) {
-			// GMO panel already made visible through JavaScript, now make permanent
-			gmoPanel.setHidden(false);
-			// Get gene name/state pairs
-			genes = gene.getObject();
-			for (SelectInput genestateBox : genestateList) {
-				genestates.add((String) genestateBox.getObject());
-			}
+		if (source.getObject() != null) {
+			sourceId = Integer.parseInt(source.getObject().toString());
 		} else {
-			// GMO panel already made invisible through JavaScript, now make permanent
-			gmoPanel.setHidden(true);
+			throw(new Exception("No source given - animal(s) not added"));
 		}
 		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-		// Birth date
-		String birthDate = null;
+		// Birth date (String)
 		if (!birthdate.getValue().equals("")) {
 			birthDate = birthdate.getValue();
 		}
-		// Entry date
-		Date entryDate = null;
+		// Entry date (Date)
 		if (!entrydate.getValue().equals("")) {
 			String entryDateString = entrydate.getValue();
 			entryDate = dateOnlyFormat.parse(entryDateString);
 		} else {
 			throw(new Exception("No entry date given - animal(s) not added"));
-		}			
-		// Name
+		}
+		// Researcher
+		if (researcher.getObject() != null) {
+			resResearcher = researcher.getValue();
+		}
+		// Location
+		if (location.getObject() != null) {
+			locId = Integer.parseInt(location.getObject().toString());
+		}
+	}
+	
+	private void handleSecondScreenRequest(Database db, Tuple request) throws Exception {
+		
+		if (background.getObject() != null) {
+			backgroundId = Integer.parseInt(background.getObject().toString());
+		} else {
+			throw(new Exception("No background given - animal(s) not added"));
+		}
+		
+		if (animalType.equals("B. Transgeen dier")) {
+			genes = gene.getObject();
+		}
+	}
+	
+	private void handleThirdScreenRequest(Database db, Tuple request) throws Exception {
+		
+		genestates = new ArrayList<String>();
+		for (SelectInput genestateBox : genestateList) {
+			genestates.add((String) genestateBox.getObject());
+		}
+	}
+	
+	private void handleAddRequest(Database db, Tuple request) throws Exception {
+			
+		// Get name from last form
 		String nameBase = "";
 		int startNumber = -1;
 		if (namebase.getObject() != null) {
@@ -253,32 +244,31 @@ public class AddAnimalPlugin extends GenericPlugin
 		} else {
 			startNumber = 1; // standard start at 1
 		}
-		// Number of animals
-		int nrOfAnimals = 1;
-		if (numberofanimals.getObject() != null) {
-			// TODO: Find out why HtmlInput<E>'s getObject() returns a String object and not an
-			// Integer one, as expected!
-			nrOfAnimals = Integer.parseInt(numberofanimals.getValue());
-		} else {
-			throw(new Exception("No number given - animal(s) not added"));
+		// Get numbers of animals from last form
+		int nrOfMales = 0;
+		int nrOfFemales = 0;
+		int nrOfUnknowns = 0;
+		if (numberofmales.getObject() != null) {
+			nrOfMales = Integer.parseInt(numberofmales.getValue());
 		}
-		// Researcher
-		String resResearcher = null;
-		if (researcher.getObject() != null) {
-			resResearcher = researcher.getValue();
+		if (numberoffemales.getObject() != null) {
+			nrOfFemales = Integer.parseInt(numberoffemales.getValue());
 		}
-		// Location
-		int locId = -1;
-		if (location.getObject() != null) {
-			locId = Integer.parseInt(location.getObject().toString());
+		if (numberofunknowns.getObject() != null) {
+			nrOfUnknowns = Integer.parseInt(numberofunknowns.getValue());
 		}
+		int nrOfAnimals = nrOfMales + nrOfFemales + nrOfUnknowns;
+		if (nrOfAnimals == 0) {
+			throw(new Exception("No number(s) given - animal(s) not added"));
+		}
+		
 		// Investigation
 		int userId = this.getLogin().getUserId();
 		int invid = ct.getOwnUserInvestigationIds(userId).get(0);
 		
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-		List<ObservationTarget> animalsToAddList = new ArrayList<ObservationTarget>();
+		List<Individual> animalsToAddList = new ArrayList<Individual>();
 		List<ProtocolApplication> appsToAddList = new ArrayList<ProtocolApplication>();
 		
 		// Make all animals
@@ -286,7 +276,7 @@ public class AddAnimalPlugin extends GenericPlugin
 			// Make and add animal
 			String nrPart = "" + (startNumber + i);
 			nrPart = ct.prependZeros(nrPart, 6);
-			ObservationTarget newAnimal = ct.createIndividual(invid, nameBase + nrPart, 
+			Individual newAnimal = ct.createIndividual(invid, nameBase + nrPart, 
 					this.getLogin().getUserId());
 			animalsToAddList.add(newAnimal);
 		}
@@ -325,8 +315,13 @@ public class AddAnimalPlugin extends GenericPlugin
 		featureIdList.add(ct.getMeasurementId("DateOfBirth"));
 		featureIdList.add(ct.getMeasurementId("ResponsibleResearcher"));
 		featureIdList.add(ct.getMeasurementId("Location"));
+		// Get ID's for sexes
+		int maleId = ct.getObservationTargetId("Male");
+		int femaleId = ct.getObservationTargetId("Female");
+		int unknownId = ct.getObservationTargetId("UnknownSex");
 		// Make all values
-		for (ObservationTarget animal : animalsToAddList) {
+		int animalCnt = 0;
+		for (Individual animal : animalsToAddList) {
 			int animalid = animal.getId();
 			// Set Active, with (start)time = entrydate and endtime = null
 			ProtocolApplication app = appsToAddList.get(0);
@@ -337,6 +332,14 @@ public class AddAnimalPlugin extends GenericPlugin
 	 		valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 	 				featureIdList.get(1), animalid, null, speciesId));
 			// Set sex
+	 		int sexId;
+	 		if (animalCnt < nrOfMales) {
+	 			sexId = maleId;
+	 		} else if (animalCnt < nrOfMales + nrOfFemales) {
+	 			sexId = femaleId;
+	 		} else {
+	 			sexId = unknownId;
+	 		}
 	 		app = appsToAddList.get(2);
 	 		valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 	 				featureIdList.get(2), animalid, null, sexId));
@@ -349,22 +352,24 @@ public class AddAnimalPlugin extends GenericPlugin
 	 		valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 	 				featureIdList.get(4), animalid, null, sourceId));
 			// Set background
-			if (backgroundId != 0) {
+			if (backgroundId > 0) {
 				app = appsToAddList.get(5);
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(5), animalid, null, backgroundId));
 			}
 			// Set genotype(s)
 			int index = 0;
-			for (String gene : genes) {
-				String geneState = genestates.get(index);
-				// Make protocol application
-				app = appsToAddList.get(6);
-				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
-						featureIdList.get(6), animalid, gene, 0));
-				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
-						featureIdList.get(7), animalid, geneState, 0));
-				index++;
+			if (genes != null) {
+				for (String gene : genes) {
+					String geneState = genestates.get(index);
+					// Make protocol application
+					app = appsToAddList.get(6);
+					valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
+							featureIdList.get(6), animalid, gene, 0));
+					valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
+							featureIdList.get(7), animalid, geneState, 0));
+					index++;
+				}
 			}
 			// Set birthdate
 			if (birthDate != null) {
@@ -384,6 +389,7 @@ public class AddAnimalPlugin extends GenericPlugin
 				valuesToAddList.add(ct.createObservedValue(invid, app.getId(), entryDate, null, 
 						featureIdList.get(10), animalid, null, locId));
 			}
+			animalCnt++;
 		}	
 		db.add(valuesToAddList);
 		
@@ -394,11 +400,12 @@ public class AddAnimalPlugin extends GenericPlugin
 	}
 	
 	private void populateFirstTablePanel(Database db) throws DatabaseException, ParseException {
+		
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
 		// panel for all elements
 		containingPanel = new DivPanel(this.getName() + "panel", "");
-
+		
 		// Populate animal species list
 		species = new SelectInput("species");
 		species.setLabel("Species:");
@@ -411,41 +418,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		species.setTooltip("Give the species.");
 		species.setId("species");
 		species.setOnchange("updateNamePrefixBox();");
-		
-		ActionInput contbutton = new ActionInput("SaveSpecies", "", "Continue");
-		
-		containingPanel.add(species);
-		containingPanel.add(contbutton);
-	}
-	
-	private void populateSecondTablePanel(Database db) throws DatabaseException, ParseException {
-		
-		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
-		
-		// panel for all elements
-		containingPanel = new DivPanel(this.getName() + "panel", "");
-		
-		background = new SelectInput("background");
-		background.setLabel("Background:");
-		background.setDescription("Give the genetic background of the animal.");
-		background.setTooltip("Give the genetic background of the animal.");
-		background.addOption("","");
-		background.addOption("0", "no background");
-		for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationIds)) { // TODO base on species
-			background.addOption(b.getId(), b.getName());
-		}
-		background.setNillable(false);
-		
-		// Populate sexes list
-		sex = new SelectInput("sex");
-		sex.setLabel("Sex:");
-		sex.addOption("","");
-		for (ObservationTarget s : ct.getAllMarkedPanels("Sex", investigationIds)) {
-			sex.addOption(s.getId(), s.getName());
-		}
-		sex.setDescription("Give the sex of the new animal(s).");
-		sex.setTooltip("Give the sex of the new animal(s).");
-		sex.setNillable(false);
 
 		// Populate source list
 		// All source types except "Eigen fok binnen uw organisatorische werkeenheid",
@@ -480,21 +452,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		animaltype.setOnchange("showHideGenotypeDiv(this.value);");
 		animaltype.setNillable(false);
 
-		// gene and genestate are CONDITIONAL on animaltype = B. Transgeen dier
-		gmoPanel = new DivPanel("GMO", "Genotype:");
-		gmoPanel.setId("GMO");
-		gene = new SelectMultipleInput("gene");
-		gene.setUseJqueryMultiplePlugin(true);
-		gene.setNillable(false); // to avoid the empty option from showing up
-		gene.setLabel("Gene(s):");
-		for (String option : ct.getAllCodesForFeatureAsStrings("GeneModification")) {
-			gene.addOption(option, option);
-		}
-		gmoPanel.add(gene);
-		savebutton = new ActionInput("Save", "", "Save gene(s)");
-		gmoPanel.add(savebutton);
-		gmoPanel.setHidden(true);
-
 		birthdate = new DateInput("birthdate");
 		birthdate.setLabel("Date of birth (if known):");
 		birthdate.setValue(null);
@@ -505,49 +462,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		entrydate.setValue(new Date());
 		entrydate.setNillable(false);
 		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
-		
-		List<String> bases = ct.getPrefixes("animal");
-		namebase = new SelectInput("namebase"); // TODO base on species
-		namebase.setLabel("Name prefix (may be empty):");
-		namebase.setId("namebase");
-		namebase.setDescription("The default prefix string that will be put in front of your name.");
-		namebase.addOption("New", "New (specify below)");
-		for (String base : bases) {
-			if (!base.equals("")) {
-				namebase.addOption(base, base);
-			}
-		}
-		namebase.setValue(""); // default empty prefix
-		namebase.setOnchange("updateStartNumberAndNewNameBase(this.value)");
-		startnumberhelper = new TextLineInput<String>("startnumberhelper");
-		startnumberhelper.setLabel("");
-		String helperContents = ((ct.getHighestNumberForPrefix("") + 1) + ";"); // start number for empty base (comes first in jQuery select box because default)
-		helperContents += "1"; // start number for new base
-		for (String base : bases) {
-			if (!base.equals("")) {
-				helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
-			}
-		}
-		startnumberhelper.setValue(helperContents);
-		startnumberhelper.setHidden(true);
-		newnamebase = new StringInput("newnamebase");
-		newnamebase.setLabel("New name prefix:");
-		newnamebasePanel = new DivPanel("Namebase", "");
-		newnamebasePanel.add(newnamebase);
-		newnamebasePanel.setId("newnamebasePanel");
-		newnamebasePanel.setHidden(true);
-		startnumber = new IntInput("startnumber");
-		startnumber.setLabel("Start numbering at:");
-		startnumber.setId("startnumber");
-		startnumber.setValue(ct.getHighestNumberForPrefix("") + 1); // start with highest number for empty prefix (default selected)
-		startnumber.setDescription("Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected.");
-		startnumber.setReadonly(true);
-		
-		numberofanimals = new IntInput("numberofanimals");
-		numberofanimals.setLabel("Number of animals to add:");
-		numberofanimals.setValue(1);
-		numberofanimals.setNillable(false);
-		numberofanimals.setDescription("Give the number of animals to add to the database.");
 		
 		researcher = new StringInput("researcher");
 		researcher.setLabel("Responsible researcher:");
@@ -566,24 +480,189 @@ public class AddAnimalPlugin extends GenericPlugin
 		location.setTooltip("Give the location of the new animal(s).");
 		location.setNillable(true);
 		
-		addbutton = new ActionInput("Add", "", "Add animal(s)");
+		ActionInput contbutton = new ActionInput("Cont1", "", "Continue");
 
 		// add everything to the panel
-		containingPanel.add(background);
-		containingPanel.add(sex);
+		containingPanel.add(new Paragraph("<h2>Bring in animals: set general info</h2>"));
+		containingPanel.add(species);
 		containingPanel.add(source);
 		containingPanel.add(animaltype);
-		containingPanel.add(gmoPanel);
 		containingPanel.add(birthdate);
 		containingPanel.add(entrydate);
 		containingPanel.add(researcher);
 		containingPanel.add(location);
+		containingPanel.add(contbutton);
+	}
+	
+	private void populateSecondTablePanel(Database db) throws DatabaseException, ParseException {
+		
+		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+		
+		containingPanel = new DivPanel(this.getName() + "panel", "");
+		containingPanel.add(new Paragraph("<h2>Bring in animals: set genotype info</h2>"));
+		
+		background = new SelectInput("background");
+		background.setLabel("Background:");
+		background.setDescription("Give the genetic background of the animal.");
+		background.setTooltip("Give the genetic background of the animal.");
+		background.addOption("","");
+		background.addOption("0", "no background");
+		for (ObservationTarget b : ct.getAllMarkedPanels("Background", investigationIds)) {
+			// Only show if background belongs to chosen species
+			if (ct.getMostRecentValueAsXref(b.getId(), "Species") == speciesId) {
+				background.addOption(b.getId(), b.getName());
+			}
+		}
+		background.setNillable(false);
+		containingPanel.add(background);
+		
+		if (animalType.equals("B. Transgeen dier")) {
+			gene = new SelectMultipleInput("gene");
+			gene.setUseJqueryMultiplePlugin(true);
+			gene.setNillable(false); // to avoid the empty option from showing up
+			gene.setLabel("Gene(s):");
+			for (String option : ct.getAllCodesForFeatureAsStrings("GeneModification")) {
+				gene.addOption(option, option);
+			}
+			containingPanel.add(gene);
+		}
+		
+		ActionInput contbutton = new ActionInput("Cont2", "", "Continue");
+		containingPanel.add(contbutton);
+	}
+	
+	private void populateThirdTablePanel(Database db) throws DatabaseException, ParseException {
+		
+		containingPanel = new DivPanel(this.getName() + "panel", "");
+		containingPanel.add(new Paragraph("<h2>Bring in animals: set genotype info (II)</h2>"));
+		
+		// first remove existing gene state boxes
+		if (genestateList != null) {
+			for (SelectInput genestateBox : genestateList) {
+				containingPanel.remove(genestateBox);
+			}
+		}
+		genestateList = new ArrayList<SelectInput>();
+		// then make fresh new gene state boxes for every gene selected
+		List<String> geneList = gene.getObject();
+		for (String geneName : geneList) {
+			SelectInput genestateBox = new SelectInput("genestate_" + geneName);
+			genestateBox.setLabel("State for " + geneName + ":");
+			for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
+				genestateBox.addOption(option, option);
+			}
+			containingPanel.add(genestateBox);
+			genestateList.add(genestateBox);
+		}
+		
+		ActionInput contbutton = new ActionInput("Cont3", "", "Continue");
+		
+		containingPanel.add(contbutton);
+	}
+	
+	private void populateFourthTablePanel(Database db) throws DatabaseException, ParseException {
+		
+		containingPanel = new DivPanel(this.getName() + "panel", "");
+		containingPanel.add(new Paragraph("<h2>Bring in animals: set names and numbers</h2>"));
+		
+		String defaultPrefix = "";
+		// TODO: put this hardcoded info in the database (NamePrefix table)
+		if (ct.getObservationTargetLabel(speciesId).equals("House mouse")) {
+			defaultPrefix = "mm_";
+		}
+		if (ct.getObservationTargetLabel(speciesId).equals("Brown rat")) {
+			defaultPrefix = "rn_";
+		}
+		if (ct.getObservationTargetLabel(speciesId).equals("Common vole")) {
+			defaultPrefix = "mar_";
+		}
+		if (ct.getObservationTargetLabel(speciesId).equals("Tundra vole")) {
+			defaultPrefix = "mo_";
+		}
+		if (ct.getObservationTargetLabel(speciesId).equals("Syrian hamster")) {
+			defaultPrefix = "ma_";
+		}
+		if (ct.getObservationTargetLabel(speciesId).equals("European groundsquirrel")) {
+			defaultPrefix = "sc_";
+		}
+		if (ct.getObservationTargetLabel(speciesId).equals("Siberian hamster")) {
+			defaultPrefix = "ps_";
+		}
+		if (ct.getObservationTargetLabel(speciesId).equals("Domestic guinea pig")) {
+			defaultPrefix = "cp_";
+		}
+		if (ct.getObservationTargetLabel(speciesId).equals("Fat-tailed dunnart")) {
+			defaultPrefix = "sg_";
+		}
+		
+		List<String> bases = ct.getPrefixes("animal");
+		namebase = new SelectInput("namebase");
+		namebase.setLabel("Name prefix (may be empty):");
+		namebase.setId("namebase");
+		namebase.setDescription("The default prefix string that will be put in front of your name.");
+		namebase.addOption("New", "New (specify below)");
+		for (String base : bases) {
+			if (!base.equals("")) {
+				namebase.addOption(base, base);
+			}
+		}
+		namebase.setValue(defaultPrefix);
+		namebase.setOnchange("updateStartNumberAndNewNameBase(this.value)");
+		
+		startnumberhelper = new TextLineInput<String>("startnumberhelper");
+		startnumberhelper.setLabel("");
+		String helperContents = "1"; // start number for new base
+		for (String base : bases) {
+			if (!base.equals("")) {
+				helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
+			}
+		}
+		helperContents += ((ct.getHighestNumberForPrefix("") + 1) + ";"); // start number for ëmpty base (comes last in jQuery select box)
+		startnumberhelper.setValue(helperContents);
+		startnumberhelper.setHidden(true);
+		
+		newnamebase = new StringInput("newnamebase");
+		newnamebase.setLabel("New name prefix:");
+		DivPanel newnamebasePanel = new DivPanel("Namebase", "");
+		newnamebasePanel.add(newnamebase);
+		newnamebasePanel.setId("newnamebasePanel");
+		newnamebasePanel.setHidden(true);
+		
+		startnumber = new IntInput("startnumber");
+		startnumber.setLabel("Start numbering at:");
+		startnumber.setId("startnumber");
+		startnumber.setValue(ct.getHighestNumberForPrefix(defaultPrefix) + 1); // start with highest number for default prefix
+		startnumber.setDescription("Set the inital number to increment the name with. The correct number is automatically set when a name prefix is selected.");
+		startnumber.setReadonly(true);
+		
+		numberofmales = new IntInput("numberofmales");
+		numberofmales.setLabel("Number of males:");
+		numberofmales.setValue(0);
+		numberofmales.setNillable(false);
+		numberofmales.setDescription("Give the number of male animals to add to the database.");
+		
+		numberoffemales = new IntInput("numberoffemales");
+		numberoffemales.setLabel("Number of females:");
+		numberoffemales.setValue(0);
+		numberoffemales.setNillable(false);
+		numberoffemales.setDescription("Give the number of female animals to add to the database.");
+		
+		numberofunknowns = new IntInput("numberofunknowns");
+		numberofunknowns.setLabel("Number of animals of unknown sex:");
+		numberofunknowns.setValue(0);
+		numberofunknowns.setNillable(false);
+		numberofunknowns.setDescription("Give the number of animals of unkowon sex to add to the database.");
+
+		ActionInput contbutton = new ActionInput("Save", "", "Save");
+		
 		containingPanel.add(namebase);
 		containingPanel.add(startnumberhelper);
 		containingPanel.add(newnamebasePanel);
 		containingPanel.add(startnumber);
-		containingPanel.add(numberofanimals);
-		containingPanel.add(addbutton);
+		containingPanel.add(numberofmales);
+		containingPanel.add(numberoffemales);
+		containingPanel.add(numberofunknowns);
+		containingPanel.add(contbutton);
 	}
 	
 	public String render()

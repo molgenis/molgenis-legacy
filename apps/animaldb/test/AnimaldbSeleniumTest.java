@@ -176,28 +176,36 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=AddAnimal_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Bring in animals"));
-		// Add 10 female House mice
+		// Add 10 female GMO House mice
 		selenium.select("id=species", "label=House mouse");
-		selenium.click("id=SaveSpecies");
+		selenium.select("id=source", "label=Harlan");
+		selenium.select("id=animaltype", "label=B. Transgeen dier");
+		selenium.click("id=Cont1");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.select("id=background", "label=C57BL/6j");
-		selenium.select("id=sex", "label=Female");
-		selenium.select("id=source", "label=Harlan");
-		selenium.select("id=animaltype", "label=A. Gewoon dier");
-		selenium.type("id=numberofanimals", "10");
-		selenium.click("id=Add");
+		selenium.select("id=gene", "label=Cry1 KO");
+		//selenium.select("id=gene", "label=Cry2 KO"); NOTE: Selenium does not support multiple select, only last click is remembered!
+		selenium.click("id=Cont2");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.select("id=genestate_Cry1 KO", "label=+/-");
+		//selenium.select("id=genestate_Cry2 KO", "label=+/-"); NOTE: Selenium does not support multiple select, only last click is remembered!
+		selenium.click("id=Cont3");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.type("id=numberoffemales", "10");
+		selenium.click("id=Save");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("10 animal(s) successfully added"));
-		// Add 10 male House mice
+		// Add 10 male non-GMO House mice
 		selenium.select("id=species", "label=House mouse");
-		selenium.click("id=SaveSpecies");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.select("id=background", "label=C57BL/6j");
-		selenium.select("id=sex", "label=Male");
 		selenium.select("id=source", "label=Harlan");
 		selenium.select("id=animaltype", "label=A. Gewoon dier");
-		selenium.type("id=numberofanimals", "10");
-		selenium.click("id=Add");
+		selenium.click("id=Cont1");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.select("id=background", "label=C57BL/6j");
+		selenium.click("id=Cont2");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.type("id=numberofmales", "10");
+		selenium.click("id=Save");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("10 animal(s) successfully added"));
 		
@@ -386,14 +394,37 @@ public class AnimaldbSeleniumTest
 		// Go to Report plugin
 		selenium.click("id=YearlyReportModule_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Report 4A (default)
+		// Report 4A (normal animals -> 10 males)
+		selenium.select("id=form", "value=4A");
+		selenium.click("id=generate");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getTable("css=#reporttablediv > table.2.0"), "Muizen");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[2]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[4]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[5]/strong"), "10");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[6]/strong"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[7]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[8]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[9]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[10]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[11]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[12]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[13]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[14]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[15]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[16]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[17]"), "0");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "10");
+		// Report 4B (GMO animals -> 10 females + 5 weaned - 2 removed)
+		selenium.select("id=form", "value=4B");
 		selenium.click("id=generate");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertEquals(selenium.getTable("css=#reporttablediv > table.2.0"), "Muizen");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[2]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[3]"), "5");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[4]"), "0");
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[5]/strong"), "20");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[5]/strong"), "10");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[6]/strong"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[7]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[8]"), "0");
@@ -406,7 +437,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[15]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[16]"), "0");
 		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[17]"), "0");
-		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "23");
+		Assert.assertEquals(selenium.getText("//div[@id='reporttablediv']/table/tbody/tr[3]/td[18]"), "13");
 		// Report 5
 		selenium.select("id=form", "value=5");
 		selenium.click("id=generate");

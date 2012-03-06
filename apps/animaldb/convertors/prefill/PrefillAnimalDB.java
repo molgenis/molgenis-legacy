@@ -17,6 +17,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
+import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.core.Ontology;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
@@ -89,6 +90,7 @@ public class PrefillAnimalDB
 		}
 		// Run convertor steps
 		populateProtocolApplication();
+		populatePrefixes(path + "nameprefix.csv");
 		populateNews(path + "news.csv");
 		populateOntology(path + "ontology.csv");
 		populateOntologyTerm(path + "ontologyterm.csv");
@@ -125,6 +127,23 @@ public class PrefillAnimalDB
 		logger.debug("Panels successfully added");
 		db.add(valuesToAddList);
 		logger.debug("Values successfully added");
+	}
+	
+	public void populatePrefixes(String filename) throws Exception
+	{
+		File file = new File(filename);
+		CsvFileReader reader = new CsvFileReader(file);
+		reader.parse(new CsvReaderListener()
+		{
+			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			{
+				NamePrefix np = new NamePrefix();
+				np.setTargetType(tuple.getString("targetType"));
+				np.setPrefix(tuple.getString("prefix"));
+				np.setHighestNumber(0);
+				db.add(np); // this one goes directly into the db, not through a list, because nothing links to it
+			}
+		});
 	}
 	
 	public void populateNews(String filename) throws Exception
