@@ -100,6 +100,11 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 		return category;
 	}
 	
+	public void setHtmlValue(String htmlValue)
+	{
+		this.htmlValue = htmlValue;
+	}
+	
 	public String getHtmlValue()
 	{
 		return htmlValue;
