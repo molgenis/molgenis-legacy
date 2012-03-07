@@ -38,6 +38,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private JQueryTreeView<JQueryTreeViewElement> treeView = null;
 	private HashMap<String, Protocol> nameToProtocol;
 	private HashMap<String, JQueryTreeViewElement> protocolsAndMeasurementsinTree;
+	private HashMap<String, JQueryTreeViewElement> measurementsInTree;
+	private HashMap<String, JQueryTreeViewElement> protocolsInTree;
+
 	private List<Measurement> shoppingCart = new ArrayList<Measurement>();
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 	private String selectedInvestigation = null;
@@ -54,7 +57,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	//will complain about the branch already exists when constructing the tree, cheating by
 	//changing the name of the branch but keeping display name the same
 	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
-
 
 	public catalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -120,10 +122,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				if (this.getSelectedField().equals("All fields")) 
 					RetrieveProtocols(db,4); 
 
-				//if (this.getSelectedField().equals("All fields")) 
-				//RetrieveProtocols(db,3); //too complicated to start the search from this function .  This filter is applied in addingLastMeasurementToTree()
-				//else if (this.getSelectedField().equals("Measurements")) {}
-				//else if (this.getSelectedField().equals("Details")) {}
+				if (this.getSelectedField().equals("Details")) 
+					RetrieveProtocols(db,5); 
 
 			}
 
@@ -190,30 +190,18 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		List<String> bottomProtocols = new ArrayList<String>();
 		List<String> middleProtocols = new ArrayList<String>();
 		protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
+
+		measurementsInTree = new HashMap<String, JQueryTreeViewElement>();
+		protocolsInTree = new HashMap<String, JQueryTreeViewElement>();
+
 		nameToProtocol = new HashMap<String, Protocol>();
 
 		try {
 
 			Query<Protocol> q = db.query(Protocol.class);
 
+			q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.getSelectedInvestigation()));
 
-			if (mode == 1) { //reload is calling
-
-				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.getSelectedInvestigation()));
-
-			} else { 	
-				//
-				//				//Search input token --> LIKE protocols
-				//				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.getSearchingInvestigation()));
-				//				q.addRules(new QueryRule(Protocol.NAME, Operator.LIKE, InputToken));
-				//
-				//			} else {
-				//				//Seach for token in mode 3 or 4
-				//				
-				//			}
-
-				q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, this.getSearchingInvestigation()));
-			}
 			//Iterate through all the found protocols
 			for (Protocol p : q.find()) {
 
@@ -356,6 +344,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							}
 						}
 
+						if(mode == 5 || mode == 4){
+							filteredNode = protocol.getFeatures_Name();
+						}
 
 					}else{	//if the input token is null, we are in the normal treeview mode. Get all the measurements
 
@@ -380,12 +371,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					//If none of the measurements of this protocol contains the input token, this protocol is not added but removed. 
 					if(findInputTokenInEachNode == false){
 
-						if(mode == 3){//filter in measurements
+						if(mode == 3 || mode == 5){//filter in measurements
 
-							//Remove all the protocols which don`t have measurements matching input token
-							if(!protocolName.toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*") ){
-								childTree.remove();
-							}
+							childTree.remove();
 
 						}else if(mode == 2 || mode == 4){ //get all measurements and protocols in descendant class. 
 							//Because the input token was found in current protocol!
@@ -442,6 +430,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		//if none of the measurements contain input token, it`s false meaning these measurements will not be shown in the tree. 
 		boolean findTokenInMeasurements = true;
 
+		boolean findTokenInDetailInformation = false;
+		
 		List<Measurement> measurementList = new ArrayList<Measurement>();
 
 		try {
@@ -451,99 +441,71 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				findTokenInMeasurements = false;
 
 			}else{
-
+				if(mode == 5 || mode == 4){
+					findTokenInMeasurements = false;
+				}
 				measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode));
 			}
 
 			for (Measurement measurement : measurementList) {
 
-				JQueryTreeViewElement childTree;
+				JQueryTreeViewElement childTree = null;
 
-				if (protocolsAndMeasurementsinTree.containsKey(measurement.getName())) {
+				String displayName = "";
 
-					if(!multipleInheritance.containsKey(measurement.getName())){
-						multipleInheritance.put(measurement.getName(), 1);
+				Query<ObservedValue> queryDisplayNames = db.query(ObservedValue.class);
+
+				queryDisplayNames.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
+
+				queryDisplayNames.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.LIKE, "display name"));
+
+				if(queryDisplayNames.find().size() > 0){
+					
+					displayName = queryDisplayNames.find().get(0).getValue();
+				}else{
+					displayName = measurement.getName();
+				}
+				
+				String htmlValue = null;
+				
+				if (protocolsAndMeasurementsinTree.containsKey(displayName)) {
+
+					if(!multipleInheritance.containsKey(displayName)){
+						multipleInheritance.put(displayName, 1);
 					}else{
-						int number = multipleInheritance.get(measurement.getName());
-						multipleInheritance.put(measurement.getName(), ++number);
+						int number = multipleInheritance.get(displayName);
+						multipleInheritance.put(displayName, ++number);
 					}
 
-					JQueryTreeViewElement previousChildTree = protocolsAndMeasurementsinTree.get(measurement.getName());
+					JQueryTreeViewElement previousChildTree = protocolsAndMeasurementsinTree.get(displayName);
 
-					childTree = new JQueryTreeViewElement(measurement.getName() + multipleInheritance.get(measurement.getName()), measurement.getName(), parentTree, previousChildTree.getHtmlValue());
+					childTree = new JQueryTreeViewElement(displayName + multipleInheritance.get(displayName), displayName, parentTree, previousChildTree.getHtmlValue());
+
+					htmlValue = htmlTableForTreeInformation(db, measurement);
+
+					childTree.setHtmlValue(htmlValue);
 
 				} else {
 
-					List<String> categoryNames = measurement.getCategories_Name();
-
-					String measurementDescription = measurement.getDescription();
-
-					String measurementDataType = measurement.getDataType();
-
-					//String htmlValue = 	"<table id = 'detailInformation'  border = 2>" +
-					String htmlValue = 	"<table id = 'box-body'  >" +
-							"<tr><th width=40>Item name</th><td>" + measurement.getName() +
-							"</td></tr><tr><th>Category</th><td><table border=1>";
-
-
-					for(String string : categoryNames){
-						htmlValue += "<tr><td>";
-						htmlValue += string;
-						htmlValue += "</td></tr>";
-
-					}
-					htmlValue += "</table></td></tr>";
-
-					htmlValue += "<tr><th>Description</th><td>" +
-							measurementDescription + "</td></tr>";
-
-					htmlValue += "<tr><th>Data type</th><td width=40>" +
-							measurementDataType + "</td></tr>" ;
-					//htmlValue = "<p>why?</p>";
+					htmlValue = htmlTableForTreeInformation(db, measurement);
 					
-//					Query<MolgenisFile> queryDisplayNamesFile = db.query(MolgenisFile.class);
-//
-//					System.out.println("Files : >>>>>>>>" + queryDisplayNamesFile);
-
-					Query<ObservedValue> queryDisplayNames = db.query(ObservedValue.class);
-
-					queryDisplayNames.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
-
-					String displayName = "";
-
-					if(!queryDisplayNames.find().isEmpty()){
-
-						for(ObservedValue ov : queryDisplayNames.find()){
-
-							String featureName = ov.getFeature_Name();
-							String value = ov.getValue();
-
-							if(featureName.equals("display name_" + selectedInvestigation)){
-								displayName = queryDisplayNames.find().get(0).getValue();
-							}
-
-							System.out.println("value featureName "+ value + featureName);
-							if (featureName.startsWith("SOP")) {
-								htmlValue += "<tr><th>" + featureName + "</th><td><a href=" + value + ">" + value + "</a></td></tr>";
-							} else {
-								htmlValue += "<tr><th>" + featureName + "</th><td> " + value + "</td></tr>";
-							}
-						}
-
-					}
+					childTree = new JQueryTreeViewElement(displayName, parentTree, htmlValue);
 					
+					protocolsAndMeasurementsinTree.put(displayName, childTree);
+				}
+				
+				if(mode == 5 || mode == 4){
 
-
-					htmlValue += "</table>";
-
-					if(displayName.equals("")){
-						childTree = new JQueryTreeViewElement(measurement.getName(),parentTree, htmlValue);
+					if(htmlValue.toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")){
+						findTokenInDetailInformation = true;
 					}else{
-						childTree = new JQueryTreeViewElement(displayName,parentTree, htmlValue);
+						findTokenInDetailInformation = false;
+						childTree.remove();
 					}
-
-					protocolsAndMeasurementsinTree.put(measurement.getName(), childTree);
-
+					
+					if(findTokenInDetailInformation == true){
+						findTokenInMeasurements = true;
+					}
 				}
 			}
 
@@ -552,6 +514,70 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		}
 
 		return findTokenInMeasurements;
+	}
+	
+	/**
+	 * This method is used to create a html table populated with all the information about one specific measurement
+	 * @param db
+	 * @param measurement
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public String htmlTableForTreeInformation(Database db, Measurement measurement) throws DatabaseException{
+
+		List<String> categoryNames = measurement.getCategories_Name();
+
+		String measurementDescription = measurement.getDescription();
+
+		String measurementDataType = measurement.getDataType();
+
+		//String htmlValue = 	"<table id = 'detailInformation'  border = 2>" +
+		String htmlValue = 	"<table id = 'box-body'  >" +
+				"<tr><th width=40>Item name</th><td>" + measurement.getName() +
+				"</td></tr><tr><th>Category</th><td><table border=1>";
+
+
+		for(String string : categoryNames){
+			htmlValue += "<tr><td>";
+			htmlValue += string;
+			htmlValue += "</td></tr>";
+
+		}
+		htmlValue += "</table></td></tr>";
+
+		htmlValue += "<tr><th>Description</th><td>" +
+				measurementDescription + "</td></tr>";
+
+		htmlValue += "<tr><th>Data type</th><td width=40>" +
+				measurementDataType + "</td></tr>" ;
+
+		Query<ObservedValue> queryDetailInformation = db.query(ObservedValue.class);
+
+		queryDetailInformation.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, measurement.getName()));
+
+		if(!queryDetailInformation.find().isEmpty()){
+
+			for(ObservedValue ov : queryDetailInformation.find()){
+
+				String featureName = ov.getFeature_Name();
+				String value = ov.getValue();
+
+				if (featureName.startsWith("SOP")) {
+					htmlValue += "<tr><th>" + featureName + "</th><td><a href=" + value + ">" + value + "</a></td></tr>";
+				} else {
+
+					if(featureName.startsWith("display name")){
+						featureName = "display name";
+					}
+
+					htmlValue += "<tr><th>" + featureName + "</th><td> " + value + "</td></tr>";
+				}
+			}
+		}
+
+		htmlValue += "</table>";
+
+		return htmlValue;
 	}
 
 	public String getTreeView() {
