@@ -138,10 +138,10 @@ public class AddAnimalPlugin extends GenericPlugin
 			}
 			if (action.equals("Cont2")) {
 				handleSecondScreenRequest(db, request);
-				if (animalType.equals("B. Transgeen dier")) {
+				if (animalType.equals("B. Transgeen dier") && genes != null) {
 					populateThirdTablePanel(db);
 				} else {
-					// Skip third screen if animals are non-GMO
+					// Skip third screen if animals are non-GMO or if no genes selected
 					populateFourthTablePanel(db);
 				}
 			}
@@ -221,6 +221,8 @@ public class AddAnimalPlugin extends GenericPlugin
 	}
 	
 	private void handleAddRequest(Database db, Tuple request) throws Exception {
+		
+		ct.setDatabase(db);
 			
 		// Get name from last form
 		String nameBase = "";
@@ -232,7 +234,7 @@ public class AddAnimalPlugin extends GenericPlugin
 					nameBase = newnamebase.getObject().toString();
 				} else {
 					nameBase = "";
-				}	
+				}
 			}
 		} else {
 			 nameBase = "";
@@ -401,6 +403,8 @@ public class AddAnimalPlugin extends GenericPlugin
 	
 	private void populateFirstTablePanel(Database db) throws DatabaseException, ParseException {
 		
+		ct.setDatabase(db);
+		
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
 		// panel for all elements
@@ -496,6 +500,8 @@ public class AddAnimalPlugin extends GenericPlugin
 	
 	private void populateSecondTablePanel(Database db) throws DatabaseException, ParseException {
 		
+		ct.setDatabase(db);
+		
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
 		
 		containingPanel = new DivPanel(this.getName() + "panel", "");
@@ -533,6 +539,8 @@ public class AddAnimalPlugin extends GenericPlugin
 	
 	private void populateThirdTablePanel(Database db) throws DatabaseException, ParseException {
 		
+		ct.setDatabase(db);
+		
 		containingPanel = new DivPanel(this.getName() + "panel", "");
 		containingPanel.add(new Paragraph("<h2>Bring in animals: set genotype info (II)</h2>"));
 		
@@ -561,6 +569,8 @@ public class AddAnimalPlugin extends GenericPlugin
 	}
 	
 	private void populateFourthTablePanel(Database db) throws DatabaseException, ParseException {
+		
+		ct.setDatabase(db);
 		
 		containingPanel = new DivPanel(this.getName() + "panel", "");
 		containingPanel.add(new Paragraph("<h2>Bring in animals: set names and numbers</h2>"));

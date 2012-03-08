@@ -94,6 +94,8 @@ public class PrintLabelPlugin extends GenericPlugin
 	 */
 	private void handlePrintRequest(Database db, Tuple request) throws LabelGeneratorException, DatabaseException, ParseException, MatrixException {
 		
+		cs.setDatabase(db);
+		
 		int userId = this.getLogin().getUserId();
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));

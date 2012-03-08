@@ -71,7 +71,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 				prefillDb(db);
 			}
 		} catch (Exception e) {
-			prefillDb(db);
+			this.setError("Something went wrong while trying to reset and prefill your database: could not count number of MolgenisUsers in DB");
 		}
 	}
 	
@@ -84,7 +84,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 				new emptyDatabase(db, false);
 			}
 			FillMetadata.fillMetadata(db, false);
-			this.getMessages().add(new ScreenMessage("Your database was empty, so it was reset and prefilled with basic security entities", true));
+			this.setSuccess("Your database was empty, so it was reset and prefilled with basic security entities");
 			
 			// Populate db with targets, features, values etc. needed to make AnimalDB run
 			// Note: we don't do this here anymore. Use the Import database Plugin instead.
@@ -95,7 +95,7 @@ public class AnimalDBHeader extends PluginModel<Entity>
 			if (e.getMessage() != null) {
 				message += (": " + e.getMessage());
 			}
-			this.getMessages().add(new ScreenMessage(message, false));
+			this.setError(message);
 			e.printStackTrace();
 		}
 	}
