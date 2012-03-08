@@ -45,7 +45,7 @@
 					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
 				
 				<input type="submit" name="SearchCatalogueTree" value="search" onclick="__action.value='SearchCatalogueTree';"/>
-				<img class="navigation_button" src="generated-res/img/filter.png" alt="Add filter"	onclick="__action.value='SearchCatalogueTree';return true;""/>		
+				<!--img class="navigation_button" src="generated-res/img/filter.png" alt="Add filter"	onclick="__action.value='SearchCatalogueTree';return true;""/-->		
 		
 		</div>
 
