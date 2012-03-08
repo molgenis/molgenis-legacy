@@ -106,6 +106,10 @@ public class ConvertUliDbToPheno
 		parentgroupNrMap = new HashMap<String, Integer>();
 		litterNrMap = new HashMap<String, Integer>();
 		activeMap = new HashMap<String, ObservedValue>();
+		
+		// Create two lines that are not in the import but that will be needed later
+		createLine("ki hu TNF R1", "ki Humanized TNF R1", "Lawri", ct.getInvestigationId(invName));
+		createLine("ki hu TNF R2", "ki Humanized TNF R2", "Conrad", ct.getInvestigationId(invName));
 	}
 	
 	public void convertFromFile(String filename) throws Exception {
@@ -191,6 +195,9 @@ public class ConvertUliDbToPheno
 	{
 		makeProtocolApplication("SetOldUliDbTiernummer");
 		makeProtocolApplication("SetOldUliDbId");
+		makeProtocolApplication("SetOldUliDbLine");
+		makeProtocolApplication("SetOldUliDbBackground");
+		makeProtocolApplication("SetOldUliDbGene");
 		makeProtocolApplication("SetSpecies");
 		makeProtocolApplication("SetAnimalType");
 		makeProtocolApplication("SetActive");
@@ -258,7 +265,7 @@ public class ConvertUliDbToPheno
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetAnimalType"), now, 
 							null, "AnimalType", newAnimalName, "B. Transgeen dier", null));
 				}
-				// Eingangsdatum, Abgangsdatum and Status ->
+				// Eingangsdatum, Abgangsdatum and StatusNew ->
 				// DateOfBirth, DeathDate and Active + start and end time
 				// Default start date is 01-01-2006
 				Calendar cal = Calendar.getInstance();
@@ -280,19 +287,11 @@ public class ConvertUliDbToPheno
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDeathDate"), 
 							startDate, null, "DeathDate", newAnimalName, newDateOnlyFormat.format(endDate), null));
 				}
-				// Animals born before or on 10-1-2009 are considered to be dead
-				cal.set(2009, Calendar.JANUARY, 10);
-				Date cutoffDate = cal.getTime();
-				String state = tuple.getString("Status");
+				String state = tuple.getString("StatusNew");
 				if (state != null) {
-					if (state.equals("lebt") && startDate.after(cutoffDate)) {
-						state = "Alive";
-						endDate = null; // Alive animals have no end-date on their Active value
-					} else {
-						state = "Dead";
-					}
+					state = "Alive";
+					endDate = null;
 				} else {
-					// Assume Dead if state not set
 					state = "Dead";
 				}
 				activeMap.put(newAnimalName, ct.createObservedValue(invName, appMap.get("SetActive"), 
@@ -378,7 +377,7 @@ public class ConvertUliDbToPheno
 				String lineFullName = tuple.getString("LineFullName");
 				if (lineName != null) {
 					if (ct.getObservationTargetId(lineName) == -1) {
-						createLine(lineName, lineFullName, ct.getInvestigationId(invName));
+						createLine(lineName, lineFullName, null, ct.getInvestigationId(invName));
 					}
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 							now, null, "Line", newAnimalName, null, lineName));
@@ -622,7 +621,7 @@ public class ConvertUliDbToPheno
 		});
 	}
 	
-	private void createLine(String lineName, String lineFullName, int investigationId) throws DatabaseException, IOException, ParseException
+	private void createLine(String lineName, String lineFullName, String remark, int investigationId) throws DatabaseException, IOException, ParseException
 	{
 		Date now = new Date();
 		
@@ -651,6 +650,13 @@ public class ConvertUliDbToPheno
 			protocolId = ct.getProtocolId("SetLineFullName");
 			db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
 					lineFullName, 0));
+		}
+		// Set remark (if known)
+		if (remark != null) {
+			featureId = ct.getMeasurementId("Remark");
+			protocolId = ct.getProtocolId("SetRemark");
+			db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
+					remark, 0));
 		}
 	}
 	
