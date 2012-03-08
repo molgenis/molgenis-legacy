@@ -29,7 +29,7 @@
 <p><em>Caution: this might interfere with existing database items!</em></p>
 
 <div class="row">
-	<label for="zip" style="height:2em">ZIP with CSV files to be imported:</label>
+	<label for="zip" style="height:2em">ZIP, CSV or TXT file to be imported:</label>
 	<input type="file" name="zip" id="zip" class="textbox" />
 </div>
 <div class="row" style="height:5em">

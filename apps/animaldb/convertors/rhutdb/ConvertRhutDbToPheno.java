@@ -149,6 +149,7 @@ public class ConvertRhutDbToPheno
 		createLine("ICR(CD-1)");
 		createLine("Swing");
 		createLine("CK1e");
+		createLine("unknown");
 	}
 	
 	private void createLine(String lineName) throws DatabaseException, IOException, ParseException

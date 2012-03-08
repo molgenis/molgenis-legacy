@@ -86,6 +86,7 @@ public class ListPluginMatrix extends GenericPlugin
 				measurementsToShow.add("OldUliDbId");
 				measurementsToShow.add("OldUliDbTiernummer");
 				measurementsToShow.add("OldRhutDbAnimalId");
+				measurementsToShow.add("Remark");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));

@@ -59,7 +59,7 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 					this.setSuccess("Pre-filling AnimalDB successful");
 				} else if (legacy.equals("ulidb")) {
 					ConvertUliDbToPheno myLoadUliDb = new ConvertUliDbToPheno(db, this.getLogin());
-					myLoadUliDb.convertFromZip(filename);
+					myLoadUliDb.convertFromFile(filename);
 					this.setSuccess("Legacy import from Uli Eisel DB successful");
 				} else if (legacy.equals("oldadb")) {
 					LoadAnimalDB myLoadAnimalDB = new LoadAnimalDB(db, this.getLogin());
