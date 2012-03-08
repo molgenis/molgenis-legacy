@@ -617,7 +617,7 @@ public class AddAnimalPlugin extends GenericPlugin
 				helperContents += (";" + (ct.getHighestNumberForPrefix(base) + 1));
 			}
 		}
-		helperContents += ((ct.getHighestNumberForPrefix("") + 1) + ";"); // start number for ëmpty base (comes last in jQuery select box)
+		helperContents += ((ct.getHighestNumberForPrefix("") + 1) + ";"); // start number for empty base (comes last in jQuery select box)
 		startnumberhelper.setValue(helperContents);
 		startnumberhelper.setHidden(true);
 		
