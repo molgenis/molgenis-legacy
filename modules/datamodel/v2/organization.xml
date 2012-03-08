@@ -1,0 +1,72 @@
+<molgenis name="org.molgenis">
+	<module name="organization">
+		<description>Generic entities you can use as the starting point of
+			your model.</description>
+		<entity name="Investigation" implements="Nameable,Describable" xref_label="name">
+			<description>Investigation defines self-contained units of study. For
+				example: Framingham study. Optionally a description and an accession
+				to a data source can be provided. Each Investigation has a unique
+				name and a group of subjects of observation (ObservableTarget),
+				traits of observation (ObservableFeature), results (in
+				ObservedValues), and optionally actions (Protocols,
+				ProtoclApplications). 'Invetigation' maps to standard XGAP/FuGE
+				Investigation, MAGE-TAB Experiment and METABASE:Study.</description>
+			<field name="startDate" nillable="true"  type="datetime" description="The start point of the study." auto="true" />
+			<field name="updateDate" label="Time updated" type="datetime" description="Last time the investigation was modified"/>
+			<field name="endDate" nillable="true" auto="false" type="datetime" description="The end point of the study." />
+			<field name="contacts" type="mref" xref_entity="Person"
+				nillable="true" description="Contact persons for this study"/>	
+			<!-- field name="description" type="text" nillable="true"
+				description="(Optional) Rudimentary meta data about the Investigation" / -->>
+			<field name="accession" type="hyperlink" nillable="true"
+				description="(Optional) URI or accession number to indicate source of Study. E.g. arrayexpress:M-EXP-2345" />
+	
+			
+			<field name="Title" type="text" nillable="true" description="Nice title of the paper" />
+	        <field name="ShortName" type="text" nillable="true" description="Shorthand name for layout" />
+	        <field name="Abstract" label="Abstract" type="text" description=""/>
+	        <field name="Version" label="Accession version" nillable="true"/>
+	        <field name="Background" type="text" nillable="true" description="Short piece of information describing why the study is taking place, e.g. risk factors for a population"/>
+	        <field name="Objectives" type="text" nillable="true" description="What this study aims to achieve"/>
+	        <field name="KeyResults" label="Key results" type="text" nillable="true" description="Noticable results from this study"/>
+	        <field name="Conclusions" type="text" nillable="true" description="Description of the conclusions drawn"/>
+	        <field name="StudyDesign" label="Study design" type="text" nillable="true" description=""/>
+	        <field name="StudySizeReason" label="Reason for study size" type="text" nillable="true" description=""/>
+	        <field name="StudyPower" label="Study power" type="text" nillable="true" description=""/>
+	        <field name="SourcesOfBias" label="Sources of bias" type="text" nillable="true" description=""/>
+	        <field name="Limitations" type="text" nillable="true" description=""/>
+	        <field name="Acknowledgements" type="text" nillable="true" description=""/>
+		        
+	        <field name="citations" type="xref" xref_entity="StudyCitation"
+				nillable="true" description="Contact persons for this study"/>	
+			
+			<unique fields="name" description="Name is unique" />
+		</entity>
+		
+		
+		<entity name="InvestigationElement" abstract="true" implements="Nameable,Describable"
+			xref_label="name">
+			<description>General superclass to use for all elements of an
+				Investigation. The unique forces all of these elements to have
+				unique names within one Investigation. (can be changed to
+				Name,Study,Type by flipping a boolean in the molgenis 'Unique'
+				class.)</description>
+			<field name="Investigation" type="mref" xref_label="name"
+				xref_entity="Investigation" nillable="true"
+				description="MAJOR CHANGE: IS NOW AN MREF!! Reference to the Study that this data element is part of" />
+			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
+				nillable="true"
+				description="(Optional) Reference to the formal ontology definition for this element, e.g. 'Animal' or 'GWAS protocol'" />
+			<unique fields="name" description="Name is unique" />
+		</entity>
+		
+		<entity name="InvestigationCitation">
+			 <field name="Investigation" type="xref" xref_entity="Investigation" nillable="false"/>	
+			 <field name="Citation" type="xref" xref_entity="Publication" nillable="false"/>
+			 <field name="IsPrimary" label="Is this a primary citation?" type="enum" enum_options="[yes,no]" default="no" />
+			 <unique fields="Investigation,Citation" description="Citation is unique within an Investigation" />
+		</entity>
+		
+		
+	</module>
+</molgenis>
