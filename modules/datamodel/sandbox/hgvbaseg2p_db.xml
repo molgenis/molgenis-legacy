@@ -518,12 +518,12 @@
         <field name="Identifier" unique="true" description="Auto-generated Study identifier (begins HGVST)"/>
         
         <!-- new field in Study table: Title -->
-        <field name="Title" type="text" nillable="true"/>
+        <field name="Title" type="text" nillable="true" description="Nice title of the publication / paper"/>
         
         <!-- new field in Study table: CitationID -->
         <!--field name="CitationID" label="Base citation identifier" type="xref" nillable="true" xref_field="Citation.CitationID" xref_label="PubmedID" /-->
         
-        <field name="Name" type="text" nillable="true" />
+        <field name="ShortName" type="text" nillable="true" description="Shorthand name for layout"/>
         <field name="StudyAbstract" label="Abstract" type="text"/>
         <field name="Label" nillable="true"/>
         <field name="Accession" nillable="true" />
@@ -532,18 +532,18 @@
         
         <!--field name="ResearcherID" label="Researcher ID" type="xref" nillable="true" xref_field="Researcher.ResearcherID"/-->
        
-        <field name="Background" type="text" nillable="true"/>
-        <field name="Objectives" type="text" nillable="true"/>
-        <field name="KeyResults" label="Key results" type="text" nillable="true"/>
-        <field name="Conclusions" type="text" nillable="true"/>
-        <field name="StudyDesign" label="Study design" type="text" nillable="true"/>
-        <field name="StudySizeReason" label="Reason for study size" type="text" nillable="true"/>
-        <field name="StudyPower" label="Study power" type="text" nillable="true"/>
-        <field name="SourcesOfBias" label="Sources of bias" type="text" nillable="true"/>
-        <field name="Limitations" type="text" nillable="true"/>
-        <field name="Acknowledgements" type="text" nillable="true"/>
-        <field name="TimeCreated" label="Time created" type="datetime" />
-        <field name="TimeUpdated" label="Time updated" type="datetime" />
+        <field name="Background" type="text" nillable="true" description=""/>
+        <field name="Objectives" type="text" nillable="true" description=""/>
+        <field name="KeyResults" label="Key results" type="text" nillable="true" description=""/>
+        <field name="Conclusions" type="text" nillable="true" description=""/>
+        <field name="StudyDesign" label="Study design" type="text" nillable="true" description=""/>
+        <field name="StudySizeReason" label="Reason for study size" type="text" nillable="true" description=""/>
+        <field name="StudyPower" label="Study power" type="text" nillable="true" description=""/>
+        <field name="SourcesOfBias" label="Sources of bias" type="text" nillable="true" description=""/>
+        <field name="Limitations" type="text" nillable="true" description=""/>
+        <field name="Acknowledgements" type="text" nillable="true" description=""/>
+        <field name="TimeCreated" label="Time created" type="datetime" description=""/>
+        <field name="TimeUpdated" label="Time updated" type="datetime" description=""/>
         
         <!--field name="IsHidden" label="Should study be hidden?" nillable="true"/-->
         <!--field name="IsDisplayed" label="Should study data be shown or hidden?" nillable="true"/-->

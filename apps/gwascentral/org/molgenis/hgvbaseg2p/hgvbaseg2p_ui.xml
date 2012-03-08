@@ -1,135 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
-		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
-	-->
+<!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
 <molgenis name="hgvbase">
-	<plugin name="molgenis_header" type="plugins.header.MolgenisHeader" />
-	<menu name="Main" position="left">
-		<form name="StudyInfo" label="Studies" entity="Study" sortby="StudyID"
-			sortorder="desc" compact_view="StudyID,Identifier,Name,IsHidden,IsDisplayed" />
-		<!--
-			commands="commands.MyCommand"/
-		-->
-		<menu name="StudyMenu" position="top_left">
-			<plugin name="StudyPreview" label="Study Preview"
-				type="plugins.preview.StudyPreviewPlugin" />
-			<plugin name="StudyOverview" label="Study Overview"
-				type="plugins.overview.StudyOverviewPlugin" />
-			<!--
-				plugin name="StudyManagement" label="Study Management"
-				type="plugins.manage.StudyManagementPlugin" /
-			-->
-			<!--
-				plugin name="Delete" label="Delete" type="plugins.delete.Delete" /
-			-->
-			<form name="Submissions" entity="Submission" view="record"> <!--commands="commands.SubmissionCommand"-->
-				<form name="Contributions" entity="Contribution" view="record">
-					<!--
-						commands="commands.MyCommand1"
-					-->
-					<form name="Researchers" entity="Researcher" view="record" />
-					<!--
-						commands="commands.MyCommand13"/
-					-->
+	<!-- plugin name="molgenis_header" type="plugins.header.MolgenisHeader" 
+		/ -->
+	<menu name="main">
+		<form name="StudyInfo" label="Studies" entity="Study"
+			compact_view="name">
+			<menu name="StudyMenu">
+				<form name="StudyPanels" label="Panels" entity="Panel">
+					<form name="Links" label="Hotlinks" entity="Link" />
 				</form>
-			</form>
-			<form name="StudyHotlinks" label="Study Links" entity="Hotlink"
-				view="record" hide_fields="Experiments,Resultsets,PhenotypeMethods,Samplepanels" />
-			<form name="Citations" label="Citations" entity="Citation" view="record"
-				/><!-- commands="commands.CitationCommand" /-->
-			<form name="PhenotypeMethod" label="Phenotype Methods" entity="PhenotypeMethod"
-				view="record"><!--</form> commands="commands.MyCommand3"-->
-				<form name="PhenoHotlinks" label="Phenotype Method Links"
-					entity="Hotlink" view="record" hide_fields="Studies,Experiments,Resultsets,Samplepanels" />
-				<form name="PhenotypeProperty" label="Phenotype Property"
-					entity="PhenotypeProperty" view="record">
-					<!--
-						</form>commands="commands.MyCommand14"
-					-->
-					<form name="PhenotypeAnnotation" label="Phenotype Annotations"
-						entity="PhenotypeAnnotation" view="record" />
-				</form>
-			</form>
-			<form name="AnalysisMethodInfo" label="Analysis Methods" entity="AnalysisMethod"
-				view="record" /><!--</form>commands="commands.MyCommand6"/-->
-			<form name="SamplePanelInfo" label="Sample Panels" entity="Samplepanel"
-				compact_view="SamplepanelID,Identifier,Name"><!--</form>commands="commands.MyCommand9"-->
-				<form name="SamplepanelHotlinks" label="Sample Panel Links"
-					entity="Hotlink" view="record"
-					hide_fields="Studies,Experiments,Resultsets,PhenotypeMethods" />
-				<form name="PhenotypeValue" label="Phenotype Value" entity="PhenotypeValue"
-					view="record"></form>
-			</form>
-			<form name="AssayedPanel" label="Assayed Panels" entity="Assayedpanel"
-				view="record"><!--</form> commands="commands.MyCommand10"-->
-				<form name="SelectionCriteria" label="Selection Criteria"
-					entity="SelectionCriteria" view="record" />
-			</form>
-			<menu name="Experiments" label="Experiments">
-				<form name="ExperimentInfo" label="Experiment" entity="Experiment"
-					compact_view="ExperimentID,StudyID,Identifier,Name"><!-- commands="commands.MyCommand7"-->
-					<form name="ResultSet" label="Result Sets" entity="Resultset"
-						view="record"><!--commands="commands.MyCommand8-->
-						<form name="ResultsetHotlinks" label="Result Set Links"
-							entity="Hotlink" view="record"
-							hide_fields="Studies,Experiments,PhenotypeMethods,Samplepanels" />
-						<form name="Significances" entity="Significance" view="list" />
+				<form name="Contributions" entity="Contribution" />
+				<form name="StudyAnalysisMethods" entity="Protocol" />
+				<form name="Citations" label="Citations" entity="Citation" />
+				<form name="Experiments" entity="Experiment">
+					<form name="DataSets" lalel="DataSets / ResultSets" entity="DataSet">
+						<form name="DataSetLinks" label="Hotlinks" entity="Link" />
 					</form>
-					<form name="ExpHotlinks" label="Experiment Links" entity="Hotlink"
-						view="record" hide_fields="Studies,Resultsets,PhenotypeMethods,Samplepanels" />
-					<form name="GenotypedBundle" label="Genotyped Bundles" entity="GenotypedBundle"
-						view="record">
-						<!--
-								commands="commands.MyCommand11"
-							-->
-						<form name="BundleLoci" label="Bundle Loci" entity="BundleLoci"
-							view="record" /><!--commands="commands.MyCommand15" /-->
-					</form>
+					<form name="ExperimentLinks" label="Hotlinks" entity="Link" />
+					<form name="AassayedPanels" entity="Panel" />
 				</form>
 			</menu>
-		</menu>
-
-
-		<!-- these appear down the side -->
-		<!--
-			form name="AllCitations" label="All Citations" entity="Citation"
-			view="list" /
-		-->
-		<!--
-			form name="AllExperiments" label="All Experiments"
-			entity="Experiment" view="list" /
-		-->
-		<!--
-			form name="AllSamplePanels" label="All Sample Panels"
-			entity="Samplepanel" view="list" /
-		-->
-		<!--
-			form name="AllAssayedPanels" label="All Assayed Panels"
-			entity="Assayedpanel" view="list" /
-		-->
-		<!--
-			form name="AllAnalysisMethods" label="All Analysis Methods"
-			entity="AnalysisMethod" view="list" /
-		-->
-		<!--
-			form name="AllPhenotypeMethods" label="All Phenotype Methods"
-			entity="PhenotypeMethod" view="list" /
-		-->
-		<plugin name="QuickAdd" label="Quick Add" type="plugins.add.QuickAddPlugin" />
-		<plugin name="ImportMarkers" label="Import Markers"
-			type="plugins.data.ImportMarkersPlugin" />
+		</form>
+		<form name="OntologyTerms" entity="OntologyTerm" />
+		<form name="Protocol" entity="Protocol" />
+		<form name="Persons" entity="Person" />
 	</menu>
-	<form name="AllResearchers" label="Researchers" entity="Researcher"
-		view="record" /><!--commands ="commands.MyCommand2"/-->
-	<form name="AllPhenProps" label="Phenotype Properties" entity="PhenotypeProperty"
-		view="record" /><!--</form>commands="commands.MyCommand4" /-->
-	<form name="AllPhenAnnots" label="Phenotype Annotations" entity="PhenotypeAnnotation"
-		view="record" /><!--commands="commands.MyCommand5" /-->
-	<form name="AllBundleLoci" label="Bundle Loci" entity="BundleLoci"
-		view="record" />
-	<!--
-		commands="commands.MyCommand12" /-->
-	<form name="Submissions_del" label="Submissions" entity="Submission"
-		view="record" />
+
 </molgenis>
