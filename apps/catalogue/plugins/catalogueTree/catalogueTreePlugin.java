@@ -31,6 +31,7 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
+import org.semanticweb.HermiT.hierarchy.HierarchySearch.SearchPredicate;
 
 public class catalogueTreePlugin extends PluginModel<Entity> {
 
@@ -44,14 +45,22 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<Measurement> shoppingCart = new ArrayList<Measurement>();
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 	private String selectedInvestigation = null;
-	private boolean isSelectedInv = false; 
 	private String InputToken=null;
 	private String searchingInvestigation=null;
 	private String comparison=null;
-
 	private String selectedField = null;
+
+	private boolean isSelectedInv = false;
 	//private boolean isSelectedField = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
+
+	private static int SEARCHINGPROTOCOL = 2;
+
+	private static int SEARCHINGMEASUREMENT = 3;
+
+	private static int SEARCHINGALL = 4;
+
+	private static int SEARCHINGDETAIL = 5;
 
 	//Multiple inheritance: some measurements might have multiple parents, therefore it
 	//will complain about the branch already exists when constructing the tree, cheating by
@@ -114,16 +123,16 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				//Search input token --> LIKE protocols
 				System.out.println("Input token: >>>>>>"+ this.getInputToken() + ">>> selectedField >>"+ selectedField + "comparison >>>" + this.getComparison()+ "searchingInvestigation>>"+ this.getSearchingInvestigation());
 				if (this.getSelectedField().equals("Protocols")) 
-					RetrieveProtocols(db,2); 
+					RetrieveProtocols(db, SEARCHINGPROTOCOL); 
 				//Search "Any field" ==> All fields LIKE input token 
 				if (this.getSelectedField().equals("Measurements")) 
-					RetrieveProtocols(db,3); 
+					RetrieveProtocols(db, SEARCHINGMEASUREMENT); 
 
 				if (this.getSelectedField().equals("All fields")) 
-					RetrieveProtocols(db,4); 
+					RetrieveProtocols(db, SEARCHINGALL); 
 
 				if (this.getSelectedField().equals("Details")) 
-					RetrieveProtocols(db,5); 
+					RetrieveProtocols(db, SEARCHINGDETAIL); 
 
 			}
 
@@ -251,11 +260,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		//Variable indicating whether the input token has been found. 
 		boolean foundInputToken = false;
-		//		
-		//		//in mode 2 where we search for protocols, we could ensure the token has been found. Because we use input token to query database, 
-		//		//so the retrieved protocols must match the input token
-		//		if(mode == 2)
-		//			foundInputToken = true;
 
 		if(topProtocols.size() == 0){ //The protocols don`t have sub-protocols and we could directly find the measurements of protocols
 			recursiveAddingNodesToTree(bottomProtocols, protocolsTree.getName(), protocolsTree, db, foundInputToken, mode);
@@ -290,16 +294,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		boolean findInputTokenInNextAllNodes = false;
 
 		//Create a variable to keep track of ONLY ONE sub-node of the current node. If the variable is false, that means there is no token found in this one branch.
-		boolean findInputTokenInEachNode = true;
 
 		//Loop through all the nodes on this level.
 		for (String protocolName : nextNodes) {
+
+			boolean findInputTokenInEachNode = false;
 
 			Protocol protocol = nameToProtocol.get(protocolName);
 
 			if (!protocolName.equals(parentClassName) && protocol != null) {
 
-				JQueryTreeViewElement childTree;
+				JQueryTreeViewElement childTree = null;
 
 				//Resolve the issue of duplicated names in the tree. For any sub-protocols or measurements could
 				//belong to multiple parent class, so it`ll throw an error if we try to create the same element twice
@@ -332,50 +337,23 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				//On the last branch of the tree, we`ll find measurements and add them to the tree. 
 				if (protocol.getFeatures_Name() != null	&& protocol.getFeatures_Name().size() > 0) { //error checking 
 
-					List<String> filteredNode = new ArrayList<String> ();
-
-					//if the input token is not null, only get the measurements that match the token
-					if(InputToken != null){
-
-						for(String eachMeasurementName : protocol.getFeatures_Name()){
-
-							if(eachMeasurementName.toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")){
-								filteredNode.add(eachMeasurementName);
-							}
-						}
-
-						if(mode == 5 || mode == 4){
-							filteredNode = protocol.getFeatures_Name();
-						}
-
-					}else{	//if the input token is null, we are in the normal treeview mode. Get all the measurements
-
-						filteredNode = protocol.getFeatures_Name();
+					if(mode != SEARCHINGPROTOCOL){
+						findInputTokenInEachNode = addingMeasurementsToTree(protocol.getFeatures_Name(), childTree, db, false, mode); //.. so normally it goes always this way
 					}
-
-					//add measurements to the tree! The return boolean value indicates whether the measurements have been added
-					//to the tree or not. However in mode 2 which is searching for input token only in protocols, we do not need
-					//to search input token in measurements, so skip this part
-					if(mode != 2){
-						findInputTokenInEachNode = addingMeasurementsToTree(filteredNode, childTree, db, mode); //.. so normally it goes always this way
-					}else{
-						findInputTokenInEachNode = false;
-					}
-
 				}
 
 				//If the input token is not null, the tree will be filtered, in another word, part of the tree elements
 				//will be deleted according to different mode that has been selected.
 				if(InputToken != null){
 
-					//If none of the measurements of this protocol contains the input token, this protocol is not added but removed. 
+					//If none of the child nodes, such as none of the measurements of this protocol, contains the input token, this protocol is not added but removed. 
 					if(findInputTokenInEachNode == false){
 
-						if(mode == 3 || mode == 5){//filter in measurements
+						if(mode == SEARCHINGMEASUREMENT || mode == SEARCHINGDETAIL){//filter in measurements
 
 							childTree.remove();
 
-						}else if(mode == 2 || mode == 4){ //get all measurements and protocols in descendant class. 
+						}else if(mode == SEARCHINGPROTOCOL || mode == SEARCHINGALL){ //get all measurements and protocols in descendant class. 
 							//Because the input token was found in current protocol!
 
 							//Remove all protocols that don`t match the input token
@@ -387,17 +365,18 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 								//If the input token is found in the current protocol, re-add all its descendants to the tree. Because
 								//its sub-nodes might not contain the input token therefore they might have been removed from the tree already.
 								//Therefore need to be re-added
-								findInputTokenInEachNode = recursiveAddingNodesToTree(protocol.getSubprotocols_Name(), protocol.getName(), childTree, db, true, mode);
-
+								if(protocol.getSubprotocols_Name().size() > 0){
+									findInputTokenInEachNode = recursiveAddingNodesToTree(protocol.getSubprotocols_Name(), protocol.getName(), childTree, db, true, mode);
+									findInputTokenInEachNode = true;
+								}
 								//This is the case where none of the measurements of this protocol match the input token, but the current protocol
 								//matches input token. Therefore its measurements need to be re-added to the tree 
 								if (protocol.getFeatures_Name() != null	&& protocol.getFeatures_Name().size() > 0) {
-									findInputTokenInEachNode = addingMeasurementsToTree(protocol.getFeatures_Name(), childTree, db, mode); 
+									findInputTokenInEachNode = addingMeasurementsToTree(protocol.getFeatures_Name(), childTree, db, true, mode); 
+									findInputTokenInEachNode = true;
 								}
 							}
 						}
-
-
 					}
 					//if any branch of node contains input token, we indicate to keep the parent node in the tree.
 					//For example protocolA has protocolB and protocolC, protoclB contains input token whereas protocolC dose not. We`ll delete C and tells 
@@ -424,33 +403,62 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * @param parentTree
 	 * @param db
 	 */
-	public boolean addingMeasurementsToTree(List<String> childNode, JQueryTreeViewElement parentTree, Database db, Integer mode) {
+	public boolean addingMeasurementsToTree(List<String> childNode, JQueryTreeViewElement parentTree, Database db, boolean foundInParent ,Integer mode) {
 
 		//Create a variable to store the boolean value with which we could know whether we need to skip these measurements of the protocol.
 		//if none of the measurements contain input token, it`s false meaning these measurements will not be shown in the tree. 
-		boolean findTokenInMeasurements = true;
+		boolean findTokenInMeasurements = false;
 
+		//indicate with the input token has been found in detail information in the measurement.
 		boolean findTokenInDetailInformation = false;
-		
-		List<Measurement> measurementList = new ArrayList<Measurement>();
+
+		//This variables store the measurements that conform to the requirements by the mode that has been selected.
+		//For example, it only contains the measurement where the input token has been found under mode searchingMeasurement
+		List<String> filteredNode = new ArrayList<String>();
+
+
+		//If the input token is available, we need to check which mode it is and decide what we do with it here
+		if(InputToken != null){
+
+			//In mode of searching for measurements, we check if the name of measurements contain the input token
+			//If the token is not in the name, the measurement is removed from list.
+			if(mode == SEARCHINGMEASUREMENT){
+
+				for(String eachMeasurementName : childNode){
+
+					if(eachMeasurementName.toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")){
+						filteredNode.add(eachMeasurementName);
+						findTokenInMeasurements = true;
+					}
+				}
+
+			}else{
+				//In mode of searching for all fields, details, we need to loop through all the measurements, therefore
+				//we do not care whether the measurement name contains the input token or not.
+				filteredNode = childNode;
+			}
+
+		}else{
+			//Normal mode when the input token is not available
+			filteredNode = childNode;
+		}
 
 		try {
 
-			if(childNode.size() == 0){
+			List<Measurement> measurementList = new ArrayList<Measurement>();
 
-				findTokenInMeasurements = false;
-
-			}else{
-				if(mode == 5 || mode == 4){
-					findTokenInMeasurements = false;
-				}
-				measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode));
-			}
+			if(filteredNode.size() > 0)
+				measurementList = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, filteredNode));
 
 			for (Measurement measurement : measurementList) {
 
+				//reset the the variable to false
+				findTokenInDetailInformation = false;
+
 				JQueryTreeViewElement childTree = null;
 
+				//Query the display name! For some measurements, the labels were stored in the observedValue with feature_name
+				//"display name". If the display name is not available, we`ll use the measurement name as label
 				String displayName = "";
 
 				Query<ObservedValue> queryDisplayNames = db.query(ObservedValue.class);
@@ -460,14 +468,21 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				queryDisplayNames.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.LIKE, "display name"));
 
 				if(queryDisplayNames.find().size() > 0){
-					
+
 					displayName = queryDisplayNames.find().get(0).getValue();
 				}else{
 					displayName = measurement.getName();
 				}
-				
+
+				//Query the all the detail information about this measurement, in molgenis terminology, the detail information 
+				//are all the observedValue and some of the fields from the measurement
 				String htmlValue = null;
-				
+
+				htmlValue = htmlTableForTreeInformation(db, measurement);
+
+				//Check if the tree has already had the treeElement with the same name cos the name can not be duplicated in
+				//jquery tree here. Therefore if the element already existed, a suffix will be added at the end of string to
+				//make the name unique
 				if (protocolsAndMeasurementsinTree.containsKey(displayName)) {
 
 					if(!multipleInheritance.containsKey(displayName)){
@@ -481,20 +496,18 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					childTree = new JQueryTreeViewElement(displayName + multipleInheritance.get(displayName), displayName, parentTree, previousChildTree.getHtmlValue());
 
-					htmlValue = htmlTableForTreeInformation(db, measurement);
-
 					childTree.setHtmlValue(htmlValue);
 
 				} else {
 
-					htmlValue = htmlTableForTreeInformation(db, measurement);
-					
 					childTree = new JQueryTreeViewElement(displayName, parentTree, htmlValue);
-					
+
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
-				
-				if(mode == 5 || mode == 4){
+
+				//Searching for the details. Since htmlValue has all the information about this measurement,
+				//therefore we search for the input tokenin this variable
+				if(mode == SEARCHINGDETAIL){
 
 					if(htmlValue.toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")){
 						findTokenInDetailInformation = true;
@@ -502,7 +515,33 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						findTokenInDetailInformation = false;
 						childTree.remove();
 					}
-					
+
+					if(findTokenInDetailInformation == true){
+						findTokenInMeasurements = true;
+					}
+				}
+
+				//Searching for the details and measurement name. If either name of measurement or detail information
+				//of measurement contains the input token, this is a matching!
+				if(mode == SEARCHINGALL){
+
+					if(htmlValue.toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")){
+						findTokenInDetailInformation = true;
+					}else{
+
+						if(measurement.getName().toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")){
+							findTokenInDetailInformation = true;
+						}else{
+
+							if(foundInParent != true){
+								findTokenInDetailInformation = false;
+								childTree.remove();
+							}else{
+								findTokenInDetailInformation = true;
+							}
+						}
+					}
+
 					if(findTokenInDetailInformation == true){
 						findTokenInMeasurements = true;
 					}
@@ -513,9 +552,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			e.printStackTrace();
 		}
 
+		//Return this round searching result back to the parent node
 		return findTokenInMeasurements;
 	}
-	
+
 	/**
 	 * This method is used to create a html table populated with all the information about one specific measurement
 	 * @param db
