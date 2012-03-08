@@ -7,6 +7,7 @@
 
 package plugins.breedingplugin;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,8 +35,11 @@ public class ManageLines extends PluginModel<Entity>
 	private CommonService cs = CommonService.getInstance();
 	
 	private String lineName;
+	private String fullName;
 	private int source;
 	private int species;
+	private String remarks;
+	
 	private List<ObservationTarget> sourceList;
 	private List<ObservationTarget> lineList;
 	private List<ObservationTarget> speciesList;
@@ -68,6 +72,16 @@ public class ManageLines extends PluginModel<Entity>
 		return "plugins/breedingplugin/ManageLines.ftl";
 	}
 	
+	public String getFullName(int lineId) {
+		String fullName;
+		try {
+			fullName = cs.getMostRecentValueAsString(lineId, "LineFullName");
+		} catch (Exception e) {
+			fullName = "Error when retrieving full name";
+		}
+		return fullName;
+	}
+	
 	public String getSourceName(int lineId) {
 		String sourceName;
 		try {
@@ -90,7 +104,7 @@ public class ManageLines extends PluginModel<Entity>
 		return speciesName;
 	}
 	
-	public String getRemarks(int lineId) throws DatabaseException {
+	public String getRemarksString(int lineId) throws DatabaseException {
 		List<String> remarksList = cs.getRemarks(lineId);
 		String returnString = "";
 		for (String remark : remarksList) {
@@ -108,7 +122,18 @@ public class ManageLines extends PluginModel<Entity>
 		cs.setDatabase(db);
 		try {
 			String action = request.getString("__action");
+			
+			if (action.equals("Edit")) {
+				int lineId = request.getInt("id");
+				this.setLineName(this.getLine(lineId));
+				this.setFullName(this.getFullName(lineId));
+				this.setSpecies(this.getSpeciesId(lineId));
+				this.setSource(this.getSourceId(lineId));
+				this.setRemarks(this.getRemarksString(lineId));
+			}
+			
 			if (action.equals("addLine")) {
+				// TODO: add or update!!
 				Date now = Calendar.getInstance().getTime();
 				this.setLineName(request.getString("lineName"));
 				// Make group
@@ -139,8 +164,8 @@ public class ManageLines extends PluginModel<Entity>
 							protocolId, measurementId, lineId, request.getString("remarks"), 0));
 				}
 				
-				this.getMessages().clear();
-				this.getMessages().add(new ScreenMessage("Line successfully added", true));
+				this.setSuccess("Line successfully added");
+				// TODO: reset everything so form is empty again
 			}
 			
 		} catch (Exception e) {
@@ -150,6 +175,18 @@ public class ManageLines extends PluginModel<Entity>
 			}
 			e.printStackTrace();
 		}
+	}
+
+	private int getSourceId(int lineId) throws DatabaseException, ParseException {
+		return cs.getMostRecentValueAsXref(lineId, "Source");
+	}
+
+	private int getSpeciesId(int lineId) throws DatabaseException, ParseException {
+		return cs.getMostRecentValueAsXref(lineId, "Species");
+	}
+
+	private String getLine(int lineId) throws DatabaseException, ParseException {
+		return cs.getObservationTargetLabel(lineId);
 	}
 
 	@Override
@@ -202,6 +239,14 @@ public class ManageLines extends PluginModel<Entity>
 		return lineName;
 	}
 
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
 	public int getSource() {
 		return source;
 	}
@@ -216,6 +261,14 @@ public class ManageLines extends PluginModel<Entity>
 
 	public void setSpecies(int species) {
 		this.species = species;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 
 	public void setSourceList(List<ObservationTarget> sourceList) {

@@ -30,9 +30,13 @@
 <div>
 
 	<p><h2>Add new breeding line</h2></p>
-	<div id='name_part' class='row' style="width:700px">
+	<div class='row'>
 		<label for='linename'>Line name:</label>
 		<input type='text' class='textbox' name='linename' id='linename' value='<#if screen.lineName?exists>${screen.getLineName()}</#if>' />
+	</div>
+	<div class='row'>
+		<label for='fullname'>Full line name:</label>
+		<input type='text' class='textbox' name='fullname' id='fullname' value='<#if screen.fullName?exists>${screen.getFullName()}</#if>' />
 	</div>
 	<!-- Species -->
 	<div class="row">
@@ -59,7 +63,7 @@
 	<!-- Remarks -->
 	<div class='row'>
 		<label for='remarks'>Remarks:</label>
-		<input type='text' class='textbox' name='remarks' id='remarks' />
+		<input type='text' class='textbox' name='remarks' id='remarks' value='<#if screen.remarks?exists>${screen.getRemarks()}</#if>' />
 	</div>
 	<!-- Add button -->
 	<div id='buttons_part' class='row'>
@@ -75,9 +79,11 @@
 			<thead>
 				<tr>
 					<th>Name</th>
+					<th>Full name</th>
 					<th>Species</th>
 					<th>Source</th>
 					<th>Remarks</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -85,9 +91,11 @@
 				<#assign lineId = line.getId()>
 				<tr>
 					<td>${line.name}</td>
+					<td>${screen.getFullName(lineId)}</td>
 					<td>${screen.getSpeciesName(lineId)}</td>
 					<td>${screen.getSourceName(lineId)}</td>
-					<td>${screen.getRemarks(lineId)}</td>
+					<td>${screen.getRemarksString(lineId)}</td>
+					<td><a href='molgenis.do?__target=${screen.name}&__action=Edit&id=${line.id?string.computer}'>Edit</a></td>
 				</tr>
 			</#list>
 			</tbody>
