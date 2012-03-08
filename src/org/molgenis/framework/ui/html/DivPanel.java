@@ -88,7 +88,7 @@ public class DivPanel extends HtmlWidget
 		result += ">";
 		for (HtmlInput<?> i : this.inputs.values()){		
 			if(makeNewDiv){
-				result += "<div style=\" ";
+				result += "<div style=\"clear:both;";
 				
 				if (i.isHidden())
 				{

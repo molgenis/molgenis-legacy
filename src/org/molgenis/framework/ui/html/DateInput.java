@@ -197,7 +197,7 @@ public class DateInput extends HtmlInput<Date>
 				+ "text ui-widget-content ui-corner-all" + validate
 				+ "\" id=\"" + this.getName() + "\" value=\""
 				+ this.getValue("dd-MM-yyyy") + "\" name=\"" + this.getName()
-				+ "\" autocomplete=\"off\""+description+"/>";
+				+ "\" autocomplete=\"off\"" + description + " />";
 
 		// add the dialog unless readonly (input is always readonly, i.e.,
 		// cannot be typed in).
