@@ -6,7 +6,7 @@
    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 		<title>${screen.getLabel()}</title>
 		<link rel="shortcut icon" type="image/x-icon" href="generated-res/img/molgenis.ico">
 		<link rel="stylesheet" style="text/css" type="text/css" href="generated-res/css/main.css">
