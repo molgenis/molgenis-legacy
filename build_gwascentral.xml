@@ -1,0 +1,20 @@
+<project>
+	<!-- this name is used to name the war file -->
+	<property name="app_name" value="gwascentral" />
+
+	<!-- this holds all the settings for the generator -->
+	<property name="app_properties" value="apps/gwascentral/org/molgenis/hgvbaseg2p/hgvbase.properties"/>
+	<!-- this determines what handwritten modules should be loaded -->
+	<path id="app.class.path">
+		<pathelement location="apps/${app_name}" />
+		<pathelement location="modules/datamodel" />
+		<pathelement location="modules/import" />
+		<pathelement location="modules/webserver" />
+		<pathelement location="modules/feedback" />
+		<pathelement location="modules/auth" />
+	</path>
+
+	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
+	<import file="build_common.xml" />
+
+</project>
