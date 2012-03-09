@@ -112,29 +112,35 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				this.deleteShoppingItem(measurementName);
 
 			} if (request.getAction().startsWith("SearchCatalogueTree")) {
-				this.setInputToken(request.getString("InputToken").trim());
+				if  (request.getString("InputToken") != null) {
+				
+					this.setInputToken(request.getString("InputToken").trim());
 
-				System.out.println("The request string : "+ request);
-				System.out.println("The searching investigation is : "+ request.getString("searchingInvestigation").trim());
-				this.setSearchingInvestigation(request.getString("searchingInvestigation").trim());
-				searchingInvestigation = request.getString("searchingInvestigation").trim();
-				this.setSelectedField(request.getString("selectedField"));
+					System.out.println("The request string : "+ request);
+					System.out.println("The searching investigation is : "+ request.getString("searchingInvestigation").trim());
+					this.setSearchingInvestigation(request.getString("searchingInvestigation").trim());
+					searchingInvestigation = request.getString("searchingInvestigation").trim();
+					this.setSelectedField(request.getString("selectedField"));
 
-				//Search input token --> LIKE protocols
-				System.out.println("Input token: >>>>>>"+ this.getInputToken() + ">>> selectedField >>"+ selectedField + "comparison >>>" + this.getComparison()+ "searchingInvestigation>>"+ this.getSearchingInvestigation());
-				if (this.getSelectedField().equals("Protocols")) 
-					RetrieveProtocols(db, SEARCHINGPROTOCOL); 
-				//Search "Any field" ==> All fields LIKE input token 
-				if (this.getSelectedField().equals("Measurements")) 
-					RetrieveProtocols(db, SEARCHINGMEASUREMENT); 
+					//Search input token --> LIKE protocols
+					System.out.println("Input token: >>>>>>"+ this.getInputToken() + ">>> selectedField >>"+ selectedField + "comparison >>>" + this.getComparison()+ "searchingInvestigation>>"+ this.getSearchingInvestigation());
+					if (this.getSelectedField().equals("Protocols")) 
+						RetrieveProtocols(db, SEARCHINGPROTOCOL); 
+					//Search "Any field" ==> All fields LIKE input token 
+					if (this.getSelectedField().equals("Measurements")) 
+						RetrieveProtocols(db, SEARCHINGMEASUREMENT); 
 
-				if (this.getSelectedField().equals("All fields")) 
-					RetrieveProtocols(db, SEARCHINGALL); 
+					if (this.getSelectedField().equals("All fields")) 
+						RetrieveProtocols(db, SEARCHINGALL); 
 
-				if (this.getSelectedField().equals("Details")) 
-					RetrieveProtocols(db, SEARCHINGDETAIL); 
+					if (this.getSelectedField().equals("Details")) 
+						RetrieveProtocols(db, SEARCHINGDETAIL); 
 
-			}
+
+				}else {
+					this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
+				}
+			 }
 
 		} catch (Exception e) {
 			e.printStackTrace();
