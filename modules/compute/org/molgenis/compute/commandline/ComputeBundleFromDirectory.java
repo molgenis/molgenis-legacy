@@ -257,7 +257,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 							}
 						}
 						// set the params
-						p.setMem(Integer.parseInt(params.getString("mem")));
+						p.setMem(params.getString("mem"));
 						// p.setIterateOver_Name(params.getStringList("iterateOver"));
 						p.setWalltime(params.getString("walltime"));
 						p.setNodes(params.getInt("nodes"));

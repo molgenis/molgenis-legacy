@@ -323,9 +323,13 @@ public class ComputeCommandLine
 		{
 			System.out.println(opt.getCheckErrors());
 
-			System.out.println("command line format -i(nputlist)=<InputWorksheet> " + "-p(arametersfile)=<parameters.txt>"
-					+ "-w(orkflowfile)=<workflow.txt>" + "-prot(ocoldir)=<WorkflowDescriptionDir> " + "-o(utputscriptsdir=<OutputDir> "
-					+ "-g(rid)|c(luster)=<LocationOnBackend(Grid or Cluster)> " + "-t(emplatesdir)=<TemplatesDir> " + "<GererationID>");
+			System.out.println("command line format\n-parametersfile=<InputWorksheet>\n"
+					+ "-parametersfile=<parameters.txt>\n"
+					+ "-workflowfile=<workflow.txt>\n"
+					+ "-protocoldir=<WorkflowDescriptionDir>\n"
+					+ "-outputscriptsdir=<OutputDir>\n"
+					+ "-grid|cluster=<LocationOnBackend(Grid or Cluster)>\n"
+					+ "-templatesdir=<TemplatesDir> " + "<GererationID>\n");
 			System.exit(1);
 		}
 

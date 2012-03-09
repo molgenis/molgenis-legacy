@@ -20,6 +20,7 @@ AnalyzeCovariates,AnalyzeCovariates,"CovariatesBefore, CovariatesAfter"
 MergeBam,MergeBam,SamSortRecal
 PicardQCrecal,PicardQCrecal,MergeBam
 Coverage,Coverage,MergeBam
+CoverageGATK,CoverageGATK,MergeBam
 IndelGenotyper,IndelGenotyper,MergeBam
 FilterIndels,FilterIndels,IndelGenotyper
 UnifiedGenotyper,UnifiedGenotyper,MergeBam

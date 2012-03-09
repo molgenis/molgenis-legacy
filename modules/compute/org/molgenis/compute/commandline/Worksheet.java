@@ -551,11 +551,6 @@ public class Worksheet
 		int nelements = 0;
 		for (Tuple t : worksheet)
 		{
-			if (t.getString("line_number").contains("8"))
-			{
-				System.out.println("doh");
-			}
-
 			// check lenght of line_number field
 			nelements = t.getList("line_number").size();
 
