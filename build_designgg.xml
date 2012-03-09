@@ -23,7 +23,7 @@
 			<arg value="${port}"/>
 			<classpath>
 				<path refid="molgenis.classpath" />
-				<path location="${build.dir}" />
+				<path location="${build.molgenis_apps.dir}" />
 			</classpath>
 		</java>
 	</target>
@@ -42,10 +42,10 @@
 	-->
 	<target name="webtest" description="Start the Selenium test">
 		<testng haltOnFailure="true">
-			<classfileset dir="${build.dir}" includes="**/DesignGGSeleniumTest.class"/>
+			<classfileset dir="${build.molgenis_apps.dir}" includes="**/DesignGGSeleniumTest.class"/>
 			<classpath>
 				<path refid="molgenis.classpath" />
-				<path location="${build.dir}" />
+				<path location="${build.molgenis_apps.dir}" />
 			</classpath>
 		</testng>
 	</target>
