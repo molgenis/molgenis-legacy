@@ -13,7 +13,8 @@ It should be used via 'import' plus passing of properties
 	<!-- static properties shared between all apps-->
 	<property file="${app_properties}" />
 	<property name="molgenis.dir" value="../molgenis" />
-	<property name="build.dir" value="dist/classes" />
+	<property name="build.molgenis.dir" value="../molgenis/bin" />
+	<property name="build.molgenis_apps.dir" value="build/classes" />
 	<property name="testng.report.dir" value="dist/test-output" />
 	<property name="war.dir" value="dist/war" />
 	<property name="war.name" value="${app_name}.war" />
@@ -21,7 +22,8 @@ It should be used via 'import' plus passing of properties
 
 	<!-- path to MOLGENIS toolkit -->
 	<path id="molgenis.classpath">
-		<pathelement location="${build.dir}" />
+		<pathelement location="${build.molgenis.dir}" />
+		<pathelement location="${build.molgenis_apps.dir}" />
 		<fileset dir="../molgenis/lib">
 			<include name="**/*.jar" />
 		</fileset>
@@ -38,11 +40,13 @@ It should be used via 'import' plus passing of properties
 	<target name="clean">
 		<!-- remove and create generated folder  -->
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${build.dir}" />
+			<fileset dir="${build.molgenis.dir}" />
+			<fileset dir="${build.molgenis_apps.dir}" />
 			<fileset dir="${testng.report.dir}" />
 			<fileset dir="${war.dir}" />
 		</delete>
-		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.molgenis.dir}"/>
+		<mkdir dir="${build.molgenis_apps.dir}" />
 		<mkdir dir="${output_src}" />
 		<mkdir dir="${output_sql}" />
 		<mkdir dir="${testng.report.dir}" />
@@ -64,12 +68,12 @@ It should be used via 'import' plus passing of properties
 		</condition>
 
 		<!-- check if molgenis is compiled into ${build.dir}, otherwise compile now -->
-		<javac srcdir="${molgenis.dir}/src" destdir="${build.dir}" nowarn="on" debug="true">
+		<javac srcdir="${molgenis.dir}/src" destdir="${build.molgenis.dir}" nowarn="on" debug="true">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
 		<!-- copy resources to build dir -->
-		<copy todir="${build.dir}">
+		<copy todir="${build.molgenis.dir}">
 			<fileset dir="${molgenis.dir}/src" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico,**/*.js,**/*.css,**/*.jpg,**/*.png,**/*.gif,**/*.ftl" />
 		</copy>
 
@@ -87,7 +91,7 @@ It should be used via 'import' plus passing of properties
 		</pathconvert>
 		<echo message="copying ftl files from ${app_path} to ${build.dir}" />
 		<fail unless="app_path">app.class.path is not set</fail>
-		<copy todir="${build.dir}">
+		<copy todir="${build.molgenis_apps.dir}">
 			<!-- watch the trailing /**/*.ftl"-->
 			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java" />
 			<!-- cut the two leading directories from path -->
@@ -98,7 +102,7 @@ It should be used via 'import' plus passing of properties
 		<mkdir dir="${output_sql}" />
 
 		<!-- copy sql and other resources from generate sql -->
-		<copy todir="${build.dir}" verbose="true">
+		<copy todir="${build.molgenis_apps.dir}" verbose="true">
 			<fileset dir="${output_sql}" includes="**/*.sql" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
@@ -113,10 +117,28 @@ It should be used via 'import' plus passing of properties
 			<isset property="persistence_xml_location" />
 		</condition>
 	</target>
-
+	
+	<target name="updatedb">
+		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+			<classpath refid="molgenis.classpath" />
+			<classpath refid="app.class.path" />
+			<arg value="${app_properties}" />
+			<arg value="--updatedb" />
+		</java>
+	</target>
+	
+	<target name="updatedbfillmeta">
+			<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+				<classpath refid="molgenis.classpath" />
+				<classpath refid="app.class.path" />
+				<arg value="${app_properties}" />
+				<arg value="--updatedbfillmeta" />
+			</java>
+		</target>
+	
 	<target name="copy-persistence.xml" depends="check_persistence_xml_locaton" if="condition">
-		<copy file="${persistence_xml_location}" todir="${build.dir}/META-INF/" overwrite="true" />
-		<echo>persistence.xml copied from ${persistence_xml_location} to ${build.dir}/META-INF/</echo>
+		<copy file="${persistence_xml_location}" todir="${build.molgenis_apps.dir}/META-INF/" overwrite="true" />
+		<echo>persistence.xml copied from ${persistence_xml_location} to ${build.molgenis_apps.dir}/META-INF/</echo>
 	</target>
 
 	<target name="compile">
@@ -130,7 +152,7 @@ It should be used via 'import' plus passing of properties
 
 		<!-- compile the generated results, use fork to run it with its own memory settings -->
 		<!-- NB: under Windows, forking works only if the javac path is in your PATH variable -->
-		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="true">
+		<javac fork="true" srcdir="${output_src}:${app_src}" destdir="${build.molgenis_apps.dir}" nowarn="on" memoryinitialsize="256m" memorymaximumsize="512m" debug="true">
 			<classpath refid="molgenis.classpath" />
 		</javac>
 
@@ -147,7 +169,7 @@ It should be used via 'import' plus passing of properties
 
 		<!-- run the tests -->
 		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
-			<xmlfileset dir="${build.dir}" includes="**/*testng.xml" />
+			<xmlfileset dir="${build.molgenis_apps.dir}" includes="**/*testng.xml" />
 			<jvmarg value="-ea" />
 			<jvmarg value="-Xmx1512m" />
 		</testng>
@@ -250,7 +272,7 @@ It should be used via 'import' plus passing of properties
 			<map from="${basedir}/" to="" />
 		</pathconvert>
 
-		<copy todir="${build.dir}">
+		<copy todir="${build.molgenis_apps.dir}">
 			<!-- watch the trailing /**/*.ftl"-->
 			<fileset dir="." includes="${app_path}/**/*" excludes="**/*.java" />
 			<fileset dir="${app_path}/handwritten/java/META-INF" />
@@ -270,15 +292,18 @@ It should be used via 'import' plus passing of properties
 		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
 			<classpath>
 				<path refid="molgenis.classpath" />
-				<path location="${build.dir}" />
-
+				<path location="${build.molgenis.dir}" />
+				<path location="${build.molgenis_apps.dir}" />
 			</classpath>
 		</java>
 	</target>
 
 	<target name="makeWar">
 		<war destfile="${war.dir}/${war.name}" webxml="${webxml.dir}">
-			<classes dir="${build.dir}">
+			<classes dir="${build.molgenis.dir}">
+				<include name="**/*" />
+			</classes>
+			<classes dir="${build.molgenis_apps.dir}">
 				<include name="**/*" />
 			</classes>
 			<fileset dir="WebContent">
@@ -296,7 +321,15 @@ It should be used via 'import' plus passing of properties
 			</metainf>
 		</war>
 	</target>
+	
+	<target name="webtest" description="Start the Selenium test">
+		<testng classpathref="${molgenis.classpath}" haltOnFailure="true">
+			<classfileset dir="${app_build_dir}" includes="**/${selenium_test_class}.class"/>
+		</testng>
+	</target>
 
 	<target name="clean-generate-compile-war" depends="clean,generate,compile,makeWar" />
+	
+	<target name="clean-generate-compile-updatedbfillmeta-run" depends="clean,generate,compile,updatedbfillmeta,run" />
 
 </project>
