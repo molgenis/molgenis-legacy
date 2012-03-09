@@ -37,7 +37,7 @@
 			<field name="seqlen" type="int" nillable="true"
 				description="The length of the residue feature. See column:residues. This column is partially redundant with the residues column, and also with featureloc. This column is required because the location may be unknown and the residue sequence may not be manifested, yet it may be desirable to store and query the length of the feature. The seqlen should always be manifested where the length of the sequence is known." />
 		</entity>
-		<entity name="SequenceRelation" implements="Identifiable">
+		<entity name="SequenceRelation" implements="Nameable">
 			<description>
 				Relation of one feature relative to another. If
 				appropriate feature
@@ -50,6 +50,7 @@
 				<br />
 				Discussion: should this be an Observation or an ObservationElement?
 			</description>
+			<unique fields="name"/>
 			<field name="Feature" type="xref" xref_entity="SequenceCharacteristic"
 				xref_field="id" xref_label="name"
 				description="(Overrides Observation.feature) The feature that is being located. Any feature can have zero or more featurelocs." />
