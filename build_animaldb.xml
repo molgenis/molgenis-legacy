@@ -34,16 +34,18 @@
 	<target name="test">
 		<!-- combine classpaths -->
 		<path id="combined.class.path">
-			<path refid="molgenis.classpath"/>
-			<path refid="app.class.path"/>
-			<path location="${output_src}"/>
+			<path refid="molgenis.classpath" />
+			<path refid="app.class.path" />
+			<path location="${output_src}" />
 		</path>
+
 		<!-- run the tests -->
 		<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
-			<xmlfileset dir="${build.dir}" includes="**/*testng.xml" />
-			<classfileset dir="${build.dir}" includes="**/AnimaldbSeleniumTest.class" />
+			<xmlfileset dir="${build.molgenis_apps.dir}" includes="**/*testng.xml" />
+			<classfileset dir="${build.molgenis_apps.dir}" includes="**/AnimaldbSeleniumTest.class" />
 			<jvmarg value="-ea" />
-		</testng>			
+			<jvmarg value="-Xmx1512m" />
+		</testng>		
 	</target>
 	
 	<target name="runOn" description="Start the application">
