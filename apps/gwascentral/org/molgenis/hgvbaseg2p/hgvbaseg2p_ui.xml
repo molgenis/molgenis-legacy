@@ -3,6 +3,7 @@
 <molgenis name="hgvbase">
 	<!-- plugin name="molgenis_header" type="plugins.header.MolgenisHeader" 
 		/ -->
+	<plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" />
 	<menu name="main">
 		<form name="StudyInfo" label="Studies" entity="Study"
 			compact_view="name">
@@ -41,7 +42,6 @@
 			</form>
 		</form>
 		<form name="Persons" entity="Person" />
-
 		<menu name="Genomic">
 			<form name="DataSources" entity="DataSource" />
 			<form name="Chromosomes" entity="Chromosome" />
@@ -51,6 +51,9 @@
 				<form name="Coordinates" entity="SequenceRelation" />
 			</form>
 		</menu>
+		
+		<plugin label="Archiver" name="SimpleArchiver" type="plugins.archiver.Archiver" />
+		<plugin name="Login" type="org.molgenis.auth.ui.UserLogin" />
 	</menu>
 
 </molgenis>
