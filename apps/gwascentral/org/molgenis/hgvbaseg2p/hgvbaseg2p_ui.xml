@@ -13,18 +13,44 @@
 				<form name="Contributions" entity="Contribution" />
 				<form name="StudyAnalysisMethods" entity="Protocol" />
 				<form name="Citations" label="Citations" entity="Citation" />
-				<form name="Experiments" entity="Experiment">
-					<form name="DataSets" lalel="DataSets / ResultSets" entity="DataSet">
-						<form name="DataSetLinks" label="Hotlinks" entity="Link" />
-					</form>
-					<form name="ExperimentLinks" label="Hotlinks" entity="Link" />
-					<form name="AassayedPanels" entity="Panel" />
+				<form name="Experiments" entity="Experiment" compact_view="name,experimentType">
+					<menu name="ExperimentMenu">
+						<form name="DataSets" lalel="DataSets / ResultSets" entity="DataSet">
+							<form name="DataSetLinks" label="Hotlinks" entity="Link" />
+						</form>
+						<form name="ExperimentLinks" label="Hotlinks" entity="Link" />
+						<form name="AassayedPanels" entity="Panel" />
+						<form name="UsedMarkerSets" entity="Usedmarkerset" />
+						<form name="Significances" entity="FrequencyCluster">
+							<form name="GenotypeFrequencies" entity="GenotypeFrequency" />
+							<form name="AlleleFrequencies" entity="AlleleFrequency" />
+						</form>
+					</menu>
 				</form>
+				<form name="PhenotypeProperty" entity="ObservableFeature" />
+				<form name="PhenotypeMethod" entity="ProtocolApplication">
+					<form name="PhenotypeValue" entity="ObservedValue" />
+				</form>
+				<form name="Submission" entity="Submission" />
 			</menu>
 		</form>
 		<form name="OntologyTerms" entity="OntologyTerm" />
-		<form name="Protocol" entity="Protocol" />
+		<form name="Protocol" entity="Protocol">
+			<form name="Measurement" entity="Measurement">
+				<form name="PhenotypeAnnotations" entity="FeatureAnnotation" />
+			</form>
+		</form>
 		<form name="Persons" entity="Person" />
+
+		<menu name="Genomic">
+			<form name="DataSources" entity="DataSource" />
+			<form name="Chromosomes" entity="Chromosome" />
+			<form name="Markers" entity="Marker">
+				<form name="Alleles" entity="Allele" />
+				<form name="PermittedGenotypes" entity="Genotype" />
+				<form name="Coordinates" entity="SequenceRelation" />
+			</form>
+		</menu>
 	</menu>
 
 </molgenis>

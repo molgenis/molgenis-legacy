@@ -58,9 +58,6 @@
 			<field name="Acknowledgements" type="text" nillable="true"
 				description="" />
 
-			<field name="StudyPanels" type="mref" mref_name="StudySamplepanel"
-				xref_entity="Panel" />
-
 			<field name="primaryCitation" type="xref" xref_entity="Citation"
 				nillable="true" />
 			<field name="otherCitations" type="mref" xref_entity="Citation"
@@ -130,8 +127,8 @@
 				nillable="true" description="Subprotocols of this protocol" />
 		</entity>
 
-		<entity name="ProtocolApplication" implements="Nameable, Describable">
-		<!-- identifier?. Is this part of Study or part of DataSet? -->
+		<entity name="ProtocolApplication" implements="Nameable,Describable">
+			<!-- identifier?. Is this part of Study or part of DataSet? -->
 			<description>
 				A ProtocolApplication class defines the actual action of observation
 				by refering to a protocol and optional ParameterValues. The name
@@ -161,19 +158,28 @@
 				METABASE:PlannedVisit allows for planning of protocol applications;
 				this is outside scope for this model?).
 			</description>
+			<!-- new: moved here from Observation as it is generally constant in one 
+				ProtocolApplication (otherwise use subProtocols) -->
+			<field name="Target" type="xref" xref_entity="ObservationTarget"
+				xref_field="id" xref_label="name"
+				description="References the ObservationTarget or Character that was observed. For example 'individual1'. In a correlation matrix this could be also characteristic 'probe123'." />
+
 			<field auto="true" name="startTime" type="datetime"
 				description="time when the protocol started." />
 			<field auto="true" name="endTime" type="datetime"
 				description="time when the protocol ended." />
+				
 			<field name="protocol" type="xref" xref_entity="Protocol"
 				nillable="true" description="Reference to the protocol that is being used." />
 			<field name="Circumstance" type="text"
 				description="Any particular condistions under which the test is done" />
+				
 			<field name="Performer" type="mref" xref_entity="Person"
 				nillable="true" />
-			<!-- should this be in StudyElement? -->
+				
+			<!-- todo: should this be in StudyElement? -->
 			<field name="Study" type="xref" xref_entity="Study" />
-			<unique fields="name,Study"/>
+			<unique fields="name,Study" />
 		</entity>
 
 		<entity name="Contribution" implements="Identifiable">
