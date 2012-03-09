@@ -13,9 +13,6 @@ import org.molgenis.util.EmailService;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import plugins.emptydb.emptyDatabase;
-import app.FillMetadata;
-
 public class FeedbackForm extends PluginModel<Entity>
 {
 	private String feedback = null;
