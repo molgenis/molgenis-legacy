@@ -8,6 +8,7 @@ import org.molgenis.fieldtypes.BoolField;
 import org.molgenis.fieldtypes.DateField;
 import org.molgenis.fieldtypes.DatetimeField;
 import org.molgenis.fieldtypes.DecimalField;
+import org.molgenis.fieldtypes.EmailField;
 import org.molgenis.fieldtypes.EnumField;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.FileField;
@@ -49,6 +50,7 @@ public class MolgenisFieldTypes
 		DATE_TIME,
 		DECIMAL,
 		ENUM,
+		EMAIL,
 		FILE,
 		FREEMARKER,
 		HEXA,
@@ -77,6 +79,7 @@ public class MolgenisFieldTypes
 			addType(new DatetimeField());
 			addType(new DecimalField());
 			addType(new EnumField());
+			addType(new EmailField());
 			addType(new FileField());
 			addType(new ImageField());
 			addType(new HyperlinkField());

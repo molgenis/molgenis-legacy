@@ -16,11 +16,12 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.CharField;
+import org.molgenis.fieldtypes.EmailField;
 import org.molgenis.fieldtypes.EnumField;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.MrefField;
@@ -487,7 +488,7 @@ public class Field implements Serializable {
      *             When the field is not of type Type.VARCHAR.
      */
     public int getVarCharLength() throws MolgenisModelException {
-        if (!(this.type instanceof StringField) && !(this.type instanceof CharField)) {
+        if (!(this.type instanceof StringField) && !(this.type instanceof CharField) && !(this.type instanceof EmailField)) {
             throw new MolgenisModelException("Field is not a VARCHAR, so length cannot be retrieved.");
         }
 
