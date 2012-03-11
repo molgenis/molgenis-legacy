@@ -58,20 +58,20 @@ public class JQueryTreeView<E> extends HtmlWidget
 		 
 		if (node.hasChildren()) {
 			returnString = "<li class=\"" + (nodeOpen(node, selectedLabels) ? "opened" : "closed") 
-			 			+  "\"><span class=\"folder\">" + node.getLabel() + "</span>"
-			 			+  "<ul>";
+			 			+  "\"><span class=\"folder\">" + node.getLabel() + "</span>\n"
+			 			+  "<ul>\n";
 			
 			Vector<JQueryTreeViewElement> children = node.getChildren();
 			for (JQueryTreeViewElement child : children) {
 				returnString += renderTree(child, selectedLabels);
 			}
-			returnString += "</ul></li>";
+			returnString += "</ul>\n</li>\n";
 		} else {
 			returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\"><span class=\"point\"><input type=\"checkbox\" id=\"" 
 						  +	node.getLabel() + "\" name=\"" + node.getLabel() + "\"" 
 						  +	(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
-						  +	" />" + node.getLabel() + "</span></li>" 
-						  +	"<script>createHashMap(\"" + node.getName() + "\",\"" + node.getHtmlValue() + "\")</script>";
+						  +	" />" + node.getLabel() + "</span></li>\n" 
+						  +	"<script>createHashMap(\"" + node.getName() + "\",\"" + node.getHtmlValue() + "\")</script>\n";
 				
 			listOfMeasurements.add(node.getName());
 		}
@@ -81,25 +81,15 @@ public class JQueryTreeView<E> extends HtmlWidget
 	
 	public String toHtml(List<String> selected){
 		String html ="<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n" 
-			+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>"
-			+ "<script src=\"res/scripts/catalogue.js\" language=\"javascript\"></script>"
+			+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>\n"
+			+ "<script src=\"res/scripts/catalogue.js\" language=\"javascript\"></script>\n"
 			+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n" 
 			+ "<link rel=\"stylesheet\" href=\"res/css/catalogue.css\" type=\"text/css\" media=\"screen\" />\n" 
-			+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>"
-			+ "<script>var map = new HashMap();" 
-			+ "</script>" 
-			//		"<div id=\"splitter\">" + //this div is used for the splitter
-			//		"   <div> Left content goes here </div>"+
-			//		"   <div> Right content goes here </div>"+
-			//		" </div> "+
-//			+ "<div id=\"masstoggler\">" 
-//			+ "<a title=\"Collapse entire tree\" href=\"#\"><img src=\"res/img/toggle_collapse_tiny.png\"  style=\"vertical-align: bottom;\"></a> "
-//			+ "<a title=\"Expand entire tree\" href=\"#\"><img src=\"res/img/toggle_expand_tiny.png\"  style=\"vertical-align: bottom;\"></a>" 
-//			+ "</div><br/>"
-			
-			+ "<ul id=\"browser\" class=\"pointtree\">"
+			+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>\n"
+			+ "<script>var map = new HashMap();\n</script>" 			
+			+ "<ul id=\"browser\" class=\"pointtree\">\n"
 			+ renderTree(treeData.getRoot(), selected)
-			+ "</ul>";	
+			+ "</ul>\n";	
 		
 	    
 		// This piece of javascript need to be here because some java calls are needed.  
