@@ -488,7 +488,7 @@ public class Field implements Serializable {
      *             When the field is not of type Type.VARCHAR.
      */
     public int getVarCharLength() throws MolgenisModelException {
-        if (!(this.type instanceof StringField) && !(this.type instanceof CharField) && !(this.type instanceof EmailField)) {
+        if (!(this.type instanceof StringField) && !(this.type instanceof CharField)) {
             throw new MolgenisModelException("Field is not a VARCHAR, so length cannot be retrieved.");
         }
 
