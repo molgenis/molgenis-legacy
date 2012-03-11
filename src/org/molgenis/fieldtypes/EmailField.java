@@ -32,19 +32,19 @@ public class EmailField extends FieldType
 	@Override
 	public String getMysqlType() throws MolgenisModelException
 	{
-		return "VARCHAR("+f.getVarCharLength()+")";
+		return "VARCHAR(255)";
 	}
 	
 	@Override
 	public String getOracleType() throws MolgenisModelException
 	{
-		return "VARCHAR2("+f.getVarCharLength()+")";
+		return "VARCHAR2(255)";
 	}
 
 	@Override
 	public String getHsqlType() throws MolgenisModelException
 	{
-		return "VARCHAR("+f.getVarCharLength()+")";
+		return "VARCHAR(255)";
 	}
 	@Override
 	public String getXsdType() throws MolgenisModelException
