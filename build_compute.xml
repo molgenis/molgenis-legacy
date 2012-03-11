@@ -92,8 +92,8 @@
 			</fileset>
 		</copy>
 						
-		<!-- Create molgenis_app.jar -->
-		<jar jarfile="${lib_dir}/molgenis_compute-r${svn.Revision}.jar" basedir="${build.dir}" update="false"/>
+		<!-- Create molgenis_app.jar in folder dist/${app}-->
+		<jar jarfile="${lib_dir}/molgenis_compute-r${svn.Revision}.jar" basedir="${build.molgenis_apps.dir}" update="false"/>
 		
 		<!-- Make package with 'lib','workflows','protocols' and shell script to start all -->
 		<echo file="${app_distro_dir}/molgenis_compute.sh">#!/bin/bash
