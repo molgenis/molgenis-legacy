@@ -1,66 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
-<molgenis name="Catalogue" label="Catalogue">
+<molgenis name="Catalogue" label="LifeLines Biobank Catalogue">
 	<plugin name="catalogueHeader" type="plugins.header.catalogueHeader" />
-	<!-- plugin label="About" name="Catalogue" type="org.molgenis.catalogue.header.HomePage" />  -->
-	
-	<menu name="main" position="left" startswith="WelcomeScreen">
-		<!-- <plugin name="catalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" /> -->
-		<!-- plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" label="Login" /-->
-		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Login" />
-        <!--  plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" /--> 
-    
-    
-		<menu name="catalogueOverview" label="Catalogue Overview">
+	<!-- plugin label="About" name="Catalogue" type="org.molgenis.catalogue.header.HomePage" 
+		/> -->
 
-			<form name="investigation" entity="Investigation" label="Investigation">
-				<form name="computeProtocol" entity="ComputeProtocol" label="Compute Protocol"/>
-				<form name="measurement" entity="Measurement" label="Measurement" />
-				<form name="mappingMeasurement" entity="MappingMeasurement" label="Mapping Measurement"/>
-				<form name="protocol" entity="Protocol" label="Protocol" />
-				<form name="observationTarget" entity="ObservationTarget" label="Observation Target" >
-					<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
+	<menu name="main" position="top_left" startswith="catalogueWelcomeScreen">
+		<!-- <plugin name="catalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" 
+			label="Welcome" /> -->
+		<!-- plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" 
+			label="Login" / -->
+
+		<!-- plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" 
+			/ -->
+
+		<plugin name="catalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin"
+			label="Welcome" />
+
+		<plugin name="catalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin"
+			label="Search variables" />
+
+		<form name="investigation" entity="Investigation" label="Study details"
+			compact_view="name,description" hide_fields="accession">
+			<menu name="InvestigationMenu">
+				<form name="measurement" entity="Measurement" label="Measurements"
+					hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+				<form name="protocol" entity="Protocol" label="Protocols"
+					compact_view="Name,Features" hide_fields="ontologyReference,Investigation,TargetFilter">
+					<form name="ProtocolDocuments" entity="ProtocolDocument" />
 				</form>
+				<form name="PermittedValues" entity="Category" />
+			</menu>
+		</form>
+
+		<form name="MySelections" entity="ShoppingCart" label="My selections"
+			view_type="list">
+			<form name="SelectionMeasurement" entity="Measurement" label="Measurements"
+				readonly="true"
+				hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+		</form>
+
+		<plugin name="Request" type="plugins.requestData.LifeLinesRequest"
+			label="Submit data request" />
+
+		<menu name="Mappings" label="Harmonization platform (ALPHA)">
+			<form name="mappingMeasurement" entity="MappingMeasurement"
+				label="Measurement Mappings" groups="admin" />
+			<form name="computeProtocol" entity="ComputeProtocol" label="Analysis Protocols" />
+			<form name="observationTarget" entity="ObservationTarget" label="Observation Target">
+				<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
 			</form>
+			<menu name="selectionModel" label="Select prediction model">
+				<plugin name="predictionModelSelection"
+					type="plugins.predictionSelection.predictionSelectionPlugin" label="Validate Prediction Model" />
+			</menu>
 		</menu>
-		<plugin name="catalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Catalogue Tree" />  
-		
-		<menu name="selectionModel" label="Select prediction model">
-			<plugin name="predictionModelSelection" type="plugins.predictionSelection.predictionSelectionPlugin" label="Validate Prediction Model" />
-		</menu>
-		
-		<menu name="Downloads" label="Downloads">
-			<plugin name="MeasurementsDownloadForm" type="plugins.data.MeasurementsDownloadForm" label="Your Current Downloads" />  
-			<plugin name="OldPlacedDownloads" type="plugins.data.OldPlacedDownloads" label="Your Old Downloads" />  
-			<plugin label="Matrix Viewer" name="MatrixViewer" type="plugins.matrix.CatalogueMatrix" />
-			<plugin name="ApproveUserDownloads" type="plugins.data.ApproveUserDownloads" label="Approve User Downloads" />  
-		</menu>	
-		
+
 		<menu name="Admin">
-			<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" label="Protocols" />  -->
-			<menu name="ImportData" label="Import Data">+
-				<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin" label="Generic Importer"/>
-				<plugin name="LLDataImportExcel" type="plugins.data.LLDataImportExcel" label="Import LL data"  />
-				<plugin name="DataShaperImportExcel" type="plugins.data.DataShaperImportExcel" label="Import DataShaper data"  />
-				<!-- <plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" /> -->
-				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
+			<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" 
+				label="Protocols" /> -->
+			<form name="Requests" entity="LifeLinesRequest" />
+			<menu name="ImportData" label="Import Data">
+				<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin"
+					label="Generic Importer" />
+				<plugin name="LLDataImportExcel" type="plugins.data.LLDataImportExcel"
+					label="Import LL data" />
+				<plugin name="DataShaperImportExcel" type="plugins.data.DataShaperImportExcel"
+					label="Import DataShaper data" />
+				<!-- <plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" 
+					/> -->
+				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
+					label="Batch Upload" />
 			</menu>
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
-		  		<form name="MolgenisUser" entity="MolgenisUser" label="User" />
+				<form name="MolgenisUser" entity="MolgenisUser" label="User" />
 				<form name="MolgenisGroup" entity="MolgenisGroup" label="Group" />
 				<form name="MolgenisEntity" entity="MolgenisEntity" label="Entity" />
-				<form name="MolgenisPermission" entity="MolgenisPermission" label="Permission" />
-				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink"/>
-				<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
+				<form name="MolgenisPermission" entity="MolgenisPermission"
+					label="Permission" />
+				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" />
+				<plugin label="Upgrade person to user" name="UserToPersonPlugin"
+					type="org.molgenis.auth.service.persontouser.PersonToUser" />
 			</menu>
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
+			<form name="OntologyTerms" entity="OntologyTerm" />
+
 		</menu>
-		<!-- 
-		<plugin name="catalogueHelp" type="plugins.help.catalogueHelpPlugin" label="Help"  />
-		<plugin name="catalogueContact" type="plugins.contact.catalogueContactPlugin" label="Contact" />
-		 -->
-		
+		<!-- <plugin name="catalogueHelp" type="plugins.help.catalogueHelpPlugin" 
+			label="Help" /> <plugin name="catalogueContact" type="plugins.contact.catalogueContactPlugin" 
+			label="Contact" /> -->
+
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin"
+			label="Login" />
+
 	</menu>
 </molgenis>
 

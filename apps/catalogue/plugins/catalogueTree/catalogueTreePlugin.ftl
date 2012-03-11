@@ -24,80 +24,78 @@
 			</#if>
 		</#list>
 		
-		<div align="right">
-				<label>Search:</label>
-				<select id="selectedField" name="selectedField" title="choose field" name="chooseField" style="display:none"> 
-					<#list screen.arraySearchFields as field>
-								<!--#assign FieldName = field.name-->
-						<option value="${field}" <#if screen.selectedField??>
-							<#if screen.selectedField == field>selected="selected"</#if></#if> >${field}</option>			
-					</#list>
-					 <!--option value="All fields">All fields</option-->
-				</select>
-				<select name="searchingInvestigation" id="searchingInvestigation" style="display:none"> 
-					<#list screen.arrayInvestigations as inv>
-						<#assign searchingInvName = inv.name>
-						<option value="${searchingInvName}" <#if screen.searchingInvestigation??><#if screen.searchingInvestigation == searchingInvName>selected="selected"</#if></#if> >${searchingInvName}</option>			
-					</#list>
-				</select>		
-				<input title="fill in search term" type="text" name="InputToken" 
-					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';searchingInvestigation.style.display='inline'; searchingInvestigation.style.display='inline'; " 
-					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
-				
-				<input type="submit" name="SearchCatalogueTree" value="search" onclick="__action.value='SearchCatalogueTree';"/>
-				<!--img class="navigation_button" src="generated-res/img/filter.png" alt="Add filter"	onclick="__action.value='SearchCatalogueTree';return true;""/-->		
-		
-		</div>
-
-		
 		<div class="screenbody">
 			<div class="screenpadding">
-				<h4> Choose an investigation</h4> 
+				<h4 style="display:inline"> Choose another study:</h4> 
 				<select name="investigation" id="investigation"> 
 					<#list screen.arrayInvestigations as inv>
 						<#assign invName = inv.name>
 						<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
 					</#list>
 				</select>
+				<script>$('#investigation').chosen();</script>
 				<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
 				<input type="image" src="res/img/refresh.png" alt="Submit" 
 					name="chooseInvestigation" style="vertical-align: middle;" 
 					value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-					DownloadMeasurementsSubmit.style.display='inline';"	/>	
+					DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
+					
+				<p/>	
 					
 			   <#if screen.isSelectedInv() == true>
 					<table class="box" width="100%" cellpadding="0" cellspacing="0">
-					    <tr><td class="box-header">  
+					    <tr><td class="box-header" colspan="2">  
 					        <div id="masstoggler"> 
-					        	Catalogue
+					        	Browse protocols and their variables for study '${screen.selectedInvestigation}':<br/><label>click to expand, collapse or show details</label>
 			 					<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 			 					<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
 			 				</div>
 					    </td></tr>
+					    
+					    
+					    <tr><td class="box-body" style="width:50%;">
+					    
+			
+				<select id="selectedField" name="selectedField" title="choose field" name="chooseField" style="display:none"> 
+					<#list screen.arraySearchFields as field>
+								<!--#assign FieldName = field.name-->
+						<option value="${field}" <#if screen.selectedField??>
+							<#if screen.selectedField == field>selected="selected"</#if></#if> >Search ${field}</option>			
+					</#list>
+					 <!--option value="All fields">All fields</option-->
+				</select>
+				
+				<input title="fill in search term" type="text" name="InputToken" 
+					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';searchingInvestigation.style.display='inline'; searchingInvestigation.style.display='inline'; " 
+					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
+				
+				<input type="submit" name="SearchCatalogueTree" value="search" onclick="__action.value='SearchCatalogueTree';"/>
+				
+					    
+					    
+					    
+					    </td><td class="box-body" style="width: 50%;">Details:</td></tr>
 					    <tr><td class="box-body">
 								<div id="leftSideTree">  
 									${screen.getTreeView()}
 								</div><br/>
 						    </td>
+						    
 						    <td class="box-body">
 						    	<!--div id="scrollingDiv"--> 
-      								<div id="details"></div> <br/><br/>
+      								<div id="details"></div><br/><br/>
       							<!--/div-->
-								<div id="ShoopingCartButton" style="float: right;">
-									<!--input type="submit" style="display:none" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Download" 
-									onclick="__action.value='DownloadMeasurements';"/-->
-									<input type="submit" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Download" 
-									onclick="__action.value='DownloadMeasurements';"/>
-									
-								</div>
-								
+
 						   </td>
 						</tr>
-						<tr><td class="box-body"></td>
-							<td class="box-body"></td>
+						<tr>
 							<td class="box-body">
-								<!-- download button here?? or up-->
+
+									<input type="submit" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Save selection" 
+									onclick="__action.value='DownloadMeasurements';"/>
+									
 							</td>
+							<td class="box-body"></td>
 						</tr>
 					</table>
 			   </#if>	

@@ -81,7 +81,7 @@ public class catalogueHeader extends PluginModel<Entity>
 	public void setUserLogin() {
 		
 		if (this.getLogin().isAuthenticated()) {
-			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getFullUserName() + "</a>";
+			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Welcome " + ((DatabaseLogin)this.getLogin()).getUserName() + "</a>";
 			this.userLogin += "<a href='molgenis.do?__target=catalogueHeader&select=UserLogin&__action=doLogout'>" + " | Logout " + "</a>";
 		} else {
 			this.userLogin = "<a href='molgenis.do?__target=main&select=SimpleUserLogin'>" + "Login" + "</a>";
@@ -133,5 +133,11 @@ public class catalogueHeader extends PluginModel<Entity>
 	public String getUserLogin() {
 		
 		return userLogin;
+	}
+	
+	@Override
+	public String getCustomHtmlHeaders()
+	{
+		return "<link rel=\"stylesheet\" href=\"res/css/catalogue/colors.css\">	";
 	}
 }

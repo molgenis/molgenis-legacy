@@ -103,6 +103,7 @@
 		</entity>
 		<entity name="ProtocolDocument" extends="MolgenisFile">
 			<field name="protocol" type="xref" xref_entity="Protocol" />
+			<field name="document" type="file"/>
 		</entity>
 		<entity name="Workflow" extends="Protocol" implements="Identifiable,Nameable">
 			<description>A workflow is a plan to execute a series of subprotocols

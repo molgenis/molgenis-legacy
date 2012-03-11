@@ -41,6 +41,7 @@ public class UserLogin extends SimpleUserLogin
 	public void reload(Database db)
 	{
 		super.reload(db);
+		
 		this.populateRegistrationForm();
 	}
 

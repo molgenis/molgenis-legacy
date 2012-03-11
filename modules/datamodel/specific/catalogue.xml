@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="gcc" label="Catalogue">
-	
+
 	<module name="catalogue" label="Catalogue">
-		 <entity name="MappingMeasurement" implements="Identifiable">
+		<entity name="MappingMeasurement" implements="Identifiable">
 			<field name="Investigation" type="xref" xref_entity="Investigation"
 				nillable="true" />
 			<field name="protocolApplication" type="xref" xref_entity="ProtocolApplication"
@@ -10,58 +10,59 @@
 				jpaCascade="javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH"
 				description="Reference to the protocol application that was used to produce this observation. For example a particular patient visit or the application of a microarray or the calculation of a QTL model" />
 			<description>FIXME: change to ObservableFeature?</description>
-			<field name="Feature" type="mref" xref_entity="ObservationElement" nillable="false"
-				xref_field="id" xref_label="name"
+			<field name="Feature" type="mref" xref_entity="ObservationElement"
+				nillable="false" xref_field="id" xref_label="name"
 				description="References the ObservableFeature that this observation was made on. For example 'probe123'. Can be ommited for 1D data (i.e., a data list)." />
 			<description>FIXME: change to ObservationTarget?</description>
 			<field name="Target" type="xref" xref_entity="ObservationElement"
 				xref_field="id" xref_label="name" nillable="false"
 				description="References the ObservationTarget that this feature was made on. For example 'individual1'. In a correlation matrix this could be also 'probe123'." />
-			<field name="value" type="freemarker" nillable="true" description="Please input your R-script" />
-			<field name="mapping" type="xref" xref_entity="Measurement"/>
+			<field name="value" type="freemarker" nillable="true"
+				description="Please input your R-script" />
+			<field name="mapping" type="xref" xref_entity="Measurement" />
 			<field name="dataType" type="enum" default="pairingrule"
-				enum_options="[pairingrule, algorithm]"
-				description="Choose if the entity is pairingrule or algorithm" />
-		</entity>
-	
-	<!-- 
-		<entity name="datashapermeasurement">
-			<description>This entity includes the dictionary from lifelines </description>
-		    <field name="id" type="autoid" description="automatically generated id" />
-		    <field name="Interpretation" nillable="true" type="string" />
-			<field name="ContraIndication" nillable="true" type="string" />
-			<field name="ComputationSource" type="text" nillable="true" />
-			<field name="SeeAlso" type="string" nillable="true"/>
-			<field name="Classification" type="string" nillable="true"/>
-			<field name="DataShaperClass" type="string" nillable="true"/>
-			<field name="CollectionMode" type="string" nillable="true"/>
-			<field name="Disease" type="string" nillable="true"/>
-			<field name="Format" type="string" nillable="false"/>
-			<field name="MedicalHealthIntervention" type="string" nillable="true"/>
-			<field name="Period" type="string" nillable="true"/>
-			<field name="Sample" type="string" nillable="true"/>
-			<field name="SourceofInformation" type="string" nillable="true"/>
-			<field name="dataShaperTarget" type="string" nillable="true"/>
-			<field name="Targetgender" type="string" nillable="true"/>
-			<field name="DataShaperType" type="string" nillable="true"/>
-		</entity>
-		-->
-		<!--<entity name="themeProtocol" extends="Protocol">
-			<field name="Features" type="mref" xref_entity="Protocol" nillable="true" />
-		</entity>
-		<entity name="groupTheme" extends="themeProtocol">
-			<field name="Features" type="mref" xref_entity="themeProtocol" nillable="true" />
+				enum_options="[pairingrule, algorithm]" description="Choose if the entity is pairingrule or algorithm" />
 		</entity>
 
-		We should find a trick to hide the fields from pheno model that are empty .  
-		-->
-		<entity name="shoppingCart">
-		    <field name="id" type="autoid" description="automatically generated id" />
-			<field name="measurements" type="mref" xref_entity="Measurement" nillable="true" />
+		<!-- <entity name="datashapermeasurement"> <description>This entity includes 
+			the dictionary from lifelines </description> <field name="id" type="autoid" 
+			description="automatically generated id" /> <field name="Interpretation" 
+			nillable="true" type="string" /> <field name="ContraIndication" nillable="true" 
+			type="string" /> <field name="ComputationSource" type="text" nillable="true" 
+			/> <field name="SeeAlso" type="string" nillable="true"/> <field name="Classification" 
+			type="string" nillable="true"/> <field name="DataShaperClass" type="string" 
+			nillable="true"/> <field name="CollectionMode" type="string" nillable="true"/> 
+			<field name="Disease" type="string" nillable="true"/> <field name="Format" 
+			type="string" nillable="false"/> <field name="MedicalHealthIntervention" 
+			type="string" nillable="true"/> <field name="Period" type="string" nillable="true"/> 
+			<field name="Sample" type="string" nillable="true"/> <field name="SourceofInformation" 
+			type="string" nillable="true"/> <field name="dataShaperTarget" type="string" 
+			nillable="true"/> <field name="Targetgender" type="string" nillable="true"/> 
+			<field name="DataShaperType" type="string" nillable="true"/> </entity> -->
+		<!--<entity name="themeProtocol" extends="Protocol"> <field name="Features" 
+			type="mref" xref_entity="Protocol" nillable="true" /> </entity> <entity name="groupTheme" 
+			extends="themeProtocol"> <field name="Features" type="mref" xref_entity="themeProtocol" 
+			nillable="true" /> </entity> We should find a trick to hide the fields from 
+			pheno model that are empty . -->
+		<entity name="ShoppingCart" implements="Identifiable,Nameable"
+			xref_label="Name">
+			<field name="measurements" type="mref" xref_entity="Measurement"
+				nillable="true" />
 			<field name="userID" type="string" nillable="true" />
+			<field name="dateOfSelection" type="date" auto="true" />
+			<field name="Approved" type="boolean" nillable="true" />
 			<field name="checkedOut" type="boolean" nillable="true" />
-			<field name="dateOfOrder" type="string"/>
-			<field name="approved" type="boolean" nillable="true" />
+			<unique fields="Name" />
+		</entity>
+
+		<entity name="LifeLinesRequest" implements="Identifiable">
+			<field name="FirstName" />
+			<field name="LastName" />
+			<field name="Email" type="email" />
+			<field name="measurements" type="mref" xref_entity="Measurement" />
+			<field name="GWAS" type="bool" />
+			<field name="NoIndividuals" type="int" />
+			<field name="Summary" type="richtext" />
 		</entity>
 	</module>
 </molgenis>

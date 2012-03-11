@@ -72,6 +72,8 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 					throw new Exception("Wrong parameter.");
 
 				((OpenIdLogin) this.getApplicationController().getLogin()).authenticate(db, httpRequest, httpResponse, returnURL, request.getString("op"));
+				
+				this.getModel().setLabel("My Account");
 
 //				this.getDatabaseUser(db);
 
@@ -108,7 +110,11 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 				//no use: all caught as InvocationTargetException
 				//throw new RedirectedException();
 			}
+			
+			this.getModel().setLabel("My Account");
+			
 		} else {
+			this.getModel().setLabel("Login");
 			throw new DatabaseException("Login failed: username or password empty");
 		}
 	}
@@ -118,6 +124,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 		this.getModel().setAction("Logout");
 		this.getApplicationController().getLogin().logout(db);
 		this.getApplicationController().getLogin().reload(db);
+		this.getModel().setLabel("Login");
 	}
 	
 	public void Cancel(Database db, Tuple request)
