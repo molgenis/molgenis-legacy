@@ -122,12 +122,36 @@ public class Molgenis {
 
     public static void main(String[] args) {
         try {
-            if (args.length != 1) {
-                throw new Exception("You have to provide the molgenis.properties file as first argument. Now got: "
-                        + Arrays.toString(args));
+            if (args.length == 1)
+            {
+            	new Molgenis(args[0]).generate();
             }
-            new Molgenis(args[0]).generate();
-        } catch (Exception e) {
+            else if(args.length == 2)
+            {
+            	if(args[1].equals("--updatedb"))
+            	{
+            		new Molgenis(args[0]).updateDb(false);
+            	}
+            	else if(args[1].equals("--updatedbfillmeta"))
+            	{
+            		new Molgenis(args[0]).updateDb(true);
+            	}
+            	else
+            	{
+            		throw new Exception("Bad second argument: use either --updatedb or --updatedbfillmeta");
+            	}
+            }
+            else
+            {
+            	 throw new Exception("You have to provide the molgenis.properties file as first argument to generate Molgenis.\n" +
+            	 		"Alternatively, add the additional argument --updatedb OR --updatedbfillmeta to perform the update database action.\n" +
+            	 		"The --updatedbfillmeta will also insert the metadata into the database.\n" +
+            	 		"Your arguments:\n"
+                         + Arrays.toString(args));
+            }
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
     }
