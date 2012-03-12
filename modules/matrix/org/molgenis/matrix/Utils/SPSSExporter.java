@@ -3,7 +3,6 @@ package org.molgenis.matrix.Utils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -19,105 +18,82 @@ import org.molgenis.pheno.ObservedValue;
 
 import com.pmstation.spss.SPSSWriter;
 
-public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> implements Exporter<R, C, V> {
+public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> 
+	extends AbstractExporter<R, C, V>
+{
+	private SPSSWriter 		d_spssWriter;
 
-	private final SliceablePhenoMatrixMV<R, C, V> d_matrix;
-	private SPSSWriter d_spssWriter;
-
-	public SPSSExporter(SliceablePhenoMatrixMV<R, C, V> matrix) throws MatrixException {
-		d_matrix = matrix;
+	public SPSSExporter(SliceablePhenoMatrixMV<R, C, V> matrix, OutputStream os) throws MatrixException {
+		super(matrix, os);
+		initWriter();
 	}
 
 	@Override
-	public void exportAll(OutputStream os) throws MatrixException {
-		initWriter(os);
-		export(os, false);
-	}
-
-	@Override
-	public void exportVisible(OutputStream os) throws MatrixException {
-		initWriter(os);
-		export(os, true);
-	}
-	
-	private void export(OutputStream os, boolean exportVisibleRows) throws MatrixException {
-		if (d_spssWriter == null) {
-			initWriter(os);
-		}
-		
+	protected void export(boolean exportVisibleRows) throws MatrixException {
 		try {
 			writeColHeaders(os);
 			d_spssWriter.addDataSection();
-			ScrollableResults sr = d_matrix.getScrollableValues(exportVisibleRows);
-			writeResults(sr, exportVisibleRows && d_matrix.getRowOffset() > 0);
+			ScrollableResults sr = matrix.getScrollableValues(exportVisibleRows);
+			writeResults(sr, exportVisibleRows && matrix.getRowOffset() > 0);
 			d_spssWriter.addFinishSection();
 		} catch (Exception ex) {
 			throw new MatrixException(ex);
 		}
 	}
-
-	private void writeResults(ScrollableResults sr, boolean exportVisibleRows) throws MatrixException {
+	
+	@Override
+	public void writeSingleCell(Object object, int iRow, int iColumn, ColumnType columnType)  {
 		try {
-			List<Column> columns = d_matrix.getColumns();
-			while (sr.next()) {
-				Object[] row = sr.get();
-				int nColumns = exportVisibleRows ? row.length - 1 : row.length;
-				for (int iColumn = 0; iColumn < nColumns; ++iColumn) {
-					writeSingleCell(row[iColumn], columns.get(iColumn).getType());
-				}
+			switch(columnType) {
+				case Datetime :
+					if(object != null) {
+						Timestamp ts = (Timestamp)object;
+						d_spssWriter.addData(new Date(ts.getTime()));
+					} else {
+						d_spssWriter.addData((Date)null);
+					}
+					break;
+				case Date :
+					if(object != null) {
+						Timestamp ts = (Timestamp)object;
+						d_spssWriter.addData(new Date(ts.getTime())); 
+					} else {
+						d_spssWriter.addData((Date)null);
+					}				
+					break;
+				case Decimal :
+					if(object != null) {
+						Number nDouble = (Number)object;
+						d_spssWriter.addData(nDouble.doubleValue());
+					} else {
+						d_spssWriter.addData((Double)null);
+					}
+					break;
+				case Integer : 
+					if(object != null) {
+						Number nInt = (Number)object;
+						d_spssWriter.addData(nInt.longValue());
+					} else {
+						d_spssWriter.addData((Long)null);
+					}
+					break;
+				default :
+					if(object != null) {
+						d_spssWriter.addData(object.toString());
+					} else {
+						d_spssWriter.addData((String)null);
+					}
 			}
-		} catch (Exception e) {
-			throw new MatrixException(e);
-		} 
-	}
-
-	private void writeSingleCell(Object object, ColumnType columnType) throws IOException, ParseException {
-		switch(columnType) {
-			case Datetime :
-				if(object != null) {
-					Timestamp ts = (Timestamp)object;
-					d_spssWriter.addData(new Date(ts.getTime()));
-				} else {
-					d_spssWriter.addData((Date)null);
-				}
-				break;
-			case Date :
-				if(object != null) {
-					Timestamp ts = (Timestamp)object;
-					d_spssWriter.addData(new Date(ts.getTime())); 
-				} else {
-					d_spssWriter.addData((Date)null);
-				}				
-				break;
-			case Decimal :
-				if(object != null) {
-					Number nDouble = (Number)object;
-					d_spssWriter.addData(nDouble.doubleValue());
-				} else {
-					d_spssWriter.addData((Double)null);
-				}
-				break;
-			case Integer : 
-				if(object != null) {
-					Number nInt = (Number)object;
-					d_spssWriter.addData(nInt.longValue());
-				} else {
-					d_spssWriter.addData((Long)null);
-				}
-				break;
-			default :
-				if(object != null) {
-					d_spssWriter.addData(object.toString());
-				} else {
-					d_spssWriter.addData((String)null);
-				}
-				
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
 	private void writeColHeaders(OutputStream os) throws IOException, NumberFormatException, MatrixException {
 		int columnIdx = 0;
-		for (C colHeader : d_matrix.getColHeaders()) {			
+		
+		
+		for (C colHeader : (List<C>)matrix.getColHeaders()) {			
 			writeColHeader(colHeader, columnIdx);
 			++columnIdx;
 		}
@@ -126,7 +102,9 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 	private void writeColHeader(C colHeader, int columnIdx) throws IOException {
 		String dataType = colHeader.getDataType();
 		String colName = colHeader.getName();
-		ColumnType colType = d_matrix.getColumns().get(columnIdx).getType();
+		
+		List<Column> columns = matrix.getColumns();
+		ColumnType colType = columns.get(columnIdx).getType();
 		
 		if (colType == null) {
 			d_spssWriter.addStringVar(colName, 255, colName);
@@ -150,7 +128,7 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 		}
 	}
 
-	private void initWriter(OutputStream os) throws MatrixException {
+	private void initWriter() throws MatrixException {
 		d_spssWriter = new SPSSWriter(os, "windows-1252");
 		d_spssWriter.setCalculateNumberOfCases(false);
 		try {
@@ -159,4 +137,6 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 			throw new MatrixException(e);
 		}
 	}
+
+
 }

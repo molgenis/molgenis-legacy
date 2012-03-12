@@ -32,16 +32,16 @@ public class EAVRelationalBackend implements Backend {
     public EAVRelationalBackend(SliceablePhenoMatrixMV matrix) {
         this.matrix = matrix;
         
-        this.em = matrix.getEm();
-        this.joinColumn = matrix.getJOIN_COLUMN();
+        this.em = matrix.getEntityManager();
+        this.joinColumn = matrix.JOIN_COLUMN;
         this.measurementsByProtocol = matrix.getMeasurementsByProtocol();
         this.investigation = matrix.getInvestigation();
         
-        ambiguityTable = BackendUtils.buildAmbiguityTable(measurementsByProtocol);  
+        ambiguityTable = BackendUtils.buildAmbiguityTable(measurementsByProtocol, null, null);  
     }
     
     @Override
-    public String createQuery(boolean count, List<MatrixQueryRule> rules) throws Exception {
+    public String createQuery(boolean count, List<MatrixQueryRule> rules) {
         StringBuilder query = new StringBuilder();
         
         boolean first = true;

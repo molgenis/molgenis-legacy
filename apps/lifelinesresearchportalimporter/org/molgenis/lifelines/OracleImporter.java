@@ -41,6 +41,9 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
+//import org.molgenis.util.CsvFileReader;
+//import org.molgenis.util.CsvReader;
+//import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvReaderListener;
@@ -51,9 +54,16 @@ import app.DatabaseFactory;
 import app.FillMetadata;
 import au.com.bytecode.opencsv.CSVReader;
 
+class Holder<T> {
+    public Holder(T value) {
+        this.value = value;
+    }
+    public T value;
+}
+
 public class OracleImporter {
 	private static final boolean SHARED_MEASUREMENTS = true;
-	private static final String DICT = "VW_DICT";
+	private static final String DICT = "VW_DICT_ENG";
 	private static final String CATE = "VW_DICT_VALUESETS";
 	private static final eDatabase DATABASE_TYPE = LoaderUtils.eDatabase.ORACLE;
 
@@ -253,20 +263,13 @@ public class OracleImporter {
 		int batchCount = 0;
 		int recordCnt = 0;
 
-		final String[] headers = reader.readNext();
-		int paIdx = -1;
-		for (int i = 0; i < headers.length; ++i) {
-			final String header = headers[i];
-			if (header.equalsIgnoreCase("PA_ID")) {
-				paIdx = i;
-				break;
-			}
-		}
+		final Holder<Integer> paIdx = new Holder<Integer>(null);
+		final String[] headers = getHeaderInfo(reader, paIdx);
 
 		String[] nextLine;
 		while ((nextLine = reader.readNext()) != null) {
 			final Integer paId = protocolAppDBId.get(recordCnt);
-			final Integer targetId = targetDBId.get(nextLine[paIdx]);
+			final Integer targetId = targetDBId.get(nextLine[paIdx.value]);
 			for (int i = 0; i < headers.length; ++i) {
 				final String value = StringUtils.trim(nextLine[i]);
 				final String fieldHeader = headers[i];
@@ -343,35 +346,50 @@ public class OracleImporter {
 				protocol.getName(), loadTime));
 	}
 
+	private static String[] getHeaderInfo(final CSVReader reader, final Holder<Integer> outPaIdx) throws Exception {
+		final String[] headers = reader.readNext();
+		for (int i = 0; i < headers.length; ++i) {
+			final String header = headers[i];
+			if (header.equalsIgnoreCase("PA_ID")) {
+				outPaIdx.value = i; //out parameter
+				break;
+			}
+		}
+		return headers;
+	}
+	
+	
 	private void storeCsv(final Protocol protocol, final BufferedWriter bw)
 			throws Exception {
 		final String fileName = getFileName(protocol);
-		final CsvReader reader = new CsvFileReader(new File(path + fileName));
+		final CSVReader reader = new CSVReader(new FileReader(new File(path + fileName)));
 
 		bw.append("TARGET, FEATURE, VALUE, PROTOCOLAPPLICATION, INVESTIGATION, DTYPE");
 		bw.newLine();
-		reader.parse(new CsvReaderListener() {
-
-			private int recordCnt = 0;
-
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception {
-				final Integer paId = protocolAppDBId.get(recordCnt);
-				final Integer targetId = targetDBId.get(tuple
-						.getString("PA_ID"));
-				for (final String fieldHeader : tuple.getFields()) {
-					final int measurementId = measurementDBId.get(fieldHeader);
-					final String value = tuple.getString(fieldHeader);
-					bw.append(String.format("%s,%s,\"%s\",%s,%s,%s", targetId,
-							measurementId, value, paId, inv.getId(),
-							ObservedValue.class.getSimpleName()));
-					bw.newLine();
-				}
-				recordCnt++;
+		
+		final Holder<Integer> paIdx = new Holder<Integer>(null);
+		final String[] headers = getHeaderInfo(reader, paIdx);
+		
+		int recordCnt = 0;
+		String[] nextLine = null;
+		while ((nextLine = reader.readNext()) != null) {
+			final Integer paId = protocolAppDBId.get(recordCnt);
+			final Integer targetId = targetDBId.get(nextLine[paIdx.value]);			
+			
+			int colIdx = 0;
+			for (final String fieldHeader : headers) {
+				final int measurementId = measurementDBId.get(fieldHeader);
+				final String value = nextLine[colIdx];
+				bw.append(String.format("%s,%s,\"%s\",%s,%s,%s", targetId,
+						measurementId, value, paId, inv.getId(),
+						ObservedValue.class.getSimpleName()));
+				bw.newLine();
+				++colIdx;
 			}
-		});
+			recordCnt++;
+		}
 		bw.flush();
-		bw.close();
+		bw.close();		
 	}
 
 	static int protocolAppName = 0;
@@ -381,18 +399,19 @@ public class OracleImporter {
 			throws Exception {
 		final String fileName = getFileName(protocol);
 		final List<ProtocolApplication> protocolApplications = new ArrayList<ProtocolApplication>();
-		final CsvReader reader = new CsvFileReader(new File(path + fileName));
-
-		reader.parse(new CsvReaderListener() {
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception {
-				final ProtocolApplication protocolApplication = new ProtocolApplication();
-				protocolApplication.setName("" + protocolAppName++);
-				protocolApplication.setInvestigation(inv);
-				protocolApplication.setProtocol(protocol);
-				protocolApplications.add(protocolApplication);
-			}
-		});
+		
+		final CSVReader reader = new CSVReader(new FileReader(new File(path + fileName)));
+		
+		final Holder<Integer> paIdx = new Holder<Integer>(null);
+		getHeaderInfo(reader, paIdx); //process first line
+		
+		while (reader.readNext() != null) {
+			final ProtocolApplication protocolApplication = new ProtocolApplication();
+			protocolApplication.setName("" + protocolAppName++);
+			protocolApplication.setInvestigation(inv);
+			protocolApplication.setProtocol(protocol);
+			protocolApplications.add(protocolApplication);			
+		}
 		saveEntitiesToDatabase((List<Entity>) (List) protocolApplications, protocol.getName());
 		int idx = 0;
 		for (final ProtocolApplication protocolApplication : protocolApplications) {
@@ -421,23 +440,25 @@ public class OracleImporter {
 		final List<ObservationTarget> targets = new ArrayList<ObservationTarget>();
 		for (final Protocol protocol : protocols) {
 			final String fileName = getFileName(protocol);
+			System.out.println(fileName);
+			
+			au.com.bytecode.opencsv.CSVReader reader = new CSVReader(new FileReader(new File(path + fileName)));
+			
+			final Holder<Integer> paIdx = new Holder<Integer>(null);
+			getHeaderInfo(reader, paIdx); //process header, find paIdx
 
-			final CsvReader reader = new CsvFileReader(
-					new File(path + fileName));
-			reader.parse(new CsvReaderListener() {
-				public void handleLine(int line_number, Tuple tuple)
-						throws Exception {
-					final String pa_id = tuple.getString("PA_ID");
-					if (!targetDBId.containsKey(pa_id)) {
-						targetDBId.put(pa_id, -1);
+			String[] line = null;
+			while ((line = reader.readNext()) != null) {
+				final String pa_id = line[paIdx.value];
+				if (!targetDBId.containsKey(pa_id)) {
+					targetDBId.put(pa_id, -1);
 
-						final ObservationTarget target = new ObservationTarget();
-						target.setName(pa_id);
-						target.setInvestigation(inv);
-						targets.add(target);
-					}
+					final ObservationTarget target = new ObservationTarget();
+					target.setName(pa_id);
+					target.setInvestigation(inv);
+					targets.add(target);
 				}
-			});
+			}
 			reader.close();
 		}
 		saveEntitiesToDatabase((List<Entity>) (List) targets, "Loading all Targets");
@@ -447,7 +468,11 @@ public class OracleImporter {
 	}
 
 	private String getFileName(final Protocol protocol) {
-		return "VW_" + protocol.getName() + "_DATA_VIEW.csv";
+		if(protocol.getName().startsWith("VW_")) {
+			return protocol.getName() + "_DATA_VIEW.csv";
+		} else {		
+			return "VW_" + protocol.getName() + "_DATA_VIEW.csv";
+		}
 	}
 
 	private final static int RECORDS_THREAD = 1000;
@@ -497,11 +522,9 @@ public class OracleImporter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		final String inputPath = "D:/LifelinesData/LL1/";
-		final String outputPath = "/Users/jorislops/Desktop/LLOutput/";
-
-		//PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
-
+		PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
+		
+		final String inputPath = "/Users/jorislops/Desktop/lifelinesdata/ll1/";
 
 		final Properties props = new Properties();
 		final FileInputStream in = new FileInputStream("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/db.properties");

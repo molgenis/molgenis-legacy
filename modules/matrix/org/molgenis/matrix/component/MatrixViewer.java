@@ -8,6 +8,8 @@ import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +26,11 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
+import org.apache.commons.collections.Closure;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -53,10 +60,12 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.Utils.AbstractExporter;
 import org.molgenis.matrix.Utils.CsvExporter;
 import org.molgenis.matrix.Utils.ExcelExporter;
 import org.molgenis.matrix.Utils.Exporter;
 import org.molgenis.matrix.Utils.SPSSExporter;
+import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
@@ -416,7 +425,16 @@ public class MatrixViewer extends HtmlWidget
 							for (Observation val : rowValues[col])
 							{
 								String valueToShow = (String) val.get("value");
-
+								
+								if(val instanceof ObservedValue) {
+									Measurement measurement = (Measurement) cols.get(col);
+									String dataType = measurement.getDataType();
+									ColumnType columnType = Column.getColumnType(dataType);
+									if(columnType == ColumnType.Date) {
+										valueToShow = StringUtils.substringBefore(valueToShow, " ");
+									}
+								}
+								
 								if (val instanceof ObservedValue && valueToShow == null)
 								{
 									valueToShow = ((ObservedValue) val).getRelation_Name();
@@ -512,6 +530,7 @@ public class MatrixViewer extends HtmlWidget
 		// column header filter
 		@SuppressWarnings("rawtypes")
 		List selectedMeasurements = new ArrayList(colHeaders);
+	
 		MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
 				selectedMeasurements, false, false,
 				"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
@@ -525,7 +544,7 @@ public class MatrixViewer extends HtmlWidget
 		divContents += measurementChooser.render();
 		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Add").render();
 		divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
-		divContents += new ActionInput(REMALLCOLHEADERFILTER, "", "Remove all").render();
+		//divContents += new ActionInput(REMALLCOLHEADERFILTER, "", "Remove all").render();
 		divContents += "</div>";
 		
 		return divContents;
@@ -590,7 +609,7 @@ public class MatrixViewer extends HtmlWidget
 			    for(Entry<Protocol, List<Measurement>> p : measurementsByProtocol.entrySet()) {
 					Protocol protocol = p.getKey();
 					for(Measurement measurement : p.getValue()) {
-						colId.addOption(protocol.getId()+";" +measurement.getId(), measurement.getName());
+						colId.addOption(protocol.getId()+";" +measurement.getId(), String.format("%s (%s)", measurement.getName(), protocol.getName()));
 					}
 				}
 			} else {
@@ -735,9 +754,8 @@ public class MatrixViewer extends HtmlWidget
 		File file = makeFile("_All", "csv");
 		
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			CsvExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
-					new CsvExporter<ObservationTarget, Measurement, ObservedValue>
-					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
+			AbstractExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+				new CsvExporter<ObservationTarget, Measurement, ObservedValue>((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, new FileOutputStream(file));
 			exportAll(file, exporter);
 		} else {			
 			// remember old limits and offset
@@ -805,7 +823,7 @@ public class MatrixViewer extends HtmlWidget
 			throws MatrixException {
 		try {
 			FileOutputStream os = new FileOutputStream(file);
-			exporter.exportAll(os);
+			exporter.exportAll();
 			os.flush();
 			os.close();
 			downloadLink = file.getName();
@@ -815,14 +833,11 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 	
-	private void exportVisible(File file, Exporter<ObservationTarget, Measurement, ObservedValue> exporter)
+	private void exportVisible(String fileName, Exporter<ObservationTarget, Measurement, ObservedValue> exporter)
 			throws MatrixException {
 		try {
-			FileOutputStream os = new FileOutputStream(file);
-			exporter.exportVisible(os);
-			os.flush();
-			os.close();
-			downloadLink = file.getName();
+			exporter.exportVisible();
+			downloadLink = fileName;
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			throw new MatrixException(e1);
@@ -834,10 +849,10 @@ public class MatrixViewer extends HtmlWidget
 	{
 		File file = makeFile("_Visible", "csv");
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			CsvExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
-					new CsvExporter<ObservationTarget, Measurement, ObservedValue>
-					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
-			exportVisible(file, exporter);
+			FileOutputStream os = new FileOutputStream(file);
+			AbstractExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+				new CsvExporter<ObservationTarget, Measurement, ObservedValue>((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, os);
+			exportVisible(file.getName(), exporter);
 		} else {	
 			List<?> rows = matrix.getRowHeaders();
 			List<?> cols = matrix.getColHeaders();
@@ -907,7 +922,7 @@ public class MatrixViewer extends HtmlWidget
 		if (matrix instanceof SliceablePhenoMatrixMV) {
 			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
 					new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
+					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, new FileOutputStream(excelFile));
 			exportAll(excelFile, exporter);
 		} else {
 			// remember old limits and offset
@@ -997,9 +1012,9 @@ public class MatrixViewer extends HtmlWidget
 		File excelFile = makeFile("_Visible","xls");
 		if (matrix instanceof SliceablePhenoMatrixMV) {
 			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
-					new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
-			exportVisible(excelFile, exporter);
+				new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
+				((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, new FileOutputStream(excelFile));
+			exportVisible(excelFile.getName(), exporter);
 		} else {
 			
 			if (this.matrix instanceof DatabaseMatrix)
@@ -1110,9 +1125,8 @@ public class MatrixViewer extends HtmlWidget
 		if (matrix instanceof SliceablePhenoMatrixMV) {
 			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
 					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
-					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
-
-			exportVisible(file, exporter);
+					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix, new FileOutputStream(file));
+			exportVisible(file.getName(), exporter);
 		} else {
 			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 			SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
@@ -1179,7 +1193,7 @@ public class MatrixViewer extends HtmlWidget
 		if (matrix instanceof SliceablePhenoMatrixMV) {
 			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
 					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
-					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix);
+					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix, new FileOutputStream(file));
 			exportAll(file, exporter);
 		} else {
 			// remember old limits and offset
@@ -1341,7 +1355,14 @@ public class MatrixViewer extends HtmlWidget
 	public void updateColHeaderFilter(Database db, Tuple t) throws Exception
 	{
 		if(matrix instanceof SliceablePhenoMatrixMV) {
-			addColumns((List<Integer>)t.getList(MEASUREMENTCHOOSER));
+			
+			List<Integer> measurementIds = new ArrayList<Integer>();
+			List<String> list = (List<String>)t.getList(MEASUREMENTCHOOSER);
+			for(String s : list) {
+				measurementIds.add(Integer.parseInt(s));
+			}
+			resetColumns(measurementIds);
+
 		} else {
 			List<?> chosenMeasurementIds;
 			if (t.getList(MEASUREMENTCHOOSER) != null)
@@ -1364,24 +1385,105 @@ public class MatrixViewer extends HtmlWidget
 
 	}
 
-	private void addColumns(List<Integer> columnIds) throws DatabaseException {
+	private void resetColumns(final List<Integer> columnIds) throws DatabaseException {
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		LinkedHashMap<Protocol, List<Measurement>> pms = ((SliceablePhenoMatrixMV) matrix).getMeasurementsByProtocol();
-		
+		pms.clear();
+
+		//adding columns to pms in correct order
 		List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, columnIds).find();
-		for(Measurement measurement : measurements) {
-			List<Protocol> protocols = (List<Protocol>) measurement.getFeaturesProtocolCollection();
-			Protocol p = protocols.get(0);
-			if(pms.containsKey(p)) {
-				if(!pms.get(p).contains(measurement)) {
-					pms.get(p).add(measurement);
-				} 
+		for(final Integer colId : columnIds) {
+			Measurement m = (Measurement) CollectionUtils.find(measurements, new Predicate() {
+				public boolean evaluate(Object o) {
+					Measurement meas = (Measurement) o;
+					return meas.getId().equals(colId);
+				}
+			});
+			Protocol protocol = m.getFeaturesProtocolCollection().iterator().next();
+			if (pms.get(protocol) == null) {
+				pms.put(protocol, new ArrayList<Measurement>(Collections.singleton(m)));
 			} else {
-				List<Measurement> ms = new ArrayList<Measurement>();
-				ms.add(measurement);
-				pms.put(p, ms);
+				pms.get(protocol).add(m);
 			}
 		}
+		
+		System.out.println("----------");
+		for (final Entry<Protocol, List<Measurement>> entry : pms.entrySet()) {
+			for(Measurement m : entry.getValue()) {
+				System.out.println(m.getName());
+			}
+		}		
+		System.out.println("----------");
+		
+//		//remove deleted columns
+//		for (final Entry<Protocol, List<Measurement>> entry : pms.entrySet()) {
+//			final List <Measurement> measurementsCpy = Arrays.asList(new Measurement[entry.getValue().size()]);
+//			Collections.copy(measurementsCpy, entry.getValue());			
+//			CollectionUtils.forAllDo(measurementsCpy, new Closure() {
+//				int i = 0;
+//				
+//				@Override
+//				public void execute(Object arg0) {
+//					Measurement m = (Measurement) arg0;
+//					
+//					boolean exists = CollectionUtils.exists(columnIds, PredicateUtils.equalPredicate(m.getId()));
+//					
+//					if(!exists) {
+//						System.out.println(m.getId() + " not in " + columnIds);
+//						
+//						entry.getValue().remove(i);
+//					} else {
+//						++i;	
+//					}
+//				}
+//			});
+//		}
+//		
+//		System.out.println("----------");
+//		for (final Entry<Protocol, List<Measurement>> entry : pms.entrySet()) {
+//			for(Measurement m : entry.getValue()) {
+//				System.out.println(m.getName());
+//			}
+//		}
+//		System.out.println("----------");
+//
+//		//add new columns
+//		List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, columnIds).find();
+//		boolean firstPA_ID = true;
+//		for(Measurement measurement : measurements) {
+//			if(measurement.getName().equalsIgnoreCase("PA_ID")) {
+//				if(!firstPA_ID) {
+//					continue;
+//				}
+//				firstPA_ID = false;				
+//			}
+//			
+//			final List<Protocol> protocols = (List<Protocol>) measurement.getFeaturesProtocolCollection();
+//			final Protocol p = protocols.get(0);
+////			Protocol contains = (Protocol) CollectionUtils.find(pms.keySet(), new Predicate() {
+////				public boolean evaluate(Object arg0) {
+////					Protocol prot = (Protocol) arg0;
+////					return p.getId().equals(prot.getId());
+////				}
+////			});
+//			if(pms.containsKey(p)) {
+//				if(!pms.get(p).contains(measurement)) {
+//					pms.get(p).add(measurement);
+//				} 
+//			} else {
+//				List<Measurement> ms = new ArrayList<Measurement>();
+//				ms.add(measurement);
+//				pms.put(p, ms);
+//			}
+//		}
+//		
+//		System.out.println("----------");
+//		for (final Entry<Protocol, List<Measurement>> entry : pms.entrySet()) {
+//			for(Measurement m : entry.getValue()) {
+//				System.out.println(m.getName());
+//			}
+//		}
+//		System.out.println("----------");
 	}
 
 	public void addAllColHeaderFilter(Database db, Tuple t) throws Exception
@@ -1392,7 +1494,7 @@ public class MatrixViewer extends HtmlWidget
 			for(Measurement m : allMeasurements) {
 				measruementIds.add(m.getId());
 			}
-			addColumns(measruementIds);
+			resetColumns(measruementIds);
 		} else {
 			List<Measurement> allMeasurements = db.find(Measurement.class);
 			List<String> chosenMeasurementNames = new ArrayList<String>();
@@ -1411,7 +1513,7 @@ public class MatrixViewer extends HtmlWidget
 			for(String mId : chosenMeasurements) {
 				measurementIds.add(Integer.parseInt(mId));
 			}
-			addColumns(measurementIds);
+			resetColumns(measurementIds);
 		} else { 
 			// Find and update col header filter rule
 			boolean hasRule = false;
@@ -1445,17 +1547,23 @@ public class MatrixViewer extends HtmlWidget
 
 	public void remAllColHeaderFilter(Database db, Tuple t) throws Exception
 	{
-		List<MatrixQueryRule> removeList = new ArrayList<MatrixQueryRule>();
-		for (MatrixQueryRule mqr : matrix.getRules())
-		{
-			if (mqr.getFilterType().equals(MatrixQueryRule.Type.colHeader))
+		if(matrix instanceof SliceablePhenoMatrixMV){
+			
+			((SliceablePhenoMatrixMV)matrix).getMeasurementsByProtocol().clear();
+			
+		} else {
+			List<MatrixQueryRule> removeList = new ArrayList<MatrixQueryRule>();
+			for (MatrixQueryRule mqr : matrix.getRules())
 			{
-				removeList.add(mqr);
+				if (mqr.getFilterType().equals(MatrixQueryRule.Type.colHeader))
+				{
+					removeList.add(mqr);
+				}
 			}
+			matrix.getRules().removeAll(removeList);
+			matrix.setColLimit(0);
+			matrix.reload();
 		}
-		matrix.getRules().removeAll(removeList);
-		matrix.setColLimit(0);
-		matrix.reload();
 	}
 
 	public void rowHeaderEquals(Database db, Tuple t) throws Exception

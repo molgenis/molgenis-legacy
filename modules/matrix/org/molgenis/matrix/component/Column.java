@@ -1,15 +1,16 @@
 package org.molgenis.matrix.component;
 
-import java.io.Serializable;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 
-public class Column implements Serializable {
+public class Column  {
     private Protocol protocol;
     private Measurement measurement;
 
+    //TODO: remove enum and replace by datatype that is a MolgenisType
+    @Deprecated
     public enum ColumnType {
         Date("date"),
         Timestamp("timestamp"),
@@ -22,6 +23,7 @@ public class Column implements Serializable {
         private String name;
         private boolean quote = true;
 
+        
         ColumnType(String name) {
             this.name = name;
         }
@@ -64,6 +66,22 @@ public class Column implements Serializable {
 
     public static ColumnType getColumnType(String columnType) {
         columnType = WordUtils.capitalize(columnType);
+        
+        if(columnType.startsWith("NUMMER")) {
+        	final int decimalPrecision = Integer.parseInt(StringUtils.substringBetween(columnType, ",", ")"));
+        	//final int precision = Integer.parseInt(StringUtils.substringBetween(columnType, "(", ","));
+        	
+        	if(decimalPrecision == 0) {
+        		return ColumnType.Integer;
+        	} else {
+        		return ColumnType.Decimal;	
+        	}
+        } else if(columnType.startsWith("DATUM")) {
+        	return ColumnType.Date;
+        } else if(columnType.startsWith("TEKST")) {
+        	return ColumnType.String;
+        }
+        
         try {
             return ColumnType.valueOf(columnType);
         } catch (Exception ex) {

@@ -31,65 +31,79 @@ public class EAVViewBackend implements Backend {
     private final EntityManager em;
 
     private final SliceablePhenoMatrixMV<?, ?, ?> matrix;
+	private String leftJoinTable;
     
-    public EAVViewBackend(SliceablePhenoMatrixMV<?, ?, ?> matrix, String tablePrefix) {
+    public EAVViewBackend(SliceablePhenoMatrixMV<?, ?, ?> matrix, String tablePrefix, String leftJoinTable) {
         this.matrix = matrix;
-        this.em = matrix.getEm();
+        this.em = matrix.getEntityManager();
         this.tablePrefix = tablePrefix;
-        this.joinColumn = matrix.getJOIN_COLUMN();
-        
-                
+        this.joinColumn = matrix.JOIN_COLUMN;
+        this.leftJoinTable = leftJoinTable;        
     }
 
     @Override
-    public String createQuery(boolean count, List<MatrixQueryRule> rules) throws Exception {
+    public String createQuery(boolean count, List<MatrixQueryRule> rules) {
         StringBuilder sql = new StringBuilder("SELECT ");
         
         LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol = matrix.getMeasurementsByProtocol();
         
-        String firstTableName = tablePrefix + measurementsByProtocol.keySet().toArray(new Protocol[1])[0].getName();
-
-        
+        String firstTableName = tablePrefix;
+                
+        boolean hasJoinTable = StringUtils.isNotEmpty(leftJoinTable);
+        if(hasJoinTable) {
+        	firstTableName += leftJoinTable;
+        } else {
+        	firstTableName += tablePrefix + measurementsByProtocol.keySet().toArray(new Protocol[1])[0].getName();
+        }
+        final String firstTableAlias = firstTableName+"_PK";
         
         if (count) {
             sql.append(" COUNT(*) ");
         } else {
-            //Select part
+            //Select part        	
+        	ambiguityTable = BackendUtils.buildAmbiguityTable(measurementsByProtocol, leftJoinTable, joinColumn);
         	
-        	ambiguityTable = BackendUtils.buildAmbiguityTable(measurementsByProtocol);
+        	if(hasJoinTable) {
+        		sql.append(String.format("%s.%s", firstTableAlias, joinColumn));
+        	}
         	
-            int cnt = 0;
-            
+            int cnt = 0;            
 			for (Map.Entry<Protocol, List<Measurement>> entry : measurementsByProtocol.entrySet()) {
                 for (Measurement m : entry.getValue()) {
-                    String tableName = String.format("%s%s", tablePrefix, entry.getKey().getName());
-                    
-                    String column = String.format("%s.%s", tableName, m.getName());
-                    if(ambiguityTable.containsKey(m.getName()) && ambiguityTable.get(m.getName()).size() > 1)
-                    {
-                        column = String.format("%s %s_%s", column, tableName, m.getName());
+                    if(!(hasJoinTable && m.getName().equalsIgnoreCase(joinColumn))) {
+                    	String tableName = String.format("%s%s", tablePrefix, entry.getKey().getName());
+                        
+                        String column = String.format("%s.%s", tableName, m.getName());
+                        if(ambiguityTable.containsKey(m.getName()) && ambiguityTable.get(m.getName()).size() > 1)
+                        {
+                            column = String.format("%s %s_%s", column, tableName, m.getName());
+                        }
+
+                        if (cnt > 0 || hasJoinTable) {
+                            sql.append(", ");
+                        }
+
+                        sql.append(column);                    	
                     }
-
-                    if (cnt > 0) {
-                        sql.append(", ");
-                    }
-
-                    sql.append(column);
-
                     ++cnt;
                 }
             }
         }
 
         sql.append(" FROM ");
-
+        
+		if(hasJoinTable) {
+        	sql.append(String.format("%s %s", firstTableName, firstTableAlias));
+        }
+        
         //From part
         int cnt = 0;
         for (Protocol p : measurementsByProtocol.keySet()) {
             String tableName = String.format("%s%s", tablePrefix, p.getName());
-            if (cnt > 0) {
-                sql.append(String.format(" JOIN %s ON (%s.%s = %s.%s)",
-                        tableName, firstTableName, joinColumn, tableName, joinColumn));
+            if (cnt > 0 || hasJoinTable) {
+                sql.append(String.format(" %s JOIN %s ON (%s.%s = %s.%s)",
+                		hasJoinTable ? "LEFT" : "",                		
+                        tableName, firstTableAlias, joinColumn, tableName, joinColumn));
             } else {
                 sql.append(tableName);
             }

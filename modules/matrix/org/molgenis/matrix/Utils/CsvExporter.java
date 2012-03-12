@@ -6,43 +6,33 @@ import java.util.List;
 
 import org.hibernate.ScrollableResults;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.CsvWriter;
 
-public class CsvExporter<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> implements Exporter<R, C, V> {
-
-	private final SliceablePhenoMatrixMV<R, C, V> d_matrix;
+public class CsvExporter<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> extends AbstractExporter<ObservationTarget, Measurement, ObservedValue>
+{
 	private CsvWriter d_writer;
-
-	public CsvExporter(SliceablePhenoMatrixMV<R, C, V> matrix) {
-		d_matrix = matrix;
-	}
-
-	@Override
-	public void exportAll(OutputStream os) throws MatrixException {
-		export(os, false);
-	}
-
-	@Override
-	public void exportVisible(OutputStream os) throws MatrixException {
-		export(os, true);
-	}
-
-	private void export(OutputStream os, boolean exportVisible) throws MatrixException {
+	
+	public CsvExporter(SliceablePhenoMatrixMV<R, C, V> matrix, OutputStream os) {
+		super((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix, os);
+		
 		d_writer = new CsvWriter(os);
 		d_writer.setSeparator(",");
-		
+	}
+
+	@Override	
+	protected void export(boolean exportVisible) throws MatrixException {
 		initHeaders();
 		ScrollableResults sr = null;
 		try {
-			sr = d_matrix.getScrollableValues(exportVisible);
+			sr = matrix.getScrollableValues(exportVisible);
 			// FIXME : hack because an extra column is added *only* when offset is not 0 
 			// (probably also database dependent, ie oracle/mysql)
-			writeResults(sr, exportVisible&& d_matrix.getRowOffset() > 0);
+			writeResults(sr, exportVisible && matrix.getRowOffset() > 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new MatrixException(e);
@@ -55,31 +45,27 @@ public class CsvExporter<R extends ObservationTarget, C extends Measurement, V e
 
 	private void initHeaders() throws MatrixException {
 		List<String> headers = new ArrayList<String>();
-		for (ObservationElement colHeader : (List<C>)d_matrix.getColHeaders())
+		for (Measurement colHeader : (List<C>)matrix.getColHeaders())
 		{
 			headers.add(colHeader.getName());
 		}
 		d_writer.setHeaders(headers);
 		d_writer.writeHeader();
 	}
-	
-	private void writeResults(ScrollableResults sr, boolean exportVisibleRows) throws MatrixException {
-		try {
-			while (sr.next()) {
-				writeRow(sr.get());
-			}			
-		} catch (Exception e) {
-			throw new MatrixException(e);
-		} 
-	}
 
-	private void writeRow(Object[] row) {
-		for (int i = 0; i < row.length; ++i) {
-			if (i != 0) {
-				d_writer.writeSeparator();
-			}
-			d_writer.writeValue(row[i] == null ? null : row[i].toString());
-		}
+	@Override
+	public void writeSingleCell(Object value, int iRow, int iColumn,
+			ColumnType colType) {
+		d_writer.writeValue(value == null ? null : value.toString());
+	}
+	
+	@Override
+	public void writeSeperator() {
+		d_writer.writeSeparator();
+	};
+	
+	@Override
+	public void writeEndOfLine() {
 		d_writer.writeEndOfLine();
 	}
 }

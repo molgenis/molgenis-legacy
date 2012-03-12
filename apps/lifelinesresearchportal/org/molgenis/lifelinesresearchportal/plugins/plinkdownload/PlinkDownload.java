@@ -12,17 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.XrefInput;
-import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.FamEntry;
@@ -142,10 +141,21 @@ public class PlinkDownload extends GenericPlugin
 			}
 			List<FamEntry> entries = new ArrayList<FamEntry>();
 			
-			List<Individual> parts;
+			List<Object[]> parts;
 			try
 			{
-				parts = db.find(Individual.class);
+				@SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })
+				List<Object[]> parts2 = db.getEntityManager()
+				.createQuery("SELECT ov.target.id, " 
+							+"MAX ( CASE WHEN (ov.feature.id = :sexId) THEN ov.value ELSE null END ), " 
+							+"MAX ( CASE WHEN (ov.feature.id = :mesId) THEN ov.value ELSE null END ) " 
+							+"FROM ObservedValue ov WHERE ov.feature = :sexId OR ov.feature = :mesId GROUP BY ov.target")
+				.setParameter("sexId", sexMeasId) 
+				.setParameter("mesId", measurementId)
+				.getResultList();
+				parts = parts2; //strange!
+				
+				//parts = db.find(ObservationTarget.class);
 			}
 			catch (Exception e) {
 				this.setError("Something went wrong while finding the participants: " + e.getMessage());
@@ -155,39 +165,25 @@ public class PlinkDownload extends GenericPlugin
 			List<String> skipList = new ArrayList<String>();
 			List<String> skipListNoVal = new ArrayList<String>();
 			List<String> skipListDouble = new ArrayList<String>();
-			for (Individual part : parts) {
-				
-				ObservedValue sexVal;
-				ObservedValue phenoVal;
-				double pheno;
-				try
-				{
-					List<ObservedValue> valList = db.query(ObservedValue.class).eq(ObservedValue.TARGET, part.getId()).eq(ObservedValue.FEATURE, sexMeasId).find();
-					if (valList == null || valList.size() == 0) {
-						skipListNoVal.add(part.getName());
-						continue;
-					}
-					sexVal = valList.get(0);
-					valList = db.query(ObservedValue.class).eq(ObservedValue.TARGET, part.getId()).eq(ObservedValue.FEATURE, measurementId).find();
-					if (valList == null || valList.size() == 0) {
-						skipListNoVal.add(part.getName());
-						continue;
-					}
-					phenoVal = valList.get(0);
-				} catch (Exception e) {
-					skipList.add(part.getName());
-					continue;
-				}
+			
+			for (final Object[] part : parts) {
+				final Integer targetId = (Integer) part[0];
+				final String sexVal = (String) part[1];
+				final String phenoVal = (String) part[2];
+				double pheno;				
 				try {
-					pheno = Double.parseDouble(phenoVal.getValue());
+					if(StringUtils.isNotEmpty(phenoVal)) { 
+						pheno = Double.parseDouble(phenoVal);
+
+						entries.add(
+							new FamEntry("LIFELINES", targetId.toString(), "0", "0", 
+								(byte)Integer.parseInt(sexVal), pheno)
+						);
+					}
 				} catch (NumberFormatException nfe) {
-					skipListDouble.add(part.getName());
-					continue;
+					this.setError(String.format("Dataset contains a non double value: %s", phenoVal));
+					return;
 				}
-				
-				FamEntry fe = new FamEntry("LIFELINES", part.getName(), "NA", "NA", 
-						(byte)Integer.parseInt(sexVal.getValue()), pheno);
-				entries.add(fe);
 			}
 			
 			ffw.writeAll(entries);
@@ -198,21 +194,21 @@ public class PlinkDownload extends GenericPlugin
 			downloadPanel.add(new Paragraph("<strong>Your PLINK files are ready on Target GPFS storage [under construction]:</strong>"));
 			downloadPanel.add(new Paragraph("TPED file"));
 			downloadPanel.add(new Paragraph("<a href='tmpfile/" + famExport.getName() + "'>TFAM file</a>"));
-			String parContents = "These participants were skipped because their phenotype values could not be found:";
-			for (String name : skipListNoVal) {
-				parContents += " " + name;
-			}
-			downloadPanel.add(new Paragraph(parContents));
-			parContents = "These participants were skipped because their phenotype values could not be cast to doubles:";
-			for (String name : skipListDouble) {
-				parContents += " " + name;
-			}
-			downloadPanel.add(new Paragraph(parContents));
-			parContents = "These participants were skipped because of other errors:";
-			for (String name : skipListDouble) {
-				parContents += " " + name;
-			}
-			downloadPanel.add(new Paragraph(parContents));
+//			String parContents = "These participants were skipped because their phenotype values could not be found:";
+//			for (String name : skipListNoVal) {
+//				parContents += " " + name;
+//			}
+//			downloadPanel.add(new Paragraph(parContents));
+//			parContents = "These participants were skipped because their phenotype values could not be cast to doubles:";
+//			for (String name : skipListDouble) {
+//				parContents += " " + name;
+//			}
+//			downloadPanel.add(new Paragraph(parContents));
+//			parContents = "These participants were skipped because of other errors:";
+//			for (String name : skipListDouble) {
+//				parContents += " " + name;
+//			}
+//			downloadPanel.add(new Paragraph(parContents));
 		}
 	}
 	
