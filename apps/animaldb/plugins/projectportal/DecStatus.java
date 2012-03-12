@@ -108,7 +108,7 @@ public class DecStatus extends GenericPlugin
 		statusTable.addColumn("Status");
 		
 		try {
-			List<Integer> investigationIds = cq.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> investigationIds = cq.getAllUserInvestigationIds(this.getLogin().getUserName());
 			
 			int rowCount = 0;
 			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication", investigationIds);

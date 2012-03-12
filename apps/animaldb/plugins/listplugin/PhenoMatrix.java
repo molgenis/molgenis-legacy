@@ -33,7 +33,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 	private CommonService cq = null;
 	private boolean init = false;
 	
-	public void init(Database db, String targetType, int userId) throws DatabaseException, ParseException {
+	public void init(Database db, String targetType, String userName) throws DatabaseException, ParseException {
 		this.setInit(true);
 		
 		cq = CommonService.getInstance();
@@ -42,7 +42,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		if (targetType.equals("All")) {
 			targetType = null;
 		}
-		investigationIds = cq.getAllUserInvestigationIds(userId);
+		investigationIds = cq.getAllUserInvestigationIds(userName);
 		targetIdList = cq.getAllObservationTargetIds(targetType, false, investigationIds);
 		nrOfTargets = targetIdList.size();
 		
@@ -83,7 +83,7 @@ public class PhenoMatrix extends Matrix<ObservedValue> {
 		List<ObservedValue> valueList = cq.getAllObservedValues(measurementId, investigationIds);
 		if (valueList != null && valueList.size() > 0) {
 			for (ObservedValue value : valueList) {
-				int targetLoc = targetIdList.indexOf(value.getTarget());
+				int targetLoc = targetIdList.indexOf(value.getTarget_Id());
 				if (targetLoc > -1) {
 					if (seenTargetLocs.contains(targetLoc)) {
 						data[targetLoc][colNr][size[targetLoc][colNr]] = value;

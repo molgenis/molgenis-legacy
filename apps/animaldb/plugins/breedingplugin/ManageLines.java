@@ -9,7 +9,6 @@ package plugins.breedingplugin;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -151,7 +150,7 @@ public class ManageLines extends PluginModel<Entity>
 			if (action.equals("addLine")) {
 				Date now = new Date();
 				lineName = request.getString("lineName");
-				int invid = cs.getOwnUserInvestigationId(this.getLogin().getUserId());
+				int invid = cs.getOwnUserInvestigationId(this.getLogin().getUserName());
 				String message = "";
 				// Make or get group
 				if (lineId == -1) {
@@ -169,11 +168,13 @@ public class ManageLines extends PluginModel<Entity>
 				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, lineId, "Line", 0));
 				// Set full name
-				fullName = request.getString("fullname");
-				protocolId = cs.getProtocolId("SetLineFullName");
-				measurementId = cs.getMeasurementId("LineFullName");
-				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
-						protocolId, measurementId, lineId, fullName, 0));
+				if (request.getString("fullname") != null) {
+					fullName = request.getString("fullname");
+					protocolId = cs.getProtocolId("SetLineFullName");
+					measurementId = cs.getMeasurementId("LineFullName");
+					db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
+							protocolId, measurementId, lineId, fullName, 0));
+				}
 				// Set species
 				species = request.getInt("species");
 				protocolId = cs.getProtocolId("SetSpecies");
@@ -229,10 +230,10 @@ public class ManageLines extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+		cs.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 		
 		try {
-			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserName());
 			// Populate source list
 			// All source types pertaining to "Eigen fok binnen uw organisatorische werkeenheid"
 			sourceList = new ArrayList<ObservationTarget>();

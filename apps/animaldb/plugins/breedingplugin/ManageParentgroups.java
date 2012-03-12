@@ -148,7 +148,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	
 	public void loadMotherMatrixViewer(Database db) {
 		try {
-			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Sex");
@@ -201,7 +201,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	
 	public void loadFatherMatrixViewer(Database db) {
 		try {
-			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Sex");
@@ -253,7 +253,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	
 	public void loadPgMatrixViewer(Database db) {
 		try {
-			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("StartDate");
@@ -525,7 +525,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 		// Populate lists (do this on every reload so they keep fresh, and do it here
 		// because we need the lineList in the init part that comes after)
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 			// Populate line list
 			lineList = ct.getAllMarkedPanels("Line", investigationIds);
 			// Default selected is first line
@@ -550,7 +550,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 		// Some init that only needs to be done once after login
 		if (userId != this.getLogin().getUserId().intValue()) {
 			userId = this.getLogin().getUserId().intValue();
-			ct.makeObservationTargetNameMap(userId, false);
+			ct.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 			this.setStartdate(dateOnlyFormat.format(new Date()));
 			// Prepare pg matrix
 			if (pgMatrixViewer == null) {

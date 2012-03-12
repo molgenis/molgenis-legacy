@@ -144,7 +144,7 @@ public class EventViewerPluginMatrix extends GenericPlugin
 			container = new Container();
 			div = new DivPanel();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));

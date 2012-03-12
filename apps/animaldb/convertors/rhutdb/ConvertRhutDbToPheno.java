@@ -78,13 +78,12 @@ public class ConvertRhutDbToPheno
 	
 	public ConvertRhutDbToPheno(Database db, Login login) throws Exception
 	{
+		userName = login.getUserName();
 		this.db = db;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
-		ct.makeObservationTargetNameMap(login.getUserId(), false);
+		ct.makeObservationTargetNameMap(userName, false);
 		logger = Logger.getLogger("LoadUliDb");
-		
-		userName = login.getUserName();
 		
 		highestNr = ct.getHighestNumberForPrefix("mm_") + 1;
 		
@@ -250,7 +249,8 @@ public class ConvertRhutDbToPheno
 			db.add(valuesToAddList.subList(valueStart, valueEnd));
 			logger.debug("Values " + valueStart + " through " + valueEnd + " successfully added");
 		}
-
+		
+		ct.makeObservationTargetNameMap(userName, true);
 	}
 	
 	public void populateAnimal(String filename) throws Exception

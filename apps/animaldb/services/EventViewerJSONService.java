@@ -7,41 +7,27 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
 import plugins.listplugin.PhenoMatrix;
 
 public class EventViewerJSONService implements MolgenisService{
-	private static final long serialVersionUID = -5860101269122494304L;
 	private static Logger logger = Logger.getLogger(EventViewerJSONService.class);
-	
 	private static PhenoMatrix pm;
 	private static int storedTargetStart;
 	private static int storedTargetLength;
 	private static String storedTargetType = "All";
 	private static int totalNrOfFeatures = 0;
 	private static int userId;
-
-	private MolgenisContext mc;
-	
-	public EventViewerJSONService(MolgenisContext mc)
-	{
-		this.mc = mc;
-	}
 	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
@@ -85,16 +71,17 @@ public class EventViewerJSONService implements MolgenisService{
 			 * 
 			 */
 			
-			// Get user ID
-			userId = req.getInt("userId");
-			
 			// Get database
 			Database db = request.getDatabase();
 //			this.createLogin(db, request); NO LONGER NEEDED
 			
+			// Get user ID, name
+			userId = req.getInt("userId");
+			String userName = db.findById(MolgenisUser.class, userId).getName();
+			
 			// Init OLD pheno matrix (not to be confused with the new matrix component)
 			if (pm.isInit() == false) { // if matrix has no DB yet, initialize it first
-				pm.init(db, storedTargetType, userId);
+				pm.init(db, storedTargetType, userName);
 				totalNrOfFeatures = pm.getTotalNrOfFeatures();
 			}
 			
@@ -105,7 +92,7 @@ public class EventViewerJSONService implements MolgenisService{
 					targetTypeChanged = true;
 					storedTargetType = req.getString("targetType");
 					// Reinit matrix
-					pm.init(db, storedTargetType, userId);
+					pm.init(db, storedTargetType, userName);
 					totalNrOfFeatures = pm.getTotalNrOfFeatures();
 				}
 			}

@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.animaldb.NamePrefix;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.core.MolgenisEntity;
@@ -108,9 +109,9 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public int getOwnUserInvestigationId(int userId) {
+	public int getOwnUserInvestigationId(String userName) {
 		Query<Investigation> q = db.query(Investigation.class);
-		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Investigation.OWNS_NAME, Operator.EQUALS, userName));
 		List<Investigation> invList;
 		try {
 			invList = q.find();
@@ -160,15 +161,15 @@ public class CommonService
 	 * @param userId
 	 * @return
 	 */
-	public List<Investigation> getAllUserInvestigations(int userId) {
+	public List<Investigation> getAllUserInvestigations(String userName) {
 		Query<Investigation> q = db.query(Investigation.class);
-		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Investigation.OWNS_NAME, Operator.EQUALS, userName));
 		q.addRules(new QueryRule(Operator.OR));
-		q.addRules(new QueryRule(Investigation.CANREAD, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Investigation.CANREAD_NAME, Operator.EQUALS, userName));
 		q.addRules(new QueryRule(Operator.OR));
 		q.addRules(new QueryRule(Investigation.CANREAD_NAME, Operator.EQUALS, "AllUsers")); // FIXME evil!!!
 		q.addRules(new QueryRule(Operator.OR));
-		q.addRules(new QueryRule(Investigation.CANWRITE, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Investigation.CANWRITE_NAME, Operator.EQUALS, userName));
 		List<Investigation> invList;
 		try {
 			invList = q.find();
@@ -184,10 +185,10 @@ public class CommonService
 	 * @param userId
 	 * @return
 	 */
-	public List<String> getAllUserInvestigationNames(int userId) {
+	public List<String> getAllUserInvestigationNames(String userName) {
 		
 		List<String> returnList = new ArrayList<String>();
-		List<Investigation> invList = getAllUserInvestigations(userId);
+		List<Investigation> invList = getAllUserInvestigations(userName);
 		if (invList != null) {
 			for (Investigation inv : invList) {
 				if (!returnList.contains(inv.getName())) {
@@ -204,9 +205,9 @@ public class CommonService
 	 * @param userId
 	 * @return
 	 */
-	public List<Integer> getAllUserInvestigationIds(int userId) {
+	public List<Integer> getAllUserInvestigationIds(String userName) {
 		List<Integer> returnList = new ArrayList<Integer>();
-		List<Investigation> invList = getAllUserInvestigations(userId);
+		List<Investigation> invList = getAllUserInvestigations(userName);
 		if (invList != null) {
 			for (Investigation inv : invList) {
 				if (!returnList.contains(inv.getId())) {
@@ -1935,21 +1936,15 @@ public class CommonService
 	 * @param userId
 	 * @return
 	 */
-	public int getCustomNameFeatureId(int userId)
+	public int getCustomNameFeatureId(String userName)
 	{
-		if (userId == -1) {
+		if (userName == null) {
 			return -1;
 		}
-		
-		List<CustomLabelFeature> featList;
 		try {
-			featList = db.query(CustomLabelFeature.class).eq(CustomLabelFeature.USERID, userId).find();
+			int userId = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, userName).find().get(0).getId();
+			return db.query(CustomLabelFeature.class).eq(CustomLabelFeature.USERID, userId).find().get(0).getFeatureId_Id();
 		} catch (Exception e) {
-			return -1;
-		}
-		if (featList.size() > 0) {
-			return featList.get(0).getFeatureId_Id();
-		} else {
 			return -1;
 		}
 	}
@@ -1960,7 +1955,7 @@ public class CommonService
 	 * the normal database name is taken.
 	 * To improve performance, does not make a map if one already exists.
 	 */
-	public void makeObservationTargetNameMap(int userId, boolean force)
+	public void makeObservationTargetNameMap(String userName, boolean force)
 	{
 		
 		if (observationTargetNameMap != null && force == false) {
@@ -1969,7 +1964,7 @@ public class CommonService
 		
 		observationTargetNameMap = new HashMap<Integer, String>();
 		
-		List<Integer> invIdList = getAllUserInvestigationIds(userId);
+		List<Integer> invIdList = getAllUserInvestigationIds(userName);
 		
 		// First fill with standard names for all the investigations the current user has rights on
 		List<ObservationTarget> targetList = new ArrayList<ObservationTarget>();
@@ -1989,7 +1984,7 @@ public class CommonService
 		}
 			
 		// Then overwrite with custom names, if existing
-		int customNameFeatureId = getCustomNameFeatureId(userId);
+		int customNameFeatureId = getCustomNameFeatureId(userName);
 		if (customNameFeatureId != -1) {
 			try {
 				Query<ObservedValue> valueQuery = db.query(ObservedValue.class);

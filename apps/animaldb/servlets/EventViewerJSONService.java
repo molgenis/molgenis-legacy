@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
@@ -19,6 +20,7 @@ import org.molgenis.util.Tuple;
 
 import plugins.listplugin.PhenoMatrix;
 
+@SuppressWarnings("deprecation")
 public class EventViewerJSONService extends app.servlet.MolgenisServlet {
 	private static final long serialVersionUID = -5860101269122494304L;
 	private static Logger logger = Logger.getLogger(EventViewerJSONService.class);
@@ -70,16 +72,17 @@ public class EventViewerJSONService extends app.servlet.MolgenisServlet {
 			 * 
 			 */
 			
-			// Get user ID
-			userId = req.getInt("userId");
-			
 			// Get database and login
 			Database db = this.createDatabase();
 			this.createLogin(db, request);
 			
+			// Get user ID, name
+			userId = req.getInt("userId");
+			String userName = db.findById(MolgenisUser.class, userId).getName();
+			
 			// Init OLD pheno matrix (not to be confused with the new matrix component)
 			if (pm.isInit() == false) { // if matrix has no DB yet, initialize it first
-				pm.init(db, storedTargetType, userId);
+				pm.init(db, storedTargetType, userName);
 				totalNrOfFeatures = pm.getTotalNrOfFeatures();
 			}
 			
@@ -90,7 +93,7 @@ public class EventViewerJSONService extends app.servlet.MolgenisServlet {
 					targetTypeChanged = true;
 					storedTargetType = req.getString("targetType");
 					// Reinit matrix
-					pm.init(db, storedTargetType, userId);
+					pm.init(db, storedTargetType, userName);
 					totalNrOfFeatures = pm.getTotalNrOfFeatures();
 				}
 			}

@@ -96,7 +96,7 @@ public class PrintLabelPlugin extends GenericPlugin
 		
 		cs.setDatabase(db);
 		
-		int userId = this.getLogin().getUserId();
+		String userName = this.getLogin().getUserName();
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "cagelabels.pdf");
@@ -104,10 +104,10 @@ public class PrintLabelPlugin extends GenericPlugin
 		
 		labelGenerator.startDocument(pdfFile);
 		
-		List<Integer> investigationIds = cs.getAllUserInvestigationIds(userId);
+		List<Integer> investigationIds = cs.getAllUserInvestigationIds(userName);
 		List<ObservationTarget> individualList = getIndividualsFromUi(db, request);
 		List<Measurement> measurementList = getMeasurementsFromUi(request);
-    	int ownInvId = cs.getOwnUserInvestigationId(userId);
+    	int ownInvId = cs.getOwnUserInvestigationId(userName);
         
         for (ObservationTarget ind : individualList) {
         	
@@ -238,7 +238,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	 * @throws Exception 
      */
     public void makeTargetsSelect(Database db) throws Exception {
-    	List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
+    	List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 		List<String> measurementsToShow = new ArrayList<String>();
 		measurementsToShow.add("Species");
 		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
@@ -259,7 +259,7 @@ public class PrintLabelPlugin extends GenericPlugin
 //    	targets = new SelectMultipleInput("Targets", null);
 //	    targets.setLabel("Select animal(s):");
 //		try {
-//			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
+//			List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserName());
 //		    for (Integer animalId : cs.getAllObservationTargetIds("Individual", true, investigationIds)) {
 //		    	targets.addOption(animalId, getTargetName(animalId));
 //		    }
@@ -276,7 +276,7 @@ public class PrintLabelPlugin extends GenericPlugin
     	features = new SelectMultipleInput("Features", null);
 		features.setLabel("Select feature(s):");
     	try {
-    		List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserId());
+    		List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserName());
 		    for (Measurement feature : cs.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationIds)) {
 		    	features.addOption(feature.getId(), feature.getName());
 		    }

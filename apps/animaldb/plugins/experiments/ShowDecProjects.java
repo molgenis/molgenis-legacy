@@ -9,7 +9,6 @@ package plugins.experiments;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -159,7 +158,7 @@ public class ShowDecProjects extends PluginModel<Entity>
 				
 				// Some variables we need later on
 				Integer decapplicantId = this.getLogin().getUserId();
-				int investigationId = ct.getOwnUserInvestigationId(decapplicantId);
+				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserName());
 				Date now = new Date();
 				
 				// Init lists that we can later add to the DB at once

@@ -159,7 +159,7 @@ public class ListPlugin extends PluginModel<Entity> {
 				logger.info("Reset servlet");
 				
 				// Populate measurement list
-				List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+				List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 				List<Measurement> featList = ct.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationIds);
 				//List<Measurement> featList = db.find(Measurement.class);
 				if (featList.size() > 0) {

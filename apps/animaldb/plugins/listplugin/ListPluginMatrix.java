@@ -77,7 +77,7 @@ public class ListPluginMatrix extends GenericPlugin
 			container = new Container();
 			div = new DivPanel();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				// Some measurements that we think AnimalDB users like to see most:
 				measurementsToShow.add("Active");

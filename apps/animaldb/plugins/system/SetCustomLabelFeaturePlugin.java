@@ -58,8 +58,7 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 	}
 	
 	public String getCurrentLabel() {
-		int userId = this.getLogin().getUserId();
-		int featureId = ct.getCustomNameFeatureId(userId);
+		int featureId = ct.getCustomNameFeatureId(this.getLogin().getUserName());
 		if (featureId == -1) {
 			return "name";
 		}
@@ -103,7 +102,7 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 					}
 				}
 				
-				ct.makeObservationTargetNameMap(userId, true);
+				ct.makeObservationTargetNameMap(this.getLogin().getUserName(), true);
 				
 				this.getMessages().clear();
 				this.getMessages().add(new ScreenMessage("Label successfully set", true));
@@ -122,7 +121,7 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 		
 		try {
 			// Populate feature list
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 			this.setMeasurementList(ct.getAllMeasurementsSorted("name", "ASC", investigationIds));
 		} catch (Exception e) {
 			this.getMessages().clear();

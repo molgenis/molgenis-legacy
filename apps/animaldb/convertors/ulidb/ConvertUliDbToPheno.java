@@ -59,14 +59,14 @@ public class ConvertUliDbToPheno
 	{
 		calendar = Calendar.getInstance();
 		
+		userName = login.getUserName();
+		
 		this.db = db;
 		this.login = login;
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
-		ct.makeObservationTargetNameMap(login.getUserId(), false);
+		ct.makeObservationTargetNameMap(userName, false);
 		logger = Logger.getLogger("LoadUliDb");
-		
-		userName = login.getUserName();
 		
 		highestNr = ct.getHighestNumberForPrefix("mm_") + 1;
 		
@@ -172,7 +172,8 @@ public class ConvertUliDbToPheno
 			db.add(valuesToAddList.subList(valueStart, valueEnd));
 			logger.debug("Values " + valueStart + " through " + valueEnd + " successfully added");
 		}
-
+		
+		ct.makeObservationTargetNameMap(userName, true);
 	}
 	
 	public void populateAnimal(String filename) throws Exception

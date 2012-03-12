@@ -134,7 +134,7 @@ public class LocationPlugin extends PluginModel<Entity>
 			if (action.equals("AddAnimals")) {
 //				String locName = ct.getObservationTargetLabel(locId);
 				// Prepare matrix with all animals
-//				List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserId());
+//				List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Location");
 //				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
@@ -203,7 +203,7 @@ public class LocationPlugin extends PluginModel<Entity>
 
 	private void prepareInLocMatrix(Database db, String locationName) throws Exception
 	{
-		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserId());
+		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 		List<String> measurementsToShow = new ArrayList<String>();
 		measurementsToShow.add("Location");
 		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
@@ -250,7 +250,7 @@ public class LocationPlugin extends PluginModel<Entity>
 		
 		// Populate location list and superloc map
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 			List<Integer> locationIdList = ct.getAllObservationTargetIds("Location", false, investigationIds);
 			if (locationIdList.size() > 0) {
 				this.locationList = ct.getObservationTargets(locationIdList);

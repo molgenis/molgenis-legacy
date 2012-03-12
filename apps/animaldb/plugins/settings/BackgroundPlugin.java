@@ -99,7 +99,7 @@ public class BackgroundPlugin extends PluginModel<Entity>
 			if (action.equals("addBackground")) {
 				String bkgName = request.getString("name");
 				int speciesId = request.getInt("species");
-				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
+				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserName());
 				int bkgId = ct.makePanel(investigationId, bkgName, this.getLogin().getUserId());
 				int protocolId = ct.getProtocolId("SetTypeOfGroup");
 				int measurementId = ct.getMeasurementId("TypeOfGroup");
@@ -125,7 +125,7 @@ public class BackgroundPlugin extends PluginModel<Entity>
 		
 		// Populate background and species list/map
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 			
 			backgroundList = ct.getAllMarkedPanels("Background", investigationIds);
 			

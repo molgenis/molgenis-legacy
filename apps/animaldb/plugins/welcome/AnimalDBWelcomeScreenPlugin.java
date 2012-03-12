@@ -70,7 +70,7 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 		// Entry point when logging in, so good place to (re)set the ObservationTarget label map
 		CommonService cs = CommonService.getInstance();
 		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
+		cs.makeObservationTargetNameMap(this.getLogin().getUserName(), true);
 		
 		news = new ArrayList<MolgenisNews>();
 		List<MolgenisNews> tmpNews;

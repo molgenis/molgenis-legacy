@@ -110,7 +110,7 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 //				
 //				CommonService cs = CommonService.getInstance();
 //				cs.setDatabase(db);
-//				cs.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
+//				cs.makeObservationTargetNameMap(this.getLogin().getUserName(), true);
 //			}
 //			
 //			if( action.equals("loadAnimals") )

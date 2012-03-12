@@ -255,7 +255,7 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 			reload = false;
 			userId = this.getLogin().getUserId().intValue();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));

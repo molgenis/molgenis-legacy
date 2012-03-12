@@ -104,17 +104,12 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 	}
 
 	public void handleRequest(Database db, Tuple request)
-	{
-//		String klazzName = "Animal";
-//		Class<Entity> k = Class.forName(klazzName + ".class");
-//		db.find(k);
-//		
+	{	
 		try {
 			String action = request.getString("__action");
 			
 			if (action.equals("addEvent")) {
 				SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", Locale.US);
-				int eventCounter = 0;
 				int animalCounter = 0;
 				int protocolId = request.getInt("eventtype");
 				boolean sepval = false;
@@ -126,7 +121,6 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 				
 				for (Integer targetid : selectedTargetIdList) {
-					eventCounter++;
 					
 					String animalSelectInterject = "0_"; 
 					if (sepval) {
@@ -134,7 +128,7 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 					}
 					
 					// First, make the event
-					int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
+					int invid = ct.getOwnUserInvestigationId(this.getLogin().getUserName());
 					ProtocolApplication app = ct.createProtocolApplication(invid, protocolId);
 					db.add(app);
 					int eventid = app.getId();
@@ -257,7 +251,7 @@ public class ApplyProtocolPluginOld extends PluginModel<Entity> {
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
-		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+		ct.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 		
 		try {
 			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());

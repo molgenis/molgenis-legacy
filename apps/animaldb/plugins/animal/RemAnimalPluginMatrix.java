@@ -128,7 +128,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 				}
 				Date deathDate = newDateOnlyFormat.parse(deathDateString);
 				
-				int investigationId = cs.getOwnUserInvestigationId(this.getLogin().getUserId());
+				int investigationId = cs.getOwnUserInvestigationId(this.getLogin().getUserName());
 				String notRemoved = "";
 				String removed = "";
 				for (Integer animalId : targetList) {
@@ -203,7 +203,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 			container = new Container();
 			div = new DivPanel();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Location");

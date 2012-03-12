@@ -91,12 +91,12 @@ public class ViewFamily extends PluginModel<Entity>
 	public void reload(Database db)
 	{	
 		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+		cs.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 		if (animalMatrixViewer != null) {
 			animalMatrixViewer.setDatabase(db);
 		} else {
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserId());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Mother");

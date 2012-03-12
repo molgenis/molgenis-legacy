@@ -95,7 +95,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		try
 		{
 			ct.setDatabase(db);
-			ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+			ct.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 			if (speciesId == -1) {
 				resetAllFormValues();
 				populateFirstTablePanel(db);
@@ -396,7 +396,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		db.add(valuesToAddList);
 		
 		// Update custom label map now new animals have been added
-		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
+		ct.makeObservationTargetNameMap(this.getLogin().getUserName(), true);
 		
 		this.setSuccess(animalsToAddList.size() + " animal(s) successfully added");
 	}
@@ -405,7 +405,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		ct.setDatabase(db);
 		
-		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 		
 		// panel for all elements
 		containingPanel = new DivPanel(this.getName() + "panel", "");
@@ -502,7 +502,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		ct.setDatabase(db);
 		
-		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 		
 		containingPanel = new DivPanel(this.getName() + "panel", "");
 		containingPanel.add(new Paragraph("<h2>Bring in animals: set genotype info</h2>"));

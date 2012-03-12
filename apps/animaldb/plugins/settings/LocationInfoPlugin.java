@@ -160,7 +160,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 		
 		// Populate location list and superloc map
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 			List<Integer> locationIdList = ct.getAllObservationTargetIds("Location", false, investigationIds);
 			if (locationIdList.size() > 0) {
 				this.locationList = ct.getObservationTargets(locationIdList);

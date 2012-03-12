@@ -90,12 +90,12 @@ public class EventViewerPlugin extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
-		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+		ct.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 		
 		// Populate target list
 		List<Integer> idList = null;
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 			idList = ct.getAllObservationTargetIds(null, false, investigationIds);
 		} catch (Exception e) {
 			e.printStackTrace();

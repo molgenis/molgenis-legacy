@@ -491,7 +491,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				}
 				
 				// Some variables we need later on
-				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
+				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserName());
 				Calendar myCal = Calendar.getInstance();
 				Date now = myCal.getTime();
 				
@@ -717,7 +717,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 						value.setEndtime(subProjectRemovalDate);
 						db.update(value);
 						
-						int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
+						int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserName());
 						
 						// If applicable, end status Active and set Death date
 						if (endstatus.equals("A. Dood in het kader van de proef") || endstatus.equals("B. Gedood na beeindiging van de proef")) {
@@ -899,7 +899,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					}
 					
 					// Make 'AnimalInSubproject' protocol application and add values
-					int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserId());
+					int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserName());
 					int protocolId = ct.getProtocolId("AnimalInSubproject");
 					ProtocolApplication app = ct.createProtocolApplication(investigationId, protocolId);
 					db.add(app);

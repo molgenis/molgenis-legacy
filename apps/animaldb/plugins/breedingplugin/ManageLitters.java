@@ -674,7 +674,7 @@ public class ManageLitters extends PluginModel<Entity>
 				int weanSize = Wean(db, request);
 				
 				// Update custom label map now new animals have been added
-				ct.makeObservationTargetNameMap(this.getLogin().getUserId(), true);
+				ct.makeObservationTargetNameMap(this.getLogin().getUserName(), true);
 				
 				this.weandate = null;
 				this.weanSizeFemale = 0;
@@ -737,7 +737,7 @@ public class ManageLitters extends PluginModel<Entity>
 	{
 		Date now = new Date();
 		int invid = ct.getObservationTargetById(this.genoLitterId).getInvestigation_Id();
-		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 		
 		// Set genotype date on litter -> this is how we mark a litter as genotyped
 		int protocolId = ct.getProtocolId("SetGenotypeDate");
@@ -1533,8 +1533,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 		
 		try {
-			int userId = this.getLogin().getUserId();
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(userId);
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 			
 			// Populate parent group list
 			this.setParentgroupList(ct.getAllMarkedPanels("Parentgroup", investigationIds));
@@ -1571,10 +1570,10 @@ public class ManageLitters extends PluginModel<Entity>
 	
 	private void reloadLitterLists(Database db) {
 		ct.setDatabase(db);
-		ct.makeObservationTargetNameMap(this.getLogin().getUserId(), false);
+		ct.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
 		
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserId());
+			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
 			
 			// Populate litter lists
 			litterList.clear();
@@ -1764,7 +1763,7 @@ public class ManageLitters extends PluginModel<Entity>
 	
 	private void reloadMatrixViewer() {
 		try {
-			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Line");
@@ -1790,7 +1789,7 @@ public class ManageLitters extends PluginModel<Entity>
 	
 	private void reloadLitterMatrixViewer() {
 		try {
-			List<String> investigationNames = ct.getAllUserInvestigationNames(userId);
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			
 			List<String> measurementsToShow = new ArrayList<String>();
 			measurementsToShow.add("Parentgroup");

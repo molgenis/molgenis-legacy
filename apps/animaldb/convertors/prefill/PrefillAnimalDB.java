@@ -127,6 +127,7 @@ public class PrefillAnimalDB
 		logger.debug("Panels successfully added");
 		db.add(valuesToAddList);
 		logger.debug("Values successfully added");
+		ct.makeObservationTargetNameMap(userName, true);
 	}
 	
 	public void populatePrefixes(String filename) throws Exception
