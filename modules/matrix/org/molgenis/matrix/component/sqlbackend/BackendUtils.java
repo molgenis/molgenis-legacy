@@ -6,6 +6,7 @@ package org.molgenis.matrix.component.sqlbackend;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -113,7 +114,8 @@ public class BackendUtils {
                 	//Column.getColumnType(dataType);
                 String value = rule.getValue().toString();
                 
-                List<Category> categories = m.getCategories();
+                
+                Collection<Category> categories = m.getCategories();
                 final Map<String, Integer> labelToCode = new HashMap<String, Integer>();
                 CollectionUtils.forAllDo(categories, new Closure() {
 					@Override
