@@ -39,6 +39,7 @@ public class ManageLines extends PluginModel<Entity>
 	private int source;
 	private int species;
 	private String remarks;
+	private int lineId = -1;
 	
 	private List<ObservationTarget> sourceList;
 	private List<ObservationTarget> lineList;
@@ -105,13 +106,18 @@ public class ManageLines extends PluginModel<Entity>
 	}
 	
 	public String getRemarksString(int lineId) throws DatabaseException {
-		List<String> remarksList = cs.getRemarks(lineId);
+		//List<String> remarksList = cs.getRemarks(lineId);
 		String returnString = "";
-		for (String remark : remarksList) {
-			returnString += (remark + "<br>");
-		}
-		if (returnString.length() > 0) {
-			returnString = returnString.substring(0, returnString.length() - 4);
+//		for (String remark : remarksList) {
+//			returnString += (remark + "<br>");
+//		}
+//		if (returnString.length() > 0) {
+//			returnString = returnString.substring(0, returnString.length() - 4);
+//		}
+		try {
+			returnString = cs.getMostRecentValueAsString(lineId, "Remark");
+		} catch (Exception e) {
+			returnString = "Error when retrieving remarks";
 		}
 		return returnString;
 	}
@@ -124,48 +130,69 @@ public class ManageLines extends PluginModel<Entity>
 			String action = request.getString("__action");
 			
 			if (action.equals("Edit")) {
-				int lineId = request.getInt("id");
-				this.setLineName(this.getLine(lineId));
-				this.setFullName(this.getFullName(lineId));
-				this.setSpecies(this.getSpeciesId(lineId));
-				this.setSource(this.getSourceId(lineId));
-				this.setRemarks(this.getRemarksString(lineId));
+				lineId = request.getInt("id");
+				lineName = this.getLine(lineId);
+				fullName = this.getFullName(lineId);
+				species = this.getSpeciesId(lineId);
+				source = this.getSourceId(lineId);
+				remarks = this.getRemarksString(lineId);
 			}
 			
 			if (action.equals("addLine")) {
-				// TODO: add or update!!
-				Date now = Calendar.getInstance().getTime();
-				this.setLineName(request.getString("lineName"));
-				// Make group
+				Date now = new Date();
+				lineName = request.getString("lineName");
 				int invid = cs.getOwnUserInvestigationId(this.getLogin().getUserId());
-				int lineId = cs.makePanel(invid, lineName, this.getLogin().getUserId());
+				// Make or get group
+				if (lineId == -1) {
+					lineId = cs.makePanel(invid, lineName, this.getLogin().getUserId());
+				} else {
+					ObservationTarget line = cs.getObservationTargetById(lineId);
+					line.setName(lineName); // maybe user has changed name
+					db.update(line);
+				}
 				// Mark group as Line using a special event
 				int protocolId = cs.getProtocolId("SetTypeOfGroup");
 				int measurementId = cs.getMeasurementId("TypeOfGroup");
 				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, lineId, "Line", 0));
+				// Set full name
+				fullName = request.getString("fullname");
+				protocolId = cs.getProtocolId("SetLineFullName");
+				measurementId = cs.getMeasurementId("LineFullName");
+				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
+						protocolId, measurementId, lineId, fullName, 0));
 				// Set species
-				this.setSpecies(request.getInt("species"));
+				species = request.getInt("species");
 				protocolId = cs.getProtocolId("SetSpecies");
 				measurementId = cs.getMeasurementId("Species");
 				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, lineId, null, species));
 				// Set source
-				this.setSource(request.getInt("source"));
+				source = request.getInt("source");
 				protocolId = cs.getProtocolId("SetSource");
 				measurementId = cs.getMeasurementId("Source");
 				db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
 						protocolId, measurementId, lineId, null, source));
 				// Set remark
 				if (request.getString("remarks") != null) {
+					remarks = request.getString("remarks");
 					protocolId = cs.getProtocolId("SetRemark");
 					measurementId = cs.getMeasurementId("Remark");
 					db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
-							protocolId, measurementId, lineId, request.getString("remarks"), 0));
+							protocolId, measurementId, lineId, remarks, 0));
 				}
-				
-				this.setSuccess("Line successfully added");
-				// TODO: reset everything so form is empty again
+				if (lineId == -1) {
+					this.setSuccess("Line successfully added");
+				} else {
+					this.setSuccess("Line successfully updated");
+				}
+				// Reset everything so form is empty again
+				lineId = -1;
+				lineName = null;
+				fullName = null;
+				species = -1;
+				source = -1;
+				remarks = null;
 			}
 			
 		} catch (Exception e) {
