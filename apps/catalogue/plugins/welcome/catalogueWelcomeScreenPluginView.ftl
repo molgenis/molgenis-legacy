@@ -31,7 +31,7 @@
 <tr><td colspan="2">
 
 <h1>Welcome at LifeLines biobank variable catalogue</h1>
-<p>Use this catalog to explore the data items available in LifeLineds and request data.</p>
+<p>Use this catalog to explore the data items available in Lifelines and request data.</p>
 
 </td></tr>
 <tr><td>
@@ -56,7 +56,7 @@ the <a href="http://www.nbic.nl">NBIC/biobanking task force</a>,
  <a href="http://p3gobservatory.org">P3G/Obiba</a> and <a href="http://www.bioshare.eu">EU-BioSHArE</a>. 
  The catalogue is structured compatible to the international <a href="http://www.observ-om.org">Observ' data standard for life science observation data</a>, 
  implemented using the <a href="http://www.molgenis.org">MOLGENIS</a> open source software platform and hosted by the <a href="target">Target</a> infrastructure project as part of [BEZWERINGSFORMULE INVULLEN]. 
- For more information on the softwaer, please contact: <a href="mailto:m.a.swertz@rug.nl">Morris Swertz</a>.
+ For more information on the software, please contact: <a href="mailto:m.a.swertz@rug.nl">Morris Swertz</a>.
 </p>
 </td>
 
