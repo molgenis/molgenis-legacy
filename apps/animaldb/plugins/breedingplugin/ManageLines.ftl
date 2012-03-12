@@ -84,6 +84,7 @@
 					<th>Source</th>
 					<th>Remarks</th>
 					<th></th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -96,6 +97,7 @@
 					<td>${screen.getSourceName(lineId)}</td>
 					<td>${screen.getRemarksString(lineId)}</td>
 					<td><a href='molgenis.do?__target=${screen.name}&__action=Edit&id=${line.id?string.computer}'>Edit</a></td>
+					<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'>Remove</a></td>
 				</tr>
 			</#list>
 			</tbody>

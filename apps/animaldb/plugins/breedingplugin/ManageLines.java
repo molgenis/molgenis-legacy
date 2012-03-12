@@ -138,17 +138,30 @@ public class ManageLines extends PluginModel<Entity>
 				remarks = this.getRemarksString(lineId);
 			}
 			
+			if (action.equals("Delete")) {
+				lineId = request.getInt("id");
+				List<ObservedValue> valList = db.query(ObservedValue.class).eq(ObservedValue.TARGET, lineId).
+						or().eq(ObservedValue.RELATION, lineId).find();
+				db.remove(valList);
+				ObservationTarget line = cs.getObservationTargetById(lineId);
+				db.remove(line);
+				this.setSuccess("Line successfully removed");
+			}
+			
 			if (action.equals("addLine")) {
 				Date now = new Date();
 				lineName = request.getString("lineName");
 				int invid = cs.getOwnUserInvestigationId(this.getLogin().getUserId());
+				String message = "";
 				// Make or get group
 				if (lineId == -1) {
 					lineId = cs.makePanel(invid, lineName, this.getLogin().getUserId());
+					message = "Line successfully added";
 				} else {
 					ObservationTarget line = cs.getObservationTargetById(lineId);
 					line.setName(lineName); // maybe user has changed name
 					db.update(line);
+					message = "Line successfully updated";
 				}
 				// Mark group as Line using a special event
 				int protocolId = cs.getProtocolId("SetTypeOfGroup");
@@ -181,11 +194,7 @@ public class ManageLines extends PluginModel<Entity>
 					db.add(cs.createObservedValueWithProtocolApplication(invid, now, null, 
 							protocolId, measurementId, lineId, remarks, 0));
 				}
-				if (lineId == -1) {
-					this.setSuccess("Line successfully added");
-				} else {
-					this.setSuccess("Line successfully updated");
-				}
+				this.setSuccess(message);
 				// Reset everything so form is empty again
 				lineId = -1;
 				lineName = null;
