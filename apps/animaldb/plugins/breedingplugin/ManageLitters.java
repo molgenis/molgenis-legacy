@@ -1424,9 +1424,28 @@ public class ManageLitters extends PluginModel<Entity>
 		int nrOfFemales = Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeFemale"));
 		int nrOfMales = Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeMale"));
 		int nrOfUnknowns = Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeUnknown"));
+		List<ObservedValue> litterValList = db.query(ObservedValue.class).eq(ObservedValue.FEATURE_NAME, "Litter").
+				eq(ObservedValue.RELATION, litter).find();
+		int femaleId = ct.getObservationTargetId("Female");
+		int maleId = ct.getObservationTargetId("Male");
+		List<String> females = new ArrayList<String>();
+		List<String> males = new ArrayList<String>();
+		List<String> unknowns = new ArrayList<String>();
+		for (ObservedValue litterVal : litterValList) {
+			int animalId = litterVal.getTarget_Id();
+			String animalName = litterVal.getTarget_Name();
+			if (ct.getMostRecentValueAsXref(animalId, "Sex") == femaleId) {
+				females.add(animalName);
+			} else if (ct.getMostRecentValueAsXref(animalId, "Sex") == maleId) {
+				males.add(animalName);
+			} else {
+				unknowns.add(animalName);
+			}
+		}
 		
 		// Labels for females
 		int nrOfCages = 0;
+		int femaleNr = 0;
 		while (nrOfFemales > 0) {
 			elementList = new ArrayList<String>();
 			// Line name + Nr. of females in cage
@@ -1451,7 +1470,7 @@ public class ManageLitters extends PluginModel<Entity>
 			elementList.add(litterBirthDateString);
 			// Nrs. for writing extra information behind
 			for (int i = 1; i <= cageSize; i++) {
-				elementList.add(i + ".");
+				elementList.add(females.get(femaleNr++) + ".");
 			}
 			
 			labelgenerator.addLabelToDocument(elementList);
@@ -1460,6 +1479,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 		
 		// Labels for males
+		int maleNr = 0;
 		while (nrOfMales > 0) {
 			elementList = new ArrayList<String>();
 			// Line name + Nr. of males in cage
@@ -1476,7 +1496,7 @@ public class ManageLitters extends PluginModel<Entity>
 			elementList.add(litterBirthDateString);
 			// Nrs. for writing extra information behind
 			for (int i = 1; i <= Math.min(nrOfMales, 2); i++) {
-				elementList.add(i + ".");
+				elementList.add(males.get(maleNr++) + ".");
 			}
 			
 			labelgenerator.addLabelToDocument(elementList);
@@ -1486,6 +1506,7 @@ public class ManageLitters extends PluginModel<Entity>
 		
 		// Labels for unknowns
 		// TODO: keep or group together with (fe)males?
+		int unknownNr = 0;
 		while (nrOfUnknowns > 0) {
 			elementList = new ArrayList<String>();
 			// Line name + Nr. of unknowns in cage
@@ -1502,7 +1523,7 @@ public class ManageLitters extends PluginModel<Entity>
 			elementList.add(litterBirthDateString);
 			// Nrs. for writing extra information behind
 			for (int i = 1; i <= Math.min(nrOfUnknowns, 2); i++) {
-				elementList.add(i + ".");
+				elementList.add(unknowns.get(unknownNr++) + ".");
 			}
 			
 			labelgenerator.addLabelToDocument(elementList);
