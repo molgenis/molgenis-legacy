@@ -35,7 +35,7 @@ public class JQueryDataTable extends Table
 				  "\n\"bInfo\": false," +
 				  "\n\"bAutoWidth\": false," +
 				  "\n\"bJQueryUI\": true," +
-				  "\n\"bSort\": true," +
+				  "\n\"bSort\": false," +
 				  "\n\"aoColumns\": [";
 		// Prevent fancy auto-detected sorting types by hard-setting to 'string' for every column
 		for (int i = 0; i < super.cols.size() + 1; i++) {
