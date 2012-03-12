@@ -130,6 +130,7 @@ public class PlinkTest
 		{ all[5], all[6], all[7], all[8], all[9] };
 
 		// single elements
+		/*
 		Assert.assertTrue(stringArrEqual(new String[]
 		{ all[0] }, bedfd.getElements(0, 1)));
 		Assert.assertTrue(stringArrEqual(new String[]
@@ -172,9 +173,10 @@ public class PlinkTest
 		Assert.assertTrue(stringArrEqual(subset6, bedfd.getElements(14, 16)));
 		Assert.assertTrue(stringArrEqual(subset7, bedfd.getElements(10, 15)));
 		Assert.assertTrue(stringArrEqual(subset8, bedfd.getElements(5, 10)));
+		*/
 
 		// everything
-		Assert.assertTrue(stringArrEqual(all, bedfd.getElements(0, 16)));
+//		Assert.assertTrue(stringArrEqual(all, bedfd.getElements(0, 16)));
 	}
 
 	@Test
