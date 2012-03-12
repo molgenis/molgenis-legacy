@@ -63,11 +63,11 @@
 			<menu name="ImportData" label="Import Data">
 				<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin"
 					label="Generic Importer" />
-				<plugin name="LLDataImportExcel" type="plugins.data.LLDataImportExcel"
+				<!--<plugin name="LLDataImportExcel" type="plugins.data.LLDataImportExcel"
 					label="Import LL data" />
 				<plugin name="DataShaperImportExcel" type="plugins.data.DataShaperImportExcel"
 					label="Import DataShaper data" />
-				<!-- <plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" 
+				--><!-- <plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" 
 					/> -->
 				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
 					label="Batch Upload" />
