@@ -127,10 +127,11 @@ downloadmatrixascsv<-function(id=NULL)
 	return(data)
 }
 
-downloadmatrixascsvCURL<-function(id=NULL)
+downloadmatrixascsvCURL <- function(id=NULL, timeout = 60000)
 {
+	myOpts = curlOptions(timeout.ms = timeout, verbose=TRUE)
 	data_url <- paste(serverpath,"/downloadmatrixascsv?id=",id,"&download=all&stream=true",sep="")
-	tetsing <- getURL(data_url, curl = ch)
+	tetsing <- getURL(data_url, curl = ch,.opts=myOpts)
 	tmpfile <- tempfile()
 	cat(tetsing,file=tmpfile)
 	data <- read.table(tmpfile,sep="\t",header=T,row.names=1,colClasses=c("character"),check.names=FALSE)
@@ -146,6 +147,7 @@ downloadmatrixascsvCURL<-function(id=NULL)
 	rownames(data) <- rownames
 	return(data)
 }
+
 
 #find by pkey or skey container and remove
 remove.datamatrix <- function(id=NULL, name=NULL, investigation_id=NULL)
