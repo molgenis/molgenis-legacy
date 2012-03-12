@@ -15,7 +15,7 @@ public class BedFileDriver
 	private File bedFile;
 
 	/**
-	 * Get the mode: mode 1 = SNP-major, mode 2 = individual-major
+	 * Get the mode: mode 1 = SNP-major, mode 0 = individual-major
 	 * 
 	 * @return
 	 */
@@ -135,12 +135,13 @@ public class BedFileDriver
 	 */
 	public String getElement(long index) throws Exception
 	{
-		RandomAccessFile raf = new RandomAccessFile(bedFile, "r");
-		raf.seek((index / 4) + 3);
-		String byteString = reverse(bits(raf.readByte()));
-		raf.close();
-		int bitpair = (int) (index % 4) * 2;
-		return byteString.substring(bitpair, bitpair + 2);
+		throw new Exception("fixme!");
+//		RandomAccessFile raf = new RandomAccessFile(bedFile, "r");
+//		raf.seek((index / 4) + 3);
+//		String byteString = reverse(bits(raf.readByte()));
+//		raf.close();
+//		int bitpair = (int) (index % 4) * 2;
+//		return byteString.substring(bitpair, bitpair + 2);
 	}
 
 	/**
@@ -153,16 +154,19 @@ public class BedFileDriver
 	 * @return
 	 * @throws IOException
 	 */
-	public String[] getElements(long from, long to) throws IOException
+	public String[] getElements(long from, long to, int paddingBitpairs, int pass) throws IOException
 	{
-		long start = (from / 4) + 3;
-		long stop = (to % 4) != 0 ? (to / 4) + 3 : (to / 4) + 2;
-		byte[] res = new byte[(int) (stop - start) + 1];
+		double paddingFraction = paddingBitpairs / 4.0;
+		// Start byte = byte position of start individual, corrected for padding 0's that get added at every SNP:
+		long start = (long)((from / 4.0) - (pass * paddingFraction) + pass + 3);
+		// Stop byte = byte position after last individual, corrected for padding 0's that get added at every SNP:
+		long stop = (long)((to / 4.0) - ((pass + 1) * paddingFraction) + (pass + 1) + 3);
+		byte[] res = new byte[(int) (stop - start)];
 		int res_index = 0;
-		String[] result = new String[(int) (to - from)];
-
+		String[] result = new String[(int) (to - from)]; // to - from = nr. of individuals
+		
 		RandomAccessFile raf = new RandomAccessFile(bedFile, "r");
-		raf.seek((from / 4) + 3);
+		raf.seek(start);
 		raf.read(res);
 		raf.close();
 
@@ -170,35 +174,26 @@ public class BedFileDriver
 		{
 			byte b = res[i];
 			String byteString = reverse(bits(b));
-
-			int fromBitpair;
-			if (i == 0)
+			
+			int toBit = 8; // normally we take the whole byte
+			if (i == res.length - 1) // except at the end, when we correct for padding 0's
 			{
-				fromBitpair = (int) (from % 4) * 2;
-			}
-			else
-			{
-				fromBitpair = 0;
-			}
-
-			int toBitpair;
-
-			if (i == res.length - 1)
-			{
-				toBitpair = (to % 4) != 0 ? (int) (to % 4) * 2 : 8;
-			}
-			else
-			{
-				toBitpair = 8;
+				// At the end, the string is padded with 0's -> check
+				for (int j = paddingBitpairs * 2; j < 8; j++) {
+					if (byteString.charAt(j) != '0') {
+						throw new IOException("Fatal error: padding 0's not present where expected!");
+					}
+				}
+				toBit -= (paddingBitpairs * 2); 
 			}
 
-			for (int pair = fromBitpair; pair < toBitpair; pair += 2)
+			for (int pair = 0; pair < toBit; pair += 2)
 			{
-				String bla = byteString.substring(pair, pair + 2);
-				result[res_index] = bla;
-				res_index++;
+				//System.out.print(res_index + " ");
+				result[res_index++] = byteString.substring(pair, pair + 2);
 			}
 		}
+		//System.out.println("");
 		return result;
 	}
 
