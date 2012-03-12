@@ -738,7 +738,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				+ measurement.getName() + "</td></tr>";
 
 		if (categoryNames.size() > 0) {
-			htmlValue += "<tr><td  class='box-body-label'>Permitted values:</td><td><table border=1>";
+			htmlValue += "<tr><td  class='box-body-label'>Permitted values:</td><td><table>";
 
 			for (String string : categoryNames) {
 				htmlValue += "<tr><td>";
@@ -770,7 +770,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				String value = ov.getValue();
 
 				if (featureName.startsWith("SOP")) {
-					htmlValue += "<tr><th>" + featureName + "</th><td><a href="
+					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td><a href="
 							+ value + ">" + value + "</a></td></tr>";
 				} else {
 
@@ -778,7 +778,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						featureName = "display name";
 					}
 
-					htmlValue += "<tr><th>" + featureName + "</th><td> "
+					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td> "
 							+ value + "</td></tr>";
 				}
 			}
