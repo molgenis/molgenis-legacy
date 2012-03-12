@@ -4,6 +4,10 @@
 
 	<!-- this holds all the settings for the generator -->
 	<property name="app_properties" value="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties"/>
+	
+	<!-- this holds the class name of the Selenium test -->
+	<property name="selenium_test_class" value="XqtlSeleniumTest" />
+	
 	<!-- this determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
