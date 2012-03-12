@@ -33,9 +33,10 @@
 	
 <h2>AnimalDB manuals</h2>
 
-<p>
-<a href="animaldb/AddingAnimals.pdf" target="_blank">Manual 1: Adding animals [NL]</a><br />
-<a href="animaldb/RemovingAnimals.pdf" target="_blank">Manual 2: Removing animals, using the matrix [NL]</a>
+<p><strong>Dutch / Nederlands</strong><br />
+<a href="animaldb/AddingAnimals.pdf" target="_blank">Handleiding 1: Toevoegen van dieren anders dan via de kweek</a><br />
+<a href="animaldb/RemovingAnimals.pdf" target="_blank">Handleiding 2: Verwijderen van dieren, gebruik van de matrix</a><br />
+<a href="animaldb/Breeding.pdf" target="_blank">Handleiding 3: Kweekbeheer</a>
 </p>
 
 

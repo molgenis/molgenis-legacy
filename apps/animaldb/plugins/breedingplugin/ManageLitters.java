@@ -623,7 +623,7 @@ public class ManageLitters extends PluginModel<Entity>
 			
 			if (litterMatrixViewer != null && action.startsWith(litterMatrixViewer.getName())) {
 				litterMatrixViewer.handleRequest(db, request);
-				this.action = "ShowDoneLitters";
+				this.action = "ShowLitters";
 				return;
 			}
 			
