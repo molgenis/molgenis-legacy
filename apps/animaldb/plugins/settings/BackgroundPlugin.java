@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -19,7 +20,6 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
 
 public class BackgroundPlugin extends PluginModel<Entity>
 {

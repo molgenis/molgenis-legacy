@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
@@ -24,7 +25,6 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
 
 public class ShowDecProjects extends PluginModel<Entity>
 {

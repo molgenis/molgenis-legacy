@@ -5,12 +5,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 
-import commonservice.CommonService;
 
 /**
  * This is the OLD implementation of the Matrix interface for the List Plugin.

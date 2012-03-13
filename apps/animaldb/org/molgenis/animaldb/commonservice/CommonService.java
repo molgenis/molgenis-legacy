@@ -1,4 +1,4 @@
-package commonservice;
+package org.molgenis.animaldb.commonservice;
 
 import java.io.IOException;
 import java.text.ParseException;

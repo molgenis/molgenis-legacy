@@ -2,9 +2,9 @@ package plugins.report;
 
 import java.util.List;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 
-import commonservice.CommonService;
 
 public abstract class AnimalDBReport {
 	

@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.batch.MolgenisBatch;
 import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.framework.db.Database;
@@ -29,7 +30,6 @@ import org.molgenis.util.Tuple;
 
 import app.servlet.MolgenisServlet;
 
-import commonservice.CommonService;
 
 public class ListPlugin extends PluginModel<Entity> {
 	private static final long serialVersionUID = -7341276676642021364L;

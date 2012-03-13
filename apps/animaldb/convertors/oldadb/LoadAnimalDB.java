@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -33,7 +34,6 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
 
 /**
  * Class to load data from Ate's old AnimalDB into the new version with the Pheno model.

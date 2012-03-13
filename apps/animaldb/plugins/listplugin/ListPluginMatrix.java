@@ -10,6 +10,7 @@ package plugins.listplugin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.GenericPlugin;
@@ -25,7 +26,6 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
 
 public class ListPluginMatrix extends GenericPlugin
 {

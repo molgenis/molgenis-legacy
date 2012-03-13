@@ -18,6 +18,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.core.Ontology;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
@@ -35,7 +36,6 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
 
 public class PrefillAnimalDB
 {

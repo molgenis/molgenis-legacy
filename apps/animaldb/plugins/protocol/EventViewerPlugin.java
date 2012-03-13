@@ -10,6 +10,7 @@ package plugins.protocol;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -17,7 +18,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
 
 public class EventViewerPlugin extends PluginModel<Entity>
 {

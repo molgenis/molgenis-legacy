@@ -6,13 +6,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.ObservedValue;
 
-import commonservice.CommonService;
 
 public class VWAReport4 extends AnimalDBReport
 {

@@ -22,6 +22,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -39,7 +40,6 @@ import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
 
 public class ConvertRhutDbToPheno
 {

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -33,7 +34,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import commonservice.CommonService;
 
 import convertors.locations.ImportAteLocations;
 
