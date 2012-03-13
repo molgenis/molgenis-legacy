@@ -720,7 +720,11 @@ public class ManageLitters extends PluginModel<Entity>
 				this.selectedParentgroup = -1;
 				reload(db);
 				reloadLitterLists(db);
-				reloadLitterMatrixViewer();
+				try {
+					reloadLitterMatrixViewer(ct.getObservationTargetLabel(this.genoLitterId));
+				} catch (Exception e) {
+					reloadLitterMatrixViewer(null);
+				}
 				this.getMessages().add(new ScreenMessage("All " + animalCount + " animals successfully genotyped", true));
 			}
 			
@@ -1550,7 +1554,7 @@ public class ManageLitters extends PluginModel<Entity>
 			userId = this.getLogin().getUserId().intValue();
 			reloadLitterLists(db);
 			reloadMatrixViewer();
-			reloadLitterMatrixViewer();
+			reloadLitterMatrixViewer(null);
 		}
 		
 		try {
@@ -1808,7 +1812,7 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	private void reloadLitterMatrixViewer() {
+	private void reloadLitterMatrixViewer(String litterName) {
 		try {
 			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			
@@ -1827,6 +1831,10 @@ public class ManageLitters extends PluginModel<Entity>
 					ObservedValue.VALUE, Operator.NOT, null));
 			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("GenotypeDate"),
 					ObservedValue.VALUE, Operator.NOT, null));
+			if (litterName != null) { // to restrict on only one litter
+				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
+						Panel.NAME, Operator.EQUALS, litterName));
+			}
 			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX, 
 					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), 
 					true, 1, false, false, filterRules, 

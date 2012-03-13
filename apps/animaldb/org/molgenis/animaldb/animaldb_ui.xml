@@ -16,7 +16,9 @@
 			<plugin name="DataViewer" type="org.molgenis.animaldb.plugins.listplugin.ListPluginMatrix"
 				label="Data viewer" />
 			<plugin name="TimelineViewer" type="org.molgenis.animaldb.plugins.protocol.EventViewerPluginMatrix"
-				label="Timeline viewer" />	
+				label="Timeline viewer" />
+			<plugin name="ViewFamily" type="org.molgenis.animaldb.plugins.breedingplugin.ViewFamily"
+				label="Family viewer" />
 			<plugin name="AddAnimal" type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
 			<menu name="breedingmodule" position="left" label="Breeding">
@@ -24,15 +26,13 @@
 					label="Parentgroups" />
 				<plugin name="ManageLitters" type="org.molgenis.animaldb.plugins.breedingplugin.ManageLitters"
 					label="Litters" />
-				<plugin name="ViewFamily" type="org.molgenis.animaldb.plugins.breedingplugin.ViewFamily"
-					label="Family tree" />
 			</menu>
 			<plugin name="RemAnimal" type="org.molgenis.animaldb.plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />	
 			<plugin name="LocationPlugin" type="org.molgenis.animaldb.plugins.location.LocationPlugin"
 				label="Animals in locations" />
 			<plugin name="PrintLabels" type="org.molgenis.animaldb.plugins.output.PrintLabelPlugin"
-				label="Make (cage) labels" />
+				label="(Cage) labels" />
 		</menu>
 		
 		<menu name="decmenu" position="left" label="DEC and NVWA">
