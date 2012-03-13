@@ -537,14 +537,12 @@ public class MatrixViewer extends HtmlWidget
 		divContents += new Paragraph("filterRules", "Applied filters:" + generateFilterRules()).render();
 
 		// add column filter
-		divContents += "<div style=\"vertical-align:middle\">Add filter:";
 		List<? extends Object> colHeaders = matrix.getColHeaders();
+		divContents += "<div style=\"clear:both\">Add filter:";
 		divContents += buildFilterChoices(colHeaders).render();
-		divContents += buildFilterOperator(d_selectedMeasurement).render();
-		divContents += buildFilterInput(d_selectedMeasurement).render();
-
-		divContents += new ActionInput(FILTERCOL, "", "Apply").render();
-		divContents += "</div>";
+		divContents += buildFilterOperator(d_selectedMeasurement).render(); // TODO: chosen() screws up vertical alignment under FF+IE
+		divContents += buildFilterInput(d_selectedMeasurement).render(); // TODO: chosen() screws up vertical alignment under FF+IE
+		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div>";
 		
 		// column header filter
 		@SuppressWarnings("rawtypes")
@@ -558,8 +556,7 @@ public class MatrixViewer extends HtmlWidget
 		// disable display of button for adding new measurements from here
 		measurementChooser.setIncludeAddButton(false);
 		divContents += new Newline().render();
-		divContents += new Newline().render();
-		divContents += "<div style=\"vertical-align:middle\">Add/remove columns:";
+		divContents += "<div style=\"clear: both; vertical-align:middle\">Add/remove columns:";
 		divContents += measurementChooser.render();
 		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
 		divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
@@ -677,7 +674,8 @@ public class MatrixViewer extends HtmlWidget
 			// No measurement or relation could be retrieved, stick with value
 		}
 		String field = ""; // Show fieldname only when it's something special (not value or relation_Name but for instance endtime)
-		if (mqr.getField() != null && !mqr.getField().equals("value") && !mqr.getField().contains("relation")) {
+		if (mqr.getField() != null && !mqr.getField().equals("value") && !mqr.getField().contains("relation") && 
+				!mqr.getField().equals("name")) {
 			field = "." + mqr.getField();
 		}
 		String outStr = "<br />" + measurementName + field + " " + mqr.getOperator().toString() + " " + 

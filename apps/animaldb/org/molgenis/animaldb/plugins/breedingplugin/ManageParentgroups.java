@@ -444,6 +444,9 @@ public class ManageParentgroups extends PluginModel<Entity>
 			if (action.equals("addParentgroup")) {
 				String newPgName = AddParentgroup(db, request);
 				pgMatrixViewer.setDatabase(db);
+				// Add filter on name of newly added PG:
+				pgMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
+						Individual.NAME, Operator.EQUALS, newPgName));
 				pgMatrixViewer.reloadMatrix(db, null);
 				pgMatrixViewerString = pgMatrixViewer.render();
 				this.setAction("init");
