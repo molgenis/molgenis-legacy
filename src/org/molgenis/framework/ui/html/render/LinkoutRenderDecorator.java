@@ -17,8 +17,8 @@ public class LinkoutRenderDecorator implements RenderDecorator
 		mypatterns.put("AC_[0-9]{6}.[0-9]+", "http://www.ncbi.nlm.nih.gov/sites/gquery?term=");
 		mypatterns.put("AC[0-9]{6}.[0-9]+", "http://www.ncbi.nlm.nih.gov/sites/gquery?term=");
 		mypatterns.put("A[tT][0-9]{1}[gG][0-9]{4,6}", "http://www.arabidopsis.org/servlets/Search?type=general&search_action=detail&method=1&show_obsolete=F&sub_type=gene&SEARCH_EXACT=4&SEARCH_CONTAINS=1&name=");
-	
-		mypatterns.put("WBGene[0-9]+", "http://www.wormbase.org/db/gene/gene?class=Gene&name=");
+		mypatterns.put("CS[0-9]{5}", "http://www.arabidopsis.org/servlets/Search?type=general&search_action=detail&method=1&show_obsolete=F&sub_type=germplasm&SEARCH_EXACT=4&SEARCH_CONTAINS=1&name=");	
+		mypatterns.put("WBGene[0-9]{8}", "http://www.wormbase.org/db/gene/gene?class=Gene&name=");
 	}
 	
 	public String render(String in){
@@ -31,7 +31,7 @@ public class LinkoutRenderDecorator implements RenderDecorator
 			
 			while (matcher.find()) {
 				//System.out.println( matcher.group() + " at index "+matcher.start()+" and ending at index "+matcher.end()+".\n");
-				matcher.appendReplacement(sb, "<a href="+mypatterns.get(key)+matcher.group()+ ">" + matcher.group() + "</a>");
+				matcher.appendReplacement(sb, "<a target=\"_blank\" href="+mypatterns.get(key)+matcher.group()+ ">" + matcher.group() + "</a>");
 			}
 			matcher.appendTail(sb);
 			out = sb.toString();
