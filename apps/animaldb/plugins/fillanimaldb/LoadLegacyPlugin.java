@@ -7,16 +7,16 @@
 
 package plugins.fillanimaldb;
 
+import org.molgenis.animaldb.convertors.oldadb.LoadAnimalDB;
+import org.molgenis.animaldb.convertors.prefill.PrefillAnimalDB;
+import org.molgenis.animaldb.convertors.rhutdb.ConvertRhutDbToPheno;
+import org.molgenis.animaldb.convertors.ulidb.ConvertUliDbToPheno;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import convertors.oldadb.LoadAnimalDB;
-import convertors.prefill.PrefillAnimalDB;
-import convertors.rhutdb.ConvertRhutDbToPheno;
-import convertors.ulidb.ConvertUliDbToPheno;
 
 public class LoadLegacyPlugin extends PluginModel<Entity>
 {

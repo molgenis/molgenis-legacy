@@ -1,4 +1,4 @@
-package convertors.prefill;
+package org.molgenis.animaldb.convertors.prefill;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

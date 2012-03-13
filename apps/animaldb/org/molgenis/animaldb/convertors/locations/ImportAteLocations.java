@@ -1,4 +1,4 @@
-package convertors.locations;
+package org.molgenis.animaldb.convertors.locations;
 
 import java.io.File;
 import java.io.IOException;

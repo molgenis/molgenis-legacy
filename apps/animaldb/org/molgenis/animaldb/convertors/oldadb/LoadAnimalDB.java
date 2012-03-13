@@ -1,4 +1,4 @@
-package convertors.oldadb;
+package org.molgenis.animaldb.convertors.oldadb;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

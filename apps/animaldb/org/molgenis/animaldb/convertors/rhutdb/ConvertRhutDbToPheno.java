@@ -1,4 +1,4 @@
-package convertors.rhutdb;
+package org.molgenis.animaldb.convertors.rhutdb;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

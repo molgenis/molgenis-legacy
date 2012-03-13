@@ -1,4 +1,4 @@
-package convertors.ulidb;
+package org.molgenis.animaldb.convertors.ulidb;
 
 import java.io.File;
 import java.io.IOException;
