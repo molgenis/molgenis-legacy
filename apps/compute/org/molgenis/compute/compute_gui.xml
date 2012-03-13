@@ -60,6 +60,7 @@
 			<form name="Institutes" entity="Institute" />
 			<form name="OntologyTerms" entity="OntologyTerm" />
 			<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
+			<form name="Machines" entity="Machine"/>
 		</menu>
 		<menu name="Pbs">
 			<plugin name="QSTAT" type="org.molgenis.compute.ui.QstatPlugin" />
