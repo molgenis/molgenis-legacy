@@ -100,6 +100,7 @@ public class MatrixViewer extends HtmlWidget
 	private int selectMultiple = 0;
 	private boolean showValueValidRange = false;
 	private boolean showDownloadOptions = false;
+	private boolean showNameFilter = true;
 
 	private String downloadLink = null;
 	private Measurement d_selectedMeasurement = null;
@@ -148,10 +149,6 @@ public class MatrixViewer extends HtmlWidget
 	/**
 	 * Default constructor.
 	 * 
-	 * @param callingScreenController
-	 * @param name
-	 * @param matrix
-	 * @param showLimitControls
 	 */
 	public MatrixViewer(ScreenController<?> callingScreenController, String name,
 			SliceableMatrix<?, ?, ?> matrix,
@@ -172,17 +169,26 @@ public class MatrixViewer extends HtmlWidget
 			this.matrix.getRules().addAll(filterRules);
 		}
 	}
+	
+	/**
+	 * Constructor, same as default, except you get to set whether you want a filter option on "name".
+	 * 
+	 */
+	public MatrixViewer(ScreenController<?> callingScreenController, String name,
+			SliceableMatrix<?, ?, ?> matrix,
+			boolean showLimitControls, int selectMultiple, 
+			boolean showDownloadOptions, boolean showValueValidRange,
+			boolean showNameFilter, List<MatrixQueryRule> filterRules)
+	{
+		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, 
+				showDownloadOptions, showValueValidRange, filterRules);
+		this.showNameFilter = showNameFilter;
+	}
 
 	/**
 	 * Constructor where you immediately restrict the column set by applying a
 	 * colHeader filter rule.
 	 * 
-	 * @param callingScreenController
-	 * @param name
-	 * @param matrix
-	 * @param showLimitControls
-	 * @param filterRules
-	 * @throws Exception
 	 */
 	public MatrixViewer(ScreenController<?> callingScreenController, String name,
 			SliceablePhenoMatrix<?, ?> matrix,
@@ -196,6 +202,23 @@ public class MatrixViewer extends HtmlWidget
 		{
 			this.matrix.getRules().add(columnRule);
 		}
+	}
+	
+	/**
+	 * Constructor where you immediately restrict the column set by applying a
+	 * colHeader filter rule and you get to set whether you want a filter option on "name".
+	 * 
+	 */
+	public MatrixViewer(ScreenController<?> callingScreenController, String name,
+			SliceablePhenoMatrix<?, ?> matrix,
+			boolean showLimitControls, int selectMultiple, 
+			boolean showDownloadOptions, boolean showValueValidRange,
+			boolean showNameFilter,
+			List<MatrixQueryRule> filterRules, MatrixQueryRule columnRule) throws Exception
+	{
+		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, 
+				showDownloadOptions, showValueValidRange, filterRules, columnRule);
+		this.showNameFilter = showNameFilter;
 	}
 
 	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
@@ -599,7 +622,9 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	private SelectInput buildFilterChoices(List<? extends Object> colHeaders) {
 		SelectInput colId = new SelectInput(COLID);
-		colId.addOption(-1, "name");
+		if (showNameFilter == true) {
+			colId.addOption(-1, "name");
+		}
 		if (colHeaders != null && colHeaders.size() > 0 && colHeaders.get(0) instanceof Entity)
 		{
 			List<? extends Entity> headers = (List<? extends Entity>) colHeaders;
@@ -655,7 +680,11 @@ public class MatrixViewer extends HtmlWidget
 		} catch (Exception e) {
 			// No measurement or relation could be retrieved, stick with value
 		}
-		String outStr = "<br />" + measurementName + " " + mqr.getOperator().toString() + " " + 
+		String field = ""; // Show fieldname only when it's something special (not value or relation_Name but for instance endtime)
+		if (mqr.getField() != null && !mqr.getField().equals("value") && !mqr.getField().contains("relation")) {
+			field = "." + mqr.getField();
+		}
+		String outStr = "<br />" + measurementName + field + " " + mqr.getOperator().toString() + " " + 
 				(value != null ? value.toString() : "NULL");
 		ActionInput removeButton = new ActionInput(REMOVEFILTER + "_" + filterCnt, "", "");
 		removeButton.setIcon("generated-res/img/delete.png");
