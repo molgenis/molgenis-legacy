@@ -48,13 +48,13 @@ public class ShowDecProjects extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_experiments_ShowDecProjects";
+		return "org_molgenis_animaldb_plugins_experiments_ShowDecProjects";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/experiments/ShowDecProjects.ftl";
+		return "org/molgenis/animaldb/plugins/experiments/ShowDecProjects.ftl";
 	}
 	
 	public int getListId()

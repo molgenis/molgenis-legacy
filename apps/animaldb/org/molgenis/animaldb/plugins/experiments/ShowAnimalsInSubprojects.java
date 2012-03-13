@@ -65,13 +65,13 @@ public class ShowAnimalsInSubprojects extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_experiments_ShowAnimalsInSubprojects";
+		return "org_molgenis_animaldb_plugins_experiments_ShowAnimalsInSubprojects";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/experiments/ShowAnimalsInSubprojects.ftl";
+		return "org/molgenis/animaldb/plugins/experiments/ShowAnimalsInSubprojects.ftl";
 	}
 	
 	public String getCurrentDate() {

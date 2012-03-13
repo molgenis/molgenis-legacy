@@ -44,13 +44,13 @@ public class GenePlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_settings_GenePlugin";
+		return "org_molgenis_animaldb_plugins_settings_GenePlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/settings/GenePlugin.ftl";
+		return "org/molgenis/animaldb/plugins/settings/GenePlugin.ftl";
 	}
 
 	public String getAction()

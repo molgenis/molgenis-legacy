@@ -129,12 +129,12 @@ public class ViewFamily extends PluginModel<Entity>
 
 	@Override
 	public String getViewName() {
-		return "plugins_breedingplugin_ViewFamily";
+		return "org_molgenis_animaldb_plugins_breedingplugin_ViewFamily";
 	}
 
 	@Override
 	public String getViewTemplate() {
-		return "plugins/breedingplugin/ViewFamilyView.ftl";
+		return "org/molgenis/animaldb/plugins/breedingplugin/ViewFamilyView.ftl";
 	}
 
 	@Override

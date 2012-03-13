@@ -44,13 +44,13 @@ public class AddSpecialGroupPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_specialgroups_AddSpecialGroupPlugin";
+		return "org_molgenis_animaldb_plugins_specialgroups_AddSpecialGroupPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/specialgroups/AddSpecialGroupPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/specialgroups/AddSpecialGroupPlugin.ftl";
 	}
 	
 	// Label list related methods:

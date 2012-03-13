@@ -4,7 +4,7 @@
  * 
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
 -->
-<#macro plugins_header_AnimalDBHeader screen>
+<#macro org_molgenis_animaldb_plugins_header_AnimalDBHeader screen>
 
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->

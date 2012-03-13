@@ -58,13 +58,13 @@ public class YearlyReportModule extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_report_YearlyReportModule";
+		return "org_molgenis_animaldb_plugins_report_YearlyReportModule";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/report/YearlyReportModule.ftl";
+		return "org/molgenis/animaldb/plugins/report/YearlyReportModule.ftl";
 	}
 	
 	private void makeReport(Database db) {

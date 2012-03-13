@@ -260,12 +260,12 @@ public class AnimalDbUsers extends PluginModel<Entity>
 
 	@Override
 	public String getViewName() {
-		return "plugins_system_AnimalDbUsers";
+		return "org_molgenis_animaldb_plugins_system_AnimalDbUsers";
 	}
 
 	@Override
 	public String getViewTemplate() {
-		return "plugins/system/AnimalDbUsersView.ftl";
+		return "org/molgenis/animaldb/plugins/system/AnimalDbUsersView.ftl";
 	}
 	
 	public String getCustomHtmlHeaders()

@@ -1,4 +1,4 @@
-<#macro plugins_system_AnimalDbUsers screen>
+<#macro org_molgenis_animaldb_plugins_system_AnimalDbUsers screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->

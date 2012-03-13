@@ -47,13 +47,13 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_system_CascadingDeleteAnimalsPlugin";
+		return "org_molgenis_animaldb_plugins_system_CascadingDeleteAnimalsPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/system/CascadingDeleteAnimalsPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/system/CascadingDeleteAnimalsPlugin.ftl";
 	}
 	
 	// Target related methods:

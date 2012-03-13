@@ -55,13 +55,13 @@ public class SpeciesPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_settings_SpeciesPlugin";
+		return "org_molgenis_animaldb_plugins_settings_SpeciesPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/settings/SpeciesPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/settings/SpeciesPlugin.ftl";
 	}
 
 	public String getAction()

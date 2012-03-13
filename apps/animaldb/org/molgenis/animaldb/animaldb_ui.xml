@@ -2,47 +2,47 @@
 
 <molgenis name="animaldb" label="AnimalDB">
 
-	<plugin name="AnimalDBHeader" type="plugins.header.AnimalDBHeader" />
+	<plugin name="AnimalDBHeader" type="org.molgenis.animaldb.plugins.header.AnimalDBHeader" />
 
 	<menu name="mainmenu" position="top_left">
 		
-		<plugin name="AnimalDBWelcomeScreen" type="plugins.welcome.AnimalDBWelcomeScreenPlugin"
+		<plugin name="AnimalDBWelcomeScreen" type="org.molgenis.animaldb.plugins.welcome.AnimalDBWelcomeScreenPlugin"
 			label="Welcome" />
 			
-		<plugin name="Manual" type="plugins.welcome.ManualPlugin"
+		<plugin name="Manual" type="org.molgenis.animaldb.plugins.welcome.ManualPlugin"
 			label="Manuals" />
 		
 		<menu name="animalmenu" position="left" label="Animals">
-			<plugin name="DataViewer" type="plugins.listplugin.ListPluginMatrix"
+			<plugin name="DataViewer" type="org.molgenis.animaldb.plugins.listplugin.ListPluginMatrix"
 				label="Data viewer" />
-			<plugin name="TimelineViewer" type="plugins.protocol.EventViewerPluginMatrix"
+			<plugin name="TimelineViewer" type="org.molgenis.animaldb.plugins.protocol.EventViewerPluginMatrix"
 				label="Timeline viewer" />	
-			<plugin name="AddAnimal" type="plugins.animal.AddAnimalPlugin"
+			<plugin name="AddAnimal" type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
 			<menu name="breedingmodule" position="left" label="Breeding">
-				<plugin name="ManageParentgroups" type="plugins.breedingplugin.ManageParentgroups"
+				<plugin name="ManageParentgroups" type="org.molgenis.animaldb.plugins.breedingplugin.ManageParentgroups"
 					label="Parentgroups" />
-				<plugin name="ManageLitters" type="plugins.breedingplugin.ManageLitters"
+				<plugin name="ManageLitters" type="org.molgenis.animaldb.plugins.breedingplugin.ManageLitters"
 					label="Litters" />
-				<plugin name="ViewFamily" type="plugins.breedingplugin.ViewFamily"
+				<plugin name="ViewFamily" type="org.molgenis.animaldb.plugins.breedingplugin.ViewFamily"
 					label="Family tree" />
 			</menu>
-			<plugin name="RemAnimal" type="plugins.animal.RemAnimalPluginMatrix"
+			<plugin name="RemAnimal" type="org.molgenis.animaldb.plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />	
-			<plugin name="LocationPlugin" type="plugins.location.LocationPlugin"
+			<plugin name="LocationPlugin" type="org.molgenis.animaldb.plugins.location.LocationPlugin"
 				label="Animals in locations" />
-			<plugin name="PrintLabels" type="plugins.output.PrintLabelPlugin"
+			<plugin name="PrintLabels" type="org.molgenis.animaldb.plugins.output.PrintLabelPlugin"
 				label="Make (cage) labels" />
 		</menu>
 		
 		<menu name="decmenu" position="left" label="DEC and NVWA">
-			<plugin name="DecStatus" type="plugins.projectportal.DecStatus"
+			<plugin name="DecStatus" type="org.molgenis.animaldb.plugins.projectportal.DecStatus"
 				label="DEC status portal" />
-			<plugin name="AddProject" type="plugins.experiments.ShowDecProjects"
+			<plugin name="AddProject" type="org.molgenis.animaldb.plugins.experiments.ShowDecProjects"
 				label="DEC applications" />
-			<plugin name="AddSubproject" type="plugins.experiments.ShowDecSubprojects"
+			<plugin name="AddSubproject" type="org.molgenis.animaldb.plugins.experiments.ShowDecSubprojects"
 				label="DEC subprojects" />
-			<plugin name="YearlyReportModule" type="plugins.report.YearlyReportModule"
+			<plugin name="YearlyReportModule" type="org.molgenis.animaldb.plugins.report.YearlyReportModule"
 				label="Yearly report" />
 		</menu>
 		
@@ -56,20 +56,20 @@
 		</menu -->
 			
 		<menu name="Settings" position="left" label="Settings">
-			<plugin name="ManageLines" type="plugins.breedingplugin.ManageLines"
+			<plugin name="ManageLines" type="org.molgenis.animaldb.plugins.breedingplugin.ManageLines"
 				label="Breeding lines" />
-			<plugin name="Locations" type="plugins.settings.LocationInfoPlugin"
+			<plugin name="Locations" type="org.molgenis.animaldb.plugins.settings.LocationInfoPlugin"
 				label="Locations" />
-			<plugin name="Species" type="plugins.settings.SpeciesPlugin"
+			<plugin name="Species" type="org.molgenis.animaldb.plugins.settings.SpeciesPlugin"
 				label="Species" />
-			<plugin name="Genes" type="plugins.settings.GenePlugin"
+			<plugin name="Genes" type="org.molgenis.animaldb.plugins.settings.GenePlugin"
 				label="Gene modifications" />
-			<plugin name="Backgrounds" type="plugins.settings.BackgroundPlugin"
+			<plugin name="Backgrounds" type="org.molgenis.animaldb.plugins.settings.BackgroundPlugin"
 				label="Backgrounds" />
 			<menu name="errorcorrectmenu" position="left" label="Correct errors">
-				<plugin name="ErrorCorrectionIndividual" type="plugins.system.ErrorCorrectionIndividualPlugin"
+				<plugin name="ErrorCorrectionIndividual" type="org.molgenis.animaldb.plugins.system.ErrorCorrectionIndividualPlugin"
 						label="Animals" />
-				<plugin name="ErrorCorrectionValue" type="plugins.system.ErrorCorrectionPlugin"
+				<plugin name="ErrorCorrectionValue" type="org.molgenis.animaldb.plugins.system.ErrorCorrectionPlugin"
 						label="Values" />
 			</menu>
 		</menu>
@@ -77,7 +77,7 @@
 		<menu name="Admin" position="left" label="Admin">
 			
 			<menu name="securitymenu" position="left" label="Security">
-				<plugin name="AnimalDbUsers" type="plugins.system.AnimalDbUsers" 
+				<plugin name="AnimalDbUsers" type="org.molgenis.animaldb.plugins.system.AnimalDbUsers" 
 					label="Manage users and investigations" />
 				<plugin name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser"
 					label="Upgrade persons to users"  />
@@ -95,16 +95,16 @@
 			</menu>
 			
 			<menu name="systemmenu" position="left" label="System">
-				<plugin name="PreFillDatabase" type="plugins.fillanimaldb.PreFillDatabasePlugin"
+				<plugin name="PreFillDatabase" type="org.molgenis.animaldb.plugins.fillanimaldb.PreFillDatabasePlugin"
 					label="Reset database" />
-				<plugin name="LoadLegacy" type="plugins.fillanimaldb.LoadLegacyPlugin"
+				<plugin name="LoadLegacy" type="org.molgenis.animaldb.plugins.fillanimaldb.LoadLegacyPlugin"
 					label="Import database" />
 				<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
 				<plugin name="ApplyProtocol" type="org.molgenis.protocol.ApplyProtocolPlugin"
 					label="Make/edit values" />
-				<plugin name="CascadingDeleteAnimals" type="plugins.system.CascadingDeleteAnimalsPlugin"
+				<plugin name="CascadingDeleteAnimals" type="org.molgenis.animaldb.plugins.system.CascadingDeleteAnimalsPlugin"
 					label="Delete targets" />
-				<!-- <plugin name="SetCustomLabelFeature" type="plugins.system.SetCustomLabelFeaturePlugin"
+				<!-- <plugin name="SetCustomLabelFeature" type="org.molgenis.animaldb.plugins.system.SetCustomLabelFeaturePlugin"
 					label="Set custom label feature" /> -->
 				<menu name="tablemenu" position="left" label="Content tables">
 					<form name="investigation" entity="Investigation" view="list" label="Investigations" />

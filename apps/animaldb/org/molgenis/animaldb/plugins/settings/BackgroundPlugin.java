@@ -58,13 +58,13 @@ public class BackgroundPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_settings_BackgroundPlugin";
+		return "org_molgenis_animaldb_plugins_settings_BackgroundPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/settings/BackgroundPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/settings/BackgroundPlugin.ftl";
 	}
 
 	public String getAction()

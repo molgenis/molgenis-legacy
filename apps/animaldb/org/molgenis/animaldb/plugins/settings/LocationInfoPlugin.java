@@ -66,13 +66,13 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_settings_LocationInfoPlugin";
+		return "org_molgenis_animaldb_plugins_settings_LocationInfoPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/settings/LocationInfoPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/settings/LocationInfoPlugin.ftl";
 	}
 
 	public String getAction()

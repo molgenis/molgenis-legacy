@@ -34,13 +34,13 @@ public class PreFillDatabasePlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_fillanimaldb_PreFillDatabasePlugin";
+		return "org_molgenis_animaldb_plugins_fillanimaldb_PreFillDatabasePlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/fillanimaldb/PreFillDatabasePlugin.ftl";
+		return "org/molgenis/animaldb/plugins/fillanimaldb/PreFillDatabasePlugin.ftl";
 	}
 
 	@Override

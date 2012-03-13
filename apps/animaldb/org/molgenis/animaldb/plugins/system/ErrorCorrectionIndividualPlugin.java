@@ -61,13 +61,13 @@ public class ErrorCorrectionIndividualPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_system_ErrorCorrectionIndividualPlugin";
+		return "org_molgenis_animaldb_plugins_system_ErrorCorrectionIndividualPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/system/ErrorCorrectionIndividualPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/system/ErrorCorrectionIndividualPlugin.ftl";
 	}
 
 	@Override

@@ -34,13 +34,13 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_welcome_AnimalDBWelcomeScreenPlugin";
+		return "org_molgenis_animaldb_plugins_welcome_AnimalDBWelcomeScreenPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/welcome/AnimalDBWelcomeScreenPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/welcome/AnimalDBWelcomeScreenPlugin.ftl";
 	}
 
 	@Override

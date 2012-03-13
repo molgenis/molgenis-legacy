@@ -35,13 +35,13 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_fillanimaldb_LoadLegacyPlugin";
+		return "org_molgenis_animaldb_plugins_fillanimaldb_LoadLegacyPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/fillanimaldb/LoadLegacyPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/fillanimaldb/LoadLegacyPlugin.ftl";
 	}
 
 	@Override

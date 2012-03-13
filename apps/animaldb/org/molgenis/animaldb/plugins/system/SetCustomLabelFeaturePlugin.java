@@ -40,13 +40,13 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_system_SetCustomLabelFeaturePlugin";
+		return "org_molgenis_animaldb_plugins_system_SetCustomLabelFeaturePlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/system/SetCustomLabelFeaturePlugin.ftl";
+		return "org/molgenis/animaldb/plugins/system/SetCustomLabelFeaturePlugin.ftl";
 	}
 
 	public void setMeasurementList(List<Measurement> measurementList) {
