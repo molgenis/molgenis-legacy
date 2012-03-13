@@ -1,4 +1,4 @@
-package test;
+package org.molgenis.animaldb.test;
 
 import java.util.Calendar;
 
