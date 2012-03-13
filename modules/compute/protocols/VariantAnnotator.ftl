@@ -17,6 +17,7 @@ inputs "${snpsgenomicannotatedvcf}"
 inputs "${mergedbam}"
 inputs "${dbsnpvcf}"
 inputs "${indexfile}"
+<#if capturingKit != "None">inputs "${baitsbed}"</#if>
 alloutputsexist "${snpeffsummaryhtml}" "${snpeffintermediate}" "${snpsfinalvcf}"
 
 ####Create snpEFF annotations on original input file####
@@ -42,6 +43,6 @@ java -jar -Xmx4g ${genomeAnalysisTKjar1411} \
 --snpEffFile ${snpeffintermediate} \
 -D ${dbsnpvcf} \
 -R ${indexfile} \
---variant ${snpsgenomicannotatedvcf} \
--o ${snpsfinalvcf} \
--L ${baitsbed}
+--variant ${snpsgenomicannotatedvcf} \<#if capturingKit != "None">
+-L ${baitsbed} \</#if>
+-o ${snpsfinalvcf}

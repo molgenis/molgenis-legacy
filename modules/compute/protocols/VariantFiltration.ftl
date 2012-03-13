@@ -12,7 +12,7 @@
 inputs "${snpsgenomicannotatedvcf}"
 inputs "${indelsmaskbed}"
 inputs "${indexfile}"
-inputs "${baitintervals}"
+<#if capturingKit != "None">inputs "${baitintervals}"</#if>
 inputs "${dbsnprod}"
 alloutputsexist "${snpsgenomicannotatedfilteredvcf}"
 
@@ -44,8 +44,8 @@ java -jar -Xmx10g ${genomeAnalysisTKjar} \
 -T VariantFiltration \
 -B:variant,VCF ${snpsgenomicannotatedvcf} \
 -B:mask,Bed ${indelsmaskbed} \
--R ${indexfile} \
--L ${baitintervals} \
+-R ${indexfile} \<#if capturingKit != "None">
+-L ${baitintervals} \</#if>
 -D ${dbsnprod} \
 -o ${snpsgenomicannotatedfilteredvcf} \
 --maskName InDel \

@@ -11,7 +11,8 @@
 #MOLGENIS walltime=66:00:00 nodes=1 cores=1 mem=12
 #FOREACH externalSampleID
 
-inputs "${mergedbam}" "${mergedbamindex}" "${indexfile}" "${targetintervals}"
+inputs "${mergedbam}" "${mergedbamindex}" "${indexfile}"
+<#if capturingKit != "None">inputs "${targetintervals}"</#if>
 alloutputsexist "${coveragegatk}" \
 "${coveragegatk}.sample_cumulative_coverage_counts" \
 "${coveragegatk}.sample_cumulative_coverage_proportions" \
@@ -27,8 +28,8 @@ ${genomeAnalysisTKjar} \
 -R ${indexfile} \
 -I ${mergedbam} \
 -o ${coveragegatk} \
--ct 1 -ct 2 -ct 5 -ct 10 -ct 15 -ct 20 -ct 30 -ct 40 -ct 50 \
--L ${targetintervals}
+-ct 1 -ct 2 -ct 5 -ct 10 -ct 15 -ct 20 -ct 30 -ct 40 -ct 50<#if capturingKit != "None"> \
+-L ${targetintervals}"</#if>
 
 #Create coverage graphs for sample
 ${rscript} ${cumcoveragescriptgatk} \
