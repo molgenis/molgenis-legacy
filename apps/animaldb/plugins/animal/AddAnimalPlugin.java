@@ -64,15 +64,15 @@ public class AddAnimalPlugin extends GenericPlugin
 	public DivPanel containingPanel = null;
 	// Variables for holding form values between wizard steps:
 	private int speciesId = -1;
-	private int backgroundId;
-	private int sourceId;
+	private int backgroundId = -1;
+	private int sourceId = -1;
 	private int locId = -1;
-	private String birthDate;
-	private Date entryDate;
-	private String animalType;
-	private String resResearcher;
-	private List<String> genes;
-	private List<String> genestates;
+	private String birthDate = null;
+	private Date entryDate = null;
+	private String animalType = null;
+	private String resResearcher = null;
+	private List<String> genes = null;
+	private List<String> genestates = null;
 
 	public AddAnimalPlugin(String name, ScreenController<?> parent)
 	{
@@ -132,8 +132,17 @@ public class AddAnimalPlugin extends GenericPlugin
 			String action = request.getAction();
 			containingPanel.setValuesFromRequest(request);
 			
+			if (action.equals("Cancel")) {
+				resetAllFields();
+			}
+			if (action.equals("Prev1")) {
+				populateFirstTablePanel(db);
+			}
 			if (action.equals("Cont1")) {
 				handleFirstScreenRequest(db, request);
+				populateSecondTablePanel(db);
+			}
+			if (action.equals("Prev2")) {
 				populateSecondTablePanel(db);
 			}
 			if (action.equals("Cont2")) {
@@ -145,13 +154,21 @@ public class AddAnimalPlugin extends GenericPlugin
 					populateFourthTablePanel(db);
 				}
 			}
+			if (action.equals("Prev3")) {
+				if (animalType.equals("B. Transgeen dier") && genes != null) {
+					populateThirdTablePanel(db);
+				} else {
+					// Skip third screen if animals are non-GMO or if no genes selected
+					populateSecondTablePanel(db);
+				}
+			}
 			if (action.equals("Cont3")) {
 				handleThirdScreenRequest(db, request);
 				populateFourthTablePanel(db);
 			}
 			if (action.equals("Save")) {
 				handleAddRequest(db, request);
-				speciesId = -1; // trigger for reload() to render first screen again
+				resetAllFields(); 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -159,6 +176,19 @@ public class AddAnimalPlugin extends GenericPlugin
 				this.setError("Error: " + e.getMessage());
 			}
 		}
+	}
+	
+	private void resetAllFields() {
+		speciesId = -1; // also trigger for reload() to render first screen again
+		backgroundId = -1;
+		sourceId = -1;
+		locId = -1;
+		birthDate = null;
+		entryDate = null;
+		animalType = null;
+		resResearcher = null;
+		genes = null;
+		genestates = null;
 	}
 	
 	private void handleFirstScreenRequest(Database db, Tuple request) throws Exception {
@@ -404,8 +434,8 @@ public class AddAnimalPlugin extends GenericPlugin
 	private void populateFirstTablePanel(Database db) throws DatabaseException, ParseException {
 		
 		ct.setDatabase(db);
-		
 		List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
+		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 		
 		// panel for all elements
 		containingPanel = new DivPanel(this.getName() + "panel", "");
@@ -422,6 +452,9 @@ public class AddAnimalPlugin extends GenericPlugin
 		species.setTooltip("Give the species.");
 		species.setId("species");
 		species.setOnchange("updateNamePrefixBox();");
+		if (speciesId != -1) {
+			species.setValue(speciesId);
+		}
 
 		// Populate source list
 		// All source types except "Eigen fok binnen uw organisatorische werkeenheid",
@@ -444,6 +477,9 @@ public class AddAnimalPlugin extends GenericPlugin
 		source.setDescription("Give the source from which the new animal(s) originate(s).");
 		source.setTooltip("Give the source from which the new animal(s) originate(s).");
 		source.setNillable(false);
+		if (sourceId != -1) {
+			source.setValue(sourceId);
+		}
 		
 		// Populate animal type list
 		animaltype = new SelectInput("animaltype");
@@ -455,23 +491,35 @@ public class AddAnimalPlugin extends GenericPlugin
 		animaltype.setDescription("Give the type of the new animal(s). Select type 2 (GMO) to modify the genotype of the animal(s).");
 		animaltype.setOnchange("showHideGenotypeDiv(this.value);");
 		animaltype.setNillable(false);
+		if (animalType != null) {
+			animaltype.setValue(animalType);
+		}
 
 		birthdate = new DateInput("birthdate");
 		birthdate.setLabel("Date of birth (if known):");
 		birthdate.setValue(null);
 		birthdate.setDescription("The date of birth of the animal(s).");
+		if (birthDate != null) {
+			birthdate.setValue(dateOnlyFormat.parse(birthDate));
+		}
 
 		entrydate = new DateInput("entrydate");
 		entrydate.setLabel("Date of entry:");
 		entrydate.setValue(new Date());
 		entrydate.setNillable(false);
 		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
+		if (entryDate != null) {
+			entrydate.setValue(entryDate);
+		}
 		
 		researcher = new StringInput("researcher");
 		researcher.setLabel("Responsible researcher:");
 		researcher.setNillable(true);
 		researcher.setDescription("Give the responsible researcher.");
 		researcher.setTooltip("Give the responsible researcher.");
+		if (resResearcher != null) {
+			researcher.setValue(resResearcher);
+		}
 		
 		// Populate locations list
 		location = new SelectInput("location");
@@ -483,8 +531,13 @@ public class AddAnimalPlugin extends GenericPlugin
 		location.setDescription("Give the location of the new animal(s).");
 		location.setTooltip("Give the location of the new animal(s).");
 		location.setNillable(true);
+		if (locId != -1) {
+			location.setValue(locId);
+		}
 		
-		ActionInput contbutton = new ActionInput("Cont1", "", "Continue");
+		DivPanel buttonPanel = new DivPanel("buttonPanel1", "", false);
+		ActionInput contbutton = new ActionInput("Cont1", "", "Next");
+		buttonPanel.add(contbutton);
 
 		// add everything to the panel
 		containingPanel.add(new Paragraph("<h2>Bring in animals: set general info</h2>"));
@@ -495,7 +548,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel.add(entrydate);
 		containingPanel.add(researcher);
 		containingPanel.add(location);
-		containingPanel.add(contbutton);
+		containingPanel.add(buttonPanel);
 	}
 	
 	private void populateSecondTablePanel(Database db) throws DatabaseException, ParseException {
@@ -520,6 +573,9 @@ public class AddAnimalPlugin extends GenericPlugin
 			}
 		}
 		background.setNillable(false);
+		if (backgroundId != -1) {
+			background.setValue(backgroundId);
+		}
 		containingPanel.add(background);
 		
 		if (animalType.equals("B. Transgeen dier")) {
@@ -530,11 +586,20 @@ public class AddAnimalPlugin extends GenericPlugin
 			for (String option : ct.getAllCodesForFeatureAsStrings("GeneModification")) {
 				gene.addOption(option, option);
 			}
+			if (genes != null) {
+				gene.setValue(genes);
+			}
 			containingPanel.add(gene);
 		}
 		
-		ActionInput contbutton = new ActionInput("Cont2", "", "Continue");
-		containingPanel.add(contbutton);
+		DivPanel buttonPanel = new DivPanel("buttonPanel2", "", false);
+		ActionInput cancelbutton = new ActionInput("Cancel", "", "Cancel");
+		ActionInput prevbutton = new ActionInput("Prev1", "", "Previous");
+		ActionInput contbutton = new ActionInput("Cont2", "", "Next");
+		buttonPanel.add(cancelbutton);
+		buttonPanel.add(prevbutton);
+		buttonPanel.add(contbutton);
+		containingPanel.add(buttonPanel);
 	}
 	
 	private void populateThirdTablePanel(Database db) throws DatabaseException, ParseException {
@@ -544,28 +609,31 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel = new DivPanel(this.getName() + "panel", "");
 		containingPanel.add(new Paragraph("<h2>Bring in animals: set genotype info (II)</h2>"));
 		
-		// first remove existing gene state boxes
-		if (genestateList != null) {
-			for (SelectInput genestateBox : genestateList) {
-				containingPanel.remove(genestateBox);
-			}
-		}
 		genestateList = new ArrayList<SelectInput>();
-		// then make fresh new gene state boxes for every gene selected
 		List<String> geneList = gene.getObject();
+		int geneNr = 0;
 		for (String geneName : geneList) {
 			SelectInput genestateBox = new SelectInput("genestate_" + geneName);
 			genestateBox.setLabel("State for " + geneName + ":");
 			for (String option : ct.getAllCodesForFeatureAsStrings("GeneState")) {
 				genestateBox.addOption(option, option);
 			}
+			if (genestates != null && genestates.get(geneNr) != null) {
+				genestateBox.setValue(genestates.get(geneNr));
+			}
 			containingPanel.add(genestateBox);
 			genestateList.add(genestateBox);
+			geneNr++;
 		}
 		
-		ActionInput contbutton = new ActionInput("Cont3", "", "Continue");
-		
-		containingPanel.add(contbutton);
+		DivPanel buttonPanel = new DivPanel("buttonPanel3", "", false);
+		ActionInput cancelbutton = new ActionInput("Cancel", "", "Cancel");
+		ActionInput prevbutton = new ActionInput("Prev2", "", "Previous");
+		ActionInput contbutton = new ActionInput("Cont3", "", "Next");
+		buttonPanel.add(cancelbutton);
+		buttonPanel.add(prevbutton);
+		buttonPanel.add(contbutton);
+		containingPanel.add(buttonPanel);
 	}
 	
 	private void populateFourthTablePanel(Database db) throws DatabaseException, ParseException {
@@ -663,7 +731,13 @@ public class AddAnimalPlugin extends GenericPlugin
 		numberofunknowns.setNillable(false);
 		numberofunknowns.setDescription("Give the number of animals of unkowon sex to add to the database.");
 
+		DivPanel buttonPanel = new DivPanel("buttonPanel4", "", false);
+		ActionInput cancelbutton = new ActionInput("Cancel", "", "Cancel");
+		ActionInput prevbutton = new ActionInput("Prev3", "", "Previous");
 		ActionInput contbutton = new ActionInput("Save", "", "Save");
+		buttonPanel.add(cancelbutton);
+		buttonPanel.add(prevbutton);
+		buttonPanel.add(contbutton);
 		
 		containingPanel.add(namebase);
 		containingPanel.add(startnumberhelper);
@@ -672,7 +746,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel.add(numberofmales);
 		containingPanel.add(numberoffemales);
 		containingPanel.add(numberofunknowns);
-		containingPanel.add(contbutton);
+		containingPanel.add(buttonPanel);
 	}
 	
 	public String render()
