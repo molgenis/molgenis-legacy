@@ -28,11 +28,14 @@
 <#if screen.action == "Manage">
 	
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
-	
-	<p><a href="molgenis.do?__target=${screen.name}&__action=AddAnimals">Add animals</a></p>
-
+	<div>
+		<input type='submit' class='addbutton' id='add' value='Add animals' onclick="__action.value='AddAnimals'" />
+	</div>
+	<br />
+	<hr />
+	<label for="animalsinlocmatrix">${screen.matrixLabel}</label>
 	${screen.renderAnimalsInLocMatrixViewer()}
-	
+	<hr />
 	<div class='row'>
 		<label for="moveto">Move selected to:</label>
 		<select name="moveto" id="moveto" class="selectbox">
@@ -40,17 +43,50 @@
 				<option value="${ll.id?string.computer}">${ll.name}</option>
 			</#list>
 		</select>
-		<input type='submit' class='addbutton' value='Apply' onclick="__action.value='Move'" />
+	</div>
+	<div class='row'>
+		<script>
+			$(function() {
+				$( "#startdate" ).datepicker({
+					numberOfMonths: 1,
+					showButtonPanel: true,
+					dateFormat: "yy-mm-dd"
+				});
+			});
+		</script>
+		<label for="startdate">Start date:</label>
+		<input type='text' id='startdate' name='startdate' />
+	</div>
+	<div class='row'>
+		<label for="move">&nbsp;</label>
+		<input type='submit' class='addbutton' id='move' value='Apply' onclick="__action.value='Move'" />
 	</div>
 	
 <#elseif screen.action == "AddAnimals">
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 	
+	<label for="animalsnotinlocmatrix">All animals:</label>
 	${screen.renderAnimalsNotInLocMatrixViewer()}
+	<hr />
+	<div class='row'>
+		<script>
+			$(function() {
+				$( "#addstartdate" ).datepicker({
+					numberOfMonths: 1,
+					showButtonPanel: true,
+					dateFormat: "yy-mm-dd"
+				});
+			});
+		</script>
+		<label for="addstartdate">Start date:</label>
+		<input type='text' id='addstartdate' name='addstartdate' />
+	</div>
+	<div class='row'>
+		<label for="applyadd">&nbsp;</label>
+		<input type='submit' class='addbutton' id="applyadd" value='Add' onclick="__action.value='ApplyAddAnimals'" />
+	</div>
 	
-	<input type='submit' class='addbutton' value='Add' onclick="__action.value='ApplyAddAnimals'" />
-
 <#else>
 
 	<#if screen.locationList?size gt 0>

@@ -9,10 +9,12 @@ package plugins.location;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.molgenis.framework.db.Database;
@@ -47,6 +49,7 @@ public class LocationPlugin extends PluginModel<Entity>
 	static String ANIMALSINLOCMATRIX = "animalsinlocmatrix";
 	static String ANIMALSNOTINLOCMATRIX = "animalsnotinlocmatrix";
 	private int locId = -1;
+	private String matrixLabel;
 	
 	public LocationPlugin(String name, ScreenController<?> parent)
 	{
@@ -87,6 +90,14 @@ public class LocationPlugin extends PluginModel<Entity>
 		this.action = action;
 	}
 	
+	public String getMatrixLabel() {
+		return matrixLabel;
+	}
+
+	public void setMatrixLabel(String matrixLabel) {
+		this.matrixLabel = matrixLabel;
+	}
+
 	public String getSuperLocName(int locationId) {
 		return superLocMap.get(locationId);
 	}
@@ -113,6 +124,9 @@ public class LocationPlugin extends PluginModel<Entity>
 		ct.setDatabase(db);
 		if (animalsInLocMatrixViewer != null) {
 			animalsInLocMatrixViewer.setDatabase(db);
+		}
+		if (animalsNotInLocMatrixViewer != null) {
+			animalsNotInLocMatrixViewer.setDatabase(db);
 		}
 		
 		try {
@@ -152,22 +166,26 @@ public class LocationPlugin extends PluginModel<Entity>
 						true, 2, false, true, null, 
 						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 				animalsNotInLocMatrixViewer.setDatabase(db);
-				animalsNotInLocMatrixViewer.setLabel("All animals:");
 			}
 			
 			if (action.equals("ApplyAddAnimals")) {
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+				String startDateString = request.getString("addstartdate");
+				Date startDate = newDateOnlyFormat.parse(startDateString);
 				List<ObservationElement> rows = (List<ObservationElement>) animalsNotInLocMatrixViewer.getSelection(db);
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(ANIMALSNOTINLOCMATRIX + "_selected_" + rowCnt) != null) {
 						int animalId = row.getId();
-						assignAnimalToLocation(db, invid, animalId, locId);
+						assignAnimalToLocation(db, invid, animalId, locId, startDate);
 					}
 					rowCnt++;
 				}
 				
 				animalsInLocMatrixViewer.reloadMatrix(null, null);
 				action = "Manage";
+				this.setSuccess("Animals successfully added to " + ct.getObservationTargetLabel(locId) + 
+						". Now showing animals in that location.");
 				return;
 			}
 			
@@ -178,26 +196,32 @@ public class LocationPlugin extends PluginModel<Entity>
 			
 			if (action.equals("Move")) {
 				int newLocationId = request.getInt("moveto");
+				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+				String startDateString = request.getString("startdate");
+				Date startDate = newDateOnlyFormat.parse(startDateString);
 				List<ObservationElement> rows = (List<ObservationElement>) animalsInLocMatrixViewer.getSelection(db);
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(ANIMALSINLOCMATRIX + "_selected_" + rowCnt) != null) {
 						int animalId = row.getId();
-						assignAnimalToLocation(db, invid, animalId, newLocationId);
+						assignAnimalToLocation(db, invid, animalId, newLocationId, startDate);
 					}
 					rowCnt++;
 				}
-				
-				prepareInLocMatrix(db, ct.getObservationTargetLabel(newLocationId));
+				String newLocName = ct.getObservationTargetLabel(newLocationId);
+				prepareInLocMatrix(db, newLocName);
 				action = "Manage";
+				this.setSuccess("Animals successfully moved to " + newLocName + ". Now switching to that location.");
 				return;
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			String message = "Error";
 			if (e.getMessage() != null) {
-				this.setError(e.getMessage());
+				message += ": " + e.getMessage();
 			}
+			this.setError(message);
 		}
 	}
 
@@ -220,10 +244,11 @@ public class LocationPlugin extends PluginModel<Entity>
 				true, 2, false, true, filterRules, 
 				new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
 		animalsInLocMatrixViewer.setDatabase(db);
-		animalsInLocMatrixViewer.setLabel("Animals in " + locationName + ":");
+		this.matrixLabel = "Animals in " + locationName + ":";
 	}
 
-	private void assignAnimalToLocation(Database db, int investigationId, int animalId, int locationId) throws DatabaseException, IOException, ParseException
+	private void assignAnimalToLocation(Database db, int investigationId, int animalId, int locationId,
+			Date startDate) throws DatabaseException, IOException, ParseException
 	{
 		// First end existing Location value(s)
 		Query<ObservedValue> q = db.query(ObservedValue.class);
@@ -233,14 +258,14 @@ public class LocationPlugin extends PluginModel<Entity>
 		List<ObservedValue> valueList = q.find();
 		if (valueList != null) {
 			for (ObservedValue value : valueList) {
-				value.setEndtime(new Date());
+				value.setEndtime(startDate);
 				db.update(value);
 			}
 		}
 		// Then make new one
 		int protocolId = ct.getProtocolId("SetLocation");
 		int featureId = ct.getMeasurementId("Location");
-		db.add(ct.createObservedValueWithProtocolApplication(investigationId, new Date(), null, 
+		db.add(ct.createObservedValueWithProtocolApplication(investigationId, startDate, null, 
 				protocolId, featureId, animalId, null, locationId));
 	}
 
@@ -275,16 +300,14 @@ public class LocationPlugin extends PluginModel<Entity>
 	
 	public String renderAnimalsInLocMatrixViewer() {
 		if (animalsInLocMatrixViewer != null) {
-			return "<p>" + animalsInLocMatrixViewer.getLabel() + "</p>" + 
-					animalsInLocMatrixViewer.render();
+			return animalsInLocMatrixViewer.render();
 		}
 		return "Error - location matrix not initialized";
 	}
 	
 	public String renderAnimalsNotInLocMatrixViewer() {
 		if (animalsNotInLocMatrixViewer != null) {
-			return "<p>" + animalsNotInLocMatrixViewer.getLabel() + "</p>" + 
-					animalsNotInLocMatrixViewer.render();
+			return animalsNotInLocMatrixViewer.render();
 		}
 		return "Error - location matrix not initialized";
 	}
