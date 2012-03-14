@@ -3,9 +3,9 @@ package org.molgenis.fieldtypes;
 import java.text.ParseException;
 
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
+import org.molgenis.framework.ui.html.EmailInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
-import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.model.MolgenisModelException;
 
 public class EmailField extends FieldType
@@ -61,7 +61,7 @@ public class EmailField extends FieldType
 	@Override
 	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
-		return new StringInput(name);
+		return new EmailInput(name);
 	}
 
 	@Override
