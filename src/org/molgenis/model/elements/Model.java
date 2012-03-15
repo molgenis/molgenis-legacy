@@ -187,7 +187,7 @@ public class Model
 	 */
 	public Vector<Entity> getEntities(boolean includeSystemTable)
 	{
-		return getEntities(includeSystemTable, false);
+		return getEntities(includeSystemTable, true);
 	}
 
 	public List<Module> getModules()
