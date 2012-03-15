@@ -1,4 +1,4 @@
-package org.molgenis.animaldb.plugins.report;
+package org.molgenis.animaldb.plugins.administration;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -1,5 +1,5 @@
 
-package org.molgenis.animaldb.plugins.breeding;
+package org.molgenis.animaldb.plugins.viewers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,12 +129,12 @@ public class ViewFamily extends PluginModel<Entity>
 
 	@Override
 	public String getViewName() {
-		return "org_molgenis_animaldb_plugins_breeding_ViewFamily";
+		return "org_molgenis_animaldb_plugins_viewers_ViewFamily";
 	}
 
 	@Override
 	public String getViewTemplate() {
-		return "org/molgenis/animaldb/plugins/breeding/ViewFamilyView.ftl";
+		return "org/molgenis/animaldb/plugins/viewers/ViewFamilyView.ftl";
 	}
 
 	@Override

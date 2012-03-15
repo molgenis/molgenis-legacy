@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.report;
+package org.molgenis.animaldb.plugins.administration;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,13 +58,13 @@ public class YearlyReportModule extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_animaldb_plugins_report_YearlyReportModule";
+		return "org_molgenis_animaldb_plugins_administration_YearlyReportModule";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/animaldb/plugins/report/YearlyReportModule.ftl";
+		return "org/molgenis/animaldb/plugins/administration/YearlyReportModule.ftl";
 	}
 	
 	private void makeReport(Database db) {

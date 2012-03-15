@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.protocol;
+package org.molgenis.animaldb.plugins.viewers;
 
 import java.text.ParseException;
 import java.util.ArrayList;

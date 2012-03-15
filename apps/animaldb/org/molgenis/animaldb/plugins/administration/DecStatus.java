@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.projectportal;
+package org.molgenis.animaldb.plugins.administration;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
