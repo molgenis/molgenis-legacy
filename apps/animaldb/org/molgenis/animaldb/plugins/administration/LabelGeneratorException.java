@@ -1,4 +1,4 @@
-package org.molgenis.animaldb.plugins.output;
+package org.molgenis.animaldb.plugins.administration;
 
 public class LabelGeneratorException extends Exception {
 

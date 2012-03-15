@@ -42,7 +42,7 @@
 			<plugin name="LocationPlugin" type="org.molgenis.animaldb.plugins.animal.LocationPlugin"
 				label="Animals in locations" />
 			<!-- PrintLabelPlugin; Goal: print (cage) labels with any kind of info on them; Flavor: Java-only -->
-			<plugin name="PrintLabels" type="org.molgenis.animaldb.plugins.output.PrintLabelPlugin"
+			<plugin name="PrintLabels" type="org.molgenis.animaldb.plugins.administration.PrintLabelPlugin"
 				label="(Cage) labels" />
 		</menu>
 		

@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.molgenis.animaldb.commonservice.CommonService;
-import org.molgenis.animaldb.plugins.output.LabelGenerator;
-import org.molgenis.animaldb.plugins.output.LabelGeneratorException;
+import org.molgenis.animaldb.plugins.administration.LabelGenerator;
+import org.molgenis.animaldb.plugins.administration.LabelGeneratorException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;

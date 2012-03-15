@@ -1,9 +1,10 @@
-package org.molgenis.animaldb.plugins.output;
+package org.molgenis.animaldb.plugins.administration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.List;
+
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
