@@ -14,12 +14,15 @@ import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.LongField;
+import org.molgenis.fieldtypes.StringField;
+import org.molgenis.fieldtypes.TextField;
 import org.molgenis.framework.db.AbstractMapper;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.TupleWriter;
@@ -435,6 +438,55 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 							|| rule.getOperator() == Operator.SORTDESC)
 					{
 
+					}
+					else if (rule.getOperator() == QueryRule.Operator.SEARCH)
+					{
+						// naive implementation, should use hibernate search when it comes
+						// available!
+						List<QueryRule> searchRules = new ArrayList<QueryRule>();
+
+						try
+						{
+							boolean addAND = false;
+							
+							// try create big OR filter for all fields and all search elements
+							// todo: enable string term concat using quotes
+							if(rule.getValue() != null && !rule.getValue().equals("")) for (String term : rule.getValue().toString().split(" "))
+							{
+								List<QueryRule> termRules = new ArrayList<QueryRule>();
+
+								// create different query rule depending on type
+								List<Field> fields = getDatabase().getMetaData()
+										.getEntity(create().getClass().getSimpleName()).getAllFields();
+								
+								for (Field f : fields)
+								{
+									if (f.getType() instanceof StringField
+											|| f.getType() instanceof TextField)
+									{
+										termRules.add(new QueryRule(f.getName(), Operator.LIKE,
+												term.trim()));
+										termRules.add(new QueryRule(Operator.OR));
+									}
+								}
+							
+								//add as big X or Y or Z subquery to our rules
+								searchRules.add(new QueryRule(termRules));
+								
+								if(addAND) searchRules.add(new QueryRule(Operator.AND));
+								addAND = true;
+							}
+							
+							where_clause.append("(");
+							where_clause.append(createWhereSql(true,
+									false, searchRules.toArray(new QueryRule[searchRules.size()])));
+							where_clause.append(")");
+							
+						}
+						catch (Exception e)
+						{
+							throw new DatabaseException(e);
+						}
 					}
 					else if (rule.getOperator() == QueryRule.Operator.NESTED)
 					{

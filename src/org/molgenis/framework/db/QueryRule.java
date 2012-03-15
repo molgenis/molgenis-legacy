@@ -68,6 +68,8 @@ public class QueryRule implements Cloneable {
 	 * Different types of rules that can be applied.
 	 */
 	public enum Operator {
+		/** search all fields */
+		SEARCH("search"),
 		/** 'field' equal to 'value' */
 		EQUALS("="),
 		/** 'field' in 'value' (value being a list). */
@@ -196,7 +198,7 @@ public class QueryRule implements Cloneable {
 	public QueryRule(Operator operator, Object value) {
 		if (operator == Operator.LIMIT || operator == Operator.OFFSET
 				|| operator == Operator.SORTASC
-				|| operator == Operator.SORTDESC) {
+				|| operator == Operator.SORTDESC || operator == Operator.SEARCH) {
 			this.operator = operator;
 			this.value = value;
 		} else {

@@ -444,4 +444,11 @@ public class InMemoryDatabase implements Database
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public <E extends Entity> List<E> search(Class<E> entityClass, String searchString) throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

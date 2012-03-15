@@ -528,4 +528,9 @@ public interface Database
 	 */
 	public <E extends Entity> Mapper<E> getMapperFor(Class<E> klazz)
 			throws DatabaseException;
+	
+	/** Generic search of database based on a search string. Searches string and text fields using 'LIKE'. 
+	 * Can be very expensive.*/
+	public <E extends Entity> List<E> search(Class<E> entityClass,
+			String searchString) throws DatabaseException;
 }

@@ -56,6 +56,13 @@ public class QueryImp<E extends Entity> implements Query<E> {
 		rules.add(new QueryRule(field, Operator.EQUALS, value));
 		return this;
 	}
+	
+	@Override
+	public Query<E> search(String searchTerms)
+	{
+		rules.add(new QueryRule(Operator.SEARCH, searchTerms));
+		return this;
+	}
 
 	@Override
 	public Query<E> in(String field, List<?> values) {
