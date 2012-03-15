@@ -26,34 +26,32 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-				<h4 style="display:inline"> Choose another study:</h4> 
-				<select name="investigation" id="investigation"> 
-					<#list screen.arrayInvestigations as inv>
-						<#assign invName = inv.name>
-						<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
-					</#list>
-				</select>
-				<script>$('#investigation').chosen();</script>
-				<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
-				<input type="image" src="res/img/refresh.png" alt="Submit" 
-					name="chooseInvestigation" style="vertical-align: middle;" 
-					value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-					DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
-					
-				<p/>	
-					
-			   <#if screen.isSelectedInv() == true>
-					<table class="box" width="100%" cellpadding="0" cellspacing="0">
-					    <tr><td class="box-header" colspan="2">  
-					        <div id="masstoggler"> 
-					        	Browse protocols and their variables for study '${screen.selectedInvestigation}':<br/><label>click to expand, collapse or show details</label>
-			 					<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
-			 					<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
-			 				</div>
-					    </td></tr>
-					    
-					    
-					    <tr><td class="box-body" style="width:50%;">
+				
+						   <#if screen.isSelectedInv() == true>
+								<table class="box" width="100%" cellpadding="0" cellspacing="0">
+								    <tr><td class="box-header" colspan="2">  
+								        <label>Choose a study:
+										<select name="investigation" id="investigation"> 
+											<#list screen.arrayInvestigations as inv>
+												<#assign invName = inv.name>
+												<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+											</#list>
+										</select>
+										<script>$('#investigation').chosen();</script>
+										<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
+										<input type="image" src="res/img/refresh.png" alt="Submit" 
+											name="chooseInvestigation" style="vertical-align: middle;" 
+											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
+											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
+										</label>
+										<div id="masstoggler"> 	
+										<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+						 				
+						 				<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
+						 				<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
+			 							</div>
+					    			</td></tr>
+					    			<tr><td class="box-body" style="width:50%;">
 					    
 			
 				<select id="selectedField" name="selectedField" title="choose field" name="chooseField" style="display:none"> 
@@ -91,8 +89,13 @@
 						<tr>
 							<td class="box-body">
 
-									<input type="submit" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Save selection" 
-									onclick="__action.value='DownloadMeasurements';"/>
+									<input class="saveSubmit" type="submit" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Save selection" 
+									onclick="__action.value='DownloadMeasurements';" 
+									style="color: #000; background: #8EC7DE;
+										   border: 2px outset #d7b9c9;
+										   font-size:15px;
+										   font-weight:bold;
+										   "/>
 									
 							</td>
 							<td class="box-body"></td>
