@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.experiments;
+package org.molgenis.animaldb.plugins.administration;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

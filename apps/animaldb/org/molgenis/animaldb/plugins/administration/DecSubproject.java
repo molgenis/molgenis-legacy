@@ -1,4 +1,4 @@
-package org.molgenis.animaldb.plugins.experiments;
+package org.molgenis.animaldb.plugins.administration;
 
 public class DecSubproject extends DecEntity {
 	private int decExpListId;

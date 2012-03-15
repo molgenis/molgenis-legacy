@@ -1,4 +1,4 @@
-package org.molgenis.animaldb.plugins.experiments;
+package org.molgenis.animaldb.plugins.administration;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
