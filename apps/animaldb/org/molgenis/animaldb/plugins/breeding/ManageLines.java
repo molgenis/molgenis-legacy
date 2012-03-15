@@ -63,13 +63,13 @@ public class ManageLines extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_animaldb_plugins_breedingplugin_ManageLines";
+		return "org_molgenis_animaldb_plugins_breeding_ManageLines";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/animaldb/plugins/breedingplugin/ManageLines.ftl";
+		return "org/molgenis/animaldb/plugins/breeding/ManageLines.ftl";
 	}
 	
 	public String getFullName(int lineId) {

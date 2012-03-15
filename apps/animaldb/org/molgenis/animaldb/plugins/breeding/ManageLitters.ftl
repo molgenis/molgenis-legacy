@@ -1,4 +1,4 @@
-<#macro org_molgenis_animaldb_plugins_breedingplugin_ManageLitters screen>
+<#macro org_molgenis_animaldb_plugins_breeding_ManageLitters screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->

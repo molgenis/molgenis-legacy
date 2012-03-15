@@ -1,4 +1,4 @@
-<#macro org_molgenis_animaldb_plugins_experiments_ShowDecProjects screen>
+<#macro org_molgenis_animaldb_plugins_administration_ShowDecProjects screen>
 	
 <!-- this shows a title and border -->
 	<div class="formscreen">

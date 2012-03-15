@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.fillanimaldb;
+package org.molgenis.animaldb.plugins.system;
 
 import org.molgenis.animaldb.convertors.oldadb.LoadAnimalDB;
 import org.molgenis.animaldb.convertors.prefill.PrefillAnimalDB;
@@ -35,13 +35,13 @@ public class LoadLegacyPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_animaldb_plugins_fillanimaldb_LoadLegacyPlugin";
+		return "org_molgenis_animaldb_plugins_system_LoadLegacyPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/animaldb/plugins/fillanimaldb/LoadLegacyPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/system/LoadLegacyPlugin.ftl";
 	}
 
 	@Override

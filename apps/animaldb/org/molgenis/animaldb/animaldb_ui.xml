@@ -7,11 +7,11 @@
 	<menu name="mainmenu" position="top_left">
 		
 		<!-- AnimalDBWelcomeScreenPlugin; Goal: start screen with news items; Flavor: Freemarker -->
-		<plugin name="AnimalDBWelcomeScreen" type="org.molgenis.animaldb.plugins.welcome.AnimalDBWelcomeScreenPlugin"
+		<plugin name="AnimalDBWelcomeScreen" type="org.molgenis.animaldb.plugins.accessibility.AnimalDBWelcomeScreenPlugin"
 			label="Welcome" />
 		
 		<!-- ManualPlugin; Goal: provide links to AnimalDB manuals; Flavor: Freemarker -->
-		<plugin name="Manual" type="org.molgenis.animaldb.plugins.welcome.ManualPlugin"
+		<plugin name="Manual" type="org.molgenis.animaldb.plugins.accessibility.ManualPlugin"
 			label="Manuals" />
 		
 		<menu name="animalmenu" position="left" label="Animals">
@@ -122,10 +122,10 @@
 			
 			<menu name="systemmenu" position="left" label="System">
 				<!-- PreFillDatabasePlugin; Goal: reset the database, putting back only the basic security entries; Flavor: Freemarker -->
-				<plugin name="PreFillDatabase" type="org.molgenis.animaldb.plugins.fillanimaldb.PreFillDatabasePlugin"
+				<plugin name="PreFillDatabase" type="org.molgenis.animaldb.plugins.system.PreFillDatabasePlugin"
 					label="Reset database" />
 				<!-- LoadLegacyPlugin; Goal: import legacy data from a ZIP, TXT or CSV file; Flavor: Freemarker -->
-				<plugin name="LoadLegacy" type="org.molgenis.animaldb.plugins.fillanimaldb.LoadLegacyPlugin"
+				<plugin name="LoadLegacy" type="org.molgenis.animaldb.plugins.system.LoadLegacyPlugin"
 					label="Import database" />
 				<!-- Archiver; Goal: export your whole database as a TAR.GZ file and import it again; Flavor: Freemarker -->
 				<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />

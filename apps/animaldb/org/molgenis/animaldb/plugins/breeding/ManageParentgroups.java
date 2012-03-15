@@ -283,13 +283,13 @@ public class ManageParentgroups extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_animaldb_plugins_breedingplugin_ManageParentgroups";
+		return "org_molgenis_animaldb_plugins_breeding_ManageParentgroups";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/animaldb/plugins/breedingplugin/ManageParentgroups.ftl";
+		return "org/molgenis/animaldb/plugins/breeding/ManageParentgroups.ftl";
 	}
 	
 	private void AddParents(Database db, List<Integer> parentIdList, String protocolName, String featureName, int parentgroupid, Date eventDate) 

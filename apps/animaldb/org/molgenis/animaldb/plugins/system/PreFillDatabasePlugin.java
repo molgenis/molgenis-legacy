@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.fillanimaldb;
+package org.molgenis.animaldb.plugins.system;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
@@ -34,13 +34,13 @@ public class PreFillDatabasePlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_animaldb_plugins_fillanimaldb_PreFillDatabasePlugin";
+		return "org_molgenis_animaldb_plugins_system_PreFillDatabasePlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/animaldb/plugins/fillanimaldb/PreFillDatabasePlugin.ftl";
+		return "org/molgenis/animaldb/plugins/system/PreFillDatabasePlugin.ftl";
 	}
 
 	@Override

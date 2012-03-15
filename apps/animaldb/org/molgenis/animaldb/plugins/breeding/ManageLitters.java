@@ -116,13 +116,13 @@ public class ManageLitters extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_animaldb_plugins_breedingplugin_ManageLitters";
+		return "org_molgenis_animaldb_plugins_breeding_ManageLitters";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/animaldb/plugins/breedingplugin/ManageLitters.ftl";
+		return "org/molgenis/animaldb/plugins/breeding/ManageLitters.ftl";
 	}
 	
 	// Parent group list related methods:

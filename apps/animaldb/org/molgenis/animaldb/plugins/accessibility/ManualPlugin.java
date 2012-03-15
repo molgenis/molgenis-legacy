@@ -29,13 +29,13 @@ public class ManualPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_animaldb_plugins_welcome_ManualPlugin";
+		return "org_molgenis_animaldb_plugins_accessibility_ManualPlugin";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/animaldb/plugins/welcome/ManualPlugin.ftl";
+		return "org/molgenis/animaldb/plugins/accessibility/ManualPlugin.ftl";
 	}
 
 	@Override
