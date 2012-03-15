@@ -6,5 +6,5 @@
     <!--| <a href="molgenis.do?__target=main&select=BbmriHelp"> Help </a> 
     | <a href="molgenis.do?__target=main&select=BbmriContact"> Contact </a>-->
  </div>
-		<img src="res/img/catalogue/lifelines-header.png">
+		<img src="res/img/catalogue/lifelinesHeader2.png">
 </#macro>
