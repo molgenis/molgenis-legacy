@@ -162,7 +162,7 @@ public class Model
 	/**
 	 * 
 	 */
-	public Vector<Entity> getEntities(boolean includeSystemTable)
+	public Vector<Entity> getEntities(boolean includeSystemTable, boolean includeNonConcretes)
 	{
 		Vector<Entity> entities = new Vector<Entity>();
 
@@ -170,12 +170,24 @@ public class Model
 		{
 			if (element.getClass().equals(Entity.class))
 			{
-				if(includeSystemTable || !((Entity) element).isSystem()) {
-					entities.add((Entity) element);
+				if(includeSystemTable || !((Entity) element).isSystem())
+				{
+					if(includeNonConcretes || !((Entity) element).isAbstract())
+					{
+						entities.add((Entity) element);
+					}
 				} 
 			}
 		}
 		return entities;
+	}
+	
+	/**
+	 * 
+	 */
+	public Vector<Entity> getEntities(boolean includeSystemTable)
+	{
+		return getEntities(includeSystemTable, false);
 	}
 
 	public List<Module> getModules()
