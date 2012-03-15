@@ -2,7 +2,7 @@
 
 <molgenis name="animaldb" label="AnimalDB">
 
-	<plugin name="AnimalDBHeader" type="org.molgenis.animaldb.plugins.header.AnimalDBHeader" />
+	<plugin name="AnimalDBHeader" type="org.molgenis.animaldb.plugins.accessibility.AnimalDBHeader" />
 
 	<menu name="mainmenu" position="top_left">
 		
@@ -39,7 +39,7 @@
 			<plugin name="RemAnimal" type="org.molgenis.animaldb.plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />
 			<!-- LocationPlugin; Goal: manage animals in locations; Flavor: Freemarker -->
-			<plugin name="LocationPlugin" type="org.molgenis.animaldb.plugins.location.LocationPlugin"
+			<plugin name="LocationPlugin" type="org.molgenis.animaldb.plugins.animal.LocationPlugin"
 				label="Animals in locations" />
 			<!-- PrintLabelPlugin; Goal: print (cage) labels with any kind of info on them; Flavor: Java-only -->
 			<plugin name="PrintLabels" type="org.molgenis.animaldb.plugins.output.PrintLabelPlugin"
