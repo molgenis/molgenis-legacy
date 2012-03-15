@@ -49,6 +49,10 @@ public interface Query<E extends Entity>
 	 */
 	public abstract Query<E> eq( String field, Object value );
 	
+	/** Shorthand for search all fields. Typically translates to 'like' on all textual fields
+	 * @param searchTerms the terms to search on, space seperated
+	 */
+	public abstract Query<E> search(String searchTerms) throws DatabaseException;
 	
 	/**
 	 * Shorthand for

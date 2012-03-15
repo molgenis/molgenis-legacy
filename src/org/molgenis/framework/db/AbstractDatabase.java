@@ -16,10 +16,13 @@ import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.fieldtypes.StringField;
+import org.molgenis.fieldtypes.TextField;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCQueryGernatorUtil;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.security.SimpleLogin;
+import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.Entity;
 import org.molgenis.util.ResultSetTuple;
@@ -77,7 +80,7 @@ public abstract class AbstractDatabase implements Database
 	{
 		return getMapperFor(klazz).find(rules);
 	}
-	
+
 	@Override
 	public <E extends Entity> void find(Class<E> entityClass,
 			TupleWriter writer, QueryRule... rules) throws DatabaseException
@@ -111,12 +114,12 @@ public abstract class AbstractDatabase implements Database
 	}
 
 	@Override
-	public <E extends Entity> List<E> findByExample(E example) throws DatabaseException
+	public <E extends Entity> List<E> findByExample(E example)
+			throws DatabaseException
 	{
-		 return (List<E>) getMapperFor(example.getClass()).findById(example);
+		return (List<E>) getMapperFor(example.getClass()).findById(example);
 	}
 
-	
 	@Override
 	public <E extends Entity> E findById(Class<E> entityClass, Object id)
 			throws DatabaseException
@@ -578,7 +581,8 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int add(E entity) throws DatabaseException
 	{
-		List<E> entities = getMapperFor((Class<E>) entity.getClass()).createList(1);
+		List<E> entities = getMapperFor((Class<E>) entity.getClass())
+				.createList(1);
 		entities.add(entity);
 		return add(entities);
 	}
@@ -605,7 +609,8 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int update(E entity) throws DatabaseException
 	{
-		List<E> entities = getMapperFor((Class<E>) entity.getClass()).createList(1);
+		List<E> entities = getMapperFor((Class<E>) entity.getClass())
+				.createList(1);
 		entities.add(entity);
 		return update(entities);
 	}
@@ -632,7 +637,8 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int remove(E entity) throws DatabaseException
 	{
-		List<E> entities = getMapperFor((Class<E>) entity.getClass()).createList(1);
+		List<E> entities = getMapperFor((Class<E>) entity.getClass())
+				.createList(1);
 		entities.add(entity);
 		return remove(entities);
 	}
@@ -838,5 +844,57 @@ public abstract class AbstractDatabase implements Database
 				throw new DatabaseException(e);
 			}
 		}
+	}
+
+	@Override
+	public <E extends Entity> List<E> search(Class<E> entityClass,
+			String searchString) throws DatabaseException
+	{
+		return find(entityClass, new QueryRule(Operator.SEARCH, searchString));
+		
+//		// naive implementation, should use hibernate search when it comes
+//		// available!
+//		List<QueryRule> searchRules = new ArrayList<QueryRule>();
+//		searchRules.addAll(Arrays.asList(rules));
+//
+//		try
+//		{
+//			boolean addAND = false;
+//			
+//			// try create big OR filter for all fields and all search elements
+//			// todo: enable string term concat using quotes
+//			for (String term : searchString.split(" "))
+//			{
+//				List<QueryRule> termRules = new ArrayList<QueryRule>();
+//
+//				// create different query rule depending on type
+//				List<Field> fields = this.getMetaData()
+//						.getEntity(entityClass.getSimpleName()).getAllFields();
+//				
+//				for (Field f : fields)
+//				{
+//					if (f.getType() instanceof StringField
+//							|| f.getType() instanceof TextField)
+//					{
+//						termRules.add(new QueryRule(f.getName(), Operator.LIKE,
+//								term.trim()));
+//						termRules.add(new QueryRule(Operator.OR));
+//					}
+//				}
+//			
+//				//add as big X or Y or Z subquery to our rules
+//				searchRules.add(new QueryRule(termRules));
+//				
+//				if(addAND) searchRules.add(new QueryRule(Operator.AND));
+//				addAND = true;
+//			}
+//		}
+//		catch (Exception e)
+//		{
+//			throw new DatabaseException(e);
+//		}
+//
+//		return this.find(entityClass,
+//				searchRules.toArray(new QueryRule[searchRules.size()]));
 	}
 }
