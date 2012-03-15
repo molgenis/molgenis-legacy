@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.welcome;
+package org.molgenis.animaldb.plugins.accessibility;
 
 import java.util.List;
 
