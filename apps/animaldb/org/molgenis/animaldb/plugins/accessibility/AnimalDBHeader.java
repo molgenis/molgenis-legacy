@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.header;
+package org.molgenis.animaldb.plugins.accessibility;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.DatabaseLogin;
