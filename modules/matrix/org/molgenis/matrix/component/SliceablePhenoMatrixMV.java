@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.collections.Closure;
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.ejb.EntityManagerImpl;
@@ -208,20 +210,17 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     @SuppressWarnings("unchecked")
 	@Override
     public List<C> getColHeaders() throws MatrixException {
-        final List<Measurement> result = new ArrayList<Measurement>();
-        boolean first = true;
-        for (Map.Entry<Protocol, List<Measurement>> entry : getMeasurementsByProtocol().entrySet()) {
-        	for(Measurement m  :entry.getValue()) {
-        		if(m.getName().equalsIgnoreCase("PA_ID")) {
-        			if(!first) {
-        				continue;
-        			}
-        			first = false;
-        		}
-        		result.add(m);
-        	}
-        }
-        return (List<C>) result;
+    	final List<C> result = new ArrayList<C>();
+    	
+    	List<Column> columns = getColumns();
+    	CollectionUtils.forAllDo(columns, new Closure() {
+			@Override
+			public void execute(Object arg0) {
+				result.add((C) ((Column)arg0).getMeasurement());
+			}
+		});
+    	
+    	return result;
     }
     
     public List<Column> getColumns() {
@@ -324,44 +323,23 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     @Deprecated
     public List<V>[][] getValueLists() throws MatrixException {
         try {
-            int columnCount = getVisibleColumnCount();
 
-            List<Measurement> colMeasurements = new ArrayList<Measurement>();
-            for (Entry<Protocol, List<Measurement>> entry : measurementsByProtocol.entrySet()) {
-				for (Measurement value : entry.getValue()) {
-					colMeasurements.add(value);
-				}
-			}
+            List<Measurement> colMeasurements = (List<Measurement>) getColHeaders();
             
             String sql = createQuery();
             System.out.println(sql);
 
             int offset = getRowOffset();
 			@SuppressWarnings("unchecked")
-			List tmpData = em.createNativeQuery(sql).setMaxResults(getRowLimit()).setFirstResult(offset).getResultList();
-			
-			List<Object[]> data = tmpData;
-			
-			int numColumns = 1;
+			List<Object[]> data = em.createNativeQuery(sql).setMaxResults(getRowLimit()).setFirstResult(offset).getResultList();
 
-			boolean oneColumn = false;
-			try {
-				if(data.get(0).getClass().getSimpleName().equals("Object[]")) { //hibernate returns ArrayList when 1 column is selected instead of Object[]
-					numColumns = data.get(0).length;
-				} else {
-					oneColumn = true;
-				}
-			} catch(Exception ex) {
-				oneColumn = true;				
-			}
-			
-			if(offset != 0) {
+			int numColumns = data.get(0).length;
+			if(offset > 0) { //oracle add a rownum column to the end
 				numColumns--;
 			}
-			
+			 
             final List<V>[][] valueMatrix = create(data.size(), numColumns);
 
-            if(!oneColumn) {
 	            for (int iRow = 0; iRow < data.size(); ++iRow) {
 					for (int iCol = 0; iCol < numColumns; ++iCol) {
 	                    valueMatrix[iRow][iCol] = new ArrayList<V>();
@@ -380,26 +358,6 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
 	                    valueMatrix[iRow][iCol].add(ov);
 	                }
 	            }
-            } else { //oneColumn
-            	List<Object> oneColData = tmpData; 
-            	
-	            for (int iRow = 0; iRow < oneColData.size(); ++iRow) {
-                    valueMatrix[iRow][0] = new ArrayList<V>();
-                    @SuppressWarnings("unchecked")
-					V ov = (V)new ObservedValue();
-                    if (oneColData.get(iRow) != null) {                    	
-                    	String value = oneColData.get(iRow).toString();
-                    	
-                    	//value = getCategoryLabel(colMeasurements, 0, value);                    	
-                        
-						ov.setValue(value);
-                    } else {
-                        ov.setValue("null");
-                    }
-
-                    valueMatrix[iRow][0].add(ov);
-	            }
-            }
             return valueMatrix;
         } catch (Exception ex) {
             throw new MatrixException(ex);

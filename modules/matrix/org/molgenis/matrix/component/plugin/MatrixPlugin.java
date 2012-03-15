@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jpa.JpaDatabase;
@@ -90,6 +92,20 @@ public class MatrixPlugin extends GenericPlugin
 							matrix, 
 							true, 0, true, true, Arrays.asList(new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow)));
 					targetMatrixViewer.setDatabase(db);
+					
+					//reset columns, TRICK to get the columns in correct Order when first time rendered
+					final List<Integer> columnIds = new ArrayList<Integer>();
+					CollectionUtils.collect((List<Measurement>)(List)patient.getFeatures(), 
+							new Transformer() {
+								@Override
+								public Object transform(Object arg0) {
+									Measurement m = (Measurement) arg0;
+									return m.getId();
+								}
+							}, 
+							columnIds);
+					targetMatrixViewer.resetColumns(columnIds);					
+					
 					div.add(targetMatrixViewer);
 					container.add(div);
 				} catch(MatrixException e) { 

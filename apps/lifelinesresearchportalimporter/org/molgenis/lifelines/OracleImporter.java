@@ -62,6 +62,28 @@ class Holder<T> {
 }
 
 public class OracleImporter {
+	public static void main(String[] args) throws Exception {
+		PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
+		
+		final String inputPath = "/Users/jorislops/Desktop/lifelinesdata/ll2/";
+
+		final Properties props = new Properties();
+		final FileInputStream in = new FileInputStream("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/db.properties");
+		props.load(in);
+		in.close();
+
+		final String url = props.getProperty("jdbc.url");
+		final String username = props.getProperty("jdbc.username");
+		final String password = props.getProperty("jdbc.password");
+
+		long begin = System.currentTimeMillis();
+		new OracleImporter(inputPath, username, password, url);
+
+		long end = System.currentTimeMillis();
+		long time = (end - begin) / 1000;
+		System.out.println("total Time to load dataset: " + time);
+	}
+	
 	private static final boolean SHARED_MEASUREMENTS = true;
 	private static final String DICT = "VW_DICT_ENG";
 	private static final String CATE = "VW_DICT_VALUESETS";
@@ -519,27 +541,5 @@ public class OracleImporter {
 
 		executor.shutdown();
 		executor.awaitTermination(1, TimeUnit.HOURS);
-	}
-
-	public static void main(String[] args) throws Exception {
-		PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
-		
-		final String inputPath = "/Users/jorislops/Desktop/lifelinesdata/ll1/";
-
-		final Properties props = new Properties();
-		final FileInputStream in = new FileInputStream("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/db.properties");
-		props.load(in);
-		in.close();
-
-		final String url = props.getProperty("jdbc.url");
-		final String username = props.getProperty("jdbc.username");
-		final String password = props.getProperty("jdbc.password");
-
-		long begin = System.currentTimeMillis();
-		new OracleImporter(inputPath, username, password, url);
-
-		long end = System.currentTimeMillis();
-		long time = (end - begin) / 1000;
-		System.out.println("total Time to load dataset: " + time);
 	}
 }

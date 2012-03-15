@@ -92,7 +92,7 @@ public class LoaderUtils {
         	} else if(database == eDatabase.ORACLE) {
         		return "cast(%s as number)";
         	}
-        } else if (dataType.equals("datetime") || dataType.equals("datum")) {
+        } else if (dataType.equals("datetime") || dataType.equals("datum") || dataType.equals("date")) {
         	if(database == eDatabase.MYSQL) {
         		return "cast(substr(value,1, 19) AS DATETIME) ";
         	} else {
@@ -104,9 +104,15 @@ public class LoaderUtils {
         	} else if(database == eDatabase.ORACLE) {
         		return "cast(%s as number)";
         	}
-        } else if (dataType.equals("string") || dataType.equals("tekst") || dataType.equals("text")) {
+        } else if (dataType.equals("string") || dataType.equals("tekst") || dataType.equals("text") || dataType.equals("varchar2")) {
             return "%s";
         } else if(dataType.equals("long")) {
+        	if(database == eDatabase.MYSQL) {
+        		return "cast(%s as DECIMAL)";	
+        	} else if(database == eDatabase.ORACLE) {
+        		return "cast(%s as number)";
+        	}
+        } else if(dataType.equals("number")) {
         	if(database == eDatabase.MYSQL) {
         		return "cast(%s as DECIMAL)";	
         	} else if(database == eDatabase.ORACLE) {

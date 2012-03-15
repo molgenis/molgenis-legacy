@@ -1408,13 +1408,41 @@ public class MatrixViewer extends HtmlWidget
 
 	}
 
-	private void resetColumns(final List<Integer> columnIds) throws DatabaseException {
+	public void resetColumns(final List<Integer> columnIds) throws DatabaseException {
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		LinkedHashMap<Protocol, List<Measurement>> pms = ((SliceablePhenoMatrixMV) matrix).getMeasurementsByProtocol();
+		final LinkedHashMap<Protocol, List<Measurement>> pms = ((SliceablePhenoMatrixMV) matrix).getMeasurementsByProtocol();
 		pms.clear();
 
 		//adding columns to pms in correct order
-		List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, columnIds).find();
+		final List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, columnIds).find();
+
+		//find paId to remove (paId is automatical placed into list of column by query backend)
+		final Measurement paId = (Measurement)CollectionUtils.find(measurements, new Predicate() {
+			@Override
+			public boolean evaluate(Object arg0) {
+				final Measurement m = (Measurement) arg0;
+				return m.getName().equalsIgnoreCase("PA_ID");
+			}
+		});
+
+		if(paId != null) {
+			columnIds.remove(new Integer(paId.getId()));
+		}
+
+		final Protocol patient = db.getEntityManager()
+			.createQuery("SELECT p FROM Protocol p WHERE Lower(p.name) = :name", Protocol.class)
+			.setParameter("name", "patient")
+			.getSingleResult();			
+		
+		final Measurement paIDPk = 
+			db.getEntityManager()
+			.createQuery("SELECT m FROM Measurement m JOIN m.featuresProtocolCollection p WHERE Lower(m.name) = :measurementName AND p.id = :protocolID", Measurement.class)
+			.setParameter("measurementName", "pa_id")
+			.setParameter("protocolID", patient.getId())			
+			.getSingleResult();
+		List<Measurement> patientMeasurment = new ArrayList();
+		patientMeasurment.add(paIDPk);
+		pms.put(patient, patientMeasurment);
 		for(final Integer colId : columnIds) {
 			Measurement m = (Measurement) CollectionUtils.find(measurements, new Predicate() {
 				public boolean evaluate(Object o) {
@@ -1433,7 +1461,7 @@ public class MatrixViewer extends HtmlWidget
 		System.out.println("----------");
 		for (final Entry<Protocol, List<Measurement>> entry : pms.entrySet()) {
 			for(Measurement m : entry.getValue()) {
-				System.out.println(m.getName());
+				System.out.println(m.getName() + " " + m.getId());
 			}
 		}		
 		System.out.println("----------");

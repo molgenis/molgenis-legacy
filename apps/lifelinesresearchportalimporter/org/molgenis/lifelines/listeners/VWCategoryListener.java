@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import org.molgenis.framework.db.Database;
@@ -37,6 +38,8 @@ public class VWCategoryListener extends ImportTupleListener {
 		this.shareMeasurements = shareMeasurements;
 	}
 
+	final private HashSet<String> uniqueLabelWithinCode = new HashSet<String>();
+	
 	@Override
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
 		String tableName = tuple.getString("TABNAAM");
@@ -64,9 +67,19 @@ public class VWCategoryListener extends ImportTupleListener {
 		category.getCategoriesMeasurementCollection().add(measurement); // add to
 		//measurement.getCategories(db)
 
-		measurement.getCategories().add(category);
-																// measurment
+		measurement.getCategories().add(category); // measurment
+		
+		
 		category.setName(fieldName + "_" + category.getLabel());
+		category.setName(fieldName + "_" + tuple.getString("VALLABELVAL"));
+
+		//check to see if label is Unique
+		final String uniqueLabel = fieldName + "_" + category.getLabel(); 
+		if(uniqueLabelWithinCode.contains(uniqueLabel)) {
+			throw new IllegalArgumentException(String.format("Non unique in category Label: %s", uniqueLabel));
+		}
+		uniqueLabelWithinCode.add(uniqueLabel);
+		
 		categories.add(category);
 	}
 

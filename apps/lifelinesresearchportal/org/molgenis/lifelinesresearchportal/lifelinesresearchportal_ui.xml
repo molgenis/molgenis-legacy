@@ -1,38 +1,43 @@
 <molgenis name="xqtl_lifelines" label="LifeLines Research Portal and Catalog">
 	<plugin name="molgenis_header" type="plugins.cluster.demo.xwbllheader.MolgenisHeader" />
 	<menu name="main">
-		<plugin label="Home" name="LifeLinesHome" type="plugins.cluster.demo.homepage.LifeLines" />
-		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="Logout/account settings"/>
-		<plugin label="Data loader" name="LifeLinesLoader" type="org.molgenis.lifelinesresearchportal.plugins.loader.LifeLinesLoaderPlugin" />
-<!-- 		<menu label="Catalog" name="LifeLinesCatalogMenu"> -->
-<!-- 			<plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" label="Catalogue Tree" />   -->
-<!-- 			<menu name="Downloads" label="Downloads"> -->
-<!-- 				<plugin name="MeasurementsDownloadForm" type="plugins.data.MeasurementsDownloadForm" label="Your Current Downloads" />   -->
-<!-- 				<plugin name="OldPlacedDownloads" type="plugins.data.OldPlacedDownloads" label="Your Old Downloads" />   -->
-<!-- 				<plugin label="Matrix Viewer" name="MatrixViewer" type="plugins.matrix.CatalogueMatrix" /> -->
-<!-- 				<plugin name="ApproveUserDownloads" type="plugins.data.ApproveUserDownloads" label="Approve User Downloads" />   -->
-<!-- 			</menu>	 -->
-<!-- 		</menu> -->
-		<plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
-		<plugin label="PLINK" name="PlinkDownload" type="org.molgenis.lifelinesresearchportal.plugins.plinkdownload.PlinkDownload" />
-		<menu label="Database tables" name="DatabaseTables">
-			<form label="Studies" name="investigation" entity="Investigation" view="list">
-				<form name="protocol" entity="Protocol" view="list" label="Protocols" />
-				<form name="protocolapplication" entity="ProtocolApplication"
-					view="list" label="Protocol applications" />
-				<form name="measurement" entity="Measurement" view="list"
-					label="Measurements" />
-				<form name="individual" entity="Individual" view="list" label="Individuals" />
-				<form name="observedvalue" entity="ObservedValue" view="list"
-					label="Observed values" />
-				<form name="category" entity="Category" view="list" label="Categories" />
-				<form name="ontology" entity="Ontology" view="list" label="Ontologies" />
-				<form name="ontologyterm" entity="OntologyTerm" view="list"
-					label="Ontology terms" />
-			</form>
-			<form name="shopcart" entity="shoppingCart" view="list" label="Shopping carts" />
-		</menu>
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
-		
+		<plugin label="Home" name="LifeLinesHome"
+			type="plugins.cluster.demo.homepage.LifeLines" />
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin"
+			label="Logout/account settings" />
+		<plugin label="Data loader" name="LifeLinesLoader"
+			type="org.molgenis.lifelinesresearchportal.plugins.loader.LifeLinesLoaderPlugin" />
+		<!-- <menu label="Catalog" name="LifeLinesCatalogMenu"> -->
+		<!-- <plugin name="LLcatalogueTreePlugin" type="plugins.LLcatalogueTree.LLcatalogueTreePlugin" 
+			label="Catalogue Tree" /> -->
+		<!-- <menu name="Downloads" label="Downloads"> -->
+		<!-- <plugin name="MeasurementsDownloadForm" type="plugins.data.MeasurementsDownloadForm" 
+			label="Your Current Downloads" /> -->
+		<!-- <plugin name="OldPlacedDownloads" type="plugins.data.OldPlacedDownloads" 
+			label="Your Old Downloads" /> -->
+		<!-- <plugin label="Matrix Viewer" name="MatrixViewer" type="plugins.matrix.CatalogueMatrix" 
+			/> -->
+		<!-- <plugin name="ApproveUserDownloads" type="plugins.data.ApproveUserDownloads" 
+			label="Approve User Downloads" /> -->
+		<!-- </menu> -->
+		<!-- </menu> -->
+		<plugin label="Data viewer" name="MatrixViewer"
+			type="org.molgenis.matrix.component.plugin.MatrixPlugin" />
+		<plugin label="PLINK" name="PlinkDownload"
+			type="org.molgenis.lifelinesresearchportal.plugins.plinkdownload.PlinkDownload" />
+		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml" />
+		<form name="investigation" entity="Investigation" label="Study details"
+			compact_view="name,description" hide_fields="accession">
+			<menu name="InvestigationMenu">
+				<form name="measurement" entity="Measurement" label="Measurements"
+					hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+				<form name="protocol" entity="Protocol" label="Protocols"
+					compact_view="Name,Features" hide_fields="ontologyReference,Investigation,TargetFilter">
+					<form name="ProtocolDocuments" entity="ProtocolDocument" />
+				</form>
+				<form name="PermittedValues" entity="Category" />
+			</menu>
+		</form>
+
 	</menu>
 </molgenis>
