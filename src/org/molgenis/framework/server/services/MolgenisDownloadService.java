@@ -173,27 +173,21 @@ public class MolgenisDownloadService implements MolgenisService
 		out.println("You can download these data:<br>");
 		out.println("<table>");
 		
-		for (String className : db.getEntityNames())
+		for (org.molgenis.model.elements.Entity eClass : db.getMetaData().getEntities(false, false))
 		{
-			String simpleEntityName = className.substring(className.lastIndexOf('.')+1);
-			Class<? extends Entity> klazz = db.getClassForName(simpleEntityName);
-			
+			String name = eClass.getName();
+			Class<? extends Entity> klazz = db.getClassForName(name);
+
 			//hide entities without read permission
 			if(db.getSecurity().canRead(klazz))
 			{
-				//hide auth entities
-				if(!(simpleEntityName.equals("MolgenisGroup") || simpleEntityName.equals("MolgenisPermission") || simpleEntityName.equals("MolgenisRole") || simpleEntityName.equals("MolgenisRoleGroupLink") || simpleEntityName.equals("MolgenisUser")))
-				{
-					out.println("<tr>");
-					out.println("<td><a href=\"" + (req.getRequest().getPathInfo().endsWith("/") ? "" :  "/" + mc.getVariant() + req.getServicePath() + "/") + className + "\">"
-						+ className + "</a></td>");
-					out.println("<td><a href=\"" + (req.getRequest().getPathInfo().endsWith("/") ? "" : "/" + mc.getVariant() + req.getServicePath() + "/") + className
-						+ "?__showQueryDialogue=true\">"
-						+ "filter" + "</a></td>");
-					out.println("</tr>");
-				}
-				
-				
+				out.println("<tr>");
+				out.println("<td><a href=\"" + (req.getRequest().getPathInfo().endsWith("/") ? "" :  "/" + mc.getVariant() + req.getServicePath() + "/") + name + "\">"
+					+ name + "</a></td>");
+				out.println("<td><a href=\"" + (req.getRequest().getPathInfo().endsWith("/") ? "" : "/" + mc.getVariant() + req.getServicePath() + "/") + name
+					+ "?__showQueryDialogue=true\">"
+					+ "filter" + "</a></td>");
+				out.println("</tr>");
 			}
 		}
 		out.println("</table>");
