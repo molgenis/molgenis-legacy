@@ -8,14 +8,21 @@
 package plugins.system.appcustomizer;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.molgenis.core.RuntimeProperty;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
+
+import plugins.cluster.demo.ClusterDemo;
 
 public class AppCustomizer extends PluginModel
 {
@@ -30,11 +37,19 @@ public class AppCustomizer extends PluginModel
 	{
 		return "plugins_system_appcustomizer_AppCustomizer";
 	}
+	
+	private Boolean hideLoginButtons;
 
 	@Override
 	public String getViewTemplate()
 	{
 		return "plugins/system/appcustomizer/AppCustomizer.ftl";
+	}
+	
+	
+
+	public Boolean getHideLoginButtons() {
+		return hideLoginButtons;
 	}
 
 	@Override
@@ -88,6 +103,21 @@ public class AppCustomizer extends PluginModel
 				
 				this.setMessages(new ScreenMessage("New CSS uploaded.", true));
 			}
+			
+			else if("showHomeButtons".equals(request.getAction()))
+			{
+				setHideHomeScreenButtons(db, "false");
+			}
+			
+			else if("hideHomeButtons".equals(request.getAction()))
+			{
+				setHideHomeScreenButtons(db, "true");
+			}
+			
+			else
+			{
+				throw new Exception("unknown request action: " + request.getAction());
+			}
 
 
 		}
@@ -97,11 +127,52 @@ public class AppCustomizer extends PluginModel
 		}
 	}
 	
+	private void setHideHomeScreenButtons(Database db, String setMe) throws DatabaseException
+	{
+		List<RuntimeProperty> rp = db.find(RuntimeProperty.class, new QueryRule(RuntimeProperty.NAME, Operator.EQUALS, ClusterDemo.XQTL_HOMESCREEN_HIDELOGINBUTTONS));
+		if(rp.size() == 0)
+		{
+			RuntimeProperty newRp = new RuntimeProperty();
+			newRp.setName(ClusterDemo.XQTL_HOMESCREEN_HIDELOGINBUTTONS);
+			newRp.setValue(setMe);
+			db.add(newRp);
+		}
+		else if(rp.size() == 1)
+		{
+			rp.get(0).setValue(setMe);
+			db.update(rp);
+		}
+		else
+		{
+			throw new DatabaseException("runtime prop size exceeds 1");
+		}
+	}
+	
 
 	@Override
 	public void reload(Database db)
 	{
-		
+		try
+		{
+			List<RuntimeProperty> rp = db.find(RuntimeProperty.class, new QueryRule(RuntimeProperty.NAME, Operator.EQUALS, ClusterDemo.XQTL_HOMESCREEN_HIDELOGINBUTTONS));
+			
+			if(rp.size() == 1 && rp.get(0).getValue().equals("false"))
+			{
+				this.hideLoginButtons = false;
+			}
+			else if(rp.size() == 1 && rp.get(0).getValue().equals("true"))
+			{
+				this.hideLoginButtons = true;
+			}
+			else
+			{
+				this.hideLoginButtons = false;
+			}
+		}
+		catch(DatabaseException e)
+		{
+			this.setMessages(new ScreenMessage("Could not query runtime propery: " + e.getMessage(), false));
+		}
 
 	}
 

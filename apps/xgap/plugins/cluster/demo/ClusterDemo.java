@@ -18,6 +18,7 @@ import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.MolgenisUser;
+import org.molgenis.core.RuntimeProperty;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -48,13 +49,14 @@ public class ClusterDemo extends PluginModel<Entity>
 		super(name, parent);
 	}
 	
+	public static final String XQTL_HOMESCREEN_HIDELOGINBUTTONS = "xqtl_homescreen_hideloginbuttons";
+	
 	private boolean userIsAdminAndDatabaseIsEmpty;
 	private String validpath;
 	private boolean loggedIn;
 	private RenderDecorator linkouter;
 	private StorageHandler sh;
-	
-	
+	private Boolean hideLoginButtons;
 	
 	public RenderDecorator getLinkouter()
 	{
@@ -74,6 +76,10 @@ public class ClusterDemo extends PluginModel<Entity>
 	public String getValidpath()
 	{
 		return validpath;
+	}
+	
+	public Boolean getHideLoginButtons() {
+		return hideLoginButtons;
 	}
 
 	public void setValidpath(String validpath)
@@ -308,6 +314,33 @@ public class ClusterDemo extends PluginModel<Entity>
 		db.add(makeBioinfoPartOfBio);
 		
 	}
+	
+	private void queryHideLoginSetting(Database db)
+	{
+		
+		try
+		{
+			List<RuntimeProperty> rp = db.find(RuntimeProperty.class, new QueryRule(RuntimeProperty.NAME, Operator.EQUALS, XQTL_HOMESCREEN_HIDELOGINBUTTONS));
+			
+			if(rp.size() == 1 && rp.get(0).getValue().equals("false"))
+			{
+				this.hideLoginButtons = false;
+			}
+			else if(rp.size() == 1 && rp.get(0).getValue().equals("true"))
+			{
+				this.hideLoginButtons = true;
+			}
+			else
+			{
+				this.hideLoginButtons = false;
+			}
+		}
+		catch(DatabaseException e)
+		{
+			this.setMessages(new ScreenMessage("Could not query runtime propery: " + e.getMessage(), false));
+		}
+	}
+	
 
 	@Override
 	public void reload(Database db)
@@ -316,6 +349,8 @@ public class ClusterDemo extends PluginModel<Entity>
 		{
 			linkouter = new LinkoutRenderDecorator();
 		}
+		
+		queryHideLoginSetting(db);
 
 		sh = new StorageHandler(db);
 				

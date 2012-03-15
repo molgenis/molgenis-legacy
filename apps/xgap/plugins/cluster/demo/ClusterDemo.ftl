@@ -59,6 +59,7 @@
 				<div style="height: 10px">&nbsp;</div>
 			</td>
 		</tr>
+		<#if !screen.hideLoginButtons>
 		<tr>
 			<td align="center">
 				<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
@@ -125,6 +126,7 @@
 				</div>
 			</td>
 		</tr>
+		</#if>
 		<tr>
 			<td align="center" colspan="7" >
 				<div align="left">

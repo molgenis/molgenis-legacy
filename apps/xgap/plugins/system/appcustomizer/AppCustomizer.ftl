@@ -37,6 +37,13 @@
 	<input type="submit" value="Upload" onclick="__action.value='uploadCss';return true;"/><br>
 	
 	<br>
+	Toggle the display of the buttons on the home screen. (Login with the default passwords as biologist/bioinformatician and subsequently 'Browse data', 'Upload data', etc)
+	<br>
+	<#if screen.hideLoginButtons>
+		<input type="submit" value="Show login home screen buttons" id="showHomeButtons" onclick="document.forms.${screen.name}.__action.value = 'showHomeButtons'; document.forms.${screen.name}.submit();"/>
+	<#else>
+		<input type="submit" value="Hide login home screen buttons" id="hideHomeButtons" onclick="document.forms.${screen.name}.__action.value = 'hideHomeButtons'; document.forms.${screen.name}.submit();"/>
+	</#if>
 
 <#--end of your plugin-->	
 			</div>
