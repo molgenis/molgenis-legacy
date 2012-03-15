@@ -256,10 +256,7 @@ public class ClusterDemo extends PluginModel<Entity>
 				"org.molgenis.cluster.ParameterSet",
 				"org.molgenis.cluster.ParameterValue",
 				"org.molgenis.cluster.SelectedData",
-				"org.molgenis.cluster.SelectedParameter",
-				
-				//needed to get file storage location
-				"org.molgenis.core.RuntimeProperty"
+				"org.molgenis.cluster.SelectedParameter"
 				};
 		
 		for(String e : entities){
@@ -269,6 +266,21 @@ public class ClusterDemo extends PluginModel<Entity>
 			mp.setPermission("write"); //might fail? need Selenium test!!
 			db.add(mp);
 		}
+		
+		//let biologist read RuntimeProperty, for file storage location and other app settings
+		MolgenisPermission mp = new MolgenisPermission();
+		mp.setEntity_ClassName("org.molgenis.core.RuntimeProperty");
+		mp.setRole_Name("biologist");
+		mp.setPermission("read");
+		db.add(mp);
+		
+		//let anonymous read RuntimeProperty, for file storage location and other app settings
+		MolgenisPermission mp2 = new MolgenisPermission();
+		mp2.setEntity_ClassName("org.molgenis.core.RuntimeProperty");
+		mp2.setRole_Name("anonymous");
+		mp2.setPermission("read");
+		db.add(mp2);
+		
 	}
 	
 	/**

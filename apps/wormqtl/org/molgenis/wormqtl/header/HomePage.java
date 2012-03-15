@@ -129,7 +129,7 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					"org.molgenis.data.DecimalDataElement", "org.molgenis.data.TextDataElement",
 
 					// allow reading dataset backend files
-					"org.molgenis.core.MolgenisFile", "org.molgenis.core.RuntimeProperty",
+					"org.molgenis.core.MolgenisFile",
 
 					// allow to see how uploaded this dataset
 					"org.molgenis.protocol.ProtocolApplication_Performer"
