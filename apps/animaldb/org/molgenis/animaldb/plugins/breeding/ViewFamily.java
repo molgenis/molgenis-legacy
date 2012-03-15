@@ -1,5 +1,5 @@
 
-package org.molgenis.animaldb.plugins.breedingplugin;
+package org.molgenis.animaldb.plugins.breeding;
 
 import java.util.ArrayList;
 import java.util.List;

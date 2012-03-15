@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.breedingplugin;
+package org.molgenis.animaldb.plugins.breeding;
 
 import java.io.File;
 import java.text.ParseException;
