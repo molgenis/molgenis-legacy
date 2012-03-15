@@ -89,16 +89,17 @@
 						<tr>
 							<td class="box-body">
 
-									<input class="saveSubmit" type="submit" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Save selection" 
+									
+									
+							</td>
+							<td class="box-body">
+							<input class="saveSubmit" type="submit" id="DownloadMeasurementsSubmit" name="DownloadMeasurementsSubmit" value="Save selection" 
 									onclick="__action.value='DownloadMeasurements';" 
 									style="color: #000; background: #8EC7DE;
 										   border: 2px outset #d7b9c9;
 										   font-size:15px;
 										   font-weight:bold;
-										   "/>
-									
-							</td>
-							<td class="box-body"></td>
+										   "/></td>
 						</tr>
 					</table>
 			   </#if>	
