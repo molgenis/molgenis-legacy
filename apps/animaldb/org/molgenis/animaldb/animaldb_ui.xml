@@ -16,23 +16,23 @@
 		
 		<menu name="animalmenu" position="left" label="Animals">
 			<!-- ListPluginMatrix; Goal: matrix for viewing animal values; Flavor: Java-only -->
-			<plugin name="DataViewer" type="org.molgenis.animaldb.plugins.listplugin.ListPluginMatrix"
+			<plugin name="DataViewer" type="org.molgenis.animaldb.plugins.viewers.ListPluginMatrix"
 				label="Data viewer" />
 			<!-- ListPluginMatrix; Goal: view values for one animal, in a timeline; Flavor: Java-only -->
 			<plugin name="TimelineViewer" type="org.molgenis.animaldb.plugins.protocol.EventViewerPluginMatrix"
 				label="Timeline viewer" />
 			<!-- ViewFamily; Goal: view litter and genotype info for one animal; Flavor: Freemarker -->
-			<plugin name="ViewFamily" type="org.molgenis.animaldb.plugins.breedingplugin.ViewFamily"
+			<plugin name="ViewFamily" type="org.molgenis.animaldb.plugins.breeding.ViewFamily"
 				label="Family viewer" />
 			<!-- AddAnimalPlugin; Goal: bring in animals other than through breeding; Flavor: Java-only -->
 			<plugin name="AddAnimal" type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
 			<menu name="breedingmodule" position="left" label="Breeding">
 				<!-- ManageParentgroups; Goal: create and browse parentgroups; Flavor: Freemarker -->
-				<plugin name="ManageParentgroups" type="org.molgenis.animaldb.plugins.breedingplugin.ManageParentgroups"
+				<plugin name="ManageParentgroups" type="org.molgenis.animaldb.plugins.breeding.ManageParentgroups"
 					label="Parentgroups" />
 				<!-- ManageLitters; Goal: create, wean, genotype and browse litters, print cage labels; Flavor: Freemarker -->
-				<plugin name="ManageLitters" type="org.molgenis.animaldb.plugins.breedingplugin.ManageLitters"
+				<plugin name="ManageLitters" type="org.molgenis.animaldb.plugins.breeding.ManageLitters"
 					label="Litters" />
 			</menu>
 			<!-- RemAnimalPluginMatrix; Goal: remove animals; Flavor: Java-only -->
@@ -51,10 +51,10 @@
 			<plugin name="DecStatus" type="org.molgenis.animaldb.plugins.projectportal.DecStatus"
 				label="DEC status portal" />
 			<!-- ShowDecProjects; Goal: create, edit and browse DEC projects; Flavor: Freemarker -->
-			<plugin name="AddProject" type="org.molgenis.animaldb.plugins.experiments.ShowDecProjects"
+			<plugin name="AddProject" type="org.molgenis.animaldb.plugins.administration.ShowDecProjects"
 				label="DEC applications" />
 			<!-- ShowDecSubprojects; Goal: create, edit and browse DEC subprojects; Flavor: Freemarker -->
-			<plugin name="AddSubproject" type="org.molgenis.animaldb.plugins.experiments.ShowDecSubprojects"
+			<plugin name="AddSubproject" type="org.molgenis.animaldb.plugins.administration.ShowDecSubprojects"
 				label="DEC subprojects" />
 			<!-- YearlyReportModule; Goal: create yearly reports for the NVWA; Flavor: Freemarker -->
 			<plugin name="YearlyReportModule" type="org.molgenis.animaldb.plugins.report.YearlyReportModule"
@@ -73,7 +73,7 @@
 			
 		<menu name="Settings" position="left" label="Settings">
 			<!-- ManageLines; Goal: create, edit and browse breeding lines; Flavor: Freemarker -->
-			<plugin name="ManageLines" type="org.molgenis.animaldb.plugins.breedingplugin.ManageLines"
+			<plugin name="ManageLines" type="org.molgenis.animaldb.plugins.breeding.ManageLines"
 				label="Breeding lines" />
 			<!-- LocationInfoPlugin; Goal: create, import and browse locations; Flavor: Freemarker -->
 			<plugin name="Locations" type="org.molgenis.animaldb.plugins.settings.LocationInfoPlugin"
