@@ -97,47 +97,37 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 	private List<Entity> search(String searchThis, Database db) throws DatabaseException
 	{
 		List<org.molgenis.util.Entity> res = new ArrayList<org.molgenis.util.Entity>();
-		Vector<org.molgenis.model.elements.Entity> entityList = metadb.getEntities();
-		
-		
-
-		for (org.molgenis.model.elements.Entity entityType : entityList)
+	
+		for (org.molgenis.model.elements.Entity eClass : db.getMetaData().getEntities(false, false))
 		{
-			if (!entityType.isAbstract() && !entityType.isSystem())
+				
+			String name = eClass.getName();
+			Class<? extends Entity> entityClass = db.getClassForName(name);
+				
+			//user must have at least have read permissions
+			if(this.getLogin().canRead(entityClass))
 			{
-				
-				Class<? extends Entity> entityClass = db.getClassForName(entityType.getName());
-
-//				System.out.println("entityClass = " + entityClass.getName());
-//				System.out.println("canRead = " + this.getLogin().canRead(entityClass));
-//				System.out.println("canWrite = " + this.getLogin().canWrite(entityClass));
-				
-				//user must have at least have read permissions
-				//plus, do not display MolgenisUser unless user is admin
-				//FIXME: MolgenisUser and others are system entities and should therefore not be visible in the first place!!
-				if(this.getLogin().canRead(entityClass) && (!entityType.getName().equals("MolgenisUser") || this.getLogin().getUserName().equals("admin")))
+				List<? extends org.molgenis.util.Entity> eInstances = db.find(entityClass);
+				for (org.molgenis.util.Entity e : eInstances)
 				{
-					List<? extends org.molgenis.util.Entity> eInstances = db.find(entityClass);
-					for (org.molgenis.util.Entity e : eInstances)
+					for (String field : e.getFields())
 					{
-						for (String field : e.getFields())
+						// match if:
+						// 1. Field value is not NULL
+						// 2. Class is equal to Type, hereby removing
+						// superclasses from results
+						// 3. Lowercased value matches the lowercased search
+						// string
+						if (e.get(field) != null && e.get(Field.TYPE_FIELD).toString().equals(name)
+								&& e.get(field).toString().toLowerCase().contains(searchThis.toLowerCase()))
 						{
-							// match if:
-							// 1. Field value is not NULL
-							// 2. Class is equal to Type, hereby removing
-							// superclasses from results
-							// 3. Lowercased value matches the lowercased search
-							// string
-							if (e.get(field) != null && e.get(Field.TYPE_FIELD).toString().equals(entityType.getName())
-									&& e.get(field).toString().toLowerCase().contains(searchThis.toLowerCase()))
-							{
-								res.add(e);
-								break;
-							}
+							res.add(e);
+							break;
 						}
 					}
 				}
 			}
+			
 		}
 		return res;
 	}

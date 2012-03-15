@@ -507,8 +507,15 @@ public class XqtlSeleniumTest
 
 			selenium.type("name=searchThis", "e");
 			clickAndWait("id=simple_search");
-			Assert.assertTrue(selenium.isTextPresent("Found 339 result(s)"));
-			Assert.assertTrue(selenium.isTextPresent("bioinformatician"));
+			Assert.assertTrue(selenium.isTextPresent("Found 331 result(s)"));
+			Assert.assertTrue(selenium.isTextPresent("xgap_rqtl_straintype_special"));
+			Assert.assertTrue(selenium.isTextPresent("Arabidopsis_thaliana"));
+			Assert.assertTrue(selenium.isTextPresent("metaboliteexpression"));
+			Assert.assertTrue(selenium.isTextPresent("X193"));
+			Assert.assertTrue(selenium.isTextPresent("Ler_x_Cvi"));
+			Assert.assertTrue(selenium.isTextPresent("chrIV"));
+			Assert.assertTrue(selenium.isTextPresent("Isohamnetindeoxyhesoxyldihexoside"));
+			Assert.assertTrue(selenium.isTextPresent("EG113L115C"));
 
 		}
 
