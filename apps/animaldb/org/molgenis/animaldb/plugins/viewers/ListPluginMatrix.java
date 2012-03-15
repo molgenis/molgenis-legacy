@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package org.molgenis.animaldb.plugins.listplugin;
+package org.molgenis.animaldb.plugins.viewers;
 
 import java.util.ArrayList;
 import java.util.List;
