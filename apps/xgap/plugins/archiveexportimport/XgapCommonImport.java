@@ -70,8 +70,8 @@ public class XgapCommonImport {
 				}
 				else if (db instanceof JpaDatabase)
 				{
-					extraFields.put("Data_" + Data.ID, data.getId().toString());
-					extraFields.put("Data_" + Data.NAME, data.getName());
+					extraFields.put("data_" + Data.ID, data.getId().toString());
+					extraFields.put("data_" + Data.NAME, data.getName());
 				}
 				else
 				{

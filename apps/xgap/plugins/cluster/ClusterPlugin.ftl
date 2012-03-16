@@ -210,7 +210,15 @@ You have selected: <b>${model.selectedAnalysis.name}</b><br><br>
 				<select name="${d_n.getName()}">
 					<#list model.datavalues as d_v>
 						<#if d_v.getValue_Id()??>
-						<#if d_v.dataname == d_n.getId()>
+						
+						<#-- HACK FOR JPA!?!? -->
+						<#if d_v.dataname_id?is_string>
+							<#assign dv_dnid = d_v.dataname>
+						<#else>
+							<#assign dv_dnid = d_v.dataname_id>
+						</#if>
+						
+						<#if dv_dnid == d_n.getId()>
 							<#--option value="dataValueID${d_v.getId()}">${d_v.getName()}</option-->
 							<option value="${d_v.getValue_Id()?c}">${d_v.getName()}</option>
 						</#if>
@@ -245,6 +253,14 @@ You have selected: <b>${model.selectedAnalysis.name}</b><br><br>
 			<#--select name="parameterNameID${p_n.getId()}"-->
 			<select name="${p_n.getName()}">
 				<#list model.parametervalues as p_v>
+				
+					<#-- HACK FOR JPA!?!? -->
+					<#if p_v.parametername_id?is_string>
+						<#assign pv_pn = p_v.parametername>
+					<#else>
+						<#assign pv_pn = p_v.parametername_id>
+					</#if>
+				
 					<#if p_v.parametername == p_n.getId()>
 						<#--option value="parameterValueID${p_v.getId()}">${p_v.getName()}</option-->
 						<option value="${p_v.getValue()}">${p_v.getName()}</option>

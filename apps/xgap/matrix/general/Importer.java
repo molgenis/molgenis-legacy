@@ -53,8 +53,8 @@ public class Importer
             if (db instanceof JDBCDatabase) {
                 extraFields.put("Data_" + Data.NAME, data.getName());
             } else if (db instanceof JpaDatabase) {
-                extraFields.put("Data_" + Data.ID, data.getId().toString());
-                extraFields.put("Data_" + Data.NAME, data.getName());
+                extraFields.put("data_" + Data.ID, data.getId().toString());
+                extraFields.put("data_" + Data.NAME, data.getName());
             } else {
                 throw new DatabaseException("Unsupported database mapper");
             }

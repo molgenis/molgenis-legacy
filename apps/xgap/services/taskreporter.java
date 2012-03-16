@@ -64,16 +64,19 @@ public class taskreporter  implements MolgenisService
 			Database db = request.getDatabase();
 			
 
-			QueryRule jobQuery0 = new QueryRule("id", Operator.EQUALS, jobID);
-			QueryRule subjobQuery0 = new QueryRule("job", Operator.EQUALS, jobID);
+			QueryRule jobQuery0 = new QueryRule(Job.ID, Operator.EQUALS, jobID);
+			
 			QueryRule subjobQuery1 = new QueryRule("nr", Operator.EQUALS, subjobNr);
 
-			out.println("job queryrule: " + subjobQuery0.toString());
-			out.println("subjob queryrule: " + subjobQuery1.toString());
-
-			out.println("db.find: " + db.find(Subjob.class, subjobQuery0, subjobQuery1).toString());
+//			out.println("job queryrule: " + subjobQuery0.toString());
+//			out.println("subjob queryrule: " + subjobQuery1.toString());
+//
+//			out.println("db.find: " + db.find(Subjob.class, subjobQuery0, subjobQuery1).toString());
 
 			Job job = db.find(Job.class, jobQuery0).get(0);
+			
+			QueryRule subjobQuery0 = new QueryRule(Subjob.JOB, Operator.EQUALS, job.getId());
+			
 			Subjob subjob = db.find(Subjob.class, subjobQuery0, subjobQuery1).get(0);
 
 			subjob.setStatusCode(statusCode);

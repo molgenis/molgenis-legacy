@@ -145,8 +145,8 @@ public class DataElementImportByFile
 				// do not add selectedMatrix, but check whether the matrix is
 				// actually in the database (identified by 'name' plus
 				// 'investigation')
-				if (db.find(Data.class, new QueryRule("name", Operator.EQUALS, selectedMatrix.getName()),
-						new QueryRule("investigation", Operator.EQUALS, selectedMatrix.getInvestigation_Id())).size() > 0)
+				if (db.find(Data.class, new QueryRule(Data.NAME, Operator.EQUALS, selectedMatrix.getName()),
+						new QueryRule(Data.INVESTIGATION, Operator.EQUALS, selectedMatrix.getInvestigation_Id())).size() > 0)
 				{
 					// it's present in the database
 				}
@@ -170,7 +170,7 @@ public class DataElementImportByFile
 			final FinalInteger row_index = new FinalInteger(0);
 
 			final Investigation inv = db.find(Investigation.class,
-					new QueryRule("id", Operator.EQUALS, selectedMatrix.getInvestigation_Id())).get(0);
+					new QueryRule(Investigation.ID, Operator.EQUALS, selectedMatrix.getInvestigation_Id())).get(0);
 
 			CsvReaderListener crl = new CsvReaderListener()
 			{

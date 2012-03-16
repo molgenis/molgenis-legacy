@@ -1,7 +1,10 @@
 package org.molgenis.xgap.test;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.molgenis.MolgenisOptions.MapperImplementation;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.DetectOS;
 import org.molgenis.util.TarGz;
@@ -21,7 +24,6 @@ import com.thoughtworks.selenium.HttpCommandProcessor;
 import com.thoughtworks.selenium.Selenium;
 
 import core.Helper;
-
 import filehandling.storage.StorageHandler;
 
 /**
@@ -46,24 +48,40 @@ public class XqtlSeleniumTest
 	String pageLoadTimeout = "30000";
 	boolean tomcat = false;
 
-	UsedMolgenisOptions usedOptions;
+	private static UsedMolgenisOptions usedOptions;
 	
 	public static void deleteDatabase() throws Exception
 	{
-		File dbDir = new File("hsqldb");
-		if (dbDir.exists())
+		
+		if(usedOptions.mapper_implementation == MapperImplementation.JPA) //any JPA database
 		{
-			TarGz.recursiveDeleteContentIgnoreSvn(dbDir);
+			/**
+			 * NOTE: requires a database 'xqtlworkbench' to exist!
+			 */
+			Map<String, Object> configOptions = new HashMap<String, Object>();
+			configOptions.put("hibernate.hbm2ddl.auto", "create-drop");
+			DatabaseFactory.create(configOptions);	
+			
+		
 		}
-		else
+		else //assuming HSQL standalone database, the xQTL default
 		{
-			throw new Exception("HSQL database directory does not exist");
-		}
+			File dbDir = new File("hsqldb");
+			if (dbDir.exists())
+			{
 
-		if (dbDir.list().length != 1)
-		{
-			throw new Exception("HSQL database directory does not contain 1 file (.svn) after deletion! it contains: "
-					+ dbDir.list().toString());
+				TarGz.recursiveDeleteContentIgnoreSvn(dbDir);
+			}
+			else
+			{
+				throw new Exception("HSQL database directory does not exist");
+			}
+	
+			if (dbDir.list().length != 1)
+			{
+				throw new Exception("HSQL database directory does not contain 1 file (.svn) after deletion! it contains: "
+						+ dbDir.list().toString());
+			}
 		}
 	}
 	
