@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.james.mime4j.field.FieldName;
 import org.molgenis.util.SimpleTuple;
 
 public class CSVFileSpliter {
