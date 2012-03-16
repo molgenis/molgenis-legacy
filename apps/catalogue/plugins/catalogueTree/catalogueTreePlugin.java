@@ -125,8 +125,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					System.out.println("Input token: >>>>>>"
 							+ this.getInputToken() + ">>> selectedField >>"
 							+ selectedField + "comparison >>>"
-							+ this.getComparison());// "searchingInvestigation>>"
-					// + this.getSearchingInvestigation());
+							+ this.getComparison());
 					if (this.getSelectedField().equals("Protocols"))
 						RetrieveProtocols(db, SEARCHINGPROTOCOL);
 					// Search "Any field" ==> All fields LIKE input token
@@ -140,16 +139,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						RetrieveProtocols(db, SEARCHINGDETAIL);
 
 				} else {
-					this.getModel()
-							.getMessages()
-							.add(new ScreenMessage("Empty search string", true));
+					this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
 				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.setError("There was a problem handling your Download: "
-					+ e.getMessage());
+			this.setError("There was a problem handling your Download: " + e.getMessage());
 		}
 
 	}
@@ -311,10 +307,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsTree, db, foundInputToken, mode);
 		}
 
-		// After traverse through the tree, all the elements should have fallen
-		// in the right places of the tree, now create the tree view
-		treeView = new JQueryTreeView<JQueryTreeViewElement>("Protocols",
-				protocolsTree);
+		
+		System.out.println(">>>Protocols tree: "+ protocolsTree + "tree elements: "+ protocolsTree.getTreeElements().containsKey("Questionnaire"));
+		if (!protocolsTree.getTreeElements().containsKey("Questionnaire")) { 
+			//Search result is empty or tree is empty 
+			this.getModel().getMessages().add(new ScreenMessage("There are no results to show. Please, redifine your search or import some data.",true));
+			this.setError("There are no results to show. Please, redifine your search or import some data.");
+		} else {
+			// After traverse through the tree, all the elements should have fallen
+			// in the right places of the tree, now create the tree view
+			treeView = new JQueryTreeView<JQueryTreeViewElement>("Protocols", protocolsTree);
+		}
 	}
 
 	/**
@@ -422,14 +425,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					// this protocol is not added but removed.
 					if (findInputTokenInEachNode == false) {
 
-						if (mode == SEARCHINGMEASUREMENT
-								|| mode == SEARCHINGDETAIL) {// filter in
-																// measurements
+						if (mode == SEARCHINGMEASUREMENT || mode == SEARCHINGDETAIL) {// filter in measurements
 
 							childTree.remove();
 
-						} else if (mode == SEARCHINGPROTOCOL
-								|| mode == SEARCHINGALL) { // get all
+						} else if (mode == SEARCHINGPROTOCOL || mode == SEARCHINGALL) { // get all
 															// measurements and
 															// protocols in
 															// descendant class.
@@ -813,11 +813,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		List<Integer> DownloadedMeasurementIds = new ArrayList<Integer>();
 
 		if (this.shoppingCart.isEmpty()) {
-			this.getModel()
-					.getMessages()
-					.add(new ScreenMessage(
-							"Your download list is empty. Please select item and proceed to download",
-							true));
+			this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. Please select item and proceed to download",true));
 			this.setError("Your download list is empty. Please select item and proceed to download");
 
 		} else {
@@ -963,11 +959,5 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return comparison;
 	}
 
-	// public void setSearchingInvestigation(String searchingInvestigation) {
-	// this.searchingInvestigation = searchingInvestigation;
-	// }
-	//
-	// public String getSearchingInvestigation() {
-	// return searchingInvestigation;
-	// }
+
 }
