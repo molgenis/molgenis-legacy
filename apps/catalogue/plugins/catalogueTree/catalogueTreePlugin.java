@@ -38,19 +38,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private JQueryTreeView<JQueryTreeViewElement> treeView = null;
 	private HashMap<String, Protocol> nameToProtocol;
 	private HashMap<String, JQueryTreeViewElement> protocolsAndMeasurementsinTree;
-	// private HashMap<String, JQueryTreeViewElement> measurementsInTree;
-	// private HashMap<String, JQueryTreeViewElement> protocolsInTree;
 
 	private List<Measurement> shoppingCart = new ArrayList<Measurement>();
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 	private String selectedInvestigation = null;
 	private String InputToken = null;
-	// private String searchingInvestigation = null;
 	private String comparison = null;
 	private String selectedField = null;
 
 	private boolean isSelectedInv = false;
-	// private boolean isSelectedField = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
 
 	private static int SEARCHINGPROTOCOL = 2;
@@ -61,11 +57,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	private static int SEARCHINGDETAIL = 5;
 
-	// Multiple inheritance: some measurements might have multiple parents,
-	// therefore it
-	// will complain about the branch already exists when constructing the tree,
-	// cheating by
-	// changing the name of the branch but keeping display name the same
+	/** Multiple inheritance: some measurements might have multiple parents therefore it
+	 *  will complain about the branch already exists when constructing the tree, cheating by
+	 *  changing the name of the branch but keeping display name the same
+	 */
+	 
 	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
 
 	public catalogueTreePlugin(String name, ScreenController<?> parent) {
@@ -110,16 +106,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
-				String measurementName = request.getString("measurementName"); // TODO
-																				// :
-																				// this
-																				// is
-																				// not
-																				// working
-				measurementName = request.getAction().substring(
-						"DeleteMeasurement".length() + 2
-								+ "measurementName".length(),
-						request.getAction().length());
+				String measurementName = request.getString("measurementName"); 
+																				
+																				
+				measurementName = request.getAction().substring( "DeleteMeasurement".length() + 2+ "measurementName".length(),	request.getAction().length());
 				this.deleteShoppingItem(measurementName);
 
 			}
@@ -129,16 +119,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					this.setInputToken(request.getString("InputToken").trim());
 
 					System.out.println("The request string : " + request);
-					// System.out.println("The searching investigation is : "
-					// + request.getString("searchingInvestigation")
-					// .trim());
-					// this.setSearchingInvestigation(request.getString(
-					// "searchingInvestigation").trim());
-					// searchingInvestigation = request.getString(
-					// "searchingInvestigation").trim();
+					
 					this.setSelectedField(request.getString("selectedField"));
 
-					// Search input token --> LIKE protocols
 					System.out.println("Input token: >>>>>>"
 							+ this.getInputToken() + ">>> selectedField >>"
 							+ selectedField + "comparison >>>"
@@ -182,7 +165,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				if (inv.size() > 0)
 					this.setSelectedInvestigation(inv.get(0).getName());
 			} catch (DatabaseException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -218,8 +200,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		}
 
 		if (this.getInputToken() == null)
-			RetrieveProtocols(db, 1); // mode 1: gets all protocols without
-										// filters!
+			RetrieveProtocols(db, 1); // mode 1: gets all protocols without filters!
 
 		this.setInputToken(null);
 
@@ -272,18 +253,19 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					nameToProtocol.put(p.getName(), p);
 				}
 
-				// Algorithm to find the topmost protocols. There are three kind
-				// of protocols needed.
-				// 1. The protocols that are parents of other protocols
-				// 2. The protocols that are children of some other protocols
-				// and at the same time are parents of some other protocols
-				// 3. The protocols that are only children of other protocols
-				// Therefore we could do protocol2 =
-				// protocol2.removeAll(protocol3) ----> parent protocols but not
-				// topmost
-				// we then do protocol1 = protocol1.removeAll(protocol2) ------>
-				// topmost parent protocols
-				if (!subNames.isEmpty()) {
+				/**
+				 *  Algorithm to find the topmost protocols. There are three kind
+				 *   of protocols needed.
+				 *   1. The protocols that are parents of other protocols
+				 *   2. The protocols that are children of some other protocols
+				 *   and at the same time are parents of some other protocols
+				 *   3. The protocols that are only children of other protocols
+				 *   Therefore we could do protocol2 =
+				 *   protocol2.removeAll(protocol3) ----> parent protocols but not topmost
+				 *   we then do protocol1 = protocol1.removeAll(protocol2) 
+				 *   topmost parent protocols
+				 */
+				 if (!subNames.isEmpty()) {
 
 					if (!topProtocols.contains(p.getName())) {
 						topProtocols.add(p.getName());
@@ -377,13 +359,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 				JQueryTreeViewElement childTree = null;
 
-				// Resolve the issue of duplicated names in the tree. For any
-				// sub-protocols or measurements could
-				// belong to multiple parent class, so it`ll throw an error if
-				// we try to create the same element twice
-				// Therefore we need to give a unique identifier to the tree
-				// element but assign the same value to
-				// the display name.
+				/**
+				 *  Resolve the issue of duplicated names in the tree. For any
+				 *  sub-protocols or measurements could	 belong to multiple parent class, so it`ll throw an error if
+				 *  we try to create the same element twice
+				 *  Therefore we need to give a unique identifier to the tree element but assign the same value to the display name.
+				 */
+				
 				if (protocolsAndMeasurementsinTree.containsKey(protocolName)) {
 					if (!multipleInheritance.containsKey(protocolName)) {
 						multipleInheritance.put(protocolName, 1);

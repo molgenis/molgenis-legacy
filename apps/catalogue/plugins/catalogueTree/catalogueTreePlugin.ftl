@@ -68,8 +68,6 @@
 					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
 				
 				<input type="submit" name="SearchCatalogueTree" value="search" onclick="__action.value='SearchCatalogueTree';"/>
-				
-					    
 					    
 					    
 					    </td><td class="box-body" style="width: 50%;">Details:</td></tr>
