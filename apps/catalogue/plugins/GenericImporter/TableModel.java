@@ -460,11 +460,13 @@ public class TableModel {
 									if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).size() != 0){
 
 										Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
-
+										
+										//TODO this needs to be re-written!
+										//The measurement already exists but not "display name. 
 										if(!cellValue.equals("display name")){
-											
+
 											if(!measure.getInvestigation_Name().equals(investigationName)){
-												
+
 												if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
 
 													displayNameMeasurement = new Measurement();
@@ -484,9 +486,20 @@ public class TableModel {
 												observedValueList.add(ov);
 											}
 										}
+
 									}
-									
-									if(!cellValue.equals("display name")){
+									if(cellValue.equals("display name")){
+
+										if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
+
+											displayNameMeasurement = new Measurement();
+
+											displayNameMeasurement.setName("display name");
+
+											db.add(displayNameMeasurement);
+
+										}
+									}else{
 										measurement.setName(cellValue);
 										headerMeasurements.add(measurement);
 
