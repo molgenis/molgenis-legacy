@@ -212,7 +212,6 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception	{
 
-
 		mappingForMolgenisEntity.clear();
 		
 		investigationName = "";

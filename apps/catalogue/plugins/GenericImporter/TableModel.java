@@ -77,14 +77,16 @@ public class TableModel {
 		this.addField(classType, fieldName, columnList, Vertical, new SimpleTuple());
 	}
 
-	public void addField(String ClassType, String fieldName, int[] columnList, Boolean Vertical, Tuple defaults) {
+	public void addField(String ClassType, String fieldName, int[] columnList, Boolean Vertical, Tuple defaults) 
+	{
 
 		for(int i = 0; i < columnList.length; i++){
 			this.addField( ClassType, fieldName, columnList[i], Vertical, defaults, -1);
 		}
 	}
 
-	public void addField(String ClassType, String fieldName, boolean Vertical, int dependedIndex, int... columnIndexes) {
+	public void addField(String ClassType, String fieldName, boolean Vertical, int dependedIndex, int... columnIndexes) 
+	{
 
 		List<Integer> columnList = new ArrayList<Integer>();
 
@@ -106,31 +108,36 @@ public class TableModel {
 		relationIndex.put(dependedIndex, columnList);
 	}
 
-	public void addField(String ClassType, String fieldName, int columnIndex, Boolean Vertical) {
+	public void addField(String ClassType, String fieldName, int columnIndex, Boolean Vertical) 
+	{
 		this.addField( ClassType, fieldName, columnIndex, Vertical, new SimpleTuple(), -1);
 	}
 
 	public void addField(String ClassType, String fieldName, int columnIndex,
-			boolean Vertical, int... dependentColumnIndex) {
+			boolean Vertical, int... dependentColumnIndex) 
+	{
 
 		this.addField(ClassType, fieldName, columnIndex, Vertical, new SimpleTuple(), dependentColumnIndex);
 
 	}
 
 	public void addField(String ClassType, String fieldName, int columnIndex,
-			boolean Vertical, Tuple defaults) {
+			boolean Vertical, Tuple defaults) 
+	{
 		this.addField(ClassType, fieldName, columnIndex, Vertical, defaults, -1);
 
 	}
 
 	public void addField(String ClassType, String fieldName, int[] coHeaders,
-			int targetIndex, boolean Vertical) {
+			int targetIndex, boolean Vertical) 
+	{
 		observationTarget = targetIndex;
 		this.addField(ClassType, fieldName, coHeaders, Vertical, new SimpleTuple());
 		observationTarget = -1;
 	}
 
-	public void addField(String ClassType, String fieldName, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex){
+	public void addField(String ClassType, String fieldName, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex)
+	{
 
 		try {					
 			//create a tableField that will take care of loading columnIndex into 'name' property
@@ -152,15 +159,18 @@ public class TableModel {
 
 	}
 
-	public TableField getField(int columnIndex){
+	public TableField getField(int columnIndex)
+	{
 		return configuration.get(columnIndex);
 	}
 
-	public List<TableField> getConfiguration(){
+	public List<TableField> getConfiguration()
+	{
 		return configuration;
 	}
 
-	public void convertIntoPheno(Sheet sheet){
+	public void convertIntoPheno(Sheet sheet)
+	{
 
 		int row = sheet.getRows();
 
@@ -195,13 +205,13 @@ public class TableModel {
 						cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("'", "").trim();
 					else
 						cellValue = sheet.getCell(colIndex, rowIndex).getContents().replaceAll("'", "").trim();
-					System.out.println("The cell value is " + cellValue);
-					System.out.println("The size is =========== " + configuration.size());
+					//					System.out.println("The cell value is " + cellValue);
+					//					System.out.println("The size is =========== " + configuration.size());
 
 					TableField field = columnIndexToTableField.get(colIndex);
 
 					if(columnIndexToTableField.get(colIndex) != null && !columnIndexToTableField.get(colIndex).getClassType().equals("NULL")){
-						
+
 						if(columnIndexToTableField.get(colIndex).getVertical() && rowIndex != 0){
 
 							//Keep track of the entities
@@ -256,15 +266,18 @@ public class TableModel {
 										}
 
 
-										if(!value.equalsIgnoreCase("")){
+										if(!value.equalsIgnoreCase(""))
+										{
 
-											if(field.getClassType().equals(Category.class.getSimpleName())){
+											if(field.getClassType().equals(Category.class.getSimpleName()))
+											{
 
 												//Category entity couldn`t have empty property in name, description, code_string, label
 												//therefore it`s separated from other entites.
 												String categoryName = value;
 
-												if(value.split("=").length > 1){
+												if(value.split("=").length > 1)
+												{
 													categoryName = value.split("=")[1].trim();
 												}
 
@@ -291,9 +304,11 @@ public class TableModel {
 								}
 							}
 
-							if(field.getDependentColumnIndex()[0] != -1){
+							if(field.getDependentColumnIndex()[0] != -1)
+							{
 
-								for(int index = 0; index < field.getDependentColumnIndex().length; index++){
+								for(int index = 0; index < field.getDependentColumnIndex().length; index++)
+								{
 
 									int dependentColumn = field.getDependentColumnIndex()[index];
 
@@ -307,9 +322,11 @@ public class TableModel {
 
 									List<Object> values = new ArrayList<Object>();
 
-									if(field.getClassType().equals(Category.class.getSimpleName())){
+									if(field.getClassType().equals(Category.class.getSimpleName()))
+									{
 
-										for(int i = 0; i < multipleValues.length; i++){
+										for(int i = 0; i < multipleValues.length; i++)
+										{
 
 											String categoryCodeString = multipleValues[i];
 
@@ -322,6 +339,7 @@ public class TableModel {
 
 										}
 									}else{
+
 										for(int i = 0; i < multipleValues.length; i++){
 											values.add(multipleValues[i].trim());
 										}
@@ -346,7 +364,8 @@ public class TableModel {
 												}
 											}
 
-										}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(Boolean.class)){
+										}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(Boolean.class))
+										{
 
 											values.clear();
 
@@ -364,13 +383,15 @@ public class TableModel {
 													values.add(true);
 											}
 
-										}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(String.class)){
+										}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(String.class))
+										{
 
 											values.clear();
 											values.add(addingPropertyToEntity.get(field.getRelationString()));
 										}
 
-										if(field.getRelationString().equals(Measurement.DATATYPE)){
+										if(field.getRelationString().equals(Measurement.DATATYPE))
+										{
 
 											String dataType = adjustDataTypeValue(cellValue);
 
@@ -382,12 +403,14 @@ public class TableModel {
 										}
 									}
 
-									if(field.getRelationString().equals(Measurement.UNIT_NAME)){
+									if(field.getRelationString().equals(Measurement.UNIT_NAME))
+									{
 
 										for(int i = 0; i < multipleValues.length; i++)
 										{
 
-											if(!multipleValues[i].equals("")){
+											if(!multipleValues[i].equals(""))
+											{
 
 												List<String> eachValues = new ArrayList<String>();
 
@@ -395,12 +418,14 @@ public class TableModel {
 
 												List<OntologyTerm> existingOntologyTermList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, eachValues));
 
-												if(existingOntologyTermList.size() == 0){
+												if(existingOntologyTermList.size() == 0)
+												{
 
 													OntologyTerm unitOntologyTerm = new OntologyTerm();
 													unitOntologyTerm.set(OntologyTerm.NAME, multipleValues[i]);
 
-													if(!ontologyTermOfList.keySet().contains(unitOntologyTerm.getName())){
+													if(!ontologyTermOfList.keySet().contains(unitOntologyTerm.getName()))
+													{
 														ontologyTermOfList.put(unitOntologyTerm.getName(), unitOntologyTerm);
 													}
 												}
@@ -435,25 +460,39 @@ public class TableModel {
 									if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).size() != 0){
 
 										Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
-										if(!measure.getInvestigation_Name().equals(investigationName)){
-											cellValue += "_" + investigationName;
-											measurementWithSameLabels.put(measure.getName(), cellValue);
+
+										if(!cellValue.equals("display name")){
+											
+											if(!measure.getInvestigation_Name().equals(investigationName)){
+												
+												if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
+
+													displayNameMeasurement = new Measurement();
+
+													displayNameMeasurement.setName("display name");
+
+													db.add(displayNameMeasurement);
+
+												}
+
+												ObservedValue ov = new ObservedValue();
+												ov.setTarget_Name(cellValue + "_" +investigationName);
+												ov.setFeature_Name("display name");
+												ov.setValue(cellValue);
+												cellValue += "_" + investigationName;
+												measurementWithSameLabels.put(measure.getName().toLowerCase(), cellValue);
+												observedValueList.add(ov);
+											}
 										}
-
 									}
+									
+									if(!cellValue.equals("display name")){
+										measurement.setName(cellValue);
+										headerMeasurements.add(measurement);
 
-
-									if(cellValue.equals("display name")){
-										cellValue += "display name_" + investigationName;
-										measurementWithSameLabels.put("display name", cellValue);
+										if(investigationName != null)
+											measurement.set("Investigation_name", investigationName);
 									}
-
-									measurement.setName(cellValue);
-									headerMeasurements.add(measurement);
-
-									if(investigationName != null)
-										measurement.set("Investigation_name", investigationName);
-
 								}
 								//The rest of the column is observedValue!
 							}else{
@@ -468,8 +507,8 @@ public class TableModel {
 
 									//TODO: import measurements then import individual data. The measurement has to be consistent.
 
-									if(measurementWithSameLabels.keySet().contains(headerName)){
-										headerName = measurementWithSameLabels.get(headerName);
+									if(measurementWithSameLabels.keySet().contains(headerName.toLowerCase())){
+										headerName = measurementWithSameLabels.get(headerName.toLowerCase());
 									}
 
 									observedValue.setFeature_Name(headerName);
@@ -587,10 +626,10 @@ public class TableModel {
 
 							displayNameMeasurement = new Measurement();
 
-							displayNameMeasurement.setName("display name_" + investigationName);
+							displayNameMeasurement.setName("display name");
 
 						}else{
-							displayNameMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name_" + investigationName)).get(0);
+							displayNameMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).get(0);
 						}
 
 						//else the measurement comes from different investigation, that means there are duplicated measurements, import with investigation name
@@ -632,7 +671,7 @@ public class TableModel {
 			}catch(Exception e){
 				System.out.println(e.getMessage());
 			}
-			
+
 			//Try to update measurements
 
 			HashMap<String, List<String>> subProtocolAndProtocol = new HashMap<String, List<String>>();
@@ -727,6 +766,11 @@ public class TableModel {
 				if(templateScript == null){
 					p.set(ComputeProtocol.SCRIPTTEMPLATE, "N/A");
 				}
+				//TODO 
+				if(p.get(ComputeProtocol.MEM) == null)
+					p.set(ComputeProtocol.MEM, "512");
+				if(p.get(ComputeProtocol.CORES) == null)
+					p.set(ComputeProtocol.CORES, "2");
 
 				if(feature_names.size() > 0)
 				{
