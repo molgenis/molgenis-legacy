@@ -53,13 +53,13 @@ public class AnimalDBHeader extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "org_molgenis_animaldb_plugins_header_AnimalDBHeader";
+		return "org_molgenis_animaldb_plugins_accessibility_AnimalDBHeader";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "org/molgenis/animaldb/plugins/header/AnimalDBHeader.ftl";
+		return "org/molgenis/animaldb/plugins/accessibility/AnimalDBHeader.ftl";
 	}
 
 	@Override
