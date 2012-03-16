@@ -53,7 +53,7 @@ public class XqtlSeleniumTest
 	public static void deleteDatabase() throws Exception
 	{
 		
-		if(usedOptions.mapper_implementation == MapperImplementation.JPA) //any JPA database
+		if(new UsedMolgenisOptions().mapper_implementation == MapperImplementation.JPA) //any JPA database
 		{
 			/**
 			 * NOTE: requires a database 'xqtlworkbench' to exist!
