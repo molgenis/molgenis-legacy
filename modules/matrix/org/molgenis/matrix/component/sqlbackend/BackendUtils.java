@@ -12,16 +12,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.james.mime4j.field.datetime.parser.DateTimeParser;
-import org.junit.experimental.categories.Categories;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -30,7 +26,7 @@ import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 
-import com.ibm.icu.text.SimpleDateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  *
