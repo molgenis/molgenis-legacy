@@ -118,11 +118,11 @@
 <#else>
 
 <div id="decapplist">
-	<p><strong>DEC Projects</strong></p>
-	<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0">Add</a></p>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0"><img id="add_decproject" class="add_button" title="add new decproject" alt="Add new Dec project" src="generated-res/img/new.png"></a></p>
 	<table cellpadding="0" cellspacing="0" border="0" class="display" id="decProjectsTable">
 		<thead>
 			<tr>
+				<th></th>
 				<th>Name</th>
 				<th>DEC number</th>
 				<th>DEC title</th>
@@ -131,13 +131,13 @@
 				<th>DEC applicant</th>
 				<th>DEC application PDF</th>
 				<th>DEC approval PDF</th>
-				<th></th>
 			</tr>
 		</thead>
 		<tbody>
 		<#if screen.decappList?exists>
 			<#list screen.decappList as decl>
 				<tr>
+					<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${decl.decAppListId}"><img id="edit_breedingline" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
 					<td>${decl.name}</td>
 					<td>${decl.decNr}</td>
 					<td>${decl.decTitle}</td>
@@ -146,7 +146,6 @@
 					<td>${decl.decApplicantName}</td>
 					<td>${decl.pdfDecApplication}</td>
 					<td>${decl.pdfDecApproval}</td>
-					<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${decl.decAppListId}">Edit</a></td>
 				</tr>
 			</#list>
 		</#if>
@@ -169,7 +168,11 @@
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
 	  "bAutoWidth": false,
-	  "bJQueryUI": true }
+	  "bJQueryUI": true,
+	  "aoColumnDefs": [ 
+      	{ "sWidth": "30px", "aTargets": [ 0 ] }
+    	] 
+	  }
 	);
 	
 	

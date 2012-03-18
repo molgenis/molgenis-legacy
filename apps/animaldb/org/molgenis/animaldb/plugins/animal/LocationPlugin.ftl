@@ -93,18 +93,19 @@
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="loctable">
 			<thead>
 				<tr>
-					<th>Name</th>
-					<th>Part of</th>
 					<th></th>
+					<th>Name</th>
+					<!--<th>Part of</th>-->
 				</tr>
 			</thead>
 			<tbody>
 			<#list screen.locationList as loc>
 				<#assign locId = loc.getId()>
 				<tr>
+					<!--<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId?string.computer}">Manage animals in ${loc.name}</a></td> -->
+					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId?string.computer}"><img id="edit_breedingline" class="edit_button" title="add/remove animals from location: ${loc.name}" alt="Edit" src="generated-res/img/grid-manage.gif"></a></td>
 					<td>${loc.name}</td>
-					<td>${screen.getSuperLocName(locId)}</td>
-					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId?string.computer}">Manage animals in ${loc.name}</a></td>
+					<!--<td>${screen.getSuperLocName(locId)}</td>-->
 				</tr>
 			</#list>
 			</tbody>
@@ -127,7 +128,11 @@
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
 	  "bAutoWidth": false,
-	  "bJQueryUI" : true }
+	  "bJQueryUI" : true,
+	  "aoColumnDefs": [ 
+      	{ "sWidth": "30px", "aTargets": [ 0 ] }
+    	] 
+	  }
 	);
 </script>
 

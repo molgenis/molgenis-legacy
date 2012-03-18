@@ -78,26 +78,27 @@
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="linestable">
 			<thead>
 				<tr>
+					<th></th>
 					<th>Name</th>
 					<th>Full name</th>
 					<th>Species</th>
 					<th>Source</th>
 					<th>Remarks</th>
 					<th></th>
-					<th></th>
+					
 				</tr>
 			</thead>
 			<tbody>
 			<#list screen.lineList as line>
 				<#assign lineId = line.getId()>
 				<tr>
+					<td><a href='molgenis.do?__target=${screen.name}&__action=Edit&id=${line.id?string.computer}'><img id="edit_breedingline" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
 					<td>${line.name}</td>
 					<td>${screen.getFullName(lineId)}</td>
 					<td>${screen.getSpeciesName(lineId)}</td>
 					<td>${screen.getSourceName(lineId)}</td>
 					<td>${screen.getRemarksString(lineId)}</td>
-					<td><a href='molgenis.do?__target=${screen.name}&__action=Edit&id=${line.id?string.computer}'>Edit</a></td>
-					<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'>Remove</a></td>
+					<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td>
 				</tr>
 			</#list>
 			</tbody>
@@ -115,14 +116,21 @@
 </form>
 
 <script>
+
 	var oTable = jQuery('#linestable').dataTable(
 	{ "bProcessing": true,
 	  "bServerSide": false,
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
 	  "bAutoWidth": false,
-	  "bJQueryUI" : true }
+	  "bJQueryUI" : true,
+	  "aoColumnDefs": [ 
+      	{ "sWidth": "30px", "aTargets": [ 0,6 ] }
+    	] 
+	  }
 	);
+	
+	
 </script>
     
 </#macro>

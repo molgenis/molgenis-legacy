@@ -363,11 +363,12 @@
 <#else>
 
 	<div id="experimentlist">
-		<p><strong>DEC subprojects</strong></p>
-		<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1">Add</a></p>
+		<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=-1"><img id="add_subproject" class="add_button" title="add new subproject" alt="Add new subproject" src="generated-res/img/new.png"></a></p>
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="decSubProjectsTable">
 			<thead>
 				<tr>
+					<th></th>
+					<th>Animals</th>
 					<th>Name</th>
 					<th>Start date</th>
 					<th>End date</th>
@@ -384,8 +385,6 @@
 					<th>Pain management</th>
 					<th>Expected animal end status</th>
 					<th>Remarks</th>
-					<th>Animals</th>
-					<th></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -393,6 +392,8 @@
 					<#assign i = 0>
 					<#list screen.experimentList as expl>
 						<tr>
+							<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${i}"><img id="edit_breedingline" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
+							<td> <a href='molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${i}'><img id="edit_breedingline" class="edit_button" title="add/remove animals to/from subproject" alt="Edit" src="generated-res/img/grid-manage.gif"></a>  [${expl.nrOfAnimals}]</td>
 							<td>${expl.name}</td>
 							<td>${expl.startDate}</td>
 							<td>${expl.endDate}</td>
@@ -409,8 +410,6 @@
 							<td>${expl.painManagement}</td>
 							<td>${expl.animalEndStatus}</td>
 							<td>${expl.remarks}</td>
-							<td>${expl.nrOfAnimals} [<a href='molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${i}'>Manage</a>]</td>
-							<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${i}">Edit</a>&nbsp;</td>
 						</tr>
 						<#assign i = i + 1>
 					</#list>
@@ -433,7 +432,12 @@
 	  "sPaginationType": "full_numbers",
 	  "bSaveState": true,
 	  "bAutoWidth": false,
-	  "bJQueryUI": true }
+	  "bJQueryUI": true,
+	  "aoColumnDefs": [ 
+      	{ "sWidth": "30px", "aTargets": [ 0 ] }
+    	] 
+	  }
+	  
 	);
 </script>
 	
