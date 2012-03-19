@@ -53,6 +53,8 @@ public class levenshteinDistance {
 		testString.add("sex ha");
 
 		testString.add("smoker");
+		
+		testString.add("Blood PRESSURE");
 
 		test.findMatch(test.getNormalizedOntologyTerms(), testString);
 	}
@@ -100,26 +102,51 @@ public class levenshteinDistance {
 
 		for(String eachString : inputString){
 
-			//Padding the string
-			for(int i = 0; i < nGrams - 1; i++){
-				eachString = "^" + eachString;
-				eachString = eachString + "$";
-			}
-
+			String [] singleWords = eachString.split(" ");
+			
 			List<String> tokens = new ArrayList<String>();
+			
+			//Padding the string
+			for(int index = 0; index < singleWords.length; index++){
+				//TODO what if there is overlapping between different words such diebetes mellitus. 
+				//The s$ will be the produced from two words. 
+				singleWords[index] = singleWords[index].toLowerCase();
+				singleWords[index] = "^" + singleWords[index];
+				singleWords[index] = singleWords[index] + "$";
+				
+				for(int i = 0; i < singleWords[index].length(); i++){
 
-			for(int i = 0; i < eachString.length(); i++){
-
-				if(i + nGrams < eachString.length()){
-					tokens.add(eachString.substring(i, i + nGrams));
-				}else{
-					if(!tokens.contains(eachString.substring(eachString.length() - 2))){
-						tokens.add(eachString.substring(eachString.length() - 2));
+					if(i + nGrams < singleWords[index].length()){
+						tokens.add(singleWords[index].substring(i, i + nGrams));
+					}else{
+						if(!tokens.contains(singleWords[index].substring(singleWords[index].length() - 2))){
+							tokens.add(singleWords[index].substring(singleWords[index].length() - 2).toLowerCase());
+						}
 					}
 				}
 			}
+			
+			normalizedInputString.put(eachString, tokens);
+			
+//			for(int i = 0; i < nGrams - 1; i++){
+//				eachString = "^" + eachString;
+//				eachString = eachString + "$";
+//			}
 
-			normalizedInputString.put(eachString.substring(1, eachString.length() - 1), tokens);
+//			List<String> tokens = new ArrayList<String>();
+//			
+//			for(int i = 0; i < eachString.length(); i++){
+//
+//				if(i + nGrams < eachString.length()){
+//					tokens.add(eachString.substring(i, i + nGrams));
+//				}else{
+//					if(!tokens.contains(eachString.substring(eachString.length() - 2))){
+//						tokens.add(eachString.substring(eachString.length() - 2));
+//					}
+//				}
+//			}
+//			normalizedInputString.put(eachString.substring(1, eachString.length() - 1), tokens);
+			
 		}
 
 		return normalizedInputString;
@@ -130,21 +157,27 @@ public class levenshteinDistance {
 	 * 
 	 * @param ontologyTerms
 	 * @param listOfInputString
+	 * @return 
 	 */
-	public void findMatch(HashMap<String, List<String>> ontologyTerms, List<String> listOfInputString){
+	public HashMap<String, HashMap<String, Double>> findMatch(HashMap<String, 
+			List<String>> ontologyTerms, List<String> listOfInputString){
 
-		String matchedOntologyTerm = null;
-		double maxSimilarity = 0;
+		//Variable to store the mapping result
+		HashMap<String, HashMap<String, Double>> mappingResult = new HashMap<String, HashMap<String, Double>>();
 
 		//Iterate the string
 		for(String stringToMatch : listOfInputString){
-
+			
 			List<String> eachString = new ArrayList<String>();
 
 			eachString.add(stringToMatch);
 
 			HashMap<String, List<String>> temp = createNGrams(eachString, nGrams);
-
+			
+			String matchedOntologyTerm = null;
+			
+			double maxSimilarity = 0;
+			
 			for(String eachOntologyTerm : ontologyTerms.keySet()){
 
 				double similarity = calculateScore(temp.get(stringToMatch), 
@@ -153,10 +186,14 @@ public class levenshteinDistance {
 					maxSimilarity = similarity;
 					matchedOntologyTerm = eachOntologyTerm;
 				}
-
-				System.out.println("The matched ontology term is " + matchedOntologyTerm + ". The similarity is " + maxSimilarity);
 			}
+			System.out.println("The matched ontology term is " + matchedOntologyTerm + ". The similarity is " + maxSimilarity);
+			HashMap<String, Double> matchedTermAndSimilarity = new HashMap<String, Double>();
+			matchedTermAndSimilarity.put(stringToMatch, maxSimilarity);
+			mappingResult.put(stringToMatch, matchedTermAndSimilarity);
 		}
+		
+		return mappingResult;
 	}
 
 	public void checkData(List<String> inputString){}
