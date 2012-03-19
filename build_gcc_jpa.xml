@@ -56,12 +56,12 @@
 				</path>
 				<!-- run the tests -->
 				<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
-					<xmlfileset dir="${build.dir}" includes="**/*testngJpa1.xml" />
+					<xmlfileset dir="${build.molgenis.dir}" includes="**/*testngJpa1.xml" />
 					<jvmarg value="-ea" />
 					<jvmarg value="-Xmx1024m" />
 				</testng>
 				<testng classpathref="combined.class.path" outputDir="${testng.report.dir}" haltOnFailure="true">
-					<xmlfileset dir="${build.dir}" includes="**/*testngJpa2.xml" />
+					<xmlfileset dir="${build.molgenis.dir}" includes="**/*testngJpa2.xml" />
 					<jvmarg value="-ea" />
 					<jvmarg value="-Xmx1024m" />
 				</testng>	
