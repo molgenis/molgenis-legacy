@@ -19,11 +19,11 @@ public class VWAReport4 extends AnimalDBReport
 	private String[][] matrix = null;
 	List<String> speciesList = new ArrayList<String>();
 	private String type;
-	private int userId;
+	private String userName;
 
-	public VWAReport4(Database db, int userId)
+	public VWAReport4(Database db, String userName)
 	{
-		this.userId = userId;
+		this.userName = userName;
 		this.db = db;
 		ct = CommonService.getInstance();
 		ct.setDatabase(db);
@@ -48,16 +48,14 @@ public class VWAReport4 extends AnimalDBReport
 			ArrayList<ArrayList<Integer>> rowList = new ArrayList<ArrayList<Integer>>();
 
 			// Go through all animals owned by the current user
-			List<Integer> investigationIds = ct.getOwnUserInvestigationIds(userId);
-			List<Integer> targetIdList = ct.getAllObservationTargetIds("Individual", false, investigationIds);
-			for (Integer targetid : targetIdList)
+			List<String> investigationNames = ct.getOwnUserInvestigationNames(userName);
+			List<String> targetNameList = ct.getAllObservationTargetNames("Individual", false, investigationNames);
+			for (String animalName : targetNameList)
 			{
-				String animalName = ct.getObservationTargetLabel(targetid);
-				
 				// Check AnimalType
 				String animalType = "";
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+				q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "AnimalType"));
 				List<ObservedValue> valueList = q.find();
 				if (valueList.size() > 0)
@@ -82,7 +80,7 @@ public class VWAReport4 extends AnimalDBReport
 				boolean activeEndOfPrevYear = false;
 				boolean activeEndOfThisYear = false;
 				q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+				q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.NOT, null));
 				q.sortDESC(ObservedValue.TIME);
@@ -135,14 +133,14 @@ public class VWAReport4 extends AnimalDBReport
 				if (activeEndOfPrevYear == false)
 				{
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+					q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, userName));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Source"));
 					valueList = q.find();
 					if (valueList.size() > 0)
 					{
-						int sourceid = valueList.get(0).getRelation_Id();
+						String sourceName = valueList.get(0).getRelation_Name();
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, sourceid));
+						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, sourceName));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "SourceType"));
 						valueList = q.find();
 						if (valueList.size() > 0)
@@ -178,7 +176,7 @@ public class VWAReport4 extends AnimalDBReport
 				{
 					// Not in an experiment at all - ever?
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+					q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 					if (q.count() == 0) {
 						// List as 'dood voor de proef'
@@ -186,7 +184,7 @@ public class VWAReport4 extends AnimalDBReport
 					} else {
 						// Died while in or after experiment this year?
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+						q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.GREATER_EQUAL, startOfYearString));
 						q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.LESS, endOfYearString));
@@ -197,14 +195,14 @@ public class VWAReport4 extends AnimalDBReport
 							int experimentId = subprojectValueList.get(0).getRelation_Id();
 							String expName = ct.getObservationTargetLabel(experimentId);
 							q = db.query(ObservedValue.class);
-							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+							q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "FromExperiment"));
 							q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, experimentId));
 							List<ObservedValue> fromSubprojectValueList = q.find();
 							if (fromSubprojectValueList.size() == 1) {
 								int protocolApplicationId = fromSubprojectValueList.get(0).getProtocolApplication_Id();
 								q = db.query(ObservedValue.class);
-								q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+								q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 								q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
 								q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
 								List<ObservedValue> endstatusValueList = q.find();
@@ -233,7 +231,7 @@ public class VWAReport4 extends AnimalDBReport
 
 					// Handle 'afgevoerde' animals (col 14-17)
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+					q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Removal"));
 					q.addRules(new QueryRule(ObservedValue.TIME, Operator.GREATER_EQUAL, startOfYearString));
 					q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS, endOfYearString));
@@ -252,7 +250,7 @@ public class VWAReport4 extends AnimalDBReport
 
 				// Get species and store values in the corresponding "bin"
 				q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
+				q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Species"));
 				valueList = q.find();
 				if (valueList.size() > 0)

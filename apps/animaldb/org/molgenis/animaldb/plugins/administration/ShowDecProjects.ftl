@@ -118,7 +118,7 @@
 <#else>
 
 <div id="decapplist">
-	<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0"><img id="add_decproject" class="add_button" title="add new decproject" alt="Add new Dec project" src="generated-res/img/new.png"></a></p>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=0"><img id="add_decproject" class="add_button" title="add new decproject" alt="Add new DEC project" src="generated-res/img/new.png"></a></p>
 	<table cellpadding="0" cellspacing="0" border="0" class="display" id="decProjectsTable">
 		<thead>
 			<tr>

@@ -98,17 +98,13 @@ public class BackgroundPlugin extends PluginModel<Entity>
 			
 			if (action.equals("addBackground")) {
 				String bkgName = request.getString("name");
-				int speciesId = request.getInt("species");
-				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserName());
-				int bkgId = ct.makePanel(investigationId, bkgName, this.getLogin().getUserId());
-				int protocolId = ct.getProtocolId("SetTypeOfGroup");
-				int measurementId = ct.getMeasurementId("TypeOfGroup");
-				db.add(ct.createObservedValueWithProtocolApplication(investigationId, new Date(), null, 
-						protocolId, measurementId, bkgId, "Background", 0));
-				protocolId = ct.getProtocolId("SetSpecies");
-				measurementId = ct.getMeasurementId("Species");
-				db.add(ct.createObservedValueWithProtocolApplication(investigationId, new Date(), null, 
-						protocolId, measurementId, bkgId, null, speciesId));
+				String speciesName = request.getString("species");
+				String investigationName = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
+				ct.makePanel(investigationName, bkgName, this.getLogin().getUserName());
+				db.add(ct.createObservedValueWithProtocolApplication(investigationName, new Date(), null, 
+						"SetTypeOfGroup", "TypeOfGroup", bkgName, "Background", null));
+				db.add(ct.createObservedValueWithProtocolApplication(investigationName, new Date(), null, 
+						"SetSpecies", "Species", bkgName, null, speciesName));
 			}
 			
 		} catch (Exception e) {
@@ -125,19 +121,14 @@ public class BackgroundPlugin extends PluginModel<Entity>
 		
 		// Populate background and species list/map
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
-			
-			backgroundList = ct.getAllMarkedPanels("Background", investigationIds);
-			
-			speciesList = ct.getAllMarkedPanels("Species", investigationIds);
-			
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+			backgroundList = ct.getAllMarkedPanels("Background", investigationNames);
+			speciesList = ct.getAllMarkedPanels("Species", investigationNames);
 			speciesMap = new HashMap<Integer, String>();
 			for (ObservationTarget background : backgroundList) {
-				int backgroundId = background.getId();
-				int speciesId = ct.getMostRecentValueAsXref(backgroundId, "Species");
-				if (speciesId != -1) {
-					String speciesName = ct.getObservationTargetLabel(speciesId);
-					speciesMap.put(backgroundId, speciesName);
+				String speciesName = ct.getMostRecentValueAsXrefName(background.getName(), "Species");
+				if (speciesName != null) {
+					speciesMap.put(background.getId(), speciesName);
 				}
 			}
 			

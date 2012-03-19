@@ -7,7 +7,6 @@
 
 package org.molgenis.animaldb.plugins.system;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = -366762636959036651L;
 	private CommonService ct = CommonService.getInstance();
-	private List<Integer> targetIdList;
+	private List<String> targetNameList;
 	
 	public CascadingDeleteAnimalsPlugin(String name, ScreenController<?> parent)
 	{
@@ -57,14 +56,14 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 	}
 	
 	// Target related methods:
-	public List<Integer> getTargetIdList()
+	public List<String> getTargetNameList()
 	{
-		return targetIdList;
+		return targetNameList;
 	}
 
-	public void setTargetIdList(List<Integer> targetIdList)
+	public void setTargetNameList(List<String> targetNameList)
 	{
-		this.targetIdList = targetIdList;
+		this.targetNameList = targetNameList;
 	}
 	
 	public String getTargetName(Integer id) {
@@ -75,12 +74,12 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		}
 	}
 
-	public void removeValues(Database db, CommonService ct, int targetId, 
-			List<ProtocolApplication> protocolApplicationList, List<Integer> investigationIds) throws DatabaseException {
+	public void removeValues(Database db, CommonService ct, String targetName, 
+			List<ProtocolApplication> protocolApplicationList, List<String> investigationNames) throws DatabaseException {
 		// Values related to the target itself
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
-		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 		List<ObservedValue> valueList = q.find();
 		for (ObservedValue value : valueList) {
 			int paId = value.getProtocolApplication_Id();
@@ -98,8 +97,8 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		db.remove(valueList);
 		// Values in which the target is linked to
 		q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, targetId));
-		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
+		q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, targetName));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 		valueList = q.find();
 		for (ObservedValue value : valueList) {
 			int paId = value.getProtocolApplication_Id();
@@ -122,26 +121,25 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 	{
 		try
 		{
-			int userId = this.getLogin().getUserId();
-			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(userId);
+			String userName = this.getLogin().getUserName();
+			List<String> investigationNames = ct.getWritableUserInvestigationNames(userName);
 			
 			String action = request.getString("__action");
 			List<ProtocolApplication> protocolApplicationList = new ArrayList<ProtocolApplication>();
 			
 			if (action.equals("remove")) {
 				
-				List<?> targetsIdsAsObjectsList = request.getList("target");
-				for (Object targetIdAsObject : targetsIdsAsObjectsList) {
-					// Animal ID
-					int targetId = Integer.parseInt((String)targetIdAsObject);
-					removeValues(db, ct, targetId, protocolApplicationList, investigationIds);
-					ObservationTarget target = ct.getObservationTargetById(targetId);
+				List<?> targetsNamesAsObjectsList = request.getList("target");
+				for (Object targetNameAsObject : targetsNamesAsObjectsList) {
+					String targetName = (String)targetNameAsObject;
+					removeValues(db, ct, targetName, protocolApplicationList, investigationNames);
+					ObservationTarget target = ct.getObservationTargetByName(targetName);
 					db.remove(target);
 				}
 				for (ProtocolApplication pa : protocolApplicationList) {
 					Query<ObservedValue> q = db.query(ObservedValue.class);
 					q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, pa.getId()));
-					q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
+					q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 					List<ObservedValue> valueList = q.find();
 					if (valueList.size() == 0) {
 						// No values left in this application, so safe to remove
@@ -155,10 +153,10 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		
 			if (action.equals("removeAllAnimals"))
 			{
-				List<Integer> animalIdList = ct.getAllObservationTargetIds("Individual", false, investigationIds);
-				List<ObservationTarget> allAnimalList = ct.getObservationTargets(animalIdList);
+				List<String> animalNameList = ct.getAllObservationTargetNames("Individual", false, investigationNames);
+				List<ObservationTarget> allAnimalList = ct.getObservationTargets(animalNameList);
 				for (ObservationTarget animal : allAnimalList) {
-					removeValues(db, ct, animal.getId(), protocolApplicationList, investigationIds);
+					removeValues(db, ct, animal.getName(), protocolApplicationList, investigationNames);
 					db.remove(animal);
 				}
 				db.remove(protocolApplicationList);
@@ -183,8 +181,8 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 
 		try
 		{
-			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
-			this.setTargetIdList(ct.getAllObservationTargetIds(null, false, investigationIds));
+			List<String> investigationNames = ct.getWritableUserInvestigationNames(this.getLogin().getUserName());
+			this.setTargetNameList(ct.getAllObservationTargetNames(null, false, investigationNames));
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (e.getMessage() != null) {

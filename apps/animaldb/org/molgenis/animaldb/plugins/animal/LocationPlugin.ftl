@@ -40,7 +40,7 @@
 		<label for="moveto">Move selected to:</label>
 		<select name="moveto" id="moveto" class="selectbox">
 			<#list screen.locationList as ll>
-				<option value="${ll.id?string.computer}">${ll.name}</option>
+				<option value="${ll.name}">${ll.name}</option>
 			</#list>
 		</select>
 	</div>
@@ -100,11 +100,11 @@
 			</thead>
 			<tbody>
 			<#list screen.locationList as loc>
-				<#assign locId = loc.getId()>
+				<#assign locName = loc.getName()>
 				<tr>
 					<!--<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId?string.computer}">Manage animals in ${loc.name}</a></td> -->
-					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId?string.computer}"><img id="edit_breedingline" class="edit_button" title="add/remove animals from location: ${loc.name}" alt="Edit" src="generated-res/img/grid-manage.gif"></a></td>
-					<td>${loc.name}</td>
+					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locName=${locName}"><img id="edit_breedingline" class="edit_button" title="add/remove animals from location: ${locName}" alt="Edit" src="generated-res/img/grid-manage.gif"></a></td>
+					<td>${locName}</td>
 					<!--<td>${screen.getSuperLocName(locId)}</td>-->
 				</tr>
 			</#list>

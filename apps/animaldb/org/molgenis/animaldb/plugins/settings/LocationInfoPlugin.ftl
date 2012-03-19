@@ -52,7 +52,7 @@
 	<select name="superlocation" id="superlocation" class="selectbox">
 		<option value="0">&nbsp;</option>
 		<#list screen.locationList as ll>
-			<option value="${ll.id?string.computer}">${ll.name}</option>
+			<option value="${ll.name}">${ll.name}</option>
 		</#list>
 	</select>
 	</div>

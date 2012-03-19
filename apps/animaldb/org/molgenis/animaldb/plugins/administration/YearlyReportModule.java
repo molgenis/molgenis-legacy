@@ -12,9 +12,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -69,22 +68,22 @@ public class YearlyReportModule extends PluginModel<Entity>
 	
 	private void makeReport(Database db) {
 		
-		int userId = this.getLogin().getUserId();
+		String userName = this.getLogin().getUserName();
 		
 		if (form.equals("4A")) {
-			report = new VWAReport4(db, userId);
+			report = new VWAReport4(db, userName);
 			report.makeReport(year, "A");
 		}
 		if (form.equals("4B")) {
-			report = new VWAReport4(db, userId);
+			report = new VWAReport4(db, userName);
 			report.makeReport(year, "B");
 		}
 		if (form.equals("4C")) {
-			report = new VWAReport4(db, userId);
+			report = new VWAReport4(db, userName);
 			report.makeReport(year, "C");
 		}
 		if (form.equals("5")) {
-			report = new VWAReport5(db, userId);
+			report = new VWAReport5(db, userName);
 			report.makeReport(year, "");
 		}
 	}

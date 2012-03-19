@@ -108,18 +108,17 @@ public class DecStatus extends GenericPlugin
 		statusTable.addColumn("Status");
 		
 		try {
-			List<Integer> investigationIds = cq.getAllUserInvestigationIds(this.getLogin().getUserName());
-			
+			List<String> investigationNames = cq.getAllUserInvestigationNames(this.getLogin().getUserName());
 			int rowCount = 0;
-			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication", investigationIds);
-			List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment", investigationIds);
-			List<Integer> aliveAnimalIdList = cq.getAllObservationTargetIds("Individual", true, 
-					investigationIds);
-			List<Integer> totalAnimalIdList = cq.getAllObservationTargetIds("Individual", false, 
-					investigationIds);
+			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication", investigationNames);
+			List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment", investigationNames);
+			List<String> aliveAnimalNameList = cq.getAllObservationTargetNames("Individual", true, 
+					investigationNames);
+			List<String> totalAnimalNameList = cq.getAllObservationTargetNames("Individual", false, 
+					investigationNames);
 			for (ObservationTarget decApp : decList) {
-				rowCount = addStatusRows(decApp, statusTable, rowCount, investigationIds, expList, 
-						aliveAnimalIdList, totalAnimalIdList);
+				rowCount = addStatusRows(decApp, statusTable, rowCount, expList, 
+						aliveAnimalNameList, totalAnimalNameList);
 			}
 		} catch (Exception e) {
 			
@@ -141,19 +140,19 @@ public class DecStatus extends GenericPlugin
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	private int addStatusRows(ObservationTarget decApp, Table statusTable, int rowCount, List<Integer> investigationIds, 
-			List<ObservationTarget> expList, List<Integer> aliveAnimalIdList,
-			List<Integer> totalAnimalIdList) throws DatabaseException, ParseException {
+	private int addStatusRows(ObservationTarget decApp, Table statusTable, int rowCount, 
+			List<ObservationTarget> expList, List<String> aliveAnimalNameList,
+			List<String> totalAnimalNameList) throws DatabaseException, ParseException {
 		
 		int nrOfAnimalsAliveCum = 0;
 		int nrOfAnimalsRemovedCum = 0;
 		int budgetCum = 0;
 		DecimalFormat f = new DecimalFormat("0.##");
-		int decId = decApp.getId();
+		String decName = decApp.getName();
 		
 		// First check: bail out if DEC no longer active
 		SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-		String endDateString = cq.getMostRecentValueAsString(decId, "EndDate");
+		String endDateString = cq.getMostRecentValueAsString(decName, "EndDate");
 		Date endDate = newDateOnlyFormat.parse(endDateString);
 		Date now = new Date();
 		if (endDate.before(now)) {
@@ -161,16 +160,16 @@ public class DecStatus extends GenericPlugin
 		}
 		
 		statusTable.addRow("" + (rowCount + 1));
-		statusTable.setCell(0, rowCount, cq.getMostRecentValueAsString(decId, "DecNr"));
-		statusTable.setCell(1, rowCount, cq.getMostRecentValueAsString(decId, "StartDate"));
+		statusTable.setCell(0, rowCount, cq.getMostRecentValueAsString(decName, "DecNr"));
+		statusTable.setCell(1, rowCount, cq.getMostRecentValueAsString(decName, "StartDate"));
 		statusTable.setCell(2, rowCount, endDateString);
 		
 		List<ObservationTarget> expInDecList = new ArrayList<ObservationTarget>();
 		int extraRow = 1;
 		for (ObservationTarget subproject : expList) {
 			// Take only Subprojects that belong to the current DEC
-			int decApplicationId = cq.getMostRecentValueAsXref(subproject.getId(), cq.getMeasurementId("DecApplication"));
-			if (decApplicationId == decId) {
+			String decApplicationName = cq.getMostRecentValueAsXrefName(subproject.getName(), "DecApplication");
+			if (decApplicationName.equals(decName)) {
 				expInDecList.add(subproject);
 				statusTable.addRow("" + (rowCount + 1 + extraRow));
 				extraRow++;
@@ -178,9 +177,8 @@ public class DecStatus extends GenericPlugin
 		}
 		
 		for (ObservationTarget subproject : expInDecList) {
-			
-			int subprojectId = subproject.getId();
-			String subProjectCode = cq.getMostRecentValueAsString(subprojectId, "ExperimentNr");
+			String subprojectName = subproject.getName();
+			String subProjectCode = cq.getMostRecentValueAsString(subprojectName, "ExperimentNr");
 			char codeA = 'A';
 			char code = subProjectCode.toCharArray()[0];
 			int expRow = 1 + code - codeA;
@@ -189,8 +187,8 @@ public class DecStatus extends GenericPlugin
 			}
 			
 			statusTable.setCell(3, rowCount + expRow, subProjectCode);
-			statusTable.setCell(4, rowCount + expRow, cq.getMostRecentValueAsString(subprojectId, "StartDate"));
-			statusTable.setCell(5, rowCount + expRow, cq.getMostRecentValueAsString(subprojectId, "EndDate"));
+			statusTable.setCell(4, rowCount + expRow, cq.getMostRecentValueAsString(subprojectName, "StartDate"));
+			statusTable.setCell(5, rowCount + expRow, cq.getMostRecentValueAsString(subprojectName, "EndDate"));
 			
 			// Calculate numbers of animals alive/used/total
 			int nrOfAnimalsAlive = 0;
@@ -199,20 +197,20 @@ public class DecStatus extends GenericPlugin
 			int budget = 100; // TODO: use real budget
 			budgetCum += budget;
 			java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
-			if (aliveAnimalIdList.size() > 0) {
+			if (aliveAnimalNameList.size() > 0) {
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
-				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, aliveAnimalIdList));
+				q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, subprojectName));
+				q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, aliveAnimalNameList));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				q.addRules(new QueryRule(ObservedValue.TIME, Operator.LESS_EQUAL, nowDb));
 				q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 				nrOfAnimalsAlive = q.count();
 			}
 			nrOfAnimalsAliveCum += nrOfAnimalsAlive;
-			if (totalAnimalIdList.size() > 0) {
+			if (totalAnimalNameList.size() > 0) {
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, subprojectId));
-				q.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, totalAnimalIdList));
+				q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, subprojectName));
+				q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, totalAnimalNameList));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 				nrOfAnimalsTotal = q.count();
 			}

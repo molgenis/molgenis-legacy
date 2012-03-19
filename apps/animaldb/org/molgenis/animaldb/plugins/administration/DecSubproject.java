@@ -14,7 +14,6 @@ public class DecSubproject extends DecEntity {
 	private String painManagement;
 	private String animalEndStatus;
 	private String remarks;
-	private int decApplicationId;
 	private String decApplication;
 	private int nrOfAnimals;
 	
@@ -108,12 +107,6 @@ public class DecSubproject extends DecEntity {
 			return "";
 		}
 		return remarks;
-	}
-	public void setDecApplicationId(int decApplicationId) {
-		this.decApplicationId = decApplicationId;
-	}
-	public int getDecApplicationId() {
-		return decApplicationId;
 	}
 	public void setDecApplication(String decApplication) {
 		this.decApplication = decApplication;

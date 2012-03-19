@@ -44,7 +44,7 @@
 		<select name="species" id="species" class="selectbox">
 			<#if screen.speciesList??>
 				<#list screen.speciesList as species>
-					<option value="${species.id?string.computer}" <#if species.id == screen.species>selected="selected"</#if>>${species.name}</option>
+					<option value="${species.name}" <#if species.name == screen.species>selected="selected"</#if>>${species.name}</option>
 				</#list>
 			</#if>
 		</select>
@@ -55,7 +55,7 @@
 		<select name="source" id="source" class="selectbox">
 			<#if screen.sourceList??>
 				<#list screen.sourceList as source>
-					<option value="${source.id?string.computer}" <#if source.id == screen.source>selected="selected"</#if>>${source.name}</option>
+					<option value="${source.name}" <#if source.name == screen.source>selected="selected"</#if>>${source.name}</option>
 				</#list>
 			</#if>
 		</select>
@@ -74,35 +74,39 @@
 <br />
 <div>
 	<p><h2>Existing breeding lines</h2></p>
-	<#if screen.lineList?size gt 0>
-		<table cellpadding="0" cellspacing="0" border="0" class="display" id="linestable">
-			<thead>
-				<tr>
-					<th></th>
-					<th>Name</th>
-					<th>Full name</th>
-					<th>Species</th>
-					<th>Source</th>
-					<th>Remarks</th>
-					<th></th>
-					
-				</tr>
-			</thead>
-			<tbody>
-			<#list screen.lineList as line>
-				<#assign lineId = line.getId()>
-				<tr>
-					<td><a href='molgenis.do?__target=${screen.name}&__action=Edit&id=${line.id?string.computer}'><img id="edit_breedingline" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
-					<td>${line.name}</td>
-					<td>${screen.getFullName(lineId)}</td>
-					<td>${screen.getSpeciesName(lineId)}</td>
-					<td>${screen.getSourceName(lineId)}</td>
-					<td>${screen.getRemarksString(lineId)}</td>
-					<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td>
-				</tr>
-			</#list>
-			</tbody>
-		</table>
+	<#if screen.lineList??>
+		<#if screen.lineList?size gt 0>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="linestable">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Name</th>
+						<th>Full name</th>
+						<th>Species</th>
+						<th>Source</th>
+						<th>Remarks</th>
+						<th></th>
+						
+					</tr>
+				</thead>
+				<tbody>
+				<#list screen.lineList as line>
+					<#assign lineName = line.getName()>
+					<tr>
+						<td><a href='molgenis.do?__target=${screen.name}&__action=Edit&id=${line.id?string.computer}'><img id="edit_breedingline" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
+						<td>${lineName}</td>
+						<td>${screen.getFullName(lineName)}</td>
+						<td>${screen.getSpeciesName(lineName)}</td>
+						<td>${screen.getSourceName(lineName)}</td>
+						<td>${screen.getRemarksString(lineName)}</td>
+						<td><a href='molgenis.do?__target=${screen.name}&__action=Delete&id=${line.id?string.computer}'><img id="delete_breedingline" class="edit_button" title="delete current record" alt="Delete" src="generated-res/img/delete.png"></a></td>
+					</tr>
+				</#list>
+				</tbody>
+			</table>
+		<#else>
+			<p>There are no breeding lines yet.</p>
+		</#if>
 	<#else>
 		<p>There are no breeding lines yet.</p>
 	</#if>

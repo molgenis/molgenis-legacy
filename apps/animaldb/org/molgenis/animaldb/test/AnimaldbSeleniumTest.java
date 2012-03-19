@@ -320,7 +320,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC applications"));
 		// Make a DEC project
-		selenium.click("link=Add");
+		selenium.click("id=add_decproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.type("id=dectitle", "MyDEC");
 		selenium.type("id=decnumber", "12345");
@@ -338,7 +338,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC subprojects"));
 		// Make a DEC subproject
-		selenium.click("link=Add");
+		selenium.click("id=add_subproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.type("id=experimenttitle", "MyProject");
 		selenium.type("id=expnumber", "A");
@@ -350,7 +350,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("DEC subproject successfully added"));
 		// Add animals to DEC
-		selenium.click("link=Manage");
+		selenium.click("id=manage_breedingline");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=startadd");
 		selenium.waitForPageToLoad(pageLoadTimeout);

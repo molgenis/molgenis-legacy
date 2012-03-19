@@ -158,27 +158,24 @@ public class ShowDecProjects extends PluginModel<Entity>
 				
 				// Some variables we need later on
 				Integer decapplicantId = this.getLogin().getUserId();
-				int investigationId = ct.getOwnUserInvestigationId(this.getLogin().getUserName());
+				String investigationName = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
 				Date now = new Date();
 				
 				// Init lists that we can later add to the DB at once
 				List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 				
 				// Check if edit or add
-				int projectId;
+				String projectName;
 				if (listId == 0) {
 					// autogenerate name to be the DEC id prepended with "DEC "
-					name = name + decnumber;
-									
+					projectName = name + decnumber;
 					// Make new DEC project
-					projectId = ct.makePanel(investigationId, name, this.getLogin().getUserId());
-					int protocolId = ct.getProtocolId("SetTypeOfGroup");
-					int measurementId = ct.getMeasurementId("TypeOfGroup");
-					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationId, 
-							now, null, protocolId, measurementId, projectId, "DecApplication", 0));
+					ct.makePanel(investigationName, projectName, this.getLogin().getUserName());
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(investigationName, 
+							now, null, "SetTypeOfGroup", "TypeOfGroup", projectName, "DecApplication", null));
 				} else {
 					// Get existing DEC project
-					projectId = ct.getObservationTargetId(getDecProjectByListId().getName());
+					projectName = getDecProjectByListId().getName();
 				}
 				
 				// Set values
@@ -187,46 +184,33 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// TODO: this is not entirely true anymore, now that value dates
 				// are date-only, without time info, so values from the same day
 				// cannot be distinguished anymore!
-				int protocolId = ct.getProtocolId("SetDecProjectSpecs");
-				ProtocolApplication app = ct.createProtocolApplication(investigationId, protocolId);
+				ProtocolApplication app = ct.createProtocolApplication(investigationName, "SetDecProjectSpecs");
 				db.add(app);
-				int protocolApplicationId = app.getId();
-				int measurementId = ct.getMeasurementId("DecNr");
-				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, decnumber, 0));
-				
-				measurementId = ct.getMeasurementId("DecTitle");
-				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, dectitle, 0));
-				
-				measurementId = ct.getMeasurementId("DecApplicantId");
-				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, decapplicantId.toString(), 0));
+				String protocolApplicationName = app.getName();
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+						enddate, "DecNr", projectName, decnumber, null));
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+						enddate, "DecTitle", projectName, dectitle, null));
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+						enddate, "DecApplicantId", projectName, decapplicantId.toString(), null));
 				if (decapplicationpdf != null) {
-					measurementId = ct.getMeasurementId("DecApplicationPdf");
-					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-							enddate, measurementId, projectId, decapplicationpdf, 0));
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+							enddate, "DecApplicationPdf", projectName, decapplicationpdf, null));
 				}
 				if (decapprovalpdf != null) {
-					measurementId = ct.getMeasurementId("DecApprovalPdf");
-					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-							enddate, measurementId, projectId, decapprovalpdf, 0));
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+							enddate, "DecApprovalPdf", projectName, decapprovalpdf, null));
 				}
-				measurementId = ct.getMeasurementId("StartDate");
-				valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-						enddate, measurementId, projectId, dbFormat.format(startdate), 0));
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+						enddate, "StartDate", projectName, dbFormat.format(startdate), null));
 				if (enddate != null) {
-					measurementId = ct.getMeasurementId("EndDate");
-					valuesToAddList.add(ct.createObservedValue(investigationId, protocolApplicationId, startdate, 
-							enddate, measurementId, projectId,  dbFormat.format(enddate), 0));
+					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+							enddate, "EndDate", projectName,  dbFormat.format(enddate), null));
 				}
 				// Add everything to DB
 				db.add(valuesToAddList);
 				
-				// Reload, so list is refreshed
-				this.getMessages().clear();
-				this.getMessages().add(new ScreenMessage("DEC Project successfully added", true));
-				this.reload(db);
+				this.setSuccess("DEC Project successfully added");
 			}
 			
 		} catch (Exception e) {
@@ -244,55 +228,37 @@ public class ShowDecProjects extends PluginModel<Entity>
 		ct.setDatabase(db);
 		
 		try {
-			List<Integer> investigationIds = ct.getWritableUserInvestigationIds(this.getLogin().getUserId());
+			List<String> investigationNames = ct.getWritableUserInvestigationNames(this.getLogin().getUserName());
 			// Populate DEC projects list
 			decappList.clear();
-			List<ObservationTarget> decList = ct.getAllMarkedPanels("DecApplication", investigationIds);
+			List<ObservationTarget> decList = ct.getAllMarkedPanels("DecApplication", investigationNames);
 			int pos = 1;
 			for (ObservationTarget currentDec : decList) {
 				String name = currentDec.getName();
-				
 				DecProject tmpDec = new DecProject();
-				// set id
 				tmpDec.setId(currentDec.getId());
-				// set dec app list id
 				tmpDec.setDecAppListId(pos);
-				// set name
 				tmpDec.setName(name);
-				// set decnr
-				int featureId = ct.getMeasurementId("DecNr");
-				String decNr = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
+				String decNr = ct.getMostRecentValueAsString(name, "DecNr");
 				if (decNr != null) tmpDec.setDecNr(decNr);
-				// set dectitle
-				featureId = ct.getMeasurementId("DecTitle");
-				String decTitle = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
+				String decTitle = ct.getMostRecentValueAsString(name, "DecTitle");
 				if (decTitle != null) tmpDec.setDecTitle(decTitle);
-				// set decapplicant
-				featureId = ct.getMeasurementId("DecApplicantId");
-				String decApplicantString = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
+				String decApplicantString = ct.getMostRecentValueAsString(name, "DecApplicantId");
 				if (decApplicantString != null && !decApplicantString.equals("")) {
 					MolgenisUser applicant = db.findById(MolgenisUser.class, Integer.parseInt(decApplicantString));
 					tmpDec.setDecApplicantName(applicant.getName());
 				} else {
 					tmpDec.setDecApplicantName("");
 				}
-				// set pdfdecapplication
 				String pdfDecApplication = "";
-				featureId = ct.getMeasurementId("DecApplicationPdf");
-				pdfDecApplication = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
+				pdfDecApplication = ct.getMostRecentValueAsString(name, "DecApplicationPdf");
 				if (pdfDecApplication != null) tmpDec.setPdfDecApplication(pdfDecApplication);
-				// set pdfdecapproval
 				String pdfDecApproval = "";
-				featureId = ct.getMeasurementId("DecApprovalPdf");
-				pdfDecApproval = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
+				pdfDecApproval = ct.getMostRecentValueAsString(name, "DecApprovalPdf");
 				if (pdfDecApproval != null) tmpDec.setPdfDecApproval(pdfDecApproval);
-				// set start date
-				featureId = ct.getMeasurementId("StartDate");
-				String startDate = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
+				String startDate = ct.getMostRecentValueAsString(name, "StartDate");
 				if (startDate != null) tmpDec.setStartDate(startDate);
-				// set end date
-				featureId = ct.getMeasurementId("EndDate");
-				String endDate = ct.getMostRecentValueAsString(currentDec.getId(), featureId);
+				String endDate = ct.getMostRecentValueAsString(name, "EndDate");
 				if (endDate != null) tmpDec.setEndDate(endDate);
 				
 				decappList.add(tmpDec);

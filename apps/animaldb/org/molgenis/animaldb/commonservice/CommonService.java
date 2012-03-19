@@ -50,7 +50,7 @@ public class CommonService
 	public static final String PANEL = "Panel";
 
 	protected static Database db;
-	private static int protAppCounter = 0;
+	private static int protAppCounter = 0; // for generating unique protocol application names
 	private transient Logger logger = Logger.getLogger(CommonService.class);
 	protected static Map<Integer, String> observationTargetNameMap = null;
 	
@@ -101,44 +101,44 @@ public class CommonService
 	}
 	
 	/**
-	 * Gets the ID of the first investigation owned by the user with ID 'userId'.
-	 * Returns -1 if no investigations found.
+	 * Gets the name of the first investigation owned by the user with name 'userName'.
+	 * Returns null if no investigations found.
 	 * 
 	 * @param userId
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public int getOwnUserInvestigationId(String userName) {
+	public String getOwnUserInvestigationName(String userName) {
 		Query<Investigation> q = db.query(Investigation.class);
 		q.addRules(new QueryRule(Investigation.OWNS_NAME, Operator.EQUALS, userName));
 		List<Investigation> invList;
 		try {
 			invList = q.find();
 		} catch (Exception e) {
-			return -1;
+			return null;
 		}
 		if (invList.size() > 0) {
-			return invList.get(0).getId();
+			return invList.get(0).getName();
 		} else {
-			return -1;
+			return null;
 		}
 	}
 	
 	/**
-	 * Gets the IDs of all the investigations owned by the user with ID 'userId'.
+	 * Gets the names of all the investigations owned by the user with name 'userName'.
 	 * Returns null if no investigation found.
 	 * 
-	 * @param userId
+	 * @param userName
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Integer> getOwnUserInvestigationIds(int userId) {
+	public List<String> getOwnUserInvestigationNames(String userName) {
 		Query<Investigation> q = db.query(Investigation.class);
-		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Investigation.OWNS_NAME, Operator.EQUALS, userName));
 		List<Investigation> invList;
-		List<Integer> returnList = new ArrayList<Integer>();
+		List<String> returnList = new ArrayList<String>();
 		try {
 			invList = q.find();
 		} catch (Exception e) {
@@ -146,7 +146,7 @@ public class CommonService
 		}
 		if (invList != null && invList.size() > 0) {
 			for (Investigation inv : invList) {
-				returnList.add(inv.getId());
+				returnList.add(inv.getName());
 			}
 		} else {
 			return null;
@@ -155,10 +155,10 @@ public class CommonService
 	}
 	
 	/**
-	 * Gets the investigations owned, readable or writable by the user with ID 'userId'.
+	 * Gets the investigations owned, readable or writable by the user with name 'userName'.
 	 * TODO: also take groups into account.
 	 * 
-	 * @param userId
+	 * @param userName
 	 * @return
 	 */
 	public List<Investigation> getAllUserInvestigations(String userName) {
@@ -180,9 +180,9 @@ public class CommonService
 	}
 	
 	/**
-	 * Gets the names of the investigations owned, readable or writable by the user with ID 'userId'.
+	 * Gets the names of the investigations owned, readable or writable by the user with name 'userName'.
 	 * 
-	 * @param userId
+	 * @param userName
 	 * @return
 	 */
 	public List<String> getAllUserInvestigationNames(String userName) {
@@ -200,38 +200,19 @@ public class CommonService
 	}
 	
 	/**
-	 * Gets the ID's of the investigations owned, readable or writable by the user with ID 'userId'.
+	 * Gets the names of the investigation owned or writable by the user with name 'userName'.
 	 * 
-	 * @param userId
-	 * @return
-	 */
-	public List<Integer> getAllUserInvestigationIds(String userName) {
-		List<Integer> returnList = new ArrayList<Integer>();
-		List<Investigation> invList = getAllUserInvestigations(userName);
-		if (invList != null) {
-			for (Investigation inv : invList) {
-				if (!returnList.contains(inv.getId())) {
-					returnList.add(inv.getId());
-				}
-			}
-		}
-		return returnList;
-	}
-	
-	/**
-	 * Gets the ID's of the investigation owned or writable by the user with ID 'userId'.
-	 * 
-	 * @param userId
+	 * @param userName
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Integer> getWritableUserInvestigationIds(int userId) {
+	public List<String> getWritableUserInvestigationNames(String userName) {
 		Query<Investigation> q = db.query(Investigation.class);
-		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
+		q.addRules(new QueryRule(Investigation.OWNS_NAME, Operator.EQUALS, userName));
 		q.addRules(new QueryRule(Operator.OR));
-		q.addRules(new QueryRule(Investigation.CANWRITE, Operator.EQUALS, userId));
-		List<Integer> returnList = new ArrayList<Integer>();
+		q.addRules(new QueryRule(Investigation.CANWRITE_NAME, Operator.EQUALS, userName));
+		List<String> returnList = new ArrayList<String>();
 		List<Investigation> invList;
 		try {
 			invList = q.find();
@@ -239,7 +220,7 @@ public class CommonService
 			return null;
 		}
 		for (Investigation inv : invList) {
-			returnList.add(inv.getId());
+			returnList.add(inv.getName());
 		}
 		return returnList;
 	}
@@ -247,15 +228,21 @@ public class CommonService
 	/**
 	 * Retrieve an observation target by id. Gives back null if not found.
 	 * 
-	 * @param targetId the id to look for
-	 * @return an ObservationTarget entity with Id targetId
-	 * @throws DatabaseException
-	 * @throws ParseException
 	 */
 	public ObservationTarget getObservationTargetById(int targetId)
 			throws DatabaseException, ParseException
 	{
 		return db.findById(ObservationTarget.class, targetId);
+	}
+	
+	/**
+	 * Retrieve an observation target by name. Gives back null if not found.
+	 * 
+	 */
+	public ObservationTarget getObservationTargetByName(String targetName)
+			throws DatabaseException, ParseException
+	{
+		return db.query(ObservationTarget.class).eq(ObservationTarget.NAME, targetName).find().get(0);
 	}
 	
 	/**
@@ -361,20 +348,20 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Integer> getAllObservationTargetIds(String type, boolean isActive, List<Integer> investigationIds) 
+	@SuppressWarnings("unchecked")
+	public List<String> getAllObservationTargetNames(String type, boolean isActive, List<String> investigationNames) 
 	throws DatabaseException, ParseException
 	{
-		List<Integer> returnList = new ArrayList<Integer>();
+		List<String> returnList = new ArrayList<String>();
 		
-		if (investigationIds == null) {
-			investigationIds = new ArrayList<Integer>();
+		if (investigationNames == null) {
+			investigationNames = new ArrayList<String>();
+		}
+		if (!investigationNames.contains("System")) {
+			investigationNames.add("System");
 		}
 		
-		Integer systemId = getInvestigationId("System");
-		if (!investigationIds.contains(systemId)) {
-			investigationIds.add(systemId);
-		}
-		
+		@SuppressWarnings("rawtypes")
 		Class targetClass = db.getClassForName("ObservationTarget");
 		if (type != null) {
 			targetClass = db.getClassForName(type);
@@ -382,40 +369,40 @@ public class CommonService
 		
 		if (isActive == false) {
 			Query<ObservationTarget> targetQuery = db.query(targetClass);
-			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
+			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION_NAME, Operator.IN, investigationNames));
 			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
 			List<ObservationTarget> targetList = targetQuery.find();
 			for (ObservationTarget target : targetList) {
-				returnList.add(target.getId());
+				returnList.add(target.getName());
 			}
 			return returnList;
 		} else {
-			// Find 'Active' target id's
+			// Find 'Active' target names
 			Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
 			valueQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 			valueQuery.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
-			valueQuery.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
+			valueQuery.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 			List<ObservedValue> valueList = valueQuery.find();
-			List<Integer> activeIdList = new ArrayList<Integer>();
+			List<String> activeNameList = new ArrayList<String>();
 			for (ObservedValue value : valueList) {
-				if (!activeIdList.contains(value.getTarget_Id())) {
-					activeIdList.add(value.getTarget_Id());
+				if (!activeNameList.contains(value.getTarget_Name())) {
+					activeNameList.add(value.getTarget_Name());
 				}
 			}
-			// Find target id's of right type
-			List<Integer> typeIdList = new ArrayList<Integer>();
+			// Find target names of right type
+			List<String> typeNameList = new ArrayList<String>();
 			Query<ObservationTarget> targetQuery = db.query(targetClass);
-			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION, Operator.IN, investigationIds));
+			targetQuery.addRules(new QueryRule(ObservationTarget.INVESTIGATION_NAME, Operator.IN, investigationNames));
 			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
 			List<ObservationTarget> targetList = targetQuery.find();
 			for (ObservationTarget target : targetList) {
-				if (!typeIdList.contains(target.getId())) {
-					typeIdList.add(target.getId());
+				if (!typeNameList.contains(target.getName())) {
+					typeNameList.add(target.getName());
 				}
 			}
 			// Keep overlap and return corresponding targets
-			typeIdList.retainAll(activeIdList);
-			return typeIdList;
+			typeNameList.retainAll(activeNameList);
+			return typeNameList;
 		}
 	}
 	
@@ -437,15 +424,15 @@ public class CommonService
 		return q.find();
 	}
 	
-	/** Returns all ObservationTargets in the Investigations with ID's investigationIds
+	/** Returns all ObservationTargets in the Investigations with the given names
 	 * 
 	 * @return list of observation targets
 	 * @throws DatabaseException 
 	 */
-	public List<ObservationTarget> getAllObservationTargets(List<Integer> investigationIds) {
+	public List<ObservationTarget> getAllObservationTargets(List<String> investigationNames) {
 		try {
-		    return db.query(ObservationTarget.class).in(ObservationTarget.INVESTIGATION, 
-		    		investigationIds).find();
+		    return db.query(ObservationTarget.class).in(ObservationTarget.INVESTIGATION_NAME, 
+		    		investigationNames).find();
 		} catch (Exception e) {
 		    return new ArrayList<ObservationTarget>();
 		}
@@ -495,10 +482,10 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservationTarget> getObservationTargets(List<Integer> idList) throws DatabaseException, ParseException {
-		if (idList.size() > 0) {
+	public List<ObservationTarget> getObservationTargets(List<String> nameList) throws DatabaseException, ParseException {
+		if (nameList.size() > 0) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
-			targetQuery.addRules(new QueryRule(ObservationTarget.ID, Operator.IN, idList));
+			targetQuery.addRules(new QueryRule(ObservationTarget.NAME, Operator.IN, nameList));
 			targetQuery.addRules(new QueryRule(Operator.SORTASC, ObservationTarget.NAME));
 			return targetQuery.find();
 		} else {
@@ -546,21 +533,14 @@ public class CommonService
 	
 	/**
 	 * Creates a Location and adds it to the database.
-	 * 
-	 * @param investigationId
-	 * @param locationName
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 * @throws IOException
 	 */
-	public int makeLocation(int investigationId, String locationName, int userId)
+	public int makeLocation(String investigationName, String locationName, String userName)
 			throws DatabaseException, ParseException, IOException
 	{
 		Location locationToAdd = new Location();
 		locationToAdd.setName(locationName);
-		locationToAdd.setInvestigation(investigationId);
-		locationToAdd.setOwns(userId);
+		locationToAdd.setInvestigation_Name(investigationName);
+		locationToAdd.setOwns_Name(userName);
 		db.add(locationToAdd);
 		return locationToAdd.getId();
 	}
@@ -571,57 +551,21 @@ public class CommonService
 
 	/**
 	 * Creates a Panel and adds it to the database.
-	 * 
-	 * @param investigationId
-	 * @param panelName
-	 * @return
-	 * @throws DatabaseException
-	 * @throws IOException
-	 * @throws ParseException
 	 */
-	public int makePanel(int investigationId, String panelName, int userId)
+	public int makePanel(String investigationName, String panelName, String userName)
 			throws DatabaseException, IOException, ParseException
 	{
 		Panel newGroup = new Panel();
 		newGroup.setName(panelName);
-		newGroup.setInvestigation_Id(investigationId);
-		newGroup.setOwns_Id(userId);
+		newGroup.setInvestigation_Name(investigationName);
+		newGroup.setOwns_Name(userName);
 		db.add(newGroup);
 		return newGroup.getId();
 	}
 	
 	/**
 	 * Creates a Panel but does NOT add it to the database.
-	 * 
-	 * @param investigationId
-	 * @param panelName
-	 * @return
-	 * @throws DatabaseException
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	@Deprecated
-	public Panel createPanel(int investigationId, String panelName, int userId)
-			throws DatabaseException, IOException, ParseException
-	{
-		Panel newGroup = new Panel();
-		newGroup.setName(panelName);
-		newGroup.setInvestigation(investigationId);
-		newGroup.setOwns(userId);
-		return newGroup;
-	}
-	
-	/**
-	 * Creates a Panel but does NOT add it to the database.
 	 * Uses Investigation and User Names so it can be used with lists.
-	 * 
-	 * @param investigationName
-	 * @param panelName
-	 * @param userName
-	 * @return
-	 * @throws DatabaseException
-	 * @throws IOException
-	 * @throws ParseException
 	 */
 	public Panel createPanel(String investigationName, String panelName, String userName)
 			throws DatabaseException, IOException, ParseException
@@ -645,57 +589,52 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservationTarget> getAllMarkedPanels(String mark, List<Integer> investigationIds)
+	public List<ObservationTarget> getAllMarkedPanels(String mark, List<String> investigationNames)
 			throws DatabaseException, ParseException
 	{
-		List<Integer> panelIdList = new ArrayList<Integer>();
-
+		List<String> panelNameList = new ArrayList<String>();
 		Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-		valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, getMeasurementId("TypeOfGroup")));
+		valueQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "TypeOfGroup"));
 		valueQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, mark));
-		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
-		QueryRule qr2 = new QueryRule(Operator.OR);
-		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
-		valueQuery.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigations
+		if (investigationNames.size() > 0) {
+			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.IN, investigationNames);
+			QueryRule qr2 = new QueryRule(Operator.OR);
+			QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
+			valueQuery.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigations
+		} else {
+			valueQuery.addRules(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System"));
+		}
 		valueQuery.addRules(new QueryRule(Operator.SORTASC, ObservedValue.TARGET_NAME));
 		List<ObservedValue> valueList = valueQuery.find();
 		for (ObservedValue value : valueList) {
-			panelIdList.add(value.getTarget_Id());
+			panelNameList.add(value.getTarget_Name());
 		}
 
-		return getObservationTargets(panelIdList);
+		return getObservationTargets(panelNameList);
 	}
 
 	/**
 	 * Creates an ObservedValue for adding an ObservationTarget to a Panel, but does NOT add this to the database.
-	 * 
-	 * @param investigationId
-	 * @param targetid
-	 * @param tmpDate
-	 * @param groupid
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 * @throws IOException
+	 * However, a protocol application is created and added to the database, so there is a database transaction
+	 * involved, rendering this method unsuitable for use with batch lists.
 	 */
-	// TODO: keep using this or use normal mref?
-	public ObservedValue addObservationTargetToPanel(int investigationId, int targetid,
-			Date tmpDate, int groupid) throws DatabaseException,
+	public ObservedValue addObservationTargetToPanel(String investigationName, String targetName,
+			Date tmpDate, String panelName) throws DatabaseException,
 			ParseException, IOException
 	{
 		// First, check is target is already in this Panel
-		int featureid = getMeasurementId("Group");
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-		q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, groupid));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Group"));
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
+		q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, panelName));
 		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 		List<ObservedValue> valueList = q.find();
 		
 		if (valueList.size() == 0) {
-			int protocolId = getProtocolId("SetGroup");
-			ProtocolApplication app = createProtocolApplication(investigationId, protocolId);
+			ProtocolApplication app = createProtocolApplication(investigationName, "SetGroup");
 			db.add(app);
-			return createObservedValue(investigationId, app.getId(), tmpDate, null, featureid, targetid, null, groupid);
+			return createObservedValue(investigationName, app.getName(), tmpDate, null, "Group", 
+					targetName, null, panelName);
 		}
 		// Target is already in group, so do not make value
 		return null;
@@ -733,10 +672,9 @@ public class CommonService
 	 */
 	@Deprecated
 	public int getActorId(int userId) throws DatabaseException, ParseException {
-		int measurementId = getMeasurementId("MolgenisUserId");
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, Integer.toString(userId)));
-		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "MolgenisUserId"));
 		List<ObservedValue> valueList = q.find();
 		if (valueList.size() > 0) {
 			return valueList.get(0).getTarget_Id();
@@ -744,41 +682,11 @@ public class CommonService
 			throw new DatabaseException("No Actor found for MolgenisUser id " + userId);
 		}
 	}
-
-	/**
-	 * Makes a new application of the given protocol
-	 * but does NOT add it to the database.
-	 * 
-	 * @param investigationId
-	 * @param protocolId
-	 * @return the ProtocolApplication that was created
-	 * @throws ParseException
-	 * @throws DatabaseException
-	 * @throws IOException
-	 */
-	public ProtocolApplication createProtocolApplication(int investigationId, int protocolId) throws ParseException,
-			DatabaseException, IOException
-	{
-		Date now = Calendar.getInstance().getTime();
-		ProtocolApplication pa = new ProtocolApplication();
-		pa.setInvestigation_Id(investigationId);
-		pa.setName(protocolId + "_" + protAppCounter++ + "_" + now.toString()); // strange but unique name
-		pa.setProtocol_Id(protocolId);
-		pa.setTime(now);
-		return pa;
-	}
 	
 	/**
 	 * Makes a new application of the given protocol
 	 * but does NOT add it to the database.
 	 * Uses Investigation and Protocol Names so it can be used with lists.
-	 * 
-	 * @param investigationName
-	 * @param protocolName
-	 * @return
-	 * @throws ParseException
-	 * @throws DatabaseException
-	 * @throws IOException
 	 */
 	public ProtocolApplication createProtocolApplication(String investigationName, String protocolName) throws ParseException,
 			DatabaseException, IOException
@@ -793,23 +701,12 @@ public class CommonService
 	}
 	
 	/**
-	 * Makes a new ProtocolApplication, adds it to the database and return its id.
-	 * 
-	 * @param investigationId
-	 * @param protocolId
-	 * @return the id of the ProtocolApplication that was added to the database
-	 * @throws DatabaseException
-	 * @throws IOException
+	 * Makes a new ProtocolApplication, adds it to the database and return its name.
 	 */
-	public int makeProtocolApplication(int investigationId, int protocolId) throws DatabaseException, IOException {
-		Date now = Calendar.getInstance().getTime();
-		ProtocolApplication pa = new ProtocolApplication();
-		pa.setInvestigation_Id(investigationId);
-		pa.setName(protocolId + "_" + protAppCounter++ + "_" + now.toString()); // strange but unique name
-		pa.setProtocol_Id(protocolId);
-		pa.setTime(now);
+	public String makeProtocolApplication(String investigationName, String protocolName) throws DatabaseException, IOException, ParseException {
+		ProtocolApplication pa = createProtocolApplication(investigationName, protocolName);
 		db.add(pa);
-		return pa.getId();
+		return pa.getName();
 	}
 
 	/**
@@ -930,64 +827,51 @@ public class CommonService
 	 * but does NOT add it to the database.
 	 * Warning: because this method involves a database transaction, it is not suited for use
 	 * with batch lists.
-	 * 
-	 * @param investigationId
-	 * @param starttime
-	 * @param endtime
-	 * @param protocolName
-	 * @param featureName
-	 * @param subjectTargetId
-	 * @param valueString
-	 * @param targetRef
-	 * @return ObservedValue
-	 * @throws DatabaseException
-	 * @throws IOException
-	 * @throws ParseException
 	 */
-	public ObservedValue createObservedValueWithProtocolApplication(int investigationId,
-			Date starttime, Date endtime, int protocolId, int featureId,
-			int subjectTargetId, String valueString, int targetRef)
+	public ObservedValue createObservedValueWithProtocolApplication(String investigationName,
+			Date starttime, Date endtime, String protocolName, String featureName,
+			String subjectTargetName, String valueString, String targetRefName)
 			throws DatabaseException, IOException, ParseException
 	{
 		// Make and add ProtocolApplication
-		ProtocolApplication app = createProtocolApplication(investigationId, protocolId);
+		ProtocolApplication app = createProtocolApplication(investigationName, protocolName);
 		db.add(app);
 		
 		ObservedValue newValue = new ObservedValue();
-		newValue.setInvestigation_Id(investigationId);
-		newValue.setProtocolApplication_Id(app.getId());
-		newValue.setFeature_Id(featureId);
+		newValue.setInvestigation_Name(investigationName);
+		newValue.setProtocolApplication_Name(app.getName());
+		newValue.setFeature_Name(featureName);
 		newValue.setTime(starttime);
 		newValue.setEndtime(endtime);
-		newValue.setTarget_Id(subjectTargetId);
-		if (targetRef != 0) {
-			newValue.setRelation_Id(targetRef);
+		newValue.setTarget_Name(subjectTargetName);
+		if (targetRefName != null) {
+			newValue.setRelation_Name(targetRefName);
 		} else {
 			newValue.setValue(valueString);
 		}
 		return newValue;
 	}
-
+	
 	/**
 	 * For a given ObservationTarget and ObservableFeature, returns
 	 * the value of the most recent ObservedValue,
 	 * based on the timestamp of its ProtocolApplication.
 	 * Returns "" if none found.
 	 * 
-	 * @param targetid
-	 * @param featureid
+	 * @param targetName
+	 * @param featureName
 	 * @return String: the most recent value for given feature and target
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public String getMostRecentValueAsString(int targetid, int featureid)
+	public String getMostRecentValueAsString(String targetName, String featureName)
 			throws DatabaseException, ParseException
 	{
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, featureName));
 		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
-		// Discussion: if you uncomment the previous line, only values are retrieved
+		// Discussion: if you uncomment the next line, only values are retrieved
 		// that have endtime 'null', i.e. values that are still valid.
 		// Is this desirable? Maybe we could use a boolean to switch this behavior on and off?
 		// q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
@@ -1009,83 +893,23 @@ public class CommonService
 			return returnValue.getValue();
 		} else {
 			return "";
-			// Discussion: I'm unhappy with the solution below (commented out) because
-			// it's perfectly normal for a target-feature combination not to have a value,
-			// so this should not cause an exception but just return an empty string.
-			//throw new DatabaseException("No valid values were found for targetid: " + 
-			//	targetid + " and featureid: " + featureid);
 		}
 	}
 	
 	/**
 	 * For a given ObservationTarget and ObservableFeature, returns
-	 * the value of the most recent ObservedValue,
-	 * based on the timestamp of its ProtocolApplication.
-	 * Returns "" if none found.
-	 * 
-	 * @param targetid
-	 * @param featureName
-	 * @return String: the most recent value for given feature and target
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public String getMostRecentValueAsString(int targetid, String featureName)
-			throws DatabaseException, ParseException
-	{
-		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, featureName));
-		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
-		// Discussion: if you uncomment the previous line, only values are retrieved
-		// that have endtime 'null', i.e. values that are still valid.
-		// Is this desirable? Maybe we could use a boolean to switch this behavior on and off?
-		// q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
-		List<ObservedValue> valueList = q.find();
-		if (valueList.size() > 0) {
-			ObservedValue returnValue = valueList.get(0); // default is first one
-			Date storedTime = null;
-			for (ObservedValue currentValue : valueList) {
-				if (currentValue.getProtocolApplication_Id() != null) {
-					int protappId = currentValue.getProtocolApplication_Id();
-					ProtocolApplication protapp = getProtocolApplicationById(protappId);
-					Date protappTime = protapp.getTime();
-					if (storedTime == null || protappTime.after(storedTime)) {
-						returnValue = currentValue;
-						storedTime = protappTime;
-					}
-				}
-			}
-			return returnValue.getValue();
-		} else {
-			return "";
-			// Discussion: I'm unhappy with the solution below (commented out) because
-			// it's perfectly normal for a target-feature combination not to have a value,
-			// so this should not cause an exception but just return an empty string.
-			//throw new DatabaseException("No valid values were found for targetid: " + 
-			//	targetid + " and featureid: " + featureid);
-		}
-	}
-
-	/**
-	 * For a given ObservationTarget and ObservableFeature, returns
 	 * the ID of the ObservationTarget related to in the most recent ObservedValue,
 	 * based on the timestamp of its ProtocolApplication.
-	 * Returns -1 if none found.
-	 * 
-	 * @param targetid
-	 * @param featureid
-	 * @return int: ID of relation in most recent value for given feature and target
-	 * @throws DatabaseException
-	 * @throws ParseException
+	 * Returns null if none found.
 	 */
-	public int getMostRecentValueAsXref(int targetid, int featureid)
+	public String getMostRecentValueAsXrefName(String targetName, String featureName)
 			throws DatabaseException, ParseException
 	{
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-		q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, featureid));
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, featureName));
 		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
-		// Discussion: if you uncomment the previous line, only values are retrieved
+		// Discussion: if you uncomment the next line, only values are retrieved
 		// that have endtime 'null', i.e. values that are still valid.
 		// Is this desirable? Maybe we could use a boolean to switch this behavior on and off?
 		//q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
@@ -1104,63 +928,9 @@ public class CommonService
 					}
 				}
 			}
-			return returnValue.getRelation_Id();
+			return returnValue.getRelation_Name();
 		} else {
-			return -1;
-			// Discussion: I'm unhappy with the solution below (commented out) because
-			// it's perfectly normal for a target-feature combination not to have a value,
-			// so this should not cause an exception but just return a dummy xref id.
-		    //throw new DatabaseException("No valid values were found for targetid: " + 
-			//	targetid + " and featureid: " + featureid);
-		}
-	}
-	
-	/**
-	 * For a given ObservationTarget and ObservableFeature, returns
-	 * the ID of the ObservationTarget related to in the most recent ObservedValue,
-	 * based on the timestamp of its ProtocolApplication.
-	 * Returns -1 if none found.
-	 * 
-	 * @param targetid
-	 * @param featureName
-	 * @return int: ID of relation in most recent value for given feature and target
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public int getMostRecentValueAsXref(int targetid, String featureName)
-			throws DatabaseException, ParseException
-	{
-		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetid));
-		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, featureName));
-		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
-		// Discussion: if you uncomment the previous line, only values are retrieved
-		// that have endtime 'null', i.e. values that are still valid.
-		// Is this desirable? Maybe we could use a boolean to switch this behavior on and off?
-		//q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
-		List<ObservedValue> valueList = q.find();
-		if (valueList.size() > 0) {
-			ObservedValue returnValue = valueList.get(0); // default is first one
-			Date storedTime = null;
-			for (ObservedValue currentValue : valueList) {
-				if (currentValue.getProtocolApplication_Id() != null) {
-					int protappId = currentValue.getProtocolApplication_Id();
-					ProtocolApplication protapp = getProtocolApplicationById(protappId);
-					Date protappTime = protapp.getTime();
-					if (storedTime == null || protappTime.after(storedTime)) {
-						returnValue = currentValue;
-						storedTime = protappTime;
-					}
-				}
-			}
-			return returnValue.getRelation_Id();
-		} else {
-			return -1;
-			// Discussion: I'm unhappy with the solution below (commented out) because
-			// it's perfectly normal for a target-feature combination not to have a value,
-			// so this should not cause an exception but just return a dummy xref id.
-		    //throw new DatabaseException("No valid values were found for targetid: " + 
-			//	targetid + " and featureid: " + featureid);
+			return null;
 		}
 	}
 
@@ -1407,9 +1177,9 @@ public class CommonService
 	}
 
 	/**
-	 * Gets the ID of the observable feature with the name "featureName"
+	 * Gets the ID of the measurement with the name "measurementName"
 	 * 
-	 * @param featureName
+	 * @param measurementName
 	 * @return int ID
 	 * @throws DatabaseException
 	 * @throws ParseException
@@ -1461,7 +1231,7 @@ public class CommonService
 	 * @throws ParseException
 	 */
 	public List<Measurement> getAllMeasurementsSorted(String sortField,
-		String sortOrder, List<Integer> investigationIds) throws DatabaseException, ParseException
+		String sortOrder, List<String> investigationNames) throws DatabaseException, ParseException
 	{
 		Query<Measurement> q = db.query(Measurement.class);
 		if (sortOrder.equals("ASC")) {
@@ -1469,8 +1239,8 @@ public class CommonService
 		} else {
 			q.sortDESC(sortField);
 		}
-		if (investigationIds.size() > 0) {
-			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
+		if (investigationNames.size() > 0) {
+			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.IN, investigationNames);
 			QueryRule qr2 = new QueryRule(Operator.OR);
 			QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 			q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1521,20 +1291,6 @@ public class CommonService
 	    }
 		
 		return features;
-	}
-
-	/**
-	 * Finds a Measurement entity by its id
-	 * 
-	 * @param featureId
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public Measurement getMeasurementById(int featureId)
-			throws DatabaseException, ParseException
-	{
-		return db.findById(Measurement.class, featureId);
 	}
 	
 	/**
@@ -1808,43 +1564,35 @@ public class CommonService
 	 * given feature and sample. This created default does not link to a
 	 * ProtocolApplication and this method isn't responsible for storing this
 	 * object in the database.
-	 * 
-	 * @param sampleId
-	 * @param features
-	 * @throws DatabaseException
-	 * @throws ParseException
 	 */
-	public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, 
-			List<Measurement> measurements, List<Integer> investigationIds, 
-			int investigationToAddToId) throws DatabaseException, ParseException
+	public List<ObservedValue> getObservedValuesByTargetAndFeatures(String targetName, 
+			List<String> measurementNames, List<String> investigationNames, 
+			String investigationToAddToName) throws DatabaseException, ParseException
 	{
 
 		List<ObservedValue> values = new ArrayList<ObservedValue>();
-
-		for (Measurement m : measurements)
+		for (String mName : measurementNames)
 		{ // for each feature, find/make value(s)
 			Query<ObservedValue> q = db.query(ObservedValue.class);
-			q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
-			q.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, m.getId()));
-			q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
+			q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
+			q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, mName));
+			q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 			List<ObservedValue> vals = q.find();
-			
 			if (vals.isEmpty())
 			{ // if value doesn't exist, create new one
 				ObservedValue newOV = new ObservedValue();
-				newOV.setFeature_Id(m.getId());
+				newOV.setFeature_Name(mName);
 				newOV.setValue("");
 				// don't set relation, as that can then never be reset to null
-				newOV.setTarget_Id(targetId);
-				newOV.setInvestigation_Id(investigationToAddToId);
+				newOV.setTarget_Name(targetName);
+				newOV.setInvestigation_Name(investigationToAddToName);
 				values.add(newOV);
 			} else {
 				values.addAll(vals);
 			}
 
 		}
-
 		return values;
 	}
 	
@@ -1855,23 +1603,15 @@ public class CommonService
 	 * given feature and sample. This created default does not link to a
 	 * ProtocolApplication and this method isn't responsible for storing this
 	 * object in the database.
-	 * 
-	 * @param targetId
-	 * @param measurement
-	 * @param investigationIds
-	 * @param investigationToBeAddedToId
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
 	 */
-	public List<ObservedValue> getObservedValuesByTargetAndFeature(int targetId, 
-			Measurement measurement, List<Integer> investigationIds, 
-			int investigationToBeAddedToId) throws DatabaseException, ParseException
+	public List<ObservedValue> getObservedValuesByTargetAndFeature(String targetName, 
+			String measurementName, List<String> investigationNames, 
+			String investigationToBeAddedToName) throws DatabaseException, ParseException
 	{
-		List<Measurement> measurementList = new ArrayList<Measurement>();
-		measurementList.add(measurement);
-		return getObservedValuesByTargetAndFeatures(targetId, measurementList, investigationIds, 
-				investigationToBeAddedToId);
+		List<String> measurementNameList = new ArrayList<String>();
+		measurementNameList.add(measurementName);
+		return getObservedValuesByTargetAndFeatures(targetName, measurementNameList, investigationNames, 
+				investigationToBeAddedToName);
 	}
 
 	/** Finds a protocolapplication entity by its name
@@ -1964,12 +1704,12 @@ public class CommonService
 		
 		observationTargetNameMap = new HashMap<Integer, String>();
 		
-		List<Integer> invIdList = getAllUserInvestigationIds(userName);
+		List<String> invNameList = getAllUserInvestigationNames(userName);
 		
 		// First fill with standard names for all the investigations the current user has rights on
 		List<ObservationTarget> targetList = new ArrayList<ObservationTarget>();
 		try {
-			targetList = getAllObservationTargets(invIdList);
+			targetList = getAllObservationTargets(invNameList);
 		} catch (Exception e) {
 			// targetList will remain empty
 			return;
@@ -1990,8 +1730,8 @@ public class CommonService
 				Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
 				valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, 
 						customNameFeatureId));
-				valueQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.IN, 
-						getAllObservationTargetIds(null, false, invIdList)));
+				valueQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.IN, 
+						getAllObservationTargetNames(null, false, invNameList)));
 				List<ObservedValue> valueList = valueQuery.find();
 				for (ObservedValue value : valueList) {
 					if (value.getValue() != null) {
@@ -2121,16 +1861,16 @@ public class CommonService
 	}
 	
 	/**
-	 * Get a list of all the remarks that have been set on the target with ID 'targetId'.
+	 * Get a list of all the remarks that have been set on the target with name 'targetName'.
 	 * 
 	 * @param targetId
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public List<String> getRemarks(int targetId) throws DatabaseException {
+	public List<String> getRemarks(String targetName) throws DatabaseException {
 		Query<ObservedValue> q = db.query(ObservedValue.class);
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Remark"));
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, targetId));
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
 		List<ObservedValue> valueList = q.find();
 		List<String> returnList = new ArrayList<String>();
 		if (valueList != null && valueList.size() > 0) {

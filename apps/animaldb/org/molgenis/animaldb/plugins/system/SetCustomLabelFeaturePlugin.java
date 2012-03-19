@@ -26,6 +26,7 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 	
 	private CommonService ct = CommonService.getInstance();
 	private List<Measurement> measurementList;
+	private String currentLabel;
 	
 	public SetCustomLabelFeaturePlugin(String name, ScreenController<?> parent)
 	{
@@ -57,17 +58,21 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 		return measurementList;
 	}
 	
-	public String getCurrentLabel() {
+	private void setCurrentLabel(Database db) {
 		int featureId = ct.getCustomNameFeatureId(this.getLogin().getUserName());
 		if (featureId == -1) {
-			return "name";
+			currentLabel = "name";
 		}
 		try {
-			Measurement feature = ct.getMeasurementById(featureId);
-			return feature.getName();
+			Measurement feature = db.findById(Measurement.class, featureId);
+			currentLabel = feature.getName();
 		} catch (Exception e) {
-			return "unknown";
+			currentLabel = "unknown";
 		}
+	}
+	
+	public String getCurrentLabel() {
+		return currentLabel;
 	}
 
 	@Override
@@ -118,11 +123,12 @@ public class SetCustomLabelFeaturePlugin extends PluginModel<Entity>
 	public void reload(Database db)
 	{
 		ct.setDatabase(db);
+		setCurrentLabel(db);
 		
 		try {
 			// Populate feature list
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
-			this.setMeasurementList(ct.getAllMeasurementsSorted("name", "ASC", investigationIds));
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+			this.setMeasurementList(ct.getAllMeasurementsSorted("name", "ASC", investigationNames));
 		} catch (Exception e) {
 			this.getMessages().clear();
 			String message = "Something went wrong while loading lists";

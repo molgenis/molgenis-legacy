@@ -108,8 +108,8 @@ public class ConvertUliDbToPheno
 		activeMap = new HashMap<String, ObservedValue>();
 		
 		// Create two lines that are not in the import but that will be needed later
-		createLine("ki hu TNF R1", "ki Humanized TNF R1", "Lawri", ct.getInvestigationId(invName));
-		createLine("ki hu TNF R2", "ki Humanized TNF R2", "Conrad", ct.getInvestigationId(invName));
+		createLine("ki hu TNF R1", "ki Humanized TNF R1", "Lawri", invName);
+		createLine("ki hu TNF R2", "ki Humanized TNF R2", "Conrad", invName);
 	}
 	
 	public void convertFromFile(String filename) throws Exception {
@@ -378,7 +378,7 @@ public class ConvertUliDbToPheno
 				String lineFullName = tuple.getString("LineFullName");
 				if (lineName != null) {
 					if (ct.getObservationTargetId(lineName) == -1) {
-						createLine(lineName, lineFullName, null, ct.getInvestigationId(invName));
+						createLine(lineName, lineFullName, null, invName);
 					}
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLine"), 
 							now, null, "Line", newAnimalName, null, lineName));
@@ -449,7 +449,7 @@ public class ConvertUliDbToPheno
 				String background = tuple.getString("Background");
 				if (background != null) {
 					if (ct.getObservationTargetId(background) == -1) {
-						createBackground(background, ct.getInvestigationId(invName));
+						createBackground(background, invName);
 					}
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetBackground"), 
 							now, null, "Background", newAnimalName, null, background));
@@ -622,42 +622,30 @@ public class ConvertUliDbToPheno
 		});
 	}
 	
-	private void createLine(String lineName, String lineFullName, String remark, int investigationId) throws DatabaseException, IOException, ParseException
+	private void createLine(String lineName, String lineFullName, String remark, String investigationName) throws DatabaseException, IOException, ParseException
 	{
 		Date now = new Date();
 		
 		// Make line panel
-		int lineId = ct.makePanel(investigationId, lineName, login.getUserId());
+		ct.makePanel(investigationName, lineName, userName);
 		// Label it as line using the (Set)TypeOfGroup protocol and feature
-		int featureId = ct.getMeasurementId("TypeOfGroup");
-		int protocolId = ct.getProtocolId("SetTypeOfGroup");
-		db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
-				"Line", 0));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetTypeOfGroup", "TypeOfGroup", lineName, 
+				"Line", null));
 		// Set the source of the line
-		featureId = ct.getMeasurementId("Source");
-		protocolId = ct.getProtocolId("SetSource");
-		int sourceId = ct.getObservationTargetId(sourceName);
-		db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
-				null, sourceId));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetSource", "Source", lineName, 
+				null, sourceName));
 		// Set the species of the line (always House mouse)
-		featureId = ct.getMeasurementId("Species");
-		protocolId = ct.getProtocolId("SetSpecies");
-		int speciesId = ct.getObservationTargetId("House mouse");
-		db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
-				null, speciesId));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetSpecies", "Species", lineName, 
+				null, "House mouse"));
 		// Set full name (if known)
 		if (lineFullName != null) {
-			featureId = ct.getMeasurementId("LineFullName");
-			protocolId = ct.getProtocolId("SetLineFullName");
-			db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
-					lineFullName, 0));
+			db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetLineFullName", "LineFullName", 
+					lineName, lineFullName, null));
 		}
 		// Set remark (if known)
 		if (remark != null) {
-			featureId = ct.getMeasurementId("Remark");
-			protocolId = ct.getProtocolId("SetRemark");
-			db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, lineId, 
-					remark, 0));
+			db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetRemark", "Remark", lineName, 
+					remark, null));
 		}
 	}
 	
@@ -666,23 +654,18 @@ public class ConvertUliDbToPheno
 		ct.makeCategory(geneName, geneName, "GeneModification");
 	}
 	
-	public void createBackground(String bkgName, int investigationId) throws Exception
+	public void createBackground(String bkgName, String investigationName) throws Exception
 	{
 		Date now = new Date();
 		
 		// Make background panel
-		int bkgId = ct.makePanel(investigationId, bkgName, login.getUserId());
+		ct.makePanel(investigationName, bkgName, login.getUserName());
 		// Label it as background using the (Set)TypeOfGroup protocol and feature
-		int featureId = ct.getMeasurementId("TypeOfGroup");
-		int protocolId = ct.getProtocolId("SetTypeOfGroup");
-		db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, bkgId, 
-				"Background", 0));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetTypeOfGroup", "TypeOfGroup", 
+				bkgName, "Background", null));
 		// Set the species of the background (always House mouse)
-		featureId = ct.getMeasurementId("Species");
-		protocolId = ct.getProtocolId("SetSpecies");
-		int speciesId = ct.getObservationTargetId("House mouse");
-		db.add(ct.createObservedValueWithProtocolApplication(investigationId, now, null, protocolId, featureId, bkgId, 
-				null, speciesId));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, now, null, "SetSpecies", "Species", bkgName, 
+				null, "House mouse"));
 	}
 	
 	public List<Integer> SplitParentIdsString(String parentIdsString) {

@@ -39,14 +39,14 @@ import org.molgenis.util.Tuple;
 public class ManageParentgroups extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 203412348106990472L;
-	private List<Integer> selectedMotherIdList = null;
-	private List<Integer> selectedFatherIdList = null;
+	private List<String> selectedMotherNameList = null;
+	private List<String> selectedFatherNameList = null;
 	private CommonService ct = CommonService.getInstance();
 	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private String startdate = null;
 	private List<ObservationTarget> lineList;
-	private int line = -1;
+	private String line = null;
 	private String remarks = null;
 	//private String pgStatus = null;
 	MatrixViewer motherMatrixViewer = null;
@@ -56,7 +56,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 	private static String FATHERMATRIX = "fathermatrix";
 	private static String PGMATRIX = "pgmatrix";
 	private String action = "init";
-	private int userId = -1;
+	private String userName = null;
 	private String motherMatrixViewerString;
 	private String fatherMatrixViewerString;
 	private String pgMatrixViewerString;
@@ -75,18 +75,18 @@ public class ManageParentgroups extends PluginModel<Entity>
 				"<link rel=\"stylesheet\" style=\"text/css\" href=\"res/css/animaldb.css\">";
 	}
 
-	public List<Integer> getSelectedMotherIdList() {
-		return selectedMotherIdList;
+	public List<String> getSelectedMotherNameList() {
+		return selectedMotherNameList;
 	}
-	public void setSelectedMotherList(List<Integer> selectedMotherIdList) {
-		this.selectedMotherIdList = selectedMotherIdList;
+	public void setSelectedMotherList(List<String> selectedMotherNameList) {
+		this.selectedMotherNameList = selectedMotherNameList;
 	}
 
-	public List<Integer> getSelectedFatherIdList() {
-		return selectedFatherIdList;
+	public List<String> getSelectedFatherNameList() {
+		return selectedFatherNameList;
 	}
-	public void setSelectedFatherList(List<Integer> selectedFatherIdList) {
-		this.selectedFatherIdList = selectedFatherIdList;
+	public void setSelectedFatherList(List<String> selectedFatherNameList) {
+		this.selectedFatherNameList = selectedFatherNameList;
 	}
 	
 	public String getAnimalName(Integer id) {
@@ -104,20 +104,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 		this.startdate = startdate;
 	}
 
-	public void setLine(int line) {
+	public void setLine(String line) {
 		this.line = line;
 	}
 	
-	public int getLine() {
+	public String getLine() {
 		return line;
-	}
-	
-	public String getLineName() {
-		try {
-			return ct.getObservationTargetLabel(line);
-		} catch (Exception e) {
-			return "No line selected";
-		}
 	}
 
 	public List<ObservationTarget> getLineList() {
@@ -166,14 +158,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 					ObservedValue.RELATION_NAME, Operator.EQUALS, "Female"));
 			motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
 					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-			if (line != -1) {
+			if (line != null) {
 				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
-						ct.getObservationTargetLabel(line)));
+						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
 				// Setting filter on the RELATION field with value = line would be more efficient,
 				// but gives a very un-userfriendly toString value when shown in the MatrixViewer UI
-				int speciesId = ct.getMostRecentValueAsXref(line, "Species");
-				String speciesName = ct.getObservationTargetLabel(speciesId);
+				String speciesName = ct.getMostRecentValueAsXrefName(line, "Species");
 				motherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
 						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, 
 						speciesName));
@@ -219,14 +209,12 @@ public class ManageParentgroups extends PluginModel<Entity>
 					ObservedValue.RELATION_NAME, Operator.EQUALS, "Male"));
 			fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
 					ObservedValue.VALUE, Operator.EQUALS, "Alive"));
-			if (line != -1) {
+			if (line != null) {
 				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS,
-						ct.getObservationTargetLabel(line)));
+						ct.getMeasurementId("Line"), ObservedValue.RELATION_NAME, Operator.EQUALS, line));
 				// Setting filter on the RELATION field with value = line would be more efficient,
 				// but gives a very un-userfriendly toString value when shown in the MatrixViewer UI
-				int speciesId = ct.getMostRecentValueAsXref(line, "Species");
-				String speciesName = ct.getObservationTargetLabel(speciesId);
+				String speciesName = ct.getMostRecentValueAsXrefName(line, "Species");
 				fatherFilterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
 						ct.getMeasurementId("Species"), ObservedValue.RELATION_NAME, Operator.EQUALS, 
 						speciesName));
@@ -292,50 +280,48 @@ public class ManageParentgroups extends PluginModel<Entity>
 		return "org/molgenis/animaldb/plugins/breeding/ManageParentgroups.ftl";
 	}
 	
-	private void AddParents(Database db, List<Integer> parentIdList, String protocolName, String featureName, int parentgroupid, Date eventDate) 
+	private void AddParents(Database db, List<String> parentNameList, String protocolName, String featureName, 
+			String parentgroupName, Date eventDate) 
 			throws DatabaseException, ParseException, IOException {
 		
-		int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
-		int protocolId = ct.getProtocolId(protocolName);
+		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
 		
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 		
-		for (int parentId : parentIdList) {
+		for (String parentName : parentNameList) {
 			// Find the 'SetParentgroupMother'/'SetParentgroupFather' event type
 			// TODO: SetParentgroupMother/SetParentgroupFather are now plain event types with only the ParentgroupMother/ParentgroupFather feature
 			// and no longer the Certain feature. Solve this!
 			// Make the event
-			ProtocolApplication app = ct.createProtocolApplication(invid, protocolId);
-			int eventid = db.add(app);
+			ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
+			db.add(app);
 			// Make 'ParentgroupMother'/'ParentgroupFather' feature-value pair and link to event
-			int measurementId = ct.getMeasurementId(featureName);
-			valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, parentgroupid, 
-					null, parentId));		
+			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, featureName, parentgroupName, 
+					null, parentName));		
 			// Make 'Certain' feature-value pair and link to event
 			String valueString;
-			if (parentIdList.size() == 1) {
+			if (parentNameList.size() == 1) {
 				valueString = "1"; // if there's only one parent of this gender, it's certain
 			} else {
 				valueString = "0"; // ... otherwise, not
 			}
-			measurementId = ct.getMeasurementId("Certain");
-			valuesToAddList.add(ct.createObservedValue(invid, eventid, eventDate, null, measurementId, parentId, 
-					valueString, 0));
+			valuesToAddList.add(ct.createObservedValue(invName, app.getName(), eventDate, null, "Certain", parentName, 
+					valueString, null));
 		}
 		// Add everything to DB
 		db.add(valuesToAddList);
 	}
 	
 	private void resetUserFields() {
-		this.selectedMotherIdList.clear();
-		this.selectedFatherIdList.clear();
+		this.selectedMotherNameList.clear();
+		this.selectedFatherNameList.clear();
 		this.setStartdate(dateOnlyFormat.format(new Date()));
 		this.setRemarks(null);
 		if (lineList.size() > 0) {
-			this.setLine(lineList.get(0).getId());
+			this.setLine(lineList.get(0).getName());
 		} else {
-			this.setLine(0);
+			this.setLine(null);
 		}
 	}
 
@@ -379,10 +365,10 @@ public class ManageParentgroups extends PluginModel<Entity>
 			
 			if (action.equals("addParentgroupScreen2")) {
 				// Save line that was set in screen 1
-				if (request.getInt("line") != null) {
-					this.line = request.getInt("line");
+				if (request.getString("line") != null) {
+					this.line = request.getString("line");
 				}
-				this.getMessages().add(new ScreenMessage("Line " + ct.getObservationTargetLabel(line) + " successfully set", true));
+				this.getMessages().add(new ScreenMessage("Line " + line + " successfully set", true));
 				
 				if (motherMatrixViewer == null) {
 					loadMotherMatrixViewer(db);
@@ -398,16 +384,16 @@ public class ManageParentgroups extends PluginModel<Entity>
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null) {
-						int motherId = row.getId();
-						if (!this.selectedMotherIdList.contains(motherId)) {
-							this.selectedMotherIdList.add(motherId);
-							motherNames += row.getName() + " ";
+						String motherName = row.getName();
+						if (!this.selectedMotherNameList.contains(motherName)) {
+							this.selectedMotherNameList.add(motherName);
+							motherNames += motherName + " ";
 						}
 					}
 					rowCnt++;
 				}
 				// Check if at least one mother selected:
-				if (this.selectedMotherIdList.size() == 0) {
+				if (this.selectedMotherNameList.size() == 0) {
 					throw new Exception("No mother(s) selected");
 				}
 				this.getMessages().add(new ScreenMessage("Mother(s) " + motherNames + "successfully added", true));
@@ -426,16 +412,16 @@ public class ManageParentgroups extends PluginModel<Entity>
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(FATHERMATRIX + "_selected_" + rowCnt) != null) {
-						int fatherId = row.getId();
-						if (!this.selectedFatherIdList.contains(fatherId)) {
-							this.selectedFatherIdList.add(fatherId);
-							fatherNames += row.getName() + " ";
+						String fatherName = row.getName();
+						if (!this.selectedFatherNameList.contains(fatherName)) {
+							this.selectedFatherNameList.add(fatherName);
+							fatherNames += fatherName + " ";
 						}
 					}
 					rowCnt++;
 				}
 				// Check if at least one father selected:
-				if (this.selectedFatherIdList.size() == 0) {
+				if (this.selectedFatherNameList.size() == 0) {
 					throw new Exception("No father(s) selected");
 				}
 				this.getMessages().add(new ScreenMessage("Father(s) " + fatherNames + "successfully added", true));
@@ -469,7 +455,7 @@ public class ManageParentgroups extends PluginModel<Entity>
 
 	private String AddParentgroup(Database db, Tuple request) throws Exception {
 		Date now = new Date();
-		int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
+		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
 		// Save start date and remarks that were set in screen 4
 		if (request.getString("startdate") != null) {
 			setStartdate(request.getString("startdate"));
@@ -478,47 +464,38 @@ public class ManageParentgroups extends PluginModel<Entity>
 			setRemarks(request.getString("remarks"));
 		}
 		Date eventDate = dateOnlyFormat.parse(startdate);
-		int userId = this.getLogin().getUserId();
 		// Make parentgroup
-		String groupPrefix = "PG_" + ct.getObservationTargetLabel(line) + "_";
+		String groupPrefix = "PG_" + line + "_";
 		int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
 		String groupNrPart = "" + groupNr;
 		groupNrPart = ct.prependZeros(groupNrPart, 6);
-		int groupId = ct.makePanel(invid, groupPrefix + groupNrPart, userId);
+		String groupName = groupPrefix + groupNrPart;
+		ct.makePanel(invName, groupName, userName);
 		// Make or update name prefix entry
 		ct.updatePrefix("parentgroup", groupPrefix, groupNr);
 		// Mark group as parent group using a special event
-		int protocolId = ct.getProtocolId("SetTypeOfGroup");
-		int measurementId = ct.getMeasurementId("TypeOfGroup");
-		db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				protocolId, measurementId, groupId, "Parentgroup", 0));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
+				"SetTypeOfGroup", "TypeOfGroup", groupName, "Parentgroup", null));
 		// Add parent(s)
-		AddParents(db, this.selectedMotherIdList, "SetParentgroupMother", "ParentgroupMother", groupId, eventDate);
-		AddParents(db, this.selectedFatherIdList, "SetParentgroupFather", "ParentgroupFather", groupId, eventDate);
+		AddParents(db, this.selectedMotherNameList, "SetParentgroupMother", "ParentgroupMother", groupName, eventDate);
+		AddParents(db, this.selectedFatherNameList, "SetParentgroupFather", "ParentgroupFather", groupName, eventDate);
 		// Set line
-		protocolId = ct.getProtocolId("SetLine");
-		measurementId = ct.getMeasurementId("Line");
-		db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				protocolId, measurementId, groupId, null, line));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
+				"SetLine", "Line", groupName, null, line));
 		// Set start date
-		protocolId = ct.getProtocolId("SetStartDate");
-		measurementId = ct.getMeasurementId("StartDate");
-		db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-				protocolId, measurementId, groupId, dbFormat.format(eventDate), 0));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
+				"SetStartDate", "StartDate", groupName, dbFormat.format(eventDate), null));
 		// Set remarks
 		if (remarks != null) {
-			protocolId = ct.getProtocolId("SetRemark");
-			measurementId = ct.getMeasurementId("Remark");
-			db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, 
-					protocolId, measurementId, groupId, remarks, 0));
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
+					"SetRemark", "Remark", groupName, remarks, null));
 		}
 		
 		//Add Set Active, with (start)time = entrydate and endtime = null
-		protocolId = ct.getProtocolId("SetActive");
-		measurementId = ct.getMeasurementId("Active");
-		db.add(ct.createObservedValueWithProtocolApplication(invid, now, null, protocolId, measurementId, groupId, "Active", 0));
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, "SetActive", "Active", 
+				groupName, "Active", null));
 		
-		return groupPrefix + groupNrPart;
+		return groupName;
 	}
 
 	@Override
@@ -528,18 +505,18 @@ public class ManageParentgroups extends PluginModel<Entity>
 		// Populate lists (do this on every reload so they keep fresh, and do it here
 		// because we need the lineList in the init part that comes after)
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
 			// Populate line list
-			lineList = ct.getAllMarkedPanels("Line", investigationIds);
+			lineList = ct.getAllMarkedPanels("Line", investigationNames);
 			// Default selected is first line
-			if (line == -1 && lineList.size() > 0) {
-				line = lineList.get(0).getId();
+			if (line == null && lineList.size() > 0) {
+				line = lineList.get(0).getName();
 			}
-			if (selectedMotherIdList == null) {
-				selectedMotherIdList = new ArrayList<Integer>();
+			if (selectedMotherNameList == null) {
+				selectedMotherNameList = new ArrayList<String>();
 			}
-			if (selectedFatherIdList == null) {
-				selectedFatherIdList = new ArrayList<Integer>();
+			if (selectedFatherNameList == null) {
+				selectedFatherNameList = new ArrayList<String>();
 			}
 			
 		} catch (Exception e) {
@@ -551,9 +528,9 @@ public class ManageParentgroups extends PluginModel<Entity>
 			e.printStackTrace();
 		}
 		// Some init that only needs to be done once after login
-		if (userId != this.getLogin().getUserId().intValue()) {
-			userId = this.getLogin().getUserId().intValue();
-			ct.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
+		if (userName != this.getLogin().getUserName()) {
+			userName = this.getLogin().getUserName();
+			ct.makeObservationTargetNameMap(userName, false);
 			this.setStartdate(dateOnlyFormat.format(new Date()));
 			// Prepare pg matrix
 			if (pgMatrixViewer == null) {

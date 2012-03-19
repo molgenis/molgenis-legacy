@@ -130,8 +130,8 @@ public class SpeciesPlugin extends PluginModel<Entity>
 		
 		// Populate species list and property maps
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
-			this.speciesList = ct.getAllMarkedPanels("Species", investigationIds);
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+			this.speciesList = ct.getAllMarkedPanels("Species", investigationNames);
 			
 			dutchNameMap = new HashMap<Integer, String>();
 			latinNameMap = new HashMap<Integer, String>();

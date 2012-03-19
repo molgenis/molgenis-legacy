@@ -44,7 +44,7 @@
 		<select name="species" id="species" class="selectbox">
 			<#if screen.speciesList??>
 				<#list screen.speciesList as species>
-					<option value="${species.id?string.computer}">${species.name}</option>
+					<option value="${species.name}">${species.name}</option>
 				</#list>
 			</#if>
 		</select>

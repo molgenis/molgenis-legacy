@@ -29,9 +29,8 @@
 <div id="targetselect">
 <label for="target">Target:</label>
 <select name="target" id="target" size='20' multiple='multiple'>
-	<#list screen.targetIdList as targetId>
-		<#assign name = screen.getTargetName(targetId)>
-		<option value="${targetId?string.computer}">${name}</option>
+	<#list screen.targetNameList as targetName>
+		<option value="${targetName}">${targetName}</option>
 	</#list>
 </select>
 </div>

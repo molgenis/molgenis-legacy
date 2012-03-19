@@ -59,7 +59,7 @@
 						<td>${litter.isSizeApproximate}</td>
 						<td>${litter.remarks}</td>
 						<td>${litter.status}</td>
-						<td><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&id=${litter.id?string.computer}">Wean</a></td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=ShowWean&name=${litter.name}">Wean</a></td>
 					</tr>
 				</#list>
 				</tbody>
@@ -98,8 +98,8 @@
 						<td>${litter.weanSize}</td>
 						<td>${litter.remarks}</td>
 						<td>${litter.status}</td>
-						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&id=${litter.id?string.computer}">Create temporary cage labels</a></td>
-						<td><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&id=${litter.id?string.computer}">Genotype</a></td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=MakeTmpLabels&name=${litter.name}">Create temporary cage labels</a></td>
+						<td><a href="molgenis.do?__target=${screen.name}&__action=ShowGenotype&name=${litter.name}">Genotype</a></td>
 					</tr>
 				</#list>
 				</tbody>
@@ -180,7 +180,7 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 	
-	<h2>Weaning litter ${screen.getLitterName()}</h2>
+	<h2>Weaning litter ${screen.getLitter()}</h2>
 	
 	<!-- Date and time of weaning -->
 	<div id='weandatediv' class='row'>
@@ -244,9 +244,9 @@
 	<div class="row">
 		<label for="location">Location (optional):</label>
 		<select id="location" name="location">
-			<option value="-1"></option>
+			<option value=""></option>
 			<#list screen.locationList as loc>
-				<option value="${loc.id}">${loc.name}</option>
+				<option value="${loc.name}">${loc.name}</option>
 			</#list>
 		</select>
 	</div>

@@ -104,10 +104,10 @@ public class PrintLabelPlugin extends GenericPlugin
 		
 		labelGenerator.startDocument(pdfFile);
 		
-		List<Integer> investigationIds = cs.getAllUserInvestigationIds(userName);
+		List<String> investigationNames = cs.getAllUserInvestigationNames(userName);
 		List<ObservationTarget> individualList = getIndividualsFromUi(db, request);
-		List<Measurement> measurementList = getMeasurementsFromUi(request);
-    	int ownInvId = cs.getOwnUserInvestigationId(userName);
+		List<String> measurementList = getMeasurementsFromUi(request);
+    	String ownInvName = cs.getOwnUserInvestigationName(userName);
         
         for (ObservationTarget ind : individualList) {
         	
@@ -115,8 +115,8 @@ public class PrintLabelPlugin extends GenericPlugin
         	List<String> lineLabelList = new ArrayList<String>();
         	lineLabelList.add("Name:");
         	lineList.add(ind.getName());
-        	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getId(), measurementList,
-        			investigationIds, ownInvId);
+        	List<ObservedValue> valueList = cs.getObservedValuesByTargetAndFeatures(ind.getName(), measurementList,
+        			investigationNames, ownInvName);
         	for (ObservedValue value : valueList) {
         		String actualValue;
         		if (value.getValue() != null) {
@@ -178,13 +178,12 @@ public class PrintLabelPlugin extends GenericPlugin
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	private List<Measurement> getMeasurementsFromUi(Tuple request) throws DatabaseException, ParseException {
-		List<Measurement> measurementList = new ArrayList<Measurement>();
+	private List<String> getMeasurementsFromUi(Tuple request) throws DatabaseException, ParseException {
+		List<String> measurementList = new ArrayList<String>();
 		List<?> featureListObject = request.getList("Features");
 		if (featureListObject != null) {
 			for (Object o : featureListObject) {
-				int measurementId = Integer.parseInt((String)o);
-				measurementList.add(cs.getMeasurementById(measurementId));
+				measurementList.add((String)o);
 			}
 		}
 		return measurementList;
@@ -276,9 +275,9 @@ public class PrintLabelPlugin extends GenericPlugin
     	features = new SelectMultipleInput("Features", null);
 		features.setLabel("Select feature(s):");
     	try {
-    		List<Integer> investigationIds = cs.getAllUserInvestigationIds(this.getLogin().getUserName());
-		    for (Measurement feature : cs.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationIds)) {
-		    	features.addOption(feature.getId(), feature.getName());
+    		List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+		    for (Measurement feature : cs.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationNames)) {
+		    	features.addOption(feature.getName(), feature.getName());
 		    }
 		} catch(Exception e) {
 			this.setMessages(new ScreenMessage("An error occurred while retrieving features from the database", false));

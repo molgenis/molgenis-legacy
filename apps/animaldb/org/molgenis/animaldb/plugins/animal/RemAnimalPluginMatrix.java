@@ -128,11 +128,10 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 				}
 				Date deathDate = newDateOnlyFormat.parse(deathDateString);
 				
-				int investigationId = cs.getOwnUserInvestigationId(this.getLogin().getUserName());
+				String investigationName = cs.getOwnUserInvestigationName(this.getLogin().getUserName());
 				String notRemoved = "";
 				String removed = "";
 				for (Integer animalId : targetList) {
-					
 					// add animals to stringlist for report
 					String animalName = cs.getObservationTargetLabel(animalId);
 					if (inExperiment(db, animalName, deathDate)) {
@@ -140,18 +139,13 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 						continue;
 					}
 					removed += animalName + " ";
-					
 					// Set 'Removal' feature
-					int protocolId = cs.getProtocolId("SetRemoval");
-					int measurementId = cs.getMeasurementId("Removal");
-					db.add(cs.createObservedValueWithProtocolApplication(investigationId, deathDate, 
-							null, protocolId, measurementId, animalId, removal, 0));
-					
+					db.add(cs.createObservedValueWithProtocolApplication(investigationName, deathDate, 
+							null, "SetRemoval", "Removal", animalName, removal, null));
 					// Report as dead/removed by setting the endtime of the Active value
-					measurementId = cs.getMeasurementId("Active");
 					Query<ObservedValue> activeQuery = db.query(ObservedValue.class);
-					activeQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-					activeQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, measurementId));
+					activeQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
+					activeQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 					List<ObservedValue> activeValueList = activeQuery.find();
 					if (activeValueList.size() == 1) {
 						ObservedValue activeValue = activeValueList.get(0);
@@ -159,22 +153,16 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 						activeValue.setValue("Dead");
 						db.update(activeValue);
 					}
-					
 					// If applicable, set Death date
 					if (removal.equals("dood")) {
-						protocolId = cs.getProtocolId("SetDeathDate");
-						measurementId = cs.getMeasurementId("DeathDate");
-						db.add(cs.createObservedValueWithProtocolApplication(investigationId, 
-								deathDate, null, protocolId, measurementId, animalId, 
-								newDateOnlyFormat.format(deathDate), 0));
+						db.add(cs.createObservedValueWithProtocolApplication(investigationName, 
+								deathDate, null, "SetDeathDate", "DeathDate", animalName, 
+								newDateOnlyFormat.format(deathDate), null));
 					}
-					
 					// Set remark
 					if (request.getString("remarks") != null) {
-						protocolId = cs.getProtocolId("SetRemark");
-						measurementId = cs.getMeasurementId("Remark");
-						db.add(cs.createObservedValueWithProtocolApplication(investigationId, deathDate, null, 
-								protocolId, measurementId, animalId, request.getString("remarks"), 0));
+						db.add(cs.createObservedValueWithProtocolApplication(investigationName, deathDate, null, 
+								"SetRemark", "Remark", animalName, request.getString("remarks"), null));
 					}
 				}
 				

@@ -19,10 +19,10 @@ public class VWAReport5 extends AnimalDBReport {
 	
 	private ArrayList<ArrayList<String>> matrix = new ArrayList<ArrayList<String>>();
 	private List<Integer> nrOfAnimalList = new ArrayList<Integer>();
-	private int userId;
+	private String userName;
 	
-	public VWAReport5(Database db, int userId) {
-		this.userId = userId;
+	public VWAReport5(Database db, String userName) {
+		this.userName = userName;
 		this.db = db;
 		ct = CommonService.getInstance();
 		ct.setDatabase(db);
@@ -41,12 +41,13 @@ public class VWAReport5 extends AnimalDBReport {
 			String endOfYearString = (year + 1) + "-01-01 00:00:00";
 			Date endOfYear = fullFormat.parse(endOfYearString);
 			
-			List<Integer> investigationIds = ct.getOwnUserInvestigationIds(userId);
-			List<ObservationTarget> decappList = ct.getAllMarkedPanels("DecApplication", investigationIds);
+			List<String> investigationNames = ct.getOwnUserInvestigationNames(userName);
+			List<ObservationTarget> decappList = ct.getAllMarkedPanels("DecApplication", investigationNames);
 			for (ObservationTarget d : decappList) {
+				String decName = d.getName();
 				// Check if the DEC application was (partly) in this year
 				Date startOfDec = null;
-				String startOfDecString = ct.getMostRecentValueAsString(d.getId(), "StartDate");
+				String startOfDecString = ct.getMostRecentValueAsString(decName, "StartDate");
 				if (startOfDecString != null && !startOfDecString.equals("")) {
 					startOfDec = dbFormat.parse(startOfDecString);
 					if (startOfDec.after(endOfYear)) {
@@ -56,21 +57,19 @@ public class VWAReport5 extends AnimalDBReport {
 					continue;
 				}
 				Date endOfDec = null;
-				String endOfDecString = ct.getMostRecentValueAsString(d.getId(), "EndDate");
+				String endOfDecString = ct.getMostRecentValueAsString(decName, "EndDate");
 				if (endOfDecString != null && !endOfDecString.equals("")) {
 					endOfDec = dbFormat.parse(endOfDecString);
 					if (endOfDec.before(startOfYear)) {
 						continue;
 					}
 				}
-				
 				// Get DEC number
-				String decNr = ct.getMostRecentValueAsString(d.getId(), "DecNr");
-				
+				String decNr = ct.getMostRecentValueAsString(decName, "DecNr");
 				// Find the experiments belonging to this DEC
 				List<Integer> experimentIdList = new ArrayList<Integer>();
 				Query<ObservedValue> q = db.query(ObservedValue.class);
-				q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, d.getId()));
+				q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, decName));
 				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "DecApplication"));
 				List<ObservedValue> valueList = q.find();
 				// Make sure we have a list of unique experiments!
@@ -82,21 +81,21 @@ public class VWAReport5 extends AnimalDBReport {
 				for (int expid : experimentIdList) {
 					String expName = ct.getObservationTargetLabel(expid);
 					// Get the experiment subcode
-					String expCode = ct.getMostRecentValueAsString(expid, "ExperimentNr");
+					String expCode = ct.getMostRecentValueAsString(expName, "ExperimentNr");
 					// Doel vd proef (experiment's Goal)
-					String goal = ct.getMostRecentValueAsString(expid, "Goal");
+					String goal = ct.getMostRecentValueAsString(expName, "Goal");
 					// Belang van de proef (experiment's Concern)
-					String concern = ct.getMostRecentValueAsString(expid, "Concern");
+					String concern = ct.getMostRecentValueAsString(expName, "Concern");
 					// Wettelijke bepalingen (experiment's LawDef)
-					String lawDef = ct.getMostRecentValueAsString(expid, "LawDef");
+					String lawDef = ct.getMostRecentValueAsString(expName, "LawDef");
 					// Toxicologisch / veiligheidsonderzoek	(experiment's ToxRes)
-					String toxRes = ct.getMostRecentValueAsString(expid, "ToxRes");
+					String toxRes = ct.getMostRecentValueAsString(expName, "ToxRes");
 					// Technieken byzondere	(experiment's SpecialTechn)
-					String specialTechn = ct.getMostRecentValueAsString(expid, "SpecialTechn");
+					String specialTechn = ct.getMostRecentValueAsString(expName, "SpecialTechn");
 					
 					// Get the animals that were in the experiment this year
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, expid));
+					q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, expName));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Experiment"));
 					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.LESS_EQUAL, endOfYearString));
 					q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.NOT, null));
@@ -105,7 +104,6 @@ public class VWAReport5 extends AnimalDBReport {
 						// Get the corresponding protocol application
 						int protocolApplicationId = animalInExpValue.getProtocolApplication_Id();
 						// Get animal ID
-						int animalId = animalInExpValue.getTarget_Id();
 						String animalName = animalInExpValue.getTarget_Name();
 						// Get dates
 						Date entryDate = animalInExpValue.getTime();
@@ -122,14 +120,14 @@ public class VWAReport5 extends AnimalDBReport {
 						
 						// Get the data about the animal in the experiment
 						// Bijzonderheid dier (animal's AnimalType)
-						String animalType = ct.getMostRecentValueAsString(animalId, "AnimalType");
+						String animalType = ct.getMostRecentValueAsString(animalName, "AnimalType");
 						// Diersoort (animal's Species -> VWASpecies and LatinSpecies)
 						String vwaSpecies = "";
 						String latinSpecies = "";
-						int normalSpeciesId = ct.getMostRecentValueAsXref(animalId, "Species");
+						String normalSpecies = ct.getMostRecentValueAsXrefName(animalName, "Species");
 						// Get VWA species
 						Query<ObservedValue> vwaSpeciesQuery = db.query(ObservedValue.class);
-						vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
+						vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, normalSpecies));
 						vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "VWASpecies"));
 						List<ObservedValue> vwaSpeciesValueList = vwaSpeciesQuery.find();
 						if (vwaSpeciesValueList.size() == 1) {
@@ -137,7 +135,7 @@ public class VWAReport5 extends AnimalDBReport {
 						}
 						// Get scientific (Latin) species
 						Query<ObservedValue> latinSpeciesQuery = db.query(ObservedValue.class);
-						latinSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
+						latinSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, normalSpecies));
 						latinSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "LatinSpecies"));
 						List<ObservedValue> latinSpeciesValueList = latinSpeciesQuery.find();
 						if (latinSpeciesValueList.size() == 1) {
@@ -147,7 +145,7 @@ public class VWAReport5 extends AnimalDBReport {
 						// Herkomst en hergebruik (animal's SourceTypeSubproject, which includes reuse)
 						String sourceType = "";
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+						q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "SourceTypeSubproject"));
 						q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
 						valueList = q.find();
@@ -159,7 +157,7 @@ public class VWAReport5 extends AnimalDBReport {
 						// Anesthesie (animal's Anaesthesia)
 						String anaesthesia = "";
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+						q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Anaesthesia"));
 						q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
 						valueList = q.find();
@@ -170,7 +168,7 @@ public class VWAReport5 extends AnimalDBReport {
 						// Pijnbestrijding, postoperatief (animal's PainManagement)
 						String painManagement = "";
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+						q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "PainManagement"));
 						q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, protocolApplicationId));
 						valueList = q.find();
@@ -182,8 +180,8 @@ public class VWAReport5 extends AnimalDBReport {
 						String actualAnimalEndStatus = "";	
 						// Find protocol application ID for the removing of this animal from this DEC subproject
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
-						q.addRules(new QueryRule(ObservedValue.RELATION, Operator.EQUALS, expid));
+						q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
+						q.addRules(new QueryRule(ObservedValue.RELATION_NAME, Operator.EQUALS, expName));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "FromExperiment"));
 						valueList = q.find();
 						if (valueList.size() > 0) {
@@ -191,7 +189,7 @@ public class VWAReport5 extends AnimalDBReport {
 							
 							// Ongerief (animal's ActualDiscomfort)
 							q = db.query(ObservedValue.class);
-							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+							q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ActualDiscomfort"));
 							q.addRules(new QueryRule(ObservedValue.PROTOCOLAPPLICATION, Operator.EQUALS, removalProtocolApplicationId));
 							valueList = q.find();
@@ -205,7 +203,7 @@ public class VWAReport5 extends AnimalDBReport {
 							
 							// Toestand dier na beeindiging proef (animal's most recent ActualAnimalEndStatus)
 							q = db.query(ObservedValue.class);
-							q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+							q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 							q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "ActualAnimalEndStatus"));
 							q.sortDESC(ObservedValue.TIME);
 							valueList = q.find();
@@ -217,7 +215,7 @@ public class VWAReport5 extends AnimalDBReport {
 									// change to 'dood ihkv de proef' because that's how the law wants it...
 									if (actualAnimalEndStatus.equals("C. Na einde proef in leven gelaten")) {
 										q = db.query(ObservedValue.class);
-										q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+										q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 										q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Active"));
 										q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.GREATER_EQUAL, startOfYearString));
 										q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.LESS_EQUAL, endOfYearString));

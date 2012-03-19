@@ -48,7 +48,7 @@ public class LocationPlugin extends PluginModel<Entity>
 	MatrixViewer animalsNotInLocMatrixViewer = null;
 	static String ANIMALSINLOCMATRIX = "animalsinlocmatrix";
 	static String ANIMALSNOTINLOCMATRIX = "animalsnotinlocmatrix";
-	private int locId = -1;
+	private String locName = null;
 	private String matrixLabel;
 	
 	public LocationPlugin(String name, ScreenController<?> parent)
@@ -130,7 +130,7 @@ public class LocationPlugin extends PluginModel<Entity>
 		}
 		
 		try {
-			int invid = ct.getOwnUserInvestigationIds(this.getLogin().getUserId()).get(0);
+			String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
 			action = request.getString("__action");
 			
 			if (animalsInLocMatrixViewer != null && action.startsWith(animalsInLocMatrixViewer.getName())) {
@@ -176,26 +176,25 @@ public class LocationPlugin extends PluginModel<Entity>
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(ANIMALSNOTINLOCMATRIX + "_selected_" + rowCnt) != null) {
-						int animalId = row.getId();
-						assignAnimalToLocation(db, invid, animalId, locId, startDate);
+						assignAnimalToLocation(db, invName, row.getName(), locName, startDate);
 					}
 					rowCnt++;
 				}
 				
 				animalsInLocMatrixViewer.reloadMatrix(null, null);
 				action = "Manage";
-				this.setSuccess("Animals successfully added to " + ct.getObservationTargetLabel(locId) + 
+				this.setSuccess("Animals successfully added to " + locName + 
 						". Now showing animals in that location.");
 				return;
 			}
 			
 			if (action.equals("Manage")) {
-				locId = request.getInt("locId");
-				prepareInLocMatrix(db, ct.getObservationTargetLabel(locId));
+				locName = request.getString("locName");
+				prepareInLocMatrix(db, locName);
 			}
 			
 			if (action.equals("Move")) {
-				int newLocationId = request.getInt("moveto");
+				String newLocationName = request.getString("moveto");
 				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				String startDateString = request.getString("startdate");
 				Date startDate = newDateOnlyFormat.parse(startDateString);
@@ -203,15 +202,13 @@ public class LocationPlugin extends PluginModel<Entity>
 				int rowCnt = 0;
 				for (ObservationElement row : rows) {
 					if (request.getBool(ANIMALSINLOCMATRIX + "_selected_" + rowCnt) != null) {
-						int animalId = row.getId();
-						assignAnimalToLocation(db, invid, animalId, newLocationId, startDate);
+						assignAnimalToLocation(db, invName, row.getName(), newLocationName, startDate);
 					}
 					rowCnt++;
 				}
-				String newLocName = ct.getObservationTargetLabel(newLocationId);
-				prepareInLocMatrix(db, newLocName);
+				prepareInLocMatrix(db, newLocationName);
 				action = "Manage";
-				this.setSuccess("Animals successfully moved to " + newLocName + ". Now switching to that location.");
+				this.setSuccess("Animals successfully moved to " + newLocationName + ". Now switching to that location.");
 				return;
 			}
 			
@@ -247,12 +244,12 @@ public class LocationPlugin extends PluginModel<Entity>
 		this.matrixLabel = "Animals in " + locationName + ":";
 	}
 
-	private void assignAnimalToLocation(Database db, int investigationId, int animalId, int locationId,
+	private void assignAnimalToLocation(Database db, String investigationName, String animalName, String locationName,
 			Date startDate) throws DatabaseException, IOException, ParseException
 	{
 		// First end existing Location value(s)
 		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, animalId));
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Location"));
 		q.addRules(new QueryRule(ObservedValue.ENDTIME, Operator.EQUALS, null));
 		List<ObservedValue> valueList = q.find();
@@ -263,10 +260,8 @@ public class LocationPlugin extends PluginModel<Entity>
 			}
 		}
 		// Then make new one
-		int protocolId = ct.getProtocolId("SetLocation");
-		int featureId = ct.getMeasurementId("Location");
-		db.add(ct.createObservedValueWithProtocolApplication(investigationId, startDate, null, 
-				protocolId, featureId, animalId, null, locationId));
+		db.add(ct.createObservedValueWithProtocolApplication(investigationName, startDate, null, 
+				"SetLocation", "Location", animalName, null, locationName));
 	}
 
 	public void reload(Database db)
@@ -275,10 +270,10 @@ public class LocationPlugin extends PluginModel<Entity>
 		
 		// Populate location list and superloc map
 		try {
-			List<Integer> investigationIds = ct.getAllUserInvestigationIds(this.getLogin().getUserName());
-			List<Integer> locationIdList = ct.getAllObservationTargetIds("Location", false, investigationIds);
-			if (locationIdList.size() > 0) {
-				this.locationList = ct.getObservationTargets(locationIdList);
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+			List<String> locationNameList = ct.getAllObservationTargetNames("Location", false, investigationNames);
+			if (locationNameList.size() > 0) {
+				this.locationList = ct.getObservationTargets(locationNameList);
 			} else {
 				this.locationList = new ArrayList<ObservationTarget>();
 			}
