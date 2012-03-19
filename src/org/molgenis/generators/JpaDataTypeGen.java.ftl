@@ -580,66 +580,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 		return result;
 
 	}
-		
-	@Override
-	public boolean equals(Object other)
-	{
-		if (other == null || !this.getClass().equals(other.getClass()))
-			return false;
-		${JavaName(entity)} e = (${JavaName(entity)}) other;
-		
-	<#list allFields(entity) as field>
-		<#if (field.type = "int" && field.auto)>
-		//ignoring automatic primary key ${field.name}		
-		<#elseif field.type = "xref" || field.type = "mref">
-		//compare on xref labels if they are set
-		<#if field.xrefLabelNames[0] != field.xrefFieldName>if(<#list field.xrefLabelNames as label>get${JavaName(field)}_${JavaName(label)}() != null <#if label_has_next> && </#if></#list>)
-		{
-			<#list field.xrefLabelNames as label>
-			if ( get${JavaName(field)}_${JavaName(label)}() == null ? e.get${JavaName(field)}_${JavaName(label)}()!= null : !get${JavaName(field)}_${JavaName(label)}().equals( e.get${JavaName(field)}_${JavaName(label)}()))
-				return false;			
-			</#list>
-		}
-		else</#if>
-		{
-			if ( get${JavaName(field)}() == null ? e.get${JavaName(field)}()!= null : !get${JavaName(field)}().equals( e.get${JavaName(field)}()))
-				return false;		
-		}
-		<#else>
-		if ( get${JavaName(field)}() == null ? e.get${JavaName(field)}()!= null : !get${JavaName(field)}().equals( e.get${JavaName(field)}()))
-			return false;		
-		</#if>
-	</#list>
-		
-		return true;
-	}	
-	
-	@Override
- 	public int hashCode() 
- 	{ 
-    	int hash = <#if entity.hasAncestor()>super.hashCode()<#else>1</#if>;
- <#list entity.fields as field>
- 		<#if (field.type = "int" && field.auto)>
-		//ignoring automatic primary key ${field.name}		
-		<#elseif field.type = "xref" || field.type = "mref">
-		//hash on xref labels if they are set
-		<#if field.xrefLabelNames[0] != field.xrefFieldName>if(<#list field.xrefLabelNames as label>get${JavaName(field)}_${JavaName(label)}() != null <#if label_has_next> && </#if></#list>)
-		{
-			<#list field.xrefLabelNames as label>
-			hash = hash * 31 + (${name(field)}_${label} == null ? 0 : ${name(field)}_${label}.hashCode());			
-			</#list>
-		}
-		else</#if>
-		{
-    		hash = hash * 31 + (${name(field)} == null ? 0 : ${name(field)}.hashCode());		
-		}
-		<#else>
-    	hash = hash * 31 + (${name(field)} == null ? 0 : ${name(field)}.hashCode());	
-		</#if>
-</#list>
-    	return hash;
-  	}
-	
+
 	/**
 	 * Get the names of all public properties of ${JavaName(entity)}.
 	 */
