@@ -133,14 +133,14 @@ public class VWAReport4 extends AnimalDBReport
 				if (activeEndOfPrevYear == false)
 				{
 					q = db.query(ObservedValue.class);
-					q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, userName));
+					q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, animalName));
 					q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "Source"));
 					valueList = q.find();
 					if (valueList.size() > 0)
 					{
 						String sourceName = valueList.get(0).getRelation_Name();
 						q = db.query(ObservedValue.class);
-						q.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, sourceName));
+						q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, sourceName));
 						q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "SourceType"));
 						valueList = q.find();
 						if (valueList.size() > 0)
@@ -164,6 +164,8 @@ public class VWAReport4 extends AnimalDBReport
 							if (animalType.equals("D. Biotoop")) {
 								inColumn = -1;
 							}
+						} else {
+							warningsList.add("Source " + sourceName + " has no SourceType, animal(s) not counted in incoming section");
 						}
 					} else {
 						warningsList.add("Animal " + animalName + " has no Source, not counted in incoming section");
@@ -257,9 +259,9 @@ public class VWAReport4 extends AnimalDBReport
 				{
 					// Get VWA species
 					String vwaSpecies = "";
-					int normalSpeciesId = valueList.get(0).getRelation_Id();
+					String normalSpeciesName = valueList.get(0).getRelation_Name();
 					Query<ObservedValue> vwaSpeciesQuery = db.query(ObservedValue.class);
-					vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
+					vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, normalSpeciesName));
 					vwaSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "VWASpecies"));
 					List<ObservedValue> vwaSpeciesValueList = vwaSpeciesQuery.find();
 					if (vwaSpeciesValueList.size() == 1) {
@@ -268,7 +270,7 @@ public class VWAReport4 extends AnimalDBReport
 					// Get scientific (Latin) species
 					String latinSpecies = "";
 					Query<ObservedValue> latinSpeciesQuery = db.query(ObservedValue.class);
-					latinSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET, Operator.EQUALS, normalSpeciesId));
+					latinSpeciesQuery.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, normalSpeciesName));
 					latinSpeciesQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "LatinSpecies"));
 					List<ObservedValue> latinSpeciesValueList = latinSpeciesQuery.find();
 					if (latinSpeciesValueList.size() == 1) {

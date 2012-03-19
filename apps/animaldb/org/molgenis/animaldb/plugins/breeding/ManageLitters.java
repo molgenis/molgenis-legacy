@@ -1101,10 +1101,8 @@ public class ManageLitters extends PluginModel<Entity>
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
 					null, "SetAnimalType", "AnimalType", animalName, animalType, null));
 			// Set source
-			if (sourceName != null) {
-				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
-						null, "SetSource", "Source", animalName, null, sourceName));
-			}
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
+					null, "SetSource", "Source", animalName, null, sourceName));
 			// Set color based on mother's (can be changed during genotyping)
 			if (color != null && !color.equals("")) {
 				valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
@@ -1220,7 +1218,7 @@ public class ManageLitters extends PluginModel<Entity>
 					"SetRemark", "Remark", litterName, remarks, null));
 		}
 		// Try to get Source via Line
-		String sourceName = ct.getMostRecentValueAsXrefName(invName, "Source");
+		String sourceName = ct.getMostRecentValueAsXrefName(lineName, "Source");
 		if (sourceName != null) {
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, 
 					eventDate, null, "SetSource", "Source", litterName, null, sourceName));
