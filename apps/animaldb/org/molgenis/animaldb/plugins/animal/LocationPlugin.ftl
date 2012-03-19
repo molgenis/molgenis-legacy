@@ -103,7 +103,7 @@
 				<#assign locName = loc.getName()>
 				<tr>
 					<#--<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId?string.computer}">Manage animals in ${loc.name}</a></td> -->
-					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locName=${locName}"><img id="edit_breedingline" class="edit_button" title="Manage animals in location: ${locName}" alt="Edit" src="generated-res/img/editview.gif"></a></td>
+					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locName=${locName}"><img id="edit_breedingline" class="edit_button" title="Manage animals in location: ${locName}" alt="Manage animals in location" src="generated-res/img/grid-manage.gif"></a></td>
 					<td>${locName}</td>
 					<#--<td>${screen.getSuperLocName(locId)}</td>-->
 				</tr>
