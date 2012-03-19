@@ -82,9 +82,9 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 		List<ObservedValue> valueList = q.find();
 		for (ObservedValue value : valueList) {
-			int paId = value.getProtocolApplication_Id();
+			String paName = value.getProtocolApplication_Name();
 			try {
-				ProtocolApplication pa = ct.getProtocolApplicationById(paId);
+				ProtocolApplication pa = ct.getProtocolApplicationByName(paName);
 				if (!protocolApplicationList.contains(pa)) {
 					protocolApplicationList.add(pa);
 				}
@@ -101,9 +101,9 @@ public class CascadingDeleteAnimalsPlugin extends PluginModel<Entity>
 		q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 		valueList = q.find();
 		for (ObservedValue value : valueList) {
-			int paId = value.getProtocolApplication_Id();
+			String paName = value.getProtocolApplication_Name();
 			try {
-				ProtocolApplication pa = ct.getProtocolApplicationById(paId);
+				ProtocolApplication pa = ct.getProtocolApplicationByName(paName);
 				if (!protocolApplicationList.contains(pa)) {
 					protocolApplicationList.add(pa);
 				}

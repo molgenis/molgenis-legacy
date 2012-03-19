@@ -718,69 +718,11 @@ public class CommonService
 	 * @throws ParseException
 	 */
 	public List<ProtocolApplication> getAllProtocolApplicationsByType(
-			int protocolid) throws DatabaseException, ParseException
+			String protocolName) throws DatabaseException, ParseException
 	{
 		Query<ProtocolApplication> q = db.query(ProtocolApplication.class);
-		q.addRules(new QueryRule("protocol", Operator.EQUALS, protocolid));
+		q.addRules(new QueryRule(ProtocolApplication.PROTOCOL_NAME, Operator.EQUALS, protocolName));
 		return q.find();
-	}
-
-	/**
-	 * Retrieve a protocol application based on id
-	 * 
-	 * @param protappid the id to use for searching
-	 * @return ProtocolApplication matching given id
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public ProtocolApplication getProtocolApplicationById(int protappid)
-			throws DatabaseException, ParseException
-	{
-		Query<ProtocolApplication> q = db.query(ProtocolApplication.class);
-		q.addRules(new QueryRule("id", Operator.EQUALS, protappid));
-		List<ProtocolApplication> eventList = q.find();
-		
-		if(eventList.get(0) != null)
-		    return eventList.get(0);
-		else
-		    throw new DatabaseException("No protocol application with id " + 
-			    protappid + " was found.");
-	}
-
-	/**
-	 * Creates an ObservedValue with the given parameters, but does NOT add it to the database.
-	 * 
-	 * @param investigationId
-	 * @param protappid
-	 * @param starttime
-	 * @param endtime
-	 * @param featureid
-	 * @param subjectTargetId
-	 * @param valueString
-	 * @param targetRef
-	 * @return ObservedValue
-	 * @throws DatabaseException
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	public ObservedValue createObservedValue(int investigationId, int protappid,
-			Date starttime, Date endtime, int featureId,
-			int subjectTargetId, String valueString, int targetRef)
-			throws DatabaseException, IOException, ParseException
-	{
-		ObservedValue newValue = new ObservedValue();
-		newValue.setInvestigation(investigationId);
-		newValue.setProtocolApplication(protappid);
-		newValue.setFeature(featureId);
-		newValue.setTime(starttime);
-		newValue.setEndtime(endtime);
-		newValue.setTarget(subjectTargetId);
-		if (targetRef != 0) {
-			newValue.setRelation(targetRef);
-		} else {
-			newValue.setValue(valueString);
-		}
-		return newValue;
 	}
 	
 	/**
@@ -881,8 +823,8 @@ public class CommonService
 			Date storedTime = null;
 			for (ObservedValue currentValue : valueList) {
 				if (currentValue.getProtocolApplication_Id() != null) {
-					int protappId = currentValue.getProtocolApplication_Id();
-					ProtocolApplication protapp = getProtocolApplicationById(protappId);
+					String protappName = currentValue.getProtocolApplication_Name();
+					ProtocolApplication protapp = getProtocolApplicationByName(protappName);
 					Date protappTime = protapp.getTime();
 					if (storedTime == null || protappTime.after(storedTime)) {
 						returnValue = currentValue;
@@ -919,8 +861,8 @@ public class CommonService
 			Date storedTime = null;
 			for (ObservedValue currentValue : valueList) {
 				if (currentValue.getProtocolApplication_Id() != null) {
-					int protappId = currentValue.getProtocolApplication_Id();
-					ProtocolApplication protapp = getProtocolApplicationById(protappId);
+					String protappName = currentValue.getProtocolApplication_Name();
+					ProtocolApplication protapp = getProtocolApplicationByName(protappName);
 					Date protappTime = protapp.getTime();
 					if (storedTime == null || protappTime.after(storedTime)) {
 						returnValue = currentValue;
@@ -934,54 +876,6 @@ public class CommonService
 		}
 	}
 
-	/**
-	 * Makes a new protocol and adds it to the database
-	 * 
-	 * @param investigationId
-	 * @param protocolName
-	 * @return
-	 * @throws ParseException
-	 * @throws DatabaseException
-	 * @throws IOException
-	 */
-	public int makeProtocol(int investigationId, String protocolName)
-			throws ParseException, DatabaseException, IOException
-	{
-		Protocol newProtocol = new Protocol();
-		newProtocol.setName(protocolName);
-		if (investigationId != -1)
-		{
-			newProtocol.setInvestigation(investigationId);
-		}
-		db.add(newProtocol);
-		return newProtocol.getId();
-	}
-
-	/**
-	 * Makes a new protocol and adds it to the database
-	 * 
-	 * @param investigationId
-	 * @param protocolName
-	 * @param description
-	 * @param locFeatIdList
-	 * @return
-	 * @throws DatabaseException
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	public int makeProtocol(int investigationId, String protocolName,
-			String description, List<Integer> measurementIdList)
-			throws DatabaseException, IOException, ParseException
-	{
-		Protocol newProtocol = new Protocol();
-		newProtocol.setName(protocolName);
-		newProtocol.setInvestigation(investigationId);
-		newProtocol.setFeatures_Id(measurementIdList);
-		newProtocol.setDescription(description);
-		db.add(newProtocol);
-		return newProtocol.getId();
-	}
-	
 	/**
 	 * Creates a new protocol but does NOT add it to the database.
 	 * 
@@ -1045,10 +939,6 @@ public class CommonService
 	/**
 	 * Find a protocol based on protocol name.
 	 * 
-	 * @param eventtypeName
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
 	 */
 	public Protocol getProtocol(String protocolName) throws DatabaseException,
 			ParseException
@@ -1072,10 +962,10 @@ public class CommonService
 	 * @throws ParseException
 	 */
 	public List<Protocol> getAllProtocolsSorted(String sortField,
-			String sortOrder, List<Integer> investigationIds) throws DatabaseException, ParseException
+			String sortOrder, List<String> investigationNames) throws DatabaseException, ParseException
 	{
 		Query<Protocol> q = db.query(Protocol.class);
-		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
+		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.IN, investigationNames);
 		QueryRule qr2 = new QueryRule(Operator.OR);
 		QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 		q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1085,73 +975,6 @@ public class CommonService
 			q.sortDESC(sortField);
 		}
 		return q.find();
-	}
-
-	/**
-	 * Find a protocol based on protocolId
-	 * 
-	 * @param protocolId
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public Protocol getProtocolById(int protocolId) throws DatabaseException,
-			ParseException
-	{
-		return db.findById(Protocol.class, protocolId);
-	}
-
-	/**
-	 * Find an ontologyterm based on an ontologyterm id
-	 * 
-	 * @param ontologyId
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public OntologyTerm getOntologyTermById(int ontologyId)
-			throws DatabaseException, ParseException
-	{
-		return db.findById(OntologyTerm.class, ontologyId);
-	}
-
-	/**
-	 * Find an ontologyterm id, based on ontologyterm name 
-	 * 
-	 * @param name
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public int getOntologyTermId(String name) throws DatabaseException,
-			ParseException
-	{
-		Query<OntologyTerm> q = db.query(OntologyTerm.class);
-		q.eq(OntologyTerm.NAME, name);
-		if(q.find() != null)
-		    return q.find().get(0).getId();
-		else
-		    throw new DatabaseException("No ontologyterm id could be located for" +
-			    "ontologyterm with name " + name);
-	}
-	
-	/** Finds an ontologyterm based on ontology name
-	 * 
-	 * @param name
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ParseException
-	 */
-	public OntologyTerm getOntologyTerm(String name) throws DatabaseException, ParseException {
-	    Query<OntologyTerm> q = db.query(OntologyTerm.class);
-		q.addRules(new QueryRule(OntologyTerm.NAME, Operator.EQUALS,
-				name));
-		if (!q.find().isEmpty())
-		{
-			return q.find().get(0);
-		}
-		else
-			throw new DatabaseException("OntologyTerm not found");
 	}
 
 	/**
@@ -1205,13 +1028,13 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Measurement> getAllMeasurements(List<Integer> investigationIds)
+	public List<Measurement> getAllMeasurements(List<String> investigationNames)
 			throws DatabaseException, ParseException
 	{
 		Query<Measurement> q = db.query(Measurement.class);
 		q.sortASC(Measurement.ID);
-		if (investigationIds.size() > 0) {
-			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
+		if (investigationNames.size() > 0) {
+			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.IN, investigationNames);
 			QueryRule qr2 = new QueryRule(Operator.OR);
 			QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 			q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1257,13 +1080,13 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<ObservableFeature> getAllObservableFeatures(List<Integer> investigationIds)
+	public List<ObservableFeature> getAllObservableFeatures(List<String> investigationNames)
 			throws DatabaseException, ParseException
 	{
 		Query<ObservableFeature> q = db.query(ObservableFeature.class);
 		q.sortASC(ObservableFeature.ID);
-		if (investigationIds.size() > 0) {
-			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
+		if (investigationNames.size() > 0) {
+			QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.IN, investigationNames);
 			QueryRule qr2 = new QueryRule(Operator.OR);
 			QueryRule qr3 = new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, "System");
 			q.addRules(new QueryRule(qr1, qr2, qr3)); // only user's own OR System investigation
@@ -1281,15 +1104,13 @@ public class CommonService
 	 * @throws DatabaseException
 	 * @throws ParseException
 	 */
-	public List<Measurement> getMeasurementsByProtocol(int protocolId) throws DatabaseException, ParseException {
+	public List<Measurement> getMeasurementsByProtocol(String protocolName) throws DatabaseException, ParseException {
 		
-		Protocol protocol = db.findById(Protocol.class, protocolId);
-
+		Protocol protocol = db.query(Protocol.class).eq(Protocol.NAME, protocolName).find().get(0);
 		List<Measurement> features = new ArrayList<Measurement>();
 	    for (Integer i : protocol.getFeatures_Id()) {
 			features.add(db.findById(Measurement.class, i));
 	    }
-		
 		return features;
 	}
 	
@@ -1349,25 +1170,14 @@ public class CommonService
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public int makeMeasurement(int investigationId, String name, int unitId,
-			MolgenisEntity targettypeAllowedForRelation, String panelLabelAllowedForRelation,
-			boolean temporal, String dataType, String description, int userId)
+	public int makeMeasurement(String investigationName, String name, String unitName,
+			String targettypeAllowedForRelationClassName, String panelLabelAllowedForRelation,
+			boolean temporal, String dataType, String description, String userName)
 	throws DatabaseException, IOException, ParseException
 	{
-		Measurement newFeat = new Measurement();
-		newFeat.setName(name);
-		newFeat.setInvestigation_Id(investigationId);
-		newFeat.setUnit_Id(unitId);
-		if (targettypeAllowedForRelation != null) {
-			newFeat.setTargettypeAllowedForRelation(targettypeAllowedForRelation);
-		}
-		if (panelLabelAllowedForRelation != null) {
-			newFeat.setPanelLabelAllowedForRelation(panelLabelAllowedForRelation);
-		}
-		newFeat.setTemporal(temporal);
-		newFeat.setDataType(dataType);
-		newFeat.setDescription(description);
-		newFeat.setOwns_Id(userId);
+		Measurement newFeat = createMeasurement(investigationName, name, unitName,
+				targettypeAllowedForRelationClassName, panelLabelAllowedForRelation,
+				temporal, dataType, description, userName);
 		db.add(newFeat);
 		return newFeat.getId();
 	}

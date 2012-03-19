@@ -15,7 +15,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.animaldb.commonservice.CommonService;
-import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.security.Login;
@@ -74,24 +73,22 @@ public class ConvertUliDbToPheno
 		
 		// If needed, make investigation
 		invName = "FDD";
-		int invid = ct.getInvestigationId(invName);
-		if (invid == -1) {
+		if (ct.getInvestigationId(invName) == -1) {
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);
 			newInv.setOwns_Name(userName);
 			newInv.setCanRead_Name("admin");
-			invid = db.add(newInv);
+			db.add(newInv);
 		}
 		
 		// Add some measurements that we'll need:
-		int stringUnitId = db.query(OntologyTerm.class).eq(OntologyTerm.NAME, "String").find().get(0).getId();
-		ct.makeMeasurement(invid, "OldUliDbTiernummer", stringUnitId, null, null, false, "string", "To set an animal's Tiernummer in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbId", stringUnitId, null, null, false, "string", "To set an animal's ID (laufende Nummer) in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbMotherInfo", stringUnitId, null, null, false, "string", "To set an animal's mother info in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbFatherInfo", stringUnitId, null, null, false, "string", "To set an animal's father info in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbLine", stringUnitId, null, null, false, "string", "To set an animal's line in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbGene", stringUnitId, null, null, false, "string", "To set an animal's gene(s) in the old Uli Eisel DB.", login.getUserId());
-		ct.makeMeasurement(invid, "OldUliDbBackground", stringUnitId, null, null, false, "string", "To set an animal's background info in the old Uli Eisel DB.", login.getUserId());
+		ct.makeMeasurement(invName, "OldUliDbTiernummer", "String", null, null, false, "string", "To set an animal's Tiernummer in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbId", "String", null, null, false, "string", "To set an animal's ID (laufende Nummer) in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbMotherInfo", "String", null, null, false, "string", "To set an animal's mother info in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbFatherInfo", "String", null, null, false, "string", "To set an animal's father info in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbLine", "String", null, null, false, "string", "To set an animal's line in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbGene", "String", null, null, false, "string", "To set an animal's gene(s) in the old Uli Eisel DB.", userName);
+		ct.makeMeasurement(invName, "OldUliDbBackground", "String", null, null, false, "string", "To set an animal's background info in the old Uli Eisel DB.", userName);
 		
 		// Init lists that we can later add to the DB at once
 		protocolAppsToAddList = new ArrayList<ProtocolApplication>();

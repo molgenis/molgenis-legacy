@@ -91,14 +91,12 @@ public class ConvertRhutDbToPheno
 		
 		// If needed, make investigation
 		invName = "FDD";
-		int invId = ct.getInvestigationId(invName);
-		if (invId == -1) {
+		if (ct.getInvestigationId(invName) == -1) {
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);
 			newInv.setOwns_Name(userName);
 			newInv.setCanRead_Name("admin");
 			db.add(newInv);
-			invId = newInv.getId();
 		}
 		
 		// Add some measurements that we'll need
