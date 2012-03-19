@@ -128,7 +128,7 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 				
 				// Make and add location
 				ct.makeLocation(invName, name, this.getLogin().getUserName());
-				if (slocName != null) {
+				if (slocName != null && !slocName.equals("")) {
 					db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
 							"SetSublocationOf", "Location", name, null, slocName));
 				}
