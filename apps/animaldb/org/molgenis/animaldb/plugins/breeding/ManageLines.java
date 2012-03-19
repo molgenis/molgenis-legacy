@@ -143,6 +143,8 @@ public class ManageLines extends PluginModel<Entity>
 				ObservationTarget line = cs.getObservationTargetById(lineId);
 				db.remove(line);
 				this.setSuccess("Line successfully removed");
+				// Reset so form is empty again
+				lineId = -1;
 			}
 			
 			if (action.equals("addLine")) {

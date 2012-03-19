@@ -29,7 +29,7 @@
 
 <div>
 
-	<p><h2>Add new breeding line</h2></p>
+	<p><h2><#if screen.lineName?exists>Update<#else>Add</#if> breeding line</h2></p>
 	<div class='row'>
 		<label for='linename'>Line name:</label>
 		<input type='text' class='textbox' name='linename' id='linename' value='<#if screen.lineName?exists>${screen.getLineName()}</#if>' />
@@ -67,7 +67,7 @@
 	</div>
 	<!-- Add button -->
 	<div id='buttons_part' class='row'>
-		<input type='submit' id='add' class='addbutton' value='Add' onclick="__action.value='addLine'" />
+		<input type='submit' id='add' class='addbutton' value='<#if screen.lineName?exists>Update<#else>Add</#if>' onclick="__action.value='addLine'" />
 	</div>
 	
 </div>
