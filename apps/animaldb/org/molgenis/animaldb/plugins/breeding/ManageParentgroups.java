@@ -368,11 +368,8 @@ public class ManageParentgroups extends PluginModel<Entity>
 				if (request.getString("line") != null) {
 					this.line = request.getString("line");
 				}
-				this.getMessages().add(new ScreenMessage("Line " + line + " successfully set", true));
-				
-				if (motherMatrixViewer == null) {
-					loadMotherMatrixViewer(db);
-				}
+				this.setSuccess("Line " + line + " successfully set");
+				loadMotherMatrixViewer(db);
 				motherMatrixViewer.setDatabase(db);
 				motherMatrixViewerString = motherMatrixViewer.render();
 			}
@@ -394,13 +391,11 @@ public class ManageParentgroups extends PluginModel<Entity>
 				}
 				// Check if at least one mother selected:
 				if (this.selectedMotherNameList.size() == 0) {
+					action = "addParentgroupScreen2"; // stay in current screen
 					throw new Exception("No mother(s) selected");
 				}
-				this.getMessages().add(new ScreenMessage("Mother(s) " + motherNames + "successfully added", true));
-				
-				if (fatherMatrixViewer == null) {
-					loadFatherMatrixViewer(db);
-				}
+				this.setSuccess("Mother(s) " + motherNames + "successfully added");
+				loadFatherMatrixViewer(db);
 				fatherMatrixViewer.setDatabase(db);
 				fatherMatrixViewerString = fatherMatrixViewer.render();
 			}
@@ -422,9 +417,10 @@ public class ManageParentgroups extends PluginModel<Entity>
 				}
 				// Check if at least one father selected:
 				if (this.selectedFatherNameList.size() == 0) {
+					action = "addParentgroupScreen3"; // stay in current screen
 					throw new Exception("No father(s) selected");
 				}
-				this.getMessages().add(new ScreenMessage("Father(s) " + fatherNames + "successfully added", true));
+				this.setSuccess("Father(s) " + fatherNames + "successfully added");
 			}
 			
 			if (action.equals("addParentgroup")) {
@@ -439,16 +435,15 @@ public class ManageParentgroups extends PluginModel<Entity>
 				this.resetUserFields();
 				fatherMatrixViewer = null;
 				motherMatrixViewer = null;
-				this.getMessages().add(new ScreenMessage("Parent group " + newPgName + " successfully added", true));
+				this.setSuccess("Parent group " + newPgName + " successfully added");
 			}
 			
 		} catch (Exception e) {
-			action = "init";
 			String message = "Something went wrong";
 			if (e.getMessage() != null) {
 				message += ": " + e.getMessage();
 			}
-			this.getMessages().add(new ScreenMessage(message, false));
+			this.setError(message);
 			e.printStackTrace();
 		}
 	}
