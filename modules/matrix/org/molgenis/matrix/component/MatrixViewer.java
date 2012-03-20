@@ -443,9 +443,10 @@ public class MatrixViewer extends HtmlWidget
 							boolean first = true;
 							for (Observation val : rowValues[col])
 							{
+								// Initially, value to show is literal value:
 								String valueToShow = (String) val.get("value");
-								
-								if(val instanceof ObservedValue) {
+								// Remove time part from date:
+								if (val instanceof ObservedValue) {
 									Measurement measurement = (Measurement) cols.get(col);
 									String dataType = measurement.getDataType();
 									ColumnType columnType = Column.getColumnType(dataType);
@@ -453,12 +454,34 @@ public class MatrixViewer extends HtmlWidget
 										valueToShow = StringUtils.substringBefore(valueToShow, " ");
 									}
 								}
-								
+								// If value is empty, use relation_Name:
 								if (val instanceof ObservedValue && valueToShow == null)
 								{
-									valueToShow = ((ObservedValue) val).getRelation_Name();
+									String relName = ((ObservedValue) val).getRelation_Name();
+									// Make a nice info box about the target in the cell:
+									String infoBoxContents = "Name: " + relName + "\\n\\n";
+									try
+									{
+										List<ObservedValue> valList = db.query(ObservedValue.class).
+												eq(ObservedValue.TARGET_NAME, relName).
+												sortASC(ObservedValue.FEATURE_NAME).
+												find();
+										for (ObservedValue infoVal : valList) {
+											String infoValue = infoVal.getValue();
+											if (infoValue == null) {
+												infoValue = infoVal.getRelation_Name();
+											}
+											infoBoxContents += (infoVal.getFeature_Name() + ": " + infoValue + "\\n");
+										}
+									}
+									catch (DatabaseException e)
+									{
+										// List will remain empty
+									}
+									valueToShow = "<a href=\"\" onclick=\"alert('" + infoBoxContents + "');\">" + 
+											relName + "</a>";
 								}
-								// if timing should be shown:
+								// If timing should be shown:
 								if (showValueValidRange)
 								{
 									if (val.get(ObservedValue.TIME) != null)
@@ -476,7 +499,6 @@ public class MatrixViewer extends HtmlWidget
 										valueToShow += ")";
 									}
 								}
-
 								if (first)
 								{
 									first = false;
