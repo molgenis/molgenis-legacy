@@ -246,7 +246,8 @@ public class MatrixViewer extends HtmlWidget
 				((DatabaseMatrix) this.matrix).setDatabase(db);
 			}
 
-			String result = "<div style=\"width:auto\">";
+			String result = "<script type=\"text/javascript\" src=\"res/scripts/tooltip.js\"></script>";
+			result += "<div style=\"width:auto\">";
 			if (downloadLink != null)
 			{
 				result += "<div><p><a href=\"tmpfile/" + downloadLink + "\">Download your export ("+downloadLink+")</a></p></div>";
@@ -459,7 +460,7 @@ public class MatrixViewer extends HtmlWidget
 								{
 									String relName = ((ObservedValue) val).getRelation_Name();
 									// Make a nice info box about the target in the cell:
-									String infoBoxContents = "Name: " + relName + "\\n\\n";
+									String infoBoxContents = "<strong>" + relName + "</strong><hr><ul>";
 									try
 									{
 										List<ObservedValue> valList = db.query(ObservedValue.class).
@@ -471,15 +472,18 @@ public class MatrixViewer extends HtmlWidget
 											if (infoValue == null) {
 												infoValue = infoVal.getRelation_Name();
 											}
-											infoBoxContents += (infoVal.getFeature_Name() + ": " + infoValue + "\\n");
+											infoBoxContents +="<li>" + (infoVal.getFeature_Name() + ": " + infoValue + "</li>");
 										}
+										infoBoxContents +="</ul>";
 									}
 									catch (DatabaseException e)
 									{
 										// List will remain empty
 									}
-									valueToShow = "<a href=\"\" onclick=\"alert('" + infoBoxContents + "');\">" + 
-											relName + "</a>";
+									//valueToShow = "<a href=\"\" onclick=\"alert('" + infoBoxContents + "');\">" + 
+											//relName + "</a>" +
+									valueToShow = relName + "<a href=\"#\" onMouseOver=\"toolTip('" + infoBoxContents + "')\" onMouseOut=\"toolTip()\">...</a>";
+											
 								}
 								// If timing should be shown:
 								if (showValueValidRange)
