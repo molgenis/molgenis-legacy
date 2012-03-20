@@ -478,7 +478,7 @@ Selection:<br><br>
 		<div style="overflow: auto; width: 780px; max-height: 400px;">
 		<#list model.multiplot.matches?values as d>
 			<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">${d.name}</a>
-			<div style="display: inline;"><#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)} <a href="molgenis.do?__target=${d.get(typefield)}s&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">...</a> <#else>${d.description}</#if></#if></div><br>
+			<div style="display: inline;"><#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}<#else>${d.description}</#if> <a href="molgenis.do?__target=${d.get(typefield)}s&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">...</a></#if></div><br>
 		</#list>
 		</div>
 		</td>
