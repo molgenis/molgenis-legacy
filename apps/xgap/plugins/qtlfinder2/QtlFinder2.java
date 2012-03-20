@@ -106,6 +106,14 @@ public class QtlFinder2 extends PluginModel<Entity>
 					this.model.getShoppingCart().remove((shopMeName));
 				}
 				
+				if(action.equals("shopAll"))
+				{
+					for(String s : this.model.getHits().keySet())
+					{
+						this.model.getShoppingCart().put(s, ((ObservationElement)this.model.getHits().get(s)).getId());
+					}
+				}
+				
 				if(action.equals("plotShoppingCart"))
 				{
 					QTLMultiPlotResult res = multiplot(new ArrayList<String>(this.model.getShoppingCart().keySet()), db);

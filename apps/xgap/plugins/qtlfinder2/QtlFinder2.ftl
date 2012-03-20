@@ -526,6 +526,16 @@ Selection:<br><br>
 	
 	</#list>
 	
+	<table cellpadding="10">
+		<tr>
+			<td>
+				<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><b><i>Select all</b></i>
+			</td>
+			<td>
+				<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();"><b><i>Unselect all</b></i>
+			</td>
+		</tr>
+	</table>
 	</#if>
 	
 	
