@@ -50,6 +50,7 @@ public class LocationPlugin extends PluginModel<Entity>
 	static String ANIMALSNOTINLOCMATRIX = "animalsnotinlocmatrix";
 	private String locName = null;
 	private String matrixLabel;
+	SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	
 	public LocationPlugin(String name, ScreenController<?> parent)
 	{
@@ -195,7 +196,6 @@ public class LocationPlugin extends PluginModel<Entity>
 			
 			if (action.equals("Move")) {
 				String newLocationName = request.getString("moveto");
-				SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 				String startDateString = request.getString("startdate");
 				Date startDate = newDateOnlyFormat.parse(startDateString);
 				List<ObservationElement> rows = (List<ObservationElement>) animalsInLocMatrixViewer.getSelection(db);
@@ -305,6 +305,10 @@ public class LocationPlugin extends PluginModel<Entity>
 			return animalsNotInLocMatrixViewer.render();
 		}
 		return "Error - location matrix not initialized";
+	}
+	
+	public String getCurrentDate() {
+		return newDateOnlyFormat.format(new Date());
 	}
 	
 }

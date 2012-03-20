@@ -42,23 +42,23 @@
 
 	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 
-	<div id="name" class="row">
-	<label for="name">Name:</label>
-	<input type="text" name="name" id="name" class="textbox" />
+	<div class="row">
+		<label for="locname">Name:</label>
+		<input type="text" name="locname" id="locname" class="textbox" />
 	</div>
 	
-	<div id="superlocation" class="row">
-	<label for="superlocation">Sublocation of:</label>
-	<select name="superlocation" id="superlocation" class="selectbox">
-		<option value="0">&nbsp;</option>
-		<#list screen.locationList as ll>
-			<option value="${ll.name}">${ll.name}</option>
-		</#list>
-	</select>
+	<div class="row">
+		<label for="superlocation">Sublocation of:</label>
+		<select name="superlocation" id="superlocation" class="selectbox">
+			<option value="">&nbsp;</option>
+			<#list screen.locationList as ll>
+				<option value="${ll.name}">${ll.name}</option>
+			</#list>
+		</select>
 	</div>
 	
-	<div id='buttons_part' class='row'>
-		<input type='submit' class='addbutton' value='Add' onclick="__action.value='addLocation'" />
+	<div class='row'>
+		<input type='submit' class='addbutton' id='addloc' value='Add' onclick="__action.value='addLocation'" />
 	</div>
 
 <#else>

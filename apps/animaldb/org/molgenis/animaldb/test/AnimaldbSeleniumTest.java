@@ -277,6 +277,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.type("id=weansizefemale", "2");
 		selenium.type("id=weansizemale", "3");
+		selenium.select("id=namebase", "label=mm_");
 		selenium.click("id=wean");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully weaned"));
@@ -390,8 +391,62 @@ public class AnimaldbSeleniumTest
 	}
 	
 	@Test(dependsOnMethods={"decWorkflow"})
+	public void locations() throws Exception {
+		// Go to locations plugin to create two locations
+		selenium.click("id=Settings_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=Locations_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Locations"));
+		selenium.click("link=Make new location");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.type("id=locname", "Room 101");
+		selenium.click("id=addloc");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Location successfully added"));
+		selenium.click("link=Make new location");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.type("id=locname", "IVC");
+		selenium.click("id=addloc");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Location successfully added"));
+		// Go to animals in locations plugin
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=LocationPlugin_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Animals in locations"));
+		// Add five animals to Room 101
+		selenium.click("id=manage_loc_Room 101");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=add");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=animalsnotinlocmatrix_selected_5");
+		selenium.click("id=animalsnotinlocmatrix_selected_6");
+		selenium.click("id=animalsnotinlocmatrix_selected_7");
+		selenium.click("id=animalsnotinlocmatrix_selected_8");
+		selenium.click("id=animalsnotinlocmatrix_selected_9");
+		selenium.click("id=applyadd");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Animals successfully added to Room 101. Now showing animals in that location."));
+		// Move two to IVC
+		selenium.click("id=animalsinlocmatrix_selected_0");
+		selenium.click("id=animalsinlocmatrix_selected_1");
+		selenium.click("id=move");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Animals successfully moved to IVC. Now switching to that location."));
+		Assert.assertTrue(selenium.isTextPresent("Animals in IVC:"));
+		selenium.click("link=Back to overview");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		
+		sleepHelper("locations");
+	}
+	
+	@Test(dependsOnMethods={"locations"})
 	public void yearlyReports() throws Exception {
 		// Go to Report plugin
+		selenium.click("id=decmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=YearlyReportModule_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Report 4A (normal animals -> 10 males)
@@ -451,45 +506,54 @@ public class AnimaldbSeleniumTest
 		sleepHelper("yearlyReports");
 	}
 	
-//	@Test(dependsOnMethods={"yearlyReports"})
-//	public void applyProtocol() throws Exception {
-//		// Go to Protocol plugin
-//		selenium.click("id=Admin_tab_button");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		selenium.click("id=systemmenu_tab_button");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		selenium.click("id=ApplyProtocol_tab_button");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		// Apply 'SetWeight' protocol on animal '000001'
-//		selenium.select("id=Protocols", "label=SetWeight");
-//		selenium.click("id=targetmatrix_selected_0"); // toggle selectbox for first animal in matrix
-//		selenium.click("id=TimeBox");
-//		selenium.click("id=Select");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[2]"), "Weight");
-//		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[3]"), "Weight start");
-//		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[4]"), "Weight end");
-//		selenium.type("id=0_1_0", "200");
-//		selenium.click("id=ApplyStartTime_1");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		selenium.click("id=Apply");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		Assert.assertTrue(selenium.isTextPresent("Protocol applied successfully"));
-//		// Check in Timeline value viewer
-//		selenium.click("id=animalmenu_tab_button");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		selenium.click("id=EventViewer_tab_button");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		selenium.click("id=targetmatrix_selected_0"); // toggle radio button for first animal in list
-//		selenium.click("id=select");
-//		selenium.waitForPageToLoad(pageLoadTimeout);
-//		Assert.assertTrue(selenium.isTextPresent("Weight"));
-//		Assert.assertTrue(selenium.isTextPresent("200"));
-//		
-//		sleepHelper("applyProtocol");
-//	}
-	
 	@Test(dependsOnMethods={"yearlyReports"})
+	public void applyProtocol() throws Exception {
+		// First log in as admin to be able to do this
+		selenium.click("id=UserLogin_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=Logout");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.type("id=username", "admin");
+		selenium.type("id=password", "admin");
+		selenium.click("id=Login");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Go to Protocol plugin
+		selenium.click("id=Admin_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=systemmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=ApplyProtocol_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		// Apply 'SetWeight' protocol on animal 'mm_000001'
+		selenium.select("id=Protocols", "label=SetWeight");
+		selenium.click("id=targetmatrix_selected_0"); // toggle selectbox for first animal in matrix
+		selenium.click("id=TimeBox");
+		selenium.click("id=Select");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[2]"), "Weight");
+		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[3]"), "Weight start");
+		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[4]"), "Weight end");
+		selenium.type("id=0_1_0", "200");
+		selenium.click("id=ApplyStartTime_1");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=Apply");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Protocol applied successfully"));
+		// Check in Timeline value viewer
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=TimelineViewer_tab_button");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=targetmatrix_selected_0"); // toggle radio button for first animal in list
+		selenium.click("id=select");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Assert.assertTrue(selenium.isTextPresent("Weight"));
+		Assert.assertTrue(selenium.isTextPresent("200"));
+		
+		sleepHelper("applyProtocol");
+	}
+	
+	@Test(dependsOnMethods={"applyProtocol"})
 	public void logoutUser() throws InterruptedException
 	{
 		selenium.click("id=UserLogin_tab_button");

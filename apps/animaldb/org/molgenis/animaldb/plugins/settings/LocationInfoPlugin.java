@@ -123,13 +123,11 @@ public class LocationInfoPlugin extends PluginModel<Entity>
 				
 				// Get values from form + current datetime
 				String slocName = request.getString("superlocation");
-				String name = request.getString("name");
-				Date now = new Date();
-				
+				String name = request.getString("locname");
 				// Make and add location
 				ct.makeLocation(invName, name, this.getLogin().getUserName());
 				if (slocName != null && !slocName.equals("")) {
-					db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
+					db.add(ct.createObservedValueWithProtocolApplication(invName, new Date(), null, 
 							"SetSublocationOf", "Location", name, null, slocName));
 				}
 				this.setSuccess("Location successfully added");

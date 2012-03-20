@@ -55,7 +55,7 @@
 			});
 		</script>
 		<label for="startdate">Start date:</label>
-		<input type='text' id='startdate' name='startdate' />
+		<input type='text' id='startdate' name='startdate' value='${screen.currentDate}' />
 	</div>
 	<div class='row'>
 		<label for="move">&nbsp;</label>
@@ -80,7 +80,7 @@
 			});
 		</script>
 		<label for="addstartdate">Start date:</label>
-		<input type='text' id='addstartdate' name='addstartdate' />
+		<input type='text' id='addstartdate' name='addstartdate' value='${screen.currentDate}' />
 	</div>
 	<div class='row'>
 		<label for="applyadd">&nbsp;</label>
@@ -103,7 +103,7 @@
 				<#assign locName = loc.getName()>
 				<tr>
 					<#--<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locId=${locId?string.computer}">Manage animals in ${loc.name}</a></td> -->
-					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locName=${locName}"><img id="edit_breedingline" class="edit_button" title="Manage animals in location: ${locName}" alt="Manage animals in location" src="generated-res/img/grid-manage.gif"></a></td>
+					<td><a href="molgenis.do?__target=${screen.name}&__action=Manage&locName=${locName}"><img id="manage_loc_${locName}" class="edit_button" title="Manage animals in location: ${locName}" alt="Manage animals in location" src="generated-res/img/grid-manage.gif"></a></td>
 					<td>${locName}</td>
 					<#--<td>${screen.getSuperLocName(locId)}</td>-->
 				</tr>
