@@ -1,0 +1,11 @@
+Package: GLS
+Version: 0.1
+Date: 20 Mar 2012
+Title: GLS
+Author: Willem Kruijer <XX@gmail.com>
+Maintainer: Willem Kruijer <XX@gmail.com>
+Depends: R (>= 2.14.0)
+Description: GLS package for GWAS in A. Thaliana
+License: GPL version 2 or later
+LazyLoad: yes
+LazyData: yes
