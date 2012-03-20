@@ -90,6 +90,7 @@ public class ManageLitters extends PluginModel<Entity>
 	private String respres = null;
 	private List<Location> locationList;
 	private String locName = null;
+	private String prefix = "";
 	
 	//hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
@@ -552,9 +553,9 @@ public class ManageLitters extends PluginModel<Entity>
 		}
 	}
 	
-	public int getStartNumberForEmptyBase() {
+	public int getStartNumberForPreselectedBase() {
 		try {
-			return ct.getHighestNumberForPrefix("") + 1;
+			return ct.getHighestNumberForPrefix(this.prefix) + 1;
 		} catch (DatabaseException e) {
 			return 1;
 		}
@@ -648,7 +649,40 @@ public class ManageLitters extends PluginModel<Entity>
 			}
 			
 			if (action.equals("ShowWean")) {
-				setLitter(request.getString("name"));
+				this.litter = request.getString("name");
+				// Find out species of litter user wants to wean, so we can provide the right name prefix
+				String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
+				String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
+				String speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
+				// TODO: get rid of duplication with AddAnimalPlugin
+				// TODO: put this hardcoded info in the database (NamePrefix table)
+				if (speciesName.equals("House mouse")) {
+					this.prefix = "mm_";
+				}
+				if (speciesName.equals("Brown rat")) {
+					this.prefix = "rn_";
+				}
+				if (speciesName.equals("Common vole")) {
+					this.prefix = "mar_";
+				}
+				if (speciesName.equals("Tundra vole")) {
+					this.prefix = "mo_";
+				}
+				if (speciesName.equals("Syrian hamster")) {
+					this.prefix = "ma_";
+				}
+				if (speciesName.equals("European groundsquirrel")) {
+					this.prefix = "sc_";
+				}
+				if (speciesName.equals("Siberian hamster")) {
+					this.prefix = "ps_";
+				}
+				if (speciesName.equals("Domestic guinea pig")) {
+					this.prefix = "cp_";
+				}
+				if (speciesName.equals("Fat-tailed dunnart")) {
+					this.prefix = "sg_";
+				}
 			}
 			
 			if (action.equals("Wean")) {
@@ -1741,6 +1775,13 @@ public class ManageLitters extends PluginModel<Entity>
 			this.getMessages().add(new ScreenMessage(message, false));
 			e.printStackTrace();
 		}
+	}
+	
+	public String getSpeciesBase() {
+		if (this.prefix != null) {
+			return this.prefix;
+		}
+		return "";
 	}
 	
 }

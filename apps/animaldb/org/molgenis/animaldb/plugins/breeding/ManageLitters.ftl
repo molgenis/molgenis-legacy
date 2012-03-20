@@ -181,8 +181,6 @@
 	<p><a href="molgenis.do?__target=${screen.name}&__action=ShowLitters">Back to overview</a></p>
 	
 	<h2>Weaning litter ${screen.getLitter()}</h2>
-	
-	<!-- Date and time of weaning -->
 	<div id='weandatediv' class='row'>
 		<label for='weandate'>Wean date:</label>
 		<!-- <input type='text' class='textbox' id='weandate' name='weandate' value='<#if screen.weandate?exists>${screen.getWeandate()}</#if>' onclick='showDateInput(this)' autocomplete='off' / -->
@@ -197,7 +195,6 @@
 		</script>			
 		<input type='text' id='weandate' name='weandate' <#if screen.weandate??> value="${screen.getWeandate()}"</#if> />
 	</div>
-	<!-- Size -->
 	<div id='weansize_part1' class='row'>
 		<label for='weansizefemale'>Nr. of females:</label>
 		<input type='text' class='textbox' name='weansizefemale' id='weansizefemale' value='<#if screen.weanSizeFemale?exists>${screen.getWeanSizeFemale()}</#if>' />
@@ -210,37 +207,33 @@
 		<label for='weansizeunknown'>Nr. of unknowns:</label>
 		<input type='text' class='textbox' name='weansizeunknown' id='weansizeunknown' value='<#if screen.weanSizeUnknown?exists>${screen.getWeanSizeUnknown()}</#if>' />
 	</div>
-	<p>Name:</p>
 	<div id="divnamebase" class="row">
 		<label for="namebase">Name prefix (may be empty):</label>
 		<select id="namebase" name="namebase" onchange="updateStartNumberAndNewNameBase(this.value)">
 			<option value=""></option>
 			<option value="New">New (specify below)</option>
 			<#list screen.bases as base>
-				<option value="${base}">${base}</option>
+				<option value="${base}" <#if screen.speciesBase == base>selected="selected"</#if> >${base}</option>
 			</#list>
 		</select>
 	</div>
-	<input id="startnumberhelper" type="hidden" value="${screen.getStartNumberHelperContent()}">
+	<input id="startnumberhelper" type="hidden" value="${screen.getStartNumberHelperContent()}" />
 	<div id="divnewnamebasePanel" class="row" style="display:none">
 		<label for="newnamebase">New name prefix:</label>
 		<input type="text" name="newnamebase" id="newnamebase" class="textbox" />
 	</div>
 	<div id="divstartnumber" class="row">
 		<label for="startnumber">Start numbering at:</label>
-		<input type="text" readonly="true" name="startnumber" id="startnumber" class="textbox" value="${screen.getStartNumberForEmptyBase()?string.computer}" />
+		<input type="text" readonly="true" name="startnumber" id="startnumber" class="textbox" value="${screen.getStartNumberForPreselectedBase()?string.computer}" />
 	</div>
-	<!-- Remarks -->
 	<div class='row'>
 		<label for='remarks'>Weaning remarks:</label>
 		<input type='text' class='textbox' name='remarks' id='remarks' />
 	</div>
-	<!-- Responsible researcher -->
 	<div class='row'>
 		<label for='respres'>Responsible researcher:</label>
 		<input type='text' class='textbox' name='respres' id='respres' value='<#if screen.responsibleResearcher?exists>${screen.getResponsibleResearcher()}</#if>' />
 	</div>
-	<!-- Optional location -->
 	<div class="row">
 		<label for="location">Location (optional):</label>
 		<select id="location" name="location">
@@ -250,7 +243,6 @@
 			</#list>
 		</select>
 	</div>
-	<!-- Add button -->
 	<div id='addlitter' class='row'>
 		<input type='submit' id='wean' class='addbutton' value='Wean' onclick="__action.value='Wean'" />
 	</div>
