@@ -49,6 +49,7 @@ AsyncMolgenisService
 	public void handleRequest(AsyncMolgenisRequest request, AsyncMolgenisResponse response)
 			throws ParseException, DatabaseException, IOException
 	{
+		long startTime = System.currentTimeMillis();
 		HttpServletRequest req = request.getRequest();
 		String path = req.getRequestURI().substring(context.getVariant().length()+1);
 		if(path.equals("")) path = "/";
@@ -82,7 +83,7 @@ AsyncMolgenisService
 					
 					request.setServicePath(p);
 					services.get(p).handleAsyncRequest(request, id);
-					manageConnection(connId);
+					manageConnection(connId,startTime);
 					
 					
 					//printSessionInfo(req.getSession());
