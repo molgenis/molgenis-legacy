@@ -95,7 +95,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		{
 			if (path.startsWith(p))
 			{
-				
+				long startTime = System.currentTimeMillis();
 				
 				//if mapped to "/", we assume we are serving out a file, and do not manage security/connections
 				if(p.equals("/"))
@@ -121,7 +121,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 					}
 					finally
 					{
-						manageConnection(connId);
+						manageConnection(connId, startTime);
 					}
 					
 					
@@ -153,7 +153,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		}
 	}
 	
-	protected void manageConnection(UUID connId) throws DatabaseException
+	protected void manageConnection(UUID connId, long startTime) throws DatabaseException
 	{
 		if (connections.containsKey(connId))
 		{
@@ -174,7 +174,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 			//remove from list (does not happen if Exception was thrown)
 			connections.remove(connId);
 			
-			System.out.println("< request was handled, active database connections: " + connections.size());
+			System.out.println("< request was handled in "+(System.currentTimeMillis()-startTime)+"ms , active database connections: " + connections.size());
 		}
 	}
 	
