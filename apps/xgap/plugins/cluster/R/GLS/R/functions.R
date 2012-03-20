@@ -8,32 +8,6 @@ MatrixRoot <- function(x) { # assumes that x is symmetric
   x.sqrt
   }
 
-# Taken from : http://realizationsinbiostatistics.blogspot.com/2008/08/matrix-square-roots-in-r_18.html
-denman.beavers <- function(mat,maxit=50) {
-  stopifnot(nrow(mat) == ncol(mat))
-  niter <- 0
-  y <- mat
-  z <- diag(rep(1,nrow(mat)))
-  for (niter in 1:maxit) {
-    y.temp <- 0.5*(y+solve(z))
-    z <- 0.5*(z+solve(y))
-    y <- y.temp
-  }
-  return(list(sqrt=y,sqrt.inv=z))
-}
-
-MatrixRoot2 <- function(x) {
-  ev <- eigen(x)
-  V <- ev$vectors
-  V %*% diag(sqrt(ev$values)) %*% t(V)
-  }
-
-
-asv     <- function(x) {summary(as.vector(x))}
-
-
-GINV    <- function(M) {svdM    <- svd(M); svdM$v %*%diag(1/svdM$d)%*% t(svdM$u)}
-
 
 IBS     <- function(X,normalization=nrow(X)) {
                 X       <- as.matrix(X)
@@ -43,89 +17,9 @@ IBS     <- function(X,normalization=nrow(X)) {
                 (t(X) %*% X + t(Y) %*% Y)/normalization
                 }
 
-IBS3     <- function(X,normalization=4*nrow(X)) {
-                X       <- as.matrix(X)
-                X       <- replace(X, list=1:2, values=2:1)
-                Y       <- X
-                Y[X%in% 1:2] <- 0
-                Y[X==0] <- 2
-                #Y       <- replace(X, list=0:2, values=c(2,0,0))
-                #Z       <- replace(X, list=0:2, values=c(0,2,0))
-                #X       <- replace(X, list=0:2, values=c(0,0,2))
-                Z       <- X
-                Z[X%in% c(0,2)] <- 0
-                Z[X==1] <- 2
-                X[X==1] <- 0                 
-                (t(X) %*% X + t(Y) %*% Y + t(Z) %*% Z)/normalization
-                }
-# IBS(GWAS_obj$markers[1:10,])[1:16,1:10]- IBS3(GWAS_obj$markers[1:10,])[1:16,1:10]
-# FIND THE MISTAKE !!
-
-IBS2    <- function(X1,X2,normalization= max(nrow(X1),nrow(X2),ncol(X1),ncol(X2))) {
-                X1       <- as.matrix(X1)
-                Y1       <- X1
-                Y1[X1==0] <- 1
-                Y1[X1==1] <- 0
-                X2       <- as.matrix(X2)
-                Y2       <- X2
-                Y2[X2==0] <- 1
-                Y2[X2==1] <- 0
-                (t(X1) %*% X2 + t(Y1) %*% Y2)/normalization
-                }
-
-
-
-RemoveSmallEigenvalues    <- function(M,min.val=0)  {
-    EV      <- eigen(M)
-    comps   <- which(EV$values<=min.val)
-    M1      <- EV$vectors
-    M1[,comps]<-0
-    EV$vectors[comps]   <- 0
-M1 %*% diag(EV$values) %*% t(M1)
-}
-
-
-ttest   <- function(snp.obj,trait.obj) {summary(lm(y ~ x, data=data.frame(x = matrix(as.numeric(snp.obj),ncol=1), y = as.numeric(trait.obj))))$coefficients[2,4]}
-
 
 IbdCorrection  <- function(K,T=0) {apply(K-matrix(T,nrow(K),ncol(K)),c(1,2),function(x) max(x,0))/(1-T)}
 
-ComputeLargeCovarianceMatrix  <- function(mtr,file.name=NULL,block.size=50,correlation=TRUE) {
-# INPUT :
-# correlation : if TRUE, compute the correlation matrix; otherwise the covariance matrix
-# OUTPUT :
-# covariance matrix
-    mtr  <- as.matrix(mtr)
-    nind <- ncol(mtr)
-    C    <- matrix(0,ncol(mtr),ncol(mtr))
-    if (nind<=block.size) {
-      C   <- cor(mtr)
-      nbl <- 1
-      blocks <- list(1:nind)
-    } else {
-      blocks          <- NULL
-      nbl             <- ceiling(nind/block.size)
-      if (nbl== nind/block.size) {
-        for (i in 1:nbl) {blocks[[i]]   <- (1:nind)[(i-1)*block.size + 1:block.size]}
-      } else {
-        for (i in 1:(nbl-1)) {blocks[[i]]   <- (1:nind)[(i-1)*block.size + 1:block.size]}
-        blocks[[nbl]]   <- (1:nind)[-(1:((nbl-1)*block.size))]
-      }
-    }
-
-    for (i in 1:nbl) {
-      if (correlation) {C[blocks[[i]],blocks[[i]]]  <- cor(mtr[,blocks[[i]]])} else {C[blocks[[i]],blocks[[i]]]  <- cov(mtr[,blocks[[i]]])}
-        }
-    if (nbl>1) {
-      for (i in 2:nbl) {   
-        for (j in 1:i) {
-          if (correlation) {C[blocks[[i]],blocks[[j]]]  <- cor(mtr[blocks[[i]]],mtr[,blocks[[j]]])} else {C[blocks[[i]],blocks[[j]]]  <- cov(mtr[blocks[[i]]],mtr[,blocks[[j]]])}
-          C[blocks[[j]],blocks[[i]]]  <- t(C[blocks[[i]],blocks[[j]]])
-        }
-      }
-    }
-C
-}
 
 #pst <- function(str) {paste(,sep="")}
 AddMeans <- function(input.frame,col.select=1:ncol(input.frame),keep.original=TRUE) {
@@ -164,7 +58,6 @@ GenomicControl <- function(LRT.stats) {
     LRT.stats/inflation
 }
 
-
 GenomicControlPvalues <- function(pvals,n.obs,n.cov=0) {
 # assumes p-values from an F-test with df=1 and df2=n.obs-n.cov-2
     F.stats     <- qf(pvals, df1=1, df2=n.obs-n.cov-2,lower.tail=F)    
@@ -191,52 +84,6 @@ MakeSnpBoxplot    <- function(data.vector,marker.vector,file.name="") {
         dev.off()
     }
 }
-#make.snp.boxplot(data.vector=data1[,tr],snp.number=snp.sig[sg,1],file.name=paste(data.path,"boxplots/",trait,".snp.",as.character(snp.sig[sg,1]),Kmethod,suffix,".jpeg",sep=""))
-# make.snp.boxplot(data.vector=data1[,tr],snp.number=snp.sig[37,1],file.name=paste(data.path,"plots/",trait,".snp.",as.character(snp.sig[37,1]),Kmethod,suffix,".jpeg",sep=""))
-
-MakeSnpSummary    <- function(data.vector,trait.name="??",marker.vector,file.name="snp.summary.txt") {
-# N.B. relies on the global objects snp and data1
-    data.vector <- as.numeric(data.vector)
-    marker.vector <- as.numeric(marker.vector)
-    summary.data<- data.frame(genotype=data1$genotype,marker.value=marker.vector,trait.value=as.numeric(data.vector))
-    summary.data<- summary.data[!is.na(summary.data$trait.value),]
-    cat("Trait: ",trait.name,"\n",file=file.name)
-    cat("snp number: ",snp.number,"\n","\n",file=file.name,append=TRUE)
-    cat("Number of accessions with at least one nonmissing observation: ",length(unique(as.character(summary.data$genotype))),"\n",file=file.name,append=TRUE)
-    cat("Total number of nonmissing observations: ",nrow(summary.data),"\n","\n",file=file.name,append=TRUE)
-    cat("Proportion Columbia allele at accession level: ",mean(as.numeric(snp[snp.number,unique(as.character(summary.data$genotype))])),"\n",file=file.name,append=TRUE)
-    cat("Proportion Columbia allele at plant level: ",mean(summary.data$marker.value),"\n","\n",file=file.name,append=TRUE)
-    #
-    summary.data0           <- summary.data[summary.data$marker.value==0,]
-    summary.data1           <- summary.data[summary.data$marker.value==1,]
-    #
-    suppressWarnings(kt0 <- ks.test(x=summary.data0$trait.value,y="pnorm"))
-    suppressWarnings(kt1 <- ks.test(x=summary.data1$trait.value,y="pnorm"))
-    #
-    cat("p-value of Kolmogorov-Smirnov test for normality, for the plants with the 0 allele: ",kt0$p.value,"\n",file=file.name,append=TRUE)
-    cat("p-value of Kolmogorov-Smirnov test for normality, for the plants with the 1 allele: ",kt1$p.value,"\n","\n",file=file.name,append=TRUE)
-    #
-    outliers0   <- outlier.test(summary.data0$trait.value,2)
-    outliers1   <- outlier.test(summary.data1$trait.value,2)
-    #
-    if (length(outliers0$outliers)>0) {
-            summary.data0           <- summary.data0[outliers0$outliers,]
-            #rare.genotypes          <- unique(as.character(summary.data0$genotype))
-            # aggregate(summary.data0$trait.value, by=list(summary.data0$genotype),FUN=length)
-            cat("Outliers in genotypes with allele ",0," :","\n","\n",file=file.name,append=TRUE)
-            suppressWarnings(write.table(summary.data0[,c(1,3)],quote=F,file=file.name,append=TRUE,row.names=F))
-    }
-    if (length(outliers1$outliers)>0) {
-            summary.data1           <- summary.data1[outliers1$outliers,]
-            cat("\n","Outliers in genotypes with allele ",1," :","\n","\n",file=file.name,append=TRUE)
-            suppressWarnings(write.table(summary.data1[,c(1,3)],quote=F,file=file.name,append=TRUE,row.names=F))
-    }
-# to do : look up standars methods for outlier-detection
-# insert a data.frame with columns : genotype, total.number.of.nonmissing, number.of.outliers
-# also : outliers of the residuals ?
-# also : output on screen as option
-}
-
 
 MakeHaploBoxplot    <- function(data.vector,hap.vector,file.name="") {
     plot.data   <- data.frame(trait.value=as.numeric(data.vector),hap.vector=as.integer(hap.vector)) 
