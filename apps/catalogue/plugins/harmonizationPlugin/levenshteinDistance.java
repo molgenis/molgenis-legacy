@@ -29,6 +29,8 @@ public class levenshteinDistance {
 	//Choose n-grams to tokenize the input string by default nGrams is 2
 	private int nGrams = 2;
 
+	private String separator = ";";
+
 	private HashMap<String, OWLClass> labelToOWLClass = null;
 
 	private HashMap<String, List<String>> normalizedOntologyTerms = null;
@@ -37,11 +39,13 @@ public class levenshteinDistance {
 
 	private OWLDataFactory factory = null;
 
-	//private OntocatQueryExpansion_lucene queryExpansion = null;
-
 	private OWLFunction owlFunction = null;
 
 	private OntologyService os = null;
+
+	private HashMap<String, Boolean> mappingResult = new HashMap<String, Boolean>();
+
+	private HashMap<String, List<String>> ontologyTermAndDataItems = new HashMap<String, List<String>>();
 
 	public static final String[] STOP_WORDS = {"a","you","about","above","after","again",
 		"against","all","am","an","and","any","are","aren't","as","at","be","because","been",
@@ -57,22 +61,20 @@ public class levenshteinDistance {
 		"wasn't","we","we'd","we'll","we're","we've","were","weren't","what","what's","when","when's","where","where's",
 		"which","while","who","who's","whom","why","why's","with","won't","would","wouldn't","you","you'd","you'll","you're",
 		"you've","your","yours","yourself","yourselves"};
-	
+
 	public static List<String> STOPWORDSLIST = new ArrayList<String>();
-	
+
 	//Constructor
 	public levenshteinDistance(int nGrams){
 
 		this.nGrams = nGrams;
-
-		//this.queryExpansion = new OntocatQueryExpansion_lucene();
 
 		manager = OWLManager.createOWLOntologyManager();
 
 		factory = manager.getOWLDataFactory();
 
 		this.owlFunction = new OWLFunction();
-		
+
 		for(int i = 0; i <STOP_WORDS.length; i++){
 			STOPWORDSLIST.add(STOP_WORDS[i]);
 		}
@@ -84,80 +86,199 @@ public class levenshteinDistance {
 
 		//test.parseOntology("/Users/pc_iverson/Desktop/Input/PredictionModel.owl");
 
-		List<String> testString = new ArrayList<String>();
+		String fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/InputForOntologyBuild.xls";
 
-		testString.add("Sex");
+		tableModel model = new tableModel(fileName);
 
-		testString.add("Age");
+		List<String> descriptions = new ArrayList<String>();
 
-		testString.add("BMI");
+		descriptions.add("Original terms");
 
-		testString.add("Parent Diabetes Mellitus");
+		descriptions.add("Ontology terms");
 
-		testString.add("Former Smoker");
+		descriptions.add("Definition");
 
-		testString.add("Current Smoker");
+		descriptions.add("Building blocks");
 
-		testString.add("Hypertension");
+		fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
 
-		testString.add("Fasting glucose");
+		tableModel model_2 = new tableModel(fileName);
 
-		HashMap <String, List<String>> annotatedTerms = test.readInSpreadSheet(
-				"/Users/pc_iverson/Desktop/Ontology_term_pilot/InputForOntologyBuild.xls",";",false,3,0);
-		
-		List<String> tokens = new ArrayList<String>();
-		
-		for(String eachKey : annotatedTerms.keySet()){
-			tokens.addAll(annotatedTerms.get(eachKey));
+		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Data", "Description");
+
+		test.findOntologyTerms(descriptions, model, descriptionForVariable, 1);
+
+		test.findOntologyTerms(descriptions, model, descriptionForVariable, 2);
+
+		test.findOntologyTerms(descriptions, model, descriptionForVariable, 3);
+
+		System.out.println();
+
+		//test.findMatch(annotatedTerms, tokens);
+	}
+
+	/**
+	 * This method is used to find the exact matching between input terms and ontology terms. If there is any matching found,
+	 * the record will be stored in mappingResult and ontologyTermAndDataItems variables. 
+	 * 
+	 * @param annotations
+	 * @param model
+	 * @param descriptionForVariable
+	 * @param level
+	 */
+	public void findOntologyTerms(List<String> annotations, tableModel model, HashMap<String, String> descriptionForVariable, int level){
+
+		HashMap<String, String> levelAnnotation = model.getDescriptionForVariable(annotations.get(0), annotations.get(level));
+
+		if(level == 1){
+			firstLevelAnnotation(levelAnnotation, descriptionForVariable);
+		}else if(level == 2){
+			secondLevelAnnotation(levelAnnotation, descriptionForVariable);
+		}else if(level == 3){
+			thirdLevelAnnotation(levelAnnotation, descriptionForVariable);
 		}
+	}
+
+	public void outPutMapping(HashMap<String, HashMap<String, Double>> mappingResultAndSimiarity){
+	
+		for(String key : mappingResultAndSimiarity.keySet()){
+			
+			System.out.println("The parameter is " + key + "\t");
+			
+			for(String dataItem : mappingResultAndSimiarity.get(key).keySet()){
+				System.out.print("The dataItem is " + dataItem + "\t" + "The similarity is " + mappingResultAndSimiarity.get(key).get(dataItem));
+				System.out.println();
+			}
+			
+			System.out.println();
+			
+		}
+	}
+	
+	public void thirdLevelAnnotation(HashMap<String, String> levelAnnotation, HashMap<String, String> descriptionForVariable){
 		
-		annotatedTerms = test.createNGrams(tokens, test.getnGrams());
+		HashMap<String, HashMap<String, Double>> mappingResultAndSimiarity = new HashMap<String, HashMap<String, Double>>();
 		
-		HashMap <String, List<String>> originalTerms = test.readInSpreadSheet(
-				"/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls"," ",true,3,1);
-		
-		tokens.clear();
-		
-		for(String eachString : originalTerms.keySet()){
-			if(!eachString.equals("")){
-				String removedStopWords = "";
-				for(String term : originalTerms.get(eachString)){
-					removedStopWords += term + " ";
+		for(String key : levelAnnotation.keySet()){
+
+			if(!levelAnnotation.get(key).equals("") && !mappingResult.get(key)){
+
+				String definitions[] = levelAnnotation.get(key).split(separator);
+				
+				for(int i = 0; i < definitions.length; i++){
+					
+					double maxSimilarity = 0;
+					
+					String matchedDataItem = "";
+					
+					List<String> tokens = createNGrams(definitions[i].toLowerCase().trim(), " ", nGrams, false);
+					
+					for(String dataItem : descriptionForVariable.keySet()){
+						
+						List<String> dataItemTokens = createNGrams(descriptionForVariable.get(dataItem).toLowerCase().trim(), " ", nGrams, true);
+						
+						double similarity = calculateScore(dataItemTokens, tokens);
+						
+						if(similarity > maxSimilarity){
+							maxSimilarity = similarity;
+							matchedDataItem = descriptionForVariable.get(dataItem);
+						}
+					}
+					
+					HashMap<String, Double> temp = new HashMap<String, Double>();
+					
+					if(mappingResultAndSimiarity.containsKey(key)){
+						temp = mappingResultAndSimiarity.get(key);
+					}
+					
+					temp.put(matchedDataItem, maxSimilarity);
+					
+					mappingResultAndSimiarity.put(key, temp);
 				}
-				tokens.add(removedStopWords.trim());
-			}	
+			}
 		}
 		
-		test.findMatch(annotatedTerms, tokens);
-		
-		
-		
-		//test.findMatch(test.getNormalizedOntologyTerms(), testString);
+		outPutMapping(mappingResultAndSimiarity);
+	}
+	
+	public void secondLevelAnnotation(HashMap<String, String> levelAnnotation, HashMap<String, String> descriptionForVariable){
 
-		//		System.out.println("Loading NCI Thesaurus ontology!");
-		//		
-		//		test.setOntologyService ("/Users/pc_iverson/Desktop/Input/Thesaurus.owl");
-		//		
-		//		System.out.println("NCI Thesaurus ontology is loaded!");
-		//		
-		//		HashMap <String, List<String>> stringToTokens = test.extensiveSearching(testString);
-		//		
-		//		System.out.println("The query terms are extended!");
-		//		
-		
+		for(String key : levelAnnotation.keySet()){
+			//The input has to be non-empty and the input has not been annotated
+			if(!levelAnnotation.get(key).equals("") && !mappingResult.get(key)){
+
+				String definitions[] = levelAnnotation.get(key).split(separator);
+
+				boolean definitionExisted = true;
+
+				for(int i = 0; i < definitions.length; i++){
+
+					String eachTerm = definitions[i].trim();
+
+					for(String dataItem : descriptionForVariable.keySet()){
+
+						String description = descriptionForVariable.get(dataItem);
+
+						if (description.equalsIgnoreCase(eachTerm)){
+							addingNewMatchedItem(key, dataItem);
+						}else{
+							definitionExisted = false;
+						}
+					}
+				}
+
+				mappingResult.put(key, definitionExisted);
+			}
+		}
+	}
+
+	public void firstLevelAnnotation(HashMap<String, String> levelAnnotation, HashMap<String, String> descriptionForVariable){
+
+		for(String key : levelAnnotation.keySet()){
+
+			mappingResult.put(key, false);
+
+			if(!levelAnnotation.get(key).equals("")){
+
+				for(String dataItem : descriptionForVariable.keySet()){
+
+					String description = descriptionForVariable.get(dataItem);
+
+					if (description.equalsIgnoreCase(levelAnnotation.get(key))){
+
+						mappingResult.put(key, true);
+						addingNewMatchedItem(key, dataItem);
+					}
+				}
+			}
+		}
+	}
+
+	public void addingNewMatchedItem(String key, String dataItem){
+
+		if(!ontologyTermAndDataItems.containsKey(key)){
+
+			List<String> dataItems = new ArrayList<String>();
+			dataItems.add(dataItem);
+			ontologyTermAndDataItems.put(key, dataItems);
+		}else{
+
+			List<String> dataItems = ontologyTermAndDataItems.get(key);
+
+			if(!dataItems.contains(key))
+				dataItems.add(dataItem);
+			ontologyTermAndDataItems.put(key, dataItems);
+		}
 	}
 
 	public int getnGrams() {
 		return nGrams;
 	}
 
-	public HashMap <String, List<String>> prePrecessInput(HashMap<String, List<String>> annotatedTerms){
-		
-		
-		
-		return null;
+	public void setSeparator(String separator) {
+		this.separator = separator;
 	}
-	
+
 	public HashMap<String, List<String>> getNormalizedOntologyTerms() {
 		return normalizedOntologyTerms;
 	}
@@ -201,56 +322,6 @@ public class levenshteinDistance {
 	}
 
 	/**
-	 * Read in the spreadsheet with annotated ontology terms
-	 * @param spreadSheet
-	 */
-	public HashMap<String, List<String>> readInSpreadSheet(String spreadSheet, String separator, boolean StopWords, int description, int dataItem){
-
-		HashMap <String, List<String>> stringToTokens = new HashMap<String, List<String>>();
-
-		File file = new File(spreadSheet);
-
-		Workbook workbook;
-
-		try {
-
-			workbook = Workbook.getWorkbook(file);
-
-			Sheet sheet = workbook.getSheet(0);
-
-			int rows = sheet.getRows();
-
-			int startingRow = 1;
-
-			//TODO hard coding on which column the information should be collected. Right now it`s 3
-			for(int i = startingRow; i < rows; i++){
-
-				List<String> mappingForEachColumn = new ArrayList<String>();
-				String inputString = sheet.getCell(description, i).getContents().toString().toLowerCase();
-				String originalString = sheet.getCell(dataItem, i).getContents().toString().toLowerCase();
-
-				String buildingBlocks [] = inputString.split(separator);
-
-				for(int k = 0; k < buildingBlocks.length; k++){
-					
-					if(StopWords == true){
-						if(!STOPWORDSLIST.contains(buildingBlocks[k]))
-							mappingForEachColumn.add(buildingBlocks[k].trim());
-					}else{
-						mappingForEachColumn.add(buildingBlocks[k].trim());
-					}
-				}
-				stringToTokens.put(originalString, mappingForEachColumn);
-			}
-
-		} catch (Exception e){
-			e.printStackTrace();
-		} 
-
-		return stringToTokens;
-	}
-
-	/**
 	 * This is method is to load the ontology file from local system and create
 	 * a hash table where the label is key and owlClass is the content
 	 * 
@@ -268,7 +339,7 @@ public class levenshteinDistance {
 		listOfOntologyTerms.addAll(labelToOWLClass.keySet());
 
 		//Levenshtein TODO
-		normalizedOntologyTerms = createNGrams(listOfOntologyTerms, nGrams);
+		normalizedOntologyTerms = createNGrams(listOfOntologyTerms, " ", nGrams);
 
 		//Method from BBMRI plugin! All the possibilities of string term
 		//normalizedOntologyTerms = createNGrams(listOfOntologyTerms);
@@ -277,44 +348,76 @@ public class levenshteinDistance {
 	}
 
 	/**
-	 * This creates all the possibilities of the string (different length)
+	 * //create n-grams tokens of the string.
 	 * @param inputString
+	 * @param nGrams
 	 * @return
 	 */
-//	public HashMap<String, List<String>> createNGrams(List<String> inputString){
-//
-//		HashMap<String, List<String>> normalizedInputString = new HashMap<String, List<String>>();
-//
-//		for(String eachString : inputString){
-//
-//			List<String> listOfString = new ArrayList<String>();
-//
-//			listOfString.add(eachString);
-//
-//			List<String> tokens = queryExpansion.chunk(listOfString);
-//
-//			normalizedInputString.put(eachString, tokens);
-//
-//		}
-//		return normalizedInputString;
-//	}
+	public List<String> createNGrams(String eachString, String separator, int nGrams, boolean stopWords){
 
-	public void createNGrams(HashMap<String, List<String>> inputString, int nGrams){}
+		String [] singleWords = eachString.split(separator);
+
+		List<String> removedStopWordsList = new ArrayList<String>();
+
+		List<String> tokens = new ArrayList<String>();
+
+		if(stopWords == true){
+			removedStopWordsList = removeStopWords(singleWords, STOPWORDSLIST);
+		}else{
+			removedStopWordsList = removeStopWords(singleWords, null);
+		}
+
+		//Padding the string
+		for(String singleWord : removedStopWordsList){
+			//TODO what if there is overlapping between different words such diebetes mellitus. 
+			//The s$ will be the produced from two words. 
+			singleWord = singleWord.toLowerCase();
+			singleWord = "^" + singleWord;
+			singleWord = singleWord + "$";
+
+			for(int i = 0; i < singleWord.length(); i++){
+
+				if(i + nGrams < singleWord.length()){
+					tokens.add(singleWord.substring(i, i + nGrams));
+				}else{
+					if(!tokens.contains(singleWord.substring(singleWord.length() - 2))){
+						tokens.add(singleWord.substring(singleWord.length() - 2).toLowerCase());
+					}
+				}
+			}
+		}
+		return tokens;
+	}
+
+	public List<String> removeStopWords(String[] listOfWords, List<String> STOPWORDSLIST){
+
+		List<String> removedStopWordsList = new ArrayList<String>();
+
+		for(int index = 0; index < listOfWords.length; index++){
+
+			if(STOPWORDSLIST == null){
+				removedStopWordsList.add(listOfWords[index]);
+			}else if(!STOPWORDSLIST.contains(listOfWords[index])){
+				removedStopWordsList.add(listOfWords[index]);
+			}
+		}
+
+		return removedStopWordsList;
+	}
+
 	/**
 	 * //create n-grams tokens of the string.
 	 * @param inputString
 	 * @param nGrams
 	 * @return
 	 */
-	public HashMap<String, List<String>> createNGrams(List<String> inputString, int nGrams){
-
-		//System.out.println("Processing the string in " + nGrams + "-gram!");
+	public HashMap<String, List<String>> createNGrams(List<String> inputString, String separator, int nGrams){
 
 		HashMap<String, List<String>> normalizedInputString = new HashMap<String, List<String>>();
 
 		for(String eachString : inputString){
 
-			String [] singleWords = eachString.split(" ");
+			String [] singleWords = eachString.split(separator);
 
 			List<String> tokens = new ArrayList<String>();
 
@@ -339,26 +442,6 @@ public class levenshteinDistance {
 			}
 
 			normalizedInputString.put(eachString, tokens);
-
-			//			for(int i = 0; i < nGrams - 1; i++){
-			//				eachString = "^" + eachString;
-			//				eachString = eachString + "$";
-			//			}
-
-			//			List<String> tokens = new ArrayList<String>();
-			//			
-			//			for(int i = 0; i < eachString.length(); i++){
-			//
-			//				if(i + nGrams < eachString.length()){
-			//					tokens.add(eachString.substring(i, i + nGrams));
-			//				}else{
-			//					if(!tokens.contains(eachString.substring(eachString.length() - 2))){
-			//						tokens.add(eachString.substring(eachString.length() - 2));
-			//					}
-			//				}
-			//			}
-			//			normalizedInputString.put(eachString.substring(1, eachString.length() - 1), tokens);
-
 		}
 
 		return normalizedInputString;
@@ -384,11 +467,10 @@ public class levenshteinDistance {
 			eachString.add(stringToMatch);
 
 			//Levenshtein TODO
-			HashMap<String, List<String>> temp = createNGrams(eachString, nGrams);
+			HashMap<String, List<String>> temp = createNGrams(eachString, " " ,nGrams);
 
 			//Method from BBMRI plugin! All the possibilities of string term
 			//HashMap<String, List<String>> temp = createNGrams(eachString);
-
 			String matchedOntologyTerm = null;
 
 			double maxSimilarity = 0;
@@ -405,7 +487,7 @@ public class levenshteinDistance {
 			System.out.println("The original string is " + stringToMatch  + "! The matched ontology term is " + matchedOntologyTerm + ". The similarity is " + maxSimilarity);
 			System.out.println();
 			HashMap<String, Double> matchedTermAndSimilarity = new HashMap<String, Double>();
-			matchedTermAndSimilarity.put(stringToMatch, maxSimilarity);
+			matchedTermAndSimilarity.put(matchedOntologyTerm, maxSimilarity);
 			mappingResult.put(stringToMatch, matchedTermAndSimilarity);
 		}
 
