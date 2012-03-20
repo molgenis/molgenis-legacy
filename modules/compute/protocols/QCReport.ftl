@@ -8,18 +8,25 @@
 # =====================================================
 #
 
-#MOLGENIS walltime=00:01:00
+#MOLGENIS walltime=00:05:00
 #FOREACH project
 #DOCUMENTATION Documentation of QCReport.ftl, ${getStatisticsScript}
 
 <#include "Helpers.ftl"/>
 
+# We need some parameters folded per sample:
 <#assign folded = foldParameters(parameters,"project,externalSampleID") />
-<#assign samplehsmetrics 			= stringList(folded, "samplehsmetrics") />
-<#assign samplealignmentmetrics 	= stringList(folded, "samplealignmentmetrics") />
-<#assign sampleinsertsizemetrics 	= stringList(folded, "sampleinsertsizemetrics") />
-<#assign sampleconcordancefile 		= stringList(folded, "sampleconcordancefile") />
-<#assign externalSampleIDfolded		= stringList(folded, "externalSampleID") />
+<#assign samplehsmetrics 				= stringList(folded, "samplehsmetrics") />
+<#assign samplealignmentmetrics 		= stringList(folded, "samplealignmentmetrics") />
+<#assign sampleinsertsizemetrics 		= stringList(folded, "sampleinsertsizemetrics") />
+<#assign sampleconcordancefile 			= stringList(folded, "sampleconcordancefile") />
+<#assign externalSampleIDfolded			= stringList(folded, "externalSampleID") />
+<#assign snpsfinalvcftabletypefolded	= stringList(folded, "snpsfinalvcftabletype") />
+<#assign snpsfinalvcftableclassfolded	= stringList(folded, "snpsfinalvcftableclass") />
+<#assign snpsfinalvcftableimpactfolded	= stringList(folded, "snpsfinalvcftableimpact") />
+<#--assign typetableoutfolded				= stringList(folded, "typetableout") />
+<#assign classtableoutfolded			= stringList(folded, "classtableout") />
+<#assign impacttableoutfolded			= stringList(folded, "impacttableout") /-->
 
 # parameters in *.tex template:
 <#assign samplecoverageplotpdf 			= stringList(folded, "samplecoverageplotpdf") />
@@ -54,7 +61,14 @@ ${getStatisticsScript} \
 echo "${graph(workflowElements)}" | ${dot} -Tpng > ${workflowpng}
 
 # get snp stats per sample
-#<#-->${snpsfinalvcftabletype}-->
+${createsnptablescript} \
+--sample ${csvQuoted(externalSampleIDfolded)} \
+--type ${csvQuoted(snpsfinalvcftabletypefolded)} \
+--class ${csvQuoted(snpsfinalvcftableclassfolded)} \
+--impact ${csvQuoted(snpsfinalvcftableimpactfolded)} \
+--typetableout "${typetableout}" \
+--classtableout "${classtableout}" \
+--impacttableout "${impacttableout}"
 
 # save latex template in file
 echo "<#include "QCReportTemplate.tex"/>" > ${qcstatisticstexreport}

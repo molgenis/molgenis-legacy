@@ -49,7 +49,6 @@
 		\multicolumn{2}{l}{\textbf{Project}} \\\\
 		Project name & ${project} \\\\
 		Number of samples & ${samplecoverageplotpdf?size} \\\\
-		Number of NGS-samples & ${externalSampleID?size} \\\\
 		\\\\
 		\multicolumn{2}{l}{\textbf{Customer}} \\\\
 		Principal investigator & ${contact?replace("<", "/ ")?replace(">", "")} \\\\
@@ -101,11 +100,25 @@ ${figures(samplecoverageplotpdf)}
 The following figures show the insert size distribution per sample. Insert refers to the base pairs that are ligated between the adapters.
 ${figures(sampleinsertsizemetricspdf)}
 
+%\clearpage
+%\subsection*{Demultiplex statistics}
+%\addcontentsline{toc}{subsection}{Demultiplex statistics}
+%Under construction...
+%displaystats(demultiplexstats)
+
+%\clearpage
+%\subsection*{GC metrics}
+%\addcontentsline{toc}{subsection}{GC metrics}
+%The following figures show the GC-content distribution per sample.
+%${figures(samplegcbiasmetricspdf)}
+
 \clearpage
-\subsection*{GC metrics}
-\addcontentsline{toc}{subsection}{GC metrics}
-The following figures show the GC-content distribution per sample.
-${figures(samplegcbiasmetricspdf)}
+\subsection*{SNP statistics}
+\addcontentsline{toc}{subsection}{SNP statistics}
+The tables with caption 'Functional type', 'Functional class' and 'Functional impact', classify the SNPs, based on Ensembl, build 37.64.
+\input{${typetableout}}
+\input{${classtableout}}
+\input{${impacttableout}}
 
 \clearpage
 \section*{Appendix 1: Genome Analysis Facility Pipeline}

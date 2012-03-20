@@ -11,6 +11,8 @@
 #MOLGENIS walltime=09:59:00 mem=4
 #FOREACH externalSampleID
 
+####  <#--assign arrayfilelocation = arrayFile?split[ (arrayFile?split("\\"))?size - 1 ]/-->
+
 #### inputs "${arrayfilelocation}" ## if not exists, then create ${sampleconcordancefile} with NA's (used in QCreport)
 inputs "${mergedbam}"
 alloutputsexist \
