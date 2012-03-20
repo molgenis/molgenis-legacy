@@ -47,20 +47,37 @@ public class Breeding extends PluginModel<Entity>
 	private String startdate = null;
 	private List<ObservationTarget> lineList;
 	private String line = null;
-	private String remarks = null;
+	private String litterRemarks = null;
 	//private String pgStatus = null;
 	MatrixViewer motherMatrixViewer = null;
 	MatrixViewer fatherMatrixViewer = null;
 	MatrixViewer pgMatrixViewer = null;
+	MatrixViewer litterMatrixViewer = null;
 	private static String MOTHERMATRIX = "mothermatrix";
 	private static String FATHERMATRIX = "fathermatrix";
 	private static String PGMATRIX = "pgmatrix";
+	private static String LITTERMATRIX = "littermatrix";
 	private String action = "init";
 	private String userName = null;
 	private String motherMatrixViewerString;
 	private String fatherMatrixViewerString;
 	private String pgMatrixViewerString;
+	private String litterMatrixViewerString;
 	private String entity = "Parentgroups";
+	private String birthdate = null;
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	private String remarks = null;
+	private String selectedParentgroup = null;
+	private int litterSize;
+	private boolean litterSizeApproximate;
+	private String locName = null;
+	private String respres = null;
+	private int weanSizeFemale;
+	private int weanSizeMale;
+	private int weanSizeUnknown;
+	private String weandate = null;
+	private String nameBase = null;
+	private int startNumber = -1;
 	
 	public Breeding(String name, ScreenController<?> parent)
 	{
@@ -145,7 +162,10 @@ public class Breeding extends PluginModel<Entity>
 
 	public String getMotherMatrixViewer()
 	{
-		return motherMatrixViewerString;
+		if (motherMatrixViewerString != null) {
+			return motherMatrixViewerString;
+		}
+		return "Mother matrix not loaded";
 	}
 	
 	public void loadMotherMatrixViewer(Database db) {
@@ -196,7 +216,10 @@ public class Breeding extends PluginModel<Entity>
 	
 	public String getFatherMatrixViewer()
 	{
-		return fatherMatrixViewerString;
+		if (fatherMatrixViewerString != null) {
+			return fatherMatrixViewerString;
+		}
+		return "Father matrix not loaded";
 	}
 	
 	public void loadFatherMatrixViewer(Database db) {
@@ -282,6 +305,48 @@ public class Breeding extends PluginModel<Entity>
 			e.printStackTrace();
 		}
 	}
+	
+	public String getLitterMatrixViewer()
+	{
+		return litterMatrixViewerString;
+	}
+	
+	public void loadLitterMatrixViewer(Database db) {
+		try {
+			List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+			
+			List<String> measurementsToShow = new ArrayList<String>();
+			measurementsToShow.add("Active");
+			measurementsToShow.add("Parentgroup");
+			measurementsToShow.add("Line");
+			measurementsToShow.add("DateOfBirth");
+			measurementsToShow.add("WeanDate");
+			measurementsToShow.add("Size");
+			measurementsToShow.add("WeanSize");
+			measurementsToShow.add("GenotypeDate");
+			measurementsToShow.add("Remark");
+			List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Panel.INVESTIGATION_NAME, 
+					Operator.IN, investigationNames));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("TypeOfGroup"),
+					ObservedValue.VALUE, Operator.EQUALS, "Litter"));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Active"),
+					ObservedValue.VALUE, Operator.EQUALS, "Active"));
+			filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, ct.getMeasurementId("Line"),
+					ObservedValue.RELATION_NAME, Operator.EQUALS, this.line));
+			litterMatrixViewer = new MatrixViewer(this, LITTERMATRIX, 
+					new SliceablePhenoMatrix<Panel, Measurement>(Panel.class, Measurement.class), 
+					true, 1, false, false, filterRules, 
+					new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+		} catch (Exception e) {
+			String message = "Something went wrong while loading litter matrix";
+			if (e.getMessage() != null) {
+				message += (": " + e.getMessage());
+			}
+			this.getMessages().add(new ScreenMessage(message, false));
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public String getViewName()
@@ -350,7 +415,7 @@ public class Breeding extends PluginModel<Entity>
 				motherMatrixViewer.setDatabase(db);
 				motherMatrixViewer.handleRequest(db, request);
 				motherMatrixViewerString = motherMatrixViewer.render();
-				this.setAction("addParentgroupScreen2"); // return to mother selection screen
+				this.action = "addParentgroupScreen2"; // return to mother selection screen
 				return;
 			}
 			
@@ -358,7 +423,7 @@ public class Breeding extends PluginModel<Entity>
 				fatherMatrixViewer.setDatabase(db);
 				fatherMatrixViewer.handleRequest(db, request);
 				fatherMatrixViewerString = fatherMatrixViewer.render();
-				this.setAction("addParentgroupScreen3"); // return to father selection screen
+				this.action = "addParentgroupScreen3"; // return to father selection screen
 				return;
 			}
 			
@@ -366,7 +431,17 @@ public class Breeding extends PluginModel<Entity>
 				pgMatrixViewer.setDatabase(db);
 				pgMatrixViewer.handleRequest(db, request);
 				pgMatrixViewerString = pgMatrixViewer.render();
-				this.setAction("init"); // return to start screen
+				this.action = "init"; // return to start screen
+				this.entity = "Parentgroups";
+				return;
+			}
+			
+			if (litterMatrixViewer != null && action.startsWith(litterMatrixViewer.getName())) {
+				litterMatrixViewer.setDatabase(db);
+				litterMatrixViewer.handleRequest(db, request);
+				litterMatrixViewerString = litterMatrixViewer.render();
+				this.action = "init"; // return to start screen
+				this.entity = "Litters";
 				return;
 			}
 			
@@ -425,8 +500,9 @@ public class Breeding extends PluginModel<Entity>
 			
 			if (action.equals("addParentgroup")) {
 				String newPgName = AddParentgroup(db, request);
+				// Reset matrix and add filter on name of newly added PG:
+				loadPgMatrixViewer(db);
 				pgMatrixViewer.setDatabase(db);
-				// Add filter on name of newly added PG:
 				pgMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
 						Individual.NAME, Operator.EQUALS, newPgName));
 				pgMatrixViewer.reloadMatrix(db, null);
@@ -442,10 +518,6 @@ public class Breeding extends PluginModel<Entity>
 				loadMotherMatrixViewer(db);
 				motherMatrixViewer.setDatabase(db);
 				motherMatrixViewerString = motherMatrixViewer.render();
-			}
-			
-			if (action.equals("createLitter")) {
-				
 			}
 			
 			if (action.equals("changeLine")) {
@@ -466,6 +538,101 @@ public class Breeding extends PluginModel<Entity>
 			if (action.equals("switchLitters")) {
 				this.setEntity("Litters");
 				this.action = "init";
+			}
+			
+			if (action.equals("deActivate")) {
+				List<?> rows = pgMatrixViewer.getSelection(db);
+				String pgName;
+				try { 
+					int row = request.getInt(PGMATRIX + "_selected");
+					pgName = ((ObservationElement) rows.get(row)).getName();
+				} catch (Exception e) {	
+					this.setAction("init");
+					throw new Exception("No parentgroup selected");
+				}
+				ObservedValue activeVal = db.query(ObservedValue.class).
+						eq(ObservedValue.TARGET_NAME, pgName).
+						eq(ObservedValue.FEATURE_NAME, "Active").
+						find().get(0);
+				if (activeVal.getValue().equals("Active")) {
+					activeVal.setValue("Inactive");
+				} else {
+					activeVal.setValue("Active");
+				}
+				db.update(activeVal);
+				// Reset matrix and return to main screen
+				loadPgMatrixViewer(db);
+				pgMatrixViewer.setDatabase(db);
+				pgMatrixViewerString = pgMatrixViewer.render();
+				this.action = "init";
+				this.entity = "Parentgroups";
+			}
+			
+			if (action.equals("deActivateLitter")) {
+				List<?> rows = litterMatrixViewer.getSelection(db);
+				String litterName;
+				try { 
+					int row = request.getInt(LITTERMATRIX + "_selected");
+					litterName = ((ObservationElement) rows.get(row)).getName();
+				} catch (Exception e) {	
+					this.setAction("init");
+					throw new Exception("No litter selected");
+				}
+				ObservedValue activeVal = db.query(ObservedValue.class).
+						eq(ObservedValue.TARGET_NAME, litterName).
+						eq(ObservedValue.FEATURE_NAME, "Active").
+						find().get(0);
+				if (activeVal.getValue().equals("Active")) {
+					activeVal.setValue("Inactive");
+				} else {
+					activeVal.setValue("Active");
+				}
+				db.update(activeVal);
+				// Reset matrix and return to main screen
+				loadLitterMatrixViewer(db);
+				litterMatrixViewer.setDatabase(db);
+				litterMatrixViewerString = litterMatrixViewer.render();
+				this.action = "init";
+				this.entity = "Litters";
+			}
+			
+			if (action.equals("createLitter")) {
+				// Get selected parentgroup from PARENTGROUP matrix
+				List<?> rows = pgMatrixViewer.getSelection(db);
+				try { 
+					int row = request.getInt(PGMATRIX + "_selected");
+					this.selectedParentgroup = ((ObservationElement) rows.get(row)).getName();
+				} catch (Exception e) {	
+					this.setAction("init");
+					throw new Exception("No parentgroup selected");
+				} 
+			}
+			
+			if (action.equals("addLitter")) {
+				String newLitterName = ApplyAddLitter(db, request);
+				// return to start screen for litters
+				loadLitterMatrixViewer(db);
+				litterMatrixViewer.setDatabase(db);
+				litterMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
+						Individual.NAME, Operator.EQUALS, newLitterName));
+				litterMatrixViewer.reloadMatrix(db, null);
+				litterMatrixViewerString = litterMatrixViewer.render();
+				this.setAction("init");
+				this.resetUserFields();
+				this.entity = "Litters";
+				this.setSuccess("Litter " + newLitterName + " successfully added; adding filter to matrix: name = " + newLitterName);
+			}
+			
+			if (action.equals("weanLitter")) {
+				
+			}
+
+			if (action.equals("genotypeLitter")) {
+	
+			}
+
+			if (action.equals("makeLabels")) {
+	
 			}
 			
 		} catch (Exception e) {
@@ -563,6 +730,179 @@ public class Breeding extends PluginModel<Entity>
 			}
 			pgMatrixViewer.setDatabase(db);
 			pgMatrixViewerString = pgMatrixViewer.render();
+			// Prepare litter matrix
+			if (litterMatrixViewer == null) {
+				loadLitterMatrixViewer(db);
+			}
+			litterMatrixViewer.setDatabase(db);
+			litterMatrixViewerString = litterMatrixViewer.render();
 		}
+	}
+	
+	public String getBirthdate() {
+		if (birthdate != null) {
+			return birthdate;
+		}
+		return newDateOnlyFormat.format(new Date());
+	}
+	
+	public int getLitterSize() {
+		return litterSize;
+	}
+	
+	public String getLitterRemarks() {
+		return litterRemarks;
+	}
+	
+	public String getSelectedParentgroup() {
+		if (selectedParentgroup != null) {
+			return selectedParentgroup;
+		}
+		return "Error: no parentgoup selected";
+	}
+	
+	private String ApplyAddLitter(Database db, Tuple request) throws Exception
+	{
+		Date now = new Date();
+		
+		setUserFields(request, false);
+		Date eventDate = newDateOnlyFormat.parse(birthdate);
+		String userName = this.getLogin().getUserName();
+		String invName = ct.getOwnUserInvestigationNames(userName).get(0);
+		String lineName = ct.getMostRecentValueAsXrefName(selectedParentgroup, "Line");
+		
+		// Init lists that we can later add to the DB at once
+		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
+		
+		// Make group
+		String litterPrefix = "LT_" + lineName + "_";
+		int litterNr = ct.getHighestNumberForPrefix(litterPrefix) + 1;
+		String litterNrPart = "" + litterNr;
+		litterNrPart = ct.prependZeros(litterNrPart, 6);
+		String litterName = litterPrefix + litterNrPart;
+		ct.makePanel(invName, litterName, userName);
+		// Make or update name prefix entry
+		ct.updatePrefix("litter", litterPrefix, litterNr);
+		// Mark group as a litter
+		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
+				"SetTypeOfGroup", "TypeOfGroup", litterName, "Litter", null));
+
+		// Apply other fields using event
+		ProtocolApplication app = ct.createProtocolApplication(invName, "SetLitterSpecs");
+		db.add(app);
+		String paName = app.getName();
+		// Parentgroup
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Parentgroup", 
+				litterName, null, selectedParentgroup));
+		// Set Line also on Litter
+		if (lineName != null) {
+			valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Line", 
+				litterName, null, lineName));
+		}
+		// Date of Birth
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "DateOfBirth", 
+				litterName, newDateOnlyFormat.format(eventDate), null));
+		// Size
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Size", litterName, 
+				Integer.toString(litterSize), null));
+		// Size approximate (certain)?
+		String valueString = "0";
+		if (litterSizeApproximate == true) {
+			valueString = "1";
+		}
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Certain", litterName, 
+				valueString, null));
+		// Remarks
+		if (remarks != null) {
+			db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
+					"SetRemark", "Remark", litterName, remarks, null));
+		}
+		// Try to get Source via Line
+		String sourceName = ct.getMostRecentValueAsXrefName(lineName, "Source");
+		if (sourceName != null) {
+			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, 
+					eventDate, null, "SetSource", "Source", litterName, null, sourceName));
+		}
+		// Active
+		valuesToAddList.add(ct.createObservedValue(invName, paName, eventDate, null, "Active", litterName, 
+				"Active", null));
+		// Add everything to DB
+		db.add(valuesToAddList);
+		
+		return litterName;
+	}
+	
+	private void setUserFields(Tuple request, boolean wean) throws Exception {
+		if (wean == true) {
+			locName = request.getString("location");
+			if (locName != null && locName.equals("")) {
+				locName = null;
+			}
+			respres = request.getString("respres");
+			if (request.getString("weandate") == null || request.getString("weandate").equals("")) {
+				throw new Exception("Wean date cannot be empty");
+			}
+			weandate = request.getString("weandate"); // in old date format!
+			setWeanSizeFemale(request.getInt("weansizefemale"));
+			setWeanSizeMale(request.getInt("weansizemale"));
+			setWeanSizeUnknown(request.getInt("weansizeunknown"));
+			this.setRemarks(request.getString("remarks"));
+			
+			if (request.getString("namebase") != null) {
+				nameBase = request.getString("namebase");
+				if (nameBase.equals("New")) {
+					if (request.getString("newnamebase") != null) {
+						nameBase = request.getString("newnamebase");
+					} else {
+						nameBase = "";
+					}
+				}
+			} else {
+				nameBase = "";
+			}
+			if (request.getInt("startnumber") != null) {
+				startNumber = request.getInt("startnumber");
+			} else {
+				startNumber = 1; // standard start at 1
+			}
+			
+		} else {
+			if (request.getString("birthdate") == null || request.getString("birthdate").equals("")) {
+				throw new Exception("Birth date cannot be empty");
+			}
+			birthdate = request.getString("birthdate"); // in old date format!
+			setLitterSize(request.getInt("littersize"));
+			if (request.getBool("sizeapp_toggle") != null) {
+				setLitterSizeApproximate(true);
+			} else {
+				setLitterSizeApproximate(false);
+			}
+			this.setRemarks(request.getString("remarks"));
+		}
+	}
+
+	private void setWeanSizeUnknown(int weanSizeUnknown)
+	{
+		this.weanSizeUnknown = weanSizeUnknown;
+	}
+
+	private void setWeanSizeMale(int weanSizeMale)
+	{
+		this.weanSizeMale = weanSizeMale;
+	}
+
+	private void setWeanSizeFemale(int weanSizeFemale)
+	{
+		this.weanSizeFemale = weanSizeFemale;
+	}
+
+	private void setLitterSizeApproximate(boolean litterSizeApproximate)
+	{
+		this.litterSizeApproximate = litterSizeApproximate;
+	}
+
+	private void setLitterSize(int litterSize)
+	{
+		this.litterSize = litterSize;
 	}
 }

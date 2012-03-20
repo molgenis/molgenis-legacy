@@ -152,25 +152,21 @@
 		</script>			
 		<input type='text' id='birthdate' name='birthdate' <#if screen.getBirthdate??> value="${screen.getBirthdate()}"</#if> />
 	</div>
-	
 	<!-- Size -->
 	<div id='newlitter_size_part' class='row'>
 		<label for='littersize'>Litter size:</label>
 		<input type='text' class='textbox' name='littersize' id='littersize' value='<#if screen.litterSize?exists>${screen.getLitterSize()}</#if>' />
 	</div>
-	
 	<!-- Size approximate? -->
 	<div id="sizeapp_div" class="row">
 		<label for="sizeapp_toggle">Size approximate:</label>
 		<input type="checkbox" id="sizeapp_toggle" name="sizeapp_toggle" value="sizeapp" checked="yes" />
 	</div>
-	
 	<!-- Remarks -->
 	<div class='row'>
 		<label for='remarks'>Remarks:</label>
 		<input type='text' class='textbox' name='remarks' id='remarks' value='<#if screen.remarks?exists>${screen.getRemarks()}</#if>' />
 	</div>
-	
 	<!-- Add button -->
 	<div id='newlitter_buttons_part' class='row'>
 		<input type='submit' id='addlitter' class='addbutton' value='Add' onclick="__action.value='ApplyAddLitter'" />
