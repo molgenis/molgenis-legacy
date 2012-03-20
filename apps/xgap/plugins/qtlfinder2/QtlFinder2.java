@@ -97,7 +97,8 @@ public class QtlFinder2 extends PluginModel<Entity>
 				{
 					String shopMeName = request.getString("__shopMeName");
 					int shopMeId = request.getInt("__shopMeId");
-					this.model.getShoppingCart().put(shopMeName, shopMeId);
+					Entity e = db.findById(ObservationElement.class, shopMeId);
+					this.model.getShoppingCart().put(shopMeName, e);
 				}
 				
 				if (action.equals("unshop"))
@@ -108,15 +109,12 @@ public class QtlFinder2 extends PluginModel<Entity>
 				
 				if(action.equals("shopAll"))
 				{
-					for(String s : this.model.getHits().keySet())
-					{
-						this.model.getShoppingCart().put(s, ((ObservationElement)this.model.getHits().get(s)).getId());
-					}
+					this.model.getShoppingCart().putAll(this.model.getHits());
 				}
 				
 				if(action.equals("plotShoppingCart"))
 				{
-					QTLMultiPlotResult res = multiplot(new ArrayList<String>(this.model.getShoppingCart().keySet()), db);
+					QTLMultiPlotResult res = multiplot(new ArrayList<Entity>(this.model.getShoppingCart().values()), db);
 					this.model.setReport(null);
 					this.model.setMultiplot(res);
 				}
@@ -328,10 +326,8 @@ public class QtlFinder2 extends PluginModel<Entity>
 	
 	
 	
-	private QTLMultiPlotResult multiplot(List<String> names, Database db) throws Exception
+	private QTLMultiPlotResult multiplot(List<Entity> entities, Database db) throws Exception
 	{
-		//need to requery... not efficient at all :( fixme
-		List<ObservationElement> entities = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.IN, names));
 		HashMap<String,Entity> matches = new HashMap<String,Entity>();
 		int overallIndex = 1;
 		List<Data> allData = db.find(Data.class);
@@ -370,7 +366,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 					}
 					
 					//for each entity, see if the types match to the matrix
-					for(ObservationElement e : entities)
+					for(Entity e : entities)
 					{
 						if(d.getTargetType().equals(e.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(e.get(Field.TYPE_FIELD)))
 						{
@@ -472,7 +468,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 		{
 			if(model.getShoppingCart() == null)
 			{
-				Map<String, Integer> shoppingCart = new HashMap<String, Integer>();
+				Map<String, Entity> shoppingCart = new HashMap<String, Entity>();
 				this.model.setShoppingCart(shoppingCart);
 			}
 			

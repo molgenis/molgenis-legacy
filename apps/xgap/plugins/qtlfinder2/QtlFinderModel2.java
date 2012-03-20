@@ -28,7 +28,7 @@ public class QtlFinderModel2{
 	String shortenedQuery;
 	
 	//names of things in the shoppingcart
-	Map<String, Integer> shoppingCart = new HashMap<String, Integer>();
+	Map<String, Entity> shoppingCart = new HashMap<String, Entity>();
 	
 	//results for a multiplot request
 	private QTLMultiPlotResult multiplot;
@@ -99,12 +99,12 @@ public class QtlFinderModel2{
 		this.shortenedQuery = shortenedQuery;
 	}
 
-	public Map<String, Integer> getShoppingCart()
+	public Map<String, Entity> getShoppingCart()
 	{
 		return shoppingCart;
 	}
 
-	public void setShoppingCart(Map<String, Integer> shoppingCart)
+	public void setShoppingCart(Map<String, Entity> shoppingCart)
 	{
 		this.shoppingCart = shoppingCart;
 	}
