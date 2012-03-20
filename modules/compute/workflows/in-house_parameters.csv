@@ -1,5 +1,5 @@
 Name,defaultValue,description,dataType,hasOne_name
-insilicorun,run13march2012,increment each time you repeat in silico analysis,string,
+insilicorun,run0,increment each time you repeat in silico analysis,string,
 clusterQueue,umcg,,,
 mem,4,Memory in GB,,
 walltime,23:59:00,,,
