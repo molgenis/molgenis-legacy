@@ -1,8 +1,26 @@
 package org.molgenis.compute.commandline;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import nl.vu.psy.rite.exceptions.RiteException;
+import nl.vu.psy.rite.operations.Recipe;
+import nl.vu.psy.rite.operations.Step;
+import nl.vu.psy.rite.operations.implementations.bash.BashOperation;
+import nl.vu.psy.rite.persistence.mongo.MongoRecipeStore;
+
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeProtocol;
@@ -10,8 +28,9 @@ import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
 
-import java.io.*;
-import java.util.*;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 // This dependency needs to go when we upgrade to Java 7+
 //import com.google.common.io.Files;
@@ -58,24 +77,23 @@ public class ComputeCommandLine
 				targets.add("line_number");
 			}
 
-
 			// add path to loader
 			// FileTemplateLoader ftl1 = new FileTemplateLoader(this.workflowdir);
 
-//			Configuration cfg = new Configuration();
-//			cfg.setDirectoryForTemplateLoading(this.protocoldir);
-//			String documentation = protocol.getDescription();
-//			Template template = new Template("a template", new StringReader(documentation), cfg);
-//			StringWriter filledtemplate = new StringWriter();
-//			template.process(parameters, filledtemplate);
-			
-//			System.out.println(">>> " + documentation);
-//			System.out.println(">>> " + filledtemplate.toString());
-			
-			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet, this.computeBundle.getComputeParameters(),targets);
-//			Worksheet.reduceTargets(targets);
-//			print("folded worksheet: " + this.worksheet.folded.size() + ":" + this.worksheet.folded.toString());
-//			print("reduced worksheet: " + this.worksheet.reduced.size() + ":" + this.worksheet.reduced.toString());
+			// Configuration cfg = new Configuration();
+			// cfg.setDirectoryForTemplateLoading(this.protocoldir);
+			// String documentation = protocol.getDescription();
+			// Template template = new Template("a template", new StringReader(documentation), cfg);
+			// StringWriter filledtemplate = new StringWriter();
+			// template.process(parameters, filledtemplate);
+
+			// System.out.println(">>> " + documentation);
+			// System.out.println(">>> " + filledtemplate.toString());
+
+			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet, this.computeBundle.getComputeParameters(), targets);
+			// Worksheet.reduceTargets(targets);
+			// print("folded worksheet: " + this.worksheet.folded.size() + ":" + this.worksheet.folded.toString());
+			// print("reduced worksheet: " + this.worksheet.reduced.size() + ":" + this.worksheet.reduced.toString());
 
 			// each element of reduced worksheet produces one protocolApplication (i.e. a script)
 			for (Tuple work : folded)
@@ -88,19 +106,19 @@ public class ComputeCommandLine
 				// if walltime, cores, mem not specified in protocol, then use value from worksheet
 				String queue = (protocol.getClusterQueue() == null ? worksheet.getdefaultvalue("clusterQueue") : protocol.getClusterQueue());
 				work.set("clusterQueue", queue);
-//				job.setClusterQueue(queue);
+				// job.setClusterQueue(queue);
 				String walltime = (protocol.getWalltime() == null ? worksheet.getdefaultvalue("walltime") : protocol.getWalltime());
-//				job.setWalltime(walltime);
+				// job.setWalltime(walltime);
 				work.set("walltime", walltime);
 				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
-//				job.setCores(cores);
+				// job.setCores(cores);
 				work.set("cores", cores);
 				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol.getMem().toString());
-//				job.setMem(mem);
+				// job.setMem(mem);
 				work.set("mem", mem + "gb");
 
 				job.setInterpreter(protocol.getInterpreter() == null ? worksheet.getdefaultvalue("interpreter") : protocol.getInterpreter());
-				
+
 				// set jobname. If a job starts/completes, we put this in a logfile
 				work.set("jobname", job.getName());
 
@@ -123,6 +141,7 @@ public class ComputeCommandLine
 						if (work.getObject(target) instanceof List)
 						{
 							size = work.getList(target).size();
+							// BUG? What if user puts lists of different length in worksheet?
 							break;
 						}
 					}
@@ -134,9 +153,13 @@ public class ComputeCommandLine
 						String jobName = previousWfe.getName();
 						for (String target : wfeProtocol.getIterateOver_Name())
 						{
-							if (work.getObject(target) instanceof List) jobName += "_" + work.getList(target).get(i);
+							if (work.getObject(target) instanceof List)
+							// replace target by number
+							jobName += "_" + work.getList(target).get(i);
+							// jobName += "_XXX" + i;
 							else
 								jobName += "_" + work.getString(target);
+							// jobName += "_YYY";
 						}
 						dependencies.add(stepnr(previousWfe.getName()) + jobName);
 					}
@@ -153,52 +176,36 @@ public class ComputeCommandLine
 		}
 
 		// UNCOMMENT THE FOLLOWING CODE IF YOU WANT: as a last step add a job that writes a "pipeline.finished" file
-/*		
-		ComputeJob job = new ComputeJob();
-		job.setName(getworkflowfilename());
-		job.setInterpreter("bash");
-
-		// if walltime, cores, mem not specified in protocol, then use value from worksheet
-		job.setWalltime("00:00:10");
-		job.setCores(1);
-		job.setMem(1);
-
-		// final job is dependent on all other jobs
-		Set<String> dependencies = new HashSet<String>();
-		for (ComputeJob cj : this.jobs)
-		{
-			dependencies.add(cj.getName());
-		}
-		job.getPrevSteps_Name().addAll(dependencies);
-
-		// add the script
-		job.setComputeScript("touch $PBS_O_WORKDIR" + File.separator + getworkflowfilename() + ".finished");
-
-		this.jobs.add(job);
-
-		// print("compute parameters: " + computeBundle.getComputeParameters().toString());
-		// print("user parameters: " + computeBundle.getUserParameters());
-		// print("full worksheet: " + computeBundle.getWorksheet());
-*/
+		/*
+		 * ComputeJob job = new ComputeJob(); job.setName(getworkflowfilename()); job.setInterpreter("bash");
+		 * 
+		 * // if walltime, cores, mem not specified in protocol, then use value from worksheet job.setWalltime("00:00:10"); job.setCores(1); job.setMem(1);
+		 * 
+		 * // final job is dependent on all other jobs Set<String> dependencies = new HashSet<String>(); for (ComputeJob cj : this.jobs) { dependencies.add(cj.getName()); } job.getPrevSteps_Name().addAll(dependencies);
+		 * 
+		 * // add the script job.setComputeScript("touch $PBS_O_WORKDIR" + File.separator + getworkflowfilename() + ".finished");
+		 * 
+		 * this.jobs.add(job);
+		 * 
+		 * // print("compute parameters: " + computeBundle.getComputeParameters().toString()); // print("user parameters: " + computeBundle.getUserParameters()); // print("full worksheet: " + computeBundle.getWorksheet());
+		 */
 	}
 
 	private String addHeaderFooter(String scripttemplate, String interpreter)
 	{
 		// THIS SHOULD BE REPLACED WITH TEMPLATES:
-		
+
 		String ls = System.getProperty("line.separator");
 
-		scripttemplate = "<#include \"Header.ftl\"/>" 
-						+ scripttemplate + ls
-						+ "<#include \"Footer.ftl\"/>";
-//					   + "<#include \"Macros.ftl\"/>" + ls
-//					   + "<@begin/>" + ls
-//					   + (interpreter.equalsIgnoreCase("R") ? "<@Rbegin/>" + ls : "")
-//					   + scripttemplate
-//					   + (interpreter.equalsIgnoreCase("R") ? "<@Rend/>" + ls : "")
-//					   + "<@end/>" + ls;
-			
-		return(scripttemplate);
+		scripttemplate = "<#include \"Header.ftl\"/>" + scripttemplate + ls + "<#include \"Footer.ftl\"/>";
+		// + "<#include \"Macros.ftl\"/>" + ls
+		// + "<@begin/>" + ls
+		// + (interpreter.equalsIgnoreCase("R") ? "<@Rbegin/>" + ls : "")
+		// + scripttemplate
+		// + (interpreter.equalsIgnoreCase("R") ? "<@Rend/>" + ls : "")
+		// + "<@end/>" + ls;
+
+		return (scripttemplate);
 	}
 
 	private String stepnr(String wfeName)
@@ -245,10 +252,9 @@ public class ComputeCommandLine
 
 		// add the helper
 		parameters.put("freemarkerHelper", new FreemarkerHelper(this.computeBundle));
-		parameters.put("parameters",work);
+		parameters.put("parameters", work);
 		parameters.put("workflowElements", this.computeBundle.getWorkflowElements());
-		
-		
+
 		for (String field : work.getFields())
 		{
 			parameters.put(field, work.getObject(field));
@@ -268,13 +274,13 @@ public class ComputeCommandLine
 		template.process(parameters, filledtemplate);
 
 		// put debug info in script
-//		String script = "\n#####\n";
-//		script = script + "## The following ${parameters} are values:\n";
-//		script = script + "##   - " + worksheet.foldon + " " + worksheet.getConstants() + "\n";
-//		script = script + "## The following parameters are lists, <#list parameters as p>${p}</#list> \n";
-//		script = script + "##   - " + worksheet.list + "\n";
-//		script = script + "#####\n\n";
-//		script = script + filledtemplate.toString();
+		// String script = "\n#####\n";
+		// script = script + "## The following ${parameters} are values:\n";
+		// script = script + "##   - " + worksheet.foldon + " " + worksheet.getConstants() + "\n";
+		// script = script + "## The following parameters are lists, <#list parameters as p>${p}</#list> \n";
+		// script = script + "##   - " + worksheet.list + "\n";
+		// script = script + "#####\n\n";
+		// script = script + filledtemplate.toString();
 
 		return filledtemplate.toString();
 	}
@@ -323,13 +329,9 @@ public class ComputeCommandLine
 		{
 			System.out.println(opt.getCheckErrors());
 
-			System.out.println("command line format\n-parametersfile=<InputWorksheet>\n"
-					+ "-parametersfile=<parameters.txt>\n"
-					+ "-workflowfile=<workflow.txt>\n"
-					+ "-protocoldir=<WorkflowDescriptionDir>\n"
-					+ "-outputscriptsdir=<OutputDir>\n"
-					+ "-grid|cluster=<LocationOnBackend(Grid or Cluster)>\n"
-					+ "-templatesdir=<TemplatesDir> " + "<GererationID>\n");
+			System.out.println("command line format\n-parametersfile=<InputWorksheet>\n" + "-parametersfile=<parameters.txt>\n"
+					+ "-workflowfile=<workflow.txt>\n" + "-protocoldir=<WorkflowDescriptionDir>\n" + "-outputscriptsdir=<OutputDir>\n"
+					+ "-grid|cluster=<LocationOnBackend(Grid or Cluster)>\n" + "-templatesdir=<TemplatesDir> " + "<GererationID>\n");
 			System.exit(1);
 		}
 
@@ -365,6 +367,7 @@ public class ComputeCommandLine
 			ccl.generateJobs();
 			ccl.copyWorksheetAndWorkflow();
 			ccl.generateScripts();
+//			ccl.generateRite();			
 		}
 		catch (Exception e)
 		{
@@ -383,7 +386,7 @@ public class ComputeCommandLine
 			{
 				String[] filenamelist = f.toString().split(File.separator);
 				String filename = filenamelist[filenamelist.length - 1];
-				//Files.copy(f, new File(this.outputdir + File.separator + filename));
+				// Files.copy(f, new File(this.outputdir + File.separator + filename));
 				FileUtils.copyFile(f, new File(this.outputdir + File.separator + filename));
 			}
 		}
@@ -405,6 +408,42 @@ public class ComputeCommandLine
 		return f;
 	}
 
+	/**
+	 * generate for rite
+	 * 
+	 * @throws RiteException
+	 **/
+	private void generateRite() throws RiteException
+	{
+		MongoRecipeStore msr = new MongoRecipeStore("localhost", 27017, "testsh", "recipes");
+
+		for (ComputeJob job : this.jobs)
+		{
+			Recipe r = new Recipe(job.getName());
+			Step s = new Step("");
+			BashOperation bsho = new BashOperation();
+			bsho.setScript(job.getComputeScript());
+			s.add(bsho);
+			r.add(s);
+
+			if (0 < job.getPrevSteps_Name().size())
+			{
+				for (String previous : job.getPrevSteps_Name())
+				{
+					r.addDependency(previous);
+				}
+			}
+
+			msr.putRecipe(r);
+		}
+
+		/*
+		 * r = new Recipe("hello world2"); r.addDependency("hello world"); s = new Step("bla"); bsho = new BashOperation(); bsho.setScript("echo Hello to you!"); s.add(bsho); r.add(s);
+		 * 
+		 * msr.putRecipe(r);
+		 */
+	}
+
 	/** Convert all compute jobs into scripts + submit.sh */
 	private void generateScripts()
 	{
@@ -416,7 +455,7 @@ public class ComputeCommandLine
 
 			// also produce a submitlocal.sh
 			PrintWriter submitWriterLocal = new PrintWriter(new File(outputdir + File.separator + "submitlocal.sh"));
-			
+
 			// touch "workflow file name".started in same directory as submit.sh, when starting submit.sh
 			String cmd = "DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd )\"";
 			submitWriter.println(cmd);
@@ -438,19 +477,19 @@ public class ComputeCommandLine
 						dependency += ":$" + previous;
 					}
 				}
-				
+
 				// do stuff for submit.sh
 				submitWriter.println("#" + job.getName());
 				submitWriter.println(job.getName() + "=$(qsub -N " + job.getName() + " " + dependency + " " + job.getName() + ".sh)");
 				submitWriter.println("echo $" + job.getName());
-				submitWriter.println("sleep 1");
+				submitWriter.println("sleep 8");
 
 				// do stuff for submitlocal.sh
 				submitWriterLocal.println("echo Starting with " + job.getName() + "...");
 				submitWriterLocal.println("sh " + job.getName() + ".sh");
 				submitWriterLocal.println("#Dependencies: " + dependency);
 				submitWriterLocal.println("");
-				
+
 				// produce .sh file in outputdir for each job
 				PrintWriter jobWriter = new PrintWriter(new File(outputdir + File.separator + job.getName() + ".sh"));
 
