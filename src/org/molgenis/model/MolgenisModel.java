@@ -29,7 +29,7 @@ public class MolgenisModel
 //			ArrayList<String> db_files = options.model_database;
 //			for (int i = 0; i < db_files.size(); i++)
 //				db_files.set(i, options.path + db_files.get(i));
-
+// Stukje comment voor Willem om SVN te testen
 			model = MolgenisModelParser.parseDbSchema(options.model_database);
 			
 			
