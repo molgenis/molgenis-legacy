@@ -81,15 +81,15 @@ position:absolute;
  width:200px;
  z-index: 5;
 ">
-Selection:<br><br>
+Shopping cart:<br><br>
 <#list model.shoppingCart?keys as name>
 <input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
 <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a><br>
 </#list>
 
 <br><br>
-<input type="submit" value="Plot" onclick="document.forms.${screen.name}.__action.value = 'plotShoppingCart'; document.forms.${screen.name}.submit();">
-<input type="submit" value="Clear" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();">
+<@action name="plotShoppingCart" label="Create plot"/>
+<#--@action name="emptyShoppingCart" label="Clear"/-->
 
 
 
@@ -529,10 +529,10 @@ Selection:<br><br>
 	<table cellpadding="10">
 		<tr>
 			<td>
-				<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><b><i>Select all</b></i>
+				<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><b><i>Add all to cart</b></i>
 			</td>
 			<td>
-				<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();"><b><i>Unselect all</b></i>
+				<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();"><b><i>Clear current cart</b></i>
 			</td>
 		</tr>
 	</table>
