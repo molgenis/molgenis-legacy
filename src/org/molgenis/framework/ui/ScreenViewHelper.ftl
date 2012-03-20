@@ -54,6 +54,11 @@
   		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.dataTables_jui.css">
   		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.dataTables_demo_page.css">
   		
+  		<script src="generated-res/lib/jquery-plugins/jquery.jqGrid.locale-en.js" type="text/javascript"></script>
+  		<script src="generated-res/lib/jquery-plugins/jquery.jqGrid.min.js" type="text/javascript"></script>  		
+  		<link rel="stylesheet" href="generated-res/lib/jquery-plugins/jquery.jqGrid.css">
+  		  		
+  		
   		<!--script src="generated-res/lib/jquery-plugins/jquery-xqs-flyoutmenu.js"></script>
   		<script src="generated-res/lib/jquery-plugins/jquery-xqs-flyoutmenu.css"></script>
   		<script src="generated-res/lib/jquery-plugins/jquery-xqs-menubar.js"></script
