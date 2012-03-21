@@ -85,17 +85,6 @@ MakeSnpBoxplot    <- function(data.vector,marker.vector,file.name="") {
     }
 }
 
-MakeHaploBoxplot    <- function(data.vector,hap.vector,file.name="") {
-    plot.data   <- data.frame(trait.value=as.numeric(data.vector),hap.vector=as.integer(hap.vector)) 
-    if (file.name=="") {
-        boxplot(trait.value ~ hap.vector,data=plot.data,names=as.character(tabulate(hap.vector)))
-        } else {
-        jpeg(file.name,quality=100)
-        boxplot(trait.value ~ hap.vector,data=plot.data,names=as.character(tabulate(hap.vector)))
-        dev.off()
-        }
-}
-
 # For an extended version including a training and validation set, see the function define.haplotypes in the SHARE3 script 
 FindHaplotypes <- function(marker.frame,snp.set=1:nrow(marker.frame),
                            ind.set=1:ncol(marker.frame),MAF=0.01,classification.constant=1) {
