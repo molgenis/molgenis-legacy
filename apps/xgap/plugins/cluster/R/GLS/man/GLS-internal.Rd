@@ -6,7 +6,7 @@
 }
 
 \author{
-  Willem Kruijer \email{willem.kruijer@wur.nl},\cr
+  Willem Kruijer \email{willem.kruijer@wur.nl}\cr
   Danny Arends \email{Danny.Arends@Gmail.com}
 }
 

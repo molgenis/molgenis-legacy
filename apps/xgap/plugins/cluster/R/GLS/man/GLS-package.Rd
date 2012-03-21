@@ -14,9 +14,9 @@
   }
 }
 \author{
-  Willem Kruijer \email{willem.kruijer@wur.nl},\cr
+  Willem Kruijer \email{willem.kruijer@wur.nl}\cr
   Danny Arends \email{Danny.Arends@gmail.com}\cr
-  Maintainer: Willem Kruijer \email{willem.kruijer@wur.nl},\cr
+  Maintainer: Willem Kruijer \email{willem.kruijer@wur.nl}\cr
   Contributions from: ...
 }
 \references{
