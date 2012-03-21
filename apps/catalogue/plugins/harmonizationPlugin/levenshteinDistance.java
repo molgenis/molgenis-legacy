@@ -1,33 +1,31 @@
 package plugins.harmonizationPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
-
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
-import uk.ac.ebi.ontocat.Ontology;
+
 import uk.ac.ebi.ontocat.OntologyService;
 import uk.ac.ebi.ontocat.OntologyServiceException;
 import uk.ac.ebi.ontocat.OntologyTerm;
 import uk.ac.ebi.ontocat.file.FileOntologyService;
+import uk.ac.ebi.ontocat.virtual.CompositeDecorator;
 
 public class levenshteinDistance {
 
 	//Choose n-grams to tokenize the input string by default nGrams is 2
-	private int nGrams = 2;
+	private int nGrams = 3;
 
 	private String separator = ";";
 
@@ -46,6 +44,14 @@ public class levenshteinDistance {
 	private HashMap<String, Boolean> mappingResult = new HashMap<String, Boolean>();
 
 	private HashMap<String, List<String>> ontologyTermAndDataItems = new HashMap<String, List<String>>();
+
+	private HashMap<String, String> synonymToLabel = new HashMap<String, String>();
+
+	private HashMap<String, List<String>> classLabelToSynonyms = new HashMap<String, List<String>>();
+
+	private HashMap<String, String> synonymToClassLabel = new HashMap<String, String>();
+
+	private static String regex = "[!?/]";
 
 	public static final String[] STOP_WORDS = {"a","you","about","above","after","again",
 		"against","all","am","an","and","any","are","aren't","as","at","be","because","been",
@@ -84,56 +90,75 @@ public class levenshteinDistance {
 
 		levenshteinDistance test = new levenshteinDistance(2);
 
-		//		String fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/InputForOntologyBuild.xls";
-		//
-		//		tableModel model = new tableModel(fileName);
-		//
-		//		List<String> descriptions = new ArrayList<String>();
-		//
-		//		descriptions.add("Original terms");
-		//
-		//		descriptions.add("Ontology terms");
-		//
-		//		descriptions.add("Definition");
-		//
-		//		descriptions.add("Building blocks");
-		//
-		//		fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
-		//
-		//		tableModel model_2 = new tableModel(fileName);
-		//
-		//		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Data", "Description");
-		//
-		//		test.findOntologyTerms(descriptions, model, descriptionForVariable, 1);
-		//
-		//		test.findOntologyTerms(descriptions, model, descriptionForVariable, 2);
-		//
-		//		test.findOntologyTerms(descriptions, model, descriptionForVariable, 3);
-		//
-		//		System.out.println();
+		String fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/InputForOntologyBuild.xls";
 
-		System.out.println("Parsing the ontology");
+		tableModel model = new tableModel(fileName);
 
-		test.parseOntology("/Users/pc_iverson/Desktop/Input/Thesaurus.owl");
+		List<String> descriptions = new ArrayList<String>();
 
-		System.out.println("Ontology has been loaded");
+		descriptions.add("Original terms");
 
-		String fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
+		descriptions.add("Ontology terms");
+
+		descriptions.add("Definition");
+
+		descriptions.add("Building blocks");
+
+		fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
 
 		tableModel model_2 = new tableModel(fileName);
 
 		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Data", "Description");
 
-		test.annotateTextWithOntologyTerm(descriptionForVariable);
+		System.out.println("Parsing the ontology");
+
+		List<String> listOfAnnotationProperty = new ArrayList<String>();
+
+		listOfAnnotationProperty.add("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN");
+
+		test.parseOntology("/Users/pc_iverson/Desktop/Input/Thesaurus.owl", listOfAnnotationProperty);
+
+		System.out.println("Ontology has been loaded");
+
+		test.findOntologyTerms(descriptions, model, descriptionForVariable, 1);
+
+		test.findOntologyTerms(descriptions, model, descriptionForVariable, 2);
+
+		test.findOntologyTerms(descriptions, model, descriptionForVariable, 3);
+
+		System.out.println();
+
+		//		System.out.println("Parsing the ontology");
+		//
+		//		List<String> listOfAnnotationProperty = new ArrayList<String>();
+		//		
+		//		listOfAnnotationProperty.add("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN");
+		//		
+		//		test.parseOntology("/Users/pc_iverson/Desktop/Input/Thesaurus.owl", listOfAnnotationProperty);
+		//
+		//		//List<String> ontologies = new ArrayList<String>();
+		//		
+		//		//ontologies.add("/Users/pc_iverson/Desktop/Input/Thesaurus.owl");
+		//		
+		//		//test.ontoCatSearching(ontologies);
+		//		
+		//		System.out.println("Ontology has been loaded");
+		//
+		//		String fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
+		//
+		//		tableModel model_2 = new tableModel(fileName);
+		//
+		//		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Data", "Description");
+		//
+		//		test.annotateTextWithOntologyTerm(descriptionForVariable);
 		//test.findMatch(annotatedTerms, tokens);
 	}
-
 
 	public void annotateTextWithOntologyTerm(HashMap<String, String> descriptionForVariable){
 
 		for(String dataItem : descriptionForVariable.keySet()){
 
-			String description = descriptionForVariable.get(dataItem);
+			String description = descriptionForVariable.get(dataItem).replaceAll(regex, " ");
 			List<String> list = new ArrayList<String>();
 			list.add(description);
 			findMatch(normalizedOntologyTerms, list);
@@ -141,6 +166,12 @@ public class levenshteinDistance {
 
 	}
 
+
+	public void queryExpansion(){
+		
+	}
+	
+	
 	/**
 	 * This method is used to find the exact matching between input terms and ontology terms. If there is any matching found,
 	 * the record will be stored in mappingResult and ontologyTermAndDataItems variables. 
@@ -188,14 +219,28 @@ public class levenshteinDistance {
 			if(!levelAnnotation.get(key).equals("") && !mappingResult.get(key)){
 
 				String definitions[] = levelAnnotation.get(key).split(separator);
+				
+				List<String> queries = new ArrayList<String>();
 
 				for(int i = 0; i < definitions.length; i++){
+					queries.add(definitions[i].toLowerCase());
+				}
+				queries.add(levelAnnotation.get(key).replaceAll(separator, " ").toLowerCase());
 
+				for(String eachQuery : queries){
+					//for(int i = 0; i < definitions.length; i++){
+
+					List<String> listOfSynonyms = new ArrayList<String>();
+					
+					if(classLabelToSynonyms.containsKey(eachQuery)){
+						listOfSynonyms = classLabelToSynonyms.get(eachQuery);
+					}
+					
 					double maxSimilarity = 0;
 
 					String matchedDataItem = "";
 
-					List<String> tokens = createNGrams(definitions[i].toLowerCase().trim(), " ", nGrams, false);
+					List<String> tokens = createNGrams(eachQuery.toLowerCase().trim(), " ", nGrams, false);
 
 					for(String dataItem : descriptionForVariable.keySet()){
 
@@ -208,20 +253,52 @@ public class levenshteinDistance {
 							matchedDataItem = descriptionForVariable.get(dataItem);
 						}
 					}
+					
+					double synonymSimilarity = 0;
+					String synonymMatchedDataItem = "";
+					
+					for(String eachSynonym : listOfSynonyms){
+						tokens = createNGrams(eachSynonym.toLowerCase().trim(), " ", nGrams, false);
+						for(String dataItem : descriptionForVariable.keySet()){
 
+							List<String> dataItemTokens = createNGrams(descriptionForVariable.get(dataItem).toLowerCase().trim(), " ", nGrams, true);
+
+							double similarity = calculateScore(dataItemTokens, tokens);
+
+							if(similarity > synonymSimilarity){
+								synonymSimilarity = similarity;
+								synonymMatchedDataItem = descriptionForVariable.get(dataItem);
+							}
+						}
+					}
+					
+					if(synonymSimilarity > maxSimilarity){
+						maxSimilarity = synonymSimilarity;
+						matchedDataItem = synonymMatchedDataItem;
+					}
 					HashMap<String, Double> temp = new HashMap<String, Double>();
 
 					if(mappingResultAndSimiarity.containsKey(key)){
 						temp = mappingResultAndSimiarity.get(key);
 					}
-
-					temp.put(matchedDataItem, maxSimilarity);
-
+					if(temp.containsKey(matchedDataItem)){
+						if(temp.get(matchedDataItem) < maxSimilarity)
+							temp.put(matchedDataItem, maxSimilarity);
+					}else{
+						temp.put(matchedDataItem, maxSimilarity);
+					}
+					
 					mappingResultAndSimiarity.put(key, temp);
 				}
 			}
 		}
-
+		for(String dataItem : ontologyTermAndDataItems.keySet()){
+			System.out.println("The data item is " + dataItem);
+			for(String eachMapping : ontologyTermAndDataItems.get(dataItem)){
+				System.out.println("The ontology term is " + eachMapping);
+			}
+			System.out.println();
+		}
 		outPutMapping(mappingResultAndSimiarity);
 	}
 
@@ -307,42 +384,37 @@ public class levenshteinDistance {
 		return normalizedOntologyTerms;
 	}
 
-	public void setOntologyService (String ontologyFileName) throws OntologyServiceException{
+	public void setOntologyService (List<String> ontologyFiles) throws OntologyServiceException{
 
-		File ontologyFile = new File(ontologyFileName);
+		List<FileOntologyService> services = new ArrayList<FileOntologyService>();
 
-		this.os = new FileOntologyService(ontologyFile.toURI());
-	}
-
-	public HashMap<String, List<String>> extensiveSearching (List<String> intialQueries) throws OntologyServiceException{
-
-		HashMap <String, List<String>> stringToTokens = new HashMap<String, List<String>>();
-		//TODO not only search for the labels in the ontologies but also the synonyms. But the 
-		//annotation property of synonyms had the different name in different ontologies.
-		//For example synonyms is called FUL_SYN in NCI while is called alternative_term
-		//in Experiment factor ontology. So we start with searching for labels only!
-
-		//TODO Ask Despoina how to do it! Index the ontology terms in the hash table
-
-		for(String eachQuery : intialQueries){
-
-			String[] eachWords = eachQuery.split(" ");
-
-			List<String> allTokens = new ArrayList<String>();
-
-			for(int i = 0; i < eachWords.length; i++){
-				//TODO split by space symbol. This needs to be changed later. Create 
-				//n-possibilities combination of queries. 
-				for(OntologyTerm term : os.getAllTerms(eachWords[i])){
-					System.out.println(term.getLabel());
-					allTokens.add(term.getLabel());
-				}
-			}
-
-			stringToTokens.put(eachQuery, allTokens);
+		for(String ontologyName : ontologyFiles){
+			File ontologyFile = new File(ontologyName);
+			services.add(new FileOntologyService(ontologyFile.toURI(), ontologyName));
 		}
 
-		return stringToTokens;
+		os = CompositeDecorator.getService(services);
+	}
+
+	public void ontoCatSearching(List<String> ontologies) throws OntologyServiceException{
+
+		this.setOntologyService(ontologies);
+
+		List<String> allTerms = new ArrayList<String>();
+
+		for(String ontologyName : ontologies){
+
+			for(OntologyTerm ot : os.getAllTerms(ontologyName)){
+
+				for(String eachSynonym : os.getSynonyms(ot)){
+					synonymToLabel.put(eachSynonym, ot.getLabel());
+				}
+				allTerms.add(ot.getLabel());
+				allTerms.addAll(os.getSynonyms(ot));
+			}
+		}
+
+		normalizedOntologyTerms = this.createNGrams(allTerms, " ", this.nGrams, false);
 	}
 
 	/**
@@ -352,18 +424,30 @@ public class levenshteinDistance {
 	 * @param ontologyFilePath
 	 * @throws OWLOntologyCreationException 
 	 */
-	public void parseOntology(String ontologyFilePath) throws OWLOntologyCreationException{
+	public void parseOntology(String ontologyFilePath, List<String> annotationProperty) throws OWLOntologyCreationException{
 
 		OWLOntology localOntology = manager.loadOntologyFromOntologyDocument(new File(ontologyFilePath));
 
-		labelToOWLClass = this.owlFunction.labelMapURI(factory, localOntology, null);
+		List<IRI> listOfAnnotationProperty = new ArrayList<IRI>();
+		
+		for(String property : annotationProperty){
+			listOfAnnotationProperty.add(IRI.create(property));
+		}
+
+		owlFunction = new OWLFunction(factory, localOntology);
+
+		labelToOWLClass = owlFunction.labelMapURI(listOfAnnotationProperty);
+
+		classLabelToSynonyms = owlFunction.getClassLabelToSynonyms();
+
+		synonymToClassLabel = owlFunction.getSynonymToClassLabel();
 
 		List<String> listOfOntologyTerms = new ArrayList<String>();
 
 		listOfOntologyTerms.addAll(labelToOWLClass.keySet());
 
 		//Levenshtein TODO
-		normalizedOntologyTerms = createNGrams(listOfOntologyTerms, " ", nGrams);
+		normalizedOntologyTerms = createNGrams(listOfOntologyTerms, " ", nGrams, false);
 
 		//Method from BBMRI plugin! All the possibilities of string term
 		//normalizedOntologyTerms = createNGrams(listOfOntologyTerms);
@@ -436,7 +520,7 @@ public class levenshteinDistance {
 	 * @param nGrams
 	 * @return
 	 */
-	public HashMap<String, List<String>> createNGrams(List<String> inputString, String separator, int nGrams){
+	public HashMap<String, List<String>> createNGrams(List<String> inputString, String separator, int nGrams, boolean stopWords){
 
 		HashMap<String, List<String>> normalizedInputString = new HashMap<String, List<String>>();
 
@@ -446,21 +530,29 @@ public class levenshteinDistance {
 
 			List<String> tokens = new ArrayList<String>();
 
+			List<String> removedStopWordsList = new ArrayList<String>();
+
+			if(stopWords == true){
+				removedStopWordsList = removeStopWords(singleWords, STOPWORDSLIST);
+			}else{
+				removedStopWordsList = removeStopWords(singleWords, null);
+			}
+
 			//Padding the string
-			for(int index = 0; index < singleWords.length; index++){
+			for(String singleWord : removedStopWordsList){
 				//TODO what if there is overlapping between different words such diebetes mellitus. 
 				//The s$ will be the produced from two words. 
-				singleWords[index] = singleWords[index].toLowerCase();
-				singleWords[index] = "^" + singleWords[index];
-				singleWords[index] = singleWords[index] + "$";
+				singleWord = singleWord.toLowerCase();
+				singleWord = "^" + singleWord;
+				singleWord = singleWord + "$";
 
-				for(int i = 0; i < singleWords[index].length(); i++){
+				for(int i = 0; i < singleWord.length(); i++){
 
-					if(i + nGrams < singleWords[index].length()){
-						tokens.add(singleWords[index].substring(i, i + nGrams));
+					if(i + nGrams < singleWord.length()){
+						tokens.add(singleWord.substring(i, i + nGrams));
 					}else{
-						if(!tokens.contains(singleWords[index].substring(singleWords[index].length() - 2))){
-							tokens.add(singleWords[index].substring(singleWords[index].length() - 2).toLowerCase());
+						if(!tokens.contains(singleWord.substring(singleWord.length() - 2))){
+							tokens.add(singleWord.substring(singleWord.length() - 2).toLowerCase());
 						}
 					}
 				}
@@ -483,7 +575,7 @@ public class levenshteinDistance {
 
 		//Variable to store the mapping result
 		HashMap<String, HashMap<String, Double>> mappingResult = new HashMap<String, HashMap<String, Double>>();
-		HashMap<String, List<String>> annotatedByOntologyTerm = new HashMap<String, List<String>>();
+		//HashMap<String, List<String>> annotatedByOntologyTerm = new HashMap<String, List<String>>();
 		//Iterate the string
 		for(String stringToMatch : listOfInputString){
 
@@ -492,7 +584,7 @@ public class levenshteinDistance {
 			eachString.add(stringToMatch);
 
 			//Levenshtein TODO
-			HashMap<String, List<String>> temp = createNGrams(eachString, " " ,nGrams);
+			HashMap<String, List<String>> temp = createNGrams(eachString, " " ,nGrams, true);
 
 			//Method from BBMRI plugin! All the possibilities of string term
 			//HashMap<String, List<String>> temp = createNGrams(eachString);
@@ -500,24 +592,23 @@ public class levenshteinDistance {
 
 			double maxSimilarity = 0;
 
-			boolean ontologyTermFound = false;
+			//boolean ontologyTermFound = false;
 
 			for(String eachOntologyTerm : ontologyTerms.keySet()){
 
-				ontologyTermFound = searchForOntologyTerm(temp.get(stringToMatch), 
-						ontologyTerms.get(eachOntologyTerm));
-
-				if(ontologyTermFound == true){
-					if(!annotatedByOntologyTerm.containsKey(stringToMatch)){
-						List<String> listOfOntologyTerms = new ArrayList<String>();
-						listOfOntologyTerms.add(eachOntologyTerm);
-						annotatedByOntologyTerm.put(stringToMatch, listOfOntologyTerms);
-					}else{
-						List<String> listOfOntologyTerms = annotatedByOntologyTerm.get(stringToMatch);
-						listOfOntologyTerms.add(eachOntologyTerm);
-						annotatedByOntologyTerm.put(stringToMatch, listOfOntologyTerms);
-					}
-				}
+				//				ontologyTermFound = searchForOntologyTerm(stringToMatch, eachOntologyTerm);
+				//
+				//				if(ontologyTermFound == true){
+				//					if(!annotatedByOntologyTerm.containsKey(stringToMatch)){
+				//						List<String> listOfOntologyTerms = new ArrayList<String>();
+				//						listOfOntologyTerms.add(eachOntologyTerm);
+				//						annotatedByOntologyTerm.put(stringToMatch, listOfOntologyTerms);
+				//					}else{
+				//						List<String> listOfOntologyTerms = annotatedByOntologyTerm.get(stringToMatch);
+				//						listOfOntologyTerms.add(eachOntologyTerm);
+				//						annotatedByOntologyTerm.put(stringToMatch, listOfOntologyTerms);
+				//					}
+				//				}
 
 				double similarity = calculateScore(temp.get(stringToMatch), 
 						ontologyTerms.get(eachOntologyTerm));
@@ -526,25 +617,33 @@ public class levenshteinDistance {
 					matchedOntologyTerm = eachOntologyTerm;
 				}
 			}
-			
-//			System.out.println("The original string is " + stringToMatch  + "! The matched ontology term is " + matchedOntologyTerm + ". The similarity is " + maxSimilarity);
-//			System.out.println();
+
+			List<String> removedList = removeStopWords(stringToMatch.split(" "), STOPWORDSLIST);
+
+			String newString = "";
+
+			for(String each : removedList){
+				newString += each + " ";
+			}
+
+			System.out.println("The original string is " + stringToMatch  + "! The string without stop words is " + newString +
+					" The matched ontology term is " + matchedOntologyTerm + ". The similarity is " + maxSimilarity);
+			System.out.println();
 			HashMap<String, Double> matchedTermAndSimilarity = new HashMap<String, Double>();
 			matchedTermAndSimilarity.put(matchedOntologyTerm, maxSimilarity);
 			mappingResult.put(stringToMatch, matchedTermAndSimilarity);
 		}
-		
-		for(String key : annotatedByOntologyTerm.keySet()){
-			
-			System.out.println("The original string is " + key);
-			System.out.print("The ontology terms are ");
-			for(String eachOntologyTerm : annotatedByOntologyTerm.get(key)){
-				System.out.print(eachOntologyTerm + "\t");
-			}
-			System.out.println();
-			System.out.println();
-			
-		}
+
+		//		for(String key : annotatedByOntologyTerm.keySet()){
+		//			
+		//			System.out.println("The original string is " + key);
+		//			System.out.print("The ontology terms are ");
+		//			for(String eachOntologyTerm : annotatedByOntologyTerm.get(key)){
+		//				System.out.print(eachOntologyTerm + "\t");
+		//			}
+		//			System.out.println();
+		//			System.out.println();
+		//		}
 
 		return mappingResult;
 	}
@@ -571,20 +670,15 @@ public class levenshteinDistance {
 		return Double.parseDouble(df.format(similarity));
 	}
 
-	public boolean searchForOntologyTerm(List<String> inputStringTokens, List<String> ontologyTermTokens){
+	public boolean searchForOntologyTerm(String inputString, String ontologyTermTokens){
 
-		int matchedTokens = 0;
+		String[] inputStringTokens = inputString.split(" ");
 
-		for(String eachToken : ontologyTermTokens){
-			if(inputStringTokens.contains(eachToken)){
-				matchedTokens++;
-			}
+		for(int i = 0; i < inputStringTokens.length; i++){
+			if(inputStringTokens[i].equalsIgnoreCase(ontologyTermTokens))
+				return true;
 		}
-		if(ontologyTermTokens.size() == matchedTokens){
-			return true;
-		}else{
-			return false;
-		}
+		return false;
 	}
 
 }
