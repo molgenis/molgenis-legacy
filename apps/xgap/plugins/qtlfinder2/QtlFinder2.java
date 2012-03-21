@@ -161,6 +161,11 @@ public class QtlFinder2 extends PluginModel<Entity>
 						throw new Exception("Please enter a search term");
 					}
 					
+					if(query.length() > 25)
+					{
+						throw new Exception("Queries longer than 25 characters are not allowed");
+					}
+					
 					Class<? extends Entity> entityClass;
 					if(dataType.equals(__ALL__DATATYPES__SEARCH__KEY))
 					{
@@ -247,9 +252,11 @@ public class QtlFinder2 extends PluginModel<Entity>
 	
 	private Map<String, Entity> query(Class entityClass, Database db, String query, int limit) throws DatabaseException
 	{
-		Query<?> q = db.query(entityClass);
+		//Query<?> q = db.query(entityClass);
 		
-		List<? extends Entity> result = allFieldMatch(q.find(), query, limit);
+		//List<? extends Entity> result = allFieldMatch(q.find(), query, limit);
+		
+		List<? extends Entity> result  = db.search(entityClass, query);
 		
 		if(result.size() == 0)
 		{
@@ -261,7 +268,10 @@ public class QtlFinder2 extends PluginModel<Entity>
 				shortenedQuery = shortenedQuery.substring(0, shortenedQuery.length()-1);
 				//System.out.println("TRYING: " + shortenedQuery);
 				
-				result = allFieldMatch(q.find(), shortenedQuery, limit);
+				//result = allFieldMatch(q.find(), shortenedQuery, limit);
+				
+				result  = db.search(entityClass, shortenedQuery);
+				
 				//System.out.println("RESULTS: " + result.size());
 				
 				if(result.size() > 0)
