@@ -4,4 +4,4 @@
 <#assign sortedbam=sortedrecalbam />
 <#assign sortedbamindex=sortedrecalbamindex />
 
-<#include "samSort.ftl" />
+<#include "SamSort.ftl" />

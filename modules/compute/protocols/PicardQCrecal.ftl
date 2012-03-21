@@ -21,4 +21,4 @@
 <#assign hsmetrics=samplehsmetrics />
 <#assign bamindexstats=samplebamindexstats />
 
-<#include "picardQC.ftl">
+<#include "PicardQC.ftl">

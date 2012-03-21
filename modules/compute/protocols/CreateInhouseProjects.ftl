@@ -14,7 +14,7 @@
 #
 # Change permissions.
 #
-umask 0077
+umask 0007
 
 #
 # Create project dirs.

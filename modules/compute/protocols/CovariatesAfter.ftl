@@ -8,4 +8,4 @@
 #output:
 <#assign matefixedcovariatecsv=sortedrecalcovariatecsv />
 
-<#include "covariates.ftl" />
+<#include "Covariates.ftl" />
