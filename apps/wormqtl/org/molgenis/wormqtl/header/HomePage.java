@@ -97,6 +97,9 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					"app.ui.MeasurementsFormController",
 					"org.molgenis.pheno.Measurement",
 					
+					"app.ui.DerivedTraitsFormController",
+					"org.molgenis.xgap.DerivedTrait",
+					
 					"app.ui.EnvironmentalFactorsFormController",
 					"org.molgenis.xgap.EnvironmentalFactor",
 					
