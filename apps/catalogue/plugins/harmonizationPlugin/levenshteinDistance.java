@@ -6,13 +6,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.cxf.binding.corba.wsdl.Array;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 
@@ -50,6 +53,8 @@ public class levenshteinDistance {
 	private HashMap<String, List<String>> classLabelToSynonyms = new HashMap<String, List<String>>();
 
 	private HashMap<String, String> synonymToClassLabel = new HashMap<String, String>();
+
+	private OWLOntology localOntology = null;
 
 	private static String regex = "[!?/]";
 
@@ -90,6 +95,8 @@ public class levenshteinDistance {
 
 		levenshteinDistance test = new levenshteinDistance(2);
 
+		//test.parseOntology("/Users/pc_iverson/Desktop/Input/PredictionModel.owl", null);
+
 		String fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/InputForOntologyBuild.xls";
 
 		tableModel model = new tableModel(fileName);
@@ -120,6 +127,12 @@ public class levenshteinDistance {
 
 		System.out.println("Ontology has been loaded");
 
+		//System.out.println("Annotating the description of data items");
+
+		//test.annotateTextWithOntologyTerm(descriptionForVariable);
+
+		//System.out.println("The description has been annotated");
+
 		test.findOntologyTerms(descriptions, model, descriptionForVariable, 1);
 
 		test.findOntologyTerms(descriptions, model, descriptionForVariable, 2);
@@ -128,30 +141,16 @@ public class levenshteinDistance {
 
 		System.out.println();
 
-		//		System.out.println("Parsing the ontology");
-		//
-		//		List<String> listOfAnnotationProperty = new ArrayList<String>();
-		//		
-		//		listOfAnnotationProperty.add("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN");
-		//		
-		//		test.parseOntology("/Users/pc_iverson/Desktop/Input/Thesaurus.owl", listOfAnnotationProperty);
-		//
-		//		//List<String> ontologies = new ArrayList<String>();
-		//		
-		//		//ontologies.add("/Users/pc_iverson/Desktop/Input/Thesaurus.owl");
-		//		
-		//		//test.ontoCatSearching(ontologies);
-		//		
-		//		System.out.println("Ontology has been loaded");
-		//
-		//		String fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
-		//
-		//		tableModel model_2 = new tableModel(fileName);
-		//
-		//		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Data", "Description");
-		//
-		//		test.annotateTextWithOntologyTerm(descriptionForVariable);
-		//test.findMatch(annotatedTerms, tokens);
+		System.out.println("Parsing the ontology");
+
+		//List<String> ontologies = new ArrayList<String>();
+
+		//ontologies.add("/Users/pc_iverson/Desktop/Input/Thesaurus.owl");
+
+		//test.ontoCatSearching(ontologies);
+
+		System.out.println("Ontology has been loaded");
+
 	}
 
 	public void annotateTextWithOntologyTerm(HashMap<String, String> descriptionForVariable){
@@ -167,11 +166,6 @@ public class levenshteinDistance {
 	}
 
 
-	public void queryExpansion(){
-		
-	}
-	
-	
 	/**
 	 * This method is used to find the exact matching between input terms and ontology terms. If there is any matching found,
 	 * the record will be stored in mappingResult and ontologyTermAndDataItems variables. 
@@ -210,6 +204,31 @@ public class levenshteinDistance {
 		}
 	}
 
+	public List<String> queryExpansionByRelations(String query, OWLOntology localOntology){
+
+		if(localOntology == null)
+			localOntology = this.localOntology;
+		
+		List<String> allChildrenAndParents = new ArrayList<String>();
+		
+		if(labelToOWLClass.containsKey(query.toLowerCase())){
+
+			OWLClass queryClass = labelToOWLClass.get(query.toLowerCase());
+
+			List<String> allChildren = owlFunction.getAllChildren(localOntology, queryClass, new ArrayList<String>());
+			
+			List<String> allParents = owlFunction.getAllParents(localOntology, queryClass, new ArrayList<String>());
+			
+			allChildrenAndParents.addAll(allChildren);
+			
+			allChildrenAndParents.addAll(allParents);
+		}
+		
+		return allChildrenAndParents;
+	}
+
+	
+
 	public void thirdLevelAnnotation(HashMap<String, String> levelAnnotation, HashMap<String, String> descriptionForVariable){
 
 		HashMap<String, HashMap<String, Double>> mappingResultAndSimiarity = new HashMap<String, HashMap<String, Double>>();
@@ -219,7 +238,7 @@ public class levenshteinDistance {
 			if(!levelAnnotation.get(key).equals("") && !mappingResult.get(key)){
 
 				String definitions[] = levelAnnotation.get(key).split(separator);
-				
+
 				List<String> queries = new ArrayList<String>();
 
 				for(int i = 0; i < definitions.length; i++){
@@ -231,7 +250,7 @@ public class levenshteinDistance {
 					//for(int i = 0; i < definitions.length; i++){
 
 					List<String> listOfSynonyms = new ArrayList<String>();
-					
+
 					if(classLabelToSynonyms.containsKey(eachQuery)){
 						listOfSynonyms = classLabelToSynonyms.get(eachQuery);
 					}
@@ -253,10 +272,11 @@ public class levenshteinDistance {
 							matchedDataItem = descriptionForVariable.get(dataItem);
 						}
 					}
-					
+
 					double synonymSimilarity = 0;
-					String synonymMatchedDataItem = "";
 					
+					String synonymMatchedDataItem = "";
+
 					for(String eachSynonym : listOfSynonyms){
 						tokens = createNGrams(eachSynonym.toLowerCase().trim(), " ", nGrams, false);
 						for(String dataItem : descriptionForVariable.keySet()){
@@ -271,11 +291,35 @@ public class levenshteinDistance {
 							}
 						}
 					}
-					
+					//TODO query expansion, how to do?
+//					List<String> allParentsAndChildren = queryExpansionByRelations(eachQuery, null);
+//					
+//					String relativeMatchedDataItem = "";
+//					double relativeSimilarity = 0;
+//					
+//					for(String eachRelative : allParentsAndChildren){
+//						tokens = createNGrams(eachRelative.toLowerCase().trim(), " ", nGrams, false);
+//						for(String dataItem : descriptionForVariable.keySet()){
+//
+//							List<String> dataItemTokens = createNGrams(descriptionForVariable.get(dataItem).toLowerCase().trim(), " ", nGrams, true);
+//
+//							double similarity = calculateScore(dataItemTokens, tokens);
+//
+//							if(similarity > synonymSimilarity){
+//								relativeSimilarity = similarity;
+//								relativeMatchedDataItem = descriptionForVariable.get(dataItem);
+//							}
+//						}
+//					}
+
 					if(synonymSimilarity > maxSimilarity){
 						maxSimilarity = synonymSimilarity;
 						matchedDataItem = synonymMatchedDataItem;
 					}
+//					if(relativeSimilarity > maxSimilarity){
+//						relativeSimilarity = synonymSimilarity;
+//						relativeMatchedDataItem = synonymMatchedDataItem;
+//					}
 					HashMap<String, Double> temp = new HashMap<String, Double>();
 
 					if(mappingResultAndSimiarity.containsKey(key)){
@@ -287,7 +331,7 @@ public class levenshteinDistance {
 					}else{
 						temp.put(matchedDataItem, maxSimilarity);
 					}
-					
+
 					mappingResultAndSimiarity.put(key, temp);
 				}
 			}
@@ -426,14 +470,15 @@ public class levenshteinDistance {
 	 */
 	public void parseOntology(String ontologyFilePath, List<String> annotationProperty) throws OWLOntologyCreationException{
 
-		OWLOntology localOntology = manager.loadOntologyFromOntologyDocument(new File(ontologyFilePath));
+		localOntology  = manager.loadOntologyFromOntologyDocument(new File(ontologyFilePath));
 
 		List<IRI> listOfAnnotationProperty = new ArrayList<IRI>();
 		
-		for(String property : annotationProperty){
-			listOfAnnotationProperty.add(IRI.create(property));
+		if(annotationProperty != null){
+			for(String property : annotationProperty){
+				listOfAnnotationProperty.add(IRI.create(property));
+			}
 		}
-
 		owlFunction = new OWLFunction(factory, localOntology);
 
 		labelToOWLClass = owlFunction.labelMapURI(listOfAnnotationProperty);

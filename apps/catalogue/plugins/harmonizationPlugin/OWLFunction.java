@@ -10,9 +10,12 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 public class OWLFunction {
@@ -108,4 +111,63 @@ public class OWLFunction {
 			classLabelToSynonyms.put(classLabel, listOfSynonyms);
 		}
 	}
+
+	public List<String> getAllChildren(OWLOntology localOntology, OWLClass cls, List<String> allChildren){
+
+		for(OWLSubClassOfAxiom axiom : localOntology.getSubClassAxiomsForSuperClass(cls)){
+
+			for(OWLClassExpression expression : axiom.getClassesInSignature()){
+				if(!expression.isAnonymous() && !expression.asOWLClass().equals(cls)){
+					String label = this.getLabel(expression.asOWLClass(), localOntology);
+					allChildren.add(label);
+					if(!expression.asOWLClass().isBottomEntity()){
+						getAllChildren(localOntology, expression.asOWLClass(), allChildren);
+					}
+				}
+			}
+		}
+
+		return allChildren;
+	}
+
+	public List<String> getAllParents(OWLOntology localOntology, OWLClass cls, List<String> allParents){
+
+		for(OWLSubClassOfAxiom axiom : localOntology.getSubClassAxiomsForSubClass(cls)){
+
+			for(OWLClassExpression expression : axiom.getClassesInSignature()){
+				if(!expression.isAnonymous() && !expression.asOWLClass().equals(cls)){
+					String label = this.getLabel(expression.asOWLClass(), localOntology);
+					if(!label.equals("")){
+						if(!allParents.contains(label)){
+							allParents.add(label);
+							getAllParents(localOntology, expression.asOWLClass(), allParents);
+						}
+					}
+				}
+			}
+		}
+
+		return allParents;
+	}
+
+	/*
+	 * This method is used to get a label of corresponding OWLClass. 
+	 * @param      cls is the class we want to get label 
+	 * @return     the label of the class
+	 */ 
+	public String getLabel(OWLEntity cls, OWLOntology owlontology){
+		String labelValue = "";
+		try{
+			OWLAnnotationProperty label = factory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI());
+			for (OWLAnnotation annotation : cls.getAnnotations(owlontology, label)) {
+				if (annotation.getValue() instanceof OWLLiteral) {
+					OWLLiteral val = (OWLLiteral) annotation.getValue();
+					labelValue = val.getLiteral().toString();
+				}      
+			}       
+		}catch(Exception e){
+			System.out.println("The annotation is null!");
+		}
+		return labelValue;
+	}//end of the getLabel method
 }
