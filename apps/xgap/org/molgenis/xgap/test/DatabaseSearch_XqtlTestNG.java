@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.AssertTrue;
-
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
@@ -18,7 +16,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.DetectOS;
-import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.Metabolite;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
