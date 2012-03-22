@@ -798,7 +798,7 @@ public class CommonService
 	 * For a given ObservationTarget and ObservableFeature, returns
 	 * the value of the most recent ObservedValue,
 	 * based on the timestamp of its ProtocolApplication.
-	 * Returns "" if none found.
+	 * Returns null if none found.
 	 * 
 	 * @param targetName
 	 * @param featureName
@@ -834,7 +834,7 @@ public class CommonService
 			}
 			return returnValue.getValue();
 		} else {
-			return "";
+			return null;
 		}
 	}
 	

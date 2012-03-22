@@ -283,6 +283,7 @@ public class SliceablePhenoMatrix<R extends ObservationElement, C extends Observ
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			throw new MatrixException(e);
 		}
 	}
