@@ -146,7 +146,7 @@ public class PlinkDownload extends GenericPlugin
 			{
 				@SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })
 				List<Object[]> parts2 = db.getEntityManager()
-				.createQuery("SELECT ov.target.id, " 
+				.createQuery("SELECT ov.target.name, " 
 							+"MAX ( CASE WHEN (ov.feature.id = :sexId) THEN ov.value ELSE null END ), " 
 							+"MAX ( CASE WHEN (ov.feature.id = :mesId) THEN ov.value ELSE null END ) " 
 							+"FROM ObservedValue ov WHERE ov.feature = :sexId OR ov.feature = :mesId GROUP BY ov.target")
