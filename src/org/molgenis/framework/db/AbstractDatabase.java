@@ -897,4 +897,28 @@ public abstract class AbstractDatabase implements Database
 //		return this.find(entityClass,
 //				searchRules.toArray(new QueryRule[searchRules.size()]));
 	}
+	
+	public <E extends Entity> List<? extends Entity> load(Class<E> superClass, List<E> entities) throws DatabaseException
+	{
+		List<E> result = new ArrayList<E>();
+		for(Entity e : entities)
+		{
+			if(e.get(Field.TYPE_FIELD).equals(superClass.getSimpleName()))
+			{
+				//System.out.println("entity is already of superclass type("+e.get(Field.TYPE_FIELD).toString()+"), no need to query");
+			}
+			else if(superClass.isInstance(e))
+			{
+				Class<E> klazz = (Class<E>) this.getClassForName(e.get(Field.TYPE_FIELD).toString());
+				E r = this.findById(klazz, e.get(e.getIdField()));
+				result.add(r);
+				//System.out.println("requeried entity of class " + e.get(Field.TYPE_FIELD).toString());
+			}
+			else
+			{
+				//System.out.println("entity is NOT a subclass of " + superClass.getSimpleName());
+			}
+		}
+		return result;
+	}
 }
