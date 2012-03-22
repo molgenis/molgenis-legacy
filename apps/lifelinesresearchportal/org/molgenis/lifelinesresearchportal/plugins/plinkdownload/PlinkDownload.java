@@ -149,7 +149,7 @@ public class PlinkDownload extends GenericPlugin
 				.createQuery("SELECT ov.target.name, " 
 							+"MAX ( CASE WHEN (ov.feature.id = :sexId) THEN ov.value ELSE null END ), " 
 							+"MAX ( CASE WHEN (ov.feature.id = :mesId) THEN ov.value ELSE null END ) " 
-							+"FROM ObservedValue ov WHERE ov.feature = :sexId OR ov.feature = :mesId GROUP BY ov.target")
+							+"FROM ObservedValue ov WHERE ov.feature = :sexId OR ov.feature = :mesId GROUP BY ov.target.name")
 				.setParameter("sexId", sexMeasId) 
 				.setParameter("mesId", measurementId)
 				.getResultList();
@@ -167,7 +167,7 @@ public class PlinkDownload extends GenericPlugin
 			List<String> skipListDouble = new ArrayList<String>();
 			
 			for (final Object[] part : parts) {
-				final Integer targetId = (Integer) part[0];
+				final Integer targetId = Integer.parseInt(part[0].toString());
 				final String sexVal = (String) part[1];
 				final String phenoVal = (String) part[2];
 				double pheno;				
