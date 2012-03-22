@@ -196,39 +196,17 @@ public class ApplyProtocolService {
 		return returnList;
     }
 	
-	public int getMeasurementId(String measurementName) throws DatabaseException, ParseException
-	{
-		Query<Measurement> q = db.query(Measurement.class);
-		q.eq(Measurement.NAME, measurementName);
-		List<Measurement> featList = q.find();
-		if (featList.size() > 0) {
-		    return featList.get(0).getId();
-		} else {
-		    throw new DatabaseException("Id could be found for" +
-			    " Measurement with name: " + measurementName);
-		}
-	}
-
-	public List<Category> getAllCodesForFeature(String featureName)
-			throws DatabaseException, ParseException
-	{
-		//int featureId = getMeasurementId(featureName);
-		Measurement m = db.query(Measurement.class).eq(Measurement.NAME,featureName).find().get(0);
-		return db.query(Category.class).in(Category.ID, m.getCategories_Id()).find();
-	}
-	
 	public List<String> getAllCodesForFeatureAsStrings(String featurename)
 			throws DatabaseException, ParseException
 	{
-		//int featureid = getMeasurementId(featurename);
-		Measurement m= db.query(Measurement.class).eq(Measurement.NAME,featurename).find().get(0);
-		Query<Category> q = db.query(Category.class);
-		q.in(Category.ID, m.getCategories_Id());
-		//q.eq(Category.FEATURE, featureid);
+		Measurement m = db.query(Measurement.class).eq(Measurement.NAME, featurename).find().get(0);
 		List<String> returnList = new ArrayList<String>();
-		List<Category> tmpList = q.find();
-		for (Category code : tmpList) {
-			returnList.add(code.getDescription());
+		List<String> catNames = m.getCategories_Name();
+		if (catNames != null && catNames.size() > 0) {	
+			List<Category> catList = db.query(Category.class).in(Category.NAME, catNames).find();
+			for (Category cat : catList) {
+				returnList.add(cat.getDescription());
+			}
 		}
 		return returnList;
 	}
@@ -250,7 +228,7 @@ public class ApplyProtocolService {
 		List<Integer> panelIdList = new ArrayList<Integer>();
 
 		Query<ObservedValue> valueQuery = db.query(ObservedValue.class);
-		valueQuery.addRules(new QueryRule(ObservedValue.FEATURE, Operator.EQUALS, getMeasurementId("TypeOfGroup")));
+		valueQuery.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "TypeOfGroup"));
 		valueQuery.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, mark));
 		QueryRule qr1 = new QueryRule(Measurement.INVESTIGATION, Operator.IN, investigationIds);
 		QueryRule qr2 = new QueryRule(Operator.OR);

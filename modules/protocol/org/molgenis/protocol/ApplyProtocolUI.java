@@ -103,26 +103,22 @@ public class ApplyProtocolUI {
     	
 		HtmlInput valueInput;
 		Measurement feature = model.getFeaturesList().get(featureNr);
-	
 		// Get the metadata to create the input
-		
 		// Data type
 		String dataType = feature.getDataType();
 		if( MolgenisFieldTypes.getType(dataType) instanceof UnknownField ) {
 		    throw new Exception("Fieldtype " + dataType + "' is unknown in MOLGENIS");
 		}
-		
 		// Target type allowed for relation
 		String observationTargetType = model.getTargettypeAllowedForRelation(feature);
-		
 		// Panel label for relation
 		String panelLabel = feature.getPanelLabelAllowedForRelation();
-		
 		// Make the appropriate input
-		if (dataType.equals("string") && model.getAllCodesForFeature(feature).size() > 0) {
-		    // If there are codes for this Measurement, show a selectbox with those
+		List<String> catList = model.getAllCategoriesForFeatureAsStrings(feature.getName());
+		if (dataType.equals("string") && catList != null && catList.size() > 0) {
+		    // If there are categories for this Measurement, show a selectbox with those
 		    valueInput = new SelectInput(col + "_" + row + "_" + order);
-		    ((SelectInput)valueInput).setOptionsFromStringList(model.getAllCodesForFeatureAsStrings(feature));
+		    ((SelectInput)valueInput).setOptionsFromStringList(catList);
 		    if (value != null && value.getValue() != null) {
 		    	valueInput.setValue(value.getValue());
 		    }

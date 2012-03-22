@@ -33,8 +33,8 @@ public class ApplyProtocolPluginModel {
 	private boolean allValues = false;
 	private int userId = -1;
 	private List<Integer> investigationIds;
-	private Map<Measurement, List<Category>> codeMap = new HashMap<Measurement, List<Category>>();
-	private Map<Measurement, List<String>> codeMapString = new HashMap<Measurement, List<String>>();
+	//private Map<Measurement, List<Category>> codeMap = new HashMap<Measurement, List<Category>>();
+	private Map<String, List<String>> catMap = new HashMap<String, List<String>>();
 	private Map<Measurement, List<ObservationTarget>> panelMap = new HashMap<Measurement, List<ObservationTarget>>();
 	private Map<Measurement, String> typeMap = new HashMap<Measurement, String>();
 	private ApplyProtocolService service;
@@ -48,15 +48,10 @@ public class ApplyProtocolPluginModel {
 
 	public void setFeaturesLists(List<Measurement> featuresList) throws DatabaseException, ParseException {
 		this.featuresList = featuresList;
-		
 		for (Measurement m : featuresList) {
-			codeMap.put(m, service.getAllCodesForFeature(m.getName()));
-			
-			codeMapString.put(m, service.getAllCodesForFeatureAsStrings(m.getName()));
-			
+			catMap.put(m.getName(), service.getAllCodesForFeatureAsStrings(m.getName()));
 			String panelLabel = m.getPanelLabelAllowedForRelation();
 			panelMap.put(m, service.getAllMarkedPanels(panelLabel, investigationIds));
-			
 			String observationTargetType = "org.molgenis.pheno.ObservationTarget";
 			if (m.getTargettypeAllowedForRelation_Id() != null) {
 				int entityId = m.getTargettypeAllowedForRelation_Id();
@@ -66,12 +61,8 @@ public class ApplyProtocolPluginModel {
 		}
 	}
 	
-	public List<Category> getAllCodesForFeature(Measurement measurement) {
-		return codeMap.get(measurement);
-	}
-	
-	public List<String> getAllCodesForFeatureAsStrings(Measurement measurement) {
-		return codeMapString.get(measurement);
+	public List<String> getAllCategoriesForFeatureAsStrings(String measurementName) {
+		return catMap.get(measurementName);
 	}
 	
 	public List<ObservationTarget> getAllPanelsForFeature(Measurement measurement) {
