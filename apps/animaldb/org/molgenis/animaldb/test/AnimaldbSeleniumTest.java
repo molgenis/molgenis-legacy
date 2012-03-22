@@ -226,21 +226,16 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=add");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Line successfully added"));
-		// Go to Parentgroup plugin
+		// Go to Breeding plugin
 		selenium.click("id=animalmenu_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=breedingmodule_tab_button");
+		selenium.click("id=Breeding_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=ManageParentgroups_tab_button");
+		Assert.assertTrue(selenium.isTextPresent("Parentgroups"));
+		// Add a parentgroup
+		selenium.click("id=createParentgroup");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Existing parentgroups"));
-		// Add a parent group
-		selenium.click("id=createpg");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Screen 1: line
-		selenium.click("id=from1to2");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Screen 2: mothers
+		// Screen 1: mothers
 		selenium.click("id=mothermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
 		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
 		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
@@ -248,7 +243,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=mothermatrix_selected_0"); // toggle selectbox for first female in list
 		selenium.click("id=from2to3");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Screen 3: fathers
+		// Screen 2: fathers
 		selenium.click("id=fathermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
 		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
 		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
@@ -256,41 +251,39 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=fathermatrix_selected_0"); // toggle selectbox for first male in list
 		selenium.click("id=from3to4");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Screen 4: start date and remarks
+		// Screen 3: start date and remarks
 		selenium.click("id=addpg");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("successfully added"));
-		// Go to Litter plugin
-		selenium.click("ManageLitters_tab_button");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("Litters"));
 		// Add a litter
-		selenium.click("id=addlitter");
+		selenium.click("id=pgmatrix_selected_0");
+		selenium.click("id=createlitter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=matrix_selected_0"); // toggle selectbox for first parent group in list
 		selenium.type("id=littersize", "5");
 		selenium.click("id=addlitter");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("successfully added"));
 		// Wean litter
-		selenium.click("link=Wean");
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("id=weangenotype");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.type("id=weansizefemale", "2");
 		selenium.type("id=weansizemale", "3");
-		selenium.select("id=namebase", "label=mm_");
 		selenium.click("id=wean");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully weaned"));
 		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		// Check cage labels link
-		selenium.click("link=Create temporary cage labels");
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("id=label");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Download temporary wean labels as pdf"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Genotype litter
 		// TODO: expand
-		selenium.click("link=Genotype");
+		selenium.click("id=littermatrix_selected_0");
+		selenium.click("id=weangenotype");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Parentgroup: PG_MyLine_000001"));
 		Assert.assertTrue(selenium.isTextPresent("Line: MyLine"));
@@ -298,9 +291,8 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("All 5 animals successfully genotyped"));
 		// Check definitive cage labels link
-		Assert.assertTrue(selenium.isTextPresent("LT_MyLine_000001"));
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("makedeflabels");
+		selenium.click("id=label");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
 		selenium.click("link=Back to overview");

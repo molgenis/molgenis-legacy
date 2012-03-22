@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.breeding;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.molgenis.animaldb.commonservice.CommonService;
+import org.molgenis.animaldb.plugins.administration.LabelGenerator;
+import org.molgenis.animaldb.plugins.administration.LabelGeneratorException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -100,6 +103,7 @@ public class Breeding extends PluginModel<Entity>
 	private Table genotypeTable = null;
 	private boolean wean = false;
 	private String parentInfo;
+	private String labelDownloadLink;
 	
 	public Breeding(String name, ScreenController<?> parent)
 	{
@@ -438,7 +442,7 @@ public class Breeding extends PluginModel<Entity>
 				motherMatrixViewer.setDatabase(db);
 				motherMatrixViewer.handleRequest(db, request);
 				motherMatrixViewerString = motherMatrixViewer.render();
-				this.action = "addParentgroupScreen2"; // return to mother selection screen
+				this.action = "createParentgroup"; // return to mother selection screen
 				return;
 			}
 			
@@ -623,6 +627,7 @@ public class Breeding extends PluginModel<Entity>
 			}
 			
 			if (action.equals("createLitter")) {
+				this.entity = "Litters"; // switch to litter view
 				// Get selected parentgroup from PARENTGROUP matrix
 				List<?> rows = pgMatrixViewer.getSelection(db);
 				try { 
@@ -630,7 +635,6 @@ public class Breeding extends PluginModel<Entity>
 					this.selectedParentgroup = ((ObservationElement) rows.get(row)).getName();
 				} catch (Exception e) {	
 					this.action = "init";
-					this.entity = "Litters";
 					throw new Exception("No parentgroup selected");
 				} 
 			}
@@ -676,7 +680,9 @@ public class Breeding extends PluginModel<Entity>
 					parentInfo += ("Father: " + getGenoInfo(fatherName, db) + "<br />");
 					genotypeLitter(db);
 				} else {
-					this.setError("Litter has already been weaned and genotyped");
+					this.action = "init";
+					this.entity = "Litters";
+					throw new Exception("Litter has already been weaned and genotyped");
 				}
 			}
 			
@@ -717,7 +723,25 @@ public class Breeding extends PluginModel<Entity>
 			}
 
 			if (action.equals("makeLabels")) {
-	
+				// Get selected litter
+				List<?> rows = litterMatrixViewer.getSelection(db);
+				try { 
+					int row = request.getInt(LITTERMATRIX + "_selected");
+					this.litter = ((ObservationElement) rows.get(row)).getName();
+				} catch (Exception e) {	
+					this.action = "init";
+					this.entity = "Litters";
+					throw new Exception("No litter selected");
+				}
+				if (ct.getMostRecentValueAsString(this.litter, "WeanDate") == null) {
+					this.action = "init";
+					this.entity = "Litters";
+					throw new Exception("Cannot make labels for an unweaned litter");
+				} else if (ct.getMostRecentValueAsString(this.litter, "GenotypeDate") == null) {
+					makeTempCageLabels(db);
+				} else {
+					makeDefCageLabels(db);
+				}
 			}
 			
 			if (action.equals("AddGenoCol")) {
@@ -1017,10 +1041,8 @@ public class Breeding extends PluginModel<Entity>
 		String userName = this.getLogin().getUserName();
 		String invName = ct.getOwnUserInvestigationNames(userName).get(0);
 		String lineName = ct.getMostRecentValueAsXrefName(selectedParentgroup, "Line");
-		
 		// Init lists that we can later add to the DB at once
 		List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
-		
 		// Make group
 		String litterPrefix = "LT_" + lineName + "_";
 		int litterNr = ct.getHighestNumberForPrefix(litterPrefix) + 1;
@@ -1033,7 +1055,6 @@ public class Breeding extends PluginModel<Entity>
 		// Mark group as a litter
 		db.add(ct.createObservedValueWithProtocolApplication(invName, now, null, 
 				"SetTypeOfGroup", "TypeOfGroup", litterName, "Litter", null));
-
 		// Apply other fields using event
 		ProtocolApplication app = ct.createProtocolApplication(invName, "SetLitterSpecs");
 		db.add(app);
@@ -1126,39 +1147,14 @@ public class Breeding extends PluginModel<Entity>
 				throw new Exception("Birth date cannot be empty");
 			}
 			birthdate = request.getString("birthdate"); // in old date format!
-			setLitterSize(request.getInt("littersize"));
+			this.litterSize = request.getInt("littersize");
 			if (request.getBool("sizeapp_toggle") != null) {
-				setLitterSizeApproximate(true);
+				this.litterSizeApproximate = true;
 			} else {
-				setLitterSizeApproximate(false);
+				this.litterSizeApproximate = false;
 			}
-			this.setRemarks(request.getString("remarks"));
+			this.litterRemarks = request.getString("litterremarks");
 		}
-	}
-
-	private void setWeanSizeUnknown(int weanSizeUnknown)
-	{
-		this.weanSizeUnknown = weanSizeUnknown;
-	}
-
-	private void setWeanSizeMale(int weanSizeMale)
-	{
-		this.weanSizeMale = weanSizeMale;
-	}
-
-	private void setWeanSizeFemale(int weanSizeFemale)
-	{
-		this.weanSizeFemale = weanSizeFemale;
-	}
-
-	private void setLitterSizeApproximate(boolean litterSizeApproximate)
-	{
-		this.litterSizeApproximate = litterSizeApproximate;
-	}
-
-	private void setLitterSize(int litterSize)
-	{
-		this.litterSize = litterSize;
 	}
 	
 	private String findParentForParentgroup(String parentgroupName, String parentSex, Database db) throws DatabaseException, ParseException {
@@ -1630,6 +1626,9 @@ public class Breeding extends PluginModel<Entity>
 				int currCol = 5 + (genoNr * 2);
 				String paName = ct.makeProtocolApplication(invName, "SetGenotype");
 				String geneName = request.getString(currCol + "_" + animalCount);
+				if (geneName == null || geneName.equals("")) {
+					continue; // skip genes that have not been filled in
+				}
 				List<ObservedValue> valueList = ct.getObservedValuesByTargetAndFeature(animal.getName(), 
 						"GeneModification", investigationNames, invName);
 				if (genoNr < valueList.size()) {
@@ -1823,5 +1822,236 @@ public class Breeding extends PluginModel<Entity>
 	
 	public String getGenotypeTable() {
 		return genotypeTable.render();
+	}
+	
+private void makeDefCageLabels(Database db) throws LabelGeneratorException, DatabaseException, ParseException {
+		
+		// PDF file stuff
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "deflabels.pdf");
+		String filename = pdfFile.getName();
+		LabelGenerator labelgenerator = new LabelGenerator(2);
+		labelgenerator.startDocument(pdfFile);
+		
+		// Litter stuff
+		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
+		String line = this.getLineInfo(parentgroupName);
+		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
+		String motherInfo = this.getGenoInfo(motherName, db);
+		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
+		String fatherInfo = this.getGenoInfo(fatherName, db);
+		
+		List<String> elementLabelList;	
+		List<String> elementList;
+		
+		for (Individual animal : this.getAnimalsInLitter(litter, db)) {
+			String animalName = animal.getName();
+			elementList = new ArrayList<String>();
+			elementLabelList = new ArrayList<String>();
+			
+			// Name / custom label
+			elementLabelList.add("Name:");
+			elementList.add(animalName);
+			// Earmark
+			elementLabelList.add("Earmark:");
+			elementList.add(ct.getMostRecentValueAsString(animalName, "Earmark"));
+			// Line
+			elementLabelList.add("Line:");
+			elementList.add(line);
+			// Background + GeneModification + GeneState
+			elementLabelList.add("Genotype:");
+			elementList.add(this.getGenoInfo(animalName, db));
+			// Color + Sex
+			elementLabelList.add("Color and Sex:");
+			String color = ct.getMostRecentValueAsString(animalName, "Color");
+			if (color == null || color.equals("null") || color.equals("")) {
+				color = "unknown";
+			}
+			String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
+			elementList.add(color + "\t\t" + sex);
+			//Birthdate
+			elementLabelList.add("Birthdate:");
+			elementList.add(ct.getMostRecentValueAsString(animalName, "DateOfBirth"));
+			// Geno mother
+			elementLabelList.add("Genotype mother:");
+			elementList.add(motherInfo);
+			// Geno father
+			elementLabelList.add("Genotype father:");
+			elementList.add(fatherInfo);
+			// Add DEC nr, if present, or empty if not
+			elementLabelList.add("DEC:");
+			String decNr = ct.getMostRecentValueAsString(animalName, "DecNr");
+			String expNr = ct.getMostRecentValueAsString(animalName, "ExperimentNr");
+			String decInfo = (decNr != null ? decNr : "") + " " + (expNr != null ? expNr : "");
+			elementList.add(decInfo);
+			// Not needed at this time, maybe later:
+			// Birthdate
+			//elementList.add("Birthdate: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth")));
+			// OldUliDbExperimentator -> TODO: add responsible researcher
+			//elementList.add("Experimenter: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("OldUliDbExperimentator")));
+			labelgenerator.addLabelToDocument(elementLabelList, elementList);
+		}
+		
+		// In case of an odd number of animals, add extra label to make row full
+		if (this.getAnimalsInLitter(litter, db).size() %2 != 0) {
+			elementLabelList = new ArrayList<String>();
+			elementList = new ArrayList<String>();
+			labelgenerator.addLabelToDocument(elementLabelList, elementList);
+		}
+		
+		labelgenerator.finishDocument();
+		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download definitive cage labels as pdf</a>");
+	}
+
+	private void makeTempCageLabels(Database db) throws Exception {
+		
+		// PDF file stuff
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "weanlabels.pdf");
+		String filename = pdfFile.getName();
+		LabelGenerator labelgenerator = new LabelGenerator(2);
+		labelgenerator.startDocument(pdfFile);
+		List<String> elementList;
+		
+		// Selected litter stuff
+		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
+		String lineName = ct.getMostRecentValueAsXrefName(parentgroupName, "Line");
+		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
+		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
+		String litterBirthDateString = ct.getMostRecentValueAsString(litter, "DateOfBirth");
+		int nrOfFemales = Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeFemale"));
+		int nrOfMales = Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeMale"));
+		int nrOfUnknowns = Integer.parseInt(ct.getMostRecentValueAsString(litter, "WeanSizeUnknown"));
+		List<ObservedValue> litterValList = db.query(ObservedValue.class).eq(ObservedValue.FEATURE_NAME, "Litter").
+				eq(ObservedValue.RELATION_NAME, litter).find();
+		List<String> females = new ArrayList<String>();
+		List<String> males = new ArrayList<String>();
+		List<String> unknowns = new ArrayList<String>();
+		for (ObservedValue litterVal : litterValList) {
+			String animalName = litterVal.getTarget_Name();
+			if (ct.getMostRecentValueAsXrefName(animalName, "Sex").equals("Female")) {
+				females.add(animalName);
+			} else if (ct.getMostRecentValueAsXrefName(animalName, "Sex").equals("Male")) {
+				males.add(animalName);
+			} else {
+				unknowns.add(animalName);
+			}
+		}
+		
+		// Labels for females
+		int nrOfCages = 0;
+		int femaleNr = 0;
+		while (nrOfFemales > 0) {
+			elementList = new ArrayList<String>();
+			// Line name + Nr. of females in cage
+			String firstLine = lineName + "\t\t"; 
+			// Females can be 2 or 3 in a cage, if possible not 1
+			int cageSize;
+			if (nrOfFemales > 4) {
+				cageSize = 3;
+			} else {
+				if (nrOfFemales == 4) {
+					cageSize = 2;
+				} else {
+					cageSize = nrOfFemales;
+				}
+			}
+			firstLine += (cageSize + " female");
+			if (cageSize > 1) firstLine += "s";
+			elementList.add(firstLine);
+			// Parents
+			elementList.add(motherName + " x " + fatherName);
+			// Litter birth date
+			elementList.add(litterBirthDateString);
+			// Nrs. for writing extra information behind
+			for (int i = 1; i <= cageSize; i++) {
+				elementList.add(females.get(femaleNr++) + ".");
+			}
+			
+			labelgenerator.addLabelToDocument(elementList);
+			nrOfFemales -= cageSize;
+			nrOfCages++;
+		}
+		
+		// Labels for males
+		int maleNr = 0;
+		while (nrOfMales > 0) {
+			elementList = new ArrayList<String>();
+			// Line name + Nr. of males in cage
+			String firstLine = lineName; 
+			if (nrOfMales >= 2) {
+				firstLine += "\t\t2 males";
+			} else {
+				firstLine += "\t\t1 male";
+			}
+			elementList.add(firstLine);
+			// Parents
+			elementList.add(motherName + " x " + fatherName);
+			// Litter birth date
+			elementList.add(litterBirthDateString);
+			// Nrs. for writing extra information behind
+			for (int i = 1; i <= Math.min(nrOfMales, 2); i++) {
+				elementList.add(males.get(maleNr++) + ".");
+			}
+			
+			labelgenerator.addLabelToDocument(elementList);
+			nrOfMales -= 2;
+			nrOfCages++;
+		}
+		
+		// Labels for unknowns
+		// TODO: keep or group together with (fe)males?
+		int unknownNr = 0;
+		while (nrOfUnknowns > 0) {
+			elementList = new ArrayList<String>();
+			// Line name + Nr. of unknowns in cage
+			String firstLine = lineName; 
+			if (nrOfUnknowns >= 2) {
+				firstLine += "\t\t2 unknowns";
+			} else {
+				firstLine += "\t\t1 unknown";
+			}
+			elementList.add(firstLine);
+			// Parents
+			elementList.add(motherName + " x " + fatherName);
+			// Litter birth date
+			elementList.add(litterBirthDateString);
+			// Nrs. for writing extra information behind
+			for (int i = 1; i <= Math.min(nrOfUnknowns, 2); i++) {
+				elementList.add(unknowns.get(unknownNr++) + ".");
+			}
+			
+			labelgenerator.addLabelToDocument(elementList);
+			nrOfUnknowns -= 2;
+			nrOfCages++;
+		}
+		
+		// In case of an odd number of cages, add extra label to make row full
+		if (nrOfCages %2 != 0) {
+			elementList = new ArrayList<String>();
+			labelgenerator.addLabelToDocument(elementList);
+		}
+		
+		labelgenerator.finishDocument();
+		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download temporary wean labels as pdf</a>");
+	}
+	
+	public String getLabelDownloadLink() {
+		return labelDownloadLink;
+	}
+	
+	public void setLabelDownloadLink(String labelDownloadLink) {
+		this.labelDownloadLink = labelDownloadLink;
+	}
+	
+	public String getWeandate() {
+		if (weandate != null) {
+			return weandate;
+		}
+		return newDateOnlyFormat.format(new Date());
+	}
+	
+	public String getGenodate() {
+		return dateOnlyFormat.format(new Date());
 	}
 }

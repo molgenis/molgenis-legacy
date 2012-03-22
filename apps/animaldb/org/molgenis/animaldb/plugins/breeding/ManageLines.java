@@ -73,9 +73,11 @@ public class ManageLines extends PluginModel<Entity>
 	}
 	
 	public String getFullName(String lineName) {
-		String fullName;
+		String fullName = "";
 		try {
-			fullName = cs.getMostRecentValueAsString(lineName, "LineFullName");
+			if (cs.getMostRecentValueAsString(lineName, "LineFullName") != null) {
+				fullName = cs.getMostRecentValueAsString(lineName, "LineFullName");
+			}
 		} catch (Exception e) {
 			fullName = "Error when retrieving full name";
 		}
@@ -112,7 +114,9 @@ public class ManageLines extends PluginModel<Entity>
 //			returnString = returnString.substring(0, returnString.length() - 4);
 //		}
 		try {
-			returnString = cs.getMostRecentValueAsString(lineName, "Remark");
+			if (cs.getMostRecentValueAsString(lineName, "Remark") != null) {
+				returnString = cs.getMostRecentValueAsString(lineName, "Remark");
+			}
 		} catch (Exception e) {
 			returnString = "Error when retrieving remarks";
 		}

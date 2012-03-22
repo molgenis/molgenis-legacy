@@ -175,7 +175,7 @@
 	
 	<#else>
 	
-		<div class="form_header">Genotype litter</div>
+		<div class="form_header">Genotype litter ${screen.getLitter()}</div>
 		<p>${screen.parentInfo}</p>
 		${screen.getGenotypeTable()}
 		<input type='submit' id='addgenocol' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
@@ -196,6 +196,14 @@
 		</div>
 	
 	</#if>
+	
+<#elseif screen.action == "makeLabels">
+
+	<div class="form_header">Download cage labels for litter ${screen.getLitter()}</div>
+	<#if screen.labelDownloadLink??>
+		<p>${screen.labelDownloadLink}</p>
+	</#if>
+	<p><a href="molgenis.do?__target=${screen.name}&__action=init">Back to overview</a></p>
 
 <#else>
 
@@ -256,6 +264,7 @@
 	jQuery('#remgenocol').button();
 	jQuery('#save').button();
 	
+	jQuery('#line').chosen();
 	jQuery('#namebase').chosen();
 	jQuery('#location').chosen();
 	

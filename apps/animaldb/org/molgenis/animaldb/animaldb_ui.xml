@@ -27,7 +27,10 @@
 			<!-- AddAnimalPlugin; Goal: bring in animals other than through breeding; Flavor: Java-only -->
 			<plugin name="AddAnimal" type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
-			<menu name="breedingmodule" position="left" label="Breeding">
+			<!-- Breeding; Goal: create and browse parentgroups + create, wean, genotype and browse litters, print cage labels; Flavor: Freemarker -->
+			<plugin name="Breeding" type="org.molgenis.animaldb.plugins.breeding.Breeding"
+				label="Breeding" />
+			<menu name="breedingmodule" position="left" label="Breeding (old)">
 				<!-- ManageParentgroups; Goal: create and browse parentgroups; Flavor: Freemarker -->
 				<plugin name="ManageParentgroups" type="org.molgenis.animaldb.plugins.breeding.ManageParentgroups"
 					label="Parentgroups" />
