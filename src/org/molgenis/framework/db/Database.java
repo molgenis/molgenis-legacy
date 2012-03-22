@@ -42,20 +42,20 @@ import org.molgenis.util.TupleWriter;
  */
 public interface Database
 {
-//	/**
-//	 * Create tables based on annotations.
-//	 * 
-//	 * @param persistenceUnitName
-//	 */
-//    public void createTables();
-//    
-//    /**
-//     * Drop tables based on annotations
-//     * 
-//     * @param persistenceUnitName
-//     */
-//    public void dropTables(); 
-    
+	// /**
+	// * Create tables based on annotations.
+	// *
+	// * @param persistenceUnitName
+	// */
+	// public void createTables();
+	//
+	// /**
+	// * Drop tables based on annotations
+	// *
+	// * @param persistenceUnitName
+	// */
+	// public void dropTables();
+
 	/**
 	 * Retrieve meta data describing data structure in this Database.
 	 * 
@@ -75,7 +75,7 @@ public interface Database
 	 * @throws DatabaseException
 	 */
 	public void beginTx() throws DatabaseException;
-	
+
 	/**
 	 * Check whether the database is currently in a transaction. Returns true if
 	 * beginTx() was called before.
@@ -117,9 +117,8 @@ public interface Database
 	 *            to filter or otherwise change the result
 	 * @return count of entities.
 	 */
-	public <E extends Entity> int count(Class<E> entityClass,
-			QueryRule... rules) throws DatabaseException;
-	
+	public <E extends Entity> int count(Class<E> entityClass, QueryRule... rules) throws DatabaseException;
+
 	/**
 	 * Find all entities of type entityClass and return them as list. Optionally
 	 * filtering rules can be provided.
@@ -134,9 +133,8 @@ public interface Database
 	 * @throws ParseException
 	 *             as result of incompatible QueryRules
 	 */
-	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules)
-			throws DatabaseException;
-	
+	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules) throws DatabaseException;
+
 	/**
 	 * Find all entities of type entityClass and write them to a csv file.
 	 * 
@@ -152,8 +150,8 @@ public interface Database
 	 *            to filter or otherwise change result
 	 * @throws DatabaseException
 	 */
-	public <E extends Entity> void find(Class<E> entityClass,
-			TupleWriter writer, QueryRule... rules) throws DatabaseException;
+	public <E extends Entity> void find(Class<E> entityClass, TupleWriter writer, QueryRule... rules)
+			throws DatabaseException;
 
 	/**
 	 * Find all entities of type entityClass and write them to a csv file.
@@ -163,9 +161,8 @@ public interface Database
 	 * Optionally the auto id's are not exported.
 	 * 
 	 */
-	public <E extends Entity> void find(Class<E> entityClass,
-			TupleWriter writer, List<String> fieldsToExport, QueryRule... rules)
-			throws DatabaseException;
+	public <E extends Entity> void find(Class<E> entityClass, TupleWriter writer, List<String> fieldsToExport,
+			QueryRule... rules) throws DatabaseException;
 
 	/**
 	 * Find all entity objects matching the not-null properties of one example
@@ -179,8 +176,7 @@ public interface Database
 	 * @return list of entities that match the example
 	 * @throws DatabaseException
 	 */
-	public <E extends Entity> List<E> findByExample(E example)
-			throws DatabaseException;
+	public <E extends Entity> List<E> findByExample(E example) throws DatabaseException;
 
 	/**
 	 * Find one entity object of type entityClass by using its primary id.
@@ -192,8 +188,7 @@ public interface Database
 	 * @return entity object or null of not found.
 	 * @throws DatabaseException
 	 */
-	public <E extends Entity> E findById(Class<E> entityClass, Object id)
-			throws DatabaseException;
+	public <E extends Entity> E findById(Class<E> entityClass, Object id) throws DatabaseException;
 
 	/**
 	 * Create a Query to easily search the entities of type entityClass.
@@ -243,8 +238,7 @@ public interface Database
 	 *            to be added
 	 * @return number of entity objects that have been added
 	 */
-	public <E extends Entity> int add(List<E> entities)
-			throws DatabaseException;
+	public <E extends Entity> int add(List<E> entities) throws DatabaseException;
 
 	/**
 	 * Add a list of entity objects to the database by parsing them from a csv
@@ -259,8 +253,7 @@ public interface Database
 	 * @return number of entities added
 	 * @throws Exception
 	 */
-	public <E extends Entity> int add(Class<E> klazz, TupleReader reader,
-			TupleWriter writer) throws DatabaseException;
+	public <E extends Entity> int add(Class<E> klazz, TupleReader reader, TupleWriter writer) throws DatabaseException;
 
 	/**
 	 * Update one entity object in the database. In JPA the entity will be
@@ -290,8 +283,7 @@ public interface Database
 	 * @param entities
 	 *            to be updated
 	 */
-	public <E extends Entity> int update(List<E> entities)
-			throws DatabaseException;
+	public <E extends Entity> int update(List<E> entities) throws DatabaseException;
 
 	/**
 	 * Update a list of entity objects in the database by reading the new values
@@ -306,8 +298,7 @@ public interface Database
 	 * @return number of entities update
 	 * @throws Exception
 	 */
-	public <E extends Entity> int update(Class<E> klazz, TupleReader reader)
-			throws DatabaseException;
+	public <E extends Entity> int update(Class<E> klazz, TupleReader reader) throws DatabaseException;
 
 	/**
 	 * Remove one particular entity from the database (and remove from
@@ -329,8 +320,7 @@ public interface Database
 	 * @param entities
 	 *            to be removed
 	 */
-	public <E extends Entity> int remove(List<E> entities)
-			throws DatabaseException;
+	public <E extends Entity> int remove(List<E> entities) throws DatabaseException;
 
 	/**
 	 * Remove a list of entity objects from the database by parsing the
@@ -345,8 +335,7 @@ public interface Database
 	 * @return number of entities that have been removed
 	 * @throws Exception
 	 */
-	public <E extends Entity> int remove(Class<E> entityClass,
-			TupleReader reader) throws DatabaseException;
+	public <E extends Entity> int remove(Class<E> entityClass, TupleReader reader) throws DatabaseException;
 
 	/**
 	 * Enumeration of complex database update actions supported by updateByName
@@ -388,8 +377,7 @@ public interface Database
 	 *            key field name, or list of composite key fields, you want to
 	 *            use. For example: experiment, name
 	 */
-	public <E extends Entity> int update(List<E> entities,
-			DatabaseAction dbAction, String... keyName)
+	public <E extends Entity> int update(List<E> entities, DatabaseAction dbAction, String... keyName)
 			throws DatabaseException;
 
 	/**
@@ -435,8 +423,8 @@ public interface Database
 	 * @return list of entity objects of type=klazz
 	 * @throws Exception
 	 */
-	public <E extends Entity> List<E> toList(Class<E> klazz,
-			TupleReader reader, int noEntities) throws DatabaseException;
+	public <E extends Entity> List<E> toList(Class<E> klazz, TupleReader reader, int noEntities)
+			throws DatabaseException;
 
 	/**
 	 * Return the security strategy object that takes care of authorization in
@@ -466,7 +454,7 @@ public interface Database
 
 	/**
 	 * Get the entityManager, if JPA isn't supported a UnsupportedOperations
-	 * exceptions is thrown. 
+	 * exceptions is thrown.
 	 * 
 	 * Deprecated: Database should become entityManager itself ;-)
 	 * 
@@ -474,7 +462,7 @@ public interface Database
 	 */
 	@Deprecated
 	public EntityManager getEntityManager();
-	
+
 	public void flush();
 
 	/**
@@ -483,8 +471,7 @@ public interface Database
 	 * @return List<Tuple>
 	 */
 	@Deprecated
-	public List<Tuple> sql(String query, QueryRule... queryRules)
-			throws DatabaseException;
+	public List<Tuple> sql(String query, QueryRule... queryRules) throws DatabaseException;
 
 	/**
 	 * Executes a query and get back a List of (Molgenis)Tuples, rules are added
@@ -493,16 +480,14 @@ public interface Database
 	 * @return ResultSetTuple
 	 */
 	@Deprecated
-	public ResultSet executeQuery(String query, QueryRule... queryRules)
-			throws DatabaseException;
-	
+	public ResultSet executeQuery(String query, QueryRule... queryRules) throws DatabaseException;
+
 	/**
 	 * Generate the find SQL (use with caution!)
 	 */
 	@Deprecated
-	public <E extends Entity> String createFindSql(Class<E> entityClass,
-			QueryRule... rules) throws DatabaseException;
-	
+	public <E extends Entity> String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException;
+
 	/**
 	 * Return the security strategy object that takes care of authorization in
 	 * this Database.
@@ -511,13 +496,12 @@ public interface Database
 	 */
 	@Deprecated
 	public Login getSecurity();
-	
+
 	@Deprecated
 	public Connection getConnection() throws DatabaseException;
-	
-	public <E extends Entity> Mapper<E> getMapper(String name)
-			throws DatabaseException;
-	
+
+	public <E extends Entity> Mapper<E> getMapper(String name) throws DatabaseException;
+
 	/**
 	 * Find the mapper from this.mappers
 	 * 
@@ -526,11 +510,30 @@ public interface Database
 	 * @return a mapper or a exception
 	 * @throws DatabaseException
 	 */
-	public <E extends Entity> Mapper<E> getMapperFor(Class<E> klazz)
+	public <E extends Entity> Mapper<E> getMapperFor(Class<E> klazz) throws DatabaseException;
+
+	/**
+	 * Generic search of database based on a search string. Searches string and
+	 * text fields using 'LIKE'. Can be very expensive.
+	 */
+	public <E extends Entity> List<E> search(Class<E> entityClass, String searchString) throws DatabaseException;
+
+	/**
+	 * Convert superclass entities into their proper subclass types, to get the
+	 * the subclass specific fields. Requires the original superclass to compare
+	 * against: if the entity class is the same, no requery is needed. If the
+	 * entity is not a subclass, requerying is meaningless.
+	 * 
+	 * @param superClass
+	 *            the original superclass that was queried and now needs
+	 *            refining
+	 * @param entities
+	 *            the list of entities that may contain subclasses of the
+	 *            original superclass and are now requeried in their proper type
+	 *            to get all of the subclass fields
+	 * @return the list of resulting refined entities
+	 * @throws DatabaseException
+	 */
+	public <E extends Entity> List<? extends Entity> load(Class<E> superClass, List<E> entities)
 			throws DatabaseException;
-	
-	/** Generic search of database based on a search string. Searches string and text fields using 'LIKE'. 
-	 * Can be very expensive.*/
-	public <E extends Entity> List<E> search(Class<E> entityClass,
-			String searchString) throws DatabaseException;
 }

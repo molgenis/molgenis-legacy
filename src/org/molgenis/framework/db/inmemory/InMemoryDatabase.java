@@ -451,4 +451,14 @@ public class InMemoryDatabase implements Database
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public <E extends Entity> List<E> load(Class<E> superClass, List<E> entities) throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
 }
