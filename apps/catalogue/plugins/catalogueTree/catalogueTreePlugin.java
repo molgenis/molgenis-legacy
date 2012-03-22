@@ -95,14 +95,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			} else if ("DownloadMeasurements".equals(request.getAction())) {
 
-				DateFormat dateFormat = new SimpleDateFormat(
-						"yyyy-MM-dd_HH:mm:ss");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 				Date dat = new Date();
 				String dateOfDownload = dateFormat.format(dat);
-				System.out.println("selected investigaton >>>> "
-						+ selectedInvestigation);
-				this.addMeasurementsForDownload(db, request,
-						selectedInvestigation, dateOfDownload);
+				System.out.println("selected investigaton >>>> "+  selectedInvestigation);
+				System.out.println("request >>" + request);
+				this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload);
 
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
@@ -957,6 +955,25 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	private String getComparison() {
 		return comparison;
+	}
+	
+//	@Override
+//	public boolean isVisible()
+//	{
+//		// always visible
+//		return true;
+//	}
+//	
+	@Override
+	public boolean isVisible()
+	{
+		//you can use this to hide this plugin, e.g. based on user rights.
+		//e.g.
+		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
+		if (!this.getLogin().isAuthenticated()) {
+			return false;
+		}
+		return true;
 	}
 
 
