@@ -135,7 +135,10 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					"org.molgenis.core.MolgenisFile",
 
 					// allow to see how uploaded this dataset
-					"org.molgenis.protocol.ProtocolApplication_Performer"
+					"org.molgenis.protocol.ProtocolApplication_Performer",
+					
+					// allow to see analysis metadata
+					"org.molgenis.cluster.DataSet", "org.molgenis.cluster.DataName", "org.molgenis.cluster.DataValue", 
 
 			};
 
