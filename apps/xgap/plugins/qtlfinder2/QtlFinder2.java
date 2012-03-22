@@ -257,6 +257,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 		//List<? extends Entity> result = allFieldMatch(q.find(), query, limit);
 		
 		List<? extends Entity> result  = db.search(entityClass, query);
+		result = db.load(entityClass, result);
 		
 		if(result.size() == 0)
 		{
@@ -271,6 +272,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 				//result = allFieldMatch(q.find(), shortenedQuery, limit);
 				
 				result  = db.search(entityClass, shortenedQuery);
+				result = db.load(entityClass, result);
 				
 				//System.out.println("RESULTS: " + result.size());
 				
@@ -307,34 +309,6 @@ public class QtlFinder2 extends PluginModel<Entity>
 		
 		return hits;
 	}
-	
-	private List<Entity> allFieldMatch(List<? extends Entity> entities, String searchTerm, int limit)
-	{
-		List<Entity> result = new ArrayList<Entity>();
-		for(Entity e : entities)
-		{
-			for(String field : e.getFields())
-			{
-				if(field.equals(Field.TYPE_FIELD)){
-					continue;
-				}
-				Object content = e.get(field);
-				if(content != null && !content.toString().equals("[]") && content.toString().toLowerCase().contains(searchTerm.toLowerCase()))
-				{
-					result.add(e);
-					if(result.size() == limit)
-					{
-						return result;
-					}
-					break;
-				}
-			}
-		}
-		return result;
-	}
-	
-	
-	
 	
 	private QTLMultiPlotResult multiplot(List<Entity> entities, Database db) throws Exception
 	{
