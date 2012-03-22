@@ -42,6 +42,30 @@ public class AddClusterMetaModel
 
 		try
 		{
+			
+			DataSet default_tags = new DataSet();
+			default_tags.setName("Default_tags");
+			db.add(default_tags);
+			
+			DataName lod_scores = new DataName();
+			lod_scores.setName("LOD_score");
+			lod_scores.setDataSet(default_tags);
+			db.add(lod_scores);
+			
+			DataName effect_size = new DataName();
+			effect_size.setName("Effect_size");
+			effect_size.setDataSet(default_tags);
+			db.add(effect_size);
+			
+			DataName wetlab_data = new DataName();
+			wetlab_data.setName("Wetlab_data");
+			wetlab_data.setDataSet(default_tags);
+			db.add(wetlab_data);
+			
+			DataName n_wetlab_data = new DataName();
+			n_wetlab_data.setName("Normalized_wetlab_data");
+			n_wetlab_data.setDataSet(default_tags);
+			db.add(n_wetlab_data);
 
 			// QTL
 			DataSet rqtlData = new DataSet();
