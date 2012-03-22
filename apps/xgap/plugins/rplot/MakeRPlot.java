@@ -96,7 +96,7 @@ public class MakeRPlot
 		
 	}
 	
-	public static File qtlPlot(String plotName, TreeMap<Long, QtlPlotDataPoint> data, long genePos, int width, int height) throws RScriptException
+	public static File qtlPlot(String plotName, TreeMap<Long, QtlPlotDataPoint> data, long genePos, int width, int height,String ylab, String filePrefix) throws RScriptException
 	{
 		double[] lodscores = new double[data.size()];
 		long[] bplocs = new long[data.size()];
@@ -110,7 +110,7 @@ public class MakeRPlot
 			chromosomes[index] = data.get(key).getChromosome();
 			index++;
 		}
-		return qtlPlot(plotName, lodscores, bplocs, chromosomes, genePos, width, height);
+		return qtlPlot(plotName, lodscores, bplocs, chromosomes, genePos, width, height, ylab, filePrefix);
 	}
 	
 	public static File qtlMultiPlot(File dataPoints, int width, int height, String title) throws RScriptException
@@ -175,9 +175,9 @@ public class MakeRPlot
 	//create QTL plot scaling by incrementing basepair position
 	//give markers colours based on their chromosome
 	//no missing values allowed!
-	public static File qtlPlot(String plotName, double[] lodscores, long[] bplocs, String[] chromosomes, long genePos, int width, int height) throws RScriptException
+	public static File qtlPlot(String plotName, double[] lodscores, long[] bplocs, String[] chromosomes, long genePos, int width, int height,String ylab, String filePrefix) throws RScriptException
 	{
-		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot" + System.nanoTime() + ".png");
+		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + filePrefix + "_rplot" + System.nanoTime() + ".png");
 		
 		RScript script = new RScript();
 		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
@@ -199,7 +199,7 @@ public class MakeRPlot
 		
 		//start plotting: black line
 		script.append("plot(y=dataVector,x=locs,col=\"black\",main=\"" + plotName + "\",xlab=\""
-				+ "Basepair position" + "\",ylab=\"" + "LOD score" + "\",type=\"" + "l" + "\",pch=20,cex=2,lwd=2)");
+				+ "Basepair position" + "\",ylab=\"" + ylab + "\",type=\"" + "l" + "\",pch=20,cex=2,lwd=2)");
 		
 		//now add coloured balls
 		script.append("points(y=dataVector,x=locs,col=chrs,type=\"" + "p" + "\",pch=20,cex=2)");
@@ -220,7 +220,7 @@ public class MakeRPlot
 	
 	public static void main(String []args) throws RScriptException
 	{
-		File res = qtlPlot("henkie", new double[]{3,4,3,6,7,2,4,6}, new long[]{1,2,4,30,8,15,20,5}, new String[]{"I", "I", "I", "IV", "II", "III", "IV", "II"},25, 800, 600);
+		File res = qtlPlot("henkie", new double[]{3,4,3,6,7,2,4,6}, new long[]{1,2,4,30,8,15,20,5}, new String[]{"I", "I", "I", "IV", "II", "III", "IV", "II"},25, 800, 600,"LOD score", "qtl");
 		System.out.println("RES @ " + res);
 	}
 }

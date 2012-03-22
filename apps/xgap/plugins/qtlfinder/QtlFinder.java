@@ -333,7 +333,7 @@ public class QtlFinder extends PluginModel<Entity>
 						if(qtlInformationIsComplete(markerInfo, colNames))
 						{
 							TreeMap<Long, QtlPlotDataPoint> data = sortQtlPlotData(colNames, DvaluesList, markerInfo);
-							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight); //TODO: position of gene or probe!!!!!
+							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight, "LOD score", "qtl");
 						}
 						else
 						{
@@ -382,7 +382,7 @@ public class QtlFinder extends PluginModel<Entity>
 						if(qtlInformationIsComplete(markerInfo, rowNames))
 						{
 							TreeMap<Long, QtlPlotDataPoint> data = sortQtlPlotData(rowNames, DvaluesList, markerInfo);
-							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight); //TODO: position of gene or probe!!!!!
+							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight, "LOD score", "qtl");
 						}
 						else
 						{

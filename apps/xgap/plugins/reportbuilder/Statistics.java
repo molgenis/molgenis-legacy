@@ -140,6 +140,24 @@ public class Statistics
 		}
 		return res;
 	}
+	
+	public static Double[] getAsAbsDoubles(Object[] e)
+	{
+		Double[] res = new Double[e.length];
+		for (int i = 0; i < e.length; i++)
+		{
+			if (e[i] == null)
+			{
+				res[i] = null;
+			}
+			else
+			{
+				res[i] = Math.abs(Double.parseDouble(e[i].toString()));
+			}
+
+		}
+		return res;
+	}
 
 	public static double[] getAsDoublesNullToZero(Object[] e)
 	{

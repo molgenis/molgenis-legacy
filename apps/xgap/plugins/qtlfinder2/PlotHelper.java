@@ -10,8 +10,15 @@ import java.util.TreeMap;
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
+import org.molgenis.cluster.DataName;
+import org.molgenis.cluster.DataSet;
+import org.molgenis.cluster.DataValue;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.Entity;
@@ -79,7 +86,8 @@ public class PlotHelper
 				if(rowIndex != -1)
 				{
 					Double[] Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
-					int maxIndex = Statistics.getIndexOfMax(Dvalues);
+					Double[] absDvalues = Statistics.getAsAbsDoubles(instance.getRow(rowIndex));
+					int maxIndex = Statistics.getIndexOfMax(absDvalues);
 					double peakDouble = Dvalues[maxIndex];
 					
 					String peakMarker = colNames.get(maxIndex);
@@ -93,7 +101,16 @@ public class PlotHelper
 					try{
 						File img;
 						TreeMap<Long, QtlPlotDataPoint> data = QtlFinder.sortQtlPlotData(colNames, DvaluesList, markerInfo);
-						img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight); //TODO: position of gene or probe!!!!!
+					
+						if(isEffectSizeData(db, d))
+						{
+							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight,"Effect size", "eff");
+						}
+						else
+						{
+							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight,"LOD score", "qtl");
+						}
+						
 						qtl.setPlot(img.getName());	
 					}
 					catch(Exception e)
@@ -111,7 +128,8 @@ public class PlotHelper
 				if(rowIndex == -1 && colIndex != -1)
 				{
 					Double[] Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
-					int maxIndex = Statistics.getIndexOfMax(Dvalues);
+					Double[] absDvalues = Statistics.getAsAbsDoubles(instance.getCol(colIndex));
+					int maxIndex = Statistics.getIndexOfMax(absDvalues);
 					double peakDouble = Dvalues[maxIndex];
 					
 					String peakMarker = rowNames.get(maxIndex);
@@ -125,7 +143,16 @@ public class PlotHelper
 					try{
 						File img;
 						TreeMap<Long, QtlPlotDataPoint> data = QtlFinder.sortQtlPlotData(rowNames, DvaluesList, markerInfo);
-						img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight); //TODO: position of gene or probe!!!!!
+						
+						if(isEffectSizeData(db, d))
+						{
+							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight,"Effect size", "eff");
+						}
+						else
+						{
+							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight,"LOD score", "qtl");
+						}
+						
 						qtl.setPlot(img.getName());
 					}
 					catch(Exception e)
@@ -151,6 +178,39 @@ public class PlotHelper
 		}
 		
 		return result;
+	}
+	
+	private static boolean isEffectSizeData(Database db, Data data) throws DatabaseException
+	{
+		List<DataSet> dsRef = db.find(DataSet.class, new QueryRule(DataSet.NAME, Operator.EQUALS, "Default_tags"));
+		
+		if(dsRef.size() != 1)
+		{
+			throw new DatabaseException("0 or >1 results when querying dataset");
+		}
+		
+		Query<DataName> q = db.query(DataName.class);
+		q.addRules(new QueryRule(DataName.NAME, Operator.EQUALS, "Effect_size"));
+		q.addRules(new QueryRule(DataName.DATASET, Operator.EQUALS, dsRef.get(0).getId()));
+		List<DataName> dnRef = q.find();
+		
+		if(dnRef.size() != 1)
+		{
+			throw new DatabaseException("0 or >1 results when querying dataname");
+		}
+		
+		Query<DataValue> q2 = db.query(DataValue.class);
+		q2.addRules(new QueryRule(DataValue.DATANAME, Operator.EQUALS, dnRef.get(0).getId()));
+		q2.addRules(new QueryRule(DataValue.VALUE, Operator.EQUALS, data.getId()));
+		List<DataValue> dvRef = q2.find();
+		
+		if(dvRef.size() == 0)
+		{
+			return false;
+		}
+		else{
+			return true;
+		}
 	}
 	
 }
