@@ -17,6 +17,7 @@
 		<pathelement location="publicdata" />
 		<pathelement location="modules/import" />
 		<pathelement location="modules/settings" />
+		<pathelement location="modules/decorators/pheno" />
 	-->
 	<path id="app.class.path">
 		<pathelement location="apps/lifelinesresearchportal" />
@@ -32,7 +33,7 @@
 		<pathelement location="modules/matrix" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
-		<pathelement location="modules/decorators/pheno" />
+
 		
 		
 	</path>
