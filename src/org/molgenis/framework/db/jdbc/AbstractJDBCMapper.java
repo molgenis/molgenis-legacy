@@ -464,8 +464,11 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 									if (f.getType() instanceof StringField
 											|| f.getType() instanceof TextField)
 									{
-										termRules.add(new QueryRule(f.getName(), Operator.LIKE,
-												term.trim()));
+										// lowercase the term and field so matching becomes case insensitive
+										// e.g. SELECT * FROM web WHERE lower(metaDesc) LIKE '%dscript%tutorial%'
+										QueryRule searchQR = new QueryRule(f.getName(), Operator.LIKE,term.trim().toLowerCase());
+										searchQR.setField("lower("+searchQR.getField()+")");
+										termRules.add(searchQR);
 										termRules.add(new QueryRule(Operator.OR));
 									}
 								}
