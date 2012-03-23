@@ -1186,7 +1186,7 @@ public class Breeding extends PluginModel<Entity>
 		String sourceName = ct.getMostRecentValueAsXrefName(litter, "Source");
 		// Get litter birth date
 		String litterBirthDateString = ct.getMostRecentValueAsString(litter, "DateOfBirth");
-		Date litterBirthDate = newDateOnlyFormat.parse(litterBirthDateString);
+		//Date litterBirthDate = newDateOnlyFormat.parse(litterBirthDateString);
 		// Find Parentgroup for this litter
 		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
 		// Find Line for this Parentgroup
@@ -1287,9 +1287,9 @@ public class Breeding extends PluginModel<Entity>
 			// Set wean date on animal
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, 
 					null, "SetWeanDate", "WeanDate", animalName, newDateOnlyFormat.format(weanDate), null));
-			// Set 'Active'
+			// Set 'Active' -> starts at wean date
 			valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, 
-	 				litterBirthDate, null, "SetActive", "Active", animalName, "Alive", null));
+					weanDate, null, "SetActive", "Active", animalName, "Alive", null));
 	 		// Set 'Date of Birth'
 	 		valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate,
 	 				null, "SetDateOfBirth", "DateOfBirth", animalName, litterBirthDateString, null));
