@@ -117,14 +117,14 @@ Shopping cart:<br><br>
 		<#list model.qtls as qtl>
 		
 			${r.get(typefield)} <a href="molgenis.do?__target=${r.get(typefield)}s&__action=filter_set&__filter_attribute=${r.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${r.name}">${r.name}</a>
-			<br>Max. <#if qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if>: ${qtl.peakValue}<br><br>
+			<br>Max. <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if>: ${qtl.peakValue}<br><br>
 			<#if qtl.plot??>
 				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
 				<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 					<img src="tmpfile/${qtl.plot}" width="320" height="240">
 				</a><br>
 			</#if>
-			<a href="#QTL${qtl_index+1}">View <#if qtl.plot?starts_with('eff')>effect<#else>QTL</#if> details <img src="generated-res/img/filter.png" /></a>
+			<a href="#QTL${qtl_index+1}">View <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect<#else>QTL</#if> details <img src="generated-res/img/filter.png" /></a>
 			
 			<#if qtl_has_next>
 			</div><div style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
@@ -139,7 +139,7 @@ Shopping cart:<br><br>
 		<table cellpadding="30">
 			<tr>
 				<td>
-					<h3 id="QTL${qtl_index+1}">#${qtl_index+1} - <#if qtl.plot?starts_with('eff')>Effect<#else>QTL</#if> in data matrix <a href="molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${qtl.matrix.id}">${qtl.matrix.name}</a>. Basic information:</h3>
+					<h3 id="QTL${qtl_index+1}">#${qtl_index+1} - <#if qtl.plot?? && qtl.plot?starts_with('eff')>Effect<#else>QTL</#if> in data matrix <a href="molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${qtl.matrix.id}">${qtl.matrix.name}</a>. Basic information:</h3>
 					<table cellpadding="3" border="1" style="width:700px;">
 						<tr class="form_listrow0">
 							<td colspan="2">
@@ -159,7 +159,7 @@ Shopping cart:<br><br>
 						</tr>
 						<tr class="form_listrow0">
 							<td colspan="2">
-								<b>Highest <#if qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if><b>
+								<b>Highest <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if><b>
 							</td>
 						</tr>
 						<tr class="form_listrow1">
@@ -183,12 +183,12 @@ Shopping cart:<br><br>
 				</td>
 			</tr>
 			<tr>
-				<td><h3>#${qtl_index+1} - <#if qtl.plot?starts_with('eff')>Effect<#else>QTL</#if> advanced information:</h3>
+				<td><h3>#${qtl_index+1} - <#if qtl.plot?? && qtl.plot?starts_with('eff')>Effect<#else>QTL</#if> advanced information:</h3>
 				<div style="overflow: auto; max-height: 400px; width: 720px;">
 					<table cellpadding="3" border="1" style="width:700px;">
 						<tr class="form_listrow0">
 							<td colspan="5">
-								<b>All <#if qtl.plot?starts_with('eff')>effect sizes<#else>LOD scores</#if></b>
+								<b>All <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect sizes<#else>LOD scores</#if></b>
 							</td>
 						</tr>
 						<tr class="form_listrow1">
@@ -196,7 +196,7 @@ Shopping cart:<br><br>
 								<i>Marker name</i>
 							</td>
 							<td>
-								<i><#if qtl.plot?starts_with('eff')>Effect size<#else>LOD score</#if></i>
+								<i><#if qtl.plot?? && qtl.plot?starts_with('eff')>Effect size<#else>LOD score</#if></i>
 							</td>
 							<td>
 								<i>Marker cM</i>
@@ -228,7 +228,7 @@ Shopping cart:<br><br>
 						</tr>
 					</#list>
 					</table>
-					<h3>Data matrix where this <#if qtl.plot?starts_with('eff')>effect<#else>QTL</#if> was found:</h3>
+					<h3>Data matrix where this <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect<#else>QTL</#if> was found:</h3>
 					<@rb.printEntity r=qtl.matrix/>
 				</div>
 				</td>
@@ -245,6 +245,7 @@ Shopping cart:<br><br>
 				<@rb.printEntity r=r/>
 			</td>
 		</tr>
+		<#if model.report.matrices?size gt 0>
 		<tr>
 			<td>
 				<h3>Present in these matrices:</h3>
@@ -423,11 +424,10 @@ Shopping cart:<br><br>
 							</#if>
 						</#if>
 					</#if>
-					
-					
 				</#list>
 			</td>
 		</tr>
+		</#if>
 	</table>
 
 
@@ -517,7 +517,7 @@ Shopping cart:<br><br>
 	</#if>
 		
 	${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a>
-	<#if model.hits[name].reportsFor_name?? && model.hits[name].reportsFor_name?length gt 0>reports for <a href="molgenis.do?__target=Genes&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>(${model.hits[name].symbol})</#if>
+	<#if model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0>reports for <a href="molgenis.do?__target=Genes&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>(${model.hits[name].symbol})</#if>
 	
 	<div style="display: inline;font-size:100%"><#if model.hits[name].description??> <br> <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <#else>${model.hits[name].description}</#if> <a href="molgenis.do?__target=${model.hits[name].get(typefield)}s&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...more</a> </#if></div>
 	<br>
