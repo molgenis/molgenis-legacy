@@ -564,6 +564,8 @@ public class ConvertUliDbToPheno
 					panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 							now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
+					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
+							now, null, "Active", parentgroupName, "Active", null));
 					
 					// Link parent(s) to parentgroup and animal
 					for (String motherName : motherList) {

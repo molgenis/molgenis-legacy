@@ -53,12 +53,7 @@ public class PreFillDatabasePlugin extends PluginModel<Entity>
 				// Empty db and run generated sql scripts
 				new emptyDatabase(db, false);
 				FillMetadata.fillMetadata(db, false);
-				
-				// Populate db with targets, features, values etc. needed to make AnimalDB run
-				// We don't do this here anymore. Use LoadLegacyPlugin instead.
-				//FillAnimalDB myFillAnimalDB = new FillAnimalDB(db);
-				//myFillAnimalDB.populateDB(this.getLogin());
-				
+				this.setSuccess("Database successfully reset");
 			}
 		} catch(Exception e) {
 			e.printStackTrace();

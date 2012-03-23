@@ -564,6 +564,8 @@ public class ConvertRhutDbToPheno
 				panelsToAddList.add(ct.createPanel(invName, parentgroupName, userName));
 				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), 
 						now, null, "TypeOfGroup", parentgroupName, "Parentgroup", null));
+				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetActive"), 
+						now, null, "Active", parentgroupName, "Active", null));
 				// Link parents to parentgroup (if known)
 				if (motherName != null) {
 					valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetParentgroupMother"), 
