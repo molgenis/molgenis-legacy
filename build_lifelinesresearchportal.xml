@@ -12,26 +12,29 @@
 	<pathelement location="apps/catalogue" />
 	<pathelement location="modules/decorators/data" />
 	<pathelement location="apps/xgap" />
+			<pathelement location="modules/pheno" />
+		<pathelement location="modules/search" />
+		<pathelement location="publicdata" />
+		<pathelement location="modules/import" />
+		<pathelement location="modules/settings" />
 	-->
 	<path id="app.class.path">
 		<pathelement location="apps/lifelinesresearchportal" />
 		<pathelement location="apps/lifelinesresearchportalimporter" />
-		
 			
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />
-		<pathelement location="modules/import" />
+		
 		<pathelement location="modules/webserver" />
-		<pathelement location="modules/settings" />
-		<pathelement location="modules/pheno" />
-		<pathelement location="modules/search" />
+		
+
 		<pathelement location="modules/matrix" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
 		
-		<pathelement location="publicdata" />
+		
 	</path>
 	
 	<target name="runOn" description="Start the application">
