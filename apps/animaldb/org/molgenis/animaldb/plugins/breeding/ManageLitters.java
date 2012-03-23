@@ -1027,7 +1027,7 @@ public class ManageLitters extends PluginModel<Entity>
 		// TODO: find ALL gene info
 		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
 		String speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
-		String animalType = ct.getMostRecentValueAsString(motherName, "AnimalType");
+		String motherAnimalType = ct.getMostRecentValueAsString(motherName, "AnimalType");
 		String color = ct.getMostRecentValueAsString(motherName, "Color");
 		String motherBackgroundName = ct.getMostRecentValueAsXrefName(motherName, "Background");
 		String geneName = ct.getMostRecentValueAsString(motherName, "GeneModification");
@@ -1035,8 +1035,14 @@ public class ManageLitters extends PluginModel<Entity>
 		// Find father and his background
 		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
 		String fatherBackgroundName = ct.getMostRecentValueAsXrefName(fatherName, "Background");
-		// Keep normal and transgene types, but set type of child from wild parents to normal
-		// TODO: animalType should be based on BOTH mother and father
+		String fatherAnimalType = ct.getMostRecentValueAsString(fatherName, "AnimalType");
+		// Deduce animal type
+		String animalType = motherAnimalType;
+		// If one of the parents is GMO, animal is GMO
+		if (motherAnimalType.equals("B. Transgeen dier") || fatherAnimalType.equals("B. Transgeen dier")) {
+			animalType = "B. Transgeen dier";
+		}
+		// Keep normal and transgene types, but set type of child from wild mother to normal
 		if (animalType.equals("C. Wildvang") || animalType.equals("D. Biotoop")) {
 			animalType = "A. Gewoon dier";
 		}
