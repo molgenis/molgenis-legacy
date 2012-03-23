@@ -324,7 +324,7 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=enddate", thisYear + "-12-31");
 		selenium.click("id=addproject");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("DEC Project successfully added"));
+		Assert.assertTrue(selenium.isTextPresent("DEC project successfully added"));
 		Assert.assertTrue(selenium.isTextPresent("MyDEC"));
 		// Go to DEC subproject plugin
 		selenium.click("id=AddSubproject_tab_button");
