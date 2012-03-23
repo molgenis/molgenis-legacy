@@ -51,7 +51,7 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 		if (action.equals("setPathAndLoad"))
 		{
 			setupStorageAndLoadExample(db, request.getString("fileDirPath"));
-			//addPanaceaPermissionsAndTryToImportData(db);
+			addPanaceaPermissionsAndTryToImportData(db);
 		}
 	}
 
