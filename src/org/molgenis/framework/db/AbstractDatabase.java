@@ -901,22 +901,24 @@ public abstract class AbstractDatabase implements Database
 	public <E extends Entity> List<? extends Entity> load(Class<E> superClass, List<E> entities) throws DatabaseException
 	{
 		List<E> result = new ArrayList<E>();
-		for(Entity e : entities)
+		for(E e : entities)
 		{
 			if(e.get(Field.TYPE_FIELD).equals(superClass.getSimpleName()))
 			{
-				//System.out.println("entity is already of superclass type("+e.get(Field.TYPE_FIELD).toString()+"), no need to query");
+				//Entity is already of superclass type, ignore and add to results
+				result.add(e);
 			}
 			else if(superClass.isInstance(e))
 			{
+				//Entity is of subclass type, requery and add to results
 				Class<E> klazz = (Class<E>) this.getClassForName(e.get(Field.TYPE_FIELD).toString());
 				E r = this.findById(klazz, e.get(e.getIdField()));
 				result.add(r);
-				//System.out.println("requeried entity of class " + e.get(Field.TYPE_FIELD).toString());
 			}
 			else
 			{
-				//System.out.println("entity is NOT a subclass of " + superClass.getSimpleName());
+				//Entity is not a subclass or the superclass itself, ignore and add to results
+				result.add(e);
 			}
 		}
 		return result;
