@@ -117,14 +117,16 @@ Shopping cart:<br><br>
 		<#list model.qtls as qtl>
 		
 			${r.get(typefield)} <a href="molgenis.do?__target=${r.get(typefield)}s&__action=filter_set&__filter_attribute=${r.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${r.name}">${r.name}</a>
-			<br>Max. <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if>: ${qtl.peakValue}<br><br>
+			<br>Max. <#if qtl.plot??><#if qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if><#else>value</#if>: ${qtl.peakValue}<br>in ${qtl.matrix.name}<br>
 			<#if qtl.plot??>
 				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
 				<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 					<img src="tmpfile/${qtl.plot}" width="320" height="240">
 				</a><br>
+			<#else>
+				<br><br><br><i>No plot available.</i><br><br><br><br>
 			</#if>
-			<a href="#QTL${qtl_index+1}">View <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect<#else>QTL</#if> details <img src="generated-res/img/filter.png" /></a>
+			<a href="#QTL${qtl_index+1}">View <#if qtl.plot??><#if qtl.plot?starts_with('eff')>effect<#else>QTL</#if><#else>value</#if> details <img src="generated-res/img/filter.png" /></a>
 			
 			<#if qtl_has_next>
 			</div><div style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
@@ -139,7 +141,7 @@ Shopping cart:<br><br>
 		<table cellpadding="30">
 			<tr>
 				<td>
-					<h3 id="QTL${qtl_index+1}">#${qtl_index+1} - <#if qtl.plot?? && qtl.plot?starts_with('eff')>Effect<#else>QTL</#if> in data matrix <a href="molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${qtl.matrix.id}">${qtl.matrix.name}</a>. Basic information:</h3>
+					<h3 id="QTL${qtl_index+1}">#${qtl_index+1} - <#if qtl.plot??><#if qtl.plot?starts_with('eff')>Effect<#else>QTL</#if><#else>Values</#if> in data matrix <a href="molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${qtl.matrix.id}">${qtl.matrix.name}</a>. Basic information:</h3>
 					<table cellpadding="3" border="1" style="width:700px;">
 						<tr class="form_listrow0">
 							<td colspan="2">
@@ -148,18 +150,21 @@ Shopping cart:<br><br>
 						</tr>
 						<tr class="form_listrow1">
 							<td align="center"  colspan="2">
-							<i>Click to enlarge</i><br>
+							
 								<#if qtl.plot??>
+									<i>Click to enlarge</i><br>
 									<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
 									<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 										<img src="tmpfile/${qtl.plot}" width="160" height="120">
 									</a>
+								<#else>
+									<i>No plot available</i><br>
 								</#if>
 							</td>
 						</tr>
 						<tr class="form_listrow0">
 							<td colspan="2">
-								<b>Highest <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if><b>
+								<b>Highest <#if qtl.plot??><#if qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if><#else>value</#if><b>
 							</td>
 						</tr>
 						<tr class="form_listrow1">
@@ -172,7 +177,7 @@ Shopping cart:<br><br>
 						</tr>
 						<tr class="form_listrow1">
 							<td>
-								Marker: 
+								<#if qtl.plot??>Marker:<#else>Trait:</#if>
 							</td>
 							<td>
 								<a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a>
@@ -183,29 +188,29 @@ Shopping cart:<br><br>
 				</td>
 			</tr>
 			<tr>
-				<td><h3>#${qtl_index+1} - <#if qtl.plot?? && qtl.plot?starts_with('eff')>Effect<#else>QTL</#if> advanced information:</h3>
+				<td><h3>#${qtl_index+1} - <#if qtl.plot??><#if qtl.plot?starts_with('eff')>Effect<#else>QTL</#if><#else>Value</#if> advanced information:</h3>
 				<div style="overflow: auto; max-height: 400px; width: 720px;">
 					<table cellpadding="3" border="1" style="width:700px;">
 						<tr class="form_listrow0">
 							<td colspan="5">
-								<b>All <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect sizes<#else>LOD scores</#if></b>
+								<b>All <#if qtl.plot??><#if qtl.plot?starts_with('eff')>effect sizes<#else>LOD scores</#if><#else>Values</#if></b>
 							</td>
 						</tr>
 						<tr class="form_listrow1">
 							<td>
-								<i>Marker name</i>
+								<i><#if qtl.plot??>Marker<#else>Trait</#if> name</i>
 							</td>
 							<td>
-								<i><#if qtl.plot?? && qtl.plot?starts_with('eff')>Effect size<#else>LOD score</#if></i>
+								<i><#if qtl.plot??><#if qtl.plot?starts_with('eff')>Effect size<#else>LOD score</#if><#else>Value</#if></i>
 							</td>
 							<td>
-								<i>Marker cM</i>
+								<i><#if qtl.plot??>Marker<#else>Trait</#if> cM pos.</i>
 							</td>
 							<td>
-								<i>Marker bp</i>
+								<i><#if qtl.plot??>Marker<#else>Trait</#if> basepair pos.</i>
 							</td>
 							<td>
-								<i>Marker chromosome</i>
+								<i><#if qtl.plot??>Marker<#else>Trait</#if> chromosome</i>
 							</td>
 						</tr>
 					<#list qtl.markers as m>
@@ -226,9 +231,17 @@ Shopping cart:<br><br>
 									<#if qtl.markerAnnotations?keys?seq_contains(m) && qtl.markerAnnotations[m].chromosome_name??><a href="molgenis.do?__target=Chromosomes&__action=filter_set&__filter_attribute=Chromosome_name&__filter_operator=EQUALS&__filter_value=${qtl.markerAnnotations[m].chromosome_name}">${qtl.markerAnnotations[m].chromosome_name}</a></#if>
 							</td>
 						</tr>
+						<#if m_index = 1000>
+						<tr class="form_listrow1">
+							<td colspan="5">
+								<b>Limited at 1000, total size is ${qtl.markers?size?c}</b>
+							</td>
+						</tr>
+						<#break>
+						</#if>
 					</#list>
 					</table>
-					<h3>Data matrix where this <#if qtl.plot?? && qtl.plot?starts_with('eff')>effect<#else>QTL</#if> was found:</h3>
+					<h3>Data matrix where this <#if qtl.plot??><#if qtl.plot?starts_with('eff')>effect<#else>QTL</#if><#else>value</#if> was found:</h3>
 					<@rb.printEntity r=qtl.matrix/>
 				</div>
 				</td>

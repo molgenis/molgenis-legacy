@@ -166,6 +166,11 @@ public class QtlFinder2 extends PluginModel<Entity>
 						throw new Exception("Queries longer than 25 characters are not allowed");
 					}
 					
+					if(query.length() < 2)
+					{
+						throw new Exception("Queries shorter than 2 characters are not allowed");
+					}
+					
 					Class<? extends Entity> entityClass;
 					if(dataType.equals(__ALL__DATATYPES__SEARCH__KEY))
 					{
