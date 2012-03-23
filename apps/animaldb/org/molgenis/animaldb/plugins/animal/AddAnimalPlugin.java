@@ -48,6 +48,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	public SelectInput animaltype = null;
 	public SelectInput source = null;
 	public SelectInput background = null;
+	public SelectInput line = null;
 	public SelectMultipleInput gene = null;
 	public List<SelectInput> genestateList = null;
 	public DateInput birthdate = null;
@@ -65,6 +66,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	// Variables for holding form values between wizard steps:
 	private String speciesName = null;
 	private String backgroundName = null;
+	private String lineName = null;
 	private String sourceName = null;
 	private String locName = null;
 	private String birthDate = null;
@@ -114,6 +116,7 @@ public class AddAnimalPlugin extends GenericPlugin
 
 	private void resetAllFormValues() {
 		backgroundName = null;
+		lineName = null;
 		sourceName = null;
 		locName = null;
 		birthDate = null;
@@ -122,6 +125,11 @@ public class AddAnimalPlugin extends GenericPlugin
 		resResearcher = null;
 		genes = null;
 		genestates = null;
+	}
+	
+	private void resetAllFields() {
+		speciesName = null; // also trigger for reload() to render first screen again
+		resetAllFormValues();
 	}
 
 	@Override
@@ -178,19 +186,6 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 	}
 	
-	private void resetAllFields() {
-		speciesName = null; // also trigger for reload() to render first screen again
-		backgroundName = null;
-		sourceName = null;
-		locName = null;
-		birthDate = null;
-		entryDate = null;
-		animalType = null;
-		resResearcher = null;
-		genes = null;
-		genestates = null;
-	}
-	
 	private void handleFirstScreenRequest(Database db, Tuple request) throws Exception {
 		if (species.getObject() != null) {
 			speciesName = species.getObject().toString();
@@ -236,7 +231,9 @@ public class AddAnimalPlugin extends GenericPlugin
 		} else {
 			throw(new Exception("No background given - animal(s) not added"));
 		}
-		
+		if (line.getObject() != null) {
+			lineName = line.getObject().toString();
+		}
 		if (animalType.equals("B. Transgeen dier")) {
 			genes = gene.getObject();
 		}
@@ -324,6 +321,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		protocolNameList.add("SetAnimalType");
 		protocolNameList.add("SetSource");
 		protocolNameList.add("SetBackground");
+		protocolNameList.add("SetLine");
 		protocolNameList.add("SetGenotype");
 		protocolNameList.add("SetDateOfBirth");
 		protocolNameList.add("SetResponsibleResearcher");
@@ -341,6 +339,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		featureNameList.add("AnimalType");
 		featureNameList.add("Source");
 		featureNameList.add("Background");
+		featureNameList.add("Line");
 		featureNameList.add("GeneModification");
 		featureNameList.add("GeneState");
 		featureNameList.add("DateOfBirth");
@@ -384,37 +383,43 @@ public class AddAnimalPlugin extends GenericPlugin
 				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, 
 						featureNameList.get(5), animalName, null, backgroundName));
 			}
+			// Set line
+			if (lineName != null && !lineName.equals("")) {
+				app = appsToAddList.get(6);
+				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, 
+						featureNameList.get(6), animalName, null, lineName));
+			}
 			// Set genotype(s)
 			int index = 0;
 			if (genes != null) {
 				for (String gene : genes) {
 					String geneState = genestates.get(index);
 					// Make protocol application
-					app = appsToAddList.get(6);
+					app = appsToAddList.get(7);
 					valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, 
-							featureNameList.get(6), animalName, gene, null));
+							featureNameList.get(7), animalName, gene, null));
 					valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, 
-							featureNameList.get(7), animalName, geneState, null));
+							featureNameList.get(8), animalName, geneState, null));
 					index++;
 				}
 			}
 			// Set birthdate
 			if (birthDate != null) {
-				app = appsToAddList.get(7);
+				app = appsToAddList.get(8);
 				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, 
-						featureNameList.get(8), animalName, birthDate, null));
+						featureNameList.get(9), animalName, birthDate, null));
 			}
 			// Set responsible researcher
 			if (resResearcher != null) {
-				app = appsToAddList.get(8);
+				app = appsToAddList.get(9);
 				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, 
-						featureNameList.get(9), animalName, resResearcher, null));
+						featureNameList.get(10), animalName, resResearcher, null));
 			}
 			// Set location
 			if (locName != null && !locName.equals("")) {
-				app = appsToAddList.get(9);
+				app = appsToAddList.get(10);
 				valuesToAddList.add(ct.createObservedValue(invName, app.getName(), entryDate, null, 
-						featureNameList.get(10), animalName, null, locName));
+						featureNameList.get(11), animalName, null, locName));
 			}
 			animalCnt++;
 		}	
@@ -572,6 +577,23 @@ public class AddAnimalPlugin extends GenericPlugin
 			background.setValue(backgroundName);
 		}
 		containingPanel.add(background);
+		
+		line = new SelectInput("line");
+		line.setLabel("Line (optional):");
+		line.setDescription("Give the breeding line of the animal.");
+		line.setTooltip("Give the breeding line of the animal.");
+		line.addOption("","");
+		for (ObservationTarget l : ct.getAllMarkedPanels("Line", investigationNames)) {
+			// Only show if background belongs to chosen species
+			if (ct.getMostRecentValueAsXrefName(l.getName(), "Species").equals(speciesName)) {
+				line.addOption(l.getName(), l.getName());
+			}
+		}
+		line.setNillable(true);
+		if (lineName != null) {
+			line.setValue(lineName);
+		}
+		containingPanel.add(line);
 		
 		if (animalType.equals("B. Transgeen dier")) {
 			gene = new SelectMultipleInput("gene");
