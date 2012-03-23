@@ -128,4 +128,11 @@ public class ExcelExporter<R extends ObservationTarget, C extends Measurement, V
 			}
 		}
 	}
+
+	@Override
+	public String getFileExtension()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

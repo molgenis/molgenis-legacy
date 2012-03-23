@@ -186,6 +186,7 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
     public Integer getRowCount() throws MatrixException {
         try {
             String query = createCountQuery();
+            System.out.println(query);
             Number count = (Number) em.createNativeQuery(query).getSingleResult();
             return count.intValue();
         } catch (Exception e) {
@@ -333,40 +334,47 @@ public class SliceablePhenoMatrixMV<R extends ObservationElement, C extends Obse
 			@SuppressWarnings("unchecked")
 			List<Object[]> data = em.createNativeQuery(sql).setMaxResults(getRowLimit()).setFirstResult(offset).getResultList();
 
-			int numColumns = data.get(0).length;
-			if(offset > 0) { //oracle add a rownum column to the end
-				numColumns--;
-			}
-			 
-            final List<V>[][] valueMatrix = create(data.size(), numColumns);
-
-	            for (int iRow = 0; iRow < data.size(); ++iRow) {
-					for (int iCol = 0; iCol < numColumns; ++iCol) {
-	                    valueMatrix[iRow][iCol] = new ArrayList<V>();
-	                    @SuppressWarnings("unchecked")
-						V ov = (V)new ObservedValue();
-	                    if (data.get(iRow)[iCol] != null) {                    	
-	                    	String value = data.get(iRow)[iCol].toString();
-	                    	
-	                    	value = getCategoryLabel(colMeasurements, iCol, value);                    	
-	                        
-							ov.setValue(value);
-	                    } else {
-	                        ov.setValue("null");
-	                    }
+			if(!data.isEmpty()) {
+				int numColumns = data.get(0).length;
+				if(offset > 0) { //oracle add a rownum column to the end
+					numColumns--;
+				}
+				 
+	            final List<V>[][] valueMatrix = create(data.size(), numColumns);
 	
-	                    valueMatrix[iRow][iCol].add(ov);
-	                }
-	            }
-            return valueMatrix;
-        } catch (Exception ex) {
-            throw new MatrixException(ex);
-        }
+		            for (int iRow = 0; iRow < data.size(); ++iRow) {
+						for (int iCol = 0; iCol < numColumns; ++iCol) {
+		                    valueMatrix[iRow][iCol] = new ArrayList<V>();
+		                    @SuppressWarnings("unchecked")
+							V ov = (V)new ObservedValue();
+		                    if (data.get(iRow)[iCol] != null) {                    	
+		                    	String value = data.get(iRow)[iCol].toString();
+		                    	
+		                    	value = getCategoryLabel(colMeasurements, iCol, value);                    	
+		                        
+								ov.setValue(value);
+		                    } else {
+		                        ov.setValue("null");
+		                    }
+		
+		                    valueMatrix[iRow][iCol].add(ov);
+		                }
+		            }
+		            return valueMatrix;
+				} else {
+					return create(0, 0);
+				}
+	            
+	        } catch (Exception ex) {
+	            throw new MatrixException(ex);
+	        }
+        
     }
 
 	private String getCategoryLabel(List<Measurement> colMeasurements, int iCol,
 			String value) {
-		Measurement measurement = colMeasurements.get(iCol);		
+		Measurement measurement = colMeasurements.get(iCol);	
+		
 		if(categoryByMeasurement.containsKey(measurement)) {
 			for(Category category : categoryByMeasurement.get(measurement)) {
 				if(category.getCode_String().equalsIgnoreCase(value)) {

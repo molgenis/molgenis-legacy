@@ -68,4 +68,11 @@ public class CsvExporter<R extends ObservationTarget, C extends Measurement, V e
 	public void writeEndOfLine() {
 		d_writer.writeEndOfLine();
 	}
+
+	@Override
+	public String getFileExtension()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

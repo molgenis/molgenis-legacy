@@ -76,7 +76,7 @@ public class Column  {
         	} else {
         		return ColumnType.Decimal;	
         	}
-        } else if(columnType.startsWith("DATUM")) {
+        } else if(columnType.startsWith("DATUM") || columnType.startsWith("DATE")) {
         	return ColumnType.Date;
         } else if(columnType.startsWith("TEKST")) {
         	return ColumnType.String;

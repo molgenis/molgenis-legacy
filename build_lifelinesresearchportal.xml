@@ -7,12 +7,17 @@
 	<!-- this holds all the settings for the generator -->
 	<property name="app_properties" value="apps/lifelinesresearchportal/org/molgenis/lifelinesresearchportal/lifelinesresearchportal.properties"/>
 
-	<!-- this determines what handwritten modules should be loaded -->
+	<!-- this determines what handwritten modules should be loaded 
+	
+	<pathelement location="apps/catalogue" />
+	<pathelement location="modules/decorators/data" />
+	<pathelement location="apps/xgap" />
+	-->
 	<path id="app.class.path">
 		<pathelement location="apps/lifelinesresearchportal" />
 		<pathelement location="apps/lifelinesresearchportalimporter" />
-		<pathelement location="apps/xgap" />
-		<pathelement location="apps/catalogue" />
+		
+			
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />
@@ -25,7 +30,7 @@
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
-		<pathelement location="modules/decorators/data" />
+		
 		<pathelement location="publicdata" />
 	</path>
 	
