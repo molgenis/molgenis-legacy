@@ -367,7 +367,7 @@ Shopping cart:<br><br>
 						<#list ml.rowCorr?keys as key>
 							<tr class="form_listrow1">
 								<td>
-									<a href="#" onclick="document.forms.${screen.name}.__action.value = 'disambig_${key}'; document.forms.${screen.name}.submit();">${key}</a>
+									<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">${key}</a>
 								</td>
 								<td>
 									<#if ml.rowCorr[key]??>${ml.rowCorr[key]}<#else>N/A</#if>
@@ -404,7 +404,7 @@ Shopping cart:<br><br>
 						<#list ml.colCorr?keys as key>
 							<tr class="form_listrow1">
 								<td>
-									<a href="#" onclick="document.forms.${screen.name}.__action.value = 'disambig_${key}'; document.forms.${screen.name}.submit();">${key}</a>
+									<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">${key}</a>
 								</td>
 								<td>
 									<#if ml.colCorr[key]??>${ml.colCorr[key]}<#else>N/A</#if>
