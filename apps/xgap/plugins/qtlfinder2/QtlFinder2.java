@@ -252,10 +252,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 	
 	private Map<String, Entity> query(Class entityClass, Database db, String query, int limit) throws DatabaseException
 	{
-		//Query<?> q = db.query(entityClass);
-		
-		//List<? extends Entity> result = allFieldMatch(q.find(), query, limit);
-		
+
 		List<? extends Entity> result  = db.search(entityClass, query);
 		result = db.load(entityClass, result);
 		
@@ -266,21 +263,17 @@ public class QtlFinder2 extends PluginModel<Entity>
 			
 			while(noResults && shortenedQuery.length() > 0)
 			{
-				shortenedQuery = shortenedQuery.substring(0, shortenedQuery.length()-1);
-				//System.out.println("TRYING: " + shortenedQuery);
-				
-				//result = allFieldMatch(q.find(), shortenedQuery, limit);
 				
 				result  = db.search(entityClass, shortenedQuery);
 				result = db.load(entityClass, result);
-				
-				//System.out.println("RESULTS: " + result.size());
 				
 				if(result.size() > 0)
 				{
 					noResults = false;
 					this.model.setShortenedQuery(shortenedQuery);
 				}
+				
+				shortenedQuery = shortenedQuery.substring(0, shortenedQuery.length()-1);
 			}
 			
 			if(noResults)
