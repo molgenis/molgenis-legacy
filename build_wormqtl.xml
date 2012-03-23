@@ -202,6 +202,9 @@
 		<copy todir="${app_build_dir}" verbose="true">				
 			<fileset dir="generated/sql" includes="**/*.sql" />
 		</copy>
+		
+		<!-- Copy WormQTL specific application footer -->
+		<copy file="apps/wormqtl/org/molgenis/wormqtl/header/WormApplicationView.ftl" tofile="../molgenis/src/org/molgenis/framework/ui/ApplicationView.ftl" overwrite="true"/>
 	</target>
 	
 	<!--
