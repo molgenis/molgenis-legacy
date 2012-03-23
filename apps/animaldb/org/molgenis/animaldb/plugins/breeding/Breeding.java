@@ -419,18 +419,6 @@ public class Breeding extends PluginModel<Entity>
 		// Add everything to DB
 		db.add(valuesToAddList);
 	}
-	
-	private void resetUserFields() {
-		this.selectedMotherNameList.clear();
-		this.selectedFatherNameList.clear();
-		this.setStartdate(dateOnlyFormat.format(new Date()));
-		this.setRemarks(null);
-		if (lineList.size() > 0) {
-			this.setLine(lineList.get(0).getName());
-		} else {
-			this.setLine(null);
-		}
-	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request)
@@ -534,8 +522,12 @@ public class Breeding extends PluginModel<Entity>
 						Individual.NAME, Operator.EQUALS, newPgName));
 				pgMatrixViewer.reloadMatrix(db, null);
 				pgMatrixViewerString = pgMatrixViewer.render();
+				// Reset other fields
 				this.action = "init";
-				this.resetUserFields();
+				this.selectedMotherNameList.clear();
+				this.selectedFatherNameList.clear();
+				this.startdate = dateOnlyFormat.format(new Date());
+				this.remarks = null;
 				fatherMatrixViewer = null;
 				motherMatrixViewer = null;
 				this.setSuccess("Parentgroup " + newPgName + " successfully added; adding filter to matrix: name = " + newPgName);
@@ -641,15 +633,19 @@ public class Breeding extends PluginModel<Entity>
 			
 			if (action.equals("addLitter")) {
 				String newLitterName = ApplyAddLitter(db, request);
-				// return to start screen for litters
+				// Reload litter matrix and set filter on name of newly added litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
 				litterMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
 						Individual.NAME, Operator.EQUALS, newLitterName));
 				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
+				// Reset other fields
+				this.birthdate = null;
+				this.litterSize = 0;
+				this.litterRemarks = null;
+				// Return to start screen for litters
 				this.action = "init";
-				this.resetUserFields();
 				this.entity = "Litters";
 				this.setSuccess("Litter " + newLitterName + " successfully added; adding filter to matrix: name = " + newLitterName);
 			}
@@ -700,26 +696,31 @@ public class Breeding extends PluginModel<Entity>
 				this.respres = null;
 				this.selectedParentgroup = null;
 				this.locName = null;
-				// Reload litter matrix
+				// Reload litter matrix and set filter on name of newly weaned litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
+				litterMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
+						Individual.NAME, Operator.EQUALS, this.litter));
+				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
-				this.setAction("init");
-				this.resetUserFields();
+				this.action = "init";
 				this.entity = "Litters";
-				this.setSuccess("All " + weanSize + " animals successfully weaned");
+				this.setSuccess("All " + weanSize + " animals successfully weaned; adding filter to matrix: name = " + this.litter);
 			}
 
 			if (action.equals("applyGenotype")) {
 				int animalCount = Genotype(db, request);
-				// Reload litter matrix
+				// Reload litter matrix and set filter on name of newly weaned litter
 				loadLitterMatrixViewer(db);
 				litterMatrixViewer.setDatabase(db);
+				litterMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
+						Individual.NAME, Operator.EQUALS, this.litter));
+				litterMatrixViewer.reloadMatrix(db, null);
 				litterMatrixViewerString = litterMatrixViewer.render();
-				this.setAction("init");
-				this.resetUserFields();
+				// Reset other fields
+				this.action = "init";
 				this.entity = "Litters";
-				this.setSuccess("All " + animalCount + " animals successfully genotyped");
+				this.setSuccess("All " + animalCount + " animals successfully genotyped; adding filter to matrix: name = " + this.litter);
 			}
 
 			if (action.equals("makeLabels")) {
@@ -773,6 +774,11 @@ public class Breeding extends PluginModel<Entity>
 		}
 	}
 
+	/**
+	 * Prepares the genotype editable table
+	 * 
+	 * @param db
+	 */
 	private void genotypeLitter(Database db)
 	{
 		nrOfGenotypes = 1;

@@ -109,6 +109,7 @@
 		<input type='text' class="text ui-widget-content ui-corner-all" name='litterremarks' id='litterremarks' value='<#if screen.litterRemarks?exists>${screen.getLitterRemarks()}</#if>' />
 	</div>
 	<div style="clear:both; display:block">
+		<input type='submit' id='cancelcreatelitter' value='Cancel' onclick="__action.value='init'" />
 		<input type='submit' id='addlitter' value='Add' onclick="__action.value='addLitter'" />
 	</div>
 
@@ -170,6 +171,7 @@
 			</select>
 		</div>
 		<div style="clear:both; display:block">
+			<input type='submit' id='cancelweanlitter' value='Cancel' onclick="__action.value='init'" />
 			<input type='submit' id='wean' name='wean' value='Wean' onclick="__action.value='applyWean'" />
 		</div>
 	
@@ -180,18 +182,16 @@
 		${screen.getGenotypeTable()}
 		<input type='submit' id='addgenocol' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
 		<input type='submit' id='remgenocol' value='Remove Gene modification + state' onclick="__action.value='RemGenoCol'" />
-		<!-- Remarks -->
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for='genodate'>Genotyping date:</label>
 			<input type='text' class="text ui-widget-content ui-corner-all" name='genodate' id='genodate' value='<#if screen.genodate?exists>${screen.getGenodate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
 		</div>
-		<!-- Remarks -->
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for='remarks'>Genotyping remarks:</label>
 			<input type='text' class="text ui-widget-content ui-corner-all" class='textbox' name='remarks' id='remarks' />
 		</div>
-		<!-- Save button -->
 		<div style="clear:both; display:block">
+			<input type='submit' id='cancelgenotypelitter' value='Cancel' onclick="__action.value='init'" />
 			<input type='submit' id='save' value='Save' onclick="__action.value='applyGenotype'" />
 		</div>
 	
@@ -263,6 +263,9 @@
 	jQuery('#addgenocol').button();
 	jQuery('#remgenocol').button();
 	jQuery('#save').button();
+	jQuery('#cancelcreatelitter').button();
+	jQuery('#cancelweanlitter').button();
+	jQuery('#cancelgenotypelitter').button();
 	
 	jQuery('#line').chosen();
 	jQuery('#namebase').chosen();
