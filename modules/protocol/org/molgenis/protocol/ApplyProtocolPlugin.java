@@ -35,24 +35,18 @@ public class ApplyProtocolPlugin extends GenericPlugin
     public ApplyProtocolPlugin(String name, ScreenController<?> parent)
     {
 		super(name, parent);
-	
 		model = new ApplyProtocolPluginModel();
-		
 		ui = new ApplyProtocolUI(model);
     }
 
     @Override
     public void handleRequest(Database db, Tuple request)
     {
-    	if (ui.targetMatrixViewer != null) {
-    		ui.targetMatrixViewer.setDatabase(db);
-    	}
-    	service.setDatabase(db);
     	ScreenMessage message = null;
 	    String action = request.getString("__action");
-
 	    try {
-	    	if (action.startsWith(ui.targetMatrixViewer.getName())) {
+	    	if (ui.targetMatrixViewer != null && action.startsWith(ui.targetMatrixViewer.getName())) {
+	    		ui.targetMatrixViewer.setDatabase(db);
 	    		ui.targetMatrixViewer.handleRequest(db, request);
 				action = "init";
 			}
@@ -70,24 +64,23 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    }
 		    if( action.equals("ApplyAllDefaults") )
 		    {
-		    	message = handleApplyAllDefaults(request);
+		    	message = handleApplyAllDefaults(db, request);
 		    }
 		    if( action.contains("ApplyDefault_"))
 		    {
-		    	message = handleApplyDefaults(request, Integer.parseInt(action.substring(13)));
+		    	message = handleApplyDefaults(db, request, Integer.parseInt(action.substring(13)));
 		    }
 		    if( action.contains("ApplyStartTime_"))
 		    {
-		    	message = handleApplyStartTime(request, Integer.parseInt(action.substring(15)));
+		    	message = handleApplyStartTime(db, request, Integer.parseInt(action.substring(15)));
 		    }
 		    if( action.contains("ApplyEndTime_"))
 		    {
-		    	message = handleApplyEndTime(request, Integer.parseInt(action.substring(13)));
+		    	message = handleApplyEndTime(db, request, Integer.parseInt(action.substring(13)));
 		    }
 	    } catch (Exception e) {
 	    	message = new ScreenMessage("Something went wrong while handling your request: " + e.getMessage(), false);
 	    }
-
 	    if (message != null) {
 	    	this.setMessages(message);
 	    }
@@ -100,14 +93,13 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	if (ui.targetMatrixViewer != null) {
     		ui.targetMatrixViewer.setDatabase(db);
     	}
-    	service.setDatabase(db);
-		model.setService(service);
+    	model.setService(service);
 		ui.setService(service);
 		
 		int userId = this.getLogin().getUserId();
 		// Only first time or if user changed:
 		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
-			model.setUserAndInvestigationIds(userId);
+			model.setUserAndInvestigationIds(db, userId);
 		    try {
 				ui.initScreen(db, this, userId, this.getLogin().getUserName());
 			} catch (Exception e) {
@@ -127,9 +119,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	
 		try {
 			int userId = this.getLogin().getUserId();
-			int ownInvId = service.getOwnUserInvestigationIds(userId).get(0);
-			List<Integer> investigationIds = service.getWritableUserInvestigationIds(userId);
-		    int paId = service.makeProtocolApplication(ownInvId, model.getProtocolId());
+			int ownInvId = service.getOwnUserInvestigationIds(db, userId).get(0);
+			List<Integer> investigationIds = service.getWritableUserInvestigationIds(db, userId);
+		    int paId = service.makeProtocolApplication(db, ownInvId, model.getProtocolName());
 		    
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
 		    	
@@ -146,7 +138,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 					}
 					
 					List<ObservedValue> originalValues = service.getObservedValuesByTargetAndFeature(
-							targetId, measurement, investigationIds, ownInvId);
+							db, targetId, measurement, investigationIds, ownInvId);
 					
 					if (!model.isNewProtocolApplication()) {
 						// User chose to edit existing values (db.update())
@@ -252,10 +244,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
 					    newValue.setProtocolApplication(paId);
 					    // TODO: is it correct that new values are always assigned to the investigation
 					    // owned by the current user?
-					    if (model.getOwnInvestigationId() != -1) {
-					    	newValue.setInvestigation(model.getOwnInvestigationId());
+					    if (model.getOwnInvestigationId(db) != -1) {
+					    	newValue.setInvestigation_Id(model.getOwnInvestigationId(db));
 					    }
-				
 						db.add(newValue);
 						// TODO: add to batch list and add later
 					}
@@ -263,7 +254,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    } // end of target loop
 		    
 		    // Reset table:
-		    ui.fillTableCells();
+		    ui.fillTableCells(db);
 		    
 		    return new ScreenMessage("Protocol applied successfully", true);
 		} catch (Exception e) {
@@ -275,7 +266,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		return null;
     }
 
-    ScreenMessage handleApplyAllDefaults(Tuple request) {
+    ScreenMessage handleApplyAllDefaults(Database db, Tuple request) {
 
 		int sizeTargets = model.getFullTargetList().size();
 		int sizeFeatures = model.getFeaturesList().size();
@@ -304,7 +295,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    }
 		    try {
 				for (int row = 1; row <= sizeTargets; row++) {
-				    ui.makeInputAndSetCell(col, colNrInTable, row, 0, newValue);
+				    ui.makeInputAndSetCell(db, col, colNrInTable, row, 0, newValue);
 				}
 		    } catch(Exception e) {
 		    	return new ScreenMessage("Setting defaults failed: " + e, false);
@@ -320,7 +311,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
      * @param request
      * @param i 
      */
-    ScreenMessage handleApplyDefaults(Tuple request, int col) {
+    ScreenMessage handleApplyDefaults(Database db, Tuple request, int col) {
 
     	int featureNr = col;
     	//int nrOfCols = model.getFeaturesList().size();
@@ -337,7 +328,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    // do nothing, stick with default
 		}
 		
-		fixValues(request);
+		fixValues(db, request);
 	
 		// Placeholder to store value from default in
 		ObservedValue newValue = new ObservedValue();
@@ -349,7 +340,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		}
 		try {
 		    for (int row = 1; row <= sizeTargets; row++) {
-		    	ui.makeInputAndSetCell(featureNr, col, row, 0, newValue);
+		    	ui.makeInputAndSetCell(db, featureNr, col, row, 0, newValue);
 		    }
 		} catch(Exception e) {
 			return new ScreenMessage("Setting defaults failed: " + e, false);
@@ -375,16 +366,17 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		if (protocol == null) {
 			return new ScreenMessage("No protocol selected", false);
 		}
-		model.setProtocolId(Integer.parseInt(protocol.toString()));
+		model.setProtocolName(protocol.toString());
 		// Set some feature info only once
 		try {
-			model.setFeaturesLists(service.getMeasurementsByProtocol(model.getProtocolId()));
+			model.setFeaturesLists(db, service.getMeasurementsByProtocol(db, model.getProtocolName()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ScreenMessage("Error: could not retrieve measurements for chosen protocol", false);
 		}
 		
 		// Get targets
+		@SuppressWarnings("unchecked")
 		List<ObservationElement> rows = (List<ObservationElement>) ui.targetMatrixViewer.getSelection(db);
 		int rowCnt = 0;
 		for (ObservationElement row : rows) {
@@ -415,7 +407,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		if (model.getBatchesList() != null) {
 			for (Object o : model.getBatchesList()) {
 			    Integer id = Integer.parseInt((String)o);
-			    fullTargetList.addAll(service.getTargetsFromBatch(id));
+			    fullTargetList.addAll(service.getTargetsFromBatch(db, id));
 			}
 		}
 		if (fullTargetList.size() == 0) {
@@ -447,7 +439,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		ui.setValues();
 	
 		// Make the table div
-		ui.makeTable();
+		ui.makeTable(db);
 		if (model.isAllValues() == false) {
 			// Show Apply all defaults button only when showing one value per cell
 			ui.makeApplyAllDefaultsButton();
@@ -459,9 +451,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
     }
 
 
-	public ScreenMessage handleApplyStartTime(Tuple request, int col) {
+	public ScreenMessage handleApplyStartTime(Database db, Tuple request, int col) {
 		
-		fixValues(request);
+		fixValues(db, request);
 		
 		try {
 			String startTimeString = request.getString(col + "_0_0");
@@ -477,9 +469,9 @@ public class ApplyProtocolPlugin extends GenericPlugin
 	}
 
 
-	public ScreenMessage handleApplyEndTime(Tuple request, int col) {
+	public ScreenMessage handleApplyEndTime(Database db, Tuple request, int col) {
 		
-		fixValues(request);
+		fixValues(db, request);
 		
 		try {
 			String endTimeString = request.getString(col + "_0_0");
@@ -499,7 +491,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 	 * so changes that the user already made don't get lost.
 	 * Works only for cells that contain one input.
 	 */
-	private void fixValues(Tuple request) {
+	private void fixValues(Database db, Tuple request) {
 		
 		int nrOfCols = model.getFeaturesList().size();
     	if (model.isTimeInfo()) {
@@ -508,7 +500,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		
 		for (int colNr = 0; colNr < nrOfCols; colNr++) {
 			 for (int row = 1; row <= model.getFullTargetList().size(); row++) {
-				 ui.fixCellValue(colNr, row, request.getString(colNr + "_" + row + "_0"));
+				 ui.fixCellValue(db, colNr, row, request.getString(colNr + "_" + row + "_0"));
 			 }
 		}
 	}

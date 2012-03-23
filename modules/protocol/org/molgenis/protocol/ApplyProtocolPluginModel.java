@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 
@@ -27,7 +26,7 @@ public class ApplyProtocolPluginModel {
 	private List<String> targetList = new ArrayList<String>();
 	private List<String> fullTargetList = new ArrayList<String>();
 	private List<String> batchesList = new ArrayList<String>();
-	private int protocolId;
+	private String protocolName;
 	private boolean newProtocolApplication = false;
 	private boolean timeInfo = false;
 	private boolean allValues = false;
@@ -46,16 +45,16 @@ public class ApplyProtocolPluginModel {
 		this.service = service;
 	}
 
-	public void setFeaturesLists(List<Measurement> featuresList) throws DatabaseException, ParseException {
+	public void setFeaturesLists(Database db, List<Measurement> featuresList) throws DatabaseException, ParseException {
 		this.featuresList = featuresList;
 		for (Measurement m : featuresList) {
-			catMap.put(m.getName(), service.getAllCodesForFeatureAsStrings(m.getName()));
+			catMap.put(m.getName(), service.getAllCodesForFeatureAsStrings(db, m.getName()));
 			String panelLabel = m.getPanelLabelAllowedForRelation();
-			panelMap.put(m, service.getAllMarkedPanels(panelLabel, investigationIds));
+			panelMap.put(m, service.getAllMarkedPanels(db, panelLabel, investigationIds));
 			String observationTargetType = "org.molgenis.pheno.ObservationTarget";
 			if (m.getTargettypeAllowedForRelation_Id() != null) {
 				int entityId = m.getTargettypeAllowedForRelation_Id();
-				observationTargetType = service.getEntityName(entityId);
+				observationTargetType = service.getEntityName(db, entityId);
 			}
 			typeMap.put(m, observationTargetType);
 		}
@@ -81,12 +80,12 @@ public class ApplyProtocolPluginModel {
 		return targetsIdList;
 	}
 
-	public void setProtocolId(int protocolId) {
-	    this.protocolId = protocolId;
+	public void setProtocolName(String protocolName) {
+	    this.protocolName = protocolName;
 	}
 
-	public int getProtocolId() {
-	    return protocolId;
+	public String getProtocolName() {
+	    return protocolName;
 	}
 
 	public void setNewProtocolApplication(boolean newProtocolApplication) {
@@ -129,25 +128,21 @@ public class ApplyProtocolPluginModel {
 		return fullTargetList;
 	}
 
-	public void setUserAndInvestigationIds(int userId) {
+	public void setUserAndInvestigationIds(Database db, int userId) {
 		this.userId = userId;
-		this.investigationIds = service.getWritableUserInvestigationIds(userId);
+		this.investigationIds = service.getWritableUserInvestigationIds(db, userId);
 	}
 
 	public int getUserId() {
 		return userId;
 	}
 	
-	public int getOwnInvestigationId() {
-		return service.getOwnUserInvestigationId(userId);
+	public int getOwnInvestigationId(Database db) {
+		return service.getOwnUserInvestigationId(db, userId);
 	}
 	
 	public List<Integer> getInvestigationIds() {
 		return investigationIds;
-	}
-	
-	public Database getDatabase() {
-		return service.getDatabase();
 	}
 
 	public void setAllValues(boolean allValues) {

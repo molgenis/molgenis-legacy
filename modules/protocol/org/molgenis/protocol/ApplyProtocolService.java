@@ -30,18 +30,9 @@ import org.molgenis.pheno.ObservedValue;
  */
 public class ApplyProtocolService {
 	
-	private Database db;
 	private static int protAppCounter = 0;
 
-	public void setDatabase(Database db) {
-		this.db = db;
-	}
-	
-	public Database getDatabase() {
-		return db;
-	}
-
-	public List<Integer> getOwnUserInvestigationIds(int userId) {
+	public List<Integer> getOwnUserInvestigationIds(Database db, int userId) {
 		Query<Investigation> q = db.query(Investigation.class);
 		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
 		List<Investigation> invList;
@@ -61,7 +52,7 @@ public class ApplyProtocolService {
 		return returnList;
 	}
 
-	public List<Integer> getWritableUserInvestigationIds(int userId) {
+	public List<Integer> getWritableUserInvestigationIds(Database db, int userId) {
 		Query<Investigation> q = db.query(Investigation.class);
 		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
 		q.addRules(new QueryRule(Operator.OR));
@@ -79,7 +70,7 @@ public class ApplyProtocolService {
 		return returnList;
 	}
 	
-	public int getOwnUserInvestigationId(int userId) {
+	public int getOwnUserInvestigationId(Database db, int userId) {
 		Query<Investigation> q = db.query(Investigation.class);
 		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
 		List<Investigation> invList;
@@ -95,28 +86,28 @@ public class ApplyProtocolService {
 		}
 	}
 
-	public int makeProtocolApplication(int investigationId, int protocolId) throws DatabaseException {
+	public int makeProtocolApplication(Database db, int investigationId, String protocolName) throws DatabaseException {
 		Date now = Calendar.getInstance().getTime();
 		ProtocolApplication pa = new ProtocolApplication();
 		pa.setInvestigation_Id(investigationId);
-		pa.setName(protocolId + "_" + protAppCounter++ + "_" + now.toString()); // strange but unique name
-		pa.setProtocol_Id(protocolId);
+		pa.setName(protocolName + "_" + protAppCounter++ + "_" + now.toString()); // strange but unique name
+		pa.setProtocol_Name(protocolName);
 		pa.setTime(now);
 		db.add(pa);
 		return pa.getId();
 	}
 
-	public List<ObservedValue> getObservedValuesByTargetAndFeature(int targetId, 
+	public List<ObservedValue> getObservedValuesByTargetAndFeature(Database db, int targetId, 
 			Measurement measurement, List<Integer> investigationIds, 
 			int investigationToBeAddedToId) throws DatabaseException, ParseException
 	{
 		List<Measurement> measurementList = new ArrayList<Measurement>();
 		measurementList.add(measurement);
-		return getObservedValuesByTargetAndFeatures(targetId, measurementList, investigationIds, 
+		return getObservedValuesByTargetAndFeatures(db, targetId, measurementList, investigationIds, 
 				investigationToBeAddedToId);
 	}
 	
-	public List<ObservedValue> getObservedValuesByTargetAndFeatures(int targetId, 
+	public List<ObservedValue> getObservedValuesByTargetAndFeatures(Database db, int targetId, 
 			List<Measurement> measurements, List<Integer> investigationIds, 
 			int investigationToAddToId) throws DatabaseException, ParseException
 	{
@@ -150,7 +141,7 @@ public class ApplyProtocolService {
 		return values;
 	}
 
-	public int getObservationTargetId(String targetName)
+	public int getObservationTargetId(Database db, String targetName)
 	{
 		ObservationTarget tmpTarget;
 		try {
@@ -165,9 +156,9 @@ public class ApplyProtocolService {
 		}
 	}
 
-	public List<Measurement> getMeasurementsByProtocol(int protocolId) throws DatabaseException, ParseException {
+	public List<Measurement> getMeasurementsByProtocol(Database db, String protocolName) throws DatabaseException, ParseException {
 		
-		Protocol protocol = db.findById(Protocol.class, protocolId);
+		Protocol protocol = db.query(Protocol.class).eq(Protocol.NAME, protocolName).find().get(0);
 
 		List<Measurement> features = new ArrayList<Measurement>();
 	    for (Integer i : protocol.getFeatures_Id()) {
@@ -177,7 +168,7 @@ public class ApplyProtocolService {
 		return features;
 	}
 
-	public List<String> getTargetsFromBatch(int id) {
+	public List<String> getTargetsFromBatch(Database db, int id) {
 		List<String> returnList = new ArrayList<String>();
 		Query<MolgenisBatchEntity> q = db.query(MolgenisBatchEntity.class);
 		q.addRules(new QueryRule(MolgenisBatchEntity.BATCH, Operator.EQUALS, id));
@@ -196,7 +187,7 @@ public class ApplyProtocolService {
 		return returnList;
     }
 	
-	public List<String> getAllCodesForFeatureAsStrings(String featurename)
+	public List<String> getAllCodesForFeatureAsStrings(Database db, String featurename)
 			throws DatabaseException, ParseException
 	{
 		Measurement m = db.query(Measurement.class).eq(Measurement.NAME, featurename).find().get(0);
@@ -211,7 +202,7 @@ public class ApplyProtocolService {
 		return returnList;
 	}
 	
-	public List<ObservationTarget> getObservationTargets(List<Integer> idList) throws DatabaseException, ParseException {
+	public List<ObservationTarget> getObservationTargets(Database db, List<Integer> idList) throws DatabaseException, ParseException {
 		if (idList.size() > 0) {
 			Query<ObservationTarget> targetQuery = db.query(ObservationTarget.class);
 			targetQuery.addRules(new QueryRule(ObservationTarget.ID, Operator.IN, idList));
@@ -222,7 +213,7 @@ public class ApplyProtocolService {
 		}
 	}
 
-	public List<ObservationTarget> getAllMarkedPanels(String mark, List<Integer> investigationIds)
+	public List<ObservationTarget> getAllMarkedPanels(Database db, String mark, List<Integer> investigationIds)
 			throws DatabaseException, ParseException
 	{
 		List<Integer> panelIdList = new ArrayList<Integer>();
@@ -239,10 +230,10 @@ public class ApplyProtocolService {
 			panelIdList.add(value.getTarget_Id());
 		}
 
-		return getObservationTargets(panelIdList);
+		return getObservationTargets(db, panelIdList);
 	}
 
-	public String getEntityName(int entityId) {
+	public String getEntityName(Database db, int entityId) {
 		try {
 			return db.findById(MolgenisEntity.class, entityId).getClassName();
 		} catch (DatabaseException e) {
@@ -250,7 +241,7 @@ public class ApplyProtocolService {
 		}
 	}
 	
-	public List<Protocol> getAllProtocolsSorted(String sortField,
+	public List<Protocol> getAllProtocolsSorted(Database db, String sortField,
 			String sortOrder, List<Integer> investigationIds) throws DatabaseException, ParseException
 	{
 		Query<Protocol> q = db.query(Protocol.class);
@@ -266,7 +257,7 @@ public class ApplyProtocolService {
 		return q.find();
 	}
 	
-	public List<ObservationTarget> getAllObservationTargets(List<Integer> investigationIds) {
+	public List<ObservationTarget> getAllObservationTargets(Database db, List<Integer> investigationIds) {
 		try {
 		    return db.query(ObservationTarget.class).in(ObservationTarget.INVESTIGATION, investigationIds).find();
 		} catch (Exception e) {
@@ -275,7 +266,7 @@ public class ApplyProtocolService {
 		
 	}
 	
-	public List<MolgenisBatch> getAllBatches() {
+	public List<MolgenisBatch> getAllBatches(Database db) {
 	    try {
 		    List<MolgenisBatch> batches = db.find(MolgenisBatch.class);
 		    return batches;
@@ -284,15 +275,15 @@ public class ApplyProtocolService {
 		}
 	}
 	
-	public ObservationTarget getObservationTargetById(int targetId)
+	public ObservationTarget getObservationTargetById(Database db, int targetId)
 			throws DatabaseException, ParseException
 	{
 		return db.findById(ObservationTarget.class, targetId);
 	}
 
-	public List<String> getAllUserInvestigationNames(int userId) {
+	public List<String> getAllUserInvestigationNames(Database db, int userId) {
 		List<String> returnList = new ArrayList<String>();
-		List<Investigation> invList = getAllUserInvestigations(userId);
+		List<Investigation> invList = getAllUserInvestigations(db, userId);
 		if (invList != null) {
 			for (Investigation inv : invList) {
 				if (!returnList.contains(inv.getName())) {
@@ -303,7 +294,7 @@ public class ApplyProtocolService {
 		return returnList;
 	}
 
-	private List<Investigation> getAllUserInvestigations(int userId) {
+	private List<Investigation> getAllUserInvestigations(Database db, int userId) {
 		Query<Investigation> q = db.query(Investigation.class);
 		q.addRules(new QueryRule(Investigation.OWNS, Operator.EQUALS, userId));
 		q.addRules(new QueryRule(Operator.OR));

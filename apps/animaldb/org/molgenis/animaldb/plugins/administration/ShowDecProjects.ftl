@@ -110,7 +110,7 @@
 	</div>
 	
 	<div class='row'>
-		<input type='submit' id="addproject" class='addbutton' value='Add' onclick="__action.value='addEditDecProject'" />
+		<input type='submit' id="addproject" class='addbutton' value='<#if screen.listId == 0>Add<#else>Update</#if>' onclick="__action.value='addEditDecProject'" />
 	</div>
 	
 </form>
@@ -144,8 +144,8 @@
 					<td>${decl.startDate}</td>
 					<td>${decl.endDate}</td>					
 					<td>${decl.decApplicantName}</td>
-					<td>${decl.pdfDecApplication}</td>
-					<td>${decl.pdfDecApproval}</td>
+					<td><#if decl.pdfDecApplication??>${decl.pdfDecApplication}</#if></td>
+					<td><#if decl.pdfDecApproval??>${decl.pdfDecApproval}</#if></td>
 				</tr>
 			</#list>
 		</#if>

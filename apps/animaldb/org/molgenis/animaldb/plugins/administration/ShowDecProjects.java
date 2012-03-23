@@ -210,7 +210,11 @@ public class ShowDecProjects extends PluginModel<Entity>
 				// Add everything to DB
 				db.add(valuesToAddList);
 				
-				this.setSuccess("DEC Project successfully added");
+				if (listId == 0) {
+					this.setSuccess("DEC project successfully added");
+				} else {
+					this.setSuccess("DEC project successfully updated");
+				}
 			}
 			
 		} catch (Exception e) {

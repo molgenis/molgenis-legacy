@@ -73,9 +73,9 @@ public class ApplyProtocolUI {
 		protocolDiv = new DivPanel("ProtocolPanel", null);
 		tableDiv = new DivPanel("TablePanel", null);
 		tableDiv.setStyle("width:0");
-		makeProtocolSelect();
+		makeProtocolSelect(db);
 		makeTargetsMatrix(db, plugin, userId);
-		makeBatchSelect();
+		makeBatchSelect(db);
 		makeNewOrEditButtons(userName);
 		makeTimeSelectbox();
 		makeAllValuesSelectbox();
@@ -99,7 +99,7 @@ public class ApplyProtocolUI {
      * @throws Exception 
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	private HtmlInput makeInput(int featureNr, int col, int row, int order, ObservedValue value) throws Exception {
+	private HtmlInput makeInput(Database db, int featureNr, int col, int row, int order, ObservedValue value) throws Exception {
     	
 		HtmlInput valueInput;
 		Measurement feature = model.getFeaturesList().get(featureNr);
@@ -145,7 +145,7 @@ public class ApplyProtocolUI {
 						valueInput.setValue(value.getValue());
 					} else {
 						if (dataType.equals("xref")) {
-							ObservationTarget relation = this.model.getDatabase().findById(ObservationTarget.class, value.getRelation_Id());
+							ObservationTarget relation = db.findById(ObservationTarget.class, value.getRelation_Id());
 							((XrefInput)valueInput).setValue(relation);
 						} else {
 							valueInput.setValue(value.getRelation_Id());
@@ -171,8 +171,8 @@ public class ApplyProtocolUI {
      * @throws Exception
      */
 	@SuppressWarnings("rawtypes")
-	public void makeInputAndSetCell(int featureNr, int col, int row, int order, ObservedValue value) throws Exception {
-		HtmlInput input = makeInput(featureNr, col, row, order, value);
+	public void makeInputAndSetCell(Database db, int featureNr, int col, int row, int order, ObservedValue value) throws Exception {
+		HtmlInput input = makeInput(db, featureNr, col, row, order, value);
 		valueTable.setCell(col, row, input);
 	}
 	
@@ -200,12 +200,12 @@ public class ApplyProtocolUI {
     /**
      * 
      */
-    public void makeProtocolSelect() {
+    public void makeProtocolSelect(Database db) {
 		try {
 		    protocols = new SelectInput("Protocols");
 		    protocols.setLabel("Choose protocol:");
-		    protocols.setOptions(service.getAllProtocolsSorted(Protocol.NAME, "ASC", model.getInvestigationIds()), 
-		    		Protocol.ID, Protocol.NAME);
+		    protocols.setOptions(service.getAllProtocolsSorted(db, Protocol.NAME, "ASC", model.getInvestigationIds()), 
+		    		Protocol.NAME, Protocol.NAME);
 		    protocolDiv.add(protocols);
 		    protocolDiv.add(new HorizontalRuler());
 		} catch(Exception e) {
@@ -235,7 +235,7 @@ public class ApplyProtocolUI {
     
     public void makeTargetsMatrix(Database db, ScreenController<?> plugin, int userId) throws Exception {
     	
-    	List<String> investigationNames = service.getAllUserInvestigationNames(userId);
+    	List<String> investigationNames = service.getAllUserInvestigationNames(db, userId);
 		List<String> measurementsToShow = new ArrayList<String>();
 		measurementsToShow.add("Species");
 		measurementsToShow.add("Sex");
@@ -256,11 +256,11 @@ public class ApplyProtocolUI {
     /**
      * Create a select box with Batches grabbed from the database
      */
-    public void makeBatchSelect() {
+    public void makeBatchSelect(Database db) {
 		try {
 		    batches = new SelectMultipleInput("Batches", null);
 		    batches.setLabel("Choose batches:");
-		    for (MolgenisBatch o : service.getAllBatches()) {
+		    for (MolgenisBatch o : service.getAllBatches(db)) {
 		    	batches.addOption(o.getId(), o.getName());
 		    }
 		    protocolDiv.add(batches);
@@ -357,12 +357,12 @@ public class ApplyProtocolUI {
      * @param protocolId
      * @param targetList
      */
-    public void makeTable() {
+    public void makeTable(Database db) {
 		try {
 		    valueTable = new Table("ValueTable", "");
 		    makeColumns();
-		    makeRows();
-		    fillTableCells();
+		    makeRows(db);
+		    fillTableCells(db);
 		    tableDiv.add(valueTable);
 		} catch (Exception e) {
 		    logger.error(e.getMessage());
@@ -392,13 +392,13 @@ public class ApplyProtocolUI {
      * @throws DatabaseException
      * @throws ParseException
      */
-    public void makeRows() throws DatabaseException, ParseException {
+    public void makeRows(Database db) throws DatabaseException, ParseException {
 		valueTable.addRow("Defaults:");
 		model.getTargetsIdList().clear();
 		for (String o : model.getFullTargetList()) {
 		    Integer targetId = Integer.parseInt(o);
 		    model.getTargetsIdList().add(targetId);
-		    valueTable.addRow(service.getObservationTargetById(targetId).getName());
+		    valueTable.addRow(service.getObservationTargetById(db, targetId).getName());
 		}
     }
     
@@ -409,7 +409,7 @@ public class ApplyProtocolUI {
      * @throws ParseException
      */
     @SuppressWarnings("rawtypes")
-	public void fillTableCells() throws DatabaseException, ParseException {
+	public void fillTableCells(Database db) throws DatabaseException, ParseException {
 		try {
 			int sizeFeatures = model.getFeaturesList().size();
 			 
@@ -422,7 +422,7 @@ public class ApplyProtocolUI {
 						colNrInTable *= 3;
 					}
 					div = new DivPanel();
-					HtmlInput input = makeInput(col, colNrInTable, 0, 0, null);
+					HtmlInput input = makeInput(db, col, colNrInTable, 0, 0, null);
 					input.setLabel("");
 					div.add(input);
 					ActionInput applyButton2 = new ActionInput("ApplyDefault_" + colNrInTable, "", "Set");
@@ -454,8 +454,8 @@ public class ApplyProtocolUI {
 			}
 		    
 			int userId = model.getUserId();
-			int ownInvId = service.getOwnUserInvestigationId(userId);
-		    List<Integer> investigationIds = service.getWritableUserInvestigationIds(userId);
+			int ownInvId = service.getOwnUserInvestigationId(db, userId);
+		    List<Integer> investigationIds = service.getWritableUserInvestigationIds(db, userId);
 	
 		    // Rest of the rows contain inputs for each target-feature combination
 		    for (int row = 1; row <= model.getFullTargetList().size(); row++) {
@@ -473,10 +473,10 @@ public class ApplyProtocolUI {
 		    			DivPanel endtimeDiv = new DivPanel();
 		    			int valueCounter = 0;
 			    		List<ObservedValue> values = service.getObservedValuesByTargetAndFeature(
-			    			model.getTargetsIdList().get(row - 1), model.getFeaturesList().get(col), 
+			    			db, model.getTargetsIdList().get(row - 1), model.getFeaturesList().get(col), 
 			    			investigationIds, ownInvId);
 			    		for (ObservedValue value : values) {
-			    			HtmlInput input = makeInput(col, colNrInTable, row, valueCounter, value);
+			    			HtmlInput input = makeInput(db, col, colNrInTable, row, valueCounter, value);
 			    			input.setLabel("");
 			    			valueDiv.add(input);
 			    			if (model.isTimeInfo()) {
@@ -508,7 +508,7 @@ public class ApplyProtocolUI {
 			    		valueTable.setCell(colNrInTable + 2, row, endtimeDiv);
 					} else {
 						// Show only new values
-						HtmlInput input = makeInput(col, colNrInTable, row, 0, null);
+						HtmlInput input = makeInput(db, col, colNrInTable, row, 0, null);
 						valueTable.setCell(colNrInTable, row, input);
 						if (model.isTimeInfo()) {
 							DatetimeInput datetimeInputStart = new DatetimeInput((colNrInTable + 1) + "_" + row + "_0");
@@ -530,7 +530,7 @@ public class ApplyProtocolUI {
     }
     
     public void setValues() {
-		protocols.setValue(model.getProtocolId());
+		protocols.setValue(model.getProtocolName());
 		batches.setValue(model.getBatchesList());
 		if (model.isNewProtocolApplication()) {
 			newOrEditButtons.setValue("New");
@@ -561,7 +561,7 @@ public class ApplyProtocolUI {
      * @param value
      */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void fixCellValue(int col, int row, Object value) {
+	public void fixCellValue(Database db, int col, int row, Object value) {
 		HtmlInput input = (HtmlInput) valueTable.getCell(col, row);
 		input.setValue(value);
 		
@@ -569,7 +569,7 @@ public class ApplyProtocolUI {
     	if (valueTable.getCell(col, row) instanceof XrefInput) {
     		try {
     			int targetId = Integer.parseInt(value.toString());
-				((XrefInput) input).setValue(service.getObservationTargetById(targetId));
+				((XrefInput) input).setValue(service.getObservationTargetById(db, targetId));
 			} catch (Exception e) {
 				// Do nothing, no value will be set
 			}
