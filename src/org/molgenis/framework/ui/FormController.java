@@ -170,10 +170,12 @@ public abstract class FormController<E extends Entity> extends
 				this.addFilter(pager, db, request);
 
 				// go to this screen if it is not selected
-				if (getParent() != null)
-				{
-					getParent().setSelected(model.getName());
-				}
+				// DISABLED/DEPRECATED: use &select=${screenName} to go to the desired screen instead
+				// this is the default application behaviour and should be respected
+//				if (getParent() != null)
+//				{
+//					getParent().setSelected(model.getName());
+//				}
 
 			}
 			else if (action.equals("update"))
