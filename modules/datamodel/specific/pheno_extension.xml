@@ -12,11 +12,19 @@
 				dependent (e.g. to only show particular subqueries of ontologies).
 			</description>
 		</entity>
+		<entity name="AlternateId" extends="OntologyTerm">
+			<description>
+				An external identifier for an annotation. For example: name='R13H8.1', ontology='ensembl' or name='WBgene00000912', ontology='wormbase'.
+			</description>
+		</entity>
 		<entity name="ObservationElement" implements="InvestigationElement"
 			xref_label="name">
 			<description> Elements that are the targets or features we are
 				looking at of our research.
 			</description>
+			<field name="AlternateId" nillable="true" type="mref"
+				xref_entity="AlternateId" label="Alternative identifiers"
+				description="Alternative identifiers or symbols that this element is known by." />
 		</entity>
 		<entity name="Characteristic" extends="ObservationElement">
 			<description>
@@ -131,6 +139,14 @@
 				xref_field="id" xref_label="name" description="Refers to the father of the individual." />
 			<field name="ethnicOrigin" description="Refers to the ethnic origin of the individual" nillable="true" />
 		</entity>
+		<entity name="Patient" extends="Individual" implements="submittable">
+			<field name="mutations" type="mref" xref_field="SequenceCharacteristic.id"
+				xref_label="name" nillable="true" label="Mutations" />
+			<field name="patientreferences" type="mref" xref_field="Publication.id"
+				nillable="true" label="PubMed ID" />
+			<field name="consent" type="enum" enum_options="publication,yes,no"
+				default="no" label="Patient consent" />
+		</entity>
 		<entity name="Location" extends="ObservationTarget">
 			<description>This class defines physical locations such as buildings,
 				departments, rooms, freezers and cages. Use ObservedValues to link
@@ -237,7 +253,7 @@
 				description="(Optional) Reference to the
 				ontology definition or 'code' for this value (recommended for non-numeric
 				values such as codes)" />
-			<field nillable="true" name="value" description="The value observed, free text" />
+			<field nillable="true" name="value" index="true" description="The value observed, free text" />
 			<field name="characteristicValue" label="Characteristic value" nillable="true" type="xref" xref_entity="Characteristic" 
 				description="The value observed, selected from available Characteristics" />
 			<field nillable="true" name="relation" type="xref"

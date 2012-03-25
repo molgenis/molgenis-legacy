@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis>
-	<module name="variant_generic">
+<molgenis name="org.molgenis">
+	<module name="variant">
 		<description>
 			Generic schema inspired by Chado. All other properties should already
 			be covered in the core Pheno.xml model, in particular relationship
@@ -27,7 +27,7 @@
 			<field name="label" nillable="true"
 				description="The name of SequenceFeature is unique. Label allows for human-readable name that is potentially not unique." />
 			<field name="featureType" type="xref" xref_entity="OntologyTerm"
-				nillable="true"
+				nillable="true" index="true"
 				description="A required reference to a ontologyTerm giving the feature type. E.g. chromosome, contig, exon, snp, etc. This will typically be a Sequence Ontology identifier. This column is thus used to subclass the feature table. " />
 			<field name="species" type="xref" xref_entity="Species"
 				nillable="true"
@@ -45,21 +45,21 @@
 				<br/>
 				Discussion: should this be an Observation or an ObservationElement?
 			</description>
-			<field name="Feature" type="xref" xref_entity="SequenceCharacteristic"
+			<field name="SequenceFeature" type="xref" xref_entity="SequenceCharacteristic"
 				xref_field="id" xref_label="name"
 				description="(Overrides Observation.feature) The feature that is being located. Any feature can have zero or more featurelocs." />
-			<field name="Target" type="xref" xref_entity="SequenceCharacteristic"
+			<field name="SequenceTarget" type="xref" xref_entity="SequenceCharacteristic"
 				xref_field="id" xref_label="name" description="(Overrides Observation.target) The source feature which this location is relative to. Every location is relative to another feature (however, this column is nullable, because the srcfeature may not be known). All locations are -proper- that is, nothing should be located relative to itself. No cycles are allowed in the featureloc graph." />
 			<field name="relationType" type="xref" xref_entity="OntologyTerm"
 				nillable="true"
 				description="Relationship type between feature and sourcefeature. This is a ontology term typically from the OBO relationship ontology, although other relationship types are allowed. The most common relationship type is OBO_REL:part_of. Valid relationship types are constrained by the Sequence Ontology." />
 			<field name="rank" type="int" nillable="true"
 				description="The ordering of subject features with respect to the object feature may be important (for example, exon ordering on a transcript - not always derivable if you take trans spliced genes into consideration). Rank is used to order these; starts from zero. Some features (e.g. blast hits and HSPs) have two locations - one on the query and one on the subject. Rank is used to differentiate these. Rank=0 is always used for the query, Rank=1 for the subject. For multiple alignments, assignment of rank is arbitrary. Rank is also used for sequence_variant features, such as SNPs. Rank=0 indicates the wildtype (or baseline) feature, Rank=1 indicates the mutant (or compared) feature." />
-			<field name="fmin" type="int" nillable="true"
+			<field name="fmin" type="int" nillable="true" index="true"
 				description="The leftmost/minimal boundary in the linear range represented by the featureloc. Sometimes (e.g. in Bioperl) this is called -start- although this is confusing because it does not necessarily represent the 5-prime coordinate. Important: This is space-based (interbase) coordinates, counting from zero. To convert this to the leftmost position in a base-oriented system (eg GFF, Bioperl), add 1 to fmin." />
 			<field name="is_fmin_partial" type="bool" nillable="true"
 				description="This is typically false, but may be true if the value for column:fmin is inaccurate or the leftmost part of the range is unknown/unbounded." />
-			<field name="fmax" type="int" nillable="true"
+			<field name="fmax" type="int" nillable="true" index="true"
 				description="The rightmost/maximal boundary in the linear range represented by the featureloc. Sometimes (e.g. in bioperl) this is called -end- although this is confusing because it does not necessarily represent the 3-prime coordinate. Important: This is space-based (interbase) coordinates, counting from zero. No conversion is required to go from fmax to the rightmost coordinate in a base-oriented system that counts from 1 (e.g. GFF, Bioperl)." />
 			<field name="is_fmax_partial" type="bool" nillable="true"
 				description="This is typically false, but may be true if the value for column:fmax is inaccurate or the rightmost part of the range is unknown/unbounded." />
