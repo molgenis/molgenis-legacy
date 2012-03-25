@@ -10,7 +10,6 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.mutation.service.SearchServiceException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.dto.IndividualDTO;
@@ -100,7 +99,7 @@ public class PhenoService
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			throw new SearchServiceException(e.getMessage());
+			throw new PhenoServiceException(e.getMessage());
 		}
 	}
 
