@@ -36,21 +36,21 @@ public class MatrixManagerModel {
 	private int selectedWidth;
 	private int selectedHeight;
 	
-	public String renderRow(String name){
+	public String renderRow(String name, String screenName){
 		ObservationElement o = rowObsElem.get(name);
 		if(o == null){
 			return name;
 		}else{
-			return AbstractDataMatrixInstance.render(o);
+			return AbstractDataMatrixInstance.render(o, screenName);
 		}
 	}
 	
-	public String renderCol(String name){
+	public String renderCol(String name, String screenName){
 		ObservationElement o = colObsElem.get(name);
 		if(o == null){
 			return name;
 		}else{
-			return AbstractDataMatrixInstance.render(o);
+			return AbstractDataMatrixInstance.render(o, screenName);
 		}
 	}
 	

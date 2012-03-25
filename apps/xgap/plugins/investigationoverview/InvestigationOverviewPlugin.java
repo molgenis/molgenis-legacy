@@ -215,7 +215,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 					String name = invFile.getName();
 					if(name.length() > 25) name = name.substring(0, 10) + "(..)"+name.substring(name.length()-10);
 					otherList.put(name + "." + invFile.getExtension(),
-							"?__target=Files&__action=filter_set&__filter_attribute=id&__filter_operator=EQUALS&__filter_value="
+							"?select=Files&__target=Files&__action=filter_set&__filter_attribute=InvestigationFile_id&__filter_operator=EQUALS&__filter_value="
 									+ invFile.getId());
 				}
 				this.model.setOtherList(otherList);

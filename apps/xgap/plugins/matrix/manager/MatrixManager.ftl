@@ -120,7 +120,7 @@ targ2	val4	val5	val6</textarea>
 						<td></td>
 						<#list browser.subMatrix.colNames as n>
 							<td class="matrixTableCell colorOfTitle">
-								${model.renderCol(n)}
+								${model.renderCol(n, screen.name)}
 							</td>
 						</#list>
 					</tr>
@@ -128,7 +128,7 @@ targ2	val4	val5	val6</textarea>
 					<#list browser.subMatrix.rowNames as n> 
 						<tr>
 							<td class="matrixTableCell colorOfTitle">
-								${model.renderRow(n)}
+								${model.renderRow(n, screen.name)}
 							</td>
 							
 							<#assign x = browser.subMatrix.numberOfCols>

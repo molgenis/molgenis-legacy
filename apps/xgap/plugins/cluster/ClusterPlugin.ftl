@@ -356,7 +356,12 @@ seconds.
 			<#assign found = false>
 			<#list model.getJobToOutputLink()?keys as key>
 				<#if key == t.id?c>
-					<nobr><#if t.outputDataName?length gt 10><a href="${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName?substring(0, 10)}...</a><#else><a href="${model.getJobToOutputLink()[key]}${t.outputDataName}">${t.outputDataName}</a></#if></nobr>			
+					<#if model.getJobToOutputLink()[key] == 'DATA'>
+						<#assign outputLink = "?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${t.outputDataName}">
+					<#else>
+						<#assign outputLink = "?select=Files&__target=Files&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=InvestigationFile_name&__filter_operator=EQUALS&__filter_value=${t.outputDataName}">
+					</#if>
+					<nobr><a target="_blank" href="${outputLink}"><#if t.outputDataName?length gt 10>${t.outputDataName?substring(0, 10)}...<#else>${t.outputDataName}</#if></a></nobr>			
 					<#assign found = true>
 					<#break>
 				</#if>

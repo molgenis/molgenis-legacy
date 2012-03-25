@@ -695,7 +695,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return res;
 	}
 
-	public static String render(ObservationElement o)
+	public static String render(ObservationElement o, String screenName)
 	{
 		String head = o.getName();
 		String content = "";
@@ -708,9 +708,13 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 				+ "', CAPTION, '"
 				+ head
 				+ "')\" onmouseout=\"return nd();\"><nobr>"
-				+ "<a href=?__target="
+				+ "<a target=\"_blank\" href=?select="
 				+ o.get__Type()
-				+ "s&__action=filter_set&__filter_attribute="
+				+ "s&__target="
+				+ o.get__Type()
+				+ "s&__comebacktoscreen="
+				+ screenName
+				+ "&__action=filter_set&__filter_attribute="
 				+ o.get__Type()
 				+ "_name&__filter_operator=EQUALS&__filter_value="
 				+ o.getName() + ">" + o.getName() + "</a></nobr></div>";

@@ -137,7 +137,7 @@
 		<#else>
 			<#list model.expList?keys as a>
 				<td>
-					<a href="?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.expList[a].id}">${redSquare} ${a}</a> ${model.expDimensions[a]}
+					<a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.expList[a].id}">${redSquare} ${a}</a> ${model.expDimensions[a]}
 				</td>
 				
 				<#if !model.showAllExperiments && a_index == 3>
@@ -215,7 +215,7 @@
 				<div id="text" class="dynacloud">
 					<#list model.expList?keys as a>
 							<div class="datasetunhighlight">
-								<a href="?__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.expList[a].id}">${redSquare}</a>
+								<a href="?select=Datas&__target=Datas&__action=filter_set&__filter_attribute=Data_id&__filter_operator=EQUALS&__filter_value=${model.expList[a].id}">${redSquare}</a>
 								"${model.expList[a].name?substring(0,1)?upper_case + model.expList[a].name?substring(1,model.expList[a].name?length)}": <@rb.printEntityTextClean r=model.expList[a]/>
 							</div>
 					</#list>

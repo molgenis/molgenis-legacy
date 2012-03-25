@@ -747,7 +747,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 					{
 						if(j.getOutputDataName().equals(d.getName()))
 						{
-							jobToOutputLink.put(j.getId().toString(), "?__target=Datas&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=");
+							jobToOutputLink.put(j.getId().toString(), "DATA");
 							dataFound = true;
 							break;
 						}
@@ -757,7 +757,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 						{
 							if(j.getOutputDataName().equals(f.getName()))
 							{
-								jobToOutputLink.put(j.getId().toString(), "?__target=Files&__action=filter_set&__filter_attribute=InvestigationFile_name&__filter_operator=EQUALS&__filter_value=");
+								jobToOutputLink.put(j.getId().toString(), "FILE");
 								break;
 							}
 						}

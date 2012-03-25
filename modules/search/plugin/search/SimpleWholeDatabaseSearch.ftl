@@ -64,7 +64,7 @@ Found ${model.results?size} result(s) in ${model.time} seconds.
 	</#if>
 	<tr>
 	<td>
-		<a href="?__target=${r.get(typefield)}s&__action=filter_set&__filter_attribute=${r.get(typefield)}_id&__filter_operator=EQUALS&__filter_value=${r.get("id")}"> <b>Link<b> </a>
+		<a href="?select=${r.get(typefield)}s&__target=${r.get(typefield)}s&__action=filter_set&__filter_attribute=${r.get(typefield)}_id&__filter_operator=EQUALS&__filter_value=${r.get("id")}"> <b>Link<b> </a>
 	</td>
 		<#list r.getFields() as f>
 			<#if f != typefield>
