@@ -73,42 +73,36 @@
 
 <#if model.shoppingCart?? && model.shoppingCart?size gt 0>
 
-
-<div style="
-position:absolute;
- top:275px;
- right:-200px;
- width:200px;
- z-index: 5;
-">
-Shopping cart:<br><br>
-<#list model.shoppingCart?keys as name>
-<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
-<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a><br>
-</#list>
-
-<br><br>
-<@action name="plotShoppingCart" label="Create plot"/>
-<#--@action name="emptyShoppingCart" label="Clear"/-->
-
-
-
-</div>
-
-
+	<div style="
+	position:absolute;
+	 top:275px;
+	 right:-200px;
+	 width:200px;
+	 z-index: 5;
+	">
+	Multiplot cart:<br><br>
+	<#list model.shoppingCart?keys as name>
+	<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
+	<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a><br>
+	</#list>
+	
+	<br><br>
+	<@action name="plotShoppingCart" label="Create plot"/>
+	<#--@action name="emptyShoppingCart" label="Clear"/-->
+	
+	</div>
+	
 </#if>
 
 
 
 <#if model.report??>
 
-	
-
 	<#import "../reportbuilder/ReportBuilder.ftl" as rb>
 	
 	<#assign r = model.report.entity>
 	
-	<h1>${r.get(typefield)} "${r.name}"</h1>
+	<h1>${r.get(typefield)} "<a href="molgenis.do?__target=${r.get(typefield)}s&__action=filter_set&__filter_attribute=${r.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${r.name}">${r.name}</a>"</h1>
 	
 	<#if model.qtls?? && model.qtls?size gt 0><#-- should have them really -->
 	<br>
@@ -116,8 +110,8 @@ Shopping cart:<br><br>
 	<div id="${r.name}_closeme" style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
 		<#list model.qtls as qtl>
 		
-			${r.get(typefield)} <a href="molgenis.do?__target=${r.get(typefield)}s&__action=filter_set&__filter_attribute=${r.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${r.name}">${r.name}</a>
-			<br>Max. <#if qtl.plot??><#if qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if><#else>value</#if>: ${qtl.peakValue}<br>in ${qtl.matrix.name}<br>
+			Hit #${qtl_index+1}
+			<br>Max. <#if qtl.plot??><#if qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if><#else>value</#if>: ${qtl.peakValue}<br>in <a href="molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${qtl.matrix.name}">${qtl.matrix.name}</a><br><br>
 			<#if qtl.plot??>
 				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
 				<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
@@ -132,9 +126,13 @@ Shopping cart:<br><br>
 			</div><div style="float: left; padding: 5px; border: 1px solid #999; width: 400px; height: 400px; text-align:center; ">
 			</#if>
 		</#list>
-		</div>
-	</#if>
-	
+	</div>
+		
+</#if>
+
+
+	<div style="height: 40px; width: 800px; float: left;"></div><br>
+	<h1><#if model.qtls?? && model.qtls?size gt 0>Details<#else><i>No plots or details available</i></#if></h1>
 	
 	
 	<#list model.qtls as qtl>
@@ -180,8 +178,9 @@ Shopping cart:<br><br>
 								<#if qtl.plot??>Marker:<#else>Trait:</#if>
 							</td>
 							<td>
-								<a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a>
-								<#if qtl.markerAnnotations?keys?seq_contains(qtl.peakMarker)>(at bp ${qtl.markerAnnotations[qtl.peakMarker].bpstart?c}<#if qtl.markerAnnotations[qtl.peakMarker].cm??>, cM ${qtl.markerAnnotations[qtl.peakMarker].cm}</#if>)</#if>
+								<#if qtl.plot??><a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a><#else>${qtl.peakMarker}</#if>
+								<#if qtl.markerAnnotations?keys?seq_contains(qtl.peakMarker)>at bp ${qtl.markerAnnotations[qtl.peakMarker].bpstart?c}<#if qtl.markerAnnotations[qtl.peakMarker].cm??>, cM ${qtl.markerAnnotations[qtl.peakMarker].cm}</#if></#if>
+								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${qtl.peakMarker}'; document.forms.${screen.name}.submit();">explore further</a>]
 							</td>
 						</tr>
 					</table>
@@ -216,7 +215,8 @@ Shopping cart:<br><br>
 					<#list qtl.markers as m>
 						<tr class="form_listrow1">
 							<td>
-								<a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${m}">${m}</a>
+								<#if qtl.plot??><a href="molgenis.do?__target=Markers&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${m}">${m}</a><#else>${m}</#if>
+								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${m}'; document.forms.${screen.name}.submit();">explore further</a>]
 							</td>
 							<td>
 									${qtl.valuesForMarkers[m_index]}
@@ -249,7 +249,9 @@ Shopping cart:<br><br>
 		</table>
 		</#list>
 	
+	<div style="height: 40px; width: 800px; float: left;"></div><br>
 	
+	<h1>Additional</h1>
 	
 	<table cellpadding="30">
 		<tr>
@@ -261,9 +263,9 @@ Shopping cart:<br><br>
 		<#if model.report.matrices?size gt 0>
 		<tr>
 			<td>
-				<h3>Present in these matrices:</h3>
 				<#list model.report.matrices as ml>
-					<h3><i>"${ml.data.name}"</i></h3>
+					<br><br><br><h2>Present in data matrix <i>"<a href="molgenis.do?__target=Datas&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${ml.data.name}">${ml.data.name}</a>"</i></h2>
+					<h3>Matrix record information:</h3>
 					<@rb.printEntity r=ml.data/>
 					
 					<br>
@@ -273,7 +275,7 @@ Shopping cart:<br><br>
 								Total number of rows
 							</td>
 							<td>
-								${ml.totalRows}
+								${ml.totalRows?c}
 							</td>
 						</tr>
 						<tr class="form_listrow1">
@@ -281,7 +283,7 @@ Shopping cart:<br><br>
 								Total number of columns
 							</td>
 							<td>
-								${ml.totalCols}
+								${ml.totalCols?c}
 							</td>
 						</tr>
 						<tr class="form_listrow1">
@@ -304,7 +306,7 @@ Shopping cart:<br><br>
 					</table>
 						
 						
-					<h3>Plot of the values of ${r.name} in "${ml.data.name}"</h3>
+					<h3>Values of ${r.name} in "${ml.data.name}":</h3>
 					<h4>Row plot</h4>
 					<#if ml.rowImg??>
 					<table>
@@ -380,7 +382,7 @@ Shopping cart:<br><br>
 						<#list ml.rowCorr?keys as key>
 							<tr class="form_listrow1">
 								<td>
-									<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">${key}</a>
+									${key} [<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">explore further</a>]
 								</td>
 								<td>
 									<#if ml.rowCorr[key]??>${ml.rowCorr[key]}<#else>N/A</#if>
@@ -489,8 +491,9 @@ Shopping cart:<br><br>
 		<i>All items that are in the plot (click for details):</i>
 		<div style="overflow: auto; width: 780px; max-height: 400px;">
 		<#list model.multiplot.matches?values as d>
-			<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">${d.name}</a>
-			<div style="display: inline;"><#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}<#else>${d.description}</#if> <a href="molgenis.do?__target=${d.get(typefield)}s&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">...</a></#if></div><br>
+		<a href="molgenis.do?__target=${d.get(typefield)}s&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
+		[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore further</a>]
+		<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if><br>
 		</#list>
 		</div>
 		</td>
@@ -529,7 +532,7 @@ Shopping cart:<br><br>
 		<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
 	</#if>
 		
-	${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a>
+	${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();"><b>${name}</b></a>
 	<#if model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0>reports for <a href="molgenis.do?__target=Genes&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>(${model.hits[name].symbol})</#if>
 	
 	<div style="display: inline;font-size:100%"><#if model.hits[name].description??> <br> <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <#else>${model.hits[name].description}</#if> <a href="molgenis.do?__target=${model.hits[name].get(typefield)}s&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...more</a> </#if></div>
