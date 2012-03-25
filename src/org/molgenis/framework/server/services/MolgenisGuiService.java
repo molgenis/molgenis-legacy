@@ -267,6 +267,23 @@ public abstract class MolgenisGuiService
 				{
 					molgenis.getModel().setShow("root");
 					writer.write(molgenis.render());
+					
+					//special: set a different selected screen after rendering is done
+					//this enables you to for example create a filtered linkout from a plugin,
+					//while staying 'within' the plugin (keep the selection state) when you click another
+					//button in the plugin that opens in a new tab (a href target="_blank")
+					//if you don't set this, the application will switch to the screen selected for the linkout
+					//which makes very strange browsing behaviour for users
+					//
+					//e.g. molgenis.do?select=Markers&target=Markers&__comebacktoscreen=QTLFinder&__action=filter_set[...]
+					//'__target' will send the request to the 'Markers' screen
+					//'select' will tell the controller to render the the 'Markers' screen
+					//'__comebacktoscreen' will set the view state back to the plugin so you can continue using it normally
+					if(requestTuple.getString("__comebacktoscreen") != null)
+					{
+						ScreenController<?> toBeSelected = molgenis.get(requestTuple.getString("__comebacktoscreen"));
+						toBeSelected.getParent().setSelected(requestTuple.getString("__comebacktoscreen"));
+					}
 				}
 				
 				writer.close();
