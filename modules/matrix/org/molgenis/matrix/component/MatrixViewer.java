@@ -572,9 +572,11 @@ public class MatrixViewer extends HtmlWidget
 	@SuppressWarnings("unchecked")
 	public String renderFilterPart() throws MatrixException, DatabaseException
 	{
-		String divContents = "";
+		String divContents = "<br /><img id='showHideSettingsButton' src=\"generated-res/img/plus.png\" " +
+				"onclick=\"if (document.getElementById('advancedSettings').style.display=='none') {document.getElementById('advancedSettings').style.display='block'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/minus.png';} else {document.getElementById('advancedSettings').style.display='none'; document.getElementById('showHideSettingsButton').src = 'generated-res/img/plus.png';}\" " +
+				"/>";
+		divContents += "<div id='advancedSettings' style='display:none'>";
 		divContents += new Paragraph("filterRules", "Applied filters:" + generateFilterRules()).render();
-
 		// add column filter
 		List<? extends Object> colHeaders = matrix.getColHeaders();
 		divContents += "<div style=\"clear:both\">Add filter:";
@@ -582,16 +584,13 @@ public class MatrixViewer extends HtmlWidget
 		divContents += buildFilterOperator(d_selectedMeasurement).render(); // TODO: chosen() screws up vertical alignment under FF+IE
 		divContents += buildFilterInput(d_selectedMeasurement).render(); // TODO: chosen() screws up vertical alignment under FF+IE
 		divContents += new ActionInput(FILTERCOL, "", "Apply").render() + "</div>";
-		
 		// column header filter
 		@SuppressWarnings("rawtypes")
 		List selectedMeasurements = new ArrayList(colHeaders);
-	
 		MrefInput measurementChooser = new MrefInput(MEASUREMENTCHOOSER, "Add/remove columns:", 
 				selectedMeasurements, false, false,
 				"Choose one or more columns (i.e. measurements) to be displayed in the matrix viewer",
 				Measurement.class);
-		
 		// disable display of button for adding new measurements from here
 		measurementChooser.setIncludeAddButton(false);
 		divContents += new Newline().render();
@@ -600,8 +599,7 @@ public class MatrixViewer extends HtmlWidget
 		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update").render();
 		divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all").render();
 		//divContents += new ActionInput(REMALLCOLHEADERFILTER, "", "Remove all").render();
-		divContents += "</div>";
-		
+		divContents += "</div></div>";
 		return divContents;
 	}
 
