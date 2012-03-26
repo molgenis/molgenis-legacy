@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -20,6 +21,7 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
+import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -74,14 +76,14 @@ public class AddIndividual extends EasyPluginController<AddIndividualModel>
 				System.out.println("getModel().chosenInv " +getModel().chosenInv);
 				getModel().setStateStart("chooseIndividual");
 				List<QueryRule> filterRules = new ArrayList<QueryRule>();
-				filterRules.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "id_family"));
+				filterRules.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, getModel().getIdentifier()));
 				filterRules.add(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.EQUALS, getModel().chosenInv));
-				List<ObservedValue> listFam = db.find(ObservedValue.class, new QueryRule(filterRules));
-				for(ObservedValue o : listFam){
-					getModel().listFamilies.add(o.getValue());
+				List<ObservedValue> listId = db.find(ObservedValue.class, new QueryRule(filterRules));
+				for(ObservedValue o : listId){
+					getModel().listIdentifiers.add(o.getValue());
 				}
 				
-				//TODO Change the Individual search in the database to family search
+				//
 				SelectFamily select = new SelectFamily();
 				getModel().setNewFamily(select.family(db,getModel().chosenInv));
 			}
@@ -103,6 +105,24 @@ public class AddIndividual extends EasyPluginController<AddIndividualModel>
 				}
 				
 			}
+			
+			if(action.equals("submitting")){
+				
+				for(Entry<String, List<String>> entry: getModel().hashProtocols.entrySet()){
+					
+					for(String e : entry.getValue()){
+						
+						if(request.getString(e+(entry.getKey()))!=null){
+							System.out.println(request.getString(e+(entry.getKey())));
+						}
+						
+						
+					}
+				}
+				
+			}
+			
+			
 		} 
 		catch (DatabaseException e1) {
 			// TODO Auto-generated catch block

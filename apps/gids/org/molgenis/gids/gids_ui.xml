@@ -25,6 +25,7 @@
 				<form name="measurement" entity="Measurement" view="list" label="Measurements" />
 				<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
 				<form name="sample" entity="GidsSample" view="list" label="Samples" />
+				<form name="protapp" entity="ProtocolApplication" view="list" label="Protocol Application" />
 				
 	        </menu>
 	        <!--<plugin label="Import data" name="DefImport" type="plugins.genericwizard.GenericWizard" />-->

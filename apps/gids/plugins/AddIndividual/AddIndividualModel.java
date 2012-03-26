@@ -36,7 +36,8 @@ public class AddIndividualModel extends EasyPluginModel
 	HashMap <String,List<String>> hashProtocols = new HashMap<String, List<String>>();
 	List<String> knownFeatList = new ArrayList<String>();
 	List<String> featList = new ArrayList<String>();
-	List<String> listFamilies = new ArrayList<String>();
+	List<String> listIdentifiers = new ArrayList<String>();
+	String identifier = "id_family";
 	
 	
 	public AddIndividualModel(AddIndividual controller)
@@ -142,13 +143,20 @@ public class AddIndividualModel extends EasyPluginModel
 
 
 	public List<String> getListFamilies() {
-		return listFamilies;
+		return listIdentifiers;
 	}
 
 
 	public void setListFamilies(List<String> listFamilies) {
-		this.listFamilies = listFamilies;
+		this.listIdentifiers = listFamilies;
 	}
+
+
+	public String getIdentifier()
+	{
+		return identifier;
+	}
+
 
 
 //	public void setHashProtocols(String protName, List<String> hashProtocols) {

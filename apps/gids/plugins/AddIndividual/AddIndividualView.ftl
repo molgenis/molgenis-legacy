@@ -95,8 +95,10 @@
 					<td width:180px"></td>
 						<tr>
 			    		<#if screen.hashProtocols[key]??>
+			    		
 			    			<#list screen.hashProtocols[key] as la>
-			    				<label><tr><td style="width:120px">${la}</td><td><input name='createNewInvest' id="${la}${key}" type='text'></td></tr></label>
+			    			${la}${key} <br />
+			    				<label><tr><td style="width:120px">${la}</td><td><input name="${la}${key}" id="${la}${key}" type='text'></td></tr></label>
 			    			</#list>
 			    		</#if>
 			    		</tr>
