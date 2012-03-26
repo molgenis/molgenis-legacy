@@ -681,7 +681,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
    		return new org.apache.commons.lang.builder.EqualsBuilder()
 <#if entity.hasAncestor()>
              	.appendSuper(super.equals(obj))
- </#if>
+</#if>
 <#list entity.getUniqueKeysWithoutPk() as uniqueKeys >
 	<#list key_fields(uniqueKeys) as uniqueFields >
 		<#if uniqueFields.type != "mref" && uniqueFields.type != "xref">
@@ -693,6 +693,24 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 </#list>                 
                 .isEquals();
   	}
+
+  	@Override
+    public int hashCode() {
+		return new org.apache.commons.lang.builder.HashCodeBuilder(this.getClass().getName().hashCode(), this.getClass().getSimpleName().hashCode())
+<#if entity.hasAncestor()>
+             	.appendSuper(super.hashCode())
+</#if>
+<#list entity.getUniqueKeysWithoutPk() as uniqueKeys >
+	<#list key_fields(uniqueKeys) as uniqueFields >
+		<#if uniqueFields.type != "mref" && uniqueFields.type != "xref">
+			<#if name(uniqueFields) != 'type_' >
+				.append(${name(uniqueFields)})
+			</#if>
+		</#if>
+	</#list>
+</#list>    
+   			.toHashCode();
+    }  	
   	
 
 
