@@ -2,18 +2,26 @@
 <molgenis name="org.molgenis.patho" label="Pathogenecity Database v0.1">
 	<plugin name="PathoHeader" type="org.molgenis.patho.ui.PathoHeader" />
 	<menu name="PathoDataTables" label="Data Tables" position="left">
+		<form name="PathoSeqFeatures" label="SeqCharacteristics" entity="SequenceCharacteristic">
+        	<form name="PathoSeqRelationPerFeature" label="SequenceRelations" entity="SequenceRelation" />
+		</form>
+<!--
 		<form name="PathoSeqFeatures" label="SeqFeatures" entity="SeqFeature">
 			<form name="PathoSeqRelationPerFeature" label="SeqRelations"
 				entity="SeqRelation" />
 		</form>
 		<form name="PathoSeqRelation" label="SeqRelations" entity="SeqRelation" />
+-->
 		<form name="PathoMeasurements" label="Measurements" entity="Measurement" />
 		<form name="PathoSpecies" label="Species" entity="Species" />
 		<form name="OntologyTerm" label="Ontology Terms" entity="OntologyTerm" />
 		<form name="PathoBuilds" label="Genome builds" entity="GenomeBuild" />
 		<form name="PathoChromosomes" label="Chromosomes" entity="Chromosome" />
 		<form name="PathoPanels" label="Panels" entity="Panel" />
-		<form name="PathoIndividuals" label="Individuals" entity="Individual" />
+		<form name="PathoProtocols" label="Protocols" entity="Protocol"/>
+		<form name="PathoIndividuals" label="Individuals" entity="Individual">
+			<plugin name="IndividualViewer" type="org.molgenis.pheno.ui.IndividualViewer"/>
+		</form>
 		<form name="PathoObservation" label="Observed Values" entity="ObservedValue" />
 	</menu>
 </molgenis>
