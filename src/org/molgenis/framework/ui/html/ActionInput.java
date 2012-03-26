@@ -156,12 +156,11 @@ public class ActionInput extends HtmlInput<Object>
 	public String renderDefault()
 	{
 		StringBuffer input = new StringBuffer("");
-		// TODO: apparently this can be disabled.
 		if (getIcon() != null)
 		{
 			input.append("<img class=\"edit_button\" src=\"" + getIcon()
 					+ "\" alt=\"" + getLabel() + "\" onclick=\""
-					+ getJavaScriptAction() + "\" title=\"" + this.getTooltip()
+					+ getJavaScriptAction() + " $(this).closest('form').submit();\" title=\"" + this.getTooltip()
 					+ "\" id=\"" + this.getId() + "\" style=\""
 					+ this.getStyle() + "\" " + tabIndex + " />");
 		}
@@ -229,7 +228,7 @@ public class ActionInput extends HtmlInput<Object>
 			}
 			else if (this.type == Type.CUSTOM)
 			{
-				return "$(this).closest('form').find('input[name=__action]').val('"+this.getName()+"');; $(this).closest('form').submit();";
+				return "$(this).closest('form').find('input[name=__action]').val('" + this.getName() + "');";
 			}
 		}
 		return JavaScriptAction;
@@ -291,7 +290,7 @@ public class ActionInput extends HtmlInput<Object>
 	public String toIconHtml()
 	{
 		return "<img class=\"edit_button\" src=\"" + getIcon() + "\" title=\""
-				+ getLabel() + "\" onClick=\"" + this.getJavaScriptAction()
+				+ getLabel() + "\" onclick=\"" + this.getJavaScriptAction()
 				+ "\">";
 		// <img class="edit_button" src="generated-res/img/recordview.png"
 		// title="view record" alt="edit${offset}"
@@ -340,9 +339,9 @@ public class ActionInput extends HtmlInput<Object>
 			icons += "{ icons: {primary:'" + iconClass + "', secondary: null}"
 					+ (isShowLabel() ? "}" : ", text: false }");
 		}
-		String result = iconClassCss + "<button id=\"" + this.getId() + "\"" + " onClick=\""
-				+ this.getJavaScriptAction() + "\">" + this.getButtonValue()
-				+ "</button>" + "<script>$(\"#" + this.getId() + "\")"
+		String result = iconClassCss + "<input type=\"submit\" id=\"" + this.getId() + "\" onclick=\""
+				+ this.getJavaScriptAction() + "\" value=\"" + this.getButtonValue() + "\" />"
+				+ "<script>$(\"#" + this.getId() + "\")"
 				+ (width > 0 ? ".width(" + width + ")" : "")
 				//+ (getIcon() != null ? ".height(" + (this.getIconHeight() + 10) + ").width(" + (this.getIconWidth() + 10) + ")" : "")
 				+ ".button(" + icons + ");</script>\n";
