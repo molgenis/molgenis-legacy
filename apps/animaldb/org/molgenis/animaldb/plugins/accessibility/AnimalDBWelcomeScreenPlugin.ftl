@@ -33,13 +33,6 @@
 	
 <h1>Welcome to AnimalDB!</h1>
 
-<!--[if IE]>
-<div style="border: 2px solid red; padding: 4px">
-<p>You are using <strong>Internet Explorer</strong>, which is at this moment <strong>NOT SUPPORTED</strong> by AnimalDB! Please use Mozilla Firefox, Google Chrome or another browser instead.</p>
-<p>U gebruikt de <strong>Internet Explorer</strong>-browser, die op dit moment <strong>NIET ONDERSTEUND</strong> wordt door AnimalDB! Gebruik aub Mozilla Firefox, Google Chrome of een andere browser.</p>
-</div>
-<![endif]-->
-
 <#list screen.news as newsItem>
 	<h3>${newsItem.getTitle()}</h3>
 	<p>${newsItem.getText()}</p>

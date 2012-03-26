@@ -33,8 +33,6 @@ import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 
-import com.ibm.icu.util.Calendar;
-
 /**
  * @author erikroos
  * 
@@ -691,7 +689,7 @@ public class CommonService
 	public ProtocolApplication createProtocolApplication(String investigationName, String protocolName) throws ParseException,
 			DatabaseException, IOException
 	{
-		Date now = Calendar.getInstance().getTime();
+		Date now = new Date();
 		ProtocolApplication pa = new ProtocolApplication();
 		pa.setInvestigation_Name(investigationName);
 		pa.setName(protocolName + "_" + protAppCounter++ + "_" + now.toString()); // strange but unique name

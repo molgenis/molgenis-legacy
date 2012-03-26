@@ -28,7 +28,7 @@ public class AnimaldbSeleniumTest
 {
 	Selenium selenium;
 	Integer sleepTime = 1000;
-	String pageLoadTimeout = "120000";
+	String pageLoadTimeout = "60000";
 	boolean tomcat = false;
 	//String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_selenium_test_data";
 
@@ -59,6 +59,7 @@ public class AnimaldbSeleniumTest
 
 		HttpCommandProcessor proc = new HttpCommandProcessor(seleniumHost, seleniumPort, seleniumBrowser, seleniumUrl);
 		selenium = new DefaultSelenium(proc);
+		//selenium.setSpeed("1000");
 		selenium.start();
 		selenium.setTimeout(pageLoadTimeout);
 		
@@ -237,17 +238,13 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Screen 1: mothers
 		selenium.click("id=mothermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
-		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
-		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
-		Thread.sleep(5000);
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=mothermatrix_selected_0"); // toggle selectbox for first female in list
 		selenium.click("id=from2to3");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		// Screen 2: fathers
 		selenium.click("id=fathermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
-		// We have to wait here, but it's Ajax, so it's faster than a normal full page load
-		// (however, 1 sec. is not (always) enough on Hudson, so set to 5 sec.)
-		Thread.sleep(5000);
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=fathermatrix_selected_0"); // toggle selectbox for first male in list
 		selenium.click("id=from3to4");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -525,7 +522,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[2]"), "Weight");
 		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[3]"), "Weight start");
 		Assert.assertEquals(selenium.getText("//div[@id='divValueTable']/table/thead/tr/th[4]"), "Weight end");
-		selenium.type("id=0_1_0", "200");
+		selenium.type("id=0_1_0", "239");
 		selenium.click("id=ApplyStartTime_1");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=Apply");
@@ -540,7 +537,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=select");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Weight"));
-		Assert.assertTrue(selenium.isTextPresent("200"));
+		Assert.assertTrue(selenium.isTextPresent("239"));
 		
 		sleepHelper("applyProtocol");
 	}
