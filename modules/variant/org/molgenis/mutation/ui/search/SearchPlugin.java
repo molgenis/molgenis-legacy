@@ -461,32 +461,33 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	{
 		SearchService searchService = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findNextExon(request.getInt("exon_id"));
-		request.set("mid", exonDTO.getId());
-		this.handleShowMutation(request);
+		request.set("exon_id", exonDTO.getId());
+		System.out.println(">>> Displaying next exon: exon_id==" + exonDTO.getId());
+		this.handleShowExon(request);
 	}
 
 	private void handleShowPrevExon(Tuple request)
 	{
 		SearchService searchService         = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findPrevExon(request.getInt("exon_id"));
-		request.set("mid", exonDTO.getId());
-		this.handleShowMutation(request);
+		request.set("exon_id", exonDTO.getId());
+		this.handleShowExon(request);
 	}
 
 	private void handleShowLastExon(Tuple request)
 	{
 		SearchService searchService = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findLastExon();
-		request.set("mid", exonDTO.getId());
-		this.handleShowMutation(request);
+		request.set("exon_id", exonDTO.getId());
+		this.handleShowExon(request);
 	}
 
 	private void handleShowFirstExon(Tuple request)
 	{
 		SearchService searchService = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findFirstExon();
-		request.set("mid", exonDTO.getId());
-		this.handleShowMutation(request);
+		request.set("exon_id", exonDTO.getId());
+		this.handleShowExon(request);
 	}
 
 	@Override

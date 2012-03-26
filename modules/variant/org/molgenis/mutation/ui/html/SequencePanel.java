@@ -72,9 +72,9 @@ public class SequencePanel extends HtmlInput implements Serializable
 						break;
 					}
 				}
-				if ("R".equals(this.exonDTO.getOrientation()))
+				if (StringUtils.equals(this.exonDTO.getOrientation(), "R"))
 					result.append(this.exonDTO.getNuclSequence().substring(startPos - i, startPos - i + 1)); //${exonSummaryVO.nuclSequence?substring(exonSummaryVO.exon.getGdna_Position() - i, exonSummaryVO.exon.getGdna_Position() - i + 1)}
-				else
+				else if (StringUtils.equals(this.exonDTO.getOrientation(), "F"))
 					result.append(this.exonDTO.getNuclSequence().substring(i - startPos, i - startPos + 1));
 	
 				if (hasMutation)
