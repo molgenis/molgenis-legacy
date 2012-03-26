@@ -670,6 +670,32 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
     }	
 </#if>
 
+	@Override
+	public boolean equals(Object obj) {
+   		if (obj == null) { return false; }
+   		if (obj == this) { return true; }
+   		if (obj.getClass() != getClass()) {
+     		return false;
+   		}
+		${JavaName(entity)} rhs = (${JavaName(entity)}) obj;
+   		return new org.apache.commons.lang.builder.EqualsBuilder()
+<#if entity.hasAncestor()>
+             	.appendSuper(super.equals(obj))
+ </#if>
+<#list entity.getUniqueKeysWithoutPk() as uniqueKeys >
+	<#list key_fields(uniqueKeys) as uniqueFields >
+		<#if uniqueFields.type != "mref" && uniqueFields.type != "xref">
+			<#if name(uniqueFields) != 'type_' >
+				.append(${name(uniqueFields)}, rhs.get${Name(uniqueFields)}())
+			</#if>
+		</#if>
+	</#list>
+</#list>                 
+                .isEquals();
+  	}
+  	
+
+
 	@Deprecated
 	public String getValues(String sep)
 	{
