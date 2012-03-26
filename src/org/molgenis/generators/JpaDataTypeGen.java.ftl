@@ -696,7 +696,16 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 
   	@Override
     public int hashCode() {
-		return new org.apache.commons.lang.builder.HashCodeBuilder(this.getClass().getName().hashCode(), this.getClass().getSimpleName().hashCode())
+    	int firstNumber = this.getClass().getName().hashCode();
+    	int secondNumber = this.getClass().getSimpleName().hashCode();
+    	if(firstNumber % 2 == 0) {
+    	  firstNumber += 1;
+    	}
+    	if(secondNumber % 2 == 0) {
+    		secondNumber += 1;
+    	}
+    
+		return new org.apache.commons.lang.builder.HashCodeBuilder(firstNumber, secondNumber)
 <#if entity.hasAncestor()>
              	.appendSuper(super.hashCode())
 </#if>
