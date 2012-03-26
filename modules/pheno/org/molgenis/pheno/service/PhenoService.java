@@ -129,7 +129,7 @@ public class PhenoService
 	{
 		List<ObservedValueDTO> observedValueDTOList = new ArrayList<ObservedValueDTO>();
 		observedValueDTOList.add(observedValueDTO);
-		this.insert(observedValueDTO);
+		this.insert(observedValueDTOList);
 	}
 
 	/**
