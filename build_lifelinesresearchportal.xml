@@ -2,7 +2,7 @@
 
 <project>
 	<!-- this name is used to name the war file -->
-	<property name="app_name" value="xqtl_lifelines" />
+	<property name="app_name" value="lifelines_researchportal" />
 
 	<!-- this holds all the settings for the generator -->
 	<property name="app_properties" value="apps/lifelinesresearchportal/org/molgenis/lifelinesresearchportal/lifelinesresearchportal.properties"/>
