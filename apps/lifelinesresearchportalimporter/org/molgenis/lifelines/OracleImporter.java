@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -63,6 +66,7 @@ class Holder<T> {
 
 public class OracleImporter {
 	public static void main(String[] args) throws Exception {
+		Locale.setDefault(Locale.US);
 		PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
 		
 		final String inputPath = "/Users/jorislops/Desktop/lifelinesdata/ll2/";
@@ -271,8 +275,13 @@ public class OracleImporter {
 		// final CsvReader reader = new CsvFileReader(new File(path +
 		// fileName));
 
+		
 		au.com.bytecode.opencsv.CSVReader reader = new CSVReader(
-				new FileReader(new File(path + fileName)));
+				new InputStreamReader(						
+						new FileInputStream(new File(path + fileName)), 
+						Charset.forName("UTF-16")
+					)
+				);
 
 		@SuppressWarnings("deprecation")
 		final Connection conn = ((JpaDatabase) db).getConnection();

@@ -112,21 +112,30 @@ public class ExcelExporter<R extends ObservationTarget, C extends Measurement, V
 			if(columnType == ColumnType.String) {
 				return new Label(row, column, dataCell);
 			} else if(columnType == ColumnType.Integer) {
-				return new jxl.write.Number(row, column, Double.parseDouble(dataCell)); 					
+				return new jxl.write.Number(row, column, Double.parseDouble(dataCell), new WritableCellFormat (jxl.write.NumberFormats.INTEGER)); 					
 			} else if(columnType == ColumnType.Code) {
 				return new jxl.write.Label(row, column, dataCell.toString());
 			} else if(columnType == ColumnType.Decimal) {
-				return new jxl.write.Number(row, column, Double.parseDouble(dataCell));
+				return new jxl.write.Number(row, column, Double.parseDouble(dataCell), new WritableCellFormat (jxl.write.NumberFormats.FLOAT));
 			} else if(columnType == ColumnType.Timestamp || columnType == ColumnType.Datetime) {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d H:m:s");
-				return new jxl.write.DateTime(row, column, dateFormat.parse(dataCell));
+				return writeDateCell(row, column, dataCell, "y-M-d H:m:s", "yyyy MM dd hh:mm:ss");
 			} else if(columnType == ColumnType.Date) {				
-				SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d");
-				return new jxl.write.DateTime(row, column, dateFormat.parse(dataCell));
+				return writeDateCell(row, column, dataCell, "y-M-d", "yyyy MM dd");
 			} else {
 				throw new UnsupportedOperationException(String.format("Type %s not available",columnType));
 			}
 		}
+	}
+
+	private WritableCell writeDateCell(int row, int column, String dataCell, String inFormatStr, String outFormatStr)
+			throws ParseException
+	{
+		SimpleDateFormat dateFormat = new SimpleDateFormat(inFormatStr);
+		
+		jxl.write.DateFormat customDateFormat = new jxl.write.DateFormat (outFormatStr); 
+		jxl.write.WritableCellFormat excelDateFormat = new jxl.write.WritableCellFormat (customDateFormat); 
+		
+		return new jxl.write.DateTime(row, column, dateFormat.parse(dataCell), excelDateFormat);
 	}
 
 	@Override

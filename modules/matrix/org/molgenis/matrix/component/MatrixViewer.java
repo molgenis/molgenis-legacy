@@ -1498,7 +1498,7 @@ public class MatrixViewer extends HtmlWidget
 		System.out.println("----------");
 		for (final Entry<Protocol, List<Measurement>> entry : pms.entrySet()) {
 			for(Measurement m : entry.getValue()) {
-				System.out.println(m.getName() + " " + m.getId());
+				System.out.println(m.getName() + " " + m.getId() + " pID: " + entry.getKey().getName());
 			}
 		}		
 		System.out.println("----------");
