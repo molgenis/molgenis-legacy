@@ -1234,11 +1234,6 @@ public class Entity extends DBSchema implements Record
 	{
 		Vector<Unique> result = new Vector<Unique>();
 
-		// if(getName().equals("Data"))
-		// {
-		// System.out.println("breakpoint");
-		// }
-
 		// get primary key from parent
 		if (hasAncestor())
 		{
@@ -1326,6 +1321,27 @@ public class Entity extends DBSchema implements Record
 	
     public List<Unique> getUniqueKeysWithoutPk() throws MolgenisModelException {
         List<Unique> result = new ArrayList<Unique>();
+        
+        if (hasImplements())
+		{
+			for (Entity e : getImplements())
+			{
+				// we need to rewrite the uniques to point to the right entity
+				for (Unique u : e.getKeys())
+				{
+					if(u.getFields().get(0).isAuto()) {
+		                continue;
+		            }
+					Unique copy = new Unique(u);
+					u.setEntity(this);
+					if (!result.contains(copy))
+					{
+						result.add(copy);
+					}
+				}
+			}
+		}
+        
         for(Unique u : unique_fields) {
             if(u.getFields().get(0).isAuto()) {
                 continue;

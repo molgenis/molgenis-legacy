@@ -684,8 +684,9 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 </#if>
 <#list entity.getUniqueKeysWithoutPk() as uniqueKeys >
 	<#list key_fields(uniqueKeys) as uniqueFields >
+		//${name(uniqueFields)}
 		<#if uniqueFields.type != "mref" && uniqueFields.type != "xref">
-			<#if name(uniqueFields) != 'type_' >
+			<#if name(uniqueFields) != "type_" >
 				.append(${name(uniqueFields)}, rhs.get${Name(uniqueFields)}())
 			</#if>
 		</#if>
