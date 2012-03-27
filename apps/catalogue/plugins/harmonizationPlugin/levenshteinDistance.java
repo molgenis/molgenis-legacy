@@ -185,7 +185,6 @@ public class levenshteinDistance {
 
 	}
 
-
 	/**
 	 * This method is used to find the exact matching between input terms and ontology terms. If there is any matching found,
 	 * the record will be stored in mappingResult and ontologyTermAndDataItems variables. 
@@ -200,42 +199,9 @@ public class levenshteinDistance {
 		this.cutOff = cutOff;
 
 		HashMap<String, String> levelAnnotation = model.getDescriptionForVariable(annotations.get(0), annotations.get(3));
-
-		//searchingForOntologyTermInDescription(levelAnnotation, descriptionForVariable);
-
+		
 		searchingForOntologyTermByStringMatching(levelAnnotation, descriptionForVariable, cutOff);
 	}
-	
-//	public void outPutMappingSummary(HashMap<String, HashMap<String, Double>>mappingResultAndSimiarity, HashMap<String, String> dataItemNameToDescription){
-//		
-//		System.out.println();
-//
-//		for(String key : mappingResultAndSimiarity.keySet()){
-//
-//			System.out.println("The parameter is \"" + key + "\"\t");
-//
-//			for(String dataItem : mappingResultAndSimiarity.get(key).keySet()){
-//				System.out.print("The dataItem is \"" + dataItem + "\"\t" + "The similarity is " + mappingResultAndSimiarity.get(key).get(dataItem));
-//				System.out.println();
-//			}
-//			System.out.println("Mapping by cutoff " + this.cutOff);
-//			if(foundDescriptionByCutOff.containsKey(key.toLowerCase())){
-//				for(String dataItem : foundDescriptionByCutOff.get(key.toLowerCase())){
-//					System.out.println("The dataItem mapped by cut off " + cutOff + " is \"" + dataItem + "\" and its description is \"" + dataItemNameToDescription.get(dataItem) + "\"");
-//				}
-//			}
-//			System.out.println();
-//
-//			System.out.println("Mapping by the pattern matching in the description!");
-//			if(foundTermInDataDescription.containsKey(key)){
-//				for(String dataItem : foundTermInDataDescription.get(key)){
-//					System.out.println("The dataItem mapped by pattern matching is \"" + dataItem + "\" and its description is \"" + dataItemNameToDescription.get(dataItem) + "\"");
-//				}
-//			}
-//
-//			System.out.println();
-//		}
-//	}
 	
 	public void outPutMappingDetails (HashMap<String, HashMap<String, Double>>mappingResultAndSimiarity, 
 			HashMap<String, List<String>> originalQueryToExpanded, HashMap<String, String> dataItemNameToDescription) {
