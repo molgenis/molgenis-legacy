@@ -1,10 +1,10 @@
-package org.molgenis.hgvbaseg2p;
+package org.molgenis.omicsconnect;
 
 
 import org.molgenis.Molgenis;
 
 
-public class HgvbaseGenerate
+public class OmicsConnectGenerate
 {
 	public static void main(String[] args) throws Exception
 	{
