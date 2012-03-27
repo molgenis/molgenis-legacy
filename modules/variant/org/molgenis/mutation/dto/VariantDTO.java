@@ -10,8 +10,10 @@ public class VariantDTO implements Serializable
 	private Integer id;
 	private String identifier;
 	private String cdnaNotation;
+	private Integer cdnaStart;
 	private Integer gdnaStart;
 	private String aaNotation;
+	private Integer aaStart;
 	private String pathogenicity;
 	private Integer exonId;
 	private String exonName;
@@ -33,6 +35,18 @@ public class VariantDTO implements Serializable
 	}
 	public void setCdnaNotation(String cdnaNotation) {
 		this.cdnaNotation = cdnaNotation;
+	}
+	public Integer getCdnaStart() {
+		return cdnaStart;
+	}
+	public void setCdnaStart(Integer cdnaStart) {
+		this.cdnaStart = cdnaStart;
+	}
+	public Integer getAaStart() {
+		return aaStart;
+	}
+	public void setAaStart(Integer aaStart) {
+		this.aaStart = aaStart;
 	}
 	public Integer getGdnaStart() {
 		return gdnaStart;
