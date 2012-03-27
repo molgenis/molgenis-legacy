@@ -57,8 +57,14 @@ ${getStatisticsScript} \
 --baitsetout ${qcbaitset} \
 --qcdedupmetricsout ${qcdedupmetricsout}
 
-# create workflow figure
-echo "${graph(workflowElements)}" | ${dot} -Tpng > ${workflowpng}
+# get dedup info per flowcell-lane-barcode/sample
+${getDedupInfoScript} \
+--dedupmetrics ${csvQuoted(dedupmetrics)} \
+--flowcell ${csvQuoted(flowcell)} \
+--lane ${csvQuoted(lane)} \
+--sample ${csvQuoted(externalSampleID)} \
+--paired TRUE \
+--qcdedupmetricsout "${qcdedupmetricsout}"
 
 # get snp stats per sample
 ${createsnptablescript} \
@@ -69,6 +75,10 @@ ${createsnptablescript} \
 --typetableout "${typetableout}" \
 --classtableout "${classtableout}" \
 --impacttableout "${impacttableout}"
+
+
+# create workflow figure
+echo "${graph(workflowElements)}" | ${dot} -Tpng > ${workflowpng}
 
 # save latex template in file
 echo "<#include "QCReportTemplate.tex"/>" > ${qcstatisticstexreport}
