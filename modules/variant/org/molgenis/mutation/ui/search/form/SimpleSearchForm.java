@@ -8,6 +8,7 @@ import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.RadioInput;
 import org.molgenis.util.ValueLabel;
+import org.molgenis.variant.SequenceCharacteristic;
 
 public class SimpleSearchForm extends Container
 {
@@ -19,9 +20,10 @@ public class SimpleSearchForm extends Container
 		this.add(new HiddenInput("__target", ""));
 		this.add(new HiddenInput("select", ""));
 		this.add(new HiddenInput("__action", "findMutationsByTerm"));
-		this.add(new AutocompleteInput("term", "", "org.molgenis.variant.SequenceCharacteristic", "name", ""));
-		((AutocompleteInput) this.get("term")).setClazz("simple_search");
-		((AutocompleteInput) this.get("term")).setSize(50);
+		AutocompleteInput<SequenceCharacteristic> termInput = new AutocompleteInput<SequenceCharacteristic>("term", "", "org.molgenis.variant.SequenceCharacteristic", "name", "");
+		termInput.setClazz("simple_search");
+		termInput.setSize(50);
+		this.add(termInput);
 		Vector<ValueLabel> options = new Vector<ValueLabel>();
 		options.add(new ValueLabel("mutations", "Show mutations"));
 		options.add(new ValueLabel("patients", "Show patients"));

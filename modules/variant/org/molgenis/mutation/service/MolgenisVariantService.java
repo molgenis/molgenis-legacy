@@ -247,10 +247,7 @@ public class MolgenisVariantService
 	 */
 	public ExonDTO sequenceCharacteristicToExonDTO(final SequenceCharacteristic exon) throws DatabaseException
 	{
-//System.out.println(">>> sequenceCharacteristicToExonDTO: name==" + exon.getName() + ", length==" + exon.getSeqlen());
 		ExonDTO exonDTO = new ExonDTO();
-		exonDTO.setDomainId(new ArrayList<Integer>());
-		exonDTO.setDomainName(new ArrayList<String>());
 		exonDTO.setId(exon.getId());
 		exonDTO.setIsIntron("intron".equals(exon.getFeatureType().getName()) ? true : false);
 		exonDTO.setLength(exon.getSeqlen());
@@ -261,7 +258,6 @@ public class MolgenisVariantService
 			exonDTO.setMultiple3Nucl(false);
 
 		// find relation to the sequence of the gene
-//		List<SequenceRelation> sequenceRelationList = Arrays.asList(exon.getSequenceFeatureSequenceRelationCollection().toArray(new SequenceRelation[0]));
 		List<SequenceRelation> sequenceRelationList = this.db.query(SequenceRelation.class).equals(SequenceRelation.SEQUENCEFEATURE, exon.getId()).find();
 
 		for (SequenceRelation relation : sequenceRelationList)
@@ -270,7 +266,7 @@ public class MolgenisVariantService
 				continue;
 
 			SequenceCharacteristic tmp = relation.getSequenceTarget();
-//System.out.println(">>> relationType==" + relation.getRelationType().getName() + ", feature==" + tmp.getFeatureType().getName());
+
 			if ("part-of".equals(relation.getRelationType().getName()) && "cdna_sequence".equals(tmp.getFeatureType().getName()))
 			{
 				exonDTO.setCdnaEnd(relation.getFmax());
@@ -288,19 +284,32 @@ public class MolgenisVariantService
 			}
 		}
 
+		// find protein domains
+		
+		String sql = "SELECT s FROM SequenceRelation r JOIN r.sequenceFeature s WHERE s.featureType.name = 'protein_domain' AND ((r.fmin <= :pos AND :pos <= r.fmax AND r.strand = '+1') OR (r.fmax <= :pos AND :pos <= r.fmin AND r.strand = '-1'))";
+		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+		query.setParameter("pos", exonDTO.getGdnaStart());
+		
+		for (SequenceCharacteristic proteinDomain : query.getResultList())
+		{
+			exonDTO.getDomainId().add(proteinDomain.getId());
+			exonDTO.getDomainName().add(proteinDomain.getName());
+		}
+
 		GeneDTO geneDTO = this.findGene();
 
-//		System.out.println(">>> sequenceCharacteristicToExonDTO: gene.seq==" + geneDTO.getNuclSequence().length() + ", gdanStart==" + exonDTO.getGdnaStart() + ", gdnaEnd==" + exonDTO.getGdnaEnd());
 		Integer gdnaStart = Math.abs(exonDTO.getGdnaStart() - geneDTO.getBpStart().intValue());
-		Integer gdnaEnd   = Math.abs(exonDTO.getGdnaEnd() - geneDTO.getBpStart().intValue() + 1);//gdnaStart + exon.getLength();
-		exonDTO.setNuclSequence(StringUtils.substring(geneDTO.getNuclSequence(), gdnaStart, gdnaEnd));
+		Integer gdnaEnd   = Math.abs(exonDTO.getGdnaEnd() - geneDTO.getBpStart().intValue());//gdnaStart + exon.getLength();
+		exonDTO.setNuclSequence(StringUtils.substring(geneDTO.getNuclSequence(), gdnaStart, gdnaEnd + 1));
 		exonDTO.setNuclSequenceFlankLeft(this.getNuclSequenceFlankLeft(exonDTO, geneDTO));
 		exonDTO.setNuclSequenceFlankRight(this.getNuclSequenceFlankRight(exonDTO, geneDTO));
 		exonDTO.setOrientation(geneDTO.getOrientation());
 
 		if (!exonDTO.getIsIntron())
 		{
-//			System.out.println(">>> sequenceCharacteristicToExonDTO: cdnaStart==" + exonDTO.getCdnaStart() + ", cdnaEnd==" + exonDTO.getCdnaEnd() + ", aaseq==" + geneDTO.getAaSequence());
+			exonDTO.setNuclSequence(exonDTO.getNuclSequence().toUpperCase());
+			exonDTO.setNuclSequenceFlankLeft(exonDTO.getNuclSequenceFlankLeft().toLowerCase());
+			exonDTO.setNuclSequenceFlankRight(exonDTO.getNuclSequenceFlankRight().toLowerCase());
 			exonDTO.setAaSequence(StringUtils.substring(geneDTO.getAaSequence(), exonDTO.getCdnaStart(), exonDTO.getCdnaEnd()));
 			exonDTO.setNumFullAminoAcids(SequenceUtils.getNumFullAminoAcids(exonDTO.getAaSequence()));
 			exonDTO.setNumPartAminoAcids(SequenceUtils.getNumPartAminoAcids(exonDTO.getAaSequence()));
@@ -310,6 +319,8 @@ public class MolgenisVariantService
 		if (exonDTO.getIsIntron())
 		{
 			exonDTO.setNuclSequence(exonDTO.getNuclSequence().toLowerCase());
+			exonDTO.setNuclSequenceFlankLeft(exonDTO.getNuclSequenceFlankLeft().toUpperCase());
+			exonDTO.setNuclSequenceFlankRight(exonDTO.getNuclSequenceFlankRight().toUpperCase());
 		}
 
 		return exonDTO;
@@ -372,6 +383,7 @@ public class MolgenisVariantService
 					{
 						variantDTO.setExonId(target.getId());
 						variantDTO.setExonName(target.getName());
+						variantDTO.setCdnaStart(relation.getFmin());
 					}
 				}
 			}
@@ -518,9 +530,9 @@ public class MolgenisVariantService
 	
 			mutationSummaryDTO.setPatientSummaryDTOList(new ArrayList<PatientSummaryDTO>());
 			// helper hash to get distinct phenotypes
-			HashMap<String, String> phenotypeNameHash         = new HashMap<String, String>();
+			HashMap<String, String> phenotypeNameHash          = new HashMap<String, String>();
 			// helper hash to get distinct publications
-			HashMap<Integer, PublicationDTO> publicationDTOHash = new HashMap<Integer, PublicationDTO>();
+			HashMap<String, PublicationDTO> publicationDTOHash = new HashMap<String, PublicationDTO>();
 			
 			List<Patient> patients = this.db.query(Patient.class).equals(Patient.MUTATIONS, variant.getId()).find();
 			// Get distinct list, not available in Molgenis query language
@@ -576,7 +588,12 @@ public class MolgenisVariantService
 				if (CollectionUtils.isNotEmpty(patient.getPatientreferences()))
 				{
 					PublicationService publicationService = ServiceLocator.instance().getPublicationService();
-					patientSummaryDTO.setPublicationDTOList(publicationService.publicationListToPublicationDTOList(patient.getPatientreferences()));
+					List<PublicationDTO> publicationDTOList = publicationService.publicationListToPublicationDTOList(patient.getPatientreferences());
+					for (PublicationDTO publicationDTO : publicationDTOList)
+					{
+						patientSummaryDTO.getPublicationDTOList().add(publicationDTO);
+						publicationDTOHash.put(publicationDTO.getName(), publicationDTO);
+					}
 				}
 				mutationSummaryDTO.getPatientSummaryDTOList().add(patientSummaryDTO);
 			}
@@ -628,8 +645,10 @@ public class MolgenisVariantService
 
 		/* Add variants */
 
-		List<SequenceCharacteristic> variantList = patient.getMutations();
-		patientSummaryDTO.setVariantDTOList(this.sequenceCharacteristicListToVariantDTOList(variantList));
+		List<VariantDTO> variantDTOList = this.sequenceCharacteristicListToVariantDTOList(patient.getMutations());
+		patientSummaryDTO.setVariantDTOList(variantDTOList);
+		if (variantDTOList.size() > 0)
+			patientSummaryDTO.setGdnaStart(variantDTOList.get(0).getGdnaStart());
 
 		/* Add phenotypic values */
 		PhenoService phenoService   = ServiceLocator.instance().getPhenoService();

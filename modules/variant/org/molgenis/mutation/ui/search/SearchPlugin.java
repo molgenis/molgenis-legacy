@@ -208,7 +208,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		SearchService searchService = ServiceLocator.instance().getSearchService();
 
 		this.getModel().setMutationSummaryDTOList(searchService.findMutations(this.getModel().getMutationSearchCriteriaVO()));
-		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryDTOList());
+		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryDTOList", this.getModel().getMutationSummaryDTOList());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 
 		this.getModel().setHeader(this.getModel().getMutationSummaryDTOList().size() + " results.");
@@ -302,7 +302,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 			{
 				if (CollectionUtils.isNotEmpty(result.get(key)))
 				{
-					((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryVOList", result.get(key));
+					((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryDTOList", result.get(key));
 					this.getModel().getMutationSummaryVOHash().put(" " + key + " ", this.include(request, this.getModel().getMutationPager()));
 					numMutations += result.get(key).size();
 				}

@@ -13,13 +13,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.molgenis.core.dto.PublicationDTO;
 import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -29,8 +26,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.pheno.Patient;
 import org.molgenis.mutation.ServiceLocator;
-import org.molgenis.mutation.dto.ExonDTO;
-import org.molgenis.mutation.dto.MutationSummaryDTO;
 import org.molgenis.mutation.dto.MutationUploadDTO;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.dto.VariantDTO;
@@ -141,17 +136,13 @@ public abstract class Upload extends PluginModel<Entity>
 			File file = request.getFile("upload");
 
 			//TODO: Remove absolute path's!!!!
-			Calendar cal    = Calendar.getInstance();
-			Date now        = cal.getTime();
-			String destName = Integer.toString(Math.abs(now.hashCode())) + ".xls";
-			String destPath = "/home/rwagner/col7a1db/webapps/col7a1/res/upload/" + destName;
-			File dest       = new File(destPath);
+			File dest = File.createTempFile("molgenis_upload", ".xls");
 			FileUtils.copyFile(file, dest);
 			
 			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
-			String uploadPath = "http://vm7.target.rug.nl" + rt.getRequest().getContextPath() + "/res/upload/" + destName;
+//			String uploadPath = "http://vm7.target.rug.nl" + rt.getRequest().getContextPath() + "/res/upload/" + destName;
 			
-			String emailContents = "New data upload: " + uploadPath + "\n User: " + this.getLogin().getUserName() + "\n";
+			String emailContents = "New data upload by User: " + this.getLogin().getUserName() + "\n";
 			//assuming: 'encoded' p.w. (setting deObf = true)
 			this.getEmailService().email("New data upload for COL7A1", emailContents, "p.c.van.den.akker@medgen.umcg.nl", true);
 //			service.email("New data upload for COL7A1", emailContents, "robert.wagner42@gmail.com");
@@ -161,7 +152,7 @@ public abstract class Upload extends PluginModel<Entity>
 
 	private void handlePatient(Tuple request) throws Exception
 	{
-		this.patientSummaryVO = this.toPatientSummaryVO(request);
+//		this.patientSummaryVO = this.toPatientSummaryVO(request);
 
 		if (this.action.equals("newPatient"))
 		{
@@ -185,7 +176,7 @@ public abstract class Upload extends PluginModel<Entity>
 
 	private void handleMutation(Tuple request) throws Exception
 	{
-		this.toMutationUploadVO(request);
+//		this.toMutationUploadVO(request);
 
 		if (this.action.equals("newMutation"))
 		{
@@ -364,218 +355,6 @@ public abstract class Upload extends PluginModel<Entity>
 	public MutationForm getMutationForm()
 	{
 		return this.mutationForm;
-	}
-
-	private PatientSummaryDTO toPatientSummaryVO(Tuple request)
-	{
-//		PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
-//
-//		if (StringUtils.isNotEmpty(request.getString("number")))
-//			patientSummaryVO.setPatientLocalId(request.getString("number"));
-//		
-//		patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
-//
-//		if (StringUtils.isNotEmpty(request.getString("mutation1")))
-//		{
-//			MutationSummaryVO m = new MutationSummaryVO();
-//			m.setId(request.getInt("mutation1"));
-//			patientSummaryVO.getVariantSummaryVOList().add(m);
-//		}
-//
-//		if (StringUtils.isNotEmpty(request.getString("mutation2")))
-//		{
-//			MutationSummaryVO m = new MutationSummaryVO();
-//			m.setId(request.getInt("mutation2"));
-//			patientSummaryVO.getVariantSummaryVOList().add(m);
-//		}
-//
-//		if (StringUtils.isNotEmpty(request.getString("phenotype")))
-//		{
-//			patientSummaryVO.setPhenotypeId(request.getInt("phenotype"));
-//		}
-//
-//		patientSummaryVO.setPublicationDTOList(new ArrayList<PublicationDTO>());
-//
-//		if (StringUtils.isNotEmpty(request.getString("pubmed")) || StringUtils.isNotEmpty(request.getString("pdf")))
-//		{
-//			PublicationDTO p = new PublicationDTO();
-//			p.setName(request.getString("pubmed")); //FIXME: Select from PubMed
-//			p.setTitle(request.getString("pubmed"));
-//			patientSummaryVO.getPublicationDTOList().add(p);
-//		}
-//
-//		if (StringUtils.isNotEmpty(request.getString("age")))
-//			patientSummaryVO.setPatientAge(request.getString("age"));
-//		
-//		if (StringUtils.isNotEmpty(request.getString("gender")))
-//			patientSummaryVO.setPatientGender(request.getString("gender"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("ethnicity")))
-//			patientSummaryVO.setPatientEthnicity(request.getString("ethnicity"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("deceased")))
-//			patientSummaryVO.setPatientDeceased(request.getString("deceased"));
-//		
-//		if (StringUtils.isNotEmpty(request.getString("deatch_cause")))
-//			patientSummaryVO.setPatientDeathCause(request.getString("death_cause"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("mmp1_allele1")))
-//			patientSummaryVO.setPatientMmp1Allele1(request.getString("mmp1_allele1"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("mmp1_allele2")))
-//			patientSummaryVO.setPatientMmp1Allele2(request.getString("mmp1_allele2"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("consent")))
-//			patientSummaryVO.setPatientConsent(request.getString("consent"));
-
-		return patientSummaryVO;
-	}
-	
-//	private PhenotypeDetailsVO toPhenotypeDetailsVO(Tuple request)
-//	{
-//		PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
-//
-//		phenotypeDetailsVO.setObservedValues(new HashMap<String, List<ObservedValueVO>>());
-//
-//		//TODO: Implement that in a generic way
-//		
-//		return phenotypeDetailsVO;
-////		if (StringUtils.isNotEmpty(request.getString("blistering")))
-////			phenotypeDetailsVO.setBlistering(request.getString("blistering"));
-////		if (StringUtils.isNotEmpty(request.getString("location")))
-////			patientSummaryVO.getPhenotypeDetails().setLocation(request.getString("location"));
-////		if (StringUtils.isNotEmpty(request.getString("hands")))
-////			patientSummaryVO.getPhenotypeDetails().setHands(request.getString("hands"));
-////		if (StringUtils.isNotEmpty(request.getString("feet")))
-////			patientSummaryVO.getPhenotypeDetails().setFeet(request.getString("feet"));
-////		if (StringUtils.isNotEmpty(request.getString("arms")))
-////			patientSummaryVO.getPhenotypeDetails().setArms(request.getString("arms"));
-////		if (StringUtils.isNotEmpty(request.getString("legs")))
-////			patientSummaryVO.getPhenotypeDetails().setLegs(request.getString("legs"));
-////		if (StringUtils.isNotEmpty(request.getString("proximal_body_flexures")))
-////			patientSummaryVO.getPhenotypeDetails().setProximal_Body_Flexures(request.getString("proximal_body_flexures"));
-////		if (StringUtils.isNotEmpty(request.getString("trunk")))
-////			patientSummaryVO.getPhenotypeDetails().setTrunk(request.getString("trunk"));
-////		if (StringUtils.isNotEmpty(request.getString("mucous_membranes")))
-////			patientSummaryVO.getPhenotypeDetails().setMucous_Membranes(request.getString("mucous_membranes"));
-////		if (StringUtils.isNotEmpty(request.getString("skin_atrophy")))
-////			patientSummaryVO.getPhenotypeDetails().setSkin_Atrophy(request.getString("skin_atrophy"));
-////		if (StringUtils.isNotEmpty(request.getString("milia")))
-////			patientSummaryVO.getPhenotypeDetails().setMilia(request.getString("milia"));
-////		if (StringUtils.isNotEmpty(request.getString("nail_dystrophy")))
-////			patientSummaryVO.getPhenotypeDetails().setNail_Dystrophy(request.getString("nail_dystrophy"));
-////		if (StringUtils.isNotEmpty(request.getString("albopapuloid_papules")))
-////			patientSummaryVO.getPhenotypeDetails().setAlbopapuloid_Papules(request.getString("albopapuloid_papules"));
-////		if (StringUtils.isNotEmpty(request.getString("pruritic_papules")))
-////			patientSummaryVO.getPhenotypeDetails().setPruritic_Papules(request.getString("pruritic_papules"));
-////		if (StringUtils.isNotEmpty(request.getString("alopecia")))
-////			patientSummaryVO.getPhenotypeDetails().setAlopecia(request.getString("alopecia"));
-////		if (StringUtils.isNotEmpty(request.getString("squamous_cell_carcinomas")))
-////			patientSummaryVO.getPhenotypeDetails().setSquamous_Cell_Carcinomas(request.getString("squamous_cell_carcinomas"));
-////		if (StringUtils.isNotEmpty(request.getString("revertant_skin_patch")))
-////			patientSummaryVO.getPhenotypeDetails().setRevertant_Skin_Patch(request.getString("revertant_skin_patch"));
-////		if (StringUtils.isNotEmpty(request.getString("mechanism")))
-////			patientSummaryVO.getPhenotypeDetails().setMechanism(request.getString("mechanism"));
-////		if (StringUtils.isNotEmpty(request.getString("flexion_contractures")))
-////			patientSummaryVO.getPhenotypeDetails().setFlexion_Contractures(request.getString("flexion_contractures"));
-////		if (StringUtils.isNotEmpty(request.getString("pseudosyndactyly_hands")))
-////			patientSummaryVO.getPhenotypeDetails().setPseudosyndactyly_Hands(request.getString("pseudosyndactyly_hands"));
-////		if (StringUtils.isNotEmpty(request.getString("microstomia")))
-////			patientSummaryVO.getPhenotypeDetails().setMicrostomia(request.getString("microstomia"));
-////		if (StringUtils.isNotEmpty(request.getString("ankyloglossia")))
-////			patientSummaryVO.getPhenotypeDetails().setAnkyloglossia(request.getString("ankyloglossia"));
-////		if (StringUtils.isNotEmpty(request.getString("dysphagia")))
-////			patientSummaryVO.getPhenotypeDetails().setDysphagia(request.getString("dysphagia"));
-////		if (StringUtils.isNotEmpty(request.getString("growth_retardation")))
-////			patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(request.getString("growth_retardation"));
-////		if (StringUtils.isNotEmpty(request.getString("anemia")))
-////			patientSummaryVO.getPhenotypeDetails().setAnemia(request.getString("anemia"));
-////		if (StringUtils.isNotEmpty(request.getString("renal_failure")))
-////			patientSummaryVO.getPhenotypeDetails().setRenal_Failure(request.getString("renal_failure"));
-////		if (StringUtils.isNotEmpty(request.getString("dilated_cardiomyopathy")))
-////			patientSummaryVO.getPhenotypeDetails().setDilated_Cardiomyopathy(request.getString("dilated_cardiomyopathy"));
-////		if (StringUtils.isNotEmpty(request.getString("other")))
-////			patientSummaryVO.getPhenotypeDetails().setOther(request.getString("other"));
-////		
-////		// IF
-////		if (StringUtils.isNotEmpty(request.getString("if_value")))
-////			patientSummaryVO.getIf_().setValue(request.getString("if_value"));
-////		if (StringUtils.isNotEmpty(request.getString("if_retention")))
-////			patientSummaryVO.getIf_().setRetention(request.getString("if_retention"));
-////		if (StringUtils.isNotEmpty(request.getString("if_description")))
-////			patientSummaryVO.getIf_().setDescription(request.getString("if_description"));
-////		
-////		// EM
-////		if (StringUtils.isNotEmpty(request.getString("em_fibrils")))
-////			patientSummaryVO.getEm_().setNumber(request.getString("em_fibrils"));
-////		if (StringUtils.isNotEmpty(request.getString("em_appearance")))
-////			patientSummaryVO.getEm_().setAppearance(request.getString("em_appearance"));
-////		if (StringUtils.isNotEmpty(request.getString("em_retention")))
-////			patientSummaryVO.getEm_().setRetention(request.getString("em_retention"));
-////		if (StringUtils.isNotEmpty(request.getString("em_description")))
-////			patientSummaryVO.getEm_().setDescription(request.getString("em_description"));
-//	}
-
-	private void toMutationUploadVO(Tuple request)
-	{
-//		if (StringUtils.isNotEmpty(request.getString("referer")))
-//			this.referer = request.getInt("referer");
-//
-//		if (StringUtils.isNotEmpty(request.getString("consequence")))
-//			this.mutationUploadVO.setConsequence(request.getString("consequence"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("inheritance")))
-//			this.mutationUploadVO.setInheritance(request.getString("inheritance"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("conservedaa")))
-//			if (StringUtils.equals(request.getString("conservedaa"), "conservedaa"))
-//				this.mutationUploadVO.setConservedAA(true);
-//			else
-//				this.mutationUploadVO.setConservedAA(false);
-//
-//		if (StringUtils.isNotEmpty(request.getString("effectonsplicing")))
-//			if (StringUtils.equals(request.getString("effectonsplicing"), "effectonsplicing"))
-//				this.mutationUploadVO.setEffectOnSplicing(true);
-//			else
-//				this.mutationUploadVO.setEffectOnSplicing(false);
-//
-//		if (StringUtils.isNotEmpty(request.getString("event")))
-//			this.mutationUploadVO.setEvent(request.getString("event"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("foundermutation")))
-//			if (StringUtils.equals(request.getString("foundermutation"), "foundermutation"))
-//				this.mutationUploadVO.setFounderMutation(true);
-//			else
-//				this.mutationUploadVO.setFounderMutation(false);
-//
-//		if (StringUtils.isNotEmpty(request.getString("length")))
-//			this.mutationUploadVO.setLength(request.getInt("length"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("ntchange")))
-//			this.mutationUploadVO.setNtChange(request.getString("ntchange").toUpperCase());
-//
-//		if (StringUtils.isNotEmpty(request.getString("population")))
-//			this.mutationUploadVO.setPopulation(request.getString("population"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("position")))
-//			this.mutationUploadVO.setMutationPosition(request.getString("position"));
-//		else
-//			this.mutationUploadVO.setMutationPosition("");
-//			//throw new Exception("Please enter the position.");
-//
-//		if (StringUtils.isNotEmpty(request.getString("reportedsnp")))
-//			if (StringUtils.equals(request.getString("reportedsnp"), "reportedsnp"))
-//				this.mutationUploadVO.setReportedSNP(true);
-//			else
-//				;
-//		else
-//			this.mutationUploadVO.setReportedSNP(false);
-//
-//		if (StringUtils.isNotEmpty(request.getString("aachange")))
-//			this.mutationUploadVO.setAachange(request.getString("aachange"));
-//
-//		if (StringUtils.isNotEmpty(request.getString("type")))
-//			this.mutationUploadVO.setType(request.getString("type"));
 	}
 
 	@Override

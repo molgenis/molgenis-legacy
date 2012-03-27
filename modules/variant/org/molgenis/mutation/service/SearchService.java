@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +23,7 @@ import org.molgenis.mutation.dto.MutationSummaryDTO;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.dto.ProteinDomainDTO;
 import org.molgenis.mutation.dto.VariantDTO;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.Patient;
 import org.molgenis.variant.SequenceCharacteristic;
 import org.molgenis.variant.SequenceRelation;
@@ -382,10 +384,13 @@ public class SearchService extends MolgenisVariantService
 			query.setParameter("name", mutationIdentifier);
 			List<SequenceCharacteristic> variantList = query.getResultList();
 
-			if (variantList.size() != 1)
+			if (variantList.size() > 1)
 				throw new SearchServiceException("Not exactly one variant matching " + mutationIdentifier);
 
-			return this.sequenceCharacteristicToMutationSummaryDTO(variantList.get(0));
+			if (variantList.size() == 1)
+				return this.sequenceCharacteristicToMutationSummaryDTO(variantList.get(0));
+			else
+				return null;
 		}
 		catch (Exception e)
 		{
@@ -405,7 +410,11 @@ public class SearchService extends MolgenisVariantService
 			if (StringUtils.isNotEmpty(criteria.getConsequence()))
 				mutations.addAll(this.findMutationsByObservedValue("consequence", criteria.getConsequence()));
 			if (StringUtils.isNotEmpty(criteria.getMid()))
-				mutations.add(this.findMutationByIdentifier(criteria.getMid()));
+			{
+				MutationSummaryDTO tmp = this.findMutationByIdentifier(criteria.getMid());
+				if (tmp != null)
+					mutations.add(tmp);
+			}
 			if (criteria.getCdnaPosition() != null)
 				mutations.addAll(this.findMutationsByCdnaPosition(criteria.getCdnaPosition()));
 			if (criteria.getCodonChangeNumber() != null)
@@ -469,9 +478,13 @@ public class SearchService extends MolgenisVariantService
 			query.setParameter("name", patientIdentifier);
 			List<Patient> patientList = query.getResultList();
 
-			if (patientList.size() != 1)
+			if (patientList.size() > 1)
 				throw new SearchServiceException("Not exactly one patient matches " + patientIdentifier);
-			return this.patientToPatientSummaryDTO(patientList.get(0));
+			
+			if (patientList.size() == 1)
+				return this.patientToPatientSummaryDTO(patientList.get(0));
+			else
+				return null;
 		}
 		catch (Exception e)
 		{
@@ -487,15 +500,18 @@ public class SearchService extends MolgenisVariantService
 		result.put("variation", this.findMutationsByCdnaNotation(term));
 
 		result.put("PID", this.findMutationsByPatientIdentifier(term));
-	
-		List<MutationSummaryDTO> pidList = new ArrayList<MutationSummaryDTO>();
-		pidList.add(this.findMutationByIdentifier(term));
-		result.put("MID", pidList);
+
+		MutationSummaryDTO tmp = this.findMutationByIdentifier(term);
+		if (tmp != null)
+		{
+			result.put("MID", new ArrayList<MutationSummaryDTO>());
+			result.get("MID").add(tmp);
+		}
 	
 		result.put("publication", this.findMutationsByPublication(term));
 
 		result.put("measurement", this.findMutationsByMeasurement(term));
-		result.put("observedValue", this.findMutationsByObservedValue(term));
+		result.put("observed value", this.findMutationsByObservedValue(term));
 
 		if (NumberUtils.isNumber(term))
 		{
@@ -511,7 +527,7 @@ public class SearchService extends MolgenisVariantService
 
 	public List<MutationSummaryDTO> findMutationsByCodonChangeNumber(final int aaPosition)
 	{
-		String sql = "SELECT DISTINCT s FROM SequenceRelation r JOIN r.SequenceFeature s WHERE s.featureType.name = 'aa-variant' AND r.fmin = :fmin";
+		String sql = "SELECT DISTINCT s FROM SequenceRelation r JOIN r.sequenceFeature s WHERE s.featureType.name = 'aa-variant' AND r.fmin = :fmin";
 		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
 		query.setParameter("fmin", aaPosition);
 
@@ -520,7 +536,7 @@ public class SearchService extends MolgenisVariantService
 
 	public List<MutationSummaryDTO> findMutationsByCdnaPosition(final int cdnaPosition)
 	{
-		String sql = "SELECT DISTINCT s FROM SequenceRelation r JOIN r.SequenceFeature s WHERE s.featureType.name = 'cdna-variant' AND r.fmin = :fmin";
+		String sql = "SELECT DISTINCT s FROM SequenceRelation r JOIN r.sequenceFeature s WHERE s.featureType.name = 'cdna-variant' AND r.fmin = :fmin";
 		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
 		query.setParameter("fmin", cdnaPosition);
 
@@ -535,8 +551,8 @@ public class SearchService extends MolgenisVariantService
 
 	public List<MutationSummaryDTO> findMutationsByObservedValue(final String value)
 	{
-		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.target s WHERE ov.value = :value";
-		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.target s WHERE s.__Type = 'SequenceCharacteristic' AND ov.value = :value";
+		Query query = this.em.createQuery(sql);
 		query.setParameter("value", value);
 
 		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
@@ -544,8 +560,8 @@ public class SearchService extends MolgenisVariantService
 
 	public List<MutationSummaryDTO> findMutationsByObservedValue(final String featureName, final String value)
 	{
-		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE f.name = :featureName AND ov.value = :value";
-		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE s.__Type = 'SequenceCharacteristic' AND f.name = :featureName AND ov.value = :value";
+		Query query = this.em.createQuery(sql);
 		query.setParameter("featureName", featureName);
 		query.setParameter("value", value);
 
@@ -554,22 +570,39 @@ public class SearchService extends MolgenisVariantService
 
 	public List<MutationSummaryDTO> findMutationsByMeasurement(final String feature)
 	{
-		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE f.name = :name AND ov.value IN ('yes', 'true')";
-		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE s.__Type = 'SequenceCharacteristic' AND f.name = :name AND ov.value IN ('yes', 'true')";
+		Query query = this.em.createQuery(sql);
 		query.setParameter("name", feature);
 
 		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
 	}
 
+	/**
+	 * Find mutations given a publication title
+	 * @param title term
+	 * @return list of variants
+	 */
 	public List<MutationSummaryDTO> findMutationsByPublication(final String term)
 	{
-		// TODO Auto-generated method stub
-		return new ArrayList<MutationSummaryDTO>();
+		try
+		{
+			String sql = "SELECT s FROM Patient p JOIN p.mutations s JOIN p.patientreferences r WHERE r.title LIKE :term";
+			TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+			query.setParameter("term", "%" + term + "%");
+			List<SequenceCharacteristic> variantList = query.getResultList();
+
+			return this.sequenceCharacteristicListToMutationSummaryDTOList(variantList);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
 	}
 
 	public List<MutationSummaryDTO> findMutationsByPatientIdentifier(final String term)
 	{
-		String sql = "SELECT DISTINCT s FROM Patient p JOIN p.mutations s JOIN p.AlternateId a WHERE a.name = :name";
+		String sql = "SELECT DISTINCT s FROM Patient p JOIN p.mutations s JOIN p.alternateId a WHERE a.name = :name";
 		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
 		query.setParameter("name", term);
 
@@ -578,7 +611,7 @@ public class SearchService extends MolgenisVariantService
 
 	public List<MutationSummaryDTO> findMutationsByCdnaNotation(final String cdnaNotation)
 	{
-		String sql = "SELECT s FROM SequenceCharacteristic s WHERE s.name = :name";
+		String sql = "SELECT s FROM SequenceCharacteristic s JOIN s.featureType t WHERE t.name = 'cdna-variant' AND s.name = :name";
 		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
 		query.setParameter("name", cdnaNotation);
 
@@ -592,15 +625,18 @@ public class SearchService extends MolgenisVariantService
 		result.put("variation", this.findPatientsByCdnaNotation(term));
 
 		result.put("MID", this.findPatientsByMutationIdentifier(term));
-	
-		List<PatientSummaryDTO> pidList = new ArrayList<PatientSummaryDTO>();
-		pidList.add(this.findPatientByPatientIdentifier(term));
-		result.put("PID", pidList);
+
+		PatientSummaryDTO tmp = this.findPatientByPatientIdentifier(term);
+		if (tmp != null)
+		{
+			result.put("PID", new ArrayList<PatientSummaryDTO>());
+			result.get("PID").add(tmp);
+		}
 	
 		result.put("publication", this.findPatientsByPublication(term));
 
 		result.put("measurement", this.findPatientsByMeasurement(term));
-		result.put("observedValue", this.findPatientsByObservedValue(term));
+		result.put("observed value", this.findPatientsByObservedValue(term));
 
 		if (NumberUtils.isNumber(term))
 		{
@@ -637,8 +673,8 @@ public class SearchService extends MolgenisVariantService
 
 	public List<PatientSummaryDTO> findPatientsByObservedValue(final String value)
 	{
-		String sql = "SELECT DISTINCT p FROM ObservedValue ov JOIN ov.target p WHERE ov.value = :value";
-		TypedQuery<Patient> query = this.em.createQuery(sql, Patient.class);
+		String sql = "SELECT DISTINCT p FROM ObservedValue ov JOIN ov.target p WHERE p.__Type = 'Patient' AND ov.value = :value";
+		Query query = this.em.createQuery(sql);
 		query.setParameter("value", value);
 
 		return this.patientListToPatientSummaryDTOList(query.getResultList());
@@ -647,18 +683,30 @@ public class SearchService extends MolgenisVariantService
 
 	public List<PatientSummaryDTO> findPatientsByMeasurement(final String featureName)
 	{
-		String sql = "SELECT DISTINCT p FROM ObservedValue ov JOIN ov.feature f JOIN ov.target p WHERE f.name = :name AND ov.value IN ('yes', 'true')";
-		TypedQuery<Patient> query = this.em.createQuery(sql, Patient.class);
+		String sql = "SELECT DISTINCT p FROM ObservedValue ov JOIN ov.feature f JOIN ov.target p WHERE p.__Type = 'Patient' AND f.name = :name AND ov.value IN ('yes', 'true')";
+		Query query = this.em.createQuery(sql);
 		query.setParameter("name", featureName);
 
 		return this.patientListToPatientSummaryDTOList(query.getResultList());
 	}
 
 
-	public List<PatientSummaryDTO> findPatientsByPublication(final String publicationName)
+	public List<PatientSummaryDTO> findPatientsByPublication(final String term)
 	{
-		// TODO Auto-generated method stub
-		return new ArrayList<PatientSummaryDTO>();
+		try
+		{
+			String sql = "SELECT p FROM Patient p JOIN p.patientreferences r WHERE r.title LIKE :term";
+			TypedQuery<Patient> query = this.em.createQuery(sql, Patient.class);
+			query.setParameter("term", "%" + term + "%");
+			List<Patient> patientList = query.getResultList();
+
+			return this.patientListToPatientSummaryDTOList(patientList);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
 	}
 
 

@@ -148,7 +148,6 @@ public class SequenceUtils
 	 */
 	public static int getNumFullAminoAcids(String sequence)
 	{
-System.out.println(">>> getNumFullAminoAcids: sequence==" + sequence);
 		String[] tokens = StringUtils.splitByCharacterTypeCamelCase(sequence);
 		
 		if (tokens.length < 1)

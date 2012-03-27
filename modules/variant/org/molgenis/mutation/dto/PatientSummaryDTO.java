@@ -19,8 +19,7 @@ public class PatientSummaryDTO implements Comparable<PatientSummaryDTO>, Seriali
 	private String patientLocalId;
 	private String patientConsent;
 	private List<VariantDTO> variantDTOList;
-	private Integer cdnaPosition; // for sorting
-	private Integer aaPosition; // for sorting
+	private Integer gdnaStart; // for sorting
 	private Integer exonNumber; //for sorting
 	private String variantComment;
 	private Integer phenotypeId;
@@ -48,8 +47,7 @@ public class PatientSummaryDTO implements Comparable<PatientSummaryDTO>, Seriali
 		this.patientLocalId = "";
 		this.patientConsent = "";
 		this.variantDTOList = new ArrayList<VariantDTO>();
-		this.cdnaPosition = 0;
-		this.aaPosition = 0;
+		this.gdnaStart = 0;
 		this.exonNumber = 0;
 		this.variantComment = "";
 		this.phenotypeId = 0;
@@ -113,20 +111,12 @@ public class PatientSummaryDTO implements Comparable<PatientSummaryDTO>, Seriali
 		this.variantDTOList = variantDTOList;
 	}
 
-	public Integer getCdnaPosition() {
-		return cdnaPosition;
+	public Integer getGdnaStart() {
+		return gdnaStart;
 	}
 
-	public void setCdnaPosition(Integer cdnaPosition) {
-		this.cdnaPosition = cdnaPosition;
-	}
-
-	public Integer getAaPosition() {
-		return aaPosition;
-	}
-
-	public void setAaPosition(Integer aaPosition) {
-		this.aaPosition = aaPosition;
+	public void setGdnaStart(Integer gdnaStart) {
+		this.gdnaStart = gdnaStart;
 	}
 
 	public Integer getExonNumber() {
