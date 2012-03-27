@@ -424,7 +424,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 		
 		int height = (matches.size() * 10) > 300 ? (matches.size() * 10) : 300;
 		
-		File plot = MakeRPlot.qtlMultiPlot(tmpData, plotWidth, height, this.model.getQuery());
+		File plot = MakeRPlot.qtlMultiPlotV2(tmpData, plotWidth, height, this.model.getQuery());
 		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, this.model.getQuery());
 		
 		
