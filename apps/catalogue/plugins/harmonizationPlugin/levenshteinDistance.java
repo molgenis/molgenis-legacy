@@ -123,19 +123,19 @@ public class levenshteinDistance {
 
 		descriptions.add("Building blocks");
 
-		//fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/PREVEND.xls";
+		fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/PREVEND.xls";
 
-		fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
+		//fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
 
 		tableModel model_2 = new tableModel(fileName, true);
 
-		//model_2.setStartingRow(11);
+		model_2.setStartingRow(11);
 
 		model_2.processingTable();
 
-		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Data", "Description");
+		//HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Data", "Description");
 
-		//HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Veldnaam", "SPSS Omschrijving");
+		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Veldnaam", "SPSS Omschrijving");
 
 		System.out.println("Parsing the ontology");
 
