@@ -6,6 +6,8 @@
 
 package plugins.header;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.auth.MolgenisUser;
@@ -69,27 +71,27 @@ public class catalogueHeader extends PluginModel<Entity>
 				
 				//only for AutoHideLoginSwitchService, but harmless otherwise 
 				//AutoHideLoginModel.isVisible = false; //TODO 
-				
-				
-				if ("sendFeedback".equals(request.getAction())) {
-					feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName() + 
-							") sent:\n\n" + request.getString("feedback") + "\n\nabout: " + request.getString("plugin");
-					
-					// get admin email
-					MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
-					if (StringUtils.isEmpty(admin.getEmail()))
-						throw new DatabaseException("Sending feedback failed: the administrator has no email address set. Please contact your administrator about this.");
-					
-					EmailService ses = this.getEmailService();
-					ses.email("New feedback on Lifelines Catalogue", feedback, admin.getEmail(), true);
-					
-					this.getMessages().add(new ScreenMessage(feedback, true));
-				}
-				
-				if ("resetFeedbackForm".equals(request.getAction())) {
-					feedback = null;
-				}
-
+		}
+		if ("sendFeedback".equals(request.getAction())) {
+			feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName() + 
+					") sent:\n\n" + request.getString("feedback") + "\n\nabout: " + request.getString("plugin");
+			
+			// get admin email
+			MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
+			if (StringUtils.isEmpty(admin.getEmail()))
+				throw new DatabaseException("Sending feedback failed: the administrator has no email address set. Please contact your administrator about this.");
+			
+			
+			EmailService ses = this.getEmailService();
+			ses.email("New feedback on Lifelines Catalogue", feedback, admin.getEmail(), true);
+			
+			this.getMessages().add(new ScreenMessage(feedback, true));
+			
+			System.out.println("Email : " + admin.getEmail()+ "Feedback >>>"+ feedback);
+		}
+		
+		if ("resetFeedbackForm".equals(request.getAction())) {
+			feedback = null;
 		}
 	}
 	

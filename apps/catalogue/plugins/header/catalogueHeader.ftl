@@ -35,7 +35,7 @@
 		<div style="clear:both"></div>
 	
 	<div class="form_header" id="headermenu" style="width:100%" >
-		<div style="float:right; font-size: 75%; font-family: arial, sans-serif; font-style: italic;">
+		<div >
 	   		<div style="float:right; font-size: 75%; font-family: arial, sans-serif; font-style: italic;">
 				<#if screen.getFullUserName()??>
 					<a href=# onclick="showFeedback();"><img src="res/img/feedback.jpeg" align="middle" height="20px" alt="Give feedback or comments on the active page." title="Give feedback or comments on the active page."> feedback</a>
