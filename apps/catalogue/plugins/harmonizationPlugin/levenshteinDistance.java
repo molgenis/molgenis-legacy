@@ -201,42 +201,80 @@ public class levenshteinDistance {
 
 		HashMap<String, String> levelAnnotation = model.getDescriptionForVariable(annotations.get(0), annotations.get(3));
 
-		searchingForOntologyTermInDescription(levelAnnotation, descriptionForVariable);
+		//searchingForOntologyTermInDescription(levelAnnotation, descriptionForVariable);
 
 		searchingForOntologyTermByStringMatching(levelAnnotation, descriptionForVariable, cutOff);
 	}
-
-	public void outPutMapping(HashMap<String, HashMap<String, Double>>mappingResultAndSimiarity, HashMap<String, String> dataItemNameToDescription) {
+	
+//	public void outPutMappingSummary(HashMap<String, HashMap<String, Double>>mappingResultAndSimiarity, HashMap<String, String> dataItemNameToDescription){
+//		
+//		System.out.println();
+//
+//		for(String key : mappingResultAndSimiarity.keySet()){
+//
+//			System.out.println("The parameter is \"" + key + "\"\t");
+//
+//			for(String dataItem : mappingResultAndSimiarity.get(key).keySet()){
+//				System.out.print("The dataItem is \"" + dataItem + "\"\t" + "The similarity is " + mappingResultAndSimiarity.get(key).get(dataItem));
+//				System.out.println();
+//			}
+//			System.out.println("Mapping by cutoff " + this.cutOff);
+//			if(foundDescriptionByCutOff.containsKey(key.toLowerCase())){
+//				for(String dataItem : foundDescriptionByCutOff.get(key.toLowerCase())){
+//					System.out.println("The dataItem mapped by cut off " + cutOff + " is \"" + dataItem + "\" and its description is \"" + dataItemNameToDescription.get(dataItem) + "\"");
+//				}
+//			}
+//			System.out.println();
+//
+//			System.out.println("Mapping by the pattern matching in the description!");
+//			if(foundTermInDataDescription.containsKey(key)){
+//				for(String dataItem : foundTermInDataDescription.get(key)){
+//					System.out.println("The dataItem mapped by pattern matching is \"" + dataItem + "\" and its description is \"" + dataItemNameToDescription.get(dataItem) + "\"");
+//				}
+//			}
+//
+//			System.out.println();
+//		}
+//	}
+	
+	public void outPutMappingDetails (HashMap<String, HashMap<String, Double>>mappingResultAndSimiarity, 
+			HashMap<String, List<String>> originalQueryToExpanded, HashMap<String, String> dataItemNameToDescription) {
 
 		System.out.println();
 
-		for(String key : mappingResultAndSimiarity.keySet()){
+		for(String eachOriginalQuery : originalQueryToExpanded.keySet()){
 
-			System.out.println("The parameter is \"" + key + "\"\t");
+			System.out.println("The original query is -------------- " + eachOriginalQuery);
 
-			for(String dataItem : mappingResultAndSimiarity.get(key).keySet()){
-				System.out.print("The dataItem is \"" + dataItem + "\"\t" + "The similarity is " + mappingResultAndSimiarity.get(key).get(dataItem));
+			for(String key : originalQueryToExpanded.get(eachOriginalQuery)){
+
+				System.out.println("The expanded query is \"" + key + "\"\t");
+
+				key = key.toLowerCase();
+
+				for(String dataItem : mappingResultAndSimiarity.get(key).keySet()){
+					System.out.print("The dataItem is \"" + dataItem + "\"\t" + "The similarity is " + mappingResultAndSimiarity.get(key).get(dataItem));
+					System.out.println();
+				}
+
+				if(foundDescriptionByCutOff.containsKey(key)){
+					System.out.println("Mapping by cutoff " + this.cutOff);
+					for(String dataItem : foundDescriptionByCutOff.get(key)){
+						System.out.println("The dataItem mapped by cut off " + cutOff + " is \"" + dataItem + "\" and its description is \"" + dataItemNameToDescription.get(dataItem) + "\"");
+					}
+				}
 				System.out.println();
 			}
-			System.out.println("Mapping by cutoff " + this.cutOff);
-			if(foundDescriptionByCutOff.containsKey(key)){
-				for(String dataItem : foundDescriptionByCutOff.get(key)){
-					System.out.println("The dataItem mapped by cut off " + cutOff + " is \"" + dataItem + "\" and its description is \"" + dataItemNameToDescription.get(dataItem) + "\"");
-				}
-			}
-			System.out.println();
 
 			System.out.println("Mapping by the pattern matching in the description!");
-			if(foundTermInDataDescription.containsKey(key)){
-				for(String dataItem : foundTermInDataDescription.get(key)){
+			if(foundTermInDataDescription.containsKey(eachOriginalQuery)){
+				for(String dataItem : foundTermInDataDescription.get(eachOriginalQuery)){
 					System.out.println("The dataItem mapped by pattern matching is \"" + dataItem + "\" and its description is \"" + dataItemNameToDescription.get(dataItem) + "\"");
 				}
 			}
 
 			System.out.println();
 		}
-
-
 	}
 
 	public List<String> queryExpansionByRelations(String query, OWLOntology localOntology){
@@ -340,8 +378,6 @@ public class levenshteinDistance {
 					queries.add(eachExpandedQuery);
 				}
 
-				String matchedQuery = "";
-
 				for(String eachQuery : queries){
 
 					eachQuery = eachQuery.replaceAll(separator, " ");
@@ -354,6 +390,7 @@ public class levenshteinDistance {
 						originalQueryToExpanded.put(key, temp);
 					}else{
 						List<String> temp = new ArrayList<String>();
+						temp.add(eachQuery);
 						originalQueryToExpanded.put(key, temp);
 					}
 
@@ -381,7 +418,7 @@ public class levenshteinDistance {
 							matchedDataItem = descriptionForVariable.get(dataItem);
 						}
 						if(similarity > cutOff*100){
-							addingNewMatchedItem(foundDescriptionByCutOff, key, dataItem);
+							addingNewMatchedItem(foundDescriptionByCutOff, eachQuery, dataItem);
 						}
 					}
 
@@ -404,7 +441,7 @@ public class levenshteinDistance {
 								synonymMatchedDataItem = descriptionForVariable.get(dataItem);
 							}
 							if(similarity > cutOff*100){
-								addingNewMatchedItem(foundDescriptionByCutOff, key, dataItem);
+								addingNewMatchedItem(foundDescriptionByCutOff, eachQuery, dataItem);
 							}
 						}
 					}				
@@ -416,8 +453,8 @@ public class levenshteinDistance {
 
 					HashMap<String, Double> temp = new HashMap<String, Double>();
 
-					if(mappingResultAndSimiarity.containsKey(key)){
-						temp = mappingResultAndSimiarity.get(key);
+					if(mappingResultAndSimiarity.containsKey(eachQuery)){
+						temp = mappingResultAndSimiarity.get(eachQuery);
 					}
 					if(temp.containsKey(matchedDataItem)){
 						if(temp.get(matchedDataItem) < maxSimilarity)
@@ -426,11 +463,14 @@ public class levenshteinDistance {
 						temp.put(matchedDataItem, maxSimilarity);
 					}
 
-					mappingResultAndSimiarity.put(key, temp);
+					mappingResultAndSimiarity.put(eachQuery, temp);
+					
 				}
 			}
 			System.out.println();
 		}
+
+		searchingForOntologyTermInDescription(originalQueryToExpanded, descriptionForVariable);
 
 		for(String dataItem : ontologyTermAndDataItems.keySet()){
 			System.out.println("The data item is " + dataItem);
@@ -439,40 +479,48 @@ public class levenshteinDistance {
 			}
 			System.out.println();
 		}
-		outPutMapping(mappingResultAndSimiarity, descriptionForVariable);
+		outPutMappingDetails(mappingResultAndSimiarity, originalQueryToExpanded, descriptionForVariable);
+		
 	}
 
-	public void searchingForOntologyTermInDescription(HashMap<String, String> levelAnnotation, HashMap<String, String> descriptionForVariable){
+	public void searchingForOntologyTermInDescription(HashMap<String, List<String>> levelAnnotation, HashMap<String, String> descriptionForVariable){
 
-		for(String key : levelAnnotation.keySet()){
-			//The input has to be non-empty and the input has not been annotated
-			if(!levelAnnotation.get(key).equals("")){
+		for(String originalQuery : levelAnnotation.keySet()){
 
-				String definitions[] = levelAnnotation.get(key).split(separator);
+			for(String key : levelAnnotation.get(originalQuery)){
 
-				List<String> searchTokens = arrayToList(definitions);
+				//The input has to be non-empty and the input has not been annotated
+				if(!key.equals("")){
 
-				searchTokens.add(levelAnnotation.get(key).replaceAll(separator, " "));
+					String definitions[] = key.split(separator);
 
-				for(String eachTerm : searchTokens){
+					List<String> searchTokens = arrayToList(definitions);
 
-					eachTerm = eachTerm.trim();
+					searchTokens.add(key.replaceAll(separator, " "));
 
-					for(String dataItem : descriptionForVariable.keySet()){
+					for(String eachTerm : searchTokens){
 
-						String description = descriptionForVariable.get(dataItem).toLowerCase();
-						if(description.matches("^" + eachTerm.toLowerCase() + "[\\W].*")){
-							addingNewMatchedItem(foundTermInDataDescription, key, dataItem);
-						}else if(description.matches(".*[\\W]" + eachTerm.toLowerCase() + "$")){
-							addingNewMatchedItem(foundTermInDataDescription, key, dataItem);
-						}else if(description.matches(".*[\\W]" + eachTerm.toLowerCase() + "[\\W].*")){
-							addingNewMatchedItem(foundTermInDataDescription, key, dataItem);
-						}else if(description.equalsIgnoreCase(eachTerm)){
-							addingNewMatchedItem(foundTermInDataDescription, key, dataItem);
+						eachTerm = eachTerm.trim();
+
+						for(String dataItem : descriptionForVariable.keySet()){
+
+							String description = descriptionForVariable.get(dataItem).toLowerCase();
+//							if(description.matches("^" + eachTerm.toLowerCase() + "[\\W].*")){
+//								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
+//							}else if(description.matches(".*[\\W]" + eachTerm.toLowerCase() + "$")){
+//								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
+//							}else if(description.matches(".*[\\W]" + eachTerm.toLowerCase() + "[\\W].*")){
+//								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
+//							}else if(description.equalsIgnoreCase(eachTerm)){
+//								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
+//							}
+							if(description.matches(".*" + eachTerm.toLowerCase() + ".*")){
+								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
+							}
 						}
 					}
-				}
 
+				}
 			}
 		}
 	}
