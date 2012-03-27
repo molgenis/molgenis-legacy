@@ -36,7 +36,8 @@
 <p><strong>Dutch / Nederlands</strong><br />
 <a href="animaldb/AddingAnimals.pdf" target="_blank">Handleiding 1: Toevoegen van dieren anders dan via de kweek</a><br />
 <a href="animaldb/RemovingAnimals.pdf" target="_blank">Handleiding 2: Verwijderen van dieren, gebruik van de matrix</a><br />
-<a href="animaldb/Breeding.pdf" target="_blank">Handleiding 3: Kweekbeheer</a><br />
+<a href="animaldb/BreedingNew.pdf" target="_blank">Handleiding 3A: Kweekbeheer</a><br />
+<a href="animaldb/Breeding.pdf" target="_blank">Handleiding 3B: Kweekbeheer (oude plugin)</a><br />
 <a href="animaldb/AnimalsInLocations.pdf" target="_blank">Handleiding 4: Dieren in locaties</a><br />
 <a href="animaldb/Measurements.pdf" target="_blank">Handleiding 5: Eigenschappen (wat betekenen de kolommen in de matrix?)</a>
 </p>

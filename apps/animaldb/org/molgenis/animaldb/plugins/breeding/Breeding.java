@@ -748,7 +748,8 @@ public class Breeding extends PluginModel<Entity>
 			if (action.equals("AddGenoCol")) {
 				storeGenotypeTable(db, request);
 				AddGenoCol(db, request);
-				this.getMessages().add(new ScreenMessage("Gene modification + state pair successfully added", true));
+				this.action = "weanOrGenotypeLitter";
+				this.setSuccess("Gene modification + state pair successfully added");
 			}
 			
 			if (action.equals("RemGenoCol")) {
@@ -757,11 +758,12 @@ public class Breeding extends PluginModel<Entity>
 					genotypeTable.removeColumn(currCol); // NB: nr. of cols is now 1 lower!
 					genotypeTable.removeColumn(currCol);
 					nrOfGenotypes--;
-					this.getMessages().add(new ScreenMessage("Gene modification + state pair successfully removed", true));
+					this.setSuccess("Gene modification + state pair successfully removed");
 				} else {
-					this.getMessages().add(new ScreenMessage("Cannot remove - at least one Gene modification + state pair has to remain", false));
+					this.setError("Cannot remove - at least one Gene modification + state pair has to remain");
 				}
 				storeGenotypeTable(db, request);
+				this.action = "weanOrGenotypeLitter";
 			}
 			
 		} catch (Exception e) {
@@ -1696,9 +1698,9 @@ public class Breeding extends PluginModel<Entity>
 			}
 			
 			if (request.getString("1_" + animalCount) != null) {
-				int sexId = request.getInt("1_" + animalCount);
+				String sexName = request.getString("1_" + animalCount);
 				input = (HtmlInput) genotypeTable.getCell(1, animalCount);
-				input.setValue(sexId);
+				input.setValue(sexName);
 				genotypeTable.setCell(1, animalCount, input);
 			}
 			
@@ -1717,9 +1719,9 @@ public class Breeding extends PluginModel<Entity>
 			}
 			
 			if (request.getString("4_" + animalCount) != null) {
-				int backgroundId = request.getInt("4_" + animalCount);
+				String backgroundName = request.getString("4_" + animalCount);
 				input = (HtmlInput) genotypeTable.getCell(4, animalCount);
-				input.setValue(backgroundId);
+				input.setValue(backgroundName);
 				genotypeTable.setCell(4, animalCount, input);
 			}
 			
