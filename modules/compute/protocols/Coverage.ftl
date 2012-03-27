@@ -16,6 +16,10 @@ alloutputsexist "${sample}.coverage.csv" \
 "${samplecoverageplotpdf}" \
 "${sample}.coverage.Rdata"
 
+export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
+export R_HOME=${R_HOME}
+export R_LIBS=${R_LIBS} 
+
 ${coveragescript} \
 --bam ${mergedbam} \
 --chromosome 1 \

@@ -31,6 +31,10 @@ ${genomeAnalysisTKjar} \
 -ct 1 -ct 2 -ct 5 -ct 10 -ct 15 -ct 20 -ct 30 -ct 40 -ct 50<#if capturingKit != "None"> \
 -L ${targetintervals}"</#if>
 
+export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
+export R_HOME=${R_HOME}
+export R_LIBS=${R_LIBS} 
+
 #Create coverage graphs for sample
 ${rscript} ${cumcoveragescriptgatk} \
 --in ${coveragegatk}.sample_cumulative_coverage_proportions \

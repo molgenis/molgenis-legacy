@@ -44,8 +44,7 @@ then
 	echo "[1] NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA" >> ${sampleconcordancefile} 
 else
 	##Set R library path
-	R_LIBS=${tooldir}/GATK-1.3-24-gc8b1c92/gsalib
-	export R_LIBS
+	export ${R_LIBS}
 	
 	##Extract header and individual from GenomeStudio Final_Report
 	head -10 ${arrayfilelocation} > ${finalreport}
