@@ -67,7 +67,7 @@ public class Column  {
     public static ColumnType getColumnType(String columnType) {
         columnType = WordUtils.capitalize(columnType);
         
-        if(columnType.startsWith("NUMMER")) {
+        if(columnType.startsWith("NUMMER") || columnType.startsWith("NUMBER")) {
         	final int decimalPrecision = Integer.parseInt(StringUtils.substringBetween(columnType, ",", ")"));
         	//final int precision = Integer.parseInt(StringUtils.substringBetween(columnType, "(", ","));
         	
@@ -78,7 +78,7 @@ public class Column  {
         	}
         } else if(columnType.startsWith("DATUM") || columnType.startsWith("DATE")) {
         	return ColumnType.Date;
-        } else if(columnType.startsWith("TEKST")) {
+        } else if(columnType.startsWith("TEKST") || columnType.startsWith("TEXT")) {
         	return ColumnType.String;
         }
         
