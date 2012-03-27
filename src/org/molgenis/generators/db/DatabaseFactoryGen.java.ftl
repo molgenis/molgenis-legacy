@@ -214,7 +214,11 @@ public class DatabaseFactory
 <#if databaseImp == "jpa">
 		return new app.JpaDatabase(configOverrides);
 <#else>
-		throw new UnsupportedOperationException();
+		 try {
+            return new ${package}.JDBCDatabase();            
+        } catch (Exception ex) {
+            throw new DatabaseException(ex);
+        }
 </#if> 
 	}
 
