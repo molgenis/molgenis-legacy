@@ -33,7 +33,7 @@
 		<pathelement location="apps/bbmri" />
 		<pathelement location="apps/col7a1" />
 		<pathelement location="apps/gcc" />
-		<pathelement location="apps/gwascentral" />
+		<pathelement location="apps/omicsconnect" />
 		<pathelement location="apps/magetab" />
 		<pathelement location="apps/sandbox" />
 		<pathelement location="apps/bioshare" />
