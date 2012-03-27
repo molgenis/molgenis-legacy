@@ -19,12 +19,15 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 public class OWLFunction {
-
+	
+	private String separtor = ";";
 	private OWLDataFactory factory = null;
 	private OWLOntology owlontology = null;
 	private HashMap<String, List<String>> classLabelToSynonyms = new HashMap<String, List<String>>();
 	private HashMap<String, String> synonymToClassLabel = new HashMap<String, String>();
 	private HashMap<String, OWLClass> labelToClass = new HashMap<String, OWLClass>();
+	private HashMap<String, List<String>> classRelations = new HashMap<String, List<String>>();
+	private HashMap<String, List<String>> expandedQueries = new HashMap<String, List<String>>();
 
 	public OWLFunction(){
 
@@ -35,15 +38,39 @@ public class OWLFunction {
 		this.factory = factory;
 	}
 
+	public void setSeparator(String separator){
+		this.separtor = separator;
+	}
+	
+	public String getSeparator(){
+		return this.separtor;
+	}
+	
 	public HashMap<String, String> getSynonymToClassLabel() {
 		return synonymToClassLabel;
+	}
+
+	public HashMap<String, List<String>> getClassRelations() {
+		return classRelations;
+	}
+	
+	public HashMap<String, List<String>> getExpandedQueries(){
+		return this.expandedQueries;
 	}
 
 	public HashMap<String, List<String>> getClassLabelToSynonyms() {
 		return classLabelToSynonyms;
 	}
 
-	public HashMap<String, OWLClass> labelMapURI(List<IRI> AnnotataionProperty){
+	public HashMap<String, OWLClass> labelMapURI(List<String> annotationProperty){
+
+		List<IRI> AnnotataionProperty = new ArrayList<IRI>();
+
+		if(annotationProperty != null){
+			for(String property : annotationProperty){
+				AnnotataionProperty.add(IRI.create(property));
+			}
+		}
 
 		labelToClass.clear();
 		classLabelToSynonyms.clear();
@@ -62,8 +89,10 @@ public class OWLFunction {
 					labelToClass.put(labelString.toLowerCase(), cls);
 				}
 			}
-			synonymToLabel(cls, labelString, AnnotataionProperty);
+			this.synonymToLabel(cls, labelString, AnnotataionProperty);
 		}
+
+		this.convertOWLRelationToTokens();
 
 		return labelToClass;
 	}//end of labelMapURI method
@@ -109,6 +138,79 @@ public class OWLFunction {
 			classLabelToSynonyms.put(classLabel, temp);
 		}else{
 			classLabelToSynonyms.put(classLabel, listOfSynonyms);
+		}
+	}
+
+
+	public void convertOWLRelationToTokens(){
+
+		for(String labelOfClass : labelToClass.keySet()){
+
+			OWLClass cls = labelToClass.get(labelOfClass);
+
+			List<String> relations = null;
+
+			if(classRelations.containsKey(getLabel(cls, owlontology))){
+				relations = classRelations.get(getLabel(cls, owlontology));
+			}else{
+				relations = new ArrayList<String>();
+			}
+
+			for(OWLSubClassOfAxiom axiom : owlontology.getSubClassAxiomsForSubClass(cls)){
+
+				OWLClassExpression expression = axiom.getSuperClass();
+
+				List<OWLClass> tokens = new ArrayList<OWLClass>();
+
+				if(expression.isAnonymous()){
+					String definition = "";
+					for(OWLClass classToken : expression.getClassesInSignature()){
+						if(!relations.contains(getLabel(classToken, owlontology))){
+							definition += " " + getLabel(classToken, owlontology);
+						}
+						tokens.add(classToken);
+					}
+					definition = definition.trim().toLowerCase();
+					if(!definition.equalsIgnoreCase(labelOfClass))
+						relations.add(definition.trim());
+				}
+
+				queryExpansion(labelOfClass, tokens);
+			}
+			classRelations.put(labelOfClass, relations);
+		}
+	}
+
+	public void queryExpansion(String labelOfClass, List<OWLClass> tokens){
+
+		if(tokens.size() > 1){
+
+			List<String> firstTokens = this.getAllChildren(owlontology, tokens.get(0), new ArrayList());
+
+			List<String> secondTokens = this.getAllChildren(owlontology, tokens.get(1), new ArrayList());
+
+			firstTokens.add(getLabel(tokens.get(0), owlontology));
+
+			secondTokens.add(getLabel(tokens.get(1), owlontology));
+
+			for(String firstToken : firstTokens){
+
+				for(String secondToken : secondTokens){
+
+					List<String> expandedClassLabel = null;
+
+					if(!expandedQueries.containsKey(labelOfClass)){
+						expandedClassLabel = new ArrayList<String>();
+						expandedClassLabel.add(firstToken + separtor + secondToken);
+					}else{
+						expandedClassLabel = expandedQueries.get(labelOfClass);
+						if(!expandedClassLabel.contains(firstToken + separtor + secondToken)){
+							expandedClassLabel.add(firstToken + separtor + secondToken);
+						}
+					}
+					expandedQueries.put(labelOfClass, expandedClassLabel);
+				}
+			}
 		}
 	}
 
