@@ -382,7 +382,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 									if(nameToMarker.containsKey(colNames.get(markerIndex)))
 									{
 										String chrId = nameToMarker.get(colNames.get(markerIndex)).getChromosome_Id() != null ? nameToMarker.get(colNames.get(markerIndex)).getChromosome_Id().toString() : "-";
-										bw.write(overallIndex + " \"" + colNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(colNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex]);
+										bw.write(overallIndex + " \"" + colNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(colNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex] + " " + d.getId());
 										bw.newLine();
 										overallIndex++;
 									}
@@ -402,7 +402,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 									if(nameToMarker.containsKey(rowNames.get(markerIndex)))
 									{
 										String chrId = nameToMarker.get(rowNames.get(markerIndex)).getChromosome_Id() != null ? nameToMarker.get(rowNames.get(markerIndex)).getChromosome_Id().toString() : "-";
-										bw.write(overallIndex + " \"" + rowNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(rowNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex]);
+										bw.write(overallIndex + " \"" + rowNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(rowNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex] + " " + d.getId());
 										bw.newLine();
 										overallIndex++;
 									}
