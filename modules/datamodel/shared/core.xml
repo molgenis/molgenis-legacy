@@ -189,6 +189,8 @@
 				description="The status of the Publication" type="xref"
 				xref_field="OntologyTerm.id" nillable="true" />
 			-->
+			<field name="Year" nillable="true" label="Publication Year" description="The year of the Publication" />
+			<field name="Journal" nillable="true" label="Journal Title" description="The title of the Journal" />
 			<unique fields="Name" />
 		</entity>
 		<entity name="UseCase" label="Use Cases">
