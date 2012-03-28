@@ -8,7 +8,7 @@
 ${variantDTO.cdnaNotation}<#if variantDTO.aaNotation??> (${variantDTO.aaNotation})</#if>
 </#list>
 </td></tr>
-<tr class="form_listrow0"><th>Phenotype</th><td>${patientSummaryVO.getPhenotypeMajor()}<#if patientSummaryVO.getPhenotypeSub() != "">, ${patientSummaryVO.getPhenotypeSub()}</#if><#if patientSummaryVO.patientConsent != "no"> [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patientIdentifier}#phenotype">Details</a>]</#if></td></tr>
+<tr class="form_listrow0"><th>Phenotype</th><td>${patientSummaryVO.getPhenotypeMajor()}<#if patientSummaryVO.getPhenotypeSub() != "">, ${patientSummaryVO.getPhenotypeSub()}</#if><#if patientSummaryVO.patientConsent != "no"> [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patientIdentifier}#results">Details</a>]</#if></td></tr>
 <tr class="form_listrow1"><th>Local patient no</th><td>${patientSummaryVO.patientLocalId}</td></tr>
 <tr class="form_listrow0"><th>Reference</th><td>
 <#if patientSummaryVO.publicationDTOList?? && patientSummaryVO.publicationDTOList?size &gt; 0>

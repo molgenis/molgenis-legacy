@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 
-<display:table name="publicationVOList" pagesize="20" export="true" sort="list" class="listtable" id="current">
+<display:table name="publicationDTOList" pagesize="20" export="true" sort="list" class="listtable" id="current">
 <display:setProperty name="paging.banner.full"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0} <a href="{3}">Next</a> <a href="{4}">Last</a></span></display:setProperty>  
 <display:setProperty name="paging.banner.first"><span class="pagelinks">{0} <a href="{3}">Next</a> <a href="{4}">Last</a> </span></display:setProperty>
 <display:setProperty name="paging.banner.last"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0}</span></display:setProperty>
@@ -18,6 +18,9 @@
 
 <display:column title="No."><c:out value="${current_rowNum}"/></display:column>
 <display:column title="Title" property="title" sortable="true"/>
+<display:column title="Authors" property="authors" sortable="true" maxWords="2"/>
+<display:column title="Journal" property="journal" sortable="true"/>
+<display:column title="Year" property="year" sortable="true"/>
 <display:column media="html" title="External link" sortable="true">
 	<a href="${current.pubmedUrl}" title="${current.title}" target="_new">PM:<c:out value="${current.pubmedId}"/></a>
 </display:column>

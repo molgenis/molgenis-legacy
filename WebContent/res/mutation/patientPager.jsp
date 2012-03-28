@@ -22,25 +22,33 @@
 <display:column title="Phenotype" sortable="true">
 	<c:out value="${current.phenotypeMajor}"/><c:if test="${fn:length(current.phenotypeSub) > 1}">, <c:out value="${current.phenotypeSub}"/></c:if>
 </display:column>
-<display:column media="html" title="cDNA change" sortable="true" headerClass="sortable">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${current.variantSummaryVOList[0].identifier}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[0].cdnaNotation}"/></a>
+<display:column media="html" title="cDNA change" sortable="true" headerClass="sortable" sortProperty="gdnaStart">
+	<c:forEach var="variantDTO" items="${current.variantDTOList}">
+	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${variantDTO.identifier}#results"/>
+	<a href="<c:out value="${url}"/>"><c:out value="${variantDTO.cdnaNotation}"/></a><br>
+	</c:forEach>
 </display:column>
-<display:column media="html" title="Protein change" sortable="true" headerClass="sortable">
-	<c:out value="${current.variantSummaryVOList[0].aaNotation}"/>
+<display:column media="html" title="Protein change" sortable="true" headerClass="sortable" sortProperty="gdnaStart">
+	<c:forEach var="variantDTO" items="${current.variantDTOList}">
+	<c:out value="${variantDTO.aaNotation}"/><br>
+	</c:forEach>
 </display:column>
 <display:column media="html" title="Exon" sortable="true" headerClass="sortable">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${current.variantSummaryVOList[0].exonId}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${current.variantSummaryVOList[0].exonName}"/></a>
+	<c:forEach var="variantDTO" items="${current.variantDTOList}">
+	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${variantDTO.exonId}#results"/>
+	<a href="<c:out value="${url}"/>"><c:out value="${variantDTO.exonName}"/></a><br>
+	</c:forEach>
 </display:column>
 <display:column media="html" title="Pathogenicity" sortable="true" headerClass="sortable">
-	<c:out value="${current.variantSummaryVOList[0].pathogenicity}"/>
+	<c:forEach var="variantDTO" items="${current.variantDTOList}">
+	<c:out value="${variantDTO.pathogenicity}"/><br>
+	</c:forEach>
 </display:column>
 <display:column media="html" title="Reference">
 	<c:choose>
-	<c:when test="${fn:length(current.publicationVOList) > 0}">
-	<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<a href="${current.pubmedURL}${publicationVO.pubmedId}" title="${publicationVO.title}" target="_new"><c:out value="PM:${publicationVO.pubmedId}"/></a><br/>
+	<c:when test="${fn:length(current.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="PM:${publicationDTO.pubmedId}"/></a><br/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
@@ -50,25 +58,33 @@
 </display:column>
 
 <display:column media="csv excel pdf" title="cDNA change">
-	<c:out value="${current.variantSummaryVOList[0].cdnaNotation}" escapeXml="false"/>
+	<c:forEach var="variantDTO" items="${current.variantDTOList}">
+	<c:out value="${variantDTO.cdnaNotation}" escapeXml="false"/>
+	</c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="Protein change">
-	<c:out value="${current.variantSummaryVOList[0].aaNotation}" escapeXml="false"/>
+	<c:forEach var="variantDTO" items="${current.variantDTOList}">
+	<c:out value="${variantDTO.aaNotation}" escapeXml="false"/>
+	</c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="Exon/Intron">
-	<c:out value="${current.variantSummaryVOList[0].exonName}" escapeXml="false"/>
+	<c:forEach var="variantDTO" items="${current.variantDTOList}">
+	<c:out value="${variantDTO.exonName}" escapeXml="false"/>
+	</c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="Pathogenicity">
-	<c:out value="${current.variantSummaryVOList[0].pathogenicity}" escapeXml="false"/>
+	<c:forEach var="variantDTO" items="${current.variantDTOList}">
+	<c:out value="${variantDTO.pathogenicity}" escapeXml="false"/>
+	</c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="Reference">
-<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<c:out value="${publicationVO.name}" escapeXml="false"/>;
+<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<c:out value="${publicationDTO.name}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="PubMed ID">
-<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<c:out value="PM:${publicationVO.pubmedId}" escapeXml="false"/>;
+<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<c:out value="PM:${publicationDTO.pubmedId}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 
