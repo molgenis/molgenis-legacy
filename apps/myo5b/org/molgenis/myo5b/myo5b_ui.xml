@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		DOCTYPE molgenis PUBLIC "MOLGENIS 1.0"
+		"http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd"
+	-->
+<molgenis name="myo5b" label="MYO5B Database">
+	<plugin name="MolgenisHeader" type="org.molgenis.myo5b.ui.Header"/>
+	<menu name="View" startswith="SearchPlugin">
+		<plugin name="SearchPlugin" type="org.molgenis.myo5b.ui.Search" label="Search">
+			<plugin name="NewsBar" type="org.molgenis.news.ui.News" label="News"/>
+		</plugin>
+		<plugin name="UploadPlugin" type="org.molgenis.myo5b.ui.Upload" label="Submit data"/>
+		<plugin name="Contact" type="org.molgenis.feedback.ui.Contact" label="Contact"/>
+		<plugin name="Publications" type="org.molgenis.core.ui.AllPublications" label="References"/>
+<!--
+		<plugin name="Background" type="org.molgenis.myo5b.ui.Background" label="Background"/>
+-->
+		<plugin name="NewsPlugin" type="org.molgenis.news.ui.News" label="News"/>
+		<menu name="Management" position="left" label="Management">
+			<form name="SequenceCharacteristic" entity="SequenceCharacteristic">
+				<form name="SequenceObservedValue" entity="ObservedValue" label="Phenotypic Value" hide_fields="Investigation,protocolApplication,ontologyReference,time,endtime"/>
+			</form>
+			<form name="SequenceRelation" entity="SequenceRelation"/>
+			<form name="Workflow" entity="Workflow" label="Patient Workflow">
+				<form name="WorkflowElement" entity="WorkflowElement">
+					<form name="Protocol" entity="Protocol" label="Patient Protocol" hide_fields="Investigation,ontologyReference,TargetFilter"/>
+				</form>
+			</form>
+			<form name="Measurement" entity="Measurement" label="Phenotypic Feature" hide_fields="Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation"/>
+			<form name="ObservedValue" entity="ObservedValue" label="Phenotypic Value" hide_fields="Investigation,protocolApplication,ontologyReference,time,endtime"/>
+			<form name="Patient" entity="Patient">
+				<form name="PatientObservedValue" entity="ObservedValue" label="Phenotypic Value" hide_fields="Investigation,protocolApplication,ontologyReference,time,endtime"/>
+			</form>
+			<form name="Submission" entity="Submission"/>
+			<form name="Publication" entity="Publication" compact_view="Title,PubmedID" label="References">
+				<form name="OntologyTerm" entity="OntologyTerm" label="Ontology term"/>
+			</form>
+			<form name="News" entity="MolgenisNews"/>
+			<form name="Paragraph" entity="Paragraph" label="Content Management"/>
+		</menu>
+		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin" label="myMYO5B"/>
+	</menu>
+</molgenis>

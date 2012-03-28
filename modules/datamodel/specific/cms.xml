@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="cms">
+		<description>Content Management Plugin for Molgenis</description>
+		<entity name="Paragraph">
+			<field name="id" type="autoid" description="primary key" />
+			<field name="entity" type="xref" xref_field="MolgenisEntity.id" description="The plugin this cmp element refers to"/>
+			<field name="name" description="section inside the web page"/>
+			<field name="content" type="text" description="the content of the web page section"/>
+			<field name="prevParagraph" type="xref" xref_field="Paragraph.id" nillable="true" description="Prev Section in List"/>
+		</entity>
+	</module>
+</molgenis>
