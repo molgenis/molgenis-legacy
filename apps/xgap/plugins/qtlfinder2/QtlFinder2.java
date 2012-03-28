@@ -321,6 +321,11 @@ public class QtlFinder2 extends PluginModel<Entity>
 		
 		for(Data d : allData)
 		{
+			if(PlotHelper.isEffectSizeData(db, d))
+			{
+				continue;
+			}
+			
 			//if something fails with this matrix, don't break the loop
 			//e.g. backend file is missing
 			try{
@@ -422,7 +427,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 		
 		bw.close();
 		
-		int height = (matches.size() * 10) > 300 ? (matches.size() * 10) : 300;
+		int height = (matches.size() * 20) > 300 ? (matches.size() * 20) : 300;
 		
 		File plot = MakeRPlot.qtlMultiPlotV2(tmpData, plotWidth, height, this.model.getQuery());
 		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, this.model.getQuery());

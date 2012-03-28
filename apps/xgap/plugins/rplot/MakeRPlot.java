@@ -135,7 +135,7 @@ public class MakeRPlot
 		script.append(" ### chromosome position");
 		script.append(" chr.pos <- c(15072423,15279345,13783700,17493793,20924149,17718866)");
 		script.append(" ## ramp <- colorRamp(c(\"black\",\"black\",\"purple\",\"blue\",\"green\",\"yellow\",\"orange\",\"red\"))    ###### set color range for LOD indication");
-		script.append(" ramp <- colorRamp(c(\"white\",\"lightblue\",\"blue\",\"darkblue\"))    ###### set color range for LOD indication");
+		script.append(" ramp <- colorRamp(c(\"lightgray\",\"blue\",\"darkblue\",\"black\"))    ###### set color range for LOD indication");
 		script.append(" use.col <- rgb( ramp(seq(0, 1, length = 100)), max = 255)");
 		script.append(" #### selected the info for determining the number of pannels");
 		script.append(" matX.names <- as.character(unique(plotMe[,8]))                                 ##### selects the matriX names");
@@ -166,7 +166,7 @@ public class MakeRPlot
 		script.append(" matX.lod[k,] <- as.numeric(plotMe[matX.selc & plotMe[,5] == trait.names[k] ,7])");
 		script.append(" }");
 		script.append(" ");
-		script.append(" par(mar=c(1,1,0,1),fig=c(0,0.95,top.y[i],bot.y[i]),new=T,mgp=c(2,0.5,0))");
+		script.append(" par(mar=c(1,1,1,1),fig=c(0,0.95,top.y[i],bot.y[i]),new=T,mgp=c(2,0.5,0))"); //old: c(1,1,0,1)
 		script.append(" plot(0,0,type=\"n\",xlim=c(0,sum(chr.pos)/1e6),ylim=c(0.5,trait.nr+0.5),axes=F,xaxs=\"i\",yaxs=\"i\",main=\"\",ylab=\"Trait\")");
 		script.append(" mtext(matX.names[i],2,4,cex=2,font=2,las=2)");
 		script.append(" chr.borders <- c(cumsum(chr.pos)/1e6)");

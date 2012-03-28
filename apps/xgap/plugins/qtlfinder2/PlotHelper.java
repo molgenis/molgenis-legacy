@@ -180,7 +180,7 @@ public class PlotHelper
 		return result;
 	}
 	
-	private static boolean isEffectSizeData(Database db, Data data) throws DatabaseException
+	public static boolean isEffectSizeData(Database db, Data data) throws DatabaseException
 	{
 		List<DataSet> dsRef = db.find(DataSet.class, new QueryRule(DataSet.NAME, Operator.EQUALS, "Default_tags"));
 		
