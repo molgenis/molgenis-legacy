@@ -74,7 +74,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 		<#assign type_label = field.getType().toString()>
 		<#if (field.name != typefield()) || !entity.hasAncestor()>
 	public <#if type_label == "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> get${JavaName(field)}();
-	public void set${JavaName(field)}(<#if field.type = "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> ${name(field)});//NEW
+	public void set${JavaName(field)}(<#if field.type = "xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#else>${type(field)}</#if> ${name(field)});
 		<#if type_label == "enum">
 	public java.util.List<org.molgenis.util.ValueLabel> get${JavaName(field)}Options();
 		<#elseif type_label == "xref">			
@@ -214,7 +214,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 			<#else>
 				<#if field.type == "text" >			
 //	@javax.persistence.Lob()
-	@javax.persistence.Column(name="${SqlName(field)}"<#if !field.nillable>, nullable=false</#if>)
+	@javax.persistence.Column(name="${SqlName(field)}", length=16777216<#if !field.nillable>, nullable=false</#if>)
 				<#else>
         <#if SqlName(field) == '__Type'>
 	@javax.persistence.Column(name="DType"<#if !field.nillable>, nullable=false</#if>)            
@@ -230,7 +230,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 			<#if isPrimaryKey(field,entity)>
 				<#if !entity.hasAncestor()>
 	//@javax.validation.constraints.NotNull
-	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;//NEW
+	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;
 				</#if>
 			<#else>
 				
@@ -238,7 +238,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 				<#if !field.isNillable() >
 	@javax.validation.constraints.NotNull
 				</#if>
-	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;//NEW
+	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;
 			</#if>
 		<#if type_label == "enum">
 	@javax.persistence.Transient
@@ -321,7 +321,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	 * Set the ${field.description}.
 	 * @param ${name(field)}
 	 */
-	public void set${JavaName(field)}( <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)})//NEW
+	public void set${JavaName(field)}( <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)})
 	{
 		this.${name(field)} = ${name(field)};
 	}
@@ -331,7 +331,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	 * Set the ${field.description}.
 	 * @param ${name(field)}
 	 */
-	public void set${JavaName(field)}( <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)})//NEW
+	public void set${JavaName(field)}( <#if field.type =="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type == "mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)})
 	{
 		<#-- hack to solve problem with variable hidden in supertype -->
 		<#if entity.hasAncestor()> 
