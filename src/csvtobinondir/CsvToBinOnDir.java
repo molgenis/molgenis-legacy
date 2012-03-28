@@ -179,7 +179,7 @@ public class CsvToBinOnDir
 				System.out.println("Working on '" + d.getName() + "'");
 				
 				File srcTxt = new File(d.getName() + ".txt");
-				File outbin = new File(d.getName() + ".bin");
+				File outbin = new File(d.getName().toLowerCase() + ".bin"); //FIXME: good behaviour?
 				
 				System.out.println("Source: " + srcTxt.getAbsolutePath());
 				System.out.println("Target: " + outbin.getAbsolutePath());
