@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.molgenis.mutation.Exon;
+import org.molgenis.mutation.vo.ExonSummaryVO;
 
 public class SequenceUtils
 {
@@ -136,7 +137,7 @@ public class SequenceUtils
 		int numFullAas  = tokens.length;
 		if (tokens[0].length() < 3)
 			numFullAas--;
-		if (tokens[numFullAas - 1].length() < 3)
+		if (tokens[tokens.length - 1].length() < 3)
 			numFullAas--;
 		
 		return numFullAas;
@@ -339,7 +340,7 @@ public class SequenceUtils
 	 * @return gDNA position
 	 * @throws RESyntaxException
 	 */
-	public static Integer getGDNAPosition(String position, Exon exon, String orientation) throws RESyntaxException //Integer gDNAPositionStart, Integer cDNAPositionStart)
+	public static Integer getGDNAPosition(String position, ExonSummaryVO exonSummaryVO, String orientation) throws RESyntaxException //Integer gDNAPositionStart, Integer cDNAPositionStart)
 	{
 		RE reExon   = new RE("^(\\d+)$");
 		RE reIntron = new RE("^(\\d+)([+-])(\\d+)$");
@@ -347,25 +348,25 @@ public class SequenceUtils
 		if (reExon.match(position))
 			if ("R".equals(orientation))
 				// exon.gDNA - (mutation.cDNA - exon.cDNA)
-				return Math.abs(exon.getGdna_Position() - (Integer.valueOf(reExon.getParen(1)) - exon.getCdna_Position()));
+				return Math.abs(exonSummaryVO.getGdnaPosition() - (Integer.valueOf(reExon.getParen(1)) - exonSummaryVO.getCdnaPosition()));
 			else
 				// exon.gDNA + (mutation.cDNA - exon.cDNA)
-				return Math.abs(exon.getGdna_Position() + (Integer.valueOf(reExon.getParen(1)) - exon.getCdna_Position()));
+				return Math.abs(exonSummaryVO.getGdnaPosition() + (Integer.valueOf(reExon.getParen(1)) - exonSummaryVO.getCdnaPosition()));
 		else if (reIntron.match(position))
 			if (reIntron.getParen(2).equals("+"))
 				if ("R".equals(orientation))
 					// intron.gdnaPos + 1 (back to exon) - difference ('+' means downstream)
-					return Math.abs(exon.getGdna_Position() + 1 - Integer.valueOf(reIntron.getParen(3)));
+					return Math.abs(exonSummaryVO.getGdnaPosition() + 1 - Integer.valueOf(reIntron.getParen(3)));
 				else
 					// intron.gdnaPos - 1 (start at last position of exon) + difference ('+' means upstream)
-					return Math.abs(exon.getGdna_Position() - 1 + Integer.valueOf(reIntron.getParen(3)));
+					return Math.abs(exonSummaryVO.getGdnaPosition() - 1 + Integer.valueOf(reIntron.getParen(3)));
 			else
 				if ("R".equals(orientation))
 					// intron.gdnaPos - intron.length + difference ('-' means upstream)
-					return Math.abs(exon.getGdna_Position() - exon.getLength() + Integer.valueOf(reIntron.getParen(3)));
+					return Math.abs(exonSummaryVO.getGdnaPosition() - exonSummaryVO.getLength() + Integer.valueOf(reIntron.getParen(3)));
 				else
 					// intron.gdnaPos - difference ('-' means downstream)
-					return Math.abs(exon.getGdna_Position() - exon.getLength() + Integer.valueOf(reIntron.getParen(3)));
+					return Math.abs(exonSummaryVO.getGdnaPosition() - exonSummaryVO.getLength() + Integer.valueOf(reIntron.getParen(3)));
 		else
 			throw new RESyntaxException("Invalid position notation: " + position);
 	}
