@@ -462,42 +462,53 @@
 	<table cellpadding="30"><tr><td>
 		<h2>Results for "<#if model.query??>${model.query}</#if>"</h2><br>
 		
-		<table><tr>
-		<td>
-		<#if model.multiplot.plot??>
-		<i>All-in-one plot of search matches, click to enlarge:</i><br>
-			<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.multiplot.plot + "></body></html>">
-			<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-				<img src="tmpfile/${model.multiplot.plot}" width="320" height="320">
-			</a>
-		</#if>
+		<table>
+			<tr>
+				<td>
+					<#if model.multiplot.plot??>
+					<i>All-in-one plot of search matches, click to enlarge:</i><br>
+						<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.multiplot.plot + "></body></html>">
+						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+							<img src="tmpfile/${model.multiplot.plot}" width="320" height="320">
+						</a>
+					</#if>
+				</td>
+				<td>
 		
-		</td>
-		<td>
-		
-		<#if model.multiplot.cisTransPlot??>
-		<i>Cis-trans plot, click to enlarge:</i><br>
-			<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.multiplot.cisTransPlot + "></body></html>">
-			<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-				<img src="tmpfile/${model.multiplot.cisTransPlot}" width="320" height="320">
-			</a><br>
-		</#if>
-		
-		</td>
-		</tr>
-		<tr>
-		<td colspan="2">
-		<br><br>
-		<i>All items that are in the plot (click for details):</i>
-		<div style="overflow: auto; width: 780px; max-height: 400px;">
-		<#list model.multiplot.matches?values as d>
-		<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
-		[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore further</a>]
-		<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if><br>
-		</#list>
-		</div>
-		</td>
-		</tr>
+					<#if model.multiplot.cisTransPlot??>
+					<i>Cis-trans plot, click to enlarge:</i><br>
+						<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.multiplot.cisTransPlot + "></body></html>">
+						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+							<img src="tmpfile/${model.multiplot.cisTransPlot}" width="320" height="320">
+						</a><br>
+					</#if>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+				<br><br>
+				<#if model.multiplot.plot??>
+					<i>Legend, click to enlarge:</i><br>
+						<#assign html = "<html><head><title>Legend</title></head><body><img src=clusterdemo/wormqtl/legend.png></body></html>">
+						<a href="#" onclick="var generate = window.open('', '', 'width=1000,height=650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+							<img src="clusterdemo/wormqtl/legend.png" width="150" height="100">
+						</a>
+					</#if>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<br><br>
+					<i>All items that are in the plot (click for details):</i>
+					<div style="overflow: auto; width: 780px; max-height: 400px;">
+					<#list model.multiplot.matches?values as d>
+					<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
+					[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore further</a>]
+					<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if><br>
+					</#list>
+					</div>
+				</td>
+			</tr>
 		</table>
 	</td></tr></table>
 	

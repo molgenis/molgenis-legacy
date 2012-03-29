@@ -216,16 +216,55 @@ public class MakeRPlot
 		
 		//lines input example:
 		//plotMe <- rbind(plotMe, c(807, "C5M5_2", 66810758, "A_12_P172557", 15184683, 0.0127419530093572))
-		script.append("plotMe <- read.table(\""+dataPoints.getAbsolutePath().replace("\\", "/")+"\")");
 		script.append("imagefile <- \"" + tmpImg.getAbsolutePath().replace("\\", "/") + "\";");
 		script.append("png(imagefile, width = " + width + ", height = " + height + ")");
-		script.append("op <- par(mai=c(1,2,1,1))");		
-		script.append("plot(as.numeric(plotMe[,4]),as.numeric(as.factor(plotMe[,5])),type='n',main=\""+title+"\", yaxt='n',ylab=\"\", xlab=\"Basepair location\")");
-		script.append("points(as.numeric(plotMe[,4]),as.numeric(as.factor(plotMe[,5])),cex=as.numeric(plotMe[,7]), col=as.numeric(plotMe[,3]),pch=20)");
-		script.append("axis(2,at=as.numeric(unique(as.factor(plotMe[,5]))),unique(as.factor(plotMe[,5])),las=1,cex.axis=0.7)");
-		script.append("sub <- plotMe[-which(duplicated(as.factor(plotMe[,5]))),]");
-		script.append("points(sub[,6],unique(as.factor(plotMe[,5])),pch=13,cex=2,lwd=2)");
-		script.append("points(sub[,6],unique(as.factor(plotMe[,5])),pch=13,cex=1,col=\"red\")");
+		
+		script.append("plotMe <- read.table(\""+dataPoints.getAbsolutePath().replace("\\", "/")+"\")");
+		
+		//FIXME: worm specific!!! bad!!
+		script.append("chr_startpos <- c(15072423,15072423+15279345,15072423+15279345+13783700,15072423+15279345+13783700+17493793,15072423+15279345+13783700+17493793+20924149)");
+		script.append("lodscores <- as.numeric(plotMe[,7])");
+		script.append("lodscores[which(lodscores > 10)] <- 10");
+		script.append("lodscores[which(lodscores < 0)] <- 0");
+		script.append("probenames <- paste(plotMe[,5],plotMe[,8],sep=\":\")");
+		script.append("plotMe[,5] <- probenames");
+		script.append("ramp <- colorRamp(c(\"lightgray\",\"blue\",\"black\"))");
+		script.append("use.col <- rgb( ramp(seq(0, 1, length = 100)), max = 255)");
+		script.append("datasetids <- unlist(lapply(strsplit(unique(as.character(plotMe[,5])),\":\"),\"[\",2))");
+		script.append("p <- datasetids[1]");
+		script.append("cl <- 0");
+		script.append("cnt <- 1");
+		script.append("for(x in datasetids){");
+		script.append("  if(x != p) cl <- c(cl,cnt)");
+		script.append("  p <- x");
+		script.append("  cnt <- cnt+1");
+		script.append("}");
+		script.append("cl <- c(cl,length(datasetids))");
+		script.append("op <- par(mai=c(1,2,1,1))");
+		script.append("plot(c(0, max(as.numeric(plotMe[,4])/1000000)),c(1,length(unique(probenames))),type='n',main=\""+title+"\", yaxt='n',ylab=\"\", xlab=\"Location (cumulative Mbp)\")");
+		script.append("cnt <- 1");
+		script.append("for(x in unique(probenames)){");
+		script.append("  toplot <- which(plotMe[,5]==x)");
+		script.append("  points(as.numeric(plotMe[toplot,4])/1000000, rep(cnt,length(toplot)),cex=1, col=use.col[round(lodscores[toplot]*10)],pch=\"|\")");
+		script.append("  points(as.numeric(plotMe[toplot[1],6])/1000000, cnt, pch=18, cex=1.5, col=\"red\")");
+		script.append("  cnt <- cnt + 1");
+		script.append("}");
+		//script.append("axis(2,at=1:length(unique(probenames)),unlist(lapply(strsplit(unique(probenames),\":\"),\"[\",1)),las=1,cex.axis=0.7)"); //removes dataset id
+		script.append("axis(2,at=1:length(unique(probenames)),unique(probenames),las=1,cex.axis=1)");
+		script.append("abline(v=(chr_startpos/1000000)+.5,col='red')");
+		script.append("dl <- cl-1");
+		script.append("dl[1] <- cl[1]");
+		script.append("dl[length(cl)] <- cl[length(cl)]");
+		script.append("abline(h=dl+0.5,col=\"black\")");
+		script.append("cnt <- 1");
+		script.append("p <- 1");
+		script.append("cc <- 1");
+		script.append("for(x in cl[-1]){");
+		script.append("  text(x=-1.5, cc + (x-p)/2, labels=unique(datasetids)[cnt],cex=1.3)");
+		script.append("  cnt <- cnt + 1");
+		script.append("  cc <- cc+((x-p))");
+		script.append("  p <- x");
+		script.append("}");
 		
 		//print to file
 		script.append("dev.off()");

@@ -97,8 +97,10 @@ public class QtlFinder2 extends PluginModel<Entity>
 				{
 					String shopMeName = request.getString("__shopMeName");
 					int shopMeId = request.getInt("__shopMeId");
-					Entity e = db.findById(ObservationElement.class, shopMeId);
-					this.model.getShoppingCart().put(shopMeName, e);
+					//Entity e = db.findById(ObservationElement.class, shopMeId); cannot use this: problem with lists and java generics when load()
+					List<? extends Entity> input = db.find(ObservationElement.class, new QueryRule(ObservationElement.NAME, Operator.EQUALS, shopMeName));
+					input = db.load((Class)ObservationElement.class, input);
+					this.model.getShoppingCart().put(shopMeName, input.get(0));
 				}
 				
 				if (action.equals("unshop"))
@@ -311,6 +313,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 	private QTLMultiPlotResult multiplot(List<Entity> entities, Database db) throws Exception
 	{
 		HashMap<String,Entity> matches = new HashMap<String,Entity>();
+		int totalAmountOfElementsInPlot = 0;
 		int overallIndex = 1;
 		List<Data> allData = db.find(Data.class);
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
@@ -355,6 +358,10 @@ public class QtlFinder2 extends PluginModel<Entity>
 					//for each entity, see if the types match to the matrix
 					for(Entity e : entities)
 					{
+						if(e.get(Field.TYPE_FIELD).equals("Marker")){
+							//System.out.println("skipping marker " + e.get("name"));
+							continue;
+						}
 						if(d.getTargetType().equals(e.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(e.get(Field.TYPE_FIELD)))
 						{
 							//if so, use this entity to 'query' the matrix and store the values
@@ -369,10 +376,12 @@ public class QtlFinder2 extends PluginModel<Entity>
 							if(e instanceof Locus)
 							{
 								locus = ((Locus)e).getBpStart();
+								//System.out.println("locus of " + e.get("name") + " = " + locus);
 							}
 							else
 							{
-								locus = 0;
+								locus = -10000000;
+								//System.out.println("locus of " + e.get("name") + " = " + "NA");
 							}
 	
 							//if its in row, do row stuff
@@ -381,6 +390,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 								Double[] Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
 		
 								matches.put(name, e);
+								totalAmountOfElementsInPlot++;
 								
 								for(int markerIndex = 0; markerIndex < colNames.size(); markerIndex++)
 								{
@@ -401,6 +411,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 								Double[] Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
 								
 								matches.put(name, e);
+								totalAmountOfElementsInPlot++;
 								
 								for(int markerIndex = 0; markerIndex < rowNames.size(); markerIndex++)
 								{
@@ -426,10 +437,9 @@ public class QtlFinder2 extends PluginModel<Entity>
 		}
 		
 		bw.close();
-		
-		int height = (matches.size() * 20) > 300 ? (matches.size() * 20) : 300;
-		
-		File plot = MakeRPlot.qtlMultiPlotV2(tmpData, plotWidth, height, this.model.getQuery());
+		int height = 200 + (totalAmountOfElementsInPlot * 20);
+
+		File plot = MakeRPlot.qtlMultiPlot(tmpData, plotWidth, height, this.model.getQuery());
 		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, this.model.getQuery());
 		
 		
