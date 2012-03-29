@@ -13,6 +13,7 @@ import jxl.Workbook;
 
 public class tableModel {
 
+	private List<String> header = new ArrayList<String>();
 	private HashMap<String, Integer> headerToIndex = new HashMap<String, Integer>();
 	private HashMap<Integer, String> IndexToHeader = new HashMap<Integer, String>();
 	private HashMap<String, List<Cell[]>> sheetNameToContents = new HashMap<String, List<Cell[]>>();
@@ -20,6 +21,7 @@ public class tableModel {
 	private String spreadSheetName = null;
 	private int startingRow = 0;
 	private boolean allSheets = false;
+	
 
 
 	public tableModel(String spreadSheetName, boolean allSheets){
@@ -69,6 +71,7 @@ public class tableModel {
 					if(!cellValue.equals("")){
 						headerToIndex.put(cellValue, j);
 						IndexToHeader.put(j, cellValue);
+						header.add(cellValue);
 					}
 				}
 			}else{
@@ -127,5 +130,9 @@ public class tableModel {
 		}
 		System.out.println(stringToTokens.keySet().size());
 		return stringToTokens;
+	}
+	
+	public List<String> getHeaders(){
+		return this.header;
 	}
 }
