@@ -56,8 +56,10 @@ public class levenshteinDistance {
 
 	private HashMap<String, List<String>> foundTermInDataDescription = new HashMap<String, List<String>>();
 
-	private HashMap<String, List<String>> foundDescriptionByCutOff = new HashMap<String, List<String>>();
+	//private HashMap<String, List<String>> foundDescriptionByCutOff = new HashMap<String, List<String>>();
 
+	private HashMap<String, HashMap<String, Double>> foundDescriptionByCutOff = new HashMap<String, HashMap<String, Double>>();
+	
 	private HashMap<String, String> synonymToClassLabel = new HashMap<String, String>();
 
 	private HashMap<String, List<String>> expandedQueries = new HashMap<String, List<String>>();
@@ -79,7 +81,7 @@ public class levenshteinDistance {
 		"they'd","they'll","they're","they've","this","those","through","to","too","under","until","up","very","was",
 		"wasn't","we","we'd","we'll","we're","we've","were","weren't","what","what's","when","when's","where","where's",
 		"which","while","who","who's","whom","why","why's","with","won't","would","wouldn't","you","you'd","you'll","you're",
-		"you've","your","yours","yourself","yourselves"};
+		"you've","your","yours","yourself","yourselves","many"};
 
 	public static List<String> STOPWORDSLIST = new ArrayList<String>();
 
@@ -225,8 +227,8 @@ public class levenshteinDistance {
 
 				if(foundDescriptionByCutOff.containsKey(key)){
 					System.out.println("Mapping by cutoff " + this.cutOff);
-					for(String dataItem : foundDescriptionByCutOff.get(key)){
-						System.out.println("The dataItem mapped by cut off " + cutOff + " is \"" + dataItem + "\" and its description is \"" + dataItemNameToDescription.get(dataItem) + "\"");
+					for(String dataItem : foundDescriptionByCutOff.get(key).keySet()){
+						System.out.println("The dataItem mapped by cut off " + cutOff + " is \"" + dataItem + "\" and its description is \"" + foundDescriptionByCutOff.get(key).get(dataItem) + "\"");
 					}
 				}
 				System.out.println();
@@ -309,6 +311,8 @@ public class levenshteinDistance {
 	public void searchingForOntologyTermByStringMatching(HashMap<String, String> levelAnnotation, HashMap<String, String> descriptionForVariable, double cutOff){
 
 		HashMap<String, HashMap<String, Double>> mappingResultAndSimiarity = new HashMap<String, HashMap<String, Double>>();
+		
+		HashMap<String, HashMap<String, Double>> mappingResultWithCutOff = new HashMap<String, HashMap<String,Double>>();
 
 		HashMap<String, List<String>> originalQueryToExpanded = new HashMap<String, List<String>>();
 
@@ -384,7 +388,20 @@ public class levenshteinDistance {
 							matchedDataItem = descriptionForVariable.get(dataItem);
 						}
 						if(similarity > cutOff*100){
-							addingNewMatchedItem(foundDescriptionByCutOff, eachQuery, dataItem);
+							//addingNewMatchedItem(foundDescriptionByCutOff, eachQuery, dataItem);
+							HashMap<String, Double> temp = new HashMap<String, Double>();
+
+							if(foundDescriptionByCutOff.containsKey(eachQuery)){
+								temp = foundDescriptionByCutOff.get(eachQuery);
+							}
+							if(temp.containsKey(matchedDataItem)){
+								if(temp.get(matchedDataItem) < maxSimilarity)
+									temp.put(matchedDataItem, maxSimilarity);
+							}else{
+								temp.put(matchedDataItem, maxSimilarity);
+							}
+
+							foundDescriptionByCutOff.put(eachQuery, temp);
 						}
 					}
 
@@ -407,7 +424,20 @@ public class levenshteinDistance {
 								synonymMatchedDataItem = descriptionForVariable.get(dataItem);
 							}
 							if(similarity > cutOff*100){
-								addingNewMatchedItem(foundDescriptionByCutOff, eachQuery, dataItem);
+								//addingNewMatchedItem(foundDescriptionByCutOff, eachQuery, dataItem);
+								HashMap<String, Double> temp = new HashMap<String, Double>();
+
+								if(foundDescriptionByCutOff.containsKey(eachQuery)){
+									temp = foundDescriptionByCutOff.get(eachQuery);
+								}
+								if(temp.containsKey(matchedDataItem)){
+									if(temp.get(matchedDataItem) < maxSimilarity)
+										temp.put(matchedDataItem, maxSimilarity);
+								}else{
+									temp.put(matchedDataItem, maxSimilarity);
+								}
+
+								foundDescriptionByCutOff.put(eachQuery, temp);
 							}
 						}
 					}				
