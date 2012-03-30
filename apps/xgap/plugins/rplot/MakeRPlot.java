@@ -245,7 +245,7 @@ public class MakeRPlot
 		script.append("cnt <- 1");
 		script.append("for(x in unique(probenames)){");
 		script.append("  toplot <- which(plotMe[,5]==x)");
-		script.append("  points(as.numeric(plotMe[toplot,4])/1000000, rep(cnt,length(toplot)),cex=1, col=use.col[round(lodscores[toplot]*10)],pch=\"|\")");
+		script.append("  points(as.numeric(plotMe[toplot,4])/1000000, rep(cnt,length(toplot)),cex=1, col=use.col[round(lodscores[toplot]*9)+1],pch=\"|\")");
 		script.append("  points(as.numeric(plotMe[toplot[1],6])/1000000, cnt, pch=18, cex=1.5, col=\"red\")");
 		script.append("  cnt <- cnt + 1");
 		script.append("}");
