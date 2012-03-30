@@ -13,37 +13,25 @@
 		<menu name="ImportData" label="Import Data">
 			<plugin name="AddIndividual" type="plugins.AddIndividual.AddIndividual" label="Add new Individual"/>
 			<plugin name="EditIndividual" type="plugins.EditIndividual.EditIndividual" label="Edit new Individual"/>
-			<plugin name="ConvertDataIntoPheno" type="org.molgenis.gids.converters.phenoModelconverterandloader.PMconverterandloaderPlugin" label="Convert data"/>
-			<!-- plugin name="FillDatabase" type="plugins.fillgids.FillDatabasePlugin" label="Load data" />-->
+			<!--<plugin name="ConvertDataIntoPheno" type="org.molgenis.gids.converters.phenoModelconverterandloader.PMconverterandloaderPlugin" label="Convert data"/>
+			 plugin name="FillDatabase" type="plugins.fillgids.FillDatabasePlugin" label="Load data" />-->
 			<plugin name="SimpleArchiver" type="plugins.archiver.Archiver" label="Import/export database" />
 			
 		</menu>	
 		
 	    <form entity="Investigation" name="investigation">
-		    <menu name="ProjectMenuGIDS" label="ProjectMenu">
+		    <menu name="ProjectMenuTIFN" label="ProjectMenu">
 	           	<form name="individuals" entity="Individual" view="list" label="Observation targets" />
 				<form name="measurement" entity="Measurement" view="list" label="Measurements" />
 				<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
-				<form name="sample" entity="GidsSample" view="list" label="Samples" />
+				
 				<form name="protapp" entity="ProtocolApplication" view="list" label="Protocol Application" />
 				
 	        </menu>
 	        <!--<plugin label="Import data" name="DefImport" type="plugins.genericwizard.GenericWizard" />-->
 	    </form> 
 	    <form name="protocol" entity="Protocol" view="list" label="Protocols" />
-	    <menu name="viewData" label="View Data">
-		    <menu name="ViewIndividuals" label="View Individuals">
-		    	<form entity="Investigation" name="ProjectsI" label="Projects">
-		    		<plugin label="Individual matrix viewer" name="Individuals" type="plugins.matrix.IndividualMatrix" />
-		    	</form>
-		    </menu>
-		    <menu name="ViewSamples" label="View Samples">
-		    	<form entity="Investigation" name="ProjectsS" label="Projects">
-		    		<plugin label="Sample matrix viewer" name="Samples" type="plugins.matrix.SampleMatrix" />
-		    	</form>
-		    </menu>
-		   
-	    </menu>
+	    
 	         
     </menu>
     
