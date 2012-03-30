@@ -8,6 +8,6 @@ public class TifnGenerate {
 	{
 		Logger logger = Logger.getLogger("TifnGenerate");
 		new Molgenis("apps/tifn/org/molgenis/tifn/tifn.properties").generate();
-		logger.info("GIDS generated successfully!");
+		logger.info("TIFN generated successfully!");
 	}
 }
