@@ -305,9 +305,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsTree, db, foundInputToken, mode);
 		}
 
-		
+		System.out.println(protocolsTree.getName());
 		System.out.println(">>>Protocols tree: "+ protocolsTree + "tree elements: "+ protocolsTree.getTreeElements().containsKey("Questionnaire"));
-		if (!protocolsTree.getTreeElements().containsKey("Questionnaire")) { 
+		if (!protocolsTree.getTreeElements().containsKey("Questionnaire") && 
+				!protocolsTree.getTreeElements().containsKey("Measurement") &&
+				!protocolsTree.getTreeElements().containsKey("Sample")) { 
 			//Search result is empty or tree is empty 
 			this.getModel().getMessages().add(new ScreenMessage("There are no results to show. Please, redifine your search or import some data.",true));
 			this.setError("There are no results to show. Please, redifine your search or import some data.");
