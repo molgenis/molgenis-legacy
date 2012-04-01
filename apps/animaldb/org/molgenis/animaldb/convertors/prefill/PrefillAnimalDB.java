@@ -33,9 +33,7 @@ import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
-
 
 public class PrefillAnimalDB
 {
@@ -44,7 +42,7 @@ public class PrefillAnimalDB
 	private Logger logger;
 	private String userName = "admin";
 	private String invName = "System";
-	
+
 	private List<ProtocolApplication> protocolAppsToAddList = new ArrayList<ProtocolApplication>();
 	private List<ObservedValue> valuesToAddList = new ArrayList<ObservedValue>();
 	private List<Panel> panelsToAddList = new ArrayList<Panel>();
@@ -54,19 +52,19 @@ public class PrefillAnimalDB
 	private List<Protocol> protocolsToAddList = new ArrayList<Protocol>();
 	private Map<String, String> appMap = new HashMap<String, String>();
 	private Map<String, Measurement> measMap = new HashMap<String, Measurement>();
-	
-	
+
 	public PrefillAnimalDB(Database db, Login login) throws Exception
 	{
 		this.db = db;
-		
+
 		ct = CommonService.getInstance();
 		ct.setDatabase(this.db);
-		
+
 		logger = Logger.getLogger("PrefillAnimalDB");
-		
+
 		// If needed, make investigation
-		if (ct.getInvestigationId(invName) == -1) {
+		if (ct.getInvestigationId(invName) == -1)
+		{
 			Investigation newInv = new Investigation();
 			newInv.setName(invName);
 			newInv.setOwns_Name("admin");
@@ -75,7 +73,8 @@ public class PrefillAnimalDB
 		}
 	}
 
-	public void prefillFromZip(String filename) throws Exception {
+	public void prefillFromZip(String filename) throws Exception
+	{
 		// Path to store files from zip
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		String path = tmpDir.getAbsolutePath() + File.separatorChar;
@@ -85,8 +84,10 @@ public class PrefillAnimalDB
 		while (entries.hasMoreElements())
 		{
 			ZipEntry entry = (ZipEntry) entries.nextElement();
-			copyInputStream(zipFile.getInputStream(entry),
-					new BufferedOutputStream(new FileOutputStream(path + entry.getName())));
+			copyInputStream(
+					zipFile.getInputStream(entry),
+					new BufferedOutputStream(new FileOutputStream(path
+							+ entry.getName())));
 		}
 		// Run convertor steps
 		populateProtocolApplication();
@@ -105,8 +106,9 @@ public class PrefillAnimalDB
 		writeToDb();
 	}
 
-	public void writeToDb() throws Exception {
-		
+	public void writeToDb() throws Exception
+	{
+
 		db.add(ontologiesToAddList);
 		logger.debug("Ontologies successfully added");
 		db.add(ontologyTermsToAddList);
@@ -114,7 +116,8 @@ public class PrefillAnimalDB
 		db.add(categoriesToAddList);
 		logger.debug("Categories successfully added");
 		List<Measurement> measList = new ArrayList<Measurement>();
-		for (Measurement meas : measMap.values()) {
+		for (Measurement meas : measMap.values())
+		{
 			measList.add(meas);
 		}
 		db.add(measList);
@@ -129,219 +132,209 @@ public class PrefillAnimalDB
 		logger.debug("Values successfully added");
 		ct.makeObservationTargetNameMap(userName, true);
 	}
-	
+
 	public void populatePrefixes(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				NamePrefix np = new NamePrefix();
-				np.setTargetType(tuple.getString("targetType"));
-				np.setPrefix(tuple.getString("prefix"));
-				np.setHighestNumber(0);
-				db.add(np); // this one goes directly into the db, not through a list, because nothing links to it
-			}
-		});
+			NamePrefix np = new NamePrefix();
+			np.setTargetType(tuple.getString("targetType"));
+			np.setPrefix(tuple.getString("prefix"));
+			np.setHighestNumber(0);
+			db.add(np); // this one goes directly into the db, not through a
+						// list, because nothing links to it
+		}
 	}
-	
+
 	public void populateNews(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				MolgenisNews mn = new MolgenisNews();
-				mn.setAuthor("Administrator");
-				mn.setDate(new Date());
-				mn.setSubtitle("");
-				mn.setTitle(tuple.getString("title"));
-				mn.setText(tuple.getString("text"));
-				db.add(mn); // this one goes directly into the db, not through a list, because nothing links to it
-			}
-		});
+			MolgenisNews mn = new MolgenisNews();
+			mn.setAuthor("Administrator");
+			mn.setDate(new Date());
+			mn.setSubtitle("");
+			mn.setTitle(tuple.getString("title"));
+			mn.setText(tuple.getString("text"));
+			db.add(mn); // this one goes directly into the db, not through a
+						// list, because nothing links to it
+		}
 	}
-	
+
 	public void populateOntology(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				Ontology newOnt = new Ontology();
-				newOnt.setName(tuple.getString("name"));
-				ontologiesToAddList.add(newOnt);
-			}
-		});
+			Ontology newOnt = new Ontology();
+			newOnt.setName(tuple.getString("name"));
+			ontologiesToAddList.add(newOnt);
+		}
 	}
-	
+
 	public void populateOntologyTerm(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				OntologyTerm newOntTerm = new OntologyTerm();
-				newOntTerm.setName(tuple.getString("termName"));
-				newOntTerm.setDefinition(tuple.getString("termDefinition"));
-				newOntTerm.setOntology_Name(tuple.getString("ontology"));
-				ontologyTermsToAddList.add(newOntTerm);
-			}
-		});
+			OntologyTerm newOntTerm = new OntologyTerm();
+			newOntTerm.setName(tuple.getString("termName"));
+			newOntTerm.setDefinition(tuple.getString("termDefinition"));
+			newOntTerm.setOntology_Name(tuple.getString("ontology"));
+			ontologyTermsToAddList.add(newOntTerm);
+		}
 	}
-	
+
 	public void populateMeasurement(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
+			String name = tuple.getString("name");
+			String unitName = tuple.getString("unit");
+			String targettypeAllowedForRelationClassName = null;
+			if (tuple.getString("targetType") != null)
 			{
-				String name = tuple.getString("name");
-				String unitName = tuple.getString("unit");
-				String targettypeAllowedForRelationClassName = null;
-				if (tuple.getString("targetType") != null) {
-					targettypeAllowedForRelationClassName = db.getClassForName(tuple.getString("targetType")).getName();
-				}
-				String panelLabelAllowedForRelation = tuple.getString("panelLabel");
-				boolean temporal = false;
-				if (tuple.getString("temporal").equals("true")) {
-					temporal = true;
-				}
-				String dataType = tuple.getString("dataType");
-				String description = tuple.getString("description");
-				Measurement newMeas = ct.createMeasurement(invName, name, unitName, 
-						targettypeAllowedForRelationClassName, panelLabelAllowedForRelation, 
-						temporal, dataType, description, userName);
-				measMap.put(name, newMeas);
+				targettypeAllowedForRelationClassName = db.getClassForName(
+						tuple.getString("targetType")).getName();
 			}
-		});
+			String panelLabelAllowedForRelation = tuple.getString("panelLabel");
+			boolean temporal = false;
+			if (tuple.getString("temporal").equals("true"))
+			{
+				temporal = true;
+			}
+			String dataType = tuple.getString("dataType");
+			String description = tuple.getString("description");
+			Measurement newMeas = ct.createMeasurement(invName, name, unitName,
+					targettypeAllowedForRelationClassName,
+					panelLabelAllowedForRelation, temporal, dataType,
+					description, userName);
+			measMap.put(name, newMeas);
+		}
 	}
-	
+
 	public void populateCategory(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				String code = tuple.getString("code");
-				String measName = tuple.getString("measurement");
-				Category newCat = ct.createCategory(code, tuple.getString("description"), measName);
-				newCat.setInvestigation_Name(invName);
-				categoriesToAddList.add(newCat);
-				Measurement meas = measMap.get(measName);
-				List<String> catNamesForMeas = meas.getCategories_Name();
-				catNamesForMeas.add(measName + "_" + code);
-				// FIXME: the statement below doesn't work anymore
-				// No mref between Measurement and Category results after DB insert
-				meas.setCategories_Name(catNamesForMeas);
-				measMap.put(measName, meas);
-			}
-		});
+			String code = tuple.getString("code");
+			String measName = tuple.getString("measurement");
+			Category newCat = ct.createCategory(code,
+					tuple.getString("description"), measName);
+			newCat.setInvestigation_Name(invName);
+			categoriesToAddList.add(newCat);
+			Measurement meas = measMap.get(measName);
+			List<String> catNamesForMeas = meas.getCategories_Name();
+			catNamesForMeas.add(measName + "_" + code);
+			// FIXME: the statement below doesn't work anymore
+			// No mref between Measurement and Category results after DB
+			// insert
+			meas.setCategories_Name(catNamesForMeas);
+			measMap.put(measName, meas);
+		}
 	}
-	
+
 	public void populateProtocol(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				@SuppressWarnings("unchecked")
-				List<String> measurementNameList = (List<String>) tuple.getList("measurements", ",");
-				protocolsToAddList.add(ct.createProtocol(invName, tuple.getString("name"), 
-						tuple.getString("description"), measurementNameList));
-			}
-		});
+			@SuppressWarnings("unchecked")
+			List<String> measurementNameList = (List<String>) tuple.getList(
+					"measurements", ",");
+			protocolsToAddList.add(ct.createProtocol(invName,
+					tuple.getString("name"), tuple.getString("description"),
+					measurementNameList));
+		}
 	}
-	
+
 	public void populateSex(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				String sexName = tuple.getString("name");
-				panelsToAddList.add(ct.createPanel(invName, sexName, userName));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), 
-						null, "TypeOfGroup", sexName, "Sex", null));
-			}
-		});
+			String sexName = tuple.getString("name");
+			panelsToAddList.add(ct.createPanel(invName, sexName, userName));
+			valuesToAddList.add(ct.createObservedValue(invName,
+					appMap.get("SetTypeOfGroup"), new Date(), null,
+					"TypeOfGroup", sexName, "Sex", null));
+		}
 	}
-	
+
 	public void populateSpecies(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				String specName = tuple.getString("name");
-				panelsToAddList.add(ct.createPanel(invName, specName, userName));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), 
-						null, "TypeOfGroup", specName, "Species", null));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetVWASpecies"), new Date(), 
-						null, "VWASpecies", specName, tuple.getString("VwaSpecies"), null));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetLatinSpecies"), new Date(), 
-						null, "LatinSpecies", specName, tuple.getString("LatinSpecies"), null));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetDutchSpecies"), new Date(), 
-						null, "DutchSpecies", specName, tuple.getString("DutchSpecies"), null));
-			}
-		});
+			String specName = tuple.getString("name");
+			panelsToAddList.add(ct.createPanel(invName, specName, userName));
+			valuesToAddList.add(ct.createObservedValue(invName,
+					appMap.get("SetTypeOfGroup"), new Date(), null,
+					"TypeOfGroup", specName, "Species", null));
+			valuesToAddList
+					.add(ct.createObservedValue(invName,
+							appMap.get("SetVWASpecies"), new Date(), null,
+							"VWASpecies", specName,
+							tuple.getString("VwaSpecies"), null));
+			valuesToAddList.add(ct.createObservedValue(invName,
+					appMap.get("SetLatinSpecies"), new Date(), null,
+					"LatinSpecies", specName, tuple.getString("LatinSpecies"),
+					null));
+			valuesToAddList.add(ct.createObservedValue(invName,
+					appMap.get("SetDutchSpecies"), new Date(), null,
+					"DutchSpecies", specName, tuple.getString("DutchSpecies"),
+					null));
+		}
 	}
-	
+
 	public void populateBackground(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				String bkgName = tuple.getString("name");
-				String speciesName = tuple.getString("species");
-				panelsToAddList.add(ct.createPanel(invName, bkgName, userName));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), 
-						null, "TypeOfGroup", bkgName, "Background", null));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSpecies"), new Date(), 
-						null, "Species", bkgName, null, speciesName));
-			}
-		});
+			String bkgName = tuple.getString("name");
+			String speciesName = tuple.getString("species");
+			panelsToAddList.add(ct.createPanel(invName, bkgName, userName));
+			valuesToAddList.add(ct.createObservedValue(invName,
+					appMap.get("SetTypeOfGroup"), new Date(), null,
+					"TypeOfGroup", bkgName, "Background", null));
+			valuesToAddList.add(ct.createObservedValue(invName,
+					appMap.get("SetSpecies"), new Date(), null, "Species",
+					bkgName, null, speciesName));
+		}
 	}
-	
+
 	public void populateSource(String filename) throws Exception
 	{
 		File file = new File(filename);
 		CsvFileReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws DatabaseException, ParseException, IOException
-			{
-				String sourceName = tuple.getString("name");
-				panelsToAddList.add(ct.createPanel(invName, sourceName, userName));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetTypeOfGroup"), new Date(), 
-						null, "TypeOfGroup", sourceName, "Source", null));
-				valuesToAddList.add(ct.createObservedValue(invName, appMap.get("SetSourceType"), new Date(), 
-						null, "SourceType", sourceName, tuple.getString("type"), null));
-			}
-		});
+			String sourceName = tuple.getString("name");
+			panelsToAddList.add(ct.createPanel(invName, sourceName, userName));
+			valuesToAddList.add(ct.createObservedValue(invName,
+					appMap.get("SetTypeOfGroup"), new Date(), null,
+					"TypeOfGroup", sourceName, "Source", null));
+			valuesToAddList.add(ct.createObservedValue(invName,
+					appMap.get("SetSourceType"), new Date(), null,
+					"SourceType", sourceName, tuple.getString("type"), null));
+		}
 	}
-	
+
 	public void populateProtocolApplication() throws Exception
 	{
 		makeProtocolApplication("SetTypeOfGroup");
@@ -352,18 +345,23 @@ public class PrefillAnimalDB
 		makeProtocolApplication("SetSourceType");
 	}
 
-	
-	public void makeProtocolApplication(String protocolName) throws Exception {
+	public void makeProtocolApplication(String protocolName) throws Exception
+	{
 		makeProtocolApplication(protocolName, protocolName);
 	}
-	
-	public void makeProtocolApplication(String protocolName, String protocolLabel) throws ParseException, DatabaseException, IOException {
-		ProtocolApplication app = ct.createProtocolApplication(invName, protocolName);
+
+	public void makeProtocolApplication(String protocolName,
+			String protocolLabel) throws ParseException, DatabaseException,
+			IOException
+	{
+		ProtocolApplication app = ct.createProtocolApplication(invName,
+				protocolName);
 		protocolAppsToAddList.add(app);
 		appMap.put(protocolLabel, app.getName());
 	}
-	
-	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException
+
+	public static final void copyInputStream(InputStream in, OutputStream out)
+			throws IOException
 	{
 		byte[] buffer = new byte[1024];
 		int len;
@@ -374,5 +372,5 @@ public class PrefillAnimalDB
 		in.close();
 		out.close();
 	}
-	
+
 }
