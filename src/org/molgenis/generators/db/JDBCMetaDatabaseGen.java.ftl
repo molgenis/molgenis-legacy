@@ -50,7 +50,7 @@ public class JDBCMetaDatabase extends Model
 	public JDBCMetaDatabase() throws DatabaseException
 	{
 		super("${model.name}");
-		<#if entities?size &gt; 0>>
+		<#if entities?size &gt; 0>
 		try
 		{
 			<#list entities as entity><#if entity.abstract>
