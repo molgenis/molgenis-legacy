@@ -376,7 +376,6 @@ public class BinaryDataMatrixWriter
 		{
 			for (Tuple line : new CsvFileReader(inputFile))
 			{
-
 				for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
 				{
 					if (line.getString(columnIndex) == null)
@@ -452,9 +451,9 @@ public class BinaryDataMatrixWriter
 		final byte[] textElementLenghts = new byte[totalElements];
 		try
 		{
+			int index = 0;
 			for (Tuple line : new CsvFileReader(inputFile))
 			{
-				int index = 0;
 
 				for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
 				{
