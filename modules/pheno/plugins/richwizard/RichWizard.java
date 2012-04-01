@@ -7,7 +7,6 @@
 
 package plugins.richwizard;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,7 +127,7 @@ public class RichWizard extends PluginModel<Entity>
 					
 					this.model.setUniqueAncestorsOfEntities(uniqueAncestorsOfEntities);
 					
-					MolgenisModel.sortEntitiesByDependency(entities, metadb);
+					entities = MolgenisModel.sortEntitiesByDependency(entities, metadb);
 
 					this.model.setEntities(entities);
 					this.model.setEntityNames(entityNames);
