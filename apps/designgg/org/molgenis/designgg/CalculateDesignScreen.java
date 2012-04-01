@@ -22,14 +22,11 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.DetectOS;
 import org.molgenis.util.FileLink;
 import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
-
-
 
 /**
  * This screen care of showing the progress of the calculation. If done, the
@@ -62,15 +59,14 @@ public class CalculateDesignScreen extends PluginModel
 	// R execution
 	LocalComputationResource cmd = null;
 	private String rScript; // The R script used
-	
-	File workingDir = null; //tmp dir where the stuff is executed
+
+	File workingDir = null; // tmp dir where the stuff is executed
 
 	public CalculateDesignScreen(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		//setController(this); // using itself as controller.
-		
-		
+		// setController(this); // using itself as controller.
+
 		System.out.println("**** constructor CalculateDesignScreen");
 
 		// rprocessor = new RProcessor4designGG();
@@ -87,38 +83,48 @@ public class CalculateDesignScreen extends PluginModel
 		System.out.println("**** handleRequest CalculateDesignScreen");
 
 	}
-	
-	
-	byte[] toByteArrayFromalyMap(String filename) throws IOException{
-		File f = new File(filename);
-	    FileInputStream fin = null;
-	    FileChannel ch = null;
-	    byte[] bytes=null;
-	    try {
-	        fin = new FileInputStream(f);
-	        ch = fin.getChannel();
-	        int size = (int) ch.size();
-	        MappedByteBuffer buf = ch.map(MapMode.READ_ONLY, 0, size);
-	        bytes = new byte[size];
-	        buf.get(bytes);
 
-	    } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	       throw e;
-	    } finally {
-	        try {
-	            if (fin != null) {
-	                fin.close();
-	            }
-	            if (ch != null) {
-	                ch.close();
-	            }
-	        } catch (IOException e) {
-	            // TODO Auto-generated catch block
-	            throw e;
-	        }
-	    }
-	    return bytes;
+	byte[] toByteArrayFromalyMap(String filename) throws IOException
+	{
+		File f = new File(filename);
+		FileInputStream fin = null;
+		FileChannel ch = null;
+		byte[] bytes = null;
+		try
+		{
+			fin = new FileInputStream(f);
+			ch = fin.getChannel();
+			int size = (int) ch.size();
+			MappedByteBuffer buf = ch.map(MapMode.READ_ONLY, 0, size);
+			bytes = new byte[size];
+			buf.get(bytes);
+
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			throw e;
+		}
+		finally
+		{
+			try
+			{
+				if (fin != null)
+				{
+					fin.close();
+				}
+				if (ch != null)
+				{
+					ch.close();
+				}
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				throw e;
+			}
+		}
+		return bytes;
 
 	}
 
@@ -126,8 +132,8 @@ public class CalculateDesignScreen extends PluginModel
 	public void reload(Database db)
 	{
 		System.out.println("**** reload CalculateDesignScreen");
-		
-		DesignParameters p = ((MainScreen)this.getParent()).getScreen1().getDesignParameters();
+
+		DesignParameters p = ((MainScreen) this.getParent()).getScreen1().getDesignParameters();
 
 		// no job running, start the job
 		if (cmd == null)
@@ -142,21 +148,22 @@ public class CalculateDesignScreen extends PluginModel
 			File progressFile = new File(this.workingDir.getAbsolutePath() + File.separator + "processing.txt");
 			System.out.println("Current DIR" + this.workingDir.getAbsolutePath());
 			int progress = -1;
-			
+
 			try
 			{
-				BufferedReader br = new BufferedReader(new InputStreamReader(new DataInputStream(new FileInputStream(progressFile))));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new DataInputStream(new FileInputStream(
+						progressFile))));
 				progress = (int) Math.round(Double.parseDouble(br.readLine()));
 				br.close();
 			}
 			catch (IOException e1)
 			{
-				//IS A HACK
+				// IS A HACK
 				setBCalculationDone(true);
 				System.err.println("File not found:" + progressFile.getAbsolutePath());
 			}
 
-			bCooking=true;
+			bCooking = true;
 			// is job done yet? that is when processing.txt says '100%'
 			// then get the appropriate files
 
@@ -168,30 +175,39 @@ public class CalculateDesignScreen extends PluginModel
 
 					try
 					{
-						 // 1. Set Individuals per Condition
-						 try{
-							 setIndPerCondition(readCsv(new
-									 String(toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_conditionDesign.csv"))));
-		        			 Utils.setFile(workingDir+File.separator+ "myDesignGG_conditionDesign.csv", toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_conditionDesign.csv"));
-		        			 setIndXCondLink(workingDir.getName() + File.separator + "myDesignGG_conditionDesign.csv");
-						 }catch(Exception exp){
-							 System.err.println("GOOD ERROR");
-						 }
+						// 1. Set Individuals per Condition
+						try
+						{
+							setIndPerCondition(readCsv(new String(toByteArrayFromalyMap(workingDir.getAbsolutePath()
+									+ File.separator + "myDesignGG_conditionDesign.csv"))));
+							Utils.setFile(workingDir + File.separator + "myDesignGG_conditionDesign.csv",
+									toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator
+											+ "myDesignGG_conditionDesign.csv"));
+							setIndXCondLink(workingDir.getName() + File.separator + "myDesignGG_conditionDesign.csv");
+						}
+						catch (Exception exp)
+						{
+							System.err.println("GOOD ERROR");
+						}
 
-						 // 2. Set Individuals per Slide
-						 try{
-						 setIndPerSlide(readCsv(new
-								 String(toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_arrayDesign.csv"))));							
-						 Utils.setFile(workingDir+File.separator+"myDesignGG_arrayDesign.csv",
-						 toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_arrayDesign.csv"));
-													
-						 setIndXSlideLink(workingDir.getName() + File.separator + "myDesignGG_arrayDesign.csv");
-						 }catch(Exception exp){
-							 System.err.println("GOOD ERROR");
-						 }
-						 setOutputR(new
-						 String(toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "outputR.log")).replace("\n","<br>"));
-						 setBCalculationDone(true);
+						// 2. Set Individuals per Slide
+						try
+						{
+							setIndPerSlide(readCsv(new String(toByteArrayFromalyMap(workingDir.getAbsolutePath()
+									+ File.separator + "myDesignGG_arrayDesign.csv"))));
+							Utils.setFile(workingDir + File.separator + "myDesignGG_arrayDesign.csv",
+									toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator
+											+ "myDesignGG_arrayDesign.csv"));
+
+							setIndXSlideLink(workingDir.getName() + File.separator + "myDesignGG_arrayDesign.csv");
+						}
+						catch (Exception exp)
+						{
+							System.err.println("GOOD ERROR");
+						}
+						setOutputR(new String(toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator
+								+ "outputR.log")).replace("\n", "<br>"));
+						setBCalculationDone(true);
 					}
 					catch (Exception e)
 					{
@@ -205,30 +221,35 @@ public class CalculateDesignScreen extends PluginModel
 
 					try
 					{
-						 // 1. Set Individuals per Condition
-						 try{
-						 setIndPerCondition(readCsv(new
-						 String(toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_conditionDesign.csv"))));
-						 Utils.setFile(workingDir.getAbsolutePath() + File.separator 
-						 + "myDesignGG_conditionDesign.csv", toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "myDesignGG_conditionDesign.csv"));
-						 
-						 setIndXCondLink(workingDir.getName() + File.separator + "myDesignGG_conditionDesign.csv");
-						 }catch(Exception exp){
-							 System.err.println("GOOD ERROR");
-						 }
-						 // 2. Set plot image
-						 //Utils.setFile( this.getImagePath() +
-						 //File.separator + getSessionId() +
-						 //File.separator + "myDesignGGSAplot.png",
-						 //toByteArrayFromalyMap("myDesignGGSAplot.png") );
-						 //setImageLink("tmpimages/" + getSessionId() +
+						// 1. Set Individuals per Condition
+						try
+						{
+							setIndPerCondition(readCsv(new String(toByteArrayFromalyMap(workingDir.getAbsolutePath()
+									+ File.separator + "myDesignGG_conditionDesign.csv"))));
+							Utils.setFile(workingDir.getAbsolutePath() + File.separator
+									+ "myDesignGG_conditionDesign.csv",
+									toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator
+											+ "myDesignGG_conditionDesign.csv"));
+
+							setIndXCondLink(workingDir.getName() + File.separator + "myDesignGG_conditionDesign.csv");
+						}
+						catch (Exception exp)
+						{
+							System.err.println("GOOD ERROR");
+						}
+						// 2. Set plot image
+						// Utils.setFile( this.getImagePath() +
+						// File.separator + getSessionId() +
+						// File.separator + "myDesignGGSAplot.png",
+						// toByteArrayFromalyMap("myDesignGGSAplot.png") );
+						// setImageLink("tmpimages/" + getSessionId() +
 						// "/myDesignGGSAplot.png");
-						 
-						 // 3. Set outputR
-						 setOutputR(new
-								 String(toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator + "outputR.log")).replace("\n","<br>"));
-						
-						 setBCalculationDone(true);
+
+						// 3. Set outputR
+						setOutputR(new String(toByteArrayFromalyMap(workingDir.getAbsolutePath() + File.separator
+								+ "outputR.log")).replace("\n", "<br>"));
+
+						setBCalculationDone(true);
 					}
 					catch (Exception e)
 					{ // TODO: show something about exception
@@ -261,16 +282,12 @@ public class CalculateDesignScreen extends PluginModel
 		CsvReader reader = new CsvStringReader(string);
 		reader.setSeparator(',');
 		reader.setMissingValues("na");
-		reader.parse(new CsvReaderListener()
+		for (Tuple line : reader)
 		{
-			@Override
-			public void handleLine(int line_number, Tuple line) throws Exception
-			{
-				logger.debug(line.getFields());
-				result.add(line);
+			logger.debug(line.getFields());
+			result.add(line);
 
-			}
-		});
+		}
 		logger.debug(">>>> The tuple of discordia:" + result.toString());
 		return result;
 	}
@@ -281,7 +298,7 @@ public class CalculateDesignScreen extends PluginModel
 	 */
 	private boolean startProcess()
 	{
-		DesignParameters p = ((MainScreen)this.getParent()).getScreen1().getDesignParameters();
+		DesignParameters p = ((MainScreen) this.getParent()).getScreen1().getDesignParameters();
 
 		// CREATE R CODE
 		// 1. We create the sequence of R commands (an R script)
@@ -369,12 +386,10 @@ public class CalculateDesignScreen extends PluginModel
 				// Q F1 F2 F3 QF1 QF2 QF3 F1F2 F1F3 F2F3 QF1F2 QF1F3 F1F2F3
 				// QF1F2F3
 				// weight <- c(1,2,4,8,3,5,9,6,10,11,7,12,13,14,15)
-				commands
-						.add("weight <- c(" + weights.get(0) + "," + weights.get(1) + "," + weights.get(3) + ","
-								+ weights.get(7) + "," + weights.get(2) + "," + weights.get(4) + "," + weights.get(8)
-								+ "," + weights.get(5) + "," + weights.get(9) + "," + weights.get(10) + ","
-								+ weights.get(6) + "," + weights.get(11) + "," + weights.get(12) + ","
-								+ weights.get(13) + "," + weights.get(14) + ")");
+				commands.add("weight <- c(" + weights.get(0) + "," + weights.get(1) + "," + weights.get(3) + ","
+						+ weights.get(7) + "," + weights.get(2) + "," + weights.get(4) + "," + weights.get(8) + ","
+						+ weights.get(5) + "," + weights.get(9) + "," + weights.get(10) + "," + weights.get(6) + ","
+						+ weights.get(11) + "," + weights.get(12) + "," + weights.get(13) + "," + weights.get(14) + ")");
 			}
 			else if (p.getFactor2active() != null)
 			{
@@ -409,12 +424,10 @@ public class CalculateDesignScreen extends PluginModel
 		// commands.add("plotScores=F, envFactorNames=envFactorNames, writingProcess=writingProcess )");
 
 		commands.add("library(designGG)");
-		commands
-				.add("temp <-designGG( genotype=genotype, nSlides=nSlides, nTuple=nTuple, nEnvFactors=nEnvFactors, nLevels=nLevels,");
+		commands.add("temp <-designGG( genotype=genotype, nSlides=nSlides, nTuple=nTuple, nEnvFactors=nEnvFactors, nLevels=nLevels,");
 		commands.add("Level=Level, bTwoColorArray=bTwoColorArray, optimality=\"A\", method=\"SA\", ");
 		commands.add("nIterations=nIterations, n.search=n.search,");
-		commands
-				.add("plotScores=F, envFactorNames=envFactorNames, writingProcess=writingProcess, weight=weight, region=region )");
+		commands.add("plotScores=F, envFactorNames=envFactorNames, writingProcess=writingProcess, weight=weight, region=region )");
 
 		// PREPARE INPUT FILES
 		// 2. We create the file attachments. The genotypes file
@@ -463,7 +476,7 @@ public class CalculateDesignScreen extends PluginModel
 			TarGz.recursiveDeleteContent(workingFile);
 			workingFile.delete();
 			workingFile.mkdirs();
-			
+
 			this.workingDir = workingFile;
 
 			// copy input files
@@ -485,9 +498,9 @@ public class CalculateDesignScreen extends PluginModel
 				fw.write(line + "\n");
 			}
 			fw.close();
-			
+
 			System.out.println("*** " + workingFile.getAbsolutePath() + " ***");
-;
+			;
 			// run script
 			cmd.executeOSDependantCommand(new Command("cd " + workingFile.getAbsolutePath() + " && nohup R CMD BATCH "
 					+ scriptFile.getAbsolutePath() + " outputR.log &", true, false, false), DetectOS.getOS());
@@ -539,8 +552,6 @@ public class CalculateDesignScreen extends PluginModel
 	{
 		bCooking = cooking;
 	}
-	
-	
 
 	public int getProgressPercentage()
 	{
@@ -691,14 +702,13 @@ public class CalculateDesignScreen extends PluginModel
 		bCalculationFail = calculationFail;
 	}
 
-
 	/**
 	 * @return the estimatedEndTime
 	 */
 	public String getEstimatedEndTime()
 	{
-		//return estimatedEndTime;
-		return ""; //TODO!!
+		// return estimatedEndTime;
+		return ""; // TODO!!
 	}
 
 	/**
@@ -715,8 +725,8 @@ public class CalculateDesignScreen extends PluginModel
 	 */
 	public String getWaitingTime()
 	{
-		//return waitingTime;
-		return ""; //TODO!!
+		// return waitingTime;
+		return ""; // TODO!!
 	}
 
 	/**
