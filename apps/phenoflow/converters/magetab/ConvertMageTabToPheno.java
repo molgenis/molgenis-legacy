@@ -17,11 +17,9 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 import app.DatabaseFactory;
-import app.JDBCDatabase;
 
 /*
  * Changelog:
@@ -70,7 +68,7 @@ public class ConvertMageTabToPheno
 
 			// load all features, optionally adding terms
 			final Map<String, ObservationElement> fMap = new LinkedHashMap<String, ObservationElement>();
-			
+
 			for (String annotation : reader.colnames().subList(1, reader.colnames().indexOf("Sample Name")))
 			{
 				if (annotation.startsWith("Characteristics"))
@@ -78,19 +76,18 @@ public class ConvertMageTabToPheno
 					String characteristic = annotation.substring(annotation.indexOf('[') + 1, annotation.indexOf(']'));
 
 					// exclude 'Individual'
-					//if (!characteristic.equalsIgnoreCase("Individual"))
+					// if (!characteristic.equalsIgnoreCase("Individual"))
 					//
 					ObservationElement f = new ObservationElement();
-						f.setInvestigation(inv.getId());
-						f.setName(characteristic);
-						f.setInvestigation(inv.getId());
-						fMap.put(characteristic, f);
-					//}
+					f.setInvestigation(inv.getId());
+					f.setName(characteristic);
+					f.setInvestigation(inv.getId());
+					fMap.put(characteristic, f);
+					// }
 				}
 				else if (annotation.equals("Term Source REF"))
 				{
 					// ah, it is a term too, dirty even
-					
 
 				}
 			}
@@ -99,27 +96,24 @@ public class ConvertMageTabToPheno
 			db.add(new ArrayList<ObservationElement>(fMap.values()));
 
 			// add individuals at first parse
-			reader.parse(new CsvReaderListener()
+			for (Tuple line : reader)
 			{
+				// String individual =
+				// line.getString("Characteristics [Individual]");
+				String individual = line.getString("Source Name");
 
-				@Override
-				public void handleLine(int lineNo, Tuple line) throws Exception
+				if (!iMap.containsKey(individual))
 				{
-					//String individual = line.getString("Characteristics [Individual]");
-					String individual = line.getString("Source Name");
-
-					if (!iMap.containsKey(individual))
-					{
-						Individual i = new Individual();
-						i.setName(individual);
-						i.setInvestigation(inv.getId());
-						// i.setSpecies(species.getId());
-						// need special characteristics like 'sex'
-						// i.setSex("unknown");
-						iMap.put(individual, i);
-					}
+					Individual i = new Individual();
+					i.setName(individual);
+					i.setInvestigation(inv.getId());
+					// i.setSpecies(species.getId());
+					// need special characteristics like 'sex'
+					// i.setSex("unknown");
+					iMap.put(individual, i);
 				}
-			});
+			}
+
 			for (Individual i : iMap.values())
 				System.out.println(i);
 			db.add(new ArrayList<Individual>(iMap.values()));
@@ -130,85 +124,80 @@ public class ConvertMageTabToPheno
 			final Map<String, OntologyTerm> tMap = new LinkedHashMap<String, OntologyTerm>();
 			final Map<String, Ontology> sMap = new LinkedHashMap<String, Ontology>();
 			reader.reset();
-			reader.parse(new CsvReaderListener()
+			for (Tuple line : reader)
 			{
+				// String individualName =
+				// line.getString("Characteristics [Individual]");
+				String individualName = line.getString("Source Name");
+				Individual i = iMap.get(individualName);
+				if (i == null) throw new Exception("Source unknown: " + individualName);
+				ObservedValue value = null;
 
-				@Override
-				public void handleLine(int lineNo, Tuple line) throws Exception
+				// add all characteristics properly,skip first column
+				// describing source
+				for (int j = 1; j < line.size(); j++)
 				{
-					//String individualName = line.getString("Characteristics [Individual]");
-					String individualName = line.getString("Source Name");
-					Individual i = iMap.get(individualName);
-					if (i == null)
-						throw new Exception("Source unknown: " + individualName);
-					ObservedValue value = null;
+					String fieldName = line.getFields().get(j).trim();
 
-					// add all characteristics properly,skip first column
-					// describing source
-					for (int j = 1; j < line.size(); j++)
+					// until
+					if ("Sample Name".equals(fieldName)) break;
+
+					// characteristic == ObservedValue
+					if (line.getString(j) != null)
 					{
-						String fieldName = line.getFields().get(j).trim();
-
-						// until
-						if ("Sample Name".equals(fieldName))
-							break;
-
-						// characteristic == ObservedValue
-						if (line.getString(j) != null)
+						String fieldValue = line.getString(j).trim();
+						if (fieldName.startsWith("Characteristics"))
 						{
-							String fieldValue = line.getString(j).trim();
-							if (fieldName.startsWith("Characteristics"))
+							String characteristic = fieldName.substring(fieldName.indexOf('[') + 1,
+									fieldName.indexOf(']'));
+							// if
+							// (!characteristic.equalsIgnoreCase("Individual"))
+							// {
+
+							ObservationElement f = fMap.get(characteristic);
+
+							// exception for specific characteristics
+							// 'sex',
+
+							value = new ObservedValue();
+							value.setInvestigation(inv.getId());
+							value.setTarget(i.getId());
+							value.setFeature(f.getId());
+							value.setValue(fieldValue);
+
+							// removes duplicates
+							vMap.put(i.getName() + "_" + f.getName(), value);
+							// }
+						}
+						else if (fieldName.equals("Term Source REF") && !fieldValue.equals(""))
+						{
+							Ontology ontology = sMap.get(fieldValue);
+							if (ontology == null)
 							{
-								String characteristic = fieldName.substring(fieldName.indexOf('[') + 1, fieldName
-										.indexOf(']'));
-								//if (!characteristic.equalsIgnoreCase("Individual"))
-								//{
-
-								ObservationElement f = fMap.get(characteristic);
-
-									// exception for specific characteristics
-									// 'sex',
-
-									value = new ObservedValue();
-									value.setInvestigation(inv.getId());
-									value.setTarget(i.getId());
-									value.setFeature(f.getId());
-									value.setValue(fieldValue);
-
-									// removes duplicates
-									vMap.put(i.getName() + "_" + f.getName(), value);
-								//}
+								ontology = new Ontology();
+								ontology.setName(fieldValue);
+								ontology.setOntologyAccession(fieldValue);
+								System.out.println("adding source: " + ontology);
+								db.add(ontology);
+								sMap.put(fieldValue, ontology);
 							}
-							else if (fieldName.equals("Term Source REF") && !fieldValue.equals(""))
+
+							// see if characteristic is known as phenotype
+							OntologyTerm term = tMap.get(ontology.getName() + "__" + value.getValue());
+							if (term == null)
 							{
-								Ontology ontology = sMap.get(fieldValue);
-								if (ontology == null)
-								{
-									ontology = new Ontology();
-									ontology.setName(fieldValue);
-									ontology.setOntologyAccession(fieldValue);
-									System.out.println("adding source: " + ontology);
-									db.add(ontology);
-									sMap.put(fieldValue, ontology);
-								}
-
-								// see if characteristic is known as phenotype
-								OntologyTerm term = tMap.get(ontology.getName() + "__" + value.getValue());
-								if (term == null)
-								{
-									term = new OntologyTerm();
-									term.setName(value.getValue());
-									term.setOntology(ontology.getId());
-									System.out.println("adding term: " + term);
-									db.add(term);
-									tMap.put(ontology.getName() + "__" + value.getValue(), term);
-								}
-								value.setOntologyReference(term.getId());
+								term = new OntologyTerm();
+								term.setName(value.getValue());
+								term.setOntology(ontology.getId());
+								System.out.println("adding term: " + term);
+								db.add(term);
+								tMap.put(ontology.getName() + "__" + value.getValue(), term);
 							}
+							value.setOntologyReference(term.getId());
 						}
 					}
 				}
-			});
+			}
 			// for(ObservedValue v: vMap.values()) System.out.println(v);
 			db.add(new ArrayList<ObservedValue>(vMap.values()));
 

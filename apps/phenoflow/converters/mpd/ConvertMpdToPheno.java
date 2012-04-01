@@ -13,7 +13,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 import app.CsvExport;
@@ -34,19 +33,19 @@ public class ConvertMpdToPheno
 	public static void main(String[] args) throws Exception
 	{
 		ConvertMpdToPheno conv = new ConvertMpdToPheno();
-		
+
 		conv.loadProjects();
 		conv.loadStrains();
 		conv.loadAssayStats();
 		conv.loadMeasurements();
 		conv.loadAnimalDataPoints();
-		
+
 		CsvExport export = new CsvExport();
 		export.exportAll(new File(outputDir), projects, strains, animals, measurements, values);
-		
-		//CsvImport importer = new CsvImport();
-		//Database db = null;
-		//importer.importAll(db,projects, strains);
+
+		// CsvImport importer = new CsvImport();
+		// Database db = null;
+		// importer.importAll(db,projects, strains);
 	}
 
 	// containers for the mpd data
@@ -67,48 +66,36 @@ public class ConvertMpdToPheno
 	 */
 	public void loadProjects() throws Exception
 	{
-		CsvReader reader = new CsvFileReader(new File(importDir
-				+ "/projects.txt"));
-		reader.parse(new CsvReaderListener()
+		CsvReader reader = new CsvFileReader(new File(importDir + "/projects.txt"));
+		for (Tuple tuple : reader)
 		{
-
-			@Override
-			public void handleLine(int lineNumber, Tuple tuple)
-					throws Exception
-			{
-				Investigation project = new Investigation();
-				project.setName(tuple.getString("name"));
-				project.setDescription(tuple.getString("description"));
-				projects.add(project);
-			}
-		});
+			Investigation project = new Investigation();
+			project.setName(tuple.getString("name"));
+			project.setDescription(tuple.getString("description"));
+			projects.add(project);
+		}
 	}
 
 	/**
 	 * Load measurements.txt
 	 * 
-	 * This file lists all measurements.name, unit and a serie of custom fields"measnum	projsym	displayorder	varname	desc	units	inseries	protolink	p1	cat1	cat2	cat3	p2	hints	intervention	intparm	appmeth	panelsym	p3	datatype	origin	sextested	nstrainstested	ageweeks"
-	 * @throws Exception 
+	 * This file lists all measurements.name, unit and a serie of custom fields
+	 * "measnum	projsym	displayorder	varname	desc	units	inseries	protolink	p1	cat1	cat2	cat3	p2	hints	intervention	intparm	appmeth	panelsym	p3	datatype	origin	sextested	nstrainstested	ageweeks"
+	 * 
+	 * @throws Exception
 	 */
 	public void loadMeasurements() throws Exception
 	{
-		CsvReader reader = new CsvFileReader(new File(importDir
-				+ "/measurements.txt"));
-		reader.parse(new CsvReaderListener()
+		CsvReader reader = new CsvFileReader(new File(importDir + "/measurements.txt"));
+		for (Tuple tuple : reader)
 		{
-
-			@Override
-			public void handleLine(int lineNumber, Tuple tuple)
-					throws Exception
-			{
-				Measurement m = new Measurement();
-				m.setInvestigation_Name("projsym");
-				m.setName(tuple.getString("name"));
-				m.setUnit_Name("units");
-				m.setDescription(tuple.getString("desc"));
-				measurements.add(m);
-			}
-		});
+			Measurement m = new Measurement();
+			m.setInvestigation_Name("projsym");
+			m.setName(tuple.getString("name"));
+			m.setUnit_Name("units");
+			m.setDescription(tuple.getString("desc"));
+			measurements.add(m);
+		}
 	}
 
 	/**
@@ -117,43 +104,34 @@ public class ConvertMpdToPheno
 	 */
 	public void loadAnimalDataPoints() throws Exception
 	{
-		CsvReader reader = new CsvFileReader(new File(importDir
-				+ "/animaldatapoints.txt"));
+		CsvReader reader = new CsvFileReader(new File(importDir + "/animaldatapoints.txt"));
 		addObservableFeatures("sex");
 
 		// sex is repeated for each measurement
 		final List<String> hasSexValue = new ArrayList<String>();
 
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-
-			@Override
-			public void handleLine(int lineNumber, Tuple tuple)
-					throws Exception
+			// sex, should be only once???
+			if (!hasSexValue.contains(tuple.getString("animal_id")))
 			{
-				// sex, should be only once???
-				if (!hasSexValue.contains(tuple.getString("animal_id")))
-				{
-					ObservedValue v = new ObservedValue();
-					v.setTarget_Name(tuple.getString("animal_id"));
-					// map measnum to meas.name
-					v.setFeature_Name("sex");
-					v.setValue(tuple.getString("sex"));
-
-					values.add(v);
-					hasSexValue.add(tuple.getString("animal_id"));
-				}
-
-				// value
 				ObservedValue v = new ObservedValue();
 				v.setTarget_Name(tuple.getString("animal_id"));
 				// map measnum to meas.name
-				v
-						.setFeature_Name(measNumToName.get(tuple
-								.getString("measnum")));
-				v.setValue(tuple.getString("value"));
+				v.setFeature_Name("sex");
+				v.setValue(tuple.getString("sex"));
+
+				values.add(v);
+				hasSexValue.add(tuple.getString("animal_id"));
 			}
-		});
+
+			// value
+			ObservedValue v = new ObservedValue();
+			v.setTarget_Name(tuple.getString("animal_id"));
+			// map measnum to meas.name
+			v.setFeature_Name(measNumToName.get(tuple.getString("measnum")));
+			v.setValue(tuple.getString("value"));
+		}
 	}
 
 	/**
@@ -167,26 +145,19 @@ public class ConvertMpdToPheno
 	{
 		// includes a few ObservableFeatures;
 		final String[] varNames = new String[]
-		{ "longname", "mpd_id", "vendor", "stocknum", "prigroup", "typecode",
-				"genaltcode", "ndatasets" };
+		{ "longname", "mpd_id", "vendor", "stocknum", "prigroup", "typecode", "genaltcode", "ndatasets" };
 
 		addObservableFeatures(varNames);
 
-		CsvReader reader = new CsvFileReader(new File(importDir
-				+ "/strains.txt"));
-		reader.parse(new CsvReaderListener()
+		CsvReader reader = new CsvFileReader(new File(importDir + "/strains.txt"));
+		for (Tuple tuple : reader)
 		{
 
-			@Override
-			public void handleLine(int lineNumber, Tuple tuple)
-					throws Exception
-			{
-				Panel strain = new Panel();
-				strain.setName(tuple.getString("strainname"));
-				strains.add(strain);
-				addObservedValuesForTarget(strain, varNames, tuple);
-			}
-		});
+			Panel strain = new Panel();
+			strain.setName(tuple.getString("strainname"));
+			strains.add(strain);
+			addObservedValuesForTarget(strain, varNames, tuple);
+		}
 	}
 
 	/**
@@ -201,8 +172,7 @@ public class ConvertMpdToPheno
 	 */
 	public void loadAssayStats() throws Exception
 	{
-		CsvReader reader = new CsvFileReader(new File(importDir
-				+ "/assaystats.txt"));
+		CsvReader reader = new CsvFileReader(new File(importDir + "/assaystats.txt"));
 
 		// get the features
 		List<String> temp = reader.colnames();
@@ -212,27 +182,20 @@ public class ConvertMpdToPheno
 
 		addObservableFeatures(features);
 
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-
-			@Override
-			public void handleLine(int lineNumber, Tuple tuple)
-					throws Exception
-			{
-				Panel strain = new Panel();
-				strain.setName(tuple.getString("strainname"));
-				strains.add(strain);
-				addObservedValuesForTarget(strain, features, tuple);
-			}
-		});
+			Panel strain = new Panel();
+			strain.setName(tuple.getString("strainname"));
+			strains.add(strain);
+			addObservedValuesForTarget(strain, features, tuple);
+		}
 	}
 
 	/*
 	 * Helper method for loading observed values per target from a matrix like
 	 * tuple
 	 */
-	private void addObservedValuesForTarget(Panel strain, String[] varNames,
-			Tuple tuple)
+	private void addObservedValuesForTarget(Panel strain, String[] varNames, Tuple tuple)
 	{
 		for (String name : varNames)
 		{
@@ -242,15 +205,13 @@ public class ConvertMpdToPheno
 			v.setValue(tuple.getString(name));
 			values.add(v);
 		}
-		
-		
+
 	}
 
 	/*
 	 * Helper method for loading a set of features.
 	 */
-	
-	
+
 	private void addObservableFeatures(String... featureNames)
 	{
 		// NB if Java had named parameters this code would not be needed.
