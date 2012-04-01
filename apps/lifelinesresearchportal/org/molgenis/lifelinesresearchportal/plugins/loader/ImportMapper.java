@@ -16,11 +16,11 @@ import java.util.zip.ZipFile;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
-import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.ImportTupleListener;
+import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.ImportTupleLoader;
 import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.LifeLinesMedicatieListener;
 import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.LifeLinesStandardListener;
-import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.VWCategoryListener;
-import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.VwDictListener;
+import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.VWCategoryLoader;
+import org.molgenis.lifelinesresearchportal.plugins.loader.listeners.VwDictLoader;
 import org.molgenis.organization.Investigation;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.CsvFileReader;
@@ -97,41 +97,44 @@ public class ImportMapper
 
 		// load dictonary
 		final String DICT = "VW_DICT";
-		VwDictListener dicListener = new VwDictListener(inv, DICT, db);
+		VwDictLoader dictLoader = new VwDictLoader(inv, DICT, db);
 		CsvReader reader = new CsvFileReader(new File(path + DICT + "_DATA.csv"));
-		reader.parse(dicListener);
-		dicListener.commit();
+		
+		dictLoader.load(reader);
+		
+		dictLoader.commit();
 
 		// load categories
 		final String CATE = "VW_DICT_VALUESETS";
-		VWCategoryListener catListener = new VWCategoryListener(dicListener.getProtocols(), inv, CATE, db);
+		VWCategoryLoader catListener = new VWCategoryLoader(dictLoader.getProtocols(), inv, CATE, db);
 		reader = new CsvFileReader(new File(path + CATE + "_DATA.csv"));
-		reader.parse(catListener);
+		catListener.load(reader);
 		catListener.commit();
 
 		// iterate through the protocols map assuming CSV files
 		// exclude a few views:
 		// BEZOEK is skipped because we use BEZOEK_PIVOT, where each subvisit has become a row
 		List<String> exclude = Arrays.asList(new String[] { "BEZOEK", "BEP_OMSCHR", "DICT_HULP", "ONDERZOEK" });
-		for (Protocol protocol : dicListener.getProtocols().values())
+		for (Protocol protocol : dictLoader.getProtocols().values())
 		{
 			if (!exclude.contains(protocol.getName()))
 			{
 				File f = new File(path + "VW_" + protocol.getName() + "_DATA.csv");
 
-				ImportTupleListener llListener;
+				ImportTupleLoader llListener;
+				reader = new CsvFileReader(f);
 				if ("MEDICATIE".equals(protocol.getName()))
 				{
 					protocol.getFeatures().clear();
 					llListener = new LifeLinesMedicatieListener(db, protocol);
+					llListener.load(reader);
 				}
 				else
 				{
 					llListener = new LifeLinesStandardListener(inv, protocol, db);
+					llListener.load(reader);
 				}
 
-				reader = new CsvFileReader(f);
-				reader.parse(llListener);
 				llListener.commit();
 			}
 		}
