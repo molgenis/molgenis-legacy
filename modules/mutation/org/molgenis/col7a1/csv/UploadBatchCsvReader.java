@@ -28,7 +28,6 @@ import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -97,13 +96,13 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		//wrapper to count
 		final IntegerWrapper total = new IntegerWrapper(0);
 		reader.setMissingValues(missingValues);
-		reader.parse(new CsvReaderListener()
-		{
+
 			Integer mutationIdentifier = uploadService.getMaxMutationIdentifier();
 			Integer patientIdentifier  = uploadService.getMaxPatientIdentifier();
 
-			public void handleLine(int lineNo, Tuple tuple) throws Exception
+			for(Tuple tuple: reader)
 			{
+
 				//parse object, setting defaults and values from file
 //				if (lineNo > 5) return;
 				PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
@@ -341,7 +340,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 //					total.set(total.get() + BATCH_SIZE);				
 //				}
 			}
-		});
+
 		//add remaining elements to the database
 //		if(!uploadBatchList.isEmpty())
 //		{
