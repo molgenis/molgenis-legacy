@@ -2,16 +2,17 @@ package org.molgenis.matrix;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 import org.molgenis.matrix.convertors.ValueConvertor;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvWriter;
-import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.TupleWriter;
 
 /**
  * A simple matrix implementation that reads data from a file. Optionally, usage
@@ -35,7 +36,8 @@ import org.molgenis.util.Tuple;
  * @param <A>
  * @param <V>
  */
-public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V> {
+public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V>
+{
 	// convertor to read the values
 	private ValueConvertor<E> rowConvertor;
 	private ValueConvertor<A> colConvertor;
@@ -49,21 +51,24 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V> {
 	 * @param colConvertor
 	 * @param valueConvertor
 	 * @param values
-	 * @throws FileNotFoundException
 	 * @throws MatrixException
 	 * @throws FileNotFoundException
+	 * @throws DataFormatException 
+	 * @throws IOException 
 	 */
 	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor,
 			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
 			Matrix<E, A, V> values, File file) throws MatrixException,
-			FileNotFoundException {
+			IOException, DataFormatException
+	{
 		this(rowConvertor, colConvertor, valueConvertor,
 				new CsvFileReader(file));
 	}
 
 	public CsvMemoryMatrix(ValueConvertor<E> rowConvertor,
 			ValueConvertor<A> colConvertor, ValueConvertor<V> valueConvertor,
-			Matrix<E, A, V> values, CsvReader reader) throws MatrixException {
+			Matrix<E, A, V> values, CsvReader reader) throws MatrixException
+	{
 		super(values);
 		this.rowConvertor = rowConvertor;
 		this.colConvertor = colConvertor;
@@ -85,9 +90,11 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V> {
 	public CsvMemoryMatrix(final ValueConvertor<E> rowConvertor,
 			final ValueConvertor<A> colConvertor,
 			final ValueConvertor<V> valueConvertor, CsvReader csvReader)
-			throws MatrixException {
+			throws MatrixException
+	{
 		// put the rownames and colnames in parent
-		try {
+		try
+		{
 			this.rowConvertor = rowConvertor;
 			this.colConvertor = colConvertor;
 			this.valueConvertor = valueConvertor;
@@ -107,38 +114,39 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V> {
 			final V[][] values = this.create(rowNames.size(), colNames.size(),
 					valueConvertor.getValueType());
 			csvReader.reset();
-			csvReader.parse(new CsvReaderListener() {
-				@Override
-				public void handleLine(int line_number, Tuple tuple)
-						throws Exception {
-					for (int col = 0; col < tuple.size() - 1; col++) {
-						if (col >= colNames.size())
-							throw new MatrixException("new "
-									+ this.getClass().getSimpleName()
+			
+			int line_number = 0;
+			for (Tuple tuple : csvReader)
+			{
+				for (int col = 0; col < tuple.size() - 1; col++)
+				{
+					if (col >= colNames.size()) throw new MatrixException(
+							"new " + this.getClass().getSimpleName()
 									+ "() failed: csv row longer than colnames");
-						if ((line_number - 1) >= rowNames.size())
-							throw new MatrixException(
-									"new "
-											+ this.getClass().getSimpleName()
-											+ "() failed:csv rowcount longer than rownames");
+					if ((line_number - 1) >= rowNames.size()) throw new MatrixException(
+							"new "
+									+ this.getClass().getSimpleName()
+									+ "() failed:csv rowcount longer than rownames");
 
-						values[line_number - 1][col] = valueConvertor
-								.read(tuple.getString(col + 1));
-					}
-
+					values[line_number - 1][col] = valueConvertor.read(tuple
+							.getString(col + 1));
 				}
-			});
+
+			}
 
 			this.setRowNames(rowNames);
 			this.setColNames(colNames);
 			this.setValues(values);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			throw new MatrixException(e.getMessage());
 		}
 	}
 
-	public void write(TupleWriter writer) throws Exception {
+	public void write(TupleWriter writer) throws Exception
+	{
 		// NB this only works if names are unique!!!
 		// set headers
 		List<String> headers = new ArrayList<String>();
@@ -146,11 +154,13 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V> {
 			headers.add(this.colConvertor.write(value));
 		writer.setHeaders(headers);
 		writer.writeHeader();
-		for (E rowName : getRowNames()) {
+		for (E rowName : getRowNames())
+		{
 			writer.writeValue(this.rowConvertor.write(rowName));
-			for (V value : getRowByName(rowName)) {
-				if (writer instanceof CsvWriter)
-					((CsvWriter) writer).writeSeparator();
+			for (V value : getRowByName(rowName))
+			{
+				if (writer instanceof CsvWriter) ((CsvWriter) writer)
+						.writeSeparator();
 				writer.writeValue(this.valueConvertor.write(value));
 			}
 			writer.writeEndOfLine();
@@ -160,27 +170,33 @@ public class CsvMemoryMatrix<E, A, V> extends MemoryMatrix<E, A, V> {
 	}
 
 	// getters/setters
-	public ValueConvertor<E> getRowConvertor() {
+	public ValueConvertor<E> getRowConvertor()
+	{
 		return rowConvertor;
 	}
 
-	public void setRowConvertor(ValueConvertor<E> rowConvertor) {
+	public void setRowConvertor(ValueConvertor<E> rowConvertor)
+	{
 		this.rowConvertor = rowConvertor;
 	}
 
-	public ValueConvertor<A> getColConvertor() {
+	public ValueConvertor<A> getColConvertor()
+	{
 		return colConvertor;
 	}
 
-	public void setColConvertor(ValueConvertor<A> colConvertor) {
+	public void setColConvertor(ValueConvertor<A> colConvertor)
+	{
 		this.colConvertor = colConvertor;
 	}
 
-	public ValueConvertor<V> getValueConvertor() {
+	public ValueConvertor<V> getValueConvertor()
+	{
 		return valueConvertor;
 	}
 
-	public void setValueConvertor(ValueConvertor<V> valueConvertor) {
+	public void setValueConvertor(ValueConvertor<V> valueConvertor)
+	{
 		this.valueConvertor = valueConvertor;
 	}
 }

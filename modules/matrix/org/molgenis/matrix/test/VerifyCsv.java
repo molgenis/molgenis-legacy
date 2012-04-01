@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.commons.fileupload.FileUploadException;
 import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
@@ -49,33 +48,31 @@ public class VerifyCsv
 		final IntegerWrapper nrOfCols = new IntegerWrapper(-1);
 		final IntegerWrapper nrOfRows = new IntegerWrapper(0);
 
-		new CsvFileReader(inputFile).parse(new CsvReaderListener()
+		int line_number = 0;
+		for (Tuple line : new CsvFileReader(inputFile))
 		{
-			public void handleLine(int line_number, Tuple line)
-					throws Exception
+			if (line_number != 0)
 			{
-				if (line_number != 0)
+				if (nrOfCols.get() == -1)
 				{
-					if (nrOfCols.get() == -1)
-					{
-						nrOfCols.set(line.size() - 1);
-					}
-					else
-					{
-						if (nrOfCols.get() != line.size() - 1)
-						{
-							throw new ParseException(
-									"Number of columns unequal. Expected "
-											+ nrOfCols.get() + " but found "
-											+ (line.size() - 1) + " at line "
-											+ line_number, line_number);
-						}
-						// else: continue
-					}
-					nrOfRows.set(nrOfRows.get() + 1);
+					nrOfCols.set(line.size() - 1);
 				}
+				else
+				{
+					if (nrOfCols.get() != line.size() - 1)
+					{
+						throw new ParseException(
+								"Number of columns unequal. Expected "
+										+ nrOfCols.get() + " but found "
+										+ (line.size() - 1) + " at line "
+										+ line_number, line_number);
+					}
+					// else: continue
+				}
+				nrOfRows.set(nrOfRows.get() + 1);
 			}
-		});
+			line_number++;
+		}
 
 		rowAndColLength[0] = nrOfRows.get();
 		rowAndColLength[1] = nrOfCols.get();
@@ -98,47 +95,40 @@ public class VerifyCsv
 
 	private static void verifyDoubleValueType(File inputFile) throws Exception
 	{
-		new CsvFileReader(inputFile).parse(new CsvReaderListener()
+		int line_number = 0;
+		for (Tuple line : new CsvFileReader(inputFile))
 		{
-			public void handleLine(int line_number, Tuple line)
-					throws Exception
+			if (line_number != 0)
 			{
-				if (line_number != 0)
+				for (int i = 1; i < line.size(); i++)
 				{
-					for (int i = 1; i < line.size(); i++)
-					{
-						line.getDouble(i);
-					}
+					line.getDouble(i);
 				}
 			}
-		});
+			line_number++;
+		}
 	}
 
 	private static void verifyTextElementLenghtsAllowed(File inputFile)
 			throws Exception
 	{
-		new CsvFileReader(inputFile).parse(new CsvReaderListener()
+		int line_number = 0;
+		for (Tuple line : new CsvFileReader(inputFile))
 		{
-			public void handleLine(int line_number, Tuple line)
-					throws Exception
-			{
-				if (line_number != 0)
-				{
-					for (int i = 1; i < line.size(); i++)
-					{
-						if (line.getString(i) != null
-								&& line.getString(i).length() > maxStringLength)
-						{
-							throw new FileUploadException(
-									"Text element bigger than "
-											+ maxStringLength + " characters: "
-											+ line.getString(i));
-						}
 
-					}
+			for (int i = 1; i < line.size(); i++)
+			{
+				if (line.getString(i) != null
+						&& line.getString(i).length() > maxStringLength)
+				{
+					throw new FileUploadException("Text element bigger than "
+							+ maxStringLength + " characters: "
+							+ line.getString(i));
 				}
+
 			}
-		});
+			line_number++;
+		}
 	}
 
 	private static void verifyHeaderLenghtsAllowed(File inputFile)
@@ -217,12 +207,14 @@ public class VerifyCsv
 
 		for (String colName : colNames.subList(1, colNames.size()))
 		{
-			//FIXME: the strict should only be applied when application is an XGAP
+			// FIXME: the strict should only be applied when application is an
+			// XGAP
 			NameConvention.validateEntityNameStrict(colName);
 		}
 		for (String rowName : rowNames)
 		{
-			//FIXME: the strict should only be applied when application is an XGAP
+			// FIXME: the strict should only be applied when application is an
+			// XGAP
 			NameConvention.validateEntityNameStrict(rowName);
 		}
 	}
