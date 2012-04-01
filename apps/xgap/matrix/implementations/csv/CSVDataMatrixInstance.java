@@ -200,7 +200,6 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 					{
 						if (colIndicesList.contains(col-1))
 						{
-							System.out.println("haat "+tuple.getObject(col));
 							elements[row][col-1] = tuple.getObject(col);
 						}
 					}
