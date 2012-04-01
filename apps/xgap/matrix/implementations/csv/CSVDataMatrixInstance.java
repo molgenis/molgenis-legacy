@@ -71,10 +71,11 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		// naive implementation
 		final finalObject finalResult = new finalObject();
 		reader.reset();
+		int row = 0;
 		for (Tuple tuple : reader)
 		{
-			// first column is rowname
-			finalResult.set(tuple.getObject(finalColIndex + 1));
+			if (row == rowIndex) finalResult.set(tuple.getObject(finalColIndex + 1));
+			row++;
 		}
 
 		return finalResult.get();
@@ -114,20 +115,24 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		final int finalRowIndex = rowIndex;
 		final Object[] result = new Object[getNumberOfCols()];
 		reader.reset();
+		int row = 0;
 		for (Tuple tuple : reader)
 		{
-			for (int col = 0; col < tuple.size() - 1; col++)
+			if (row == rowIndex)
 			{
-				result[col] = tuple.getObject(col + 1);
+				for (int col = 0; col < tuple.size() - 1; col++)
+				{
+					result[col] = tuple.getObject(col + 1);
+				}
 			}
+			row++;
 		}
 
 		return result;
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices,
-			int[] colIndices) throws MatrixException
+	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException
 	{
 		try
 		{
@@ -156,8 +161,7 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 			}
 			if (offsetAble)
 			{
-				return getSubMatrixByOffset(rowIndices[0], rowIndices.length,
-						colIndices[0], colIndices.length);
+				return getSubMatrixByOffset(rowIndices[0], rowIndices.length, colIndices[0], colIndices.length);
 			}
 
 			// optimalization: sort ascending in primitive array, then dont use
@@ -175,32 +179,33 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 			AbstractDataMatrixInstance<Object> result = null;
 			final Object[][] elements = new Object[rowIndices.length][colIndices.length];
 
-			final ArrayList<Integer> rowIndicesList = new ArrayList<Integer>(
-					rowIndices.length);
+			final ArrayList<Integer> rowIndicesList = new ArrayList<Integer>(rowIndices.length);
 			for (int i : rowIndices)
 			{
 				rowIndicesList.add(i);
 			}
-			final ArrayList<Integer> colIndicesList = new ArrayList<Integer>(
-					colIndices.length);
+			final ArrayList<Integer> colIndicesList = new ArrayList<Integer>(colIndices.length);
 			for (int i : colIndices)
 			{
 				colIndicesList.add(i);
 			}
 			// final finalObject finalResult = new finalObject();
 			reader.reset();
-			int line_number = 1;
+			int row = 0;
 			for (Tuple tuple : reader)
 			{
-				for (int col = 0; col < tuple.size() - 1; col++)
+				if (rowIndicesList.contains(row))
 				{
-					if (colIndicesList.contains(col))
+					for (int col = 1; col <= tuple.size(); col++)
 					{
-						elements[line_number - 1][col] = tuple
-								.getObject(col + 1);
+						if (colIndicesList.contains(col-1))
+						{
+							System.out.println("haat "+tuple.getObject(col));
+							elements[row][col-1] = tuple.getObject(col);
+						}
 					}
 				}
-				line_number++;
+				row++;
 			}
 
 			List<String> rowNames = new ArrayList<String>();
@@ -216,8 +221,7 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 				colNames.add(this.getColNames().get(colIndex).toString());
 			}
 
-			result = new MemoryDataMatrixInstance<Object>(rowNames, colNames,
-					elements, this.getData());
+			result = new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements, this.getData());
 			return result;
 		}
 		catch (Exception e)
@@ -227,47 +231,39 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row2,
-			int nRows2, int col2, int nCols2) throws Exception
-	{
-		final int finalRow = row2;
-		final int finalNRows = nRows2;
-		final int finalCol = col2;
-		final int finalNCols = nCols2;
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int startRow, int numRows, int startCol, int numCols)
+			throws Exception
+	{;
 		AbstractDataMatrixInstance<Object> result = null;
-		final Object[][] elements = new Object[nRows2][nCols2];
+		final Object[][] elements = new Object[numRows][numCols];
 
 		// final finalObject finalResult = new finalObject();
 		reader.reset();
-		int line_number = 1;
+		int row = 0;
+		int rowCount = 0;
+		int colCount = 0;
 		for (Tuple tuple : reader)
 		{
-
-			int rowCount = 0;
-			int colCount = 0;
-
-			if (line_number > 0 && line_number - 1 >= finalRow
-					&& line_number - 1 < finalRow + finalNRows)
+			if (row >= startRow && row < startRow + numRows)
 			{
+				colCount = 0;
 				for (int col = 0; col < tuple.size() - 1; col++)
 				{
-					if (col >= finalCol && col < finalCol + finalNCols)
+					if (col >= startCol && col < startCol + numCols)
 					{
 						elements[rowCount][colCount] = tuple.getObject(col + 1);
 						colCount++;
 					}
 				}
 				rowCount++;
-				colCount = 0;
 			}
-			line_number++;
+			row++;
 		}
 
-		List<String> rowNames = getRowNames().subList(row2, row2 + nRows2);
-		List<String> colNames = getColNames().subList(col2, col2 + nCols2);
+		List<String> rowNames = getRowNames().subList(startRow, startRow + numRows);
+		List<String> colNames = getColNames().subList(startCol, startCol + numCols);
 
-		result = new MemoryDataMatrixInstance<Object>(rowNames, colNames,
-				elements, this.getData());
+		result = new MemoryDataMatrixInstance<Object>(rowNames, colNames, elements, this.getData());
 		return result;
 	}
 
