@@ -2,11 +2,11 @@ package org.molgenis.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.RandomAccessFile;
+import java.util.zip.DataFormatException;
 
 /**
  * CsvReader for delimited text files.
@@ -18,7 +18,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	/** the File that is being read */
 	private File file;
 
-	public CsvFileReader(File file) throws FileNotFoundException
+	public CsvFileReader(File file) throws IOException, DataFormatException
 	{
 		super(new BufferedReader(new FileReader(file)));
 		this.file = file;
@@ -114,11 +114,10 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 
 	}
 
-	// @Override
-	public void reset() throws IOException
+	@Override
+	public void reset() throws IOException, DataFormatException
 	{
-		super.reset();
-		this.reader.close();
 		this.reader = new BufferedReader(new FileReader(file));
+		super.reset();
 	}
 }

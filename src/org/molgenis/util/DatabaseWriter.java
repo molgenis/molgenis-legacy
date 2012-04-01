@@ -3,13 +3,13 @@ package org.molgenis.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.framework.db.AbstractMapper;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.jdbc.AbstractJDBCMapper;
 
 /** Tuple writer that translates tuples into rows in a Database */
 public class DatabaseWriter implements TupleWriter
 {
-	public final int BATCH_SIZE = AbstractJDBCMapper.BATCH_SIZE;
+	public final int BATCH_SIZE = AbstractMapper.BATCH_SIZE;
 	private final Database db;
 	private final Class<? extends Entity> entityClass;
 	private final List<Entity> batch = new ArrayList<Entity>();

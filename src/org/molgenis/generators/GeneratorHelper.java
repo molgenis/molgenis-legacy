@@ -24,8 +24,6 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Model;
 import org.molgenis.model.elements.Unique;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
@@ -114,7 +112,7 @@ public class GeneratorHelper
 			return "EXCEPTION";
 		}
 	}
-	
+
 	/**
 	 * Get the cpp type for a field.
 	 * 
@@ -133,7 +131,7 @@ public class GeneratorHelper
 			return "EXCEPTION";
 		}
 	}
-	
+
 	/**
 	 * Get the cpp type for a field.
 	 * 
@@ -220,7 +218,7 @@ public class GeneratorHelper
 	{
 		return MolgenisFieldTypes.get(field).getMysqlType();
 	}
-	
+
 	public String getOracleType(Model model, Field field) throws Exception
 	{
 		return MolgenisFieldTypes.get(field).getOracleType();
@@ -368,8 +366,8 @@ public class GeneratorHelper
 				if (!(f.getType() instanceof MrefField) // && (f.getName() !=
 														// "type" ||
 														// e.isRootAncestor())
-						&& (type.equals("") || f.getType().toString().equals(
-								type)))
+						&& (type.equals("") || f.getType().toString()
+								.equals(type)))
 				{
 					db_fields.add(f);
 				}
@@ -385,8 +383,8 @@ public class GeneratorHelper
 				if (!(f.getType() instanceof MrefField) // && (f.getName() !=
 														// "type" ||
 														// e.isRootAncestor())
-						&& (type.equals("") || f.getType().toString().equals(
-								type)))
+						&& (type.equals("") || f.getType().toString()
+								.equals(type)))
 				{
 					db_fields.add(f);
 				}
@@ -620,25 +618,27 @@ public class GeneratorHelper
 		}
 
 	}
-	
+
 	/**
 	 * First character to upercase. And also when following "_";
+	 * 
 	 * @param name
 	 * @return
 	 */
 	public static String getJavaName(String name)
 	{
 		if (name == null) return " NULL ";
-		
+
 		String[] split = name.split("_");
 		String result = "";
-		for(int i = 0; i < split.length; i++)
+		for (int i = 0; i < split.length; i++)
 		{
-			if(i > 0) result +="_";
-			if(split[i].equals("")) result += "";
-			else result += firstToUpper(split[i]);
+			if (i > 0) result += "_";
+			if (split[i].equals("")) result += "";
+			else
+				result += firstToUpper(split[i]);
 		}
-		
+
 		return result;
 	}
 
@@ -842,18 +842,11 @@ public class GeneratorHelper
 			{
 				try
 				{
-					CsvReader reader = new CsvFileReader(file);
-					reader.parse(new CsvReaderListener()
+					for (Tuple tuple : new CsvFileReader(file))
 					{
+						result.add(new SimpleTuple(tuple));
+					}
 
-						@Override
-						public void handleLine(int lineNumber, Tuple tuple)
-								throws Exception
-						{
-							result.add(new SimpleTuple(tuple));
-						}
-
-					});
 				}
 				catch (Exception e)
 				{

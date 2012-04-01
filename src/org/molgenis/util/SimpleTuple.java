@@ -484,6 +484,8 @@ public class SimpleTuple implements Tuple
 		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
 				((java.util.Date) this.getObject(column)).getTime());
 
+		System.err.println(this.getString(column));
+		
 		try
 		{
 			DateFormat formatter = new SimpleDateFormat(DATEFORMAT, Locale.US);
@@ -828,5 +830,23 @@ public class SimpleTuple implements Tuple
 			else if(o != null) result.add(o.toString());
 		}
 		return result;
+	}
+
+	@Override
+	public <E extends Entity> E getEntity(Class<E> entityClass)
+	{
+		E entity;
+		try
+		{
+			entity = entityClass.newInstance();
+			entity.set(this);
+			return entity;
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

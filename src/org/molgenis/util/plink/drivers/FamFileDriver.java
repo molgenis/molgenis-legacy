@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.FamEntry;
 
@@ -46,7 +45,8 @@ public class FamFileDriver
 
 		if (reader.fileEndsWithNewlineChar())
 		{
-			this.nrOfElements = reader.getNumberOfLines() - reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = reader.getNumberOfLines()
+					- reader.getAmountOfNewlinesAtFileEnd();
 		}
 		else
 		{
@@ -63,22 +63,21 @@ public class FamFileDriver
 	 */
 	public List<FamEntry> getAllEntries() throws Exception
 	{
-		reader.reset();
 		final ArrayList<FamEntry> result = new ArrayList<FamEntry>();
-		reader.parse(new CsvReaderListener()
+		int line_number = 0;
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws Exception
+			line_number++;
+			for (int objIndex = 0; objIndex < 6; objIndex++)
 			{
-				for(int objIndex = 0; objIndex < 6; objIndex++)
-				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
-				}
-				FamEntry fe = new FamEntry(tuple.getString(0),
-						tuple.getString(1), tuple.getString(2), tuple.getString(3),
-						tuple.getInt(4).byteValue(), tuple.getDouble(5));
-				result.add(fe);
+				if (tuple.getObject(objIndex) == null) throw new Exception(
+						Helper.errorMsg(line_number, objIndex));
 			}
-		});
+			FamEntry fe = new FamEntry(tuple.getString(0), tuple.getString(1),
+					tuple.getString(2), tuple.getString(3), tuple.getInt(4)
+							.byteValue(), tuple.getDouble(5));
+			result.add(fe);
+		}
 		return result;
 	}
 
@@ -95,25 +94,27 @@ public class FamFileDriver
 	public List<FamEntry> getEntries(final long from, final long to)
 			throws Exception
 	{
-		reader.reset();
+
 		final ArrayList<FamEntry> result = new ArrayList<FamEntry>();
-		reader.parse(new CsvReaderListener()
+		int line_number = 0;
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple) throws Exception
+			line_number++;
+
+			if (line_number - 1 >= from && line_number - 1 < to)
 			{
-				if (line_number - 1 >= from && line_number - 1 < to)
+				for (int objIndex = 0; objIndex < 6; objIndex++)
 				{
-					for(int objIndex = 0; objIndex < 6; objIndex++)
-					{
-						if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
-					}
-					FamEntry fe = new FamEntry(tuple.getString(0),
-							tuple.getString(1), tuple.getString(2), tuple.getString(3),
-							tuple.getInt(4).byteValue(), tuple.getDouble(5));
-					result.add(fe);
+					if (tuple.getObject(objIndex) == null) throw new Exception(
+							Helper.errorMsg(line_number, objIndex));
 				}
+				FamEntry fe = new FamEntry(tuple.getString(0),
+						tuple.getString(1), tuple.getString(2),
+						tuple.getString(3), tuple.getInt(4).byteValue(),
+						tuple.getDouble(5));
+				result.add(fe);
 			}
-		});
+		}
 		return result;
 	}
 

@@ -33,8 +33,7 @@ public class ExcelExportGen extends MySqlCreateClassPerTableGen
 		Template template = createTemplate( "/"+this.getClass().getSimpleName()+".java.ftl" );
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 		
-		List<Entity> entityList = model.getEntities();
-		MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
+		List<Entity> entityList = MolgenisModel.sortEntitiesByDependency(model.getEntities(),model); //side effect?
 		//String packageName = this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
 
 

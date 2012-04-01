@@ -22,6 +22,11 @@ public class DatabaseException extends Exception {
 		message = exception.getMessage();
 	}
 	
+	public DatabaseException(String message, Exception exception) {
+		super(exception);
+		this.message = message;
+	}
+	
 	@Override
 	public String getMessage() {
 		return message;

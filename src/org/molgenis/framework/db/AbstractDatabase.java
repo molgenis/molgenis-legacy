@@ -41,7 +41,7 @@ public abstract class AbstractDatabase implements Database
 	protected static final int BATCH_SIZE = 500;
 
 	/** List of mappers, mapping entities backend */
-	protected Map<String, Mapper<? extends Entity>> mappers = new TreeMap<String, Mapper<? extends Entity>>();
+	protected Map<String, Mapper<? extends Entity>> mappers = new LinkedHashMap<String, Mapper<? extends Entity>>();
 
 	/** The filesource associated to this database: takes care of "file" fields */
 	public File fileSource; // should be changed to protected or private
@@ -597,6 +597,12 @@ public abstract class AbstractDatabase implements Database
 			return getMapperFor(klass).add(entities);
 		}
 		return 0;
+	}
+	
+	@Override
+	public <E extends Entity> int add(Class<E> klazz, TupleReader reader) throws DatabaseException
+	{
+		return this.add(klazz, reader, null);
 	}
 
 	@Override

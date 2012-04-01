@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
@@ -22,7 +22,7 @@ public class VcfReader
 			"QUAL","FILTER","INFO","FORMAT", ""});
 	
 
-	public VcfReader(File f) throws IOException
+	public VcfReader(File f) throws IOException, DataFormatException
 	{
 		reader = new CsvFileReader(f);
 
@@ -101,17 +101,14 @@ public class VcfReader
 	public int parse(final VcfReaderListener listener) throws Exception
 	{
 		final VcfReader vcf = this;
-		return reader.parse(new CsvReaderListener(){
-
-			@Override
-			public void handleLine(int lineNumber, Tuple tuple)
-					throws Exception
-			{
-				VcfRecord record = new VcfRecord(vcf, tuple);
-				listener.handleLine(lineNumber, record);
-			}
-			
-		});
+		
+		int lineNumber = 0;
+		for(Tuple tuple: reader)
+		{
+			VcfRecord record = new VcfRecord(vcf, tuple);
+			listener.handleLine(lineNumber++, record);
+		}
+		return lineNumber;
 	}
 	
 	private Tuple parseHeader(String settings)

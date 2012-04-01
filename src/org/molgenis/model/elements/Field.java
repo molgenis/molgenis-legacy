@@ -16,8 +16,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.CharField;
@@ -136,6 +136,11 @@ public class Field implements Serializable {
         this.user_data = null;
         
         this.jpaCascade = jpaCascade;
+    }
+    
+    public Field(String name)
+    {
+    	this.name = name;
     }
 
     

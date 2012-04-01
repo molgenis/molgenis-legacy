@@ -34,7 +34,7 @@ public class TestCsvGen extends Generator
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 		
 		List<Entity> entityList = model.getEntities();
-		MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
 
 		File target = new File( this.getSourcePath(options) + "/test/TestCsv.java" );
 		target.getParentFile().mkdirs();

@@ -105,7 +105,7 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 	
 	private void setup()
 	{
-		<#list model.entities as entity><#if !entity.isAbstract()>
+		<#list entities as entity><#if !entity.isAbstract()>
 			<#if disable_decorators>
 		this.putMapper(${entity.namespace}.${JavaName(entity)}.class, new ${entity.namespace}.db.${JavaName(entity)}Mapper(this));				
 			<#elseif entity.decorator?exists>
@@ -211,4 +211,14 @@ public class JDBCDatabase extends org.molgenis.framework.db.jdbc.JDBCDatabase
 			metaData = new JDBCMetaDatabase();
 		return metaData;
 	}
+	
+<#--	@Override
+	public java.util.List<Class<? extends org.molgenis.util.Entity>> getEntityDependencyOrder()
+	{
+		java.util.List<Class<? extends org.molgenis.util.Entity>> result = new java.util.ArrayList<Class<? extends org.molgenis.util.Entity>>();
+<#list entities as entity><#if !entity.abstract>
+		result.add(${entity.namespace}.${JavaName(entity)}.class);
+</#if></#list>		
+		return result;		
+	}-->
 }

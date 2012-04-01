@@ -413,4 +413,13 @@ public interface Tuple
 	public List<String> getStringList(String string);
 
 	List<String> getStringList(int column);
+	
+	/** Automatically get the entity using the tuple to set it. 
+	 * 
+	 * This is a shorthand for:
+	 * EntityClass e = entityClass.newInstance(); 
+	 * e.set(tuple);
+	 * @throws Exception anything can go wrong
+	 */
+	public <E extends Entity> E  getEntity(Class<E> entityClass) throws Exception;
 }
