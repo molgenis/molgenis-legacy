@@ -15,7 +15,6 @@ import org.molgenis.ngs.Trio;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
@@ -37,36 +36,33 @@ import app.DatabaseFactory;
 public class WorksheetHelper
 {
 	Logger logger = Logger.getLogger(WorksheetHelper.class);
-	
+
 	static List<String> fieldsToInclude = Arrays
 			.asList(new String[]
 			{ "sample_name", "status", "sampletype", "investigation_name",
 					"flowcell_name", "lane", "barcode_barcode",
 					"capturing_capturing" });
 
-	/** Read tuples of user parameters from a file*/
+	/** Read tuples of user parameters from a file */
 	public List<Tuple> readTuplesFromFile(File worksheetFile) throws Exception
 	{
 		// load the worksheet file into a list of tuple
 		// todo: make work for Excel.
 		CsvReader reader = new CsvFileReader(worksheetFile);
 		final List<Tuple> tuples = new ArrayList<Tuple>();
-		reader.parse(new CsvReaderListener()
+		int line_number = 1;
+		for (Tuple tuple : reader)
 		{
-			@Override
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
-			{
-				tuple.set("line_number",line_number);
-				tuples.add(tuple);
-				
-//				logger.warn("renamed externalSampleId to sample");
-//				tuple.set("sample",tuple.getString("externalSampleId"));
-//				tuple.set("machine",tuple.getString("sequencer"));
-//				tuple.set("date",tuple.getString("sequencingStartDate"));
-//				tuple.set("capturing",tuple.getString("capturingKit"));
-			}
-		});
+			tuple.set("line_number", line_number++);
+			tuples.add(tuple);
+
+			// logger.warn("renamed externalSampleId to sample");
+			// tuple.set("sample",tuple.getString("externalSampleId"));
+			// tuple.set("machine",tuple.getString("sequencer"));
+			// tuple.set("date",tuple.getString("sequencingStartDate"));
+			// tuple.set("capturing",tuple.getString("capturingKit"));
+		}
+
 		return tuples;
 	}
 
@@ -76,12 +72,13 @@ public class WorksheetHelper
 	 * @param worksheet
 	 * @param sampleList
 	 * @param laneList
-	 * @param trioList 
+	 * @param trioList
 	 * @throws Exception
 	 */
 	public void convertTuplesToEntites(List<Tuple> worksheet,
 
-	List<NgsSample> sampleList, List<LibraryLane> laneList, List<Trio> trioList) throws Exception
+	List<NgsSample> sampleList, List<LibraryLane> laneList, List<Trio> trioList)
+			throws Exception
 	{
 		this.convertTuplesToEntites(worksheet, LibraryLane.class, sampleList,
 				laneList, trioList);
@@ -90,14 +87,15 @@ public class WorksheetHelper
 	/**
 	 * Load a worksheet into list of NgsSampe and LaneList. We need that for
 	 * generation of the workflow to allow both Sample and Lane iteration.
-	 * @param trioList 
+	 * 
+	 * @param trioList
 	 * 
 	 * @throws Exception
 	 */
 	public void convertTuplesToEntites(List<Tuple> worksheet,
 			Class<? extends ObservationElement> iterationLevel,
-			List<NgsSample> sampleList, List<LibraryLane> laneList, List<Trio> trioList)
-			throws Exception
+			List<NgsSample> sampleList, List<LibraryLane> laneList,
+			List<Trio> trioList) throws Exception
 	{
 		// problem is that LibraryLane don't have unique names. To be solved
 		// using decorator.
@@ -111,18 +109,18 @@ public class WorksheetHelper
 
 			for (Tuple t : worksheet)
 			{
-				//rename 'flowcell' to 'flowcell_name'
+				// rename 'flowcell' to 'flowcell_name'
 				t.set("flowcell_name", t.getString("flowcell"));
-				t.set("flowcell",null);
-				
-				//rename 'library' to 'library_name'
+				t.set("flowcell", null);
+
+				// rename 'library' to 'library_name'
 				t.set("library_name", t.getString("library"));
-				t.set("library",null);
-				
-				//rename 'externalSampleId' to 'sample_name'
+				t.set("library", null);
+
+				// rename 'externalSampleId' to 'sample_name'
 				t.set("sample_name", t.getString("externalSampleId"));
-				t.set("externalSampleId",null);
-				
+				t.set("externalSampleId", null);
+
 				LibraryLane lane = new LibraryLane();
 				lane.set(t);
 				laneList.add(lane);
@@ -289,10 +287,12 @@ public class WorksheetHelper
 		}
 		return entityMap;
 	}
-	
-	public List<Tuple> convertTriosToTuples(List<Trio> trios, List<NgsSample> samples, List<LibraryLane> lanes)
+
+	public List<Tuple> convertTriosToTuples(List<Trio> trios,
+			List<NgsSample> samples, List<LibraryLane> lanes)
 	{
-		throw new UnsupportedOperationException("This method is not yet implemented but planned");
+		throw new UnsupportedOperationException(
+				"This method is not yet implemented but planned");
 	}
 
 	/**
@@ -306,25 +306,26 @@ public class WorksheetHelper
 
 		WorksheetHelper test = new WorksheetHelper();
 
-		System.out.println("Part 1: load from file into Trio, NgsSample, LaneLibrary");
-		
+		System.out
+				.println("Part 1: load from file into Trio, NgsSample, LaneLibrary");
+
 		System.out.println("Load worksheet");
-		File f = new File("/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/TestSampleList.csv");
+		File f = new File(
+				"/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/TestSampleList.csv");
 		List<Tuple> tuples = test.readTuplesFromFile(f);
-		System.out.println("Tuples in file ("+f.getPath()+")");
+		System.out.println("Tuples in file (" + f.getPath() + ")");
 		for (Tuple t : tuples)
 		{
 			System.out.println(t);
 		}
-		
+
 		System.out.println("Convert into Trio, NgsSample, LaneLibrary");
 		List<Trio> trioList = new ArrayList<Trio>();
 		List<NgsSample> sampleList = new ArrayList<NgsSample>();
 		List<LibraryLane> laneList = new ArrayList<LibraryLane>();
-		
+
 		test.convertTuplesToEntites(tuples, sampleList, laneList, trioList);
-		
-		
+
 		sampleList = db.find(NgsSample.class);
 		laneList = db.find(LibraryLane.class);
 		trioList = db.find(Trio.class);
@@ -350,7 +351,8 @@ public class WorksheetHelper
 		sampleList = new ArrayList<NgsSample>();
 		laneList = new ArrayList<LibraryLane>();
 
-		test.convertTuplesToEntites(tuples, LibraryLane.class, sampleList, laneList, trioList);
+		test.convertTuplesToEntites(tuples, LibraryLane.class, sampleList,
+				laneList, trioList);
 
 		System.out.println("LANES (entities)");
 		for (LibraryLane l : laneList)

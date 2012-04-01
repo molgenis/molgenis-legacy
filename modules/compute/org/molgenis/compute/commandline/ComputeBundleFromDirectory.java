@@ -4,12 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.molgenis.compute.ComputeParameter;
@@ -18,25 +14,24 @@ import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 
 public class ComputeBundleFromDirectory extends ComputeBundle
 {
 	Logger logger = Logger.getLogger(ComputeBundleFromDirectory.class);
 
 	/**
-	 * Minimal constructor only requiring path to workflow directory + worksheet file. This uses defaults:
+	 * Minimal constructor only requiring path to workflow directory + worksheet
+	 * file. This uses defaults:
 	 * <ul>
 	 * <li>workflowDir/parameters.txt -> loads ComputeParameter
 	 * <li>workflowDir/workflow.txt -> loads WorkflowElement
-	 * <li>workflowDir/protocols -> reads all ftl in that directory into protocol
-	 * <li>workflowDir/workflowelementparameters.txt -> optional: read WorkflowElementParameter
+	 * <li>workflowDir/protocols -> reads all ftl in that directory into
+	 * protocol
+	 * <li>workflowDir/workflowelementparameters.txt -> optional: read
+	 * WorkflowElementParameter
 	 * <li>(DISCUSSION: can we not merge with ComputeParameter???)
 	 * </ul>
 	 * 
@@ -44,13 +39,15 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	 * @param worksheetFile
 	 * @throws Exception
 	 */
-	public ComputeBundleFromDirectory(ComputeCommandLine options) throws Exception
+	public ComputeBundleFromDirectory(ComputeCommandLine options)
+			throws Exception
 	{
 		// load files
 		this.setComputeParameters(options.parametersfile);
 		this.setWorkflowElements(options.workflowfile);
 
-		// put names of workflowElement into parameters (so we can refer to them in worksheet for dependencies)
+		// put names of workflowElement into parameters (so we can refer to them
+		// in worksheet for dependencies)
 		// for(WorkflowElement wfe: this.getWorkflowElements())
 		// {
 		// ComputeParameter pm = new ComputeParameter();
@@ -60,7 +57,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 		// try
 		// {
-		// this.setWorkflowElementParameters(new File(workflowDir.getAbsolutePath() + File.separator
+		// this.setWorkflowElementParameters(new
+		// File(workflowDir.getAbsolutePath() + File.separator
 		// + "workflowparameters.txt"));
 		// }
 		// catch (Exception e)
@@ -70,26 +68,30 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		// read user parameters
 		this.setWorksheet(options.worksheetfile);
 
-		// combine computeParameters (parameters.txt) and userParameters (worksheetFile)
+		// combine computeParameters (parameters.txt) and userParameters
+		// (worksheetFile)
 		// into one file, called worksheet
 		// this.fillWorksheet();
 
 		// load the protocols
 		this.setComputeProtocols(options.protocoldir);
-		
+
 	}
 
 	// private void fillWorksheet()
 	// {
-	// List<ComputeParameter> parameterlist = getComputeParameters(); // parameters.txt
-	// List<Tuple> userworksheet = getUserParameters(); // original user worksheet
+	// List<ComputeParameter> parameterlist = getComputeParameters(); //
+	// parameters.txt
+	// List<Tuple> userworksheet = getUserParameters(); // original user
+	// worksheet
 	//
 	// Map<String, String> parameters = new HashMap<String, String>();
 	//
 	// // novel worksheet that combines user worksheet with parameters
 	// List<Tuple> worksheet = new ArrayList<Tuple>();
 	//
-	// // fill worksheet and iteratively substitute values that point to parameters
+	// // fill worksheet and iteratively substitute values that point to
+	// parameters
 	// for (Tuple usertuple : userworksheet)
 	// {
 	// // first put all parameters/values in map
@@ -107,7 +109,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	// // // check whether existing value is empty
 	// // // if not: error
 	// // if (value != null && value != "") {
-	// throw new RuntimeException("Parameter " + field + " occurs > 1 times in your parameter.txt file.");
+	// throw new RuntimeException("Parameter " + field +
+	// " occurs > 1 times in your parameter.txt file.");
 	// // }
 	// }
 	// }
@@ -158,7 +161,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	// if (!updated) done = true; // nothing changed, so we're done
 	// }
 	//
-	// // all values in parameters for this usertupele + parameters.txt are now iteratively filled
+	// // all values in parameters for this usertupele + parameters.txt are now
+	// iteratively filled
 	//
 	// // put these parameters in worksheet tuple (wt)
 	//
@@ -179,7 +183,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 	public void setWorksheet(File worksheetFile) throws Exception
 	{
-		this.setUserParameters(new WorksheetHelper().readTuplesFromFile(worksheetFile));
+		this.setUserParameters(new WorksheetHelper()
+				.readTuplesFromFile(worksheetFile));
 		// copy missing parameters from worksheet header to ComputeParameter
 		Tuple firstTuple = this.getUserParameters().get(0);
 		for (String field : firstTuple.getFields())
@@ -202,7 +207,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 		// TODO Auto-generated constructor stub
 	}
 
-	public ComputeBundleFromDirectory(File parametersfile, File workflowfile, File worksheetfile, File protocoldir) throws Exception
+	public ComputeBundleFromDirectory(File parametersfile, File workflowfile,
+			File worksheetfile, File protocoldir) throws Exception
 	{
 		this.setComputeParameters(parametersfile);
 		this.setWorkflowElements(workflowfile);
@@ -244,13 +250,18 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 							{
 								String[] data = keyValue.split("=");
 
-								if (data.length != 2) throw new RuntimeException("error parsing file " + f + ", keyValue ='" + keyValue
-										+ "': " + line);
+								if (data.length != 2) throw new RuntimeException(
+										"error parsing file " + f
+												+ ", keyValue ='" + keyValue
+												+ "': " + line);
 
 								String key = data[0];
 								if (!p.getFields().contains(key))
 								{
-									throw new RuntimeException("error parsing file " + f + ", unknown key '" + key + "' in line: " + line);
+									throw new RuntimeException(
+											"error parsing file " + f
+													+ ", unknown key '" + key
+													+ "' in line: " + line);
 								}
 
 								params.set(data[0], data[1]);
@@ -266,7 +277,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 					}
 					else if (line.trim().startsWith("#FOREACH"))
 					{
-						String thisline = line.substring("#FOREACH".length()).trim();
+						String thisline = line.substring("#FOREACH".length())
+								.trim();
 						if (thisline.length() > 0)
 						{
 							String[] targets = thisline.split(",");
@@ -278,7 +290,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 					}
 					else if (line.trim().startsWith("#DOCUMENTATION"))
 					{
-						String thisline = line.substring("#DOCUMENTATION".length()).trim();
+						String thisline = line.substring(
+								"#DOCUMENTATION".length()).trim();
 						if (0 < thisline.length())
 						{
 							p.setDescription(thisline.trim());
@@ -286,7 +299,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 					}
 					else if (line.trim().startsWith("#INTERPRETER"))
 					{
-						String thisline = line.substring("#INTERPRETER".length()).trim();
+						String thisline = line.substring(
+								"#INTERPRETER".length()).trim();
 						if (0 < thisline.length())
 						{
 							p.setInterpreter(thisline.trim());
@@ -336,15 +350,18 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 						// logger.error("parsing "+f.getName()+", line: "+line);
 						// }
 					}
-//					else
-//					{
+					// else
+					// {
 					// also add the #LINES to the code!
-						scriptTemplate += line + ls;
-//					}
+					scriptTemplate += line + ls;
+					// }
 				}
 				reader.close();
 
-				if (!foundHeader) logger.warn("protocol " + f + " does not contain #MOLGENIS header. Defaults will be used");
+				if (!foundHeader) logger
+						.warn("protocol "
+								+ f
+								+ " does not contain #MOLGENIS header. Defaults will be used");
 
 				p.setScriptTemplate(scriptTemplate);
 
@@ -356,20 +373,24 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 	public void setComputeParameters(File file) throws Exception
 	{
-		this.setComputeParameters(readEntitiesFromFile(file, ComputeParameter.class));
+		this.setComputeParameters(readEntitiesFromFile(file,
+				ComputeParameter.class));
 	}
 
 	public void setWorkflowElements(File file) throws Exception
 	{
-		this.setWorkflowElements(readEntitiesFromFile(file, WorkflowElement.class));
+		this.setWorkflowElements(readEntitiesFromFile(file,
+				WorkflowElement.class));
 	}
 
 	public void setWorkflowElementParameters(File file) throws Exception
 	{
-		this.setWorkflowElementParameters(readEntitiesFromFile(file, WorkflowElementParameter.class));
+		this.setWorkflowElementParameters(readEntitiesFromFile(file,
+				WorkflowElementParameter.class));
 	}
 
-	private <E extends Entity> List<E> readEntitiesFromFile(File file, final Class<E> klazz) throws Exception
+	private <E extends Entity> List<E> readEntitiesFromFile(File file,
+			final Class<E> klazz) throws Exception
 	{
 		final List<E> result = new ArrayList<E>();
 
@@ -382,17 +403,13 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 
 		// read the file
 		CsvReader reader = new CsvFileReader(file);
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
+			E entity = klazz.newInstance();
+			entity.set(tuple);
+			result.add(entity);
 
-			public void handleLine(int line_number, Tuple tuple) throws Exception
-			{
-				E entity = klazz.newInstance();
-				entity.set(tuple);
-				result.add(entity);
-
-			}
-		});
+		}
 
 		return result;
 	}
@@ -418,7 +435,8 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	// // just a test
 	// File workflowDir = new File(
 	// "/Users/mswertz/Dropbox/NGS quality report/compute/New_Molgenis_Compute_for_GoNL/Example_01");
-	// File worksheetFile = new File(workflowDir.getAbsolutePath() + File.separator + "SampleList_A102.csv");
+	// File worksheetFile = new File(workflowDir.getAbsolutePath() +
+	// File.separator + "SampleList_A102.csv");
 	//
 	// ComputeBundleFromDirectory bundle = new ComputeBundleFromDirectory();
 	//
