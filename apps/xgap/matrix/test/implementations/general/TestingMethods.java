@@ -39,10 +39,9 @@ public class TestingMethods
 			writeHeader(bfw, m.getColNames());
 		}
 
+		DataMatrixInstance newMatrix = null;
 		if (method.substring(0, 9).equals("submatrix"))
 		{
-
-			DataMatrixInstance newMatrix = null;
 
 			if (method.equals("submatrixbyindexlist"))
 			{
