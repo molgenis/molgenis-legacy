@@ -15,7 +15,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
@@ -54,19 +53,13 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		final int finalColIndex = colIndex;
 		final Object[] result = new Object[getNumberOfRows()];
 		reader.reset();
-		reader.parse(new CsvReaderListener()
+		int line_number = 1;
+		for (Tuple tuple : reader)
 		{
-			@Override
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
-			{
-				if (line_number > 0)
-				{
-					result[line_number - 1] = tuple
-							.getObject(finalColIndex + 1);
-				}
-			}
-		});
+			result[line_number - 1] = tuple.getObject(finalColIndex + 1);
+			line_number++;
+		}
+
 		return result;
 	}
 
@@ -78,20 +71,12 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		// naive implementation
 		final finalObject finalResult = new finalObject();
 		reader.reset();
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			@Override
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
-			{
-				// skip header line
-				if (line_number > 0 && line_number - 1 == finalRowIndex)
-				{
-					// first column is rowname
-					finalResult.set(tuple.getObject(finalColIndex + 1));
-				}
-			}
-		});
+			// first column is rowname
+			finalResult.set(tuple.getObject(finalColIndex + 1));
+		}
+
 		return finalResult.get();
 	}
 
@@ -102,19 +87,18 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		{
 			final Object[][] result = new Object[getNumberOfRows()][getNumberOfCols()];
 			reader.reset();
-			reader.parse(new CsvReaderListener()
+			int line_number = 1;
+			for (Tuple tuple : reader)
 			{
-				@Override
-				public void handleLine(int line_number, Tuple tuple)
-						throws Exception
-				{
-					for (int col = 0; col < tuple.size() - 1; col++)
-					{
-						result[line_number - 1][col] = tuple.getObject(col + 1);
-					}
 
+				for (int col = 0; col < tuple.size() - 1; col++)
+				{
+					result[line_number - 1][col] = tuple.getObject(col + 1);
 				}
-			});
+				line_number++;
+
+			}
+
 			return result;
 		}
 		catch (Exception e)
@@ -130,21 +114,14 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 		final int finalRowIndex = rowIndex;
 		final Object[] result = new Object[getNumberOfCols()];
 		reader.reset();
-		reader.parse(new CsvReaderListener()
+		for (Tuple tuple : reader)
 		{
-			@Override
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
+			for (int col = 0; col < tuple.size() - 1; col++)
 			{
-				if (line_number > 0 && line_number - 1 == finalRowIndex)
-				{
-					for (int col = 0; col < tuple.size() - 1; col++)
-					{
-						result[col] = tuple.getObject(col + 1);
-					}
-				}
+				result[col] = tuple.getObject(col + 1);
 			}
-		});
+		}
+
 		return result;
 	}
 
@@ -212,26 +189,19 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 			}
 			// final finalObject finalResult = new finalObject();
 			reader.reset();
-			reader.parse(new CsvReaderListener()
+			int line_number = 1;
+			for (Tuple tuple : reader)
 			{
-				@Override
-				public void handleLine(int line_number, Tuple tuple)
-						throws Exception
+				for (int col = 0; col < tuple.size() - 1; col++)
 				{
-					if (line_number > 0
-							&& rowIndicesList.contains(line_number - 1))
+					if (colIndicesList.contains(col))
 					{
-						for (int col = 0; col < tuple.size() - 1; col++)
-						{
-							if (colIndicesList.contains(col))
-							{
-								elements[line_number - 1][col] = tuple
-										.getObject(col + 1);
-							}
-						}
+						elements[line_number - 1][col] = tuple
+								.getObject(col + 1);
 					}
 				}
-			});
+				line_number++;
+			}
 
 			List<String> rowNames = new ArrayList<String>();
 			List<String> colNames = new ArrayList<String>();
@@ -257,49 +227,44 @@ public class CSVDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row,
-			int nRows, int col, int nCols) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row2,
+			int nRows2, int col2, int nCols2) throws Exception
 	{
-		final int finalRow = row;
-		final int finalNRows = nRows;
-		final int finalCol = col;
-		final int finalNCols = nCols;
+		final int finalRow = row2;
+		final int finalNRows = nRows2;
+		final int finalCol = col2;
+		final int finalNCols = nCols2;
 		AbstractDataMatrixInstance<Object> result = null;
-		final Object[][] elements = new Object[nRows][nCols];
+		final Object[][] elements = new Object[nRows2][nCols2];
 
 		// final finalObject finalResult = new finalObject();
 		reader.reset();
-		reader.parse(new CsvReaderListener()
+		int line_number = 1;
+		for (Tuple tuple : reader)
 		{
 
 			int rowCount = 0;
 			int colCount = 0;
 
-			@Override
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
+			if (line_number > 0 && line_number - 1 >= finalRow
+					&& line_number - 1 < finalRow + finalNRows)
 			{
-
-				if (line_number > 0 && line_number - 1 >= finalRow
-						&& line_number - 1 < finalRow + finalNRows)
+				for (int col = 0; col < tuple.size() - 1; col++)
 				{
-					for (int col = 0; col < tuple.size() - 1; col++)
+					if (col >= finalCol && col < finalCol + finalNCols)
 					{
-						if (col >= finalCol && col < finalCol + finalNCols)
-						{
-							elements[rowCount][colCount] = tuple
-									.getObject(col + 1);
-							colCount++;
-						}
+						elements[rowCount][colCount] = tuple.getObject(col + 1);
+						colCount++;
 					}
-					rowCount++;
-					colCount = 0;
 				}
+				rowCount++;
+				colCount = 0;
 			}
-		});
+			line_number++;
+		}
 
-		List<String> rowNames = getRowNames().subList(row, row + nRows);
-		List<String> colNames = getColNames().subList(col, col + nCols);
+		List<String> rowNames = getRowNames().subList(row2, row2 + nRows2);
+		List<String> colNames = getColNames().subList(col2, col2 + nCols2);
 
 		result = new MemoryDataMatrixInstance<Object>(rowNames, colNames,
 				elements, this.getData());

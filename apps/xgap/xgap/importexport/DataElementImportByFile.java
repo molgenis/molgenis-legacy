@@ -20,7 +20,6 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 public class DataElementImportByFile
@@ -38,8 +37,9 @@ public class DataElementImportByFile
 
 	private String addedInvestigationElements;
 
-	public String ImportByFile(File file, final Data selectedMatrix, boolean useTx, boolean addNewDataObject,
-			boolean allowAdding, boolean onlyHead) throws Exception
+	public String ImportByFile(File file, final Data selectedMatrix,
+			boolean useTx, boolean addNewDataObject, boolean allowAdding,
+			boolean onlyHead) throws Exception
 	{
 
 		if (useTx)
@@ -67,15 +67,17 @@ public class DataElementImportByFile
 				// get first row element, query db and find the type
 				// FIXME: does ObservationTarget work for this ?
 				ObservationTarget firstColElem = null;
-				List<ObservationTarget> firstCol = db.find(ObservationTarget.class, new QueryRule("name",
-						Operator.EQUALS, colNames.get(1)));
+				List<ObservationTarget> firstCol = db.find(
+						ObservationTarget.class, new QueryRule("name",
+								Operator.EQUALS, colNames.get(1)));
 				if (firstCol.size() > 0)
 				{
 					firstColElem = firstCol.get(0);
 				}
 				else
 				{
-					throw new DatabaseException("Autodetect columns failed. Did you import the correct annotations?");
+					throw new DatabaseException(
+							"Autodetect columns failed. Did you import the correct annotations?");
 				}
 
 				// get type, set class to type
@@ -96,15 +98,17 @@ public class DataElementImportByFile
 				// get first row element, query db and find the type
 				// FIXME: does ObservationTarget work for this ?
 				ObservationTarget firstRowElem = null;
-				List<ObservationTarget> firstRow = db.find(ObservationTarget.class, new QueryRule("name",
-						Operator.EQUALS, rowNames.get(1)));
+				List<ObservationTarget> firstRow = db.find(
+						ObservationTarget.class, new QueryRule("name",
+								Operator.EQUALS, rowNames.get(1)));
 				if (firstRow.size() > 0)
 				{
 					firstRowElem = firstRow.get(0);
 				}
 				else
 				{
-					throw new DatabaseException("Autodetect rows failed. Did you import the correct annotations?");
+					throw new DatabaseException(
+							"Autodetect rows failed. Did you import the correct annotations?");
 				}
 
 				// get type, set class to type
@@ -123,16 +127,21 @@ public class DataElementImportByFile
 				selectedMatrix.setValueType(probeFirstFileElement(file));
 			}
 
-			// TODO: add check whether it already exists in the db? is this allowed?
+			// TODO: add check whether it already exists in the db? is this
+			// allowed?
 			if (addNewDataObject)
 			{
-				if (db.find(Data.class, new QueryRule("name", Operator.EQUALS, selectedMatrix.getName()),
-						new QueryRule("study", Operator.EQUALS, selectedMatrix.getInvestigation())).size() > 0)
+				if (db.find(
+						Data.class,
+						new QueryRule("name", Operator.EQUALS, selectedMatrix
+								.getName()),
+						new QueryRule("study", Operator.EQUALS, selectedMatrix
+								.getInvestigation())).size() > 0)
 				{
 					// selectedMatrix is already in the database (identified by
 					// 'name' plus 'investigation'), throw error
-					throw new DatabaseException("Data object with name '" + selectedMatrix.getName()
-							+ "' already exists.");
+					throw new DatabaseException("Data object with name '"
+							+ selectedMatrix.getName() + "' already exists.");
 				}
 				else
 				{
@@ -145,23 +154,29 @@ public class DataElementImportByFile
 				// do not add selectedMatrix, but check whether the matrix is
 				// actually in the database (identified by 'name' plus
 				// 'investigation')
-				if (db.find(Data.class, new QueryRule(Data.NAME, Operator.EQUALS, selectedMatrix.getName()),
-						new QueryRule(Data.INVESTIGATION, Operator.EQUALS, selectedMatrix.getInvestigation_Id())).size() > 0)
+				if (db.find(
+						Data.class,
+						new QueryRule(Data.NAME, Operator.EQUALS,
+								selectedMatrix.getName()),
+						new QueryRule(Data.INVESTIGATION, Operator.EQUALS,
+								selectedMatrix.getInvestigation_Id())).size() > 0)
 				{
 					// it's present in the database
 				}
 				else
 				{
 					// it's not present, throw error
-					throw new DatabaseException("Data object with name '" + selectedMatrix.getName()
-							+ "' does not exist.");
+					throw new DatabaseException("Data object with name '"
+							+ selectedMatrix.getName() + "' does not exist.");
 				}
 			}
 
-			final Map<String, Integer> colIds = getDimensionIds(allowAdding, selectedMatrix, colClass, colNames
-					.subList(1, colNames.size()));
+			final Map<String, Integer> colIds = getDimensionIds(allowAdding,
+					selectedMatrix, colClass,
+					colNames.subList(1, colNames.size()));
 
-			final Map<String, Integer> rowIds = getDimensionIds(allowAdding, selectedMatrix, rowClass, rowNames);
+			final Map<String, Integer> rowIds = getDimensionIds(allowAdding,
+					selectedMatrix, rowClass, rowNames);
 
 			// ADD DATA elements
 			final List<TextDataElement> tde = new ArrayList<TextDataElement>();
@@ -169,75 +184,72 @@ public class DataElementImportByFile
 
 			final FinalInteger row_index = new FinalInteger(0);
 
-			final Investigation inv = db.find(Investigation.class,
-					new QueryRule(Investigation.ID, Operator.EQUALS, selectedMatrix.getInvestigation_Id())).get(0);
+			final Investigation inv = db.find(
+					Investigation.class,
+					new QueryRule(Investigation.ID, Operator.EQUALS,
+							selectedMatrix.getInvestigation_Id())).get(0);
 
-			CsvReaderListener crl = new CsvReaderListener()
+			int line_number = 1;
+			for (Tuple line : csvFile)
 			{
-				public void handleLine(int line_number, Tuple line) throws DatabaseException, IOException
+				// count+= 1;
+
+				// for each line, add the data elements
+				for (int column_index = 1; column_index < line.size(); column_index++)
 				{
-					// count+= 1;
-
-					// for each line, add the data elements
-					for (int column_index = 1; column_index < line.size(); column_index++)
+					if (selectedMatrix.getValueType().equals("Text"))
 					{
-						if (selectedMatrix.getValueType().equals("Text"))
+						// //logger.debug("creating TextDataElement");
+						TextDataElement e = new TextDataElement();
+						e.setInvestigation(inv);
+						e.setTarget(rowIds.get(rowNames.get(
+								row_index.getValue()).toLowerCase()));
+						e.setFeature(colIds.get(colNames.get(column_index)
+								.toLowerCase()));
+						// e.setValue(row.split(seperator)[u + 1]);
+						e.setValue(line.getString(column_index));
+						e.setTargetIndex(row_index.getValue());
+						e.setFeatureIndex(column_index - 1);
+						e.setData(selectedMatrix.getId());
+						tde.add(e);
+
+						// if the list is to big, add to database
+						if (tde.size() >= BATCH_SIZE)
 						{
-							// //logger.debug("creating TextDataElement");
-							TextDataElement e = new TextDataElement();
-							e.setInvestigation(inv);
-							e.setTarget(rowIds.get(rowNames.get(row_index.getValue()).toLowerCase()));
-							e.setFeature(colIds.get(colNames.get(column_index).toLowerCase()));
-							// e.setValue(row.split(seperator)[u + 1]);
-							e.setValue(line.getString(column_index));
-							e.setTargetIndex(row_index.getValue());
-							e.setFeatureIndex(column_index - 1);
-							e.setData(selectedMatrix.getId());
-							tde.add(e);
-
-							// if the list is to big, add to database
-							if (tde.size() >= BATCH_SIZE)
-							{
-								db.add(tde);
-								tde.clear();
-							}
-
+							db.add(tde);
+							tde.clear();
 						}
-						else if (selectedMatrix.getValueType().equals("Decimal"))
-						{
-							// //logger.debug("creating DecimalDataElement");
-							DecimalDataElement e = new DecimalDataElement();
-							e.setInvestigation(inv);
-							e.setTarget(rowIds.get(rowNames.get(row_index.getValue()).toLowerCase()));
-							e.setFeature(colIds.get(colNames.get(column_index).toLowerCase()));
-							e.setTargetIndex(row_index.getValue());
-							e.setFeatureIndex(column_index - 1);
-							e.setValue(line.getDecimal(column_index));
-							e.setData(selectedMatrix.getId());
-							dde.add(e);
 
-							// if the list is to big, add to database
-							if (dde.size() >= BATCH_SIZE)
-							{
-								db.add(dde);
-								dde.clear();
-							}
-
-						}
 					}
+					else if (selectedMatrix.getValueType().equals("Decimal"))
+					{
+						// //logger.debug("creating DecimalDataElement");
+						DecimalDataElement e = new DecimalDataElement();
+						e.setInvestigation(inv);
+						e.setTarget(rowIds.get(rowNames.get(
+								row_index.getValue()).toLowerCase()));
+						e.setFeature(colIds.get(colNames.get(column_index)
+								.toLowerCase()));
+						e.setTargetIndex(row_index.getValue());
+						e.setFeatureIndex(column_index - 1);
+						e.setValue(line.getDecimal(column_index));
+						e.setData(selectedMatrix.getId());
+						dde.add(e);
 
-					// doh!
-					row_index.setValue(row_index.getValue() + 1);
+						// if the list is to big, add to database
+						if (dde.size() >= BATCH_SIZE)
+						{
+							db.add(dde);
+							dde.clear();
+						}
+
+					}
 				}
-			};
 
-			if (onlyHead)
-			{
-				csvFile.parse(10, crl);
-			}
-			else
-			{
-				csvFile.parse(crl);
+				// doh!
+				row_index.setValue(row_index.getValue() + 1);
+
+				if (onlyHead && line_number++ >= 10) break;
 			}
 
 			// add remaining tde/dde elemens
@@ -263,14 +275,17 @@ public class DataElementImportByFile
 			String addReport = "";
 			if (addedInvestigationElements.length() > 0)
 			{
-				addReport = " Details:" + makeDIV("Added InvestigationElements", addedInvestigationElements);
+				addReport = " Details:"
+						+ makeDIV("Added InvestigationElements",
+								addedInvestigationElements);
 			}
 
 			if (useTx)
 			{
 				db.commitTx();
 			}
-			return "Imported " + (colIds.size() * rowIds.size()) + " dataelements." + addReport;
+			return "Imported " + (colIds.size() * rowIds.size())
+					+ " dataelements." + addReport;
 
 		}
 		catch (Exception e)
@@ -289,24 +304,23 @@ public class DataElementImportByFile
 		CsvFileReader csvFile = new CsvFileReader(file);
 		final FinalBoolean doubleCastSucces = new FinalBoolean(false);
 		final FinalInteger row_index = new FinalInteger(0);
-		CsvReaderListener crl = new CsvReaderListener()
+
+		for (Tuple line : csvFile)
 		{
-			public void handleLine(int line_number, Tuple line) throws DatabaseException, IOException
+			try
 			{
-				try
-				{
-					Double.parseDouble(line.getObject(2).toString());
-					doubleCastSucces.setValue(true);
-				}
-				// catch NumberFormatException or NullPointerException
-				catch (Exception e)
-				{
-					// it's text :)
-				}
-				row_index.setValue(row_index.getValue() + 1);
+				Double.parseDouble(line.getObject(2).toString());
+				doubleCastSucces.setValue(true);
 			}
-		};
-		csvFile.parse(2, crl);
+			// catch NumberFormatException or NullPointerException
+			catch (Exception e)
+			{
+				// it's text :)
+			}
+			row_index.setValue(row_index.getValue() + 1);
+
+			break;
+		}
 
 		if (doubleCastSucces.getValue() == false)
 		{
@@ -318,8 +332,9 @@ public class DataElementImportByFile
 		}
 	}
 
-	private Map<String, Integer> getDimensionIds(boolean allowAdding, Data selectedMatrix, final Class klass,
-			List<String> neededNames) throws DatabaseException, ParseException, InstantiationException,
+	private Map<String, Integer> getDimensionIds(boolean allowAdding,
+			Data selectedMatrix, final Class klass, List<String> neededNames)
+			throws DatabaseException, ParseException, InstantiationException,
 			IllegalAccessException, IOException
 	{
 
@@ -332,12 +347,16 @@ public class DataElementImportByFile
 		// find the absent names
 		for (int i = 0; i < neededNames.size(); i += BATCH_SIZE)
 		{
-			List<String> batchCopyNeededNames = neededNames.subList(i, Math.min(i + BATCH_SIZE, neededNames.size()));
+			List<String> batchCopyNeededNames = neededNames.subList(i,
+					Math.min(i + BATCH_SIZE, neededNames.size()));
 
 			// we search the instances of klass, with name 'name', within
 			// investigation i?
-			List availableInvestigationElements = db.query(klass).in("name", batchCopyNeededNames).equals(
-					"investigation", selectedMatrix.getInvestigation_Id()).find();
+			List availableInvestigationElements = db
+					.query(klass)
+					.in("name", batchCopyNeededNames)
+					.equals("investigation",
+							selectedMatrix.getInvestigation_Id()).find();
 
 			// create a list of available names
 			List<String> presentNames = new ArrayList<String>();
@@ -362,8 +381,9 @@ public class DataElementImportByFile
 		List<Nameable> absentObjects = new ArrayList<Nameable>();
 		for (int i = 0; i < absentNames.size(); i++)
 		{
-			InvestigationElement absent = (InvestigationElement) klass.newInstance();
-			
+			InvestigationElement absent = (InvestigationElement) klass
+					.newInstance();
+
 			absent.setInvestigation_Id(selectedMatrix.getInvestigation_Id());
 			absent.setName(absentNames.get(i));
 			absentObjects.add(absent);
@@ -374,13 +394,15 @@ public class DataElementImportByFile
 				{
 					db.add(absentObjects);
 					addedInvestigationElements = createMissingElements(absentObjects);
-					//logger.debug("added " + absentObjects.size() + absent objects");
+					// logger.debug("added " + absentObjects.size() + absent
+					// objects");
 					absentObjects.clear();
 				}
 				else
 				{
-					throw new DatabaseException("Missing InvestigationElements: "
-					+ createMissingElements(absentObjects));
+					throw new DatabaseException(
+							"Missing InvestigationElements: "
+									+ createMissingElements(absentObjects));
 				}
 			}
 		}
@@ -395,23 +417,29 @@ public class DataElementImportByFile
 		}
 		else if (absentObjects.size() != 0 && allowAdding == false)
 		{
-			throw new DatabaseException("Missing InvestigationElements: " + createMissingElements(absentObjects));
+			throw new DatabaseException("Missing InvestigationElements: "
+					+ createMissingElements(absentObjects));
 		}
 
 		// Now get all IDs needed and return them
 		for (int i = 0; i < neededNames.size(); i += BATCH_SIZE)
 		{
-			List batchCopyNeededNames = neededNames.subList(i, Math.min(i + BATCH_SIZE, neededNames.size()));
+			List batchCopyNeededNames = neededNames.subList(i,
+					Math.min(i + BATCH_SIZE, neededNames.size()));
 
 			// we search the instances of klass, with name 'name', within
 			// study i?
-			List availableInvestigationElements = db.query(klass).in("name", batchCopyNeededNames).equals(
-					"investigation", selectedMatrix.getInvestigation_Id()).find();
+			List availableInvestigationElements = db
+					.query(klass)
+					.in("name", batchCopyNeededNames)
+					.equals("investigation",
+							selectedMatrix.getInvestigation_Id()).find();
 
 			// create a list of available names
 			for (Object present : availableInvestigationElements)
 			{
-				ids.put(((Nameable) present).getName().toLowerCase(), ((Nameable) present).getId());
+				ids.put(((Nameable) present).getName().toLowerCase(),
+						((Nameable) present).getId());
 			}
 		}
 		return ids;
@@ -420,7 +448,10 @@ public class DataElementImportByFile
 	@Deprecated
 	private static String makeDIV(String caption, String content)
 	{
-		return "<div style=\"display: inline;\" onmouseover=\"return overlib('" + content + "', CAPTION, '" + caption
+		return "<div style=\"display: inline;\" onmouseover=\"return overlib('"
+				+ content
+				+ "', CAPTION, '"
+				+ caption
 				+ "')\" onmouseout=\"return nd();\"><img src=\"res/img/filter.png\"></div>";
 	}
 
@@ -437,7 +468,8 @@ public class DataElementImportByFile
 			if (length > 100)
 			{
 				// cut off space at end of line
-				missingElements = missingElements.substring(0, missingElements.length() - 1);
+				missingElements = missingElements.substring(0,
+						missingElements.length() - 1);
 				// add html newline
 				missingElements += "<br>";
 				length = 0;
@@ -451,9 +483,11 @@ public class DataElementImportByFile
 		}
 		// cut off possible ", "
 		if (missingElements.length() > 2
-				&& missingElements.substring(missingElements.length() - 2, missingElements.length()).equals(", "))
+				&& missingElements.substring(missingElements.length() - 2,
+						missingElements.length()).equals(", "))
 		{
-			missingElements = missingElements.substring(0, missingElements.length() - 2);
+			missingElements = missingElements.substring(0,
+					missingElements.length() - 2);
 		}
 		// add cutoff indication
 		if (stopped)
@@ -461,7 +495,8 @@ public class DataElementImportByFile
 			missingElements += "...more";
 		}
 		// escape html
-		missingElements = org.apache.commons.lang.StringEscapeUtils.escapeHtml(missingElements);
+		missingElements = org.apache.commons.lang.StringEscapeUtils
+				.escapeHtml(missingElements);
 		return missingElements;
 	}
 

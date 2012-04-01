@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvFileWriter;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
@@ -72,15 +71,17 @@ public class PreProcessMatrix
 
 	public void trimTextElements() throws Exception
 	{
-		Object[][] newElements = new Object[this.rowNames.size()][this.colNames.size()];
+		Object[][] newElements = new Object[this.rowNames.size()][this.colNames
+				.size()];
 		for (int row = 0; row < this.rowNames.size(); row++)
 		{
 			for (int col = 0; col < this.colNames.size(); col++)
 			{
 				Object o = this.elements[row][col];
-				if(o != null)
+				if (o != null)
 				{
-					newElements[row][col] = o.toString().length() > 127 ? o.toString().substring(0, 127) : o;
+					newElements[row][col] = o.toString().length() > 127 ? o
+							.toString().substring(0, 127) : o;
 				}
 				else
 				{
@@ -96,33 +97,34 @@ public class PreProcessMatrix
 		return writeOutMatrix(this.rowNames, this.colNames, this.elements);
 	}
 
-	private File writeOutMatrix(List<String> newRowNames, List<String> newColNames, Object[][] newElements)
+	private File writeOutMatrix(List<String> newRowNames,
+			List<String> newColNames, Object[][] newElements)
 			throws IOException
 	{
-		File out = new File(System.getProperty("java.io.tmpdir") + File.separator + "tmpMatrix" + System.nanoTime()
-				+ ".txt");
+		File out = new File(System.getProperty("java.io.tmpdir")
+				+ File.separator + "tmpMatrix" + System.nanoTime() + ".txt");
 		CsvFileWriter writer = new CsvFileWriter(out);
 		writer.writeMatrix(newRowNames, newColNames, newElements);
 		writer.close();
 		return out;
 	}
 
-	private Object[][] getElementsFromCsv(File in, int nRow, int nCol) throws FileNotFoundException, Exception
+	private Object[][] getElementsFromCsv(File in, int nRow, int nCol)
+			throws FileNotFoundException, Exception
 	{
 		final Object[][] elements = new Object[nRow][nCol];
-		new CsvFileReader(in).parse(new CsvReaderListener()
+		int line_number = 1;
+		for (Tuple line : new CsvFileReader(in))
 		{
-			public void handleLine(int line_number, Tuple line) throws Exception
+			for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
 			{
-				if (line_number != 0)
-				{
-					for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
-					{
-						elements[line_number - 1][columnIndex - 1] = line.getObject(columnIndex);
-					}
-				}
+				elements[line_number - 1][columnIndex - 1] = line
+						.getObject(columnIndex);
+				
 			}
-		});
+			line_number++;
+		}
+
 		return elements;
 	}
 

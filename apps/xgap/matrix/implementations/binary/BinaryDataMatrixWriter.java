@@ -26,7 +26,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
@@ -39,22 +38,25 @@ public class BinaryDataMatrixWriter
 	private String nullChar = "\5";
 
 	/**
-	 * Empty constructor to create an instance that is able to run standalone functions such as 'CsvToBin'
+	 * Empty constructor to create an instance that is able to run standalone
+	 * functions such as 'CsvToBin'
 	 */
-	public BinaryDataMatrixWriter(){
+	public BinaryDataMatrixWriter()
+	{
 		//
 	}
-	
+
 	/**
-	 * Wrapper constructor
-	 * Writes a binary matrix to the filesystem
+	 * Wrapper constructor Writes a binary matrix to the filesystem
+	 * 
 	 * @param data
 	 * @param inputFile
 	 * @param db
 	 * @param testMode
 	 * @throws Exception
 	 */
-	public BinaryDataMatrixWriter(Data data, File inputFile, Database db) throws Exception
+	public BinaryDataMatrixWriter(Data data, File inputFile, Database db)
+			throws Exception
 	{
 		HashMap<Data, File> dataFileMap = new HashMap<Data, File>();
 		dataFileMap.put(data, inputFile);
@@ -62,36 +64,40 @@ public class BinaryDataMatrixWriter
 	}
 
 	/**
-	 * Wrapper constructor
-	 * Use filepointer as a directory of input files
-	 * Dont use unless you know exactly what you're doing (filenames have to map to datanames)
+	 * Wrapper constructor Use filepointer as a directory of input files Dont
+	 * use unless you know exactly what you're doing (filenames have to map to
+	 * datanames)
+	 * 
 	 * @param dataList
 	 * @param inputDir
 	 * @param db
 	 * @param testMode
 	 * @throws Exception
 	 */
-	public BinaryDataMatrixWriter(List<Data> dataList, File inputDir, Database db)
-			throws Exception
+	public BinaryDataMatrixWriter(List<Data> dataList, File inputDir,
+			Database db) throws Exception
 	{
 		List<File> inputFiles = new ArrayList<File>();
 		for (File input : inputDir.listFiles())
 		{
 			inputFiles.add(input);
 		}
-		
+
 		HashMap<Data, File> dataFileMap = new HashMap<Data, File>();
 		for (Data data : dataList)
 		{
-			File inputFile = getInputFileForName(NameConvention.escapeFileName(data.getName()) + ".txt", inputFiles);
+			File inputFile = getInputFileForName(
+					NameConvention.escapeFileName(data.getName()) + ".txt",
+					inputFiles);
 			dataFileMap.put(data, inputFile);
 		}
-		
+
 		new BinaryDataMatrixWriter(dataFileMap, db);
 	}
 
 	/**
 	 * Core constructor. Prepare and verify a list of files and import them.
+	 * 
 	 * @param dataList
 	 * @param inputFiles
 	 * @param db
@@ -104,45 +110,56 @@ public class BinaryDataMatrixWriter
 
 		for (Data data : dataFileMap.keySet())
 		{
-			
+
 			File src = dataFileMap.get(data);
 
 			if (src == null || !src.exists())
 			{
-				throw new FileUploadException("File input for BinaryMatrixWriter does not exists.");
+				throw new FileUploadException(
+						"File input for BinaryMatrixWriter does not exists.");
 			}
 
 			int[] rowAndColLength = VerifyCsv.verify(src, data.getValueType());
-			
-			//make the binary file
-			File dest = new File(System.getProperty("java.io.tmpdir") + File.separator + "tmp_binmatrix_" + System.nanoTime());
-			File binFile = makeBinaryBackend(data, src, dest, rowAndColLength[0], rowAndColLength[1]);
-		
-            //upload as a MolgenisFile, type 'BinaryDataMatrix'
-            HashMap<String, String> extraFields = new HashMap<String, String>();
-            if (db instanceof JDBCDatabase) {
-                extraFields.put("Data_" + Data.NAME, data.getName());
-            } else if (db instanceof JpaDatabase) {
-                extraFields.put("Data_" + Data.ID, data.getId().toString());
-                extraFields.put("Data_" + Data.NAME, data.getName());
-            } else {
-                throw new DatabaseException("Unsupported database mapper");
-            }
-			
-			PerformUpload.doUpload(db, true, data.getName()+".bin", "BinaryDataMatrix", binFile, extraFields, false);
+
+			// make the binary file
+			File dest = new File(System.getProperty("java.io.tmpdir")
+					+ File.separator + "tmp_binmatrix_" + System.nanoTime());
+			File binFile = makeBinaryBackend(data, src, dest,
+					rowAndColLength[0], rowAndColLength[1]);
+
+			// upload as a MolgenisFile, type 'BinaryDataMatrix'
+			HashMap<String, String> extraFields = new HashMap<String, String>();
+			if (db instanceof JDBCDatabase)
+			{
+				extraFields.put("Data_" + Data.NAME, data.getName());
+			}
+			else if (db instanceof JpaDatabase)
+			{
+				extraFields.put("Data_" + Data.ID, data.getId().toString());
+				extraFields.put("Data_" + Data.NAME, data.getName());
+			}
+			else
+			{
+				throw new DatabaseException("Unsupported database mapper");
+			}
+
+			PerformUpload.doUpload(db, true, data.getName() + ".bin",
+					"BinaryDataMatrix", binFile, extraFields, false);
 
 		}
 
 	}
-	
+
 	public void CsvToBin(String[] args) throws Exception
 	{
-		
-		if(args.length != 6){
-			throw new DataFormatException("You must supply 6 arguments: data name, investigation name, row type, column type, value type, and source file name.");
+
+		if (args.length != 6)
+		{
+			throw new DataFormatException(
+					"You must supply 6 arguments: data name, investigation name, row type, column type, value type, and source file name.");
 		}
-		
-		//get args
+
+		// get args
 		String dataName = args[0];
 		String invName = args[1];
 		String rowType = args[2];
@@ -150,7 +167,7 @@ public class BinaryDataMatrixWriter
 		String valType = args[4];
 		String fileString = args[5];
 
-		//print args
+		// print args
 		System.out.println("CsvToBin called with arguments:");
 		System.out.println("data name = " + dataName);
 		System.out.println("investigation name = " + invName);
@@ -158,72 +175,85 @@ public class BinaryDataMatrixWriter
 		System.out.println("column type = " + colType);
 		System.out.println("value type = " + valType);
 		System.out.println("source file = " + fileString);
-		
-		//check if source file exists and ends with '.txt'
+
+		// check if source file exists and ends with '.txt'
 		File src = new File(fileString);
-		if (src == null || !src.exists()){
-			throw new VerifyCsvException("Source file '"+fileString+"' not found at location '"+src.getAbsolutePath()+"'");
+		if (src == null || !src.exists())
+		{
+			throw new VerifyCsvException("Source file '" + fileString
+					+ "' not found at location '" + src.getAbsolutePath() + "'");
 		}
-		if(!src.getName().endsWith(".txt")){
-			throw new VerifyCsvException("Source file name '"+fileString+"' does not end with '.txt', are you sure it is a CSV matrix?");
+		if (!src.getName().endsWith(".txt"))
+		{
+			throw new VerifyCsvException(
+					"Source file name '"
+							+ fileString
+							+ "' does not end with '.txt', are you sure it is a CSV matrix?");
 		}
-		
+
 		System.out.println("Source file exists and ends with '.txt'..");
-		
-		//create Data object, validate the names and valuetype
+
+		// create Data object, validate the names and valuetype
 		Data d = new Data();
 		d.setName(dataName);
 		d.setInvestigation_Name(invName);
 		d.setTargetType(rowType);
 		d.setFeatureType(colType);
 		d.setValueType(valType);
-		
-		//FIXME: strict should only be applied when application is an XGAP
+
+		// FIXME: strict should only be applied when application is an XGAP
 		NameConvention.validateEntityNameStrict(dataName);
 		NameConvention.validateEntityNameStrict(invName);
-		
+
 		System.out.println("'Data' object created..");
-		
+
 		if (!valType.equals("Text") && !valType.equals("Decimal"))
 		{
-			throw new NamingException("Value type '"+valType+"' not reckognized. Use 'Text' or 'Decimal'.");
+			throw new NamingException("Value type '" + valType
+					+ "' not reckognized. Use 'Text' or 'Decimal'.");
 		}
-		
+
 		System.out.println("Valuetype OK..");
-		
-		//verify the CSV file to be a correct matrix and get the dimensions
+
+		// verify the CSV file to be a correct matrix and get the dimensions
 		int[] dims = VerifyCsv.verify(src, valType);
-		
+
 		System.out.println("CSV input file verified..");
-		
-		//convert to binary
-		File dest = new File(src.getName().substring(0, (src.getName().length()-4)) + ".bin");
-		
+
+		// convert to binary
+		File dest = new File(src.getName().substring(0,
+				(src.getName().length() - 4))
+				+ ".bin");
+
 		System.out.println("Starting conversion..");
-		
+
 		makeBinaryBackend(d, src, dest, dims[0], dims[1]);
-		
+
 		System.out.println("..done!");
-		
+
 	}
 
 	/**
 	 * Convert an input file into a binary matrix
+	 * 
 	 * @param data
 	 * @param db
 	 * @param inputFile
 	 * @param totalRows
 	 * @param totalCols
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws Exception
 	 */
-	private File makeBinaryBackend(Data data, File src, File dest, int totalRows, int totalCols) throws Exception
-		
+	private File makeBinaryBackend(Data data, File src, File dest,
+			int totalRows, int totalCols) throws Exception
+
 	{
-		if(dest.exists()){
-			throw new IOException("Destination file '" + dest.getName() + "' already exists");
+		if (dest.exists())
+		{
+			throw new IOException("Destination file '" + dest.getName()
+					+ "' already exists");
 		}
-	
+
 		FileOutputStream fos = new FileOutputStream(dest);
 		final DataOutputStream dos = new DataOutputStream(fos);
 
@@ -299,7 +329,8 @@ public class BinaryDataMatrixWriter
 			{
 				logger.info("length zero, making variable length array");
 				// determine lengths and write to binary
-				byte[] textElementLenghts = getTextDataElementLengths(src, totalCols * totalRows);
+				byte[] textElementLenghts = getTextDataElementLengths(src,
+						totalCols * totalRows);
 				dos.write(textElementLenghts);
 			}
 		}
@@ -313,13 +344,14 @@ public class BinaryDataMatrixWriter
 		{
 			writeBinaryDecimalElements(dos, src);
 		}
-		
+
 		return dest;
-		
+
 	}
 
-	private long writeBinaryTextElements(final DataOutputStream dos, File inputFile, int textLength)
-			throws FileNotFoundException, ParseException
+	private long writeBinaryTextElements(final DataOutputStream dos,
+			File inputFile, int textLength) throws FileNotFoundException,
+			ParseException
 	{
 		long start = System.currentTimeMillis();
 		// adjusting the NA string to text length, if this is a fixed length, it
@@ -339,114 +371,113 @@ public class BinaryDataMatrixWriter
 			}
 		}
 		final String naString = naStringCreate;
-		
-		try{
-		new CsvFileReader(inputFile).parse(new CsvReaderListener()
+
+		try
 		{
-			public void handleLine(int line_number, Tuple line) throws Exception
+			for (Tuple line : new CsvFileReader(inputFile))
 			{
-				if (line_number != 0)
+
+				for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
 				{
-					for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
+					if (line.getString(columnIndex) == null)
+					{ // FIXME: null: because of a parsed missing value
+						// indicator..
+						dos.writeBytes(naString);
+					}
+					else if (line.getString(columnIndex).equals(""))
 					{
-						if (line.getString(columnIndex) == null)
-						{ // FIXME: null: because of a parsed missing value indicator..
-							dos.writeBytes(naString);
-						}
-						else if (line.getString(columnIndex).equals(""))
-						{
-							dos.writeBytes(naString);
-						}
-						else
-						{
-							
-							//FIXME: little experiment..
-//							String str = line.getString(columnIndex);
-//							byte[] arr = new byte[str.length()];
-//							int count = 0;
-//							for(char c : str.toCharArray()){
-//								arr[count] = (byte) (c + 100);
-//								count++;
-//							}
-//							dos.write(arr);
-							dos.writeBytes(line.getString(columnIndex));
-							
-						}
+						dos.writeBytes(naString);
+					}
+					else
+					{
+
+						// FIXME: little experiment..
+						// String str = line.getString(columnIndex);
+						// byte[] arr = new byte[str.length()];
+						// int count = 0;
+						// for(char c : str.toCharArray()){
+						// arr[count] = (byte) (c + 100);
+						// count++;
+						// }
+						// dos.write(arr);
+						dos.writeBytes(line.getString(columnIndex));
+
 					}
 				}
 			}
-		});
-		}catch(Exception e){
+
+		}
+		catch (Exception e)
+		{
 			throw new ParseException(e.getMessage(), 0);
 		}
 		long stop = System.currentTimeMillis();
 		return stop - start;
 	}
 
-	private long writeBinaryDecimalElements(final DataOutputStream dos, File inputFile) throws FileNotFoundException, ParseException
+	private long writeBinaryDecimalElements(final DataOutputStream dos,
+			File inputFile) throws FileNotFoundException, ParseException
 	{
 		long start = System.currentTimeMillis();
-		try{
-		new CsvFileReader(inputFile).parse(new CsvReaderListener()
+		try
 		{
-			public void handleLine(int line_number, Tuple line) throws Exception
+			for (Tuple line : new CsvFileReader(inputFile))
 			{
-				if (line_number != 0)
+
+				for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
 				{
-					for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
+					if (line.getDouble(columnIndex) == null)
 					{
-						if (line.getDouble(columnIndex) == null)
-						{
-							dos.writeDouble(Double.MAX_VALUE);
-						}
-						else
-						{
-							dos.writeDouble(line.getDouble(columnIndex));
-						}
+						dos.writeDouble(Double.MAX_VALUE);
+					}
+					else
+					{
+						dos.writeDouble(line.getDouble(columnIndex));
 					}
 				}
 			}
-		});
-		}catch(Exception e){
+
+		}
+		catch (Exception e)
+		{
 			throw new ParseException(e.getMessage(), 0);
 		}
 		long stop = System.currentTimeMillis();
 		return stop - start;
 	}
 
-	private byte[] getTextDataElementLengths(File inputFile, int totalElements) throws FileNotFoundException, ParseException
+	private byte[] getTextDataElementLengths(File inputFile, int totalElements)
+			throws FileNotFoundException, ParseException
 	{
 		final byte[] textElementLenghts = new byte[totalElements];
-		try{
-		new CsvFileReader(inputFile).parse(new CsvReaderListener()
+		try
 		{
-			int index = 0;
-
-			public void handleLine(int line_number, Tuple line) throws Exception
+			for (Tuple line : new CsvFileReader(inputFile))
 			{
-				if (line_number != 0)
+				int index = 0;
+
+				for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
 				{
-					for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
-					{
-						if (line.getString(columnIndex) == null)
-						{ // FIXME:
-							// null??
-							textElementLenghts[index] = (byte) 1;
-						}
-						else if (line.getString(columnIndex).equals(""))
-						{
-							textElementLenghts[index] = (byte) 1;
-						}
-						else
-						{
-							textElementLenghts[index] = (byte) line.getString(columnIndex).length();
-						}
-						index++;
+					if (line.getString(columnIndex) == null)
+					{ // FIXME:
+						// null??
+						textElementLenghts[index] = (byte) 1;
 					}
+					else if (line.getString(columnIndex).equals(""))
+					{
+						textElementLenghts[index] = (byte) 1;
+					}
+					else
+					{
+						textElementLenghts[index] = (byte) line.getString(
+								columnIndex).length();
+					}
+					index++;
 				}
 			}
-		});
-		}catch (Exception e){
+		}
+		catch (Exception e)
+		{
 			throw new ParseException(e.getMessage(), 0);
 		}
 		return textElementLenghts;
@@ -460,53 +491,55 @@ public class BinaryDataMatrixWriter
 	 * @param inputFile
 	 * @return
 	 * @throws FileNotFoundException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 * @throws Exception
 	 */
-	private int elementLength(File inputFile) throws FileNotFoundException, ParseException
+	private int elementLength(File inputFile) throws FileNotFoundException,
+			ParseException
 	{
 		final IntegerWrapper elementLength = new IntegerWrapper(0);
 
 		try
 		{
-			new CsvFileReader(inputFile).parse(new CsvReaderListener()
+			for (Tuple line : new CsvFileReader(inputFile))
 			{
-				public void handleLine(int line_number, Tuple line) throws Exception
+				for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
 				{
-					if (line_number != 0)
+					// get one element
+					if (elementLength.get() == 0)
 					{
-						for (int columnIndex = 1; columnIndex < line.size(); columnIndex++)
+						elementLength
+								.set(line.getString(columnIndex) != null ? line
+										.getString(columnIndex).length() : 0);
+						logger.info("First element, size: "
+								+ elementLength.get());
+					}
+					else
+					{
+						if (elementLength.get() != (line.getString(columnIndex) != null ? line
+								.getString(columnIndex).length() : 0)) // nullpointer
+																		// ???
 						{
-							// get one element
-							if (elementLength.get() == 0)
-							{
-								elementLength.set(line.getString(columnIndex) != null ? line.getString(columnIndex).length() : 0);
-								logger.info("First element, size: " + elementLength.get());
-							}
-							else
-							{
-								if (elementLength.get() != 
-									(line.getString(columnIndex) != null ? line.getString(columnIndex).length() : 0)) //nullpointer ???
-								{
 
-									logger.info("Element " + line.getString(columnIndex) + " is not of length "
-											+ elementLength.get());
-									logger
-											.info("Element of unequal size found, exiting from function by throwing error");
-									elementLength.set(0);
-									throw new ElementLengthException("Exiting from CsvFileReader...");
-								}
-							}
+							logger.info("Element "
+									+ line.getString(columnIndex)
+									+ " is not of length "
+									+ elementLength.get());
+							logger.info("Element of unequal size found, exiting from function by throwing error");
+							elementLength.set(0);
+							throw new ElementLengthException(
+									"Exiting from CsvFileReader...");
 						}
 					}
 				}
-			});
+			}
 		}
 		catch (ElementLengthException e)
 		{
 			// this is okay..
 		}
-		catch(Exception ex){
+		catch (Exception ex)
+		{
 			throw new ParseException(ex.getMessage(), 0);
 		}
 
@@ -518,7 +551,8 @@ public class BinaryDataMatrixWriter
 		logger.info("getting file for name: " + name);
 		for (File f : inputFiles)
 		{
-			logger.info("file: " + f.getAbsolutePath() + " (" + f.getName() + ")");
+			logger.info("file: " + f.getAbsolutePath() + " (" + f.getName()
+					+ ")");
 			if (f.getName().equals(name))
 			{
 				logger.info("FOUND!");

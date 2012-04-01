@@ -14,7 +14,6 @@ import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 import xgap.importexport.DataElementImportByFile;
@@ -106,15 +105,10 @@ public class XgapCommonImport {
 		final List<String> names = new ArrayList<String>();
 		CsvFileReader cfr = new CsvFileReader(investigationFile);
 
-		CsvReaderListener crl = new CsvReaderListener()
+		for(Tuple tuple: cfr)
 		{
-			public void handleLine(int line_number, Tuple tuple)
-			{
-				names.add(tuple.getString("name"));
-			}
-		};
-
-		cfr.parse(crl);
+			names.add(tuple.getString("name"));
+		}
 
 		return names;
 	}
