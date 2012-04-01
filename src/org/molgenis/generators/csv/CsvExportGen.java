@@ -34,7 +34,7 @@ public class CsvExportGen extends MySqlCreateClassPerTableGen
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 		
 		List<Entity> entityList = model.getEntities();
-		MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
 		//String packageName = this.getClass().getPackage().toString().substring(Generator.class.getPackage().toString().length());
 
 

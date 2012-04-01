@@ -254,6 +254,20 @@ public interface Database
 	 * @throws Exception
 	 */
 	public <E extends Entity> int add(Class<E> klazz, TupleReader reader, TupleWriter writer) throws DatabaseException;
+	
+	
+	/**
+	 * Add a list of entity objects to the database by parsing them from a csv
+	 * file. Optionally the inserted records can be written back to another csv
+	 * file, for example to extract auto-generated keys.
+	 * 
+	 * @param <E>
+	 * @param klazz
+	 * @param reader
+	 * @return number of entities added
+	 * @throws Exception
+	 */
+	public <E extends Entity> int add(Class<E> klazz, TupleReader reader) throws DatabaseException;
 
 	/**
 	 * Update one entity object in the database. In JPA the entity will be

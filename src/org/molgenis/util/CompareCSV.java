@@ -40,15 +40,15 @@ public class CompareCSV {
 		try {
 			for(int i = 0; i < contents.size(); ++i) {
 				final List<String[]> content = contents.get(i);
-				new CsvFileReader(files[i]).parse(new CsvReaderListener() {
-				  	public void handleLine( int line_number, Tuple tuple ) {
-				  		String[] values = new String[tuple.getNrColumns()]; 
-				  		for(int i = 0; i < tuple.getNrColumns(); ++i) {
-				  			values[i] = tuple.getString(i);
-				  		}
-				  		content.add(values);
-				  	}
-				});
+				
+				for(Tuple tuple: new CsvFileReader(files[i]))
+				{
+			  		String[] values = new String[tuple.getNrColumns()]; 
+			  		for(int j = 0; j < tuple.getNrColumns(); ++j) {
+			  			values[j] = tuple.getString(j);
+			  		}
+			  		content.add(values);
+				}
 				Collections.sort(content, new CompareCSV.StringArrayComperator());
 			}
 			

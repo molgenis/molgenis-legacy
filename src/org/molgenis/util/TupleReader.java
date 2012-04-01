@@ -1,10 +1,15 @@
 package org.molgenis.util;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
-public interface TupleReader
+public interface TupleReader extends Iterable<Tuple>
 {
+	/** Iterate through available tuples */
+	public abstract Iterator<Tuple> iterator();
+	
 	/**
 	 * The values of the first row.
 	 * 
@@ -14,49 +19,6 @@ public interface TupleReader
 	 * @throws Exception
 	 */
 	public abstract List<String> colnames() throws Exception;
-	
-	/**
-	 * Each row of the file is parsed into a Tuple and then passed to
-	 * {@link CsvReaderListener}s for processing. The delimiter (',','\t','
-	 * ',';') is automatically guessed.
-	 * 
-	 * *
-	 * 
-	 * <pre>
-	 * CsvFileReader(aFile).parse(new CsvReaderListener()
-	 * {
-	 * 	public void handleLine(int line_number, Tuple tuple)
-	 * 	{
-	 * 		System.out.println(&quot;parsed line &quot; + line_number + &quot;: &quot; + tuple.toString());
-	 * 	}
-	 * });
-	 * </pre>
-	 * 
-	 * @param listeners
-	 *            observervers of the parsing that can do something with it.
-	 * @throws Exception
-	 * 
-	 * @see CsvReaderListener
-	 */
-	public abstract int parse(CsvReaderListener... listeners) throws Exception;
-	
-	/**
-	 * Parse unto a maximum number of rows.
-	 * 
-	 * @param listeners
-	 * @param noElements
-	 *            maximum number of rows to parse
-	 * @return number of elements parsed
-	 * @throws Exception
-	 */
-	public abstract int parse(int noElements, CsvReaderListener... listeners) throws Exception;
-
-	/**
-	 * Reset the reader to start reading from scratch.
-	 * 
-	 * @throws IOException
-	 */
-	public abstract void reset() throws IOException;
 	
 	/**
 	 * Close the reader.
@@ -75,14 +37,6 @@ public interface TupleReader
 	 *            from first line
 	 */
 	public abstract void setBlockStart(String blockStart);
-	
-	/**
-	 * Parses the CsvFile and returns the values from the first column in the
-	 * delimited file (ommits first row)
-	 * 
-	 * @throws IOException
-	 */
-	public abstract List<String> rownames() throws Exception;
 	
 	/**
 	 * Set the missing value indicator. For example, 'NA'. If encountered during
@@ -139,11 +93,13 @@ public interface TupleReader
 	 */
 	public abstract void renameField(String from, String to) throws Exception;
 	
-	public int parse(List<Integer> rows, CsvReaderListener ... listeners) throws Exception;
+	/** Get first column values except first row, aka rownames 
+	 * @throws DataFormatException 
+	 * @throws IOException */
+	public abstract List<String> rownames() throws IOException, DataFormatException;
 
-	void disableHeader(boolean header);
-
-	int parse(int noElements, List<Integer> rows, CsvReaderListener[] listeners)
-			throws Exception;
-
+	/** reset iterator
+	 * @throws DataFormatException 
+	 * @throws IOException */
+	public void reset() throws IOException, DataFormatException;
 }

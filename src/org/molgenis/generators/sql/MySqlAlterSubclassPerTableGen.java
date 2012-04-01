@@ -34,7 +34,7 @@ public class MySqlAlterSubclassPerTableGen extends Generator
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 		
 		List<Entity> entityList = model.getEntities();
-		MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
 
 
 		File target = new File( this.getSqlPath(options) + "/alter_tables.sql" );

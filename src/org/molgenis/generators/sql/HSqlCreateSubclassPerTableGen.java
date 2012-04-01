@@ -50,7 +50,7 @@ public class HSqlCreateSubclassPerTableGen extends Generator
 		target.getParentFile().mkdirs();
 		OutputStream targetOut = new FileOutputStream( target );
 		List<Entity> sortedlist = model.getEntities();
-		MolgenisModel.sortEntitiesByDependency(sortedlist,model);
+		sortedlist = MolgenisModel.sortEntitiesByDependency(sortedlist,model);
 
 		// create arguments
 		templateArgs.put("entities", sortedlist);

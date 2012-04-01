@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.generators.Generator;
+import org.molgenis.model.MolgenisModel;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Model;
 
@@ -36,6 +37,9 @@ public class JDBCDatabaseGen extends Generator
 		//this.sortEntitiesByXref(entityList,model); //side effect?
 		File target = new File( this.getSourcePath(options) + APP_DIR +"/JDBCDatabase.java" );
 		target.getParentFile().mkdirs();
+		
+		//sort dependency order
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
 		
 		templateArgs.put("db_filepath", options.db_filepath);
 		templateArgs.put("loginclass", options.auth_loginclass);

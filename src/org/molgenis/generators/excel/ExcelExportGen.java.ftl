@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
 
@@ -145,13 +144,10 @@ public class ExcelExport
 			
 			// Parse CSV file to tuples TODO: batch this
 			final List<Tuple> tuples = new ArrayList<Tuple>();
-			new CsvFileReader(file).parse(new CsvReaderListener()
-			  {
-				public void handleLine(int LineNo, Tuple tuple) throws Exception
-				{
-					tuples.add(tuple);
-				}
-			  });
+			for(Tuple tuple: new CsvFileReader(file))
+			{
+				tuples.add(tuple);
+			}
 			
 			// Add and store headers
 			List<String> tupleFields = new ArrayList<String>();

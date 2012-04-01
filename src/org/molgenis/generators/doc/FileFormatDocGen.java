@@ -37,7 +37,7 @@ public class FileFormatDocGen extends Generator
 		target.getParentFile().mkdirs();
 		
 		List<Entity> entityList = model.getEntities();
-		MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
 		
 		templateArgs.put("model", model );
 		templateArgs.put("entities",entityList);

@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
-import org.molgenis.util.plink.datatypes.Biallele;
-import org.molgenis.util.plink.datatypes.BimEntry;
 import org.molgenis.util.plink.datatypes.MapEntry;
 
 /**
@@ -47,7 +44,8 @@ public class MapFileDriver
 
 		if (reader.fileEndsWithNewlineChar())
 		{
-			this.nrOfElements = reader.getNumberOfLines() - reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = reader.getNumberOfLines()
+					- reader.getAmountOfNewlinesAtFileEnd();
 		}
 		else
 		{
@@ -80,24 +78,27 @@ public class MapFileDriver
 			throws Exception
 	{
 		reader.reset();
+
 		final ArrayList<MapEntry> result = new ArrayList<MapEntry>();
-		reader.parse(new CsvReaderListener()
+		int line_number = 0;
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
+			line_number++;
+
+			if (line_number - 1 >= from && line_number - 1 < to)
 			{
-				if (line_number - 1 >= from && line_number - 1 < to)
+				for (int objIndex = 0; objIndex < 4; objIndex++)
 				{
-					for(int objIndex = 0; objIndex < 4; objIndex++)
-					{
-						if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
-					}
-					MapEntry me = new MapEntry(tuple.getString(0), tuple
-							.getString(1), tuple.getDouble(2), tuple.getLong(3));
-					result.add(me);
+					if (tuple.getObject(objIndex) == null) throw new Exception(
+							Helper.errorMsg(line_number, objIndex));
 				}
+				MapEntry me = new MapEntry(tuple.getString(0),
+						tuple.getString(1), tuple.getDouble(2),
+						tuple.getLong(3));
+				result.add(me);
 			}
-		});
+		}
+
 		return result;
 	}
 
@@ -111,20 +112,20 @@ public class MapFileDriver
 	{
 		reader.reset();
 		final ArrayList<MapEntry> result = new ArrayList<MapEntry>();
-		reader.parse(new CsvReaderListener()
+		int line_number = 0;
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
+			line_number++;
+			for (int objIndex = 0; objIndex < 4; objIndex++)
 			{
-				for(int objIndex = 0; objIndex < 4; objIndex++)
-				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
-				}
-				MapEntry me = new MapEntry(tuple.getString(0), tuple
-						.getString(1), tuple.getDouble(2), tuple.getLong(3));
-				result.add(me);
+				if (tuple.getObject(objIndex) == null) throw new Exception(
+						Helper.errorMsg(line_number, objIndex));
 			}
-		});
+			MapEntry me = new MapEntry(tuple.getString(0), tuple.getString(1),
+					tuple.getDouble(2), tuple.getLong(3));
+			result.add(me);
+		}
+
 		return result;
 	}
 

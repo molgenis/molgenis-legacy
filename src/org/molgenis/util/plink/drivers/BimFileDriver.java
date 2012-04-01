@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.Biallele;
 import org.molgenis.util.plink.datatypes.BimEntry;
@@ -47,7 +46,8 @@ public class BimFileDriver
 
 		if (reader.fileEndsWithNewlineChar())
 		{
-			this.nrOfElements = reader.getNumberOfLines() - reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = reader.getNumberOfLines()
+					- reader.getAmountOfNewlinesAtFileEnd();
 		}
 		else
 		{
@@ -79,27 +79,27 @@ public class BimFileDriver
 	public List<BimEntry> getEntries(final long from, final long to)
 			throws Exception
 	{
-		reader.reset();
 		final ArrayList<BimEntry> result = new ArrayList<BimEntry>();
-		reader.parse(new CsvReaderListener()
+		int line_number = 0;
+
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
+			line_number++;
+
+			if (line_number - 1 >= from && line_number - 1 < to)
 			{
-				if (line_number - 1 >= from && line_number - 1 < to)
+				for (int objIndex = 0; objIndex < 6; objIndex++)
 				{
-					for(int objIndex = 0; objIndex < 6; objIndex++)
-					{
-						if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
-					}
-					BimEntry be = new BimEntry(tuple.getString(0), tuple
-							.getString(1), tuple.getDouble(2),
-							tuple.getLong(3), new Biallele(tuple.getString(4),
-									tuple.getString(5)));
-					result.add(be);
+					if (tuple.getObject(objIndex) == null) throw new Exception(
+							Helper.errorMsg(line_number, objIndex));
 				}
+				BimEntry be = new BimEntry(tuple.getString(0),
+						tuple.getString(1), tuple.getDouble(2),
+						tuple.getLong(3), new Biallele(tuple.getString(4),
+								tuple.getString(5)));
+				result.add(be);
 			}
-		});
+		}
 		return result;
 	}
 
@@ -111,23 +111,22 @@ public class BimFileDriver
 	 */
 	public List<BimEntry> getAllEntries() throws Exception
 	{
-		reader.reset();
 		final ArrayList<BimEntry> result = new ArrayList<BimEntry>();
-		reader.parse(new CsvReaderListener()
+		int line_number = 0;
+		for (Tuple tuple : reader)
 		{
-			public void handleLine(int line_number, Tuple tuple)
-					throws Exception
+			line_number++;
+			for (int objIndex = 0; objIndex < 6; objIndex++)
 			{
-				for(int objIndex = 0; objIndex < 6; objIndex++)
-				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number,objIndex));
-				}
-				BimEntry be = new BimEntry(tuple.getString(0), tuple
-						.getString(1), tuple.getDouble(2), tuple.getLong(3),
-						new Biallele(tuple.getString(4), tuple.getString(5)));
-				result.add(be);
+				if (tuple.getObject(objIndex) == null) throw new Exception(
+						Helper.errorMsg(line_number, objIndex));
 			}
-		});
+			BimEntry be = new BimEntry(tuple.getString(0), tuple.getString(1),
+					tuple.getDouble(2), tuple.getLong(3), new Biallele(
+							tuple.getString(4), tuple.getString(5)));
+			result.add(be);
+		}
+
 		return result;
 	}
 

@@ -1,13 +1,17 @@
 package org.molgenis.util;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.molgenis.framework.server.MolgenisResponse;
 
 /**
  * Delimited writer to write {@link org.molgenis.util.Tuple Tuple} or
@@ -57,6 +61,18 @@ public class CsvWriter implements TupleWriter
 	public CsvWriter(OutputStream outputStream)
 	{
 		this.writer = new PrintWriter(outputStream);
+	}
+
+	/** CsvWriter that write to a molgenis response
+	 * @throws IOException */
+	public CsvWriter(String name, MolgenisResponse response) throws IOException
+	{
+		HttpServletResponse r = response.getResponse();
+		r.setContentType("application/x-download");
+		r.setHeader(
+				"Content-Disposition",
+				"attachment; filename="+name);
+		this.writer = r.getWriter();
 	}
 
 	/**

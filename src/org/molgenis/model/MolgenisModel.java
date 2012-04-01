@@ -1,8 +1,10 @@
 package org.molgenis.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -15,7 +17,8 @@ import org.molgenis.model.elements.Model;
 
 public class MolgenisModel
 {
-	private static final transient Logger logger = Logger.getLogger(MolgenisModel.class.getSimpleName());
+	private static final transient Logger logger = Logger
+			.getLogger(MolgenisModel.class.getSimpleName());
 
 	public static Model parse(MolgenisOptions options) throws Exception
 	{
@@ -24,23 +27,28 @@ public class MolgenisModel
 		try
 		{
 			logger.info("parsing db-schema from " + options.model_database);
-			
+
 			// 19-4-2011 ER: unused code, so commented out!
-//			ArrayList<String> db_files = options.model_database;
-//			for (int i = 0; i < db_files.size(); i++)
-//				db_files.set(i, options.path + db_files.get(i));
-// Stukje comment voor Willem om SVN te testen
+			// ArrayList<String> db_files = options.model_database;
+			// for (int i = 0; i < db_files.size(); i++)
+			// db_files.set(i, options.path + db_files.get(i));
+
 			model = MolgenisModelParser.parseDbSchema(options.model_database);
-			
-			
-			// Get the strings of the property 'authorizable' and add the entity name
-			// 'Authorizable' to the list of Implements. Solves datamodel duplication
-			// in molgenis_apps suite. Possible future work: put auth dependencies into
+
+			// Get the strings of the property 'authorizable' and add the entity
+			// name
+			// 'Authorizable' to the list of Implements. Solves datamodel
+			// duplication
+			// in molgenis_apps suite. Possible future work: put auth
+			// dependencies into
 			// molgenis itself so it becomes generic across projects.
-			for(String eName : options.authorizable) {
-				eName = eName.trim(); //allow e.g. 'Observation, Investigation'
-				Vector<String> implNames = model.getEntity(eName).getImplementsNames();
-				if(!implNames.contains("Authorizable")){
+			for (String eName : options.authorizable)
+			{
+				eName = eName.trim(); // allow e.g. 'Observation, Investigation'
+				Vector<String> implNames = model.getEntity(eName)
+						.getImplementsNames();
+				if (!implNames.contains("Authorizable"))
+				{
 					implNames.add("Authorizable");
 					model.getEntity(eName).setImplements(implNames);
 				}
@@ -52,10 +60,11 @@ public class MolgenisModel
 			MolgenisModelValidator.validate(model, options);
 
 			logger.info("parsing ui-schema");
-			model = MolgenisModelParser.parseUiSchema(options.path + options.model_userinterface, model);
+			model = MolgenisModelParser.parseUiSchema(options.path
+					+ options.model_userinterface, model);
 			// if (options.force_molgenis_package == true)
 			// model.setName("molgenis");
-			
+
 			MolgenisModelValidator.validateUI(model, options);
 
 			logger.debug("validated: " + model);
@@ -75,68 +84,58 @@ public class MolgenisModel
 		return parse(options);
 	}
 
-	public static void sortEntitiesByDependency(List<Entity> entityList, Model model) throws Exception
+	public static List<Entity> sortEntitiesByDependency(List<Entity> entityList,
+			final Model model) throws MolgenisModelException
 	{
-		// buble sort
-		int count = 0;
-		int maxcount = entityList.size() * entityList.size();
+		List<Entity> result = new ArrayList<Entity>();
 
-		for (int i = 0; i < entityList.size() - 1; i++)
+		boolean found = true;
+		List<Entity> toBeMoved = new ArrayList<Entity>();
+		while (entityList.size() > 0 && found)
 		{
-			if (count == maxcount)
+			found = false;
+			for (Entity entity : entityList)
 			{
-				logger
-						.warn("you have a cyclic relationship in you database scheme. check the 'swapped .. with ..' messages for clues.");
-				return;
-			}
-
-			Entity currentEntity = entityList.get(i);
-			List<String> dependencies = getDependencies(currentEntity, model);
-			
-			//logger.debug(currentEntity.getName()+" depends on: "+ dependencies);
-			
-
-			if (currentEntity.hasAncestor()) dependencies.add(currentEntity.getAncestor().getName());
-			// //ancestor
-
-			// if (currentEntity.hasImplements())
-			// {
-			// for (Entity e : currentEntity.getImplements())
-			// dependencies.add(e.getName()); //imlements
-			// }
-
-			// move all dependencies before 'self'
-			for (String entity : dependencies)
-			{
-				int xrefPosition = indexOf(entityList, entity);
-				if (xrefPosition > i)
-				// need to swap when index of referenced entity is larger than
-				// own index
-				// this is endless in case of cyclic relationship!
+				List<String> deps = getDependencies(entity, model);
+				
+				//check if all deps are there
+				boolean missing = false;
+				for(String dep: deps)
 				{
-					// swap
-					Entity xrefEntity = entityList.get(xrefPosition);
-
-					// don't swap if the other refers to 'me'
-					if (!getDependencies(xrefEntity, model).contains(currentEntity.getName()))
+					if(indexOf(result, dep) < 0)
 					{
-
-						entityList.set(i, xrefEntity);
-						entityList.set(xrefPosition, currentEntity);
-						//logger.debug("swapped " + entityList.get(xrefPosition).getName() + " with "
-						//		+ entityList.get(i).getName());
-						i--; // check swapped entity
+						missing = true;
 						break;
 					}
-					else
-					{
-						//logger.debug("loop detected between " + currentEntity.getName() + " and "
-						//		+ xrefEntity.getName());
-					}
+				}
+				
+				if (!missing)
+				{
+					toBeMoved.add(entity);
+					result.add(entity);
+					found = true;
+					break;
 				}
 			}
-			count++;
+			
+			for(Entity e: toBeMoved) entityList.remove(e);
+			toBeMoved.clear();
 		}
+		
+		//list not empty, cyclic?
+		for(Entity e: entityList)
+		{
+			logger.error("cyclic relations to '"+ e.getName() + "' depends on "+getDependencies(e, model));
+			result.add(e);
+		}
+		
+		//result
+		for(Entity e: result)
+		{
+			logger.info(e.getName());
+		}
+		
+		return result;
 	}
 
 	private static int indexOf(List<Entity> entityList, String entityName)
@@ -145,39 +144,43 @@ public class MolgenisModel
 		{
 			if (entityList.get(i).getName().equals(entityName)) return i;
 		}
-		return 0;
+		return -1;
 	}
 
-
-	private static List<String> getDependencies(Entity currentEntity, Model model) throws MolgenisModelException
+	private static List<String> getDependencies(Entity currentEntity,
+			Model model) throws MolgenisModelException
 	{
-		List<String> dependencies = new ArrayList<String>();
-		
+		Set<String> dependencies = new HashSet<String>();
+
 		for (Field field : currentEntity.getAllFields())
 		{
 			if (field.getType() instanceof XrefField)
 			{
-				dependencies.add(field.getXrefEntityName()); 
+				dependencies.add(model.getEntity(field.getXrefEntityName()).getName());
 
 				Entity xrefEntity = field.getXrefEntity();
 
 				// also all subclasses have this xref!!!!
 				for (Entity e : xrefEntity.getAllDescendants())
 				{
-					if (!dependencies.contains(e.getName())) dependencies.add(e.getName());
-					// System.out.println("PARENT OF "+field.getXRefEntity()+
-					// "="+
-					// model.getEntity(field.getXRefEntity()).getParents());
+					if (!dependencies.contains(e.getName())) dependencies
+							.add(e.getName());
 				}
 			}
-			 if (field.getType() instanceof MrefField)
-			 {
-			 dependencies.add(field.getXrefEntity().getName()); //mref fields
-			// including super classes
-			 dependencies.addAll(model.getEntity(field.getXrefEntity().getName()).getParents());
-			 }
+			if (field.getType() instanceof MrefField)
+			{
+				dependencies.add(field.getXrefEntity().getName()); // mref
+															// fields
+				// including super classes
+				for (String name : model.getEntity(
+						field.getXrefEntity().getName()).getParents())
+				{
+					dependencies.add(name);
+				}
+			}
 		}
 
-		return dependencies;
+		dependencies.remove(currentEntity.getName());
+		return new ArrayList<String>(dependencies);
 	}
 }

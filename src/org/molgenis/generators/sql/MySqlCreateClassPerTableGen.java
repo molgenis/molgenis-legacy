@@ -36,7 +36,7 @@ public class MySqlCreateClassPerTableGen extends Generator
 		Map<String, Object> templateArgs = createTemplateArguments(options);
 		
 		List<Entity> entityList = model.getEntities();
-		MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
 
 		File target = new File( this.getSqlPath(options) + "/create_tables.mysql" );
 		target.getParentFile().mkdirs();

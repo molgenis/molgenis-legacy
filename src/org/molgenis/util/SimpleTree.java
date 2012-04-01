@@ -80,7 +80,7 @@ public class SimpleTree<T extends Tree> implements Tree<T>,Serializable
 	
 	public void setName(String name)
 	{
-		System.out.println("name " + name );
+		//System.out.println("name " + name );
 
 		if (name == "" || name == null)
 		{

@@ -459,6 +459,13 @@ public class InMemoryDatabase implements Database
 		return null;
 	}
 
+	@Override
+	public <E extends Entity> int add(Class<E> klazz, TupleReader reader) throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 
 
 }

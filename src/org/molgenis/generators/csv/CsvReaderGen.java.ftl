@@ -35,7 +35,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Tuple;
 
 ${imports(model, entity, "")}
@@ -78,38 +77,36 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 		//wrapper to count
 		final IntegerWrapper total = new IntegerWrapper(0);
 		reader.setMissingValues(missingValues);
-		reader.parse(new CsvReaderListener()
+		for(Tuple tuple: reader)
 		{
-			public void handleLine(int LineNo, Tuple tuple) throws Exception
+			//parse object, setting defaults and values from file
+			${JavaName(entity)} object = new ${JavaName(entity)}();
+			object.set(defaults, false); 
+			object.set(tuple, false);				
+			${name(entity)}List.add(object);		
+			
+			//add to db when batch size is reached
+			if(${name(entity)}List.size() == BATCH_SIZE)
 			{
-				//parse object, setting defaults and values from file
-				${JavaName(entity)} object = new ${JavaName(entity)}();
-				object.set(defaults, false); 
-				object.set(tuple, false);				
-				${name(entity)}List.add(object);		
+				//resolve foreign keys and copy those entities that could not be resolved to the missingRefs list
+				${name(entity)}sMissingRefs.addAll(resolveForeignKeys(db, ${name(entity)}List));
 				
-				//add to db when batch size is reached
-				if(${name(entity)}List.size() == BATCH_SIZE)
-				{
-					//resolve foreign keys and copy those entities that could not be resolved to the missingRefs list
-					${name(entity)}sMissingRefs.addAll(resolveForeignKeys(db, ${name(entity)}List));
-					
-					<#if entity.getXrefLabels()?exists>
-					//update objects in the database using xref_label defined secondary key(s) '${csv(entity.getXrefLabels())}' defined in xref_label
-					db.update(${name(entity)}List,dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
-					<#else>
-					//update objects in the database using primary key(<#list entity.getAllKeys()[0].fields as field><#if field_index != 0>,</#if>${field.name}</#list>)
-					db.update(${name(entity)}List,dbAction<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
-					</#if>
-					
-					//clear for next batch						
-					${name(entity)}List.clear();		
-					
-					//keep count
-					total.set(total.get() + BATCH_SIZE);				
-				}
+				<#if entity.getXrefLabels()?exists>
+				//update objects in the database using xref_label defined secondary key(s) '${csv(entity.getXrefLabels())}' defined in xref_label
+				db.update(${name(entity)}List,dbAction<#list entity.getXrefLabels() as label>, "${label}"</#list>);
+				<#else>
+				//update objects in the database using primary key(<#list entity.getAllKeys()[0].fields as field><#if field_index != 0>,</#if>${field.name}</#list>)
+				db.update(${name(entity)}List,dbAction<#list entity.getAllKeys()[0].fields as field>, "${field.name}"</#list>);
+				</#if>
+				
+				//clear for next batch						
+				${name(entity)}List.clear();		
+				
+				//keep count
+				total.set(total.get() + BATCH_SIZE);				
 			}
-		});
+		}
+			
 		//add remaining elements to the database
 		if(!${name(entity)}List.isEmpty())
 		{

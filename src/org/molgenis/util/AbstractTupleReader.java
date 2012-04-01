@@ -1,9 +1,11 @@
 package org.molgenis.util;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 import org.apache.log4j.Logger;
-
 
 public abstract class AbstractTupleReader implements TupleReader
 {
@@ -70,37 +72,26 @@ public abstract class AbstractTupleReader implements TupleReader
 	public void renameField(String from, String to) throws Exception
 	{
 		List<String> colnames = this.colnames();
-		if (colnames.contains(from))
-			colnames.set(colnames.indexOf(from), to);
+		if (colnames.contains(from)) colnames.set(colnames.indexOf(from), to);
 		else
 		{
 			logger.warn("renameField(" + from + "," + to + ") failed. Known columns are: " + colnames);
 		}
 		this.setColnames(colnames);
-	
+
 	}
 
-	@Override
-	public void disableHeader(boolean header)
+	public List<String> rownames() throws IOException, DataFormatException
 	{
-		this.hasHeader = header;
-	
-	}
-
-	public int parse(int noElements, CsvReaderListener... listeners) throws Exception
-	{
-		return this.parse(noElements, null, listeners);
-	}
-
-	@Override
-	public int parse(CsvReaderListener... listeners) throws Exception
-	{
-		return this.parse(Integer.MAX_VALUE, listeners);
-	}
-
-	@Override
-	public int parse(List<Integer> rows, CsvReaderListener... listeners) throws Exception
-	{
-		return this.parse(Integer.MAX_VALUE, rows, listeners);
+		List<String> rownames = new ArrayList<String>();
+		int line_number = 0;
+		for (Tuple t : this)
+		{
+			if (!t.isNull(0)) rownames.add(t.getString(0));
+			else
+				rownames.add(null);
+		}
+		this.reset();
+		return rownames;
 	}
 }

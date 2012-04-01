@@ -39,7 +39,7 @@ public class EntityModelDocGen extends Generator
 		
 		List<Entity> entityList = model.getEntities();
 		List<Module> moduleList = model.getModules();
-		MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
+		entityList = MolgenisModel.sortEntitiesByDependency(entityList,model); //side effect?
 		
 		templateArgs.put("model", model );
 		templateArgs.put("entities",entityList);

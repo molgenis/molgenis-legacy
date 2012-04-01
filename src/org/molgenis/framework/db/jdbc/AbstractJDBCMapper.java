@@ -211,7 +211,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 			ResultSet rs = getDatabase().executeQuery(sql, null);
 			rs.next();
 			int result = rs.getInt("num_rows");
-			logger.debug("counted " + this.create().getClass().getSimpleName() + " objects");
+			logger.debug("counted " + result +" " + this.create().getClass().getSimpleName() + " objects");
 			rs.close(); // closes connection too?
 			return result;
 		}

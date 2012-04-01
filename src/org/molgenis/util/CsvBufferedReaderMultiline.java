@@ -3,6 +3,7 @@ package org.molgenis.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
@@ -15,14 +16,14 @@ import org.apache.log4j.Logger;
  * 
  * @see CsvReader
  */
-public class CsvBufferedReaderMultiline implements CsvReader
+public class CsvBufferedReaderMultiline extends AbstractTupleReader implements CsvReader, TupleIterable
 {
 	/** default separators */
 	public static char[] separators =
 	{ ',', '\t', ';', ' ' };
 
 	/** Wrapper around the resource that is read */
-	public BufferedReader reader = null;
+	protected BufferedReader reader = null;
 
 	/** for log messages */
 	private static final transient Logger logger = Logger
@@ -35,8 +36,8 @@ public class CsvBufferedReaderMultiline implements CsvReader
 	private String blockStart = "";
 
 	/**
-	 * a matching String that indicates where the Csv is terminated; empty
-	 * means last line
+	 * a matching String that indicates where the Csv is terminated; empty means
+	 * last line
 	 */
 	private String blockEnd = "";
 
@@ -49,9 +50,6 @@ public class CsvBufferedReaderMultiline implements CsvReader
 	/** guessed separator */
 	private char separator = 0;
 
-	/** boolean indicating the parser is working */
-	//private boolean isParsing = false;
-
 	/** boolean indicating that the resource parsed has headers... */
 	private boolean hasHeader = true;
 
@@ -62,60 +60,41 @@ public class CsvBufferedReaderMultiline implements CsvReader
 	 * Constructor
 	 * 
 	 * @param reader
+	 * @throws IOException
+	 * @throws DataFormatException
 	 */
 	public CsvBufferedReaderMultiline(BufferedReader reader)
+			throws IOException, DataFormatException
 	{
 		this.reader = reader;
+		if (hasHeader) headers = colnames();
 	}
 
-	// @Override
+	@Override
 	public String getBlockEnd()
 	{
 		return blockEnd;
 	}
 
-	// @Override
+	@Override
 	public void setBlockEnd(String blockEnd)
 	{
 		this.blockEnd = blockEnd;
 	}
 
-	// @Override
+	@Override
 	public String getBlockStart()
 	{
 		return blockStart;
 	}
 
-	// @Override
+	@Override
 	public void setBlockStart(String blockStart)
 	{
 		this.blockStart = blockStart;
 	}
 
-	// @Override
-	public List<String> rownames() throws IOException
-	{
-		List<String> result = new ArrayList<String>();
-
-		//go to start of reading block
-		goToBlockStart(reader);
-		
-		//skip line with the headers
-		List<String> row = this.getRow(); 
-
-		//parse all other lines and collect first column value
-		while ((row = this.getRow()) != null && row.size()>0 && !isBlockEnd(row))
-		{
-			// get first element
-			result.add(row.get(0));
-		}
-
-		//reset the reader
-		this.reset();
-		return result;
-	}
-
-	// @Override
+	@Override
 	public List<String> colnames() throws IOException, DataFormatException
 	{
 		// use cached...
@@ -130,20 +109,25 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		// skip to reading block
 		goToBlockStart(reader);
 
-		//get the column names as in file
+		// get the column names as in file
 		List<String> colnames = this.getRow();
 		
-		//get data line as comparison to see if we need to add anonymous first column for data matrix
+		//mark reader so we can reset to first row
+		reader.mark(10000);
+
+		// get data line as comparison to see if we need to add anonymous first
+		// column for data matrix
 		List<String> dataline = this.getRow();
-		
-		//empty file has empty headers
-		if(dataline == null) return new ArrayList<String>();
+		reader.reset(); //unread
+		//reader.mark(-1);
+
+		// empty file has empty headers
+		if (dataline == null) return new ArrayList<String>();
 
 		// if data line is longer, then add empty first column header
 		if (colnames.size() + 1 == dataline.size())
 		{
-			logger
-					.debug("data line is longer, assuming matrix with rownames and added first column header ''");
+			logger.debug("data line is longer, assuming matrix with rownames and added first column header ''");
 			result.add("");
 		}
 		// if first element is nameless, assume first column header
@@ -161,7 +145,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 							+ "). Only the first column may be empty. Check whether you have data separators in your data values");
 		}
 
-		//add all other column names to the result
+		// add all other column names to the result
 		for (String header : colnames)
 		{
 			result.add(header);
@@ -174,67 +158,52 @@ public class CsvBufferedReaderMultiline implements CsvReader
 					"nameless header found at index " + result.indexOf(header)
 							+ ": " + result);
 		}
-
-		//reset reader
-		this.reset();
-
+		
 		// cache for later use
 		this.columnnames = result;
 
 		return result;
 	}
 
-	public int parse(int noElements, CsvReaderListener... listeners)
-			throws Exception
+	List<String> headers = null;
+	int lineCount = 0;
+
+	@Override
+	public Iterator<Tuple> iterator()
 	{
-		return this.parse(noElements, null, listeners);
+		return new TupleIterator(this);
 	}
 
-	// @Override
-	public int parse(int noElements, List<Integer> rows,
-			CsvReaderListener... listeners) throws Exception
+	/** This method gets next tuple, if availabe*/
+	public Tuple next()
 	{
-		//this.reset();
-		
-		List<String> headers = null;
-		List<String> row = null;
-
-		if (hasHeader) headers = colnames();
-		// this.reset();
-		this.goToBlockStart(this.reader);
-		if (hasHeader) row = this.getRow();
-
-		// logger.debug("found: " + t.toString());
-		int lineCount = 0;
-		// int index;
-
-		while (lineCount < noElements && (row = this.getRow()) != null && row.size() > 0
-				&& !isBlockEnd(row))
-
-
-
+		try
 		{
+			//get next row
+			List<String> row = this.getRow();
+			
+			if (row != null && row.size() > 0 && !isBlockEnd(row))
+			{
+				// template of the tuple
+				Tuple t;
+				if (hasHeader)
+				{
+					t = new SimpleTuple(headers);
+				}
+				else
+				{
+					t = new SimpleTuple();
+				}
 
-			// template of the tuple
-			Tuple t;
-			if (hasHeader)
-			{
-				t = new SimpleTuple(headers);
-			}
-			else
-			{
-				t = new SimpleTuple();
-			}
+				lineCount++;
 
-			lineCount++;
+				// warn for empty line and return
+				if (row.size() == 0)
+				{
+					logger.warn("found empty line: " + lineCount);
+					return t;
+				}
 
-			// warn for empty line and return
-			if (row.size() == 0)
-			{
-				logger.warn("found empty line: " + lineCount);
-			}
-			else if (rows == null || rows.contains(lineCount))
-			{
 				// parse the row into a tuple
 				if (hasHeader && row.size() > headers.size())
 				{
@@ -242,7 +211,8 @@ public class CsvBufferedReaderMultiline implements CsvReader
 							+ " has more columns than there are headers ("
 							+ row.size() + ">" + headers.size()
 							+ "). Put double \" around columns that have '"
-							+ separator + "' in their value. \nRow is: " + this.rowToString(row));
+							+ separator + "' in their value. \nRow is: "
+							+ this.rowToString(row));
 				}
 
 				// change MISSING_VALUES to null
@@ -255,68 +225,36 @@ public class CsvBufferedReaderMultiline implements CsvReader
 				}
 				t.set(row);
 				// logger.info("found: " + t.toString());
-
-				// handle the tuple by all handlers
-				for (CsvReaderListener listener : listeners)
-				{
-					if (row.size() == 0)
-					{
-						logger
-								.warn("EMPTY LINE on " + lineCount
-										+ ", skipped.");
-					}
-					else
-					{
-						try
-						{
-							listener.handleLine(lineCount, t);
-						}
-						catch (Exception e)
-						{
-							e.printStackTrace();
-							logger.error("parsing of row " + lineCount
-									+ " failed: " + e.getMessage()+". Tuple: "+t);
-							throw e;
-						}
-					}
-				}
+				return t;
 			}
+			
+			//next is null
+			return null;
 		}
-
-		return lineCount;
+		catch (Exception e)
+		{
+			throw new RuntimeException(e); // should never happen
+		}
 	}
 
 	private String rowToString(List<String> row)
 	{
 		StringBuffer result = new StringBuffer();
-		if(row == null) return "";
+		if (row == null) return "";
 		boolean firstRow = true;
-		for(String s: row)
+		for (String s : row)
 		{
-			if(firstRow)
-			{	
-				result.append("\""+s+"\"");
+			if (firstRow)
+			{
+				result.append("\"" + s + "\"");
 				firstRow = false;
 			}
 			else
 			{
-				result.append(", \""+result+"\"");
+				result.append(", \"" + result + "\"");
 			}
 		}
 		return result.toString();
-	}
-
-	@Override
-	public int parse(CsvReaderListener... listeners) throws Exception
-	{
-		return this.parse(Integer.MAX_VALUE, listeners);
-	}
-
-	@Override
-	public int parse(List<Integer> rows, CsvReaderListener... listeners)
-			throws Exception
-	{
-		return this.parse(Integer.MAX_VALUE, rows, listeners);
 	}
 
 	public void close() throws IOException
@@ -400,65 +338,68 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		String currentRecord = "";
 		while ((line = reader.readLine()) != null)
 		{
-            if(!inQuotes && this.getBlockEnd().equals(line.trim()))
-            {
-            	return null;
-            }
+			if (!inQuotes && this.getBlockEnd().equals(line.trim()))
+			{
+				return null;
+			}
 
 			if (!inQuotes && this.separator == 0)
 			{
 				separator = guessSeparator(line);
 			}
-			
+
 			char[] chars = line.toCharArray();
 			for (int i = 0; i < chars.length; i++)
 			{
-				if (inQuotes) 
+				if (inQuotes)
 				{
-					//skip escaping of quotes
-					if(chars[i] == this.quoteEscape && (i+1) < chars.length && chars[i+1] == '"')
+					// skip escaping of quotes
+					if (chars[i] == this.quoteEscape && (i + 1) < chars.length
+							&& chars[i + 1] == '"')
 					{
-						//escape quote once and skip next
+						// escape quote once and skip next
 						currentRecord += chars[i];
 						i++;
-						
+
 					}
-					//finish current record if closing quotes
-					else if(chars[i] == '"')
+					// finish current record if closing quotes
+					else if (chars[i] == '"')
 					{
-						//skip the quotes but say inQuotes = false
+						// skip the quotes but say inQuotes = false
 						inQuotes = false;
 					}
 					else
 					{
-						//add the character to the record
+						// add the character to the record
 						currentRecord += chars[i];
 					}
 				}
-				else 
+				else
 				{
-					if(chars[i] == '"')
+					if (chars[i] == '"')
 					{
-						//if quotes, get into them
+						// if quotes, get into them
 						inQuotes = true;
 					}
-					//if seperator, then add value to record and start with new currentRecord
-					else if(chars[i] == this.separator)
+					// if seperator, then add value to record and start with new
+					// currentRecord
+					else if (chars[i] == this.separator)
 					{
-						//skip the separator, but add the record to our result
+						// skip the separator, but add the record to our result
 						result.add(currentRecord.trim());
 						currentRecord = "";
 					}
 					else
 					{
-						//read normal character into our record
+						// read normal character into our record
 						currentRecord += chars[i];
 					}
 				}
 			}
-			
-			//if we reach this point, and we are still inQuotes, we have a multiline value, otherwise we can break and are done
-			if(!inQuotes)
+
+			// if we reach this point, and we are still inQuotes, we have a
+			// multiline value, otherwise we can break and are done
+			if (!inQuotes)
 			{
 				result.add(currentRecord.trim());
 				return result;
@@ -468,7 +409,7 @@ public class CsvBufferedReaderMultiline implements CsvReader
 				currentRecord += "\n";
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -521,13 +462,6 @@ public class CsvBufferedReaderMultiline implements CsvReader
 		return this.missingValueIndicator;
 	}
 
-	// @Override
-	public void reset() throws IOException
-	{
-		this.columnnames = null; // force to read colnames also!
-		//this.isParsing = false;
-	}
-
 	@Override
 	public void setColnames(List<String> fields)
 	{
@@ -559,5 +493,12 @@ public class CsvBufferedReaderMultiline implements CsvReader
 	{
 		this.hasHeader = header;
 
+	}
+
+	@Override
+	public void reset() throws IOException, DataFormatException
+	{
+		this.columnnames = null;
+		if (hasHeader) headers = colnames();
 	}
 }
