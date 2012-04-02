@@ -9,8 +9,18 @@ public class QTLMultiPlotResult
 	private String plot;
 	private String cisTransPlot;
 	private HashMap<String, Entity> matches;
-
+	private HashMap<String, Entity> datasets;
 	
+	public HashMap<String, Entity> getDatasets()
+	{
+		return datasets;
+	}
+
+	public void setDatasets(HashMap<String, Entity> datasets)
+	{
+		this.datasets = datasets;
+	}
+
 	public HashMap<String, Entity> getMatches()
 	{
 		return matches;

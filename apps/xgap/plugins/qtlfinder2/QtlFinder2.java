@@ -313,6 +313,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 	private QTLMultiPlotResult multiplot(List<Entity> entities, Database db) throws Exception
 	{
 		HashMap<String,Entity> matches = new HashMap<String,Entity>();
+		HashMap<String, Entity> datasets =  new HashMap<String,Entity>();
 		int totalAmountOfElementsInPlot = 0;
 		int overallIndex = 1;
 		List<Data> allData = db.find(Data.class);
@@ -390,6 +391,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 								Double[] Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
 		
 								matches.put(name, e);
+								datasets.put(d.getName(), d);
 								totalAmountOfElementsInPlot++;
 								
 								for(int markerIndex = 0; markerIndex < colNames.size(); markerIndex++)
@@ -411,6 +413,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 								Double[] Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
 								
 								matches.put(name, e);
+								datasets.put(d.getName(), d);
 								totalAmountOfElementsInPlot++;
 								
 								for(int markerIndex = 0; markerIndex < rowNames.size(); markerIndex++)
@@ -447,6 +450,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 		result.setPlot(plot.getName());
 		result.setCisTransPlot(cisTransplot.getName());
 		result.setMatches(matches);
+		result.setDatasets(datasets);
 		
 		return result;
 	}

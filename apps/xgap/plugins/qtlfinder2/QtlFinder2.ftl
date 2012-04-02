@@ -506,6 +506,21 @@
 					[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore further</a>]
 					<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if><br>
 					</#list>
+					<br>
+					<i>All datasets used in the plot (click for details):</i>
+					<table>
+					<#list model.multiplot.datasets?values as d>
+						<tr>
+							<td>
+								ID <b>${d.id}</b>
+							</td>
+							<td>
+								: <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
+								<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if>
+							</td>
+						</tr>
+					</#list>
+					</table>
 					</div>
 				</td>
 			</tr>
