@@ -188,7 +188,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 			} catch (javax.persistence.EntityNotFoundException enfe) {
 				throw new org.molgenis.framework.db.DatabaseException("The ${name(entity)} with id " + ${name(entity)}.getIdField().toString() + " no longer exists: " + enfe.getMessage());
 			}
-
+<#--
 <#list model.entities as e>
 <#if !e.abstract && !e.isAssociation()>
 	<#list e.implementedFields as f>
@@ -202,7 +202,7 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 	</#list>
 </#if>	
 </#list>
-
+-->
 			getEntityManager().remove(${name(entity)});
 		} catch (Exception ex) {
 			try {
