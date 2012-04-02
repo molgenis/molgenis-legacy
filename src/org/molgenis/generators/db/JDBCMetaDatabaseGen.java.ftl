@@ -50,68 +50,52 @@ public class JDBCMetaDatabase extends Model
 	public JDBCMetaDatabase() throws DatabaseException
 	{
 		super("${model.name}");
-		<#if entities?size &gt; 0>
+		<#if entities?size gt 0>
 		try
 		{
-			<#list entities as entity><#if entity.abstract>
-			//INTERFACE ${entity.name}
+			<#list entities as entity>
+				<#if !entity.association>
+			//${entity.name}
 			Entity ${name(entity)}_entity = new Entity("${entity.name}",this.getDatabase());
-			${name(entity)}_entity.setAbstract(true);<#if entity.hasImplements()>
-			${name(entity)}_entity.setImplements(new String[]{${csv(entity.implements)}});</#if><#if entity.hasAncestor()>
-			${name(entity)}_entity.setParents(new String[]{"${entity.getAncestor().name}"});</#if>
-			<#if entity.xrefLabels?exists>${name(entity)}_entity.setXrefLabels(Arrays.asList(new String[]{${csv(entity.xrefLabels)}}));</#if>
-			<#list entity.getFields() as field><#if field.name != typefield()>
+			${name(entity)}_entity.setSystem(<#if entity.isSystem()>true<#else>false</#if>);
+			${name(entity)}_entity.setAbstract(<#if entity.isAbstract()>true<#else>false</#if>);
+					<#if entity.hasImplements()>
+			${name(entity)}_entity.setImplements(new String[]{${csv(entity.implements)}});
+					</#if>
+					<#if entity.hasAncestor()>
+			${name(entity)}_entity.setParents(new String[]{"${entity.getAncestor().name}"});
+					</#if>
+					<#if entity.xrefLabels?exists>
+			${name(entity)}_entity.setXrefLabels(Arrays.asList(new String[]{${csv(entity.xrefLabels)}}));
+					</#if>			
+					<#list entity.getFields() as field>
+						<#if field.name != typefield()>
 			Field ${name(entity)}_${name(field)}_field = new Field(${name(entity)}_entity, "${field.name}", MolgenisFieldTypes.getType("${field.type}"));
-			<#if field.auto>
+							<#if field.auto>
 			${name(entity)}_${name(field)}_field.setAuto(true);
-			</#if>
-			<#if field.type == 'enum'>
+							</#if>
+							<#if field.type == 'enum'>
 			Vector<String> ${name(entity)}_${name(field)}_field_enumoptions = new Vector<String>();
-			<#list field.enumOptions as enumoption>
+								<#list field.enumOptions as enumoption>
 			${name(entity)}_${name(field)}_field_enumoptions.add("${enumoption}");
-			</#list>
+								</#list>
 			${name(entity)}_${name(field)}_field.setEnumOptions(${name(entity)}_${name(field)}_field_enumoptions);
-			</#if>
-			<#if field.defaultValue != ''>
+							</#if>
+							<#if field.defaultValue != ''>
 			${name(entity)}_${name(field)}_field.setDevaultValue("${field.defaultValue}");
-			</#if>
+							</#if>
 			${name(entity)}_${name(field)}_field.setNillable(<#if field.isNillable() == true>true<#else>false</#if>);
-			<#if field.type == "xref" || field.type == "mref">${name(entity)}_${name(field)}_field.setXRefVariables("${field.xrefEntityName}", "${field.xrefFieldName}",Arrays.asList(new String[]{${csv(field.xrefLabelNames)}}));</#if>
+							<#if field.type == "xref" || field.type == "mref">
+			${name(entity)}_${name(field)}_field.setXRefVariables("${field.xrefEntityName}", "${field.xrefFieldName}",Arrays.asList(new String[]{${csv(field.xrefLabelNames)}}));
+							</#if>
 			${name(entity)}_entity.addField(${name(entity)}_${name(field)}_field);
-			</#if></#list>
-			<#list entity.keys as key>
+						</#if>
+					</#list>
+					<#list entity.keys as key>
 			${name(entity)}_entity.addKey(Arrays.asList(new String[]{${csv(key.fields)}}),<#if key.isSubclass()>true<#else>false</#if>,"");
-			</#list></#if></#list>
+					</#list>
 			
-			<#list entities as entity><#if !entity.abstract && !entity.association>
-			//ENTITY ${entity.name}
-			Entity ${name(entity)}_entity = new Entity("${entity.name}",this.getDatabase());<#if entity.hasImplements()>
-			${name(entity)}_entity.setImplements(new String[]{${csv(entity.implements)}});</#if><#if entity.hasAncestor()>
-			${name(entity)}_entity.setParents(new String[]{"${entity.getAncestor().name}"});</#if>
-			<#if entity.xrefLabels?exists>${name(entity)}_entity.setXrefLabels(Arrays.asList(new String[]{${csv(entity.xrefLabels)}}));</#if>			
-			<#list entity.getFields() as field><#if field.name != typefield()>
-			Field ${name(entity)}_${name(field)}_field = new Field(${name(entity)}_entity, "${field.name}", MolgenisFieldTypes.getType("${field.type}"));
-			<#if field.auto>
-			${name(entity)}_${name(field)}_field.setAuto(true);
-			</#if>
-			<#if field.type == 'enum'>
-			Vector<String> ${name(entity)}_${name(field)}_field_enumoptions = new Vector<String>();
-			<#list field.enumOptions as enumoption>
-			${name(entity)}_${name(field)}_field_enumoptions.add("${enumoption}");
-			</#list>
-			${name(entity)}_${name(field)}_field.setEnumOptions(${name(entity)}_${name(field)}_field_enumoptions);
-			</#if>
-			<#if field.defaultValue != ''>
-			${name(entity)}_${name(field)}_field.setDevaultValue("${field.defaultValue}");
-			</#if>
-			${name(entity)}_${name(field)}_field.setNillable(<#if field.isNillable() == true>true<#else>false</#if>);
-			<#if field.type == "xref" || field.type == "mref">${name(entity)}_${name(field)}_field.setXRefVariables("${field.xrefEntityName}", "${field.xrefFieldName}",Arrays.asList(new String[]{${csv(field.xrefLabelNames)}}));</#if>
-			${name(entity)}_entity.addField(${name(entity)}_${name(field)}_field);
-			</#if></#list>
-			<#list entity.keys as key>
-			${name(entity)}_entity.addKey(Arrays.asList(new String[]{${csv(key.fields)}}),<#if key.isSubclass()>true<#else>false</#if>,"");
-			</#list></#if>
-			//END OF ENTITY ${entity.name}
+				</#if>
 			</#list>
 			
 			//disabled validation, this means above must be perfect!
