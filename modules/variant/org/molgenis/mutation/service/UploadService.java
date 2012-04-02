@@ -42,12 +42,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class UploadService extends MolgenisVariantService
 {
-	private static final transient Logger logger = Logger.getLogger(UploadService.class.getSimpleName());
+	private final transient Logger logger = Logger.getLogger(UploadService.class.getSimpleName());
 	private Database db;
 	private EntityManager em;
 
 	@Autowired
-	public UploadService(Database db)
+	public UploadService(Database db, CsvToDatabase<Entity> uploadBatchCsvReader)
 	{
 		super(db);
 		this.db = db;
@@ -267,13 +267,13 @@ public class UploadService extends MolgenisVariantService
 	 * @param uploadBatchCsvReader
 	 * @return number of patients inserted
 	 */
-	public int insert(File file, CsvToDatabase<Entity> uploadBatchCsvReader)
+	public int insert(File file)
 	{
 		try
 		{
 			Workbook workbook             = Workbook.getWorkbook(file);
-			UploadBatchExcelReader reader = new UploadBatchExcelReader();
-			reader.setUploadBatchCsvReader(uploadBatchCsvReader);
+//			UploadBatchExcelReader reader = new UploadBatchExcelReader();
+			UploadBatchExcelReader reader = (UploadBatchExcelReader) org.molgenis.mutation.ServiceLocator.instance().getContext().getBean("uploadBatchExcelReader");
 
 			this.em.getTransaction().begin();
 			int count                     = reader.importSheet(this.db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
@@ -295,7 +295,7 @@ public class UploadService extends MolgenisVariantService
 	 * 
 	 * @return biggest identifier without the leading 'P'
 	 */
-	public Integer getMaxPatientIdentifier()
+	public int findMaxPatientIdentifier()
 	{
 		try
 		{
@@ -341,11 +341,11 @@ public class UploadService extends MolgenisVariantService
 	 * Get the biggest identifier without the leading 'M'
 	 * @return biggest identifier without the leading 'M'
 	 */
-	public Integer getMaxMutationIdentifier()
+	public int findMaxMutationIdentifier()
 	{
 		try
 		{
-			List<AlternateId> mutationIdList = this.db.query(AlternateId.class).equals(AlternateId.DEFINITION, "molgenis_mutation_id").find();
+			List<AlternateId> mutationIdList = this.db.query(AlternateId.class).equals(AlternateId.DEFINITION, "molgenis_variant_id").find();
 			
 			if (CollectionUtils.isEmpty(mutationIdList))
 				return 0;
@@ -511,12 +511,9 @@ public class UploadService extends MolgenisVariantService
 		
 		if (mutationUploadDTO.getLength() == null)
 			mutationUploadDTO.setLength(1); // default value
-
-		System.out.println(">>> vor assignNt: mutationStart==" + mutationStart);
 		
 //		mutationUploadDTO.setNt(nuclSequence.substring(mutationStart, mutationStart + mutationUploadDTO.getLength()).toUpperCase());
 		this.assignNt(mutationUploadDTO, nuclSequence, mutationStart);
-		System.out.println(">>> nt==" + mutationUploadDTO.getNt());
 
 		if (mutationUploadDTO.getEvent().equals("deletion"))
 		{
@@ -569,16 +566,13 @@ public class UploadService extends MolgenisVariantService
 		else
 			mutationUploadDTO.setGdnaEnd(mutationUploadDTO.getGdnaStart() - mutationUploadDTO.getLength() + 1);
 
-		System.out.println(">>> assignValuesFromPosition: Setting cdna and gdna notation");
 		this.assignCdnaNotation(mutationUploadDTO);
 		this.assignGdnaNotation(mutationUploadDTO);
-		System.out.println(">>> assignValuesFromPosition: Set cdna and gdna notation");
 
 		// Calculations for transcribed part
 		
 		if (exonDTO.getIsIntron())
 		{
-			System.out.println(">>> exon is intron");
 //			mutationUploadDTO.setCodon("");
 			mutationUploadDTO.setAa("");
 			mutationUploadDTO.setAachange("");
@@ -589,7 +583,6 @@ public class UploadService extends MolgenisVariantService
 		}
 		else
 		{
-			System.out.println(">>> exon is exon");
 			// splice the sequences
 			String splNuclSeq  = SequenceUtils.splice(nuclSequence);
 			String splMutSeq   = SequenceUtils.splice(mutSequence.toString());

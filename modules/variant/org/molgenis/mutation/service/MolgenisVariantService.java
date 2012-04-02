@@ -143,17 +143,15 @@ public class MolgenisVariantService
 	{
 		try
 		{
-			List<SequenceRelation> relations = this.db.query(SequenceRelation.class).lessOrEqual(SequenceRelation.FMIN, position).greaterOrEqual(SequenceRelation.FMAX, position).equals(SequenceRelation.STRAND, "+1").find();
-			relations.addAll(this.db.query(SequenceRelation.class).lessOrEqual(SequenceRelation.FMAX, position).greaterOrEqual(SequenceRelation.FMIN, position).equals(SequenceRelation.STRAND, "-1").find());
-
-			for (SequenceRelation relation : relations)
-			{
-				SequenceCharacteristic seqChar = (SequenceCharacteristic) relation.getFeature();
-				if ("intron".equals(seqChar.getFeatureType().getName()))
-					return this.sequenceCharacteristicToExonDTO(seqChar);
-			}
-
-			throw new SearchServiceException("No SequenceCharacteristic matching for gDNA position " + position);
+			String sql = "SELECT f FROM SequenceRelation r JOIN r.sequenceFeature f WHERE (f.featureType.name = 'exon' OR f.featureType.name = 'intron') AND ((r.fmin <= :pos AND :pos <= r.fmax AND r.strand = '+1') OR (r.fmax <= :pos AND :pos <= r.fmin AND r.strand = '-1'))";
+			TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+			query.setParameter("pos", position);
+			List<SequenceCharacteristic> exonList = query.getResultList();
+			
+			if (exonList.size() != 1)
+				throw new SearchServiceException("Not exactly one exon matching for gDNA position " + position);
+			
+			return this.sequenceCharacteristicToExonDTO(exonList.get(0));
 		}
 		catch (Exception e)
 		{

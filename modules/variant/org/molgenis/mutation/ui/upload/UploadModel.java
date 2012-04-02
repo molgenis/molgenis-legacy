@@ -7,9 +7,12 @@
 
 package org.molgenis.mutation.ui.upload;
 
-import java.util.Date;
-
 import org.molgenis.framework.ui.EasyPluginModel;
+import org.molgenis.mutation.dto.MutationUploadDTO;
+import org.molgenis.mutation.dto.PatientSummaryDTO;
+import org.molgenis.mutation.ui.upload.form.BatchForm;
+import org.molgenis.mutation.ui.upload.form.MutationForm;
+import org.molgenis.mutation.ui.upload.form.PatientForm;
 
 /**
  * UploadModel takes care of all state and it can have helper methods to query the database.
@@ -18,20 +21,76 @@ import org.molgenis.framework.ui.EasyPluginModel;
  */
 public class UploadModel extends EasyPluginModel
 {
-	//a system veriable that is needed by tomcat
-	private static final long serialVersionUID = 1L;
-	//this string can be referenced from UploadView.ftl template as ${model.helloWorld}
-	public String helloWorld = "hello World";
-	//this date can be referenced from UploadView.ftl template as ${model.date}
-	public Date date = new Date();
-	
-	//another example, you can also use getInvestigations() and setInvestigations(...)
-	//public List<Investigation> investigations = new ArrayList<Investigation>();
+	private static final long serialVersionUID = -352089187099258661L;
+
+	private String action;
+	private MutationUploadDTO mutationUploadVO;
+	private PatientSummaryDTO patientSummaryVO;
+	private int referer ; // referer for patient.mutation{1,2} => 1 or 2, 0 initially
+
+	private BatchForm batchForm;
+	private PatientForm patientForm;
+	private MutationForm mutationForm;
 
 	public UploadModel(Upload controller)
 	{
-		//each Model can access the controller to notify it when needed.
 		super(controller);
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public MutationUploadDTO getMutationUploadVO() {
+		return mutationUploadVO;
+	}
+
+	public void setMutationUploadVO(MutationUploadDTO mutationUploadVO) {
+		this.mutationUploadVO = mutationUploadVO;
+	}
+
+	public PatientSummaryDTO getPatientSummaryVO() {
+		return patientSummaryVO;
+	}
+
+	public void setPatientSummaryVO(PatientSummaryDTO patientSummaryVO) {
+		this.patientSummaryVO = patientSummaryVO;
+	}
+
+	public int getReferer() {
+		return referer;
+	}
+
+	public void setReferer(int referer) {
+		this.referer = referer;
+	}
+
+	public BatchForm getBatchForm() {
+		return batchForm;
+	}
+
+	public void setBatchForm(BatchForm batchForm) {
+		this.batchForm = batchForm;
+	}
+
+	public PatientForm getPatientForm() {
+		return patientForm;
+	}
+
+	public void setPatientForm(PatientForm patientForm) {
+		this.patientForm = patientForm;
+	}
+
+	public MutationForm getMutationForm() {
+		return mutationForm;
+	}
+
+	public void setMutationForm(MutationForm mutationForm) {
+		this.mutationForm = mutationForm;
 	}
 	
 	

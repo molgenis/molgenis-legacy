@@ -30,14 +30,19 @@ import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 
 /**
  * Reads UploadBatch from Excel file.
  */
+@Component
 public class UploadBatchExcelReader
 {
-	public static final transient Logger logger = Logger.getLogger(UploadBatchExcelReader.class);
+	public final transient Logger logger = Logger.getLogger(UploadBatchExcelReader.class);
+	
+	@Autowired
 	private CsvToDatabase<Entity> uploadBatchCsvReader;
 
 	/**
@@ -111,7 +116,7 @@ public class UploadBatchExcelReader
 		cw.close();
 		return true;
 	}
-	
+
 	public void setUploadBatchCsvReader(CsvToDatabase<Entity> uploadBatchCsvReader)
 	{
 		this.uploadBatchCsvReader = uploadBatchCsvReader;
