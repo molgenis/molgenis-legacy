@@ -1,10 +1,10 @@
 #
 # =====================================================
 # $Id$
-# $URL: $
+# $URL$
 # $LastChangedDate$
 # $LastChangedRevision$
-# $LastChangedBy: $
+# $LastChangedBy$
 # =====================================================
 #
 
