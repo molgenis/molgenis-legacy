@@ -6,7 +6,8 @@
 
 package plugins.header;
 
-import javax.mail.MessagingException;
+import gcc.catalogue.Feedback;
+
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.DatabaseLogin;
@@ -88,6 +89,14 @@ public class catalogueHeader extends PluginModel<Entity>
 			this.getMessages().add(new ScreenMessage(feedback, true));
 			
 			System.out.println("Email : " + admin.getEmail()+ "Feedback >>>"+ feedback);
+			
+			//save the feedback message in DB
+			Feedback f = new Feedback(); 
+			
+			f.setFeedback(feedback);
+			f.setName(name);
+			
+			db.add(f);
 		}
 		
 		if ("resetFeedbackForm".equals(request.getAction())) {

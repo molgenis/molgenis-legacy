@@ -14,34 +14,27 @@
 		<!-- plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" 
 			/ -->
 
-		<plugin name="catalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin"
-			label="Welcome" />
+		<plugin name="catalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" />
 
-		<plugin name="catalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin"
-			label="Search variables" />
+		<plugin name="catalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Search variables" />
+		<!-- plugin name="Search" type="plugins.Search.Search" label="Search" /> -->
 
-		<form name="investigation" entity="Investigation" label="Study details"
-			compact_view="name,description" hide_fields="accession">
+
+		<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
 			<menu name="InvestigationMenu">
-				<form name="measurement" entity="Measurement" label="Measurements"
-					hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
-				<form name="protocol" entity="Protocol" label="Protocols"
-					compact_view="Name,Features" hide_fields="ontologyReference,Investigation,TargetFilter">
+				<form name="measurement" entity="Measurement" label="Measurements" hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+				<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="ontologyReference,Investigation,TargetFilter">
 					<form name="ProtocolDocuments" entity="ProtocolDocument" />
 				</form>
 				<form name="PermittedValues" entity="Category" />
 			</menu>
 		</form>
 
-		<form name="MySelections" entity="ShoppingCart" label="My selections"
-			view_type="list">
-			<form name="SelectionMeasurement" entity="Measurement" label="Measurements"
-				readonly="true"
-				hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+		<form name="MySelections" entity="ShoppingCart" label="My selections" view_type="list">
+			<form name="SelectionMeasurement" entity="Measurement" label="Measurements"	readonly="true" hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
 		</form>
 
-		<plugin name="Request" type="plugins.requestData.LifeLinesRequest"
-			label="Submit data request" />
+		<plugin name="Request" type="plugins.requestData.LifeLinesRequest" label="Submit data request" />
 
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
 			<form name="mappingMeasurement" entity="MappingMeasurement"
@@ -59,6 +52,8 @@
 		<menu name="Admin">
 			<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" 
 				label="Protocols" /> -->
+			<!--<plugin name="AdminIndexes" type="plugins.Search.AdminIndexes" label="Admin Indexes" />-->
+			
 			<form name="Requests" entity="LifeLinesRequest" />
 			<menu name="ImportData" label="Import Data">
 				<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin"

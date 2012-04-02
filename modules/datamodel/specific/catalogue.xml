@@ -23,6 +23,12 @@
 			<field name="dataType" type="enum" default="pairingrule"
 				enum_options="[pairingrule, algorithm]" description="Choose if the entity is pairingrule or algorithm" />
 		</entity>
+		
+		<entity name="feedback" label="Feedback" >
+			<field name="id" type="autoid" description="automatically generated id" />
+			<field name="feedback" type="string" nillable="true" />
+			<field name="name" type="string" nillable="true" />
+		</entity>
 
 		<!-- <entity name="datashapermeasurement"> <description>This entity includes 
 			the dictionary from lifelines </description> <field name="id" type="autoid" 
