@@ -506,10 +506,12 @@ public class Worksheet
 						String value = ls.get(0);
 						for (int i = 1; i < ls.size(); i++)
 						{
-							if (value != null && !value.equalsIgnoreCase(ls.get(i)) || value == null && ls.get(i) != null)
-							{
-								throw new RuntimeException("Cannot reduce field " + rfield + " because it contains different values!");
-							}
+							 //if ((value != null && !value.equalsIgnoreCase(ls.get(i))) || (value == null && ls.get(i) != null))
+							 if (value != null && !value.equalsIgnoreCase(ls.get(i)) || value == null && ls.get(i) != null)
+							 {
+								 int j = i + 1;
+								 throw new RuntimeException("Cannot reduce field " + rfield + " because it contains different values!" + " Value 1: " + value + " is not the same as value " + j + ": " + ls.get(i));
+							 }
 						}
 
 						// reduce to one value
