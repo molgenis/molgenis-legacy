@@ -88,8 +88,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	public void handleRequest(Database db, Tuple request) {
 
-		int a = 10;
-
 		try {
 
 			if ("chooseInvestigation".equals(request.getAction())) {
