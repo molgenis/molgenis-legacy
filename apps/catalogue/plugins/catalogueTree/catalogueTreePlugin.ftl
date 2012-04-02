@@ -1,4 +1,6 @@
 <#macro plugins_catalogueTree_catalogueTreePlugin screen>
+
+
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -7,6 +9,8 @@
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
+	<input type="hidden" name="DemoName" id="DemoName" value="%= demoName %">
+	
 <!-- this shows a title and border -->
 
 

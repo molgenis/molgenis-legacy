@@ -2,6 +2,7 @@ package plugins.catalogueTree;
 
 import gcc.catalogue.ShoppingCart;
 
+import java.awt.Component;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.Icon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.text.DateFormatter;
 
 import org.molgenis.framework.db.Database;
@@ -84,6 +88,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	public void handleRequest(Database db, Tuple request) {
 
+		int a = 10;
+
 		try {
 
 			if ("chooseInvestigation".equals(request.getAction())) {
@@ -95,13 +101,22 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			} else if ("DownloadMeasurements".equals(request.getAction())) {
 
+				// a jframe here isn't strictly necessary, but it makes the example a little more real
+			    JFrame frame = new JFrame("Save Selection");
+			    String selectionName = JOptionPane.showInputDialog(frame, "Please insert a name for your selection.");
+
+			    // if they press Cancel, 'name' will be null
+			    System.out.printf("The selection's name is '%s'.\n", selectionName);
+			    
+
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 				Date dat = new Date();
 				String dateOfDownload = dateFormat.format(dat);
 				System.out.println("selected investigaton >>>> "+  selectedInvestigation);
 				System.out.println("request >>" + request);
-				this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload);
+				this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, selectionName);
 
+				
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
 				String measurementName = request.getString("measurementName"); 
@@ -789,12 +804,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * @param request
 	 * @param selectedInvestigation
 	 * @param dateOfDownload
+	 * @param selectionName 
 	 * @throws DatabaseException
 	 * @throws IOException
 	 */
-	private void addMeasurementsForDownload(Database db, Tuple request,
-			String selectedInvestigation, String dateOfDownload)
-			throws DatabaseException, IOException {
+	private void addMeasurementsForDownload(Database db, Tuple request, String selectedInvestigation, String dateOfDownload, String selectionName) throws DatabaseException, IOException {
 
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement
@@ -827,7 +841,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				// m.getId());
 			}
 
-			// REWRITE SO USERS CAN HAVE MULTIPLE SHOPPINGCARTS
+			// REWRITE SO USERS CAN HAVE MULTIPLE SHOPPINGCARTS-- there are no shopping carts any more . 
 
 			// Query<ShoppingCart> q = db.query(ShoppingCart.class);
 			// q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS,
@@ -838,12 +852,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			List<ShoppingCart> result = new ArrayList<ShoppingCart>();// q.find();
 
 			if (result.isEmpty()) {
-				String shoppingCartName = this.getLogin().getUserName() + "_"
-						+ System.currentTimeMillis();
+				//String shoppingCartName = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
 
 				// Add to database
 				ShoppingCart shoppingCart = new ShoppingCart();
-				shoppingCart.setName(shoppingCartName);
+				String shoppingCartName = selectionName;
+				shoppingCart.setName(shoppingCartName );
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				shoppingCart.setUserID(this.getLogin().getUserName());
