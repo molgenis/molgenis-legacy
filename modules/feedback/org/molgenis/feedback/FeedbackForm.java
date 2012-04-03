@@ -1,5 +1,7 @@
 package org.molgenis.feedback;
 
+import gcc.catalogue.Feedback;
+
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.auth.MolgenisUser;
@@ -54,8 +56,20 @@ public class FeedbackForm extends PluginModel<Entity>
 				ses.email("New feedback on "+appName+"", feedback, admin.getEmail(), true);
 				
 				this.getMessages().add(new ScreenMessage(feedback, true));
+				
+				feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName() + 
+				") sent:\n\n" + request.getString("feedback") + "\n\nabout: " + request.getString("plugin");
+		
+		
+				//save the feedback message in DB
+				Feedback f = new Feedback(); 
+				
+				f.setFeedback(feedback);
+				f.setName(name);
+				
+				db.add(f);
 			}
-			
+					
 			if ("resetFeedbackForm".equals(request.getAction())) {
 				feedback = null;
 			}
