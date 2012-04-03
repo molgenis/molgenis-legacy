@@ -20,8 +20,8 @@ public class Search extends SearchPlugin
 	{
 		super(name, parent);
 		this.getModel().getmBrowseVO().getGenePanel().setShowNames(false);
-		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
-		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
+		this.getModel().setPatientPager("res/mutation/mvid/patientPager.jsp");
+		this.getModel().setMutationPager("res/mutation/mvid/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
 	}
 	
