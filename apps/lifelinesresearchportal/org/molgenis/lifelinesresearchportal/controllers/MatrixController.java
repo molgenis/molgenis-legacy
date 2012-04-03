@@ -27,6 +27,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.lifelinesresearchportal.models.MatrixModel;
+import org.molgenis.lifelinesresearchportal.models.PhenoMatrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.Utils.CsvExporter;
 import org.molgenis.matrix.Utils.ExcelExporter;
@@ -54,7 +55,7 @@ public class MatrixController extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	private MatrixModel<ObservationTarget, Measurement, ObservedValue> matrix;
+	private PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix;
 
 	private EntityManager em;
 
@@ -312,7 +313,7 @@ public class MatrixController extends HttpServlet
 		}
 	}
 
-	public void renderJsonTable(MatrixModel<ObservationTarget, Measurement, ObservedValue> matrix, PrintWriter outWriter)
+	public void renderJsonTable(PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix, PrintWriter outWriter)
 			throws Exception
 	{
 		List<Object[]> records = matrix.getTypedValues();
@@ -455,7 +456,7 @@ public class MatrixController extends HttpServlet
 		out.flush();
 	}
 
-	private static void applyFiltersToMatrix(MatrixModel<ObservationTarget, Measurement, ObservedValue> matrix,
+	private static void applyFiltersToMatrix(PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix,
 			String filters)
 	{
 		if (StringUtils.isNotEmpty(filters))

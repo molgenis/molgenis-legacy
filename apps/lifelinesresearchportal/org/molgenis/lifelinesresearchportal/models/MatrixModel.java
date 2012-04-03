@@ -159,17 +159,18 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 		}
 	}
 
-	public List<Measurement> getColHeaders() throws MatrixException
+	@Override
+	public List<C> getMeasurements() 
 	{
-		final List<Measurement> result = new ArrayList<Measurement>();
-		List<Column> columns = getColumns();
+		final List<C> result = new ArrayList<C>();
+		final List<Column> columns = getColumns();
 		CollectionUtils.forAllDo(columns, new Closure()
 		{
 			@Override
 			public void execute(Object column)
 			{
 				Column c = (Column) column;
-				result.add(c.getMeasurement());
+				result.add((C) c.getMeasurement());
 			}
 		});
 		return result;

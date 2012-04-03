@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.hibernate.ScrollableResults;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.pheno.Measurement;
@@ -13,7 +14,6 @@ import org.molgenis.protocol.Protocol;
 
 public interface PhenoMatrix<R extends ObservationTarget, C extends Measurement, V extends ObservedValue>
 {
-
 	public abstract Integer getRowCount() throws MatrixException;
 
 	public abstract int getRowLimit();
@@ -41,4 +41,11 @@ public interface PhenoMatrix<R extends ObservationTarget, C extends Measurement,
 
 	public abstract Protocol getSortProtocol();
 
+	public abstract void addCondition(int protocolId, int measurementId, String op, Operator operator, String value);
+
+	public abstract List<Object[]> getTypedValues() throws MatrixException;
+
+	public List<C> getMeasurements();
+	
+//	public abstract List<Column> getColHeaders();
 }
