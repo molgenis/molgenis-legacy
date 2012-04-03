@@ -18,6 +18,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.lifelinesresearchportal.backend.PhenoMatrixViewBackend;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.PhenoMatrix;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.sqlbackend.Backend;

@@ -13,7 +13,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.lifelinesresearchportal.models.MatrixModel;
-import org.molgenis.lifelinesresearchportal.models.PhenoMatrix;
+import org.molgenis.matrix.PhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.sqlbackend.Backend;
 import org.molgenis.matrix.component.sqlbackend.BackendUtils;
