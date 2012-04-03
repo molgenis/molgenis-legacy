@@ -9,11 +9,7 @@
 #
 
 #MOLGENIS walltime=20:00:00 nodes=1 cores=1 mem=10
-#FOREACH run
-
-#
-# Check the reads of the input file.
-#
+#FOREACH flowcell, lane
 
 #
 # For each lane demultiplex rawdata.
@@ -31,15 +27,15 @@
 		#
 		${demultiplexscript} --bcs '${csv(barcode)}' \
 		--mms 1 \
-		--mpr1 ${fq.gz} \
-		--dmr1 '${csv(fq.gz_barcode)}' \
-		--ukr1 ${fq.gz_discarded} \
+		--mpr1 ${fq_gz} \
+		--dmr1 '${csv(fq_gz_barcode)}' \
+		--ukr1 ${fq_gz_discarded} \
 		>> ${runIntermediateDir}/demultiplex.log
 		
 		#
 		# Read count of the input file.
 		#
-		reads_in_1=$(gzip -cd ${fq.gz} | wc -l)
+		reads_in_1=$(gzip -cd ${fq_gz} | wc -l)
 		
 		#
 		# Read count of the output file.
@@ -50,13 +46,23 @@
 			#
 			# Calculate MD5Sums for the demultiplexed, uncompressed FastQ files.
 			#
-			gzip -cd ${file_to_check}${gz_extension} | md5sum | sed 's/ -/${file_to_check}/' > ${file_to_check}${md5sum_extension}
+			gzip -cd ${file_to_check}${gz_extension} | md5sum | sed 's/ -/ ${file_to_check}/' > ${file_to_check}${md5sum_extension}
 			
 			#
 			# Update summed read count of output files.
 			#
 			summed_reads_out_1=$(( $summed_reads_out_1 + $(gzip -cd ${file_to_check}${gz_extension} | wc -l) ))
 		</#list>
+		
+		#
+		# Calculate MD5Sum for the discarded, uncompressed FastQ file.
+		#
+		gzip -cd ${fq_gz_discarded} | md5sum | sed 's/ -/ ${fq_discarded}/' > ${fq_discarded}${md5sum_extension}
+		
+		#
+		# Update summed read count of output files with the # discarded reads.
+		#		
+		summed_reads_out_1=$(( $summed_reads_out_1 + $(gzip -cd ${fq_gz_discarded} | wc -l) ))
 		
 		#
 		# Flush disk caches to disk to make sure we don't loose any demultiplexed data 
@@ -87,19 +93,19 @@
 		#
 		${demultiplexscript} --bcs '${csv(barcode)}' \
 		--mms 1 \
-		--mpr1 ${fq.gz_1} \
-		--mpr2 ${fq.gz_2} \
-		--dmr1 '${csv(fq.gz_barcode_1)}' \
-		--dmr2 '${csv(fq.gz_barcode_2)}' \
-		--ukr1 ${fq.gz_discarded_1} \
-		--ukr2 ${fq.gz_discarded_2} \
+		--mpr1 ${fq_gz_1} \
+		--mpr2 ${fq_gz_2} \
+		--dmr1 '${csv(fq_gz_barcode_1)}' \
+		--dmr2 '${csv(fq_gz_barcode_2)}' \
+		--ukr1 ${fq_gz_discarded_1} \
+		--ukr2 ${fq_gz_discarded_2} \
 		>> ${runIntermediateDir}/demultiplex.log 
 		
 		#
 		# Read count of the input files.
 		#
-		reads_in_1=$(gzip -cd ${fq.gz_1} | wc -l)
-		reads_in_2=$(gzip -cd ${fq.gz_2} | wc -l)
+		reads_in_1=$(gzip -cd ${fq_gz_1} | wc -l)
+		reads_in_2=$(gzip -cd ${fq_gz_2} | wc -l)
 		
 		#
 		# Read count of the output file.
@@ -111,7 +117,7 @@
 			#
 			# Calculate MD5Sums for the demultiplexed, uncompressed FastQ files.
 			#
-			gzip -cd ${file_1_to_check}${gz_extension} | md5sum | sed 's/ -/${file_1_to_check}/' > ${file_1_to_check}${md5sum_extension}
+			gzip -cd ${file_1_to_check}${gz_extension} | md5sum | sed 's/ -/ ${file_1_to_check}/' > ${file_1_to_check}${md5sum_extension}
 			#
 			# Update summed read count of output files.
 			#
@@ -121,12 +127,24 @@
 			#
 			# Calculate MD5Sums for the demultiplexed, uncompressed FastQ files.
 			#
-			gzip -cd ${file_2_to_check}${gz_extension} | md5sum | sed 's/ -/${file_2_to_check}/' > ${file_2_to_check}${md5sum_extension}
+			gzip -cd ${file_2_to_check}${gz_extension} | md5sum | sed 's/ -/ ${file_2_to_check}/' > ${file_2_to_check}${md5sum_extension}
 			#
 			# Update summed read count of output files.
 			#
 			summed_reads_out_2=$(( $summed_reads_out_2 + $(gzip -cd ${file_2_to_check}${gz_extension} | wc -l) ))
 		</#list>
+		
+		#
+		# Calculate MD5Sum for the discarded, uncompressed FastQ file.
+		#
+		gzip -cd ${fq_gz_discarded_1} | md5sum | sed 's/ -/ ${fq_discarded_1}/' > ${fq_discarded_1}${md5sum_extension}
+		gzip -cd ${fq_gz_discarded_2} | md5sum | sed 's/ -/ ${fq_discarded_2}/' > ${fq_discarded_2}${md5sum_extension}
+		
+		#
+		# Update summed read count of output files with the # discarded reads.
+		#		
+		summed_reads_out_1=$(( $summed_reads_out_1 + $(gzip -cd ${fq_gz_discarded_1} | wc -l) ))
+		summed_reads_out_2=$(( $summed_reads_out_2 + $(gzip -cd ${fq_gz_discarded_2} | wc -l) ))
 		
 		#
 		# Flush disk caches to disk to make sure we don't loose any demultiplexed data 
