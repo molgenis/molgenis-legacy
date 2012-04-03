@@ -8,10 +8,10 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.ScrollableResults;
+import org.molgenis.lifelinesresearchportal.models.PhenoMatrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.Column.ColumnType;
-import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -23,7 +23,7 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 {
 	private SPSSWriter 		d_spssWriter;
 
-	public SPSSExporter(SliceablePhenoMatrixMV<R, C, V> matrix, OutputStream os) throws MatrixException {
+	public SPSSExporter(PhenoMatrix<R, C, V> matrix, OutputStream os) throws MatrixException {
 		super(matrix, os);
 		initWriter();
 	}
@@ -91,15 +91,14 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 
 	private void writeColHeaders(OutputStream os) throws IOException, NumberFormatException, MatrixException {
 		int columnIdx = 0;
-		
-		
-		for (C colHeader : (List<C>)matrix.getColHeaders()) {			
-			writeColHeader(colHeader, columnIdx);
+				
+		for (Column column : matrix.getColumns()) {			
+			writeColHeader(column.getMeasurement(), columnIdx);
 			++columnIdx;
 		}
 	}
 
-	private void writeColHeader(C colHeader, int columnIdx) throws IOException {
+	private void writeColHeader(Measurement colHeader, int columnIdx) throws IOException {
 		String dataType = colHeader.getDataType();
 		String colName = colHeader.getName();
 		
@@ -141,9 +140,12 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 	@Override
 	public String getFileExtension()
 	{
-		// TODO Auto-generated method stub
+		return ".sav";
+	}
+	
+	@Override
+	public String getMimeType()
+	{
 		return null;
 	}
-
-
 }

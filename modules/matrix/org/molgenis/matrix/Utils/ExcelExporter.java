@@ -20,6 +20,8 @@ import jxl.write.WriteException;
 
 import org.hibernate.ScrollableResults;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.lifelinesresearchportal.models.MatrixModel;
+import org.molgenis.lifelinesresearchportal.models.PhenoMatrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
@@ -37,7 +39,7 @@ public class ExcelExporter<R extends ObservationTarget, C extends Measurement, V
 	private final WritableWorkbook workbook;
 	private final WritableSheet sheet;
 	
-	public ExcelExporter(SliceablePhenoMatrixMV<R, C, V> matrix, OutputStream os) throws WriteException, IOException {
+	public ExcelExporter(PhenoMatrix<R, C, V> matrix, OutputStream os) throws WriteException, IOException {
 		super(matrix, os);		
 		d_headerFormat = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD));
 		d_headerFormat.setWrap(false);
@@ -55,7 +57,7 @@ public class ExcelExporter<R extends ObservationTarget, C extends Measurement, V
 		try {
 			// Write headers
 			int colIdx = 0;
-			for (C colHeader : (List<C>)matrix.getColHeaders())
+			for (Measurement colHeader : matrix.getMeasurements())
 			{
 				Label f = new Label(colIdx, 0, colHeader.getName(), d_headerFormat);
 				sheet.addCell(f);
@@ -141,7 +143,12 @@ public class ExcelExporter<R extends ObservationTarget, C extends Measurement, V
 	@Override
 	public String getFileExtension()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return ".xls";
+	}
+	
+	@Override
+	public String getMimeType()
+	{
+		return "application/excel";
 	}
 }
