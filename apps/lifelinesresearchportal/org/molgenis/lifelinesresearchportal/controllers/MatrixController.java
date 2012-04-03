@@ -36,10 +36,13 @@ import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.HandleException;
+
+import com.mindbright.jca.security.UnsupportedOperationException;
 
 import app.DatabaseFactory;
 import app.ExcelExport;
@@ -100,6 +103,7 @@ public class MatrixController extends HttpServlet
 			{
 				if (StringUtils.equals(operation, "getColModel"))
 				{
+					response.setContentType("text/javascript");
 					getColModel(response.getWriter(), matrix.getMeasurementsByProtocol());
 				}
 				else if (StringUtils.equals(operation, "getColumnNames"))
@@ -133,14 +137,21 @@ public class MatrixController extends HttpServlet
 	{ "unchecked", "rawtypes" })
 	private LinkedHashMap<Protocol, List<Measurement>> getSelectedFromTree(String selectedColumnsPar)
 	{
-		LinkedHashMap<Protocol, List<Measurement>> selectedMeasurementByProtocol = getSelectedMeasurements(em,
+		final LinkedHashMap<Protocol, List<Measurement>> selectedMeasurementByProtocol = getSelectedMeasurements(em,
 				selectedColumnsPar);
 		if (selectedMeasurementByProtocol.isEmpty())
 		{
-			// first time only, when data is loadeded!
-			Protocol firstProtocol = investigation.getInvestigationProtocolCollection().iterator().next();
-			selectedMeasurementByProtocol = new LinkedHashMap<Protocol, List<Measurement>>();
-			selectedMeasurementByProtocol.put(firstProtocol, (List<Measurement>) (List) firstProtocol.getFeatures());
+			final Protocol patientProtocol = em.createQuery("SELECT p FROM Protocol p WHERE p.name = :name AND p.investigation = :investigation", Protocol.class)
+					.setParameter("name", "PATIENT")
+					.setParameter("investigation", investigation)
+					.getSingleResult();
+			
+			final List<ObservableFeature> features = em.createQuery("SELECT m FROM Protocol p JOIN p.features m WHERE p = :protocol AND m.name <> 'PA_ID'", ObservableFeature.class)
+					.setParameter("protocol", patientProtocol)
+					.getResultList();
+			
+			final List<Measurement> measurements = (List<Measurement>) (List) features;
+			selectedMeasurementByProtocol.put(patientProtocol, measurements);
 		}
 		return selectedMeasurementByProtocol;
 	}
@@ -274,18 +285,18 @@ public class MatrixController extends HttpServlet
 				Exporter<ObservationTarget, Measurement, ObservedValue> exporter = null;
 				if (exportType.equals("Excel"))
 				{
-//					exporter = new ExcelExporter<ObservationTarget, Measurement, ObservedValue>(matrix,
-//							response.getOutputStream());
+					exporter = new ExcelExporter<ObservationTarget, Measurement, ObservedValue>(matrix,
+							response.getOutputStream());
 				}
 				else if (exportType.equals("Spss"))
 				{
-//					exporter = new SPSSExporter<ObservationTarget, Measurement, ObservedValue>(matrix,
-//							response.getOutputStream());
+					exporter = new SPSSExporter<ObservationTarget, Measurement, ObservedValue>(matrix,
+							response.getOutputStream());
 				}
 				else if (exportType.equals("Csv"))
 				{
-//					exporter = new CsvExporter<ObservationTarget, Measurement, ObservedValue>(matrix,
-//							response.getOutputStream());
+					exporter = new CsvExporter<ObservationTarget, Measurement, ObservedValue>(matrix,
+							response.getOutputStream());
 				}
 
 				download(request, response, exporter, exportVisable);
@@ -315,14 +326,12 @@ public class MatrixController extends HttpServlet
 		int rowCount = matrix.getRowCount();
 		int rowOffset = matrix.getRowOffset();
 
-		// int currentPage = (int) Math.ceil((float) rowOffset / (float)
-		// rowLimit);
 		int totalPages = (int) Math.ceil((float) rowCount / (float) rowLimit);
 
 		out.append(String.format("<page>%s</page>", rowOffset));
 		out.append(String.format("<total>%s</total>", totalPages));
 		out.append(String.format("<records>%s</records>", rowCount));
-		// print rowHeader + colValues
+
 		for (final Object[] rec : records)
 		{
 			final String rowId = rec[0].toString();
@@ -341,7 +350,7 @@ public class MatrixController extends HttpServlet
 			out.append("</row>");
 		}
 		out.append("</rows>");
-		System.out.println(out.toString());
+
 		outWriter.append(out.toString());
 		outWriter.flush();
 	}
@@ -471,7 +480,11 @@ public class MatrixController extends HttpServlet
 
 					String op = (String) searchRule.get("op");
 					String value = (String) searchRule.get("data");
-					matrix.addCondition(protocolId, measurementId, op, Operator.EQUALS, value);
+					
+					
+					
+					Operator operator = getOperator(op);
+					matrix.addCondition(protocolId, measurementId, op, operator, value);
 				}
 				System.out.println(groupOp);
 				System.out.println(rules);
@@ -481,6 +494,25 @@ public class MatrixController extends HttpServlet
 				Logger.getLogger(MatrixController.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
+	}
+
+	private static Operator getOperator(String operator)
+	{
+		operator = operator.toLowerCase();
+		if(operator.equals("eq")) {
+			return Operator.EQUALS;
+		} else if(operator.equals("ne")) {
+			throw new UnsupportedOperationException("operator not equals is not implemented!");
+		} else if(operator.equals("lt")) {
+			return Operator.LESS;
+		} else if(operator.equals("le")) {
+			return Operator.LESS_EQUAL;
+		} else if(operator.equals("gt")) {
+			return Operator.GREATER;
+		} else if(operator.equals("ge")) {
+			return Operator.GREATER_EQUAL;
+		}
+		throw new IllegalArgumentException(String.format("unkown operator: %s", operator));
 	}
 
 	private static void jsTreeJson(HttpServletResponse response,
@@ -535,7 +567,10 @@ public class MatrixController extends HttpServlet
 		ServletOutputStream op = resp.getOutputStream();
 		ServletContext context = getServletConfig().getServletContext();
 		String mimetype = context.getMimeType(filename);
-
+		if(StringUtils.isEmpty(mimetype)) {
+			exporter.getMimeType();
+		}
+		
 		resp.setContentType((mimetype != null) ? mimetype : "application/octet-stream");
 		//resp.setContentLength((int) f.length());
 		resp.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");

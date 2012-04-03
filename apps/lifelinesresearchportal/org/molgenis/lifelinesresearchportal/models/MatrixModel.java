@@ -16,11 +16,11 @@ import org.hibernate.Session;
 import org.hibernate.ejb.EntityManagerImpl;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.lifelinesresearchportal.backend.PhenoMatrixViewBackend;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.sqlbackend.Backend;
-import org.molgenis.matrix.component.sqlbackend.EAVViewBackend;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
@@ -52,8 +52,10 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 	private final EntityManager em;
 	private final Investigation investigation;
 	private final LinkedHashMap<Protocol, List<Measurement>> measurementsByProtocol;
-	private final Map<Measurement, List<Category>> categoryByMeasurement = new HashMap<Measurement, List<Category>>();
-
+	
+//	private final Map<Measurement, List<Category>> categoryByMeasurement = new HashMap<Measurement, List<Category>>();
+	private final Map<Measurement, Map<String, Category>> categoryByCode = new HashMap<Measurement, Map<String,Category>>();
+	
 	public final String JOIN_COLUMN = "PA_ID";
 
 	private Backend backend;
@@ -63,9 +65,9 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 	private Protocol sortProtocol;
 	private Measurement sortMeasurement;
 	private String sortOrder;
+	private boolean displayLabels = true; //display category labels
+	private boolean formatDate = true;
 	
-	private Column pkColumn;
-
 	public MatrixModel(EntityManager em, Investigation investigation,
 			LinkedHashMap<Protocol, List<Measurement>> measurementByProtocol) throws MatrixException
 	{
@@ -94,8 +96,10 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 			}
 		}
 		
+		
+		PhenoMatrix<ObservationTarget, Measurement, ObservedValue> m = (PhenoMatrix<ObservationTarget, Measurement, ObservedValue>) this;
 		//this.backend = new EAVViewBackend(null, VIEW_PREFIX, PRIMARY_KEY_TABLE);
-		//this.backend = new EAVViewBackend(this, em, VIEW_PREFIX, PRIMARY_KEY_TABLE);
+		this.backend = new PhenoMatrixViewBackend(em, m, VIEW_PREFIX, PRIMARY_KEY_TABLE);
 		try
 		{
 			loadCategories();
@@ -107,22 +111,33 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 	}
 
 	private void loadCategories() throws DatabaseException {
-		String qlString = "SELECT m FROM Measurement m JOIN FETCH m.categories c WHERE m.investigation = :investigation";
-		List<Measurement> measCats = em.createQuery(qlString, Measurement.class)
+		final String qlString = "SELECT m FROM Measurement m JOIN FETCH m.categories c WHERE m.investigation = :investigation";
+		final List<Measurement> measCats = em.createQuery(qlString, Measurement.class)
 					.setParameter("investigation", investigation)
 					.getResultList();
 		
-		for (Measurement m : measCats)
+		for (final Measurement m : measCats)
 		{
-			for(Category c : m.getCategories()) {
-				if(categoryByMeasurement.containsKey(m)) {
-					categoryByMeasurement.get(m).add(c);
-				} else {				
-					List<Category> cats = new ArrayList<Category>();
-					cats.add(c);
-					categoryByMeasurement.put(m, cats);
+			for (final Category c : m.getCategories())
+			{
+				if(categoryByCode.containsKey(m)) {
+					categoryByCode.get(m).put(c.getCode_String(), c);
+				} else {
+					final HashMap<String, Category> codeCatMap = new HashMap<String, Category>(m.getCategories().size());
+					codeCatMap.put(c.getCode_String().toLowerCase(), c);
+					categoryByCode.put(m, codeCatMap);
 				}
 			}
+			
+//			for(Category c : m.getCategories()) {
+//				if(categoryByMeasurement.containsKey(m)) {
+//					categoryByMeasurement.get(m).add(c);
+//				} else {				
+//					List<Category> cats = new ArrayList<Category>();
+//					cats.add(c);
+//					categoryByMeasurement.put(m, cats);
+//				}
+//			}
 		}
 	}
 
@@ -228,18 +243,35 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 	@SuppressWarnings("unchecked")
 	public List<Object[]> getTypedValues() throws MatrixException
 	{
-		List<Measurement> colMeasurements = new ArrayList<Measurement>();
-		for (Entry<Protocol, List<Measurement>> entry : measurementsByProtocol.entrySet())
-		{
-			for (Measurement value : entry.getValue())
-			{
-				colMeasurements.add(value);
+		final String sql = createQuery();
+		System.out.println(sql);
+		
+		final List<Object[]> result = em.createNativeQuery(sql)
+			.setMaxResults(getRowLimit())
+			.setFirstResult(getRowOffset())
+			.getResultList();
+		
+		
+		final List<Column> column = getColumns();
+		for(final Object[] row : result) {
+			for(int iCol = 0; iCol < row.length-1; ++iCol) {
+				if(row[iCol] != null) {
+					final Measurement m = column.get(iCol).getMeasurement();
+					
+					if(displayLabels) {
+						row[iCol] =	getCategoryLabel(m, row[iCol].toString());
+					}
+					
+					if(formatDate && column.get(iCol).getType() == Column.ColumnType.Date) {
+						row[iCol] = row[iCol].toString().split(" ")[0];
+					}					
+				}
 			}
 		}
-
-		String sql = createQuery();
-		System.out.println(sql);
-		return em.createNativeQuery(sql).setMaxResults(getRowLimit()).setFirstResult(getRowOffset()).getResultList();
+		
+		
+			
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -265,6 +297,31 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 		return sr;
 	}
 
+	
+	private String getCategoryLabel(final Measurement measurement, final String value) {
+		final Map<String, Category> codeCat = categoryByCode.get(measurement);
+		if(codeCat != null) {
+			final Category category = codeCat.get(value.toLowerCase());
+			if(category != null) {
+				return category.getLabel();
+			} else {
+				return "unkown label!";
+			}
+		}
+		return value;
+
+		
+//		final Measurement measurement = colMeasurements.get(iCol);
+//		if(categoryByMeasurement.containsKey(measurement)) {
+//			for(Category category : categoryByMeasurement.get(measurement)) {
+//				if(category.getCode_String().equalsIgnoreCase(value)) {
+//					return category.getLabel();
+//				}
+//			}
+//		}
+//		return value;
+	}
+	
 	public Investigation getInvestigation()
 	{
 		return investigation;
