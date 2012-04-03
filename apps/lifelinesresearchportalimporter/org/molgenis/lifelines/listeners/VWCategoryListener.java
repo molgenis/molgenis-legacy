@@ -26,16 +26,20 @@ public class VWCategoryListener extends ImportTupleListener {
 	private final List<Category> categories = new ArrayList<Category>();
 	private final Investigation investigation;
 	private final boolean shareMeasurements;
+	private List<String> protocolsToImport;
 
 	public VWCategoryListener(Map<String, Protocol> protocols,
 			Investigation investigation, String name, Database db,
-			boolean shareMeasurements) {
+			boolean shareMeasurements, List<String> protocolsToImport) {
 		super(name, db);
+		
 
 		this.em = db.getEntityManager();
 		this.protocols = protocols;
 		this.investigation = investigation;
 		this.shareMeasurements = shareMeasurements;
+		
+		this.protocolsToImport = protocolsToImport;
 	}
 
 	final private HashSet<String> uniqueLabelWithinCode = new HashSet<String>();
@@ -43,7 +47,13 @@ public class VWCategoryListener extends ImportTupleListener {
 	@Override
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
 		String tableName = tuple.getString("TABNAAM");
-		Protocol protocol = protocols.get(tableName);
+		if(protocolsToImport != null) {
+			if(!protocolsToImport.contains(tableName.toUpperCase())) {
+				return;
+			}
+		}
+		
+		final Protocol protocol = protocols.get(tableName);
 		if(protocol == null) {
 			return;
 		}
@@ -53,13 +63,13 @@ public class VWCategoryListener extends ImportTupleListener {
 			fieldName = tableName + "_" + tuple.getString("VELD");
 		}
 
-		List<ObservableFeature> measurements = (List<ObservableFeature>) protocol.getFeatures();
-		List<ObservableFeature> filterMeasurements = filter(
+		final List<ObservableFeature> measurements = (List<ObservableFeature>) protocol.getFeatures();
+		final List<ObservableFeature> filterMeasurements = filter(
 				having(on(Measurement.class).getName(),
 						equalToIgnoringCase(fieldName)), measurements);
-		Measurement measurement = (Measurement) filterMeasurements.get(0);
+		final Measurement measurement = (Measurement) filterMeasurements.get(0);
 
-		Category category = new Category();
+		final Category category = new Category();
 		category.setInvestigation(investigation);
 		category.setCode_String(tuple.getString("VALLABELVAL"));
 		category.setLabel(tuple.getString("VALLABELABEL"));

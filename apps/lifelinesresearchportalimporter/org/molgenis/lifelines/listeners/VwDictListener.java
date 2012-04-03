@@ -36,12 +36,15 @@ public class VwDictListener extends ImportTupleListener {
 	private final Investigation investigation;
 	private final boolean shareMeasurements; 
 
-	private final EntityManager em; 
+	private final EntityManager em;
+
+	private final List<String> protocolsToImport; 
 	
-	public VwDictListener(Investigation investigation, String name, boolean shareMeasurements, Database db) {
+	public VwDictListener(final Investigation investigation, final String name, final boolean shareMeasurements, final Database db, List<String> protocolsToImport) {
 		super(name, db);
 		this.investigation = investigation;
 		this.shareMeasurements = shareMeasurements;
+		this.protocolsToImport = protocolsToImport;
 		
 		em = db.getEntityManager();
 		
@@ -53,6 +56,12 @@ public class VwDictListener extends ImportTupleListener {
 	public void handleLine(int line_number, Tuple tuple) throws Exception {
 		
 		String protocolName = tuple.getString("TABNAAM");
+		
+		if(protocolsToImport != null) {
+			if(!protocolsToImport.contains(protocolName.toUpperCase())) {
+				return;
+			}
+		}		
 		
 		//create new protocol if not yet known
 		Protocol p = protocols.get(protocolName);
@@ -71,7 +80,6 @@ public class VwDictListener extends ImportTupleListener {
 		} else {
 			measurmentName = protocolName + "_" +tuple.getString("VELD");	
 		}
-			
 		
 		Measurement m = null;
 		List<Measurement> ms = db.query(Measurement.class).eq(Measurement.NAME, measurmentName).find();

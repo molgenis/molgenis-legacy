@@ -7,10 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,14 +44,9 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-//import org.molgenis.util.CsvFileReader;
-//import org.molgenis.util.CsvReader;
-//import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
-import org.molgenis.util.CsvReaderListener;
 import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 import app.DatabaseFactory;
 import app.FillMetadata;
@@ -65,11 +60,13 @@ class Holder<T> {
 }
 
 public class OracleImporter {
-	public static void main(String[] args) throws Exception {
+	private static final String CHAR_ENCODING = "UTF-8";
+
+	public static void main(final String[] args) throws Exception {
 		Locale.setDefault(Locale.US);
 		PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
 		
-		final String inputPath = "/Users/jorislops/Desktop/lifelinesdata/ll2/";
+		final String inputPath = "/Users/jorislops/Desktop/LL Data/exadata/";
 
 		final Properties props = new Properties();
 		final FileInputStream in = new FileInputStream("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/db.properties");
@@ -80,8 +77,9 @@ public class OracleImporter {
 		final String username = props.getProperty("jdbc.username");
 		final String password = props.getProperty("jdbc.password");
 
-		long begin = System.currentTimeMillis();
-		new OracleImporter(inputPath, username, password, url);
+		final long begin = System.currentTimeMillis();
+		final List<String> protocolToLoad = Arrays.asList("PATIENT", "MEDICATIE");
+		new OracleImporter(inputPath, username, password, url, protocolToLoad);
 
 		long end = System.currentTimeMillis();
 		long time = (end - begin) / 1000;
@@ -105,15 +103,19 @@ public class OracleImporter {
 	private final Map<String, Integer> targetDBId = new HashMap<String, Integer>();
 	private final Map<String, Integer> measurementDBId = new HashMap<String, Integer>();
 	private final Map<Integer, Integer> protocolAppDBId = new HashMap<Integer, Integer>();
-
+	
+	private List<String> protocolsToImport = null;
+	
 	public OracleImporter(String path, String userName, String password,
-			String dbUrl) throws Exception {
+			String dbUrl, List<String> protocolsToImport) throws Exception {
 		this.path = path;
 		this.username = userName;
 		// this.outputPath = outputPath;
 
 		db = initDatabase(userName, password, dbUrl);
 		this.em = db.getEntityManager();
+		
+		this.protocolsToImport = protocolsToImport; 
 
 		inv = new Investigation();
 		inv.setName("Test" + new Date());
@@ -128,9 +130,15 @@ public class OracleImporter {
 			final String dbUrl) throws Exception {
 		final Map<String, Object> configOverrides = new HashMap<String, Object>();
 		configOverrides.put("hibernate.hbm2ddl.auto", "create-drop");
-		configOverrides.put("javax.persistence.jdbc.user", userName);
-		configOverrides.put("javax.persistence.jdbc.password", password);
-		configOverrides.put("javax.persistence.jdbc.url", dbUrl);
+		if(StringUtils.isNotEmpty(userName)) {
+			configOverrides.put("javax.persistence.jdbc.user", userName);
+		}
+		if(StringUtils.isNotEmpty(password)) {
+			configOverrides.put("javax.persistence.jdbc.password", password);
+		}
+		if(StringUtils.isNotEmpty(dbUrl)) {
+			configOverrides.put("javax.persistence.jdbc.url", dbUrl);
+		}
 
 		final Database database = DatabaseFactory.create(configOverrides);
 		FillMetadata.fillMetadata(database, false);
@@ -139,18 +147,16 @@ public class OracleImporter {
 
 	private void loadData() throws DatabaseException, FileNotFoundException,
 			Exception, IOException {
-
 		VwDictListener dicListener = new VwDictListener(inv, DICT,
-				SHARED_MEASUREMENTS, db);
-		CsvReader reader = new CsvFileReader(
-				new File(path + DICT + "_DATA_VIEW.csv"));
+				SHARED_MEASUREMENTS, db, protocolsToImport);
+		CsvReader reader = new CsvFileReader(new File(path + DICT + "_DATA_VIEW.csv"),  CHAR_ENCODING);
 		reader.parse(dicListener);
 		dicListener.commit();
 
 		// load categories
 		VWCategoryListener catListener = new VWCategoryListener(
-				dicListener.getProtocols(), inv, CATE, db, SHARED_MEASUREMENTS);
-		reader = new CsvFileReader(new File(path + CATE + "_DATA_VIEW.csv"));
+				dicListener.getProtocols(), inv, CATE, db, SHARED_MEASUREMENTS, protocolsToImport);
+		reader = new CsvFileReader(new File(path + CATE + "_DATA_VIEW.csv"), CHAR_ENCODING);
 		reader.parse(catListener);
 		catListener.commit();
 
@@ -169,6 +175,12 @@ public class OracleImporter {
 		
 		long beginTime = System.currentTimeMillis();
 		for (final Protocol protocol : dicListener.getProtocols().values()) {
+			if(protocolsToImport != null) {
+				if(!protocolsToImport.contains(protocol.getName().toUpperCase())) {
+					return;
+				}
+			}		
+			
 			System.out.println("loading data for Protocol: "
 					+ protocol.getName());
 
@@ -250,8 +262,7 @@ public class OracleImporter {
 			if (mViewCount.intValue() > 0) {
 				em.getTransaction().begin();
 				String dropView = String.format(
-						"DROP MATERIALIZED VIEW \"%s\".\"LL_VWM_%s\"", username
-								.toUpperCase(), protocol.getName()
+						"DROP MATERIALIZED VIEW \"LL_VWM_%s\"", protocol.getName()
 								.toUpperCase());
 				em.createNativeQuery(dropView).executeUpdate();
 				em.getTransaction().commit();
@@ -262,7 +273,7 @@ public class OracleImporter {
 
 			System.out.println("----------");
 			System.out.println(mview);
-			System.out.println("----------");
+			System.out.println("----------");	
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -279,15 +290,15 @@ public class OracleImporter {
 		au.com.bytecode.opencsv.CSVReader reader = new CSVReader(
 				new InputStreamReader(						
 						new FileInputStream(new File(path + fileName)), 
-						Charset.forName("UTF-16")
+						CHAR_ENCODING
 					)
 				);
 
 		@SuppressWarnings("deprecation")
 		final Connection conn = ((JpaDatabase) db).getConnection();
 		final PreparedStatement ps = conn
-				.prepareStatement("INSERT INTO OBSERVEDVALUE (TARGET, FEATURE, VALUE, PROTOCOLAPPLICATION, INVESTIGATION, DTYPE) "
-						+ "VALUES (?, ?, ?, ?, ?, ?)");
+				.prepareStatement("INSERT INTO OBSERVEDVALUE (TARGET, FEATURE, VALUE, PROTOCOLAPPLICATION, INVESTIGATION) "
+						+ "VALUES (?, ?, ?, ?, ?)");
 		((OraclePreparedStatement) ps).setExecuteBatch(50);
 		long beginTime = System.currentTimeMillis();
 
@@ -315,7 +326,7 @@ public class OracleImporter {
 				ps.setString(3, value);
 				ps.setInt(4, paId);
 				ps.setInt(5, inv.getId());
-				ps.setString(6, "ObservedValue");
+				//ps.setString(6, "ObservedValue");
 
 				ps.executeUpdate(); // JDBC queues this for later execution
 				if (batchCount % 50 == 0) {
@@ -332,41 +343,6 @@ public class OracleImporter {
 			recordCnt++;
 		}
 
-		// reader.parse( new CsvReaderListener() {
-		// private int batchCount = 0;
-		// private int recordCnt = 0;
-		//
-		// @Override
-		// public void handleLine(int line_number, Tuple tuple)
-		// throws Exception {
-		//
-		// final Integer paId = protocolAppDBId.get(recordCnt);
-		// final Integer targetId = targetDBId.get(tuple.getString("PA_ID"));
-		// for (final String fieldHeader : tuple.getFields()) {
-		// final int measurementId = measurementDBId.get(fieldHeader);
-		// final String value = tuple.getString(fieldHeader);
-		//
-		//
-		// ps.setInt(1, targetId);
-		// ps.setInt(2, measurementId);
-		// ps.setString(3, value);
-		// ps.setInt(4, paId);
-		// ps.setInt(5, inv.getId());
-		// ps.setString(6, "ObservedValue");
-		//
-		// ps.executeUpdate(); //JDBC queues this for later execution
-		// if(batchCount % 50 == 0) {
-		// ((OraclePreparedStatement)ps).sendBatch(); // JDBC sends the queued
-		// request
-		// System.out.println(String.format("Protocol: %s recordCnt: %d",
-		// protocol.getName(), recordCnt));
-		// }
-		// batchCount++;
-		//
-		// }
-		// recordCnt++;
-		// }
-		// });
 		((OraclePreparedStatement) ps).sendBatch(); // JDBC sends the queued
 													// request
 		conn.commit();
@@ -470,10 +446,19 @@ public class OracleImporter {
 			throws Exception {
 		final List<ObservationTarget> targets = new ArrayList<ObservationTarget>();
 		for (final Protocol protocol : protocols) {
+			if(protocolsToImport != null) {
+				if(!protocolsToImport.contains(protocol.getName().toUpperCase())) {
+					return;
+				}
+			}		
+						
 			final String fileName = getFileName(protocol);
 			System.out.println(fileName);
 			
-			au.com.bytecode.opencsv.CSVReader reader = new CSVReader(new FileReader(new File(path + fileName)));
+			
+			
+			final au.com.bytecode.opencsv.CSVReader reader = new CSVReader(
+					new InputStreamReader(new FileInputStream(path + fileName), CHAR_ENCODING));
 			
 			final Holder<Integer> paIdx = new Holder<Integer>(null);
 			getHeaderInfo(reader, paIdx); //process header, find paIdx
