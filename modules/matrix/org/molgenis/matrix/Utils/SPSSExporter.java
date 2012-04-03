@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.ScrollableResults;
-import org.molgenis.lifelinesresearchportal.models.PhenoMatrix;
+import org.molgenis.matrix.PhenoMatrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.Column.ColumnType;

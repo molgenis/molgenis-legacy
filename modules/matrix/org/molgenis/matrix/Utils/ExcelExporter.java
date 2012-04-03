@@ -20,11 +20,9 @@ import jxl.write.WriteException;
 
 import org.hibernate.ScrollableResults;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.lifelinesresearchportal.models.MatrixModel;
-import org.molgenis.lifelinesresearchportal.models.PhenoMatrix;
+import org.molgenis.matrix.PhenoMatrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.Column.ColumnType;
-import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
