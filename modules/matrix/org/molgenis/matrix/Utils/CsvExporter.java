@@ -5,22 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.ScrollableResults;
-import org.molgenis.lifelinesresearchportal.models.MatrixModel;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.Column.ColumnType;
+import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.CsvWriter;
 
-
-public class CsvExporter<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> 
-	extends AbstractExporter<R, C, V>
+public class CsvExporter<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> extends AbstractExporter<ObservationTarget, Measurement, ObservedValue>
 {
 	private CsvWriter d_writer;
 	
-	public CsvExporter(MatrixModel<R, C, V> matrix, OutputStream os) {
-		super(matrix, os);
+	public CsvExporter(SliceablePhenoMatrixMV<R, C, V> matrix, OutputStream os) {
+		super((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix, os);
 		
 		d_writer = new CsvWriter(os);
 		d_writer.setSeparator(",");
@@ -47,7 +45,7 @@ public class CsvExporter<R extends ObservationTarget, C extends Measurement, V e
 
 	private void initHeaders() throws MatrixException {
 		List<String> headers = new ArrayList<String>();
-		for (Measurement colHeader : matrix.getColHeaders())
+		for (Measurement colHeader : (List<C>)matrix.getColHeaders())
 		{
 			headers.add(colHeader.getName());
 		}
@@ -74,12 +72,7 @@ public class CsvExporter<R extends ObservationTarget, C extends Measurement, V e
 	@Override
 	public String getFileExtension()
 	{
-		return ".csv";
-	}
-
-	@Override
-	public String getMimeType()
-	{
-		return "application/excel";
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

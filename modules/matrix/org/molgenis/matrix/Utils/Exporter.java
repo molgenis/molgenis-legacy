@@ -13,5 +13,4 @@ public interface Exporter<T extends ObservationTarget, M extends Measurement, V 
 	public void writeSingleCell(Object value, int iRow, int iColumn, ColumnType colType);
 	
 	public String getFileExtension();
-	public String getMimeType();
 }
