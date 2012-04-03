@@ -303,7 +303,7 @@ public class MolgenisVariantService
 			exonDTO.setNuclSequence(exonDTO.getNuclSequence().toUpperCase());
 			exonDTO.setNuclSequenceFlankLeft(exonDTO.getNuclSequenceFlankLeft().toLowerCase());
 			exonDTO.setNuclSequenceFlankRight(exonDTO.getNuclSequenceFlankRight().toLowerCase());
-			exonDTO.setAaSequence(StringUtils.substring(geneDTO.getAaSequence(), exonDTO.getCdnaStart(), exonDTO.getCdnaEnd()));
+			exonDTO.setAaSequence(StringUtils.substring(geneDTO.getAaSequence(), exonDTO.getCdnaStart(), exonDTO.getCdnaEnd() + 1));
 			exonDTO.setNumFullAminoAcids(SequenceUtils.getNumFullAminoAcids(exonDTO.getAaSequence()));
 			exonDTO.setNumPartAminoAcids(SequenceUtils.getNumPartAminoAcids(exonDTO.getAaSequence()));
 			exonDTO.setNumGlyXYRepeats(SequenceUtils.getNumGlyXYRepeats(exonDTO.getAaSequence()));
@@ -391,8 +391,8 @@ public class MolgenisVariantService
 				variantDTO.setCdnaStart(relation.getFmin());
 			}
 
-			/* Find pathogenicity */
-			String pathoSql = "SELECT ov FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND f.name = 'Pathogenicity'";
+			/* Find prominent value to be displayed in table view */
+			String pathoSql = "SELECT ov FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND (f.name = 'Pathogenicity' OR f.name = 'homo-/heterozygous')";
 			TypedQuery<ObservedValue> pathoQuery = this.em.createQuery(pathoSql, ObservedValue.class);
 			pathoQuery.setParameter("target", variant);
 			List<ObservedValue> observedValueList = pathoQuery.getResultList();
@@ -516,6 +516,8 @@ public class MolgenisVariantService
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "inheritance"))
 					mutationSummaryDTO.setInheritance(observedValue.getValue());
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "pathogenicity"))
+					mutationSummaryDTO.setPathogenicity(observedValue.getValue());
+				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "homo-/heterozygous"))
 					mutationSummaryDTO.setPathogenicity(observedValue.getValue());
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "type of mutation"))
 					mutationSummaryDTO.setType(observedValue.getValue());

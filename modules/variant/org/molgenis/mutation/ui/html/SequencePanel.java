@@ -53,7 +53,7 @@ public class SequencePanel extends HtmlInput implements Serializable
 			int startPos = this.exonDTO.getGdnaStart();
 			int endPos   = this.exonDTO.getGdnaEnd();
 			for (int i = startPos;
-					("R".equals(this.exonDTO.getOrientation()) ? i > endPos : i < endPos);
+					("R".equals(this.exonDTO.getOrientation()) ? i >= endPos : i <= endPos);
 					i = ("R".equals(this.exonDTO.getOrientation()) ? i - 1 : i + 1))
 			{
 //				System.out.println(">>> SequencePanel: seqlen==" + exonDTO.getNuclSequence().length() + ", startPos==" + startPos + ", i==" + i);
