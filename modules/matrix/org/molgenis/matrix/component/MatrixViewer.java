@@ -814,9 +814,9 @@ public class MatrixViewer extends HtmlWidget
 		File file = makeFile("_All", "csv");
 		
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			AbstractExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
-				new CsvExporter<ObservationTarget, Measurement, ObservedValue>((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, new FileOutputStream(file));
-			exportAll(file, exporter);
+//			AbstractExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+//				new CsvExporter<ObservationTarget, Measurement, ObservedValue>((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, new FileOutputStream(file));
+//			exportAll(file, exporter);
 		} else {			
 			// remember old limits and offset
 			int rowOffset = matrix.getRowOffset();
@@ -910,9 +910,9 @@ public class MatrixViewer extends HtmlWidget
 		File file = makeFile("_Visible", "csv");
 		if (matrix instanceof SliceablePhenoMatrixMV) {
 			FileOutputStream os = new FileOutputStream(file);
-			AbstractExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
-				new CsvExporter<ObservationTarget, Measurement, ObservedValue>((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, os);
-			exportVisible(file.getName(), exporter);
+//			AbstractExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+//				new CsvExporter<ObservationTarget, Measurement, ObservedValue>((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, os);
+//			exportVisible(file.getName(), exporter);
 		} else {	
 			List<?> rows = matrix.getRowHeaders();
 			List<?> cols = matrix.getColHeaders();
@@ -980,10 +980,10 @@ public class MatrixViewer extends HtmlWidget
 	{
 		File excelFile = makeFile("_All", "xls");			
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
-					new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, new FileOutputStream(excelFile));
-			exportAll(excelFile, exporter);
+//			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+//					new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
+//					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, new FileOutputStream(excelFile));
+//			exportAll(excelFile, exporter);
 		} else {
 			// remember old limits and offset
 			int rowOffset = matrix.getRowOffset();
@@ -1071,10 +1071,10 @@ public class MatrixViewer extends HtmlWidget
 	{
 		File excelFile = makeFile("_Visible","xls");
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
-				new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
-				((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, new FileOutputStream(excelFile));
-			exportVisible(excelFile.getName(), exporter);
+//			ExcelExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+//				new ExcelExporter<ObservationTarget, Measurement, ObservedValue>
+//				((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>)matrix, new FileOutputStream(excelFile));
+//			exportVisible(excelFile.getName(), exporter);
 		} else {
 			
 			if (this.matrix instanceof DatabaseMatrix)
@@ -1183,10 +1183,10 @@ public class MatrixViewer extends HtmlWidget
 		File file = makeFile("_All", "sav");
 	
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
-					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
-					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix, new FileOutputStream(file));
-			exportVisible(file.getName(), exporter);
+//			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+//					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
+//					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix, new FileOutputStream(file));
+//			exportVisible(file.getName(), exporter);
 		} else {
 			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 			SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
@@ -1251,10 +1251,10 @@ public class MatrixViewer extends HtmlWidget
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		
 		if (matrix instanceof SliceablePhenoMatrixMV) {
-			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
-					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
-					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix, new FileOutputStream(file));
-			exportAll(file, exporter);
+//			SPSSExporter<ObservationTarget, Measurement, ObservedValue> exporter = 
+//					new SPSSExporter<ObservationTarget, Measurement, ObservedValue>
+//					((SliceablePhenoMatrixMV<ObservationTarget, Measurement, ObservedValue>) matrix, new FileOutputStream(file));
+//			exportAll(file, exporter);
 		} else {
 			// remember old limits and offset
 			int rowOffset = matrix.getRowOffset();

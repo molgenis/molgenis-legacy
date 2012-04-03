@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.hibernate.ScrollableResults;
+import org.molgenis.lifelinesresearchportal.models.MatrixModel;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.SliceablePhenoMatrixMV;
@@ -14,10 +15,10 @@ import org.molgenis.pheno.ObservedValue;
 public abstract class AbstractExporter<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> 
 	implements Exporter<ObservationTarget, Measurement, ObservedValue> {
 	
-	protected final SliceablePhenoMatrixMV<R, C, V> matrix;
+	protected final MatrixModel<R, C, V> matrix;
 	protected final OutputStream os;
 	
-	public AbstractExporter(final SliceablePhenoMatrixMV<R, C, V> matrix, final OutputStream os) {
+	public AbstractExporter(final MatrixModel<R, C, V> matrix, final OutputStream os) {
 		this.matrix = matrix;
 		this.os = os;
 	}	

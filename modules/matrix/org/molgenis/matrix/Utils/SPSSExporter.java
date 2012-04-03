@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.ScrollableResults;
+import org.molgenis.lifelinesresearchportal.models.MatrixModel;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.Column.ColumnType;
@@ -23,7 +24,7 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 {
 	private SPSSWriter 		d_spssWriter;
 
-	public SPSSExporter(SliceablePhenoMatrixMV<R, C, V> matrix, OutputStream os) throws MatrixException {
+	public SPSSExporter(MatrixModel<R, C, V> matrix, OutputStream os) throws MatrixException {
 		super(matrix, os);
 		initWriter();
 	}
@@ -141,9 +142,12 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 	@Override
 	public String getFileExtension()
 	{
-		// TODO Auto-generated method stub
+		return ".sav";
+	}
+	
+	@Override
+	public String getMimeType()
+	{
 		return null;
 	}
-
-
 }
