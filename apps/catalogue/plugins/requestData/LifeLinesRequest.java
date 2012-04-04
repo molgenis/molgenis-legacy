@@ -2,10 +2,13 @@ package plugins.requestData;
 
 import gcc.catalogue.ShoppingCart;
 
+import org.apache.commons.lang.StringUtils;
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.BoolInput;
 import org.molgenis.framework.ui.html.DivPanel;
@@ -16,6 +19,8 @@ import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.XrefInput;
+import org.molgenis.util.EmailService;
+import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
 
 /**
@@ -29,8 +34,11 @@ import org.molgenis.util.Tuple;
  * LifeLinesRequestView holds the template to show the layout. Get/set it via
  * this.getView()/setView(..).
  */
-public class LifeLinesRequest extends
-		EasyPluginController<LifeLinesRequestModel> {
+public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9143685202494784007L;
 	boolean submitted = false;
 	Tuple tuple = null;
 
@@ -75,10 +83,45 @@ public class LifeLinesRequest extends
 		getModel().setSuccess("Update successful");
 	}
 
-	public void submit(Database db, Tuple request) {
-		this.setSucces("Request sumbmitted succesfully");
+	public void submit(Database db, Tuple request) throws DatabaseException, EmailException {
+		sentEmail(db, request);
+		this.setSucces("Request submitted succesfully");
 		submitted = true;
 		tuple = request;
+	}
+	
+	public void sentEmail(Database db, Tuple request) throws DatabaseException, EmailException {
+		String subject   = "Data request";
+		
+		ShoppingCart shc = new ShoppingCart();
+		shc = db.query(ShoppingCart.class).eq(ShoppingCart.ID, request.getString("MyMeasurementSelection") ).find().get(0);
+		shc.getName();
+		
+		String email = "Hello admin, \n\n" +
+				" User " + request.getString(FIRSTNAME)	+ " "+
+				request.getString(LASTNAME) + 
+				"(" + request.getString("emailAddress") + ")" +	
+				" has requested data with id: " +
+				request.getString("MyMeasurementSelection") +
+				" and name: " + shc.getName();
+		
+		if (request.getString("GWAS")=="true") email +=  " GWAS ";
+		
+		email+= " with NoIndividuals: "+ request.getString("NoIndividuals") +
+			    " Summary:"+ request.getString("Summary");
+				
+		// get admin email
+		MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
+		if (StringUtils.isEmpty(admin.getEmail()))
+			throw new DatabaseException("Sending data request failed: the administrator has no email address set. Please contact your administrator about this.");
+		
+		
+		EmailService ses = this.getEmailService();
+		ses.email(subject, email, admin.getEmail(), true);
+		
+		//this.getMessages().add(new ScreenMessage(feedback, true));
+		
+		System.out.println("Email : " + admin.getEmail()+ "data request >>>"+ email);
 	}
 
 	public String render() {
@@ -99,8 +142,7 @@ public class LifeLinesRequest extends
 		DivPanel l = new DivPanel();
 		l.setLabel("<h3>LifeLines Data Request:</h3>");
 
-		l.add(new Paragraph(
-				"Please specify here your LifeLines data request. You request will be sent to ... for evaluation."));
+		l.add(new Paragraph("Please specify here your LifeLines data request. You request will be sent to ... for evaluation."));
 
 		StringInput first = new StringInput(FIRSTNAME);
 		first.setNillable(false);
@@ -114,8 +156,7 @@ public class LifeLinesRequest extends
 		email.setNillable(false);
 		l.add(email);
 
-		XrefInput x = new XrefInput("MyMeasurementSelection",
-				ShoppingCart.class);
+		XrefInput x = new XrefInput("MyMeasurementSelection", ShoppingCart.class);
 		x.setNillable(false);
 		l.add(x);
 
