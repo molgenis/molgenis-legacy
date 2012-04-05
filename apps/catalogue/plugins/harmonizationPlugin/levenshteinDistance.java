@@ -225,10 +225,14 @@ public class levenshteinDistance {
 		//		}
 		
 		for(String eachOriginalQuery : mappingResultAndSimiarity.keySet()){
-
-			matchingResult = "<table style='border-spacing: 2px; width: 100%;'>" +
-					"<tr><td>Parameter</td><td>Expanded Query</td><td>Matched data item</td><td>Similarity score</td></tr>";
-
+			
+			matchingResult = "<input type=\"button\" id=\"" + eachOriginalQuery + "_button\" onclick=\"toggle('" + eachOriginalQuery + "')\" value=\"toggle\"/>";
+			
+			matchingResult += "Click to see the matching for parameter: " + eachOriginalQuery + "</br>";
+			
+			matchingResult += "<table id=\"" + eachOriginalQuery + "\" style='border-spacing: 3px; width: 100%; display:none;'>";
+			
+			matchingResult += "<tr><td>Expanded Query</td><td>Matched data item</td><td>Similarity score</td></tr>";
 			
 			LinkedMap map = mappingResultAndSimiarity.get(eachOriginalQuery);
 			
@@ -242,15 +246,15 @@ public class levenshteinDistance {
 				String expandedQuery = eachRow.expandedQuery;
 				String matchedItem = eachRow.matchedItem;
 				Double similarity = eachRow.similarity;
-				matchingResult += "<tr><td>" + eachOriginalQuery + "</td><td>" + expandedQuery + "</td><td>" 
+				matchingResult += "<tr id=\"" + eachOriginalQuery + "\"><td>" + expandedQuery + "</td><td>" 
 						+ matchedItem + "</td><td>" + similarity + "</td></tr>";
 				System.out.print(eachOriginalQuery + "\t" + expandedQuery + "\t" + matchedItem + "\t" + similarity);
 				System.out.println();
 			}
 			matchingResult += "</table>";
+			
 			tableContent.add(matchingResult);
 		}
-		
 	}
 
 	public void searchingForOntologyTermByStringMatching(HashMap<String, String> levelAnnotation, HashMap<String, String> descriptionForVariable){

@@ -34,6 +34,27 @@
                 }
             );
             });
+            
+            $(document).ready(function(){
+ 				$('.toppleTable').click(function(){
+    				$("table").toggle();
+  				});
+			});
+			
+		
+		
+		function toggle(tableId) {
+			
+			var ele = document.getElementById(tableId);
+			
+			if(ele.style.display == "block") {
+		    		ele.style.display = "none";	
+		  	}else {
+				ele.style.display = "block";
+			}
+		} 
+
+		
 		</script>
 		<#--optional: mechanism to show messages-->
 		<#list screen.getMessages() as message>
@@ -52,20 +73,17 @@
 			
 			</br></br></br>
 			
-			The matching for the next parameter is </br>
-			
 			<#list screen.getMatchingResult() as eachElement>
-				${eachElement}
-				The matching for the next parameter is </br>
+				${eachElement} </br></br>
 			</#list>
 			
-			<!--
+			
 			<p style="font-weight:bold"><img id="1" class="showHideLabel" src="${imgM}"/>&nbsp;1</p>
 				<div class="showHide" style="display:block" id="showHide1">
 				
 			<p style="font-weight:bold"><img id="1" class="showHideLabel" src="${imgP}"/>&nbsp;2</p>
 				<div class="showHide" style="display:none" id="showHide2">
-			-->
+			
 			
 			
 		
