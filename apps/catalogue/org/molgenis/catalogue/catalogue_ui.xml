@@ -37,6 +37,8 @@
 		<plugin name="Request" type="plugins.requestData.LifeLinesRequest" label="Submit data request" />
 
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
+			
+			<plugin name="harmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
 			<form name="mappingMeasurement" entity="MappingMeasurement"
 				label="Measurement Mappings" groups="admin" />
 			<form name="computeProtocol" entity="ComputeProtocol" label="Analysis Protocols" />
