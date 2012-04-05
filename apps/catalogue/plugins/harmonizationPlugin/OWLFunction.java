@@ -19,7 +19,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 public class OWLFunction {
-	
+
 	private String separtor = ";";
 	private OWLDataFactory factory = null;
 	private OWLOntology owlontology = null;
@@ -41,11 +41,11 @@ public class OWLFunction {
 	public void setSeparator(String separator){
 		this.separtor = separator;
 	}
-	
+
 	public String getSeparator(){
 		return this.separtor;
 	}
-	
+
 	public HashMap<String, String> getSynonymToClassLabel() {
 		return synonymToClassLabel;
 	}
@@ -53,7 +53,7 @@ public class OWLFunction {
 	public HashMap<String, List<String>> getClassRelations() {
 		return classRelations;
 	}
-	
+
 	public HashMap<String, List<String>> getExpandedQueries(){
 		return this.expandedQueries;
 	}
@@ -174,9 +174,29 @@ public class OWLFunction {
 					if(!definition.equalsIgnoreCase(labelOfClass))
 						relations.add(definition.trim());
 				}
-
 				queryExpansion(labelOfClass, tokens);
 			}
+			
+			List<String> childAndParent = new ArrayList<String>();
+			
+			List<String> temp = null;
+			
+			if(!expandedQueries.containsKey(labelOfClass)){
+				temp = new ArrayList<String>();
+			}else{
+				temp = expandedQueries.get(labelOfClass);
+			}
+			
+			childAndParent = getAllChildren(owlontology, cls, new ArrayList<String>(), 2);
+			
+			temp.addAll(childAndParent);
+			
+			childAndParent = getAllParents(owlontology, cls, new ArrayList<String>(), 2);
+			
+			temp.addAll(childAndParent);
+			
+			expandedQueries.put(labelOfClass, temp);
+			
 			classRelations.put(labelOfClass, relations);
 		}
 	}
@@ -185,9 +205,25 @@ public class OWLFunction {
 
 		if(tokens.size() > 1){
 
-			List<String> firstTokens = this.getAllChildren(owlontology, tokens.get(0), new ArrayList());
+			List<String> firstTokens = new ArrayList<String>();
 
-			List<String> secondTokens = this.getAllChildren(owlontology, tokens.get(1), new ArrayList());
+			List<String> secondTokens = new ArrayList<String>();
+
+			List<String> temp = this.getAllChildren(owlontology, tokens.get(0), new ArrayList(), 2);
+
+			firstTokens.addAll(temp);
+
+			temp = this.getAllParents(owlontology, tokens.get(0), new ArrayList(), 2);
+			
+			firstTokens.addAll(temp);
+
+			temp = this.getAllChildren(owlontology, tokens.get(1), new ArrayList(), 2);
+			
+			secondTokens.addAll(temp);
+			
+			temp = this.getAllParents(owlontology, tokens.get(1), new ArrayList(), 2);
+			
+			secondTokens.addAll(temp);
 
 			firstTokens.add(getLabel(tokens.get(0), owlontology));
 
@@ -214,17 +250,18 @@ public class OWLFunction {
 		}
 	}
 
-	public List<String> getAllChildren(OWLOntology localOntology, OWLClass cls, List<String> allChildren){
+	public List<String> getAllChildren(OWLOntology localOntology, OWLClass cls, List<String> allChildren, int recursiveTimes){
 
 		for(OWLSubClassOfAxiom axiom : localOntology.getSubClassAxiomsForSuperClass(cls)){
 
-			for(OWLClassExpression expression : axiom.getClassesInSignature()){
-				if(!expression.isAnonymous() && !expression.asOWLClass().equals(cls)){
-					String label = this.getLabel(expression.asOWLClass(), localOntology);
-					allChildren.add(label);
-					if(!expression.asOWLClass().isBottomEntity()){
-						getAllChildren(localOntology, expression.asOWLClass(), allChildren);
-					}
+			OWLClassExpression expression = axiom.getSubClass();
+
+			if(!expression.isAnonymous()){
+				String label = this.getLabel(expression.asOWLClass(), localOntology);
+				allChildren.add(label);
+				if(!expression.asOWLClass().isBottomEntity()){
+					if(recursiveTimes - 1 > 0)
+						getAllChildren(localOntology, expression.asOWLClass(), allChildren, --recursiveTimes);
 				}
 			}
 		}
@@ -232,18 +269,19 @@ public class OWLFunction {
 		return allChildren;
 	}
 
-	public List<String> getAllParents(OWLOntology localOntology, OWLClass cls, List<String> allParents){
+	public List<String> getAllParents(OWLOntology localOntology, OWLClass cls, List<String> allParents, int recursiveTimes){
 
 		for(OWLSubClassOfAxiom axiom : localOntology.getSubClassAxiomsForSubClass(cls)){
 
-			for(OWLClassExpression expression : axiom.getClassesInSignature()){
-				if(!expression.isAnonymous() && !expression.asOWLClass().equals(cls)){
-					String label = this.getLabel(expression.asOWLClass(), localOntology);
-					if(!label.equals("")){
-						if(!allParents.contains(label)){
-							allParents.add(label);
-							getAllParents(localOntology, expression.asOWLClass(), allParents);
-						}
+			OWLClassExpression expression = axiom.getSuperClass();
+
+			if(!expression.isAnonymous()){
+				String label = this.getLabel(expression.asOWLClass(), localOntology);
+				if(!label.equals("")){
+					if(!allParents.contains(label)){
+						allParents.add(label);
+						if(recursiveTimes - 1 > 0)
+							getAllParents(localOntology, expression.asOWLClass(), allParents, --recursiveTimes);
 					}
 				}
 			}

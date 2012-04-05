@@ -12,6 +12,7 @@ import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAnnotationValue;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -23,6 +24,7 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.util.OWLEntityRenamer;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
@@ -44,15 +46,15 @@ public class createOntology {
 		factory = manager.getOWLDataFactory();
 
 		referenceOntology = this.loadOntology("/Users/pc_iverson/Desktop/Input/Thesaurus.owl");
-		
+
 		System.out.println(referenceOntology.getOntologyID().getOntologyIRI().toString());
-		
+
 		createdOntology = this.loadOntology("/Users/pc_iverson/Desktop/Input/PredictionModel.owl");
 
 		this.labelToOWLClass = labelMapURI(referenceOntology, OWLRDFVocabulary.RDFS_LABEL.getIRI());
-		
+
 		this.synonymsToOWLClass = labelMapURI(referenceOntology, IRI.create("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN"));
-		
+
 		this.addingClassHierarchy(referenceOntology, createdOntology);
 
 		this.OntologySave(createdOntology);
@@ -64,19 +66,19 @@ public class createOntology {
 	}
 
 	private void addingClassHierarchy(OWLOntology referenceOntology, OWLOntology createdOntology) {
-		
+
 		Set<OWLOntology> setOfOntologies = new HashSet<OWLOntology>();
-		
+
 		setOfOntologies.add(createdOntology);
-		
+
 		OWLEntityRenamer renamer = new OWLEntityRenamer(manager, setOfOntologies);
-		
+
 		for(OWLClass cls : createdOntology.getClassesInSignature()){
 
 			String className = this.getLabel(cls, createdOntology);
-			
+
 			OWLClass replacedClass = null;
-			
+
 			if(labelToOWLClass.containsKey(className.toLowerCase())){
 				replacedClass = labelToOWLClass.get(className.toLowerCase());
 			}
@@ -86,16 +88,44 @@ public class createOntology {
 			if(replacedClass != null){
 				List<OWLOntologyChange> changes = renamer.changeIRI(cls, replacedClass.getIRI());
 				manager.applyChanges(changes);
+				
+				addAnnotation(replacedClass, referenceOntology, createdOntology);
+				
+				recursiveAddingSuperClass(replacedClass, referenceOntology, createdOntology);
+				
+				recursiveAddingSubClass(replacedClass, referenceOntology, createdOntology);
 			}
 		}
 	}
 
 	private void recursiveAddingSuperClass(OWLClass cls,
-			OWLOntology referenceOntology2, OWLOntology createdOntology2) {
-
-
-
-
+			OWLOntology referenceOntology, OWLOntology createdOntology) {
+		
+		for (OWLSubClassOfAxiom axiom : referenceOntology.getSubClassAxiomsForSubClass(cls)){
+			
+			OWLClassExpression expression = axiom.getSuperClass();
+			
+			if(!expression.isAnonymous()){
+				manager.applyChange(new AddAxiom(createdOntology, axiom));
+				addAnnotation(expression.asOWLClass(), referenceOntology, createdOntology);
+				recursiveAddingSuperClass(expression.asOWLClass(), referenceOntology, createdOntology);
+			}
+		}
+	}
+	
+	private void recursiveAddingSubClass(OWLClass cls,
+			OWLOntology referenceOntology, OWLOntology createdOntology) {
+		
+		for (OWLSubClassOfAxiom axiom : referenceOntology.getSubClassAxiomsForSuperClass(cls)){
+			
+			OWLClassExpression expression = axiom.getSubClass();
+			
+			if(!expression.isAnonymous()){
+				manager.applyChange(new AddAxiom(createdOntology, axiom));
+				addAnnotation(expression.asOWLClass(), referenceOntology, createdOntology);
+				recursiveAddingSubClass(expression.asOWLClass(), referenceOntology, createdOntology);
+			}
+		}
 	}
 
 	public static void main (String args[]) throws OWLOntologyCreationException, OWLOntologyStorageException {
@@ -114,27 +144,25 @@ public class createOntology {
 		File file = new File(ontologyFileName);
 
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(file);
-		
+
 		System.out.println("The ontology is loaded!");
 
 		return ontology;
 	}
 
-	//	public void startOntologyService() throws OntologyServiceException, URISyntaxException{
-	//		
-	//		System.out.println("Start the service");
-	//		
-	//		FileOntologyService os = new FileOntologyService(new URI("https://cabig.nci.nih.gov/community/concepts/EVS/"), "NCLt");
-	//		
-	//		System.out.println("Start the searching");
-	//		
-	//		for (OntologyTerm ot : os.searchAll("thymus", SearchOptions.EXACT)) {
-	//			System.out.println(ot.getLabel());
-	//		}
-	//		
-	//		
-	//		
-	//	}
+	/**
+	 * Copy and paste annotation of OWL class from reference ontology to the new ontology
+	 * @param cls
+	 * @param referenceOntology
+	 * @param createdOntology
+	 */
+	public void addAnnotation(OWLClass cls, OWLOntology referenceOntology, OWLOntology createdOntology){
+
+		for(OWLAnnotation annotation : cls.getAnnotations(referenceOntology)){
+			OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(cls.getIRI(), annotation);
+			manager.applyChange(new AddAxiom(createdOntology, ax));
+		}
+	}
 
 	public HashMap labelMapURI(OWLOntology owlontology, IRI AnnotataionProperty){
 
@@ -175,5 +203,4 @@ public class createOntology {
 		}
 		return labelValue;
 	}//end of the getLabel method
-
 }
