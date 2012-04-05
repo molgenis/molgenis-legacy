@@ -1,5 +1,8 @@
 package plugins.harmonizationPlugin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -13,13 +16,14 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	 * 
 	 */
 	private static final long serialVersionUID = 2146491520971364766L;
-	private String matchingResult = "Hello World!";
+	
+	private List<String> matchingResult = new ArrayList<String>();
 
 	public harmonizationPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 
-	public String getMatchingResult(){
+	public List<String> getMatchingResult(){
 		return matchingResult;
 	}
 	

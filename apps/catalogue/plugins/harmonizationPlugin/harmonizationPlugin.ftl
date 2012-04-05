@@ -52,7 +52,12 @@
 			
 			</br></br></br>
 			
-			${screen.getMatchingResult()}
+			The matching for the next parameter is </br>
+			
+			<#list screen.getMatchingResult() as eachElement>
+				${eachElement}
+				The matching for the next parameter is </br>
+			</#list>
 			
 			<!--
 			<p style="font-weight:bold"><img id="1" class="showHideLabel" src="${imgM}"/>&nbsp;1</p>
