@@ -19,7 +19,7 @@
 				ontology.</description>
 		</entity>
 		
-		<entity name="BiobankContact" extends="Person">
+		<entity name="BiobankCoordinator" extends="Person">
 			<description>This is the values of the coordinators.</description>
 		</entity>
 		
@@ -30,9 +30,9 @@
 			<field name="Category" type="xref" xref_entity="BiobankCategory" description="A. Core Biobanks, DNA available, B. Supporting biobanks (DNA not yet available)" />
 			<field name="SubCategory" type="xref" xref_entity="BiobankCategory" description="For example: Population, development, birth and growth" />
 			<field name="Topic" type="mref" nillable="true" xref_entity="BiobankTopic" />
+			<field name="Coordinator" type="mref" nillable="true" xref_entity="BiobankCoordinator" description="One or more contact persons for this biobank" />
 			<field name="Institutes" nillable="true" type="string" label="Institutions" description="Institute that are custodian of this biobankPanel (found in xls as Institutions). For example: VU" />
 			<!--  <field name="Coordinators" type="mref" nillable="true" xref_entity="Person" mref_name="BiobankContact" description="One or more contact persons for this biobank" /> -->
-			<field name="Coordinators" type="mref" nillable="true" xref_entity="BiobankContact" description="One or more contact persons for this biobank" />
 			<field name="PanelSize" label="Current n=" nillable="true" description="Current n= in xls" />
 			<field name="Biodata" type="mref" nillable="true" xref_entity="BiobankDataType" description="Biodata in xls" />
 			<field name="GwaDataNum" label="GWA data n=" type="string" nillable="true" description="GWA data n=" />
