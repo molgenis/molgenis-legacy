@@ -1,6 +1,6 @@
 Name	defaultValue	description	dataType	hasOne_name
 mkdir_command	srmmkdir	The shell command to create directory	string	
-root_dir	byelas	The root directory	string	
+root_dir	bbmri.nl/byelas	The root directory	string
 tool_dir	${root_dir}/tools	The root directory	string	
 results_dir	${root_dir}/TEST_RESULTS1	Directory where the results will be stored	string	
 study_tped	${root_dir}/GWAS/NLhap550/NLhap550.hg19.tped	The path to the TPED file of the study	string	
@@ -37,4 +37,4 @@ sample_g	${root_dir}/test_dataset/chr${chromosome}.controls.sample
 exclude_samples_g	${root_dir}/test_dataset/${bin_file} 
 sample_g_ref	${temp_dir}/study_GENSAMPLE_norm_chr${chromosome}/sample_exclude_names.txt
 output_1	${results_dir}/test_vs_GoNL_chr${chromosome}_${start_pos}_${end_pos}_${bin_file}	output_1	string
-output_log	${results_dir}/test_vs_GoNL_chr${chromosome}_${start_pos}_${end_pos}_${bin_file}.log	output_log	string
+log	${results_dir}/test_vs_GoNL_chr${chromosome}_${start_pos}_${end_pos}_${bin_file}.log	log	string
