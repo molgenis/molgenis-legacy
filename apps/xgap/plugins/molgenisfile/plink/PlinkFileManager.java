@@ -141,7 +141,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 						PerformUpload.doUpload(db, famInvFile, famFile, false);
 						PerformUpload.doUpload(db, bedInvFile, bedFile, false);
 						
-						boolean tagged = tagParameter("Plink_params", "inputname", fileSetName, db);
+						boolean tagged = tagParameter("Plink_bin_params", "inputname", fileSetName, db);
 						
 						if(tagged)
 						{

@@ -96,10 +96,21 @@ DownloadnSavePLINK <- function(investigationname, token, DBtraitID = "", inputna
 	cat(Generate_Statement(paste("plink <- PlinkFromMolgenis(phenotypematrixname='",DBtraitID,"',investigationname='",investigationname,"')","\n",sep="")),file=qtlfile,append=T)
 	cat(Generate_Statement(paste("write.table(plink,file=\"./run",jobid,"/phenotypes.txt\",quote=FALSE,row.names=FALSE)","\n",sep="")),file=qtlfile,append=T)
 	cat("report(2,\"PhenotypesDownloaded\")\n",file=qtlfile,append=T)
+  
+ #plink, ped/map format (fails for PLINKBIN analysis, but doesn't matter)
   cat(Generate_Statement(paste("downloadFileViaCurl('",paste(dbpath,"/downloadfile",sep=""),"?name=",inputname,"_ped','run",jobid,"/",inputname,".ped')\n",sep="")),file=qtlfile,append=T)
   cat("report(2,\"PEDDownloaded\")\n",file=qtlfile,append=T)
   cat(Generate_Statement(paste("downloadFileViaCurl('",paste(dbpath,"/downloadfile",sep=""),"?name=",inputname,"_map','run",jobid,"/",inputname,".map')\n",sep="")),file=qtlfile,append=T)
   cat("report(2,\"MAPDownloaded\")\n",file=qtlfile,append=T)
+  
+  #plink, binary format (fails for PLINK analysis, but doesn't matter)
+  cat(Generate_Statement(paste("downloadFileViaCurl('",paste(dbpath,"/downloadfile",sep=""),"?name=",inputname,"_bed','run",jobid,"/",inputname,".bed')\n",sep="")),file=qtlfile,append=T)
+  cat("report(2,\"BEDDownloaded\")\n",file=qtlfile,append=T)
+  cat(Generate_Statement(paste("downloadFileViaCurl('",paste(dbpath,"/downloadfile",sep=""),"?name=",inputname,"_bim','run",jobid,"/",inputname,".bim')\n",sep="")),file=qtlfile,append=T)
+  cat("report(2,\"BIMDownloaded\")\n",file=qtlfile,append=T)
+  cat(Generate_Statement(paste("downloadFileViaCurl('",paste(dbpath,"/downloadfile",sep=""),"?name=",inputname,"_fam','run",jobid,"/",inputname,".fam')\n",sep="")),file=qtlfile,append=T)
+  cat("report(2,\"FAMDownloaded\")\n",file=qtlfile,append=T)
+  
   cat("q(\"no\")","\n",sep="",file=qtlfile,append=T)
 }
 
@@ -210,7 +221,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
     cat("debug: R/qtl Downloadfile generated\n")
     doDownload <- TRUE
   }
-  if(job=="PLINK"){
+  if(job=="PLINK" || job=="PLINKBIN"){
     tryCatch(DownloadnSavePLINK(investigationname=investigation, token, phenotypes, getparameter("inputname",jobparams), dbpath=dbpath,jobid,njobs,libraryloc)
       ,error =  function(e){cat(e[[1]],"\n");report(dbpath,jobid,0,-1,"Downloadscript")}
     )

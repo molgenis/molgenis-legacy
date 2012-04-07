@@ -259,6 +259,35 @@ public class AddClusterMetaModel
 			plink.setTargetFunctionName("PLINK");
 			db.add(plink);
 			
+			//PLINK job on binaries (BIM/BED/FAM)
+			
+			ParameterSet plinkBinParams = new ParameterSet();
+			plinkBinParams.setName("Plink_bin_params");
+			db.add(plinkBinParams);
+			
+			DataSet plinkBinDataSet = new DataSet();
+			plinkBinDataSet.setName("PlinkBinPhenotypes");
+			db.add(plinkBinDataSet);
+			
+			DataName plinkBinPhenotypes = new DataName();
+			plinkBinPhenotypes.setName("phenotypes");
+			plinkBinPhenotypes.setDataSet(plinkBinDataSet);
+			db.add(plinkBinPhenotypes);
+
+			ParameterName plinkBinName = new ParameterName();
+			plinkBinName.setName("inputname");
+			plinkBinName.setDescription("Name of the three input files retrieved from the database.");
+			plinkBinName.setParameterSet(plinkBinParams);
+			db.add(plinkBinName);
+			
+			Analysis plinkBin = new Analysis();
+			plinkBin.setName("Plink_bin_analysis");
+			plinkBin.setDescription("This is a basic PLINK association analysis on the binary formats: BED/BIM/FAM. The input parameter 'inputname' must correspond to files in your database: 'inputname'_bed.bed, 'inputname'_bim.bim and 'inputname'_fam.fam. Use 'Import data' -> 'Plink' for convenience. For more information, please visit the <a target=\"_blank\" href=\"http://pngu.mgh.harvard.edu/~purcell/plink/\">Plink website</a>.");
+			plinkBin.setDataSet(plinkBinDataSet);
+			plinkBin.setParameterSet(plinkBinParams);
+			plinkBin.setTargetFunctionName("PLINKBIN");
+			db.add(plinkBin);
+			
 			// QTL BIM JOB
 			
 			Analysis qtlBim = new Analysis();
