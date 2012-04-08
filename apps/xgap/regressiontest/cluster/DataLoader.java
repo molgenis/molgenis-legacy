@@ -11,7 +11,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
 
 import plugins.emptydb.emptyDatabase;
-import app.DatabaseFactory;
+import plugins.molgenisfile.plink.PlinkFileManager;
 import filehandling.storage.StorageHandler;
 
 public class DataLoader
@@ -118,6 +118,12 @@ public class DataLoader
 				Data genoData = db.find(Data.class, investigationId, genoName).get(0);
 				Data phenoData = db.find(Data.class, investigationId, phenoName).get(0);
 				new AddClusterMetaModel(genoData, phenoData, db);
+				
+				PlinkFileManager.tagParameter("Plink_bin_params", "inputname", "hapmap1", db);
+				System.out.println("tagged plink parameters");
+				AddClusterMetaModel.tagPlinkBinaryDataSet(db);
+				System.out.println("tagged plink dataset");
+				
 				result.add("Complete success");
 			}
 			catch (Exception e)

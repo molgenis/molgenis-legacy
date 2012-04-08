@@ -241,7 +241,7 @@ public class PlinkFileManager extends PluginModel<Entity>
 		}
 	}
 	
-	private boolean tagParameter(String paramSet, String paramName, String paramValue, Database db) throws DatabaseException,
+	public static boolean tagParameter(String paramSet, String paramName, String paramValue, Database db) throws DatabaseException,
 	ParseException, IOException
 	{
 		List<ParameterSet> plinkParams = db.find(ParameterSet.class, new QueryRule(ParameterSet.NAME, Operator.EQUALS, paramSet));

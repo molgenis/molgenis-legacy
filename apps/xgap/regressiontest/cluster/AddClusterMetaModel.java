@@ -1,5 +1,7 @@
 package regressiontest.cluster;
 
+import java.util.List;
+
 import org.molgenis.cluster.Analysis;
 import org.molgenis.cluster.DataName;
 import org.molgenis.cluster.DataSet;
@@ -9,6 +11,7 @@ import org.molgenis.cluster.ParameterSet;
 import org.molgenis.cluster.ParameterValue;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
@@ -33,6 +36,35 @@ public class AddClusterMetaModel
 		
 		new AddClusterMetaModel(genoData, phenoData, db);
 
+	}
+	
+	public static void tagPlinkBinaryDataSet(Database db) throws Exception
+	{
+		List<DataSet> ds = db.find(DataSet.class, new QueryRule(DataSet.NAME, Operator.EQUALS, "PlinkBinPhenotypes"));
+		if(ds.size() == 0)
+		{
+			throw new Exception("tagPlinkBinaryDataSet: dataset not found");
+		}
+		System.out.println("found dataset");
+		
+		Query<DataName> q = db.query(DataName.class);
+		q.addRules(new QueryRule(DataName.NAME, Operator.EQUALS, "phenotypes"));
+		q.addRules(new QueryRule(DataName.DATASET, Operator.EQUALS, ds.get(0).getId()));
+		List<DataName> dn = q.find();
+	
+		if(dn.size() == 0)
+		{
+			throw new Exception("tagPlinkBinaryDataSet: dataname not found");
+		}
+		System.out.println("found dataname");
+		
+		DataValue dv = new DataValue();
+		dv.setDataName_Id(dn.get(0).getId());
+		dv.setName("fake_metab_hapmap_example_plink_phenotypes");
+		dv.setValue(db.find(Data.class, new QueryRule(Data.NAME, Operator.EQUALS, "fake_metab_hapmap_example_plink_phenotypes")).get(0));
+		System.out.println("created datavalue: " + dv.toString());
+		db.add(dv);
+		System.out.println("added plink datavalue: " + dv.toString());
 	}
 
 	public AddClusterMetaModel(Data genoData, Data phenoData, Database db) throws Exception

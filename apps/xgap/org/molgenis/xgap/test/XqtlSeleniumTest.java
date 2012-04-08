@@ -525,7 +525,7 @@ public class XqtlSeleniumTest
 
 			selenium.type("name=searchThis", "e");
 			clickAndWait("id=simple_search");
-			Assert.assertTrue(selenium.isTextPresent("Found 331 result(s)"));
+			Assert.assertTrue(selenium.isTextPresent("Found 336 result(s)"));
 			Assert.assertTrue(selenium.isTextPresent("xgap_rqtl_straintype_special"));
 			Assert.assertTrue(selenium.isTextPresent("Arabidopsis_thaliana"));
 			Assert.assertTrue(selenium.isTextPresent("metaboliteexpression"));
