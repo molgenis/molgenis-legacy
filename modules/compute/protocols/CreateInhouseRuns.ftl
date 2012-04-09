@@ -9,7 +9,7 @@
 #
 
 #MOLGENIS walltime=00:10:00
-#FOREACH run
+#FOREACH run, flowcell
 
 #
 # Change permissions.
