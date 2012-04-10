@@ -114,6 +114,13 @@ public class AnimaldbSeleniumTest
 			selenium.click("id=source1");
 			selenium.click("id=load");
 			selenium.waitForPageToLoad(pageLoadTimeout);
+		}
+		if (!selenium.isTextPresent("Pre-filling AnimalDB successful")) {
+			// If not, maybe we're on Joeri's Mac? :P
+			selenium.type("id=zip", "/Users/joerivandervelde/Dropbox/GCC/AnimalDB/Data/legacy/PrefillAnimalDB.zip");
+			selenium.click("id=source1");
+			selenium.click("id=load");
+			selenium.waitForPageToLoad(pageLoadTimeout);
 			Assert.assertTrue(selenium.isTextPresent("Pre-filling AnimalDB successful"));
 		}
 		sleepHelper("loginAdmin");
