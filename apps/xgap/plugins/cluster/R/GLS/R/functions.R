@@ -1,24 +1,6 @@
-# function found on the internet: (author?)
-is.installed <- function(mypkg) is.element(mypkg, installed.packages()[,1]) 
-
-# Taken from : http://realizationsinbiostatistics.blogspot.com/2008/08/matrix-square-roots-in-r_18.html
-MatrixRoot <- function(x) { # assumes that x is symmetric
-  x.eig <- eigen(x,symmetric=TRUE)
-  x.sqrt <- x.eig$vectors %*% diag(sqrt(x.eig$values)) %*% solve(x.eig$vectors)
-  x.sqrt
-  }
-
-
-IBS     <- function(X,normalization=nrow(X)) {
-                X       <- as.matrix(X)
-                Y       <- X
-                Y[X==0] <- 1
-                Y[X==1] <- 0
-                (t(X) %*% X + t(Y) %*% Y)/normalization
-                }
-
-
-IbdCorrection  <- function(K,T=0) {apply(K-matrix(T,nrow(K),ncol(K)),c(1,2),function(x) max(x,0))/(1-T)}
+IbdCorrection  <- function(K, T=0){
+  apply(K-matrix(T,nrow(K),ncol(K)),c(1,2),function(x) max(x,0))/(1-T)
+}
 
 
 #pst <- function(str) {paste(,sep="")}
@@ -44,27 +26,9 @@ AddMeans <- function(input.frame,col.select=1:ncol(input.frame),keep.original=TR
     input.frame
 }
 
-Heritability <- function(data.vector,geno.vector)   { 
-    her.frame   <- data.frame(data=data.vector,geno=geno.vector)
-    her.frame   <- her.frame[!is.na(her.frame$data),]
-    means       <- aggregate(her.frame$data, by=list(her.frame$geno),FUN=mean,na.rm =T)[,2]
-    vars        <- aggregate(her.frame$data, by=list(her.frame$geno),FUN=var,na.rm =T)[,2]
-    list(heritability=var(means,na.rm =T)/(mean(vars,na.rm =T)+var(means,na.rm =T)),gen.variance=var(means,na.rm =T),res.variance=mean(vars,na.rm =T))
-}
-#Heritability(data.vector=GWAS.obj$pheno[,tr.n],geno.vector=GWAS.obj$pheno$genotype)
-
 GenomicControl <- function(LRT.stats) {
     inflation   <- median(LRT.stats)/0.456
     LRT.stats/inflation
-}
-
-GenomicControlPvalues <- function(pvals,n.obs,n.cov=0) {
-# assumes p-values from an F-test with df=1 and df2=n.obs-n.cov-2
-    F.stats     <- qf(pvals, df1=1, df2=n.obs-n.cov-2,lower.tail=F)    
-    inflation   <- median(F.stats)/qf(0.5, df1=1, df2=n.obs-n.cov-2,lower.tail=F)
-    F.stats     <- F.stats /inflation
-    new.pvals   <- pf(F.stats, df1=1, df2=400,lower.tail=F)
-list(pvalues=new.pvals, inflation.factor=inflation)
 }
 
 MakeSnpBoxplot    <- function(data.vector,marker.vector,file.name="") {
@@ -876,45 +840,6 @@ gwas.obj$pheno  <- data1
 #assign(gwas.obj$pheno, value=data1, envir = .GlobalEnv)
 gwas.obj
 }
-
-
-#memory.size()
-#gc()
-#memory.size()
-#gwas.obj=GWAS.obj
-
-scan.GLS  <- function(gwas.obj,input.pheno,varcomp.file,output.file,covariate.file="") {
-# cov.string  is the string added to the scan.GLS command
-#
-cov.string      <- ""
-if (covariate.file!="") {cov.string  <- paste("-fixed",covariate.file)}
-if (file.exists(gwas.obj$external$bin.name)) {
-  command.string      <- paste("scan_GLS",gwas.obj$external$bin.name,input.pheno,
-                               gwas.obj$external$kinship.name,varcomp.file,output.file,cov.string)
-  system(command.string, intern = TRUE, ignore.stderr = FALSE,wait = TRUE, input = NULL)
-} else {
-  gwas.obj$external$bin.name  <- paste(substr(gwas.obj$external$csv.name,1,nchar(gwas.obj$external$csv.name)-4),".bin",sep="")
-  command.string      <- paste("scan_GLS",gwas.obj$external$csv.name,input.pheno,gwas.obj$external$kinship.name,
-                               varcomp.file,output.file,cov.string,"-writebin",gwas.obj$external$bin.name)
-  system(command.string, intern = TRUE, ignore.stderr = FALSE,wait = TRUE, input = NULL)
-}
-
-gwa.result <- ReadGwaResult(gwas.obj=gwas.obj,output.file=output.file)
-gwa.result
-}
-
-ReadGwaResult <- function(gwas.obj,output.file) {
-    GWA.result          <- read.table(file=output.file)
-    if (ncol(gwas.obj$genes)!=0) {
-        GWA.result          <- cbind(GWA.result,gwas.obj$map$gene1,gwas.obj$map$gene2)
-        names(GWA.result)   <- c("marker","stat","pvalue","gene1","gene2")
-    } else {
-        names(GWA.result)   <- c("marker","stat","pvalue")
-    }
-    GWA.result[GWA.result[,3]==-1,3]  <- 1
-GWA.result
-}
-                                                                                    
 
 # To do: rainbow colored dots for effects size
 MakeLodPlot <- function(xvalues,yvalues,file.name="",jpeg.plot=T,x.lab="base pairs",
