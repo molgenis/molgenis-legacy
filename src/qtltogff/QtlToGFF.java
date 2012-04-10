@@ -24,6 +24,8 @@ public class QtlToGFF
 					" - LOD drop: the amount of LOD score a peak must drop to form a confidence interval (usually 1.5)\n"+
 					" - LOD limit: the amount of LOD score that forms the roof of a '1000 score' in the GFF file (usually 10.0)\n"+
 					"\n" +
+					"Output: data matrix file name + .gff, e.g. 'qtl_results.bin' becomes 'qtl_results.gff'\n" +
+					"\n" +
 					"Example:\n" +
 					"java -jar -Xmx1g QtlToGFF.jar qtlmatrix.bin chromo.txt markers.txt probes.txt T F F 3.5 1.5 10.0\n");
 		}
@@ -153,6 +155,8 @@ public class QtlToGFF
 		{
 			throw new Exception("ERROR: Bad argument. LOD limit is not a double");
 		}
+		
+		System.out.println("All other arguments OK...");
 		
 		boolean a = trait_has_bppos.equals("T") ? true : false;
 		boolean b = cumu_trait_bppos.equals("T") ? true : false;

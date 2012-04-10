@@ -24,11 +24,7 @@ public class QtlToGFFConverter
 	{
 		chromosomes = loadChromosomes(chromosomeFile);
 		markers = loadMarkers(markerFile);
-		
-		if(trait_has_bppos)
-		{
-			traits = loadTraits(traitFile);
-		}
+		traits = loadTraits(traitFile);
 		
 		BinaryDataMatrixInstance instance = new BinaryDataMatrixInstance(matrixFile);
 		
@@ -40,7 +36,12 @@ public class QtlToGFFConverter
 		
 		//perform checks: figure out if markers are on rows of cols, account for all trait/marker names in rows/cols (must all match 100%)
 		
+		//get row/colnames from markers/traits and only iterate over those - report unmatched entries in matrix
+		
+		//take chromosome order and bp lengths into account
+		
 		//parse through the matrix and perform peak detection
+		//maybe simple at first, so just significant regions and not proper dropoff peak detect..
 		
 		//append intervals to GFF file
 		
@@ -61,6 +62,7 @@ public class QtlToGFFConverter
 		    m.setChromosomeName(split[2]);
 		    markers.put(split[0], m);
 		}
+		System.out.println("Read in markers");
 		return markers;
 	}
 	
@@ -78,6 +80,7 @@ public class QtlToGFFConverter
 		    c.setOrderNr(Short.parseShort(split[3]));
 		    chromosomes.put(split[0], c);
 		}
+		System.out.println("Read in chromosomes");
 		return chromosomes;
 	}
 	
@@ -94,6 +97,7 @@ public class QtlToGFFConverter
 		    t.setChromosomeName(split[2]);
 		    traits.put(split[0], t);
 		}
+		System.out.println("Read in traits");
 		return traits;
 	}
 }
