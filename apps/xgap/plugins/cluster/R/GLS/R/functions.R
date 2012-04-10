@@ -62,74 +62,6 @@ MakeSnpBoxplot    <- function(data.vector,marker.vector,file.name="") {
 # TO DO : HETEROZYGOTES
 #
 
-OutlierTest    <- function(x,number.of.sds=3) {
-        st.dev  <- sd(x,na.rm=TRUE)
-        avg     <- mean(x,na.rm=TRUE)
-        outliers<- which(x < (avg - number.of.sds*st.dev) | x > (avg + number.of.sds*st.dev))
-        list(outlier.values=x[outliers],outliers=outliers)
-}
-#x       <- rnorm(1000)
-#qw      <- outlier.test(x,6)
-
-
-DefineBlocks  <- function(indices,block.size=1000) {
-    nsnp            <- length(indices)
-    if (nsnp<=block.size) {
-      blocks  <- list(indices)
-    } else {
-      blocks          <- NULL
-      nbl             <- ceiling(nsnp/block.size)
-      if (nbl== nsnp/block.size) {
-          for (i in 1:nbl) {blocks[[i]]   <- indices[(i-1)*block.size + 1:block.size]}
-      } else {
-          for (i in 1:(nbl-1)) {blocks[[i]]   <- indices[(i-1)*block.size + 1:block.size]}
-          blocks[[nbl]]   <- indices[-(1:((nbl-1)*block.size))]
-      }   
-    }
-blocks
-}
-
-MakeKinshipAsreml  <- function(K,genotype.names) {
-# K = kinship matrix
-    n                   <- nrow(K)
-    vec1                <- rep(1:n,1:n)
-    row.number.matrix   <- matrix(rep(1:n,n),ncol=n)
-    vec2                <- row.number.matrix[upper.tri(row.number.matrix,diag=T)]
-    matrix.indices      <- matrix(c(vec1,vec2),ncol=2)
-    #
-    Ainv        <- solve(K)
-    AINV        <- data.frame(matrix(0,round(.5*n*(n+1)),3))
-    names(AINV) <- c("Row","Column","Ainverse")
-    AINV[,1]    <- vec1
-    AINV[,2]    <- vec2
-    AINV[,3]    <- Ainv[matrix.indices]
-    attr(AINV,"rowNames") <-  genotype.names
-    AINV 
-}
-
-MakeVarcompFile <- function(file.name,var.comp.values=c(1,0.1)) {
-    var.comp.values      <- data.frame(var.comp=as.numeric(unlist(var.comp.values)))
-    row.names(var.comp.values)<- c("sigma2_g","sigma2_e")
-    write.table(var.comp.values,file=file.name,quote=F,row.names = T,col.names=F,sep=",") 
-}
-
-MakePhenoFile <- function(pheno.object,file.name,col.number=2) {
-    pheno.frame <- data.frame(pheno.object$genotype,pheno.object[,col.number])
-    names(pheno.frame)  <- c("genotype",names(pheno.object)[col.number])
-    write.csv(pheno.frame,quote=F,file=file.name)
-}           
-
-MakeCovariateFile <- function(pheno.dataframe,cov.cols,file.name="") {
-        cov.frame               <- data.frame(mu=rep(1,nrow(pheno.dataframe)),row.names=row.names(pheno.dataframe))
-        if (sum(cov.cols)!=0) {
-            new.names <- c(names(cov.frame),names(pheno.dataframe)[cov.cols])
-            cov.frame <- cbind(cov.frame,pheno.dataframe[,cov.cols])
-            names(cov.frame)  <- new.names
-            write.csv(cov.frame,quote=F,row.names=F,file=file.name)
-        }
-cov.frame
-}
-
 MakeGwasObject2 <- function(geno.data="atwell_data.RData",description="test",maf=0) {
 #                           csvName=paste(description,".csv",sep=""),binName=paste(description,".bin",sep=""),RimageName=paste(description,".RData",sep="")) {
 # OBJECTIVE : 
@@ -1194,43 +1126,6 @@ SimulatePhenoGivenGeno2 <- function(marker.object,sigma2a=1,sigma2e=1,h=0.5,mu=1
   # as.numeric(... %*% ... )
   }
 list(phenotype=y,effect.locations=effect.loc,qtl.freq=marker.freq,effect.sizes=sqrt(a2))
-}
-
-DefineGenomicRegions <- function(chr.vector,block.size=100) {
-  n.chr  <- length(unique(chr.vector))
-  chr.nrs<- sort(unique(chr.vector))
-  output.list1 <- list()
-  for (i in chr.nrs) {
-    j <- which(chr.nrs==i)
-    n.marker <- sum(chr.vector==i)
-    k1 <- ceiling(n.marker/block.size)
-    difference <- round(block.size/2)
-    output.list1[[j]] <- data.frame(begin=1+(0:(k1-1))*block.size,end=(1:k1)*block.size)
-    output.list1[[j]][nrow(output.list1[[j]]),2] <- n.marker
-    output.list1[[j]] <- output.list1[[j]] + sum(chr.vector<i)
-  }
-output.list1
-}
-# test:
-#DefineGenomicRegions(chr.vector=GWAS.obj$map$chromosome,block.size=10000)
- 
-DefineGenomicRegionsWithOverlap <- function(chr.vector,block.size=100) {
-  if (ceiling(block.size/2)!=block.size/2) {block.size <- block.size + 1}
-  n.chr  <- length(unique(chr.vector))
-  chr.nrs<- sort(unique(chr.vector))
-  output.list1 <- data.frame(begin=integer(0),end=integer(0))
-  for (i in chr.nrs) {
-    j <- which(chr.nrs==i)
-    n.marker <- sum(chr.vector==i)
-    k <- ceiling(2*n.marker/block.size)
-    difference <- block.size/2
-    new.output.list <- data.frame(begin=1+(0:(k-1))*(block.size/2),end=block.size+(0:(k-1))*(block.size/2))
-    nr <- nrow(new.output.list)
-    new.output.list[(nr-1):nr,2] <- n.marker
-    new.output.list <- new.output.list + sum(chr.vector<i)
-    output.list1 <- rbind(output.list1,new.output.list)
-  }
-output.list1
 }
 
 haldane <- function(x){exp(-2*x/100)}
