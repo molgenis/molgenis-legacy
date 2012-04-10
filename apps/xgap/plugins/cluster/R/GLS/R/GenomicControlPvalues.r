@@ -24,3 +24,10 @@ GenomicControlPvalues <- function(pvals, n.obs,n.cov=0) {
   new.pvals   <- pf(F.stats, df1=1, df2=n.obs-n.cov-2,lower.tail=F)
   list(pvalues=new.pvals, inflation.factor=inflation)
 }
+
+GenomicControl <- function(LRT.stats) {
+  if(missing(LRT.stats)) stop("argument 'LRT.stats' is missing, with no default")
+
+  inflation   <- median(LRT.stats)/0.456
+  LRT.stats/inflation
+}

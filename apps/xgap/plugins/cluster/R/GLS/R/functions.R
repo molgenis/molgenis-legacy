@@ -26,11 +26,6 @@ AddMeans <- function(input.frame,col.select=1:ncol(input.frame),keep.original=TR
     input.frame
 }
 
-GenomicControl <- function(LRT.stats) {
-    inflation   <- median(LRT.stats)/0.456
-    LRT.stats/inflation
-}
-
 MakeSnpBoxplot    <- function(data.vector,marker.vector,file.name="") {
     data.vector   <- as.numeric(data.vector)
     marker.vector <- as.numeric(marker.vector)
@@ -49,63 +44,6 @@ MakeSnpBoxplot    <- function(data.vector,marker.vector,file.name="") {
     }
 }
 
-# For an extended version including a training and validation set, see the function define.haplotypes in the SHARE3 script 
-FindHaplotypes <- function(marker.frame,snp.set=1:nrow(marker.frame),
-                           ind.set=1:ncol(marker.frame),MAF=0.01,classification.constant=1) {
-    # marker.frame is assumed to be a data-frame or matrix with the snps in the rows and individuals in the columns
-    # The species is assumed to be homozygote (this function is an adapted version of the more general one in the haplo.stats package,
-    # which also considers heterozygozity)
-    phased.snp.data <- t(marker.frame[snp.set,ind.set])
-    nr          <- nrow(phased.snp.data)
-    hapSeq      <- apply(phased.snp.data, 1, function(x) {paste(x, sep = "", collapse = "-")})
-    uniHap      <- unique(hapSeq)
-    nHap        <- length(uniHap)
-    hapNum      <- as.character(1:nHap) # N.B. This line replaces the following line from the original code (from the haplo.stats package) # ok now??? 
-    #hapNum      <- unlist(sapply(1:nHap, function(x) {paste(paste(rep("0", ceiling(log10(nHap)) - nchar(as.character(x))),collapse = ""), x, sep = "",collapse = "")}))
-    names(uniHap) <- paste("hap.", hapNum, sep = "")
-    hapPool     <- strsplit(uniHap, "-")
-    hapPool     <- data.frame(t(data.frame(lapply(hapPool, function(x) {as.numeric(x)}))))
-    colnames(hapPool) <- colnames(phased.snp.data)
-    hapCount    <- sapply(uniHap, function(x) {sum(x == hapSeq)})
-    hapFreq     <- hapCount/sum(hapCount)
-    noNameUniHap <- uniHap
-    names(noNameUniHap) <- NULL
-    hapIndex    <- sapply(hapSeq, function(x) {which(x == noNameUniHap)})
-    hapIndex2   <- hapIndex 
-    # Now define respectively haplotypes which  
-    # 3) the subset of tr.types that has minimal (MAF) frequency (within tr.types, not the whole sample)
-    # 4) the subset of tr.types that is below this frequency
-    common.types<- sort((1:nHap)[(tabulate(hapIndex,nbins=nHap)/nr)>MAF])     
-    rare.types  <- sort((1:nHap)[(tabulate(hapIndex,nbins=nHap)/nr)<=MAF])
-    hapIndex2[hapIndex %in% rare.types] <- 0
-    if ((length(rare.types))>0) {
-        new.hapPool     <- hapPool[common.types,]
-        new.nHap        <- nrow(new.hapPool)
-        new.hapIndex    <- matrix(0,nr,length(common.types))
-        common.individuals<- which(hapIndex %in% common.types)
-        n.c             <- length(common.individuals)# as.numeric(as.factor(... : this is to rename the common types
-        new.hapIndex[matrix(c(common.individuals, as.numeric(as.factor(hapIndex[common.individuals]))), ncol=2)]   <- 1
-        for (h in rare.types) {
-            qw          <- hapPool[h,] 
-            differences <- apply(hapPool[common.types,],1,FUN=function(x) {sum(x!=qw)})
-            weights     <- exp(-classification.constant*differences)
-            weights     <- weights/sum(weights)
-            new.hapIndex[which(hapIndex==h),]<- matrix(rep(weights,sum((hapIndex==h))),byrow=TRUE,ncol=length(weights))
-        } 
-    hapPool     <- new.hapPool
-    hapIndex     <- new.hapIndex
-    nHap        <- new.nHap
-    } else {
-        new.hapIndex    <- matrix(0,nr,length(common.types))
-        common.individuals<- which(hapIndex %in% common.types)
-        n.c             <- length(common.individuals)# as.numeric(as.factor(... : this is to rename the common types
-        new.hapIndex[matrix(c(common.individuals, as.numeric(as.factor(hapIndex[common.individuals]))), ncol=2)]   <- 1
-        hapIndex     <- new.hapIndex
-    }
-list(hapIndex=hapIndex,nHap=nHap,hapPool=hapPool,hapCodes=hapIndex2)
-}
-# find.haplotypes(snp, c(12,14,16,21),MAF=0.01)
-
 # then : 
 #- asreml # nb columbia genotypes !!
 #- call this using snp.sig, + genes 
@@ -116,27 +54,6 @@ list(hapIndex=hapIndex,nHap=nHap,hapPool=hapPool,hapCodes=hapIndex2)
 # interpretation haplo-tested
 # correction haplo boxplot (when MAF>0)
 
-
-fdp <- function(pvals,ev=1,gamma=0.05) {
-# computes false discovery proportion under the full (strong) null
-p<- length(pvals)
-if (gamma==0) {
-    lod.thr= -log(ev/p,base=10)
-    R.thr= sum(pvals<= ev/p)
-} else {
-    evtable = data.frame(pvalues=sort(pvals),test=rep(0,p))
-    evtable$test  = as.numeric((p*evtable$pvalues) /(1:p)<= gamma)
-    if (sum(evtable$test)==p) {
-      R.thr=p
-      lod.thr=-log(evtable$pvalues[p],base=10)
-    } else {
-      ind = min(which(evtable$test==0))-1
-      if (ind==0) {R.thr=0; lod.thr=Inf} else {R.thr=ind; lod.thr=-log(evtable$pvalues[ind],base=10)}
-    } 
-}
-list(lod.thr,R.thr)
-}
-
 # estimate.interaction
 #geno.vector=GWAS.obj$pheno$genotype;marker1=as.numeric(GWAS.obj$markers[interactions$snp1[ep],GWAS.obj$pheno$genotype]);marker2=as.numeric(GWAS.obj$markers[interactions$snp2[ep],GWAS.obj$pheno$genotype]);trait.values=GWAS.obj$pheno[,tr];cov.values=cov.frame.interaction;kinship.asreml.object=GWAS.obj$kinship.asreml
 #
@@ -144,28 +61,6 @@ list(lod.thr,R.thr)
 # assumes 0-1 markers    
 # TO DO : HETEROZYGOTES
 #
-               
-EstimateInteraction  <- function(geno.vector,marker1,marker2,trait.values,kinship.asreml.object,cov.values=data.frame(NULL)) {
-  #
-  require(asreml)
-  # N.B. the input geno.vector is (supposed to be) character; for asreml, ordered factor is requires
-  interaction.frame   <- data.frame(genotype=ordered(geno.vector,levels=unique(geno.vector)),phenotype=trait.values,marker1=marker1,marker2=marker2,epistasis=marker1*marker2)
-  if (ncol(cov.values)>1) {interaction.frame   <- cbind(interaction.frame,cov.values)}
-  if (ncol(cov.values)==1) {  
-          reml.formula.inter        <- as.formula("phenotype ~ marker1 + marker2 + epistasis")
-      } else {
-          reml.formula.inter        <- as.formula(paste("phenotype ~ marker1 + marker2 + epistasis +",paste(names(cov.values),collapse="+")))
-      }
-  reml.obj<- asreml(fixed= reml.formula.inter,data=interaction.frame, random = ~ giv(genotype,var=T),na.method.X="omit", 
-                    ginverse = list(genotype=GWAS.obj$kinship.asreml),G.param=iv,R.param=iv,fixgammas=TRUE)  
-  # N.B. in the preceding line, we should have kinship.asreml.object instead of GWAS.obj$kinship.asreml; but the former gives an error. WHY ??
-  # N.B another "global" object is used: iv, defined in emmax_win.r
-  #  this is done to pass on the values of the variance components as they are in the scan for the main effects
-  effect  <-  reml.obj$coefficients$fixed[["epistasis"]]
-  pvalue  <- (wald(reml.obj))[[4]][4]
-  list(pvalue,effect)
-}
-#estimate.interaction(geno.vector=GWAS.obj$pheno$genotype,marker1=as.numeric(GWAS.obj$markers[interactions$snp1[ep],GWAS.obj$pheno$genotype]),marker2=as.numeric(GWAS.obj$markers[interactions$snp2[ep],GWAS.obj$pheno$genotype]),trait.values=GWAS.obj$pheno[,tr],kinship.asreml.object=GWAS.obj$kinship.asreml)
 
 OutlierTest    <- function(x,number.of.sds=3) {
         st.dev  <- sd(x,na.rm=TRUE)
@@ -193,7 +88,6 @@ DefineBlocks  <- function(indices,block.size=1000) {
     }
 blocks
 }
-
 
 MakeKinshipAsreml  <- function(K,genotype.names) {
 # K = kinship matrix
@@ -235,24 +129,6 @@ MakeCovariateFile <- function(pheno.dataframe,cov.cols,file.name="") {
         }
 cov.frame
 }
-
-# to do: remove the temporary files after the bin-file has been created
-MakeBin  <- function(markers,kinship.file,csv.file.name,bin.file.name) {
-    varcompfile <- "temp.varcomp.csv"  
-    MakeVarcompFile(file.name=varcompfile)
-    temp.pheno.file <- "temp.pheno.csv"
-    MakePhenoFile(pheno.object=data.frame(genotype=rep(names(markers),each=2),temp.trait=rnorm(2*ncol(markers))),col.number=2,file.name=temp.pheno.file)
-    output.file <- "temp.output.csv"
-    command.string      <- paste("scan_GLS",csv.file.name,temp.pheno.file,kinship.file,varcompfile,output.file,"-writebin",bin.file.name)
-    system(command.string, intern = TRUE, ignore.stderr = FALSE,wait = TRUE, input = NULL)
-}
-
-MakeCsv  <- function(markers,plant.names,file.name) {
-    blocks <- DefineBlocks(1:nrow(markers),10000)
-    cat("",plant.names,"\n",file=file.name,sep=",")
-    for (i in 1:length(blocks)) {write.table(markers[blocks[[i]],],file=file.name,quote=F,append=T,col.names =F,sep=",")}
-}
-
 
 MakeGwasObject2 <- function(geno.data="atwell_data.RData",description="test",maf=0) {
 #                           csvName=paste(description,".csv",sep=""),binName=paste(description,".bin",sep=""),RimageName=paste(description,".RData",sep="")) {
@@ -900,73 +776,6 @@ if (file.name!="") {dev.off()}
 
 } #   END OF THE FUNCTION
 
-# To do: rainbow colored dots for effects size
-MakeLodPlotWithChromosomeColors <- function(xvalues,yvalues,gwas.obj,file.name="",jpeg.plot=T,x.lab="base pairs",
-                        y.lab="-10Log(p)",x.sig=integer(0),x.effects=integer(0),col.palette = c("royalblue","maroon","royalblue","maroon","royalblue"),
-                        effects.size=numeric(0),chr.boundaries=c(0),y.thr=0) {
-# OBJECTIVE : Make a plot of the LOD-profile, on screen or in a file (pdf or jpeg)
-# Significant markers can be highlighted with red dots
-# 
-# INPUT :
-# * file.name  : if "", the plot is made to the screen. Otherwise to that file (should be .jpeg or .pdf)
-# * jpeg.plot  : if TRUE, jpeg is produced, otherwise pdf
-# * xvalues    : vector of cumulative marker positions
-# * yvalues    : vector of LOD-scores
-# * x.lab      : x-axis label
-# * y.lab      : y-axis label
-# * x.sig      : vector of integers, indicating which components in the vectors xvalues and yvalues are significant
-# * x.effects  : vector of integers, indicating which components in the vector xvalues correspond to a real (known) effect
-# * effects.size: vector of reals indicating the effect-sizes corresponding to x.effects 
-# * chr.boundaries : vector of chromosome boundaries, i.e. x-values on the same scale as xvalues  
-# * y.thr      : LOD-threshold
-#
-# OUTPUT : a plot
-# * markers declared significant get a red dot
-# * markers with a true effect get a blue dot
-# * if both the real effects and the "declared significant" are given, the markers that are in the
-#   intersection (i.e. true positives) get a pink dot
-if (file.name!="") {
-  if (jpeg.plot) {jpeg(file.name)} else {pdf(file.name)}
-}
-
-plot(x=xvalues,y=yvalues,xlab=x.lab,ylab=y.lab,type="n",lwd=0.4)
-if (sum(chr.boundaries)!=0) {
-  for (CHR in 1:gwas.obj$nchr) {
-    lines(x=xvalues[gwas.obj$map$chromosome==CHR],y=yvalues[gwas.obj$map$chromosome==CHR],type="l",lwd=0.4,col=col.palette[CHR])    
-  }
-  #for (chr.b in chr.boundaries) {
-  #  lines(x=rep(chr.b,2),y=c(0,max(yvalues)),lwd=1)
-  #}
-} else {
-  plot(x=xvalues,y=yvalues,xlab=x.lab,ylab=y.lab,type="l",lwd=0.4)    
-}
-
-class(x.sig) <- "integer"
-class(x.effects) <- "integer"
-
-if (sum(x.sig)!=0 | sum(x.effects)!=0) {
-  if (sum(x.sig)!=0 & sum(x.effects)==0) {
-    points(x=xvalues[x.sig],y=yvalues[x.sig],pch=20,col="red")
-  }
-  if (sum(x.sig)==0 & sum(x.effects)!=0) {
-    points(x=xvalues[x.effects],y=yvalues[x.effects],pch=20,col="blue",lwd=2)
-  }
-  if (sum(x.sig)!=0 & sum(x.effects)!=0) {
-    false.neg <- setdiff(x.effects,x.sig)
-    false.pos <- setdiff(x.sig,x.effects)
-    true.pos  <- intersect(x.sig,x.effects)
-    points(x=xvalues[false.pos],y=yvalues[false.pos],pch=20,col="red")
-    points(x=xvalues[false.neg],y=yvalues[false.neg],pch=20,col="blue")
-    points(x=xvalues[true.pos],y=yvalues[true.pos],pch=20,col="purple",lwd=2)
-  }
-}
-if (y.thr!=0) {lines(x=c(min(xvalues),max(xvalues)),y=rep(y.thr,2))}
-if (file.name!="") {dev.off()}
-
-} #   END OF THE FUNCTION
-
-
-
 ############# code found on CRAN  
 getAttributeField <- function (x, field, attrsep = ";") {
      s = strsplit(x, split = attrsep, fixed = TRUE)
@@ -1526,14 +1335,6 @@ Meff <- min(which(cumsum(eigen.vals)/sum(eigen.vals) > cut.off))
 Meff
 }
 
-CalculateEffect <- function(gwas.obj,snp.name,trait.number) {
-  effect.size <- NA
-  if (!is.na(mean(gwas.obj$pheno[gwas.obj$markers[snp.name,gwas.obj$pheno$genotype]==1,trait.number],na.rm=T)) & !is.na(mean(gwas.obj$pheno[gwas.obj$markers[snp.name,gwas.obj$pheno$genotype]==0,trait.number],na.rm=T))) {
-    effect.size <- mean(gwas.obj$pheno[gwas.obj$markers[snp.name,gwas.obj$pheno$genotype]==1,trait.number],na.rm=T) - mean(gwas.obj$pheno[gwas.obj$markers[snp.name,gwas.obj$pheno$genotype]==0,trait.number],na.rm=T)
-  }
-effect.size/2
-}
-
 ReadGenstatSimulatedCross <- function(geno.file,map.file,pheno.file,rqtl.file,trait.name="test") {
 # OBJECTIVE : read  a geno, map , and pheno file (typically the DH-simulation by Marcos, done in Genstat),
 #             write it to a csvr file (see www.rqtl.org) import it in R-qtl
@@ -1572,27 +1373,3 @@ GetResiduals <- function(y,X,lm.family=1) {
   }
 as.numeric(lm.fit$residuals)
 }
-
-NormalQuantileTransform <- function(y) {
-# the normal quantile transform as in Guan and Stephens (2010) 
-qqnorm(y,plot.it=F)$x
-}
-
-KinshipTransform <- function(Matrix) {
-  nn <- ncol(Matrix)
-  (sum(diag(Matrix))-as.numeric(matrix(1,1,nn) %*% Matrix %*% matrix(1,nn,1))/nn)/(nn-1)
-}
-
-
-# OBJECTIVE : 
-# *
-# *
-# INPUT :
-# *
-# *
-# *
-# OUTPUT :
-# *
-# *
-# *
-
