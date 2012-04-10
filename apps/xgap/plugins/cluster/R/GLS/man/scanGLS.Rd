@@ -1,7 +1,6 @@
-\name{scanGLS}
-\alias{scanGLS}
+\name{scan.GLS}
 \alias{scan.GLS}
-\title{scanGLS - GWAS analysis }
+\title{scan.GLS - GWAS analysis }
 \description{
   GWAS analysis
 }

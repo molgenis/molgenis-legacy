@@ -10,7 +10,7 @@
 \details{
   TODO: Links to the main functions of the package
   \itemize{
-    \item \code{\link{scanGLS}} - \code{\link{scanGLS}}
+    \item \code{\link{scan.GLS}} - \code{\link{scan.GLS}}
   }
 }
 \author{
@@ -28,6 +28,6 @@
 
 \seealso{
   \itemize{
-    \item \code{\link{scanGLS}} - main function in scanGLS
+    \item \code{\link{scan.GLS}} - main function in scanGLS
   }
 }
