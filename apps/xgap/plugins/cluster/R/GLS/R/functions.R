@@ -570,7 +570,7 @@ AddPhenoData  <- function(gwas.obj,csv.file.name,add.var.means=FALSE,mean.cols=0
 #           if make.pheno.image=TRUE, also an R-image containing the phenotypic data is created
 #           (for consistency with earlier version this data-frame is then called data1)
 
-if (!add.var.means) {mean.cols<-0}
+  if (!add.var.means) {mean.cols<-0}
 if (sum(mean.cols)==0) {add.var.means<-FALSE}
 #
 data0                   <- read.table(file=csv.file.name,sep=",",na.strings="",header=T)
@@ -703,42 +703,6 @@ if (y.thr!=0) {lines(x=c(min(xvalues),max(xvalues)),y=rep(y.thr,2))}
 if (file.name!="") {dev.off()}
 
 } #   END OF THE FUNCTION
-
-############# code found on CRAN  
-getAttributeField <- function (x, field, attrsep = ";") {
-     s = strsplit(x, split = attrsep, fixed = TRUE)
-     sapply(s, function(atts) {
-         a = strsplit(atts, split = "=", fixed = TRUE)
-         m = match(field, sapply(a, "[", 1))
-         if (!is.na(m)) {
-             rv = a[[m]][2]
-         }
-         else {
-             rv = as.character(NA)
-         }
-         return(rv)
-     })
-}
-
-# and here is quick parser
-
-gffRead <- function(gffFile, nrows = -1) {
-     cat("Reading ", gffFile, ": ", sep="")
-     gff = read.table(gffFile, sep="\t", as.is=TRUE, quote="",
-     header=FALSE, comment.char="#", nrows = nrows,
-     colClasses=c("character", "character", "character", "integer",
-"integer",
-     "character", "character", "character", "character"))
-     colnames(gff) = c("seqname", "source", "feature", "start", "end",
-             "score", "strand", "frame", "attributes")
-     cat("found", nrow(gff), "rows with classes:",
-         paste(sapply(gff, class), collapse=", "), "\n")
-     stopifnot(!any(is.na(gff$start)), !any(is.na(gff$end)))
-     return(gff)
-}
-
-############# END of code found on CRAN
-
 
 PlotMcmcResults  <- function(mcmc.results,names,effects=data.frame(),file.name="plot.pdf") {
 # CODE BY CHRISTIAN SCHAFER (CREST / UNIVERSITE PARIS DAUPHINE)
@@ -1125,13 +1089,6 @@ list(phenotype=y,effect.locations=effect.loc,qtl.freq=marker.freq,effect.sizes=s
 }
 
 haldane <- function(x){exp(-2*x/100)}
-
-computeVariance <- function(effectsFrame) {
-  x <- matrix(effectsFrame$location,ncol=nrow(effectsFrame))
-  a <- matrix(outer(t(x),x,FUN="-"),ncol=nrow(effectsFrame))
-  y <- matrix(effectsFrame$size,ncol=1)
-  t(y) %*% haldane(abs(a)) %*% y
-}
 
 MoskvinaCorrection <- function(marker.frame,number.of.replicates=rep(1,ncol(marker.frame)),
                                inv.cor.matrix=diag(rep(1,sum(number.of.replicates))),b.size=100,alpha=0.05) {
