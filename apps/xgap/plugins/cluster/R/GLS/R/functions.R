@@ -1088,7 +1088,7 @@ SimulatePhenoGivenGeno2 <- function(marker.object,sigma2a=1,sigma2e=1,h=0.5,mu=1
 list(phenotype=y,effect.locations=effect.loc,qtl.freq=marker.freq,effect.sizes=sqrt(a2))
 }
 
-haldane <- function(x){exp(-2*x/100)}
+
 
 MoskvinaCorrection <- function(marker.frame,number.of.replicates=rep(1,ncol(marker.frame)),
                                inv.cor.matrix=diag(rep(1,sum(number.of.replicates))),b.size=100,alpha=0.05) {
@@ -1168,16 +1168,3 @@ ReadGenstatSimulatedCross <- function(geno.file,map.file,pheno.file,rqtl.file,tr
 sim.a
 }
 
-GetResiduals <- function(y,X,lm.family=1) {
-# INPUT : a vector y and a design matrix or data.frame X, without intercept
-#   family = 1 standard regression. family!=1 : logit
-# OUTPUT : residuals of regression of y on to X
-  Data       <- data.frame(cbind(y,X))#if (!is.data.frame)
-  lm.formula <- paste(names(Data)[1],"~",paste(names(Data)[-1],collapse="+")) 
-  if (lm.family==1) {
-    lm.fit     <- glm(formula=lm.formula,data=Data,family=gaussian(link = "identity"))  
-  } else {
-    lm.fit     <- glm(formula=lm.formula,data=Data,family=binomial(link = "logit"))
-  }
-as.numeric(lm.fit$residuals)
-}
