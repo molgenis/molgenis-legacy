@@ -4,7 +4,6 @@
 #
 # Copyright (c) 2012 Willem Kruijer and Danny Arends
 
-
 GINV    <- function(M) {
   if(missing(M)) stop("argument 'M' is missing, with no default")
   
