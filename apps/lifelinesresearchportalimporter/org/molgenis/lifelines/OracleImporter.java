@@ -32,8 +32,8 @@ import org.apache.log4j.PropertyConfigurator;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jpa.JpaDatabase;
-import org.molgenis.lifelines.listeners.VWCategoryListener;
-import org.molgenis.lifelines.listeners.VwDictListener;
+import org.molgenis.lifelines.listeners.CategoryLoader;
+import org.molgenis.lifelines.listeners.DictLoader;
 import org.molgenis.lifelines.utils.EAVToView;
 import org.molgenis.lifelines.utils.LoaderUtils;
 import org.molgenis.lifelines.utils.LoaderUtils.eDatabase;
@@ -147,18 +147,15 @@ public class OracleImporter {
 
 	private void loadData() throws DatabaseException, FileNotFoundException,
 			Exception, IOException {
-		VwDictListener dicListener = new VwDictListener(inv, DICT,
-				SHARED_MEASUREMENTS, db, protocolsToImport);
-		CsvReader reader = new CsvFileReader(new File(path + DICT + "_DATA_VIEW.csv"),  CHAR_ENCODING);
-		reader.parse(dicListener);
-		dicListener.commit();
-
+		DictLoader dicListener = new DictLoader(
+				new File(path + DICT + "_DATA_VIEW.csv"), CHAR_ENCODING, inv, SHARED_MEASUREMENTS, em, protocolsToImport);
+		dicListener.load();
+		
 		// load categories
-		VWCategoryListener catListener = new VWCategoryListener(
-				dicListener.getProtocols(), inv, CATE, db, SHARED_MEASUREMENTS, protocolsToImport);
-		reader = new CsvFileReader(new File(path + CATE + "_DATA_VIEW.csv"), CHAR_ENCODING);
-		reader.parse(catListener);
-		catListener.commit();
+		CategoryLoader catListener = new CategoryLoader(
+				new File(path + DICT + "_DATA_VIEW.csv"), CHAR_ENCODING,
+				dicListener.getProtocols(), inv, CATE, em, SHARED_MEASUREMENTS, protocolsToImport);
+		catListener.load();
 
 		createOracleTrigger();
 
