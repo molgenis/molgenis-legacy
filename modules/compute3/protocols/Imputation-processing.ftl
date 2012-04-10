@@ -1,4 +1,4 @@
-#MOLGENIS walltime=23:00:00 nodes=1 cores=1 mem=8 clusterQueue=nodes
+#MOLGENIS walltime=23:00:00 nodes=1 cores=1 mem=8 clusterQueue=nodes interpreter=bash
 
 #INPUTS input_1,input_2,input_3,input_4,sample_g,exclude_samples_g
 #OUTPUTS output_1
