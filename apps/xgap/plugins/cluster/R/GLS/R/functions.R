@@ -786,41 +786,6 @@ mapAsDataFrame  <- function(crossObject) {
 return(mapDataFrame)
 }
 
-
-
-ExtractDesignMatrixFromCross  <- function(crossObject) {
-# INPUT :
-# a cross-object
-# OUTPUT :
-# a data-frame
-# first column: chromosome; 2nd column : position
-
-regr.frame <- data.frame(simdata=crossObject$pheno)
-
-for (i in 1:nchr(crossObject)) {
-  n.temp  <- ncol(regr.frame)
-  regr.frame <- cbind(regr.frame,as.data.frame(crossObject$geno[[i]]$data))
-  names(regr.frame)[-(1:n.temp)] <- names(pull.map(crossObject)[[i]])
-}
-regr.frame
-}
-
-ExtractPiMassInputFilesFromCross  <- function(crossObject,geno.file="geno_piMASS.txt",pheno.file="pheno_piMASS") {
-# INPUT :
-# a cross-object
-# OUTPUT :
-# geno- and phenotype text files
-
-regr.frame <- ExtractDesignMatrixFromCross(crossObject)
-
-geno.frame <- t(2*(regr.frame[,-1]-1)) 
-pheno.vector<- regr.frame[,1]
-pheno.frame<- qqnorm(pheno.vector,plot.it=F)$pheno.vector
-write.table(geno.frame,file=geno.file,quote=F,row.names=T,col.names=F,sep=",")
-write.table(pheno.frame,file=pheno.file,quote=F,row.names=F,col.names=F,sep=",")
-
-}
-
 # to do simplify, and use the functions ExtractPiMassGenoFilesFromGwasObject and
 # ExtractPiMassPhenoFilesFromGwasObject defined below
 ExtractPiMassInputFilesFromGwasObject  <- function(gwas.object,trait.number,covariate.numbers=0,pca.correct=T,
