@@ -58,7 +58,11 @@
 				For example 'length' or 'rs123534' or 'probe123'. Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." /> <field name="Outputs" 
 				type="mref" xref_entity="ComputeFeature" nillable="true" description="Shadows Protocol.Features (copy):The features that can be observed using this protocol. For example 'length' or 'rs123534' or 'probe123'. 
 				Also protocol parameters are considered observable features as they are important to the interpretation of the observed values." / -->
-		</entity>
+            <field name="inputs" type="mref" xref_entity="ComputeParameter" nillable="true" />
+            <field name="outputs" type="mref" xref_entity="ComputeParameter" nillable="true" />
+            <field name="exes" type="mref" xref_entity="ComputeParameter" nillable="true" />
+            <field name="log" type="mref" xref_entity="ComputeParameter" nillable="true" />
+        </entity>
 		<entity name="ComputeParameter" extends="Measurement">
 			<description>Parameter are the inputs or outputs into an
 				ComputeProtocol. It reuses all of ObservableFeature to define the

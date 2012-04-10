@@ -15,9 +15,7 @@ import org.molgenis.util.Tuple;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,12 +26,35 @@ import java.util.List;
  */
 public class ModelLoader
 {
+    public static final String FLAG_MOLGENIS = "#MOLGENIS";
+
+    public static final String FLAG_INPUTS = "#INPUTS";
+    public static final String FLAG_OUTPUTS = "#OUTPUTS";
+    public static final String FLAG_EXES = "#EXES";
+    public static final String FLAG_LOG = "#LOG";
+    public static final String FLAG_TARGETS = "#TARGETS";
+
+    public static final String FLAG_CLUSTER_QUEUE = "clusterQueue";
+    public static final String FLAG_CORES = "cores";
+    public static final String FLAG_NODES = "nodes";
+    public static final String FLAG_WALLTIME = "walltime";
+    public static final String FLAG_MEMORY = "mem";
+
+    public static final String FLAG_INTERPRETER = "interpreter";
+    private static final String INTERPRETER_BASH = "bash";
+	private static final String INTERPRETER_R = "R";
+
+
     private static Logger logger = Logger.getLogger(ModelLoader.class);
+
+    private Workflow workflow = null;
 
     public Workflow loadWorkflowFromFiles(File fileWorkflow, File dirProtocol, File fileParameters) throws Exception
     {
-        Workflow workflow = new Workflow();
+        workflow = new Workflow();
         String name = fileWorkflow.getName();
+        //removing file extension
+        name = name.substring(0, name.lastIndexOf("."));
         workflow.setName(name);
 
         //read workflow elements
@@ -60,19 +81,185 @@ public class ModelLoader
 
             isExist(fileProtocol);
 
-            String protocol = readFileAsString(fileProtocol);
+            String protocol = readFileAsString( fileProtocol);
             //create ComputeProtocol parsing file
-            ComputeProtocol computeProtocol = parseComputeProtocolFromString(protocol);
+            ComputeProtocol computeProtocol = parseComputeProtocolFromString(strComputeProtocol, protocol);
             workflowElement.setProtocol(computeProtocol);
+
+            //set predecessors for workflow elements
+            workflowElement.setPreviousSteps(createListPreviousSteps(workflowElement, workflowElements));
         }
 
         return workflow;
     }
 
-    private ComputeProtocol parseComputeProtocolFromString(String protocol)
+    private List<WorkflowElement> createListPreviousSteps(WorkflowElement workflowElement, List<WorkflowElement> workflowElements)
     {
-        System.out.println("  ... parsed");
+        List<WorkflowElement> previous = new ArrayList<WorkflowElement>();
+        List<String> names = workflowElement.getPreviousSteps_Name();
+
+        for(int i = 0; i < names.size(); i++)
+        {
+            WorkflowElement el = findWorkflowElement(names.get(i), workflowElements);
+            previous.add(el);
+        }
+
+        return previous;
+    }
+
+    private WorkflowElement findWorkflowElement(String s, List<WorkflowElement> workflowElements)
+    {
+        Iterator<WorkflowElement> itr = workflowElements.iterator();
+        while(itr.hasNext())
+        {
+            WorkflowElement el = itr.next();
+            String name = el.getName();
+
+            if(s.equalsIgnoreCase(name))
+                return el;
+        }
+
+        logger.log(Level.ERROR, "workflow element " + s + " does not exist");
+        System.exit(1);
         return null;
+    }
+
+    private ComputeProtocol parseComputeProtocolFromString(String protocolName, String protocolListing)
+    {
+
+        ComputeProtocol protocol = new ComputeProtocol();
+
+        protocol.setName(protocolName);
+        protocol.setScriptTemplate(protocolListing);
+
+        String strMolgenisHeader = protocolListing.substring(protocolListing.indexOf(FLAG_MOLGENIS),
+                protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_MOLGENIS)));
+
+        //set walltime
+        String str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_WALLTIME);
+        protocol.setWalltime(str);
+
+        //set # nodes
+        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_NODES);
+        protocol.setNodes(Integer.parseInt(str));
+
+        //set # cores
+        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_CORES);
+        protocol.setCores(Integer.parseInt(str));
+
+        //set interpreter
+        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_INTERPRETER);
+        protocol.setInterpreter(str);
+
+        //set cluster queue
+        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_CLUSTER_QUEUE);
+        protocol.setClusterQueue(str);
+
+        //set memory
+        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_MEMORY);
+        protocol.setMem(str);
+
+        //set targets
+        str = protocolListing.substring(protocolListing.indexOf(FLAG_TARGETS),
+                protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_TARGETS)));
+        List<ComputeParameter> list = getParametersFromHeader(str);
+        protocol.setIterateOver(list);
+
+        //set inputs
+        str = protocolListing.substring(protocolListing.indexOf(FLAG_INPUTS),
+                        protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_INPUTS)));
+        list = getParametersFromHeader(str);
+        protocol.setInputs(list);
+
+        //set outputs
+        str = protocolListing.substring(protocolListing.indexOf(FLAG_OUTPUTS),
+                        protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_OUTPUTS)));
+        list = getParametersFromHeader(str);
+        protocol.setOutputs(list);
+
+        //set exes
+        str = protocolListing.substring(protocolListing.indexOf(FLAG_EXES),
+                                protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_EXES)));
+                list = getParametersFromHeader(str);
+                protocol.setExes(list);
+
+        //set logs
+        str = protocolListing.substring(protocolListing.indexOf(FLAG_LOG),
+                                protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_LOG)));
+                list = getParametersFromHeader(str);
+                protocol.setLog(list);
+
+        System.out.println("  ... parsed");
+        return protocol;
+    }
+
+    private List<ComputeParameter> getParametersFromHeader(String str)
+    {
+        List<ComputeParameter> list = new ArrayList<ComputeParameter>();
+        Vector<String> names = findNames(str);
+
+        for(int i = 0; i < names.size(); i++)
+        {
+            ComputeParameter par = findParameter(names.elementAt(i));
+            list.add(par);
+        }
+
+        return list;
+    }
+
+    private ComputeParameter findParameter(String s)
+    {
+        Collection<ComputeParameter> parameters = workflow.getWorkflowComputeParameterCollection();
+
+        Iterator<ComputeParameter> itr = parameters.iterator();
+        while(itr.hasNext())
+        {
+            ComputeParameter par = itr.next();
+            String name = par.getName();
+
+            if(s.equalsIgnoreCase(name))
+                return par;
+        }
+
+        logger.log(Level.ERROR, "parameter " + s + " does not exist");
+        System.exit(1);
+        return null;
+    }
+
+    private Vector<String> findNames(String list)
+    {
+        Vector<String> names = new Vector<String>();
+        int posEmpty = list.indexOf(" ") + 1;
+        list = list.substring(posEmpty);
+
+        while(list.indexOf(",") > -1)
+        {
+            int posComa = list.indexOf(",");
+            String name = list.substring(0, posComa).trim();
+            if(name != "")
+                names.addElement(name);
+            list = list.substring(posComa + 1);
+        }
+        list = list.trim();
+        if(list.length() > 0)
+            names.add(list);
+        return names;
+    }
+
+
+    private String getValueFromMolgenisHeader(String str, String flag)
+    {
+        String value;
+        int index = str.indexOf("=", str.indexOf(flag)) + 1;
+
+        int indexSpace = str.indexOf(" ", index);
+
+        if(indexSpace > -1)
+            value = str.substring(index, indexSpace);
+        else
+            value = str.substring(index);
+
+        return value;
     }
 
     public List<Tuple> loadWorksheetFromFile(File fileWorksheet)
