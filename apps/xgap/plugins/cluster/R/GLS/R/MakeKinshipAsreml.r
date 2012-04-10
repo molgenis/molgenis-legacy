@@ -4,7 +4,6 @@
 #
 # Copyright (c) 2012 Willem Kruijer and Danny Arends
 
-
 MakeKinshipAsreml  <- function(K, genotype.names){
   if(missing(K)) stop("argument 'K' is missing, with no default")
   if(missing(genotype.names)) stop("argument 'genotype.names' is missing, with no default")

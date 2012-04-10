@@ -1,7 +1,3 @@
-IbdCorrection  <- function(K, T=0){
-  apply(K-matrix(T,nrow(K),ncol(K)),c(1,2),function(x) max(x,0))/(1-T)
-}
-
 
 #pst <- function(str) {paste(,sep="")}
 AddMeans <- function(input.frame,col.select=1:ncol(input.frame),keep.original=TRUE) {
