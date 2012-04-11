@@ -65,9 +65,13 @@ public class CommandLineGenerator
         //read worksheet
         List<Tuple> worksheet = loader.loadWorksheetFromFile(fileWorksheet);
 
-        //generate compute jobs
         JobGenerator jobGenerator = new GenericJobGenerator();
-        Vector<ComputeJob> computeJobs = jobGenerator.generateComputeJobs(workflow, worksheet);
+        //set configuration settings
+        jobGenerator.setConfig(config);
+
+        //generate compute jobs
+        //here, ComputeJobs can be generated also from DB given list of Targets
+        Vector<ComputeJob> computeJobs = jobGenerator.generateComputeJobsWorksheet(workflow, worksheet);
 
         //generate actual analysis files
         boolean status = jobGenerator.generateActualJobs(computeJobs, backend, config);

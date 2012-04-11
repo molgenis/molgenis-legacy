@@ -1,6 +1,7 @@
 package org.molgenis.generator;
 
 import org.molgenis.compute.ComputeJob;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Tuple;
 
@@ -26,7 +27,10 @@ public interface JobGenerator
     public static final String GENERATION_ID = "runid";
     public static final String TEMPLATE_DIR = "templatedir";
 
-    Vector<ComputeJob> generateComputeJobs(Workflow workflow, List<Tuple> worksheet);
+    Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet);
+    Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet);
 
     boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String,String> config);
+
+    void setConfig(Hashtable<String,String> config);
 }
