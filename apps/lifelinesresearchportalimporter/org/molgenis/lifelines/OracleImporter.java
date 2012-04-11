@@ -147,21 +147,27 @@ public class OracleImporter {
 
 	private void loadData() throws DatabaseException, FileNotFoundException,
 			Exception, IOException {
-		DictLoader dicListener = new DictLoader(
-				new File(path + DICT + "_DATA_VIEW.csv"), CHAR_ENCODING, inv, SHARED_MEASUREMENTS, em, protocolsToImport);
-		dicListener.load();
 		
-		// load categories
-		CategoryLoader catListener = new CategoryLoader(
-				new File(path + DICT + "_DATA_VIEW.csv"), CHAR_ENCODING,
-				dicListener.getProtocols(), inv, CATE, em, SHARED_MEASUREMENTS, protocolsToImport);
-		catListener.load();
-
+		//load Measurements into db
+		final DictLoader dictLoader = new DictLoader(
+				new File(path + DICT + "_DATA_VIEW.csv"), CHAR_ENCODING, inv, SHARED_MEASUREMENTS, em, protocolsToImport);
+		dictLoader.load();
+		dictLoader.close();
+		
+		// load categories into db
+		{
+			final CategoryLoader catLoader = new CategoryLoader(
+					new File(path + DICT + "_DATA_VIEW.csv"), CHAR_ENCODING,
+					dictLoader.getProtocols(), inv, em, SHARED_MEASUREMENTS, protocolsToImport);
+			catLoader.load();
+			catLoader.close();
+		}
+		
 		createOracleTrigger();
 
-		loadTargets(dicListener.getProtocols().values());
+		loadTargets(dictLoader.getProtocols().values());
 		
-		for (final Protocol protocol : dicListener.getProtocols().values()) {
+		for (final Protocol protocol : dictLoader.getProtocols().values()) {
 			final String fileName = getFileName(protocol);
 			if(!new File(path + fileName).exists()) {
 				System.out.println(String.format("File: '%s' doesn't exists", fileName));
@@ -171,7 +177,7 @@ public class OracleImporter {
 			
 		
 		long beginTime = System.currentTimeMillis();
-		for (final Protocol protocol : dicListener.getProtocols().values()) {
+		for (final Protocol protocol : dictLoader.getProtocols().values()) {
 			if(protocolsToImport != null) {
 				if(!protocolsToImport.contains(protocol.getName().toUpperCase())) {
 					return;
@@ -199,7 +205,7 @@ public class OracleImporter {
 		}
 		long endTime = System.currentTimeMillis();
 		System.out.println(String.format("All tables loaded in %d", (endTime - beginTime / 1000)));
-		for (final Protocol protocol : dicListener.getProtocols().values()) {
+		for (final Protocol protocol : dictLoader.getProtocols().values()) {
 			createViews(protocol);
 		}
 	}
@@ -344,10 +350,12 @@ public class OracleImporter {
 													// request
 		conn.commit();
 		ps.close();
+		
+		reader.close();
+		
 		long endTime = System.currentTimeMillis();
 		long loadTime = (endTime - beginTime) / 1000;
-		System.out.println(String.format("To load Protocol: %s takes %d",
-				protocol.getName(), loadTime));
+		System.out.println(String.format("To load Protocol: %s takes %d", protocol.getName(), loadTime));
 	}
 
 	private static String[] getHeaderInfo(final CSVReader reader, final Holder<Integer> outPaIdx) throws Exception {
@@ -452,8 +460,6 @@ public class OracleImporter {
 			final String fileName = getFileName(protocol);
 			System.out.println(fileName);
 			
-			
-			
 			final au.com.bytecode.opencsv.CSVReader reader = new CSVReader(
 					new InputStreamReader(new FileInputStream(path + fileName), CHAR_ENCODING));
 			
@@ -521,7 +527,6 @@ public class OracleImporter {
 					em.clear();
 					em.getTransaction().commit();
 					em.close();
-
 				}
 			});
 		}

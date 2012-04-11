@@ -2,8 +2,11 @@ package org.molgenis.lifelines.listeners;
 
 import javax.persistence.EntityManager;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,6 +15,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
@@ -20,6 +24,8 @@ import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
+
+import au.com.bytecode.opencsv.CSVReader;
 import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.*;
 
@@ -33,10 +39,10 @@ public class CategoryLoader {
 	private final Investigation investigation;
 	private final boolean shareMeasurements;
 	private List<String> protocolsToImport;
-	private final CsvFileReader csvFileReader;
+	private final CSVReader csvFileReader;
 	
 	public CategoryLoader(final File file, final String encoding, Map<String, Protocol> protocols,
-			Investigation investigation, String name, EntityManager em,
+			Investigation investigation, EntityManager em,
 			boolean shareMeasurements, List<String> protocolsToImport) throws IOException, DataFormatException {
 		this.em = em;
 		this.protocols = protocols;
@@ -45,31 +51,42 @@ public class CategoryLoader {
 		
 		this.protocolsToImport = protocolsToImport;
 		
-		this.csvFileReader = new CsvFileReader(file, encoding);
+		this.csvFileReader = 
+			new CSVReader(
+				new BufferedReader(
+						new InputStreamReader(
+								new FileInputStream(file), encoding)
+				)
+			);
 	}
 
 	final private HashSet<String> uniqueLabelWithinCode = new HashSet<String>();
 	
 	public void load() throws Exception {
-		final Iterator<Tuple> iterator = csvFileReader.iterator();
-		while(iterator.hasNext()) {
-			final Tuple tuple = iterator.next();
+		final String[] headers = csvFileReader.readNext();
 		
-			String tableName = tuple.getString("TABNAAM");
+		int tabNaamIdx = ArrayUtils.indexOf(headers, "TABNAAM");
+		int veldIdx = ArrayUtils.indexOf(headers, "VELD");
+		int valLabelValIdx = ArrayUtils.indexOf(headers, "VALLABELVAL");
+		int valLabelLabelIdx = ArrayUtils.indexOf(headers, "VALLABELABEL");
+		
+		String[] row = null;
+		while((row = csvFileReader.readNext()) != null)
+		{
+			final String tableName = row[tabNaamIdx];
+			final String fieldName = shareMeasurements ? row[veldIdx] : tableName + "_" + row[veldIdx];
+			final String valLabelVal = row[valLabelValIdx];
+			final String valLabelLabel = row[valLabelLabelIdx]; 
+			
 			if(protocolsToImport != null) {
 				if(!protocolsToImport.contains(tableName.toUpperCase())) {
-					return;
+					continue;
 				}
 			}
 			
 			final Protocol protocol = protocols.get(tableName);
 			if(protocol == null) {
-				return;
-			}
-	
-			String fieldName = tuple.getString("VELD");
-			if (!shareMeasurements) {
-				fieldName = tableName + "_" + tuple.getString("VELD");
+				continue;
 			}
 	
 			final List<ObservableFeature> measurements = (List<ObservableFeature>) protocol.getFeatures();
@@ -80,17 +97,15 @@ public class CategoryLoader {
 	
 			final Category category = new Category();
 			category.setInvestigation(investigation);
-			category.setCode_String(tuple.getString("VALLABELVAL"));
-			category.setLabel(tuple.getString("VALLABELABEL"));
-			category.setDescription(tuple.getString("VALLABELABEL"));
+			category.setCode_String(valLabelVal);
+			category.setLabel(valLabelLabel);
+			category.setDescription(valLabelLabel);
 			category.getCategoriesMeasurementCollection().add(measurement); // add to
-			//measurement.getCategories(db)
 	
 			measurement.getCategories().add(category); // measurment
 			
-			
 			category.setName(fieldName + "_" + category.getLabel());
-			category.setName(fieldName + "_" + tuple.getString("VALLABELVAL"));
+			category.setName(fieldName + "_" + valLabelVal);
 	
 			//check to see if label is Unique
 			final String uniqueLabel = fieldName + "_" + category.getLabel(); 
@@ -104,6 +119,9 @@ public class CategoryLoader {
 		commit();
 	}
 
+	public void close() throws IOException {
+		csvFileReader.close();
+	}
 	
 	private void commit() throws Exception {
 		try {

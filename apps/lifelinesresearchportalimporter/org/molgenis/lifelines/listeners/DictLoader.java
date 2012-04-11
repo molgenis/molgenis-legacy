@@ -1,7 +1,10 @@
 package org.molgenis.lifelines.listeners;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,6 +14,7 @@ import java.util.zip.DataFormatException;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.organization.Investigation;
@@ -18,6 +22,8 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 
 
@@ -45,32 +51,42 @@ public class DictLoader {
 
 	private final List<String> protocolsToImport;
 
-	private final CsvFileReader csvFileReader; 
+	private final CSVReader csvFileReader; 
 	
 	public DictLoader(final File file, final String encoding, 
 			final Investigation investigation, final boolean shareMeasurements, final EntityManager em, List<String> protocolsToImport) throws IOException, DataFormatException {
 		this.investigation = investigation;
 		this.shareMeasurements = shareMeasurements;
 		this.protocolsToImport = protocolsToImport;
-		
 		this.em = em;
 		
-		this.csvFileReader = new CsvFileReader(file, encoding);
+		this.csvFileReader = 
+			new CSVReader(
+				new BufferedReader(
+						new InputStreamReader(
+								new FileInputStream(file), encoding)
+				)
+			);
 	}
 
 	public void load() throws Exception {
 		em.setFlushMode(FlushModeType.AUTO); //force to reload		
-		em.getTransaction().begin();
+		em.getTransaction().begin();		
 		
-		final Iterator<Tuple> iterator = csvFileReader.iterator();
-		while(iterator.hasNext()) {
-			final Tuple tuple = iterator.next();
-			
-			final String protocolName = tuple.getString("TABNAAM");
+		final String[] headers = csvFileReader.readNext();
+		final Integer tabNaamIdx = ArrayUtils.indexOf(headers, "TABNAAM");
+		final Integer veldIdx = ArrayUtils.indexOf(headers, "VELD");
+		final Integer veldTypeIdx = ArrayUtils.indexOf(headers, "VLDTYPE");
+		final Integer veldOmschrIdx = ArrayUtils.indexOf(headers, "OMSCHR");
+		
+		String[] row = null;
+		
+		while((row = csvFileReader.readNext()) != null) {
+			final String protocolName = row[tabNaamIdx];
 			
 			if(protocolsToImport != null) {
 				if(!protocolsToImport.contains(protocolName.toUpperCase())) {
-					return;
+					continue;
 				}
 			}		
 			
@@ -87,9 +103,9 @@ public class DictLoader {
 			
 			String measurmentName = null;
 			if(shareMeasurements) {
-				measurmentName = tuple.getString("VELD");
+				measurmentName = row[veldIdx];
 			} else {
-				measurmentName = protocolName + "_" +tuple.getString("VELD");	
+				measurmentName = protocolName + "_" +row[veldIdx];	
 			}
 			
 			Measurement m = null;
@@ -103,8 +119,8 @@ public class DictLoader {
 			} else {		
 				m = new Measurement();
 				m.setName(measurmentName);
-				m.setDataType( tuple.getString("VLDTYPE")  );
-				m.setDescription(tuple.getString("OMSCHR"));
+				m.setDataType( row[veldTypeIdx]  );
+				m.setDescription( row[veldOmschrIdx] );
 				m.setInvestigation(investigation);
 			}
 			p.getFeatures().add(m);	
@@ -118,6 +134,10 @@ public class DictLoader {
 		em.setFlushMode(FlushModeType.COMMIT);
 	}
 
+	public void close() throws IOException {
+		csvFileReader.close();
+	}
+	
 	public Map<String, Protocol> getProtocols() {
 		return protocols;
 	}

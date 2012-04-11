@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Locale;
 
 import jxl.Workbook;
@@ -64,6 +63,7 @@ public class ExcelExporter<R extends ObservationTarget, C extends Measurement, V
 			
 			retrieveDataAndWriteExcelSheet(sheet, exportVisibleRows);	
 	
+						
 			workbook.write();
 			workbook.close();
 			
