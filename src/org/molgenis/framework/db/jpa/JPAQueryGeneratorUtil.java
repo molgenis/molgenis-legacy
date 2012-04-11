@@ -4,7 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -19,6 +21,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -42,6 +45,7 @@ public class JPAQueryGeneratorUtil
 		return createQuery(db, inputClass, inputClass, mapper, em, rules);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <IN extends Entity, OUT> TypedQuery<OUT> createQuery(
 			Database db, Class<IN> inputClass, Class<OUT> outputClass,
 			Mapper<IN> mapper, EntityManager em, QueryRule... rules)
@@ -87,18 +91,28 @@ public class JPAQueryGeneratorUtil
 		return createQuery(db, entityClass, Long.class, abstractJpaMapper, em, rules);
 	}
 
-	private static <E extends Entity> Predicate createWhere(Database db,
-			Mapper<E> mapper, EntityManager em, Root<E> root, CriteriaQuery cq,
+	private static <IN extends Entity, OUT> Predicate createWhere(Database db,
+			Mapper<IN> mapper, EntityManager em, Root<IN> root, CriteriaQuery<OUT> cq,
 			CriteriaBuilder cb, int[] limitOffset, QueryRule... rul)
 			throws DatabaseException
 	{
+		Map<String, Join<?, ?>> joinHash = new HashMap<String, Join<?, ?>>();
+		return _createWhere(db, mapper, em, root, cq, cb, limitOffset, joinHash, rul);
+	}
 
+	private static <IN extends Entity, OUT> Predicate _createWhere(Database db,
+			Mapper<IN> mapper, EntityManager em, Root<IN> root, CriteriaQuery<OUT> cq,
+			CriteriaBuilder cb, int[] limitOffset, Map<String, Join<?, ?>> joinHash, QueryRule... rul)
+			throws DatabaseException
+	{
 		List<QueryRule> rules = Arrays.asList(rul);
 
 		Predicate whereClause = null;
 		List<Order> orders = new ArrayList<Order>();
 
 		QueryRule prevRule = null;
+		
+		
 		forLoop: for (int i = 0; i < rules.size(); ++i)
 		{
 			QueryRule rule = rules.get(i);
@@ -118,6 +132,11 @@ public class JPAQueryGeneratorUtil
 
 				Predicate predicate = null;
 
+				
+				Expression<?> expression = _addJoin(rule, root, joinHash);
+					
+					
+				
 				switch (operator)
 				{
 					case LAST:
@@ -136,11 +155,21 @@ public class JPAQueryGeneratorUtil
 						limitOffset[1] = (Integer) rule.getValue();
 						break;
 					default:
+						Expression<?> lhs = null;
+						if (expression != null)
+						{
+							lhs = expression;
+						}
+						else if (attributeName != null)
+						{
+							lhs = root.get(attributeName);
+						}
+						Object rhs = rule.getValue();
+
 						switch (operator)
 						{
 							case EQUALS:
-
-								if (rule.getValue() instanceof Entity)
+								if (rhs instanceof Entity)
 								{
 									try
 									{
@@ -161,32 +190,22 @@ public class JPAQueryGeneratorUtil
 									{
 										// it's a xref attribute which is joined
 										// to root
-										if (root.get(attributeName)
+										if (attributeName.contains(".") ||
+												root.get(attributeName)
 												.getJavaType().getName()
 												.equals("java.util.List")
 												|| root.get(attributeName)
 														.getJavaType()
 														.newInstance() instanceof Entity)
 										{
-											Entity entity = root.getJavaType()
-													.newInstance();
-											String xrefAttribtename = entity
-													.getXrefIdFieldName(attributeName);
-
-											Join join = root.join(
-													attributeName,
-													JoinType.LEFT);
-											Expression attribute = join
-													.get(xrefAttribtename);
-											Object value = rule.getValue();
-											predicate = cb.equal(attribute,
-													value);
+											predicate = cb.equal(lhs, rhs);
 										}
 										else
 										{ // normal attribute
-											predicate = cb.equal(
-													root.get(attributeName),
-													rule.getValue());
+//											predicate = cb.equal(
+//													root.get(attributeName),
+//													rule.getValue());
+											predicate = cb.equal(lhs,  rhs);
 										}
 									}
 									catch (InstantiationException ex)
@@ -194,9 +213,10 @@ public class JPAQueryGeneratorUtil
 										// this is a hack, newInstance can not
 										// be called on inmutable object
 										// like Integer
-										predicate = cb.equal(
-												root.get(attributeName),
-												rule.getValue());
+//										predicate = cb.equal(
+//												root.get(attributeName),
+//												rule.getValue());
+										predicate = cb.equal(lhs,  rhs);
 									}
 									catch (IllegalAccessException ex)
 									{
@@ -208,54 +228,60 @@ public class JPAQueryGeneratorUtil
 								}
 								break;
 							case NOT:
-								predicate = cb.notEqual(
-										root.get(attributeName),
-										rule.getValue());
+//								predicate = cb.notEqual(
+//										root.get(attributeName),
+//										rule.getValue());
+								predicate = cb.notEqual(lhs,  rhs);
 								break;
 							case LIKE:
-								predicate = cb.like(
-										root.get(attributeName)
-												.as(String.class),
-										(String) rule.getValue());
+//								predicate = cb.like(
+//										root.get(attributeName)
+//												.as(String.class),
+//										(String) rule.getValue());
+								predicate = cb.like(lhs.as(String.class), (String) rhs);
 								break;
 							case LESS:
-								predicate = cb.lessThan(
-										(Expression) root.get(attributeName),
-										(Comparable) rule.getValue());
+//								predicate = cb.lessThan(
+//										(Expression) root.get(attributeName),
+//										(Comparable) rule.getValue());
+								predicate = cb.lessThan((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case GREATER:
-								predicate = cb.greaterThan(
-										(Expression) root.get(attributeName),
-										(Comparable) rule.getValue());
+//								predicate = cb.greaterThan(
+//										(Expression) root.get(attributeName),
+//										(Comparable) rule.getValue());
+								predicate = cb.greaterThan((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case LESS_EQUAL:
-								predicate = cb.lessThanOrEqualTo(
-										(Expression) root.get(attributeName),
-										(Comparable) rule.getValue());
+//								predicate = cb.lessThanOrEqualTo(
+//										(Expression) root.get(attributeName),
+//										(Comparable) rule.getValue());
+								predicate = cb.lessThanOrEqualTo((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case GREATER_EQUAL:
-								predicate = cb.greaterThanOrEqualTo(
-										(Expression) root.get(attributeName),
-										(Comparable) rule.getValue());
+//								predicate = cb.greaterThanOrEqualTo(
+//										(Expression) root.get(attributeName),
+//										(Comparable) rule.getValue());
+								predicate = cb.greaterThanOrEqualTo((Expression) lhs, (Comparable<Object>) rhs);
 								break;
 							case NESTED:
 								QueryRule[] nestedrules = rule.getNestedRules();
-								createWhere(db, mapper, em, root, cq, cb,
-										new int[2], nestedrules);
+								_createWhere(db, mapper, em, root, cq, cb,
+										new int[2], joinHash, nestedrules);
 								break;
 							case SUBQUERY:
 								SubQueryRule sqr = (SubQueryRule) rule;
 
 								Subquery sq = cq.subquery(sqr
 										.getSubQueryResultClass());
-								Root sqFrom = sq.from(sqr
+								Root<IN> sqFrom = sq.from(sqr
 										.getSubQueryFromClass());
 
-								Mapper sqMapper = db.getMapper(sqr
+								Mapper<IN> sqMapper = db.getMapper(sqr
 										.getSubQueryFromClass().getName());
 
-								Predicate where = createWhere(db, sqMapper, em,
-										sqFrom, cq, cb, new int[2],
+								Predicate where = _createWhere(db, sqMapper, em,
+										sqFrom, cq, cb, new int[2], joinHash,
 										(QueryRule[]) sqr.getValue());
 								sq.select(
 										sqFrom.get(sqr
@@ -287,29 +313,38 @@ public class JPAQueryGeneratorUtil
 								Object[] values = new Object[0];
 								if (rule.getValue() instanceof List)
 								{
-									values = ((List<Object>) rule.getValue())
+									values = ((List<?>) rule.getValue())
 											.toArray();
 								}
 								else
 								{
 									values = (Object[]) rule.getValue();
 								}
-
-								Class attrClass = root.get(attributeName)
-										.getJavaType();
-								// pseudo code: if(Attribute instanceof
-								// AbstractEntity)
-								if (AbstractEntity.class.isAssignableFrom(root
-										.get(attributeName).getJavaType()))
+//								Class attrClass = root.get(attributeName)
+//										.getJavaType();
+								Class<?> attrClass = null;
+								if (attributeName.contains("."))
 								{
-									Field idField = getIdField(attrClass);
-									predicate = root.get(attributeName)
-											.get(idField.getName()).in(values);
+									attrClass = lhs.getJavaType();
 								}
 								else
 								{
-									predicate = root.get(attributeName).in(
-											values);
+									attrClass = root.get(attributeName).getJavaType();
+								}
+								// pseudo code: if(Attribute instanceof
+								// AbstractEntity)
+								if (AbstractEntity.class.isAssignableFrom(attrClass))
+								{
+//									Field idField = getIdField(attrClass);
+//									predicate = root.get(attributeName)
+//											.get(idField.getName()).in(values);
+									predicate = root.get(attributeName).in(values);
+								}
+								else
+								{
+//									predicate = root.get(attributeName).in(
+//											values);
+									predicate = lhs.in(values);
 								}
 
 								break;
@@ -325,9 +360,9 @@ public class JPAQueryGeneratorUtil
 								{
 									List<QueryRule> restOfQueryRules = rules
 											.subList(i, rules.size());
-									Predicate rightsPred = createWhere(db,
+									Predicate rightsPred = _createWhere(db,
 											mapper, em, root, cq, cb,
-											limitOffset,
+											limitOffset, joinHash,
 											restOfQueryRules
 													.toArray(new QueryRule[1]));
 									if (rightsPred != null)
@@ -363,7 +398,7 @@ public class JPAQueryGeneratorUtil
 		return whereClause;
 	}
 
-	private static Field getIdField(Class<Entity> entity)
+	private static <E extends Entity> Field getIdField(Class<?> entity)
 	{
 		for (Field f : entity.getDeclaredFields())
 		{
@@ -372,6 +407,80 @@ public class JPAQueryGeneratorUtil
 			{
 				return f;
 			}
+		}
+		return null;
+	}
+	
+	private static <E extends Entity> Expression<?> _addJoin(QueryRule rule, Root<E> root, Map<String, Join<?, ?>> joinHash) throws DatabaseException
+	{
+		try
+		{
+			String attributeName = rule.getJpaAttribute();
+
+			if (attributeName == null)
+				return null;
+			
+			if (rule.getValue() instanceof Entity)
+				return root.get(attributeName);
+
+			if (attributeName.contains(".") ||
+					root.get(attributeName)
+					.getJavaType().getName()
+					.equals("java.util.List")
+					|| root.get(attributeName)
+							.getJavaType()
+							.newInstance() instanceof Entity)
+			{
+
+				Entity entity = root.getJavaType()
+						.newInstance();
+				String xrefAttribtename = entity
+						.getXrefIdFieldName(attributeName);
+	
+				String[] attributeNameSplit = StringUtils.split(attributeName, ".");
+				if (attributeNameSplit.length == 0) {
+					return null;
+				}
+				else if(attributeNameSplit.length > 1) {
+					attributeName    = attributeNameSplit[0];
+					xrefAttribtename = attributeNameSplit[1];
+				}
+	
+				Join<?, ?> join = null;
+	//			Set<Join<E, ?>> joins = root.getJoins();
+	//			for (Join tmp : joins.toArray(new Join[0]))
+	//			{
+	//				if (tmp.getAttribute().getName().equals(attributeName))
+	//				{
+	//					join = tmp;
+	//				}
+	//			}
+				if(joinHash.containsKey(attributeName)) {
+					join = joinHash.get(attributeName);
+				} else {
+					join = root.join(
+						attributeName,
+							JoinType.LEFT);
+					joinHash.put(attributeName, join);
+				}
+				Expression<?> attribute = join
+						.get(xrefAttribtename);
+				
+				return attribute;
+			}
+		}
+		catch (InstantiationException ex)
+		{
+			// this is a hack, newInstance can not
+			// be called on inmutable object
+			// like Integer
+		}
+		catch (IllegalAccessException ex)
+		{
+			LogFactory.getLog(
+					JPAQueryGeneratorUtil.class
+							.getName()).error(ex);
+			throw new DatabaseException(ex);
 		}
 		return null;
 	}
