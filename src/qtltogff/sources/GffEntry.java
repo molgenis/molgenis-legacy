@@ -29,6 +29,12 @@ public class GffEntry {
 		this.group = group;
 	}
 	
+	@Override
+	public String toString()
+	{
+		String sep = "\t";
+		return chr + sep + src + sep + feat + sep + start + sep + stop + sep + "." + sep + "." + sep + score + sep + group;
+	}
 	
 	public String getChr() {
 		return chr;

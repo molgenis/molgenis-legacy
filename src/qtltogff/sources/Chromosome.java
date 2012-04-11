@@ -6,6 +6,7 @@ public class Chromosome
 	String gffName;
 	Long bpLength;
 	Short orderNr;
+	Long cumuBpDeductionAmount;
 	
 	public String getName()
 	{
@@ -39,6 +40,14 @@ public class Chromosome
 	{
 		this.orderNr = orderNr;
 	}
+	public Long getCumuBpDeductionAmount() {
+		return cumuBpDeductionAmount;
+	}
+	public void setCumuBpDeductionAmount(Long cumuBpDeductionAmount) {
+		this.cumuBpDeductionAmount = cumuBpDeductionAmount;
+	}
+	
+	
 	
 	
 }

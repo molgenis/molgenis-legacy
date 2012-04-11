@@ -39,6 +39,17 @@ public class QtlToGFFConverter
 		markers = loadMarkers(markerFile);
 		traits = loadTraits(traitFile);
 		
+		//calculate chromosome bp deduction amounts of we have cumulative annotations
+		if(cumu_trait_bppos || cumu_marker_bppos)
+		{
+			for(String chr : chromosomes.keySet())
+			{
+				chromosomes.get(chr).setCumuBpDeductionAmount(getCumuBpDeductionAmount(chr));
+				System.out.println("deduction amount for " + chr + " is: " + chromosomes.get(chr).getCumuBpDeductionAmount());
+			}
+		}
+		
+		
 		//create matrix instance and get row/col names
 		BinaryDataMatrixInstance instance = new BinaryDataMatrixInstance(matrixFile);
 		List<String> colNames = instance.getColNames();
@@ -141,12 +152,13 @@ public class QtlToGFFConverter
 		}
 		if(markersNotInFile.size() > 0)
 		{
-			System.out.println("\nWARNING: The following "+markersNotInFile.size()+" markers were found in the matrix, but not in your annotation file:");
+			System.out.println("\nFATAL: The following "+markersNotInFile.size()+" markers were found in the matrix, but not in your annotation file:");
 			for(String m : markersNotInFile)
 			{
 				System.out.print(m + " ");
 			}
 			System.out.print("\n");
+			throw new Exception("All markers in the matrix must be accounted for. Quitting..");
 		}
 		if(markersNotInMatrix.size() > 0)
 		{
@@ -180,12 +192,69 @@ public class QtlToGFFConverter
 				values = instance.getRow(rowNames.indexOf(t)); //as in example set & verified
 			}
 			
-			List<Peak> peaks = detectPeaks(values, lod_thres);
-			
+			List<Peak> peaks = detectPeaks(values, markersInMatrix, lod_thres);
 			List<GffEntry> entries = new ArrayList<GffEntry>();
+			
+			int peakCount = 0;
 			for(Peak p : peaks)
 			{
-				entries.add(makeGffEntry(p));
+				String traitGroup = t + "_" + peakCount;
+				
+				if(p.getStartIndex() == p.getStopIndex())
+				{
+					throw new Exception("No interval for " + t + ", start and stop is both index " + p.getStartIndex());
+				}
+				
+				String leftFlankingMarker = markersInMatrix.get(p.getStartIndex());
+				String rightFlankingMarker = markersInMatrix.get(p.getStopIndex());
+				
+				long leftBpPos = markers.get(leftFlankingMarker).getBpPos();
+				long rightBpPos = markers.get(rightFlankingMarker).getBpPos();
+				
+				if(!markers.get(leftFlankingMarker).getChromosomeName().equals(markers.get(rightFlankingMarker).getChromosomeName()))
+				{
+					throw new Exception("FATAL: QTL region found crossing two chromosomes in trait " + t);
+				}
+				
+				if(cumu_marker_bppos)
+				{
+					leftBpPos = leftBpPos - chromosomes.get(markers.get(leftFlankingMarker).getChromosomeName()).getCumuBpDeductionAmount();
+					rightBpPos = rightBpPos - chromosomes.get(markers.get(rightFlankingMarker).getChromosomeName()).getCumuBpDeductionAmount();
+				}
+				
+				String peakMarkerChromosomeGffName = chromosomes.get(markers.get(p.getPeakMarker()).getChromosomeName()).getGffName();
+
+				int score;
+				if(p.getPeakValue().doubleValue() > lod_limit)
+				{
+					score = 1000;
+				}
+				else{
+					score = (int) ((lod_limit / p.getPeakValue().doubleValue()) * 100);
+				}
+				
+				GffEntry qtl_interval = new GffEntry(peakMarkerChromosomeGffName, "QtlToGFF", "qtl_interval", leftBpPos, rightBpPos, score, traitGroup);
+				entries.add(qtl_interval);
+				
+				if(trait_has_bppos)
+				{
+					long traitLoc = traits.get(t).getBpPos();
+					if(cumu_trait_bppos)
+					{
+						traitLoc = traitLoc - chromosomes.get(traits.get(t).getChromosomeName()).getCumuBpDeductionAmount();
+					}
+					String traitChromosomeGffName = chromosomes.get(traits.get(t).getChromosomeName()).getGffName();
+					
+					if(!peakMarkerChromosomeGffName.equals(traitChromosomeGffName))
+					{
+						traitGroup = t + "_"+peakCount+"_has_transqtl_"+peakCount+"_on_" + peakMarkerChromosomeGffName;
+					}
+					
+					GffEntry trait_loc = new GffEntry(traitChromosomeGffName, "QtlToGFF", "trait_loc", traitLoc, traitLoc+30, score, traitGroup);
+					entries.add(trait_loc);
+				}
+					
+				peakCount++;
 			}
 			
 			if(entries.size() > 0){
@@ -208,22 +277,47 @@ public class QtlToGFFConverter
 		int total = 0;
 		for(String tr : entriesPerTrait.keySet())
 		{
-			System.out.println(tr + " has " + entriesPerTrait.get(tr).size() + " peaks");
 			total += entriesPerTrait.get(tr).size();
+			for(GffEntry g: entriesPerTrait.get(tr))
+			{
+				System.out.println(g.toString());
+			}
 		}
-		System.out.println("TOTAL AMOUNT OF PEAKS: " + total);
+		System.out.println("Total amount of GFF entries written: " + total);
+		
+		
 		
 	}
 	
-	
-	public GffEntry makeGffEntry(Peak p)
+	public long getCumuBpDeductionAmount(String chromosomeName) throws Exception
 	{
-		GffEntry ge = new GffEntry();
-		
-		return ge;
+		Chromosome chr = chromosomes.get(chromosomeName);
+		List<Short> orderNrsMatched = new ArrayList<Short>();
+		long amount = 0;
+		for(short orderNr = 1; orderNr < chr.getOrderNr(); orderNr++)
+		{
+			boolean match = false;
+			for(String matchMe : chromosomes.keySet())
+			{
+				if(chromosomes.get(matchMe).getOrderNr().shortValue() == orderNr)
+				{
+					if(orderNrsMatched.contains(orderNr)){
+						throw new Exception("Duplicate order number "+orderNr+" in chromosomes for name " + matchMe);
+					}
+					orderNrsMatched.add(orderNr);
+					amount += chromosomes.get(matchMe).getBpLength();
+					match = true;
+				}
+			}
+			if(!match)
+			{
+				throw new Exception("No chromosome found for expected order nr " + orderNr);
+			}
+		}
+		return amount;
 	}
 	
-	public List<Peak> detectPeaks(Object[] values, double lod_thres)
+	public List<Peak> detectPeaks(Object[] values, List<String> markersInMatrix, double lod_thres) throws Exception
 	{
 		List<Peak> peaks = new ArrayList<Peak>();
 		
@@ -231,32 +325,77 @@ public class QtlToGFFConverter
 		//TODO: proper peak detection, e.g. waterfill
 		
 		int peakStart = -1;
+		int peakMarker = -1;
+		double highestMarkerValue = -1.0;
 		
 		for(int i = 0; i < values.length; i++)
 		{
 			double d = ((Double)values[i]).doubleValue();
 			
+			//start of a peak
 			if(peakStart == -1 && d > lod_thres)
 			{
 				peakStart = i;
 			}
 			
-			if(peakStart != -1 && d < lod_thres)
+			//inside a peak: find the highest marker
+			if(peakStart != -1)
 			{
-//				System.out.println("Peak found: " + peakStart + " to " + i);
-				Peak p = new Peak(peakStart != 0 ? peakStart-1 : peakStart, i);
-				peaks.add(p);
-//				System.out.println("corrected to : " + p.getStartIndex() + " to " + p.getStopIndex());
+				if(highestMarkerValue == -1.0)
+				{
+					highestMarkerValue = d;
+					peakMarker = i;
+				}
+				else
+				{
+					if(d > highestMarkerValue)
+					{
+						highestMarkerValue = d;
+						peakMarker = i;
+					}
+				}
+			}
+			
+			//inside a peak: finish when LOD drops below threshold, or we reached the last value
+			if(peakStart != -1 && (d < lod_thres || i == values.length-1))
+			{
 				
+				//adjust for flanking marker: start -1 if possible for left flank (i is always 1 ahead anyway for right flank)
+				Peak p = new Peak(peakStart != 0 ? peakStart-1 : peakStart, i, markersInMatrix.get(peakMarker), highestMarkerValue);
+				
+				String leftFlankMarkerChr = markers.get(markersInMatrix.get(p.getStartIndex())).getChromosomeName();
+				String rightFlankMarkerChr = markers.get(markersInMatrix.get(p.getStopIndex())).getChromosomeName();
+				
+				//the flanking (+1 and -1 markers around region) can be across chromosomes by accident..
+				if(!leftFlankMarkerChr.equals(rightFlankMarkerChr))
+				{
+					String leftFlankMarkerChrPlusOne = markers.get(markersInMatrix.get(p.getStartIndex()+1)).getChromosomeName();
+					String rightFlankMarkerChrMinusOne = markers.get(markersInMatrix.get(p.getStopIndex()-1)).getChromosomeName();
+				
+					//left flank marker is wrongly positioned another chromosome
+					if(leftFlankMarkerChrPlusOne.equals(rightFlankMarkerChr))
+					{
+						p.setStartIndex(p.getStartIndex()+1);
+//						System.out.println("Corrected a QTL region by pushing the left flanking marker back to the right chromosome..");
+					}
+					//right flank marker is wrongly positioned another chromosome
+					else if(rightFlankMarkerChrMinusOne.equals(leftFlankMarkerChr))
+					{
+						p.setStopIndex(p.getStopIndex()-1);
+//						System.out.println("Corrected a QTL region by pulling the right flanking marker back to the right chromosome..");
+					}
+					else{
+						throw new Exception("Cannot make sense of this QTL region.. aborting");
+					}
+					
+				}
+				
+				peaks.add(p);
+				
+//				System.out.println("Peak : " + p.getStartIndex() + " to " + p.getStopIndex() + " peakmarker = " + p.getPeakMarker());
 				peakStart = -1;
+				highestMarkerValue = -1.0;
 			}
-			
-			if(peakStart != -1 && i == values.length-1)
-			{
-				System.out.println("QTL ON THE LAST MARKER!?!?!?!?!!!"); //FIXME
-				break;
-			}
-			
 			
 		}
 		
