@@ -31,7 +31,7 @@ public class ModelLoader
     public static final String FLAG_INPUTS = "#INPUTS";
     public static final String FLAG_OUTPUTS = "#OUTPUTS";
     public static final String FLAG_EXES = "#EXES";
-    public static final String FLAG_LOG = "#LOG";
+    public static final String FLAG_LOG = "#LOGS";
     public static final String FLAG_TARGETS = "#TARGETS";
 
     public static final String FLAG_CLUSTER_QUEUE = "clusterQueue";
@@ -135,59 +135,95 @@ public class ModelLoader
         String strMolgenisHeader = protocolListing.substring(protocolListing.indexOf(FLAG_MOLGENIS),
                 protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_MOLGENIS)));
 
+        String str = null;
+
         //set walltime
-        String str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_WALLTIME);
-        protocol.setWalltime(str);
+        if(strMolgenisHeader.indexOf(FLAG_WALLTIME) > -1)
+        {
+            str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_WALLTIME);
+            protocol.setWalltime(str);
+        }
 
         //set # nodes
-        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_NODES);
-        protocol.setNodes(Integer.parseInt(str));
+        if(strMolgenisHeader.indexOf(FLAG_NODES) > -1)
+        {
+            str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_NODES);
+            protocol.setNodes(Integer.parseInt(str));
+        }
 
         //set # cores
-        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_CORES);
-        protocol.setCores(Integer.parseInt(str));
+        if(strMolgenisHeader.indexOf(FLAG_CORES) > -1)
+        {
+            str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_CORES);
+            protocol.setCores(Integer.parseInt(str));
+        }
 
         //set interpreter
-        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_INTERPRETER);
-        protocol.setInterpreter(str);
+        if(strMolgenisHeader.indexOf(FLAG_INTERPRETER) > -1)
+        {
+            str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_INTERPRETER);
+            protocol.setInterpreter(str);
+        }
 
         //set cluster queue
-        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_CLUSTER_QUEUE);
-        protocol.setClusterQueue(str);
+        if(strMolgenisHeader.indexOf(FLAG_CLUSTER_QUEUE) > -1)
+        {
+            str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_CLUSTER_QUEUE);
+            protocol.setClusterQueue(str);
+        }
 
         //set memory
-        str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_MEMORY);
-        protocol.setMem(str);
+        if(strMolgenisHeader.indexOf(FLAG_MEMORY) > -1)
+        {
+            str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_MEMORY);
+            protocol.setMem(str);
+        }
 
+        List<ComputeParameter> list = null;
         //set targets
-        str = protocolListing.substring(protocolListing.indexOf(FLAG_TARGETS),
-                protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_TARGETS)));
-        List<ComputeParameter> list = getParametersFromHeader(str);
-        protocol.setIterateOver(list);
+        if(protocolListing.indexOf(FLAG_TARGETS) > -1)
+        {
+            str = protocolListing.substring(protocolListing.indexOf(FLAG_TARGETS),
+                    protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_TARGETS)));
+            list = getParametersFromHeader(str);
+            protocol.setIterateOver(list);
+        }
 
         //set inputs
-        str = protocolListing.substring(protocolListing.indexOf(FLAG_INPUTS),
-                        protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_INPUTS)));
-        list = getParametersFromHeader(str);
-        protocol.setInputs(list);
+        if(protocolListing.indexOf(FLAG_INPUTS) > -1)
+        {
+            str = protocolListing.substring(protocolListing.indexOf(FLAG_INPUTS),
+                            protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_INPUTS)));
+            list = getParametersFromHeader(str);
+            protocol.setInputs(list);
+        }
 
         //set outputs
-        str = protocolListing.substring(protocolListing.indexOf(FLAG_OUTPUTS),
-                        protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_OUTPUTS)));
-        list = getParametersFromHeader(str);
-        protocol.setOutputs(list);
+        if(protocolListing.indexOf(FLAG_OUTPUTS) > -1)
+        {
+            str = protocolListing.substring(protocolListing.indexOf(FLAG_OUTPUTS),
+                            protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_OUTPUTS)));
+            list = getParametersFromHeader(str);
+            protocol.setOutputs(list);
+        }
 
         //set exes
-        str = protocolListing.substring(protocolListing.indexOf(FLAG_EXES),
+        if(protocolListing.indexOf(FLAG_EXES) > -1)
+        {
+            str = protocolListing.substring(protocolListing.indexOf(FLAG_EXES),
                                 protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_EXES)));
-                list = getParametersFromHeader(str);
-                protocol.setExes(list);
+            list = getParametersFromHeader(str);
+            protocol.setExes(list);
+        }
 
         //set logs
-        str = protocolListing.substring(protocolListing.indexOf(FLAG_LOG),
+        if(protocolListing.indexOf(FLAG_LOG) > -1)
+        {
+            str = protocolListing.substring(protocolListing.indexOf(FLAG_LOG),
                                 protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_LOG)));
-                list = getParametersFromHeader(str);
-                protocol.setLog(list);
+            list = getParametersFromHeader(str);
+            protocol.setLog(list);
+        }
 
         System.out.println("  ... parsed");
         return protocol;
@@ -226,10 +262,17 @@ public class ModelLoader
         return null;
     }
 
+    //here, we trim first to remove end string white spaces
     private Vector<String> findNames(String list)
     {
+        list = list.trim();
+
         Vector<String> names = new Vector<String>();
         int posEmpty = list.indexOf(" ") + 1;
+
+        if(posEmpty == 0)
+            return names;
+
         list = list.substring(posEmpty);
 
         while(list.indexOf(",") > -1)
@@ -240,8 +283,6 @@ public class ModelLoader
                 names.addElement(name);
             list = list.substring(posComa + 1);
         }
-        list = list.trim();
-        if(list.length() > 0)
             names.add(list);
         return names;
     }

@@ -2,9 +2,9 @@
 
 #INPUTS input_1,input_2,input_3,input_4,sample_g,exclude_samples_g
 #OUTPUTS output_1
-#LOG log
+#LOGS log
 #EXES path_to_impute2
-#TARGETS 
+#TARGETS
 
 
 echo "Before execution" 2>&1 | tee -a ${log}
