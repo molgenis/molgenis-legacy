@@ -117,7 +117,7 @@ public class TestDatabase
 	@Test
 </#if>
 	<#assign dependson = "test" + JavaName(entity)/>
-	public void test${JavaName(entity)}() throws DatabaseException, IOException, ParseException
+	public void test${JavaName(entity)}() throws DatabaseException
 	{
 		//create entities
 		List<${JavaName(entity)}> entities = new ArrayList<${JavaName(entity)}>();
@@ -194,25 +194,148 @@ public class TestDatabase
 		//test the query capabilities by finding on all fields
 		for(${JavaName(entity)} entity: entitiesDb)
 		{
-<#list entity.allFields as f><#if f.type == "int">		
+<#list entity.allFields as f>
+<#assign types = ["int", "text", "varchar", "xref"]>
+<#if types?seq_contains(f.type)>
+<#if f.type == "xref" && databaseImp != 'jpa'>
+	<#assign fieldGetter = JavaName(f) + "_" + JavaName(f.xrefField)>
+<#else>
+	<#assign fieldGetter = JavaName(f)>
+</#if>
 			//test field '${f.name}'
 			{
 				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
-				q2.equals("${name(f)}",entity.get${JavaName(f)}());
+				q2.equals("${name(f)}",entity.get${fieldGetter}());
 				List<${JavaName(entity)}> results = q2.find();
 <#if pkey(entity) == f>
 				assertEquals(results.size(),1);
 </#if>			
 				for(${JavaName(entity)} r: results)
 				{
-					<#if f.type == "xref" || f.type == "mref">
+					<#if f.type == "xref">
 					assertEquals(r.get${JavaName(f)}_${JavaName(f.xrefField)}(), entity.get${JavaName(f)}_${JavaName(f.xrefField)}());
 					<#else>
 					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
 					</#if>
 				}
 			}
-</#if></#list>
+			//test operator 'in' for field '${f.name}'
+			{
+				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
+				java.util.List<Object> inList = new ArrayList<Object>();
+				inList.add(entity.get${fieldGetter}());
+				q2.in("${name(f)}", inList);
+				List<${JavaName(entity)}> results = q2.find();
+<#if pkey(entity) == f>
+				assertEquals(results.size(),1);
+</#if>			
+				for(${JavaName(entity)} r: results)
+				{
+					<#if f.type == "xref">
+					assertEquals(r.get${JavaName(f)}_${JavaName(f.xrefField)}(), entity.get${JavaName(f)}_${JavaName(f.xrefField)}());
+					<#else>
+					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
+					</#if>
+				}
+			}
+<#if JavaType(f) == "String">
+			//test operator 'like' for field '${f.name}'
+			{
+				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
+				q2.like("${name(f)}", entity.get${fieldGetter}());
+				List<${JavaName(entity)}> results = q2.find();
+<#if pkey(entity) == f>
+				assertEquals(results.size(),1);
+</#if>			
+				for(${JavaName(entity)} r: results)
+				{
+					<#if f.type == "xref">
+					assertEquals(r.get${JavaName(f)}_${JavaName(f.xrefField)}(), entity.get${JavaName(f)}_${JavaName(f.xrefField)}());
+					<#else>
+					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
+					</#if>
+				}
+			}
+<#elseif f.type == "int">
+			//test operators 'lessOrEqual' and 'greaterOrEqual' for field '${f.name}'
+			{
+				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
+				q2.lessOrEqual("${name(f)}", entity.get${fieldGetter}());
+				q2.greaterOrEqual("${name(f)}", entity.get${fieldGetter}());
+				List<${JavaName(entity)}> results = q2.find();
+<#if pkey(entity) == f>
+				assertEquals(results.size(),1);
+</#if>			
+				for(${JavaName(entity)} r: results)
+				{
+					<#if f.type == "xref">
+					assertEquals(r.get${JavaName(f)}_${JavaName(f.xrefField)}(), entity.get${JavaName(f)}_${JavaName(f.xrefField)}());
+					<#else>
+					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
+					</#if>
+				}
+			}
+</#if>
+<#if f.type == "xref">
+<#list f.xrefLabelNames as label>
+			//test operator 'equals' for implicit join field '${f.name}_${label}'
+			{
+				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
+				q2.equals("${name(f)}_${label}",entity.get${JavaName(f)}_${JavaName(label)}());
+				List<${JavaName(entity)}> results = q2.find();
+<#if pkey(entity) == f>
+				assertEquals(results.size(),1);
+</#if>			
+				for(${JavaName(entity)} r: results)
+				{
+					<#if f.type == "xref">
+					assertEquals(r.get${JavaName(f)}_${JavaName(f.xrefField)}(), entity.get${JavaName(f)}_${JavaName(f.xrefField)}());
+					<#else>
+					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
+					</#if>
+				}
+			}
+			//test operator 'in' for implicit join field '${f.name}_${label}'
+			{
+				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
+				java.util.List<Object> inList = new ArrayList<Object>();
+				inList.add(entity.get${JavaName(f)}_${JavaName(label)}());
+				q2.in("${name(f)}_${label}", inList);
+				List<${JavaName(entity)}> results = q2.find();
+<#if pkey(entity) == f>
+				assertEquals(results.size(),1);
+</#if>			
+				for(${JavaName(entity)} r: results)
+				{
+					<#if f.type == "xref">
+					assertEquals(r.get${JavaName(f)}_${JavaName(f.xrefField)}(), entity.get${JavaName(f)}_${JavaName(f.xrefField)}());
+					<#else>
+					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
+					</#if>
+				}
+			}
+			//test operator 'like' for implicit join field '${f.name}_${label}'
+			{
+				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
+				q2.like("${name(f)}_${label}", entity.get${JavaName(f)}_${JavaName(label)}());
+				List<${JavaName(entity)}> results = q2.find();
+<#if pkey(entity) == f>
+				assertEquals(results.size(),1);
+</#if>			
+				for(${JavaName(entity)} r: results)
+				{
+					<#if f.type == "xref">
+					assertEquals(r.get${JavaName(f)}_${JavaName(f.xrefField)}(), entity.get${JavaName(f)}_${JavaName(f.xrefField)}());
+					<#else>
+					assertEquals(r.get${JavaName(f)}(),entity.get${JavaName(f)}());
+					</#if>
+				}
+			}
+</#list>
+</#if>
+
+</#if>
+</#list>
 		}
 	}
 
