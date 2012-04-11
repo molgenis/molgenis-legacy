@@ -131,6 +131,16 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		reads_in_2=$(gzip -cd ${compressedFastqFilepathPE2} | wc -l)
 		
 		#
+		# Read count sanity check for the inputs.
+		# For PE data the amount of reads in both input files must be the same!
+		#
+		if (( $reads_in_1 != $reads_in_2))
+		then touch ${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_check.FAILED
+		echo "FATAL: cannot demultiplex ${filenamePrefix}. Number of reads in both specified PE FastQ input files not the same!"
+		exit 1
+		fi
+		
+		#
 		# Read count of the output file.
 		#
 		summed_reads_out_1=0
@@ -158,7 +168,7 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 			#
 			# Update summed read count of output files.
 			#
-			summed_reads_out_1=$(( $summed_reads_out_1 + $(gzip -cd ${compressedDemultiplexedSampleFastqFilepathPE2[fileToCheck_index]} | wc -l) ))
+			summed_reads_out_2=$(( $summed_reads_out_2 + $(gzip -cd ${compressedDemultiplexedSampleFastqFilepathPE2[fileToCheck_index]} | wc -l) ))
 		</#list>
 		
 		#
