@@ -28,6 +28,8 @@
 			<plugin name="AddAnimal" type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
 			<!-- Breeding; Goal: create and browse parentgroups + create, wean, genotype and browse litters, print cage labels; Flavor: Freemarker -->
+			<plugin name="BreedingNew" type="org.molgenis.animaldb.plugins.breeding.Breedingnew"
+				label="BreedingNew" />
 			<plugin name="Breeding" type="org.molgenis.animaldb.plugins.breeding.Breeding"
 				label="Breeding" />
 			<menu name="breedingmodule" position="left" label="Breeding (old)">

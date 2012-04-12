@@ -104,7 +104,7 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Import database"));
 		// First try and see if we're on Erik's laptop
-		selenium.type("id=zip", "C:\\Users\\Erik\\Dropbox\\GCC\\AnimalDB\\Data\\legacy\\PrefillAnimalDB.zip");
+		selenium.type("id=zip", "/Users/roankanninga/AnimalDB/PrefillAnimalDB.zip");
 		selenium.click("id=source1");
 		selenium.click("id=load");
 		selenium.waitForPageToLoad(pageLoadTimeout);
@@ -237,28 +237,70 @@ public class AnimaldbSeleniumTest
 		// Go to Breeding plugin
 		selenium.click("id=animalmenu_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=Breeding_tab_button");
+		//selenium.click("id=Breeding_tab_button");
+		selenium.click("id=BreedingNew_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Parentgroups"));
 		// Add a parentgroup
+		
 		selenium.click("id=createParentgroup");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Screen 1: mothers
-		selenium.click("id=mothermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
+		selenium.type("id=numberPG", "3");
+		
+		selenium.click("id=selectt");
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=mothermatrix_selected_0"); // toggle selectbox for first female in list
+		selenium.click("id=showHideSettingsButton");
+		Thread.sleep(1000);
+		selenium.click("id=mothermatrix_removeFilter_2");
+		Thread.sleep(1000);
+		selenium.click("id=mothermatrix_selected_0"); //select first mother
+		selenium.click("id=motherB0");
+		Thread.sleep(10000);
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		Thread.sleep(10000);
+		
+		selenium.click("id=mothermatrix_selected_1"); //select second mother
+		selenium.click("id=motherB1");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=mothermatrix_selected_2"); //select third mother
+		selenium.click("id=motherB2");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		//click on next page for mothers in the matrix
+		selenium.click("id=mothermatrix_moveDownEnd");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+
+		selenium.click("id=mothermatrix_selected_0"); //select first father
+		selenium.click("id=fatherB0");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=mothermatrix_selected_1"); //select second father
+		selenium.click("id=fatherB1");
+		selenium.waitForPageToLoad(pageLoadTimeout);
+		selenium.click("id=mothermatrix_selected_2"); //select third father
+		selenium.click("id=fatherB2");
+		selenium.waitForPageToLoad(pageLoadTimeout);
 		selenium.click("id=from2to3");
+		
 		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Screen 2: fathers
-		selenium.click("id=fathermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		selenium.click("id=fathermatrix_selected_0"); // toggle selectbox for first male in list
-		selenium.click("id=from3to4");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		// Screen 3: start date and remarks
-		selenium.click("id=addpg");
-		selenium.waitForPageToLoad(pageLoadTimeout);
-		Assert.assertTrue(selenium.isTextPresent("successfully added"));
+		Assert.assertTrue(selenium.isTextPresent("successfully added"));		
+		
+//		selenium.click("id=createParentgroup");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		// Screen 1: mothers
+//		selenium.click("id=mothermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		selenium.click("id=mothermatrix_selected_0"); // toggle selectbox for first female in list
+//		selenium.click("id=from2to3");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		// Screen 2: fathers
+//		selenium.click("id=fathermatrix_removeFilter_3"); // remove filter on line (line is not set for new animals)
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		selenium.click("id=fathermatrix_selected_0"); // toggle selectbox for first male in list
+//		selenium.click("id=from3to4");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		// Screen 3: start date and remarks
+//		selenium.click("id=addpg");
+//		selenium.waitForPageToLoad(pageLoadTimeout);
+//		Assert.assertTrue(selenium.isTextPresent("successfully added"));
 		// Add a litter
 		selenium.click("id=pgmatrix_selected_0");
 		selenium.click("id=createlitter");
