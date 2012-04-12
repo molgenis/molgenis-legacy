@@ -19,6 +19,7 @@ projectRawNgsDataDir,${projectAnalysisDir}/rawdata/ngs/,"Contains project specif
 projectRawArrayDataDir,${projectAnalysisDir}/rawdata/array/,"Contains project specific rawdata (i.e., Genome Studio files)",string,
 projectJobsDir,${projectAnalysisDir}/jobs/,Project specific job scripts directory,string,
 projectLogsDir,${projectAnalysisDir}/logs/,Project specific log directory,string,
+projectQCDir,${projectAnalysisDir}/qc/,Project specific QC directory,string,
 projectIntermediateDir,${projectAnalysisDir}/intermediate,Store intermediate results here; empty at end of project.,string,
 projectResultsDir,${projectAnalysisDir}/results,Store final results here; a sub set of the primary outputs that we want to keep/archive are moved to this dir; afterwards the remaining files from the intermediate dir will be lost when we clean up.,string,
 parametersFile,${molgenisComputeDir}/workflows/in-house_parameters.csv,,string,
