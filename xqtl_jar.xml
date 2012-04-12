@@ -40,6 +40,7 @@
 		<unjar src="${mlibs}hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar" dest="${jarme}" overwrite="false"/> <!-- JPA common -->
 		<unjar src="${mlibs}hibernate/hibernate3.jar" dest="${jarme}" overwrite="false"/> <!-- JPA common -->
 		<unjar src="${mlibs}hibernate/hibernate-search-3.4.1.Final.jar" dest="${jarme}" overwrite="false"/> <!-- JPA search-->
+		<unjar src="${mlibs}hibernate-validator-4.1.0.Final/validation-api-1.0.0.GA.jar" dest="${jarme}" overwrite="false"/> <!-- JPA validation-->
 		<unjar src="${mlibs}lucene-core-3.0.2.jar" dest="${jarme}" overwrite="false"/> <!-- JPA search -->
 		<unjar src="${mlibs}gridgain/spring-2.5.6.jar" dest="${jarme}" overwrite="false"/> <!-- Spring framework -->
 		<unjar src="${mlibs}ganymed-ssh2-build250.jar" dest="${jarme}" overwrite="false"/> <!-- SSH utils -->
