@@ -7,8 +7,8 @@ Arguments = "${script_name}.sh";
 StdError = "${error_log}";
 StdOutput = "${output_log}";
 
-InputSandbox = {"${script_location}/${script_name}.sh${extra_inputs}"};
-OutputSandbox = {"${error_log}","${output_log}"${extra_outputs}};
+InputSandbox = {"${script_location}/${script_name}.sh"};
+OutputSandbox = {"${error_log}","${output_log}"};
 
 Requirements = ((other.GlueCEInfoHostName == "creamce.gina.sara.nl" ||
 	 other.GlueCEInfoHostName == "phoebe.htc.biggrid.nl" ||

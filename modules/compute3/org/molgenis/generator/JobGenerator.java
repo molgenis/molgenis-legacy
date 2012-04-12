@@ -27,8 +27,8 @@ public interface JobGenerator
     public static final String GENERATION_ID = "runid";
     public static final String TEMPLATE_DIR = "templatedir";
 
-    Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet);
-    Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet);
+    Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);
+    Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet, String backend);
 
     boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String,String> config);
 

@@ -3,6 +3,8 @@ package org.molgenis.generator;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
@@ -11,9 +13,7 @@ import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -25,12 +25,38 @@ import java.util.*;
  */
 public class GenericJobGenerator implements JobGenerator
 {
+    private static Logger logger = Logger.getLogger(GenericJobGenerator.class);
+
+    //template sources
+    private String templateGridDownload;
+    private String templateGridDownloadExe;
+    private String templateGridUpload;
+    private String templateGridJDL;
+    private String templateGridAfterExecution;
+
+    private String templateClusterHeader;
+    private String templateClusterFooter;
+
+    //template filenames
+    private String fileTemplateGridDownload = "templ-download-grid.ftl";
+    private String fileTemplateGridDownloadExe = "templ-exe-grid.ftl";
+    private String fileTemplateGridUpload = "templ-upload-grid.ftl";
+    private String fileTemplateGridJDL = "templ-jdl-grid.ftl";
+    private String fileTemplateGridAfterExecution = "templ-after-exe.ftl";
+
+    private String fileTemplateClusterHeader = "templ-pbs-header.ftl";
+    private String fileTemplateClusterFooter = "templ-pbs-footer.ftl";
+
+    private Hashtable<String, GridTransferContainer> pairJobTransfers = null;
 
     private Hashtable<String, String> config;
 
-    public Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet)
+    public Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet, String backend)
     {
         Vector<ComputeJob> computeJobs = new Vector<ComputeJob>();
+
+        if(backend.equalsIgnoreCase(JobGenerator.GRID))
+            pairJobTransfers = new Hashtable<String,GridTransferContainer>();
 
         //because Hashtable does not allow null keys or values
         Hashtable<String, String> values = new Hashtable<String, String>();
@@ -57,11 +83,10 @@ public class GenericJobGenerator implements JobGenerator
             }
             else
                 values.put(parameter.getName(), "");
-       }
+        }
 
         //produce jobs for every worksheet record
-        //for (int i = 0; i < worksheet.size(); i++)
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < worksheet.size(); i++)
         {
             //add parameters from worksheet to values
             Tuple tuple = worksheet.get(i);
@@ -130,24 +155,118 @@ public class GenericJobGenerator implements JobGenerator
                 job.setComputeScript(jobListing);
                 computeJobs.add(job);
 
-                System.out.println("----------------------------------------------------------------------");
-                System.out.println(el.getName());
-                System.out.println(jobListing);
-                System.out.println("----------------------------------------------------------------------");
+                //fill job transfer container for grid jobs to ensure correct data transfer
+                if(backend.equalsIgnoreCase(JobGenerator.GRID))
+                {
+                    GridTransferContainer container = fillContainer(protocol, values);
+                    pairJobTransfers.put(job.getName(), container);
+                }
+
+
+                logger.log(Level.DEBUG, "----------------------------------------------------------------------");
+                logger.log(Level.DEBUG, el.getName());
+                logger.log(Level.DEBUG, jobListing);
+                logger.log(Level.DEBUG, "----------------------------------------------------------------------");
 
             }
         }
         return computeJobs;
     }
 
-    public Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet)
+    private GridTransferContainer fillContainer(ComputeProtocol protocol, Hashtable<String, String> values)
+    {
+        GridTransferContainer container = new GridTransferContainer();
+
+        //TODO: start here - fill container with protocol inputs/outputs etc. and their values for later replacement during job generation for grid
+        return container;
+    }
+
+    public Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet, String backend)
     {
         return null;
     }
 
     public boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String, String> config)
     {
-        return false;
+        //read templates
+        String templatesDir = config.get(JobGenerator.TEMPLATE_DIR);
+
+        if (backend.equalsIgnoreCase(JobGenerator.GRID))
+            readTemplatesGrid(templatesDir);
+        else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+            readTemplatesCluster(templatesDir);
+
+        for (ComputeJob computeJob : computeJobs)
+        {
+            //generate files for selected back-end
+            if (backend.equalsIgnoreCase(JobGenerator.GRID))
+                generateActualJobGrid(computeJob, config);
+            else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+                generateActualJobCluster(computeJob, config);
+
+        }
+
+        return true;
+    }
+
+    private void generateActualJobCluster(ComputeJob computeJob, Hashtable<String, String> config)
+    {
+
+    }
+
+    private void generateActualJobGrid(ComputeJob computeJob, Hashtable<String, String> config)
+    {
+        //create values hashtable to fill templates
+        Hashtable<String, String> values = new Hashtable<String, String>();
+
+        values.put("script_name", computeJob.getName());
+        values.put("error_log", "err_" + computeJob.getName() + ".log");
+        values.put("output_log", "out_" + computeJob.getName() + ".log");
+        values.put("script_location", config.get(JobGenerator.BACK_END_DIR));
+
+        //create jdl
+        String jdlListing = weaveFreemarker(templateGridJDL, values);
+
+        //write jdl
+        (new File(config.get(JobGenerator.OUTPUT_DIR))).mkdirs();
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".jdl",
+                jdlListing);
+
+        //create shell
+        String shellListing;
+        String script = computeJob.getComputeScript();
+        ComputeProtocol protocol = ((ComputeProtocol)computeJob.getProtocol());
+        List<ComputeParameter> inputs = protocol.getInputs();
+
+    }
+
+    private void readTemplatesCluster(String templatesDir)
+    {
+        try
+        {
+            templateClusterHeader = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterHeader);
+            templateClusterFooter = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterFooter);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void readTemplatesGrid(String templatesDir)
+    {
+        try
+        {
+            templateGridDownload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownload);
+            templateGridDownloadExe = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownloadExe);
+            templateGridUpload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridUpload);
+            templateGridJDL = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridJDL);
+            templateGridAfterExecution = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridAfterExecution);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void setConfig(Hashtable<String, String> config)
@@ -175,4 +294,35 @@ public class GenericJobGenerator implements JobGenerator
 
         return out.toString();
     }
+
+    private final String getFileAsString(String filename) throws IOException
+    {
+        File file = new File(filename);
+
+        if (!file.exists())
+        {
+            logger.log(Level.ERROR, "template file " + filename + " does not exist");
+            System.exit(1);
+        }
+        final BufferedInputStream bis = new BufferedInputStream(
+                new FileInputStream(file));
+        final byte[] bytes = new byte[(int) file.length()];
+        bis.read(bytes);
+        bis.close();
+        return new String(bytes);
+    }
+
+    public void writeToFile(String outfilename, String script)
+    {
+        try
+        {
+            BufferedWriter out = new BufferedWriter(new FileWriter(outfilename));
+            out.write(script);
+            out.close();
+        }
+        catch (IOException e)
+        {
+        }
+    }
+
 }
