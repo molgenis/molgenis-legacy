@@ -33,7 +33,7 @@ public class GffEntry {
 	public String toString()
 	{
 		String sep = "\t";
-		return chr + sep + src + sep + feat + sep + start + sep + stop + sep + "." + sep + "." + sep + score + sep + group;
+		return chr + sep + src + sep + feat + sep + start + sep + stop + sep + score + sep + "." + sep + "." + sep + group;
 	}
 	
 	public String getChr() {

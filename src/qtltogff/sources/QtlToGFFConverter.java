@@ -1,8 +1,14 @@
 package qtltogff.sources;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +51,7 @@ public class QtlToGFFConverter
 			for(String chr : chromosomes.keySet())
 			{
 				chromosomes.get(chr).setCumuBpDeductionAmount(getCumuBpDeductionAmount(chr));
-				System.out.println("deduction amount for " + chr + " is: " + chromosomes.get(chr).getCumuBpDeductionAmount());
+				System.out.println("Deduction amount for " + chr + " is: " + chromosomes.get(chr).getCumuBpDeductionAmount());
 			}
 		}
 		
@@ -173,7 +179,7 @@ public class QtlToGFFConverter
 		//iterate traits and detect peaks
 		System.out.println("Now going to iterate over the traits in your annotation file and detect peaks..");
 		Map<String, List<GffEntry>> entriesPerTrait = new HashMap<String, List<GffEntry>>();
-		for(String t : traits.keySet())
+		for(final String t : traits.keySet())
 		{
 			if(traitsNotInMatrix.contains(t))
 			{
@@ -195,10 +201,10 @@ public class QtlToGFFConverter
 			List<Peak> peaks = detectPeaks(values, markersInMatrix, lod_thres);
 			List<GffEntry> entries = new ArrayList<GffEntry>();
 			
-			int peakCount = 0;
+			int multiPeakCount = 0;
 			for(Peak p : peaks)
 			{
-				String traitGroup = t + "_" + peakCount;
+				//String traitGroup = t + "_" + multiPeakCount;
 				
 				if(p.getStartIndex() == p.getStopIndex())
 				{
@@ -229,8 +235,25 @@ public class QtlToGFFConverter
 				{
 					score = 1000;
 				}
-				else{
-					score = (int) ((lod_limit / p.getPeakValue().doubleValue()) * 100);
+				else
+				{
+					//scale until limit: 0->limit = 0->1000
+					
+				//	score = 1000 / limit * 
+					
+			//		score = (int) (p.getPeakValue().doubleValue() * 100.0);
+					
+					
+					score = (int) (1000.0 * (p.getPeakValue().doubleValue() / lod_limit));
+					
+					
+				//	System.out.println("lod: " + p.getPeakValue() + " -> " + score);
+				}
+				
+				String traitGroup = t;
+				if(peaks.size() > 1)
+				{
+					traitGroup = t + "_" + multiPeakCount;
 				}
 				
 				GffEntry qtl_interval = new GffEntry(peakMarkerChromosomeGffName, "QtlToGFF", "qtl_interval", leftBpPos, rightBpPos, score, traitGroup);
@@ -247,32 +270,40 @@ public class QtlToGFFConverter
 					
 					if(!peakMarkerChromosomeGffName.equals(traitChromosomeGffName))
 					{
-						traitGroup = t + "_"+peakCount+"_has_transqtl_"+peakCount+"_on_" + peakMarkerChromosomeGffName;
+						traitGroup = traitGroup + "_has_transqtl_on_" + peakMarkerChromosomeGffName;
 					}
 					
 					GffEntry trait_loc = new GffEntry(traitChromosomeGffName, "QtlToGFF", "trait_loc", traitLoc, traitLoc+30, score, traitGroup);
 					entries.add(trait_loc);
 				}
 					
-				peakCount++;
+				multiPeakCount++;
 			}
 			
 			if(entries.size() > 0){
 				entriesPerTrait.put(t, entries);
 			}
 			
-			
-			
-//			System.out.println("values for trait " + t);
-//			
-//			for(Object v : values)
-//			{
-//				System.out.print(v + " ");
-//			}
-//			System.out.print("\n");
-			
-
 		}
+		
+		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(output)));
+		
+		String chr1 = ((Chromosome)chromosomes.values().toArray()[0]).getGffName();
+		Long chr1size = ((Chromosome)chromosomes.values().toArray()[0]).getBpLength();
+		String trackname = matrixFile.getName().substring(0, matrixFile.getName().length()-4);
+		writer.println("browser position "+chr1+":1-"+chr1size);
+		writer.println("browser hide all");
+		writer.println("track name="+trackname+"	description=\"QTL results of "+trackname+" compiled by QtlToGFF\" visibility=2	useScore=1");
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		System.out.println(dateFormat.format(date));
+		
+		writer.println("##name "+trackname);
+		writer.println("##description QTL results of "+trackname+" compiled by QtlToGFF");
+		writer.println("##date "+dateFormat.format(date));
+		writer.println("##gff-version 2");
+		writer.println("##source QtlToGFF, see: http://www.molgenis.org/svn/standalone_tools/src/qtltogff/");
 		
 		int total = 0;
 		for(String tr : entriesPerTrait.keySet())
@@ -280,12 +311,12 @@ public class QtlToGFFConverter
 			total += entriesPerTrait.get(tr).size();
 			for(GffEntry g: entriesPerTrait.get(tr))
 			{
-				System.out.println(g.toString());
+				writer.println(g);
 			}
 		}
-		System.out.println("Total amount of GFF entries written: " + total);
+		System.out.println(total + " GFF entries written to file" + output.getAbsolutePath());
 		
-		
+		writer.close();
 		
 	}
 	
