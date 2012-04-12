@@ -38,7 +38,12 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		# Check if the files required for demultiplexing are present.
 		#
 		inputs "${compressedFastqFilepathSR}"
-
+		
+		#
+		# Read count of the input file.
+		#
+		reads_in_1=$(gzip -cd ${compressedFastqFilepathSR} | wc -l)
+		
 		#
 		# Demultiplex the multiplexed, gzipped FastQ file.
 		#
@@ -46,11 +51,6 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		--mpr1 ${compressedFastqFilepathSR} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathSR)}' \
 		--ukr1 ${compressedDemultiplexedDiscardedFastqFilepathSR}
-		
-		#
-		# Read count of the input file.
-		#
-		reads_in_1=$(gzip -cd ${compressedFastqFilepathSR} | wc -l)
 		
 		#
 		# Read count of the output file.
@@ -93,8 +93,8 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		# Read count sanity check.
 		#
 		if (( $reads_in_1 == $summed_reads_out_1 ))
-		then touch ${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_check.passed
-		else touch ${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_check.FAILED
+		then touch ${runIntermediateDir}/${filenamePrefix}.demultiplex.read_count_check.passed
+		else touch ${runIntermediateDir}/${filenamePrefix}.demultiplex.read_count_check.FAILED
 		fi
 		
 	</#if>
@@ -114,17 +114,6 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		inputs "${compressedFastqFilepathPE2}"
 	
 		#
-		# Demultiplex the multiplexed, gzipped FastQ file.
-		#
-		${demultiplexScript} --bcs '${csv(barcode)}' \
-		--mpr1 ${compressedFastqFilepathPE1} \
-		--mpr2 ${compressedFastqFilepathPE2} \
-		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathPE1)}' \
-		--dmr2 '${csv(compressedDemultiplexedSampleFastqFilepathPE2)}' \
-		--ukr1 ${compressedDemultiplexedDiscardedFastqFilepathPE1} \
-		--ukr2 ${compressedDemultiplexedDiscardedFastqFilepathPE2}
-		
-		#
 		# Read count of the input files.
 		#
 		reads_in_1=$(gzip -cd ${compressedFastqFilepathPE1} | wc -l)
@@ -135,10 +124,21 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		# For PE data the amount of reads in both input files must be the same!
 		#
 		if (( $reads_in_1 != $reads_in_2))
-		then touch ${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_check.FAILED
+		then touch ${runIntermediateDir}/${filenamePrefix}.demultiplex.read_count_check.FAILED
 		echo "FATAL: cannot demultiplex ${filenamePrefix}. Number of reads in both specified PE FastQ input files not the same!"
 		exit 1
 		fi
+		
+		#
+		# Demultiplex the multiplexed, gzipped FastQ file.
+		#
+		${demultiplexScript} --bcs '${csv(barcode)}' \
+		--mpr1 ${compressedFastqFilepathPE1} \
+		--mpr2 ${compressedFastqFilepathPE2} \
+		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathPE1)}' \
+		--dmr2 '${csv(compressedDemultiplexedSampleFastqFilepathPE2)}' \
+		--ukr1 ${compressedDemultiplexedDiscardedFastqFilepathPE1} \
+		--ukr2 ${compressedDemultiplexedDiscardedFastqFilepathPE2}
 		
 		#
 		# Read count of the output file.
@@ -197,8 +197,8 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		# Read count sanity check.
 		#
 		if (( $reads_in_1 == $summed_reads_out_1 )) && (( $reads_in_2 == $summed_reads_out_2))
-		then touch ${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_check.passed
-		else touch ${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_check.FAILED
+		then touch ${runIntermediateDir}/${filenamePrefix}.demultiplex.read_count_check.passed
+		else touch ${runIntermediateDir}/${filenamePrefix}.demultiplex.read_count_check.FAILED
 		fi
 	</#if>
 	
