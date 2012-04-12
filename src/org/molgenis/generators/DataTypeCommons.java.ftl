@@ -58,12 +58,8 @@
 				  		values.add(${type(f.xrefField)}.parse${settertype(f.xrefField)}((ref.toString())));
 				  	</#if>
 			  	</#if>
-				}							
-<#if databaseImp = 'JPA'>				
+				}											
 				this.set${JavaName(f)}_${JavaName(f.xrefField)}( values );
-<#else>				
-				this.set${JavaName(f)}( values );
-</#if>			
 			}
 			<#if f.xrefLabelNames[0] != f.xrefFieldName><#list f.xrefLabelNames as label>
 			//set labels ${label} for mref field ${JavaName(f)}	

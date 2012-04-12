@@ -254,7 +254,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 			</#list></#if>
 			<#elseif type_label == "mref">
 	@javax.persistence.Transient
-	private java.util.List<${type(field.xrefField)}> ${name(field)}_${name(field.xrefField)} = null;		
+	private java.util.List<${type(field.xrefField)}> ${name(field)}_${name(field.xrefField)} = new java.util.ArrayList<${type(field.xrefField)}>();		
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	@javax.persistence.Transient
 	private java.util.List<String> ${name(field)}_${label} = new java.util.ArrayList<String>();
@@ -346,7 +346,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 		</#if>
 		
 		this.${name(field)} = ${name(field)};
-	}			
+	}
 			</#if>
 
 	
@@ -455,6 +455,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	
 	public java.util.List<${type(field.xrefField)}> get${JavaName(field)}_${JavaName(field.xrefField)}()
 	{
+<#if databaseImp = 'JPA'>
 		if(${name(field)} != null && !${name(field)}.isEmpty()) {
 			java.util.List<${type(field.xrefField)}> result = new java.util.ArrayList<${type(field.xrefField)}>();
 //			for(${type(field.xrefField)} xref: ${name(field)}_${name(field.xrefField)}) {
@@ -469,6 +470,9 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 			}		
 			return ${name(field)}_${name(field.xrefField)};
 		}
+<#else>
+		return ${name(field)}_${name(field.xrefField)};
+</#if>
 	}	
 	
 <#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>	
