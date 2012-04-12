@@ -92,7 +92,9 @@ public class FrontController extends MolgenisFrontController
 			<#if auth_redirect != ''>
 			login = new ${loginclass}(request.getDatabase(), "${auth_redirect}", context.getTokenFactory());
 			<#else>
-			login = new ${loginclass}(request.getDatabase(), context.getTokenFactory());
+			//login = new ${loginclass}(request.getDatabase(), context.getTokenFactory());
+			login = org.molgenis.mutation.ServiceLocator.instance().getSecurityService();
+			login.login(request.getDatabase(), "anonymous", "anonymous");
 			</#if>			
 			request.getRequest().getSession().setAttribute("login", login);
 		}
@@ -110,7 +112,8 @@ public class FrontController extends MolgenisFrontController
 		UUID id = UUID.randomUUID();
 		
 	<#if databaseImp = 'jpa'>
-		Database db = DatabaseFactory.create();
+		Database db = (Database) org.molgenis.mutation.ServiceLocator.instance().getContext().getBean("org.molgenis.framework.db.Database");
+		//Database db = DatabaseFactory.create();
 	<#else>
 		Connection conn = context.getDataSource().getConnection();
 		<#if db_mode != 'standalone'>

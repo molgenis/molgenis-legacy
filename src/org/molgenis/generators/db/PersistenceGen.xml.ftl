@@ -11,7 +11,7 @@
 	</#if>
 </#list>
 	    <properties>
-	      <property name="javax.persistence.jdbc.url" value="${options.dbUri}"/>
+	      <property name="javax.persistence.jdbc.url" value="${options.dbUri}?autoReconnect=true"/>
 	      <property name="javax.persistence.jdbc.password" value="${options.dbPassword}"/>
 	      <property name="javax.persistence.jdbc.driver" value="${options.dbDriver}"/>
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
@@ -20,6 +20,13 @@
           <property name="hibernate.show_sql" value="false"/>
           <property name="hibernate.format_sql" value="true"/>
           <property name="hibernate.query.substitutions" value="true=1, false=0"/>
+          <property name="hibernate.jdbc.batch_size" value="50"/>
+          <property name="hibernate.dynamic-insert" value="true"/>
+          <property name="hibernate.dynamic-update" value="true"/>
+          <property name="hibernate.order_inserts" value="true"/>
+          <property name="hibernate.order_updates" value="true"/>
+          <property name="hibernate.cache.use_query_cache" value="false"/>
+          <property name="hibernate.cache.use_second_level_cache" value="false"/>
           <property name="hibernate.search.default.directory_provider" value="filesystem"/>
           <property name="hibernate.search.default.indexBase" value="/var/lucene/indexes"/>
           
