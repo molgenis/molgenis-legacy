@@ -40,8 +40,6 @@ inputs ${ssvQuoted(dedupmetrics)}
 inputs ${ssvQuoted(sampleconcordancefile)}
 inputs ${qcstatisticscolnames}
 
-mkdir -p ${qcdir}
-
 # get general sample statistics
 ${getStatisticsScript} \
 --hsmetrics ${csvQuoted(samplehsmetrics)} \

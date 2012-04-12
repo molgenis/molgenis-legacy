@@ -25,6 +25,7 @@ mkdir -p ${projectJobsDir}
 mkdir -p ${projectLogsDir}
 mkdir -p ${projectIntermediateDir}
 mkdir -p ${projectResultsDir}
+mkdir -p ${qcdir}
 
 #
 # Create symlinks to the raw data required to analyse this project
