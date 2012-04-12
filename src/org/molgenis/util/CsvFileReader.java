@@ -127,6 +127,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	@Override
 	public void reset() throws IOException, DataFormatException
 	{
+		if(this.reader != null) this.reader.close();
 		this.reader = new BufferedReader(new FileReader(file));
 		super.reset();
 	}
