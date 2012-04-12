@@ -229,6 +229,7 @@ public class CsvBufferedReaderMultiline extends AbstractTupleReader implements C
 			}
 			
 			//next is null
+			if(reader != null) reader.close();
 			return null;
 		}
 		catch (Exception e)
