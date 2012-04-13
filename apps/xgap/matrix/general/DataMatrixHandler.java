@@ -131,13 +131,13 @@ public class DataMatrixHandler extends MolgenisFileHandler
 				if (dm.getValueType().equals("Decimal"))
 				{
 					List<DecimalDataElement> dde = db.find(DecimalDataElement.class,
-							new QueryRule("data", Operator.EQUALS, dm.getId()));
+							new QueryRule("data_id", Operator.EQUALS, dm.getId()));
 					db.remove(dde);
 				}
 				else
 				{
 					List<TextDataElement> tde = db.find(TextDataElement.class,
-							new QueryRule("data", Operator.EQUALS, dm.getId()));
+							new QueryRule("data_id", Operator.EQUALS, dm.getId()));
 					db.remove(tde);
 				}
 			}
@@ -211,7 +211,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			for (Entity e : test)
 			{
 				// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
-				if ((db instanceof JDBCDatabase && new Integer(e.get("data").toString()).intValue() == data.getId().intValue()) ||
+				if ((db instanceof JDBCDatabase && new Integer(e.get("data_id").toString()).intValue() == data.getId().intValue()) ||
 				(db instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId().intValue()))
 				{
 					try
@@ -242,10 +242,10 @@ public class DataMatrixHandler extends MolgenisFileHandler
 	{
 		Query<DecimalDataElement> dde = db.query(DecimalDataElement.class);
 		dde.limit(1);
-		dde.equals("data", data.getId());
+		dde.equals("data_id", data.getId());
 		Query<TextDataElement> tde = db.query(TextDataElement.class);
 		tde.limit(1);
-		tde.equals("data", data.getId());
+		tde.equals("data_id", data.getId());
 		boolean hasDataElements = (dde.find().size() > 0 || tde.find().size() > 0) ? true : false;
 		return hasDataElements;
 	}
@@ -306,7 +306,7 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		List<? extends Entity> test = db.find(db.getClassForName(matrixSource));
 		for (Entity e : test)
 		{
-			if (Integer.valueOf(e.get("data").toString()).intValue() == dm.getId().intValue())
+			if (Integer.valueOf(e.get("data_id").toString()).intValue() == dm.getId().intValue())
 			{
 				QueryRule mfId = new QueryRule("id", Operator.EQUALS, e.get(e.getIdField()));
 				return db.find(MolgenisFile.class, mfId).get(0);
@@ -334,8 +334,8 @@ public class DataMatrixHandler extends MolgenisFileHandler
 		for (Entity e : mfSubclasses)
 		{
 			// used to be: if ((e.get("data_name").toString()).equals(data.getName()))
-			if ((db instanceof JDBCDatabase && new Integer(e.get("data").toString()).intValue() == data.getId().intValue()) ||
-			(db instanceof JpaDatabase && ((Data) e.get("data")).getId().intValue() == data.getId().intValue()))
+			if ((db instanceof JDBCDatabase && new Integer(e.get("data_id").toString()).intValue() == data.getId().intValue()) ||
+			(db instanceof JpaDatabase && ((Data) e.get("data_id")).getId().intValue() == data.getId().intValue()))
 			{
 				return this.getFile(e.get("name").toString(), db);
 			}
@@ -438,18 +438,8 @@ public class DataMatrixHandler extends MolgenisFileHandler
 			
 			mfAdd.setName(data.getName());
 			mfAdd.setExtension(getExtension(data.getStorage()));
-            if (db instanceof JDBCDatabase)
-            {
-                mfAdd.set("Data_" + Data.NAME, data.getName());
-            }
-            else if (db instanceof JpaDatabase) {
-            	mfAdd.set("Data_" + Data.ID, data.getId().toString());
-            	mfAdd.set("Data_" + Data.NAME, data.getName());
-            }
-            else
-            {
-                throw new DatabaseException("Unsupported database mapper");
-            }
+            mfAdd.set("data_" + Data.ID, data.getId().toString());
+            mfAdd.set("data_" + Data.NAME, data.getName());
             
 			db.add(mfAdd);
 			relinked = true;			

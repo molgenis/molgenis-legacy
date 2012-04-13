@@ -55,7 +55,7 @@ public class Matrix_XqtlTestNG
 		db = DatabaseFactory.create();
 
 		//setup database tables
-		String report = ResetXgapDb.reset(db, true);
+		String report = ResetXgapDb.reset(db, false);
 		Assert.assertTrue(report.endsWith("SUCCESS"));
 
 		// setup file storage
