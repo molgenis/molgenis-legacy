@@ -14,12 +14,13 @@ public class BinToCsv
 {
 	public static void main(String[] args) throws Exception
 	{
-		if (args.length != 1)
+		if (args.length != 2)
 		{
-			throw new DataFormatException("You must supply 1 argument: source file name.");
+			throw new DataFormatException("You must supply 2 arguments: source file name and whether you want matrix output ('M') or a list ('L').");
 		}
 
 		String fileString = args[0];
+		String matrixOrList = args[1];
 
 		// check if source file exists and ends with '.bin'
 		File src = new File(fileString);
@@ -35,6 +36,11 @@ public class BinToCsv
 		}
 
 		System.out.println("Source file exists and ends with '.bin'..");
+		
+		if(!(matrixOrList.equals("M") || matrixOrList.equals("L")))
+		{
+			throw new Exception("ERROR: Bad argument. Please use 'M' for matrix output or 'L' for a list.");
+		}
 
 		BinaryDataMatrixInstance instance = new BinaryDataMatrixInstance(src);
 
@@ -47,7 +53,16 @@ public class BinToCsv
 		System.out.println("Starting conversion..");
 
 		PrintStream p = new PrintStream(new BufferedOutputStream(new FileOutputStream(dest)));
-		instance.toPrintStream(p);
+	
+		if(matrixOrList.equals("M"))
+		{
+			instance.toPrintStream(p);
+		}
+		else
+		{
+			instance.toObservedValueList(p);
+		}
+		
 		p.close();
 
 		System.out.println("..done!");

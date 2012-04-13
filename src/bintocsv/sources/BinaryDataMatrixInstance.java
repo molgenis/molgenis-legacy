@@ -192,6 +192,64 @@ public class BinaryDataMatrixInstance
 		}
 		return d;
 	}
+	
+	
+	
+	public List<String> toObservedValueList(PrintStream p) throws Exception
+	{
+		try
+		{
+			p.append("investigation_name" + "\t" +
+					"data_name" + "\t" +
+					"target_name" + "\t" +
+					"feature_name" + "\t" +
+					"targetindex" + "\t" +
+					"featureindex" + "\t" +
+					"value\n");
+			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
+			{
+				Object[] row = this.getRow(rowIndex);
+				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
+				{
+					p.append(this.getData().getInvestigation_Name() + "\t"
+							+ this.getData().getName() + "\t"
+							+ getRowNames().get(rowIndex) + "\t"
+							+ getColNames().get(colIndex) + "\t" + rowIndex
+							+ "\t" + colIndex + "\t" + row[colIndex] + "\n");
+				}
+				p.flush();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		
+		
+		List<String> res = new ArrayList<String>();
+
+		// get a shorthand to all the matrix values
+		Object[][] elements = getElements();
+
+		// add header
+		// TODO: finish this part
+//		res.add(this.getData().getTarget_Name() + "\t"
+//				+ this.getData().getFeature_Name() + "\t" + "etc");
+
+		// iterate over all the values and add in the form of a list
+		for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
+		{
+			for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
+			{
+				res.add(getRowNames().get(rowIndex) + "\t"
+						+ getColNames().get(colIndex) + "\t"
+						+ elements[rowIndex][colIndex]);
+			}
+		}
+
+		return res;
+	}
 
 	public Double[] readNextDoublesFromRAF(RandomAccessFile raf, int nr)
 			throws IOException
