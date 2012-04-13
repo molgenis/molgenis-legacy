@@ -23,8 +23,8 @@ alloutputsexist "${coveragegatk}" \
 "${coveragegatk}.cumulative_coverage.pdf"
 
 export PATH=${JAVA_HOME}/bin:<#noparse>${PATH}</#noparse>
-export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
 export R_HOME=${R_HOME}
+export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
 export R_LIBS=${R_LIBS}
 
 java -Djava.io.tmpdir=${tempdir} -Xmx12g -jar \

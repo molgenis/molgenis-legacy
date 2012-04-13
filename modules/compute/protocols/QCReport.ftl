@@ -42,7 +42,7 @@ inputs ${qcstatisticscolnames}
 
 export R_HOME=${R_HOME}
 export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
-export R_LIBS=${R_LIBS} 
+export R_LIBS=${R_LIBS}
 
 # get general sample statistics
 ${getStatisticsScript} \
