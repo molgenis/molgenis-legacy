@@ -195,7 +195,7 @@ public class BinaryDataMatrixInstance
 	
 	
 	
-	public List<String> toObservedValueList(PrintStream p) throws Exception
+	public void toObservedValueList(PrintStream p) throws Exception
 	{
 		try
 		{
@@ -224,31 +224,6 @@ public class BinaryDataMatrixInstance
 		{
 			e.printStackTrace();
 		}
-		
-		
-		
-		List<String> res = new ArrayList<String>();
-
-		// get a shorthand to all the matrix values
-		Object[][] elements = getElements();
-
-		// add header
-		// TODO: finish this part
-//		res.add(this.getData().getTarget_Name() + "\t"
-//				+ this.getData().getFeature_Name() + "\t" + "etc");
-
-		// iterate over all the values and add in the form of a list
-		for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
-		{
-			for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
-			{
-				res.add(getRowNames().get(rowIndex) + "\t"
-						+ getColNames().get(colIndex) + "\t"
-						+ elements[rowIndex][colIndex]);
-			}
-		}
-
-		return res;
 	}
 
 	public Double[] readNextDoublesFromRAF(RandomAccessFile raf, int nr)
