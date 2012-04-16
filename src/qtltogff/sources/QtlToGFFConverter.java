@@ -176,6 +176,12 @@ public class QtlToGFFConverter
 			System.out.print("\n");
 		}
 		
+		//iterate markers in matrix and check if they are in ascending chromosomes
+		//TODO
+		
+		//iterate markers in matrix and check if they are in ascending bp position as well
+		//TODO
+		
 		//iterate traits and detect peaks
 		System.out.println("Now going to iterate over the traits in your annotation file and detect peaks..");
 		Map<String, List<GffEntry>> entriesPerTrait = new HashMap<String, List<GffEntry>>();
@@ -198,7 +204,8 @@ public class QtlToGFFConverter
 				values = instance.getRow(rowNames.indexOf(t)); //as in example set & verified
 			}
 			
-			List<Peak> peaks = detectPeaks(values, markersInMatrix, lod_thres);
+			PeakDetection pd = new PeakDetection(markers);
+			List<Peak> peaks = pd.detectPeaks(values, markersInMatrix, lod_thres, lod_drop, t);
 			List<GffEntry> entries = new ArrayList<GffEntry>();
 			
 			int multiPeakCount = 0;
@@ -346,101 +353,6 @@ public class QtlToGFFConverter
 			}
 		}
 		return amount;
-	}
-	
-	public List<Peak> detectPeaks(Object[] values, List<String> markersInMatrix, double lod_thres) throws Exception
-	{
-		List<Peak> peaks = new ArrayList<Peak>();
-		
-		//naive: just find regions over cutoff and pick flanking markers
-		//TODO: proper peak detection, e.g. waterfill
-		
-		int peakStart = -1;
-		int peakMarker = -1;
-		double highestMarkerValue = -1.0;
-		
-		for(int i = 0; i < values.length; i++)
-		{
-			double d = ((Double)values[i]).doubleValue();
-			
-			//start of a peak
-			if(peakStart == -1 && d > lod_thres)
-			{
-				peakStart = i;
-			}
-			
-			//inside a peak: find the highest marker
-			if(peakStart != -1)
-			{
-				if(highestMarkerValue == -1.0)
-				{
-					highestMarkerValue = d;
-					peakMarker = i;
-				}
-				else
-				{
-					if(d > highestMarkerValue)
-					{
-						highestMarkerValue = d;
-						peakMarker = i;
-					}
-				}
-			}
-			
-			//inside a peak: finish when LOD drops below threshold, or we reached the last value
-			if(peakStart != -1 && (d < lod_thres || i == values.length-1))
-			{
-				
-				//adjust for flanking marker: start -1 if possible for left flank (i is always 1 ahead anyway for right flank)
-				Peak p = new Peak(peakStart != 0 ? peakStart-1 : peakStart, i, markersInMatrix.get(peakMarker), highestMarkerValue);
-				
-				String leftFlankMarkerChr = markers.get(markersInMatrix.get(p.getStartIndex())).getChromosomeName();
-				String rightFlankMarkerChr = markers.get(markersInMatrix.get(p.getStopIndex())).getChromosomeName();
-				
-				//the flanking (+1 and -1 markers around region) can be across chromosomes by accident..
-				if(!leftFlankMarkerChr.equals(rightFlankMarkerChr))
-				{
-					String leftFlankMarkerChrPlusOne = markers.get(markersInMatrix.get(p.getStartIndex()+1)).getChromosomeName();
-					String rightFlankMarkerChrMinusOne = markers.get(markersInMatrix.get(p.getStopIndex()-1)).getChromosomeName();
-				
-					//left flank marker is wrongly positioned another chromosome
-					if(leftFlankMarkerChrPlusOne.equals(rightFlankMarkerChr))
-					{
-						p.setStartIndex(p.getStartIndex()+1);
-//						System.out.println("Corrected a QTL region by pushing the left flanking marker back to the right chromosome..");
-					}
-					//right flank marker is wrongly positioned another chromosome
-					else if(rightFlankMarkerChrMinusOne.equals(leftFlankMarkerChr))
-					{
-						p.setStopIndex(p.getStopIndex()-1);
-//						System.out.println("Corrected a QTL region by pulling the right flanking marker back to the right chromosome..");
-					}
-					else{
-						throw new Exception("Cannot make sense of this QTL region.. aborting");
-					}
-					
-				}
-				
-				peaks.add(p);
-				
-//				System.out.println("Peak : " + p.getStartIndex() + " to " + p.getStopIndex() + " peakmarker = " + p.getPeakMarker());
-				peakStart = -1;
-				highestMarkerValue = -1.0;
-			}
-			
-		}
-		
-//		if(peaks.size() > 0)
-//		{
-//			System.out.println("peaks were found in these values:");
-//			for(Object v : values)
-//			{
-//				System.out.print(v + " ");
-//			}
-//			System.out.print("\n");
-//		}
-		
-		return peaks;
 	}
 	
 	public Map<String, Marker> loadMarkers(File markerFile) throws FileNotFoundException
