@@ -68,6 +68,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
 	private List<JQueryTreeViewElement> directChildrenOfTop = new ArrayList<JQueryTreeViewElement>();
+	private List<String> listOfMeasurements = new ArrayList<String>();
 
 	public catalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -236,7 +237,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		List<String> bottomProtocols = new ArrayList<String>();
 		List<String> middleProtocols = new ArrayList<String>();
 		protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
-
+		listOfMeasurements.clear();
+		
 		// measurementsInTree = new HashMap<String, JQueryTreeViewElement>();
 		// protocolsInTree = new HashMap<String, JQueryTreeViewElement>();
 
@@ -622,7 +624,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				} else {
 					displayName = measurement.getName();
 				}
-
+				
 				// Query the all the detail information about this measurement,
 				// in molgenis terminology, the detail information
 				// are all the observedValue and some of the fields from the
@@ -636,6 +638,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				// jquery tree here. Therefore if the element already existed, a
 				// suffix will be added at the end of string to
 				// make the name unique
+				
+//				displayName = displayName.replaceAll("[%#]", "");
+				
 				if (protocolsAndMeasurementsinTree.containsKey(displayName)) {
 
 					if (!multipleInheritance.containsKey(displayName)) {
@@ -652,7 +657,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							+ multipleInheritance.get(displayName),
 							displayName, parentTree,
 							previousChildTree.getHtmlValue());
-
+					
+					listOfMeasurements.add(displayName
+							+ multipleInheritance.get(displayName));
+					
 					childTree.setHtmlValue(htmlValue);
 
 				} else {
@@ -660,6 +668,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree = new JQueryTreeViewElement(displayName,
 							parentTree, htmlValue);
 
+					listOfMeasurements.add(displayName);
+					
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
 
@@ -806,7 +816,32 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		// selected.add(m.getName());
 		// }
 
-		return treeView.toHtml(selected);
+		String htmlTreeView = treeView.toHtml(selected);
+
+		// This piece of javascript need to be here because some java calls are needed.  
+		String measurementClickEvent = "<script>";
+
+		List<String> uniqueMeasurementName = new ArrayList<String>();
+		
+		for(String eachMeasurement : listOfMeasurements){
+			
+			if(!uniqueMeasurementName.contains(eachMeasurement)){
+				
+				uniqueMeasurementName.add(eachMeasurement);
+				
+				if(eachMeasurement.equals("Year partner son daughter 3")){
+					System.out.println();
+				}
+				measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
+						+ "getHashMapContent(\"" + eachMeasurement + "\");});"
+						+ "";
+			}
+		}
+		measurementClickEvent += "</script>";
+
+		htmlTreeView += measurementClickEvent;
+
+		return htmlTreeView;
 	}
 
 	/**
