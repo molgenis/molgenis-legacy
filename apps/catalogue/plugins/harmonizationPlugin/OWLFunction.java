@@ -1,11 +1,13 @@
 package plugins.harmonizationPlugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -15,6 +17,8 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
@@ -23,16 +27,24 @@ public class OWLFunction {
 	private String separtor = ";";
 	private OWLDataFactory factory = null;
 	private OWLOntology owlontology = null;
+	private OWLOntologyManager manager = null;
 	private HashMap<String, List<String>> classLabelToSynonyms = new HashMap<String, List<String>>();
 	private HashMap<String, String> synonymToClassLabel = new HashMap<String, String>();
 	private HashMap<String, OWLClass> labelToClass = new HashMap<String, OWLClass>();
-	private HashMap<String, List<String>> classRelations = new HashMap<String, List<String>>();
+	
+
 	private HashMap<String, List<String>> expandedQueries = new HashMap<String, List<String>>();
 
 	public OWLFunction(){
 
 	}
 
+	public OWLFunction(String ontologyFileName) throws OWLOntologyCreationException{
+		this.manager = OWLManager.createOWLOntologyManager();
+		this.factory = manager.getOWLDataFactory();
+		this.owlontology = manager.loadOntologyFromOntologyDocument(new File(ontologyFileName));
+	}
+	
 	public OWLFunction(OWLDataFactory factory, OWLOntology owlontology){
 		this.owlontology = owlontology;
 		this.factory = factory;
@@ -42,16 +54,20 @@ public class OWLFunction {
 		this.separtor = separator;
 	}
 
+	public OWLOntology getOntology(){
+		return this.owlontology;
+	}
+	
 	public String getSeparator(){
 		return this.separtor;
 	}
 
+	public HashMap<String, OWLClass> getLabelToClass() {
+		return labelToClass;
+	}
+	
 	public HashMap<String, String> getSynonymToClassLabel() {
 		return synonymToClassLabel;
-	}
-
-	public HashMap<String, List<String>> getClassRelations() {
-		return classRelations;
 	}
 
 	public HashMap<String, List<String>> getExpandedQueries(){
@@ -62,7 +78,7 @@ public class OWLFunction {
 		return classLabelToSynonyms;
 	}
 
-	public HashMap<String, OWLClass> labelMapURI(List<String> annotationProperty){
+	public void labelMapURI(List<String> annotationProperty){
 
 		List<IRI> AnnotataionProperty = new ArrayList<IRI>();
 
@@ -93,8 +109,6 @@ public class OWLFunction {
 		}
 
 		this.convertOWLRelationToTokens();
-
-		return labelToClass;
 	}//end of labelMapURI method
 
 	public void synonymToLabel(OWLClass cls, String classLabel, List<IRI> AnnotataionProperty){
@@ -148,14 +162,6 @@ public class OWLFunction {
 
 			OWLClass cls = labelToClass.get(labelOfClass);
 
-			List<String> relations = null;
-
-			if(classRelations.containsKey(getLabel(cls, owlontology))){
-				relations = classRelations.get(getLabel(cls, owlontology));
-			}else{
-				relations = new ArrayList<String>();
-			}
-
 			for(OWLSubClassOfAxiom axiom : owlontology.getSubClassAxiomsForSubClass(cls)){
 
 				OWLClassExpression expression = axiom.getSuperClass();
@@ -163,16 +169,10 @@ public class OWLFunction {
 				List<OWLClass> tokens = new ArrayList<OWLClass>();
 
 				if(expression.isAnonymous()){
-					String definition = "";
 					for(OWLClass classToken : expression.getClassesInSignature()){
-						if(!relations.contains(getLabel(classToken, owlontology))){
-							definition += " " + getLabel(classToken, owlontology);
-						}
-						tokens.add(classToken);
+						if(!tokens.contains(classToken))
+							tokens.add(classToken);
 					}
-					definition = definition.trim().toLowerCase();
-					if(!definition.equalsIgnoreCase(labelOfClass))
-						relations.add(definition.trim());
 				}
 				queryExpansion(labelOfClass, tokens);
 			}
@@ -195,10 +195,25 @@ public class OWLFunction {
 			
 			temp.addAll(childAndParent);
 			
-			expandedQueries.put(labelOfClass, temp);
+			temp.add(labelOfClass);
 			
-			classRelations.put(labelOfClass, relations);
+			temp = removeDuplication(temp);
+			
+			expandedQueries.put(labelOfClass, temp);
 		}
+	}
+
+	private List<String> removeDuplication(List<String> temp) {
+		
+		List<String> removedList = new ArrayList<String>();
+		
+		for(String eachElement : temp){
+			if(!removedList.contains(eachElement.toLowerCase())){
+				removedList.add(eachElement.toLowerCase());
+			}
+		}
+		
+		return removedList;
 	}
 
 	public void queryExpansion(String labelOfClass, List<OWLClass> tokens){
@@ -244,12 +259,13 @@ public class OWLFunction {
 							expandedClassLabel.add(firstToken + separtor + secondToken);
 						}
 					}
+					expandedClassLabel = removeDuplication(expandedClassLabel);
 					expandedQueries.put(labelOfClass, expandedClassLabel);
 				}
 			}
 		}
 	}
-
+	
 	public List<String> getAllChildren(OWLOntology localOntology, OWLClass cls, List<String> allChildren, int recursiveTimes){
 
 		for(OWLSubClassOfAxiom axiom : localOntology.getSubClassAxiomsForSuperClass(cls)){
