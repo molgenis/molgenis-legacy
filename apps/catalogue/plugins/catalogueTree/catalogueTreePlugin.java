@@ -65,8 +65,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 *  will complain about the branch already exists when constructing the tree, cheating by
 	 *  changing the name of the branch but keeping display name the same
 	 */
-	 
+
 	private HashMap<String, Integer> multipleInheritance = new HashMap<String, Integer>();
+	private List<JQueryTreeViewElement> directChildrenOfTop = new ArrayList<JQueryTreeViewElement>();
 
 	public catalogueTreePlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -100,12 +101,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			} else if ("DownloadMeasurements".equals(request.getAction())) {
 
 				// a jframe here isn't strictly necessary, but it makes the example a little more real
-			    JFrame frame = new JFrame("Save Selection");
-			    String selectionName = JOptionPane.showInputDialog(frame, "Please insert a name for your selection.");
+				JFrame frame = new JFrame("Save Selection");
+				String selectionName = JOptionPane.showInputDialog(frame, "Please insert a name for your selection.");
 
-			    // if they press Cancel, 'name' will be null
-			    System.out.printf("The selection's name is '%s'.\n", selectionName);
-			    
+				// if they press Cancel, 'name' will be null
+				System.out.printf("The selection's name is '%s'.\n", selectionName);
+
 
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 				Date dat = new Date();
@@ -114,12 +115,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				System.out.println("request >>" + request);
 				this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, selectionName);
 
-				
+
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
 				String measurementName = request.getString("measurementName"); 
-																				
-																				
+
+
 				measurementName = request.getAction().substring( "DeleteMeasurement".length() + 2+ "measurementName".length(),	request.getAction().length());
 				this.deleteShoppingItem(measurementName);
 
@@ -130,7 +131,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					this.setInputToken(request.getString("InputToken").trim());
 
 					System.out.println("The request string : " + request);
-					
+
 					this.setSelectedField(request.getString("selectedField"));
 
 					System.out.println("Input token: >>>>>>"
@@ -272,7 +273,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				 *   we then do protocol1 = protocol1.removeAll(protocol2) 
 				 *   topmost parent protocols
 				 */
-				 if (!subNames.isEmpty()) {
+				if (!subNames.isEmpty()) {
 
 					if (!topProtocols.contains(p.getName())) {
 						topProtocols.add(p.getName());
@@ -306,30 +307,42 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		boolean foundInputToken = false;
 
 		if (topProtocols.size() == 0) { // The protocols don`t have
-										// sub-protocols and we could directly
-										// find the measurements of protocols
+			// sub-protocols and we could directly
+			// find the measurements of protocols
 			recursiveAddingNodesToTree(bottomProtocols,
 					protocolsTree.getName(), protocolsTree, db,
 					foundInputToken, mode);
 
 		} else { // The protocols that have sub-protocols, then we recursively
-					// find sub-protocols
+			// find sub-protocols
 			recursiveAddingNodesToTree(topProtocols, protocolsTree.getName(),
 					protocolsTree, db, foundInputToken, mode);
 		}
 
+		if(mode == 1){
+			directChildrenOfTop = protocolsTree.getChildren();
+		}
+
 		System.out.println(protocolsTree.getName());
 		System.out.println(">>>Protocols tree: "+ protocolsTree + "tree elements: "+ protocolsTree.getTreeElements().containsKey("Questionnaire"));
-		if (!protocolsTree.getTreeElements().containsKey("Questionnaire") && 
-				!protocolsTree.getTreeElements().containsKey("Measurement") &&
-				!protocolsTree.getTreeElements().containsKey("Sample")) { 
-			//Search result is empty or tree is empty 
-			this.getModel().getMessages().add(new ScreenMessage("There are no results to show. Please, redifine your search or import some data.",true));
-			this.setError("There are no results to show. Please, redifine your search or import some data.");
-		} else {
+
+		boolean freshTree = false;
+
+		for(JQueryTreeViewElement element : directChildrenOfTop){
+			if(protocolsTree.getTreeElements().containsKey(element.getName())){
+				freshTree = true;
+			}
+		}
+
+		if (freshTree) { 
 			// After traverse through the tree, all the elements should have fallen
 			// in the right places of the tree, now create the tree view
 			treeView = new JQueryTreeView<JQueryTreeViewElement>("Protocols", protocolsTree);
+		} else {
+			//Search result is empty or tree is empty 
+			this.getModel().getMessages().add(new ScreenMessage("There are no results to show. Please, redifine your search or import some data.",true));
+			this.setError("There are no results to show. Please, redifine your search or import some data.");
+
 		}
 	}
 
@@ -381,7 +394,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				 *  we try to create the same element twice
 				 *  Therefore we need to give a unique identifier to the tree element but assign the same value to the display name.
 				 */
-				
+
 				if (protocolsAndMeasurementsinTree.containsKey(protocolName)) {
 					if (!multipleInheritance.containsKey(protocolName)) {
 						multipleInheritance.put(protocolName, 1);
@@ -417,13 +430,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				// add them to the tree.
 				if (protocol.getFeatures_Name() != null
 						&& protocol.getFeatures_Name().size() > 0) { // error
-																		// checking
+					// checking
 
 					if (mode != SEARCHINGPROTOCOL) {
 						findInputTokenInEachNode = addingMeasurementsToTree(
 								protocol.getFeatures_Name(), childTree, db,
 								false, mode); // .. so normally it goes always
-												// this way
+						// this way
 					}
 				}
 
@@ -443,9 +456,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							childTree.remove();
 
 						} else if (mode == SEARCHINGPROTOCOL || mode == SEARCHINGALL) { // get all
-															// measurements and
-															// protocols in
-															// descendant class.
+							// measurements and
+							// protocols in
+							// descendant class.
 							// Because the input token was found in current
 							// protocol!
 
@@ -454,7 +467,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							if (!foundTokenInParentProtocol
 									&& !protocolName.toLowerCase().matches(
 											".*" + InputToken.toLowerCase()
-													+ ".*")) {
+											+ ".*")) {
 
 								childTree.remove();
 
@@ -597,7 +610,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 				queryDisplayNames.addRules(new QueryRule(
 						ObservedValue.TARGET_NAME, Operator.EQUALS, measurement
-								.getName()));
+						.getName()));
 
 				queryDisplayNames.addRules(new QueryRule(
 						ObservedValue.FEATURE_NAME, Operator.LIKE,
@@ -755,7 +768,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		queryDetailInformation.addRules(new QueryRule(
 				ObservedValue.TARGET_NAME, Operator.EQUALS, measurement
-						.getName()));
+				.getName()));
 
 		if (!queryDetailInformation.find().isEmpty()) {
 
@@ -870,10 +883,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			} else {
 				ShoppingCart shoppingCart = result.get(0); // assuming user can
-															// have only one
-															// shopping cart
-															// that's NOT
-															// checked out
+				// have only one
+				// shopping cart
+				// that's NOT
+				// checked out
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				db.update(shoppingCart);
@@ -905,11 +918,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			if (this.shoppingCart.get(i).getName().equals(selected)) {
 				this.shoppingCart.remove(i);
 				this.getModel()
-						.getMessages()
-						.add(new ScreenMessage(
-								"The item \""
-										+ selected
-										+ "\" has been successfully removed from your shopping cart",
+				.getMessages()
+				.add(new ScreenMessage(
+						"The item \""
+								+ selected
+								+ "\" has been successfully removed from your shopping cart",
 								true));
 			}
 		}
@@ -970,14 +983,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private String getComparison() {
 		return comparison;
 	}
-	
-//	@Override
-//	public boolean isVisible()
-//	{
-//		// always visible
-//		return true;
-//	}
-//	
+
+	//	@Override
+	//	public boolean isVisible()
+	//	{
+	//		// always visible
+	//		return true;
+	//	}
+	//	
 	@Override
 	public boolean isVisible()
 	{
