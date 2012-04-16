@@ -91,18 +91,6 @@ public class JQueryTreeView<E> extends HtmlWidget
 			+ renderTree(treeData.getRoot(), selected)
 			+ "</ul>\n";	
 		
-	    
-		// This piece of javascript need to be here because some java calls are needed.  
-	    String measurementClickEvent = "<script>";
-	    
-	    for(String eachMeasurement : listOfMeasurements){
-	    	measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
-						    			+ "getHashMapContent(\"" + eachMeasurement + "\");});"
-						    			+ "";
-	    }
-	    measurementClickEvent += "</script>";
-	    
-	    html += measurementClickEvent;
 	    return html;
 	}
 	
