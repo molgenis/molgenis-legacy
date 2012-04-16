@@ -8,7 +8,7 @@
  * change without notice). 
  */
 
-package plugins.ngs.project;
+package org.molgenis.ngs.plugins.project;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;

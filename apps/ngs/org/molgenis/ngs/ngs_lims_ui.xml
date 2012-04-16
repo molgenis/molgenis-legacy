@@ -12,8 +12,6 @@
 			<form name="LimsWorkflowElements" label="Workflow Elements"
 				entity="WorkflowElement" />
 		</form>
-		<plugin name="LimsApplyProocol" label="Apply protocol"
-			type="org.molgenis.compute.ui.ApplyProtocol" />
 		<form name="LimsFeatures" label="Features" entity="Measurement"/>
 		<!-- plugin name="SampleMatrix" type="org.molgenis.compute.ui.SampleMatrix"
 			label="Sample report" /-->

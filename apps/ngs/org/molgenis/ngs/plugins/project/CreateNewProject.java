@@ -1,3 +1,4 @@
+package org.molgenis.ngs.plugins.project;
 ///** 
 // * 
 // * @author Jessica Lundberg

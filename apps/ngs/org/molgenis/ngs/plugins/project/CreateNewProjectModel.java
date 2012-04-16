@@ -5,7 +5,7 @@
  * A model class for CreateNewProject
  * 
  */
-package plugins.ngs.project;
+package org.molgenis.ngs.plugins.project;
 
 import java.util.ArrayList;
 import java.util.List;

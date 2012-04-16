@@ -5,7 +5,7 @@
  * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
-package plugins.ngs.batch;
+package org.molgenis.ngs.plugins.batch;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
