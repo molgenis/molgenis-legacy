@@ -157,7 +157,7 @@ public class LevenshteinDistanceModel {
 	 * @param nGrams
 	 * @return
 	 */
-	private List<String> createNGrams(String inputQuery, boolean removeStopWords){
+	public List<String> createNGrams(String inputQuery, boolean removeStopWords){
 
 		List<String> tokens = new ArrayList<String>();
 

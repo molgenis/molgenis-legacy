@@ -4,23 +4,14 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeSet;
 
-import org.apache.cxf.binding.corba.wsdl.Array;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 
 import uk.ac.ebi.ontocat.OntologyService;
@@ -48,21 +39,11 @@ public class levenshteinDistance {
 
 	private OntologyService os = null;
 
-	private HashMap<String, Boolean> mappingResult = new HashMap<String, Boolean>();
-
-	private HashMap<String, List<String>> ontologyTermAndDataItems = new HashMap<String, List<String>>();
-
 	private HashMap<String, String> synonymToLabel = new HashMap<String, String>();
-
-	private HashMap<String, List<String>> classLabelToSynonyms = new HashMap<String, List<String>>();
 
 	private HashMap<String, List<String>> foundTermInDataDescription = new HashMap<String, List<String>>();
 
 	//private HashMap<String, List<String>> foundDescriptionByCutOff = new HashMap<String, List<String>>();
-
-	private HashMap<String, HashMap<String, Double>> foundDescriptionByCutOff = new HashMap<String, HashMap<String, Double>>();
-
-	private HashMap<String, String> synonymToClassLabel = new HashMap<String, String>();
 
 	private HashMap<String, List<String>> expandedQueries = new HashMap<String, List<String>>();
 
@@ -70,12 +51,16 @@ public class levenshteinDistance {
 
 	private OWLOntology localOntology = null;
 
-	private HashMap<String, List<String>> classLabelToRelations = new HashMap<String, List<String>>();
-
 	private String matchingResult = "";
 
 	private static String regex = "[!?/]";
-	
+
+	private HashMap<String, List<String>> parameterToExpandedQuery = new HashMap<String, List<String>>();
+
+	public HashMap<String, List<String>> getParameterToExpandedQuery() {
+		return parameterToExpandedQuery;
+	}
+
 	List<String> tableContent = new ArrayList<String>();
 
 	public static final String[] STOP_WORDS = {"a","you","about","above","after","again",
@@ -223,36 +208,51 @@ public class levenshteinDistance {
 		//				
 		//			}
 		//		}
-		
+
 		for(String eachOriginalQuery : mappingResultAndSimiarity.keySet()){
-			
-			matchingResult = "<input type=\"button\" id=\"" + eachOriginalQuery + "_button\" onclick=\"toggle('" + eachOriginalQuery + "')\" value=\"toggle\"/>";
-			
-			matchingResult += "Click to see the matching for parameter: " + eachOriginalQuery + "</br>";
-			
+
+			//			matchingResult = "<div id=\"" + eachOriginalQuery + "_button\" />";
+
+			matchingResult = "Click to see the matching for parameter: <div class=\"parameters\" onclick=\"toggle('" + eachOriginalQuery + "')\">" + eachOriginalQuery + "</div>";
+
 			matchingResult += "<table id=\"" + eachOriginalQuery + "\" style='border-spacing: 3px; width: 100%; display:none;'>";
-			
-			matchingResult += "<tr><td>Expanded Query</td><td>Matched data item</td><td>Similarity score</td></tr>";
-			
+
+			matchingResult += "<tr><td>Expanded Query</td><td>Matched data item</td><td>Similarity score</td><td>verfication</td></tr>";
+
 			LinkedMap map = mappingResultAndSimiarity.get(eachOriginalQuery);
-			
+
 			List<LinkedInformation> links = map.getSortedInformation();
-			
+
 			int size = links.size();
-			
+
 			for(int i = size - 1; i > 0; i--){
-				
+
 				LinkedInformation eachRow = links.get(i);
 				String expandedQuery = eachRow.expandedQuery;
 				String matchedItem = eachRow.matchedItem;
 				Double similarity = eachRow.similarity;
 				matchingResult += "<tr id=\"" + eachOriginalQuery + "\"><td>" + expandedQuery + "</td><td>" 
-						+ matchedItem + "</td><td>" + similarity + "</td></tr>";
+						+ matchedItem + "</td><td>" + similarity + "</td><td><input type=\"checkbox\" name=\"" + expandedQuery + "\" id=\"" 
+						+ expandedQuery + "\"></td></tr>";
 				System.out.print(eachOriginalQuery + "\t" + expandedQuery + "\t" + matchedItem + "\t" + similarity);
 				System.out.println();
+
+				List<String> temp = null;
+				
+				if(parameterToExpandedQuery.containsKey(eachOriginalQuery)){
+
+					temp = parameterToExpandedQuery.get(eachOriginalQuery);
+					temp.add(expandedQuery);
+					parameterToExpandedQuery.put(eachOriginalQuery, temp);
+				}else{
+					temp = new ArrayList<String>();
+					temp.add(expandedQuery);
+					parameterToExpandedQuery.put(eachOriginalQuery, temp);
+				}
+
 			}
 			matchingResult += "</table>";
-			
+
 			tableContent.add(matchingResult);
 		}
 	}
@@ -336,48 +336,6 @@ public class levenshteinDistance {
 
 		outPutMappingDetails(mappingResultAndSimiarity, descriptionForVariable);
 
-	}
-
-	public void searchingForOntologyTermInDescription(HashMap<String, List<String>> levelAnnotation, HashMap<String, String> descriptionForVariable){
-
-		for(String originalQuery : levelAnnotation.keySet()){
-
-			for(String key : levelAnnotation.get(originalQuery)){
-
-				//The input has to be non-empty and the input has not been annotated
-				if(!key.equals("")){
-
-					String definitions[] = key.split(separator);
-
-					List<String> searchTokens = arrayToList(definitions);
-
-					searchTokens.add(key.replaceAll(separator, " "));
-
-					for(String eachTerm : searchTokens){
-
-						eachTerm = eachTerm.trim();
-
-						for(String dataItem : descriptionForVariable.keySet()){
-
-							String description = descriptionForVariable.get(dataItem).toLowerCase();
-							//							if(description.matches("^" + eachTerm.toLowerCase() + "[\\W].*")){
-							//								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
-							//							}else if(description.matches(".*[\\W]" + eachTerm.toLowerCase() + "$")){
-							//								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
-							//							}else if(description.matches(".*[\\W]" + eachTerm.toLowerCase() + "[\\W].*")){
-							//								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
-							//							}else if(description.equalsIgnoreCase(eachTerm)){
-							//								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
-							//							}
-							if(description.matches(".*" + eachTerm.toLowerCase() + ".*")){
-								addingNewMatchedItem(foundTermInDataDescription, originalQuery, dataItem);
-							}
-						}
-					}
-
-				}
-			}
-		}
 	}
 
 	public void addingNewMatchedItem(HashMap<String, List<String>> ontologyTermAndDataItems, String key, String dataItem){
@@ -469,8 +427,6 @@ public class levenshteinDistance {
 		owlFunctionLocal.labelMapURI(listOfAnnotationProperty);
 
 		this.expandedQueries = owlFunctionLocal.getExpandedQueries();
-
-		this.classLabelToRelations  = owlFunctionLocal.getClassRelations();
 	}
 
 	/**
@@ -486,11 +442,9 @@ public class levenshteinDistance {
 
 		owlFunction = new OWLFunction(factory, referenceOntology);
 
-		labelToOWLClass = owlFunction.labelMapURI(annotationProperty);
-
-		classLabelToSynonyms = owlFunction.getClassLabelToSynonyms();
-
-		synonymToClassLabel = owlFunction.getSynonymToClassLabel();
+		owlFunction.labelMapURI(annotationProperty);
+		
+		labelToOWLClass = owlFunction.getLabelToClass();
 
 		List<String> listOfOntologyTerms = new ArrayList<String>();
 
