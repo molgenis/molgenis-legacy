@@ -12,8 +12,10 @@
 #FOREACH externalSampleID
 
 <#if sortedrecalbam?size == 1>
-	cp ${sortedrecalbam[0]} ${mergedbam}
-	cp ${sortedrecalbam[0]}.bai ${mergedbamindex}
+	#cp ${sortedrecalbam[0]} ${mergedbam}
+	#cp ${sortedrecalbam[0]}.bai ${mergedbamindex}
+	ln -s ${sortedrecalbam[0]} ${mergedbam}
+	ln -s ${sortedrecalbam[0]}.bai ${mergedbamindex}
 <#else>
 	java -jar -Xmx6g ${mergesamfilesjar} \
 	<#list sortedrecalbam as srb>INPUT=${srb} \
