@@ -169,7 +169,7 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 				//mref: get pairs as a list query, assume longest list size
 				int listSize = 0;
 				<#list f.xrefLabelNames as label>
-				if(o.get${JavaName(f)}_${JavaName(label)}() != null) listSize = Math.max(o.get${JavaName(f)}_${label}().size(), listSize);
+				if(o.get${JavaName(f)}_${JavaName(label)}() != null) listSize = Math.max(o.get${JavaName(f)}_${JavaName(label)}().size(), listSize);
 				</#list>
 				for(int i = 0; i < listSize; i++)
 				{
@@ -270,7 +270,7 @@ public class ${JavaName(entity)}CsvReader extends CsvToDatabase<${JavaName(entit
 						<#if f.xrefLabelNames?size &gt; 1>
 						String key = "";
 						<#list f.xrefLabelNames as label>
-						key = key + "|" +(o.get${JavaName(f)}_${JavaName(label)}() != null && i < o.get${JavaName(f)}_${label}().size() ? o.get${JavaName(f)}_${label}().get(i) : "null");
+						key = key + "|" +(o.get${JavaName(f)}_${JavaName(label)}() != null && i < o.get${JavaName(f)}_${JavaName(label)}().size() ? o.get${JavaName(f)}_${JavaName(label)}().get(i) : "null");
 						</#list>
 						<#else>	
 						${JavaType(f.xrefLabels[0])} key = o.get${JavaName(f)}_${JavaName(f.xrefLabelNames[0])}().get(i);
