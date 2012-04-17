@@ -27,7 +27,38 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 	@Override
 	public String createFindSqlInclRules(org.molgenis.framework.db.QueryRule[] rules) throws org.molgenis.framework.db.DatabaseException
 	{
-		throw new UnsupportedOperationException();
+		return "SELECT <#list viewFields(entity) as f>${SqlName(f.entity)}.${SqlName(f)}<#if f_has_next>"
+			+", </#if></#list>"<#list viewFields(entity,"xref") as f><#list f.xrefLabelTree.getAllChildren(true) as path><#if path.value.type != "xref">
+			//parent is ${path.getParent()}
+			+", xref_${path.getParent().name}.${SqlName(path.value.name)} AS ${SqlName(path.name)}"</#if></#list></#list>
+			+" FROM ${SqlName(entity)} "<#list superclasses(entity)?reverse as superclass><#if name(superclass) != name(entity)>
+			+" INNER JOIN ${SqlName(superclass)} ON (${SqlName(entity)}.${SqlName(pkey(entity))} = ${SqlName(superclass)}.${SqlName(pkey(entity))})"</#if></#list>
+<#--this piece of dark magic that attaches all xref_label possibilities -->
+
+<#list viewFields(entity,"xref") as f>
+			
+			//label for ${f.name}=${csv(f.xrefLabelNames)}
+<#assign pathlist = []/>			
+<#list f.xrefLabelTree.getAllChildren(true) as path>
+//path==${path.name}. type==${path.value.type}.
+<#if path.value.type != "xref" && !pathlist?seq_contains(path.getParent().name)>
+//in if path.value.type != "xref" && !pathlist?seq_contains(path.getParent().name)
+<#assign pathlist = pathlist + [path.getParent().name]/>
+<#if !path.getParent().parent?exists>
+		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 
+			+" ON xref_${SqlName(path.getParent().name)}.${SqlName(pkey(path.value.entity))} = ${SqlName(f.entity)}.${SqlName(f.name)}"
+<#elseif path.value.entity == path.getParent().value.xrefEntity>
+			//linked via ${path.getParent().value.entity.name}.${path.getParent().value.name}
+			+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 
+			+" ON xref_${SqlName(path.getParent().name)}.${SqlName(pkey(path.value.entity))} = xref_${SqlName(path.getParent().parent.name)}.${SqlName(path.getParent().value.name)}"
+<#else>
+			//linked ${path.value.entity.name}.${path.value.name} via superclass	
+			+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.name}"
+			+" ON xref_${SqlName(path.name)}.${SqlName(path.value.name)} = xref_${path.name}.${SqlName(pkey(path.value.entity))}"
+		   	+" LEFT JOIN ${SqlName(path.value.entity)} AS xref_${path.getParent().name} " 					
+			+" ON xref_${SqlName(path.getParent().name)}.${SqlName(path.getParent().value)} = xref_${SqlName(path.getParent().parent.name)}.${SqlName(pkey(path.value.entity))}"			
+</#if></#if></#list>
+</#list>;
 	}	
 
 
@@ -240,7 +271,8 @@ public class ${JavaName(entity)}JpaMapper extends org.molgenis.framework.db.jpa.
 
 			if (${fieldName}New != null) {
 //				${fieldName}New = getEntityManager().getReference(org.hibernate.proxy.HibernateProxyHelper.getClassWithoutInitializingProxy(${fieldName}New), ${fieldName}New.getIdValue());
-				${fieldName}New = getEntityManager().getReference(${fieldName}New.getClass(), ${fieldName}New.getIdValue());
+//				${fieldName}New = getEntityManager().getReference(${fieldName}New.getClass(), ${fieldName}New.getIdValue());
+				${fieldName}New = getEntityManager().getReference(org.hibernate.Hibernate.getClass(${fieldName}New), ${fieldName}New.getIdValue());
 				${name(entity)}.set${JavaName(field)}(${fieldName}New);
 			} else { //object is reference by xref		
                             if(${name(entity)}.get${JavaName(field)}_${JavaName(field.xrefField)}() != null) {
