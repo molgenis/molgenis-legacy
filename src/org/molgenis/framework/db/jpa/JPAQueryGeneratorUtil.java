@@ -135,7 +135,16 @@ public class JPAQueryGeneratorUtil
 				
 				Expression<?> expression = _addJoin(rule, root, joinHash);
 					
-					
+				Expression<?> lhs = null;
+				if (expression != null)
+				{
+					lhs = expression;
+				}
+				else if (attributeName != null)
+				{
+					lhs = root.get(attributeName);
+				}
+				Object rhs = rule.getValue();
 				
 				switch (operator)
 				{
@@ -143,10 +152,10 @@ public class JPAQueryGeneratorUtil
 						throw new UnsupportedOperationException(
 								"Not supported yet.");
 					case SORTASC:
-						orders.add(cb.asc(root.get(attributeName)));
+						orders.add(cb.asc(lhs));
 						break;
 					case SORTDESC:
-						orders.add(cb.desc(root.get(attributeName)));
+						orders.add(cb.desc(lhs));
 						break;
 					case LIMIT:
 						limitOffset[0] = (Integer) rule.getValue();
@@ -155,17 +164,6 @@ public class JPAQueryGeneratorUtil
 						limitOffset[1] = (Integer) rule.getValue();
 						break;
 					default:
-						Expression<?> lhs = null;
-						if (expression != null)
-						{
-							lhs = expression;
-						}
-						else if (attributeName != null)
-						{
-							lhs = root.get(attributeName);
-						}
-						Object rhs = rule.getValue();
-
 						switch (operator)
 						{
 							case EQUALS:
