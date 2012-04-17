@@ -1,5 +1,6 @@
 package org.molgenis.framework.server;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,8 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class TokenFactory
+import org.springframework.stereotype.Component;
+
+@Component
+public class TokenFactory implements Serializable
 {
+	private static final long serialVersionUID = -1669938881359317765L;
 	private HashMap<String, Token> securityTokens;
 	
 	public TokenFactory()
