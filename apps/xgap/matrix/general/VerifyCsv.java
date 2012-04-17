@@ -10,6 +10,8 @@ import org.molgenis.framework.db.CsvToDatabase.IntegerWrapper;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
 
+import app.servlet.UsedMolgenisOptions;
+
 import decorators.NameConvention;
 
 public class VerifyCsv
@@ -93,6 +95,19 @@ public class VerifyCsv
 			throw new FileUploadException(
 					"Number of columns must be greater than 0. Found: "
 							+ rowAndColLength[1]);
+		}
+		
+		CsvFileReader csvFile = new CsvFileReader(inputFile);
+		List<String> colNames = csvFile.colnames();
+		List<String> rowNames = csvFile.rownames();
+		
+		if (rowAndColLength[1] < colNames.size() && !(colNames.get(0).equals("")))
+		{
+			throw new Exception("Too many column headers (" + colNames.size() + ") in relation to the amount of columns (" + rowAndColLength[1] + ")");
+		}
+		if (rowAndColLength[0] < rowNames.size())
+		{
+			throw new Exception("Too many row headers (" + rowNames.size() + ") in relation to the amount of rows (" + rowAndColLength[0] + ")");
 		}
 
 		return rowAndColLength;
@@ -207,15 +222,17 @@ public class VerifyCsv
 
 		for (String colName : colNames.subList(1, colNames.size()))
 		{
-			// FIXME: the strict should only be applied when application is an
-			// XGAP
-			NameConvention.validateEntityNameStrict(colName);
+			if(new UsedMolgenisOptions().decorator_overriders.equals("org.molgenis.xgap.decoratoroverriders"))
+			{
+				NameConvention.validateEntityNameStrict(colName);
+			}
 		}
 		for (String rowName : rowNames)
 		{
-			// FIXME: the strict should only be applied when application is an
-			// XGAP
-			NameConvention.validateEntityNameStrict(rowName);
+			if(new UsedMolgenisOptions().decorator_overriders.equals("org.molgenis.xgap.decoratoroverriders"))
+			{
+				NameConvention.validateEntityNameStrict(rowName);
+			}
 		}
 	}
 }
