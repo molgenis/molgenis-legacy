@@ -1,73 +1,51 @@
 <molgenis name="org.molgenis">
 	<module name="core">
 		<description>Generic entities you can use as the starting point of
-			your model.</description>
-		<entity name="Identifiable" abstract="true" system="true">
-			<description>This interface assigns an automatic 'id' field to every
-				object.</description>
-			<field name="id" type="autoid" description="automatically generated id" />
+			your model.
+		</description>
+		<entity name="Autoid" abstract="true" system="true">
+			<description>This interface assigns an automatic 'id'.
+			</description>
+			<field name="id" type="autoid" hidden="true"
+				description="automatically generated internal id" />
 		</entity>
-		<entity name="Nameable" abstract="true" 
-			implements="Identifiable">
-			<description>This interface extends Identifiable with a unique 'name'
-				field. The name length can be stored in one byte. (Java has signed
-				integers) The name is by itself not unique, this should be enforced
-				within a certain context. For example, unique(name, study) to make
-				the name unique within one single study. The NameableDecorator
-				ensures that names don't lead to problems in R and other script
-				environments.</description>
-			<field name="name" length="127" type="varchar" description="human-readable name." />
+		<entity name="Identifiable" implements="Autoid" abstract="true"
+			system="true" xref_label="identifier">
+			<description>This interface assigns an automatic 'id' and
+				'identifier' field to all entities that implement it.
+			</description>
+			<field name="identifier" type="string"
+				description="human readible identifier or name" />
 		</entity>
-		<entity name="Describable" abstract="true" system="true">
-			<description>This interface adds a description field to all entities
-				the implement it.</description>
-			<field name="description" type="text" nillable="true"
-				description="description field" />
+		<entity name="Ontology" implements="Identifiable">
+			<description> Ontology defines a reference to an ontology or
+				controlled vocabulary from which well-defined and stable (ontology)
+				terms can be obtained. Each Ontology should have a unique identifer,
+				for instance: Gene Ontology, Mammalian Phenotype, Human Phenotype
+				Ontology, Unified Medical Language System, Medical Subject Headings,
+				etc. Also a abbreviation is required, for instance: GO, MP, HPO,
+				UMLS, MeSH, etc. Use of existing ontologies/vocabularies is
+				recommended to harmonize phenotypic feature and value descriptions.
+				But one can also create a 'local' Ontology. The Ontology class maps
+				to FuGE::Ontology, MAGE-TAB::TermSourceREF.
+			</description>
+			<field auto="false" name="ontologyAccession" type="string"
+				nillable="true"
+				description="A accession that uniquely identifies the ontology (typically an acronym). E.g. GO, MeSH, HPO." />
+			<field nillable="true" auto="false" name="ontologyURI" type="hyperlink"
+				description="(Optional) A URI that references the location of the ontology." />
+			<unique fields="identifier" description="identifier is unique" />
 		</entity>
-		<entity name="OntologyTerm" xref_label="name" implements="Nameable">
+		<entity name="OntologyTerm" implements="Identifiable"
+			xref_label="ontology_identifier,identifier">
 			<description>
-				OntologyTerm defines a single entry (term) from an ontology or a
-				controlled vocabulary (defined by Ontology). The name is the
-				ontology term which is unique within an ontology source, such as
-				[examples here]. Other data entities can reference to this
-				OntologyTerm to harmonize naming of concepts. Each term should have
-				a local, unique label within the Investigation. If no suitable
-				ontology term exists then one can define new terms locally (in which
-				case there is no formal accession for the term limiting its use for
-				cross-Investigation queries). In those cases the local name should
-				be repeated in both term and termAccession. Maps to
-				FuGE::OntologyIndividual; in MAGE-TAB there is no separate entity to
-				model terms.
-				<br />
-				Optionally a local controlled vocabulary or ontology can be defined,
-				for example to represent 'Codelists' often used in questionaires.
-				Note: this is not a InvestigationElement because of the additional
-				xref_label and unique constraint.This class defines a single entry
-				from an ontology or a controlled vocabulary.
-				<br />
-				If it is a simple controlled vocabulary, there may be no formal
-				accession for the term. In these cases the local name should be
-				repeated in both term and termAccession. If the term has a value,
-				the OntologyTerm will have a single DataProperty whose value was the
-				value for the property. For instance, for an OntologyIndividual
-				based on the MO ontology the attributes might be: The term would be
-				what is usually called the local name in the Ontology, for instance
-				'Age'; The termAccession could be
-				'http://mged.sourceforge.net/ontologies/MGEDOntology.owl#Age' or a
-				an arbitrary accession if one exists; The identifier is a unique
-				identifier for individuals in the scope of the FuGE instance; The
-				inherited name attribute should not be used; The ontologyURI of
-				OntologySource could be
-				'http://mged.sourceforge.net/ontologies/MGEDOntology.owl&quot;. The
-				OntologyTerm subclasses are instances of Ontology classes and
-				properties, not the actual terms themselves. An OntologyIndividual,
-				if based on an existing Ontology, can be considered a statement that
-				can be validated against the referenced ontology. The subclasses and
-				their associations are based on the Ontology Definition Model,
-				ad/2005-04-13, submitted to the OMG as a response to RFP
-				ad/2003-03-40, Copyright 2005 DSTC Pty Ltd. Copyright 2005 IBM
-				Copyright 2005 Sandpiper Software, Inc under the standard OMG
-				license terms. 
+				OntologyTerm defines a single entry (term) from an
+				ontology or a controlled vocabulary (defined by Ontology). The
+				identifier is the ontology term is unique. E.g. 'NCI:Antigen Gene'.
+				Other data entities can reference to this OntologyTerm to harmonize
+				naming of concepts. If no suitable ontology term exists then one can
+				define new terms locally (in which case there is no formal accession
+				for the term limiting its use for cross-Investigation queries).
 			</description>
 			<field auto="false" name="ontology" type="xref" nillable="true"
 				description="(Optional) The source ontology or controlled vocabulary list that ontology terms have been obtained from."
@@ -78,36 +56,14 @@
 				description="(Optional) The definition of the term." />
 			<unique fields="ontology,termAccession"
 				description="The term accession is unique within an Ontology" />
-			<field nillable="true" auto="false" name="termPath" type="varchar"
-				length="1024"
-				description="EXTENSION. The Ontology Lookup Service path that contains this term." />
-			<unique fields="ontology,name" description="ADDITION: Name is unique within its type " />
+			<unique fields="ontology,identifier" description="each identifier is unique" />
 		</entity>
-		<entity name="Ontology" implements="Nameable" xref_label="name">
-			<description> Ontology defines a reference to a an ontology or
-				controlled vocabulary from which well-defined and stable (ontology)
-				terms can be obtained. Each Ontology should have a unique name, for
-				instance: Gene Ontology, Mammalian Phenotype, Human Phenotype
-				Ontology, Unified Medical Language System, Medical Subject Headings,
-				etc. Also a abbreviation is required, for instance: GO, MP, HPO,
-				UMLS, MeSH, etc. Use of existing ontologies/vocabularies is
-				recommended to harmonize phenotypic feature and value descriptions.
-				But one can also create a 'local' Ontology. The Ontology class maps
-				to FuGE::Ontology, MAGE-TAB::TermSourceREF.</description>
-			<field auto="false" name="ontologyAccession" type="string"
-				nillable="true"
-				description="A identifier that uniquely identifies the ontology (typically an acronym). E.g. GO, MeSH, HPO." />
-			<field nillable="true" auto="false" name="ontologyURI" type="hyperlink"
-				description="(Optional) A URI that references the location of the ontology." />
-			<unique fields="name" description="Name is unique within its type " />
-		</entity>
-		<entity name="MolgenisEntity" system="true" implements="Identifiable" xref_label="className" >
-			<description>Referenceable catalog of entity names, menus, forms and
-				plugins.</description>
-			<field name="name" description="Name of the entity" />
-			<field name="type_" description="Type of the entity" />
-			<field name="className" unique="true" description="Full name of the entity" />
-			<unique fields="name,type_" />
+		<entity name="Accession" extends="OntologyTerm">
+			<description>
+				An external identifier for an annotation. For example:
+				name='R13H8.1', ontology='ensembl' or name='WBgene00000912',
+				ontology='wormbase'.
+			</description>
 		</entity>
 	</module>
 </molgenis>
