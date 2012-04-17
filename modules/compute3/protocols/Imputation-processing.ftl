@@ -19,6 +19,13 @@ ${path_to_impute2} \
 -Ne 20000 \
 -o ${output_1} 2>&1 | tee -a ${log}
 
+returnCode=$?
+
+if [ $returnCode -eq 0 ]
+then
+echo "FINISHED_SUCCESS" 2>&1 | tee -a ${log}
+fi
+
 echo "After execution" 2>&1 | tee -a ${log}
 
 echo -n "SNP1:" 2>&1 | tee -a ${log}
