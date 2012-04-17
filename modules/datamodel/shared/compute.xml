@@ -61,7 +61,7 @@
             <field name="inputs" type="mref" xref_entity="ComputeParameter" nillable="true" />
             <field name="outputs" type="mref" xref_entity="ComputeParameter" nillable="true" />
             <field name="exes" type="mref" xref_entity="ComputeParameter" nillable="true" />
-            <field name="log" type="mref" xref_entity="ComputeParameter" nillable="true" />
+            <field name="logs" type="mref" xref_entity="ComputeParameter" nillable="true" />
         </entity>
 		<entity name="ComputeParameter" extends="Measurement">
 			<description>Parameter are the inputs or outputs into an
