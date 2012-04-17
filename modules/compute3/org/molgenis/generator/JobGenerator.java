@@ -27,6 +27,13 @@ public interface JobGenerator
     public static final String GENERATION_ID = "runid";
     public static final String TEMPLATE_DIR = "templatedir";
 
+    //key words in templates
+    public static final String LFN_NAME = "lfn_name";
+    public static final String INPUT = "input";
+    public static final String OUTPUT = "output";
+    public static final String LOG = "log";
+
+
     Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);
     Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet, String backend);
 

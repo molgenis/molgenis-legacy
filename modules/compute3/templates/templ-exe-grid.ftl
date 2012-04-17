@@ -1,5 +1,5 @@
 #download executable
-lcg-cp lfn://grid/${srm_name} \
+lcg-cp lfn://grid/${lfn_name} \
 file:///$TMPDIR/${input}
 
 echo -n "SUM_ADLER32_${input}" 2>&1 | tee -a ${log}

@@ -222,7 +222,7 @@ public class ModelLoader
             str = protocolListing.substring(protocolListing.indexOf(FLAG_LOG),
                                 protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_LOG)));
             list = getParametersFromHeader(str);
-            protocol.setLog(list);
+            protocol.setLogs(list);
         }
 
         System.out.println("  ... parsed");

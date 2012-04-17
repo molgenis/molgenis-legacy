@@ -55,8 +55,8 @@ public class GenericJobGenerator implements JobGenerator
     {
         Vector<ComputeJob> computeJobs = new Vector<ComputeJob>();
 
-        if(backend.equalsIgnoreCase(JobGenerator.GRID))
-            pairJobTransfers = new Hashtable<String,GridTransferContainer>();
+        if (backend.equalsIgnoreCase(JobGenerator.GRID))
+            pairJobTransfers = new Hashtable<String, GridTransferContainer>();
 
         //because Hashtable does not allow null keys or values
         Hashtable<String, String> values = new Hashtable<String, String>();
@@ -106,9 +106,8 @@ public class GenericJobGenerator implements JobGenerator
             }
 
             //weave complex parameters
-            //TODO it is not good that we have dependencies between parameter templates (can be a circular dependency)
             int count = 0;
-            while (complexParameters.size() > 0)
+            while ((complexParameters.size() > 0) && (count < 10))
             {
                 Vector<ComputeParameter> toRemove = new Vector<ComputeParameter>();
                 for (ComputeParameter computeParameter : complexParameters)
@@ -156,12 +155,11 @@ public class GenericJobGenerator implements JobGenerator
                 computeJobs.add(job);
 
                 //fill job transfer container for grid jobs to ensure correct data transfer
-                if(backend.equalsIgnoreCase(JobGenerator.GRID))
+                if (backend.equalsIgnoreCase(JobGenerator.GRID))
                 {
                     GridTransferContainer container = fillContainer(protocol, values);
                     pairJobTransfers.put(job.getName(), container);
                 }
-
 
                 logger.log(Level.DEBUG, "----------------------------------------------------------------------");
                 logger.log(Level.DEBUG, el.getName());
@@ -177,7 +175,38 @@ public class GenericJobGenerator implements JobGenerator
     {
         GridTransferContainer container = new GridTransferContainer();
 
-        //TODO: start here - fill container with protocol inputs/outputs etc. and their values for later replacement during job generation for grid
+        List<ComputeParameter> inputs = protocol.getInputs();
+        for (ComputeParameter input : inputs)
+        {
+            String name = input.getName();
+            String value = values.get(name);
+            container.addInput(name, value);
+        }
+
+        List<ComputeParameter> outputs = protocol.getOutputs();
+        for (ComputeParameter output : outputs)
+        {
+            String name = output.getName();
+            String value = values.get(name);
+            container.addOutput(name, value);
+        }
+
+        List<ComputeParameter> exes = protocol.getExes();
+        for (ComputeParameter exe : exes)
+        {
+            String name = exe.getName();
+            String value = values.get(name);
+            container.addExe(name, value);
+        }
+
+        List<ComputeParameter> logs = protocol.getLogs();
+        for (ComputeParameter log : logs)
+        {
+            String name = log.getName();
+            String value = values.get(name);
+            container.addLog(name, value);
+        }
+
         return container;
     }
 
@@ -233,11 +262,99 @@ public class GenericJobGenerator implements JobGenerator
                 jdlListing);
 
         //create shell
-        String shellListing;
-        String script = computeJob.getComputeScript();
-        ComputeProtocol protocol = ((ComputeProtocol)computeJob.getProtocol());
-        List<ComputeParameter> inputs = protocol.getInputs();
+        String shellListing = "";
+        String initialScript = computeJob.getComputeScript();
+        GridTransferContainer container = pairJobTransfers.get(computeJob.getName());
 
+        //get log filename
+        Hashtable<String, String> logs = container.getLogs();
+        Enumeration logValues = logs.elements();
+        String logName = (String) logValues.nextElement();
+        String justLogName = giveJustName(logName);
+
+        //generate downloading section (transfer inputs and executable)
+        //and change job listing to execute in the grid
+        Hashtable<String, String> inputs = container.getInputs();
+        Enumeration actuals = inputs.elements();
+        while (actuals.hasMoreElements())
+        {
+            Hashtable<String, String> local = new Hashtable<String, String>();
+
+            String actualName = (String) actuals.nextElement();
+            String justName = giveJustName(actualName);
+
+            local.put(JobGenerator.LFN_NAME, actualName);
+            local.put(JobGenerator.INPUT, justName);
+            local.put(JobGenerator.LOG, justLogName);
+
+            String inputListing = weaveFreemarker(templateGridDownload, local);
+            initialScript.replaceAll(actualName, justName);
+
+            shellListing += inputListing;
+        }
+
+        Hashtable<String, String> exes = container.getExes();
+        actuals = exes.elements();
+        while (actuals.hasMoreElements())
+        {
+            Hashtable<String, String> local = new Hashtable<String, String>();
+
+            String actualName = (String) actuals.nextElement();
+            String justName = giveJustName(actualName);
+
+            local.put(JobGenerator.LFN_NAME, actualName);
+            local.put(JobGenerator.INPUT, justName);
+            local.put(JobGenerator.LOG, justLogName);
+
+            String inputListing = weaveFreemarker(templateGridDownloadExe, local);
+            initialScript.replaceAll(actualName, justName);
+
+            shellListing += inputListing;
+        }
+
+        shellListing += initialScript;
+
+        //generate uploading section
+        //and change job listing to execute in the grid
+        Hashtable<String, String> outputs = container.getOutputs();
+        actuals = outputs.elements();
+        while (actuals.hasMoreElements())
+        {
+            Hashtable<String, String> local = new Hashtable<String, String>();
+
+            String actualName = (String) actuals.nextElement();
+            String justName = giveJustName(actualName);
+
+            local.put(JobGenerator.LFN_NAME, actualName);
+            local.put(JobGenerator.OUTPUT, justName);
+            local.put(JobGenerator.LOG, justLogName);
+
+            String outputListing = weaveFreemarker(templateGridUpload, local);
+            shellListing.replaceAll(actualName, justName);
+
+            shellListing += outputListing;
+        }
+
+        //add upload log
+        Hashtable<String, String> local = new Hashtable<String, String>();
+
+        local.put(JobGenerator.LFN_NAME, logName);
+        local.put(JobGenerator.OUTPUT, justLogName);
+        local.put(JobGenerator.LOG, justLogName);
+
+        String outputListing = weaveFreemarker(templateGridUpload, local);
+        shellListing += outputListing;
+
+        //write shell
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".sh",
+                shellListing);
+   }
+
+    private String giveJustName(String actualName)
+    {
+        int posSlash = actualName.lastIndexOf("/");
+        String justName = actualName.substring(posSlash + 1);
+        return justName;
     }
 
     private void readTemplatesCluster(String templatesDir)
