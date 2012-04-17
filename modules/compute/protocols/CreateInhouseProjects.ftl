@@ -67,7 +67,7 @@ mkdir -p ${qcdir}
 <#list unfolded as sampleSequenceDetails>
 echo ${sampleSequenceDetails} >> ${projectJobsDir}/${project}.csv
 </#list>-->
-${toolDir}/scripts/extract_samples_from_GAF_list.pl --i ${worksheet} --o ${projectJobsDir}/${project}.csv --c project --q ${project}
+${tooldir}/scripts/extract_samples_from_GAF_list.pl --i ${worksheet} --o ${projectJobsDir}/${project}.csv --c project --q ${project}
 
 #
 # Execute MOLGENIS/compute to create job scripts to analyse this project.
