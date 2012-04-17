@@ -19,11 +19,11 @@ umask 0007
 #
 # Create project dirs.
 #
-mkdir -p ${projectRawArrayDataDir}
-mkdir -p ${projectRawNgsDataDir}
+mkdir -p ${projectrawarraydatadir}
+mkdir -p ${projectrawdatadir}
 mkdir -p ${projectJobsDir}
 mkdir -p ${projectLogsDir}
-mkdir -p ${projectIntermediateDir}
+mkdir -p ${intermediatedir}
 mkdir -p ${projectResultsDir}
 mkdir -p ${qcdir}
 
@@ -37,19 +37,19 @@ mkdir -p ${qcdir}
 	<#if seqType[sample_index] == "SR">
 		
 		<#if barcode[sample_index] == "None">
-			ln -s ${fq[sample_index]} ${projectRawNgsDataDir}/
+			ln -s ${fq[sample_index]} ${projectrawdatadir}/
 		<#else>
-			ln -s ${fq_barcode[sample_index]} ${projectRawNgsDataDir}/
+			ln -s ${fq_barcode[sample_index]} ${projectrawdatadir}/
 		</#if>
 		
 	<#elseif seqType[sample_index] == "PE">
 		
 		<#if barcode[sample_index] == "None">
-			ln -s ${fq_1[sample_index]} ${projectRawNgsDataDir}/
-			ln -s ${fq_2[sample_index]} ${projectRawNgsDataDir}/
+			ln -s ${fq_1[sample_index]} ${projectrawdatadir}/
+			ln -s ${fq_2[sample_index]} ${projectrawdatadir}/
 		<#else>
-			ln -s ${fq_barcode_1[sample_index]} ${projectRawNgsDataDir}/
-			ln -s ${fq_barcode_2[sample_index]} ${projectRawNgsDataDir}/
+			ln -s ${fq_barcode_1[sample_index]} ${projectrawdatadir}/
+			ln -s ${fq_barcode_2[sample_index]} ${projectrawdatadir}/
 		</#if>
 		
 	</#if>
@@ -67,7 +67,7 @@ mkdir -p ${qcdir}
 <#list unfolded as sampleSequenceDetails>
 echo ${sampleSequenceDetails} >> ${projectJobsDir}/${project}.csv
 </#list>-->
-${toolDir}/scripts/extract_samples_from_GAF_list.pl --i ${completeWorksheet} --o ${projectJobsDir}/${project}.csv --c project --q ${project}
+${toolDir}/scripts/extract_samples_from_GAF_list.pl --i ${worksheet} --o ${projectJobsDir}/${project}.csv --c project --q ${project}
 
 #
 # Execute MOLGENIS/compute to create job scripts to analyse this project.
