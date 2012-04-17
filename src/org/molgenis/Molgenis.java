@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -47,7 +48,6 @@ import org.molgenis.fieldtypes.TextField;
 import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.generators.DataTypeGen;
 import org.molgenis.generators.Generator;
-import org.molgenis.generators.JpaDataTypeGen;
 import org.molgenis.generators.R.RApiGen;
 import org.molgenis.generators.R.REntityGen;
 import org.molgenis.generators.R.RMatrixGen;
@@ -269,7 +269,7 @@ public class Molgenis {
             if (options.mapper_implementation.equals(MapperImplementation.JPA)) {
             	System.out.println("--------------JPAGEN--------------");
                 generators.add(new JpaDatabaseGen());
-                generators.add(new JpaDataTypeGen());
+                generators.add(new DataTypeGen());
                 generators.add(new JpaMapperGen());
                 generators.add(new JDBCMetaDatabaseGen());
                 
@@ -472,7 +472,7 @@ public class Molgenis {
 
         // clean out generators
         List<Generator> use = new ArrayList<Generator>();
-        if (generatorsToUse.length > 0) {
+        if (ArrayUtils.isNotEmpty(generatorsToUse)) {
             for (Class<? extends Generator> c : generatorsToUse) {
                 use.add(c.newInstance());
             }
@@ -772,7 +772,10 @@ public class Molgenis {
             logger.error(e);
 
         } finally {
-            conn.close();
+        	if (conn != null)
+        	{
+        		conn.close();
+        	}
         }
 
     }
