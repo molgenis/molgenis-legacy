@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +25,9 @@ import org.molgenis.util.cmdline.Option.Type;
  * 
  * @author Morris Swertz
  */
-public class MolgenisOptions
+public class MolgenisOptions implements Serializable
 {
+	private static final long serialVersionUID = -7129779333842369716L;
 	final public static String CLASS_PER_TABLE = "class_per_table";
 	final public static String SUBCLASS_PER_TABLE = "subclass_per_table";
 	final public static String HIERARCHY_PER_TABLE = "hierarchy_per_table";
@@ -466,7 +468,7 @@ public class MolgenisOptions
 		{
 			e.printStackTrace();
 		}
-		return null;
+		return "";
 	}
 	
 	public String getHibernateDialect() {
