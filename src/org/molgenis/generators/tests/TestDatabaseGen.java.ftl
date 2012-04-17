@@ -243,6 +243,7 @@ public class TestDatabase
 			{
 				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
 				q2.like("${name(f)}", entity.get${fieldGetter}() + "%");
+				q2.sortASC("${name(f)}");
 				List<${JavaName(entity)}> results = q2.find();
 				for(${JavaName(entity)} r: results)
 				{
@@ -254,6 +255,7 @@ public class TestDatabase
 			{
 				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
 				q2.lessOrEqual("${name(f)}", entity.get${fieldGetter}());
+				q2.sortASC("${name(f)}");
 				List<${JavaName(entity)}> results = q2.find();
 				for(${JavaName(entity)} r: results)
 				{
@@ -264,6 +266,7 @@ public class TestDatabase
 			{
 				Query<${JavaName(entity)}> q2 = db.query(${JavaName(entity)}.class);
 				q2.greaterOrEqual("${name(f)}", entity.get${fieldGetter}());
+				q2.sortDESC("${name(f)}");
 				List<${JavaName(entity)}> results = q2.find();
 				for(${JavaName(entity)} r: results)
 				{
@@ -295,6 +298,7 @@ public class TestDatabase
 				java.util.List<Object> inList = new ArrayList<Object>();
 				inList.add(entity.get${JavaName(f)}_${JavaName(label)}());
 				q2.in("${name(f)}_${label}", inList);
+				q2.sortDESC("${name(f)}_${label}");
 				List<${JavaName(entity)}> results = q2.find();
 <#if pkey(entity) == f>
 				assertEquals(results.size(),1);
