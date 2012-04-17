@@ -8,9 +8,29 @@ function addingTable(tableId){
 		document.getElementById('details').innerHTML += map.get(tableId);
 		document.getElementById(tableId + " table").style.display = "none";		
 	}
-	
 }
 
+function refreshByHits(){
+	
+	var hits = document.getElementById('changeHits').value;
+	var divForTable = document.getElementById('details');
+	var tables = divForTable.getElementsByTagName('table');	
+	for(var i = 0; i < tables.length; i++){
+		
+		var eachTable = tables[i];
+		
+		var rowElements = eachTable.getElementsByTagName('tr');
+		
+		for(var j = 0; j < rowElements.length; j++){
+			
+			if(j < hits){
+				rowElements[j].style.display = "table-row";
+			}else{
+				rowElements[j].style.display = "none";
+			}
+		}
+	}
+}
 </script>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
@@ -133,7 +153,9 @@ function addingTable(tableId){
 							addingTable('${parameter}');
 						</script>
 					</#list>
-					
+					<script>
+						refreshByHits()
+					</script>
 			   </#if>	
 			</div>
 		</div>

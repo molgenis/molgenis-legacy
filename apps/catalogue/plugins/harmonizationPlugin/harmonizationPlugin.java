@@ -87,33 +87,35 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						+ selectedInvestigation);
 				arrayInvestigations.clear();
 
-			}else if(request.getAction().equals("chooseDifferentHits")){
-
-				hitSize = request.getInt("changeHits");
-
-				String optionForHits = "<select name='changeHits' id='changeHits'>";
-
-				int residue = maxQuerySize / 10;
-
-				optionForHits += "<option>" + hitSize + "</option>";
-
-				for(int i = 0; i < residue; i++){
-					if(hitSize != (i+1)*10)
-						optionForHits += "<option>" + (i+1)*10 + "</option>";
-				}
-
-				optionForHits += "</select>";
-
-				hitSizeOption  = "Choose how many results you want to view" 
-						+ optionForHits
-						+ "<input type='image' src='res/img/refresh.png' alt='Submit'"
-						+ "name='refreshHits' style='vertical-align: middle;'" 
-						+ "value='show hits' onclick=__action.value='chooseDifferentHits';>";
-
-				makeHtmlTable(mappingResultAndSimiarity);
-
-
-			}else if (request.getAction().equals("startMatching")){
+			}
+//			else if(request.getAction().equals("chooseDifferentHits")){
+//
+//				hitSize = request.getInt("changeHits");
+//
+//				String optionForHits = "<select name='changeHits' id='changeHits'>";
+//
+//				int residue = maxQuerySize / 10;
+//
+//				optionForHits += "<option>" + hitSize + "</option>";
+//
+//				for(int i = 0; i < residue; i++){
+//					if(hitSize != (i+1)*10)
+//						optionForHits += "<option>" + (i+1)*10 + "</option>";
+//				}
+//
+//				optionForHits += "</select>";
+//
+//				hitSizeOption  = "Choose how many results you want to view" 
+//						+ optionForHits
+//						+ "<input type='image' src='res/img/refresh.png' alt='Submit'"
+//						+ "name='refreshHits' style='vertical-align: middle;'" 
+//						+ "value='show hits' onclick=__action.value='chooseDifferentHits';>";
+//
+//				makeHtmlTable(mappingResultAndSimiarity);
+//
+//
+//			}
+			else if (request.getAction().equals("startMatching")){
 
 				String uploadFileName = request.getString("ontologyFile");
 
@@ -146,7 +148,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 					int residue = maxQuerySize / 10;
 
-					String optionForHits = "<select name='changeHits' id='changeHits'>";
+					String optionForHits = "<select name='changeHits' id='changeHits' onChange='refreshByHits()'>";
 
 					for(int i = 0; i < residue; i++){
 						optionForHits += "<option>" + (i+1)*10 + "</option>";
@@ -157,10 +159,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 					optionForHits += "</select>";
 
 					hitSizeOption  = "Choose how many results you want to view" 
-							+ optionForHits
-							+ "<input type='image' src='res/img/refresh.png' alt='Submit'"
-							+ "name='refreshHits' style='vertical-align: middle;'" 
-							+ "value='show hits' onclick=__action.value='chooseDifferentHits';>";
+							+ optionForHits;
 				}
 
 			}else if(request.getAction().equals("saveMapping")){
@@ -418,7 +417,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				stopIndex = size - hitSize;
 			}
 
-			for(int i = size; i > stopIndex; i--){
+			for(int i = size; i > 0; i--){
 
 				LinkedInformation eachRow = links.get(i - 1);
 				String expandedQuery = eachRow.expandedQuery;
