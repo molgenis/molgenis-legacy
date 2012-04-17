@@ -33,6 +33,7 @@ public class GenericJobGenerator implements JobGenerator
     private String templateGridUpload;
     private String templateGridJDL;
     private String templateGridAfterExecution;
+    private String templateGridUploadLog;
 
     private String templateClusterHeader;
     private String templateClusterFooter;
@@ -41,6 +42,7 @@ public class GenericJobGenerator implements JobGenerator
     private String fileTemplateGridDownload = "templ-download-grid.ftl";
     private String fileTemplateGridDownloadExe = "templ-exe-grid.ftl";
     private String fileTemplateGridUpload = "templ-upload-grid.ftl";
+    private String fileTemplateGridUploadLog = "templ-upload-grid-log.ftl";
     private String fileTemplateGridJDL = "templ-jdl-grid.ftl";
     private String fileTemplateGridAfterExecution = "templ-after-exe.ftl";
 
@@ -288,7 +290,7 @@ public class GenericJobGenerator implements JobGenerator
             local.put(JobGenerator.LOG, justLogName);
 
             String inputListing = weaveFreemarker(templateGridDownload, local);
-            initialScript.replaceAll(actualName, justName);
+            initialScript = initialScript.replaceAll(actualName, justName);
 
             shellListing += inputListing;
         }
@@ -307,8 +309,12 @@ public class GenericJobGenerator implements JobGenerator
             local.put(JobGenerator.LOG, justLogName);
 
             String inputListing = weaveFreemarker(templateGridDownloadExe, local);
-            initialScript.replaceAll(actualName, justName);
 
+            System.out.println("-----------");
+            System.out.println(initialScript);
+            System.out.println("act " + actualName);
+            System.out.println("just " + justName);
+            initialScript = initialScript.replaceAll(actualName, justName);
             shellListing += inputListing;
         }
 
@@ -330,7 +336,7 @@ public class GenericJobGenerator implements JobGenerator
             local.put(JobGenerator.LOG, justLogName);
 
             String outputListing = weaveFreemarker(templateGridUpload, local);
-            shellListing.replaceAll(actualName, justName);
+            shellListing = shellListing.replaceAll(actualName, justName);
 
             shellListing += outputListing;
         }
@@ -342,7 +348,7 @@ public class GenericJobGenerator implements JobGenerator
         local.put(JobGenerator.OUTPUT, justLogName);
         local.put(JobGenerator.LOG, justLogName);
 
-        String outputListing = weaveFreemarker(templateGridUpload, local);
+        String outputListing = weaveFreemarker(templateGridUploadLog, local);
         shellListing += outputListing;
 
         //write shell
@@ -377,6 +383,7 @@ public class GenericJobGenerator implements JobGenerator
             templateGridDownload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownload);
             templateGridDownloadExe = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownloadExe);
             templateGridUpload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridUpload);
+            templateGridUploadLog = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridUploadLog);
             templateGridJDL = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridJDL);
             templateGridAfterExecution = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridAfterExecution);
         }
