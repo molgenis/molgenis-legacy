@@ -684,8 +684,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 					displayName = measurement.getName();
 				}
 
-				listOfParameters.add(displayName);
-
 				// Query the all the detail information about this measurement,
 				// in molgenis terminology, the detail information
 				// are all the observedValue and some of the fields from the
@@ -715,6 +713,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 							+ multipleInheritance.get(displayName),
 							displayName, parentTree,
 							previousChildTree.getHtmlValue());
+					
+					listOfParameters.add(displayName + multipleInheritance.get(displayName));
 
 					childTree.setHtmlValue(htmlValue);
 
@@ -723,6 +723,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 					childTree = new JQueryTreeViewElement(displayName,
 							parentTree, htmlValue);
 
+					listOfParameters.add(displayName);
+					
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
 
@@ -742,7 +744,32 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 		// selected.add(m.getName());
 		// }
 
-		return treeView.toHtml(selected);
+		String htmlTreeView = treeView.toHtml(selected);
+
+		// This piece of javascript need to be here because some java calls are needed.  
+		String measurementClickEvent = "<script>";
+
+		List<String> uniqueMeasurementName = new ArrayList<String>();
+		
+		for(String eachMeasurement : listOfParameters){
+			
+			if(!uniqueMeasurementName.contains(eachMeasurement)){
+				
+				uniqueMeasurementName.add(eachMeasurement);
+				
+				if(eachMeasurement.equals("Year partner son daughter 3")){
+					System.out.println();
+				}
+				measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
+						+ "getClickedTable(\"" + eachMeasurement + "\");});"
+						+ "";
+			}
+		}
+		measurementClickEvent += "</script>";
+
+		htmlTreeView += measurementClickEvent;
+
+		return htmlTreeView;
 	}
 
 	public void setArrayInvestigations(List<Investigation> arrayInvestigations) {
