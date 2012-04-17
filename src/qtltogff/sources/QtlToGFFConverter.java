@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -19,7 +20,7 @@ import bintocsv.sources.BinaryDataMatrixInstance;
 
 public class QtlToGFFConverter
 {
-	Map<String, Marker> markers;
+	LinkedHashMap<String, Marker> markers; //must be in correct order of ascending bp/chromosomes!
 	Map<String, Trait> traits;
 	Map<String, Chromosome> chromosomes;
 	
@@ -182,8 +183,17 @@ public class QtlToGFFConverter
 		//iterate markers in matrix and check if they are in ascending bp position as well
 		//TODO
 		
+		//iterate markers in file and check if they are in ascending chromosomes
+		//TODO
+		
+		//iterate markers in file and check if they are in ascending bp position as well
+		//TODO
+		
+		//create peak detector
+		PeakDetection pd = new PeakDetection(markers, markersInMatrix);
+		
 		//iterate traits and detect peaks
-		System.out.println("Now going to iterate over the traits in your annotation file and detect peaks..");
+		System.out.println("Now going to iterate over the traits in your annotation file and detect peaks..\n");
 		Map<String, List<GffEntry>> entriesPerTrait = new HashMap<String, List<GffEntry>>();
 		for(final String t : traits.keySet())
 		{
@@ -204,8 +214,8 @@ public class QtlToGFFConverter
 				values = instance.getRow(rowNames.indexOf(t)); //as in example set & verified
 			}
 			
-			PeakDetection pd = new PeakDetection(markers);
-			List<Peak> peaks = pd.detectPeaks(values, markersInMatrix, lod_thres, lod_drop, t);
+			
+			List<Peak> peaks = pd.detectPeaks(values, lod_thres, lod_drop, t);
 			List<GffEntry> entries = new ArrayList<GffEntry>();
 			
 			int multiPeakCount = 0;
@@ -213,20 +223,20 @@ public class QtlToGFFConverter
 			{
 				//String traitGroup = t + "_" + multiPeakCount;
 				
-				if(p.getStartIndex() == p.getStopIndex())
+				if(markers.get(p.getLeftFlankMarker()).getBpPos().longValue() > markers.get(p.getRightFlankMarker()).getBpPos().longValue())
 				{
-					throw new Exception("No interval for " + t + ", start and stop is both index " + p.getStartIndex());
+					throw new Exception("No valid interval for " + t + ", start bp exceeds stop bp!");
 				}
 				
-				String leftFlankingMarker = markersInMatrix.get(p.getStartIndex());
-				String rightFlankingMarker = markersInMatrix.get(p.getStopIndex());
+				String leftFlankingMarker = p.getLeftFlankMarker();
+				String rightFlankingMarker = p.getRightFlankMarker();
 				
 				long leftBpPos = markers.get(leftFlankingMarker).getBpPos();
 				long rightBpPos = markers.get(rightFlankingMarker).getBpPos();
 				
 				if(!markers.get(leftFlankingMarker).getChromosomeName().equals(markers.get(rightFlankingMarker).getChromosomeName()))
 				{
-					throw new Exception("FATAL: QTL region found crossing two chromosomes in trait " + t);
+					throw new Exception("FATAL: QTL region found crossing two chromosomes in trait " + t + ". Marker " + leftFlankingMarker + " is on chr " + markers.get(leftFlankingMarker).getChromosomeName() + " while marker " + rightFlankingMarker + " is on chr " + markers.get(rightFlankingMarker).getChromosomeName());
 				}
 				
 				if(cumu_marker_bppos)
@@ -245,16 +255,7 @@ public class QtlToGFFConverter
 				else
 				{
 					//scale until limit: 0->limit = 0->1000
-					
-				//	score = 1000 / limit * 
-					
-			//		score = (int) (p.getPeakValue().doubleValue() * 100.0);
-					
-					
 					score = (int) (1000.0 * (p.getPeakValue().doubleValue() / lod_limit));
-					
-					
-				//	System.out.println("lod: " + p.getPeakValue() + " -> " + score);
 				}
 				
 				String traitGroup = t;
@@ -355,9 +356,9 @@ public class QtlToGFFConverter
 		return amount;
 	}
 	
-	public Map<String, Marker> loadMarkers(File markerFile) throws FileNotFoundException
+	public LinkedHashMap<String, Marker> loadMarkers(File markerFile) throws FileNotFoundException
 	{
-		Map<String, Marker> markers = new HashMap<String, Marker>();
+		LinkedHashMap<String, Marker> markers = new LinkedHashMap<String, Marker>();
 		Scanner s = new Scanner(markerFile);
 		while (s.hasNextLine()){
 			String line = s.nextLine();

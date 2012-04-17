@@ -2,49 +2,77 @@ package qtltogff.sources;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PeakDetection {
 
-	private Map<String, Marker> markers;
+	private LinkedHashMap<String, Marker> allMarkers;
+	private List<String> markersInMatrix;
+	private Map<String, List<String>> markersPerChr;
 	
-	private char pr_plus = '+';
-	private char pr_minus = '-';
-	private char pr_equal = '=';
-	private char pr_below = ' ';
-	
-	public PeakDetection(Map<String, Marker> markers)
+	public PeakDetection(LinkedHashMap<String, Marker> allMarkers, List<String> markersInMatrix)
 	{
-		this.markers = markers;
+		this.allMarkers = allMarkers;
+		this.markersInMatrix = markersInMatrix;
+		markersPerChr = new HashMap<String, List<String>>();
+		
+		System.out.println();
+		for(String key : allMarkers.keySet()){
+			
+			Marker m = allMarkers.get(key);
+			
+			//important: ignore the ones not in the matrix!
+			if(markersInMatrix.contains(m.getName()))
+			{
+				List<String> markerList = null;
+				
+				if(markersPerChr.containsKey(m.getChromosomeName()))
+				{
+					markerList = markersPerChr.get(m.getChromosomeName());
+				}
+				else
+				{
+					markerList = new ArrayList<String>();
+	 			}
+				markerList.add(m.getName());
+				markersPerChr.put(m.getChromosomeName(), markerList);
+			}
+		}
+		
+		for(String key : markersPerChr.keySet())
+		{
+			System.out.println("Markers on chr "+ key);
+			for(String m : markersPerChr.get(key))
+			{
+				System.out.print(" " + m);
+			}
+			System.out.println();
+			System.out.println();
+		}
+		
 	}
 	
-	public List<Peak> detectPeaks(Object[] values, List<String> markersInMatrix, double lod_thres, double lod_drop, String traitName) throws Exception
+	public List<Peak> detectPeaks(Object[] values, double lod_thres, double lod_drop, String traitName) throws Exception
 	{
 		List<Peak> peaks = new ArrayList<Peak>();
-		
-		
 		Map<String, List<Double>> valuesPerChr = new HashMap<String, List<Double>>();
-		
-		
-		
-		String[] DEBUG_chromos = new String[values.length];
-		
-
 		
 		//cut up values to smaller lists per chromosome
 		List<Double> valuesForThisChr = new ArrayList<Double>();
+		
 		//as a start value, assign the chromosome of the first marker
-		String curChr = markers.get(markersInMatrix.get(0)).getChromosomeName();
+		String curChr = allMarkers.get(markersInMatrix.get(0)).getChromosomeName();
 		for(int i = 0; i < values.length; i++)
 		{
 			double d = ((Double)values[i]).doubleValue();
 			//on chromosome switch: add current values to map
-			if(!curChr.equals(markers.get(markersInMatrix.get(i)).getChromosomeName()))
+			if(!curChr.equals(allMarkers.get(markersInMatrix.get(i)).getChromosomeName()))
 			{
 				valuesPerChr.put(curChr, valuesForThisChr);
 				valuesForThisChr = new ArrayList<Double>();
-				curChr = markers.get(markersInMatrix.get(i)).getChromosomeName();
+				curChr = allMarkers.get(markersInMatrix.get(i)).getChromosomeName();
 			}
 			valuesForThisChr.add(d);
 			//last element: add the last chromosome to the map
@@ -54,409 +82,173 @@ public class PeakDetection {
 			}
 		}
 		
-		
+		//iterate over chromosomes for this trait
 		for(String key : valuesPerChr.keySet())
 		{
-			int highestPosInThisChr = -1;
-			double highestValue = -1.0;
+			//assume there is a peak
+			boolean hasPeak = true;
 			
-			for(int i = 0; i < valuesPerChr.get(key).size(); i++)
+			//continue scanning for peaks until there are no more (though typically only 1 or 2)
+			int iteration = 1;
+			while(hasPeak)
 			{
-				double d = valuesPerChr.get(key).get(i);
-
-				if(d > highestValue)
-				{
-					highestPosInThisChr = i;
-					highestValue = d;
-				}
-			}
-			
-			//if we have at least 1 peak in this chromosome..
-			if(highestValue > lod_thres)
-			{
-				System.out.println(traitName + " highest in chr " + key + " is " + highestPosInThisChr + " value " + highestValue);
+				//set to false unless one is found
+				hasPeak = false;
 				
-				for(Double v : valuesPerChr.get(key))
-				{
-					System.out.print(v + "\t");
-				}
-				System.out.println();
-				
-				for(int i = 0; i < valuesPerChr.get(key).size(); i++)
-				{
-					System.out.print(i + "\t");
-				}
-				
-				System.out.println();
-				
-				//find left flanking marker
-				int leftDropoffIndex = -1;
-				int leftQtlRegionEnd = -1;
-				
-				int pointer = highestPosInThisChr;
-				while(leftQtlRegionEnd == -1)
-				{
-					if(highestPosInThisChr > 0)
-					{
-						pointer--;
-						if(valuesPerChr.get(key).get(pointer) < lod_thres)
-						{
-							leftQtlRegionEnd = pointer;
-						}
-						else if(valuesPerChr.get(key).get(pointer) < (highestValue - lod_drop))
-						{
-							leftDropoffIndex = pointer;
-						}
-					}
-					else
-					{
-						leftDropoffIndex = 0;
-						leftQtlRegionEnd = 0;
-					}
-				}
-				
-				int rightDropoffIndex = -1;
-				int rightQtlRegionEnd = -1;
-				
-				pointer = highestPosInThisChr;
-				while(rightQtlRegionEnd == -1)
-				{
-					if(highestPosInThisChr < valuesPerChr.get(key).size())
-					{
-						pointer++;
-						if(valuesPerChr.get(key).get(pointer) < lod_thres)
-						{
-							rightQtlRegionEnd = pointer;
-						}
-						else if(valuesPerChr.get(key).get(pointer) < (highestValue - lod_drop))
-						{
-							rightDropoffIndex = pointer;
-						}
-					}
-					else
-					{
-						rightDropoffIndex = 0;
-						rightQtlRegionEnd = 0;
-					}
-				}
-				
-				
-				
-				System.out.println("left dropoff: " + leftDropoffIndex);
-				System.out.println("right dropoff: " + rightDropoffIndex);
-				System.out.println("left region: " + leftQtlRegionEnd);
-				System.out.println("right region: " + rightQtlRegionEnd);
-				System.out.println();
-				
-			}
-		
-			
-		}
-		
-		
-		/**
-		
-		for(String key : valuesPerChr.keySet())
-		{
-			boolean DEBUG_peakfound = false;
-			char[] profile = new char[valuesPerChr.get(key).size()];
-			boolean inRegion = false;
-			
-			for(int i = 0; i < valuesPerChr.get(key).size(); i++)
-			{
-				double d = valuesPerChr.get(key).get(i);
-				if(d > lod_thres)
-				{
-					if(inRegion)
-					{
-						if(valuesPerChr.get(key).get(i-1) < d)
-						{
-							profile[i] = pr_plus;
-						}
-						else if(valuesPerChr.get(key).get(i-1) == d)
-						{
-							profile[i] = pr_equal;
-						}
-						else
-						{
-							profile[i] = pr_minus;
-						}
-					}
-					else
-					{
-						profile[i] = pr_plus;
-						inRegion = true;
-						DEBUG_peakfound = true;
-					}
-				}
-				else
-				{
-					profile[i] = pr_below;
-				}
-			}
-			
-
-			if(DEBUG_peakfound){
-				System.out.println(traitName + " has one or more peaks on chromosome " + key + ":");
-				for(char c : profile)
-				{
-					System.out.print(c + "\t");
-				}
-				System.out.println();
-				
-				for(Double v : valuesPerChr.get(key))
-				{
-					System.out.print(v + "\t");
-				}
-				System.out.println();
-				
-				for(int i = 0; i < valuesPerChr.get(key).size(); i++)
-				{
-					System.out.print(i + "\t");
-				}
-				
-				System.out.println();
-				
-				
-				
-				String[] peak = new String[valuesPerChr.get(key).size()];
-				
-				boolean insidePeak = false;
-				boolean peakDropped = false;
-				double highestInPeak = -1.0;
-				int highestInPeakPos = -1;
+				//scan the profile for the highest value and the position of this value
+				int highestPosInThisChr = -1;
+				double highestValue = -1.0;
 				for(int i = 0; i < valuesPerChr.get(key).size(); i++)
 				{
 					double d = valuesPerChr.get(key).get(i);
-					
-					//detect start of peak
-					if(!insidePeak && profile[i] == pr_plus)
+
+					if(d > highestValue)
 					{
-						insidePeak = true;
-						highestInPeak = d;
-						highestInPeakPos = i;
-						peak[i] = "start";
-						//on the last marker: assign flank/peak, not start
-						if(i == valuesPerChr.get(key).size()-1)
-						{
-							peak[i] = "F/peak";
-						}
-						//on the first marker: assign flank/start
-						else if(i==0)
-						{
-							peak[i] = "start";
-						}
-						continue;
+						highestPosInThisChr = i;
+						highestValue = d;
 					}
+				}
+
+			
+				//a significant highest value was found, now detect the region and dropoff
+				if(highestValue > lod_thres)
+				{
+					hasPeak = true;
 					
-					//detect end of peak by threshold
-					if(insidePeak && (profile[i] == pr_below || i == valuesPerChr.get(key).size()-1))
+					System.out.println("------- " + traitName + " peak "+iteration+" -------");
+					iteration++;
+					
+					//find left dropoff / descent
+					int leftDropoff = -1;
+					int leftDescentRegion = -1;
+					
+					int pointer = highestPosInThisChr;
+					while(leftDescentRegion == -1)
 					{
-						if(peakDropped)
+						//System.out.println("WHILE POINTER LEFT: " + pointer + " VALUE: " + valuesPerChr.get(key).get(pointer));
+						if(pointer == 0)
 						{
-							peak[i] = "end";
+							leftDescentRegion = pointer;
+							break;
+						}
+						
+						pointer--;
+						
+						if(valuesPerChr.get(key).get(pointer) <= (valuesPerChr.get(key).get(pointer+1)))
+						{
+							if(valuesPerChr.get(key).get(pointer) < lod_thres)
+							{
+								leftDescentRegion = pointer;
+							}
+							else if(valuesPerChr.get(key).get(pointer) < (highestValue - lod_drop) && leftDropoff == -1)
+							{
+								leftDropoff = pointer;
+							}
 						}
 						else
 						{
-							peak[i] = "F/end";
+	//						System.out.println("********* LEFT DESCENT REGION END BEFORE END OF QTL REGION (>THRESHOLD) ********* ");
+	//						System.out.println("p\t" + pointer + "\t" + valuesPerChr.get(key).get(pointer));
+	//						System.out.println("p+1\t" + (pointer+1) + "\t"+ (valuesPerChr.get(key).get(pointer+1)));
+							leftDescentRegion = pointer+1;
 						}
-						peak[highestInPeakPos] = "peak";
-						insidePeak = false;
-						continue;
 					}
 					
-					//detect end of peak by dropoff
-					if(insidePeak && !peakDropped && d < (highestInPeak - lod_drop))
-					{
-						peak[i] = "F/drop";
-						peak[highestInPeakPos] = "peak";
-						peakDropped = true;
-						continue;
-					}
+					//find right dropoff / descent
+					int rightDropoff = -1;
+					int rightDescentRegion = -1;
 					
-					if(insidePeak)
+					pointer = highestPosInThisChr;
+					while(rightDescentRegion == -1)
 					{
-						peak[i] = "-->";
-						if(d > highestInPeak)
+						//System.out.println("WHILE POINTER RIGHT: " + pointer + " VALUE: " + valuesPerChr.get(key).get(pointer));
+						if(pointer == valuesPerChr.get(key).size()-1)
 						{
-							highestInPeak = d;
-							highestInPeakPos = i;
-						//	peak[i] = "insNH";
+							rightDescentRegion = pointer;
+							break;
 						}
-						continue;
+					
+						pointer++;
+						
+						if(valuesPerChr.get(key).get(pointer) <= (valuesPerChr.get(key).get(pointer-1)))
+						{
+							if(valuesPerChr.get(key).get(pointer) < lod_thres)
+							{
+								rightDescentRegion = pointer;
+							}
+							else if(valuesPerChr.get(key).get(pointer) < (highestValue - lod_drop) && rightDropoff == -1)
+							{
+								rightDropoff = pointer;
+							}
+						}
+						else
+						{
+	//						System.out.println("********* RIGHT DESCENT REGION END BEFORE END OF QTL REGION (>THRESHOLD) ********* ");
+	//						System.out.println("p\t" + pointer + "\t" + valuesPerChr.get(key).get(pointer));
+	//						System.out.println("p-1\t" + (pointer-1) + "\t"+ (valuesPerChr.get(key).get(pointer-1)));
+							rightDescentRegion = pointer-1;
+						}
 					}
 					
-					peak[i] = "";
+					System.out.println(traitName + " highest in chr " + key + " is " + highestPosInThisChr + " value " + highestValue);
 					
+					for(Double v : valuesPerChr.get(key))
+					{
+						System.out.print(v + "\t");
+					}
+					System.out.println();
+					
+					for(int i = 0; i < valuesPerChr.get(key).size(); i++)
+					{
+						System.out.print(i + "\t");
+					}
+					
+					System.out.println();
+					
+					System.out.println("left dropoff: " + leftDropoff);
+					System.out.println("right dropoff: " + rightDropoff);
+					System.out.println("left descent region: " + leftDescentRegion);
+					System.out.println("right descent region: " + rightDescentRegion);
+					System.out.println();
+					
+					int start;
+					int stop;
+					if(leftDropoff != -1 && leftDropoff > leftDescentRegion)
+					{
+						start = leftDropoff;
+						
+					}else
+					{
+						start = leftDescentRegion;
+					}
+						
+					if(rightDropoff != -1 && rightDropoff < rightDescentRegion)
+					{
+						stop = rightDropoff;
+					}else
+					{
+						stop = rightDescentRegion;
+						
+					}
+					
+					System.out.println("LEFT FLANKING MARKER INDEX: " + start + ", WHICH IS MARKER " + markersPerChr.get(key).get(start));
+					System.out.println("RIGHT FLANKING MARKER INDEX: " + stop + ", WHICH IS MARKER " + markersPerChr.get(key).get(stop));
+					System.out.println("PEAK MARKER INDEX: " + highestPosInThisChr + ", WHICH IS MARKER " + markersPerChr.get(key).get(highestPosInThisChr));
+					
+					Peak p = new Peak(markersPerChr.get(key).get(start), markersPerChr.get(key).get(stop), markersPerChr.get(key).get(highestPosInThisChr), highestValue);
+					peaks.add(p);
+					
+					System.out.println("ZEROING REGION: " + leftDescentRegion + " to " + rightDescentRegion);
+					System.out.println();
+					
+					for(int i = leftDescentRegion; i <= rightDescentRegion; i++)
+					{
+						valuesPerChr.get(key).set(i, 0.0);
+					}
+						
 				}
-				
-				for(int p = 0; p < peak.length; p++)
-				{
-					System.out.print(peak[p] + "\t");
-				}
-				System.out.println();
-				
-				System.out.println();
-				
-				int[][] jaap = new int[1][1];
-				jaap[0] = new int[]{1};
 			}
-			
-			}
-			
-			*/
-
-		
-		
+		}
 		return peaks;
 	}
-	
-	public List<Peak> detectPeaks_(Object[] values, List<String> markersInMatrix, double lod_thres) throws Exception
-	{
-		
-		List<Peak> peaks = new ArrayList<Peak>();
-		
-		//naive: just find regions over cutoff and pick flanking markers
-		//TODO: proper peak detection, e.g. waterfill
-		
-		int peakStart = -1;
-		int peakMarker = -1;
-		double highestMarkerValue = -1.0;
-		
-		double prev = -1.0;
-		
-		char[] profile = new char[values.length];
-		String[] chromos = new String[values.length];
-		
-		for(int i = 0; i < values.length; i++)
-		{
-		
-			double d = ((Double)values[i]).doubleValue();
-			
-			profile[i] = 'o';
-			
-			chromos[i] =  markers.get(markersInMatrix.get(i)).getChromosomeName();
-			
-			//start of a peak
-			if(peakStart == -1 && d > lod_thres)
-			{
-				peakStart = i;
-				prev = i==0 ? ((Double)values[i]).doubleValue() : ((Double)values[i-1]).doubleValue();
-				profile[i==0?i:i-1] = 'F';
-				
-				highestMarkerValue = d;
-				peakMarker = i;
-			}
-			
-			//inside a peak: find the highest marker
-			if(peakStart != -1)
-			{
-				if(d > prev)
-				{
-					profile[i] = pr_plus;
-				}
-				else if(d == prev)
-				{
-					profile[i] = pr_below;
-				}
-				else{
-					profile[i] = pr_minus;
-				}
-				prev = d;
-				
-				if(d > highestMarkerValue)
-				{
-					highestMarkerValue = d;
-					peakMarker = i;
-				}
-				
-			
-			}
-			
-			
-			
-			//inside a peak: finish when LOD drops below threshold, or we reached the last value
-			if(peakStart != -1 && (d < lod_thres || i == values.length-1))
-			{
-				
-				//adjust for flanking marker: start -1 if possible for left flank (i is always 1 ahead anyway for right flank)
-				Peak p = new Peak(peakStart != 0 ? peakStart-1 : peakStart, i, markersInMatrix.get(peakMarker), highestMarkerValue);
-				
-				String leftFlankMarkerChr = markers.get(markersInMatrix.get(p.getStartIndex())).getChromosomeName();
-				String rightFlankMarkerChr = markers.get(markersInMatrix.get(p.getStopIndex())).getChromosomeName();
-				
-				//the flanking (+1 and -1 markers around region) can be across chromosomes by accident..
-				if(!leftFlankMarkerChr.equals(rightFlankMarkerChr))
-				{
-					String leftFlankMarkerChrPlusOne = markers.get(markersInMatrix.get(p.getStartIndex()+1)).getChromosomeName();
-					String rightFlankMarkerChrMinusOne = markers.get(markersInMatrix.get(p.getStopIndex()-1)).getChromosomeName();
-				
-					//left flank marker is wrongly positioned another chromosome
-					if(leftFlankMarkerChrPlusOne.equals(rightFlankMarkerChr))
-					{
-						p.setStartIndex(p.getStartIndex()+1);
-//						System.out.println("Corrected a QTL region by pushing the left flanking marker back to the right chromosome..");
-					}
-					//right flank marker is wrongly positioned another chromosome
-					else if(rightFlankMarkerChrMinusOne.equals(leftFlankMarkerChr))
-					{
-						p.setStopIndex(p.getStopIndex()-1);
-//						System.out.println("Corrected a QTL region by pulling the right flanking marker back to the right chromosome..");
-					}
-					else{
-						throw new Exception("Cannot make sense of this QTL region.. aborting");
-					}
-					
-				}
-				
-				peaks.add(p);
-				
-				
-				
-				System.out.println("Peak : " + p.getStartIndex() + " to " + p.getStopIndex() + " peakmarker = " + p.getPeakMarker());
-				peakStart = -1;
-				highestMarkerValue = -1.0;
-			}
-			
-		}
-		
-		if(peaks.size() > 0)
-		{
-		//	String s = new String(profile);
-		//	System.out.println(s);
-			
-			for(char c : profile)
-			{
-				System.out.print(c + "\t");
-			}
-			System.out.println();
-			
-			for(Object v : values)
-			{
-				double d = ((Double)v).doubleValue();
-				System.out.print(d + "\t");
-			}
-			System.out.println();
-			
-			for(String ch : chromos)
-			{
-				System.out.print(ch + "\t");
-			}
-			System.out.println();
-			
-			for(int i = 0; i < values.length; i++)
-			{
-				System.out.print(i + "\t");
-			}
-			
-			System.out.println();
-			System.out.println();
-		}
-		
-		
-		return peaks;
-		
-	}
-	
-	
 }
