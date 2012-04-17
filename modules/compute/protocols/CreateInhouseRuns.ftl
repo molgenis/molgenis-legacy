@@ -9,7 +9,7 @@
 #
 
 #MOLGENIS walltime=00:10:00
-#FOREACH run, flowcell
+#FOREACH run
 
 #
 # Change permissions.
@@ -29,7 +29,7 @@ mkdir -p ${runIntermediateDir}
 <#list unfolded as sampleSequenceDetails>
 echo ${sampleSequenceDetails} >> ${runJobsDir}/${run}.csv
 </#list>-->
-${toolDir}/scripts/extract_samples_from_GAF_list.pl --i ${completeWorksheet} --o ${runJobsDir}/${run}.csv --c run --q ${run}
+${tooldir}/scripts/extract_samples_from_GAF_list.pl --i ${worksheet} --o ${runJobsDir}/${run}.csv --c run --q ${run}
 
 #
 # Execute MOLGENIS/compute to create job scripts to analyse this project.
@@ -39,6 +39,6 @@ sh ${molgenisComputeDir}/molgenis_compute.sh \
 -outputscriptsdir=${runJobsDir}/ \
 -parametersfile=${parametersFile} \
 -workflowfile=${demultiplexWorkflowFile} \
--protocoldir=${protocolsDir} \
+-protocoldir=${protocoldir} \
 -cluster=dummy \
 -templatesdir=dummy dummy
