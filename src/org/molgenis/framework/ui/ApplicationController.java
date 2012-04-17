@@ -51,7 +51,7 @@ public class ApplicationController extends
 	private MolgenisOptions options;
 	
 	/** MolgenisContext */
-	private MolgenisContext mc;
+	private transient MolgenisContext mc;
 
 	/**
 	 * Construct a user interface for a database.
