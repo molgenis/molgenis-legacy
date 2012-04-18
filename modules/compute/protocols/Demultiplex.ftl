@@ -60,16 +60,20 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		summed_reads_out_1=0
 		
 		#
-		# 1. Calculate MD5Sums for the demultiplexed, uncompressed FastQ files.
-		# 2. Count the amount of lines in this demultiplexed, uncompressed FastQ files(, which equals reads * 4).
-		# 3. Update the sum of lines of all demultiplexed, uncompressed FastQ files derived from the same multiplexed FastQ file.
+		# For the demultiplexed, uncompressed FastQ files:
+		# 1. Calculate MD5Sums.
+		# 2. Count the amount of lines(, which equals to reads * 4) per file.
+		# 3. Update the sum of lines of all files.
 		#
 		<#list demultiplexedSampleFastqFilenameSR as fileToCheck>
 		this_read_count=0
+		mkfifo ${demultiplexedSampleFastqChecksumFilepathSR[fileToCheck_index]}.pipe
+		md5sum <${demultiplexedSampleFastqChecksumFilepathSR[fileToCheck_index]}.pipe | \
+			sed 's/ -/ ${fileToCheck}/' > ${demultiplexedSampleFastqChecksumFilepathSR[fileToCheck_index]} &
 		this_read_count=$(gzip -cd ${compressedDemultiplexedSampleFastqFilepathSR[fileToCheck_index]} | \
-			tee <(md5sum | sed 's/ -/ ${fileToCheck}/' > ${demultiplexedSampleFastqChecksumFilepathSR[fileToCheck_index]}) | \
+			tee ${demultiplexedSampleFastqChecksumFilepathSR[fileToCheck_index]}.pipe | \
 			wc -l)
-		
+		rm ${demultiplexedSampleFastqChecksumFilepathSR[fileToCheck_index]}.pipe
 		summed_reads_out_1=$(( $summed_reads_out_1 + $this_read_count ))
 			
 		</#list>
@@ -78,10 +82,13 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		# Same for the discarded, uncompressed FastQ file.
 		#
 		this_read_count=0
+		mkfifo ${demultiplexedDiscardedFastqChecksumFilepathSR}.pipe
+		md5sum <${demultiplexedDiscardedFastqChecksumFilepathSR}.pipe | \
+			sed 's/ -/ ${demultiplexedDiscardedFastqFilenameSR}/' > ${demultiplexedDiscardedFastqChecksumFilepathSR} &
 		this_read_count=$(gzip -cd ${compressedDemultiplexedDiscardedFastqFilepathSR} | \
-			tee <(md5sum | sed 's/ -/ ${demultiplexedDiscardedFastqFilenameSR}/' > ${demultiplexedDiscardedFastqChecksumFilepathSR}) | \
+			tee ${demultiplexedDiscardedFastqChecksumFilepathSR}.pipe | \
 			wc -l)
-	
+		rm ${demultiplexedDiscardedFastqChecksumFilepathSR}.pipe
 		summed_reads_out_1=$(( $summed_reads_out_1 + $this_read_count ))
 		
 		#
@@ -150,44 +157,56 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		summed_reads_out_2=0
 		
 		#
-		# 1. Calculate MD5Sums for the demultiplexed, uncompressed FastQ files.
-		# 2. Count the amount of lines in this demultiplexed, uncompressed FastQ files(, which equals reads * 4).
-		# 3. Update the sum of lines of all demultiplexed, uncompressed FastQ files derived from the same multiplexed FastQ file.
+		# For the demultiplexed, uncompressed FastQ files:
+		# 1. Calculate MD5Sums.
+		# 2. Count the amount of lines(, which equals to reads * 4) per file.
+		# 3. Update the sum of lines of all files.
 		#
 		<#list demultiplexedSampleFastqFilenamePE1 as fileToCheck>
 		this_read_count=0
+		mkfifo ${demultiplexedSampleFastqChecksumFilepathPE1[fileToCheck_index]}.pipe
+		md5sum <${demultiplexedSampleFastqChecksumFilepathPE1[fileToCheck_index]}.pipe | \
+			sed 's/ -/ ${fileToCheck}/' > ${demultiplexedSampleFastqChecksumFilepathPE1[fileToCheck_index]} &
 		this_read_count=$(gzip -cd ${compressedDemultiplexedSampleFastqFilepathPE1[fileToCheck_index]} | \
-			tee <(md5sum | sed 's/ -/ ${fileToCheck}/' > ${demultiplexedSampleFastqChecksumFilepathPE1[fileToCheck_index]}) | \
+			tee ${demultiplexedSampleFastqChecksumFilepathPE1[fileToCheck_index]}.pipe | \
 			wc -l)
-		
+		rm ${demultiplexedSampleFastqChecksumFilepathPE1[fileToCheck_index]}.pipe
 		summed_reads_out_1=$(( $summed_reads_out_1 + $this_read_count ))
 		
 		</#list>
 		<#list demultiplexedSampleFastqFilenamePE2 as fileToCheck>
 		this_read_count=0
+		mkfifo ${demultiplexedSampleFastqChecksumFilepathPE2[fileToCheck_index]}.pipe
+		md5sum <${demultiplexedSampleFastqChecksumFilepathPE2[fileToCheck_index]}.pipe | \
+			sed 's/ -/ ${fileToCheck}/' > ${demultiplexedSampleFastqChecksumFilepathPE2[fileToCheck_index]} &
 		this_read_count=$(gzip -cd ${compressedDemultiplexedSampleFastqFilepathPE2[fileToCheck_index]} | \
-			tee <(md5sum | sed 's/ -/ ${fileToCheck}/' > ${demultiplexedSampleFastqChecksumFilepathPE2[fileToCheck_index]}) | \
+			tee ${demultiplexedSampleFastqChecksumFilepathPE2[fileToCheck_index]}.pipe | \
 			wc -l)
-		
+		rm ${demultiplexedSampleFastqChecksumFilepathPE2[fileToCheck_index]}.pipe
 		summed_reads_out_2=$(( $summed_reads_out_2 + $this_read_count ))
 		
 		</#list>
-		
 		#
 		# Same for the discarded, uncompressed FastQ files.
 		#
 		this_read_count=0
+		mkfifo ${demultiplexedDiscardedFastqChecksumFilepathPE1}.pipe
+		md5sum <${demultiplexedDiscardedFastqChecksumFilepathPE1}.pipe | \
+			sed 's/ -/ ${demultiplexedDiscardedFastqFilenamePE1}/' > ${demultiplexedDiscardedFastqChecksumFilepathPE1} &
 		this_read_count=$(gzip -cd ${compressedDemultiplexedDiscardedFastqFilepathPE1} | \
-			tee <(md5sum | sed 's/ -/ ${demultiplexedDiscardedFastqFilenamePE1}/' > ${demultiplexedDiscardedFastqChecksumFilepathPE1}) | \
+			tee ${demultiplexedDiscardedFastqChecksumFilepathPE1}.pipe | \
 			wc -l)
-	
+		rm ${demultiplexedDiscardedFastqChecksumFilepathPE1}.pipe
 		summed_reads_out_1=$(( $summed_reads_out_1 + $this_read_count ))
 		
 		this_read_count=0
+		mkfifo ${demultiplexedDiscardedFastqChecksumFilepathPE2}.pipe
+		md5sum <${demultiplexedDiscardedFastqChecksumFilepathPE2}.pipe | \
+			sed 's/ -/ ${demultiplexedDiscardedFastqFilenamePE2}/' > ${demultiplexedDiscardedFastqChecksumFilepathPE2} &
 		this_read_count=$(gzip -cd ${compressedDemultiplexedDiscardedFastqFilepathPE2} | \
-			tee <(md5sum | sed 's/ -/ ${demultiplexedDiscardedFastqFilenamePE2}/' > ${demultiplexedDiscardedFastqChecksumFilepathPE2}) | \
+			tee ${demultiplexedDiscardedFastqChecksumFilepathPE2}.pipe | \
 			wc -l)
-	
+		rm ${demultiplexedDiscardedFastqChecksumFilepathPE2}.pipe
 		summed_reads_out_2=$(( $summed_reads_out_2 + $this_read_count ))
 		
 		#
