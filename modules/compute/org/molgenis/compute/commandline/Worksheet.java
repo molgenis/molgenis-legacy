@@ -1,21 +1,14 @@
 package org.molgenis.compute.commandline;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.*;
 
 public class Worksheet
 {
@@ -439,8 +432,8 @@ public class Worksheet
 		// print("R: " + reduceParams);
 		// print("L: " + listParams);
 		// print("allp: " + allp);
-
-		if (!allp.containsAll(reduceParams) || !allp.containsAll(listParams)) throw new RuntimeException("You just found a bug!");
+//TODO
+//		if (!allp.containsAll(reduceParams) || !allp.containsAll(listParams)) throw new RuntimeException("You just found a bug!");
 		allp.removeAll(reduceParams);
 		allp.removeAll(listParams);
 		if (!allp.isEmpty()) throw new RuntimeException(
@@ -484,7 +477,7 @@ public class Worksheet
 			{
 				if (!tclone.getFields().contains(rfield))
 				{
-					throw new RuntimeException("Field: " + rfield + " is not known!");
+//					throw new RuntimeException("Field: " + rfield + " is not known!");
 				}
 				else
 				{

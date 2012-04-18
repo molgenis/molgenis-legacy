@@ -41,6 +41,8 @@ public interface JobGenerator
 
 
     Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);
+    Vector<ComputeJob> generateComputeJobsWorksheetWithFolding(Workflow workflow, List<Tuple> worksheet, String backend);
+
     Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet, String backend);
 
     boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String,String> config);
