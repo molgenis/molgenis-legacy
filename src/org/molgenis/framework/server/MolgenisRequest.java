@@ -11,6 +11,7 @@ public class MolgenisRequest extends HttpServletRequestTuple
 
 	Database db;
 	String servicePath;
+	String requestPath;
 	
 	public MolgenisRequest(HttpServletRequest request) throws Exception
 	{
@@ -46,6 +47,16 @@ public class MolgenisRequest extends HttpServletRequestTuple
 
 	
 	
+	public String getRequestPath()
+	{
+		return requestPath;
+	}
+
+	public void setRequestPath(String requestPath)
+	{
+		this.requestPath = requestPath;
+	}
+
 	/**
 	 * Special toString for MolgenisRequest
 	 * Will break off large values, and hide passwords

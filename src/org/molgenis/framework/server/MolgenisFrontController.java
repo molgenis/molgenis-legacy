@@ -113,7 +113,8 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 					System.out.println("database status: " + (request.getDatabase().getSecurity().isAuthenticated() ? "authenticated as "
 							+ request.getDatabase().getSecurity().getUserName() : "not authenticated"));
 					
-					request.setServicePath(p);
+					request.setRequestPath(path); //the path that was requested
+					request.setServicePath(p); //the path mapping used to handle the request
 					
 					try
 					{
