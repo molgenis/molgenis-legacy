@@ -300,8 +300,8 @@ public class QtlToGFFConverter
 		Long chr1size = ((Chromosome)chromosomes.values().toArray()[0]).getBpLength();
 		String trackname = matrixFile.getName().substring(0, matrixFile.getName().length()-4);
 		writer.println("browser position "+chr1+":1-"+chr1size);
-		writer.println("browser hide all");
-		writer.println("track name="+trackname+"	description=\"QTL results of "+trackname+" compiled by QtlToGFF\" visibility=2	useScore=1");
+		//writer.println("browser hide all");
+		writer.println("track name="+trackname+" description=\"QTL results of "+trackname+" compiled by QtlToGFF\" visibility=3 useScore=1");
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
