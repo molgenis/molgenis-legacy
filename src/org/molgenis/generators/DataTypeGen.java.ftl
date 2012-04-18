@@ -230,7 +230,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 			<#if isPrimaryKey(field,entity)>
 				<#if !entity.hasAncestor()>
 	//@javax.validation.constraints.NotNull
-	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;
+	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#elseif field.type == "xref">null<#else> ${default(field)}</#if>;
 				</#if>
 			<#else>
 				
@@ -238,7 +238,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 				<#if !field.isNillable() >
 	@javax.validation.constraints.NotNull
 				</#if>
-	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#else> ${default(field)}</#if>;
+	private <#if field.type="xref">${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}<#elseif field.type="mref">java.util.List<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}><#else>${type(field)}</#if> ${name(field)} = <#if field.type == "mref">new java.util.ArrayList<${field.xrefEntity.namespace}.${JavaName(field.xrefEntity)}>()<#elseif field.type == "xref">null<#else> ${default(field)}</#if>;
 			</#if>
 		<#if type_label == "enum">
 	@javax.persistence.Transient
@@ -247,7 +247,7 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 	private java.util.List<org.molgenis.util.ValueLabel> ${name(field)}_options = new java.util.ArrayList<org.molgenis.util.ValueLabel>();
 		<#elseif type_label == "xref">
 	@javax.persistence.Transient
-	private ${type(field.xrefField)} ${name(field)}_${name(field.xrefField)} = null;	
+	private ${type(field.xrefField)} ${name(field)}_${name(field.xrefField)} = ${default(field)};	
 			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
 	@javax.persistence.Transient
 	private ${type(field.xrefLabels[label_index])} ${name(field)}_${label} = null;						
