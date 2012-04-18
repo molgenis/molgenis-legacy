@@ -272,9 +272,11 @@ public class GenericJobGenerator implements JobGenerator
                     //to avoid empty worksheet fields
                     if (value == null)
                     {
-                        break;
+                        values.put(name, "");
+                        //break;
                     }
-                    values.put(name, value);
+                    else
+                        values.put(name, value);
 
                     id += "_" + value;
                 }
