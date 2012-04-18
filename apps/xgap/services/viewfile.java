@@ -77,8 +77,20 @@ public class viewfile  implements MolgenisService {
 //					throw new NullPointerException("Not specified: 'type'");
 //				}
 				
+				//regular syntax: http://localhost:8080/xqtl/viewfile?name=hapmap1_bim
 				if(name == null){
-					throw new NullPointerException("Not specified: 'name'");
+					
+					//allow alternative syntax: http://localhost:8080/xqtl/viewfile/hapmap1_bim
+					//required for linking to external services, e.g. UCSC browser
+					String reqUrl = request.getRequestPath().substring(request.getServicePath().length());
+					if(reqUrl.startsWith("/") && reqUrl.length() > 1)
+					{
+						name = reqUrl.substring(1);
+						System.out.println("special syntax, getting name: "+ name);
+					}
+					else{
+						throw new NullPointerException("Not specified: 'name'");
+					}
 				}
 				
 //				if(investigationname == null){
@@ -158,7 +170,7 @@ public class viewfile  implements MolgenisService {
 	}
 
 	public void displayUsage(PrintWriter out, Database db) {
-		String usage = "To download file content, please specify 'name' (ie. downloadfile?name=myresultfile\n\n";
+		String usage = "To view file content, please specify 'name' (ie. /viewfile?name=myresultfile or /viewfile/myresultfile) \n\n";
 		out.print(usage);
 	}
 
