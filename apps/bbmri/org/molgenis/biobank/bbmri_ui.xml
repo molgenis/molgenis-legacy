@@ -12,7 +12,7 @@
 		</menu>
 		 -->
 		<menu name="BiobankOverview" label="Biobank Overview">
-			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	hide_fields="id,canRead,canWrite,Approved,Acronym" />
+			<form name="Cohorts" entity="Biobank" label="Biobank Overview"	hide_fields="id,canRead,canWrite,Approved,Acronym,owns" />
 		</menu>
 		<menu name="Admin">
 		    <menu name="DataViews">
