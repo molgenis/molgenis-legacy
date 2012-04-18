@@ -32,7 +32,7 @@ public class AuthorizableDecorator<E extends Entity> extends MapperDecorator<E>
 	public int add(List<E> entities) throws DatabaseException
 	{
 		// add your pre-processing here
-		this.getDatabase().getSecurity().setAdmin(entities, this.getDatabase());
+		this.getDatabase().getLogin().setAdmin(entities, this.getDatabase());
 
 		// here we call the standard 'add'
 		int count = super.add(entities);
