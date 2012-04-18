@@ -48,7 +48,7 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		#
 		# Demultiplex the multiplexed, gzipped FastQ file.
 		#
-		${demultiplexScript} --bcs '${csv(barcode)}' \
+		${demultiplexscript} --bcs '${csv(barcode)}' \
 		--mpr1 ${compressedFastqFilepathSR} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathSR)}' \
 		--ukr1 ${compressedDemultiplexedDiscardedFastqFilepathSR} \
@@ -141,7 +141,7 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		#
 		# Demultiplex the multiplexed, gzipped FastQ file.
 		#
-		${demultiplexScript} --bcs '${csv(barcode)}' \
+		${demultiplexscript} --bcs '${csv(barcode)}' \
 		--mpr1 ${compressedFastqFilepathPE1} \
 		--mpr2 ${compressedFastqFilepathPE2} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathPE1)}' \
