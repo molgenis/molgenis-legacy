@@ -7,44 +7,21 @@
 
 package plugins.genomebrowser;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.net.URL;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
-import matrix.DataMatrixInstance;
-import matrix.general.DataMatrixHandler;
-
-import org.molgenis.data.Data;
+import org.molgenis.auth.MolgenisPermission;
+import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.model.elements.Field;
-import org.molgenis.pheno.ObservableFeature;
-import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
+import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
-import org.molgenis.xgap.Locus;
-import org.molgenis.xgap.Marker;
-import org.molgenis.xgap.Probe;
-
-import plugins.qtlfinder.QTLInfo;
-import plugins.qtlfinder.QTLMultiPlotResult;
-import plugins.reportbuilder.Report;
-import plugins.reportbuilder.ReportBuilder;
-import plugins.reportbuilder.Statistics;
-import plugins.rplot.MakeRPlot;
-import app.JDBCMetaDatabase;
 
 public class GenomeBrowser extends PluginModel<Entity>
 {
@@ -53,11 +30,6 @@ public class GenomeBrowser extends PluginModel<Entity>
 
 	private GenomeBrowserModel model = new GenomeBrowserModel();
 	
-	static String __ALL__DATATYPES__SEARCH__KEY = "__ALL__DATATYPES__SEARCH__KEY";
-	
-	private int plotWidth = 1024;
-	private int plotHeight = 768;
-
 	public GenomeBrowserModel getMyModel()
 	{
 		return model;
@@ -88,7 +60,24 @@ public class GenomeBrowser extends PluginModel<Entity>
 			try
 			{
 			
+				if(this.model.getAppUrl() == null)
+				{
+					//TODO: does this always work?
+					//in R API we use String server = "http://" + request.getRequest().getLocalName() + ":" + request.getRequest().getLocalPort() + "/"+mc.getVariant();
+
+					//String appUrl = this.getApplicationController().getApplicationUrl();
+					//this.model.setAppUrl(appUrl);
 					
+					String host = HtmlTools.getExposedIPAddress();
+				
+
+					URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, this.getApplicationController().getMolgenisContext().getVariant());
+
+					this.model.setAppUrl(reconstructedURL.toString());
+				}
+				
+				
+				
 				
 			}
 			catch (Exception e)
@@ -107,7 +96,29 @@ public class GenomeBrowser extends PluginModel<Entity>
 
 		try
 		{
+			if(this.model.getFilesAreVisible() == null){
+				//find out if molgenisfiles are readable by anonymous
+				Query q = db.query(MolgenisPermission.class);
+				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.core.MolgenisFile"));
+				q.addRules((new QueryRule(MolgenisPermission.ROLE__NAME, Operator.EQUALS, "anonymous")));
+				if(q.find().size() > 0)
+				{
+					this.model.setFilesAreVisible(true);
+				}
+				else
+				{
+					this.model.setFilesAreVisible(false);
+				}
+			}
 			
+			
+			if(this.model.getFilesAreVisible())
+			{
+				Query q = db.query(MolgenisFile.class);
+				q.addRules(new QueryRule(MolgenisFile.EXTENSION, Operator.EQUALS, "gff"));
+				List<MolgenisFile> mf = q.find();
+				this.model.setGffFiles(mf);
+			}
 			
 			
 		}

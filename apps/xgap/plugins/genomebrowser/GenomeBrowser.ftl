@@ -34,8 +34,44 @@
 	<#assign modelExists = false>
 </#if>
 
-lala
+list of GFF files<br>
+check if MolgenisFile is readable by anonymous<br>
+dropdown with USCS databases: http://genome.ucsc.edu/FAQ/FAQreleases.html#release1<br>
+<br>
+uitleggen dat files van buitenaf zichtbaar moeten zijn!<br>
 
+<#if model.release??>
+	<#assign release = model.release>
+<#else>
+	<#assign release = "ce10">
+</#if>
+
+<input type="text" name="release" class="searchBox" value="${release}" >
+
+<br>
+[create linkout]<br>
+<br>
+<#if model.appUrl?? && model.appUrl?contains('localhost')>
+ERROR: you are not connected to the interwebz, or your outgoing port is blocked! cannot serve out GFF to USCS
+<#elseif model.appUrl??>
+resultaat:
+<#if model.filesAreVisible>
+
+	<#list model.gffFiles as f>
+		<a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=ce10&hgt.customText=${model.appUrl}/viewfile/${f.name}">click me</a><br>
+	</#list>
+
+<#else>
+FILES ARE NOT VISIBLE
+</#if>
+
+
+
+<#else>
+NO REQUEST YET
+</#if>
+
+<@action name="addTrack" label="Add"/>
 
 	</div>
 </form>
