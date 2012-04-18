@@ -1,10 +1,10 @@
 #
 # =====================================================
 # $Id$
-# $URL: http://www.molgenis.org/svn/molgenis_apps/trunk/modules/compute/protocols/Coverage.ftl $
+# $URL$
 # $LastChangedDate$
 # $LastChangedRevision$
-# $LastChangedBy: mdijkstra $
+# $LastChangedBy$
 # =====================================================
 #
 
