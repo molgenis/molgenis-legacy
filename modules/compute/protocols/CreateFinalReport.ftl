@@ -13,7 +13,10 @@
 
 umask 0007
 
-${gafscripts}/copy_fq_to_rawdatadir.pl \
--rawdatadir ${runIntermediateDir} \
+
+
+perl ${scriptdir}/create_per_sample_finalreport.pl \
+-inputdir ${arraydir} \
+-outputdir ${runIntermediateDir} \
 -run ${run} \
 -samplecsv ${worksheet}

@@ -12,11 +12,7 @@
 #FOREACH run
 
 
-# Add to parametercsv
-# gafhome		/target/gpfs2/gaf
-# gaftools		${gafhome}/tools
-# gafscripts	${gaftools}/scripts
 
 perl ${gafscripts}/run_GERALD.pl \
 -run ${run} \
--samplecsv ${completeWorksheet}
+-samplecsv ${worksheet}
