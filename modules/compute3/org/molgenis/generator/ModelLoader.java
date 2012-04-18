@@ -34,6 +34,7 @@ public class ModelLoader
     public static final String FLAG_LOG = "#LOGS";
     public static final String FLAG_TARGETS = "#TARGETS";
 
+    //also used for cluster scripts generation
     public static final String FLAG_CLUSTER_QUEUE = "clusterQueue";
     public static final String FLAG_CORES = "cores";
     public static final String FLAG_NODES = "nodes";

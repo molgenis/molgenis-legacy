@@ -27,11 +27,17 @@ public interface JobGenerator
     public static final String GENERATION_ID = "runid";
     public static final String TEMPLATE_DIR = "templatedir";
 
-    //key words in templates
+    //key words in templates for grid
     public static final String LFN_NAME = "lfn_name";
     public static final String INPUT = "input";
     public static final String OUTPUT = "output";
     public static final String LOG = "log";
+
+    //key words in templates for cluster (other cluster key words are reused from ModelLoader)
+    public static final String JOB_ID = "jobname";
+    public static final String JOB_DEPENDENCIES = "depend";
+
+    public static final String DEPENDENCY_HEAD = " -W depend=afterok";
 
 
     Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);

@@ -23,9 +23,9 @@
 			</description>
 			<!-- discussion: rename Features to Inputs and Outputs -->
 			<field name="interpreter" type="enum" default="bash" enum_options="[bash,R,Python,WorkflowInterpreter,jdl]" description="the interpreter used to run this command. For example 'shellTemplate'" />
-			<field name="walltime" nillable="true" type="string" description="# the expected maximum runtime of this job. Notation: 'dd:hh:mm'" />
-			<field name="mem" type="string" description="# PBS memory argument (e.g. 512mb, 4gb)" />
-			<field name="cores" type="int" description="# required cores" />
+			<field name="walltime" nillable="true" type="string" default="20:00:00" description="# the expected maximum runtime of this job. Notation: 'dd:hh:mm'" />
+			<field name="mem" type="string" default="4gb" description="# PBS memory argument (e.g. 512mb, 4gb)" />
+			<field name="cores" type="int" default="1" description="# required cores" />
 
 		</entity>
 		<entity name="ComputeProtocol" extends="Protocol" implements="ComputeDetails">

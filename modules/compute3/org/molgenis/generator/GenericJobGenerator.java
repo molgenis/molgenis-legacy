@@ -35,6 +35,7 @@ public class GenericJobGenerator implements JobGenerator
     private String templateGridAfterExecution;
     private String templateGridUploadLog;
 
+    private String templateClusterSubmission;
     private String templateClusterHeader;
     private String templateClusterFooter;
 
@@ -48,8 +49,16 @@ public class GenericJobGenerator implements JobGenerator
 
     private String fileTemplateClusterHeader = "templ-pbs-header.ftl";
     private String fileTemplateClusterFooter = "templ-pbs-footer.ftl";
+    private String fileTemplateClusterSubmission = "templ-submit.ftl";
 
+    //used for grid generation
     private Hashtable<String, GridTransferContainer> pairJobTransfers = null;
+
+    //used for cluster generation - submit script
+    private Hashtable<WorkflowElement, ComputeJob> pairWEtoCJ = null;
+    private Hashtable<ComputeJob, WorkflowElement> pairCJtoWE = null;
+
+    private String submitScript = null;
 
     private Hashtable<String, String> config;
 
@@ -60,6 +69,12 @@ public class GenericJobGenerator implements JobGenerator
         if (backend.equalsIgnoreCase(JobGenerator.GRID))
             pairJobTransfers = new Hashtable<String, GridTransferContainer>();
 
+        if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+        {
+            pairWEtoCJ = new Hashtable<WorkflowElement, ComputeJob>();
+            pairCJtoWE = new Hashtable<ComputeJob, WorkflowElement>();
+            submitScript = "";
+        }
         //because Hashtable does not allow null keys or values
         Hashtable<String, String> values = new Hashtable<String, String>();
 
@@ -101,10 +116,18 @@ public class GenericJobGenerator implements JobGenerator
 
                 //to avoid empty worksheet fields
                 if (value == null)
+                {
                     break;
-
+                }
                 values.put(name, value);
+
                 id += "_" + value;
+            }
+
+            //temporary until folding is implemented
+            if(workflow.getName().equalsIgnoreCase("ngs_demo"))
+            {
+                id =  "id_" + System.currentTimeMillis();
             }
 
             //weave complex parameters
@@ -145,8 +168,6 @@ public class GenericJobGenerator implements JobGenerator
 
                 ComputeJob job = new ComputeJob();
 
-                //TODO review ComputeJob model
-
                 String jobName = config.get(JobGenerator.GENERATION_ID) + "_" +
                         workflow.getName() + "_" +
                         el.getName() + "_" + id;
@@ -156,13 +177,18 @@ public class GenericJobGenerator implements JobGenerator
                 job.setComputeScript(jobListing);
                 computeJobs.add(job);
 
-                //fill job transfer container for grid jobs to ensure correct data transfer
+                //fill containers for grid jobs to ensure correct data transfer
+                // and for cluster to generate submit script
                 if (backend.equalsIgnoreCase(JobGenerator.GRID))
                 {
                     GridTransferContainer container = fillContainer(protocol, values);
                     pairJobTransfers.put(job.getName(), container);
                 }
-
+                else if(backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+                {
+                    pairWEtoCJ.put(el, job);
+                    pairCJtoWE.put(job, el);
+                }
                 logger.log(Level.DEBUG, "----------------------------------------------------------------------");
                 logger.log(Level.DEBUG, el.getName());
                 logger.log(Level.DEBUG, jobListing);
@@ -234,14 +260,63 @@ public class GenericJobGenerator implements JobGenerator
                 generateActualJobGrid(computeJob, config);
             else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
                 generateActualJobCluster(computeJob, config);
-
         }
+
+        //write cluster submit script
+        if(backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + "submit_" + config.get(JobGenerator.GENERATION_ID) + ".sh",
+                submitScript);
+
 
         return true;
     }
 
     private void generateActualJobCluster(ComputeJob computeJob, Hashtable<String, String> config)
     {
+        System.out.println("name: " + computeJob.getName());
+
+        //create values hashtable to fill templates
+        Hashtable<String, String> values = new Hashtable<String, String>();
+
+        ComputeProtocol protocol = (ComputeProtocol) computeJob.getProtocol();
+
+        values.put(JobGenerator.JOB_ID, computeJob.getName());
+        values.put(ModelLoader.FLAG_CLUSTER_QUEUE, protocol.getClusterQueue());
+        values.put(ModelLoader.FLAG_CORES, protocol.getCores().toString());
+        values.put(ModelLoader.FLAG_NODES, protocol.getNodes().toString());
+        values.put(ModelLoader.FLAG_MEMORY, protocol.getMem());
+        values.put(ModelLoader.FLAG_WALLTIME, protocol.getWalltime());
+
+        //create actual cluster job
+        String header = weaveFreemarker(templateClusterHeader, values);
+        String main = computeJob.getComputeScript();
+        String footer = weaveFreemarker(templateClusterFooter, values);
+        String actualJob = header + main + footer;
+
+        //write script
+        (new File(config.get(JobGenerator.OUTPUT_DIR))).mkdirs();
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".sh",
+                actualJob);
+
+        //create job submission part
+        WorkflowElement el = pairCJtoWE.get(computeJob);
+
+        if(el.getPreviousSteps().size() > 0)
+        {
+            String dependency = JobGenerator.DEPENDENCY_HEAD;
+            for(WorkflowElement wEl : el.getPreviousSteps())
+            {
+                ComputeJob cJ = pairWEtoCJ.get(wEl);
+                dependency += ":" + cJ.getName();
+                values.put(JobGenerator.JOB_DEPENDENCIES, dependency);
+            }
+        }
+        else
+            values.put(JobGenerator.JOB_DEPENDENCIES, "");
+
+        String strSubmit = weaveFreemarker(templateClusterSubmission, values);
+
+        submitScript += strSubmit;
 
     }
 
@@ -369,6 +444,7 @@ public class GenericJobGenerator implements JobGenerator
         {
             templateClusterHeader = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterHeader);
             templateClusterFooter = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterFooter);
+            templateClusterSubmission = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterSubmission);
         }
         catch (IOException e)
         {

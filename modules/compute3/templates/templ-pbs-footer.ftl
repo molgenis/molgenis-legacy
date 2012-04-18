@@ -1,3 +1,4 @@
+
 ###### AFTER ######
 after="$(date +%s)"
 elapsed_seconds="$(expr $after - $before)"

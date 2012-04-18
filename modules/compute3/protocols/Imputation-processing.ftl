@@ -30,3 +30,4 @@ echo "After execution" 2>&1 | tee -a ${log}
 
 echo -n "SNP1:" 2>&1 | tee -a ${log}
 wc -l ${output_1}  2>&1 | tee -a ${log}
+
