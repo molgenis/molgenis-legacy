@@ -40,14 +40,14 @@ public class ApplyProtocolService {
 		try {
 			invList = q.find();
 		} catch (Exception e) {
-			return null;
+			return new ArrayList<Integer>();
 		}
 		if (invList != null && invList.size() > 0) {
 			for (Investigation inv : invList) {
 				returnList.add(inv.getId());
 			}
 		} else {
-			return null;
+			return new ArrayList<Integer>();
 		}
 		return returnList;
 	}
