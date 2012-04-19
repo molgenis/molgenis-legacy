@@ -66,6 +66,11 @@
 \tableofcontents
 
 \clearpage
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+This report describes a series of statistics about your sequencing data. Together with this report you'll receive a SNP-list. If you, in addition, also want the raw data, then please notify us via e-mail. In any case we'll delete the raw data, three months after \today.
+
+\clearpage
 \section*{Project analysis results}
 \addcontentsline{toc}{section}{Project analysis results}
 
@@ -141,7 +146,7 @@ ${figures(sampleinsertsizemetricspdf)}
 \end{wrapfigure}
 Figure \ref{fig:wet} illustrated the basic experimental process of exome capture sequencing. The Genomic DNA sample was randomly fragmented using Nebulisation. Then barcoded adapters were ligated to both ends of the resulting fragments, according the standard New England Biolabs protocol. Fragments with an insert size of 220 bp on average were excised using the Caliper XT gel system and the extracted DNA was amplified with PCR.
 
-The quality of the product was verified on the BioRad Experion instrument. If the quality of the product meets the criteria, the product is multiplexed in an equimolar pool of 4 simular products. This pool is hybridized to the Agilent SureSelect 50 MB Exome library, according the provided protocol. After amplification of the enriched products with PCR the quality of the products is verified on the BioRad Experion instrument and Paired End sequenced on the HiSeq2000 with 100 bp reads. Image Files were processed using standard Illumina basecalling software and the generated reads are ready for downstream processing after demultiplexing.
+The quality of the product was verified on the BioRad Experion instrument. If the quality of the product meets the criteria, the product is multiplexed in an equimolar pool of 4 simular products. This pool is hybridized to the Agilent SureSelect All exon V2, according the provided protocol. After amplification of the enriched products with PCR the quality of the products is verified on the BioRad Experion instrument and Paired End sequenced on the HiSeq2000 with 100 bp reads. Image Files were processed using standard Illumina basecalling software and the generated reads are ready for downstream processing after demultiplexing.
 
 \clearpage
 \section*{Appendix 2: Bioinformatics pipeline}
