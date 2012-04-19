@@ -21,7 +21,7 @@
 			</form>
 			<!-- form name="WorksheetLaneLevel" label="Lane level worksheet" entity="WorksheetLaneLevel" commands="org.molgenis.compute.ui.WorksheetBatchCommand"> <plugin name="ButtonLaneLevel" type="org.molgenis.compute.ui.StartNgs" 
 				/> </form -->
-			<plugin name="ImportWorksheet" label="Upload worksheet" type="org.molgenis.ngs.ui.ImportWorksheet" />
+			<!-- plugin name="ImportWorksheet" label="Upload worksheet" type="org.molgenis.ngs.ui.ImportWorksheet" /-->
 		</menu>
 		<include file="apps/compute/org/molgenis/compute/ngs_lims_ui.xml" />
 		<menu name="Compute">
