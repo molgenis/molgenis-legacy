@@ -15,12 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import nl.vu.psy.rite.exceptions.RiteException;
-import nl.vu.psy.rite.operations.Recipe;
-import nl.vu.psy.rite.operations.Step;
-import nl.vu.psy.rite.operations.implementations.bash.BashOperation;
-import nl.vu.psy.rite.persistence.mongo.MongoRecipeStore;
-
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeProtocol;
@@ -413,7 +407,7 @@ public class ComputeCommandLine
 	 * 
 	 * @throws RiteException
 	 **/
-	private void generateRite() throws RiteException
+/*	private void generateRite() throws RiteException
 	{
 		MongoRecipeStore msr = new MongoRecipeStore("localhost", 27017, "testsh", "recipes");
 
@@ -442,7 +436,7 @@ public class ComputeCommandLine
 		 * 
 		 * msr.putRecipe(r);
 		 */
-	}
+/*	}*/
 
 	/** Convert all compute jobs into scripts + submit.sh */
 	private void generateScripts()
