@@ -66,14 +66,14 @@ public class PlinkDownload extends GenericPlugin
 						"<a href='http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml' target='_blank'>" +
 						"PLINK documentation website</a>.");
 				
-				final Builder<Measurement> xrefInputBuilder = 
-					new XrefInput.Builder<Measurement>(Measurement.NAME, Measurement.class);
-				final List<QueryRule> queryRules = Arrays.asList(
-						new QueryRule(Measurement.DATATYPE, Operator.LIKE, "NUMBER%"));
-				xrefInputBuilder.setFilters(queryRules);
-
-				//create xrefInput
-				measurements = xrefInputBuilder.build();
+//				final Builder<Measurement> xrefInputBuilder = 
+//					new XrefInput.Builder<Measurement>(Measurement.NAME, Measurement.class);
+//				final List<QueryRule> queryRules = Arrays.asList(
+//						new QueryRule(Measurement.DATATYPE, Operator.LIKE, "NUMBER%"));
+//				xrefInputBuilder.setFilters(queryRules);
+//
+//				//create xrefInput
+//				measurements = xrefInputBuilder.build();
 
 				measurements.setLabel("Select your phenotype:");
 				genPlink = new ActionInput("genPlink", "", "Generate");
