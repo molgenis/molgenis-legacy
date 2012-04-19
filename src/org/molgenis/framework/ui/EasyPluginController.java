@@ -12,8 +12,7 @@ import org.molgenis.util.Tuple;
 /**
  * Simplified controller that handles a lot of the hard stuff in handleRequest.
  */
-public abstract class EasyPluginController<M extends ScreenModel> extends
-		SimpleScreenController<M>
+public abstract class EasyPluginController<M extends ScreenModel> extends SimpleScreenController<M>
 {
 	private static final long serialVersionUID = 1L;
 
@@ -37,25 +36,23 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 	 * @throws HandleRequestDelegationException
 	 */
 	@Override
-	public void handleRequest(Database db, Tuple request)
-			throws HandleRequestDelegationException
+	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException
 	{
 		// automatically calls functions with same name as action
-		delegate(request.getAction(), db, request);
+		delegate(request.getAction(), db, request, null);
 	}
 
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
-			throws HandleRequestDelegationException
+	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
 	{
 		// automatically calls functions with same name as action
-		delegate(request.getAction(), db, request);
-		
-		//default show
+		delegate(request.getAction(), db, request, out);
+
+		// default show
 		return Show.SHOW_MAIN;
 	}
 
-	public void delegate(String action, Database db, Tuple request)
+	public void delegate(String action, Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// try/catch for db.rollbackTx
@@ -65,22 +62,17 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 			try
 			{
 				db.beginTx();
-				logger.debug("trying to use reflection to call "
-						+ this.getClass().getName() + "." + action);
-				Method m = this.getClass().getMethod(action, Database.class,
-						Tuple.class);
+				logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
+				Method m = this.getClass().getMethod(action, Database.class, Tuple.class);
 				m.invoke(this, db, request);
-				logger.debug("call of " + this.getClass().getName() + "(name="
-						+ this.getName() + ")." + action + " completed");
-				if(db.inTx())
-                    db.commitTx();
+				logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+						+ " completed");
+				if (db.inTx()) db.commitTx();
 			}
 			catch (NoSuchMethodException e1)
 			{
-				this.getModel().setMessages(
-						new ScreenMessage("Unknown action: " + action, false));
-				logger.error("call of " + this.getClass().getName() + "(name="
-						+ this.getName() + ")." + action
+				this.getModel().setMessages(new ScreenMessage("Unknown action: " + action, false));
+				logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
 						+ "(db,tuple) failed: " + e1.getMessage());
 				db.rollbackTx();
 				// useless - can't do this on every error! we cannot distinguish
@@ -88,15 +80,31 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 				// anyway
 				// }catch (InvocationTargetException e){
 				// throw new RedirectedException(e);
+
+				if (out != null) try
+				{
+					db.beginTx();
+					logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
+					Method m = this.getClass().getMethod(action, Database.class, Tuple.class, OutputStream.class);
+					m.invoke(this, db, request, out);
+					logger.debug("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+							+ " completed");
+					if (db.inTx()) db.commitTx();
+				}
+				catch (Exception e)
+				{
+					this.getModel().setMessages(new ScreenMessage("Unknown action: " + action, false));
+					logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+							+ "(db,tuple) failed: " + e1.getMessage());
+					db.rollbackTx();
+				}
 			}
 			catch (Exception e)
 			{
-				logger.error("call of " + this.getClass().getName() + "(name="
-						+ this.getName() + ")." + action + " failed: "
-						+ e.getMessage());
+				logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+						+ " failed: " + e.getMessage());
 				e.printStackTrace();
-				this.getModel().setMessages(
-						new ScreenMessage(e.getCause().getMessage(), false));
+				this.getModel().setMessages(new ScreenMessage(e.getCause().getMessage(), false));
 				db.rollbackTx();
 			}
 		}
@@ -118,13 +126,14 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 	{
 		this.getModel().setMessages(new ScreenMessage(message, true));
 	}
-	
-	public <E extends Entity> FormModel<E> getParentForm(Class<E> entityClass) {
-		//here we gonna put the parent
+
+	public <E extends Entity> FormModel<E> getParentForm(Class<E> entityClass)
+	{
+		// here we gonna put the parent
 		ScreenController parent = getParent();
-		while(parent != null)
+		while (parent != null)
 		{
-			if(parent instanceof FormController && ((FormController<?>)parent).getEntityClass().equals(entityClass))
+			if (parent instanceof FormController && ((FormController<?>) parent).getEntityClass().equals(entityClass))
 			{
 				return (FormModel<E>) parent.getModel();
 			}
@@ -133,7 +142,8 @@ public abstract class EasyPluginController<M extends ScreenModel> extends
 				parent = (ScreenController) parent.getParent();
 			}
 		}
-		throw new RuntimeException("Parent form of class "+entityClass.getName()+" is unknown in plugin name="+getName());
+		throw new RuntimeException("Parent form of class " + entityClass.getName() + " is unknown in plugin name="
+				+ getName());
 	}
 
 }
