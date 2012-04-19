@@ -432,8 +432,8 @@ public class Worksheet
 		// print("R: " + reduceParams);
 		// print("L: " + listParams);
 		// print("allp: " + allp);
-//TODO
-//		if (!allp.containsAll(reduceParams) || !allp.containsAll(listParams)) throw new RuntimeException("You just found a bug!");
+
+		if (!allp.containsAll(reduceParams) || !allp.containsAll(listParams)) throw new RuntimeException("You just found a bug!");
 		allp.removeAll(reduceParams);
 		allp.removeAll(listParams);
 		if (!allp.isEmpty()) throw new RuntimeException(
@@ -477,7 +477,7 @@ public class Worksheet
 			{
 				if (!tclone.getFields().contains(rfield))
 				{
-//					throw new RuntimeException("Field: " + rfield + " is not known!");
+					throw new RuntimeException("Field: " + rfield + " is not known!");
 				}
 				else
 				{
