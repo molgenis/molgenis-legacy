@@ -839,17 +839,6 @@ public abstract class AbstractDatabase implements Database
 		{
 			throw new DatabaseException(e);
 		}
-		finally
-		{
-			try
-			{
-				con.close();
-			}
-			catch (SQLException e)
-			{
-				throw new DatabaseException(e);
-			}
-		}
 	}
 
 	@Override
