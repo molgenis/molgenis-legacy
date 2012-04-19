@@ -2,31 +2,37 @@
 	<plugin name="molgenis_header" type="org.molgenis.ngs.ui.NgsHeader" />
 	<menu name="mainmenu" position="left">
 		<menu name="NGS">
-			<form name="Investigations" label="Projects, Samples" entity="Investigation">
-				<menu name="InvestigationsMenu">
-					<form name="Samples" entity="NgsSample" hide_fields="ontologyReference" />
-					<form name="Trios" entity="Trio" />
+			<form name="Study" label="Studies, Samples" entity="NgsStudy">
+				<form name="Samples" entity="NgsSample" />
+			</form>
+			<form name="Flowcells" entity="Flowcell" label="Flowcell, Lanes">
+				<form name="Lanes" label="Sample(s) per lane" entity="LibraryLane" />
+			</form>
+			<plugin name="AnalysisWorksheet" type="org.molgenis.ngs.ui.AnalysisWorksheet" />
+		</menu>
+		<menu name="LIMS">
+			<form name="LimsProtocols" label="Protocols" entity="Protocol">
+				<menu name="LimsProtocolsMenu">
+					<form name="LimsProtocolFeatures" label="Parameter descriptions"
+						entity="ObservableFeature" readonly="true" />
 				</menu>
 			</form>
-			<form name="Flowcells" entity="Flowcell" label="Flowcell, Lanes"
-				hide_fields="Investigation,ontologyReference">
-				<form name="Lanes" label="Sample(s) per lane" entity="LibraryLane" hide_fields="Investigation,ontologyReference" />
+			<form name="LimsWorkflows" label="Workflows" entity="Workflow">
+				<form name="LimsWorkflowElements" label="Workflow Elements"
+					entity="WorkflowElement" />
 			</form>
-			<form name="Worksheet" label="Analysis Worksheet" entity="Worksheet"
-				commands="org.molgenis.compute.ui.WorksheetBatchCommand">
-				<plugin name="Button" type="org.molgenis.compute.ui.StartNgs" />
-			</form>
-			<!-- form name="WorksheetLaneLevel" label="Lane level worksheet" entity="WorksheetLaneLevel" 
-				commands="org.molgenis.compute.ui.WorksheetBatchCommand"> <plugin name="ButtonLaneLevel" 
-				type="org.molgenis.compute.ui.StartNgs" /> </form -->
-			<plugin name="ImportWorksheet" label="Upload worksheet"
-				type="org.molgenis.ngs.ui.ImportWorksheet" />
 		</menu>
-		<include file="apps/ngs/org/molgenis/ngs/ngs_lims_ui.xml" />
 		<menu name="Admin">
 			<form name="Machines" entity="Machine" />
 			<form name="Persons" entity="Person" />
-			<form name="AlternateIds" entity="AlternateId" />
+			<form name="Accessions" entity="Accession" />
+			<form name="Barcodes" entity="LibraryBarcode" />
+			<form name="PrepKits" entity="LibraryPrepKit" />
+			<form name="Capturing" entity="LibraryCapturing" />
+			<form name="ProtocolApplications" entity="ProtocolApplication">
+				<form name="ObservedValues" entity="ObservedValue" />
+			</form>
+			<form name="LimsFeatures" label="Features" entity="ObservableFeature" />
 		</menu>
 	</menu>
 </molgenis>
