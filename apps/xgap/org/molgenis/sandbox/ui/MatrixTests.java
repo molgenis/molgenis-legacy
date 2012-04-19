@@ -61,7 +61,7 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 		}
 		else
 		{
-			this.delegate(request.getAction(), db, request);
+			this.delegate(request.getAction(), db, request, null);
 		}
 		// default show
 		return Show.SHOW_MAIN;
