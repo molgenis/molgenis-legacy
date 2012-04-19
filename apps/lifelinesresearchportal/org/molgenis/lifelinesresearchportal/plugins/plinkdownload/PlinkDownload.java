@@ -9,20 +9,23 @@ package org.molgenis.lifelinesresearchportal.plugins.plinkdownload;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.html.AbstractRefInput;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.XrefInput;
+import org.molgenis.framework.ui.html.XrefInput.Builder;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationTarget;
-import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.FamEntry;
 import org.molgenis.util.plink.writers.FamFileWriter;
@@ -36,10 +39,10 @@ public class PlinkDownload extends GenericPlugin
 		super(name, parent);
 	}
 
-	DivPanel mainPanel = null;
-	DivPanel downloadPanel = null;
-	XrefInput measurements;
-	ActionInput genPlink;
+	private DivPanel mainPanel = null;
+	private DivPanel downloadPanel = null;
+	private AbstractRefInput<Measurement> measurements;
+	private ActionInput genPlink;
 	
 	@Override
 	public void reload(Database db)
@@ -63,7 +66,15 @@ public class PlinkDownload extends GenericPlugin
 						"<a href='http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml' target='_blank'>" +
 						"PLINK documentation website</a>.");
 				
-				measurements = new XrefInput(UUID.randomUUID().toString(), Measurement.class);
+				final Builder<Measurement> xrefInputBuilder = 
+					new XrefInput.Builder<Measurement>(Measurement.NAME, Measurement.class);
+				final List<QueryRule> queryRules = Arrays.asList(
+						new QueryRule(Measurement.DATATYPE, Operator.LIKE, "NUMBER%"));
+				xrefInputBuilder.setFilters(queryRules);
+
+				//create xrefInput
+				measurements = xrefInputBuilder.build();
+
 				measurements.setLabel("Select your phenotype:");
 				genPlink = new ActionInput("genPlink", "", "Generate");
 				
@@ -95,7 +106,6 @@ public class PlinkDownload extends GenericPlugin
 		String action = request.getAction();
 	
 		if (action.equals("genPlink")) {
-			
 			// Get selected phenotype
 			int measurementId = request.getInt(measurements.getName());
 			Measurement meas;
@@ -170,16 +180,11 @@ public class PlinkDownload extends GenericPlugin
 				final Integer targetId = Integer.parseInt(part[0].toString());
 				final String sexVal = (String) part[1];
 				final String phenoVal = (String) part[2];
-				double pheno;				
+				double pheno = StringUtils.isNotEmpty(phenoVal) ? Double.parseDouble(phenoVal) : -9;				
 				try {
-					if(StringUtils.isNotEmpty(phenoVal)) { 
-						pheno = Double.parseDouble(phenoVal);
-
-						entries.add(
+					entries.add(
 							new FamEntry("LIFELINES", targetId.toString(), "0", "0", 
-								(byte)Integer.parseInt(sexVal), pheno)
-						);
-					}
+								(byte)Integer.parseInt(sexVal), pheno));
 				} catch (NumberFormatException nfe) {
 					this.setError(String.format("Dataset contains a non double value: %s", phenoVal));
 					return;
@@ -194,21 +199,6 @@ public class PlinkDownload extends GenericPlugin
 			downloadPanel.add(new Paragraph("<strong>Your PLINK files are ready on Target GPFS storage [under construction]:</strong>"));
 			downloadPanel.add(new Paragraph("TPED file"));
 			downloadPanel.add(new Paragraph("<a href='tmpfile/" + famExport.getName() + "'>TFAM file</a>"));
-//			String parContents = "These participants were skipped because their phenotype values could not be found:";
-//			for (String name : skipListNoVal) {
-//				parContents += " " + name;
-//			}
-//			downloadPanel.add(new Paragraph(parContents));
-//			parContents = "These participants were skipped because their phenotype values could not be cast to doubles:";
-//			for (String name : skipListDouble) {
-//				parContents += " " + name;
-//			}
-//			downloadPanel.add(new Paragraph(parContents));
-//			parContents = "These participants were skipped because of other errors:";
-//			for (String name : skipListDouble) {
-//				parContents += " " + name;
-//			}
-//			downloadPanel.add(new Paragraph(parContents));
 		}
 	}
 	

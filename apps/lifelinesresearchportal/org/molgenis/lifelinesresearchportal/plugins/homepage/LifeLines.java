@@ -49,11 +49,12 @@ public class LifeLines extends PluginModel<Entity>
 	}
 	
 	public String getStudyInfo() {
-		if (inv != null) {
-			return inv.getName() + ": " + inv.getDescription();
-		} else {
-			return null;
-		}
+		return "test2";
+//		if (inv != null) {
+//			return inv.getName() + ": " + inv.getDescription();
+//		} else {
+//			return null;
+//		}
 	}
 
 	@Override
