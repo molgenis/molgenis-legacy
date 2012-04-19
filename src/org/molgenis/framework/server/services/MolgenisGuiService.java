@@ -5,9 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,12 +15,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
-import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
@@ -29,11 +26,8 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.FileInput;
-import org.molgenis.util.CsvWriter;
-import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
+import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
-import org.molgenis.util.TupleWriter;
 
 
 public abstract class MolgenisGuiService
@@ -99,6 +93,19 @@ public abstract class MolgenisGuiService
 				return;
 			}
 			molgenis = createUserInterface();
+			
+			//determine the real application base URL (once)
+			try
+			{
+				String host = HtmlTools.getExposedIPAddress();
+				URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, molgenis.getMolgenisContext().getVariant());
+				molgenis.setBaseUrl(reconstructedURL.toString());
+			}
+			catch(Exception e)
+			{
+				throw new IOException(e);
+			}
+			logger.debug("application base URL = " + molgenis.getApplicationUrl());
 		}
 		
 		// Always pass login to GUI
@@ -106,9 +113,9 @@ public abstract class MolgenisGuiService
 		
 		// this should work unless complicated load balancing without proxy
 		// rewriting...
-		molgenis.setBaseUrl(request.getRequest().getScheme() + "://"
-				+ request.getRequest().getServerName() + getPort(request.getRequest())
-				+ request.getRequest().getContextPath());
+//		molgenis.setBaseUrl(request.getRequest().getScheme() + "://"
+//				+ request.getRequest().getServerName() + getPort(request.getRequest())
+//				+ request.getRequest().getContextPath());
 
 		// handle request
 		try
