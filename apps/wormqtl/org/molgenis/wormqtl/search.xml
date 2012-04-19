@@ -6,5 +6,7 @@
 			type="plugins.reportbuilder.ReportBuilder" group="biologist" />
 		<plugin label="Explore experiments" name="DatasetExplorer"
 			type="plugins.datasetexplorer.DatasetExplorer" group="biologist" />
+		<plugin label="Genome Browser" name="GenomeBrowser"
+			type="plugins.genomebrowser.GenomeBrowser" group="biologist" />
 	</menu>
 </molgenis>
