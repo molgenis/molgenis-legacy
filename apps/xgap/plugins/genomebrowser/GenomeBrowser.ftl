@@ -34,44 +34,69 @@
 	<#assign modelExists = false>
 </#if>
 
-list of GFF files<br>
-check if MolgenisFile is readable by anonymous<br>
-dropdown with USCS databases: http://genome.ucsc.edu/FAQ/FAQreleases.html#release1<br>
-<br>
-uitleggen dat files van buitenaf zichtbaar moeten zijn!<br>
-
 <#if model.release??>
 	<#assign release = model.release>
 <#else>
 	<#assign release = "ce10">
 </#if>
 
-<input type="text" name="release" class="searchBox" value="${release}" >
+<#--assign ucscMirror = "http://genome.ucsc.edu/"-->
+<#--assign ucscMirror = "http://genome-mirror.moma.ki.au.dk/"-->
+<#assign ucscMirror = "http://genome-mirror.bscb.cornell.edu/">
+<#--assign ucscMirror = "http://genome.hmgc.mcw.edu/"-->
+<#--assign ucscMirror = "http://genome-mirror.duhs.duke.edu/"-->
+<#--assign ucscMirror = "http://genome.qfab.org/"-->
 
+<h2>Genome browser plugin (UCSC)</h2>
+
+<div align="middle">
+	<div style="width: 850px" align="left">
+		Using UCSC mirror: <a href="${ucscMirror}">${ucscMirror}</a>. More info: <a href="http://en.wikipedia.org/wiki/UCSC_Genome_Browser">Wikipedia</a>, <a href="http://genomewiki.ucsc.edu/">UCSC Wiki</a>, <a href="http://genome.ucsc.edu/FAQ/">UCSC FAQ</a>.<br>
+		<br>
+		Selected database release: <b>${release}</b>. Valid options include e.g. <b>hg19</b>, <b>mm10</b> or <b>rn4</b>.<br>
+		Default is <b>ce10</b> for C. Elegans, build WS220. <a target="_blank" href="http://genome.ucsc.edu/FAQ/FAQreleases.html#release1">See the list of all available releases.</a><br>
+		Switch UCSC database release to:<input type="text" name="__ucsc_release" class="searchBox" value="${release}"> <input type="submit" value="Switch" onclick="__action.value='__setRelease';return true;"/><br>
+	</div>
+</div>
 <br>
-[create linkout]<br>
-<br>
-<#if model.appUrl?? && model.appUrl?contains('localhost')>
-ERROR: you are not connected to the interwebz, or your outgoing port is blocked! cannot serve out GFF to USCS
-<#elseif model.appUrl??>
-resultaat:
+
 <#if model.filesAreVisible>
-
-	<#list model.gffFiles as f>
-		<a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=ce10&hgt.customText=${model.appUrl}/viewfile/${f.name}">click me</a><br>
-	</#list>
-
+	<#if model.gffFiles?size == 0>
+		There are currently no GFF files in your database!<br>
+	<#else>
+	<h3>Load GFF file tracks into browser:</h3>
+	<ul>
+		<#list model.gffFiles as f>
+			<li>Add track <a target="ucsc_iframe" href="${ucscMirror}cgi-bin/hgTracks?db=${release}&hgt.customText=${model.appUrl}/viewfile/${f.name}">${f.name}</a></li>
+		</#list>
+	</ul>
+		<br>
+	</#if>
 <#else>
-FILES ARE NOT VISIBLE
+	<br><br>ERROR: Your GFF files are not made visible to the outside world. To enable this, tell your admin to give <b>read</b> permissions for <b>anonymous</b> on <b>org.molgenis.core.MolgenisFile</b>.<br><br>
 </#if>
 
-
-
+<#if model.appUrl?? && model.appUrl?contains('localhost')>
+	<br><br>ERROR: Could not determine application URL from external location.<br>
+	Either you are not connected to the internet, your outgoing port is blocked, or you are behind a router (or other kind of network) that does not forward the application URL to the outside world.<br>
+	This means we cannot serve out your GFF files to external services such as the UCSC genome browser.<br><br>
+<#elseif model.appUrl??>
+	<#-- all is well -->
 <#else>
-NO REQUEST YET
+	<br><br>ERROR: Application base URL was not set. Contact an xQTL developer.<br><br>
 </#if>
 
-<@action name="addTrack" label="Add"/>
+<h3>Embedded genome browser - <a target="_blank" href="${ucscMirror}cgi-bin/hgTracks?db=${release}">open it in a new window</a></h3>
+<div align="middle">
+	<iframe name="ucsc_iframe" height="500px" width="850px" src="${ucscMirror}"></iframe>
+	<div style="width: 850px" align="left">
+		<br>
+		To reset the viewer, click on <b>Session</b> and then <i>Click here to reset</i> in the <b>Session Management</b> section. You start from scratch and must add any custom tracks again.
+		<br><br>
+		PLEASE NOTE: Even if you see no errors here, the UCSC browser might still prompt an error such as <b>Unrecognized format line 1 [...] </b>. This means you are probably behind a router which has a valid outgoing IP, but prevents incoming requests from reaching your computer within the local network. Ask a technical person to arrange a solution, and/or install xQTL on a properly configured web server.
+		<br><br>
+	</div>
+</div>
 
 	</div>
 </form>

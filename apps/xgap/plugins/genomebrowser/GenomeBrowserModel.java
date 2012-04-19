@@ -3,6 +3,7 @@ package plugins.genomebrowser;
 import java.util.List;
 
 import org.molgenis.core.MolgenisFile;
+import org.molgenis.xgap.InvestigationFile;
 
 public class GenomeBrowserModel
 {

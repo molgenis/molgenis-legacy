@@ -7,7 +7,6 @@
 
 package plugins.genomebrowser;
 
-import java.net.URL;
 import java.util.List;
 
 import org.molgenis.auth.MolgenisPermission;
@@ -20,7 +19,6 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
 
 public class GenomeBrowser extends PluginModel<Entity>
@@ -59,26 +57,16 @@ public class GenomeBrowser extends PluginModel<Entity>
 			String action = request.getString("__action");
 			try
 			{
-			
-				if(this.model.getAppUrl() == null)
+				if(action.equals("__setRelease"))
 				{
-					//TODO: does this always work?
-					//in R API we use String server = "http://" + request.getRequest().getLocalName() + ":" + request.getRequest().getLocalPort() + "/"+mc.getVariant();
-
-					//String appUrl = this.getApplicationController().getApplicationUrl();
-					//this.model.setAppUrl(appUrl);
-					
-					String host = HtmlTools.getExposedIPAddress();
-				
-
-					URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, this.getApplicationController().getMolgenisContext().getVariant());
-
-					this.model.setAppUrl(reconstructedURL.toString());
+					String release = request.getString("__ucsc_release");
+					if(release == null || release.trim().isEmpty())
+					{
+						throw new Exception("Please fill in a release code");
+					}
+					this.model.setRelease(release.trim());
+					this.setMessages(new ScreenMessage("Release set to " + release.trim() , true));
 				}
-				
-				
-				
-				
 			}
 			catch (Exception e)
 			{
@@ -96,9 +84,16 @@ public class GenomeBrowser extends PluginModel<Entity>
 
 		try
 		{
+			
+			if(this.model.getAppUrl() == null)
+			{
+				this.model.setAppUrl(this.getApplicationController().getApplicationUrl());
+			}
+			
 			if(this.model.getFilesAreVisible() == null){
 				//find out if molgenisfiles are readable by anonymous
-				Query q = db.query(MolgenisPermission.class);
+				Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
+//				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.xgap.InvestigationFile"));
 				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.core.MolgenisFile"));
 				q.addRules((new QueryRule(MolgenisPermission.ROLE__NAME, Operator.EQUALS, "anonymous")));
 				if(q.find().size() > 0)
@@ -114,12 +109,11 @@ public class GenomeBrowser extends PluginModel<Entity>
 			
 			if(this.model.getFilesAreVisible())
 			{
-				Query q = db.query(MolgenisFile.class);
+				Query<MolgenisFile> q = db.query(MolgenisFile.class);
 				q.addRules(new QueryRule(MolgenisFile.EXTENSION, Operator.EQUALS, "gff"));
 				List<MolgenisFile> mf = q.find();
 				this.model.setGffFiles(mf);
 			}
-			
 			
 		}
 		catch (Exception e)
