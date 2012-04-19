@@ -51,6 +51,12 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 		// default show
 		return Show.SHOW_MAIN;
 	}
+	
+	@Deprecated
+	public void delegate(String action, Database db, Tuple request) throws HandleRequestDelegationException
+	{
+		this.delegate(action,db,request,null);
+	}
 
 	public void delegate(String action, Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
