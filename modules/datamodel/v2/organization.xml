@@ -22,8 +22,8 @@
 				description="Last time the investigation was modified" />
 			<field name="EndDate" nillable="true" auto="false" type="datetime"
 				description="The end point of the study." />
-			<field name="Contacts" type="mref" xref_entity="Person"
-				nillable="true" description="Contact persons for this study" />
+			<field name="Contact" type="xref" xref_entity="Person"
+				nillable="true" description="Primary contact person for this study" />
 			<!-- discussion: should this be a PersonAffiliated? -->
 			<unique fields="identifier" description="Identifier is globally unique" />
 		</entity>

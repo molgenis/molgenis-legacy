@@ -19,6 +19,7 @@
 		</entity>
 		<entity name="NgsSample" extends="ObservationTarget">
 			<description>Description of the sample/library</description>
+			<field name="study" type="xref" xref_entity="NgsStudy"/>
 			<field name="sampletype" type="enum" default="dna"
 				enum_options="[dna,rna]"
 				description="Type of sample (dna/rna). Will become ontologyReference" />
