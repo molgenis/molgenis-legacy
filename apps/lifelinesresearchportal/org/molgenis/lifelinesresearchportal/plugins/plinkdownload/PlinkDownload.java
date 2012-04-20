@@ -9,22 +9,15 @@ package org.molgenis.lifelinesresearchportal.plugins.plinkdownload;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.html.AbstractRefInput;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DivPanel;
-import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.framework.ui.html.Paragraph;
-import org.molgenis.framework.ui.html.XrefInput;
-import org.molgenis.framework.ui.html.XrefInput.Builder;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.FamEntry;
