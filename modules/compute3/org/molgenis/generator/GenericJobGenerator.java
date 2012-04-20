@@ -106,6 +106,8 @@ public class GenericJobGenerator implements JobGenerator
         //produce jobs for every worksheet record
         for (int i = 0; i < worksheet.size(); i++)
         {
+            int ngs_id = 1;
+
             //add parameters from worksheet to values
             Tuple tuple = worksheet.get(i);
             List<String> names = tuple.getFields();
@@ -128,7 +130,9 @@ public class GenericJobGenerator implements JobGenerator
             //temporary until folding is implemented
             if (workflow.getName().equalsIgnoreCase("ngs_demo"))
             {
-                id = "id_" + System.currentTimeMillis();
+                //id = "id_" + System.currentTimeMillis();
+                id = "id" + ngs_id ;
+                ngs_id++;
             }
 
             //weave complex parameters
@@ -257,6 +261,7 @@ public class GenericJobGenerator implements JobGenerator
                     values.put(parameter.getName(), "");
             }
 
+            int ngs_count = 1;
             //produce jobs for every worksheet record
             for (int i = 0; i < folded.size(); i++)
             {
@@ -265,6 +270,7 @@ public class GenericJobGenerator implements JobGenerator
                 List<String> names = tuple.getFields();
 
                 String id = "id";
+
                 for (String name : names)
                 {
                     String value = tuple.getString(name);
@@ -284,7 +290,9 @@ public class GenericJobGenerator implements JobGenerator
                 //temporary until folding is implemented
                 if (workflow.getName().equalsIgnoreCase("ngs_demo"))
                 {
-                    id = "id_" + System.currentTimeMillis();
+                    //id = "id_" + System.currentTimeMillis();
+                    id = "id_" + ngs_count;
+                    ngs_count++;
                 }
 
                 //weave complex parameters
@@ -626,20 +634,23 @@ public class GenericJobGenerator implements JobGenerator
 
     public String weaveFreemarker(String strTemplate, Hashtable<String, String> values)
     {
+        Configuration cfg = new Configuration();
+        //cfg.setTemplateExceptionHandler(new MyTemplateExceptionHandler());
+
         Template t = null;
         StringWriter out = new StringWriter();
         try
         {
-            t = new Template("name", new StringReader(strTemplate), new Configuration());
+            t = new Template("name", new StringReader(strTemplate), cfg);
             t.process(values, out);
         }
         catch (TemplateException e)
         {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         catch (IOException e)
         {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
 
         return out.toString();

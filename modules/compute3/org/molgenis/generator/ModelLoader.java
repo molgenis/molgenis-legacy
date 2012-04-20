@@ -230,7 +230,7 @@ public class ModelLoader
         return protocol;
     }
 
-    private List<ComputeParameter> getParametersFromHeader(String str)
+    public List<ComputeParameter> getParametersFromHeader(String str)
     {
         List<ComputeParameter> list = new ArrayList<ComputeParameter>();
         Vector<String> names = findNames(str);
