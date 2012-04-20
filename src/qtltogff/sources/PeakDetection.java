@@ -12,12 +12,14 @@ public class PeakDetection {
 	private LinkedHashMap<String, Marker> allMarkers;
 	private List<String> markersInMatrix;
 	private Map<String, List<String>> markersPerChr;
+	private boolean verbose;
 	static DecimalFormat twoDForm = new DecimalFormat("#.##");
 	
-	public PeakDetection(LinkedHashMap<String, Marker> allMarkers, List<String> markersInMatrix)
+	public PeakDetection(LinkedHashMap<String, Marker> allMarkers, List<String> markersInMatrix, boolean verbose)
 	{
 		this.allMarkers = allMarkers;
 		this.markersInMatrix = markersInMatrix;
+		this.verbose = verbose;
 		markersPerChr = new HashMap<String, List<String>>();
 		
 		System.out.println();
@@ -126,8 +128,8 @@ public class PeakDetection {
 				{
 					hasPeak = true;
 					
-					System.out.println("------- " + traitName + " on chr " + key + ", peak "+iteration+" -------");
-					System.out.println("profile:");
+					if(verbose) System.out.println("------- " + traitName + " on chr " + key + ", peak "+iteration+" -------");
+					if(verbose) System.out.println("profile:");
 					iteration++;
 					
 					//find left dropoff / descent
@@ -202,26 +204,27 @@ public class PeakDetection {
 						}
 					}
 					
-					
-					for(Double v : valuesPerChr.get(key))
-					{
-						System.out.print(Double.valueOf(twoDForm.format(v)) + "\t");
+					if(verbose){
+						for(Double v : valuesPerChr.get(key))
+						{
+							System.out.print(Double.valueOf(twoDForm.format(v)) + "\t");
+						}
+						System.out.println();
+						
+						for(int i = 0; i < valuesPerChr.get(key).size(); i++)
+						{
+							System.out.print(i + "\t");
+						}
+						
+						System.out.println();
+						System.out.println();
+						System.out.println("highest value is " + highestValue + " at position " + highestPosInThisChr);
+						System.out.println("left dropoff: " + leftDropoff);
+						System.out.println("right dropoff: " + rightDropoff);
+						System.out.println("left descent region: " + leftDescentRegion);
+						System.out.println("right descent region: " + rightDescentRegion);
+						System.out.println();
 					}
-					System.out.println();
-					
-					for(int i = 0; i < valuesPerChr.get(key).size(); i++)
-					{
-						System.out.print(i + "\t");
-					}
-					
-					System.out.println();
-					System.out.println();
-					System.out.println("highest value is " + highestValue + " at position " + highestPosInThisChr);
-					System.out.println("left dropoff: " + leftDropoff);
-					System.out.println("right dropoff: " + rightDropoff);
-					System.out.println("left descent region: " + leftDescentRegion);
-					System.out.println("right descent region: " + rightDescentRegion);
-					System.out.println();
 					
 					int start;
 					int stop;
@@ -243,15 +246,16 @@ public class PeakDetection {
 						
 					}
 					
-					System.out.println("left flanking marker put at: " + start + ", which is" + markersPerChr.get(key).get(start));
-					System.out.println("right flanking marker put at: " + stop + ", which is " + markersPerChr.get(key).get(stop));
-					System.out.println("peak marker put at: " + highestPosInThisChr + ", which is " + markersPerChr.get(key).get(highestPosInThisChr));
+					if(verbose){
+						System.out.println("left flanking marker put at: " + start + ", which is " + markersPerChr.get(key).get(start));
+						System.out.println("right flanking marker put at: " + stop + ", which is " + markersPerChr.get(key).get(stop));
+						System.out.println("peak marker put at: " + highestPosInThisChr + ", which is " + markersPerChr.get(key).get(highestPosInThisChr));
+						System.out.println("zeroing region: " + leftDescentRegion + " to " + rightDescentRegion);
+						System.out.println();
+					}
 					
 					Peak p = new Peak(markersPerChr.get(key).get(start), markersPerChr.get(key).get(stop), markersPerChr.get(key).get(highestPosInThisChr), highestValue);
 					peaks.add(p);
-					
-					System.out.println("zeroing region: " + leftDescentRegion + " to " + rightDescentRegion);
-					System.out.println();
 					
 					for(int i = leftDescentRegion; i <= rightDescentRegion; i++)
 					{

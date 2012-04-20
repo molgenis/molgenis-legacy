@@ -24,7 +24,7 @@ public class QtlToGFFConverter
 	Map<String, Trait> traits;
 	Map<String, Chromosome> chromosomes;
 	
-	public QtlToGFFConverter(File matrixFile, File chromosomeFile, File markerFile, File traitFile, boolean trait_has_bppos, boolean cumu_trait_bppos, boolean cumu_marker_bppos, double lod_thres, double lod_drop, double lod_limit, File output) throws Exception
+	public QtlToGFFConverter(File matrixFile, File chromosomeFile, File markerFile, File traitFile, boolean trait_has_bppos, boolean cumu_trait_bppos, boolean cumu_marker_bppos, double lod_thres, double lod_drop, double lod_limit, File output, boolean verbose) throws Exception
 	{
 		System.out.println("##########\n" +
 		"QtlToGFF conversion starting with arguments:\n"+
@@ -38,6 +38,7 @@ public class QtlToGFFConverter
 		" - LOD threshold: "+lod_thres+"\n"+
 		" - LOD drop: "+lod_drop+"\n"+
 		" - LOD limit: "+lod_limit+"\n" +
+		" - Boolean (d): verbose: "+verbose+"\n"+
 		"##########");
 		
 		
@@ -190,7 +191,7 @@ public class QtlToGFFConverter
 		//TODO
 		
 		//create peak detector
-		PeakDetection pd = new PeakDetection(markers, markersInMatrix);
+		PeakDetection pd = new PeakDetection(markers, markersInMatrix, verbose);
 		
 		//iterate traits and detect peaks
 		System.out.println("Now going to iterate over the traits in your annotation file and detect peaks..\n");
@@ -356,53 +357,81 @@ public class QtlToGFFConverter
 		return amount;
 	}
 	
-	public LinkedHashMap<String, Marker> loadMarkers(File markerFile) throws FileNotFoundException
+	public LinkedHashMap<String, Marker> loadMarkers(File markerFile) throws Exception
 	{
 		LinkedHashMap<String, Marker> markers = new LinkedHashMap<String, Marker>();
 		Scanner s = new Scanner(markerFile);
 		while (s.hasNextLine()){
-			String line = s.nextLine();
-		    String[] split = line.split("\t");
-		    Marker m = new Marker();
-		    m.setName(split[0]);
-		    m.setBpPos(Long.parseLong(split[1]));
-		    m.setChromosomeName(split[2]);
-		    markers.put(split[0], m);
+		    String line = null;
+		    try
+			{
+		    	line = s.nextLine();
+			    String[] split = line.split("\t");
+			    Marker m = new Marker();
+			    m.setName(split[0]);
+			    m.setBpPos(Long.parseLong(split[1]));
+			    m.setChromosomeName(split[2]);
+			    markers.put(split[0], m);
+			}
+			catch(Exception e)
+			{
+				System.out.println("ERROR in line '"+line+"'");
+				throw new Exception(e);
+			}
+		    
 		}
 		System.out.println("Read in markers");
 		return markers;
 	}
 	
-	public Map<String,Chromosome> loadChromosomes(File chromosomeFile) throws FileNotFoundException
+	public Map<String,Chromosome> loadChromosomes(File chromosomeFile) throws Exception
 	{
 		Map<String, Chromosome> chromosomes = new HashMap<String, Chromosome>();
 		Scanner s = new Scanner(chromosomeFile);
 		while (s.hasNextLine()){
-			String line = s.nextLine();
-		    String[] split = line.split("\t");
-		    Chromosome c = new Chromosome();
-		    c.setName(split[0]);
-		    c.setGffName(split[1]);
-		    c.setBpLength(Long.parseLong(split[2]));
-		    c.setOrderNr(Short.parseShort(split[3]));
-		    chromosomes.put(split[0], c);
+			String line = null;
+		    try
+			{
+		    	line = s.nextLine();
+			    String[] split = line.split("\t");
+			    Chromosome c = new Chromosome();
+			    c.setName(split[0]);
+			    c.setGffName(split[1]);
+			    c.setBpLength(Long.parseLong(split[2]));
+			    c.setOrderNr(Short.parseShort(split[3]));
+			    chromosomes.put(split[0], c);
+			}
+			catch(Exception e)
+			{
+				System.out.println("ERROR in line '"+line+"'");
+				throw new Exception(e);
+			}
 		}
 		System.out.println("Read in chromosomes");
 		return chromosomes;
 	}
 	
-	public Map<String, Trait> loadTraits(File traitFile) throws FileNotFoundException
+	public Map<String, Trait> loadTraits(File traitFile) throws Exception
 	{
 		Map<String, Trait> traits = new HashMap<String, Trait>();
 		Scanner s = new Scanner(traitFile);
 		while (s.hasNextLine()){
-			String line = s.nextLine();
-		    String[] split = line.split("\t");
-		    Trait t = new Trait();
-		    t.setName(split[0]);
-		    t.setBpPos(Long.parseLong(split[1]));
-		    t.setChromosomeName(split[2]);
-		    traits.put(split[0], t);
+			String line = null;
+			try
+			{
+				line = s.nextLine();
+			    String[] split = line.split("\t");
+			    Trait t = new Trait();
+			    t.setName(split[0]);
+			    t.setBpPos(Long.parseLong(split[1]));
+			    t.setChromosomeName(split[2]);
+			    traits.put(split[0], t);
+			}
+			catch(Exception e)
+			{
+				System.out.println("ERROR in line '"+line+"'");
+				throw new Exception(e);
+			}
 		}
 		System.out.println("Read in traits");
 		return traits;

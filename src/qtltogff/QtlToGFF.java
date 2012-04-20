@@ -9,9 +9,9 @@ public class QtlToGFF
 {
 	public static void main(String[] args) throws Exception
 	{
-		if (args.length != 10)
+		if (args.length != 11)
 		{
-			throw new DataFormatException("\n\nYou must supply 10 arguments:\n" +
+			throw new DataFormatException("\n\nYou must supply 11 arguments:\n" +
 					"\n" +
 					" - Data matrix file (binary xQTL format, Trait x Marker or vice versa)\n"+
 					" - Chromosome annotation file, no headers, containing: name[TAB]gffname[TAB]bplength[TAB]ordernr (order number matters for cumulative positioning)\n"+
@@ -23,11 +23,12 @@ public class QtlToGFF
 					" - LOD threshold: minimum value for a LOD score to be considered a significant QTL (usually 3.5)\n"+
 					" - LOD drop: the amount of LOD score a peak must drop to form a confidence interval (usually 1.5)\n"+
 					" - LOD limit: the amount of LOD score that forms the roof of a '1000 score' in the GFF file (usually 10.0)\n"+
+					" - Boolean (d): verbose, prints info, T/F.\n"+
 					"\n" +
 					"Output: data matrix file name + .gff, e.g. 'qtl_results.bin' becomes 'qtl_results.gff'\n" +
 					"\n" +
 					"Example:\n" +
-					"java -jar -Xmx1g QtlToGFF.jar qtlmatrix.bin chromo.txt markers.txt probes.txt T F F 3.5 1.5 10.0\n");
+					"java -jar -Xmx1g QtlToGFF.jar qtlmatrix.bin chromo.txt markers.txt probes.txt T F F 3.5 1.5 10.0 T\n");
 		}
 		
 		//track source: QtlToGFF
@@ -59,6 +60,7 @@ public class QtlToGFF
 		String lod_thres = args[7];
 		String lod_drop = args[8];
 		String lod_limit = args[9];
+		String verbose = args[10];
 
 		// check if matrix file exists and ends with '.bin'
 		File matrixFile = new File(matrixFileString);
@@ -129,6 +131,11 @@ public class QtlToGFF
 			throw new Exception("ERROR: Bad argument. Please use 'T' for true or 'F' for false to indicate whether your marker basepair positions are cumulative or not");
 		}
 		
+		if(!(verbose.equals("T") || verbose.equals("F")))
+		{
+			throw new Exception("ERROR: Bad argument. Please use 'T' for true or 'F' for false for verbose or non-verbose");
+		}
+		
 		try
 		{
 			Double.parseDouble(lod_thres);
@@ -161,8 +168,9 @@ public class QtlToGFF
 		boolean a = trait_has_bppos.equals("T") ? true : false;
 		boolean b = cumu_trait_bppos.equals("T") ? true : false;
 		boolean c = cumu_marker_bppos.equals("T") ? true : false;
+		boolean d = verbose.equals("T") ? true : false;
 		
-		new QtlToGFFConverter(matrixFile, chromosomeFile, markerFile, traitFile, a, b, c, Double.parseDouble(lod_thres), Double.parseDouble(lod_drop), Double.parseDouble(lod_limit), output);
+		new QtlToGFFConverter(matrixFile, chromosomeFile, markerFile, traitFile, a, b, c, Double.parseDouble(lod_thres), Double.parseDouble(lod_drop), Double.parseDouble(lod_limit), output, d);
 	
 		
 	}

@@ -21,6 +21,7 @@ public class RunDemo {
 				"3.5",
 				"1.5",
 				"10",
+				"T"
 				
 				};
 		QtlToGFF.main(args2);
