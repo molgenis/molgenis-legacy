@@ -1,5 +1,6 @@
 package qtltogff.sources;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -11,6 +12,7 @@ public class PeakDetection {
 	private LinkedHashMap<String, Marker> allMarkers;
 	private List<String> markersInMatrix;
 	private Map<String, List<String>> markersPerChr;
+	static DecimalFormat twoDForm = new DecimalFormat("#.##");
 	
 	public PeakDetection(LinkedHashMap<String, Marker> allMarkers, List<String> markersInMatrix)
 	{
@@ -66,7 +68,16 @@ public class PeakDetection {
 		String curChr = allMarkers.get(markersInMatrix.get(0)).getChromosomeName();
 		for(int i = 0; i < values.length; i++)
 		{
-			double d = ((Double)values[i]).doubleValue();
+			double d;
+			if(values[i] == null)
+			{
+				d = 0.0;
+				System.out.println("WARNING: Missing value at marker " + allMarkers.get(markersInMatrix.get(i)) + ", replacing by 0.0");
+			}
+			else
+			{
+				d = ((Double)values[i]).doubleValue();
+			}
 			//on chromosome switch: add current values to map
 			if(!curChr.equals(allMarkers.get(markersInMatrix.get(i)).getChromosomeName()))
 			{
@@ -115,7 +126,8 @@ public class PeakDetection {
 				{
 					hasPeak = true;
 					
-					System.out.println("------- " + traitName + " peak "+iteration+" -------");
+					System.out.println("------- " + traitName + " on chr " + key + ", peak "+iteration+" -------");
+					System.out.println("profile:");
 					iteration++;
 					
 					//find left dropoff / descent
@@ -190,11 +202,10 @@ public class PeakDetection {
 						}
 					}
 					
-					System.out.println(traitName + " highest in chr " + key + " is " + highestPosInThisChr + " value " + highestValue);
 					
 					for(Double v : valuesPerChr.get(key))
 					{
-						System.out.print(v + "\t");
+						System.out.print(Double.valueOf(twoDForm.format(v)) + "\t");
 					}
 					System.out.println();
 					
@@ -204,7 +215,8 @@ public class PeakDetection {
 					}
 					
 					System.out.println();
-					
+					System.out.println();
+					System.out.println("highest value is " + highestValue + " at position " + highestPosInThisChr);
 					System.out.println("left dropoff: " + leftDropoff);
 					System.out.println("right dropoff: " + rightDropoff);
 					System.out.println("left descent region: " + leftDescentRegion);
@@ -231,14 +243,14 @@ public class PeakDetection {
 						
 					}
 					
-					System.out.println("LEFT FLANKING MARKER INDEX: " + start + ", WHICH IS MARKER " + markersPerChr.get(key).get(start));
-					System.out.println("RIGHT FLANKING MARKER INDEX: " + stop + ", WHICH IS MARKER " + markersPerChr.get(key).get(stop));
-					System.out.println("PEAK MARKER INDEX: " + highestPosInThisChr + ", WHICH IS MARKER " + markersPerChr.get(key).get(highestPosInThisChr));
+					System.out.println("left flanking marker put at: " + start + ", which is" + markersPerChr.get(key).get(start));
+					System.out.println("right flanking marker put at: " + stop + ", which is " + markersPerChr.get(key).get(stop));
+					System.out.println("peak marker put at: " + highestPosInThisChr + ", which is " + markersPerChr.get(key).get(highestPosInThisChr));
 					
 					Peak p = new Peak(markersPerChr.get(key).get(start), markersPerChr.get(key).get(stop), markersPerChr.get(key).get(highestPosInThisChr), highestValue);
 					peaks.add(p);
 					
-					System.out.println("ZEROING REGION: " + leftDescentRegion + " to " + rightDescentRegion);
+					System.out.println("zeroing region: " + leftDescentRegion + " to " + rightDescentRegion);
 					System.out.println();
 					
 					for(int i = leftDescentRegion; i <= rightDescentRegion; i++)
