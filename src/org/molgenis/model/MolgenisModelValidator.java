@@ -772,6 +772,16 @@ public class MolgenisModelValidator
 							"there can be only one auto column and it must be the primary key for field '"
 									+ entityname + "." + fieldname + "'");
 				}
+				
+				if(field.getType() instanceof EnumField)
+				{
+					if( field.getDefaultValue() != null && !"".equals(field.getDefaultValue())) if(!field.getEnumOptions().contains(field.getDefaultValue()))
+					{
+						throw new MolgenisModelException(
+								"default value '"+field.getDefaultValue()+"' is not in enum_options for field '"
+										+ entityname + "." + fieldname + "'");
+					}
+				}
 			}
 
 			if (autocount > 1) throw new MolgenisModelException(
