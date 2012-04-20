@@ -88,7 +88,7 @@
 
 <h3>Embedded genome browser - <a target="_blank" href="${ucscMirror}cgi-bin/hgTracks?db=${release}">open it in a new window</a></h3>
 <div align="middle">
-	<iframe name="ucsc_iframe" height="500px" width="850px" src="${ucscMirror}"></iframe>
+	<iframe name="ucsc_iframe" height="500px" width="850px" src="${ucscMirror}cgi-bin/hgTracks?db=${release}"></iframe>
 	<div style="width: 850px" align="left">
 		<br>
 		To reset the viewer, click on <b>Session</b> and then <i>Click here to reset</i> in the <b>Session Management</b> section. You start from scratch and must add any custom tracks again.
