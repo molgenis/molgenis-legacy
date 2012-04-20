@@ -26,6 +26,12 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
+//import nl.vu.psy.rite.exceptions.RiteException;
+//import nl.vu.psy.rite.operations.Recipe;
+//import nl.vu.psy.rite.operations.Step;
+//import nl.vu.psy.rite.operations.implementations.bash.BashOperation;
+//import nl.vu.psy.rite.persistence.mongo.MongoRecipeStore;
+
 // This dependency needs to go when we upgrade to Java 7+
 //import com.google.common.io.Files;
 
