@@ -41,7 +41,7 @@ public class PlinkDownload extends GenericPlugin
 
 	private DivPanel mainPanel = null;
 	private DivPanel downloadPanel = null;
-	private AbstractRefInput<Measurement> measurements;
+//	private AbstractRefInput<Measurement> measurements;
 	private ActionInput genPlink;
 	
 	@Override
@@ -75,12 +75,12 @@ public class PlinkDownload extends GenericPlugin
 //				//create xrefInput
 //				measurements = xrefInputBuilder.build();
 
-				measurements.setLabel("Select your phenotype:");
-				genPlink = new ActionInput("genPlink", "", "Generate");
-				
-				mainPanel.add(manual);
-				mainPanel.add(measurements);
-				mainPanel.add(genPlink);
+//				measurements.setLabel("Select your phenotype:");
+//				genPlink = new ActionInput("genPlink", "", "Generate");
+//				
+//				mainPanel.add(manual);
+//				mainPanel.add(measurements);
+//				mainPanel.add(genPlink);
 			}
 		}
 		catch (Exception e)
@@ -107,7 +107,7 @@ public class PlinkDownload extends GenericPlugin
 	
 		if (action.equals("genPlink")) {
 			// Get selected phenotype
-			int measurementId = request.getInt(measurements.getName());
+			int measurementId = -1;//request.getInt(measurements.getName());
 			Measurement meas;
 			try
 			{
