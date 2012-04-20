@@ -30,7 +30,7 @@ public class TableModelPaTest
 		{
 			ObservableFeature f = new ObservableFeature();
 			f.setIdentifier(name+"_col" + i);
-			f.setObservedCharacteristic_Id(1);
+			//f.setObservedCharacteristic_Id(1);
 			features.add(f);
 		}
 		db.add(features);

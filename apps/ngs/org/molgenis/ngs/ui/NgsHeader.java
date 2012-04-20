@@ -2,9 +2,9 @@
 package org.molgenis.ngs.ui;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
 /**

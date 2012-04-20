@@ -1,14 +1,6 @@
 
 package org.molgenis.ngs.ui;
 
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.jdbc.JDBCDatabase;
-import org.molgenis.framework.ui.FreemarkerView;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.util.Tuple;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,6 +9,13 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.jdbc.JDBCDatabase;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
+import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.util.Tuple;
 
 /**
  * AdminDBPluginController takes care of all user requests and application logic.

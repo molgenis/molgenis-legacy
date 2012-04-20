@@ -5,34 +5,48 @@
 			<form name="Study" label="Studies, Samples" entity="NgsStudy">
 				<form name="Samples" entity="NgsSample" />
 			</form>
-			<form name="Flowcells" entity="Flowcell" label="Flowcell, Lanes">
+			<form name="Flowcells" entity="Flowcell" label="Flowcells, Lanes">
 				<form name="Lanes" label="Sample(s) per lane" entity="LibraryLane" />
 			</form>
 			<plugin name="AnalysisWorksheet" type="org.molgenis.ngs.ui.AnalysisWorksheet" />
+			<plugin name="UploadWorksheet" label="Upload"
+				type="org.molgenis.ngs.ui.ImportWorksheet" />
 		</menu>
 		<menu name="LIMS">
-			<form name="LimsProtocols" label="Protocols" entity="Protocol">
-				<menu name="LimsProtocolsMenu">
-					<form name="LimsProtocolFeatures" label="Parameter descriptions"
-						entity="ObservableFeature" readonly="true" />
-				</menu>
-			</form>
+			<form name="LimsProtocolFeatures" label="Lab parameters" entity="ObservableFeature" />
+			<form name="LimsProtocols" label="Protocols" entity="Protocol" />
 			<form name="LimsWorkflows" label="Workflows" entity="Workflow">
 				<form name="LimsWorkflowElements" label="Workflow Elements"
 					entity="WorkflowElement" />
 			</form>
+			<form name="LimsProtocolApplications" label="Experiments"
+				entity="ProtocolApplication">
+				<form name="LimsObservedValue" label="ParameterValues" entity="ObservedValue" />
+			</form>
+		</menu>
+		<menu name="Compute">
+			<form name="ComputerParameters" entity="ComputeParameter" />
+			<form name="ComputeProtocols" entity="ComputeProtocol" />
+			<form name="ComputeWorkflows" entity="ComputeWorkflow">
+				<form name="ComputeWorkflowSteps" entity="ComputeWorkflowStep" />
+			</form>
+			<form name="ComputeJobs" entity="ComputeJob" />
+			<plugin name="UploadCompute" label="Upload"
+				type="org.molgenis.ngs.ui.ImportCompute" />
 		</menu>
 		<menu name="Admin">
 			<form name="Machines" entity="Machine" />
 			<form name="Persons" entity="Person" />
 			<form name="Accessions" entity="Accession" />
-			<form name="Barcodes" entity="LibraryBarcode" />
-			<form name="PrepKits" entity="LibraryPrepKit" />
-			<form name="Capturing" entity="LibraryCapturing" />
+			<form name="Barcodes" entity="NgsBarcode" />
+			<form name="PrepKits" entity="NgsPrepKit" />
+			<form name="Capturing" entity="NgsCapturingKit" />
 			<form name="ProtocolApplications" entity="ProtocolApplication">
 				<form name="ObservedValues" entity="ObservedValue" />
 			</form>
 			<form name="LimsFeatures" label="Features" entity="ObservableFeature" />
+			<form name="OntologyTerms" entity="OntologyTerm" />
+
 		</menu>
 	</menu>
 </molgenis>

@@ -31,20 +31,21 @@
 				<ul>
 					<li>How about different types of parameters? E.g. 'input_files',
 						'output_files', 'logs', 'executables'. These each need different
-						handling between grid/cluster, and some may be optional.</li>
+						handling between grid/cluster, and some may be optional.
+					</li>
 				</ul>
 			</description>
-			<field name="scriptTemplate" type="freemarker"
-				description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
-			<field name="scriptInterpreter" type="enum" default="bash"
-				enum_options="[bash,R,python]"
-				description="the interpreter used to run this command. For example 'shellTemplate'. Determines execution mode." />
-			<field name="walltime" default="00:00:30" type="string"
-				description="# the expected maximum runtime of this job. Notation: 'dd:hh:mm'" />
 			<field name="mem" default="2Gb" type="string"
 				description="# PBS memory argument (e.g. 512mb, 4gb)" />
 			<field name="cores" default="2" type="int" description="# required cores" />
 			<field name="nodes" default="1" type="int" description="# required nodes" />
+			<field name="walltime" default="00:00:30" type="string"
+				description="# the expected maximum runtime of this job. Notation: 'dd:hh:mm'" />
+			<field name="scriptInterpreter" type="enum" default="bash"
+				enum_options="[bash,R,python]"
+				description="the interpreter used to run this command. For example 'shellTemplate'. Determines execution mode." />
+			<field name="scriptTemplate" type="freemarker"
+				description="Commandline or (template of) an script, e.g. in R. Templating engine is freemarker." />
 		</entity>
 		<entity name="ComputeParameter" extends="ObservableFeature">
 			<description>Parameter are the inputs or outputs into an
@@ -87,7 +88,7 @@
 			<field name="StatusChangeTime" type="datetime" description="time log for this job" />
 			<field name="StatusCode" type="enum"
 				enum_options="[submitted,started,paused,finished,error,resubmitted]"
-				default="idle"
+				default="paused"
 				description="Status code of this job. State transitions: submitted->started->[paused|finished|error]->resubmitted->started->etc" />
 		</entity>
 		<entity name="ComputeResource" implements="Identifiable">
@@ -97,6 +98,29 @@
 			<field name="Queue" nillable="true" type="text"
 				description="ADDED TO FIX THE BUILD - NEEDED IN PbsSubmitApplication.java: currentjob.setQueue(app.getQueue());" />
 			<unique fields="identifier" />
+		</entity>
+		<entity name="ComputeWorkflow" implements="Identifiable">
+			<description>A workflow is a plan to execute a series of subprotocols
+				in a particular order. Each workflow elements is another protocol as
+				refered to via WorkflowElement. Because Workflow extends Protocol,
+				workflows can be nested just as any other protocol.
+			</description>
+			<field type="text" name="description" />
+			<unique fields="identifier" />
+		</entity>
+		<entity name="ComputeWorkflowStep" implements="Identifiable">
+			<description>Elements of a workflow are references to protocols. The
+				whole workflow is a directed graph with each element pointing to the
+				previousSteps that the current workflow element depends on.
+			</description>
+			<field name="ComputeWorkflow" type="xref" xref_entity="ComputeWorkflow"
+				description="Workflow this element is part of" />
+			<field name="ComputeProtocol" type="xref" xref_entity="ComputeProtocol"
+				description="Protocol to be used at this workflow step" />
+			<field name="PrevSteps" type="mref" xref_entity="ComputeWorkflowStep"
+				nillable="true"
+				description="Previous steps that need to be done before this protocol can be executed." />
+			<unique fields="ComputeWorkflow,identifier" />
 		</entity>
 	</module>
 </molgenis>

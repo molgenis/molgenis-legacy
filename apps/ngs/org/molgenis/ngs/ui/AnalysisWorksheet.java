@@ -33,14 +33,17 @@ public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheetMod
 	@Override
 	public void reload(Database db) throws Exception
 	{	
-		String sql = "select study.identifier as project, ngsstudy.seqType, s.identifier as externalSampleId, machine.machine as sequencer, flowcell.runDate as sequencingStartDate, " +
-				"flowcell.run, f.identifier as flowcell, l.lane, b.barcode, c.capturing as capturingKit " +
+		String sql = "select study.identifier as project, person.displayname as contact, ngsstudy.seqType, s.identifier as internalSampleId, ngssample.externalIdentifier as externalSampleId, " +
+				"machine.name as sequencer, flowcell.startDate as sequencingStartDate, " +
+				"flowcell.run, f.identifier as flowcell, l.lane, b.name as barcode, c.name as capturingKit, k.name as prepKit " +
 				"from study natural join ngsstudy " +
+				"left join person on study.contact = person.id "+
 				"left join ngssample natural join characteristic s on ngssample.study=study.id " +
 				"left join libraryLane l on l.sample=ngssample.id " +
 				"left join flowcell natural join characteristic f on l.flowcell=f.id " +
-				"left join libraryBarcode b on b.id=l.barcode " +
-				"left join libraryCapturing c on c.id=l.capturing " +
+				"left join NgsBarcode b on b.id=l.barcode " +
+				"left join NgsCapturingKit c on c.id=l.capturingKit " +
+				"left join NgsPrepKit k on k.id=l.prepKit " +
 				"left join machine on flowcell.machine=machine.id";
 		
 		List<Tuple> result = db.sql(sql);
@@ -52,8 +55,10 @@ public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheetMod
 		{
 			Tuple row = new SimpleTuple();
 			row.set("select", "<input name=\"selectIndex\" type=\"checkbox\" value=\""+index+++"\"");
+			row.set("contact", t.getString("contact"));
 			row.set("project", t.getString("project"));
 			row.set("seqType", t.getString("seqType"));
+			row.set("internalSampleId", t.getString("internalSampleId"));
 			row.set("externalSampleId", t.getString("externalSampleId"));
 			row.set("sequencer", t.getString("sequencer"));
 			row.set("sequencingStartDate", t.getString("sequencingStartDate"));
@@ -91,7 +96,7 @@ public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheetMod
 	
 	public void download_txt_selected(Database db, Tuple request,  OutputStream out)
 	{
-		this.download(db, request, out, request.getList("selectedIndex"));
+		this.download(db, request, out, request.getList("selectIndex"));
 	}
 	
 	private void download(Database db, Tuple request,  OutputStream out, List<?> indexes)

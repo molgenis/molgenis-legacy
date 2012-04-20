@@ -103,9 +103,9 @@
 			<field name="dataType" type="enum" default="string"
 				enum_options="[xref,string,nominal,ordinal,date,datetime,int,code,image,decimal,bool,file,log,data,exe]"
 				description="(Optional) Reference to the technical data type. E.g. 'int'" />
-			<field name="observedCharacteristic" type="xref" xref_entity="Characteristic"
+			<!-- field name="observedCharacteristic" nillable="true" type="xref" xref_entity="Characteristic"
 				description="This can be used to parameterize what property is being observed. analyte/feature &amp; property being tested. E.g. 'Has' Alzheimes 
-				disease state, 'What is' NaCl concentration, 'What is allele at' Marker (a Marker is a characteristic)" />
+				disease state, 'What is' NaCl concentration, 'What is allele at' Marker (a Marker is a characteristic)" /-->
 			<!-- nb: we don't want to create new ObservableFeature for 1000s of Markers. 
 				Instead we just want to say: Observes [Marker] with Marker being variable. -->
 			<field name="temporal" type="boolean" default="false"

@@ -18,7 +18,7 @@
 				Rudimentary meta data about the Investigation" />
 			<field name="StartDate" nillable="true" type="datetime"
 				description="The start point of the study." auto="true" />
-			<field name="UpdateDate" type="datetime"
+			<field name="UpdateDate" auto="true" type="datetime"
 				description="Last time the investigation was modified" />
 			<field name="EndDate" nillable="true" auto="false" type="datetime"
 				description="The end point of the study." />
@@ -172,7 +172,7 @@
 			<field name="FirstName" label="First Name" nillable="true" />
 			<field name="MidInitials" label="Mid Initials" nillable="true" />
 			<field name="LastName" label="Last Name" nillable="true" />
-			<field name="EmailAddress" type="email" />
+			<field name="EmailAddress" type="email" nillable="true"/>
 			<field name="Phone" nillable="true"
 				description="The telephone number of the Contact including the suitable area codes." />
 			<unique fields="FirstName,MidInitials,LastName" />
