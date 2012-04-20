@@ -38,17 +38,13 @@ alloutputsexist \
 "${sample}.concordance.q20.dp10.eval" \
 "${sampleconcordancefile}"
 
-if test ! -e ${arrayfilelocation};
+if test ! -e ${finalreport};
 then
 	echo "name, step, nSNPs, PercDbSNP, Ti/Tv_known, Ti/Tv_Novel, All_comp_het_called_het, Known_comp_het_called_het, Non-Ref_Sensitivity, Non-Ref_discrepancy, Overall_concordance" > ${sampleconcordancefile}
 	echo "[1] NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA" >> ${sampleconcordancefile} 
 else
 	##Set R library path
 	export R_LIBS="${R_LIBS}"
-	
-	##Extract header and individual from GenomeStudio Final_Report
-	head -10 ${arrayfilelocation} > ${finalreport}
-	awk '$2 == "${arrayID}" {$2 = "${externalSampleID}"; print}' ${arrayfilelocation} >> ${finalreport}
 	
 	##Push sample belonging to family "1" into list.txt
 	echo '1 ${externalSampleID}' > ${familylist}
