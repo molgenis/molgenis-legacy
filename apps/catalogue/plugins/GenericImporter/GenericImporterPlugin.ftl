@@ -365,47 +365,43 @@
 			<div class="screenpadding" id = "screenpadding">	
 			    <h3 id="test"> Import dataShaper data to pheno model  </h3>
 		        
-		        <script>
- 					var dataTypeOptions = new Array();
-					var fieldName = "";
-					var fieldNameOptions = new Array();
-					var map = new HashMap();
-					var count = 0;
-					var index = 1;
-					var headerCount = 0;
- 				</script>
-		        
 		        <div id="fileChosenSection">
 			        <#if screen.isImportingFinished() == true>
-				        <h4> Please select the file </h4>
-				        <input type="file" name = "uploadFile"/><br /><br />
-				        
-				        <h4> Please choose ONE of the following options: </h4>
-				        
-				        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
-				        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
-				        
-				        <!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
-	 				
-	 					<#list screen.getDataTypeOptions() as dataTypeOptions>
-							<script type="text/javascript">
-								createSelection("${dataTypeOptions}");
-							</script>
-						</#list>
-						
-						
-						<#list screen.getSpreadSheetHeanders() as header>
-							<script type="text/javascript">
-								createHashMap("${header}");
-							</script>
-						</#list>
-						
-						<#list screen.getChooseFieldName() as fieldNameOptions>
-							<script type="text/javascript">
-								createFieldName("${fieldNameOptions}");
-							</script>
-						</#list>
+			        <h4> 1.Please select the file </h4>
+			        <input type="file" name = "uploadFile"/><br /><br />
+			        
+			        <h4> 2.Please input a starting row index for importing data </h4>
+			        <input type="text" id="startingRowIndex" name="startingRowIndex" size=5 value=1 />
+			        In some excel, the actual data do not start with the first column
+			        <h4> 3.Dose the input file have multiple sheets? 
+			        <input type="checkbox" id="multipleSheets" name="multipleSheets" /></h4>
+			        
+			        <h4> 4.Please choose ONE of the following options: </h4>
+			        
+			        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
+			        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
+			        
+			        <!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
+ 				
 					</#if>
+					<#list screen.getDataTypeOptions() as dataTypeOptions>
+						<script type="text/javascript">
+							createSelection("${dataTypeOptions}");
+						</script>
+					</#list>
+					
+					
+					<#list screen.getSpreadSheetHeanders() as header>
+						<script type="text/javascript">
+							createHashMap("${header}");
+						</script>
+					</#list>
+					
+					<#list screen.getChooseFieldName() as fieldNameOptions>
+						<script type="text/javascript">
+							createFieldName("${fieldNameOptions}");
+						</script>
+					</#list>
 				</div>
 				
 				<div id="mappingFileSection">
@@ -413,7 +409,8 @@
 					Please enter your investigation: <input type="text" name="investigation" size="15" value="${screen.getInvestigationName()}"> <br/><br/>
 					
 					
-					Enter column numbers </br></br>  <input type="text" id="shortcut" size="15" value=""> 
+					Enter column numbers </br></br>  
+					<input type="text" id="shortcut" size="15" value=""> 
 					<select id='shortcutClassType' name='shortcut' onchange="changeFieldContent('shortcut');">
 							<#list screen.getChooseClassType() as options>
 								<option id="">${options}</option>
@@ -434,7 +431,7 @@
 			        <input type="submit" value="upload mapping" onclick="__action.value='uploadMapping';return true;"/>
 			        <input type="submit" value="save mapping" onclick="__action.value='saveMapping';return true;"/><br /><br/><br/>
 					
-					<div id="scrollView"  style="overflow:scroll;">
+					<div id="addScrollBar"  style="overflow:scroll;">
 					<table id="table" border="1">
 						<tr>
 							<#list screen.getSpreadSheetHeanders() as header>
@@ -505,7 +502,7 @@
 					
 					<h4> ...now you can finish with choosing import: </h4>
 			        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/>
-			        <input type="submit" value="Last Step" onclick="__action.value='backToPreviousStep';return true;"/><br /><br />			
+			        <input type="submit" value="Upload new files" onclick="__action.value='backToPreviousStep';return true;"/><br /><br />			
 					<#else>
 						</br></br>
 						<label> <#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
