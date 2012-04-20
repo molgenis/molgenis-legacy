@@ -62,7 +62,7 @@ digraph G {
 			        	color = "black"
 			        	</#if>
                 
-                        label = "{<#if entity.abstract>Interface:</#if>${JavaName(entity)}<#if entity.hasImplements()>\n implements ${csv(entity.getImplements())}</#if><#if entity.hasAncestor()>\n extends ${name(entity.getAncestor())}</#if>|<#list entity.implementedFields as f><#if !f.system>${name(f)} : ${f.type}<#if f.type=="xref" || f.type="mref">-&gt;${name(f.xrefEntity)}</#if><#if !f.nillable>*</#if>\l</#if></#list>}"
+                        label = "{<#if entity.abstract>Interface:</#if>${JavaName(entity)}<#if entity.hasImplements()>\n implements ${csv(entity.getImplements())}</#if><#if entity.hasAncestor()>\n extends ${name(entity.getAncestor())}</#if>|<#list entity.allFields as f><#if !f.system>${name(f)} : ${f.type}<#if f.type=="xref" || f.type="mref">-&gt;${name(f.xrefEntity)}</#if><#if !f.nillable>*</#if>\l</#if></#list>}"
                 ]
 
 </#if></#list>
@@ -94,7 +94,7 @@ digraph G {
 			        	color = "black"
 			        	</#if>
                 
-                        label = "{<#if entity.abstract>Interface:</#if>${JavaName(entity)}<#if entity.hasImplements()>\n implements ${csv(entity.getImplements())}</#if><#if entity.hasAncestor()>\n extends ${entity.getAncestor().getName()}</#if>|<#list entity.implementedFields as f><#if !f.system>${name(f)} : ${f.type}<#if f.type=="xref" || f.type="mref">-&gt;${name(f.xrefEntity)}</#if><#if !f.nillable>*</#if>\l</#if></#list>}"
+                        label = "{<#if entity.abstract>Interface:</#if>${JavaName(entity)}<#if entity.hasImplements()>\n implements ${csv(entity.getImplements())}</#if><#if entity.hasAncestor()>\n extends ${entity.getAncestor().getName()}</#if>|<#list entity.allFields as f><#if !f.system>${name(f)} : ${f.type}<#if f.type=="xref" || f.type="mref">-&gt;${name(f.xrefEntity)}</#if><#if !f.nillable>*</#if>\l</#if></#list>}"
                 ]
 </#if></#list>
 /*        }  */
