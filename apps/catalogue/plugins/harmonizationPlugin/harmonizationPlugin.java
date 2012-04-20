@@ -192,8 +192,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						db.add(validationStudyProtocol);
 					}
 
-					List<MappingMeasurement> listOfMapping = new ArrayList<MappingMeasurement>();
-
 					for(Entry<String, LinkedMap> entry : mappingResultAndSimiarity.entrySet()){
 
 						String originalQuery = entry.getKey();
@@ -260,17 +258,35 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 									db.add(m);
 								}
 								
-								mapping.setTarget_Name(validationStudyName + "_" + originalQuery);
+								Query<MappingMeasurement> queryForMapping = db.query(MappingMeasurement.class);
+								
+								queryForMapping.addRules(new QueryRule(MappingMeasurement.TARGET_NAME, 
+										Operator.EQUALS, validationStudyName + "_" + originalQuery));
+								
+								queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, 
+										Operator.EQUALS, originalQuery));
+								
+								if(queryForMapping.find().size() > 0){
+									
+									mapping = queryForMapping.find().get(0);
+									
+									mapping.setFeature_Id(measurementIds);
+									
+									db.update(mapping);
+									
+								}else{
+									
+									mapping.setTarget_Name(validationStudyName + "_" + originalQuery);
 
-								mapping.setFeature_Id(measurementIds);
+									mapping.setInvestigation_Name("Validation Study");
 
-								mapping.setInvestigation_Name("Validation Study");
+									mapping.setDataType("pairingrule");
 
-								mapping.setDataType("pairingrule");
-
-								mapping.setMapping_Name(originalQuery);
-
-								listOfMapping.add(mapping);
+									mapping.setMapping_Name(originalQuery);
+									
+									db.add(mapping);
+									
+								}
 
 								List<Integer> oldFeatureIds = validationStudyProtocol.getFeatures_Id();
 
@@ -287,9 +303,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						}
 
 					}
-
-					db.add(listOfMapping);
-
 					db.update(validationStudyProtocol);
 				}
 			}
