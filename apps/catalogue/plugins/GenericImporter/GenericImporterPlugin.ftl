@@ -364,17 +364,8 @@
 		</script>
 			<div class="screenpadding" id = "screenpadding">	
 			    <h3 id="test"> Import dataShaper data to pheno model  </h3>
-		        <h4> Please select the file </h4>
-		        <input type="file" name = "uploadFile"/><br /><br />
 		        
-		        <h4> Please choose ONE of the following options: </h4>
-		        
-		        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
-		        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
-		        
-		        <!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
- 				
- 				<script>
+		        <script>
  					var dataTypeOptions = new Array();
 					var fieldName = "";
 					var fieldNameOptions = new Array();
@@ -383,124 +374,143 @@
 					var index = 1;
 					var headerCount = 0;
  				</script>
- 				
-				<#list screen.getDataTypeOptions() as dataTypeOptions>
-					<script type="text/javascript">
-						createSelection("${dataTypeOptions}");
-					</script>
-				</#list>
+		        
+		        <div id="fileChosenSection">
+			        <#if screen.isImportingFinished() == true>
+				        <h4> Please select the file </h4>
+				        <input type="file" name = "uploadFile"/><br /><br />
+				        
+				        <h4> Please choose ONE of the following options: </h4>
+				        
+				        <input type="submit" value="ImportByColumnHeader" onclick="__action.value='UploadFileByColumn';return true;"/>
+				        <input type="submit" value="ImportByRowHeader" onclick="__action.value='UploadFileByRow';return true;"/>
+				        
+				        <!-- <input type="submit" value="Empty Database" onclick="__action.value='fillinDatabase';return true;"/>-->
+	 				
+	 					<#list screen.getDataTypeOptions() as dataTypeOptions>
+							<script type="text/javascript">
+								createSelection("${dataTypeOptions}");
+							</script>
+						</#list>
+						
+						
+						<#list screen.getSpreadSheetHeanders() as header>
+							<script type="text/javascript">
+								createHashMap("${header}");
+							</script>
+						</#list>
+						
+						<#list screen.getChooseFieldName() as fieldNameOptions>
+							<script type="text/javascript">
+								createFieldName("${fieldNameOptions}");
+							</script>
+						</#list>
+					</#if>
+				</div>
 				
-				
-				<#list screen.getSpreadSheetHeanders() as header>
-					<script type="text/javascript">
-						createHashMap("${header}");
-					</script>
-				</#list>
-				
-				<#list screen.getChooseFieldName() as fieldNameOptions>
-					<script type="text/javascript">
-						createFieldName("${fieldNameOptions}");
-					</script>
-				</#list>
-				
-				<#if screen.isImportingFinished() == false>
-				Please enter your investigation: <input type="text" name="investigation" size="15" value="${screen.getInvestigationName()}"> <br/><br/>
-				
-				
-				Enter column numbers  <input type="text" id="shortcut" size="15" value=""> 
-				<select id='shortcutClassType' name='shortcut' onchange="changeFieldContent('shortcut');">
-						<#list screen.getChooseClassType() as options>
+				<div id="mappingFileSection">
+					<#if screen.isImportingFinished() == false>
+					Please enter your investigation: <input type="text" name="investigation" size="15" value="${screen.getInvestigationName()}"> <br/><br/>
+					
+					
+					Enter column numbers </br></br>  <input type="text" id="shortcut" size="15" value=""> 
+					<select id='shortcutClassType' name='shortcut' onchange="changeFieldContent('shortcut');">
+							<#list screen.getChooseClassType() as options>
+								<option id="">${options}</option>
+							</#list>
+					</select>
+					<select id='shortcutFieldName' name='shortcut' onchange="changeFieldContent('shortcut');">
+						<#list screen.getChooseFieldName() as options>
 							<option id="">${options}</option>
 						</#list>
-				</select>
-				<select id='shortcutFieldName' name='shortcut' onchange="changeFieldContent('shortcut');">
-					<#list screen.getChooseFieldName() as options>
-						<option id="">${options}</option>
-					</#list>
-				</select>
-				Choose Target <input type="text" id="shortcutTarget" size="5" value=""> 
-				<button type="button" onclick="updateTableContent();">Update</button> 
-				<br/><br/>
-				
-				<!-- this is the code for uploading the mapping file -->				
-				<p> You could upload a mapping file if you have it already </p>
-		        <input type="file" name = "uploadMapping"/>
-		        <input type="submit" value="upload mapping" onclick="__action.value='uploadMapping';return true;"/>
-		        <input type="submit" value="save mapping" onclick="__action.value='saveMapping';return true;"/><br /><br/><br/>
-				
-				<table id="table" border="1">
-					<tr>
-						<#list screen.getSpreadSheetHeanders() as header>
-							<th>${header}</th>
-						</#list>
-					</tr>
-					<tr>
-						<#list screen.getSpreadSheetHeanders() as header>
-							<td><div id='${header}_count'></div></td>
-							<script type="text/javascript">getCount('${header}_count');</script>
-						</#list>
-					</tr>
+					</select>
+					Choose Target <input type="text" id="shortcutTarget" size="5" value=""> 
+					<button type="button" onclick="updateTableContent();">Update</button> 
+					<br/><br/>
 					
-					<tr><div id='1'>
-						<#list screen.getSpreadSheetHeanders() as header>
-							<td><select id='1' name='${header}' onchange="changeFieldContent('${header}');">
-								<#list screen.getChooseClassType() as options>
-								  <option id="">${options}</option>
-								</#list>
-								</select>
-							</td>
-						</#list>
-					</div></tr>
-					<tr><div id='1'>
-						<#list screen.getSpreadSheetHeanders() as header>
-							<td><select id='2' name='${header}' onchange="changeFieldContent('${header}');">
-								<#list screen.getChooseFieldName() as options>
-								  <option id="">${options}</option>
-								</#list>
-								</select>
-							</td>
-						</#list>
-					</div></tr>
-					<tr>
-						<#list screen.getSpreadSheetHeanders() as header>
-							<td><select id='3' name='${header}' onchange="changeFieldContent('${header}');">
-								<#list screen.getColumnIndex() as options>
-								  <option id="">${options}</option>
-								</#list>
-								</select>
-							</td>
-						</#list>
-					</tr>
+					<!-- this is the code for uploading the mapping file -->				
+					<p> You could upload a mapping file if you have it already </p>
+			        <input type="file" name = "uploadMapping"/>
+			        <input type="submit" value="upload mapping" onclick="__action.value='uploadMapping';return true;"/>
+			        <input type="submit" value="save mapping" onclick="__action.value='saveMapping';return true;"/><br /><br/><br/>
 					
-					<tr>
-						<#list screen.getSpreadSheetHeanders() as header>
-							<td><div id='${header}'>data type</div>
-							</td>
+					<div id="scrollView"  style="overflow:scroll;">
+					<table id="table" border="1">
+						<tr>
+							<#list screen.getSpreadSheetHeanders() as header>
+								<th>${header}</th>
+							</#list>
+						</tr>
+						<tr>
+							<#list screen.getSpreadSheetHeanders() as header>
+								<td><div id='${header}_count'></div></td>
+								<script type="text/javascript">getCount('${header}_count');</script>
+							</#list>
+						</tr>
+						
+						<tr><div id='1'>
+							<#list screen.getSpreadSheetHeanders() as header>
+								<td><select id='1' name='${header}' onchange="changeFieldContent('${header}');">
+									<#list screen.getChooseClassType() as options>
+									  <option id="">${options}</option>
+									</#list>
+									</select>
+								</td>
+							</#list>
+						</div></tr>
+						<tr><div id='1'>
+							<#list screen.getSpreadSheetHeanders() as header>
+								<td><select id='2' name='${header}' onchange="changeFieldContent('${header}');">
+									<#list screen.getChooseFieldName() as options>
+									  <option id="">${options}</option>
+									</#list>
+									</select>
+								</td>
+							</#list>
+						</div></tr>
+						<tr>
+							<#list screen.getSpreadSheetHeanders() as header>
+								<td><select id='3' name='${header}' onchange="changeFieldContent('${header}');">
+									<#list screen.getColumnIndex() as options>
+									  <option id="">${options}</option>
+									</#list>
+									</select>
+								</td>
+							</#list>
+						</tr>
+						
+						<tr>
+							<#list screen.getSpreadSheetHeanders() as header>
+								<td><div id='${header}'>data type</div>
+								</td>
+							</#list>
+						</tr>
+					</table>
+					</div>
+					
+					<#assign colIndex = 0>
+					<#list screen.getMappingForMolgenisEntity() as eachColumn>
+						<#assign rowIndex = 0>
+						<#assign header = "">
+						<#list eachColumn as eachElement>
+							<#if (rowIndex > 0)>
+								<script>readInMappingFile('${header}' ,'${eachElement}', '${rowIndex}', '${colIndex}');</script>
+							<#elseif rowIndex == 0>
+								<#assign header = eachElement>
+							</#if>
+							<#assign rowIndex = rowIndex + 1>
 						</#list>
-					</tr>
-				</table>
-				
-				<#assign colIndex = 0>
-				<#list screen.getMappingForMolgenisEntity() as eachColumn>
-					<#assign rowIndex = 0>
-					<#assign header = "">
-					<#list eachColumn as eachElement>
-						<#if (rowIndex > 0)>
-							<script>readInMappingFile('${header}' ,'${eachElement}', '${rowIndex}', '${colIndex}');</script>
-						<#elseif rowIndex == 0>
-							<#assign header = eachElement>
-						</#if>
-						<#assign rowIndex = rowIndex + 1>
+						<#assign colIndex = colIndex + 1>
 					</#list>
-					<#assign colIndex = colIndex + 1>
-				</#list>
-				
-				<h4> ...now you can finish with choosing import: </h4>
-		        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/><br /><br />			
-				<#else>
-					</br></br>
-					<label> <#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
-				</#if> 
+					
+					<h4> ...now you can finish with choosing import: </h4>
+			        <input type="submit" value="Next Step" onclick="__action.value='ImportLifelineToPheno';return true;"/>
+			        <input type="submit" value="Last Step" onclick="__action.value='backToPreviousStep';return true;"/><br /><br />			
+					<#else>
+						</br></br>
+						<label> <#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
+					</#if> 
+				</div>
 			</div>
 		</div>
 	</div>

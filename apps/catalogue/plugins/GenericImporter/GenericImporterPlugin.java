@@ -230,7 +230,29 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			this.setStepsFlag(1);
 
 
-		} else if("uploadMapping".equals(request.getAction())) {//Upload the mapping file to avoid repeated work!
+		} else if ("UploadFileByRow".equals(request.getAction())) {
+
+			excelDirection = "UploadFileByRow";
+			System.out.println(request);
+			uploadFileName  = request.getString("uploadFile");
+			
+			if(uploadFileName != null && !uploadFileName.equals("")){
+				readHeaders(request.getAction());
+			}else{
+				this.setStatus("Please select a file to import!");
+			}
+			
+			this.setStepsFlag(1);
+
+		} else if("backToPreviousStep".equals(request.getAction())){ 
+			
+			importingFinished = true;
+			
+			file = null;
+			
+			filePath = null;
+		
+		}else if("uploadMapping".equals(request.getAction())) {//Upload the mapping file to avoid repeated work!
 
 			String mappingFileName = request.getString("uploadMapping");
 
@@ -271,20 +293,6 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 					mappingForMolgenisEntity.add(mappingForEachColumn);
 				}
 			}
-
-		} else if ("UploadFileByRow".equals(request.getAction())) {
-
-			excelDirection = "UploadFileByRow";
-			System.out.println(request);
-			uploadFileName  = request.getString("uploadFile");
-			
-			if(uploadFileName != null && !uploadFileName.equals("")){
-				readHeaders(request.getAction());
-			}else{
-				this.setStatus("Please select a file to import!");
-			}
-			
-			this.setStepsFlag(1);
 
 		} else if("saveMapping".equals(request.getAction())){
 
