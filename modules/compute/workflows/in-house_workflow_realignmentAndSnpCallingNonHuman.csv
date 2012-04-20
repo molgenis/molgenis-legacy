@@ -14,8 +14,7 @@ IndelGenotyper,IndelGenotyper,MergeBam
 FilterIndels,FilterIndels,IndelGenotyper
 UnifiedGenotyper,UnifiedGenotyper,MergeBam
 GenomicAnnotator,GenomicAnnotator,UnifiedGenotyper
-VQSR,VQSR,UnifiedGenotyper
-MakeIndelMask,MakeIndelMask,"VQSR?"
+MakeIndelMask,MakeIndelMask,UnifiedGenotyper
 VariantFiltration,VariantFiltration,MakeIndelMask
-VcfToTable,VcfToTable,VariantAnnotator
+VcfToTable,VcfToTable,VariantFiltration
 QCReport,QCReport,"PicardQC, Markduplicates, Coverage, VcfToTable"
