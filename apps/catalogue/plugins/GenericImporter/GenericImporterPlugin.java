@@ -25,6 +25,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
@@ -88,6 +89,8 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 	private int previousAddingDataType = 0; 
 
 	private String filePath = null;
+
+	private Integer startingRowIndex = 0;
 
 	public GenericImporterPlugin(String name, ScreenController<?> parent)
 	{
@@ -223,7 +226,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			uploadFileName  = request.getString("uploadFile");
 			filePath = request.getString("uploadFileOriginalFileName");
 			if(uploadFileName != null && !uploadFileName.equals("")){
-				readHeaders(request.getAction());
+				readHeaders(request);
 			}else{
 				this.setStatus("Please select a file to import!");
 			}
@@ -237,14 +240,14 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			uploadFileName  = request.getString("uploadFile");
 			
 			if(uploadFileName != null && !uploadFileName.equals("")){
-				readHeaders(request.getAction());
+				readHeaders(request);
 			}else{
 				this.setStatus("Please select a file to import!");
 			}
 			
 			this.setStepsFlag(1);
 
-		} else if("backToPreviousStep".equals(request.getAction())){ 
+		}else if("backToPreviousStep".equals(request.getAction())){ 
 			
 			importingFinished = true;
 			
@@ -466,7 +469,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 	}
 
-	public void readHeaders(String header) throws BiffException, IOException{
+	public void readHeaders(Tuple request) throws BiffException, IOException{
 
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
@@ -492,22 +495,26 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 			columnIndex.add(0);
 
-			if(header.equals("UploadFileByColumn"))
+			startingRowIndex  = request.getInt("startingRowIndex");
+			
+			startingRowIndex--;
+			
+			if(request.getAction().equals("UploadFileByColumn"))
 			{
 				setColumnCount(columns);
 
 				for(int i = 0 ; i < columns; i++)
 				{
 					columnIndex.add(i + 1);
-					headers.add(sheet.getCell(i, 0).getContents().toString().replaceAll(" ", "_"));
-					System.out.println(sheet.getCell(i, 0).getContents().toString());
+					headers.add(sheet.getCell(i, startingRowIndex).getContents().toString().replaceAll(" ", "_"));
+					System.out.println(sheet.getCell(i, startingRowIndex).getContents().toString());
 
 				}
 
 				setSpreadSheetHeanders(headers);
 			}
 
-			if(header.equals("UploadFileByRow"))
+			if(request.getAction().equals("UploadFileByRow"))
 			{
 				setColumnCount(rows);
 
@@ -620,9 +627,9 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 					}
 				}
 
-				table.setInvestigation(investigationName);
+				table.setInvestigationName(investigationName);
 
-				table.convertIntoPheno(dictionaryCategory);
+				table.convertIntoPheno(dictionaryCategory, startingRowIndex);
 
 			}
 

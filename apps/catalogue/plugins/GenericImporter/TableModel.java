@@ -64,7 +64,7 @@ public class TableModel {
 
 	private Measurement displayNameMeasurement = null;
 
-	private HashMap<String, String> measurementWithSameLabels = new HashMap<String, String>();;
+	private HashMap<String, String> checkExistingMeasurementsInDB = new HashMap<String, String>();
 
 	public TableModel(int i,  Database db) {
 		this.db = db;
@@ -169,8 +169,11 @@ public class TableModel {
 		return configuration;
 	}
 
-	public void convertIntoPheno(Sheet sheet)
+	public void convertIntoPheno(Sheet sheet, int startingRowIndex) throws DatabaseException
 	{
+		db.beginTx();
+
+		setInvestigation();
 
 		int row = sheet.getRows();
 
@@ -195,7 +198,7 @@ public class TableModel {
 
 		try
 		{
-			for(int rowIndex = 0; rowIndex < row; rowIndex++){
+			for(int rowIndex = 0; (rowIndex + startingRowIndex) < row; rowIndex++){
 
 				for(int colIndex = 0; colIndex < column; colIndex++){
 
@@ -204,7 +207,7 @@ public class TableModel {
 					if(excelDirection.equals("UploadFileByRow"))
 						cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("'", "").trim();
 					else
-						cellValue = sheet.getCell(colIndex, rowIndex).getContents().replaceAll("'", "").trim();
+						cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents().replaceAll("'", "").trim();
 					//					System.out.println("The cell value is " + cellValue);
 					//					System.out.println("The size is =========== " + configuration.size());
 
@@ -460,7 +463,7 @@ public class TableModel {
 									if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).size() != 0){
 
 										Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
-										
+
 										//TODO this needs to be re-written!
 										//The measurement already exists but not "display name. 
 										if(!cellValue.equals("display name")){
@@ -482,7 +485,7 @@ public class TableModel {
 												ov.setFeature_Name("display name");
 												ov.setValue(cellValue);
 												cellValue += "_" + investigationName;
-												measurementWithSameLabels.put(measure.getName().toLowerCase(), cellValue);
+												checkExistingMeasurementsInDB.put(measure.getName().toLowerCase(), cellValue);
 												observedValueList.add(ov);
 											}
 										}
@@ -514,20 +517,39 @@ public class TableModel {
 
 									ObservedValue observedValue = new ObservedValue();
 
-									String headerName = sheet.getCell(colIndex, 0).getContents().replaceAll("'", "").trim();
+									String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("'", "").trim();
 
-									String targetName = sheet.getCell(field.getObservationTarget(), rowIndex).getContents().replaceAll("'", "").trim();
-
+									String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("'", "").trim();
+									
 									//TODO: import measurements then import individual data. The measurement has to be consistent.
 
-									if(measurementWithSameLabels.keySet().contains(headerName.toLowerCase())){
-										headerName = measurementWithSameLabels.get(headerName.toLowerCase());
+									if(checkExistingMeasurementsInDB.keySet().contains(headerName.toLowerCase())){
+										headerName = checkExistingMeasurementsInDB.get(headerName.toLowerCase());
 									}
 
 									observedValue.setFeature_Name(headerName);
-
-									observedValue.setTarget_Name(targetName);
-
+									
+									TableField targetField = columnIndexToTableField.get(field.getObservationTarget());
+									
+									if(targetField.getClassType().equalsIgnoreCase(Measurement.class.getSimpleName())){
+										
+										if(!checkExistingMeasurementsInDB.containsKey(targetName)){
+											
+											if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, targetName)).size() > 0){
+												checkExistingMeasurementsInDB.put(targetName, targetName + "_" + investigationName);
+												
+											}else{
+												checkExistingMeasurementsInDB.put(targetName, targetName);
+					
+											}
+										}
+										
+										observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
+										
+									}else{
+										observedValue.setTarget_Name(targetName);
+									}
+									
 									observedValue.setValue(cellValue);
 
 									observedValueList.add(observedValue);
@@ -589,28 +611,15 @@ public class TableModel {
 			List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
 
 			for(String ontologyTermName : ontologyTermOfList.keySet()){
-
 				ontologyTermList.add(ontologyTermOfList.get(ontologyTermName));
-
 			}
 
-			try{
-				db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
-			}catch(Exception e){
-				System.out.println(e.getMessage());
-			}
 
-			try{
-				db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
-			}catch(Exception e){
-				System.out.println(e.getMessage());
-			}
+			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
 
-			try{
-				db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
-			}catch(Exception e){
-				System.out.println(e.getMessage());
-			}
+			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+
+			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
 
 
 			HashMap<String, InvestigationElement> displayNameToMeasurement = new HashMap<String, InvestigationElement>();
@@ -679,11 +688,7 @@ public class TableModel {
 				}
 			}
 
-			try{
-				db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
-			}catch(Exception e){
-				System.out.println(e.getMessage());
-			}
+			db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 
 			//Try to update measurements
 
@@ -734,11 +739,8 @@ public class TableModel {
 				}
 			}
 
-			try{
-				db.update(protocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.INVESTIGATION_NAME);
-			}catch(Exception e){
-				System.out.println(e.getMessage());
-			}
+			db.update(protocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME, Protocol.INVESTIGATION_NAME);
+
 
 			List<InvestigationElement> subProtocols = new ArrayList<InvestigationElement>();
 
@@ -814,25 +816,18 @@ public class TableModel {
 				}
 			}
 
-			try{
-				db.update(computeProtocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ComputeProtocol.NAME, ComputeProtocol.INVESTIGATION_NAME);
-			}catch(Exception e){
-				System.out.println(e.getMessage());
-			}
 
-			try{
-				db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
-			}catch(Exception e){
-				System.out.println(e.getMessage());
-			}
+			db.update(computeProtocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ComputeProtocol.NAME, ComputeProtocol.INVESTIGATION_NAME);
 
-			try{
-				db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
-			}catch(Exception e){
-				System.out.println(e.getMessage());
-			}
+			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
+
+			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);		
+
+			db.commitTx();
 
 		} catch (Exception e) {
+
+			db.rollbackTx();
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -863,7 +858,15 @@ public class TableModel {
 		missingCategoryList.add(missingCategoryIndex);
 	}
 
-	public void setInvestigation(String investigationName) throws DatabaseException {
+	public void setInvestigationName(String investigationName){
+
+		if(investigationName != null)
+		{
+			this.investigationName = investigationName;
+		}
+	}
+
+	public void setInvestigation() throws DatabaseException {
 
 		Investigation investigation = new Investigation();
 
@@ -872,11 +875,6 @@ public class TableModel {
 			investigation.setName(investigationName);
 
 			db.add(investigation);
-
-		}
-		if(investigationName != null)
-		{
-			this.investigationName = investigationName;
 		}
 	}
 
