@@ -168,6 +168,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		chooseFieldName.add(ObservationTarget.class.getSimpleName() + ":" + ObservationTarget.NAME);
 		chooseFieldName.add(Panel.class.getSimpleName() + ":" + Panel.NAME);
 		chooseFieldName.add(Panel.class.getSimpleName() + ":" + Panel.INDIVIDUALS_NAME);
+		chooseFieldName.add("NULL");
 		chooseClassType.add(ObservedValue.class.getSimpleName());
 		chooseClassType.add(ObservationTarget.class.getSimpleName());
 		chooseClassType.add(Individual.class.getSimpleName());

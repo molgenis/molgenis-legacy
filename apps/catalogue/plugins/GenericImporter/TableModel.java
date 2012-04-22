@@ -307,7 +307,7 @@ public class TableModel {
 								}
 							}
 
-							if(field.getDependentColumnIndex()[0] != -1)
+							if(field.getDependentColumnIndex()[0] != -1 && !cellValue.equals(""))
 							{
 
 								for(int index = 0; index < field.getDependentColumnIndex().length; index++)
@@ -318,8 +318,19 @@ public class TableModel {
 									TableField dependendField = columnIndexToTableField.get(dependentColumn);
 
 									//InvestigationElement addingPropertyToEntity = dependendField.getEntity();
-
-									InvestigationElement addingPropertyToEntity = colValues.get(dependentColumn).get(rowIndex - 1).get(0);
+									
+									int existingRow = rowIndex;
+									
+									InvestigationElement addingPropertyToEntity = null;
+									
+									while(colValues.get(dependentColumn).get(existingRow - 1).size() == 0){
+										
+										existingRow--;
+									}
+									
+									addingPropertyToEntity = colValues.get(dependentColumn).get(existingRow - 1).get(0);
+									
+//									InvestigationElement addingPropertyToEntity = colValues.get(dependentColumn).get(rowIndex - 1).get(0);
 
 									String multipleValues[] = cellValue.split(dependendField.getValueSplitter());
 
@@ -437,8 +448,9 @@ public class TableModel {
 									}
 
 									if(values.size() == 1)
-									{
-										addingPropertyToEntity.set(field.getRelationString(), values.get(0));
+									{	
+										if(!values.get(0).equals(""))
+											addingPropertyToEntity.set(field.getRelationString(), values.get(0));
 									}else{
 										addingPropertyToEntity.set(field.getRelationString(), values);
 									}
@@ -520,7 +532,7 @@ public class TableModel {
 									String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("'", "").trim();
 
 									String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("'", "").trim();
-									
+
 									//TODO: import measurements then import individual data. The measurement has to be consistent.
 
 									if(checkExistingMeasurementsInDB.keySet().contains(headerName.toLowerCase())){
@@ -528,28 +540,28 @@ public class TableModel {
 									}
 
 									observedValue.setFeature_Name(headerName);
-									
+
 									TableField targetField = columnIndexToTableField.get(field.getObservationTarget());
-									
+
 									if(targetField.getClassType().equalsIgnoreCase(Measurement.class.getSimpleName())){
-										
+
 										if(!checkExistingMeasurementsInDB.containsKey(targetName)){
-											
+
 											if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, targetName)).size() > 0){
 												checkExistingMeasurementsInDB.put(targetName, targetName + "_" + investigationName);
-												
+
 											}else{
 												checkExistingMeasurementsInDB.put(targetName, targetName);
-					
+
 											}
 										}
-										
+
 										observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
-										
+
 									}else{
 										observedValue.setTarget_Name(targetName);
 									}
-									
+
 									observedValue.setValue(cellValue);
 
 									observedValueList.add(observedValue);
