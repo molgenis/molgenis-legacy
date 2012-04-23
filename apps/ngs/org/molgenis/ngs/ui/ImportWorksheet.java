@@ -143,7 +143,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 			if (persons.get(study_contact) == null)
 			{
 				Person person = new Person();
-				person.setDisplayName(study_contact);
+				person.setName(study_contact);
 
 				persons.put(study_contact, person);
 			}
@@ -154,7 +154,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 				NgsStudy study = new NgsStudy();
 				study.setIdentifier(study_identifier);
 				study.setSeqType(seqType);
-				study.setContact_DisplayName(study_contact);
+				study.setContact_Name(study_contact);
 
 				studies.put(study_identifier, study);
 			}
