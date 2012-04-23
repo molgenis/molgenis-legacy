@@ -45,13 +45,5 @@
 			<field name="owns" type="xref" xref_entity="MolgenisRole"
 				xref_field="id" xref_label="name" />
 		</entity>
-				<entity name="MolgenisEntity" system="true" implements="Identifiable" xref_label="className" >
-			<description>Referenceable catalog of entity names, menus, forms and
-				plugins.</description>
-			<field name="name" description="Name of the entity" />
-			<field name="type_" description="Type of the entity" />
-			<field name="className" unique="true" description="Full name of the entity" />
-			<unique fields="name,type_" />
-		</entity>
 	</module>
 </molgenis>

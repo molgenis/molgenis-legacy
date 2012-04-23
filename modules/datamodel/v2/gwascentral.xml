@@ -87,7 +87,7 @@
 
 		</entity>
 
-		<entity name="SelectionCriteria" implements="Nameable,Describable">
+		<entity name="SelectionCriteria" implements="Autoid">
 			<!-- todo: this should probably be a subclass of protocolApplication? -->
 
 			<description>Create relationships between panels, founder panels,

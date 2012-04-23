@@ -66,7 +66,6 @@
 			<field name="Accession" type="hyperlink" nillable="true"
 				description="(Optional) URI or accession number to indicate source of Study. E.g. arrayexpress:M-EXP-2345" />
 		</entity>
-
 		<entity name="Experiment" implements="Identifiable">
 			<!-- discussion: can we not simply create DataSet as part of Study (and 
 				leave out the Study-Experiment structure?) -->
@@ -108,6 +107,7 @@
 			<!-- can we have example of this? -->
 			<!-- field name="Explinks" label="Links" hidden="true" nillable="true" 
 				xref_entity="Link" type="mref" / -->
+			<unique fields="identifier"/>
 		</entity>
 
 		<entity name="DataSet" implements="Identifiable">
@@ -148,7 +148,7 @@
 			<field name="Fax" nillable="true" type="varchar"
 				description="The fax number of the Contact." />
 		</entity>
-		<entity name="Person" xref_label="DisplayName" implements="Autoid">
+		<entity name="Person" xref_label="Name" implements="Autoid">
 			<description>
 				Person represents one or more people involved with an Investigation.
 				This may include authors on a paper, lab personnel or PIs. Person
@@ -166,13 +166,13 @@
 				<br />
 				The FUGE equivalent to Person is FuGE::Person.
 			</description>
-			<field name="DisplayName" unique="true" />
+			<field name="Name" unique="true" />
 			<field name="Title" label="Title" nillable="true"
 				description="An academic title, e.g. Prof.dr, PhD" />
 			<field name="FirstName" label="First Name" nillable="true" />
 			<field name="MidInitials" label="Mid Initials" nillable="true" />
 			<field name="LastName" label="Last Name" nillable="true" />
-			<field name="EmailAddress" type="email" nillable="true"/>
+			<field name="Email" type="email" nillable="true" />
 			<field name="Phone" nillable="true"
 				description="The telephone number of the Contact including the suitable area codes." />
 			<unique fields="FirstName,MidInitials,LastName" />
@@ -218,6 +218,59 @@
 			<unique fields="identifier" description="Identifier is globally is unique" />
 
 		</entity>
+		<entity name="Contribution" implements="Identifiable">
+			<description>A contribution describes the part a Person has
+				contributed to a Contributable item.
+			</description>
+			<field name="Researcher" label="Researcher" type="xref"
+				xref_entity="Person" description="The person involved" />
+			<field name="Submission" label="Submission" type="xref"
+				xref_entity="Submission" xref_cascade="true"
+				description="The submission contributed to." />
+			<!-- discussion: drop fields below and instead have a list of contributionTypes 
+				(mref OntologyTerm)? -->
+			<field name="IsSubmitter" label="Submitter?" type="enum"
+				enum_options="[yes,no]" />
+			<field name="IsAuthor" label="Author?" type="enum"
+				enum_options="[yes,no]" />
+			<field name="IsSource" label="Source?" type="enum"
+				enum_options="[yes,no]" />
+		</entity>
+		<entity name="Submission" implements="Identifiable" xref_label="identifier">
+			<field name="TimeCreated" label="Time created" type="datetime" />
+			<field name="Study" type="xref" xref_entity="Study" />
+			<unique fields="identifier" />
+		</entity>
 
+		<!-- how to create links for everything? -->
+
+		<!-- entity name="Link" xref_label="HotlinkLabel">
+			<field name="HotlinkLabel" length="100" label="Hotlink label"
+				description="Indicate where the URL is pointing, e.g. &quot;dbSNP refSNP report&quot;" />
+			<field name="UrlPrefix" length="300" label="URL prefix" />
+			<field name="UrlSuffix" length="100" label="URL suffix"
+				nillable="true" />
+			<field name="Identifier" length="15" label="Identifier"
+				nillable="true" />
+
+			<field name="Studies" label="Studies" nillable="true" type="mref"
+				xref_field="Study.id" xref_label="identifier" mref_name="StudyHotlink"
+				mref_localid="HotlinkID" mref_remoteid="StudyID" />
+			<field name="Experiments" nillable="true" label="Experiments"
+				type="mref" xref_field="Experiment.id" xref_label="identifier"
+				mref_name="ExperimentHotlink" mref_localid="HotlinkID"
+				mref_remoteid="ExperimentID" />
+			<field name="DataSet" nillable="true" label="Result sets" type="mref"
+				xref_field="DataSet.id" xref_label="identifier" mref_name="ResultsetHotlink"
+				mref_localid="HotlinkID" mref_remoteid="ResultsetID" />
+			<field name="PhenotypeMethods" nillable="true" label="Phenotype methods" 
+				type="mref" xref_field="PhenotypeMethod.PhenotypeMethodID" xref_label="Identifier" 
+				mref_name="PhenotypeMethodHotlink" mref_localid="HotlinkID" mref_remoteid="PhenotypeMethodID" 
+				/>
+			<field name="Samplepanels" nillable="true" label="Sample panels"
+				type="mref" xref_field="Panel.id" xref_label="identifier" mref_name="SamplepanelHotlink"
+				mref_localid="HotlinkID" mref_remoteid="SamplepanelID" />
+			<unique fields="HotlinkLabel" />
+		</entity -->
 	</module>
 </molgenis>

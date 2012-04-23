@@ -10,8 +10,6 @@
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/import" />
 		<pathelement location="modules/webserver" />
-		<pathelement location="modules/feedback" />
-		<pathelement location="modules/auth" />
 	</path>
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
