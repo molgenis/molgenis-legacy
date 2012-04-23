@@ -385,7 +385,7 @@
 				        <h4> 2.Please input a starting row index for importing data </h4>
 				        <input type="text" id="startingRowIndex" name="startingRowIndex" size=5 value=1 />
 				        In some excel, the actual data do not start with the first column
-				        <h4> 3.Dose the input file have multiple sheets? 
+				        <h4> 3.Does the input file have multiple sheets? 
 				        <input type="checkbox" id="multipleSheets" name="multipleSheets" /></h4>
 				        
 				        <h4> 4.Please choose ONE of the following options: </h4>
