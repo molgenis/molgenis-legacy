@@ -31,6 +31,22 @@ function refreshByHits(){
 		}
 	}
 }
+
+function setValidationStudy(validationStudyName){
+	
+	var dropBox = document.getElementById("validationStudy");
+	
+	var options = dropBox.getElementsByTagName("option");
+	
+	for(var i = 0; i < options.length; i++){
+		
+		if(options[i].value == validationStudyName){
+			
+			dropBox.selectedIndex = i;
+		}
+	}
+}
+
 </script>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
@@ -61,52 +77,55 @@ function refreshByHits(){
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-						   <#if screen.isSelectedInv() == true>
-								<table class="box" width="100%" cellpadding="0" cellspacing="0">
-								    <tr><td class="box-header" colspan="1">  
-								        <label>Choose a prediction model:
-										<select name="investigation" id="investigation"> 
-											<#list screen.arrayInvestigations as inv>
-												<#assign invName = inv.name>
-												<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
-											</#list>
-										</select>
-										<script>$('#investigation').chosen();</script>
-										<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
-										<input type="image" src="res/img/refresh.png" alt="Submit" 
-											name="chooseInvestigation" style="vertical-align: middle;" 
-											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
-										</label>
-										<div id="masstoggler"> 	
-										<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
-						 				
-						 				<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
-						 				<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
-			 							</div>
-					    			</td>
-					    			<td class="box-header" colspan="2">
-					    				<label>Choose a validation study:
-										<select name="validationStudy" id="validationStudy"> 
-											<#list screen.getValidationStudy() as studyName>
-												<option value=${studyName}>${studyName}</option>			
-											</#list>
-										</select></br></br>
-										<script>$('#validationStudy').chosen();</script>
-										Please input a name for this study
-										<input type="text" name="validationStudyName" id="validationStudyName" size="15" value="${screen.getValidationStudyName()}">
-					    			</td>
-					    			</tr>
-					    			<tr><td class="box-body" style="width:50%;">
-						Please upload your ontology file to extend your query (optional)<br/><br/>
-						<input type="file" name = "ontologyFile"/>	    
-					    
-					    </td><td class="box-body" style="width: 50%;">
-						Please upload your Data Dictionary<br/><br/>
-						<input type="file" name = "dataDictionary"/></br></br>
+				<#if screen.isSelectedInv() == true>
+					<table class="box" width="100%" cellpadding="0" cellspacing="0">
+						<tr><td class="box-header" colspan="1">  
+								<label>Choose a prediction model:
+								<select name="investigation" id="investigation"> 
+									<#list screen.arrayInvestigations as inv>
+										<#assign invName = inv.name>
+											<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+									</#list>
+								</select>
+								<script>$('#investigation').chosen();</script>
+								<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
+								<input type="image" src="res/img/refresh.png" alt="Submit" 
+									name="chooseInvestigation" style="vertical-align: middle;" 
+									value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
+									DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
+								</label>
+								<div id="masstoggler"> 	
+									<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+							 			<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
+							 			<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
+				 				</div>
+							</td>
+					    	<td class="box-header" colspan="2">
+					    		<label>Choose a validation study:
+								<select name="validationStudy" id="validationStudy"> 
+									<#list screen.arrayInvestigations as inv>
+										<#assign invName = inv.name>
+										<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+									</#list>
+								</select></br></br>
+								<script>
+									setValidationStudy('${screen.getValidationStudyName()}');
+									$('#validationStudy').chosen();
+								</script>
+					    	</td>
+					    </tr>
+					    <tr>
+					    	<td class="box-body" style="width:50%;">
 						
-						</td></tr>
-					    <tr><td class="box-body">
+								Please upload your ontology file to extend your query (optional)<br/><br/>
+								<input type="file" name = "ontologyFile"/>	    
+					    
+					    	</td>
+					    	<td class="box-body" style="width: 50%;">
+							</td>
+						</tr>
+					    <tr>
+					    	<td class="box-body">
 								<div id="leftSideTree">  
 									${screen.getTreeView()}
 								</div><br/>
@@ -125,25 +144,21 @@ function refreshByHits(){
 						</tr>
 						<tr>
 							<td class="box-body">
-
-									<input class="saveSubmit" type="submit" id="startMatching" name="startMatching" value="Matching" 
+								<input class="saveSubmit" type="submit" id="startMatching" name="startMatching" value="Matching" 
 									onclick="__action.value='startMatching';" 
 									style="color: #000; background: #8EC7DE;
 										   border: 2px outset #d7b9c9;
 										   font-size:15px;
-										   font-weight:bold;
-										   "/>
+										   font-weight:bold;"/>
 									
 							</td>
 							<td class="box-body">
-							
 							<input class="saveMapping" type="submit" id="saveMapping" name="saveMapping" value="save Mapping" 
 									onclick="__action.value='saveMapping';" 
 									style="color: #000; background: #8EC7DE;
 										   border: 2px outset #d7b9c9;
 										   font-size:15px;
-										   font-weight:bold;
-										   "/></td>
+										   font-weight:bold;"/></td>
 							
 						</tr>
 					</table>
@@ -154,12 +169,11 @@ function refreshByHits(){
 						</script>
 					</#list>
 					<script>
-						refreshByHits()
+						refreshByHits();
 					</script>
 			   </#if>	
 			</div>
 		</div>
 	</div>
 </form>
-
 </#macro>

@@ -88,38 +88,36 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				arrayInvestigations.clear();
 
 			}
-//			else if(request.getAction().equals("chooseDifferentHits")){
-//
-//				hitSize = request.getInt("changeHits");
-//
-//				String optionForHits = "<select name='changeHits' id='changeHits'>";
-//
-//				int residue = maxQuerySize / 10;
-//
-//				optionForHits += "<option>" + hitSize + "</option>";
-//
-//				for(int i = 0; i < residue; i++){
-//					if(hitSize != (i+1)*10)
-//						optionForHits += "<option>" + (i+1)*10 + "</option>";
-//				}
-//
-//				optionForHits += "</select>";
-//
-//				hitSizeOption  = "Choose how many results you want to view" 
-//						+ optionForHits
-//						+ "<input type='image' src='res/img/refresh.png' alt='Submit'"
-//						+ "name='refreshHits' style='vertical-align: middle;'" 
-//						+ "value='show hits' onclick=__action.value='chooseDifferentHits';>";
-//
-//				makeHtmlTable(mappingResultAndSimiarity);
-//
-//
-//			}
+			//			else if(request.getAction().equals("chooseDifferentHits")){
+			//
+			//				hitSize = request.getInt("changeHits");
+			//
+			//				String optionForHits = "<select name='changeHits' id='changeHits'>";
+			//
+			//				int residue = maxQuerySize / 10;
+			//
+			//				optionForHits += "<option>" + hitSize + "</option>";
+			//
+			//				for(int i = 0; i < residue; i++){
+			//					if(hitSize != (i+1)*10)
+			//						optionForHits += "<option>" + (i+1)*10 + "</option>";
+			//				}
+			//
+			//				optionForHits += "</select>";
+			//
+			//				hitSizeOption  = "Choose how many results you want to view" 
+			//						+ optionForHits
+			//						+ "<input type='image' src='res/img/refresh.png' alt='Submit'"
+			//						+ "name='refreshHits' style='vertical-align: middle;'" 
+			//						+ "value='show hits' onclick=__action.value='chooseDifferentHits';>";
+			//
+			//				makeHtmlTable(mappingResultAndSimiarity);
+			//
+			//
+			//			}
 			else if (request.getAction().equals("startMatching")){
 
 				String uploadFileName = request.getString("ontologyFile");
-
-				String dataDictionary = request.getString("dataDictionary");
 
 				parameterWithHtmlTable.clear();
 
@@ -127,40 +125,49 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 				parameterToExpandedQuery.clear();
 
-				if(dataDictionary == null){
-					setMessages(new ScreenMessage("The data dictioanry cannot be null", false));
-				}else{
+				String separator = "";
 
-					String separator = "";
+				validationStudyName = request.getString("validationStudy");
 
-					questionsAndIdentifier  = readDataDictionary(dataDictionary);
+				if(db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
+						Operator.EQUALS, validationStudyName)).size() > 0){
 
-					if(uploadFileName != null){
-						OWLFunction	owlFunction = new OWLFunction(uploadFileName);
-						owlFunction.labelMapURI(null);
-						expandedQueries = owlFunction.getExpandedQueries();
-						expandedQueries.remove("Prediction Model");
-						expandedQueries.remove("Composite");
-						separator = owlFunction.getSeparator();
+					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
+							Operator.EQUALS, validationStudyName))){
+						if(m.getDescription() != null && !m.getDescription().equals("")){
+							questionsAndIdentifier.put(m.getDescription(), m.getName());
+						}
 					}
-
-					this.stringMatching(separator);
-
-					int residue = maxQuerySize / 10;
-
-					String optionForHits = "<select name='changeHits' id='changeHits' onChange='refreshByHits()'>";
-
-					for(int i = 0; i < residue; i++){
-						optionForHits += "<option>" + (i+1)*10 + "</option>";
-					}
-					if(residue == 0){
-						optionForHits += "<option>10</option>";
-					}
-					optionForHits += "</select>";
-
-					hitSizeOption  = "Choose how many results you want to view" 
-							+ optionForHits;
 				}
+
+				//questionsAndIdentifier  = readDataDictionary(dataDictionary);
+
+				if(uploadFileName != null){
+					OWLFunction	owlFunction = new OWLFunction(uploadFileName);
+					owlFunction.labelMapURI(null);
+					expandedQueries = owlFunction.getExpandedQueries();
+					expandedQueries.remove("Prediction Model");
+					expandedQueries.remove("Composite");
+					separator = owlFunction.getSeparator();
+				}
+
+				this.stringMatching(separator);
+
+				int residue = maxQuerySize / 10;
+
+				String optionForHits = "<select name='changeHits' id='changeHits' onChange='refreshByHits()'>";
+
+				for(int i = 0; i < residue; i++){
+					optionForHits += "<option>" + (i+1)*10 + "</option>";
+				}
+				if(residue == 0){
+					optionForHits += "<option>10</option>";
+				}
+				optionForHits += "</select>";
+
+				hitSizeOption  = "Choose how many results you want to view" 
+						+ optionForHits;
+
 
 			}else if(request.getAction().equals("saveMapping")){
 
@@ -257,25 +264,25 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 									m.setInvestigation_Name("Validation Study");
 									db.add(m);
 								}
-								
+
 								Query<MappingMeasurement> queryForMapping = db.query(MappingMeasurement.class);
-								
+
 								queryForMapping.addRules(new QueryRule(MappingMeasurement.TARGET_NAME, 
 										Operator.EQUALS, validationStudyName + "_" + originalQuery));
-								
+
 								queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, 
 										Operator.EQUALS, originalQuery));
-								
+
 								if(queryForMapping.find().size() > 0){
-									
+
 									mapping = queryForMapping.find().get(0);
-									
+
 									mapping.setFeature_Id(measurementIds);
-									
+
 									db.update(mapping);
-									
+
 								}else{
-									
+
 									mapping.setTarget_Name(validationStudyName + "_" + originalQuery);
 
 									mapping.setInvestigation_Name("Validation Study");
@@ -283,9 +290,11 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 									mapping.setDataType("pairingrule");
 
 									mapping.setMapping_Name(originalQuery);
+
+									mapping.setFeature_Id(featureIds);
 									
 									db.add(mapping);
-									
+
 								}
 
 								List<Integer> oldFeatureIds = validationStudyProtocol.getFeatures_Id();
@@ -725,7 +734,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 							+ multipleInheritance.get(displayName),
 							displayName, parentTree,
 							previousChildTree.getHtmlValue());
-					
+
 					listOfParameters.add(displayName + multipleInheritance.get(displayName));
 
 					childTree.setHtmlValue(htmlValue);
@@ -736,7 +745,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 							parentTree, htmlValue);
 
 					listOfParameters.add(displayName);
-					
+
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
 
@@ -762,13 +771,13 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 		String measurementClickEvent = "<script>";
 
 		List<String> uniqueMeasurementName = new ArrayList<String>();
-		
+
 		for(String eachMeasurement : listOfParameters){
-			
+
 			if(!uniqueMeasurementName.contains(eachMeasurement)){
-				
+
 				uniqueMeasurementName.add(eachMeasurement);
-				
+
 				if(eachMeasurement.equals("Year partner son daughter 3")){
 					System.out.println();
 				}
