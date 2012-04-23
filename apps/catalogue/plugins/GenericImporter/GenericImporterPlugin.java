@@ -92,6 +92,8 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 	private Integer startingRowIndex = 0;
 
+	private Boolean multipleSheets = true;
+
 	public GenericImporterPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -500,6 +502,10 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			
 			startingRowIndex--;
 			
+			if(request.getBool("multipleSheets") != null){
+				multipleSheets = request.getBool("multipleSheets");
+			}
+			
 			if(request.getAction().equals("UploadFileByColumn"))
 			{
 				setColumnCount(columns);
@@ -619,7 +625,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 							if(classType.equals(Measurement.class.getSimpleName()) && fieldName.equals(Measurement.DATATYPE))
 							{
 
-								for(String molgenisOption : userInputToDataType.keySet())
+								for(String  molgenisOption : userInputToDataType.keySet())
 								{
 									table.setDataType(userInputToDataType.get(molgenisOption), molgenisOption);
 								}
@@ -629,8 +635,8 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 				}
 
 				table.setInvestigationName(investigationName);
-
-				table.convertIntoPheno(dictionaryCategory, startingRowIndex);
+				
+				table.convertIntoPheno(workbook.getSheets(), startingRowIndex, multipleSheets);
 
 			}
 
