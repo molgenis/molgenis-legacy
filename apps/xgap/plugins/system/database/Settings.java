@@ -31,6 +31,7 @@ import org.molgenis.pheno.Panel;
 import org.molgenis.pheno.Species;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
+import org.molgenis.xgap.InvestigationFile;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.Metabolite;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
@@ -146,9 +147,6 @@ public class Settings extends PluginModel
 			List<Metabolite> metabolites = db.find(Metabolite.class, new QueryRule(Metabolite.INVESTIGATION_NAME, Operator.EQUALS, invName));
 			report.add(db.remove(metabolites) + " metabolites deleted");
 			
-			
-
-			
 			List<Data> data = db.find(Data.class, new QueryRule(Data.INVESTIGATION_NAME, Operator.EQUALS, invName));
 			
 			DataMatrixHandler dmh = new DataMatrixHandler(db);
@@ -171,9 +169,7 @@ public class Settings extends PluginModel
 				db.remove(d);
 				report.add("Data matrix '"+d.getName()+"' deleted");
 			}
-			
-			report.add(db.remove(inv) + " investigations deleted");
-			
+
 			List<OntologyTerm> onto = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.LIKE, "xgap_rqtl_straintype_"));
 			report.add(db.remove(onto) + " ontologyterms (containing 'xgap_rqtl_straintype_') deleted");
 			
@@ -182,6 +178,11 @@ public class Settings extends PluginModel
 			
 			List<Species> spec = db.find(Species.class, new QueryRule(Species.NAME, Operator.EQUALS, "Arabidopsis_thaliana"));
 			report.add(db.remove(spec) + " species (named 'Arabidopsis_thaliana') deleted");
+			
+			List<InvestigationFile> files = db.find(InvestigationFile.class, new QueryRule(InvestigationFile.INVESTIGATION_NAME, Operator.EQUALS, invName));
+			report.add(db.remove(files) + " files removed (Plink example data)");
+			
+			report.add(db.remove(inv) + " investigations deleted");
 			
 			report.add("All done!");
 			
