@@ -43,7 +43,7 @@ public class TifnHeader extends PluginModel<Entity>
 	{
 		return "org/molgenis/tifn/header/TifnHeader.ftl";
 	}
-
+	
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception
 	{
@@ -133,7 +133,7 @@ public class TifnHeader extends PluginModel<Entity>
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/colors.css\">" + "\n" +
-			   "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/xgap_main_override.css\">" ;
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"res/tifn_colors.css\">" + "\n" +
+			   "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/main_override.css\">" ;
 	}
 }
