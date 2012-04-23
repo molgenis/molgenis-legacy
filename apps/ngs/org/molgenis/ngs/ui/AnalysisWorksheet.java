@@ -33,7 +33,7 @@ public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheetMod
 	@Override
 	public void reload(Database db) throws Exception
 	{	
-		String sql = "select study.identifier as project, person.displayname as contact, ngsstudy.seqType, s.identifier as internalSampleId, ngssample.externalIdentifier as externalSampleId, " +
+		String sql = "select study.identifier as project, person.name as contact, ngsstudy.seqType, s.identifier as internalSampleId, ngssample.externalIdentifier as externalSampleId, " +
 				"machine.name as sequencer, flowcell.startDate as sequencingStartDate, " +
 				"flowcell.run, f.identifier as flowcell, l.lane, b.name as barcode, c.name as capturingKit, k.name as prepKit " +
 				"from study natural join ngsstudy " +

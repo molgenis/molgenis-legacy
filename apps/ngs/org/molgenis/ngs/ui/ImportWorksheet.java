@@ -238,7 +238,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 	public void saveUpload(Database db, Tuple request) throws DatabaseException
 	{
 		int count = 0;
-		count += db.update(new ArrayList<Person>(persons.values()), DatabaseAction.ADD_UPDATE_EXISTING, "displayName");
+		count += db.update(new ArrayList<Person>(persons.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
 		count += db.update(new ArrayList<NgsStudy>(studies.values()), DatabaseAction.ADD_UPDATE_EXISTING, "identifier");
 		count += db.update(new ArrayList<NgsBarcode>(barcodes.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
 		count += db.update(new ArrayList<NgsPrepKit>(prepKits.values()), DatabaseAction.ADD_UPDATE_EXISTING, "name");
@@ -277,11 +277,11 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 			f.add(new ActionInput("resetUpload", "reset"));
 			f.add(new ActionInput("saveUpload", "save"));
 
-			EntityTable s = new EntityTable("studies", studies.values(), false, "identifier", "contact_displayName");
+			EntityTable s = new EntityTable("studies", studies.values(), false, "identifier", "contact_name");
 			s.setLabel("<h3>Studies:</h3>");
 			f.add(s);
 
-			EntityTable p = new EntityTable("persons", persons.values(), false, "displayName");
+			EntityTable p = new EntityTable("persons", persons.values(), false, "name");
 			p.setLabel("<h3>Persons:</h3>");
 			f.add(p);
 
