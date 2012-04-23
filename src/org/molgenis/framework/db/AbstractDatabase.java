@@ -106,6 +106,7 @@ public abstract class AbstractDatabase implements Database
 			}
 			logger.debug(String.format("find(%s, writer) wrote %s lines",
 					entityClass.getSimpleName(), count));
+			writer.close();
 		}
 		catch (Exception ex)
 		{
