@@ -1,11 +1,16 @@
 package org.molgenis.pheno.ui;
 
+import java.util.List;
+
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.framework.ui.html.Input;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.dto.IndividualDTO;
+import org.molgenis.pheno.dto.ProtocolDTO;
+import org.molgenis.pheno.ui.form.ApplyProtocolForm;
 import org.molgenis.pheno.ui.form.IndividualForm;
+import org.molgenis.pheno.ui.form.SelectProtocolForm;
 
 public class IndividualViewerModel extends EasyPluginModel
 {
@@ -14,11 +19,14 @@ public class IndividualViewerModel extends EasyPluginModel
 	private Integer id;
 	private IndividualDTO individualDTO;
 	private IndividualForm individualForm;
+	private ProtocolDTO protocolDTO;
+	private SelectProtocolForm selectProtocolForm;
+	private List<ProtocolDTO> protocolDTOList;
+	private ApplyProtocolForm applyProtocolForm;
 
 	public IndividualViewerModel(IndividualViewer controller)
 	{
 		super(controller);
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getAction()
@@ -61,9 +69,54 @@ public class IndividualViewerModel extends EasyPluginModel
 		this.individualForm = individualForm;
 	}
 
-	public Input<?> createInput(String name)
+	public ProtocolDTO getProtocolDTO()
+	{
+		return protocolDTO;
+	}
+
+	public void setProtocolDTO(ProtocolDTO protocolDTO)
+	{
+		this.protocolDTO = protocolDTO;
+	}
+
+	public SelectProtocolForm getSelectProtocolForm()
+	{
+		return selectProtocolForm;
+	}
+
+	public void setSelectProtocolForm(SelectProtocolForm protocolForm)
+	{
+		this.selectProtocolForm = protocolForm;
+	}
+
+	public List<ProtocolDTO> getProtocolDTOList()
+	{
+		return protocolDTOList;
+	}
+
+	public void setProtocolDTOList(List<ProtocolDTO> protocolDTOList)
+	{
+		this.protocolDTOList = protocolDTOList;
+	}
+
+	public ApplyProtocolForm getApplyProtocolForm()
+	{
+		return applyProtocolForm;
+	}
+
+	public void setApplyProtocolForm(ApplyProtocolForm applyProtocolForm)
+	{
+		this.applyProtocolForm = applyProtocolForm;
+	}
+
+	public Input<?> createIndividualInput(String name)
 	{
 		return this.individualForm.get(name);
+	}
+
+	public Input<?> createProtocolInput(String name)
+	{
+		return this.applyProtocolForm.get(name);
 	}
 
 	public boolean isEditable()

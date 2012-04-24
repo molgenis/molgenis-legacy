@@ -16,33 +16,51 @@
 		<div class="screenbody">
 			<div class="screenpadding">
 
-<#-- Observable features -->
 <#assign individualDTO = model.individualDTO>
-<#list individualDTO.protocolList as protocol>
-<#assign protocolId = "Protocol" + protocol.protocolId>
-<#assign observedValueDTOs = individualDTO.observedValues[protocolId]>
-<#if observedValueDTOs?size &gt; 0>
-<h4>${protocol.protocolName}</h4>
-<table class="listtable" cellpadding="4">
-<#assign even = 1>
-<#list observedValueDTOs as observedValueDTO>
-<#if even == 1>
-  <#assign class = "form_listrow0">
-  <#assign even = 0>
-<#else>
-  <#assign class = "form_listrow1">
-  <#assign even = 1>
-</#if>
-<tr class="${class}"><th width="50%">${observedValueDTO.featureDTO.featureName}</th><td>${observedValueDTO.value}</td></tr>
+
+<#list model.protocolDTOList as protocol>
+	<#assign protocolKey = "Protocol" + protocol.protocolId>
+
+	<#if individualDTO.observedValues?keys?seq_contains(protocolKey)>
+
+		<h3>${protocol.protocolName}</h3>
+
+		<#list individualDTO.observedValues[protocolKey]?keys as paKey>
+			<#assign observedValueDTOValList = individualDTO.observedValues[protocolKey][paKey]>
+			<#assign tmpObservedValueDTO     = observedValueDTOValList?first>
+	
+			<h4>${tmpObservedValueDTO.protocolApplicationName} (${tmpObservedValueDTO.protocolApplicationTime?string.medium_short})</h4>
+
+			<table class="listtable" cellpadding="4">
+			<tr><th width="50%">Feature</th><th width="50%">Value</th></tr>
+				
+			<#list observedValueDTOValList as observedValueDTO>
+				<#assign even = 1>
+				<#if observedValueDTO.protocolId == protocol.protocolId>
+					<#if even == 1>
+						<#assign class = "form_listrow0">
+						<#assign even = 0>
+					<#else>
+						<#assign class = "form_listrow1">
+						<#assign even = 1>
+					</#if>
+					<tr class="${class}"><th width="50%">${observedValueDTO.featureDTO.featureName}</th><td width="50%">${observedValueDTO.value}</td></tr>
+				</#if>
+			</#list>
+				
+			</table>
+		</#list>
+
+	</#if>
+
 </#list>
-</table>
-</#if>
-</#list>
+
 <#if model.isEditable()>
 <form method="post" action="molgenis.do">
 ${model.individualForm.__action}
 ${model.individualForm.__target}
 <@action name="edit" label="Edit"/>
+<@action name="select" label="Apply Protocol"/>
 </form>
 </#if>
 

@@ -1,6 +1,7 @@
 package org.molgenis.pheno.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class ObservedValueDTO implements Serializable
 {
@@ -8,6 +9,10 @@ public class ObservedValueDTO implements Serializable
 	private static final long serialVersionUID = 5023457428783817292L;
 
 	private Integer observedValueId;
+	private Integer protocolApplicationId;
+	private String protocolApplicationName;
+	private Date protocolApplicationTime;
+	private Integer protocolId;
 	private FeatureDTO featureDTO;
 	private Integer targetId;
 	private String targetName;
@@ -18,6 +23,30 @@ public class ObservedValueDTO implements Serializable
 	}
 	public void setObservedValueId(Integer observedValueId) {
 		this.observedValueId = observedValueId;
+	}
+	public Integer getProtocolApplicationId() {
+		return protocolApplicationId;
+	}
+	public void setProtocolApplicationId(Integer protocolApplicationId) {
+		this.protocolApplicationId = protocolApplicationId;
+	}
+	public String getProtocolApplicationName() {
+		return protocolApplicationName;
+	}
+	public void setProtocolApplicationName(String protocolApplicationName) {
+		this.protocolApplicationName = protocolApplicationName;
+	}
+	public Date getProtocolApplicationTime() {
+		return protocolApplicationTime;
+	}
+	public void setProtocolApplicationTime(Date protocolApplicationTime) {
+		this.protocolApplicationTime = protocolApplicationTime;
+	}
+	public Integer getProtocolId() {
+		return protocolId;
+	}
+	public void setProtocolId(Integer protocolId) {
+		this.protocolId = protocolId;
 	}
 	public FeatureDTO getFeatureDTO() {
 		return featureDTO;

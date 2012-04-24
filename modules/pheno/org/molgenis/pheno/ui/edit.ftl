@@ -1,4 +1,3 @@
-<!-- this shows a title and border -->
 	<div class="formscreen">
 		<div class="form_header" id="${screen.getName()}">
 		${screen.label}
@@ -12,7 +11,7 @@
 		<p class="errormessage">${message.text}</p>
 			</#if>
 		</#list>
-		
+
 		<div class="screenbody">
 			<div class="screenpadding">
 
@@ -20,25 +19,40 @@
 ${model.individualForm.__action}
 ${model.individualForm.__target}
 <#assign individualDTO = model.individualDTO>
-<#list individualDTO.protocolList as protocol>
-<#assign protocolId = "Protocol" + protocol.protocolId>
-<h4>${protocol.protocolName}</h4>
-<table class="listtable" cellpadding="4">
-<#assign even = 1>
-<#list protocol.featureDTOList as featureDTO>
-<#if even == 1>
-  <#assign class = "form_listrow0">
-  <#assign even = 0>
-<#else>
-  <#assign class = "form_listrow1">
-  <#assign even = 1>
-</#if>
-<tr class="${class}"><th width="50%">${featureDTO.featureName}</th><td>${model.createInput(featureDTO.featureKey)}</td></tr>
+
+<#list model.protocolDTOList as protocol>
+	<#assign protocolKey = "Protocol" + protocol.protocolId>
+
+	<#if individualDTO.observedValues?keys?seq_contains(protocolKey)>
+
+		<h3>${protocol.protocolName}</h3>
+
+		<#list individualDTO.observedValues[protocolKey]?keys as paKey>
+			<#assign observedValueDTOValList = individualDTO.observedValues[protocolKey][paKey]>
+			<#assign tmpObservedValueDTO     = observedValueDTOValList?first>
+	
+			<h4>${tmpObservedValueDTO.protocolApplicationName} (${tmpObservedValueDTO.protocolApplicationTime?string.medium_short})</h4>
+
+			<table cellpadding="4">
+			<tr><th>Feature</th><th>Value</th></tr>
+				
+			<#list observedValueDTOValList as observedValueDTO>
+				<#assign ovKey = "ObservedValue" + observedValueDTO.observedValueId>
+				<#if observedValueDTO.protocolId == protocol.protocolId>
+					<tr><th>${observedValueDTO.featureDTO.featureName}</th><td>${model.createIndividualInput(ovKey)}</td></tr>
+				</#if>
+			</#list>
+				
+			</table>
+		</#list>
+
+	</#if>
+
 </#list>
-</table>
-</#list>
+
 <@action name="show" label="Back to List mode"/>
-<@action name="save" label="Save"/>
+<@action name="update" label="Save"/>
+<@action name="add" label="Apply Protocol"/>
 </form>
 
 			</div>

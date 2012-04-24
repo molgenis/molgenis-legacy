@@ -16,7 +16,8 @@ public class IndividualDTO implements Serializable
 	private List<ProtocolDTO> protocolList = new ArrayList<ProtocolDTO>();
 //	private String protocolName;
 	// (protocolName, List<ObservedValueVO>)
-	private HashMap<String, List<ObservedValueDTO>> observedValues = new HashMap<String, List<ObservedValueDTO>>();
+	private HashMap<String, HashMap<String, List<ObservedValueDTO>>> observedValues = new HashMap<String, HashMap<String, List<ObservedValueDTO>>>();
+	private List<ObservedValueDTO> observedValueDTOList = new ArrayList<ObservedValueDTO>();
 
 	public Integer getIndividualId() {
 		return individualId;
@@ -36,10 +37,16 @@ public class IndividualDTO implements Serializable
 //	public void setProtocolName(String protocolName) {
 //		this.protocolName = protocolName;
 //	}
-	public HashMap<String, List<ObservedValueDTO>> getObservedValues() {
+	public HashMap<String, HashMap<String, List<ObservedValueDTO>>> getObservedValues() {
 		return observedValues;
 	}
-	public void setObservedValues(HashMap<String, List<ObservedValueDTO>> featureValues) {
+	public void setObservedValues(HashMap<String, HashMap<String, List<ObservedValueDTO>>> featureValues) {
 		this.observedValues = featureValues;
+	}
+	public List<ObservedValueDTO> getObservedValueDTOList() {
+		return observedValueDTOList;
+	}
+	public void setObservedValueDTOList(List<ObservedValueDTO> observedValueDTOList) {
+		this.observedValueDTOList = observedValueDTOList;
 	}
 }

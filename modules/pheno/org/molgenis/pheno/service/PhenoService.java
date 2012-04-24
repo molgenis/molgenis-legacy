@@ -1,10 +1,11 @@
 package org.molgenis.pheno.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.persistence.EntityManager;
+//import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,6 +18,7 @@ import org.molgenis.pheno.dto.FeatureDTO;
 import org.molgenis.pheno.dto.ObservedValueDTO;
 import org.molgenis.pheno.dto.ProtocolDTO;
 import org.molgenis.protocol.Protocol;
+import org.molgenis.protocol.ProtocolApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +26,13 @@ import org.springframework.stereotype.Service;
 public class PhenoService
 {
 	private Database db;
-	private EntityManager em;
+//	private EntityManager em;
 	
 	@Autowired
 	public PhenoService(Database db)
 	{
 		this.db = db;
-		this.em = db.getEntityManager();
+//		this.em = db.getEntityManager();
 	}
 	
 	/**
@@ -45,18 +47,90 @@ public class PhenoService
 		{
 			IndividualDTO individualDetailsDTO = new IndividualDTO();
 			individualDetailsDTO.setIndividualId(id);
-			individualDetailsDTO.setObservedValues(new HashMap<String, List<ObservedValueDTO>>());
+			individualDetailsDTO.setObservedValues(new HashMap<String, HashMap<String, List<ObservedValueDTO>>>());
 
-			List<Protocol> protocolList             = this.db.query(Protocol.class).find();
+			List<Protocol> protocolList        = this.db.query(Protocol.class).find();
 			individualDetailsDTO.setProtocolList(this.protocolListToProtocolDTOList(protocolList));
 
 			for (Protocol protocol : protocolList)
 			{
 				List<ObservedValue> observedValueList = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, id).in(ObservedValue.FEATURE, protocol.getFeatures_Id()).find();
-				individualDetailsDTO.getObservedValues().put("Protocol" + protocol.getId(), this.observedValueListToObservedValueDTOList(observedValueList));
+				
+				if (observedValueList.size() == 0)
+					continue;
+
+				String protocolKey = "Protocol" + protocol.getId();
+
+				if (!individualDetailsDTO.getObservedValues().containsKey(protocolKey))
+				{
+					individualDetailsDTO.getObservedValues().put(protocolKey, new HashMap<String, List<ObservedValueDTO>>());
+				}
+
+				for (ObservedValue observedValue : observedValueList)
+				{
+					String protocolApplicationKey = "ProtocolApplication" + observedValue.getProtocolApplication_Id();
+
+					if (!individualDetailsDTO.getObservedValues().get(protocolKey).containsKey(protocolApplicationKey))
+					{
+						individualDetailsDTO.getObservedValues().get(protocolKey).put(protocolApplicationKey, new ArrayList<ObservedValueDTO>());
+					}
+					individualDetailsDTO.getObservedValues().get(protocolKey).get(protocolApplicationKey).add(this.observedValueToObservedValueDTO(observedValue));
+				}
 			}
 
+//			List<ObservedValue> observedValueList = this.db.query(ObservedValue.class).equals(ObservedValue.TARGET, id).sortASC(ObservedValue.PROTOCOLAPPLICATION).find();
+//			individualDetailsDTO.setObservedValueDTOList(this.observedValueListToObservedValueDTOList(observedValueList));
+//			for (ObservedValue observedValue : observedValueList)
+//			{
+//				String key = "Protocol" + observedValue.getProtocol_Id();
+//				if (!individualDetailsDTO.getObservedValues().containsKey(key))
+//				{
+//					individualDetailsDTO.getObservedValues().put(key, new ArrayList<ObservedValueDTO>());
+//				}
+//				individualDetailsDTO.getObservedValues().get(key).add(observedValueToObservedValueDTO(observedValue));
+//			}
+
 			return individualDetailsDTO;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new PhenoServiceException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Find a protocol by primary key
+	 * @param id
+	 * @return protocol
+	 */
+	public ProtocolDTO findProtocol(Integer id)
+	{
+		try
+		{
+			Protocol protocol = this.db.findById(Protocol.class, id);
+			
+			if (protocol == null)
+				throw new PhenoServiceException("No protocol found for " + id);
+
+			return this.protocolToProtocolDTO(protocol);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new PhenoServiceException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Find all protocols
+	 * @return list of protocols
+	 */
+	public List<ProtocolDTO> findProtocols()
+	{
+		try
+		{
+			return this.protocolListToProtocolDTOList(this.db.query(Protocol.class).sortASC(Protocol.NAME).find());
 		}
 		catch (Exception e)
 		{
@@ -91,8 +165,8 @@ public class PhenoService
 	{
 		try
 		{
-			String sql = "SELECT DISTINCT ov.value FROM ObservedValue ov JOIN ov.feature f WHERE f.name = :feature ORDER BY ov.value";
-			TypedQuery<String> query = this.em.createQuery(sql, String.class);
+			String sql = "SELECT DISTINCT ov.value FROM ObservedValue ov JOIN ov.feature f WHERE f.name = :feature OR f.description = :feature ORDER BY ov.value";
+			TypedQuery<String> query = this.db.getEntityManager().createQuery(sql, String.class);
 			query.setParameter("feature", featureName);
 			return query.getResultList();
 		}
@@ -130,6 +204,32 @@ public class PhenoService
 		List<ObservedValueDTO> observedValueDTOList = new ArrayList<ObservedValueDTO>();
 		observedValueDTOList.add(observedValueDTO);
 		this.insert(observedValueDTOList);
+	}
+
+	/**
+	 * Insert a new ProtocolApplication
+	 * @param name
+	 * @param time
+	 * @return primary key of the new ProtocolApplication
+	 */
+	public Integer insertProtocolApplication(String name, Date time, Integer protocolId)
+	{
+		try
+		{
+			ProtocolApplication pa = new ProtocolApplication();
+			pa.setName(name);
+			pa.setTime(time);
+			pa.setProtocol_Id(protocolId);
+			
+			this.db.add(pa);
+			
+			return pa.getId();
+		}
+		catch (DatabaseException e)
+		{
+			e.printStackTrace();
+			throw new PhenoServiceException(e.getMessage());
+		}
 	}
 
 	/**
@@ -189,7 +289,8 @@ public class PhenoService
 			{
 				FeatureDTO featureDTO = new FeatureDTO();
 				featureDTO.setFeatureId(measurement.getId());
-				featureDTO.setFeatureKey(protocolDTO.getProtocolKey() + ".Feature" + measurement.getId());
+//				featureDTO.setFeatureKey(protocolDTO.getProtocolKey() + ".Feature" + measurement.getId());
+				featureDTO.setFeatureKey("Feature" + measurement.getId());
 				featureDTO.setFeatureName(measurement.getName());
 				featureDTO.setFeatureType(measurement.getDataType());
 				
@@ -204,7 +305,7 @@ public class PhenoService
 		return protocolDTO;
 	}
 
-	public List<ObservedValueDTO> observedValueListToObservedValueDTOList(List<ObservedValue> observedValueList)
+	public List<ObservedValueDTO> observedValueListToObservedValueDTOList(List<ObservedValue> observedValueList) throws DatabaseException
 	{
 		List<ObservedValueDTO> observedValueDTOList = new ArrayList<ObservedValueDTO>();
 
@@ -217,17 +318,27 @@ public class PhenoService
 		return observedValueDTOList;
 	}
 
-	public ObservedValueDTO observedValueToObservedValueDTO(ObservedValue observedValue)
+	public ObservedValueDTO observedValueToObservedValueDTO(ObservedValue observedValue) throws DatabaseException
 	{
 		ObservedValueDTO observedValueDTO = new ObservedValueDTO();
 		observedValueDTO.setObservedValueId(observedValue.getId());
+		
+		ProtocolApplication protocolApplication = this.db.findById(ProtocolApplication.class, observedValue.getProtocolApplication_Id());
+		observedValueDTO.setProtocolApplicationId(protocolApplication.getId());
+		observedValueDTO.setProtocolApplicationName(protocolApplication.getName());
+		observedValueDTO.setProtocolApplicationTime(protocolApplication.getTime());
+		observedValueDTO.setProtocolId(protocolApplication.getProtocol_Id());
+
 		observedValueDTO.setTargetId(observedValue.getTarget_Id());
 		observedValueDTO.setTargetName(observedValue.getTarget_Name());
 		observedValueDTO.setValue(observedValue.getValue());
+		
+		Measurement measurement = this.db.findById(Measurement.class, observedValue.getFeature_Id());
 		FeatureDTO featureDTO = new FeatureDTO();
-		featureDTO.setFeatureId(observedValue.getFeature_Id());
-		featureDTO.setFeatureKey("Feature" + observedValue.getFeature_Id());
-		featureDTO.setFeatureName(observedValue.getFeature_Name());
+		featureDTO.setFeatureId(measurement.getId());
+		featureDTO.setFeatureKey("Feature" + measurement.getId());
+		featureDTO.setFeatureName(measurement.getName());
+		featureDTO.setFeatureType(measurement.getDataType());
 		observedValueDTO.setFeatureDTO(featureDTO);
 		return observedValueDTO;
 	}
@@ -250,6 +361,8 @@ public class PhenoService
 			observedValue.setFeature_Id(observedValueDTO.getFeatureDTO().getFeatureId());
 		if (observedValueDTO.getObservedValueId() != null)
 			observedValue.setId(observedValueDTO.getObservedValueId());
+		if (observedValueDTO.getProtocolApplicationId() != null)
+			observedValue.setProtocolApplication_Id(observedValueDTO.getProtocolApplicationId());
 		if (observedValueDTO.getTargetId() != null)
 			observedValue.setTarget_Id(observedValueDTO.getTargetId());
 		if (StringUtils.isNotEmpty(observedValueDTO.getValue()))
