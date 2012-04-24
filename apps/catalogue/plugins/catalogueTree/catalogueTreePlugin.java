@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +29,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.organization.Investigation;
@@ -60,6 +64,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private static int SEARCHINGALL = 4;
 
 	private static int SEARCHINGDETAIL = 5;
+	
+	Integer mode;
 
 	/** Multiple inheritance: some measurements might have multiple parents therefore it
 	 *  will complain about the branch already exists when constructing the tree, cheating by
@@ -127,10 +133,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			}
 			if (request.getAction().startsWith("SearchCatalogueTree")) {
+				
 				if (request.getString("InputToken") != null) {
 
 					this.setInputToken(request.getString("InputToken").trim());
 
+					
 					System.out.println("The request string : " + request);
 
 					this.setSelectedField(request.getString("selectedField"));
@@ -139,18 +147,40 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							+ this.getInputToken() + ">>> selectedField >>"
 							+ selectedField + "comparison >>>"
 							+ this.getComparison());
-					if (this.getSelectedField().equals("Protocols"))
+					if (this.getSelectedField().equals("Protocols")) {
+						//Show filters label 
+						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Protocols ",  true));
+
+						mode = SEARCHINGPROTOCOL;
 						RetrieveProtocols(db, SEARCHINGPROTOCOL);
+					}
 					// Search "Any field" ==> All fields LIKE input token
-					if (this.getSelectedField().equals("Measurements"))
+					if (this.getSelectedField().equals("Measurements")) {
+						//Show filters label 
+						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Measurements ",  true));
+
+						mode = SEARCHINGMEASUREMENT;
 						RetrieveProtocols(db, SEARCHINGMEASUREMENT);
+					}
+					if (this.getSelectedField().equals("All fields")) {
+						//Show filters label 
+						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in all fields ",  true));
 
-					if (this.getSelectedField().equals("All fields"))
+						mode = SEARCHINGALL;
 						RetrieveProtocols(db, SEARCHINGALL);
+					}
+					if (this.getSelectedField().equals("Details")) {
+						//Show filters label 
+						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Details ",  true));
 
-					if (this.getSelectedField().equals("Details"))
+						mode = SEARCHINGDETAIL;
 						RetrieveProtocols(db, SEARCHINGDETAIL);
+					}
 
+					
+					//show a label with the search filter and an option to remove it 
+					//in case of removal of filter , reload the tree
+					
 				} else {
 					this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
 				}
@@ -162,7 +192,31 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		}
 
 	}
-
+//	/**
+//	 * This function is used by the user interface template to show rules on the
+//	 * screen.
+//	 * 
+//	 * @return a list of query rules that can be managed by the user.
+//	 * @throws DatabaseException
+//	 */
+//	public Vector<String> getFilters() throws DatabaseException
+//	{
+//		Vector<String> filters = new Vector<String>();
+//		//Map<String, String> nameLabelMap = new TreeMap<String, String>();
+//
+//		if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
+//		else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol"); 
+//		else if (mode == SEARCHINGMEASUREMENT) filters.add("SearchingMeasurement");
+//		else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail"); 
+//		else if (mode == SEARCHINGALL) filters.add("SearchingAll"); 
+//
+//			//filters.add(label + " " + rule.getOperator().toString() + " "+ rule.getValue());
+//
+//		
+//
+//		return filters;
+//	}
+	
 	@Override
 	public void reload(Database db) {
 

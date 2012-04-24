@@ -34,18 +34,18 @@ public class catalogueUpdateDatabase
 		Database db = DatabaseFactory.create("apps/catalogue/org/molgenis/catalogue/catalogue.molgenis.properties");
 		
 		// Only add  user if type of Login allows for this
-		if (!(db.getSecurity() instanceof SimpleLogin)) {
-			MolgenisUser u = new MolgenisUser();
-			u.setName("biobank");
-			u.setPassword("biobank");
-			u.setSuperuser(true);
-			db.add(u);
-			Person p = new Person();
-			p.setFirstName("Despoina");
-			p.setLastName("Antonakaki");
-			p.setEmail("despoina.antonakaki@gmail.com");
-			db.add(p);
-		}
+//		if (!(db.getSecurity() instanceof SimpleLogin)) {
+//			MolgenisUser u = new MolgenisUser();
+//			u.setName("biobank");
+//			u.setPassword("biobank");
+//			u.setSuperuser(true);
+//			db.add(u);
+//			Person p = new Person();
+//			p.setFirstName("Despoina");
+//			p.setLastName("Antonakaki");
+//			p.setEmail("despoina.antonakaki@gmail.com");
+//			db.add(p);
+//		}
 		
 		MolgenisUser demo = new MolgenisUser();
 		demo.setName("demo");
@@ -71,11 +71,8 @@ public class catalogueUpdateDatabase
 			mp.setEntity_Id(i);
 			mp.setPermission("own");
 			db.add(mp);
-			System.out.println("=Inserting molgenis permisssion for ==" + i);
-
+			System.out.println("Inserting molgenis permisssion for :" + i);
 		}
-		
-		
 		//TODO : do batch import
 	}
 }

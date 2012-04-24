@@ -15,6 +15,7 @@
 
 
 	<div class="formscreen">
+		
 		<div class="form_header" id="${screen.getName()}">
 			${screen.label}
 		</div>
@@ -101,7 +102,8 @@
 										   border: 2px outset #d7b9c9;
 										   font-size:15px;
 										   font-weight:bold;
-										   "/></td>
+										   "/>
+							</td>
 						</tr>
 					</table>
 			   </#if>	
