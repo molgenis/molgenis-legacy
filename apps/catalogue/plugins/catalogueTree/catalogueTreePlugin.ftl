@@ -73,7 +73,20 @@
 					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
 				
 				<input type="submit" name="SearchCatalogueTree" value="search" onclick="__action.value='SearchCatalogueTree';"/>
-					    
+					    <!--
+					    <#list screen.getFilters() as filters>
+							<div class="filterslabel">
+								<b>Search results for ${filters}</b>
+								<img id="remove_filter" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="__action.value='removeFilters';" title="remove filter"
+							</div>
+						</#list>
+						-->
+						
+						<#list screen.getFilters() as filter>			
+							<!--<b>${filter}</b> <img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','removeFilters','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>-->
+							<b>${filter}</b> <img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','removeFilters','iframe');  document.forms.${screen.name}_form.submit();" title="remove filter"/>
+						<#if filter_has_next> and </#if>
+						</#list>
 					    
 					    </td><td class="box-body" style="width: 50%;">Details:</td></tr>
 					    <tr><td class="box-body">

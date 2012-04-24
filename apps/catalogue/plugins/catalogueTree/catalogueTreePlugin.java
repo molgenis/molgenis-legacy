@@ -56,7 +56,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	private boolean isSelectedInv = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
+	private List<String> SearchFilters = new ArrayList<String>();
 
+	
 	private static int SEARCHINGPROTOCOL = 2;
 
 	private static int SEARCHINGMEASUREMENT = 3;
@@ -131,8 +133,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				measurementName = request.getAction().substring( "DeleteMeasurement".length() + 2+ "measurementName".length(),	request.getAction().length());
 				this.deleteShoppingItem(measurementName);
 
-			}
-			if (request.getAction().startsWith("SearchCatalogueTree")) {
+			} else if (request.getAction().startsWith("SearchCatalogueTree")) {
 				
 				if (request.getString("InputToken") != null) {
 
@@ -150,6 +151,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("Protocols")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Protocols ",  true));
+						SearchFilters.add("Protocols:" + this.getInputToken());
 
 						mode = SEARCHINGPROTOCOL;
 						RetrieveProtocols(db, SEARCHINGPROTOCOL);
@@ -158,13 +160,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("Measurements")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Measurements ",  true));
-
+						SearchFilters.add("Measurements:" + this.getInputToken());
 						mode = SEARCHINGMEASUREMENT;
 						RetrieveProtocols(db, SEARCHINGMEASUREMENT);
 					}
 					if (this.getSelectedField().equals("All fields")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in all fields ",  true));
+						SearchFilters.add("All:" + this.getInputToken());
 
 						mode = SEARCHINGALL;
 						RetrieveProtocols(db, SEARCHINGALL);
@@ -172,6 +175,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("Details")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Details ",  true));
+						SearchFilters.add("Details:" + this.getInputToken());
 
 						mode = SEARCHINGDETAIL;
 						RetrieveProtocols(db, SEARCHINGDETAIL);
@@ -184,6 +188,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				} else {
 					this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
 				}
+			} else if (request.getAction().startsWith("removeFilters")) {
+				System.out.println("-------------------reached-----------------------");
+				
 			}
 
 		} catch (Exception e) {
@@ -1073,6 +1080,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return comparison;
 	}
 
+	public List<String> getFilters() {
+//		if (!SearchFilters.isEmpty()) {
+//			return this.SearchFilters;
+//		}
+		//return "filters";
+		return SearchFilters;
+	}
+	
 	//	@Override
 	//	public boolean isVisible()
 	//	{
