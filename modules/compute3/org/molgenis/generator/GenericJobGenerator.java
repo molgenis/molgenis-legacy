@@ -28,6 +28,8 @@ public class GenericJobGenerator implements JobGenerator
 {
     private static Logger logger = Logger.getLogger(GenericJobGenerator.class);
 
+    private FoldingMaker foldingMaker = new FoldingMaker();
+
     //template sources
     private String templateGridDownload;
     private String templateGridDownloadExe;
@@ -131,7 +133,7 @@ public class GenericJobGenerator implements JobGenerator
             if (workflow.getName().equalsIgnoreCase("ngs_demo"))
             {
                 //id = "id_" + System.currentTimeMillis();
-                id = "id" + ngs_id ;
+                id = "id" + ngs_id;
                 ngs_id++;
             }
 
@@ -157,9 +159,21 @@ public class GenericJobGenerator implements JobGenerator
                     }
                 }
                 complexParameters.removeAll(toRemove);
-                System.out.println("loop " + count + " removed" + toRemove.size());
+                System.out.println("loop " + count + " removed " + toRemove.size());
                 count++;
             }
+
+            //check correctness
+            int number = 0;
+            Enumeration keys = values.keys();
+            while (keys.hasMoreElements())
+            {
+                String key = (String) keys.nextElement();
+                String value = values.get(key);
+                System.out.println(number + "\t" + key + " -> " + value);
+                number++;
+            }
+
             //read all workflow elements
             Collection<WorkflowElement> workflowElements = workflow.getWorkflowWorkflowElementCollection();
             Iterator<WorkflowElement> itr = workflowElements.iterator();
@@ -186,7 +200,7 @@ public class GenericJobGenerator implements JobGenerator
                 // and for cluster to generate submit script
                 if (backend.equalsIgnoreCase(JobGenerator.GRID))
                 {
-                    GridTransferContainer container = fillContainer(protocol, values);
+                    GridTransferContainer container = fillContainerStr(protocol, values);
                     pairJobTransfers.put(job.getName(), container);
                 }
                 else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
@@ -202,6 +216,45 @@ public class GenericJobGenerator implements JobGenerator
             }
         }
         return computeJobs;
+    }
+
+    private GridTransferContainer fillContainerStr(ComputeProtocol protocol, Hashtable<String, String> values)
+    {
+        GridTransferContainer container = new GridTransferContainer();
+
+        List<ComputeParameter> inputs = protocol.getInputs();
+        for (ComputeParameter input : inputs)
+        {
+            String name = input.getName();
+            String value = values.get(name);
+            container.addInput(name, value);
+        }
+
+        List<ComputeParameter> outputs = protocol.getOutputs();
+        for (ComputeParameter output : outputs)
+        {
+            String name = output.getName();
+            String value = values.get(name);
+            container.addOutput(name, value);
+        }
+
+        List<ComputeParameter> exes = protocol.getExes();
+        for (ComputeParameter exe : exes)
+        {
+            String name = exe.getName();
+            String value = values.get(name);
+            container.addExe(name, value);
+        }
+
+        List<ComputeParameter> logs = protocol.getLogs();
+        for (ComputeParameter log : logs)
+        {
+            String name = log.getName();
+            String value = values.get(name);
+            container.addLog(name, value);
+        }
+
+        return container;
     }
 
     public Vector<ComputeJob> generateComputeJobsWorksheetWithFolding(Workflow workflow, List<Tuple> worksheet, String backend)
@@ -235,10 +288,10 @@ public class GenericJobGenerator implements JobGenerator
             String template = protocol.getScriptTemplate();
 
             List<String> targets = protocol.getIterateOver_Name();
-			if (targets.size() == 0)
-			{
-				targets.add("line_number");
-			}
+            if (targets.size() == 0)
+            {
+                targets.add("line_number");
+            }
 
             List<Tuple> folded = Worksheet.foldWorksheet(worksheet, (List<ComputeParameter>) parameters, targets);
 
@@ -317,12 +370,187 @@ public class GenericJobGenerator implements JobGenerator
                         }
                     }
                     complexParameters.removeAll(toRemove);
-                    System.out.println("loop " + count + " removed" + toRemove.size());
+                    System.out.println("loop " + count + " removed " + toRemove.size());
                     count++;
                 }
-                //read all workflow elements
+
+                //check correctness
+                int number = 0;
+                Enumeration keys = values.keys();
+                while (keys.hasMoreElements())
+                {
+                    String key = (String) keys.nextElement();
+                    String value = values.get(key);
+                    System.out.println(number + "\t" + key + " -> " + value);
+                    number++;
+                }
+
 
                 String jobListing = weaveFreemarker(template, values);
+
+                ComputeJob job = new ComputeJob();
+
+                String jobName = config.get(JobGenerator.GENERATION_ID) + "_" +
+                        workflow.getName() + "_" +
+                        el.getName() + "_" + id;
+
+                job.setName(jobName);
+                job.setProtocol(protocol);
+                job.setComputeScript(jobListing);
+                computeJobs.add(job);
+
+                //fill containers for grid jobs to ensure correct data transfer
+                // and for cluster to generate submit script
+                if (backend.equalsIgnoreCase(JobGenerator.GRID))
+                {
+                    GridTransferContainer container = fillContainerStr(protocol, values);
+                    pairJobTransfers.put(job.getName(), container);
+                }
+                else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+                {
+                    pairWEtoCJ.put(el, job);
+                    pairCJtoWE.put(job, el);
+                }
+                logger.log(Level.DEBUG, "----------------------------------------------------------------------");
+                logger.log(Level.DEBUG, el.getName());
+                logger.log(Level.DEBUG, jobListing);
+                logger.log(Level.DEBUG, "----------------------------------------------------------------------");
+
+            }
+        }
+        return computeJobs;
+    }
+
+    public Vector<ComputeJob> generateComputeJobsWorksheetWithFoldingNew(Workflow workflow, List<Tuple> f, String backend)
+    {
+        //create the table with targets, which is equal to worksheet if there are no targets
+        List<Hashtable> table = null;
+
+        //remove unused parameters from the worksheet
+        List<Hashtable> worksheet = foldingMaker.transformToTable(f);
+        foldingMaker.setWorkflow(workflow);
+        worksheet = foldingMaker.removeUnused(worksheet, (List<ComputeParameter>) workflow.getWorkflowComputeParameterCollection());
+
+        //some supplementary hashtables
+        Vector<ComputeJob> computeJobs = new Vector<ComputeJob>();
+
+        if (backend.equalsIgnoreCase(JobGenerator.GRID))
+            pairJobTransfers = new Hashtable<String, GridTransferContainer>();
+
+        if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+        {
+            pairWEtoCJ = new Hashtable<WorkflowElement, ComputeJob>();
+            pairCJtoWE = new Hashtable<ComputeJob, WorkflowElement>();
+            submitScript = "";
+        }
+
+        Collection<ComputeParameter> parameters = workflow.getWorkflowComputeParameterCollection();
+
+
+        Collection<WorkflowElement> workflowElements = workflow.getWorkflowWorkflowElementCollection();
+        Iterator<WorkflowElement> itr = workflowElements.iterator();
+        while (itr.hasNext())
+        {
+            //because Hashtable does not allow null keys or values used for weaving
+            Hashtable<String, Object> values = new Hashtable<String, Object>();
+
+            //parameters which are templates
+            Vector<ComputeParameter> complexParameters = new Vector<ComputeParameter>();
+
+            WorkflowElement el = itr.next();
+            ComputeProtocol protocol = (ComputeProtocol) el.getProtocol();
+            String template = protocol.getScriptTemplate();
+
+            //chack if we have any targets
+            List<ComputeParameter> targets = foldingMaker.findTargets(protocol.getScriptTemplate());
+            if (targets != null)
+            {
+                table = foldingMaker.fold(targets, worksheet);
+            }
+            else
+                table = worksheet;
+
+            Iterator<ComputeParameter> itParameter = parameters.iterator();
+            while (itParameter.hasNext())
+            {
+                ComputeParameter parameter = itParameter.next();
+                if (parameter.getDefaultValue() != null)
+                {
+                    if (parameter.getDefaultValue().contains("${"))
+                    {
+                        complexParameters.addElement(parameter);
+                    }
+                    else
+                    {
+                        values.put(parameter.getName(), parameter.getDefaultValue());
+                    }
+                }
+                else
+                    values.put(parameter.getName(), "");
+            }
+
+            //weave complex parameters without folding
+            //because folding related to protocols
+            for (int i = 0; i < worksheet.size(); i++)
+            {
+                Hashtable<String, Object> line = worksheet.get(i);
+
+                Enumeration ekeys = line.keys();
+                while (ekeys.hasMoreElements())
+                {
+                    String ekey = (String) ekeys.nextElement();
+                    Object eValues = line.get(ekey);
+                    values.put(ekey, eValues);
+                }
+
+                int count = 0;
+                while ((complexParameters.size() > 0) && (count < 10))
+                {
+                    Vector<ComputeParameter> toRemove = new Vector<ComputeParameter>();
+                    for (ComputeParameter computeParameter : complexParameters)
+                    {
+                        String complexValue = foldingMaker.weaveFreemarker(computeParameter.getDefaultValue(), values);
+
+                        if (complexValue.contains("${"))
+                        {
+                            System.out.println(computeParameter.getName() + " -> " + complexValue);
+                        }
+                        else
+                        {
+                            values.put(computeParameter.getName(), complexValue);
+                            toRemove.add(computeParameter);
+                        }
+                    }
+                    complexParameters.removeAll(toRemove);
+                    System.out.println("loop " + count + " removed " + toRemove.size());
+                    count++;
+                }
+            }
+
+            //now we start to use foldered worksheet
+            for (int i = 0; i < table.size(); i++)
+            {
+                String id = "id";
+                Hashtable<String, Object> line = table.get(i);
+
+                Enumeration ekeys = line.keys();
+                while (ekeys.hasMoreElements())
+                {
+                    String ekey = (String) ekeys.nextElement();
+                    Object eValues = line.get(ekey);
+                    values.put(ekey, eValues);
+
+                    id += "_" + eValues.toString();
+                }
+
+                //temporary until folding is implemented
+                if (workflow.getName().equalsIgnoreCase("ngs_demo"))
+                {
+                    //id = "id_" + System.currentTimeMillis();
+                    id = "id_" + i;
+                }
+
+                String jobListing = foldingMaker.weaveFreemarker(template, values);
 
                 ComputeJob job = new ComputeJob();
 
@@ -357,7 +585,7 @@ public class GenericJobGenerator implements JobGenerator
         return computeJobs;
     }
 
-    private GridTransferContainer fillContainer(ComputeProtocol protocol, Hashtable<String, String> values)
+    private GridTransferContainer fillContainer(ComputeProtocol protocol, Hashtable<String, Object> values)
     {
         GridTransferContainer container = new GridTransferContainer();
 
@@ -365,7 +593,7 @@ public class GenericJobGenerator implements JobGenerator
         for (ComputeParameter input : inputs)
         {
             String name = input.getName();
-            String value = values.get(name);
+            String value = (String) values.get(name);
             container.addInput(name, value);
         }
 
@@ -373,7 +601,7 @@ public class GenericJobGenerator implements JobGenerator
         for (ComputeParameter output : outputs)
         {
             String name = output.getName();
-            String value = values.get(name);
+            String value = (String) values.get(name);
             container.addOutput(name, value);
         }
 
@@ -381,7 +609,7 @@ public class GenericJobGenerator implements JobGenerator
         for (ComputeParameter exe : exes)
         {
             String name = exe.getName();
-            String value = values.get(name);
+            String value = (String) values.get(name);
             container.addExe(name, value);
         }
 
@@ -389,7 +617,7 @@ public class GenericJobGenerator implements JobGenerator
         for (ComputeParameter log : logs)
         {
             String name = log.getName();
-            String value = values.get(name);
+            String value = (String) values.get(name);
             container.addLog(name, value);
         }
 
@@ -635,7 +863,7 @@ public class GenericJobGenerator implements JobGenerator
     public String weaveFreemarker(String strTemplate, Hashtable<String, String> values)
     {
         Configuration cfg = new Configuration();
-        //cfg.setTemplateExceptionHandler(new MyTemplateExceptionHandler());
+        //cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 
         Template t = null;
         StringWriter out = new StringWriter();
@@ -646,11 +874,11 @@ public class GenericJobGenerator implements JobGenerator
         }
         catch (TemplateException e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         return out.toString();

@@ -1,5 +1,8 @@
 package org.molgenis.generator;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.molgenis.compute.ComputeParameter;
@@ -8,6 +11,9 @@ import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -17,14 +23,13 @@ import java.util.*;
  * Time: 12:49
  * To change this template use File | Settings | File Templates.
  */
-public class Foldamino
+public class FoldingMaker
 {
-    private String flag = "#FOREACH";
     private List<ComputeParameter> parameters = null;
     private ModelLoader loader = new ModelLoader();
     private Workflow workflow;
 
-    private static Logger logger = Logger.getLogger(Foldamino.class);
+    private static Logger logger = Logger.getLogger(FoldingMaker.class);
 
 
     public List<Hashtable> removeUnused(List<Hashtable> worksheet, List<ComputeParameter> parameters)
@@ -81,7 +86,7 @@ public class Foldamino
                     continue;
 
                 String value = tuple.getString(field);
-                System.out.println(field + " -> " + value);
+                //System.out.println(field + " -> " + value);
 
                 if (value == null)
                     continue;
@@ -94,6 +99,13 @@ public class Foldamino
 
     public void testFolding(Workflow workflow, List<Hashtable> worksheet)
     {
+
+        Hashtable<String, Object> values = new Hashtable<String, Object>();
+        Vector<ComputeParameter> complexParameters = new Vector<ComputeParameter>();
+
+        Collection<ComputeParameter> parameters = workflow.getWorkflowComputeParameterCollection();
+
+
         this.workflow = workflow;
         Collection<WorkflowElement> elements = workflow.getWorkflowWorkflowElementCollection();
 
@@ -109,12 +121,115 @@ public class Foldamino
             else
             {
                 System.out.println(element.getName() + " has targets!");
+                //List<Hashtable> table = fold(targets, worksheet);
+
+                //here weaving testing
+                Iterator<ComputeParameter> itParameter = parameters.iterator();
+                while (itParameter.hasNext())
+                {
+                    ComputeParameter parameter = itParameter.next();
+                    if (parameter.getDefaultValue() != null)
+                    {
+                        if (parameter.getDefaultValue().contains("${"))
+                        {
+                            complexParameters.addElement(parameter);
+                        }
+                        else
+                        {
+                            values.put(parameter.getName(), parameter.getDefaultValue());
+                        }
+                    }
+                    else
+                        values.put(parameter.getName(), "");
+                }
+
+                for (int i = 0; i < worksheet.size(); i++)
+                {
+                    Hashtable<String, Object> line = worksheet.get(i);
+
+                    Enumeration ekeys = line.keys();
+                    while (ekeys.hasMoreElements())
+                    {
+                        String ekey = (String) ekeys.nextElement();
+                        Object eValues = line.get(ekey);
+                        //System.out.println("#" + ekey + " -> " + eValues);
+                        values.put(ekey, eValues);
+                    }
+
+                    int count = 0;
+                    while ((complexParameters.size() > 0) && (count < 10))
+                    {
+                        Vector<ComputeParameter> toRemove = new Vector<ComputeParameter>();
+                        for (ComputeParameter computeParameter : complexParameters)
+                        {
+                            String complexValue = weaveFreemarker(computeParameter.getDefaultValue(), values);
+
+                            if (complexValue.contains("${"))
+                            {
+                                System.out.println(computeParameter.getName() + " -> " + complexValue);
+                            }
+                            else
+                            {
+                                values.put(computeParameter.getName(), complexValue);
+                                toRemove.add(computeParameter);
+                            }
+                        }
+                        complexParameters.removeAll(toRemove);
+                        System.out.println("loop " + count + " removed " + toRemove.size());
+                        count++;
+                    }
+                }
+
                 List<Hashtable> table = fold(targets, worksheet);
+
+                for (int i = 0; i < table.size(); i++)
+                {
+                    Hashtable<String, Object> line = table.get(i);
+
+                    Enumeration ekeys = line.keys();
+                    while (ekeys.hasMoreElements())
+                    {
+                        String ekey = (String) ekeys.nextElement();
+                        Object eValues = line.get(ekey);
+                        values.put(ekey, eValues);
+                    }
+
+                    String template = protocol.getScriptTemplate();
+                    String jobListing = weaveFreemarker(template, values);
+
+                    System.out.println(jobListing);
+
+                }
             }
         }
     }
 
-    private List<Hashtable> fold(List<ComputeParameter> targets, List<Hashtable> worksheet)
+
+    public String weaveFreemarker(String strTemplate, Hashtable<String, Object> values)
+    {
+        Configuration cfg = new Configuration();
+        //cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+
+        Template t = null;
+        StringWriter out = new StringWriter();
+        try
+        {
+            t = new Template("name", new StringReader(strTemplate), cfg);
+            t.process(values, out);
+        }
+        catch (TemplateException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return out.toString();
+    }
+
+    public List<Hashtable> fold(List<ComputeParameter> targets, List<Hashtable> worksheet)
     {
         //we find all used parameters
         Vector<ComputeParameter> parameters = new Vector<ComputeParameter>();
@@ -136,7 +251,7 @@ public class Foldamino
         //find all hasOne
         //first find initial hasOnes
         Vector<String> vecHasOneNames = new Vector<String>();
-        for(ComputeParameter target : targets)
+        for (ComputeParameter target : targets)
         {
             //this does not work - target.getHasOne()
             vecTargetNames.add(target.getName());
@@ -149,10 +264,10 @@ public class Foldamino
         int prevSize = 0;
 
         //now find the rest
-        while(vecHasOneNames.size() > prevSize)
+        while (vecHasOneNames.size() > prevSize)
         {
             Vector<String> temp = new Vector<String>();
-            for(String hasOneName : vecHasOneNames)
+            for (String hasOneName : vecHasOneNames)
             {
                 ComputeParameter par = findParameter(hasOneName);
                 List<String> hasOneNames = par.getHasOne_Name();
@@ -169,16 +284,16 @@ public class Foldamino
         //foldered line, where Object can be String of List<String>
         Hashtable<String, Object> line = null;
 
-        Vector<FoldaminoUniqueContainer> uniqueContainers = new Vector<FoldaminoUniqueContainer>();
+        Vector<FoldingUniqueContainer> uniqueContainers = new Vector<FoldingUniqueContainer>();
 
-        for(Hashtable initialLine: worksheet)
+        for (Hashtable initialLine : worksheet)
         {
-            System.out.println("#" + initialLine.toString());
+            //System.out.println("#" + initialLine.toString());
 
             //vector of all target values is used to build unique key-combination
             //unique string
             String keyCombination = "";
-            for(String field : vecTargetNames)
+            for (String field : vecTargetNames)
             {
                 String value = (String) initialLine.get(field);
                 keyCombination += value;
@@ -186,7 +301,7 @@ public class Foldamino
 
             //vector of all hasOne is used to build hasOne unique combination
             String hasOneCombination = "";
-            for(String field : vecHasOneNames)
+            for (String field : vecHasOneNames)
             {
                 String value = (String) initialLine.get(field);
                 hasOneCombination += value;
@@ -197,16 +312,58 @@ public class Foldamino
             uniqueContainers = evaluateUniqueness(uniqueContainers, keyCombination, hasOneCombination, initialLine);
         }
 
-        for(FoldaminoUniqueContainer container : uniqueContainers)
+        //create vector with unique field
+        Vector<String> unique = new Vector<String>();
+        unique.addAll(vecTargetNames);
+        unique.addAll(vecHasOneNames);
+
+
+        for (FoldingUniqueContainer container : uniqueContainers)
         {
+            //these initial lines should be foldered
             Vector<Hashtable> initialLines = container.getAllHashtablles();
-            if(initialLines.size() > 1)
+            if (initialLines.size() > 1)
             {
                 line = new Hashtable<String, Object>();
-//                for(Hashtable initialLine initialLines)
-//                {
-//
-//                }
+                for (Hashtable initialLine : initialLines)
+                {
+                    Enumeration ekeys = initialLine.keys();
+                    while (ekeys.hasMoreElements())
+                    {
+                        String ekey = (String) ekeys.nextElement();
+                        String eValue = (String) initialLine.get(ekey);
+                        //System.out.println("#" + ekey + " -> " + eValue);
+
+                        boolean isKeyUnique = isUnique(unique, ekey);
+
+                        if (isKeyUnique)
+                        {
+                            //we add ones
+                            if (!line.containsKey(ekey))
+                            {
+                                line.put(ekey, eValue);
+                            }
+                        }
+                        else
+                        {
+                            //we create List<String> only once and add all values there
+                            if (!line.containsKey(ekey))
+                            {
+                                //ha-ha we have some many variables that I cannot name a new one!!!
+                                List<String> finalListofValues = new ArrayList<String>();
+                                finalListofValues.add(eValue);
+                                line.put(ekey, finalListofValues);
+                            }
+                            else
+                            {
+                                List<String> finalListofValues = (List<String>) line.get(ekey);
+                                finalListofValues.add(eValue);
+                                line.put(ekey, finalListofValues);
+                            }
+                        }
+                    }
+
+                }
             }
             else
             {
@@ -218,19 +375,29 @@ public class Foldamino
         return folded;
     }
 
-    private Vector<FoldaminoUniqueContainer> evaluateUniqueness(Vector<FoldaminoUniqueContainer> uniqueContainers,
+    private boolean isUnique(Vector<String> unique, String ekey)
+    {
+        for (String str : unique)
+        {
+            if (str.equalsIgnoreCase(ekey))
+                return true;
+        }
+        return false;
+    }
+
+    private Vector<FoldingUniqueContainer> evaluateUniqueness(Vector<FoldingUniqueContainer> uniqueContainers,
                                                                 String keyCombination, String hasOneCombination, Hashtable initialLine)
     {
         boolean unique = true;
-        for(FoldaminoUniqueContainer container : uniqueContainers)
+        for (FoldingUniqueContainer container : uniqueContainers)
         {
             String key = container.getKey();
-            if(key.equalsIgnoreCase(keyCombination))
+            if (key.equalsIgnoreCase(keyCombination))
             {
                 //it is not unique
                 //let check hasOneCombination
                 String hasOne = container.getHasOne();
-                if(hasOne.equalsIgnoreCase(hasOneCombination))
+                if (hasOne.equalsIgnoreCase(hasOneCombination))
                 {
                     //it should be foldered
                     container.addElement(initialLine);
@@ -245,21 +412,21 @@ public class Foldamino
             }
         }
 
-        if(unique)
+        if (unique)
         {
-                FoldaminoUniqueContainer newContainer = new FoldaminoUniqueContainer(keyCombination, hasOneCombination, initialLine);
-                uniqueContainers.add(newContainer);
+            FoldingUniqueContainer newContainer = new FoldingUniqueContainer(keyCombination, hasOneCombination, initialLine);
+            uniqueContainers.add(newContainer);
         }
         return uniqueContainers;  //To change body of created methods use File | Settings | File Templates.
     }
 
-    private List<ComputeParameter> findTargets(String protocol)
+    public List<ComputeParameter> findTargets(String protocol)
     {
         List<ComputeParameter> list = null;
-        if (protocol.indexOf(flag) > -1)
+        if (protocol.indexOf(JobGenerator.FLAG) > -1)
         {
-            String str = protocol.substring(protocol.indexOf(flag),
-                    protocol.indexOf("\n", protocol.indexOf(flag)));
+            String str = protocol.substring(protocol.indexOf(JobGenerator.FLAG),
+                    protocol.indexOf("\n", protocol.indexOf(JobGenerator.FLAG)));
             list = getParametersFromHeader(str);
             return list;
         }
@@ -320,5 +487,10 @@ public class Foldamino
         }
         names.add(list);
         return names;
+    }
+
+    public void setWorkflow(Workflow workflow)
+    {
+        this.workflow = workflow;
     }
 }

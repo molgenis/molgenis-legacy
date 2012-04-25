@@ -10,14 +10,14 @@ import java.util.Vector;
  * Time: 12:55
  * To change this template use File | Settings | File Templates.
  */
-public class FoldaminoUniqueContainer
+public class FoldingUniqueContainer
 {
     private String key;
     private String hasOne;
 
     private Vector<Hashtable> hashtables = new Vector<Hashtable>();
 
-    public FoldaminoUniqueContainer(String keyCombination, String hasOneCombination, Hashtable initialLine)
+    public FoldingUniqueContainer(String keyCombination, String hasOneCombination, Hashtable initialLine)
     {
         this.key = keyCombination;
         this.hasOne = hasOneCombination;

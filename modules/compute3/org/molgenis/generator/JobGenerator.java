@@ -39,9 +39,12 @@ public interface JobGenerator
 
     public static final String DEPENDENCY_HEAD = " -W depend=afterok";
 
+    public static final String FLAG = "#FOREACH";
+
 
     Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);
     Vector<ComputeJob> generateComputeJobsWorksheetWithFolding(Workflow workflow, List<Tuple> worksheet, String backend);
+    Vector<ComputeJob> generateComputeJobsWorksheetWithFoldingNew(Workflow workflow, List<Tuple> worksheet, String backend);
 
     Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet, String backend);
 
