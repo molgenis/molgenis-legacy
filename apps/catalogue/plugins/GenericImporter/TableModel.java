@@ -183,9 +183,9 @@ public class TableModel {
 
 		int sheetSize = sheets.length;
 
-		if(multipleSheets == true){
-			sheetSize = 1;
-		}
+//		if(multipleSheets == true){
+//			sheetSize = 1;
+//		}
 		try{
 			for(int sheetIndex = 0; sheetIndex < sheetSize; sheetIndex++){
 
