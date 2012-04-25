@@ -122,4 +122,11 @@ public class ExcelReader extends AbstractTupleReader implements TupleReader, Tup
 	{
 		//nothing needed
 	}
+
+	@Override
+	//excel reader is never 'closed'?
+	public boolean isClosed()
+	{
+		return false;
+	}
 }
