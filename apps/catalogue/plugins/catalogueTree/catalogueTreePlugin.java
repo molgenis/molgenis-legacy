@@ -106,6 +106,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				System.out.println("The selected investigation is : "
 						+ selectedInvestigation);
 				arrayInvestigations.clear();
+				this.SearchFilters.clear();
+
 
 			} else if ("DownloadMeasurements".equals(request.getAction())) {
 

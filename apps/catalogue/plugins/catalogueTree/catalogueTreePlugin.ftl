@@ -84,7 +84,12 @@
 						
 						<#list screen.getFilters() as filter>			
 							<!--<b>${filter}</b> <img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','removeFilters','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>-->
-							<b>${filter}</b> <img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','removeFilters','iframe');  document.forms.${screen.name}_form.submit();" title="remove filter"/>
+							<!--<b>${filter}</b> <img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','removeFilters','iframe');  document.forms.${screen.name}_form.submit();" title="remove filter"/>-->
+							<b>${filter}</b>
+							<input type="image" src="generated-res/img/cancel.png" alt="Remove filter" 
+											name="chooseInvestigation" style="vertical-align: middle;" 
+											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
+											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
 						<#if filter_has_next> and </#if>
 						</#list>
 					    
