@@ -502,4 +502,18 @@ public class CsvBufferedReaderMultiline extends AbstractTupleReader implements C
 		this.columnnames = null;
 		if (hasHeader) headers = colnames();
 	}
+
+	@Override
+	public boolean isClosed()
+	{
+		try
+		{
+			return !reader.ready();
+		}
+		catch(IOException ioe)
+		{
+			return true;
+		}
+		
+	}
 }

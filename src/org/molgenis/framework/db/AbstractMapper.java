@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -439,15 +440,21 @@ public abstract class AbstractMapper<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
+	//FIXME: limit argument is never used?
 	public List<E> toList(TupleReader reader, int limit)
 			throws DatabaseException
 	{
-		final List<E> entities = createList(10);
+		//hack to while over a reader until the result is empty
+		if(reader.isClosed())
+		{
+			return new ArrayList<E>();
+		}
+		
+		final List<E> entities = createList(10); //TODO why 10?
 		try
 		{
-			for (Tuple line : reader)
+			for (Tuple line : reader) //TODO should limit not be used somehow?
 			{
-
 				E e = create();
 				e.set(line, false); // parse the tuple
 				entities.add(e);
