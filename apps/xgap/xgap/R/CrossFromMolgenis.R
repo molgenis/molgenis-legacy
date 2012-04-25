@@ -174,7 +174,7 @@ CrossFromMolgenis <- function(investigationname="",genotypematrixname=NULL,pheno
 	names <- NULL
 	allchr <- find.chromosome(investigation_name=investigationname)
 	for(i in 1:dim(marker_data)[1]){
-		chrid <- marker_info[which(rownames(marker_data)[i]== marker_info$name),"chromosome"]
+		chrid <- marker_info[which(rownames(marker_data)[i]== marker_info$name),"chromosome_id"]
 		chr <- c(chr,allchr[which(chrid==allchr$id),]$ordernr)
 		loc <- c(loc,marker_info[which(rownames(marker_data)[i]== marker_info$name),"cm"])
 		names <- c(names,marker_info[which(rownames(marker_data)[i]== marker_info$name),"name"])
