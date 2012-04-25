@@ -109,17 +109,17 @@ public class ExcelExporter<R extends ObservationTarget, C extends Measurement, V
 		if (dataCell == null) {
 			return new Blank(row, column);
 		} else {
-			if(columnType == ColumnType.String) {
+			if(columnType == ColumnType.STRING) {
 				return new Label(row, column, dataCell);
-			} else if(columnType == ColumnType.Integer) {
+			} else if(columnType == ColumnType.INTEGER) {
 				return new jxl.write.Number(row, column, Double.parseDouble(dataCell), new WritableCellFormat (jxl.write.NumberFormats.INTEGER)); 					
-			} else if(columnType == ColumnType.Code) {
+			} else if(columnType == ColumnType.CODE) {
 				return new jxl.write.Label(row, column, dataCell.toString());
-			} else if(columnType == ColumnType.Decimal) {
+			} else if(columnType == ColumnType.DECIMAL) {
 				return new jxl.write.Number(row, column, Double.parseDouble(dataCell), new WritableCellFormat (jxl.write.NumberFormats.FLOAT));
-			} else if(columnType == ColumnType.Timestamp || columnType == ColumnType.Datetime) {
+			} else if(columnType == ColumnType.TIMESTAMP || columnType == ColumnType.DATETIME) {
 				return writeDateCell(row, column, dataCell, "y-M-d H:m:s", "yyyy MM dd hh:mm:ss");
-			} else if(columnType == ColumnType.Date) {				
+			} else if(columnType == ColumnType.DATE) {				
 				return writeDateCell(row, column, dataCell, "y-M-d", "yyyy MM dd");
 			} else {
 				throw new UnsupportedOperationException(String.format("Type %s not available",columnType));

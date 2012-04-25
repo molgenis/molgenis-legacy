@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.ScrollableResults;
-import org.molgenis.matrix.PhenoMatrix;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.PhenoMatrix;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.pheno.Measurement;
@@ -45,7 +45,7 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 	public void writeSingleCell(Object object, int iRow, int iColumn, ColumnType columnType)  {
 		try {
 			switch(columnType) {
-				case Datetime :
+				case DATETIME :
 					if(object != null) {
 						Timestamp ts = (Timestamp)object;
 						d_spssWriter.addData(new Date(ts.getTime()));
@@ -53,7 +53,7 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 						d_spssWriter.addData((Date)null);
 					}
 					break;
-				case Date :
+				case DATE :
 					if(object != null) {
 						Timestamp ts = (Timestamp)object;
 						d_spssWriter.addData(new Date(ts.getTime())); 
@@ -61,7 +61,7 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 						d_spssWriter.addData((Date)null);
 					}				
 					break;
-				case Decimal :
+				case DECIMAL :
 					if(object != null) {
 						Number nDouble = (Number)object;
 						d_spssWriter.addData(nDouble.doubleValue());
@@ -69,7 +69,7 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 						d_spssWriter.addData((Double)null);
 					}
 					break;
-				case Integer : 
+				case INTEGER : 
 					if(object != null) {
 						Number nInt = (Number)object;
 						d_spssWriter.addData(nInt.longValue());
@@ -107,7 +107,7 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 		
 		if (colType == null) {
 			d_spssWriter.addStringVar(colName, 255, colName);
-		} else if (colType.equals(ColumnType.Decimal)) {
+		} else if (colType.equals(ColumnType.DECIMAL)) {
 			int width = 10;
 			int decimal = 2;
 			String precision = StringUtils.substringBetween(dataType, "(", ")");
@@ -117,10 +117,10 @@ public class SPSSExporter<R extends ObservationTarget, C extends Measurement, V 
 				decimal = Integer.parseInt(parts[1]);
 			}
 			d_spssWriter.addNumericVar(colName, width, decimal, colName);
-		} else if (colType.equals(ColumnType.Integer)) {
+		} else if (colType.equals(ColumnType.INTEGER)) {
 			// so far for nondecimals is always 10,0 from what I see.
 			d_spssWriter.addNumericVar(colName, 10, 0, colName);
-		} else if (colType.equals(ColumnType.Date) || colType.equals(ColumnType.Datetime) || colType.equals(ColumnType.Timestamp)) {
+		} else if (colType.equals(ColumnType.DATE) || colType.equals(ColumnType.DATETIME) || colType.equals(ColumnType.TIMESTAMP)) {
 			d_spssWriter.addDateVar(colName, SPSSWriter.DATE_TYPE_05, colName);
 		} else {
 			d_spssWriter.addStringVar(colName, 255, colName);

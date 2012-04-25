@@ -22,17 +22,17 @@ public abstract class AbstractExporter<R extends ObservationTarget, C extends Me
 		this.os = os;
 	}	
 	
-	public final void writeResults(final ScrollableResults rs, final boolean exportVisibleRows) throws MatrixException {
+	public final void writeResults(final ScrollableResults sr, final boolean exportVisibleRows) throws MatrixException {
 		try {
 			final List<Column> columns = matrix.getColumns();
 			int iRow = 0;
-			while (rs.next()) {
-				final Object[] row = rs.get();
+			while (sr.next()) {
+				final Object[] row = sr.get();
 				final int nColumns = exportVisibleRows ? row.length - 1 : row.length;
 				for (int iColumn = 0; iColumn < nColumns; ++iColumn) {
 					writeSingleCell(row[iColumn], iRow, iColumn, columns.get(iColumn).getType());
 					if(iColumn < nColumns - 1) {
-						writeSeperator();
+						writeSeparator();
 					}
 				}
 				writeEndOfLine();
@@ -43,7 +43,7 @@ public abstract class AbstractExporter<R extends ObservationTarget, C extends Me
 		} 
 	}
 	
-	public void writeSeperator() {}
+	public void writeSeparator() {}
 	public void writeEndOfLine() {}
 
 	protected abstract void export(boolean exportVisible) throws MatrixException;
