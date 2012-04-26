@@ -310,7 +310,6 @@ public class PhenoService
 		pa.setTime(paDTO.getTime());
 		pa.setPerformer_Id(paDTO.getPerformerIdList());
 		pa.setProtocol_Id(paDTO.getProtocolId());
-		System.out.println(">>> Created performerId==" + pa.getPerformer_Id());
 		return pa;
 	}
 
