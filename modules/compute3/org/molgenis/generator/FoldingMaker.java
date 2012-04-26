@@ -89,8 +89,12 @@ public class FoldingMaker
                 //System.out.println(field + " -> " + value);
 
                 if (value == null)
-                    continue;
-                hashtable.put(field, value);
+                {
+                    hashtable.put(field, "");
+                    //continue;
+                }
+                else
+                    hashtable.put(field, value);
             }
             list.add(hashtable);
         }
