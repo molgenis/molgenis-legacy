@@ -44,8 +44,6 @@ import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 
 import app.DatabaseFactory;

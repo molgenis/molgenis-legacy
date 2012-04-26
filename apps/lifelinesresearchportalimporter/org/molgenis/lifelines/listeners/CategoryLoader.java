@@ -1,6 +1,9 @@
 package org.molgenis.lifelines.listeners;
 
-import javax.persistence.EntityManager;
+import static ch.lambdaj.Lambda.filter;
+import static ch.lambdaj.Lambda.having;
+import static ch.lambdaj.Lambda.on;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,26 +11,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.DataFormatException;
 
+import javax.persistence.EntityManager;
+
 import org.apache.commons.lang.ArrayUtils;
-import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.Tuple;
 
 import au.com.bytecode.opencsv.CSVReader;
-import static ch.lambdaj.Lambda.*;
-import static org.hamcrest.Matchers.*;
 
 //import static org.hamcrest.text.IsEqualIgnoringCase.*;
 

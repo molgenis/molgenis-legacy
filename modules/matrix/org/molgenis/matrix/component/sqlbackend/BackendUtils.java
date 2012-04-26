@@ -128,7 +128,7 @@ public class BackendUtils {
                 		System.out.println("Invalid Label"); 
                 	}
                 } else {
-                	if(ct == ColumnType.Date) {
+                	if(ct == ColumnType.DATE) {
                 		Date date = null;
                 		try {
                 			date = new SimpleDateFormat("yyyy-MM-dd").parse(value);
