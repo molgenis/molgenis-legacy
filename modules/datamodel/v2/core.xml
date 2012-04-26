@@ -37,7 +37,7 @@
 			<unique fields="identifier" description="identifier is unique" />
 		</entity>
 		<entity name="OntologyTerm" implements="Identifiable"
-			xref_label="ontology_identifier,identifier">
+			xref_label="identifier">
 			<description>
 				OntologyTerm defines a single entry (term) from an
 				ontology or a controlled vocabulary (defined by Ontology). The
@@ -56,7 +56,7 @@
 				description="(Optional) The definition of the term." />
 			<unique fields="ontology,termAccession"
 				description="The term accession is unique within an Ontology" />
-			<unique fields="ontology,identifier" description="each identifier is unique" />
+			<unique fields="identifier" description="each identifier is unique" />
 		</entity>
 		<entity name="Accession" extends="OntologyTerm">
 			<description>
