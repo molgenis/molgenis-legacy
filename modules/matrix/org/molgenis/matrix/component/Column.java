@@ -12,19 +12,18 @@ public class Column  {
     //TODO: remove enum and replace by datatype that is a MolgenisType
     @Deprecated
     public enum ColumnType {
-        Date("date"),
-        Timestamp("timestamp"),
-        Datetime("datetime"),
-        Integer("int", false),
-        Decimal("decimal", false),
-        String("string"),
-        Code("code", false);
+        DATE("date"),
+        TIMESTAMP("timestamp"),
+        DATETIME("datetime"),
+        INTEGER("int", false),
+        DECIMAL("decimal", false),
+        STRING("string"),
+        CODE("code", false);
         
         private String name;
         private boolean quote = true;
-
-        
-        ColumnType(String name) {
+         
+		ColumnType(String name) {
             this.name = name;
         }
         
@@ -32,11 +31,11 @@ public class Column  {
             this.name = name;
             this.quote = quote;
         }
-
+        
         public boolean isQuote() {
             return quote;
         }
-
+        
         @Override
         public String toString() {
             return name;
@@ -53,6 +52,7 @@ public class Column  {
     }
 
     public ColumnType getType() {
+//    	measurement.g
         return getColumnType(measurement.getDataType());
     }
 
@@ -63,7 +63,8 @@ public class Column  {
     public Measurement getMeasurement() {
         return measurement;
     }
-
+    
+    @Deprecated
     public static ColumnType getColumnType(String columnType) {
         columnType = WordUtils.capitalize(columnType);
         
@@ -72,23 +73,25 @@ public class Column  {
         	//final int precision = Integer.parseInt(StringUtils.substringBetween(columnType, "(", ","));
         	
         	if(decimalPrecision == 0) {
-        		return ColumnType.Integer;
+        		return ColumnType.INTEGER;
         	} else {
-        		return ColumnType.Decimal;	
+        		return ColumnType.DECIMAL;	
         	}
         } else if(columnType.startsWith("DATUM") || columnType.startsWith("DATE")) {
-        	return ColumnType.Date;
+        	return ColumnType.DATE;
         } else if(columnType.startsWith("TEKST") || columnType.startsWith("TEXT")) {
-        	return ColumnType.String;
+        	return ColumnType.STRING;
+        } else if(columnType.startsWith("CODE")) {
+        	return ColumnType.CODE;
         }
         
         try {
             return ColumnType.valueOf(columnType);
         } catch (Exception ex) {
             if (columnType.equals("int")) {
-                return ColumnType.Integer;
+                return ColumnType.INTEGER;
             }
         }
-        return ColumnType.String;
+        return ColumnType.STRING;
     }
 }

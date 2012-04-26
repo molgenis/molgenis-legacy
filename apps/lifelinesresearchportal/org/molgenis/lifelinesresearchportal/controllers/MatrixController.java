@@ -1,14 +1,16 @@
 package org.molgenis.lifelinesresearchportal.controllers;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +21,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import jxl.write.WriteException;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
@@ -32,7 +36,7 @@ import org.molgenis.matrix.PhenoMatrix;
 import org.molgenis.matrix.Utils.CsvExporter;
 import org.molgenis.matrix.Utils.ExcelExporter;
 import org.molgenis.matrix.Utils.Exporter;
-import org.molgenis.matrix.Utils.SPSSExporter;
+import org.molgenis.matrix.Utils.newSPSSExporter;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.organization.Investigation;
@@ -43,16 +47,21 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.HandleException;
 
-import com.mindbright.jca.security.UnsupportedOperationException;
-
 import app.DatabaseFactory;
-import app.ExcelExport;
+
+import com.mindbright.jca.security.UnsupportedOperationException;
 
 /**
  * Servlet implementation class jqGrid
  */
 public class MatrixController extends HttpServlet
 {
+	private static final String CSV_TYPE = "Csv";
+
+	private static final String EXCEL_TYPE = "Excel";
+
+	private static final String SPSS_TYPE = "Spss";
+
 	private static final long serialVersionUID = 1L;
 
 	private PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix;
@@ -273,34 +282,9 @@ public class MatrixController extends HttpServlet
 
 		try
 		{
-			if (StringUtils.isNotEmpty(exportType) && StringUtils.isNotEmpty(exportType))
+			if (StringUtils.isNotEmpty(exportType))
 			{
-				String exportSelection = request.getParameter("exportSelection");
-				if (exportSelection.equals("All"))
-				{
-					matrix.setRowLimit(0);
-					matrix.setRowLimit(matrix.getRowCount());
-				}
-				boolean exportVisable = !exportSelection.equals("All");
-
-				Exporter<ObservationTarget, Measurement, ObservedValue> exporter = null;
-				if (exportType.equals("Excel"))
-				{
-					exporter = new ExcelExporter<ObservationTarget, Measurement, ObservedValue>(matrix,
-							response.getOutputStream());
-				}
-				else if (exportType.equals("Spss"))
-				{
-					exporter = new SPSSExporter<ObservationTarget, Measurement, ObservedValue>(matrix,
-							response.getOutputStream());
-				}
-				else if (exportType.equals("Csv"))
-				{
-					exporter = new CsvExporter<ObservationTarget, Measurement, ObservedValue>(matrix,
-							response.getOutputStream());
-				}
-
-				download(request, response, exporter, exportVisable);
+				exportData(request, response, exportType);
 			}
 			else
 			{
@@ -313,6 +297,76 @@ public class MatrixController extends HttpServlet
 		}
 	}
 
+	private void exportData(HttpServletRequest request, HttpServletResponse response, String exportType)
+			throws MatrixException, FileNotFoundException, WriteException, IOException
+	{
+		final String exportSelection = request.getParameter("exportSelection");
+		if (exportSelection.equals("All"))
+		{
+			matrix.setRowLimit(0);
+			matrix.setRowLimit(matrix.getRowCount());
+		}
+		boolean exportVisible = !exportSelection.equals("All");
+
+		final String dataFileName = makeTmpFileName(exportVisible, "csv");
+		final String spssFileName = exportType.equals(SPSS_TYPE) ? makeTmpFileName(exportVisible, "sps") : null;
+		
+		final FileOutputStream dataOut = new FileOutputStream(dataFileName);
+		final FileOutputStream spssScriptOut = new FileOutputStream(spssFileName);
+		
+		final Exporter<ObservationTarget, Measurement, ObservedValue> exporter = createExporter(exportType, exportVisible, dataOut, spssScriptOut);
+		downloadWithLink(response, exporter, exportVisible, dataFileName, spssFileName);
+	}
+
+	private void downloadWithLink(HttpServletResponse response,
+			Exporter<ObservationTarget, Measurement, ObservedValue> exporter, boolean exportVisible, 
+			String dataFileName, String spssFileName) throws IOException
+	{
+		final String DOWNLOAD_LINK = "<a href=\"%s\">%s</a>";
+		
+		final ServletOutputStream out = response.getOutputStream();
+		
+		response.setContentType("text/HTML");
+		response.setHeader("Cache-Control", "0");
+		
+		out.println(String.format(DOWNLOAD_LINK, dataFileName));
+		if(StringUtils.isNotEmpty(spssFileName)) {
+			out.println(String.format(DOWNLOAD_LINK, spssFileName));
+		}
+		
+		out.flush();
+		out.close();
+	}
+
+
+
+
+	private Exporter<ObservationTarget, Measurement, ObservedValue> createExporter(final String exportType, final boolean exportVisible, 
+			final OutputStream data, OutputStream spsScript) 
+			throws FileNotFoundException, WriteException, IOException, MatrixException
+	{
+		if (exportType.equals(EXCEL_TYPE))
+		{
+			return new ExcelExporter<ObservationTarget, Measurement, ObservedValue>(matrix, data);
+		}
+		else if (exportType.equals(SPSS_TYPE))
+		{
+			return new newSPSSExporter<ObservationTarget, Measurement, ObservedValue>(matrix, 
+					data, spsScript);
+		}
+		else if (exportType.equals(CSV_TYPE))
+		{
+			return new CsvExporter<ObservationTarget, Measurement, ObservedValue>(matrix, data);
+		} else {
+			throw new MatrixException("Unknown export type: " + exportType);
+		}
+	}
+
+	public String makeTmpFileName(final boolean exportVisible, final String extension){
+		final File tmpDir = new File(System.getProperty("java.io.tmpdir"));	
+		return String.format("%s%sExport%s.%s", tmpDir.getAbsolutePath(), File.separatorChar, exportVisible ? "visible" : "all", extension);
+	}
+	
 	public void renderJsonTable(PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix, PrintWriter outWriter)
 			throws Exception
 	{
@@ -405,24 +459,24 @@ public class MatrixController extends HttpServlet
 
 				String dataInit = "";
 				String searchOptions = "";
-				if (columnType == ColumnType.Date || columnType == ColumnType.Datetime)
+				if (columnType == ColumnType.DATE || columnType == ColumnType.DATETIME)
 				{
 					searchOptions = dateSearchOptions;
 					dataInit = ",\"dataInit\": function(element) { $(element).datepicker({dateFormat: 'yy-mm-dd'}); }";
 				}
-				else if (columnType == ColumnType.Integer)
+				else if (columnType == ColumnType.INTEGER)
 				{
 					searchOptions = numberSearchOptions;
 				}
-				else if (columnType == ColumnType.Decimal)
+				else if (columnType == ColumnType.DECIMAL)
 				{
 					searchOptions = numberSearchOptions;
 				}
-				else if (columnType == ColumnType.Code)
+				else if (columnType == ColumnType.CODE)
 				{
 					searchOptions = codeSearchOptions;
 				}
-				else if (columnType == ColumnType.String)
+				else if (columnType == ColumnType.STRING)
 				{
 					searchOptions = stringSearchOptions;
 				}
@@ -560,7 +614,7 @@ public class MatrixController extends HttpServlet
 
 	private void download(HttpServletRequest req, HttpServletResponse resp, 
 			Exporter<ObservationTarget, Measurement, ObservedValue> exporter, 
-			boolean exportVisable)
+			boolean exportVisible)
 			throws IOException, MatrixException
 	{
 		String filename = "matrix" + exporter.getFileExtension();
@@ -573,10 +627,9 @@ public class MatrixController extends HttpServlet
 		}
 		
 		resp.setContentType((mimetype != null) ? mimetype : "application/octet-stream");
-		//resp.setContentLength((int) f.length());
 		resp.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-		if (exportVisable)
+		if (exportVisible)
 		{
 			exporter.exportVisible();
 		}

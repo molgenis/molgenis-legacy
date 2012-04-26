@@ -451,7 +451,7 @@ public class MatrixViewer extends HtmlWidget
 									Measurement measurement = (Measurement) cols.get(col);
 									String dataType = measurement.getDataType();
 									ColumnType columnType = Column.getColumnType(dataType);
-									if(columnType == ColumnType.Date) {
+									if(columnType == ColumnType.DATE) {
 										valueToShow = StringUtils.substringBefore(valueToShow, " ");
 									}
 								}

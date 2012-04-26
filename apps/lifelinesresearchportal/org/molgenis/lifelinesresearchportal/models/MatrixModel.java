@@ -25,12 +25,9 @@ import org.molgenis.matrix.component.sqlbackend.Backend;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-
-import com.mindbright.jca.security.UnsupportedOperationException;
 
 /**
  * Sliceable version of the PhenoMatrix. This assumes the rows are
@@ -129,16 +126,6 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 					categoryByCode.put(m, codeCatMap);
 				}
 			}
-			
-//			for(Category c : m.getCategories()) {
-//				if(categoryByMeasurement.containsKey(m)) {
-//					categoryByMeasurement.get(m).add(c);
-//				} else {				
-//					List<Category> cats = new ArrayList<Category>();
-//					cats.add(c);
-//					categoryByMeasurement.put(m, cats);
-//				}
-//			}
 		}
 	}
 
@@ -264,7 +251,7 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 						row[iCol] =	getCategoryLabel(m, row[iCol].toString());
 					}
 					
-					if(formatDate && column.get(iCol).getType() == Column.ColumnType.Date) {
+					if(formatDate && column.get(iCol).getType() == Column.ColumnType.DATE) {
 						row[iCol] = row[iCol].toString().split(" ")[0];
 					}					
 				}
@@ -298,7 +285,6 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 		}
 		return sr;
 	}
-
 	
 	private String getCategoryLabel(final Measurement measurement, final String value) {
 		final Map<String, Category> codeCat = categoryByCode.get(measurement);
@@ -311,17 +297,6 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 			}
 		}
 		return value;
-
-		
-//		final Measurement measurement = colMeasurements.get(iCol);
-//		if(categoryByMeasurement.containsKey(measurement)) {
-//			for(Category category : categoryByMeasurement.get(measurement)) {
-//				if(category.getCode_String().equalsIgnoreCase(value)) {
-//					return category.getLabel();
-//				}
-//			}
-//		}
-//		return value;
 	}
 	
 	public Investigation getInvestigation()
