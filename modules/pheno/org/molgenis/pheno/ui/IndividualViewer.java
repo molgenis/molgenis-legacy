@@ -4,8 +4,6 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +22,7 @@ import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.dto.IndividualDTO;
 import org.molgenis.pheno.dto.FeatureDTO;
 import org.molgenis.pheno.dto.ObservedValueDTO;
+import org.molgenis.pheno.dto.ProtocolApplicationDTO;
 import org.molgenis.pheno.dto.ProtocolDTO;
 import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.pheno.ui.form.ApplyProtocolForm;
@@ -119,6 +118,7 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 		this.populateApplyProtocolForm(form, protocolDTO);
 		
 		this.getModel().setProtocolDTO(protocolDTO);
+		this.getModel().setApplyProtocolForm(form);
 	}
 
 	private void populateSelectProtocolForm(SelectProtocolForm selectProtocolForm, List<ProtocolDTO> protocolDTOList)
@@ -157,19 +157,27 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	 */
 	private void handleInsert(Database db, Tuple request) throws ParseException
 	{
-		this.setView(new FreemarkerView("add.ftl", getModel()));
+		this.setView(new FreemarkerView("show.ftl", getModel()));
 
 		this.loadIndividualDetailsVO(db);
 
 		List<ObservedValueDTO> insertList = new ArrayList<ObservedValueDTO>();
 		List<String> parameterNameList    = request.getFields();
 
-		PhenoService phenoService = new PhenoService(db);
+		PhenoService phenoService         = new PhenoService(db);
 
-		String paName             = request.getString("paName");
-		Date paTime               = request.getDate("paTime");
-		Integer protocolId        = this.getModel().getProtocolDTO().getProtocolId();
-		Integer paId              = phenoService.insertProtocolApplication(paName, paTime, protocolId);
+		ProtocolApplicationDTO paDTO      = new ProtocolApplicationDTO();
+		paDTO.setName(request.getString("paName"));
+		paDTO.setTime(request.getDate("paTime"));
+		paDTO.setProtocolId(this.getModel().getProtocolDTO().getProtocolId());
+		List<Integer> performerIdList     = new ArrayList<Integer>();
+		for (String s : request.getStringList("paPerformer"))
+		{
+			performerIdList.add(Integer.parseInt(s));
+		}
+		paDTO.setPerformerIdList(performerIdList);
+
+		Integer paId                      = phenoService.insert(paDTO);
 
 		for (String parameterName : parameterNameList)
 		{

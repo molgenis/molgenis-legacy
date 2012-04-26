@@ -22,6 +22,7 @@ ${model.applyProtocolForm.__target}
 <table cellpadding="4">
 <tr><td>Name of ProtocolApplication</td><td>${model.applyProtocolForm.paName}</td></tr>
 <tr><td>Time of ProtocolApplication</td><td>${model.applyProtocolForm.paTime}</td></tr>
+<tr><td>Performer</td><td>${model.applyProtocolForm.paPerformer}</td>
 <#list model.protocolDTO.featureDTOList as featureDTO>
 <tr><td>${featureDTO.featureName}</td><td>${model.createProtocolInput(featureDTO.featureKey)}</td></tr>
 </#list>

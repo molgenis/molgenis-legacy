@@ -8,6 +8,7 @@ import java.util.List;
 //import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -16,6 +17,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.dto.IndividualDTO;
 import org.molgenis.pheno.dto.FeatureDTO;
 import org.molgenis.pheno.dto.ObservedValueDTO;
+import org.molgenis.pheno.dto.ProtocolApplicationDTO;
 import org.molgenis.pheno.dto.ProtocolDTO;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
@@ -212,17 +214,13 @@ public class PhenoService
 	 * @param time
 	 * @return primary key of the new ProtocolApplication
 	 */
-	public Integer insertProtocolApplication(String name, Date time, Integer protocolId)
+	public Integer insert(ProtocolApplicationDTO paDTO)
 	{
 		try
 		{
-			ProtocolApplication pa = new ProtocolApplication();
-			pa.setName(name);
-			pa.setTime(time);
-			pa.setProtocol_Id(protocolId);
-			
+			ProtocolApplication pa = this.protocolApplicationDTOToProtocolApplication(paDTO);
 			this.db.add(pa);
-			
+
 			return pa.getId();
 		}
 		catch (DatabaseException e)
@@ -305,6 +303,17 @@ public class PhenoService
 		return protocolDTO;
 	}
 
+	public ProtocolApplication protocolApplicationDTOToProtocolApplication(ProtocolApplicationDTO paDTO)
+	{
+		ProtocolApplication pa = new ProtocolApplication();
+		pa.setName(paDTO.getName());
+		pa.setTime(paDTO.getTime());
+		pa.setPerformer_Id(paDTO.getPerformerIdList());
+		pa.setProtocol_Id(paDTO.getProtocolId());
+		System.out.println(">>> Created performerId==" + pa.getPerformer_Id());
+		return pa;
+	}
+
 	public List<ObservedValueDTO> observedValueListToObservedValueDTOList(List<ObservedValue> observedValueList) throws DatabaseException
 	{
 		List<ObservedValueDTO> observedValueDTOList = new ArrayList<ObservedValueDTO>();
@@ -327,11 +336,12 @@ public class PhenoService
 		observedValueDTO.setProtocolApplicationId(protocolApplication.getId());
 		observedValueDTO.setProtocolApplicationName(protocolApplication.getName());
 		observedValueDTO.setProtocolApplicationTime(protocolApplication.getTime());
+		observedValueDTO.setPerformerNameList(protocolApplication.getPerformer_Name());
 		observedValueDTO.setProtocolId(protocolApplication.getProtocol_Id());
 
 		observedValueDTO.setTargetId(observedValue.getTarget_Id());
 		observedValueDTO.setTargetName(observedValue.getTarget_Name());
-		observedValueDTO.setValue(observedValue.getValue());
+		observedValueDTO.setValue(ObjectUtils.toString(observedValue.getValue(), "null"));
 		
 		Measurement measurement = this.db.findById(Measurement.class, observedValue.getFeature_Id());
 		FeatureDTO featureDTO = new FeatureDTO();

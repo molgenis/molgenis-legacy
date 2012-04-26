@@ -1,8 +1,10 @@
 package org.molgenis.pheno.ui.form;
 
+import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.HiddenInput;
+import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.framework.ui.html.TextLineInput;
 
 public class ApplyProtocolForm extends Container
@@ -17,5 +19,6 @@ public class ApplyProtocolForm extends Container
 		this.add(new HiddenInput("__action", ""));
 		this.add(new TextLineInput<String>("paName", ""));
 		this.add(new DateInput("paTime", ""));
+		this.add(new MrefInput("paPerformer", MolgenisUser.class));
 	}
 }

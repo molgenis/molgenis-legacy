@@ -2,6 +2,7 @@ package org.molgenis.pheno.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class ObservedValueDTO implements Serializable
 {
@@ -12,6 +13,7 @@ public class ObservedValueDTO implements Serializable
 	private Integer protocolApplicationId;
 	private String protocolApplicationName;
 	private Date protocolApplicationTime;
+	private List<String> performerNameList;
 	private Integer protocolId;
 	private FeatureDTO featureDTO;
 	private Integer targetId;
@@ -41,6 +43,12 @@ public class ObservedValueDTO implements Serializable
 	}
 	public void setProtocolApplicationTime(Date protocolApplicationTime) {
 		this.protocolApplicationTime = protocolApplicationTime;
+	}
+	public List<String> getPerformerNameList() {
+		return performerNameList;
+	}
+	public void setPerformerNameList(List<String> performerNameList) {
+		this.performerNameList = performerNameList;
 	}
 	public Integer getProtocolId() {
 		return protocolId;

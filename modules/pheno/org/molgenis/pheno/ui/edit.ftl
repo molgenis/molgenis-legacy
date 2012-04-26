@@ -52,7 +52,7 @@ ${model.individualForm.__target}
 
 <@action name="show" label="Back to List mode"/>
 <@action name="update" label="Save"/>
-<@action name="add" label="Apply Protocol"/>
+<@action name="select" label="Apply Protocol"/>
 </form>
 
 			</div>

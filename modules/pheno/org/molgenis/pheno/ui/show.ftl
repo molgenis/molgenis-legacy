@@ -29,7 +29,10 @@
 			<#assign observedValueDTOValList = individualDTO.observedValues[protocolKey][paKey]>
 			<#assign tmpObservedValueDTO     = observedValueDTOValList?first>
 	
-			<h4>${tmpObservedValueDTO.protocolApplicationName} (${tmpObservedValueDTO.protocolApplicationTime?string.medium_short})</h4>
+			<h4>${tmpObservedValueDTO.protocolApplicationName}
+			(${tmpObservedValueDTO.protocolApplicationTime?string.medium_short})
+			<#if tmpObservedValueDTO.performerNameList?size &gt; 0>Performers: <#list tmpObservedValueDTO.performerNameList as performerName>${performerName} </#list></#if>
+			</h4>
 
 			<table class="listtable" cellpadding="4">
 			<tr><th width="50%">Feature</th><th width="50%">Value</th></tr>
