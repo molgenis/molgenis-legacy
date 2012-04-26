@@ -23,7 +23,6 @@
 				/> </form -->
 			<!-- plugin name="ImportWorksheet" label="Upload worksheet" type="org.molgenis.ngs.ui.ImportWorksheet" /-->
 		</menu>
-		<include file="apps/compute/org/molgenis/compute/ngs_lims_ui.xml" />
 		<menu name="Compute">
 			<form name="ComputeParameters" hide_fields="id,Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation,temporal" entity="ComputeParameter" viewtype="list" />
 			<form name="ComputeProtocols" entity="ComputeProtocol" hide_fields="Investigation,ontologyReference,ProtocolType,Features,TargetFilter" viewtype="record">
@@ -64,9 +63,6 @@
 		</menu>
 		<menu name="Pbs">
 			<plugin name="QSTAT" type="org.molgenis.compute.ui.QstatPlugin" />
-		</menu>
-		<menu name="AdminDB">
-			<plugin name="AdminDBPlugin" type="org.molgenis.ngs.ui.AdminDBPlugin" />
 		</menu>
 		<menu name="TestingR">
 			<plugin name="TestR" type="org.molgenis.compute.ui.TestR" />
