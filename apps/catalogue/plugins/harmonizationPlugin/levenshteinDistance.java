@@ -130,19 +130,19 @@ public class levenshteinDistance {
 
 		descriptions.add("Building blocks");
 
-		//fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/PREVEND.xls";
+		fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/PREVEND.xls";
 
-		fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
+		//fileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
 
 		tableModel model_2 = new tableModel(fileName, true);
 
-		model_2.setStartingRow(1);
+		model_2.setStartingRow(11);
 
 		model_2.processingTable();
 
-		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Data", "Description");
+		//HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Data", "Description");
 
-		//HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Veldnaam", "SPSS Omschrijving");
+		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Veldnaam", "SPSS Omschrijving");
 
 		System.out.println("Parsing the ontology");
 
@@ -150,7 +150,7 @@ public class levenshteinDistance {
 
 		//listOfAnnotationProperty.add("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN");
 
-		//parseOntology("/Users/pc_iverson/Desktop/Input/Thesaurus.owl", listOfAnnotationProperty);
+		//parseOntology("/Users/pc_iverson/Desktop/Input/Thesaurus.owl", "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN");
 
 		System.out.println("Ontology has been loaded");
 
@@ -424,7 +424,7 @@ public class levenshteinDistance {
 
 		OWLFunction owlFunctionLocal = new OWLFunction(factory, localOntology);
 
-		owlFunctionLocal.labelMapURI(listOfAnnotationProperty);
+		owlFunctionLocal.labelMapURI(localOntology.getOntologyID().getOntologyIRI().toString() + "#additionalInfo");
 
 		this.expandedQueries = owlFunctionLocal.getExpandedQueries();
 	}
@@ -436,7 +436,7 @@ public class levenshteinDistance {
 	 * @param ontologyFilePath
 	 * @throws OWLOntologyCreationException 
 	 */
-	public void parseOntology(String ontologyFilePath, List<String> annotationProperty) throws OWLOntologyCreationException{
+	public void parseOntology(String ontologyFilePath, String... annotationProperty) throws OWLOntologyCreationException{
 
 		referenceOntology  = manager.loadOntologyFromOntologyDocument(new File(ontologyFilePath));
 

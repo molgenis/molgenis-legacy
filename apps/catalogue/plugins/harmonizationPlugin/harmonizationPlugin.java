@@ -23,6 +23,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 public class harmonizationPlugin extends PluginModel<Entity> {
 
@@ -37,7 +38,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	private String selectedInvestigation = null;
 	private String selectedField = null;
 	private boolean isSelectedInv = false;
-	private int hitSize = 10;
 
 	/** Multiple inheritance: some measurements might have multiple parents therefore it
 	 *  will complain about the branch already exists when constructing the tree, cheating by
@@ -78,8 +78,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 		try {
 
-			//db.beginTx();
-
 			if (request.getAction().equals("chooseInvestigation")) {
 				selectedInvestigation = request.getString("investigation");
 				this.setSelectedInvestigation(selectedInvestigation);
@@ -87,35 +85,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						+ selectedInvestigation);
 				arrayInvestigations.clear();
 
-			}
-			//			else if(request.getAction().equals("chooseDifferentHits")){
-			//
-			//				hitSize = request.getInt("changeHits");
-			//
-			//				String optionForHits = "<select name='changeHits' id='changeHits'>";
-			//
-			//				int residue = maxQuerySize / 10;
-			//
-			//				optionForHits += "<option>" + hitSize + "</option>";
-			//
-			//				for(int i = 0; i < residue; i++){
-			//					if(hitSize != (i+1)*10)
-			//						optionForHits += "<option>" + (i+1)*10 + "</option>";
-			//				}
-			//
-			//				optionForHits += "</select>";
-			//
-			//				hitSizeOption  = "Choose how many results you want to view" 
-			//						+ optionForHits
-			//						+ "<input type='image' src='res/img/refresh.png' alt='Submit'"
-			//						+ "name='refreshHits' style='vertical-align: middle;'" 
-			//						+ "value='show hits' onclick=__action.value='chooseDifferentHits';>";
-			//
-			//				makeHtmlTable(mappingResultAndSimiarity);
-			//
-			//
-			//			}
-			else if (request.getAction().equals("startMatching")){
+			}else if (request.getAction().equals("startMatching")){
 
 				String uploadFileName = request.getString("ontologyFile");
 
@@ -125,7 +95,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 				parameterToExpandedQuery.clear();
 
-				String separator = "";
+				String separator = ";";
 
 				validationStudyName = request.getString("validationStudy");
 
@@ -134,40 +104,70 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
 							Operator.EQUALS, validationStudyName))){
+
+						if(m.getName().equalsIgnoreCase("Gender")){
+							System.out.println();
+						}
+						
+//						if(m.getName().endsWith("_" + validationStudyName)){
+//							
+//							String displayName = m.getName().substring(0, 
+//									m.getName().length() - validationStudyName.length() -1);
+//							
+//							questionsAndIdentifier.put(displayName, m.getName());
+//							
+//						}else{
+//							questionsAndIdentifier.put(m.getName(), m.getName());
+//						}
+						
 						if(m.getDescription() != null && !m.getDescription().equals("")){
-							questionsAndIdentifier.put(m.getDescription(), m.getName());
+							questionsAndIdentifier.put(m.getDescription().replaceAll("[\n;]", " "), m.getName());
+						}
+						if(m.getCategories_Name() != null && m.getCategories_Name().size() > 0){
+							
+							if(m.getDescription() != null && !m.getDescription().equals("")){
+								for(String eachCategory : m.getCategories_Name()){
+									questionsAndIdentifier.put(eachCategory + " " + m.getDescription().replaceAll("[\n;]", " "),  m.getName());
+								}
+							}
 						}
 					}
+
 				}
+				
+				if(questionsAndIdentifier.size() > 0){
+					
+					if(uploadFileName != null){
+						OWLFunction	owlFunction = new OWLFunction(uploadFileName);
+						//owlFunction.labelMapURI("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN");
+						owlFunction.labelMapURI(OWLRDFVocabulary.RDFS_COMMENT.getIRI().toString());
+						expandedQueries = owlFunction.getExpandedQueries();
+						expandedQueries.remove("Prediction Model");
+						expandedQueries.remove("Composite");
+						separator = owlFunction.getSeparator();
+					}
 
-				//questionsAndIdentifier  = readDataDictionary(dataDictionary);
+					this.stringMatching(separator);
 
-				if(uploadFileName != null){
-					OWLFunction	owlFunction = new OWLFunction(uploadFileName);
-					owlFunction.labelMapURI(null);
-					expandedQueries = owlFunction.getExpandedQueries();
-					expandedQueries.remove("Prediction Model");
-					expandedQueries.remove("Composite");
-					separator = owlFunction.getSeparator();
+					int residue = maxQuerySize / 10;
+
+					String optionForHits = "<select name='changeHits' id='changeHits' onChange='refreshByHits()'>";
+
+					for(int i = 0; i < residue; i++){
+						optionForHits += "<option>" + (i+1)*10 + "</option>";
+					}
+					if(residue == 0){
+						optionForHits += "<option>10</option>";
+					}
+					optionForHits += "</select>";
+
+					hitSizeOption  = "Choose how many results you want to view" 
+							+ optionForHits;
+					
+				}else{
+					
+					this.setMessages(new ScreenMessage("Please choose the correct cohort study with data item", false));
 				}
-
-				this.stringMatching(separator);
-
-				int residue = maxQuerySize / 10;
-
-				String optionForHits = "<select name='changeHits' id='changeHits' onChange='refreshByHits()'>";
-
-				for(int i = 0; i < residue; i++){
-					optionForHits += "<option>" + (i+1)*10 + "</option>";
-				}
-				if(residue == 0){
-					optionForHits += "<option>10</option>";
-				}
-				optionForHits += "</select>";
-
-				hitSizeOption  = "Choose how many results you want to view" 
-						+ optionForHits;
-
 
 			}else if(request.getAction().equals("saveMapping")){
 
@@ -212,26 +212,29 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 							String identifier = originalQuery + " " + eachMatching.expandedQuery;
 
 							if(request.getBool(identifier.replaceAll(" ", "_")) != null){
+								
 								String dataItemName = questionsAndIdentifier.get(eachMatching.matchedItem);
 
-								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, 
-										Operator.EQUALS, validationStudyName + "_" + dataItemName)).size() == 0){
-
-									Measurement m = new Measurement();
-									m.setName(validationStudyName + "_" + dataItemName);
-									m.setDescription(eachMatching.matchedItem); 
-									m.setInvestigation_Name("Validation Study");
-									db.add(m);
-									listOFMatchedItem.add(validationStudyName + "_" + dataItemName);
-								}else{
-									Measurement m = db.find(Measurement.class, new QueryRule(Measurement.NAME, 
-											Operator.EQUALS, validationStudyName + "_" + dataItemName)).get(0);
-									m.setName(validationStudyName + "_" + dataItemName);
-									m.setDescription(eachMatching.matchedItem); 
-									m.setInvestigation_Name("Validation Study");
-									db.update(m);
-									listOFMatchedItem.add(validationStudyName + "_" + dataItemName);
-								}
+								listOFMatchedItem.add(dataItemName);
+								
+//								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, 
+//										Operator.EQUALS, dataItemName + "_" + validationStudyName)).size() == 0){
+//
+//									Measurement m = new Measurement();
+//									m.setName(dataItemName.toLowerCase() + "_" + validationStudyName);
+//									m.setDescription(eachMatching.matchedItem); 
+//									m.setInvestigation_Name("Validation Study");
+//									db.add(m);
+//									listOFMatchedItem.add(dataItemName.toLowerCase() + "_" + validationStudyName);
+//								}else{
+//									Measurement m = db.find(Measurement.class, new QueryRule(Measurement.NAME, 
+//											Operator.EQUALS, dataItemName + "_" + validationStudyName)).get(0);
+//									m.setName(dataItemName.toLowerCase() + "_" + validationStudyName);
+//									m.setDescription(eachMatching.matchedItem); 
+//									m.setInvestigation_Name("Validation Study");
+//									db.update(m);
+//									listOFMatchedItem.add(dataItemName.toLowerCase() + "_" + validationStudyName );
+//								}
 							}
 						}
 
@@ -246,21 +249,21 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 							List<Integer> measurementIds = new ArrayList<Integer>();
 
-							List<Integer> featureIds = validationStudyProtocol.getFeatures_Id();
+							List<Integer> featuresInMapping = validationStudyProtocol.getFeatures_Id();
 
 							for(Measurement m : measurements){
 								measurementIds.add(m.getId());
-								if(!featureIds.contains(m.getId())){
-									featureIds.add(m.getId());
+								if(!featuresInMapping.contains(m.getId())){
+									featuresInMapping.add(m.getId());
 								}
 							}
 
 							if(measurementIds.size() > 0){
 
 								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, 
-										Operator.EQUALS, validationStudyName + "_" + originalQuery)).size() == 0){
+										Operator.EQUALS, originalQuery + "_" + validationStudyName)).size() == 0){
 									Measurement m = new Measurement();
-									m.setName(validationStudyName + "_" + originalQuery);
+									m.setName(originalQuery.toLowerCase() + "_" + validationStudyName);
 									m.setInvestigation_Name("Validation Study");
 									db.add(m);
 								}
@@ -268,7 +271,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 								Query<MappingMeasurement> queryForMapping = db.query(MappingMeasurement.class);
 
 								queryForMapping.addRules(new QueryRule(MappingMeasurement.TARGET_NAME, 
-										Operator.EQUALS, validationStudyName + "_" + originalQuery));
+										Operator.EQUALS, originalQuery + "_" + validationStudyName));
 
 								queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, 
 										Operator.EQUALS, originalQuery));
@@ -282,8 +285,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 									db.update(mapping);
 
 								}else{
-
-									mapping.setTarget_Name(validationStudyName + "_" + originalQuery);
+									
+									mapping.setTarget_Name(originalQuery.toLowerCase() + "_" + validationStudyName);
 
 									mapping.setInvestigation_Name("Validation Study");
 
@@ -291,21 +294,21 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 									mapping.setMapping_Name(originalQuery);
 
-									mapping.setFeature_Id(featureIds);
-									
+									mapping.setFeature_Id(measurementIds);
+
 									db.add(mapping);
 
 								}
 
 								List<Integer> oldFeatureIds = validationStudyProtocol.getFeatures_Id();
 
-								for(Integer id : featureIds){
+								for(Integer id : featuresInMapping){
 									if(!oldFeatureIds.contains(id)){
 										oldFeatureIds.add(id);
 									}
 								}
 
-								oldFeatureIds.addAll(featureIds);
+								oldFeatureIds.addAll(featuresInMapping);
 
 								validationStudyProtocol.setFeatures_Id(oldFeatureIds);
 							}
@@ -323,27 +326,16 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 	}
 
-	private HashMap<String, String> readDataDictionary(String dataDictionary) {
-
-		dataDictionary = "/Users/pc_iverson/Desktop/Ontology_term_pilot/LifeLines_Data_itmes.xls";
-
-		tableModel model_2 = new tableModel(dataDictionary, true);
-
-		model_2.setStartingRow(1);
-
-		model_2.processingTable();
-
-		HashMap<String, String> descriptionForVariable = model_2.getDescriptionForVariable("Description", "Data");
-
-		return descriptionForVariable;
-	}
-
-	public void stringMatching(String separator){
+	public void stringMatching(String separator) throws Exception{
 
 		mappingResultAndSimiarity.clear();
 
 		for(String eachParameter : listOfParameters){
 
+			if(eachParameter.equalsIgnoreCase("Body Mass Index")){
+				System.out.println();
+			}
+			
 			List<String> expandedQuery = new ArrayList<String>();
 
 			List<String> finalQuery = new ArrayList<String>();
@@ -399,12 +391,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 					temp = new LinkedMap();
 				}
 
-				try {
-					temp.add(eachQuery, matchedDataItem, maxSimilarity);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				temp.add(eachQuery, matchedDataItem, maxSimilarity);
 
 				mappingResultAndSimiarity.put(eachParameter, temp);
 			}
@@ -433,12 +420,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 			matchingResult += "<tr><td>Expanded Query</td><td>Matched data item</td><td>Similarity score</td><td>verfication</td></tr>";
 
-			int stopIndex = 0;
-
-			if(hitSize < size){
-				stopIndex = size - hitSize;
-			}
-
 			for(int i = size; i > 0; i--){
 
 				LinkedInformation eachRow = links.get(i - 1);
@@ -451,7 +432,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 				matchingResult += "<tr id='" + identifier.replaceAll(" ", "_") + "'><td>" + expandedQuery + "</td><td>" 
 						+ matchedItem + "</td><td>" + similarity + "</td><td><input type='checkbox' name='" 
-						+ identifier.replaceAll(" ", "_") + "' id='" + identifier.replaceAll(" ", "_") + "'></td></tr>";
+						+ identifier.replaceAll(" ", "_") + "'></td></tr>";
 				//				System.out.print(eachOriginalQuery + "\t" + expandedQuery + "\t" + matchedItem + "\t" + similarity);
 				//				System.out.println();
 			}
