@@ -112,6 +112,8 @@ function setValidationStudy(validationStudyName){
 									setValidationStudy('${screen.getValidationStudyName()}');
 									$('#validationStudy').chosen();
 								</script>
+								</br>
+								Tick the box if this is baseline data<input type="checkbox" name="baseline" id="baseline"/>
 					    	</td>
 					    </tr>
 					    <tr>

@@ -105,49 +105,50 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
 							Operator.EQUALS, validationStudyName))){
 
-						if(m.getName().equalsIgnoreCase("Gender")){
+						if(m.getName().equalsIgnoreCase("SMOKE_3")){
 							System.out.println();
 						}
-						
-//						if(m.getName().endsWith("_" + validationStudyName)){
-//							
-//							String displayName = m.getName().substring(0, 
-//									m.getName().length() - validationStudyName.length() -1);
-//							
-//							questionsAndIdentifier.put(displayName, m.getName());
-//							
-//						}else{
-//							questionsAndIdentifier.put(m.getName(), m.getName());
-//						}
-						
+
+						//						if(m.getName().endsWith("_" + validationStudyName)){
+						//							
+						//							String displayName = m.getName().substring(0, 
+						//									m.getName().length() - validationStudyName.length() -1);
+						//							
+						//							questionsAndIdentifier.put(displayName, m.getName());
+						//							
+						//						}else{
+						//							questionsAndIdentifier.put(m.getName(), m.getName());
+						//						}
+
 						if(m.getDescription() != null && !m.getDescription().equals("")){
-							questionsAndIdentifier.put(m.getDescription().replaceAll("[\n;]", " "), m.getName());
+							questionsAndIdentifier.put(m.getDescription().replaceAll("[\\n;]", " "), m.getName());
 						}
 						if(m.getCategories_Name() != null && m.getCategories_Name().size() > 0){
-							
+
 							if(m.getDescription() != null && !m.getDescription().equals("")){
 								for(String eachCategory : m.getCategories_Name()){
-									questionsAndIdentifier.put(eachCategory + " " + m.getDescription().replaceAll("[\n;]", " "),  m.getName());
+									questionsAndIdentifier.put(eachCategory + " " + m.getDescription().replaceAll("[\\n;]", " "),  m.getName());
 								}
 							}
 						}
 					}
 
 				}
-				
+
 				if(questionsAndIdentifier.size() > 0){
-					
+
 					if(uploadFileName != null){
 						OWLFunction	owlFunction = new OWLFunction(uploadFileName);
 						//owlFunction.labelMapURI("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN");
-						owlFunction.labelMapURI(OWLRDFVocabulary.RDFS_COMMENT.getIRI().toString());
+						//OWLRDFVocabulary.RDFS_COMMENT.getIRI().toString(), 
+						owlFunction.labelMapURI("http://www.semanticweb.org/ontologies/2012/2/PredictionModel.owl#alternative_term");
 						expandedQueries = owlFunction.getExpandedQueries();
 						expandedQueries.remove("Prediction Model");
 						expandedQueries.remove("Composite");
 						separator = owlFunction.getSeparator();
 					}
 
-					this.stringMatching(separator);
+					this.stringMatching(separator, request);
 
 					int residue = maxQuerySize / 10;
 
@@ -163,9 +164,9 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 					hitSizeOption  = "Choose how many results you want to view" 
 							+ optionForHits;
-					
+
 				}else{
-					
+
 					this.setMessages(new ScreenMessage("Please choose the correct cohort study with data item", false));
 				}
 
@@ -212,29 +213,10 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 							String identifier = originalQuery + " " + eachMatching.expandedQuery;
 
 							if(request.getBool(identifier.replaceAll(" ", "_")) != null){
-								
+
 								String dataItemName = questionsAndIdentifier.get(eachMatching.matchedItem);
 
 								listOFMatchedItem.add(dataItemName);
-								
-//								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, 
-//										Operator.EQUALS, dataItemName + "_" + validationStudyName)).size() == 0){
-//
-//									Measurement m = new Measurement();
-//									m.setName(dataItemName.toLowerCase() + "_" + validationStudyName);
-//									m.setDescription(eachMatching.matchedItem); 
-//									m.setInvestigation_Name("Validation Study");
-//									db.add(m);
-//									listOFMatchedItem.add(dataItemName.toLowerCase() + "_" + validationStudyName);
-//								}else{
-//									Measurement m = db.find(Measurement.class, new QueryRule(Measurement.NAME, 
-//											Operator.EQUALS, dataItemName + "_" + validationStudyName)).get(0);
-//									m.setName(dataItemName.toLowerCase() + "_" + validationStudyName);
-//									m.setDescription(eachMatching.matchedItem); 
-//									m.setInvestigation_Name("Validation Study");
-//									db.update(m);
-//									listOFMatchedItem.add(dataItemName.toLowerCase() + "_" + validationStudyName );
-//								}
 							}
 						}
 
@@ -285,7 +267,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 									db.update(mapping);
 
 								}else{
-									
+
 									mapping.setTarget_Name(originalQuery.toLowerCase() + "_" + validationStudyName);
 
 									mapping.setInvestigation_Name("Validation Study");
@@ -313,7 +295,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 								validationStudyProtocol.setFeatures_Id(oldFeatureIds);
 							}
 						}
-
 					}
 					db.update(validationStudyProtocol);
 				}
@@ -326,7 +307,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 	}
 
-	public void stringMatching(String separator) throws Exception{
+	public void stringMatching(String separator, Tuple request) throws Exception{
 
 		mappingResultAndSimiarity.clear();
 
@@ -335,7 +316,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			if(eachParameter.equalsIgnoreCase("Body Mass Index")){
 				System.out.println();
 			}
-			
+
 			List<String> expandedQuery = new ArrayList<String>();
 
 			List<String> finalQuery = new ArrayList<String>();
@@ -352,9 +333,16 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 				finalQuery.add(eachQuery.replaceAll(separator, " "));
 
+				if(request.getBool("baseline") != null){
+					finalQuery.add(eachQuery.replaceAll(separator, " ") + " Baseline");
+				}
+
 				for(int i = 0; i < blocks.length; i++){
 					if(!finalQuery.contains(blocks[i].toLowerCase()))
 						finalQuery.add(blocks[i].toLowerCase());
+					if(request.getBool("baseline") != null){
+						finalQuery.add(blocks[i].toLowerCase() + " Baseline");
+					}
 				}
 			}
 

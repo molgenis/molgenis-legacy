@@ -17,6 +17,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -121,6 +122,10 @@ public class OWLFunction {
 			listOfAnnotationProperty.add(factory.getOWLAnnotationProperty(annotationPropertyIRI));
 		}
 
+		if(classLabel.equalsIgnoreCase("former")){
+			System.out.println();
+		}
+		
 		Pattern pattern = Pattern.compile(">[a-zA-Z0-9\\s]+<");
 
 		Matcher matcher = pattern.matcher("");
@@ -175,13 +180,18 @@ public class OWLFunction {
 
 				List<OWLClass> tokens = new ArrayList<OWLClass>();
 
+				String labelOfProperty = "";
+				
 				if(expression.isAnonymous()){
 					for(OWLClass classToken : expression.getClassesInSignature()){
 						if(!tokens.contains(classToken))
 							tokens.add(classToken);
 					}
+					for(OWLObjectProperty property : expression.getObjectPropertiesInSignature()){
+						labelOfProperty = getLabel(property, owlontology);
+					}
 				}
-				queryExpansion(labelOfClass, tokens);
+				queryExpansion(labelOfClass, labelOfProperty, tokens);
 			}
 
 			List<String> childAndParent = new ArrayList<String>();
@@ -194,11 +204,11 @@ public class OWLFunction {
 				temp = expandedQueries.get(labelOfClass);
 			}
 
-			childAndParent = getAllChildren(owlontology, cls, new ArrayList<String>(), 2);
+			childAndParent = getAllChildren(owlontology, cls, new ArrayList<String>(), 1);
 
 			temp.addAll(childAndParent);
 
-			childAndParent = getAllParents(owlontology, cls, new ArrayList<String>(), 2);
+			childAndParent = getAllParents(owlontology, cls, new ArrayList<String>(), 1);
 
 			temp.addAll(childAndParent);
 
@@ -236,27 +246,61 @@ public class OWLFunction {
 		return removedList;
 	}
 
-	public void queryExpansion(String labelOfClass, List<OWLClass> tokens){
+	public void queryExpansion(String labelOfClass, String labelOfProperty, List<OWLClass> tokens){
 
-		if(tokens.size() > 1){
+		if(tokens.size() == 1 && !labelOfProperty.equals("")){
+			
+			List<String> firstTokens = new ArrayList<String>();
+			
+			List<String> temp = this.getAllChildren(owlontology, tokens.get(0), new ArrayList(), 1);
+			
+			firstTokens.addAll(temp);
+
+			temp = this.getAllParents(owlontology, tokens.get(0), new ArrayList(), 1);
+
+			firstTokens.addAll(temp);
+			
+			firstTokens.add(getLabel(tokens.get(0), owlontology));
+			
+			firstTokens = addSynonymsToList(firstTokens);
+			
+			for(String firstToken : firstTokens){
+				
+				List<String> expandedClassLabel = null;
+
+				if(!expandedQueries.containsKey(labelOfClass)){
+					expandedClassLabel = new ArrayList<String>();
+					expandedClassLabel.add( labelOfProperty + separtor + firstToken);
+				}else{
+					expandedClassLabel = expandedQueries.get(labelOfClass);
+					if(!expandedClassLabel.contains(labelOfProperty + separtor + firstToken)){
+						expandedClassLabel.add(labelOfProperty + separtor + firstToken);
+					}
+				}
+				
+				expandedClassLabel = removeDuplication(expandedClassLabel);
+				expandedQueries.put(labelOfClass, expandedClassLabel);
+			}
+			
+		}else if(tokens.size() > 1){
 
 			List<String> firstTokens = new ArrayList<String>();
 
 			List<String> secondTokens = new ArrayList<String>();
 
-			List<String> temp = this.getAllChildren(owlontology, tokens.get(0), new ArrayList(), 2);
+			List<String> temp = this.getAllChildren(owlontology, tokens.get(0), new ArrayList(), 1);
 
 			firstTokens.addAll(temp);
 
-			temp = this.getAllParents(owlontology, tokens.get(0), new ArrayList(), 2);
+			temp = this.getAllParents(owlontology, tokens.get(0), new ArrayList(), 1);
 
 			firstTokens.addAll(temp);
 
-			temp = this.getAllChildren(owlontology, tokens.get(1), new ArrayList(), 2);
+			temp = this.getAllChildren(owlontology, tokens.get(1), new ArrayList(), 1);
 
 			secondTokens.addAll(temp);
 
-			temp = this.getAllParents(owlontology, tokens.get(1), new ArrayList(), 2);
+			temp = this.getAllParents(owlontology, tokens.get(1), new ArrayList(), 1);
 
 			secondTokens.addAll(temp);
 
