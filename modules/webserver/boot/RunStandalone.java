@@ -14,16 +14,25 @@ public class RunStandalone
 
 	public RunStandalone(Integer port)
 	{
+		new RunStandalone(port, false);
+	}
+	
+	public RunStandalone(Integer port, boolean headless)
+	{
 		try
 		{
 			try
 			{
+				if(headless)
+				{
+					throw new HeadlessException("NOTE: Headless mode was forced by user");
+				}
 				new WebserverGui(port);
 			}
 			catch (HeadlessException e)
 			{
-				System.out.println("No GUI available - going into commandline mode");
-				new Thread(new WebserverCmdLine(port)).start();
+				System.out.println(e.getMessage() + "\nNo GUI available - going into headless mode");
+				new WebserverCmdLine(port);
 			}
 		}
 		catch (IOException e)
