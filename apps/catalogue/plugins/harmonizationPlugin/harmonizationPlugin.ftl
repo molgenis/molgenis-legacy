@@ -1,13 +1,40 @@
 <#macro plugins_harmonizationPlugin_harmonizationPlugin screen>
+<style type="text/css">
+.insertTable{
+	background-color:#d0e4fe;
+}
+
+.HighLightTR.highlight {
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+	background-image: none;
+	background-color: transparent;
+	padding-left: 3px;
+}
+
+</style>
+
 
 <script type="text/javascript">
-
 function addingTable(tableId){
 	
 	if(map.get(tableId) != "null"){
 		document.getElementById('details').innerHTML += map.get(tableId);
 		document.getElementById(tableId + " table").style.display = "none";		
 	}
+}
+
+function insertTable(tableId){
+	
+	var table = document.getElementById(tableId);
+	
+	if(table.style.display == "none") {
+    		table.style.display = "inline";
+  	} else {
+		table.style.display = "none";
+	}
+	
 }
 
 function refreshByHits(){
@@ -173,6 +200,9 @@ function setValidationStudy(validationStudyName){
 					<script>
 						refreshByHits();
 					</script>
+					<#list screen.getExecutiveScript() as executiveScript>
+							${executiveScript}
+						</#list>
 			   </#if>	
 			</div>
 		</div>

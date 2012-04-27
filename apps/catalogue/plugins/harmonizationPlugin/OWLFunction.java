@@ -121,10 +121,6 @@ public class OWLFunction {
 		for(IRI annotationPropertyIRI : AnnotataionProperty){
 			listOfAnnotationProperty.add(factory.getOWLAnnotationProperty(annotationPropertyIRI));
 		}
-
-		if(classLabel.equalsIgnoreCase("former")){
-			System.out.println();
-		}
 		
 		Pattern pattern = Pattern.compile(">[a-zA-Z0-9\\s]+<");
 

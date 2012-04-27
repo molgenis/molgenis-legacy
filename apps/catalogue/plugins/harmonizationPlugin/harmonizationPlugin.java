@@ -5,6 +5,7 @@ import gcc.catalogue.MappingMeasurement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.molgenis.framework.db.Database;
@@ -23,7 +24,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 public class harmonizationPlugin extends PluginModel<Entity> {
 
@@ -54,6 +54,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	private int maxQuerySize = 0;
 	private String hitSizeOption = "";
 	private HashMap<String, LinkedMap> mappingResultAndSimiarity = new HashMap<String, LinkedMap>();
+	private List<String> listOfScripts = new ArrayList<String>();
 
 
 	public harmonizationPlugin(String name, ScreenController<?> parent) {
@@ -89,6 +90,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 				String uploadFileName = request.getString("ontologyFile");
 
+				expandedQueries.clear();
+				
 				parameterWithHtmlTable.clear();
 
 				questionsAndIdentifier.clear();
@@ -104,10 +107,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
 							Operator.EQUALS, validationStudyName))){
-
-						if(m.getName().equalsIgnoreCase("SMOKE_3")){
-							System.out.println();
-						}
 
 						//						if(m.getName().endsWith("_" + validationStudyName)){
 						//							
@@ -210,7 +209,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 						for(LinkedInformation eachMatching : listOfMatchedResult){
 
-							String identifier = originalQuery + " " + eachMatching.expandedQuery;
+							String identifier = originalQuery + " " + eachMatching.matchedItem;
 
 							if(request.getBool(identifier.replaceAll(" ", "_")) != null){
 
@@ -347,7 +346,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			}
 
 			parameterToExpandedQuery.put(eachParameter, finalQuery);
-
+			
 			for(String eachQuery : finalQuery){
 
 				double maxSimilarity = 0;
@@ -390,6 +389,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 	public void makeHtmlTable (HashMap<String, LinkedMap>mappingResultAndSimiarity) {
 
+		listOfScripts.clear();
+		
 		for(String eachOriginalQuery : mappingResultAndSimiarity.keySet()){
 
 			LinkedMap map = mappingResultAndSimiarity.get(eachOriginalQuery);
@@ -398,34 +399,88 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 			int size = links.size();
 
-			maxQuerySize  = 0;
+			String matchingResult = "<table id='" + eachOriginalQuery + " table' border='1'>";
 
-			if(maxQuerySize < size){
-				maxQuerySize = size;
-			}
-
-			String matchingResult = "<table id='" + eachOriginalQuery + " table'>";
-
-			matchingResult += "<tr><td>Expanded Query</td><td>Matched data item</td><td>Similarity score</td><td>verfication</td></tr>";
-
+			Map<String, Map<String, Double>> uniqueMapping = new HashMap<String, Map<String, Double>>();
+			
+			matchingResult += "<tr style='background: blue; color: white;'>" 
+					+"<td>Data Item</td><td>Description</td><td>Select mapping</td></tr>";
+			
 			for(int i = size; i > 0; i--){
 
 				LinkedInformation eachRow = links.get(i - 1);
 				String expandedQuery = eachRow.expandedQuery;
 				String matchedItem = eachRow.matchedItem;
 				Double similarity = eachRow.similarity;
-
-				String identifier = eachOriginalQuery + " " + expandedQuery;
-
-
-				matchingResult += "<tr id='" + identifier.replaceAll(" ", "_") + "'><td>" + expandedQuery + "</td><td>" 
-						+ matchedItem + "</td><td>" + similarity + "</td><td><input type='checkbox' name='" 
-						+ identifier.replaceAll(" ", "_") + "'></td></tr>";
+				
+				if(!uniqueMapping.containsKey(matchedItem)){
+					
+					Map<String, Double> queryAndSimilarity = new HashMap<String, Double>();
+					
+					queryAndSimilarity.put(expandedQuery, similarity);
+					
+					uniqueMapping.put(matchedItem, queryAndSimilarity);
+					
+					String identifier = eachOriginalQuery + "_" + matchedItem;
+					
+					matchingResult += "<tr border='1' id='" + identifier.replaceAll(" ", "_") + "'>" 
+							+ "<td>"+ questionsAndIdentifier.get(matchedItem) +"</td>"
+							+ "<td><div id='" + identifier.replaceAll(" ", "_") + "_div'>" 
+							+ matchedItem + "</div></td><td><input type='checkbox' name='" 
+							+ identifier.replaceAll(" ", "_") + "'></td></tr>";
+				}else{
+					
+					Map<String, Double> queryAndSimilarity = uniqueMapping.get(matchedItem);
+					
+					queryAndSimilarity.put(expandedQuery, similarity);
+					
+					uniqueMapping.put(matchedItem, queryAndSimilarity);
+					
+				}
+				
 				//				System.out.print(eachOriginalQuery + "\t" + expandedQuery + "\t" + matchedItem + "\t" + similarity);
 				//				System.out.println();
 			}
+			
 			matchingResult += "</table></div>";
-
+			
+			String executiveScript  = "<script>";
+			
+			if(maxQuerySize < uniqueMapping.keySet().size()){
+				maxQuerySize = uniqueMapping.keySet().size();
+			}
+			
+			for(String matchedItem : uniqueMapping.keySet()){
+				
+				String identifier = eachOriginalQuery + "_" + matchedItem;
+				
+				if(uniqueMapping.get(matchedItem).size() > 0){
+					String table = "<table class='insertTable' id='" + identifier.replaceAll(" ", "_") +"_table'>" 
+							+ "<tr><td>expanded query</td><td>similarity</td></tr>";
+					
+					for(Entry<String, Double> entry : uniqueMapping.get(matchedItem).entrySet()){
+					
+						String expandedQuery = entry.getKey();
+						Double similarity = entry.getValue();
+						
+						table += "<tr class='insertTable'><td>" + expandedQuery + "</td><td>" + similarity + "</td></tr>";
+					}
+					
+					table += "</table>";
+					
+					executiveScript += " document.getElementById(\"" + identifier.replaceAll(" ", "_")
+							+ "_div\").innerHTML += \"</br>" + table + "\";\n";
+					executiveScript += "var divTable = document.getElementById(\"" + identifier.replaceAll(" ", "_")
+							+ "_div\");" 
+							+ "divTable.style.cursor = \"pointer\";"
+							+ "divTable.onclick = function() {insertTable(\"" + identifier.replaceAll(" ", "_") +"_table\")};";
+				}
+			}
+			
+			executiveScript += "</script>\n\n\n";
+			
+			listOfScripts.add(executiveScript);
+			
 			parameterWithHtmlTable.put(eachOriginalQuery, matchingResult);
 		}
 	}
@@ -760,6 +815,10 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 		htmlTreeView += measurementClickEvent;
 
 		return htmlTreeView;
+	}
+
+	public List<String> getExecutiveScript() {
+		return listOfScripts;
 	}
 
 	public void setArrayInvestigations(List<Investigation> arrayInvestigations) {
