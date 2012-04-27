@@ -71,7 +71,8 @@ public class CommandLineGenerator
 
         //generate compute jobs
         //here, ComputeJobs can be generated also from DB given list of Targets
-        Vector<ComputeJob> computeJobs = jobGenerator.generateComputeJobsFoldedWorksheet(workflow, worksheet, backend);
+        Vector<ComputeJob> computeJobs = jobGenerator.generateComputeJobsFoldedWorksheetReduce(workflow, worksheet, backend);
+        //Vector<ComputeJob> computeJobs = jobGenerator.generateComputeJobsWorksheetWithFoldingNew(workflow, worksheet, backend);
 
         //generate actual analysis files
         boolean status = jobGenerator.generateActualJobs(computeJobs, backend, config);

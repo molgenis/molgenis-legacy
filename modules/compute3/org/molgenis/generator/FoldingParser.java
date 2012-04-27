@@ -1,11 +1,15 @@
 package org.molgenis.generator;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import org.molgenis.compute.ComputeParameter;
 import org.molgenis.util.Pair;
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,6 +23,12 @@ import java.util.List;
 //The whole this class is a bullshit, that we have because we do not not how to use our freemarker templates properly
 public class FoldingParser
 {
+    private static String BAD = "The problematic instruction:";
+
+    private boolean isTableFoldered = false;
+    private Vector<String> vecNotFolderedConstants = null;
+    private Collection<ComputeParameter> parameters = null;
+
     //
     public String parseTemplateLineByHand(String parTemplate, Hashtable<String, Object> line, int i, Hashtable<String, String> simpleValues)
     {
@@ -48,19 +58,24 @@ public class FoldingParser
     //this is really the worst part to parse freemarker by hand to prepare new list of templates to fill with freemarker :(
     public String doByHand(String parTemplate, Hashtable<String, String> values)
     {
-        Enumeration ekeys = values.keys();
-        while (ekeys.hasMoreElements())
+        String result = weaveFreemarker(parTemplate, values);
+
+        if (result.contains(BAD))
         {
-            String ekey = (String) ekeys.nextElement();
-            String value = (String) values.get(ekey);
+            Enumeration ekeys = values.keys();
+            while (ekeys.hasMoreElements())
+            {
+                String ekey = (String) ekeys.nextElement();
+                String value = (String) values.get(ekey);
 
-            String freemarkerKey = "${" + ekey + "}";
+                String freemarkerKey = "${" + ekey + "}";
 
-            if (parTemplate.contains(freemarkerKey))
-                parTemplate = parTemplate.replace(freemarkerKey, value);
-
+                if (parTemplate.contains(freemarkerKey))
+                    parTemplate = parTemplate.replace(freemarkerKey, value);
+            }
+            return parTemplate;
         }
-        return parTemplate;
+        return result;
     }
 
     public int getFolderedLineSize(Hashtable<String, Object> line)
@@ -120,5 +135,81 @@ public class FoldingParser
                 return false;
         }
         return true;
+    }
+
+    public boolean isDirectlyDependOnWorksheet(ComputeParameter parameter, List<Hashtable> table)
+    {
+        Hashtable row = table.get(0);
+        Enumeration rowKeys = row.keys();
+        while (rowKeys.hasMoreElements())
+        {
+            String ekey = (String) rowKeys.nextElement();
+            ekey = "${" + ekey + "}";
+
+            String parTemplate = parameter.getDefaultValue();
+            if (parTemplate.contains(ekey))
+                return true;
+        }
+
+        return false;
+    }
+
+    public void evaluateTable(List<Hashtable> table)
+    {
+        vecNotFolderedConstants = new Vector<String>();
+
+        Hashtable<String, Object> line = table.get(0);
+        Enumeration ekeys = line.keys();
+        while (ekeys.hasMoreElements())
+        {
+            String ekey = (String) ekeys.nextElement();
+            Object eValue = line.get(ekey);
+
+            if (eValue instanceof Collection<?>)
+            {
+                vecNotFolderedConstants.addElement(ekey);
+                isTableFoldered = true;
+            }
+        }
+    }
+
+    public void setParametersList(Collection<ComputeParameter> parameters)
+    {
+        this.parameters = parameters;
+    }
+
+    public boolean isParameterTemplateSimple(String parTemplate)
+    {
+        if (!isTableFoldered)
+            return true;
+        else
+        {
+            //int pos
+        }
+        return false;
+    }
+
+    public String weaveFreemarker(String strTemplate, Hashtable<String, String> values)
+    {
+        Configuration cfg = new Configuration();
+        //cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+
+        Template t = null;
+        StringWriter out = new StringWriter();
+        try
+        {
+            t = new Template("name", new StringReader(strTemplate), cfg);
+            t.process(values, out);
+        }
+        catch (TemplateException e)
+        {
+            //e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            //e.printStackTrace();
+        }
+
+        return out.toString();
     }
 }

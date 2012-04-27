@@ -28,6 +28,7 @@ import java.util.*;
  */
 public class GenericJobGenerator implements JobGenerator
 {
+
     private static Logger logger = Logger.getLogger(GenericJobGenerator.class);
 
     private FoldingMaker foldingMaker = new FoldingMaker();
@@ -662,7 +663,7 @@ public class GenericJobGenerator implements JobGenerator
                     {
                         if (parameter.getDefaultValue().contains("${"))
                         {
-                            if (isDirectlyDependOnWorksheet(parameter, table))
+                            if (foldingParser.isDirectlyDependOnWorksheet(parameter, table))
                             {
                                 complexParametersDepend.addElement(parameter);
                             }
@@ -808,10 +809,244 @@ public class GenericJobGenerator implements JobGenerator
         return computeJobs;
     }
 
+    public Vector<ComputeJob> generateComputeJobsFoldedWorksheetReduce(Workflow workflow, List<Tuple> f, String backend)
+    {
+        //create the table with targets, which is equal to worksheet if there are no targets
+        List<Hashtable> table = null;
+
+        //remove unused parameters from the worksheet
+        List<Hashtable> worksheet = foldingMaker.transformToTable(f);
+        foldingMaker.setWorkflow(workflow);
+        worksheet = foldingMaker.removeUnused(worksheet, (List<ComputeParameter>) workflow.getWorkflowComputeParameterCollection());
+
+        //some supplementary hashtables
+        Vector<ComputeJob> computeJobs = new Vector<ComputeJob>();
+
+        if (backend.equalsIgnoreCase(JobGenerator.GRID))
+            pairJobTransfers = new Hashtable<String, GridTransferContainer>();
+
+        if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+        {
+            pairWEtoCJ = new Hashtable<WorkflowElement, ComputeJob>();
+            pairCJtoWE = new Hashtable<ComputeJob, WorkflowElement>();
+            submitScript = "";
+        }
+
+        Collection<ComputeParameter> parameters = workflow.getWorkflowComputeParameterCollection();
+        Collection<WorkflowElement> workflowElements = workflow.getWorkflowWorkflowElementCollection();
+        for (WorkflowElement el : workflowElements)
+        {
+
+            ComputeProtocol protocol = (ComputeProtocol) el.getProtocol();
+            String template = protocol.getScriptTemplate();
+
+            //chack if we have any targets
+            List<ComputeParameter> targets = foldingMaker.findTargets(protocol.getScriptTemplate());
+            if (targets != null)
+            {
+                table = foldingMaker.fold(targets, worksheet);
+            }
+            else
+                table = worksheet;
+
+            //here, we prapare some information about foldered table
+            //in particular, we find what parameters are Martijn's foldered constants
+            foldingParser.evaluateTable(table);
+
+            //we set all parameters to foldered parser, which are used for reducing foldered constants
+            //this comment does give any clue to what is going on :)
+            foldingParser.setParametersList(parameters);
+
+            //now we start to use foldered worksheet
+            //all our parameters, that depend on foldered worksheet, will become lists as well, that upset me a lot :(
+            for (int i = 0; i < table.size(); i++)
+            {
+                //because Hashtable does not allow null keys or values used for weaving
+                Hashtable<String, Object> values = new Hashtable<String, Object>();
+
+                //parameters which are templates and do directly depend on worksheet values
+                Vector<ComputeParameter> complexParametersDepend = new Vector<ComputeParameter>();
+
+                //parameters which are templates but do not directly depend on worksheet values
+                Vector<ComputeParameter> complexParametersIndepend = new Vector<ComputeParameter>();
+
+                //hashtable with simple values, we need it for initial weaving
+                Hashtable<String, String> simpleValues = new Hashtable<String, String>();
+
+                //job naming
+                String id = "id";
+                Hashtable<String, Object> line = table.get(i);
+
+                Enumeration ekeys = line.keys();
+                while (ekeys.hasMoreElements())
+                {
+                    String ekey = (String) ekeys.nextElement();
+                    Object eValues = line.get(ekey);
+                    values.put(ekey, eValues);
+
+                    id += "_" + eValues.toString();
+                }
+
+                for (ComputeParameter parameter : parameters)
+                {
+                    if (parameter.getDefaultValue() != null)
+                    {
+                        if (parameter.getDefaultValue().contains("${"))
+                        {
+                            if (foldingParser.isDirectlyDependOnWorksheet(parameter, table))
+                            {
+                                complexParametersDepend.addElement(parameter);
+                            }
+                            else
+                            {
+                                complexParametersIndepend.addElement(parameter);
+                            }
+                        }
+                        else
+                        {
+                            values.put(parameter.getName(), parameter.getDefaultValue());
+                            simpleValues.put(parameter.getName(), parameter.getDefaultValue());
+                        }
+                    }
+                }
+
+                Hashtable<String, Object> unweavedValues = new Hashtable<String, Object>();
+                Hashtable<String, String> unweavedValuesSimple = new Hashtable<String, String>();
+
+
+                //System.out.println("values before " + values.size());
+
+                Vector<ComputeParameter> toRemove = new Vector<ComputeParameter>();
+                //lets process dependent parameters
+                for (ComputeParameter par : complexParametersDepend)
+                {
+                    Pair<String, Object> value = processDependentParameter(par, line, simpleValues);
+                    if (foldingParser.isValueSimple(value))
+                    {
+                        values.put(par.getName(), value.getB());
+                        toRemove.add(par);
+                    }
+                    else
+                    {
+                        unweavedValues.put(par.getName(), value.getB());
+                    }
+                }
+
+                complexParametersDepend.removeAll(toRemove);
+                //System.out.println("values after " + values.size() + "  complex dependencies: " + complexParametersDepend.size());
+
+                //lets process independent parameters
+                for (ComputeParameter par : complexParametersIndepend)
+                {
+                    Pair<String, Object> value = processDependentParameter(par, line, simpleValues);
+                    if (foldingParser.isValueSimple(value))
+                    {
+                        values.put(par.getName(), value.getB());
+                        toRemove.add(par);
+                    }
+                    else
+                    {
+                        unweavedValues.put(par.getName(), value.getB());
+                    }
+                }
+
+                complexParametersIndepend.removeAll(toRemove);
+                //System.out.println("values after " + values.size() + "  complex dependencies: " + complexParametersIndepend.size());
+
+
+                //lets see that we can do now!!!
+                Vector<String> vecToRemove = new Vector<String>();
+
+                int weavingCount = 0;
+                System.out.println("loop " + weavingCount + " -> " + unweavedValues.size());
+                while (unweavedValues.size() > 0 && weavingCount < 10)
+                {
+                    Enumeration unkeys = unweavedValues.keys();
+                    while (unkeys.hasMoreElements())
+                    {
+                        String unkey = (String) unkeys.nextElement();
+                        Object eValue = unweavedValues.get(unkey);
+
+                        Pair<String, Object> value = null;
+
+                        if (eValue instanceof Collection<?>)
+                        {
+                            //System.out.println("++++++++++++++++++++++");
+                            List<String> unweavedLines = (List<String>) eValue;
+                            value = processUnweavedCollection(unkey, unweavedLines, values);
+                        }
+                        else
+                        {
+                            //System.out.println("------------");
+                            String unweavedLine = (String) eValue;
+                            // it should not happen, but still to test
+                            //if parameter is still not weaved, it should contain a list
+                            //still, we specify 0 as a line number
+                            value = processUnweavedLine(unkey, unweavedLine, values, 0);
+                        }
+
+                        if (foldingParser.isValueSimple(value))
+                        {
+                            values.put(value.getA(), value.getB());
+                            vecToRemove.add(unkey);
+                        }
+                        else
+                            unweavedValues.put(value.getA(), value.getB());
+
+                    }
+
+                    for (String str : vecToRemove)
+                        unweavedValues.remove(str);
+                    weavingCount++;
+
+                    System.out.println("loop " + weavingCount + " -> " + unweavedValues.size());
+
+                }
+
+                String jobListing = foldingMaker.weaveFreemarker(template, values);
+
+                ComputeJob job = new ComputeJob();
+
+                String jobName = config.get(JobGenerator.GENERATION_ID) + "_" +
+                        workflow.getName() + "_" +
+                        el.getName() + "_" + id;
+
+                job.setName(jobName);
+                job.setProtocol(protocol);
+                job.setComputeScript(jobListing);
+                computeJobs.add(job);
+
+                //fill containers for grid jobs to ensure correct data transfer
+                // and for cluster to generate submit script
+                if (backend.equalsIgnoreCase(JobGenerator.GRID))
+                {
+                    GridTransferContainer container = fillContainer(protocol, values);
+                    pairJobTransfers.put(job.getName(), container);
+                }
+                else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+                {
+                    pairWEtoCJ.put(el, job);
+                    pairCJtoWE.put(job, el);
+                }
+                logger.log(Level.DEBUG, "----------------------------------------------------------------------");
+                logger.log(Level.DEBUG, el.getName());
+                logger.log(Level.DEBUG, jobListing);
+                logger.log(Level.DEBUG, "----------------------------------------------------------------------");
+
+            }
+
+
+        }
+        return computeJobs;
+    }
+
     private Pair<String, Object> processUnweavedLine(String unkey, String unweavedLine, Hashtable<String, Object> values, int i)
     {
         Pair<String, Object> pair = new Pair<String, Object>();
         Hashtable<String, String> hashtable = prepareSimpleValues(values, i);
+
+        //TODO: here most probably we can handle complex alex parameters
+
         String value = foldingParser.doByHand(unweavedLine, hashtable);
         pair.setA(unkey);
         pair.setB(value);
@@ -842,9 +1077,7 @@ public class GenericJobGenerator implements JobGenerator
         return result;
     }
 
-    private Pair<String, Object> processUnweavedCollection
-            (String
-                     unkey, List<String> unweavedLines, Hashtable<String, Object> values)
+    private Pair<String, Object> processUnweavedCollection(String unkey, List<String> unweavedLines, Hashtable<String, Object> values)
     {
         Pair<String, Object> pair = new Pair<String, Object>();
         List<String> list = new ArrayList<String>();
@@ -860,8 +1093,7 @@ public class GenericJobGenerator implements JobGenerator
     }
 
     private Pair<String, Object> processDependentParameter
-            (ComputeParameter
-                     par, Hashtable<String, Object> line, Hashtable<String, String> simpleValues)
+            (ComputeParameter par, Hashtable<String, Object> line, Hashtable<String, String> simpleValues)
     {
         Pair<String, Object> pair = new Pair<String, Object>();
         pair.setA(par.getName());
@@ -870,7 +1102,9 @@ public class GenericJobGenerator implements JobGenerator
         int lineFolderedSize = foldingParser.getFolderedLineSize(line);
         String parTemplate = par.getDefaultValue();
 
-        if (lineFolderedSize > 1)
+        boolean isParameterSimple = foldingParser.isParameterTemplateSimple(parTemplate);
+
+        if (lineFolderedSize > 1 && !isParameterSimple)
         {
             List<String> values = new ArrayList<String>();
             for (int i = 0; i < lineFolderedSize; i++)
@@ -887,23 +1121,6 @@ public class GenericJobGenerator implements JobGenerator
 
         }
         return pair;
-    }
-
-    private boolean isDirectlyDependOnWorksheet(ComputeParameter parameter, List<Hashtable> table)
-    {
-        Hashtable row = table.get(0);
-        Enumeration rowKeys = row.keys();
-        while (rowKeys.hasMoreElements())
-        {
-            String ekey = (String) rowKeys.nextElement();
-            ekey = "${" + ekey + "}";
-
-            String parTemplate = parameter.getDefaultValue();
-            if (parTemplate.contains(ekey))
-                return true;
-        }
-
-        return false;
     }
 
     private GridTransferContainer fillContainer(ComputeProtocol protocol, Hashtable<String, Object> values)
