@@ -67,6 +67,8 @@ public class TableModel {
 
 	private HashMap<String, String> checkExistingMeasurementsInDB = new HashMap<String, String>();
 
+	private HashMap<String, String> checkExistingEntitesInDB = new HashMap<String, String>();
+
 	public TableModel(int i,  Database db) {
 		this.db = db;
 		this.columnSize = i;
@@ -183,9 +185,10 @@ public class TableModel {
 
 		int sheetSize = sheets.length;
 
-//		if(multipleSheets == true){
-//			sheetSize = 1;
-//		}
+		if(multipleSheets == true){
+			sheetSize = 1;
+		}
+		
 		try{
 			for(int sheetIndex = 0; sheetIndex < sheetSize; sheetIndex++){
 
@@ -203,7 +206,7 @@ public class TableModel {
 					row = sheet.getColumns();
 					column = sheet.getRows();
 				}
-				
+
 
 
 				//three dimensional matrix of<colIndex, rowIndex, valueIndex>
@@ -224,9 +227,13 @@ public class TableModel {
 							cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
 						else
 							cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
-
+						if(cellValue.equalsIgnoreCase("CHFYETIOL")){
+							System.out.println();
+						}
 						//					System.out.println("The cell value is " + cellValue);
 						//					System.out.println("The size is =========== " + configuration.size());
+
+
 
 						TableField field = columnIndexToTableField.get(colIndex);
 
@@ -658,7 +665,7 @@ public class TableModel {
 					ontologyTermList.add(ontologyTermOfList.get(ontologyTermName));
 				}
 			}
-			
+
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -713,11 +720,13 @@ public class TableModel {
 						//Resolving importing the measurements with the same name. In the different studies, measurements with the same name could
 						//have different definitions, so we need to distinguish this kind of variables. Therefore a display name meta-measurement is created
 						//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
-						if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name_" + investigationName)).size() == 0){
-
+						if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
+							
 							displayNameMeasurement = new Measurement();
 
 							displayNameMeasurement.setName("display name");
+							
+							db.add(displayNameMeasurement);
 
 						}else{
 							displayNameMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).get(0);
@@ -738,12 +747,22 @@ public class TableModel {
 					}
 				}
 
-				//After Category has been added in the db. Set the category to Measurement by ID. 
 				List<String> categories_name = (List<String>) m.get(Measurement.CATEGORIES_NAME);
 
-				if(categories_name.size() > 0)
+				List<String> categories_new = new ArrayList<String>();
+
+				for(String eachCategory : categories_name){
+
+					if(checkExistingEntitesInDB.containsKey(eachCategory.toLowerCase())){
+						categories_new.add(checkExistingEntitesInDB.get(eachCategory.toLowerCase()));
+					}else{
+						categories_new.add(eachCategory);
+					}	
+				}
+
+				if(categories_new.size() > 0)
 				{
-					List<Category> categories = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categories_name));
+					List<Category> categories = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categories_new));
 					List<Integer> categoryId = new ArrayList<Integer>();
 					for(Category c : categories){
 
@@ -779,9 +798,20 @@ public class TableModel {
 			{
 				List<String> feature_names = (List<String>) p.get(Protocol.FEATURES_NAME);
 
-				if(feature_names.size() > 0)
+				List<String> features_new = new ArrayList<String>();
+
+				for(String eachFeature : feature_names){
+
+					if(checkExistingEntitesInDB.containsKey(eachFeature.toLowerCase())){
+						features_new.add(checkExistingEntitesInDB.get(eachFeature.toLowerCase()));
+					}else{
+						features_new.add(eachFeature);
+					}	
+				}
+
+				if(features_new.size() > 0)
 				{
-					List<Measurement> features = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, feature_names));
+					List<Measurement> features = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, features_new));
 
 					if(features.size() > 0)
 					{
@@ -824,17 +854,24 @@ public class TableModel {
 			for(InvestigationElement p : protocolList)
 			{
 
-				if(p.getName().equalsIgnoreCase("age reader")){
-					System.out.println();
-				}
-
 				if(!subProtocols.contains(p)){
 
 					List<String> subProtocol_names = subProtocolAndProtocol.get(p.getName());
 
-					if(subProtocol_names.size() > 0)
+					List<String> subProtocols_new = new ArrayList<String>();
+
+					for(String subProtocol : subProtocol_names){
+
+						if(checkExistingEntitesInDB.containsKey(subProtocol.toLowerCase())){
+							subProtocols_new.add(checkExistingEntitesInDB.get(subProtocol.toLowerCase()));
+						}else{
+							subProtocols_new.add(subProtocol);
+						}	
+					}
+					
+					if(subProtocols_new.size() > 0)
 					{
-						List<Protocol> subProtocolList = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, subProtocol_names));
+						List<Protocol> subProtocolList = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, subProtocols_new));
 
 						if(subProtocolList.size() > 0)
 						{
@@ -939,6 +976,8 @@ public class TableModel {
 
 		List<String> names = new ArrayList<String>(hashMap.keySet());
 
+		checkExistingEntitesInDB.clear();
+
 		if(names.size() > 0){
 
 			if(ClassType.equals(Category.class.getSimpleName()) || ClassType.equals(Measurement.class.getSimpleName()) 
@@ -946,17 +985,38 @@ public class TableModel {
 
 				for(Category c : db.find(Category.class, new QueryRule("name", Operator.IN, names))){
 					InvestigationElement categoryToAdd =  hashMap.get(c.getName().toLowerCase());
-					categoryToAdd.setName(categoryToAdd.getName() + "_" + investigationName);
+					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+					checkExistingEntitesInDB.put(c.getName().toLowerCase(), categoryToAdd.getName());
 				}
 
 				for(Measurement m : db.find(Measurement.class, new QueryRule("name", Operator.IN, names))){
 					InvestigationElement categoryToAdd =  hashMap.get(m.getName().toLowerCase());
-					categoryToAdd.setName(categoryToAdd.getName() + "_" + investigationName);
+					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+					checkExistingEntitesInDB.put(m.getName().toLowerCase(), categoryToAdd.getName());
 				}
 
 				for(ObservationTarget ot : db.find(ObservationTarget.class, new QueryRule("name", Operator.IN, names))){
 					InvestigationElement categoryToAdd =  hashMap.get(ot.getName().toLowerCase());
-					categoryToAdd.setName(categoryToAdd.getName() + "_" + investigationName);
+					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+					checkExistingEntitesInDB.put(ot.getName().toLowerCase(), categoryToAdd.getName());
+				}
+			}
+
+			if(ClassType.equals(ComputeProtocol.class.getSimpleName()) || ClassType.equals(Protocol.class.getSimpleName())){
+
+				for(Protocol p : db.find(Protocol.class, new QueryRule("name", Operator.IN, names))){
+
+					InvestigationElement categoryToAdd =  hashMap.get(p.getName().toLowerCase());
+					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+					checkExistingEntitesInDB.put(p.getName().toLowerCase(), categoryToAdd.getName());
+
+				}
+				for(ComputeProtocol p : db.find(ComputeProtocol.class, new QueryRule("name", Operator.IN, names))){
+
+					InvestigationElement categoryToAdd =  hashMap.get(p.getName().toLowerCase());
+					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+					checkExistingEntitesInDB.put(p.getName().toLowerCase(), categoryToAdd.getName());
+
 				}
 			}
 		}
