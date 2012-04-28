@@ -28,7 +28,7 @@ MOLGENIS applications
 ---------------------
 Many molgenis applications have been developed, a not so short overview:
 
- - xQTL Workbench for multi-level QTL mapping (project)
+ - xQTL Workbench for multi-level QTL mapping ([project](http://www.xqtl.nl/ "www.xqtl.nl"))
  - Dystrophic Epidermolysis Bullosa (deb-central) mutation database (project, publication)
  - eXtensible Genotype and Phenotype database (XGAP) (project, publication)
  - Design of Genetical Genomics Experiments (designGG)] (project, publication)
@@ -44,4 +44,4 @@ Many molgenis applications have been developed, a not so short overview:
  - Bacterial microarrays database (MOLGEN-IS) (publication)
  - Human Metabolic Pathway Database (project, publication)
 
- If you think your project should be listed (differently) please let us know
+If you think your project should be listed (differently) please let us know
