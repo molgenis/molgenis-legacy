@@ -1,0 +1,6 @@
+
+Convert from CSV to xQTL binary:
+java -jar CsvToBin.jar ExampleData ExampleInv Metabolite Individual Decimal metab.txt
+
+Get help:
+java -jar CsvToBin.jar

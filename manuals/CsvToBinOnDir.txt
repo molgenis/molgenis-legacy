@@ -1,0 +1,16 @@
+
+Convert from CSV files to xQTL binaries on a whole directory at once:
+java -jar CsvToBinOnDir.jar data.txt
+
+The argument (data.txt) is the data description file location.
+This is a MOLGENIS/XGAP format file for 'Data' entities.
+
+In this file, use at least the following column headers:
+	name, investigation_Name, targetType, featureType, valueType, storage
+
+The input and output files are all read in/write out in the directory where the JAR is located.
+The names of these files are based on the 'Data' name field.
+So: for each 'Data' name X, we expect a file called X.txt which will be converted to X.bin, all in your current working directory.
+
+Get help:
+java -jar CsvToBinOnDir.jar

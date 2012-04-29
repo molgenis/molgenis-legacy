@@ -1,0 +1,3 @@
+
+Convert from xQTL binary to CSV:
+java -jar BinToCsv.jar metab.bin

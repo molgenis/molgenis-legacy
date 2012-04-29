@@ -1,0 +1,6 @@
+
+Convert from TriTyper to xQTL binary format while making a subselection of individuals:
+java -jar -Xmx1g TriToBin.jar ./BrainsetTriTyper example.bin sliceme.txt example_data ExampleInv
+
+Get help:
+java -jar TriToBinSlice.jar

@@ -1,0 +1,11 @@
+
+Convert from binary Plink format (BED+BIM+FAM) format to Molgenis readable CSV format (individuals + SNPs + genotype matrix).
+
+Input files are expected to have the same name (e.g. 'mydata'), with the different extensions (.bim, .bed and .fam) and must all exist.
+Output files are also based on this name ('mydata') with different suffixes (X_individuals.txt, X_snps.txt, X_genotypes.txt) and may not yet exist when the tool is started.
+
+Example usage:
+java -jar -Xmx1g PlinkbinToCsv.jar mydata
+
+Get help:
+java -jar PlinkbinToCsv.jar
