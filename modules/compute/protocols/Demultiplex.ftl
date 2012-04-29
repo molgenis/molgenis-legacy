@@ -8,7 +8,7 @@
 # =====================================================
 #
 
-#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=1
+#MOLGENIS walltime=48:00:00 nodes=1 cores=4 mem=1
 #FOREACH flowcell, lane, seqType, filenamePrefix
 
 export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
@@ -52,6 +52,7 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		--mpr1 ${compressedFastqFilepathSR} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathSR)}' \
 		--ukr1 ${compressedDemultiplexedDiscardedFastqFilepathSR} \
+		--tm MP \
 		> ${runIntermediateDir}/${filenamePrefix}.demultiplex.log
 		
 		#
@@ -148,6 +149,7 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		--dmr2 '${csv(compressedDemultiplexedSampleFastqFilepathPE2)}' \
 		--ukr1 ${compressedDemultiplexedDiscardedFastqFilepathPE1} \
 		--ukr2 ${compressedDemultiplexedDiscardedFastqFilepathPE2} \
+		--tm MP \
 		> ${runIntermediateDir}/${filenamePrefix}.demultiplex.log
 		
 		#
