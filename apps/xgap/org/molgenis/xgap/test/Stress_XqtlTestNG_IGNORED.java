@@ -6,15 +6,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.Individual;
@@ -93,6 +99,9 @@ public class Stress_XqtlTestNG_IGNORED
 		db.add(mp);
 	}
 
+	/**
+	 * Webserver and database stress test
+	 */
 	@Test(dependsOnMethods = "importExampleData")
 	public void stressTest() throws Exception
 	{
@@ -158,6 +167,86 @@ public class Stress_XqtlTestNG_IGNORED
 	}
 	
 	/**
+	 * Database-only stress test
+	 */
+	@Test(dependsOnMethods = "importExampleData")
+	public void stressDatabaseTest() throws Exception
+	{
+		DataSource ds = createDataSource();
+
+		//create X amount of threats with N iterations in each thread
+		List<queryMarkers> tests = new ArrayList<queryMarkers>();
+		for (int i = 0; i < test_number_of_threads; i++)
+		{
+			tests.add(new queryMarkers(test_iterations_per_thread, ds));
+		}
+		
+		//keep track if one of the threads threw an error (failed assert or IO error)
+		final Bool testCompletedSuccessfully = new Bool(true);
+		
+		//total assert fails
+		final Int assertFails = new Int(0);
+		
+		//total db errors
+		final Int dbErrors = new Int(0);
+		
+		//total sql errors
+		final Int sqlErrors = new Int(0);
+		
+		
+		//start all threads
+		List<Thread> threads = new ArrayList<Thread>();
+		for (final queryMarkers t : tests)
+		{
+			Runnable runnable = new Runnable()
+			{
+				public void run()
+				{
+					try
+					{
+						t.queryAndAssert();
+					}
+					catch (DatabaseException dbe)
+					{
+						dbe.printStackTrace();
+						testCompletedSuccessfully.setVal(false);
+						dbErrors.setVal(dbErrors.getVal()+1);
+					}
+					catch (SQLException se)
+					{
+						se.printStackTrace();
+						testCompletedSuccessfully.setVal(false);
+						sqlErrors.setVal(sqlErrors.getVal()+1);
+					}
+					catch (AssertionError ae)
+					{
+						ae.printStackTrace();
+						testCompletedSuccessfully.setVal(false);
+						assertFails.setVal(assertFails.getVal()+1);
+					}
+				}
+			};
+			Thread thread = new Thread(runnable);
+			thread.start();
+			threads.add(thread);
+		}
+
+		// wait for all threads to complete
+		for (Thread thread : threads)
+		{
+			thread.join();
+		}
+		
+		System.out.println("** TOTAL ASSERT FAILS: " + assertFails.getVal() + " **");
+		System.out.println("** TOTAL DB ERRORS: " + dbErrors.getVal() + " **");
+		System.out.println("** TOTAL SQL ERRORS: " + sqlErrors.getVal() + " **");
+		
+		//check if one (or more) threads failed
+		Assert.assertTrue(testCompletedSuccessfully.getVal());
+		
+	}
+	
+	/**
 	 * Helper function, use to see if the example data is all there.
 	 */
 	private void checkIfExampleDataIsOK() throws Exception
@@ -188,18 +277,64 @@ public class Stress_XqtlTestNG_IGNORED
 			return storagePath;
 		}
 	}
+	
+	//manually create a connection pool for the database-only stress test
+	//NOTE: we also start a RunStandalone server with FrontController,
+	// which also creates 1 datasource.. problem?
+	private DataSource createDataSource() {
+		//NOTE: these are the current default settings for MOLGENIS HSQLDB
+		BasicDataSource data_src = new BasicDataSource();
+		data_src.setDriverClassName("org.hsqldb.jdbcDriver");
+		data_src.setUsername("sa");
+		data_src.setPassword("");
+		data_src.setUrl("jdbc:hsqldb:file:hsqldb/molgenisdb;shutdown=true"); // a path within the src folder?
+		data_src.setMaxIdle(10);
+		data_src.setMaxWait(1000);
+		return (DataSource) data_src;	
+	}
 
+}
+
+class queryMarkers
+{
+	int iterations;
+	DataSource ds;
+	
+	public queryMarkers(int iterations, DataSource ds)
+	{
+		this.iterations = iterations;
+		this.ds = ds;
+	}
+	
+	public void queryAndAssert() throws SQLException, DatabaseException, AssertionError
+	{
+		//get a fresh database connection for each batch of queries
+		Database db = getDatabase();
+		for(int i = 0; i < iterations; i ++)
+		{	
+			List<Marker> m = db.find(Marker.class);
+			Assert.assertEquals(m.size(), 117); //117 markers
+		}
+		db.close(); //not needed
+	}
+	
+	private Database getDatabase() throws SQLException, DatabaseException
+	{
+		Connection conn = ds.getConnection();
+		Database db = DatabaseFactory.create(conn);
+		return db;
+	}
 }
 
 class downloadMarkers
 {
 	int webserverport;
-	int repeats;
+	int iterations;
 	
-	public downloadMarkers(int repeats, int webserverport)
+	public downloadMarkers(int iterations, int webserverport)
 	{
 		this.webserverport = webserverport;
-		this.repeats = repeats;
+		this.iterations = iterations;
 	}
 	
 	private ArrayList<String> getUrl(String path) throws IOException
@@ -219,11 +354,11 @@ class downloadMarkers
 	
 	public void downloadAndAssert() throws AssertionError, IOException
 	{
-		for(int i = 0; i < repeats; i ++)
+		for(int i = 0; i < iterations; i ++)
 		{
 			String req = "/xqtl/api/find/Marker";
 			ArrayList<String> res = getUrl(req);
-			Assert.assertEquals(res.size(), 118);
+			Assert.assertEquals(res.size(), 118); //117 markers + 1 for col.header
 		}
 	}
 }
