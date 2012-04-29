@@ -1,0 +1,10 @@
+bin/
+build/
+tmp/
+
+*.class
+*,so
+*,si
+*,dll
+*.o
+*.tmp
