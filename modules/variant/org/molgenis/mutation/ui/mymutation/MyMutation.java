@@ -15,6 +15,7 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.service.SearchService;
@@ -29,8 +30,12 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 	{
 		super(name, null, parent);
 		this.setModel(new MyMutationModel(this));
-		this.setView(new FreemarkerView("MyMutation.ftl", getModel()));
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("MyMutation.ftl", getModel());
 	}
 
 	@Override

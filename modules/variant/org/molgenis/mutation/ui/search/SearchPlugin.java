@@ -19,7 +19,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.TextLineInput;
@@ -46,10 +46,22 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	{
 		super(name, null, parent);
 		this.setModel(new SearchModel(this));
-		this.setView(new FreemarkerView("init.ftl", getModel()));
+		this.view = new FreemarkerView("init.ftl", getModel());
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
+	}
+	
+	private ScreenView view;
+	
+	public ScreenView getView()
+	{
+		return view;
+	}
+	
+	public void setView(ScreenView view)
+	{
+		this.view = view;
 	}
 
 	@Override
