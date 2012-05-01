@@ -8,17 +8,15 @@
 package org.molgenis.scrum.decorators;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.db.MapperDecorator;
 import org.molgenis.scrum.Task;
 import org.molgenis.scrum.TaskHistory;
 
-public class TaskDecorator<E extends org.molgenis.scrum.Task> extends MappingDecorator<E>
+public class TaskDecorator<E extends org.molgenis.scrum.Task> extends MapperDecorator<E>
 {
 	// JDBCMapper is the generate thing
 	public TaskDecorator(Mapper generatedMapper)
