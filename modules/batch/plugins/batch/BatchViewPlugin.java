@@ -8,13 +8,12 @@
 package plugins.batch;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.util.Entity;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
-public class BatchViewPlugin extends GenericPlugin
+public class BatchViewPlugin extends EasyPluginController
 {
     private static final long serialVersionUID = -3093693807976546141L;
     //private String action = "init";
@@ -48,17 +47,17 @@ public class BatchViewPlugin extends GenericPlugin
     @Override
     public void reload(Database db)
     {
-		service.setDatabase(db, this.getLogin().getUserId());
+		service.setDatabase(db, db.getLogin().getUserId());
 	
-		batchContainer = new BatchContainer(service, this.getLogin().getUserId());
+		batchContainer = new BatchContainer(service, db.getLogin().getUserId());
 		ui.updateBatchView(batchContainer, service);
     }
 
     /**
      * Render the html
      */
-    public String render()
+    public ScreenView getView()
     {
-    	return ui.getContainer().toHtml();
+    	return ui.getContainer();
     }
 }
