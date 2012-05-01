@@ -12,6 +12,7 @@ import org.molgenis.auth.ui.form.RegistrationForm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
 //import commonservice.CommonService;
@@ -28,10 +29,14 @@ public class UserLogin extends SimpleUserLogin
 	{
 		super(name, parent);
 		this.setModel(new UserLoginModel(this));
-		this.setView(new FreemarkerView("UserLogin.ftl", getModel()));
 	}
 
 
+	public ScreenView getView()
+	{
+		return new FreemarkerView("UserLogin.ftl", getModel());
+	}
+	
 	public void Register(Database db, Tuple request)
 	{
 		this.getModel().setAction("Register");
