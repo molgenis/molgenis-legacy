@@ -8,7 +8,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.BoolInput;
 import org.molgenis.framework.ui.html.DivPanel;
@@ -46,7 +46,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 	final static String LASTNAME = "LastName";
 
 	public LifeLinesRequest(String name, ScreenController<?> parent) {
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new LifeLinesRequestModel(this)); // the default model
 		// this.setView(new FreemarkerView("LifeLinesRequestView.ftl",
 		// getModel())); //<plugin flavor="freemarker"
@@ -85,7 +85,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 
 	public void submit(Database db, Tuple request) throws DatabaseException, EmailException {
 		sentEmail(db, request);
-		this.setSucces("Request submitted succesfully");
+		this.setSuccess("Request submitted succesfully");
 		submitted = true;
 		tuple = request;
 	}
@@ -124,7 +124,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		System.out.println("Email : " + admin.getEmail()+ "data request >>>"+ email);
 	}
 
-	public String render() {
+	public ScreenView getView() {
 		MolgenisForm form = new MolgenisForm(this.getModel());
 
 		if (submitted) {
@@ -136,7 +136,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 							+ " "
 							+ tuple.getString(LASTNAME)
 							+ "</b> for the request. You should have received a copy of your request in your mailbox. The LifeLines data officer will contact your shortly."));
-			return form.render();
+			return form;
 		}
 
 		DivPanel l = new DivPanel();
@@ -177,7 +177,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 
 		form.add(l);
 
-		return form.render();
+		return form;
 	}
 	
 //	@Override
