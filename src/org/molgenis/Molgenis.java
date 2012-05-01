@@ -102,8 +102,8 @@ import org.molgenis.generators.tests.TestCsvGen;
 import org.molgenis.generators.tests.TestDataSetGen;
 import org.molgenis.generators.tests.TestDatabaseGen;
 import org.molgenis.generators.ui.EasyPluginControllerGen;
-import org.molgenis.generators.ui.EasyPluginModelGen;
-import org.molgenis.generators.ui.EasyPluginViewGen;
+//import org.molgenis.generators.ui.EasyPluginModelGen;
+//import org.molgenis.generators.ui.EasyPluginViewGen;
 import org.molgenis.generators.ui.FormControllerGen;
 import org.molgenis.generators.ui.HtmlFormGen;
 import org.molgenis.generators.ui.MenuControllerGen;
@@ -419,9 +419,9 @@ public class Molgenis {
             //generators.add(new PluginScreenFTLTemplateGen());
             //generators.add(new PluginScreenJavaTemplateGen());
           
-            generators.add(new EasyPluginViewGen());
+            //generators.add(new EasyPluginViewGen());
             generators.add(new EasyPluginControllerGen());
-            generators.add(new EasyPluginModelGen());
+            //generators.add(new EasyPluginModelGen());
         } else {
             logger.info("Skipping generation of plugins ....");
         }
