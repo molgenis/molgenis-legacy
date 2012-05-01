@@ -3,6 +3,7 @@ package plugins.autohidelogin;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
 public class AutoHideLogin extends org.molgenis.auth.ui.UserLogin
@@ -20,7 +21,11 @@ public class AutoHideLogin extends org.molgenis.auth.ui.UserLogin
 	{
 		super(name, parent);
 		this.setModel(new AutoHideLoginModel(this));
-		this.setView(new FreemarkerView("org/molgenis/auth/ui/UserLogin.ftl", getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("org/molgenis/auth/ui/UserLogin.ftl", getModel());
 	}
 	
 	@Override
