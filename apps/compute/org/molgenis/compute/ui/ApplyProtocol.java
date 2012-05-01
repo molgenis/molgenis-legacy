@@ -9,6 +9,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.ngs.NgsSample;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
@@ -17,12 +18,7 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Tuple;
 
 /**
- * ApplyProtocolController takes care of all user requests and application logic.
- *
- * <li>Each user request is handled by its own method based action=methodName. 
- * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
- * <li>ApplyProtocolModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
- * <li>ApplyProtocolView holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ * Trial of ApplyProtocol plugin.
  */
 public class ApplyProtocol extends EasyPluginController<ApplyProtocolModel>
 {	
@@ -33,13 +29,18 @@ public class ApplyProtocol extends EasyPluginController<ApplyProtocolModel>
 	List<NgsSample> samples;
 	ProtocolApplication application;
 	List<ObservedValue> values;
+	ScreenView view;
 	
 	public ApplyProtocol(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new ApplyProtocolModel(this));
-		//set default view to StartView
-		this.setView(new ApplyProtocolStartView(this)); 
+		this.view = new ApplyProtocolStartView(this);
+	}
+	
+	public ScreenView getView()
+	{
+		return view;
 	}
 	
 	@Override
@@ -80,7 +81,7 @@ public class ApplyProtocol extends EasyPluginController<ApplyProtocolModel>
 			}
 		}
 		
-		this.setView(new ApplyProtocolEditView(this));
+		view = new ApplyProtocolEditView(this);
 	}
 	
 	public void restart(Database db, Tuple request)
@@ -90,7 +91,7 @@ public class ApplyProtocol extends EasyPluginController<ApplyProtocolModel>
 		samples = null;
 		application = null;
 		values = null;
-		this.setView(new ApplyProtocolStartView(this)); 
+		view = new ApplyProtocolStartView(this); 
 	}
 	
 	public void cancel(Database db, Tuple request)
@@ -122,7 +123,7 @@ public class ApplyProtocol extends EasyPluginController<ApplyProtocolModel>
 			db.update(application);
 		}
 		
-		this.setView(new ApplyProtocolStartView(this));
+		view = new ApplyProtocolStartView(this);
 	}
 
 }
