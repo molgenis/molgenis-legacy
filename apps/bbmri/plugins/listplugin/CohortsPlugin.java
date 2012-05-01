@@ -7,6 +7,7 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 
 /**
  * CohortsPluginController takes care of all user requests and application logic.
@@ -22,9 +23,13 @@ public class CohortsPlugin extends EasyPluginController<CohortsPluginModel>
 
 	public CohortsPlugin(String name, ScreenController<?> parent)
 	{ 
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new CohortsPluginModel(this)); //the default model
-		this.setView(new FreemarkerView("CohortsPluginView.ftl", getModel())); //<plugin flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("CohortsPluginView.ftl", getModel());
 	}
 	
 	public String getCustomHtmlHeaders() {
