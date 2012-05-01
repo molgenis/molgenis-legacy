@@ -50,6 +50,7 @@ public class DownloadVisibleCommand extends SimpleCommand
 		FormModel<?> view = this.getFormScreen();
 		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
 		CsvWriter writer = new CsvWriter(csvDownload, fieldsToExport);
+		writer.writeHeader();
 		for(Entity e: view.getRecords()) writer.writeRow(e);
 		writer.close();
 		return ScreenModel.Show.SHOW_MAIN;
