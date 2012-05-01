@@ -4,9 +4,10 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
-import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
+import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.util.Tuple;
 
@@ -26,10 +27,13 @@ public class HtmlEditor extends EasyPluginController<HtmlEditorModel>
 
 	public HtmlEditor(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new HtmlEditorModel(this)); // the default model
-		this.setView(new FreemarkerView("HtmlEditorView.ftl", getModel())); // <plugin
-																			// flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("HtmlEditorView.ftl", getModel());
 	}
 
 	/**

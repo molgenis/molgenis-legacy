@@ -9,6 +9,7 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
@@ -48,9 +49,8 @@ public class MatrixTestsMV extends EasyPluginController<MatrixTestsModelMV>
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	public MatrixTestsMV(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new MatrixTestsModelMV(this));
-		this.setView(new FreemarkerView("MatrixTestsView.ftl", getModel()));
 
 		try {
                     Database db = DatabaseFactory.create();
@@ -72,6 +72,11 @@ public class MatrixTestsMV extends EasyPluginController<MatrixTestsModelMV>
 			e.printStackTrace();
 			this.setError(e.getMessage());
 		}
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("MatrixTestsView.ftl", getModel());
 	}
 
 	@Override

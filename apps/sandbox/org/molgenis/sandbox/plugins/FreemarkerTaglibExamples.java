@@ -2,9 +2,10 @@
 package org.molgenis.sandbox.plugins;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
 /**
@@ -21,7 +22,11 @@ public class FreemarkerTaglibExamples extends EasyPluginController<FreemarkerTag
 	{
 		super(name, null, parent);
 		this.setModel(new FreemarkerTaglibExamplesModel(this)); //the default model
-		this.setView(new FreemarkerView("FreemarkerTaglibExamplesView.ftl", getModel())); //<plugin flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("FreemarkerTaglibExamplesView.ftl", getModel());
 	}
 	
 	/**

@@ -5,6 +5,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.FreemarkerInput;
 
 /**
@@ -19,9 +20,13 @@ public class FreemarkerEditor extends EasyPluginController<FreemarkerEditorModel
 {
 	public FreemarkerEditor(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new FreemarkerEditorModel(this)); //the default model
-		this.setView(new FreemarkerView("FreemarkerEditorView.ftl", getModel())); //<plugin flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("FreemarkerEditorView.ftl", getModel());
 	}
 	
 	public String getCustomHtmlHeaders()
