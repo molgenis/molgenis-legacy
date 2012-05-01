@@ -764,6 +764,9 @@ public class MolgenisModelValidator
 					{
 						for (Field keyfield : unique.getFields())
 						{
+							if(keyfield.getName() == null) throw new MolgenisModelException(
+									"unique field '"
+											+ fieldname + "' is not known in entity "+entityname  );
 							if (keyfield.getName().equals(field.getName())) iskey = true;
 						}
 					}
