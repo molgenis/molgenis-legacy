@@ -35,8 +35,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	// member variables
 	/** */
 	private MODEL model;
-	/** */
-	private ScreenView view;
+
 	/** */
 	protected final transient Logger logger = Logger.getLogger(this.getClass());
 	/** */
@@ -174,7 +173,6 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 		return result;
 	}
 
-	@Deprecated
 	@Override
 	public String getLabel()
 	{
@@ -229,19 +227,14 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 		return null;
 	}
 
-	public ScreenView getView()
-	{
-		return view;
-	}
-
-	public void setView(ScreenView view)
-	{
-		this.view = view;
-	}
-
 	public String render() throws HtmlInputException
 	{
-		return this.getView().render();
+		String result = this.getView().render();
+		if(result == null || "".equals(result))
+		{
+			throw new HtmlInputException("render showed nothing for "+this);
+		}
+		return result;
 	}
 
 	// @Override

@@ -17,7 +17,8 @@ public abstract class IntegratedPluginController<M extends ScreenModel> extends 
 
 	public IntegratedPluginController(String name, M model, ScreenController<?> parent)
 	{
-		super(name, model, parent);
+		super(name, parent);
+		this.setModel(model);
 	}
 	
 	public String include(Tuple request, String path)

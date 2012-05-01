@@ -152,6 +152,11 @@ public class MenuModel extends SimpleScreenModel
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public String toString()
+	{
+		return "MenuModel(name="+getName()+")";
+	}
 
 
 }

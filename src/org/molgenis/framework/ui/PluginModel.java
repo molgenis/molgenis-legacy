@@ -29,6 +29,11 @@ public abstract class PluginModel<E extends Entity> extends
 				this.getName().lastIndexOf("_") + 1));
 	}
 
+	public ScreenView getView()
+	{
+		throw new UnsupportedOperationException();
+	}
+	
 	public Login getLogin()
 	{
 		return this.getApplicationController().getLogin();

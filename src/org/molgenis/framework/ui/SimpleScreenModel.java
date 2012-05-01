@@ -89,6 +89,9 @@ public abstract class SimpleScreenModel implements
 	
 	public String render() throws HtmlInputException
 	{
+		String result = this.getController().render();
+		if(result == null)
+			System.out.println("error with render of "+this);
 		return this.getController().render();
 	}
 

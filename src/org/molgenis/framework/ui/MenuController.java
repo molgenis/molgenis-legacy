@@ -32,7 +32,11 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		super(name, null, parent);
 		this.setModel(new MenuModel(this));
 		this.getModel().setLabel(name);
-		this.setView(new FreemarkerView("MenuView.ftl", getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("MenuView.ftl", this.getModel());
 	}
 
 	@Override

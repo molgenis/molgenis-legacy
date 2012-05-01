@@ -16,6 +16,8 @@ package org.molgenis.framework.ui;
 import java.io.Serializable;
 import java.util.Vector;
 
+import org.molgenis.framework.ui.html.HtmlInputException;
+
 // jdk
 
 /**
@@ -94,6 +96,8 @@ public interface ScreenModel extends Serializable
 	 * Reset the view to construction defaults, resetting all user set changes.
 	 */
 	public void reset();
+	
+	public String getName();
 
 	/**
 	 * Set the label of this screen. The label is a pretty name that makes sense
@@ -172,4 +176,6 @@ public interface ScreenModel extends Serializable
 	
 	/** Shorthand for setMessages(new ScreenMessage("succes message",false)); */
 	public void setError(String message);
+	
+	public String render() throws HtmlInputException;
 }
