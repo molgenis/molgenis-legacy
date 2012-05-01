@@ -20,9 +20,10 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DateInput;
@@ -40,7 +41,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
 
-public class RemAnimalPluginMatrix extends GenericPlugin
+public class RemAnimalPluginMatrix extends EasyPluginController
 {
 	private static final long serialVersionUID = 6730055654508843657L;
 	MatrixViewer targetMatrixViewer = null;
@@ -128,7 +129,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 				}
 				Date deathDate = newDateOnlyFormat.parse(deathDateString);
 				
-				String investigationName = cs.getOwnUserInvestigationName(this.getLogin().getUserName());
+				String investigationName = cs.getOwnUserInvestigationName(db.getLogin().getUserName());
 				String notRemoved = "";
 				String removed = "";
 				for (Integer animalId : targetList) {
@@ -191,7 +192,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 			container = new Container();
 			div = new DivPanel();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Location");
@@ -223,9 +224,9 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 		}
     }
 	
-	public String render()
+	public ScreenView getView()
     {
-    	return container.toHtml();
+    	return container;
     }
 	
 	private boolean inExperiment(Database db, String animalName, Date deathDate) throws DatabaseException, ParseException {

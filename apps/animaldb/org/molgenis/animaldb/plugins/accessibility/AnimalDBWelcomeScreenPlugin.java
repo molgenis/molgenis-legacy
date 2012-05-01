@@ -14,14 +14,16 @@ import java.util.List;
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.news.MolgenisNews;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
 
-public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
+public class AnimalDBWelcomeScreenPlugin extends EasyPluginController
 {
 	private static final long serialVersionUID = -5861419875983400033L;
 	List<MolgenisNews> news;
@@ -31,16 +33,9 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 		super(name, parent);
 	}
 
-	@Override
-	public String getViewName()
+	public ScreenView getView()
 	{
-		return "org_molgenis_animaldb_plugins_accessibility_AnimalDBWelcomeScreenPlugin";
-	}
-
-	@Override
-	public String getViewTemplate()
-	{
-		return "org/molgenis/animaldb/plugins/accessibility/AnimalDBWelcomeScreenPlugin.ftl";
+		return new FreemarkerView("org/molgenis/animaldb/plugins/accessibility/AnimalDBWelcomeScreenPlugin.ftl",this);
 	}
 
 	@Override
@@ -70,7 +65,7 @@ public class AnimalDBWelcomeScreenPlugin extends PluginModel<Entity>
 		// Entry point when logging in, so good place to (re)set the ObservationTarget label map
 		CommonService cs = CommonService.getInstance();
 		cs.setDatabase(db);
-		cs.makeObservationTargetNameMap(this.getLogin().getUserName(), true);
+		cs.makeObservationTargetNameMap(db.getLogin().getUserName(), true);
 		
 		news = new ArrayList<MolgenisNews>();
 		List<MolgenisNews> tmpNews;

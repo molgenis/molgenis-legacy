@@ -16,9 +16,10 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
@@ -35,7 +36,7 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Tuple;
 
 
-public class EventViewerPluginMatrix extends GenericPlugin
+public class EventViewerPluginMatrix extends EasyPluginController
 {
 	private static final long serialVersionUID = 8804579908239186037L;
 	MatrixViewer targetMatrixViewer = null;
@@ -144,7 +145,7 @@ public class EventViewerPluginMatrix extends GenericPlugin
 			container = new Container();
 			div = new DivPanel();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));
@@ -173,9 +174,9 @@ public class EventViewerPluginMatrix extends GenericPlugin
 		}
     }
 	
-	public String render()
+	public ScreenView getView()
     {
-    	return container.toHtml();
+    	return container;
     }
 	
 }

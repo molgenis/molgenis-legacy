@@ -17,8 +17,9 @@ import java.util.Locale;
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DivPanel;
@@ -37,7 +38,7 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Tuple;
 
 
-public class AddAnimalPlugin extends GenericPlugin
+public class AddAnimalPlugin extends EasyPluginController
 {
 	private static final long serialVersionUID = -4185405160313262242L;
 	private CommonService ct = CommonService.getInstance();
@@ -97,7 +98,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		try
 		{
 			ct.setDatabase(db);
-			ct.makeObservationTargetNameMap(this.getLogin().getUserName(), false);
+			ct.makeObservationTargetNameMap(db.getLogin().getUserName(), false);
 			if (speciesName == null) {
 				resetAllFormValues();
 				populateFirstTablePanel(db);
@@ -292,7 +293,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		}
 		
 		// Investigation
-		String userName = this.getLogin().getUserName();
+		String userName = db.getLogin().getUserName();
 		String invName = ct.getOwnUserInvestigationNames(userName).get(0);
 		
 		// Init lists that we can later add to the DB at once
@@ -426,7 +427,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		db.add(valuesToAddList);
 		
 		// Update custom label map now new animals have been added
-		ct.makeObservationTargetNameMap(this.getLogin().getUserName(), true);
+		ct.makeObservationTargetNameMap(db.getLogin().getUserName(), true);
 		
 		this.setSuccess(animalsToAddList.size() + " animal(s) successfully added");
 	}
@@ -434,7 +435,7 @@ public class AddAnimalPlugin extends GenericPlugin
 	private void populateFirstTablePanel(Database db) throws DatabaseException, ParseException {
 		
 		ct.setDatabase(db);
-		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+		List<String> investigationNames = ct.getAllUserInvestigationNames(db.getLogin().getUserName());
 		SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 		
 		// panel for all elements
@@ -555,7 +556,7 @@ public class AddAnimalPlugin extends GenericPlugin
 		
 		ct.setDatabase(db);
 		
-		List<String> investigationNames = ct.getAllUserInvestigationNames(this.getLogin().getUserName());
+		List<String> investigationNames = ct.getAllUserInvestigationNames(db.getLogin().getUserName());
 		
 		containingPanel = new DivPanel(this.getName() + "panel", "");
 		containingPanel.add(new Paragraph("<h2>Bring in animals: set genotype info</h2>"));
@@ -766,9 +767,9 @@ public class AddAnimalPlugin extends GenericPlugin
 		containingPanel.add(buttonPanel);
 	}
 	
-	public String render()
+	public ScreenView getView()
 	{
-		return this.containingPanel.toHtml();
+		return this.containingPanel;
 	}
 	
 }

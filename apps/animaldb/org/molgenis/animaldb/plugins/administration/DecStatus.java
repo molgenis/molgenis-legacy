@@ -21,18 +21,19 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
 
-public class DecStatus extends GenericPlugin
+public class DecStatus extends EasyPluginController
 {
 	private static final long serialVersionUID = -8647856553529155758L;
 	
@@ -108,7 +109,7 @@ public class DecStatus extends GenericPlugin
 		statusTable.addColumn("Status");
 		
 		try {
-			List<String> investigationNames = cq.getAllUserInvestigationNames(this.getLogin().getUserName());
+			List<String> investigationNames = cq.getAllUserInvestigationNames(db.getLogin().getUserName());
 			int rowCount = 0;
 			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication", investigationNames);
 			List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment", investigationNames);
@@ -238,8 +239,8 @@ public class DecStatus extends GenericPlugin
 		return rowCount + expInDecList.size() + 1;
 	}
 
-	public String render()
+	public ScreenView getView()
 	{
-	  return this.tablePanel.toHtml();
+	  return this.tablePanel;
 	}
 }
