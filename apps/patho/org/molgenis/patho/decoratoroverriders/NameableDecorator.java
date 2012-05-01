@@ -12,20 +12,12 @@ import java.util.List;
 import org.molgenis.core.Nameable;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Mapper;
-import org.molgenis.framework.db.jdbc.JDBCMapper;
-import org.molgenis.framework.db.jdbc.MappingDecorator;
+import org.molgenis.framework.db.MapperDecorator;
 
-public class NameableDecorator<E extends Nameable> extends MappingDecorator<E>
+public class NameableDecorator<E extends Nameable> extends MapperDecorator<E>
 {
 	
 	protected boolean strict = false;
-	
-	//JDBCMapper is the generate thing
-	//TODO: Danny Parameterize the JDBCMapper object <Object> ??
-	public NameableDecorator(JDBCMapper<E> generatedMapper)
-	{
-		super(generatedMapper);
-	}
 	
 	//new kind of constructor to work with latest DB changes
 	public NameableDecorator(Mapper<E> generatedMapper)

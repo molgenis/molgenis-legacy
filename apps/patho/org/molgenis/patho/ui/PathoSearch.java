@@ -10,6 +10,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.matrix.component.interfaces.SliceableMatrix;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
@@ -30,10 +31,13 @@ public class PathoSearch extends EasyPluginController<PathoSearchModel>
 {
 	public PathoSearch(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new PathoSearchModel(this)); // the default model
-		this.setView(new PathoSearchView(getModel())); // <plugin
-														// flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new PathoSearchView(getModel());
 	}
 
 	@Override
@@ -70,7 +74,7 @@ public class PathoSearch extends EasyPluginController<PathoSearchModel>
 		if(count > 100) throw new DatabaseException("Your query resulted in too many data. Please reduce search window");
 		
 		//set count and variants into model
-		this.setSucces("Found "+count+" variants");
+		this.setSuccess("Found "+count+" variants");
 		getModel().setCount(count);
 		getModel().setVariants(q.find());
 		
