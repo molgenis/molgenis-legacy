@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="examples">
+	<menu name="ExamplesMain" position="left">
+		<menu name="Examples" position="left">
+			<plugin name="HelloWorldPlugin" type="org.molgenis.examples.ui.HelloWorldDemo" />
+			<plugin name="SimpleInputs" type="org.molgenis.examples.ui.SimpleInputsDemo" />
+			<plugin name="LookupInputs" type="org.molgenis.examples.ui.LookupInputsDemo" />
+			<plugin name="TupleTable" type="org.molgenis.examples.ui.TupleTableDemo" />
+		</menu>
+		<menu name="DemoEntities">
+			<form name="Investigations" entity="Investigation" />
+		</menu>
+	</menu>
+</molgenis>
