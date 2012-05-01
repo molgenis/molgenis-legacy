@@ -11,11 +11,15 @@ import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.ui.search.SearchModel;
 import org.molgenis.mutation.ui.search.SearchPlugin;
-
+/**
+ * Genome browser for CHD7.
+ * TODO replace patientpager and mutationpager with TableView when available.
+ */
 public class Search extends SearchPlugin
 {
 	private static final long serialVersionUID = 4159412082076885902L;
@@ -24,12 +28,16 @@ public class Search extends SearchPlugin
 	{
 		super(name, parent);
 		this.setModel(new SearchModel(this));
-		this.setView(new FreemarkerView("init.ftl", this.getModel()));
 		this.getModel().setGeneName("CHD7");
 		this.getModel().getmBrowseVO().getGenePanel().setShowNames(false);
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("init.ftl", this.getModel());
 	}
 	
 	@Override

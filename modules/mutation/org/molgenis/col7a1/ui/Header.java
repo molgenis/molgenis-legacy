@@ -11,16 +11,24 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 
+/**
+ * Header specific for col7a1
+ */
 public class Header extends EasyPluginController<HeaderModel>
 {
 	private static final long serialVersionUID = 5933871906981851063L;
 
 	public Header(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new HeaderModel(this));
-		this.setView(new FreemarkerView("Header.ftl", getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("Header.ftl", getModel());
 	}
 
 	@Override

@@ -2,9 +2,10 @@
 package org.molgenis.mutation.ui.export;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.mutation.service.ExportService;
 
 /**
@@ -21,11 +22,15 @@ public class Export extends EasyPluginController<ExportModel>
 
 	public Export(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new ExportModel(this));
-		this.setView(new FreemarkerView("ExportView.ftl", getModel()));
 	}
 
+	public ScreenView getView()
+	{
+		return new FreemarkerView("ExportView.ftl", getModel());
+	}
+	
 	@Override
 	public void reload(Database db) throws Exception
 	{

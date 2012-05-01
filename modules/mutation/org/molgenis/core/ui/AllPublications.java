@@ -13,6 +13,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
@@ -24,8 +25,12 @@ public class AllPublications extends IntegratedPluginController<AllPublicationsM
 	{
 		super(name, null, parent);
 		this.setModel(new AllPublicationsModel(this));
-		this.setView(new FreemarkerView("AllPublications.ftl", getModel()));
 		this.getModel().setPublicationPager("res/mutation/publicationPager.jsp");
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("AllPublications.ftl", getModel());
 	}
 
 	@Override

@@ -28,7 +28,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
@@ -71,6 +71,22 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
+	}
+	
+	private ScreenView view = null;
+	
+	public void setView(ScreenView view)
+	{
+		this.view = view;
+	}
+	
+	public ScreenView getView()
+	{
+		if(view == null)
+		{
+			this.view = new FreemarkerView("MyMutation.ftl", getModel());
+		}
+		return view;
 	}
 
 	@Override
