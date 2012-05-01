@@ -3,10 +3,11 @@ package org.molgenis.matrix.ui.upload;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
-import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.framework.ui.html.Paragraph;
+import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.StringCsvMemoryMatrix;
 import org.molgenis.matrix.ui.StringMatrixView;
@@ -44,14 +45,14 @@ public class UploadSampleReport extends
 
 	public UploadSampleReport(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new UploadSampleReportModel(this)); // the default model
 		// this.setView(new FreemarkerView("UploadSampleReportView.ftl",
 		// getModel())); //<plugin flavor="freemarker"
 	}
 
 	@Override
-	public String render()
+	public ScreenView getView()
 	{
 		try
 		{
@@ -64,18 +65,18 @@ public class UploadSampleReport extends
 				case SAVED:
 					return renderSaved();
 				default:
-					return "ERROR";
+					return new Paragraph("ERROR");
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			this.setError(e.getMessage());
-			return "ERROR" + e.getMessage();
+			return new Paragraph("ERROR" + e.getMessage());
 		}
 	}
 
-	private String renderSaved()
+	private ScreenView renderSaved()
 	{
 		MolgenisForm f = new MolgenisForm(this.getModel());
 
@@ -86,12 +87,12 @@ public class UploadSampleReport extends
 
 		f.add(new ActionInput("doReset", "back"));
 
-		return f.render();
+		return f;
 	}
 
 	// show the uploaded CSV in the matrix and a button to go 'back' and one to
 	// 'save'
-	private String renderCheck()
+	private ScreenView renderCheck()
 	{
 
 		MolgenisForm f = new MolgenisForm(this.getModel());
@@ -105,12 +106,12 @@ public class UploadSampleReport extends
 
 		f.add(new ActionInput("doSave", "save data"));
 
-		return f.render();
+		return f;
 
 	}
 
 	// render the first screen showing a textarea with upload
-	private String renderUpload()
+	private ScreenView renderUpload()
 	{
 
 		MolgenisForm f = new MolgenisForm(this.getModel());
@@ -124,7 +125,7 @@ public class UploadSampleReport extends
 
 		f.add(new ActionInput("doUpload", "upload data"));
 
-		return f.render();
+		return f;
 
 	}
 
@@ -135,7 +136,7 @@ public class UploadSampleReport extends
 		{
 			CsvReader reader = new CsvStringReader(request.getString("csv"));
 			this.csvMatrix = new StringCsvMemoryMatrix(reader);
-			this.setSucces("data uploaded and parsed succesfully");
+			this.setSuccess("data uploaded and parsed succesfully");
 			this.state = State.CHECK;
 		}
 		catch (Exception e)
@@ -163,7 +164,7 @@ public class UploadSampleReport extends
 //					LibraryLane.class, ObservableFeature.class, db);
 
 			this.state = State.SAVED;
-			this.setSucces("Pheno matrix saved succesfully");
+			this.setSuccess("Pheno matrix saved succesfully");
 
 		}
 		catch (Exception e)

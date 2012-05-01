@@ -9,8 +9,9 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
-import org.molgenis.framework.ui.html.LabelInput;
+import org.molgenis.framework.ui.html.Label;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.matrix.Matrix;
@@ -20,15 +21,7 @@ import org.molgenis.matrix.ui.StringMatrixView;
 import org.molgenis.util.Tuple;
 
 /**
- * StringMatrixViewExampleController takes care of all user requests and
- * application logic.
- * 
- * <li>Each user request is handled by its own method based action=methodName.
- * <li>MOLGENIS takes care of db.commits and catches exceptions to show to the
- * user <li>StringMatrixViewExampleModel holds application state and business
- * logic on top of domain model. Get it via this.getModel()/setModel(..) <li>
- * StringMatrixViewExampleView holds the template to show the layout. Get/set it
- * via this.getView()/setView(..).
+ * Can be removed?
  */
 public class StringMatrixViewExample extends
 		EasyPluginController<StringMatrixViewExampleModel>
@@ -40,15 +33,13 @@ public class StringMatrixViewExample extends
 
 	public StringMatrixViewExample(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		try
 		{
 
 			this.setModel(new StringMatrixViewExampleModel(this)); // the
 			// default
 			// model
-			this.setView(new FreemarkerView("StringMatrixViewExampleView.ftl",
-					getModel())); // <plugin flavor="freemarker"
 
 			List<String> features = Arrays.asList(new String[]
 			{ "f1", "f2", "f3", "f4", "f5" });
@@ -74,6 +65,12 @@ public class StringMatrixViewExample extends
 			this.getModel().setMessages(
 					new ScreenMessage("ERROR " + e.getMessage(), false));
 		}
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("StringMatrixViewExampleView.ftl",
+				getModel());
 	}
 
 	/**
@@ -119,7 +116,7 @@ public class StringMatrixViewExample extends
 		{
 			MolgenisForm form = new MolgenisForm(this.getModel());
 			
-			form.add(new LabelInput("l2","Selected matrix:"));
+			form.add(new Label("l2","Selected matrix:"));
 			
 			SelectInput selectCol = new SelectInput("col");
 			selectCol.setOptions(m.getColNames(), m.getColNames());
@@ -134,7 +131,7 @@ public class StringMatrixViewExample extends
 			form.add(new StringMatrixView("test", visible));
 			
 			
-			form.add(new LabelInput("l1","Whole matrix:"));
+			form.add(new Label("l1","Whole matrix:"));
 			form.add(new StringMatrixView("all", m));
 
 			return form.render();
