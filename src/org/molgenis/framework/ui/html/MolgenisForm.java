@@ -12,21 +12,14 @@ public class MolgenisForm extends AbstractHtmlElement
 	private ScreenModel model = null;
 	private Layout layout = new FlowLayout();
 	
-	@Deprecated
 	public MolgenisForm(ScreenModel model)
 	{
-		super(model.getController().getName());
+		this(model, new FlowLayout());
+	}
+	
+	public MolgenisForm(ScreenModel model, Layout layout)
+	{
 		this.model = model;
-	}
-	
-	public MolgenisForm(ScreenController<?> controller)
-	{
-		this(controller.getModel());
-	}
-	
-	public MolgenisForm(ScreenController<?> controller, Layout layout)
-	{
-		this(controller.getModel());
 		this.layout = layout;
 	}
 	

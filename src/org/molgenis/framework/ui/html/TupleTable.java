@@ -18,7 +18,7 @@ public class TupleTable extends HtmlWidget
 	@Override
 	public String toHtml()
 	{		
-		String result = "<table id=\"" + getName() + "\" class=\"display\" width=\"100%\"><thead><tr>";
+		String result = "<div><table id=\"" + getName() + "\"><thead><tr>";
 		// header
 		if (tuples.size() > 0) for (String name : tuples.get(0).getFields())
 		{
@@ -34,7 +34,7 @@ public class TupleTable extends HtmlWidget
 			
 			result +="</tr>";
 		}
-		result += "</tbody></table><script>$('#"+getName()+"').dataTable();</script>";
+		result += "</tbody></table><script>$('#"+getName()+"').dataTable({'bJQueryUI': true,'sPaginationType': 'full_numbers','sScrollX': '100%','bScrollCollapse': true});</script></div>";
 		
 		return result;
 	}

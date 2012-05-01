@@ -264,8 +264,7 @@ public class ActionInput extends HtmlInput<Object>
 	@Override
 	public String getLabel()
 	{
-		if (super.getValue() != null && super.getLabel() == super.getValue()) return getName();
-		return super.getLabel();
+		return "&nbsp;";
 	}
 	
 	public String getButtonValue()

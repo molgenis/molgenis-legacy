@@ -69,9 +69,10 @@ public class HtmlForm extends HtmlWidget
 		return readonly;
 	}
 
-	public void setReadonly(boolean readonly)
+	public HtmlInput setReadonly(boolean readonly)
 	{
 		this.readonly = readonly;
+		return this;
 	}
 
 	public void addInput(HtmlInput<?> ... inputs)

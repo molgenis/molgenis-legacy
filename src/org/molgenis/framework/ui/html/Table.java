@@ -123,8 +123,9 @@ public class Table extends HtmlWidget
 	/**
 	 * Set the containing div's css style.
 	 */
-	public void setStyle(String style) {
+	public HtmlInput setStyle(String style) {
 		this.style = style;
+		return this;
 	}
 
 	

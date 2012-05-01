@@ -34,13 +34,6 @@ public class DivPanel extends HtmlWidget
 		this.setLabel(label);
 		this.makeNewDiv = makeNewDiv;
 	}
-	
-	/**
-	 * Set the containing div's css style.
-	 */
-	public void setStyle(String style) {
-		this.style = style;
-	}
 
 	/**
 	 * Adds the given inputs to the TablePanel.

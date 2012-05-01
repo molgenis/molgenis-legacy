@@ -212,9 +212,10 @@ public class ValidatingInput<E> extends HtmlInput<E>
 		return height;
 	}
 
-	public void setHeight(int height)
+	public ValidatingInput<E> setHeight(int height)
 	{
 		this.height = height;
+		return this;
 	}
 
 	public int getMinHeight()
