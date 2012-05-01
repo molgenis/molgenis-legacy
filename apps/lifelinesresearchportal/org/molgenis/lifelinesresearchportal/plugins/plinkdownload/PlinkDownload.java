@@ -13,17 +13,19 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.Paragraph;
+import org.molgenis.framework.ui.html.VerticalLayout;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.FamEntry;
 import org.molgenis.util.plink.writers.FamFileWriter;
 
-public class PlinkDownload extends GenericPlugin
+public class PlinkDownload extends EasyPluginController
 {
 	private static final long serialVersionUID = -4185405160313262242L;
 
@@ -84,13 +86,13 @@ public class PlinkDownload extends GenericPlugin
 	}
 	
 	@Override
-	public String render() {
-		String result = "";
+	public ScreenView getView() {
+		VerticalLayout view = new VerticalLayout();
 		if (downloadPanel != null) {
-			result += downloadPanel.render();
+			view.add(downloadPanel);
 		}
-		result += mainPanel.render();
-		return result;
+		view.add(mainPanel);
+		return view;
 	}
 
 	@Override
