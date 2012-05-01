@@ -12,7 +12,7 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.gids.GidsSample;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
@@ -39,9 +39,13 @@ public class SampleMatrix extends EasyPluginController<SampleMatrixModel>
 
 	public SampleMatrix(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new SampleMatrixModel(this)); //the default model
-		this.setView(new FreemarkerView("SampleMatrixView.ftl", getModel())); //<plugin flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("SampleMatrixView.ftl", getModel());
 	}
 	
 	public String getCustomHtmlHeaders() {

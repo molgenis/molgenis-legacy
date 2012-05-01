@@ -4,25 +4,21 @@ package plugins.EditIndividual;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.framework.ui.ScreenModel.Show;
-import org.molgenis.framework.ui.html.Table;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
-
-import com.sun.xml.fastinfoset.sax.Features;
 
 /**
  * EditIndividualController takes care of all user requests and application logic.
@@ -36,9 +32,13 @@ public class EditIndividual extends EasyPluginController<EditIndividualModel>
 {
 	public EditIndividual(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new EditIndividualModel(this)); //the default model
-		this.setView(new FreemarkerView("EditIndividualView.ftl", getModel())); //<plugin flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("EditIndividualView.ftl", getModel());
 	}
 	
 	/**
