@@ -21,15 +21,15 @@ import org.molgenis.framework.ui.FreemarkerView;
  * 
  * Based on http://codemirror.net/ (thanks!)
  */
-public class FreemarkerInput extends CodeInput
+public class JavaInput extends CodeInput
 {
-	public FreemarkerInput(String name)
+	public JavaInput(String name)
 	{
 		this(name, null);
 	}
 
-	public FreemarkerInput(String name, String value)
+	public JavaInput(String name, String value)
 	{
-		super(name, value, CodeInput.Parser.FREEMARKER);
+		super(name, value, CodeInput.Parser.JAVA);
 	}
 }
