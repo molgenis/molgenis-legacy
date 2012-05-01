@@ -3,9 +3,10 @@ package org.molgenis.framework.ui.html;
 import java.text.ParseException;
 import java.util.UUID;
 
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
-public abstract class AbstractHtmlElement implements HtmlElement
+public abstract class AbstractHtmlElement implements HtmlElement, ScreenView
 {
 	/** unique id of this input */
 	private String id;
