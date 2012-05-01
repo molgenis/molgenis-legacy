@@ -71,7 +71,7 @@
 		<entity name="NgsBarcode" implements="Autoid" xref_label="name">
 			<field name="name" type="string" unique="true"
 				description="The nucleotide sequence which forms the barcode" />
-			<field name="barcodeType" type="enum" enum_options="[GAF,RPI]" />
+			<field name="barcodeType" type="enum" default="GAF" enum_options="[GAF,RPI]" />
 		</entity>
 		<entity name="NgsCapturingKit" implements="Autoid" xref_label="name">
 			<field name="name" type="string" unique="true" />
