@@ -16,7 +16,7 @@ import java.util.List;
  * StartNgsController takes care of all user requests and application logic.
  * <p/>
  * <li>Each user request is handled by its own method based action=methodName.
- * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
+ * <li>MOLGENIS takes care of db.commits and catches exceptions to show to the user
  * <li>StartNgsModel holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
  * <li>StartNgsView holds the template to show the layout. Get/set it via this.getView()/setView(..).
  */
@@ -26,11 +26,15 @@ public class StartNgs extends EasyPluginController<StartNgsView>
 
     public StartNgs(String name, ScreenController<?> parent)
     {
-        super(name, null, parent);
+        super(name, parent);
         this.setModel(new StartNgsView(this)); //the default model
-        this.setView(new FreemarkerView("StartNgsView.ftl", getModel())); //<plugin flavor="freemarker"
     }
 
+    public ScreenView getView()
+    {
+    	return new FreemarkerView("StartNgsView.ftl", getModel());
+    }
+    
     @Override
     public void reload(Database db) throws Exception
     {

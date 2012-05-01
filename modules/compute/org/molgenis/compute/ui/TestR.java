@@ -1,14 +1,15 @@
 package org.molgenis.compute.ui;
 
+import java.util.Hashtable;
+
 import org.molgenis.compute.workflowgenerator.WorkflowGeneratorDB;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Tuple;
-
-import java.util.Hashtable;
 
 // hardcoded test - don't be scared with listing !!
 public class TestR extends EasyPluginController<TestRView>
@@ -18,11 +19,15 @@ public class TestR extends EasyPluginController<TestRView>
 
     public TestR(String name, ScreenController<?> parent)
     {
-        super(name, null, parent);
+        super(name, parent);
         this.setModel(new TestRView(this)); //the default model
-        this.setView(new FreemarkerView("TestR.ftl", getModel())); //<plugin flavor="freemarker"
     }
 
+    public ScreenView getView()
+    {
+    	return new FreemarkerView("TestR.ftl", getModel());
+    }
+    
     @Override
     public void reload(Database db) throws Exception
     {

@@ -12,7 +12,7 @@ import org.molgenis.util.Tuple;
 import java.util.List;
 
 /**
- * User story. First the user is asked to select 'targets' of analysis.
+ * First the user is asked to select 'targets' of analysis.
  * Subsequently parameters have be filled in that should be applied and compute
  * cluster. If generation of jobs is succesful user can link to monitor screen.
  */
@@ -21,9 +21,13 @@ public class RunWorkflow extends EasyPluginController<RunWorkflowModel>
 {
 	public RunWorkflow(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new RunWorkflowModel(this)); // the default model
-		this.setView(new RunWorkflowView(this.getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new RunWorkflowView(this.getModel());
 	}
 
     public void buttonRun(Database db, Tuple request) throws Exception
@@ -73,7 +77,7 @@ public class RunWorkflow extends EasyPluginController<RunWorkflowModel>
 		if (!w.equals(getModel().workflow))
 		{
 			//reset view
-			this.setView(new RunWorkflowView(this.getModel()));
+			//this.setView(new RunWorkflowView(this.getModel()));
 		
 			//reload all info:
 
