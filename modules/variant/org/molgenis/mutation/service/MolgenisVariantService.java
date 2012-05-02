@@ -32,6 +32,7 @@ import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.pheno.AlternateId;
 import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Patient;
 import org.molgenis.pheno.dto.ObservedValueDTO;
@@ -392,7 +393,7 @@ public class MolgenisVariantService
 			}
 
 			/* Find prominent value to be displayed in table view */
-			String pathoSql = "SELECT ov FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND (f.name = 'Pathogenicity' OR f.name = 'homo-/heterozygous')";
+			String pathoSql = "SELECT ov FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND (f.name = 'Pathogenicity' OR f.name = 'consequence')";
 			TypedQuery<ObservedValue> pathoQuery = this.em.createQuery(pathoSql, ObservedValue.class);
 			pathoQuery.setParameter("target", variant);
 			List<ObservedValue> observedValueList = pathoQuery.getResultList();
@@ -401,7 +402,7 @@ public class MolgenisVariantService
 			 * But you get what you deserve.
 			 */
 			if (observedValueList.size() == 1)
-				variantDTO.setPathogenicity(observedValueList.get(0).getValue());
+				variantDTO.setObservedValue(observedValueList.get(0).getValue());
 
 			return variantDTO;
 		}
@@ -505,22 +506,34 @@ public class MolgenisVariantService
 			/* Set "special" values that are displayed prominent:
 			 * Consequence, Inheritance, Pathogenicity
 			 */
-			List<ObservedValue> specialObservedValueList = this.em.createQuery("SELECT ov FROM ObservedValue ov", ObservedValue.class).getResultList();
+			String sql = "SELECT ov FROM ObservedValue ov WHERE ov.target = :target";
+			TypedQuery<ObservedValue> query = this.em.createQuery(sql, ObservedValue.class);
+			query.setParameter("target", variant);
+			List<ObservedValue> specialObservedValueList = query.getResultList();
 
 			for (ObservedValue observedValue : specialObservedValueList)
 			{
 				if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "codon change"))
+				{
 					mutationSummaryDTO.setCodonChange(observedValue.getValue());
+				}
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "consequence"))
+				{
 					mutationSummaryDTO.setConsequence(observedValue.getValue());
+					mutationSummaryDTO.setObservedValue(observedValue.getValue());
+				}
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "inheritance"))
+				{
 					mutationSummaryDTO.setInheritance(observedValue.getValue());
+				}
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "pathogenicity"))
+				{
 					mutationSummaryDTO.setPathogenicity(observedValue.getValue());
-				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "homo-/heterozygous"))
-					mutationSummaryDTO.setPathogenicity(observedValue.getValue());
+				}
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "type of mutation"))
+				{
 					mutationSummaryDTO.setType(observedValue.getValue());
+				}
 			}
 
 			mutationSummaryDTO.setPatientSummaryDTOList(new ArrayList<PatientSummaryDTO>());
@@ -608,6 +621,27 @@ public class MolgenisVariantService
 		}
 	}
 
+	public List<MutationSummaryDTO> observationElementListToMutationSummaryDTOList(final List<ObservationElement> mutationList)
+	{
+		List<SequenceCharacteristic> result = new ArrayList<SequenceCharacteristic>();
+		
+		for (ObservationElement e : mutationList)
+		{
+			if (e instanceof SequenceCharacteristic)
+			{
+				result.add((SequenceCharacteristic) e);
+			}
+			else if (e instanceof Patient)
+			{
+				String sql = "SELECT s FROM Patient p JOIN p.mutations s WHERE p = :patient";
+				TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+				query.setParameter("patient", e);
+				result.addAll(query.getResultList());
+			}
+		}
+		return this.sequenceCharacteristicListToMutationSummaryDTOList(result);
+	}
+
 	public List<MutationSummaryDTO> sequenceCharacteristicListToMutationSummaryDTOList(final List<SequenceCharacteristic> mutations)
 	{
 		List<MutationSummaryDTO> result = new ArrayList<MutationSummaryDTO>();
@@ -693,7 +727,11 @@ public class MolgenisVariantService
 		List<PatientSummaryDTO> result = new ArrayList<PatientSummaryDTO>();
 
 		for (Patient patient : patients)
+		{
 			result.add(this.patientToPatientSummaryDTO(patient));
+		}
+
+		Collections.sort(result);
 
 		return result;
 	}

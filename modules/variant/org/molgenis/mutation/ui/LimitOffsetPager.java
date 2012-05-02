@@ -10,8 +10,6 @@ public class LimitOffsetPager<E>
 	private int limit  = 20;
 	private int offset = 0;
 
-	Logger logger = Logger.getLogger(this.getClass());
-
 	public LimitOffsetPager()
 	{
 	}

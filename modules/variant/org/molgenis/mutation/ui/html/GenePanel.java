@@ -46,7 +46,10 @@ public class GenePanel extends HtmlInput implements Serializable
 	
 				if (exonDTOs.size() > 0)
 				{
-					result.appendln("<td align=\"center\" valign=\"bottom\" colspan=\"" + exonDTOs.size() + "\" width=\"1%\">" + proteinDomainSummaryVO.getDomainName() + " (exon " + exonDTOs.get(0) + " - " + exonDTOs.get(exonDTOs.size() - 1) + ")</td>");
+					String domainName = proteinDomainSummaryVO.getDomainName();
+					String beginName  = exonDTOs.get(0).getName();
+					String endName    = exonDTOs.get(exonDTOs.size() - 1).getName();
+					result.appendln("<td align=\"center\" valign=\"bottom\" colspan=\"" + exonDTOs.size() + "\" width=\"1%\">" + domainName + " (exon " + beginName + " - " + endName + ")</td>");
 				}
 			}
 			result.appendln("</tr>");

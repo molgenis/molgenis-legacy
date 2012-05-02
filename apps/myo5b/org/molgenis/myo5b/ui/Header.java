@@ -18,7 +18,7 @@ public class Header extends org.molgenis.mutation.ui.header.Header
 	{
 		super(name, parent);
 		this.getModel().setLogo("res/img/chd7/umcg_logo.gif");
-		this.getModel().setTitle("MIVD Database");
+		this.getModel().setTitle("MVID Database");
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class Header extends org.molgenis.mutation.ui.header.Header
 		headers += String.format(cssFormat, "res/displaytag/css/displaytag.css");
 		//headers += String.format(cssFormat, "res/displaytag/css/screen.css");
 		//headers += String.format(cssFormat, "res/displaytag/css/site.css");
-		headers += String.format(cssFormat, "res/css/myo5b/colors.css");
+		headers += String.format(cssFormat, "res/css/mvid/colors.css");
 		headers += String.format(cssFormat, "res/css/col7a1/data.css");
 		//headers += String.format(cssFormat, "res/css/main.css");
 		//headers += String.format(cssFormat, "res/css/menu.css");

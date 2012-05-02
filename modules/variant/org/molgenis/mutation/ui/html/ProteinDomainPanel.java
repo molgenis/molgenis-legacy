@@ -64,9 +64,9 @@ public class ProteinDomainPanel extends HtmlInput implements Serializable
 		return result.toString();
 	}
 
-	public void setProteinDomainSummaryVO(ProteinDomainDTO proteinDomainSummaryVO)
+	public void setProteinDomainDTO(ProteinDomainDTO proteinDomainDTO)
 	{
-		this.proteinDomainDTO = proteinDomainSummaryVO;
+		this.proteinDomainDTO = proteinDomainDTO;
 	}
 
 	public void setBaseUrl(String baseUrl)

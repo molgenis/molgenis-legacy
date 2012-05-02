@@ -16,7 +16,6 @@ import org.apache.regexp.RESyntaxException;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
 import org.molgenis.core.dto.PublicationDTO;
-import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.mutation.ServiceLocator;
@@ -33,7 +32,6 @@ import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Patient;
 import org.molgenis.pheno.dto.ObservedValueDTO;
-import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.variant.SequenceCharacteristic;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +45,10 @@ public class UploadService extends MolgenisVariantService
 	private EntityManager em;
 
 	@Autowired
-	public UploadService(Database db, CsvToDatabase<Entity> uploadBatchCsvReader)
+	private UploadBatchExcelReader reader;
+
+	@Autowired
+	public UploadService(Database db)
 	{
 		super(db);
 		this.db = db;
@@ -273,10 +274,10 @@ public class UploadService extends MolgenisVariantService
 		{
 			Workbook workbook             = Workbook.getWorkbook(file);
 //			UploadBatchExcelReader reader = new UploadBatchExcelReader();
-			UploadBatchExcelReader reader = (UploadBatchExcelReader) org.molgenis.mutation.ServiceLocator.instance().getContext().getBean("uploadBatchExcelReader");
+//			UploadBatchExcelReader reader = (UploadBatchExcelReader) org.molgenis.mutation.ServiceLocator.instance().getContext().getBean("uploadBatchExcelReader");
 
 			this.em.getTransaction().begin();
-			int count                     = reader.importSheet(this.db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
+			int count                     = this.reader.importSheet(this.db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
 			this.em.getTransaction().commit();
 			return count;
 		}

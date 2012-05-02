@@ -19,6 +19,7 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+//import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.SelectInput;
@@ -33,12 +34,13 @@ import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.service.CmsService;
 import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.StatisticsService;
+import org.molgenis.mutation.ui.html.MBrowse;
 import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
-public abstract class SearchPlugin extends IntegratedPluginController<SearchModel>
+public class SearchPlugin extends IntegratedPluginController<SearchModel>
 {
 	private static final long serialVersionUID = 651270609185006020L;
 
@@ -50,6 +52,8 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
+		this.getModel().setMbrowse(new MBrowse());
+		this.getModel().getMbrowse().setTarget(this.getName());
 	}
 	
 	private ScreenView view;
@@ -173,6 +177,11 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 			}
 			
 			this.populateDisplayOptionsForm();
+			
+//			for (ScreenController<?> child : this.getChildren())
+//			{
+//				child.handleRequest(db, request, out);
+//			}
 		}
 		catch (Exception e)
 		{
@@ -433,19 +442,18 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 
 		SearchService searchService = ServiceLocator.instance().getSearchService();
 
-		this.getModel().setProteinDomainSummaryVO(searchService.findProteinDomain(request.getInt("domain_id"), false));
+		this.getModel().setProteinDomainDTO(searchService.findProteinDomain(request.getInt("domain_id"), false));
 		this.getModel().setMutationSummaryDTOList(searchService.findMutationsByDomainId(request.getInt("domain_id")));
 		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryDTOList());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 
-		this.getModel().setHeader((this.getModel().getProteinDomainSummaryVO() == null) ? "Unknown id." : "");
+		this.getModel().setHeader((this.getModel().getProteinDomainDTO() == null) ? "Unknown id." : "");
 
-		if (this.getModel().getmBrowseVO().getExonList() == null)
-			this.getModel().getmBrowseVO().setExonList(searchService.findAllExons());
-		
-		this.populateProteinDomainPanel();
-		this.populateExonIntronPanel();
-		
+		this.getModel().getMbrowse().setProteinDomainDTO(this.getModel().getProteinDomainDTO());
+
+		if (this.getModel().getMbrowse().getExonDTOList() == null)
+			this.getModel().getMbrowse().setExonDTOList(searchService.findAllExons());
+
 		this.setView(new FreemarkerView("proteindomain.ftl", getModel()));
 	}
 
@@ -464,8 +472,10 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 			this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 		}
 		this.getModel().setHeader("");
-		this.populateSequencePanel();
-		
+
+		this.getModel().getMbrowse().setExonDTO(this.getModel().getExonDTO());
+		this.getModel().getMbrowse().setMutationSummaryDTOList(this.getModel().getMutationSummaryDTOList());
+
 		this.setView(new FreemarkerView("exon.ftl", getModel()));
 	}
 
@@ -473,8 +483,8 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	{
 		SearchService searchService = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findNextExon(request.getInt("exon_id"));
+		request.set("__action", "showExon");
 		request.set("exon_id", exonDTO.getId());
-		System.out.println(">>> Displaying next exon: exon_id==" + exonDTO.getId());
 		this.handleShowExon(request);
 	}
 
@@ -482,6 +492,7 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 	{
 		SearchService searchService         = ServiceLocator.instance().getSearchService();
 		ExonDTO exonDTO = searchService.findPrevExon(request.getInt("exon_id"));
+		request.set("__action", "showExon");
 		request.set("exon_id", exonDTO.getId());
 		this.handleShowExon(request);
 	}
@@ -509,16 +520,17 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 		{
 			SearchService searchService = ServiceLocator.instance().getSearchService();
 			this.getModel().setGeneDTO(searchService.findGene());
-
-			if (this.getModel().getmBrowseVO().getProteinDomainList() == null)
-				this.getModel().getmBrowseVO().setProteinDomainList(searchService.findAllProteinDomains());
+			
+			if (this.getModel().getMbrowse().getGeneDTO() == null)
+				this.getModel().getMbrowse().setGeneDTO(this.getModel().getGeneDTO());
+			
+			if (this.getModel().getMbrowse().getProteinDomainDTOList() == null)
+				this.getModel().getMbrowse().setProteinDomainDTOList(searchService.findAllProteinDomains());
 
 			CmsService cmsService = ServiceLocator.instance().getCmsService();
 
 			this.getModel().setTextRemarks(cmsService.findContentByName("remarks"));
 			this.getModel().setTextCollaborations(cmsService.findContentByName("collaborators"));
-
-			this.populateGenePanel();
 
 			if (this.getModel().getQueryParametersVO().getExpertSearch())
 			{
@@ -766,31 +778,5 @@ public abstract class SearchPlugin extends IntegratedPluginController<SearchMode
 			((SelectInput) this.getModel().getDisplayOptionsForm().get("showMutations")).setValue("show");
 		else
 			((SelectInput) this.getModel().getDisplayOptionsForm().get("showMutations")).setValue("hide");
-	}
-
-	private void populateGenePanel()
-	{
-		this.getModel().getmBrowseVO().getGenePanel().setProteinDomainSummaryVOList(this.getModel().getmBrowseVO().getProteinDomainList());
-		this.getModel().getmBrowseVO().getGenePanel().setBaseUrl("molgenis.do?__target=" + this.getName() + "&select=" + this.getName() + "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
-	}
-
-	private void populateProteinDomainPanel()
-	{
-		this.getModel().getmBrowseVO().getProteinDomainPanel().setProteinDomainSummaryVO(this.getModel().getProteinDomainSummaryVO());
-		this.getModel().getmBrowseVO().getProteinDomainPanel().setBaseUrl("molgenis.do?__target=" + this.getName() + "&select=" + this.getName() + "&__action=showProteinDomain&domain_id=&snpbool=1#exon");
-	}
-
-	private void populateExonIntronPanel()
-	{
-		this.getModel().getmBrowseVO().getExonIntronPanel().setExons(this.getModel().getmBrowseVO().getExonList());
-		this.getModel().getmBrowseVO().getExonIntronPanel().setShowIntrons(this.getModel().getQueryParametersVO().getShowIntrons());
-		this.getModel().getmBrowseVO().getExonIntronPanel().setBaseUrl("molgenis.do?__target=" + this.getName() + "&select=" + this.getName() + "&__action=showExon&exon_id=#results");
-	}
-
-	private void populateSequencePanel()
-	{
-		this.getModel().getmBrowseVO().getSequencePanel().setExonDTO(this.getModel().getExonDTO());
-		this.getModel().getmBrowseVO().getSequencePanel().setMutationSummaryVOs(this.getModel().getMutationSummaryDTOList());
-		this.getModel().getmBrowseVO().getSequencePanel().setBaseUrl("molgenis.do?__target=" + this.getName() + "&select=" + this.getName() + "&__action=showMutation&mid=#results");
 	}
 }

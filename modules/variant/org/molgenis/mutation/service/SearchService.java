@@ -551,30 +551,30 @@ public class SearchService extends MolgenisVariantService
 
 	public List<MutationSummaryDTO> findMutationsByObservedValue(final String value)
 	{
-		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.target s WHERE s.__Type = 'SequenceCharacteristic' AND ov.value = :value";
-		Query query = this.em.createQuery(sql);
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.target s WHERE ov.value = :value";
+		TypedQuery<ObservationElement> query = this.em.createQuery(sql, ObservationElement.class);
 		query.setParameter("value", value);
 
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		return this.observationElementListToMutationSummaryDTOList(query.getResultList());
 	}
 
 	public List<MutationSummaryDTO> findMutationsByObservedValue(final String featureName, final String value)
 	{
-		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE s.__Type = 'SequenceCharacteristic' AND f.name = :featureName AND ov.value = :value";
-		Query query = this.em.createQuery(sql);
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE (f.name = :featureName OR f.description = :featureName) AND ov.value = :value";
+		TypedQuery<ObservationElement> query = this.em.createQuery(sql, ObservationElement.class);
 		query.setParameter("featureName", featureName);
 		query.setParameter("value", value);
 
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		return this.observationElementListToMutationSummaryDTOList(query.getResultList());
 	}
 
 	public List<MutationSummaryDTO> findMutationsByMeasurement(final String feature)
 	{
-		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE s.__Type = 'SequenceCharacteristic' AND f.name = :name AND ov.value IN ('yes', 'true')";
-		Query query = this.em.createQuery(sql);
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE f.name = :name AND ov.value IN ('yes', 'true')";
+		TypedQuery<ObservationElement> query = this.em.createQuery(sql, ObservationElement.class);
 		query.setParameter("name", feature);
 
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		return this.observationElementListToMutationSummaryDTOList(query.getResultList());
 	}
 
 	/**
