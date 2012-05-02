@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.molgenis.batch.MolgenisBatch;
+import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.batch.service.BatchService;
 import org.molgenis.batch.ui.form.BatchEntitySelectForm;
 import org.molgenis.batch.ui.form.BatchSelectForm;
@@ -20,6 +22,7 @@ import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
