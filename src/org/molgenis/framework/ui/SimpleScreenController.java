@@ -79,7 +79,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	 * @throws HandleRequestDelegationException 
 	 * @throws Exception 
 	 */
-	public abstract void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
+	//public abstract void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
 
 	// public String getFromRequest(Tuple request, String name)
 	// {
