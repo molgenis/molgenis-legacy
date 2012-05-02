@@ -29,20 +29,21 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.Entity;
 import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Marker;
 
-public class QTLDataSetWizard extends PluginModel<Entity>
+public class QTLDataSetWizard extends EasyPluginController<QTLDataSetWizardModel>
 {
 	private static final long serialVersionUID = -1810993111211947419L;
 
@@ -52,25 +53,13 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 	public QTLDataSetWizard(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
+		this.setModel(new QTLDataSetWizardModel(this));
 	}
 
 	@Override
-	public String getViewName()
+	public ScreenView getView()
 	{
-		return "plugins_xgapwizard_QTLDataSetWizard";
-	}
-
-	private QTLDataSetWizardModel model = new QTLDataSetWizardModel(this);
-
-	public QTLDataSetWizardModel getMyModel()
-	{
-		return model;
-	}
-
-	@Override
-	public String getViewTemplate()
-	{
-		return "plugins/xgapwizard/QTLDataSetWizard.ftl";
+		return new FreemarkerView("plugins/xgapwizard/QTLDataSetWizard.ftl", getModel());
 	}
 
 	/**
@@ -85,7 +74,7 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 
 			if (request.getInt("invSelect") != null)
 			{
-				this.model.setSelectedInv(request.getInt("invSelect"));
+				getModel().setSelectedInv(request.getInt("invSelect"));
 			}
 
 			String action = request.getString("__action");
@@ -158,7 +147,7 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 				}
 			}
 			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e
+			getModel().setMessages(new ScreenMessage(e.getMessage() != null ? e
 					.getMessage() : "null", false));
 		}
 	}
@@ -173,7 +162,7 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 		try
 		{
 			List<Investigation> invList = db.find(Investigation.class);
-			this.model.setInvestigations(invList);
+			getModel().setInvestigations(invList);
 
 			// FIXME: hardcoded for now, must be replaced with combination of
 			// Metadb and enum in Data.. (pick out the ObservableFeatures)
@@ -189,12 +178,12 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 			xof.add("Metabolite");
 			xof.add("Probe");
 			// xof.add("Spot"); needs other required
-			this.model.setXqtlObservableFeatureTypes(xof);
+			getModel().setXqtlObservableFeatureTypes(xof);
 
 			List<OntologyTerm> crosses = db.find(OntologyTerm.class,
 					new QueryRule(OntologyTerm.NAME, Operator.LIKE,
 							"xgap_rqtl_straintype_"));
-			this.model.setCrosses(crosses);
+			getModel().setCrosses(crosses);
 		}
 		catch (Exception e)
 		{

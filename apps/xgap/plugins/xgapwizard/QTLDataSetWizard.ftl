@@ -1,5 +1,4 @@
-<#macro plugins_xgapwizard_QTLDataSetWizard screen>
-<#assign model = screen.myModel>
+<#assign model = screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -117,4 +116,3 @@
 		</div>
 	</div>
 </form>
-</#macro>

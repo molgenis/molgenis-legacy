@@ -3,13 +3,13 @@ package plugins.xgapwizard;
 import java.util.List;
 
 import org.molgenis.core.OntologyTerm;
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.organization.Investigation;
 
-public class QTLDataSetWizardModel extends SimpleScreenModel
+public class QTLDataSetWizardModel extends EasyPluginModel
 {
-	public QTLDataSetWizardModel(ScreenController controller)
+	public QTLDataSetWizardModel(EasyPluginController controller)
 	{
 		super(controller);
 		// TODO Auto-generated constructor stub
@@ -20,7 +20,10 @@ public class QTLDataSetWizardModel extends SimpleScreenModel
 	private List<OntologyTerm> crosses;
 	private List<String> xqtlObservableFeatureTypes;
 	
-	
+	public void clearMessage()
+	{
+		this.setMessages();
+	}
 
 
 	public List<String> getXqtlObservableFeatureTypes()
