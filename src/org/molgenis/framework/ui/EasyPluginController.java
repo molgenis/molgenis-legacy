@@ -42,12 +42,12 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	 * 
 	 * @throws HandleRequestDelegationException
 	 */
-	@Override
-	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException
-	{
-		// automatically calls functions with same name as action
-		delegate(request.getAction(), db, request, null);
-	}
+//	@Override
+//	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException
+//	{
+//		// automatically calls functions with same name as action
+//		delegate(request.getAction(), db, request, null);
+//	}
 
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException

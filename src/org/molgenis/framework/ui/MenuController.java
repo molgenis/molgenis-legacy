@@ -40,9 +40,11 @@ public class MenuController extends SimpleScreenController<MenuModel>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		this.doSelect(request);
+		
+		return Show.SHOW_MAIN;
 	}
 
 	@Override
@@ -83,16 +85,6 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		{
 			return false;
 		}
-	}
-
-
-	
-	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
-	{
-		this.handleRequest(db, request);
-		
-		return Show.SHOW_MAIN;
 	}
 	
 	public MenuModel getModel()

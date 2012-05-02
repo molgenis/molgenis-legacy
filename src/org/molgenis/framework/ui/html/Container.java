@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui.html;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,7 +15,7 @@ import org.molgenis.util.Tuple;
  * within a Container.
  */
 public class Container extends LinkedHashMap<String, HtmlInput<?>> implements
-		ScreenView
+		HtmlElement,ScreenView
 {
 	private static final long serialVersionUID = -8565170009471766957L;
 
@@ -94,5 +95,47 @@ public class Container extends LinkedHashMap<String, HtmlInput<?>> implements
 	public String render()
 	{
 		return this.toHtml();
+	}
+
+	@Override
+	public String render(Tuple params) throws ParseException, HtmlInputException
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getId()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setId(String id)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getClazz()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setClazz(String clazz)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void set(Tuple properties) throws HtmlInputException
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

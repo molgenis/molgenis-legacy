@@ -93,12 +93,6 @@ public abstract class FormController<E extends Entity> extends
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		this.handleRequest(db, request, null);
-	}
-
-	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		logger.debug("handleRequest(" + request + ")");
