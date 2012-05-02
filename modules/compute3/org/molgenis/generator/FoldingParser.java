@@ -20,14 +20,18 @@ import java.util.*;
  */
 
 
-//The whole this class is a bullshit, that we have because we do not not how to use our freemarker templates properly
+//processing freemarker templates in java - misuse of freemarker with folding
 public class FoldingParser
 {
     private static String BAD = "The problematic instruction:";
 
+    //is table (worksheet) folded
     private boolean isTableFoldered = false;
-    private Vector<String> vecNotFolderedConstants = null;
+    //values which are lists in the worksheet
+    private Vector<String> vecListsInTable = null;
+
     private Collection<ComputeParameter> parameters = null;
+    private boolean isList;
 
     //
     public String parseTemplateLineByHand(String parTemplate, Hashtable<String, Object> line, int i, Hashtable<String, String> simpleValues)
@@ -55,7 +59,8 @@ public class FoldingParser
         return result;
     }
 
-    //this is really the worst part to parse freemarker by hand to prepare new list of templates to fill with freemarker :(
+    //we try to process freemarker with freemarker
+    //if failed - do it by hand
     public String doByHand(String parTemplate, Hashtable<String, String> values)
     {
         String result = weaveFreemarker(parTemplate, values);
@@ -137,6 +142,7 @@ public class FoldingParser
         return true;
     }
 
+    //obsolete used only with old generic job generator
     public boolean isDirectlyDependOnWorksheet(ComputeParameter parameter, List<Hashtable> table)
     {
         Hashtable row = table.get(0);
@@ -156,7 +162,7 @@ public class FoldingParser
 
     public void evaluateTable(List<Hashtable> table)
     {
-        vecNotFolderedConstants = new Vector<String>();
+        vecListsInTable = new Vector<String>();
 
         Hashtable<String, Object> line = table.get(0);
         Enumeration ekeys = line.keys();
@@ -167,7 +173,7 @@ public class FoldingParser
 
             if (eValue instanceof Collection<?>)
             {
-                vecNotFolderedConstants.addElement(ekey);
+                vecListsInTable.addElement(ekey);
                 isTableFoldered = true;
             }
         }
@@ -178,13 +184,54 @@ public class FoldingParser
         this.parameters = parameters;
     }
 
-    public boolean isParameterTemplateSimple(String parTemplate)
+    //recursive checking if parameter depends on worksheet
+    public void checkIsList(String parTemplate)
     {
         if (!isTableFoldered)
-            return true;
+            setNotList();
         else
         {
-            //int pos
+            int open_pos = 0;
+            while (open_pos > -1)
+            {
+                open_pos = parTemplate.indexOf("${", open_pos);
+                if (open_pos > -1)
+                {
+                    int close_pos = parTemplate.indexOf("}", open_pos);
+                    if (close_pos > -1)
+                    {
+                        String strParameter = parTemplate.substring(open_pos + 2, close_pos);
+                        ComputeParameter par = findParameter(strParameter);
+
+                        if(par != null)
+                        {
+                            boolean isFolded = getIsFolded(par.getName());
+                            if(isFolded)
+                                setIsList();
+                            String template = par.getDefaultValue();
+                            if(template != null)
+                            {
+                                checkIsList(template);
+                            }
+                        }
+                        open_pos = close_pos;
+                    }
+                }
+           }
+        }
+    }
+
+    public void setNotList()
+    {
+        this.isList = false;
+    }
+
+    private boolean getIsFolded(String name)
+    {
+        for(String n : vecListsInTable)
+        {
+            if(n.equalsIgnoreCase(name))
+                return true;
         }
         return false;
     }
@@ -211,5 +258,29 @@ public class FoldingParser
         }
 
         return out.toString();
+    }
+
+    private ComputeParameter findParameter(String s)
+    {
+        Iterator<ComputeParameter> itr = parameters.iterator();
+        while (itr.hasNext())
+        {
+            ComputeParameter par = itr.next();
+            String name = par.getName();
+
+            if (s.equalsIgnoreCase(name))
+                return par;
+        }
+        return null;
+    }
+
+    public void setIsList()
+    {
+        this.isList = true;
+    }
+
+    public boolean getIsList()
+    {
+        return isList;
     }
 }

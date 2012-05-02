@@ -26,6 +26,9 @@ import java.util.*;
  * Time: 09:46
  * To change this template use File | Settings | File Templates.
  */
+
+
+//absolite class with fold/reduce trials
 public class GenericJobGenerator implements JobGenerator
 {
 
@@ -877,14 +880,37 @@ public class GenericJobGenerator implements JobGenerator
                 String id = "id";
                 Hashtable<String, Object> line = table.get(i);
 
-                Enumeration ekeys = line.keys();
-                while (ekeys.hasMoreElements())
+                if(targets != null)
                 {
-                    String ekey = (String) ekeys.nextElement();
-                    Object eValues = line.get(ekey);
-                    values.put(ekey, eValues);
+                    //use targets to create name
+                    Enumeration ekeys = line.keys();
+                    while (ekeys.hasMoreElements())
+                    {
+                        String ekey = (String) ekeys.nextElement();
+                        if(isTarget(ekey, targets))
+                        {
+                            Object eValues = line.get(ekey);
+                            values.put(ekey, eValues);
+                            String vvv = eValues.toString();
+                            vvv = vvv.replaceAll(" ", "_");
+                            id = "_" + vvv;
+                        }
+                    }
 
-                    id += "_" + eValues.toString();
+                }
+                else
+                {
+                    //use the whole line to create name
+                    Enumeration ekeys = line.keys();
+                    while (ekeys.hasMoreElements())
+                    {
+                        String ekey = (String) ekeys.nextElement();
+                        Object eValues = line.get(ekey);
+                        values.put(ekey, eValues);
+                        String vvv = eValues.toString();
+                        vvv = vvv.replaceAll(" ", "_");
+                        id = "_" + vvv;
+                    }
                 }
 
                 for (ComputeParameter parameter : parameters)
@@ -1003,6 +1029,11 @@ public class GenericJobGenerator implements JobGenerator
 
                 }
 
+                //try reduce here
+                //values = reduce(values);
+
+
+
                 String jobListing = foldingMaker.weaveFreemarker(template, values);
 
                 ComputeJob job = new ComputeJob();
@@ -1040,12 +1071,22 @@ public class GenericJobGenerator implements JobGenerator
         return computeJobs;
     }
 
+    private boolean isTarget(String ekey, List<ComputeParameter> targets)
+    {
+        for(ComputeParameter par: targets)
+        {
+            String name = par.getName();
+            if(name.equalsIgnoreCase(ekey))
+                return true;
+        }
+        return false;
+    }
+
+
     private Pair<String, Object> processUnweavedLine(String unkey, String unweavedLine, Hashtable<String, Object> values, int i)
     {
         Pair<String, Object> pair = new Pair<String, Object>();
         Hashtable<String, String> hashtable = prepareSimpleValues(values, i);
-
-        //TODO: here most probably we can handle complex alex parameters
 
         String value = foldingParser.doByHand(unweavedLine, hashtable);
         pair.setA(unkey);
@@ -1092,6 +1133,7 @@ public class GenericJobGenerator implements JobGenerator
         return pair;
     }
 
+    //here, we also identify what parameters should be foldered
     private Pair<String, Object> processDependentParameter
             (ComputeParameter par, Hashtable<String, Object> line, Hashtable<String, String> simpleValues)
     {
@@ -1102,9 +1144,13 @@ public class GenericJobGenerator implements JobGenerator
         int lineFolderedSize = foldingParser.getFolderedLineSize(line);
         String parTemplate = par.getDefaultValue();
 
-        boolean isParameterSimple = foldingParser.isParameterTemplateSimple(parTemplate);
 
-        if (lineFolderedSize > 1 && !isParameterSimple)
+
+        foldingParser.setNotList();
+        foldingParser.checkIsList(parTemplate);
+        boolean isList = foldingParser.getIsList();
+
+        if (lineFolderedSize > 1 && isList)
         {
             List<String> values = new ArrayList<String>();
             for (int i = 0; i < lineFolderedSize; i++)
@@ -1451,5 +1497,11 @@ public class GenericJobGenerator implements JobGenerator
         {
         }
     }
+
+    private Hashtable<String, Object> reduce(Hashtable<String, Object> values)
+    {
+        return null;  //To change body of created methods use File | Settings | File Templates.
+    }
+
 
 }

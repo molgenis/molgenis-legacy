@@ -2,7 +2,7 @@ package org.molgenis.commandline;
 
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.commandline.options.Options;
-import org.molgenis.generator.GenericJobGenerator;
+import org.molgenis.generator.Compute3JobGenerator;
 import org.molgenis.generator.JobGenerator;
 import org.molgenis.generator.ModelLoader;
 import org.molgenis.protocol.Workflow;
@@ -65,13 +65,13 @@ public class CommandLineGenerator
         //read worksheet
         List<Tuple> worksheet = loader.loadWorksheetFromFile(fileWorksheet);
 
-        JobGenerator jobGenerator = new GenericJobGenerator();
+        JobGenerator jobGenerator = new Compute3JobGenerator();
         //set configuration settings
         jobGenerator.setConfig(config);
 
         //generate compute jobs
         //here, ComputeJobs can be generated also from DB given list of Targets
-        Vector<ComputeJob> computeJobs = jobGenerator.generateComputeJobsFoldedWorksheetReduce(workflow, worksheet, backend);
+        Vector<ComputeJob> computeJobs = jobGenerator.generateComputeJobsFoldedWorksheet(workflow, worksheet, backend);
         //Vector<ComputeJob> computeJobs = jobGenerator.generateComputeJobsWorksheetWithFoldingNew(workflow, worksheet, backend);
 
         //generate actual analysis files
