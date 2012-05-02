@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -42,12 +43,11 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	 * 
 	 * @throws HandleRequestDelegationException
 	 */
-//	@Override
-//	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException
-//	{
-//		// automatically calls functions with same name as action
-//		delegate(request.getAction(), db, request, null);
-//	}
+	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException
+	{
+		// automatically calls functions with same name as action
+		delegate(request.getAction(), db, request, null);
+	}
 
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
