@@ -1,13 +1,12 @@
 package plugins.batch;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.molgenis.batch.MolgenisBatch;
-import org.molgenis.batch.MolgenisBatchEntity;
 import org.molgenis.batch.service.BatchService;
 import org.molgenis.batch.ui.form.BatchEntitySelectForm;
 import org.molgenis.batch.ui.form.BatchSelectForm;
@@ -21,7 +20,6 @@ import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
@@ -57,7 +55,7 @@ public class BatchPlugin extends EasyPluginController {
     }
 
     @Override
-    public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
     {
     	try
     	{
@@ -84,6 +82,8 @@ public class BatchPlugin extends EasyPluginController {
     	{
     		e.printStackTrace();
     	}
+    	
+    	return Show.SHOW_MAIN;
     }
 
 	/**
