@@ -7,6 +7,7 @@
 
 package org.molgenis.matrix.component.plugin;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -56,7 +57,7 @@ public class MatrixPlugin extends EasyPluginController
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		if (targetMatrixViewer != null) {
 			targetMatrixViewer.setDatabase(db);
@@ -73,6 +74,8 @@ public class MatrixPlugin extends EasyPluginController
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
 		}
+		
+		return Show.SHOW_MAIN;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
