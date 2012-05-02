@@ -23,6 +23,7 @@ import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.HorizontalRuler;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlInputException;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.RadioInput;
 import org.molgenis.framework.ui.html.SelectInput;

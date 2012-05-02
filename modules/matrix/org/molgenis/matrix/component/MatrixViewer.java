@@ -35,7 +35,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.PluginModel;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
@@ -56,11 +56,7 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.Utils.AbstractExporter;
-import org.molgenis.matrix.Utils.CsvExporter;
-import org.molgenis.matrix.Utils.ExcelExporter;
 import org.molgenis.matrix.Utils.Exporter;
-import org.molgenis.matrix.Utils.SPSSExporter;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
@@ -265,7 +261,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 		catch (Exception e)
 		{			
-			((PluginModel<?>) this.callingScreenController).setError(e.getMessage());
+			//this.callingScreenController).setError(e.getMessage());
 			e.printStackTrace();
 			return new Paragraph("error", ExceptionUtils.getRootCauseMessage(e)).render();
 		}

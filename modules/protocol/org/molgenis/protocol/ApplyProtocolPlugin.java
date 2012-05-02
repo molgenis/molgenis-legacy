@@ -19,6 +19,7 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
@@ -36,7 +37,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
     public ApplyProtocolPlugin(String name, ScreenController<?> parent)
     {
 		super(name, parent);
-		model = new ApplyProtocolPluginModel();
+		model = new ApplyProtocolPluginModel(this);
 		ui = new ApplyProtocolUI(model);
     }
 
@@ -111,7 +112,9 @@ public class ApplyProtocolPlugin extends EasyPluginController
 
     public ScreenView getView()
     {
-    	return ui.getProtocolApplicationContainer();
+    	MolgenisForm form = new MolgenisForm(this.model);
+    	form.add(ui.getProtocolApplicationContainer());
+    	return form;
     }
     
     ScreenMessage handleApply(Tuple request, Database db) {
