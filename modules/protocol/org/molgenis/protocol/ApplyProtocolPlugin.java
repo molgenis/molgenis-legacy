@@ -42,7 +42,7 @@ public class ApplyProtocolPlugin extends EasyPluginController
     }
 
     @Override
-    public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
     {
     	ScreenMessage message = null;
 	    String action = request.getString("__action");
@@ -86,6 +86,8 @@ public class ApplyProtocolPlugin extends EasyPluginController
 	    if (message != null) {
 	    	this.setMessages(message);
 	    }
+	    
+	    return Show.SHOW_MAIN;
     }
 
   
