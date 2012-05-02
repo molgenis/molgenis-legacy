@@ -37,7 +37,6 @@ public class Contact extends EasyPluginController<ContactModel>
 		return new FreemarkerView("Contact.ftl", getModel());
 	}
 	
-	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
 		this.getModel().setMessages();
