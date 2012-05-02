@@ -103,8 +103,8 @@ public class AnimaldbSeleniumTest
 		selenium.click("LoadLegacy_tab_button");
 		selenium.waitForPageToLoad(pageLoadTimeout);
 		Assert.assertTrue(selenium.isTextPresent("Import database"));
-		// First try and see if we're on Erik's laptop
-		selenium.type("id=zip", "/Users/roankanninga/AnimalDB/PrefillAnimalDB.zip");
+		// First try and see if we're on Roan's laptop
+		selenium.type("id=zip", "/Users/roankanninga/Work/AnimalDB/PrefillAnimalDB.zip");
 		selenium.click("id=source1");
 		selenium.click("id=load");
 		selenium.waitForPageToLoad(pageLoadTimeout);

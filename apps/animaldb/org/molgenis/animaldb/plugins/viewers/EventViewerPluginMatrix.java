@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.viewers;
 
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.matrix.component.MatrixViewer;
@@ -53,7 +55,7 @@ public class EventViewerPluginMatrix extends EasyPluginController
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		cs.setDatabase(db);
 		if (targetMatrixViewer != null) {
@@ -77,6 +79,8 @@ public class EventViewerPluginMatrix extends EasyPluginController
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
 		}
+		
+		return Show.SHOW_MAIN;
 	}
 
 	private void createInfoTable(Database db, int animalId) throws DatabaseException, ParseException {
@@ -176,7 +180,9 @@ public class EventViewerPluginMatrix extends EasyPluginController
 	
 	public ScreenView getView()
     {
-    	return container;
+		MolgenisForm view = new MolgenisForm(this);
+    	view.add( container );
+    	return view;
     }
 	
 }

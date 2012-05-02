@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.viewers;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -46,7 +48,7 @@ public class ListPluginMatrix extends EasyPluginController
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		if (targetMatrixViewer != null) {
 			targetMatrixViewer.setDatabase(db);
@@ -65,6 +67,8 @@ public class ListPluginMatrix extends EasyPluginController
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
 		}
+		
+		return Show.SHOW_MAIN;
 	}
 
 	@Override
@@ -112,7 +116,9 @@ public class ListPluginMatrix extends EasyPluginController
 	
 	public ScreenView getView()
     {
-    	return container;
+		MolgenisForm view = new MolgenisForm(this);
+		view.add(container);
+		return view;
     }
 	
 }

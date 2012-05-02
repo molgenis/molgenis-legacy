@@ -19,8 +19,6 @@ import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.news.MolgenisNews;
-import org.molgenis.util.Entity;
-import org.molgenis.util.Tuple;
 
 
 public class AnimalDBWelcomeScreenPlugin extends EasyPluginController
@@ -36,27 +34,6 @@ public class AnimalDBWelcomeScreenPlugin extends EasyPluginController
 	public ScreenView getView()
 	{
 		return new FreemarkerView("org/molgenis/animaldb/plugins/accessibility/AnimalDBWelcomeScreenPlugin.ftl",this);
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		//replace example below with yours
-//		try
-//		{
-//		Database db = this.getDatabase();
-//		String action = request.getString("__action");
-//		
-//		if( action.equals("do_add") )
-//		{
-//			Experiment e = new Experiment();
-//			e.set(request);
-//			db.add(e);
-//		}
-//		} catch(Exception e)
-//		{
-//			//e.g. show a message in your form
-//		}
 	}
 
 	@Override

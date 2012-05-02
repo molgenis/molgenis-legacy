@@ -8,6 +8,7 @@
 package org.molgenis.animaldb.plugins.administration;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class PrintLabelPlugin extends EasyPluginController
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		cs.setDatabase(db);
 		if (targetMatrixViewer != null) {
@@ -82,6 +83,7 @@ public class PrintLabelPlugin extends EasyPluginController
 				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
 			}
 		}
+		return Show.SHOW_MAIN;
 	}
 	
 	/**

@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.animal;
 
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 	}
 
 	@Override
-    public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
     {
 		cs.setDatabase(db);
 		if (targetMatrixViewer != null) {
@@ -181,6 +182,8 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
 		}
+		
+		return Show.SHOW_MAIN;
     }
 	
 	@Override

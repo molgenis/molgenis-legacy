@@ -39,27 +39,6 @@ public class ManualPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		//replace example below with yours
-//		try
-//		{
-//		Database db = this.getDatabase();
-//		String action = request.getString("__action");
-//		
-//		if( action.equals("do_add") )
-//		{
-//			Experiment e = new Experiment();
-//			e.set(request);
-//			db.add(e);
-//		}
-//		} catch(Exception e)
-//		{
-//			//e.g. show a message in your form
-//		}
-	}
-
-	@Override
 	public void reload(Database db)
 	{
 		//
