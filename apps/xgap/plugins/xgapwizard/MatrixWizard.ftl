@@ -125,7 +125,7 @@ examples.
 					</#list>
 					</select>
 					
-					<input type="submit" value="Tag" onclick="__dataId.value='${di.data.id?c}';__action.value='tag';return true;"/>
+					<input type="submit" value="Tag" id="tagdata_${di.data.id?c}" onclick="__dataId.value='${di.data.id?c}';__action.value='tag';return true;"/>
 					<br><br>
 				</td>
 				<td>

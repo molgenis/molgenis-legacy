@@ -45,7 +45,7 @@
 <i>Upload Excel file with your data</i>
 <br>
 <input type="file" name="upload"/>
-<input type="submit" value="Upload" onclick="__action.value='upload';return true;"/><br>
+<input type="submit" value="Upload" id="upload_excel" onclick="__action.value='upload';return true;"/><br>
 
 <div style="height: 25px;">&nbsp;</div>
 

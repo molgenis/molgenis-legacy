@@ -512,7 +512,7 @@ public class XqtlSeleniumTest
 
 		@Test(dependsOnMethods =
 		{ "returnHome" })
-		public void search() throws Exception
+		public void searchDbPlugin() throws Exception
 		{
 			// browse to Search
 			clickAndWait("id=SearchMenu_tab_button");
@@ -534,6 +534,10 @@ public class XqtlSeleniumTest
 			Assert.assertTrue(selenium.isTextPresent("chrIV"));
 			Assert.assertTrue(selenium.isTextPresent("Isohamnetindeoxyhesoxyldihexoside"));
 			Assert.assertTrue(selenium.isTextPresent("EG113L115C"));
+			
+			selenium.type("name=searchThis", "");
+			clickAndWait("id=simple_search");
+			Assert.assertTrue(selenium.isTextPresent("null"));
 
 		}
 
@@ -787,6 +791,118 @@ public class XqtlSeleniumTest
 				Assert.assertEquals(selenium.getText("css=#Job_ComputeResource_chzn > a.chzn-single > span"), "local");
 				Assert.assertTrue(selenium.isTextPresent("MyOutput*Subjobs*1 - 6 of 6"));
 
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void databaseStatusPlugin() throws Exception
+			{
+				clickAndWait("id=Admin_tab_button");
+				clickAndWait("id=DatabaseSettings_tab_button");
+				Assert.assertTrue(selenium.getHtmlSource().contains("Load example data (may take a minute)"));
+				Assert.assertTrue(selenium.isTextPresent("org.molgenis.xgap.decoratoroverriders"));
+				clickAndWait("id=loadExampleData");
+				Assert.assertTrue(selenium.isTextPresent("BEWARE: Existing users found, skipping adding example users!"));
+				Assert.assertTrue(selenium.isTextPresent("Investigation(s) present in the database, will not continue to load datamodel / reset db."));
+				Assert.assertTrue(selenium.isTextPresent("DataLoader ended"));
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void fileStoragePlugin() throws Exception
+			{
+				clickAndWait("id=Admin_tab_button");
+				clickAndWait("id=FileStorage_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("File storage property status:"));
+				Assert.assertTrue(selenium.isTextPresent("Properties are set"));
+				clickAndWait("id=filestorage_setpath");
+				Assert.assertTrue(selenium.isTextPresent("Could not set file storage: Properties already present. Please delete first."));
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void findQtlPlugin() throws Exception
+			{
+				clickAndWait("id=SearchMenu_tab_button");
+				clickAndWait("id=QtlFinderPublic2_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Search"));
+				clickAndWait("id=search");
+				Assert.assertTrue(selenium.isTextPresent("Please enter a search term"));
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void tagDataPlugin() throws Exception
+			{
+				clickAndWait("id=AnalysisSettings_tab_button");
+				clickAndWait("id=MatrixWizard_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Tag data"));
+				clickAndWait("id=tagdata_0"); //click to add the tag
+				clickAndWait("id=tagdata_0"); //click to get error
+				Assert.assertTrue(selenium.isTextPresent("Violation of unique constraint"));
+				Assert.assertTrue(selenium.isTextPresent("duplicate value(s) for column(s) NAME,DATANAME"));
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void rqtlUploadPlugin() throws Exception
+			{
+				clickAndWait("id=ImportDataMenu_tab_button");
+				clickAndWait("id=QTLWizard_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Your individuals must be in the first line"));
+				clickAndWait("id=upload_genotypes");
+				Assert.assertTrue(selenium.isTextPresent("No file selected"));
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void excelUploadPlugin() throws Exception
+			{
+				clickAndWait("id=ImportDataMenu_tab_button");
+				clickAndWait("id=ExcelWizard_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Upload Excel file with your data"));
+				clickAndWait("id=upload_excel");
+				Assert.assertTrue(selenium.isTextPresent("No file selected"));
+			}
+			
+			@Test(dependsOnMethods =
+			{ "returnHome" })
+			public void fileUploadPlugin() throws Exception
+			{
+				clickAndWait("id=ImportDataMenu_tab_button");
+				clickAndWait("id=Files_tab_button");
+				Assert.assertTrue(selenium.isTextPresent("Navigate files"));
+
+				//add new file record
+				selenium.click("id=Files_edit_new");
+				selenium.waitForPopUp("molgenis_edit_new", "30000");
+				selenium.selectWindow("name=molgenis_edit_new");
+				selenium.type("id=InvestigationFile_name", "MyInvestigationFile");
+				selenium.type("id=InvestigationFile_Extension", "txt");
+				selenium.click("css=span");
+				
+				//from: http://blog.browsermob.com/2011/03/selenium-tips-wait-with-waitforcondition/
+				//"Now for the killer part, for sites that use jQuery, if all you need is to confirm there aren't any active asynchronous requests, then the following does the trick:"
+				selenium.waitForCondition("selenium.browserbot.getUserWindow().$.active == 0", "10000");
+				selenium.click("css=span"); //select 'ClusterDemo' this way
+				clickAndWait("id=Add");
+
+				// add content and save
+				selenium.selectWindow("title=xQTL workbench");
+				Assert.assertTrue(selenium.isTextPresent("ADD SUCCESS: affected 1"));
+				Assert.assertTrue(selenium.isTextPresent("No file found. Please upload it here."));
+		
+				//no file: expect error
+				clickAndWait("id=upload_file");
+				Assert.assertTrue(selenium.isTextPresent("No file selected"));
+				
+				//cleanup
+				selenium.click("id=delete_Files");
+				Assert.assertEquals(selenium.getConfirmation(),
+						"You are about to delete a record. If you click [yes] you won't be able to undo this operation.");
+				selenium.waitForPageToLoad(pageLoadTimeout);
+				Assert.assertTrue(selenium.isTextPresent("REMOVE SUCCESS: affected 1"));
+				
 			}
 			
 			@Test(dependsOnMethods =
