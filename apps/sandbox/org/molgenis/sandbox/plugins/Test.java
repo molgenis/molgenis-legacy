@@ -33,7 +33,7 @@ public class Test extends EasyPluginController<TestModel>
 	public Test(String name, ScreenController<?> parent)
 	{
 		//link this controller into its place in the user interface tree
-		super(name, null, parent);
+		super(name, parent);
 		
 		//configure the model with the state of your UI screen
 		this.setModel(new TestModel(this));

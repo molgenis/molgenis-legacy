@@ -20,7 +20,7 @@ public class FreemarkerTaglibExamples extends EasyPluginController<FreemarkerTag
 {
 	public FreemarkerTaglibExamples(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new FreemarkerTaglibExamplesModel(this)); //the default model
 	}
 	
