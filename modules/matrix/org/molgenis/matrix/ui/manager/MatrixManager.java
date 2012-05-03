@@ -131,11 +131,6 @@ public class MatrixManager extends PluginModel
 		this.model.setOverlibText(OverlibText.getOverlibText(db, rowNames, colNames));
 	}
 
-	public void clearMessage()
-	{
-		this.setMessages();
-	}
-
 	private void createHeaders()
 	{
 		this.model.setColHeader((this.model.getBrowser().getModel().getColStart() + 1) + "-"
