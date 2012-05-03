@@ -83,7 +83,6 @@ public class GeneNetwork extends PluginModel
 					
 				}
 
-				this.setMessages();
 			}
 			catch (Exception e)
 			{
@@ -91,11 +90,6 @@ public class GeneNetwork extends PluginModel
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	@Override

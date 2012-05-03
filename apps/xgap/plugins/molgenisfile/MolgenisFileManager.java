@@ -102,7 +102,6 @@ public class MolgenisFileManager extends PluginModel<Entity>
 				this.setMessages(new ScreenMessage("File uploaded", true));
 			}
 
-			this.setMessages();
 		}
 
 		catch (Exception e)
@@ -110,11 +109,6 @@ public class MolgenisFileManager extends PluginModel<Entity>
 			e.printStackTrace();
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	@Override

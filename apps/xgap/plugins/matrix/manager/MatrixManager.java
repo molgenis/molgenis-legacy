@@ -78,7 +78,6 @@ public class MatrixManager extends PluginModel
 					RequestHandler.handle(this.model, request, db);
 				}
 
-				this.setMessages();
 			}
 			catch (Exception e)
 			{

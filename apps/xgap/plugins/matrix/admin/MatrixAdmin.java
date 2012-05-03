@@ -68,7 +68,6 @@ public class MatrixAdmin extends PluginModel
 					this.model.setSelectedData(null);
 				}
 
-				this.setMessages();
 			}
 			catch (Exception e)
 			{
@@ -76,11 +75,6 @@ public class MatrixAdmin extends PluginModel
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	@Override

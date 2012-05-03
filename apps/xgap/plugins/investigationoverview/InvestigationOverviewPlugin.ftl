@@ -28,9 +28,6 @@
 			</#if>
 		</#list>
 		
-			<#-- Hack to immediatly clear the message so it doesn't "stick". -->
-		${screen.clearMessage()}
-		
 		<#assign square = "<div style=\"display: table-cell; display: inline-block; vertical-align: top; width: 25px; height: 25px; background: ">
 		<#assign blueSquare = square + "#0033FF;\"></div>">
 		<#assign redSquare = square + "#CC0000;\"></div>">

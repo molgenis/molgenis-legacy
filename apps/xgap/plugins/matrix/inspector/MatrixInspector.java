@@ -59,25 +59,7 @@ public class MatrixInspector extends PluginModel
 
 	public void handleRequest(Database db, Tuple request)
 	{
-		if (request.getString("__action") != null)
-		{
-
-			try
-			{
-
-				this.setMessages();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
-			}
-		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
+	
 	}
 
 	@Override

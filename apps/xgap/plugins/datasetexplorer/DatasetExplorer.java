@@ -82,7 +82,6 @@ public class DatasetExplorer extends PluginModel
 				
 				}
 
-				this.setMessages();
 			}
 			catch (Exception e)
 			{

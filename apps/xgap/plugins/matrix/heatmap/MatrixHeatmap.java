@@ -113,7 +113,6 @@ public class MatrixHeatmap extends PluginModel
 					RequestHandler.handle(this.model, request.getString("__action"), null);
 				}
 
-				this.setMessages();
 			}
 			catch (Exception e)
 			{
@@ -154,11 +153,6 @@ public class MatrixHeatmap extends PluginModel
 		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
 		this.model.setRowObsElem((OverlibText.getObservationElements(db, rowNames, this.model.getSelectedData().getTargetType())));
 		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames, this.model.getSelectedData().getFeatureType())));
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	private void createHeaders()

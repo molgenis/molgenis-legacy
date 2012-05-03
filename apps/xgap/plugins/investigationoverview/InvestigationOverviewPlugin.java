@@ -110,8 +110,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 				{
 					currentInvId = null;
 				}
-				
-				this.setMessages();
+
 			}
 			catch (Exception e)
 			{
@@ -119,11 +118,6 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	@Override
