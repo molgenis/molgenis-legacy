@@ -7,25 +7,14 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.organization.Investigation;
 
-public class QTLDataSetWizardModel extends EasyPluginModel
+public class QTLDataSetWizardModel
 {
-	public QTLDataSetWizardModel(EasyPluginController controller)
-	{
-		super(controller);
-		// TODO Auto-generated constructor stub
-	}
 
 	private Integer selectedInv;
 	private List<Investigation> investigations;
 	private List<OntologyTerm> crosses;
 	private List<String> xqtlObservableFeatureTypes;
 	
-	public void clearMessage()
-	{
-		this.setMessages();
-	}
-
-
 	public List<String> getXqtlObservableFeatureTypes()
 	{
 		return xqtlObservableFeatureTypes;

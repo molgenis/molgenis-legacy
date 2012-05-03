@@ -31,6 +31,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
+import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
@@ -43,23 +44,37 @@ import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Marker;
 
-public class QTLDataSetWizard extends EasyPluginController<QTLDataSetWizardModel>
+import plugins.matrix.manager.MatrixManagerModel;
+
+public class QTLDataSetWizard extends PluginModel
 {
 	private static final long serialVersionUID = -1810993111211947419L;
 
 	// if db rollbacks, delete this matrix file!
 	private File dataFileRollback = null;
+	
+	private QTLDataSetWizardModel model = new QTLDataSetWizardModel();
+
+	public QTLDataSetWizardModel getMyModel()
+	{
+		return model;
+	}
+
+	@Override
+	public String getViewName()
+	{
+		return "plugins_xgapwizard_QTLDataSetWizard";
+	}
+
+	@Override
+	public String getViewTemplate()
+	{
+		return "plugins/xgapwizard/QTLDataSetWizard.ftl";
+	}
 
 	public QTLDataSetWizard(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.setModel(new QTLDataSetWizardModel(this));
-	}
-
-	@Override
-	public ScreenView getView()
-	{
-		return new FreemarkerView("plugins/xgapwizard/QTLDataSetWizard.ftl", getModel());
 	}
 
 	/**
@@ -74,7 +89,7 @@ public class QTLDataSetWizard extends EasyPluginController<QTLDataSetWizardModel
 
 			if (request.getInt("invSelect") != null)
 			{
-				getModel().setSelectedInv(request.getInt("invSelect"));
+				this.model.setSelectedInv(request.getInt("invSelect"));
 			}
 
 			String action = request.getString("__action");
@@ -131,24 +146,17 @@ public class QTLDataSetWizard extends EasyPluginController<QTLDataSetWizardModel
 								i.printStackTrace();
 							}
 						}
-						else
-						{
-						}
 					}
-					else
-					{
-					}
-
 					db.rollbackTx();
 				}
 				catch (DatabaseException e1)
 				{
 					e1.printStackTrace();
+					this.setMessages(new ScreenMessage(e.getMessage() != null ? e1.getMessage() : "null", false));
 				}
 			}
 			e.printStackTrace();
-			getModel().setMessages(new ScreenMessage(e.getMessage() != null ? e
-					.getMessage() : "null", false));
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 	}
 
@@ -162,7 +170,7 @@ public class QTLDataSetWizard extends EasyPluginController<QTLDataSetWizardModel
 		try
 		{
 			List<Investigation> invList = db.find(Investigation.class);
-			getModel().setInvestigations(invList);
+			this.model.setInvestigations(invList);
 
 			// FIXME: hardcoded for now, must be replaced with combination of
 			// Metadb and enum in Data.. (pick out the ObservableFeatures)
@@ -178,12 +186,12 @@ public class QTLDataSetWizard extends EasyPluginController<QTLDataSetWizardModel
 			xof.add("Metabolite");
 			xof.add("Probe");
 			// xof.add("Spot"); needs other required
-			getModel().setXqtlObservableFeatureTypes(xof);
+			this.model.setXqtlObservableFeatureTypes(xof);
 
 			List<OntologyTerm> crosses = db.find(OntologyTerm.class,
 					new QueryRule(OntologyTerm.NAME, Operator.LIKE,
 							"xgap_rqtl_straintype_"));
-			getModel().setCrosses(crosses);
+			this.model.setCrosses(crosses);
 		}
 		catch (Exception e)
 		{
@@ -192,14 +200,6 @@ public class QTLDataSetWizard extends EasyPluginController<QTLDataSetWizardModel
 					.getMessage() : "null", false));
 		}
 
-	}
-
-	/**
-	 * Helper function to clear screen messages
-	 */
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	/**
