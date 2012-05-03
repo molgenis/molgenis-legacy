@@ -37,19 +37,19 @@ mkdir -p ${qcdir}
 	<#if seqType[sample_index] == "SR">
 		
 		<#if barcode[sample_index] == "None">
-			ln -s ${fq[sample_index]} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenameSR[sample_index]} ${projectrawdatadir}/
 		<#else>
-			ln -s ${fq_barcode[sample_index]} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedDemultiplexedSampleFastqFilenameSR[sample_index]} ${projectrawdatadir}/
 		</#if>
 		
 	<#elseif seqType[sample_index] == "PE">
 		
 		<#if barcode[sample_index] == "None">
-			ln -s ${fq_1[sample_index]} ${projectrawdatadir}/
-			ln -s ${fq_2[sample_index]} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenamePE1[sample_index]} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedFastqFilenamePE2[sample_index]} ${projectrawdatadir}/
 		<#else>
-			ln -s ${fq_barcode_1[sample_index]} ${projectrawdatadir}/
-			ln -s ${fq_barcode_2[sample_index]} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedDemultiplexedSampleFastqFilenamePE1[sample_index]} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedDemultiplexedSampleFastqFilenamePE2[sample_index]} ${projectrawdatadir}/
 		</#if>
 		
 	</#if>
@@ -67,16 +67,16 @@ mkdir -p ${qcdir}
 <#list unfolded as sampleSequenceDetails>
 echo ${sampleSequenceDetails} >> ${projectJobsDir}/${project}.csv
 </#list>-->
-${tooldir}/scripts/extract_samples_from_GAF_list.pl --i ${worksheet} --o ${projectJobsDir}/${project}.csv --c project --q ${project}
+${scriptdir}/extract_samples_from_GAF_list.pl --i ${McWorksheet} --o ${projectJobsDir}/${project}.csv --c project --q ${project}
 
 #
 # Execute MOLGENIS/compute to create job scripts to analyse this project.
 #
-sh ${molgenisComputeDir}/molgenis_compute.sh \
+sh ${McDir}/molgenis_compute.sh \
 -worksheet=${projectJobsDir}/${project}.csv \
--outputscriptsdir=${projectJobsDir}/ \
--parametersfile=${parametersFile} \
--workflowfile=${workflowFile} \
--protocoldir=${protocolsDir} \
--cluster=dummy \
--templatesdir=dummy dummy
+-parameters=${McParameters} \
+-workflow=${workflowFile} \
+-protocols=${McProtocols}/ \
+-templates=${McTemplates}/ \
+-scripts=${projectJobsDir}/ \
+-id=${McId}

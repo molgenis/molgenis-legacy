@@ -18,6 +18,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeProtocol;
+import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
@@ -32,9 +33,6 @@ import freemarker.template.TemplateException;
 //import nl.vu.psy.rite.operations.implementations.bash.BashOperation;
 //import nl.vu.psy.rite.persistence.mongo.MongoRecipeStore;
 
-// This dependency needs to go when we upgrade to Java 7+
-//import com.google.common.io.Files;
-
 public class ComputeCommandLine
 {
 	protected ComputeBundle computeBundle;
@@ -47,8 +45,45 @@ public class ComputeCommandLine
 	private void generateJobs() throws Exception
 	{
 		computeBundle = new ComputeBundleFromDirectory(this);
+		
+		//
+		// Append the commandline params to the list of ComputeParamters, so we can use them in Protocols.
+		//
+		ComputeParameter McDir = new ComputeParameter();
+		McDir.setName("McDir");
+		McDir.setDefaultValue(userValues.get("McDir").toString());
+		computeBundle.addComputeParameter(McDir);
+		ComputeParameter McId = new ComputeParameter();
+		McId.setName("McId");
+		McId.setDefaultValue(userValues.get("McId").toString());
+		computeBundle.addComputeParameter(McId);
+		ComputeParameter McParameters = new ComputeParameter();
+		McParameters.setName("McParameters");
+		McParameters.setDefaultValue(userValues.get("McParameters").toString());
+		computeBundle.addComputeParameter(McParameters);
+		ComputeParameter McProtocols = new ComputeParameter();
+		McProtocols.setName("McProtocols");
+		McProtocols.setDefaultValue(userValues.get("McProtocols").toString());
+		computeBundle.addComputeParameter(McProtocols);
+		ComputeParameter McTemplates = new ComputeParameter();
+		McTemplates.setName("McTemplates");
+		McTemplates.setDefaultValue(userValues.get("McTemplates").toString());
+		computeBundle.addComputeParameter(McTemplates);
+		ComputeParameter McWorkflow = new ComputeParameter();
+		McWorkflow.setName("McWorkflow");
+		McWorkflow.setDefaultValue(userValues.get("McWorkflow").toString());
+		computeBundle.addComputeParameter(McWorkflow);
+		ComputeParameter McWorksheet = new ComputeParameter();
+		McWorksheet.setName("McWorksheet");
+		McWorksheet.setDefaultValue(userValues.get("McWorksheet").toString());
+		computeBundle.addComputeParameter(McWorksheet);
+		ComputeParameter McScripts = new ComputeParameter();
+		McScripts.setName("McScripts");
+		McScripts.setDefaultValue(userValues.get("McScripts").toString());
+		computeBundle.addComputeParameter(McScripts);
+		
 		this.worksheet = new Worksheet(computeBundle);
-
+		
 		List<ComputeProtocol> protocollist = computeBundle.getComputeProtocols();
 
 		// create hash of all workflow elements (needed for dependencies)
@@ -89,7 +124,7 @@ public class ComputeCommandLine
 
 			// System.out.println(">>> " + documentation);
 			// System.out.println(">>> " + filledtemplate.toString());
-
+			
 			List<Tuple> folded = Worksheet.foldWorksheet(this.worksheet.worksheet, this.computeBundle.getComputeParameters(), targets);
 			// Worksheet.reduceTargets(targets);
 			// print("folded worksheet: " + this.worksheet.folded.size() + ":" + this.worksheet.folded.toString());
@@ -312,54 +347,78 @@ public class ComputeCommandLine
 
 	public static void main(String[] args)
 	{
-		Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ONCE, 1);
+		Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ONCE, 0);
 
-		opt.getSet().addOption("parametersfile", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("workflowfile", false, Options.Separator.EQUALS);
+		opt.getSet().addOption("parameters", false, Options.Separator.EQUALS);
+		opt.getSet().addOption("workflow", false, Options.Separator.EQUALS);
 		opt.getSet().addOption("worksheet", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("protocoldir", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("outputscriptsdir", false, Options.Separator.EQUALS);
-		opt.getSet().addOption("grid", false, Options.Separator.EQUALS, Options.Multiplicity.ZERO_OR_ONE);
-		opt.getSet().addOption("cluster", false, Options.Separator.EQUALS, Options.Multiplicity.ZERO_OR_ONE);
-		opt.getSet().addOption("templatesdir", false, Options.Separator.EQUALS);
+		opt.getSet().addOption("protocols", false, Options.Separator.EQUALS);
+		opt.getSet().addOption("templates", false, Options.Separator.EQUALS);
+		opt.getSet().addOption("scripts", false, Options.Separator.EQUALS);
+		opt.getSet().addOption("id", false, Options.Separator.EQUALS);
+		// Directory where MOLGENIS/compute the commandline version was installed.
+		// This param is not specified by the user on the commandline but automagically determined by molgenis_compute.sh, 
+		// which prepends it to the params specified by the user.
+		opt.getSet().addOption("mcdir", false, Options.Separator.EQUALS);
+		// Disabled until multiple backend support and use of the templates dir is re-enabled.
+		//opt.getSet().addOption("grid", false, Options.Separator.EQUALS, Options.Multiplicity.ZERO_OR_ONE);
+		//opt.getSet().addOption("cluster", false, Options.Separator.EQUALS, Options.Multiplicity.ZERO_OR_ONE);
 
-		boolean isCorrect = opt.check();
+		//boolean isCorrect = opt.check();
+		boolean isCorrect = opt.check(opt.getSet().getSetName(), false, false);
 
 		if (!isCorrect)
 		{
 			System.out.println(opt.getCheckErrors());
 
-			System.out.println("command line format\n-parametersfile=<InputWorksheet>\n" + "-parametersfile=<parameters.txt>\n"
-					+ "-workflowfile=<workflow.txt>\n" + "-protocoldir=<WorkflowDescriptionDir>\n" + "-outputscriptsdir=<OutputDir>\n"
-					+ "-grid|cluster=<LocationOnBackend(Grid or Cluster)>\n" + "-templatesdir=<TemplatesDir> " + "<GererationID>\n");
+			// Location of scripts on backend currently not used on cluster
+			// If this changes re-enable: "-grid|cluster=<LocationOfScriptsOnBackend(Grid or Cluster)>\n" + 
+			System.out.println("command line format:\n" + 
+				"-worksheet=<InputWorksheet.csv>\n" + 
+				"-parameters=<InputParameters.csv>\n" + 
+				"-workflow=<InputWorkflow.csv>\n" +
+				"-protocols=<InputProtocolsDir>\n" + 
+				"-templates=<InputTemplatesDir>\n" + 
+				"-scripts=<OutputScriptsDir>\n" +
+				"-id=<ScriptGenerationID>\n");
 			System.exit(1);
 		}
 
 		ComputeCommandLine ccl = new ComputeCommandLine();
 
-		ccl.parametersfile = new File(opt.getSet().getOption("parametersfile").getResultValue(0));
-		ccl.workflowfile = new File(opt.getSet().getOption("workflowfile").getResultValue(0));
-		ccl.worksheetfile = new File(opt.getSet().getOption("worksheet").getResultValue(0));
-		ccl.outputdir = opt.getSet().getOption("outputscriptsdir").getResultValue(0);
-		ccl.protocoldir = new File(opt.getSet().getOption("protocoldir").getResultValue(0));
-		ccl.templatedir = opt.getSet().getOption("templatesdir").getResultValue(0);
+		ccl.parametersfile	= new File(opt.getSet().getOption("parameters").getResultValue(0));
+		ccl.workflowfile	= new File(opt.getSet().getOption("workflow").getResultValue(0));
+		ccl.worksheetfile	= new File(opt.getSet().getOption("worksheet").getResultValue(0));
+		ccl.protocoldir		= new File(opt.getSet().getOption("protocols").getResultValue(0));
+		ccl.templatedir 	= opt.getSet().getOption("templates").getResultValue(0);
+		ccl.outputdir		= opt.getSet().getOption("scripts").getResultValue(0);
+		
+		// Disabled until multiple backend support and use of the templates dir is re-enabled.
+		//if (opt.getSet().isSet(WorkflowGeneratorCommandLine.GRID))
+		//{
+		//	System.out.println("generation for grid");
+		//	ccl.backend = WorkflowGeneratorCommandLine.GRID;
+		//	ccl.userValues.put("outputdir", opt.getSet().getOption(WorkflowGeneratorCommandLine.GRID).getResultValue(0));
+		//}
+		//else if (opt.getSet().isSet(WorkflowGeneratorCommandLine.CLUSTER))
+		//{
+		//	System.out.println("generation for cluster");
+		//	ccl.backend = WorkflowGeneratorCommandLine.CLUSTER;
+		//	ccl.userValues.put("outputdir", opt.getSet().getOption(WorkflowGeneratorCommandLine.CLUSTER).getResultValue(0));
+		//}
+		
+		System.out.println("Script generation for PBS clusters.");
+		ccl.backend = WorkflowGeneratorCommandLine.CLUSTER;
 
-		if (opt.getSet().isSet(WorkflowGeneratorCommandLine.GRID))
-		{
-			System.out.println("generation for grid");
-			ccl.backend = WorkflowGeneratorCommandLine.GRID;
-			ccl.userValues.put("outputdir", opt.getSet().getOption(WorkflowGeneratorCommandLine.GRID).getResultValue(0));
-		}
-		else if (opt.getSet().isSet(WorkflowGeneratorCommandLine.CLUSTER))
-		{
-			System.out.println("generation for cluster");
-			ccl.backend = WorkflowGeneratorCommandLine.CLUSTER;
-			ccl.userValues.put("outputdir", opt.getSet().getOption(WorkflowGeneratorCommandLine.CLUSTER).getResultValue(0));
-		}
-
-		String generationID = opt.getSet().getData().get(0);
-
-		ccl.userValues.put("runID", generationID);
+		ccl.userValues.put("McDir",			opt.getSet().getOption("mcdir").getResultValue(0));
+		ccl.userValues.put("McId",			opt.getSet().getOption("id").getResultValue(0));
+		ccl.userValues.put("McParameters",	opt.getSet().getOption("parameters").getResultValue(0));
+		ccl.userValues.put("McProtocols",	opt.getSet().getOption("protocols").getResultValue(0));
+		ccl.userValues.put("McTemplates",	opt.getSet().getOption("templates").getResultValue(0));
+		ccl.userValues.put("McWorkflow",	opt.getSet().getOption("workflow").getResultValue(0));
+		ccl.userValues.put("McWorksheet",	opt.getSet().getOption("worksheet").getResultValue(0));
+		ccl.userValues.put("McScripts",		opt.getSet().getOption("scripts").getResultValue(0));
+		
 		ccl.workingdir = new File(".");
 
 		try
@@ -367,7 +426,7 @@ public class ComputeCommandLine
 			ccl.generateJobs();
 			ccl.copyWorksheetAndWorkflow();
 			ccl.generateScripts();
-//			ccl.generateRite();			
+			//ccl.generateRite();			
 		}
 		catch (Exception e)
 		{
@@ -382,12 +441,17 @@ public class ComputeCommandLine
 	{
 		try
 		{
-			for (File f : Arrays.asList(this.workflowfile, this.worksheetfile))
+			for (File f : Arrays.asList(this.workflowfile, this.worksheetfile, this.parametersfile))
 			{
-				String[] filenamelist = f.toString().split(File.separator);
+				String sourcepath = f.toString();
+				String[] filenamelist = sourcepath.split(File.separator);
 				String filename = filenamelist[filenamelist.length - 1];
 				// Files.copy(f, new File(this.outputdir + File.separator + filename));
-				FileUtils.copyFile(f, new File(this.outputdir + File.separator + filename));
+				String destinationpath = new String(this.outputdir + File.separator + filename);
+				destinationpath = destinationpath.replaceAll(File.separator + "+", File.separator);
+				if (!destinationpath.equals(sourcepath)) {			
+					FileUtils.copyFile(f, new File(this.outputdir + File.separator + filename));
+				}
 			}
 		}
 		catch (IOException e1)
@@ -453,8 +517,8 @@ public class ComputeCommandLine
 			// and produce submit.sh
 			PrintWriter submitWriter = new PrintWriter(new File(outputdir + File.separator + "submit.sh"));
 
-			// also produce a submitlocal.sh
-			PrintWriter submitWriterLocal = new PrintWriter(new File(outputdir + File.separator + "submitlocal.sh"));
+			// also produce a runlocal.sh
+			PrintWriter submitWriterLocal = new PrintWriter(new File(outputdir + File.separator + "runlocal.sh"));
 
 			// touch "workflow file name".started in same directory as submit.sh, when starting submit.sh
 			String cmd = "DIR=\"$( cd \"$( dirname \"${BASH_SOURCE[0]}\" )\" && pwd )\"";
@@ -463,7 +527,15 @@ public class ComputeCommandLine
 			cmd = "touch $DIR" + File.separator + getworkflowfilename() + ".started";
 			submitWriter.println(cmd);
 			submitWriterLocal.println(cmd);
-
+			
+			//
+			// Temporary hack for executing scripts with runlocal hence directly without using a scheduler like PBS.
+			// To prevent lots of errors due to scripts trying to write various *.log, *.out, *.err, etc. files in the $PBS_O_WORKDIR,
+			// we set $PBS_O_WORKDIR to the same directory as where runlocal.sh resides.
+			//
+			cmd = "export PBS_O_WORKDIR=${DIR}";
+			submitWriterLocal.println(cmd);
+			
 			for (ComputeJob job : this.jobs)
 			{
 				// create submit in submit.sh

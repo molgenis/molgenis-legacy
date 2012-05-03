@@ -27,18 +27,26 @@ To run the MOLGENIS/compute script generator
    You can generate a Next Generation Sequencing (NGS) workflow for a small test set by executing the following:   
 
 	$> sh molgenis_compute.sh \
-			-parametersfile=workflows/in-house_parameters.csv \
-			-workflowfile=workflows/in-house_workflow.csv \
+			-parameters=workflows/in-house_parameters.csv \
+			-workflow=workflows/in-house_workflow.csv \
 			-worksheet=workflows/in-house_worksheet_test.csv \
-			-protocoldir=protocols \
-			-outputscriptsdir=scripts \
-			-cluster=dummy \
-			-templatesdir=dummy dummy
+			-protocols=protocols \
+			-templates=dummy \
+			-scripts=scripts \
+			-id=run01
 	
 Please note that:
  * White space before and after the '=' is not allowed when specifying the parameters.
  * The raw data for the samples described in worksheetTest.csv is not packaged with MOLGENIS/compute, 
    so you can use worksheetTest.csv to test the generate of job scripts, but you cannot execute those example scripts
    successfully without real raw data.
+ * The -templates param is not functional yet, but you have to specify it anyway (work in progress).
+ * The last parameter specified (run01 in the example above) is the ID/name of this set of generated scripts.
+   Choose something that suits your needs.
+ * All commandline arguments are available as special MOLGENIS/compute parameters, so you can use them in the Freemarker templates for your protocols.
+   The syntax for these special params: param name starting with a capital and prefixed with Mc. 
+   For example to use the path to the parameters file you specified on the cammandline you can use ${McParameters} in your protocols.
+   In addition to the commandline arguments there is one more special MOLGENIScompute param "$McDir}, 
+   which points to the dir where MOLGENIS/compute is installed == where molgenis_compute.sh is stored. 
 	
-Questions, bug reports or feature requests? Please contact the MOLGENIS/compute developers via gcc-ngs@googlegroups.com or visit http://molgenis.org.
+Questions, bug reports or feature requests? Please contact the MOLGENIS/compute developers via gcc-ngs@googlegroups.com or visit http://molgenis.org/.

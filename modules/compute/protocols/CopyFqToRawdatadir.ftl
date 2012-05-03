@@ -19,4 +19,4 @@ umask 0007
 ${gafscripts}/copy_fq_to_rawdatadir.pl \
 -rawdatadir ${runIntermediateDir} \
 -run ${run} \
--samplecsv ${worksheet}
+-samplecsv ${McWorksheet}
