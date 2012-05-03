@@ -97,15 +97,12 @@ public abstract class MolgenisGuiService
 			//determine the real application base URL (once)
 			try
 			{
-				String host = HtmlTools.getExposedIPAddress();
-				URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, molgenis.getMolgenisContext().getVariant());
-				molgenis.setBaseUrl(reconstructedURL.toString());
+				new getExposedIP(molgenis, request);
 			}
 			catch(Exception e)
 			{
 				throw new IOException(e);
 			}
-			logger.debug("application base URL = " + molgenis.getApplicationUrl());
 		}
 		
 		// Always pass login to GUI
@@ -305,20 +302,38 @@ public abstract class MolgenisGuiService
 			throw new DatabaseException(e);
 		}
 	}	
+}
+
+/**
+ * Seperate thread to find out what the outside IP address of the application is.
+ * Can take up to 60 secs if the server cannot be contacted but does not block the rest
+ * of the application this way.
+ *
+ */
+class getExposedIP implements Runnable
+{
+	private ApplicationController molgenis;
+	private Tuple request;
 	
-	private static String getPort(HttpServletRequest req)
+	getExposedIP(ApplicationController molgenis, Tuple request)
 	{
-		if ("http".equalsIgnoreCase(req.getScheme())
-				&& req.getServerPort() != 80
-				|| "https".equalsIgnoreCase(req.getScheme())
-				&& req.getServerPort() != 443)
+		this.molgenis = molgenis;
+		this.request = request;
+		Thread t = new Thread(this);
+		t.start();
+	}
+	
+	public void run()
+	{
+		try
 		{
-			return (":" + req.getServerPort());
+			String host = HtmlTools.getExposedIPAddress();
+			URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, molgenis.getMolgenisContext().getVariant());
+			molgenis.setBaseUrl(reconstructedURL.toString());
 		}
-		else
+		catch (Exception e)
 		{
-			return "";
+			e.printStackTrace();
 		}
 	}
-
 }
