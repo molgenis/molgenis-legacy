@@ -48,4 +48,6 @@ public interface JobGenerator
     boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String,String> config);
 
     void setConfig(Hashtable<String,String> config);
+
+    void setWorksheet(List<Tuple> worksheet);
 }

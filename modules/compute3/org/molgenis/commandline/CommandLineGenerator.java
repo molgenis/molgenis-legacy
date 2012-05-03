@@ -68,6 +68,7 @@ public class CommandLineGenerator
         JobGenerator jobGenerator = new Compute3JobGenerator();
         //set configuration settings
         jobGenerator.setConfig(config);
+        jobGenerator.setWorksheet(worksheet);
 
         //generate compute jobs
         //here, ComputeJobs can be generated also from DB given list of Targets

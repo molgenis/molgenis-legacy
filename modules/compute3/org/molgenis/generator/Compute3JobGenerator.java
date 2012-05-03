@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
+import org.molgenis.gridhandler.CommandLineImputationGridHandler;
+import org.molgenis.gridhandler.GridHandler;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
@@ -32,8 +34,12 @@ public class Compute3JobGenerator implements JobGenerator
 
     private static Logger logger = Logger.getLogger(Compute3JobGenerator.class);
 
+    //parsing/making folding story
     private FoldingMaker foldingMaker = new FoldingMaker();
     private FoldingParser foldingParser = new FoldingParser();
+
+    //grid specific imputation handler
+    GridHandler gridHandler = null;
 
     //template sources
     private String templateGridDownload;
@@ -69,6 +75,13 @@ public class Compute3JobGenerator implements JobGenerator
     private String submitScript = null;
 
     private Hashtable<String, String> config;
+
+    private List<Tuple> worksheet = null;
+
+    public void setWorksheet(List<Tuple> worksheet)
+    {
+        this.worksheet = worksheet;
+    }
 
     public Vector<ComputeJob> generateComputeJobsFoldedWorksheet(Workflow workflow, List<Tuple> f, String backend)
     {
@@ -422,30 +435,42 @@ public class Compute3JobGenerator implements JobGenerator
 
     public boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String, String> config)
     {
+        int generationCount = -1;
         //read templates
         String templatesDir = config.get(JobGenerator.TEMPLATE_DIR);
 
         if (backend.equalsIgnoreCase(JobGenerator.GRID))
+        {
             readTemplatesGrid(templatesDir);
+            gridHandler = new CommandLineImputationGridHandler();
+            gridHandler.setWorksheet(worksheet);
+            generationCount = gridHandler.getNextJobID();
+
+        }
         else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
             readTemplatesCluster(templatesDir);
 
+        int i = 0;
         for (ComputeJob computeJob : computeJobs)
         {
             System.out.println(">>> generation job: " + computeJob.getName());
 
             //generate files for selected back-end
             if (backend.equalsIgnoreCase(JobGenerator.GRID))
-                generateActualJobGrid(computeJob, config);
+                generateActualJobGrid(computeJob, config, generationCount);
             else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
                 generateActualJobCluster(computeJob, config);
+
+            generationCount++;
         }
 
         //write cluster submit script
         if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
             writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + "submit_" + config.get(JobGenerator.GENERATION_ID) + ".sh",
                     submitScript);
-
+        else if(backend.equalsIgnoreCase(JobGenerator.GRID))
+            //produce targetsListFile
+            gridHandler.writeCurrentTupleToFile();
 
         return true;
     }
@@ -498,7 +523,7 @@ public class Compute3JobGenerator implements JobGenerator
 
     }
 
-    private void generateActualJobGrid(ComputeJob computeJob, Hashtable<String, String> config)
+    private void generateActualJobGrid(ComputeJob computeJob, Hashtable<String, String> config, int generationCount)
     {
         //create values hashtable to fill templates
         Hashtable<String, String> values = new Hashtable<String, String>();
@@ -526,6 +551,9 @@ public class Compute3JobGenerator implements JobGenerator
         Enumeration logValues = logs.elements();
         String logName = (String) logValues.nextElement();
         String justLogName = giveJustName(logName);
+
+        //set log name to computeJob, that will be used in grid handler
+        computeJob.setLogFile(logName);
 
         //generate downloading section (transfer inputs and executable)
         //and change job listing to execute in the grid
@@ -584,6 +612,9 @@ public class Compute3JobGenerator implements JobGenerator
             String actualName = (String) actuals.nextElement();
             String justName = giveJustName(actualName);
 
+            //set output file to compute job, that will be used in grid handler
+            computeJob.setOutputFile(actualName);
+
             local.put(JobGenerator.LFN_NAME, actualName);
             local.put(JobGenerator.OUTPUT, justName);
             local.put(JobGenerator.LOG, justLogName);
@@ -607,6 +638,9 @@ public class Compute3JobGenerator implements JobGenerator
         //write shell
         writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".sh",
                 shellListing);
+
+        //and computeJob to grid handler
+        gridHandler.setComputeJob(computeJob);
     }
 
     private String giveJustName(String actualName)
