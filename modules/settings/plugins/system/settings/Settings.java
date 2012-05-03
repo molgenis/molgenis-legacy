@@ -66,7 +66,6 @@ public class Settings<E extends Entity> extends PluginModel<E>
 				{
 					sh.validateFileStorage(db);
 				}
-				this.setMessages();
 			}
 			catch (Exception e)
 			{
@@ -74,11 +73,6 @@ public class Settings<E extends Entity> extends PluginModel<E>
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	@Override
@@ -89,12 +83,11 @@ public class Settings<E extends Entity> extends PluginModel<E>
 		try
 		{
 			report = sh.getReport();
-		//	sh.validateFileStorage();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 	}
 
