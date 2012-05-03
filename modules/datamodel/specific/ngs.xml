@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="org.molgenis" label="Next Generation Sequencing" depends="core,xgap,contact,system">
+		<include file="modules/datamodel/shared/core.xml" />
+		<include file="modules/datamodel/shared/auth.xml" />
+		<include file="modules/datamodel/shared/organization.xml" />
+		<include file="modules/datamodel/shared/protocol.xml" />
+		<include file="modules/datamodel/shared/compute.xml" />
+		<include file="modules/datamodel/shared/pheno.xml" />
 	<module name="ngs">
 		<description>Extension to XGAP to support Next Gen Sequencing projects
 			using the Illumina platform. Each work consists of Projects having
