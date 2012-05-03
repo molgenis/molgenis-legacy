@@ -135,7 +135,6 @@ public class ReportBuilder extends PluginModel
 					}
 				}
 
-				this.setMessages();
 			}
 			catch (Exception e)
 			{

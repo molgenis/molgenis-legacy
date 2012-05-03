@@ -63,7 +63,7 @@
 </div>
 
 <div style="position:relative;left:580px;top:-65px;">
-	<@action name="search" label="Search"/>
+	<input type="submit" id="search" onclick="$(this).closest('form').find('input[name=__action]').val('search');" value="Search" /><script>$("#search").button();</script>
 </div>
 
 
@@ -87,7 +87,7 @@
 	</#list>
 	
 	<br><br>
-	<@action name="plotShoppingCart" label="Create plot"/>
+	<input type="submit" id="plotShoppingCart" onclick="$(this).closest('form').find('input[name=__action]').val('plotShoppingCart');" value="Create plot" /><script>$("#plotShoppingCart").button();</script>
 	<#--@action name="emptyShoppingCart" label="Clear"/-->
 	
 	</div>

@@ -3,8 +3,6 @@ package plugins.xgapwizard;
 import java.util.List;
 
 import org.molgenis.core.OntologyTerm;
-import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.organization.Investigation;
 
 public class QTLDataSetWizardModel

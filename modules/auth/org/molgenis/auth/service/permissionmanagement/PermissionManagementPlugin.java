@@ -135,11 +135,6 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
     public void setService(PermissionManagementService service) {
     	this.service = service;
     }
-
-    public void clearMessage()
-    {
-    	this.setMessages();
-    }
     
     @Override
     public boolean isVisible()

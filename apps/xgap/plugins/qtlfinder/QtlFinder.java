@@ -216,7 +216,6 @@ public class QtlFinder extends PluginModel<Entity>
 					this.model.getResultSet().remove(key);
 				}
 
-				this.setMessages();
 			}
 			catch (Exception e)
 			{

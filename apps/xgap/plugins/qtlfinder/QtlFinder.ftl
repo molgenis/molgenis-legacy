@@ -77,10 +77,8 @@
 	</tr>
 	<tr>
 		<td>
-			<#--input type="submit" value="Find" onclick="document.forms.${screen.name}.__action.value = 'findQtl'; document.forms.${screen.name}.submit();"-->
-			
-			<@action name="findQtl" label="Find (One QTL per plot)"/>
-			<@action name="findQtlMulti" label="Find (All-in-one plot)"/>
+			<input type="submit" id="findQtl" onclick="$(this).closest('form').find('input[name=__action]').val('findQtl');" value="Find (One QTL per plot)" /><script>$("#findQtl").button();</script>
+			<input type="submit" id="findQtlMulti" onclick="$(this).closest('form').find('input[name=__action]').val('findQtlMulti');" value="Find (All-in-one plot)" /><script>$("#findQtlMulti").button();</script>
 		</td>
 	</tr>
 </table>

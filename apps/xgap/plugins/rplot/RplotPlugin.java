@@ -35,11 +35,6 @@ public class RplotPlugin<E extends Entity> extends PluginModel<E>
 		return model;
 	}
 
-	public void clearMessage()
-	{
-		this.setMessages();
-	}
-
 	public RplotPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);

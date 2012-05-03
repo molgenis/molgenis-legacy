@@ -29,12 +29,9 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservableFeature;
@@ -43,8 +40,6 @@ import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Marker;
-
-import plugins.matrix.manager.MatrixManagerModel;
 
 public class QTLDataSetWizard extends PluginModel
 {
