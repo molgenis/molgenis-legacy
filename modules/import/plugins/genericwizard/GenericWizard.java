@@ -8,7 +8,6 @@
 package plugins.genericwizard;
 
 import java.io.File;
-import java.io.PrintWriter;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.PluginModel;
@@ -34,13 +33,6 @@ public class GenericWizard extends PluginModel<Entity> {
 		super(name, parent);
 	}
 
-// moved overlib to molgenis core
-//	@Override
-//	public String getCustomHtmlHeaders() {
-//		return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>";
-//
-//	}
-
 	@Override
 	public String getViewName() {
 		return "GenericWizard";
@@ -51,11 +43,10 @@ public class GenericWizard extends PluginModel<Entity> {
 		return "plugins/genericwizard/GenericWizard.ftl";
 	}
 	
-	public void handleRequest(Database db, Tuple request) {
-		if (request.getString("__action") != null) {
-
-			System.out.println("*** handleRequest __action: "
-					+ request.getString("__action"));
+	public void handleRequest(Database db, Tuple request)
+	{
+		if (request.getString("__action") != null)
+		{
 
 			try {
 				
@@ -64,9 +55,12 @@ public class GenericWizard extends PluginModel<Entity> {
 
 					//get uploaded file and do checks
 					File file = request.getFile("upload");
-					if (file == null) {
+					if (file == null)
+					{
 						throw new Exception("No file selected.");
-					} else if (!file.getName().endsWith(".xls")) {
+					}
+					else if (!file.getName().endsWith(".xls"))
+					{
 						throw new Exception(
 								"File does not end with '.xls', other formats are not supported.");
 					}
@@ -105,8 +99,9 @@ public class GenericWizard extends PluginModel<Entity> {
 					this.model.setImportSuccess(true);
 				}
 
-				this.setMessages();
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				e.printStackTrace();
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e
 						.getMessage() : "null", false));
@@ -114,20 +109,8 @@ public class GenericWizard extends PluginModel<Entity> {
 		}
 	}
 
-	public void clearMessage() {
-		this.setMessages();
-	}
-
 	@Override
 	public void reload(Database db) {
-
-		try {
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-					.getMessage() : "null", false));
-		}
 
 	}
 
