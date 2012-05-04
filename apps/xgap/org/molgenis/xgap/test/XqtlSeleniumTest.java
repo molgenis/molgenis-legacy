@@ -883,7 +883,8 @@ public class XqtlSeleniumTest
 				
 				//from: http://blog.browsermob.com/2011/03/selenium-tips-wait-with-waitforcondition/
 				//"Now for the killer part, for sites that use jQuery, if all you need is to confirm there aren't any active asynchronous requests, then the following does the trick:"
-				selenium.waitForCondition("selenium.browserbot.getUserWindow().$.active == 0", "10000");
+				//selenium.waitForCondition("selenium.browserbot.getUserWindow().$.active == 0", "10000");
+				Thread.sleep(500);
 				selenium.click("css=span"); //select 'ClusterDemo' this way
 				clickAndWait("id=Add");
 

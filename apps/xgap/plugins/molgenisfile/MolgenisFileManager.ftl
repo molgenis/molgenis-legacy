@@ -72,7 +72,7 @@
 			If you see this text, your browser does not support Java-applets.
 			</applet>
 			
-			<br />If no picture appears, use IP adress, for example: ${model.getIpURl()}<br />
+			<br />If no picture appears, use IP adress, for example: ${model.db_path}<br />
 			If that does not help, your port is probably blocked and the applet cannot serve its content.
 		</#if>
 	<#elseif model.molgenisFile.extension == 'xxx'>

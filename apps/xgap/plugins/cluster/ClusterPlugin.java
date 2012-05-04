@@ -371,21 +371,21 @@ public class ClusterPlugin extends PluginModel<Entity>
 
 				// make toServer string
 				String toServer = "";
-				String host = null;
+//				String host = null;
 
-				if (startedJob.getComputeResource().equals("local") || startedJob.getComputeResource().equals("image"))
-				{
-					host = "localhost";
-				}
-				else if ((startedJob.getComputeResource().equals("cluster") || startedJob.getComputeResource().equals(
-						"cloud")))
-				{
-					host = HtmlTools.getExposedIPAddress();
-				}
+//				if (startedJob.getComputeResource().equals("local") || startedJob.getComputeResource().equals("image"))
+//				{
+//					host = "localhost";
+//				}
+//				else if ((startedJob.getComputeResource().equals("cluster") || startedJob.getComputeResource().equals(
+//						"cloud")))
+//				{
+//					host = HtmlTools.getExposedIPAddress();
+//				}
+//
+//				URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, this.getApplicationController().getMolgenisContext().getVariant());
 
-				URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, this.getApplicationController().getMolgenisContext().getVariant());
-
-				String db_path = reconstructedURL.toString();
+				String db_path = this.getApplicationController().getApplicationUrl();
 
 				//get Inv ref from the first matrix in the input set
 				Investigation inv = null;
