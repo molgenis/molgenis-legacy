@@ -6,8 +6,8 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.Enumeration;
+//import java.util.Date;
+//import java.util.Enumeration;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,7 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+//import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -84,13 +84,17 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	{
 		HttpServletRequest req = request.getRequest();
 		String contextPath = (StringUtils.isNotEmpty(req.getContextPath()) ? req.getContextPath() : context.getVariant());
+		if (StringUtils.startsWith(this.getServletContext().getServerInfo(), "Apache Tomcat"))
+		{
+			contextPath = req.getContextPath();
+		}
 		String path = req.getRequestURI().substring(contextPath.length()+1);
 		if(path.equals("")) path = "/";
 
 		if(!path.startsWith("/")) {
 			path = "/"+path;
 		}
-	
+
 		for (String p : services.keySet())
 		{
 			if (path.startsWith(p))
@@ -110,8 +114,8 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 					
 					UUID connId = getSecuredDatabase(request);
 					
-					System.out.println("database status: " + (request.getDatabase().getSecurity().isAuthenticated() ? "authenticated as "
-							+ request.getDatabase().getSecurity().getUserName() : "not authenticated"));
+					System.out.println("database status: " + (request.getDatabase().getLogin().isAuthenticated() ? "authenticated as "
+							+ request.getDatabase().getLogin().getUserName() : "not authenticated"));
 					
 					request.setRequestPath(path); //the path that was requested
 					request.setServicePath(p); //the path mapping used to handle the request
@@ -134,7 +138,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 			}
 		}
 	}
-	
+
 	protected UUID getSecuredDatabase(MolgenisRequest req) throws DatabaseException
 	{
 		try
@@ -232,24 +236,24 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 		}
 	}
 	
-	private void printSessionInfo(HttpSession session)
-	{
-		Date created = new Date(session.getCreationTime());
-		Date accessed = new Date(session.getLastAccessedTime());
-		System.out.println("SESSION ID " + session.getId());
-		//System.out.println("SESSION Created: " + created);
-		//System.out.println("SESSION Last Accessed: " + accessed);
-
-		// print session contents
-
-		Enumeration e = session.getAttributeNames();
-		while (e.hasMoreElements())
-		{
-			String name = (String) e.nextElement();
-			String value = session.getAttribute(name).toString();
-			System.out.println("SESSION_ATTRIB " + name + " = " + value);
-		}
-	}
+//	private void printSessionInfo(HttpSession session)
+//	{
+//		Date created = new Date(session.getCreationTime());
+//		Date accessed = new Date(session.getLastAccessedTime());
+//		System.out.println("SESSION ID " + session.getId());
+//		//System.out.println("SESSION Created: " + created);
+//		//System.out.println("SESSION Last Accessed: " + accessed);
+//
+//		// print session contents
+//
+//		Enumeration e = session.getAttributeNames();
+//		while (e.hasMoreElements())
+//		{
+//			String name = (String) e.nextElement();
+//			String value = session.getAttribute(name).toString();
+//			System.out.println("SESSION_ATTRIB " + name + " = " + value);
+//		}
+//	}
 
 	
 
