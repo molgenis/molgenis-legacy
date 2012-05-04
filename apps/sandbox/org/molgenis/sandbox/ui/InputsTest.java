@@ -124,7 +124,9 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 		view.add(new XrefInput("XrefInput", Investigation.class));
 		try
 		{
-			view.add(new XrefInput("XrefInputDefault", this.getDatabase().findById(Investigation.class,1)));
+			new XrefInput<Investigation>("XrefInputDefault", 
+					Investigation.class,
+					this.getDatabase().findById(Investigation.class,1)));
 		}
 		catch (DatabaseException e)
 		{
