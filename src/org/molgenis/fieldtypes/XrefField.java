@@ -70,7 +70,14 @@ public class XrefField extends FieldType
 	@Override
 	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
-		return new XrefInput(name, xrefEntityClassName);
+		try
+		{
+			return new XrefInput(name, xrefEntityClassName);
+		}
+		catch (ClassNotFoundException e)
+		{
+			throw new HtmlInputException(e);
+		}
 	}
 
 	@Override

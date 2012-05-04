@@ -160,11 +160,13 @@ public abstract class FieldType
 	
 	public HtmlInput<?> createInput(String name) throws HtmlInputException
 	{
-		return this.createInput(name,null);
+		return this.createInput(name, null);
 	}
 
+	@Deprecated //Dangerous, because can compile without being correct.  
 	public abstract HtmlInput<?> createInput(String name, String xrefEntityClassNames) throws HtmlInputException;
-
+	//public abstract HtmlInput<?> createInput(String name, Class<? extends Entity> xrefClass ) throws HtmlInputException;
+	
 	public abstract String getCppJavaPropertyType() throws MolgenisModelException;
 
 	public abstract String getOracleType() throws MolgenisModelException;

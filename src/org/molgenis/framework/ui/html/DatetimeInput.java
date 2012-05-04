@@ -54,7 +54,7 @@ public class DatetimeInput extends HtmlInput<Date>
 	/** Construct Datetimeinput using a Tuple with properties */
 	public DatetimeInput(Tuple properties) throws HtmlInputException
 	{
-		set(properties);
+		super(properties);
 	}
 
 	// tohtml

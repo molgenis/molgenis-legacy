@@ -8,6 +8,7 @@ import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
+import org.molgenis.util.Entity;
 
 /**
  * Many to many reference.
@@ -84,10 +85,25 @@ public class MrefField extends FieldType
 	}
 
 	@Override
+	@Deprecated
 	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
-	{
-		return new MrefInput(name, xrefEntityClassName);
+	{	
+		try
+		{
+			Class<?> klass = Class.forName(xrefEntityClassName);
+			return new MrefInput(name, klass);
+		}
+		catch (ClassNotFoundException e)
+		{
+			throw new HtmlInputException(e);
+		}		
 	}
+	
+//	@Override
+//	public HtmlInput<?> createInput(String name, Class<? extends Entity> xrefEntityClassName) throws HtmlInputException
+//	{
+//		return new MrefInput(name, xrefEntityClassName);
+//	}
 
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException

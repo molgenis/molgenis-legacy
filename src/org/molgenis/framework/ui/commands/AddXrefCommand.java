@@ -11,9 +11,9 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.html.AbstractRefInput;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.EntityForm;
-import org.molgenis.framework.ui.html.EntityInput;
 import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.XrefInput;
@@ -88,7 +88,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 		{
 			if (inputs.get(i) instanceof XrefInput)
 			{
-				((EntityInput<Entity>) inputs.get(i)).setIncludeAddButton(false);
+				((AbstractRefInput<E>) inputs.get(i)).setIncludeAddButton(false);
 			}
 		}
 		// add three hidden fields for javascript to know entity name, id field and label field
