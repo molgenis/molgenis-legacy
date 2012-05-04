@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import org.apache.commons.lang.StringUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.cxf.common.util.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.HandleException;
 
