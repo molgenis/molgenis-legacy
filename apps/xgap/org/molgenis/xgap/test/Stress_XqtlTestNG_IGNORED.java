@@ -1,8 +1,11 @@
 package org.molgenis.xgap.test;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -24,7 +27,9 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.pheno.Individual;
+import org.molgenis.util.CsvWriter;
 import org.molgenis.util.DetectOS;
+import org.molgenis.util.TupleWriter;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 import org.testng.Assert;
@@ -282,7 +287,7 @@ public class Stress_XqtlTestNG_IGNORED
 	//NOTE: we also start a RunStandalone server with FrontController,
 	// which also creates 1 datasource.. problem?
 	private DataSource createDataSource() {
-		//NOTE: these are the current default settings for MOLGENIS HSQLDB
+		//NOTE: these are custom settings for high performance
 		BasicDataSource data_src = new BasicDataSource();
 		data_src.setDriverClassName("org.hsqldb.jdbcDriver");
 		data_src.setUsername("sa");
@@ -290,6 +295,7 @@ public class Stress_XqtlTestNG_IGNORED
 		data_src.setUrl("jdbc:hsqldb:file:hsqldb/molgenisdb;shutdown=true"); // a path within the src folder?
 		data_src.setMaxIdle(10);
 		data_src.setMaxWait(1000);
+		data_src.setMaxActive(-1);
 		return (DataSource) data_src;	
 	}
 
@@ -312,10 +318,28 @@ class queryMarkers
 		Database db = getDatabase();
 		for(int i = 0; i < iterations; i ++)
 		{	
-			List<Marker> m = db.find(Marker.class);
-			Assert.assertEquals(m.size(), 117); //117 markers
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			TupleWriter writer = new CsvWriter(out);
+			db.find(Marker.class, writer, new QueryRule[]{});
+			int lines = countLines(new ByteArrayInputStream(out.toByteArray()));
+			Assert.assertEquals(lines, 118); //117 markers + 1 for col.header
 		}
 		db.close(); //not needed
+	}
+	
+	private int countLines(InputStream is)
+	{
+		String content = convertStreamToString(is);
+		String[] lines = content.split("\r\n|\r|\n");
+		return lines.length;
+	}
+	
+	public String convertStreamToString(java.io.InputStream is) {
+	    try {
+	        return new java.util.Scanner(is).useDelimiter("\\A").next();
+	    } catch (java.util.NoSuchElementException e) {
+	        return "";
+	    }
 	}
 	
 	private Database getDatabase() throws SQLException, DatabaseException
