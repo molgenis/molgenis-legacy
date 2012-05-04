@@ -6,12 +6,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.text.ParseException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -54,7 +53,7 @@ public abstract class MolgenisGuiService
 	 * @param request
 	 * @param response
 	 */
-	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
+	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws
 			DatabaseException, IOException
 	{
 
@@ -74,7 +73,7 @@ public abstract class MolgenisGuiService
 				.getAttribute("application");
 		
 		// Login credentials from FrontController
-		Login userLogin = request.getDatabase().getSecurity();
+		Login userLogin = request.getDatabase().getLogin();
 		
 		// Create GUI if null
 		if (molgenis == null)
@@ -95,13 +94,20 @@ public abstract class MolgenisGuiService
 			molgenis = createUserInterface();
 			
 			//determine the real application base URL (once)
-			try
+			if (StringUtils.startsWith(session.getServletContext().getServerInfo(), "Apache Tomcat"))
 			{
-				new getExposedIP(molgenis, request);
+				molgenis.setBaseUrl(request.getRequest().getRequestURL().toString());
 			}
-			catch(Exception e)
+			else
 			{
-				throw new IOException(e);
+				try
+				{
+					new getExposedIP(molgenis, request);
+				}
+				catch(Exception e)
+				{
+					throw new IOException(e);
+				}
 			}
 		}
 		
@@ -293,7 +299,7 @@ public abstract class MolgenisGuiService
 				writer.close();
 
 				// done, get rid of screen messages here?
-				((ApplicationController) molgenis).clearAllMessages();
+				molgenis.clearAllMessages();
 
 			}
 		}
