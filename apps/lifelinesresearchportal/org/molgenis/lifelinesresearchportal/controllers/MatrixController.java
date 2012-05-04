@@ -49,8 +49,6 @@ import org.molgenis.util.HandleException;
 
 import app.DatabaseFactory;
 
-import com.mindbright.jca.security.UnsupportedOperationException;
-
 /**
  * Servlet implementation class jqGrid
  */
