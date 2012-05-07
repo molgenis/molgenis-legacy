@@ -524,6 +524,7 @@ public class Compute3JobGenerator implements JobGenerator
 
     }
 
+    //todo: method contains few constants that should be moved to interface
     private void generateActualJobGrid(ComputeJob computeJob, Hashtable<String, String> config, int generationCount)
     {
         //create values hashtable to fill templates
@@ -572,6 +573,7 @@ public class Compute3JobGenerator implements JobGenerator
             local.put(JobGenerator.LOG, justLogName);
 
             String inputListing = weaveFreemarker(templateGridDownload, local);
+            //escapes are required to avoid $ sign processing in String replaceAll method
             justName = "\\" + justName;
             initialScript = initialScript.replaceAll(actualName, justName);
 
@@ -616,7 +618,7 @@ public class Compute3JobGenerator implements JobGenerator
             String justName = giveJustName(actualName);
 
             //set output file to compute job, that will be used in grid handler
-            computeJob.setOutputFile(actualName);
+            computeJob.setOutputFile("lfn://grid/" + actualName);
 
             local.put(JobGenerator.LFN_NAME, actualName);
             local.put(JobGenerator.OUTPUT, justName);

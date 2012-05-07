@@ -17,9 +17,7 @@ public interface GridHandler
 {
     int getNextJobID();
     void setWorksheet(List<Tuple> worksheet);
-    void setTargetComputeJob(String target, ComputeJob job);
     void setComputeJob(ComputeJob job, Hashtable<String, String> config);
 
-    void writeCurrentTupleToFile();
     void writeJobsLogsToFile(Hashtable<String, String> config);
 }
