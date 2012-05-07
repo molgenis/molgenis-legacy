@@ -40,6 +40,7 @@ public interface JobGenerator
     public static final String DEPENDENCY_HEAD = " -W depend=afterok";
 
     public static final String FLAG = "#FOREACH";
+    public static final String GRID_TEMP_DIR = "$TMPDIR";
 
     Vector<ComputeJob> generateComputeJobsFoldedWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);
 

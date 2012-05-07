@@ -3,6 +3,7 @@ package org.molgenis.gridhandler;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.util.Tuple;
 
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -16,7 +17,9 @@ public interface GridHandler
 {
     int getNextJobID();
     void setWorksheet(List<Tuple> worksheet);
-    void setComputeJob(ComputeJob job);
+    void setTargetComputeJob(String target, ComputeJob job);
+    void setComputeJob(ComputeJob job, Hashtable<String, String> config);
 
     void writeCurrentTupleToFile();
+    void writeJobsLogsToFile(Hashtable<String, String> config);
 }

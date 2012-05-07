@@ -1444,6 +1444,11 @@ public class GenericJobGenerator implements JobGenerator
         this.config = config;
     }
 
+    public void setWorksheet(List<Tuple> worksheet)
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public String weaveFreemarker(String strTemplate, Hashtable<String, String> values)
     {
         Configuration cfg = new Configuration();

@@ -42,6 +42,7 @@ public class Compute3JobGenerator implements JobGenerator
     GridHandler gridHandler = null;
 
     //template sources
+    private String templateGridHeader;
     private String templateGridDownload;
     private String templateGridDownloadExe;
     private String templateGridUpload;
@@ -54,6 +55,7 @@ public class Compute3JobGenerator implements JobGenerator
     private String templateClusterFooter;
 
     //template filenames
+    private String fileTemplateGridHeader = "templ-grid-head.ftl";
     private String fileTemplateGridDownload = "templ-download-grid.ftl";
     private String fileTemplateGridDownloadExe = "templ-exe-grid.ftl";
     private String fileTemplateGridUpload = "templ-upload-grid.ftl";
@@ -450,7 +452,6 @@ public class Compute3JobGenerator implements JobGenerator
         else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
             readTemplatesCluster(templatesDir);
 
-        int i = 0;
         for (ComputeJob computeJob : computeJobs)
         {
             System.out.println(">>> generation job: " + computeJob.getName());
@@ -470,7 +471,7 @@ public class Compute3JobGenerator implements JobGenerator
                     submitScript);
         else if(backend.equalsIgnoreCase(JobGenerator.GRID))
             //produce targetsListFile
-            gridHandler.writeCurrentTupleToFile();
+            gridHandler.writeJobsLogsToFile(config);
 
         return true;
     }
@@ -542,7 +543,7 @@ public class Compute3JobGenerator implements JobGenerator
                 jdlListing);
 
         //create shell
-        String shellListing = "";
+        String shellListing = templateGridHeader;
         String initialScript = computeJob.getComputeScript();
         GridTransferContainer container = pairJobTransfers.get(computeJob.getName());
 
@@ -553,7 +554,7 @@ public class Compute3JobGenerator implements JobGenerator
         String justLogName = giveJustName(logName);
 
         //set log name to computeJob, that will be used in grid handler
-        computeJob.setLogFile(logName);
+        computeJob.setLogFile("lfn://grid/" + logName);
 
         //generate downloading section (transfer inputs and executable)
         //and change job listing to execute in the grid
@@ -571,6 +572,7 @@ public class Compute3JobGenerator implements JobGenerator
             local.put(JobGenerator.LOG, justLogName);
 
             String inputListing = weaveFreemarker(templateGridDownload, local);
+            justName = "\\" + justName;
             initialScript = initialScript.replaceAll(actualName, justName);
 
             shellListing += inputListing;
@@ -595,6 +597,7 @@ public class Compute3JobGenerator implements JobGenerator
             logger.log(Level.DEBUG, initialScript);
             logger.log(Level.DEBUG, "act " + actualName);
             logger.log(Level.DEBUG, "just " + justName);
+            justName = "\\" + justName;
             initialScript = initialScript.replaceAll(actualName, justName);
             shellListing += inputListing;
         }
@@ -620,6 +623,7 @@ public class Compute3JobGenerator implements JobGenerator
             local.put(JobGenerator.LOG, justLogName);
 
             String outputListing = weaveFreemarker(templateGridUpload, local);
+            justName = "\\" + justName;
             shellListing = shellListing.replaceAll(actualName, justName);
 
             shellListing += outputListing;
@@ -640,14 +644,15 @@ public class Compute3JobGenerator implements JobGenerator
                 shellListing);
 
         //and computeJob to grid handler
-        gridHandler.setComputeJob(computeJob);
+
+        gridHandler.setComputeJob(computeJob, config);
     }
 
     private String giveJustName(String actualName)
     {
         int posSlash = actualName.lastIndexOf("/");
         String justName = actualName.substring(posSlash + 1);
-        return justName;
+        return JobGenerator.GRID_TEMP_DIR + System.getProperty("file.separator") + justName;
     }
 
     private void readTemplatesCluster(String templatesDir)
@@ -668,6 +673,7 @@ public class Compute3JobGenerator implements JobGenerator
     {
         try
         {
+            templateGridHeader = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridHeader);
             templateGridDownload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownload);
             templateGridDownloadExe = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownloadExe);
             templateGridUpload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridUpload);
