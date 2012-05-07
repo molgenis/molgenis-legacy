@@ -472,7 +472,7 @@ public class Molgenis {
 
         // clean out generators
         List<Generator> use = new ArrayList<Generator>();
-        if (ArrayUtils.isNotEmpty(generatorsToUse)) {
+        if (!ArrayUtils.isEmpty(generatorsToUse)) {
             for (Class<? extends Generator> c : generatorsToUse) {
                 use.add(c.newInstance());
             }
