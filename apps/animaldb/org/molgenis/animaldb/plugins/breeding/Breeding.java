@@ -1558,8 +1558,12 @@ public class Breeding extends PluginModel<Entity>
 		if (request.getString("genodate") == null) {
 			throw new Exception("Genotype date not filled in - litter not genotyped");
 		}
-		Date genoDate = dateOnlyFormat.parse(request.getString("genodate"));
-		String genodate = newDateOnlyFormat.format(genoDate);
+		//2012-05-07 ate TODO remove old date parsing after dat update
+		//Date genoDate = newDateOnlyFormat.parse(request.getString("genodate"));
+		//String genodate = newDateOnlyFormat.format(genoDate);
+		String genodate = request.getString("genodate");
+		Date genoDate = newDateOnlyFormat.parse(genodate);
+		genodate = dbFormat.format(genoDate);
 		db.add(ct.createObservedValueWithProtocolApplication(invName, now, 
 				null, "SetGenotypeDate", "GenotypeDate", this.litter, genodate, null));
 		// Set genotyping remarks on litter
@@ -2066,6 +2070,6 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 	}
 	
 	public String getGenodate() {
-		return dateOnlyFormat.format(new Date());
+		return newDateOnlyFormat.format(new Date());
 	}
 }

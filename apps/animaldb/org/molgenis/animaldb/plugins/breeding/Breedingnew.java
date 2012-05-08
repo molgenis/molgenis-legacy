@@ -1720,8 +1720,9 @@ public class Breedingnew extends PluginModel<Entity>
 		if (request.getString("genodate") == null) {
 			throw new Exception("Genotype date not filled in - litter not genotyped");
 		}
-		Date genoDate = dateOnlyFormat.parse(request.getString("genodate"));
-		String genodate = newDateOnlyFormat.format(genoDate);
+		Date genoDate = newDateOnlyFormat.parse(request.getString("genodate"));
+		String genodate = dbFormat.format(genoDate);
+		
 		db.add(ct.createObservedValueWithProtocolApplication(invName, now, 
 				null, "SetGenotypeDate", "GenotypeDate", this.litter, genodate, null));
 		// Set genotyping remarks on litter

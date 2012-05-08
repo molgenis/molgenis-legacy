@@ -94,7 +94,7 @@
 	<div class="form_header">Create litter from parentgroup ${screen.getSelectedParentgroup()}</div>
 	<div style="clear:both; display:block">
 		<label style="width:16em;float:left;" for='birthdate'>Birth date:</label>		
-		<input type='text' class="text ui-widget-content ui-corner-all" id='birthdate' name='birthdate' <#if screen.getBirthdate??> value="${screen.getBirthdate()}"</#if> />
+		<input type='text' class="text ui-widget-content ui-corner-all" id='birthdate' name='birthdate' value='' />
 	</div>
 	<div style="clear:both; display:block">
 		<label style="width:16em;float:left;" for='littersize'>Litter size:</label>
@@ -119,8 +119,8 @@
 
 		<div class="form_header">Wean litter ${screen.getLitter()}</div>
 		<div style="clear:both; display:block">
-			<label style="width:16em;float:left;" for='weandate'>Wean date:</label>		
-			<input type='text' class="text ui-widget-content ui-corner-all" id='weandate' name='weandate' <#if screen.weandate??> value="${screen.getWeandate()}"</#if> />
+			<label style="width:16em;float:left;" for='weandate'>Wean date: </label>		
+			<input type='text' class="text ui-widget-content ui-corner-all" id='weandate' name='weandate' value='' />
 		</div>
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for='weansizefemale'>Nr. of females:</label>
@@ -183,9 +183,9 @@
 		<input type='submit' id='addgenocol' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
 		<input type='submit' id='remgenocol' value='Remove Gene modification + state' onclick="__action.value='RemGenoCol'" />
 		<div style="clear:both; display:block">
-			<label style="width:16em;float:left;" for='genodate'>Genotyping date:</label>
-			<input type='text' class="text ui-widget-content ui-corner-all" name='genodate' id='genodate' value='<#if screen.genodate?exists>${screen.getGenodate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
-		</div>
+            <label style="width:16em;float:left;" for='genodate'>Genotyping date:</label>
+            <input type='text' class="text ui-widget-content ui-corner-all" id='genodate' name='genodate' value='' />
+        </div>
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for='remarks'>Genotyping remarks:</label>
 			<input type='text' class="text ui-widget-content ui-corner-all" class='textbox' name='remarks' id='remarks' />
@@ -285,6 +285,13 @@
 			dateFormat: "yy-mm-dd"
 		});
 	});
+	$(function() {
+        $( "#genodate" ).datepicker({
+            numberOfMonths: 1,
+            showButtonPanel: true,
+            dateFormat: "yy-mm-dd"
+        });
+    });
 
 	var oTable = jQuery('#pgstable').dataTable(
 	{ "bProcessing": true,
