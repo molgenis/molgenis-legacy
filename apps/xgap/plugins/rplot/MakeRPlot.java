@@ -209,7 +209,8 @@ public class MakeRPlot
 	
 	public static File qtlMultiPlot(File dataPoints, int width, int height, String title) throws RScriptException
 	{
-		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot" + System.nanoTime() + ".png");
+		long time = System.nanoTime();
+		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_" + time + ".png");
 		
 		RScript script = new RScript();
 		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
@@ -268,14 +269,15 @@ public class MakeRPlot
 		
 		//print to file
 		script.append("dev.off()");
-		script.execute();
+		script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_multiplot_"+time+".R");
 				
 		return tmpImg;
 	}
 	
 	public static File qtlCisTransPlot(File dataPoints, int width, int height, String title) throws RScriptException
 	{
-		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot" + System.nanoTime() + ".png");
+		long time = System.nanoTime();
+		File tmpImg = new File(System.getProperty("java.io.tmpdir") + File.separator + "qtl_cistrans_" + time + ".png");
 		
 		RScript script = new RScript();
 		RScript.R_COMMAND = "R CMD BATCH --vanilla --slave";
@@ -298,7 +300,7 @@ public class MakeRPlot
 		
 		//print to file
 		script.append("dev.off()");
-		script.execute();
+		script.execute(System.getProperty("java.io.tmpdir") + File.separator + "qtl_cistrans_"+time+".R");
 				
 		return tmpImg;
 	}

@@ -80,16 +80,17 @@
 	 width:200px;
 	 z-index: 5;
 	">
-	Multiplot cart:<br><br>
+	
+	<input type="submit" id="plotShoppingCart" onclick="$(this).closest('form').find('input[name=__action]').val('plotShoppingCart');" value="Create plot" /><script>$("#plotShoppingCart").button();</script>
+	<br><br>
+	
+	<input type="submit" id="emptyShoppingCart" onclick="$(this).closest('form').find('input[name=__action]').val('emptyShoppingCart');" value="Remove all" /><script>$("#emptyShoppingCart").button();</script>
+		
+		<br><br>
 	<#list model.shoppingCart?keys as name>
 	<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
 	<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a><br>
 	</#list>
-	
-	<br><br>
-	<input type="submit" id="plotShoppingCart" onclick="$(this).closest('form').find('input[name=__action]').val('plotShoppingCart');" value="Create plot" /><script>$("#plotShoppingCart").button();</script>
-	<#--@action name="emptyShoppingCart" label="Clear"/-->
-	
 	</div>
 	
 </#if>
@@ -485,19 +486,32 @@
 				</td>
 			</tr>
 			<tr>
-				<td colspan="2">
+				<td>
 				<br><br>
 				<#if model.multiplot.plot??>
 					<i>Legend, click to enlarge:</i><br>
 						<#assign html = "<html><head><title>Legend</title></head><body><img src=clusterdemo/wormqtl/legend.png></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=1000,height=650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-							<img src="clusterdemo/wormqtl/legend.png" width="150" height="100">
+							<img src="clusterdemo/wormqtl/legend.png" width="250" height="150">
 						</a>
 					</#if>
+				</td>
+				<td>
+				<br><br>
+					<i>More resources:</i>
+					<br>Download the <a href="tmpfile/${model.multiplot.cytoNetwork}">Cytoscape network</a> for this plot. (<a href="http://wiki.cytoscape.org/Cytoscape_User_Manual/Creating_Networks#Import_Free-Format_Table_Files">how-to import</a>)
+					<br>Download the <a href="tmpfile/${model.multiplot.cytoNodes}">Cytoscape nodes</a> for this plot. (<a href="http://cytoscape.org/manual/Cytoscape2_6Manual.html#Import Attribute Table Files">how-to import</a>)
+					<br>Note: includes <b>significant results only</b>. (LOD > 3.5)
+					<br><i>Save both files. Import network (has LOD scores), then node <br>attributes (chrom, bploc, dataset).</i> <a href="clusterdemo/wormqtl/cyto_example.png">Example visualization</a>
+					<br>
+					<br>Download the <a href="tmpfile/${model.multiplot.srcData}">source data</a> for this plot.
+					<br>Download the <a href="tmpfile/${model.multiplot.plot?replace(".png",".R")}">multiplot plot R script</a>.
+					<br>Download the <a href="tmpfile/${model.multiplot.cisTransPlot?replace(".png",".R")}">cistrans R plot script</a>.
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
+				
 					<br><br>
 					<i>All items that are in the plot (click for details):</i>
 					<div style="overflow: auto; width: 780px; max-height: 400px;">
@@ -506,13 +520,14 @@
 					[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore further</a>]
 					<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if><br>
 					</#list>
+					</div>
 					<br>
 					<i>All datasets used in the plot (click for details):</i>
 					<table>
 					<#list model.multiplot.datasets?values as d>
 						<tr>
 							<td>
-								ID <b>${d.id}</b>
+								<b>${d.id}</b>
 							</td>
 							<td>
 								: <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
@@ -521,7 +536,6 @@
 						</tr>
 					</#list>
 					</table>
-					</div>
 				</td>
 			</tr>
 		</table>
@@ -546,7 +560,7 @@
 	<#if model.hits??>
 	Found these hits:<br><br>
 	
-	
+	<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><b><i>Add all to cart</b></i><br><br>
 	
 	<#list model.hits?keys as name>
 	
@@ -567,7 +581,7 @@
 	
 	</#list>
 	
-	<table cellpadding="10">
+	<#-->table cellpadding="10">
 		<tr>
 			<td>
 				<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><b><i>Add all to cart</b></i>
@@ -576,7 +590,7 @@
 				<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();"><b><i>Clear current cart</b></i>
 			</td>
 		</tr>
-	</table>
+	</table-->
 	</#if>
 	
 	
