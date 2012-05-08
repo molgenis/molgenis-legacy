@@ -6,14 +6,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.dto.PublicationDTO;
@@ -89,17 +89,21 @@ public class MolgenisVariantService
 	{
 		try
 		{
-			RE reExon   = new RE("^(\\d+)$");
-			RE reIntron = new RE("^(\\d+)([+-])(\\d+)$");
-	
-			if (reExon.match(position))
-				return this.findExonByCdnaPosition(Integer.parseInt(reExon.getParen(1)));
-			else if (reIntron.match(position))
+			Pattern reExon   = Pattern.compile("^(\\d+)$");
+			Pattern reIntron = Pattern.compile("^(\\d+)([+-])(\\d+)$");
+			Matcher mExon    = reExon.matcher(position);
+			Matcher mIntron  = reIntron.matcher(position);
+			
+			if (mExon.matches())
+			{
+				return this.findExonByCdnaPosition(Integer.parseInt(mExon.group(1)));
+			}
+			else if (mIntron.matches())
 			{
 				// search by gDNA position since intron don't have cDNA position
-				int cdnaPosition = Integer.parseInt(reIntron.getParen(1));
-				String operation = reIntron.getParen(2);
-				int cdnaAdder    = Integer.parseInt(reIntron.getParen(3));
+				int cdnaPosition = Integer.parseInt(mIntron.group(1));
+				String operation = mIntron.group(2);
+				int cdnaAdder    = Integer.parseInt(mIntron.group(3));
 	
 				int gdnaPosition;
 	
@@ -113,7 +117,9 @@ public class MolgenisVariantService
 				return this.findExonByGdnaPosition(gdnaPosition);
 			}
 			else
-				throw new RESyntaxException("Invalid position notation: " + position);
+			{
+				throw new SearchServiceException("Invalid position notation: " + position);
+			}
 		}
 		catch (Exception e)
 		{

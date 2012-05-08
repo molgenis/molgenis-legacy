@@ -16,7 +16,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.regexp.RESyntaxException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
@@ -149,7 +148,7 @@ public class Upload extends EasyPluginController<UploadModel>
 		// TODO: implement check screen
 	}
 
-	private void handleAssignMutation(Tuple request) throws RESyntaxException
+	private void handleAssignMutation(Tuple request)
 	{
 		UploadService uploadService = ServiceLocator.instance().getUploadService();
 		uploadService.assignValuesFromPosition(this.getModel().getMutationUploadVO());
