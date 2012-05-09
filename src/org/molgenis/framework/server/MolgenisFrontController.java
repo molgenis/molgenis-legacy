@@ -109,7 +109,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 				}
 				else
 				{
-					System.out.println("> new request to '"+path+"' handled by " + services.get(p).getClass().getSimpleName() + " mapped on path " + p);
+					System.out.println("> new request to '"+path+"' from " + request.getRequest().getRemoteHost() + " handled by " + services.get(p).getClass().getSimpleName() + " mapped on path " + p);
 					System.out.println("request content: " + request.toString());
 					
 					UUID connId = getSecuredDatabase(request);
