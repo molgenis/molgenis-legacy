@@ -114,7 +114,7 @@
 			Hit #${qtl_index+1}
 			<br>Max. <#if qtl.plot??><#if qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if><#else>value</#if>: ${qtl.peakValue}<br>in <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${qtl.matrix.name}">${qtl.matrix.name}</a><br><br>
 			<#if qtl.plot??>
-				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
+				<#assign html = "<html><head><title>QTL plot</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
 				<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 					<img src="tmpfile/${qtl.plot}" width="320" height="240">
 				</a><br>
@@ -152,7 +152,7 @@
 							
 								<#if qtl.plot??>
 									<i>Click to enlarge</i><br>
-									<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
+									<#assign html = "<html><head><title>QTL plot</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
 									<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 										<img src="tmpfile/${qtl.plot}" width="160" height="120">
 									</a>
@@ -318,7 +318,7 @@
 						</tr>
 					</table>
 					
-					<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + ml.rowImg + "></body></html>">
+					<#assign html = "<html><head><title>Row plot</title></head><body><img src=tmpfile/" + ml.rowImg + "></body></html>">
 					<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 						<img src="tmpfile/${ml.rowImg}" width="160" height="120">
 					</a>
@@ -345,7 +345,7 @@
 						</tr>
 					</table>
 					
-					<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + ml.colImg + "></body></html>">
+					<#assign html = "<html><head><title>Column plot</title></head><body><img src=tmpfile/" + ml.colImg + "></body></html>">
 					<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 						<img src="tmpfile/${ml.colImg}" width="160" height="120">
 					</a>
@@ -468,7 +468,7 @@
 				<td>
 					<#if model.multiplot.plot??>
 					<i>All-in-one plot of search matches, click to enlarge:</i><br>
-						<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.multiplot.plot + "></body></html>">
+						<#assign html = "<html><head><title>QTL multiplot</title></head><body><img src=tmpfile/" + model.multiplot.plot + "></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 							<img src="tmpfile/${model.multiplot.plot}" width="320" height="320">
 						</a>
@@ -478,7 +478,7 @@
 		
 					<#if model.multiplot.cisTransPlot??>
 					<i>Cis-trans plot, click to enlarge:</i><br>
-						<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.multiplot.cisTransPlot + "></body></html>">
+						<#assign html = "<html><head><title>QTL cis-trans plot</title></head><body><img src=tmpfile/" + model.multiplot.cisTransPlot + "></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 							<img src="tmpfile/${model.multiplot.cisTransPlot}" width="320" height="320">
 						</a><br>

@@ -426,7 +426,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 							}
 							
 							//rewrite name to include label
-							name = e.get(ObservableFeature.NAME).toString() + (e.get(ObservableFeature.LABEL) != null ? " / " + e.get(ObservableFeature.LABEL).toString() : "");
+							name = e.get(ObservableFeature.NAME).toString() + (e.get(ObservableFeature.LABEL) != null ? "/" + e.get(ObservableFeature.LABEL).toString() : "");
 							
 							//iterate over the markers and write out input files for R / CytoScape
 							for(int markerIndex = 0; markerIndex < markerNames.size(); markerIndex++)
