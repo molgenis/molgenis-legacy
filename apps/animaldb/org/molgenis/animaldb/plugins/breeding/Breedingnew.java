@@ -537,6 +537,13 @@ public class Breedingnew extends PluginModel<Entity>
 				}	
 			}
 			try{
+				if(action.equals("init")){
+					hashFathers.clear();
+					hashMothers.clear();
+					numberOfPG = null;
+				}
+				
+				
 				if(action.equals("JensonButton")){
 					
 					List<String> pgNames = new ArrayList<String>();
@@ -570,6 +577,9 @@ public class Breedingnew extends PluginModel<Entity>
 						motherMatrixViewer = null;
 						this.setSuccess("Parentgroup " + pgNames + " successfully added; adding filter to matrix: name = " + pgNames);
 					}
+					hashFathers.clear();
+					hashMothers.clear();
+					numberOfPG = null;
 				}
 				
 				
