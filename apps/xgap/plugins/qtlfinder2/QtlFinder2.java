@@ -343,8 +343,8 @@ public class QtlFinder2 extends PluginModel<Entity>
 				if(d.getValueType().equals("Text")){
 					continue;
 				}
-				//check if datamatrix target/features matches any entity type
-				//and one of the dimensions is Marker
+				//check if one of the matrix dimensions if of type 'Marker'
+				//TODO: limited, could also be SNP or another potential subclass
 				if((d.getTargetType().equals("Marker") || d.getFeatureType().equals("Marker")))
 				{
 					
@@ -364,10 +364,18 @@ public class QtlFinder2 extends PluginModel<Entity>
 					//for each entity, see if the types match to the matrix
 					for(Entity e : entities)
 					{
+						//skip markers, we are interested in traits here
 						if(e.get(Field.TYPE_FIELD).equals("Marker")){
-							//System.out.println("skipping marker " + e.get("name"));
 							continue;
 						}
+						
+						//matrix may not have the trait type on rows AND columns (this is correlation data or so)
+						if(d.getTargetType().equals(e.get(Field.TYPE_FIELD)) && d.getFeatureType().equals(e.get(Field.TYPE_FIELD)))
+						{
+							continue;
+						}
+						
+						//one of the matrix dimensions must match the type of the trait
 						if(d.getTargetType().equals(e.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(e.get(Field.TYPE_FIELD)))
 						{
 							//if so, use this entity to 'query' the matrix and store the values
@@ -376,24 +384,6 @@ public class QtlFinder2 extends PluginModel<Entity>
 							//find out if the name is in the row or col names
 							int rowIndex = rowNames.indexOf(name);
 							int colIndex = colNames.indexOf(name);
-						
-							//get trait bp loc
-							long locus;
-							String traitChrName;
-							if(e instanceof Locus)
-							{
-								locus = ((Locus)e).getBpStart();
-								traitChrName = ((Locus)e).getChromosome_Name();
-								//System.out.println("locus of " + e.get("name") + " = " + locus);
-							}
-							else
-							{
-								locus = -10000000;
-								traitChrName = "-";
-								//System.out.println("locus of " + e.get("name") + " = " + "NA");
-							}
-							
-							
 							
 							List<String> markerNames = null;
 							Double[] Dvalues = null;
@@ -404,19 +394,41 @@ public class QtlFinder2 extends PluginModel<Entity>
 								markerNames = colNames;
 								Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
 							}
-							
 							//if its in col, and not in row, do col stuff
-							//we assume its not in row and col at the same time, then its not QTL data but correlations or so
-							if(rowIndex == -1 && colIndex != -1)
+							else if(rowIndex == -1 && colIndex != -1)
 							{
 								markerNames = rowNames;
 								Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
 							}
+							else
+							{
+								//this trait is not in the matrix.. skip
+								continue;
+							}
 							
+							//add entity and dataset to matches
 							matches.put(name, e);
 							datasets.put(d.getName(), d);
 							totalAmountOfElementsInPlot++;
 							
+							//get the basepair position of the trait and chromosome name, if possible
+							long locus;
+							String traitChrName;
+							if(e instanceof Locus)
+							{
+								locus = ((Locus)e).getBpStart();
+								traitChrName = ((Locus)e).getChromosome_Name();
+							}
+							else
+							{
+								locus = -10000000;
+								traitChrName = "-";
+							}
+							
+							//rewrite name to include label
+							name = e.get(ObservableFeature.NAME).toString() + (e.get(ObservableFeature.LABEL) != null ? " / " + e.get(ObservableFeature.LABEL).toString() : "");
+							
+							//iterate over the markers and write out input files for R / CytoScape
 							for(int markerIndex = 0; markerIndex < markerNames.size(); markerIndex++)
 							{
 								if(nameToMarker.containsKey(markerNames.get(markerIndex)))

@@ -103,7 +103,7 @@
 	
 	<#assign r = model.report.entity>
 	
-	<h1>${r.get(typefield)} <a target="_blank" href="molgenis.do?select=${r.get(typefield)}s&__target=${r.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${r.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${r.name}">${r.name}</a></h1>
+	<h1>${r.get(typefield)} <a target="_blank" href="molgenis.do?select=${r.get(typefield)}s&__target=${r.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${r.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${r.name}">${r.name}<#if r.label?? && r.label?length gt 0> / ${r.label}</#if></a></h1>
 	
 	<#if model.qtls?? && model.qtls?size gt 0><#-- should have them really -->
 	<br>
@@ -181,7 +181,7 @@
 							<td>
 								<#if qtl.plot??><a target="_blank" href="molgenis.do?select=Markers&__target=Markers&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a><#else>${qtl.peakMarker}</#if>
 								<#if qtl.markerAnnotations?keys?seq_contains(qtl.peakMarker)>at bp ${qtl.markerAnnotations[qtl.peakMarker].bpstart?c}<#if qtl.markerAnnotations[qtl.peakMarker].cm??>, cM ${qtl.markerAnnotations[qtl.peakMarker].cm}</#if></#if>
-								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${qtl.peakMarker}'; document.forms.${screen.name}.submit();">explore further</a>]
+								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${qtl.peakMarker}'; document.forms.${screen.name}.submit();">explore deeper</a>]
 							</td>
 						</tr>
 					</table>
@@ -217,7 +217,7 @@
 						<tr class="form_listrow1">
 							<td>
 								<#if qtl.plot??><a target="_blank" href="molgenis.do?select=Markers&__target=Markers&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${m}">${m}</a><#else>${m}</#if>
-								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${m}'; document.forms.${screen.name}.submit();">explore further</a>]
+								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${m}'; document.forms.${screen.name}.submit();">explore deeper</a>]
 							</td>
 							<td>
 									${qtl.valuesForMarkers[m_index]}
@@ -383,7 +383,7 @@
 						<#list ml.rowCorr?keys as key>
 							<tr class="form_listrow1">
 								<td>
-									${key} [<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">explore further</a>]
+									${key} [<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">explore deeper</a>]
 								</td>
 								<td>
 									<#if ml.rowCorr[key]??>${ml.rowCorr[key]}<#else>N/A</#if>
@@ -498,15 +498,15 @@
 				</td>
 				<td>
 				<br><br>
-					<i>More resources:</i>
-					<br>Download the <a href="tmpfile/${model.multiplot.cytoNetwork}">Cytoscape network</a> for this plot. (<a href="http://wiki.cytoscape.org/Cytoscape_User_Manual/Creating_Networks#Import_Free-Format_Table_Files">how-to import</a>)
-					<br>Download the <a href="tmpfile/${model.multiplot.cytoNodes}">Cytoscape nodes</a> for this plot. (<a href="http://cytoscape.org/manual/Cytoscape2_6Manual.html#Import Attribute Table Files">how-to import</a>)
+					<span style="font-size:15px;font-weight:bold;">More downloads:</span><br/>
+					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.cytoNetwork}">Cytoscape network</a> for this plot. (<a target="_blank" href="http://wiki.cytoscape.org/Cytoscape_User_Manual/Creating_Networks#Import_Free-Format_Table_Files">how-to import</a>)
+					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.cytoNodes}">Cytoscape nodes</a> for this plot. (<a target="_blank" href="http://cytoscape.org/manual/Cytoscape2_6Manual.html#Import Attribute Table Files">how-to import</a>)
 					<br>Note: includes <b>significant results only</b>. (LOD > 3.5)
-					<br><i>Save both files. Import network (has LOD scores), then node <br>attributes (chrom, bploc, dataset).</i> <a href="clusterdemo/wormqtl/cyto_example.png">Example visualization</a>
+					<br><i>Save both files. Import network (has LOD scores), then node <br>attributes (chrom, bploc, dataset).</i> <a target="_blank" href="clusterdemo/wormqtl/cyto_example.png">Example visualization</a>
 					<br>
-					<br>Download the <a href="tmpfile/${model.multiplot.srcData}">source data</a> for this plot.
-					<br>Download the <a href="tmpfile/${model.multiplot.plot?replace(".png",".R")}">multiplot plot R script</a>.
-					<br>Download the <a href="tmpfile/${model.multiplot.cisTransPlot?replace(".png",".R")}">cistrans R plot script</a>.
+					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.srcData}">source data</a> for these plots.
+					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.plot?replace(".png",".R")}">multiplot plot R script</a>.
+					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.cisTransPlot?replace(".png",".R")}">cistrans R plot script</a>.
 				</td>
 			</tr>
 			<tr>
@@ -516,9 +516,9 @@
 					<i>All items that are in the plot (click for details):</i>
 					<div style="overflow: auto; width: 780px; max-height: 400px;">
 					<#list model.multiplot.matches?values as d>
-					<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
-					[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore further</a>]
-					<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if><br>
+					<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}<#if d.label?? && d.label?length gt 0> / ${d.label}</#if></a>
+					[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore deeper</a>]
+					<#if d.description??> - <#if d.description?length gt 40>${d.description?substring(0, 40)}...<#else>${d.description}</#if></#if><br>
 					</#list>
 					</div>
 					<br>
@@ -531,7 +531,7 @@
 							</td>
 							<td>
 								: <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
-								<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if>
+								<#if d.description??> - <#if d.description?length gt 40>${d.description?substring(0, 40)}...<#else>${d.description}</#if></#if>
 							</td>
 						</tr>
 					</#list>
@@ -572,7 +572,7 @@
 		<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
 	</#if>
 		
-	${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();"><b>${name}</b></a>
+	${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();"><b>${name}<#if model.hits[name].label?? && model.hits[name].label?length gt 0> / ${model.hits[name].label}</#if></b></a>
 	<#if model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0>reports for <a target="_blank" href="molgenis.do?select=Genes&__target=Genes&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>(${model.hits[name].symbol})</#if>
 	
 	<div style="display: inline;font-size:100%"><#if model.hits[name].description??> <br> <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <#else>${model.hits[name].description}</#if> <a target="_blank" href="molgenis.do?select=${model.hits[name].get(typefield)}s&__target=${model.hits[name].get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...more</a> </#if></div>
