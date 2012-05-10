@@ -22,7 +22,6 @@ import matrix.general.DataMatrixHandler;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
@@ -34,6 +33,7 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Locus;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.Probe;
@@ -318,6 +318,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 		int overallIndex = 1;
 		List<Data> allData = db.find(Data.class);
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
+		Map<String, Chromosome> usedChromosomes = new HashMap<String, Chromosome>();
 		
 		//writer for data table
 		File tmpData = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot_data_table_" + System.nanoTime() + ".txt");
@@ -435,6 +436,14 @@ public class QtlFinder2 extends PluginModel<Entity>
 								{
 									String chrId = nameToMarker.get(markerNames.get(markerIndex)).getChromosome_Id() != null ? nameToMarker.get(markerNames.get(markerIndex)).getChromosome_Id().toString() : "-";
 									
+									//query and store chromosome objects for this name if it's not there yet
+									String chrName = nameToMarker.get(markerNames.get(markerIndex)).getChromosome_Name();
+									if(!usedChromosomes.containsKey(chrName))
+									{
+										Chromosome c = db.find(Chromosome.class, new QueryRule(Chromosome.NAME, Operator.EQUALS, chrName)).get(0);
+										usedChromosomes.put(chrName, c);
+									}
+									
 									// index, marker, chrId, markerLoc, trait, traitLoc, LODscore, dataId
 									bw.write(overallIndex + " \"" + markerNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(markerNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex] + " " + d.getId());
 									bw.newLine();
@@ -481,9 +490,24 @@ public class QtlFinder2 extends PluginModel<Entity>
 		bw_nodes.close();
 		
 		int height = 200 + (totalAmountOfElementsInPlot * 20);
+		
+		//add chromosomes in strict order, starting at 1
+		ArrayList<Chromosome> chromosomes = new ArrayList<Chromosome>();
+		for(int orderNrIter = 1; orderNrIter <= usedChromosomes.size(); orderNrIter++ )
+		{
+			for(Chromosome c : usedChromosomes.values())
+			{
+				if(c.getOrderNr().intValue() == orderNrIter)
+				{
+					chromosomes.add(c);
+					continue;
+				}
+			}
+		}
+		
 
-		File plot = MakeRPlot.qtlMultiPlot(tmpData, plotWidth, height, this.model.getQuery());
-		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, this.model.getQuery());
+		File plot = MakeRPlot.qtlMultiPlot(tmpData, plotWidth, height, this.model.getQuery(), chromosomes);
+		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, this.model.getQuery(), chromosomes);
 		
 		
 		QTLMultiPlotResult result = new QTLMultiPlotResult();

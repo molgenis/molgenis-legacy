@@ -582,14 +582,15 @@ public class QtlFinder extends PluginModel<Entity>
 		
 		bw.close();
 		
-		File plot = MakeRPlot.qtlMultiPlot(tmpData, plotWidth, (matches.size() * 10), query);
-		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, query);
+		//TODO: clean up?
+//		File plot = MakeRPlot.qtlMultiPlot(tmpData, plotWidth, (matches.size() * 10), query);
+//		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, query);
 		
 		
 		QTLMultiPlotResult result = new QTLMultiPlotResult();
-		result.setPlot(plot.getName());
-		result.setCisTransPlot(cisTransplot.getName());
-		result.setMatches(matches);
+//		result.setPlot(plot.getName());
+//		result.setCisTransPlot(cisTransplot.getName());
+//		result.setMatches(matches);
 		
 		this.model.setQmpr(result);
 		

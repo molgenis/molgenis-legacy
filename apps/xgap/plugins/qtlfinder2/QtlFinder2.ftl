@@ -47,24 +47,36 @@
 
 <br><br>
 
-<div style="position:relative;left:80px;top:20px;">
-		<select class=" ui-widget-content ui-corner-all" id="Phenotype_select" name="dataTypeSelect"  style="width:220px;" name="dataTypeSelect">
-			<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All phenotypes (${model.annotationTypeAndNr[allDataTypes]})</option>
-			<#list model.annotationTypeAndNr?keys as key>
-				<#if key != allDataTypes>
-					<option value="${key}" <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == key>selected="selected"</#if>>${key} (${model.annotationTypeAndNr[key]})</option>
-				</#if>
-			</#list>
-		</select><script>$("#Phenotype_select").chosen();</script>
-</div>
-<div style="position:relative;left:300px;top:-15px;">
-
-	<input type="text" name="query" class="searchBox" value="${query}" >
-</div>
-
-<div style="position:relative;left:580px;top:-65px;">
-	<input type="submit" id="search" onclick="$(this).closest('form').find('input[name=__action]').val('search');" value="Search" /><script>$("#search").button();</script>
-</div>
+<table>
+	<tr>
+		<td colspan="3" height="10" align="center">
+			&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<td width="290" align="right">
+			<select class=" ui-widget-content ui-corner-all" id="Phenotype_select" name="dataTypeSelect"  style="width:220px;" name="dataTypeSelect">
+				<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All phenotypes (${model.annotationTypeAndNr[allDataTypes]})</option>
+				<#list model.annotationTypeAndNr?keys as key>
+					<#if key != allDataTypes>
+						<option value="${key}" <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == key>selected="selected"</#if>>${key} (${model.annotationTypeAndNr[key]})</option>
+					</#if>
+				</#list>
+			</select><script>$("#Phenotype_select").chosen();</script>
+		</td>
+		<td width="250" align="center">
+			<input type="text" name="query" class="searchBox" value="${query}" >
+		</td>
+		<td width="290" align="left">
+			<input type="submit" id="search" onclick="$(this).closest('form').find('input[name=__action]').val('search');" value="Search" /><script>$("#search").button();</script>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3" height="70" align="center">
+			<span style="font-size:12px;">(<i>for example:</i> ctl, daf, pgp-7, gst-27, Y65B4BR, K02B12, WBGene00021562, WBGene00006727, acetylcholine, luciferase ... )</span>
+		</td>
+	</tr>
+</table>
 
 
 
