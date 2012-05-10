@@ -1,55 +1,52 @@
 package org.molgenis.matrix.Utils;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.tools.zip.ZipOutputStream;
-import org.hibernate.ScrollableResults;
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
+import org.molgenis.fieldtypes.CategoricalType;
+import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.PhenoMatrix;
-import org.molgenis.matrix.component.Column;
-import org.molgenis.matrix.component.Column.ColumnType;
-import org.molgenis.pheno.Category;
-import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationTarget;
-import org.molgenis.pheno.ObservedValue;
+import org.molgenis.matrix.TableModel;
+import org.molgenis.model.elements.Field;
 
-public class newSPSSExporter<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> 
-extends CsvExporter<R, C, V>
+/**
+ * 
+ * @author Daan Reid
+ *
+ *	Exporter that writes to two streams; one of comma-separated values, and one SPSS script file to read them.
+ */
+public class newSPSSExporter<RowType extends Iterable<?>> extends CsvExporter<RowType>
 {
 
 	private  OutputStream d_spsOs;
 
-	public newSPSSExporter(PhenoMatrix<R, C, V> matrix, OutputStream os, OutputStream dpsOs)
+	public newSPSSExporter(TableModel<RowType> matrix, OutputStream os, OutputStream spsOs)
 	{
-		super(matrix, new ZipOutputStream(os), new SimpleDateFormat("MM/dd/yyyy"));
-		d_spsOs = dpsOs;
+		super(matrix, os, new SimpleDateFormat("MM/dd/yyyy"));
+		d_spsOs = spsOs;
 	}
 		
 	@Override
-	protected void export(boolean exportVisible) throws MatrixException
+	public void export() throws MatrixException
 	{
 		super.initHeaders();
-		ScrollableResults sr = null;
 		try {
 			writeSPSFile();
-			sr = matrix.getScrollableValues(exportVisible);
-			// FIXME : hack because an extra column is added *only* when offset is not 0 
-			// (probably also database dependent, ie oracle/mysql)
-			writeResults(sr, exportVisible && matrix.getRowOffset() > 0);
+			writeResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new MatrixException(e);
 		} finally {
-			d_writer.close();
-			sr.close();
 			d_writer.close();
 		}
 	}
@@ -58,27 +55,29 @@ extends CsvExporter<R, C, V>
 	{
 		BufferedWriter spsWriter = new BufferedWriter(new OutputStreamWriter(d_spsOs));
 		
-		List<C> measurements = matrix.getMeasurements();
-		Map<Measurement, List<Category>> categoryLabels = new HashMap<Measurement, List<Category>>();
+		List<Field> columns = tableModel.getColumns();
 		StringWriter valLabels = new StringWriter();
 		StringWriter colNames = new StringWriter();
-		for (Measurement m : measurements) {
-			ColumnType columnType = Column.getColumnType(m.getDataType());
-			if (columnType.equals(ColumnType.CODE)) {
-				categoryLabels.put(m, m.getCategories());
+		List<Field> categoricalFields = new ArrayList<Field>();
+		
+		// write variable definitions
+		for (Field field : columns) {
+			FieldType fieldType = field.getType();
+			if (fieldType.getEnumType() == FieldTypeEnum.CATEGORICAL) {
+				categoricalFields.add(field);
 			}
-			colNames.write(String.format("%s %s", m.getName(), colTypeToSPSSType(columnType)));
+			colNames.write(String.format("%s %s", field.getName(), colTypeToSPSSType(fieldType.getEnumType())));
 		}
 		
-		
-		if (categoryLabels.size() > 0) {
-			for (Measurement m : categoryLabels.keySet()) {
-				valLabels.write(String.format("ADD VALUE LABELS %s ", m.getName()));
-				for (Category c : categoryLabels.get(m)) {
-					valLabels.write(String.format(" \'%s\' \'%s\' ", c.getCode_String(), c.getLabel()));
-				}
+		// add category labels to variables if appropriate
+		for (Field field : categoricalFields) {
+			Map<String, String> categoryMapping = ((CategoricalType)field.getType()).getCategoryMapping();
+			valLabels.write(String.format("ADD VALUE LABELS %s ", field.getName()));
+			for (Entry<String, String> entry : categoryMapping.entrySet()) {
+				valLabels.write(String.format(" %s \'%s\' ", entry.getKey(), entry.getValue()));
 			}
-		}		
+			valLabels.write("\n");
+		}
 		
 		String spsFormatStr = String.format("GET DATA\n" +
 		"/type = txt\n" + 
@@ -87,31 +86,29 @@ extends CsvExporter<R, C, V>
 		"delimiters = \',\'\n" +
 		"firstcase = 2\n" +
 		"variables = %s" +
-		"execute.", colNames, valLabels);
+		"execute.",  File.createTempFile("real",".howto").getAbsoluteFile(), colNames.toString() + valLabels.toString());
 		
 		spsWriter.write(spsFormatStr);
 		spsWriter.flush();
 		spsWriter.close();
 	}
 
-	private static String colTypeToSPSSType(ColumnType columnType)
+	private static String colTypeToSPSSType(FieldTypeEnum columnType)
 	{
 		switch(columnType) {
-			case CODE:
+			case CATEGORICAL:
 				return "F";
 			case DATE:
 				return "ADATE";
-			case DATETIME:
+			case DATE_TIME:
 				return "ADATE";
 			case DECIMAL:
 				return "F";
-			case INTEGER:
+			case INT:
 				return "F";
 			case STRING:
 				return "A";
-			case TIMESTAMP:
-				return "A";
 		}
-		return null;
+		throw new IllegalArgumentException("Unknown field type: " + columnType);
 	}
 }

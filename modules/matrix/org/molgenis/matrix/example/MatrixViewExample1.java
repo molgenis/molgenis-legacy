@@ -8,24 +8,24 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.matrix.StringMemoryMatrix;
 import org.molgenis.matrix.ui.MatrixViewer;
 
 /**
- * MatrixViewExample1Controller takes care of all user requests and application logic.
- *
- * <li>Each user request is handled by its own method based action=methodName. 
- * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
- * <li>MatrixViewExample1Model holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
- * <li>MatrixViewExample1View holds the template to show the layout. Get/set it via this.getView()/setView(..).
+ * Can be removed?
  */
 public class MatrixViewExample1 extends EasyPluginController<MatrixViewExample1Model>
 {
 	public MatrixViewExample1(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new MatrixViewExample1Model(this)); //the default model
-		this.setView(new FreemarkerView("MatrixViewExample1View.ftl", getModel())); //<plugin flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("MatrixViewExample1View.ftl", getModel());
 	}
 	
 	/**

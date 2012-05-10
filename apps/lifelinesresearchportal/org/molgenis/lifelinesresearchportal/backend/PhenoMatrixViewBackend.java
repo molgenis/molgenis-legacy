@@ -13,7 +13,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.lifelinesresearchportal.models.MatrixModel;
-import org.molgenis.matrix.PhenoMatrix;
+import org.molgenis.matrix.TableModel;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.sqlbackend.Backend;
 import org.molgenis.matrix.component.sqlbackend.BackendUtils;
@@ -35,10 +35,10 @@ public class PhenoMatrixViewBackend implements Backend {
     private HashMap<String, List<String>> ambiguityTable;
     private final EntityManager em;
 
-    private final PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix;
+    private final TableModel<ObservationTarget, Measurement, ObservedValue> matrix;
 	private String leftJoinTable;
     
-    public PhenoMatrixViewBackend(EntityManager em, PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix, 
+    public PhenoMatrixViewBackend(EntityManager em, TableModel<ObservationTarget, Measurement, ObservedValue> matrix, 
     		String tablePrefix, String leftJoinTable) {
         this.matrix = matrix;
         this.em = em;

@@ -32,7 +32,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.lifelinesresearchportal.models.MatrixModel;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.PhenoMatrix;
+import org.molgenis.matrix.TableModel;
 import org.molgenis.matrix.Utils.CsvExporter;
 import org.molgenis.matrix.Utils.ExcelExporter;
 import org.molgenis.matrix.Utils.Exporter;
@@ -49,8 +49,6 @@ import org.molgenis.util.HandleException;
 
 import app.DatabaseFactory;
 
-import com.mindbright.jca.security.UnsupportedOperationException;
-
 /**
  * Servlet implementation class jqGrid
  */
@@ -64,7 +62,7 @@ public class MatrixController extends HttpServlet
 
 	private static final long serialVersionUID = 1L;
 
-	private PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix;
+	private TableModel<ObservationTarget, Measurement, ObservedValue> matrix;
 
 	private EntityManager em;
 
@@ -367,7 +365,7 @@ public class MatrixController extends HttpServlet
 		return String.format("%s%sExport%s.%s", tmpDir.getAbsolutePath(), File.separatorChar, exportVisible ? "visible" : "all", extension);
 	}
 	
-	public void renderJsonTable(PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix, PrintWriter outWriter)
+	public void renderJsonTable(TableModel<ObservationTarget, Measurement, ObservedValue> matrix, PrintWriter outWriter)
 			throws Exception
 	{
 		List<Object[]> records = matrix.getTypedValues();
@@ -510,7 +508,7 @@ public class MatrixController extends HttpServlet
 		out.flush();
 	}
 
-	private static void applyFiltersToMatrix(PhenoMatrix<ObservationTarget, Measurement, ObservedValue> matrix,
+	private static void applyFiltersToMatrix(TableModel<ObservationTarget, Measurement, ObservedValue> matrix,
 			String filters)
 	{
 		if (StringUtils.isNotEmpty(filters))

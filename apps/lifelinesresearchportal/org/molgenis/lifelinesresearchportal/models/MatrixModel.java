@@ -18,7 +18,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.lifelinesresearchportal.backend.PhenoMatrixViewBackend;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.PhenoMatrix;
+import org.molgenis.matrix.TableModel;
 import org.molgenis.matrix.component.Column;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.sqlbackend.Backend;
@@ -43,7 +43,7 @@ import org.molgenis.protocol.Protocol;
  * 
  */
 
-public class MatrixModel<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> implements PhenoMatrix<R, C, V>
+public class MatrixModel<R extends ObservationTarget, C extends Measurement, V extends ObservedValue> implements TableModel<R, C, V>
 {
 	private static final String PRIMARY_KEY_TABLE = "PATIENT";
 	private static final String VIEW_PREFIX = "LL_VWM_";
@@ -95,7 +95,7 @@ public class MatrixModel<R extends ObservationTarget, C extends Measurement, V e
 		}
 		
 		
-		PhenoMatrix<ObservationTarget, Measurement, ObservedValue> m = (PhenoMatrix<ObservationTarget, Measurement, ObservedValue>) this;
+		TableModel<ObservationTarget, Measurement, ObservedValue> m = (TableModel<ObservationTarget, Measurement, ObservedValue>) this;
 		//this.backend = new EAVViewBackend(null, VIEW_PREFIX, PRIMARY_KEY_TABLE);
 		this.backend = new PhenoMatrixViewBackend(em, m, VIEW_PREFIX, PRIMARY_KEY_TABLE);
 		try

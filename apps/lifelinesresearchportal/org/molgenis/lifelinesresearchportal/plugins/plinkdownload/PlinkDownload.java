@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;

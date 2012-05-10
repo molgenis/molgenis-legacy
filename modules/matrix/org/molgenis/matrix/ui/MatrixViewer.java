@@ -18,7 +18,7 @@ import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.AbstractHtmlElement;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.framework.ui.html.LabelInput;
+import org.molgenis.framework.ui.html.Label;
 import org.molgenis.matrix.Matrix;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.util.Tuple;
@@ -110,7 +110,7 @@ public class MatrixViewer extends HtmlInput<Matrix>
 		{
 			if (temp.containsKey(id)) throw new MatrixViewException(
 					"rowIds should be unique");
-			temp.put(id, new LabelInput(id, id));
+			temp.put(id, new Label(id, id));
 		}
 
 		this.rows = temp;
@@ -170,7 +170,7 @@ public class MatrixViewer extends HtmlInput<Matrix>
 		{
 			if (temp.containsKey(id)) throw new MatrixViewException(
 					"colIds should be unique");
-			temp.put(id, new LabelInput(id, id));
+			temp.put(id, new Label(id, id));
 		}
 
 		this.cols = temp;

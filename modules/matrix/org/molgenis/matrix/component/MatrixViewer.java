@@ -78,8 +78,6 @@ import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
-import com.pmstation.spss.SPSSWriter;
-
 public class MatrixViewer extends HtmlWidget
 {
 	private static final int BATCHSIZE = 100;
