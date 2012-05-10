@@ -66,7 +66,8 @@ public class MolgenisFieldTypes
 		STRING,
 		TEXT,
 		XREF,
-		UNKNOWN
+		CATEGORICAL,
+		UNKNOWN, 
 	}
 	
 	/** Initialize default field types */
