@@ -19,7 +19,6 @@
 
 
         <!-- spring framework -->
-<!--
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
@@ -32,6 +31,7 @@
             <version>3.1.0.RELEASE</version>
             <type>jar</type>
         </dependency>
+<!--
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
@@ -164,9 +164,9 @@
         
         <!-- Quartz -->
         <dependency>
-            <groupId>quartz</groupId>
+            <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>1.5.2</version>
+            <version>1.8.6</version>
         </dependency>
         
         <!-- Freemarker -->
@@ -196,11 +196,6 @@
             <artifactId>junit</artifactId>
             <version>4.10</version>
         </dependency>
-	<dependency>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>selenium-maven-plugin</artifactId>
-		<version>2.3</version>
-	</dependency>
         
         
         <!-- Hibernate Search -->
@@ -231,14 +226,7 @@
             <artifactId>cxf-bundle-minimal</artifactId>
             <version>2.5.2</version>
         </dependency>
-            
-        
-<!--        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>1.3.2</version>
-        </dependency>-->
-        
+
         <!-- XML processing -->
         <dependency>
             <groupId>xerces</groupId>
@@ -272,63 +260,30 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20090211</version>            
-        </dependency>      
-
-	<!-- VAADIN -->
+        </dependency>
 	<dependency>
-	    <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin</artifactId>
-	    <version>6.7.5</version>
+		<groupId>com.google.code.gson</groupId>
+		<artifactId>gson</artifactId>
+		<version>2.2</version>
+		<scope>compile</scope>
 	</dependency>
     </dependencies>
-
 
     <build>
         <sourceDirectory>src</sourceDirectory>
         
         <resources>
-            <!-- copy's freemarker template -->
-<!--
-            <resource>
-                <directory>src/</directory>
-                <includes>
-                    <include>**/*.ftl</include>
-                </includes>                
-            </resource>
--->
-            <!-- Copy Web page resources, should this not located in the molgenis_app -->
-            <resource>
-                <directory>src/org/molgenis/framework/ui/res/</directory>
-				<targetPath>org/molgenis/framework/ui/res</targetPath>
-            </resource>
+		<resource>
+			<directory>src/</directory>
+			<includes>
+				<include>**/*.ftl</include>
+				<include>src/org/molgenis/framework/ui/res/</include>
+			</includes>                
+		</resource>
         </resources>
         
         
         <plugins>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.5</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>org/molgenis/framework/ui/res/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/org/molgenis/framework/ui/res/</directory>
-									<excludes>
-										<exclude>**/.svn</exclude>
-									</excludes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

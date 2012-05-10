@@ -9,19 +9,17 @@
  */
 package org.molgenis.model.elements;
 
-// jdk
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.CharField;
-import org.molgenis.fieldtypes.EmailField;
 import org.molgenis.fieldtypes.EnumField;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.MrefField;
@@ -33,7 +31,6 @@ import org.molgenis.model.MolgenisModelException;
 import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tree;
 
-// invengine
 /**
  * Describes a field in an entity.
  * 
@@ -233,11 +230,8 @@ public class Field implements Serializable {
     }
 
     public String getFormatString() {
-        //if (type.equals == Type.XREF_SINGLE || type == Type.XREF_MULTIPLE)
         if (type instanceof XrefField || type instanceof MrefField) {
             try {
-                //DBSchema root = entity.getRoot();
-
                 return this.getXrefField().getFormatString();
             } catch (Exception e) {
                 ;
