@@ -106,11 +106,19 @@ public class AnimaldbSeleniumTest
 		selenium.click("LoadLegacy_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Import database"));
-		// First try and see if we're on Roan's laptop
-		selenium.type("id=zip", "/Users/roankanninga/Work/AnimalDB/PrefillAnimalDB.zip");
+		// Since Ate hates waiting, first see if we are on his laptop ;)		
+		selenium.type("id=zip","/home/paraiko/Projects/AnimalDB/prefill data/PrefillAnimalDB_2012-04-30.zip");
 		selenium.click("id=source1");
 		selenium.click("id=load");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);	
+		// Then  try and see if we're on Roan's laptop
+		if (!selenium.isTextPresent("Pre-filling AnimalDB successful")) {
+			// If not, let's assume we're on the Hudson server
+			selenium.type("id=zip", "/Users/roankanninga/Work/AnimalDB/PrefillAnimalDB.zip");
+			selenium.click("id=source1");
+			selenium.click("id=load");
+			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		}
 		if (!selenium.isTextPresent("Pre-filling AnimalDB successful")) {
 			// If not, let's assume we're on the Hudson server
 			selenium.type("id=zip", "/data/home/erikroos/PrefillAnimalDB.zip");
@@ -124,8 +132,8 @@ public class AnimaldbSeleniumTest
 			selenium.click("id=source1");
 			selenium.click("id=load");
 			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-			Assert.assertTrue(selenium.isTextPresent("Pre-filling AnimalDB successful"));
 		}
+		
 		sleepHelper("loginAdmin");
 	}
 	

@@ -67,6 +67,8 @@ public class AddAnimalPlugin extends EasyPluginController
 	public SelectInput actor = null;
 	public SelectInput location = null;
 	public DivPanel containingPanel = null;
+	private SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	// Variables for holding form values between wizard steps:
 	private String speciesName = null;
 	private String backgroundName = null;
@@ -248,7 +250,11 @@ public class AddAnimalPlugin extends EasyPluginController
 		// Birth date (String)
 		if (!birthdate.getValue().equals(""))
 		{
-			birthDate = birthdate.getValue();
+			//FIXME --> construct to make sure that the date is saved in de Animaldb date format(yyyy-MM-dd)
+			//birthDate = birthdate.getValue();
+			Date bd = inputFormat.parse(birthdate.getValue());
+			birthDate = dbFormat.format(bd);
+			
 		}
 		// Entry date (Date)
 		if (!entrydate.getValue().equals(""))
