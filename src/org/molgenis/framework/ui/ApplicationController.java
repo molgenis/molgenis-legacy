@@ -405,4 +405,13 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	{
 		return new FreemarkerView("ApplicationView.ftl", this.getModel());
 	}
+	
+	//minor hack to get the login tab status..
+	//TODO: integrate the switching service with molgenis gui?
+	//or have a tuple/hashmap with these kinds of variables here?
+	private Boolean userLoginVisible;
+	public Boolean isUserLoginVisible()
+	{ return userLoginVisible; }
+	public void setUserLoginVisible(Boolean b)
+	{ userLoginVisible = b; System.out.println("SETTING userLoginVisible to " + b);}
 }

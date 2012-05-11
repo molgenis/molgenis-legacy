@@ -58,8 +58,6 @@ public class MolgenisServiceAuthenticationHelper
 			String username = req.getString(LOGIN_USER_NAME);
 			String password = req.getString(LOGIN_PASSWORD);
 			
-			System.out.println("going to log in with " + username + " / " + password);
-			
 			LoginStatus login = FrontControllerAuthenticator.login(req, username, password);	
 			
 			
