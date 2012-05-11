@@ -463,7 +463,10 @@ public class DatabaseLogin implements Login, Serializable {
 
 			Integer id = (Integer) entity.get("owns");
 			
-			if (id.equals(this.getUserId()))
+			if( id == null)
+				logger.error("owns shouldnt be null for "+entity);
+			
+			if (id != null && id.equals(this.getUserId()))
 				return true;
 			
 			return false;
