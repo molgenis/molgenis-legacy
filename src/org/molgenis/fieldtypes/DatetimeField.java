@@ -88,7 +88,7 @@ public class DatetimeField extends FieldType
 		return "Ljava/util/Date;";
 	}
 
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return Date.class;
 	}

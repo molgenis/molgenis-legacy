@@ -88,7 +88,7 @@ public class XrefField extends FieldType
 	}
 
 	@Override
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return null;
 	}

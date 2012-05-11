@@ -76,7 +76,7 @@ public class HexaField extends FieldType
 		return "Ljava/lang/String;";
 	}
 
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return HexaInput.class;
 	}
