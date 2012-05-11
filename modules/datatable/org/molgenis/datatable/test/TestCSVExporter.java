@@ -2,7 +2,6 @@ package org.molgenis.datatable.test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -124,12 +123,11 @@ public class TestCSVExporter
 		Assert.assertEquals("id,name\n1,inv1\n2,inv2\n", export.toString());
 	}
 	
-	@Test
-	public void testDatabaseTuple() throws Exception {
+//	@Test FIXME: incomplete (need to figure out whether/how to get tuples/fields from db)
+	public void testDatabaseTable() throws Exception {
 		Database db = DatabaseFactory.create();
 		EntityManager em = db.getEntityManager();
 		List resultList = em.createNativeQuery("SELECT id, name FROM Investigation").getResultList();
-		
 		
 //		Investigation inv1 = new Investigation();
 //		inv1.setId(1);
