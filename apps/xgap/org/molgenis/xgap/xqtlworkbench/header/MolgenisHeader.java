@@ -14,8 +14,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
-import plugins.autohidelogin.AutoHideLoginModel;
-
 /**
  * A simple plugin to create the header of the MOLGENIS application. This
  * includes the header logo as well as the top level menu items for
@@ -52,7 +50,7 @@ public class MolgenisHeader extends PluginModel<Entity>
 			getLogin().logout(db);
 			
 			//only for AutoHideLoginSwitchService, but harmless otherwise
-			AutoHideLoginModel.isVisible = false;
+			this.getApplicationController().setUserLoginVisible(false);
 		}
 	}
 

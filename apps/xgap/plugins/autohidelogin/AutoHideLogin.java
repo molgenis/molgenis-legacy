@@ -1,6 +1,7 @@
 package plugins.autohidelogin;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
@@ -17,10 +18,13 @@ public class AutoHideLogin extends org.molgenis.auth.ui.UserLogin
 	 */
 	private static final long serialVersionUID = -4799149937057039542L;
 
+	public ApplicationController ac;
+	
 	public AutoHideLogin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 		this.setModel(new AutoHideLoginModel(this));
+		this.ac = this.getApplicationController();
 	}
 	
 	public ScreenView getView()
@@ -32,14 +36,13 @@ public class AutoHideLogin extends org.molgenis.auth.ui.UserLogin
 	public void Login(Database db, Tuple request) throws Exception
 	{
 		super.Login(db, request);
-		AutoHideLoginModel.isVisible = false;
+		ac.setUserLoginVisible(false);
 	}
 	
 	@Override
 	public void Logout(Database db, Tuple request) throws Exception
 	{
 		super.Logout(db, request);
-		AutoHideLoginModel.isVisible = false;
+		ac.setUserLoginVisible(false);
 	}
-
 }
