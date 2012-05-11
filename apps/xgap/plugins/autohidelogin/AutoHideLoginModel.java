@@ -31,7 +31,7 @@ public class AutoHideLoginModel extends UserLoginModel
 	@Override
 	public boolean isVisible()
 	{
-		return controller.ac.isUserLoginVisible() != null ? controller.ac.isUserLoginVisible() : false;
+		return controller.ac.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) != null ? ((Boolean)controller.ac.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN)) : false;
 	}
 	
 }

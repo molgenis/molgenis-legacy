@@ -10,6 +10,8 @@ import org.molgenis.util.Tuple;
 public class AutoHideLogin extends org.molgenis.auth.ui.UserLogin
 {
 
+	public static String AUTOHIDE_LOGIN = "autohide_login_switch_boolean";
+	
 	/**
 	 * Special version of UserLogin. After every login or logout,
 	 * the plugin tab hides itself. Must work together with
@@ -36,13 +38,13 @@ public class AutoHideLogin extends org.molgenis.auth.ui.UserLogin
 	public void Login(Database db, Tuple request) throws Exception
 	{
 		super.Login(db, request);
-		ac.setUserLoginVisible(false);
+		ac.sessionVariables.put(AUTOHIDE_LOGIN, false);
 	}
 	
 	@Override
 	public void Logout(Database db, Tuple request) throws Exception
 	{
 		super.Logout(db, request);
-		ac.setUserLoginVisible(false);
+		ac.sessionVariables.put(AUTOHIDE_LOGIN, false);
 	}
 }

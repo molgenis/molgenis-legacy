@@ -16,6 +16,8 @@ import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.ui.ApplicationController;
 
+import plugins.autohidelogin.AutoHideLogin;
+
 /**
  * Hide/unhide the login tab via a boolean and this service to flip it.
  * See: /molgenis_apps/apps/xgap/plugins/autohidelogin/AutoHideLogin.java
@@ -50,22 +52,22 @@ public class AutoHideLoginService  implements MolgenisService
 		try
 		{
 			//if null, make true
-			if(molgenis.isUserLoginVisible() == null)
+			if(molgenis.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) == null)
 			{
-				molgenis.setUserLoginVisible(true);
+				molgenis.sessionVariables.put(AutoHideLogin.AUTOHIDE_LOGIN, true);
 			}
 			else
 			{
 				//if true, make false
-				if(molgenis.isUserLoginVisible() == true)
+				if((Boolean)molgenis.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) == true)
 				{
-					molgenis.setUserLoginVisible(false);
+					molgenis.sessionVariables.put(AutoHideLogin.AUTOHIDE_LOGIN, false);
 				}
 				
 				//if false, make true
 				else
 				{
-					molgenis.setUserLoginVisible(true);
+					molgenis.sessionVariables.put(AutoHideLogin.AUTOHIDE_LOGIN, true);
 				}
 			}
 
