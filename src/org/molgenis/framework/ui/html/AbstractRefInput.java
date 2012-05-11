@@ -322,6 +322,12 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 
 	public final String toJquery(String htmlOptions, String xrefLabelString)
 	{
+		if(this.isHidden())
+		{
+			return "<input type=\"hidden\" value=\"+getValue()+\"/>";
+		}
+		
+		
 		final String dataplaceHolder = getXrefEntitySimpleName(); 
 		final String cssClasses = String.format("%s %s", 
 				this.isReadonly() ? "readonly " : "",
@@ -335,7 +341,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 			data.put(XREF_LABELS, xrefLabelString);
 			data.put(NILLABLE, isNillable());
 			
-			final boolean hasFilters = CollectionUtils.isNotEmpty(getXrefFilters());
+			final boolean hasFilters = getXrefFilters() != null && getXrefFilters().size() > 0;
 			if(hasFilters) {
 				data.put(FILTERS, new Gson().toJson(getXrefFilters()));
 			}			
