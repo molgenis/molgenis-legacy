@@ -55,8 +55,12 @@ public class BbmriHeader extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception
 	{
+		System.out.println("__________");
+
 		if ("doLogout".equals(request.getAction())) {
-				getLogin().logout(db);
+			System.out.println("asfgsgas");
+				this.getLogin().logout(db);
+				//getLogin().logout(db);
 		}
 	}
 	
@@ -123,6 +127,8 @@ public class BbmriHeader extends PluginModel<Entity>
 		
 	}
 
+	
+	
 	public String getUserLogin() {
 		
 		return userLogin;
