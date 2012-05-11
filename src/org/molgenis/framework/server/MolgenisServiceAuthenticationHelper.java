@@ -130,7 +130,7 @@ public class MolgenisServiceAuthenticationHelper
 			String printMe = "<form name=\"input\" action=\"\" method=\"post\">";
 			printMe += "<table><tr><td colspan=\"2\">Please log in:</td></tr>";
 			printMe += "<tr><td>Username:</td><td><input type=\"text\" name=\"" + LOGIN_USER_NAME + "\"></td></tr>";
-			printMe += "<tr><td>Password:</td><td><input type=\"text\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>";
+			printMe += "<tr><td>Password:</td><td><input type=\"password\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>";
 			printMe += "<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Login\"></td></tr></table>";
 			printMe += "</form>";
 			return new AuthStatus(true, printMe);
