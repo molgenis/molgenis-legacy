@@ -224,7 +224,7 @@ public class MolgenisXrefService implements MolgenisService
 
 		// create a CustomQuery
 		// JoinQuery q = getDatabase().query(queryFields);
-		if(CollectionUtils.isNotEmpty(filters)) {
+		if(filters != null && filters.size() > 0) {
 			q.addRules(filters.toArray(new QueryRule[filters.size()]));
 		}
 		
