@@ -19,7 +19,7 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Tuple;
 
 import plugins.matrix.manager.Browser;
-import plugins.matrix.manager.MatrixManager;
+import plugins.matrix.manager.CreateBrowserInstance;
 
 public class MatrixInspector extends PluginModel
 {
@@ -87,7 +87,7 @@ public class MatrixInspector extends PluginModel
 			if (this.model.isHasBackend())
 			{
 				logger.info("*** creating browser instance");
-				Browser br = MatrixManager.createBrowserInstance(db, data);
+				Browser br = new CreateBrowserInstance(db, data, this.getApplicationController()).getBrowser();
 				this.model.setWarningsAndErrors(new WarningsAndErrors(data, db, br.getModel().getInstance()));
 
 			}

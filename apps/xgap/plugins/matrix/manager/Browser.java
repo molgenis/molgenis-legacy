@@ -10,6 +10,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.util.Tuple;
 
 public class Browser
@@ -21,15 +22,17 @@ public class Browser
 	 */
 	private BrowserModel model = new BrowserModel();
 	
-	public static DataMatrixInstance inmemory;
+	private ApplicationController ac;
 
 	public BrowserModel getModel()
 	{
 		return model;
 	}
 
-	public Browser(Data selectedData, DataMatrixInstance instance) throws Exception
+	public Browser(Data selectedData, DataMatrixInstance instance, ApplicationController ac) throws Exception
 	{
+		this.ac = ac;
+		
 		// create instance of complete matrix and run checks
 		model.setInstance(instance);
 		model.setColMax(instance.getNumberOfCols());
@@ -74,8 +77,8 @@ public class Browser
 		DataMatrixInstance subMatrix = model.getInstance().getSubMatrix(rowNames, colNames);
 		model.setSubMatrix(subMatrix);
 		
-		//store static pointer for csv download 'visible'
-		inmemory = this.model.getSubMatrix();
+		//store pointer for csv download 'visible'
+		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, subMatrix);
 	}
 	
 	public void updateSubmatrixKeepCols() throws Exception
@@ -89,8 +92,8 @@ public class Browser
 		DataMatrixInstance subMatrix = model.getInstance().getSubMatrix(rowNames, colNames);
 		model.setSubMatrix(subMatrix);
 		
-		//store static pointer for csv download 'visible'
-		inmemory = this.model.getSubMatrix();
+		//store pointer for csv download 'visible'
+		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, subMatrix);
 	}
 
 	private void updateSubmatrix() throws Exception
@@ -104,8 +107,8 @@ public class Browser
 				nRows, model.getColStart(), nCols);
 		model.setSubMatrix(subMatrix);
 		
-		//store static pointer for csv download 'visible'
-		inmemory = this.model.getSubMatrix();
+		//store pointer for csv download 'visible'
+		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, subMatrix);
 
 	}
 	
@@ -385,8 +388,8 @@ public class Browser
 		
 		filter = action.replace("_", " ") + ", " + field + " " + operator.toLowerCase() + " " + value;
 		
-		//store static pointer for csv download 'visible'
-		inmemory = this.model.getSubMatrix();
+		//store pointer for csv download 'visible'
+		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, this.model.getSubMatrix());
 		
 		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 		model.setHeight(this.model.getSubMatrix().getNumberOfRows());
@@ -439,8 +442,8 @@ public class Browser
 		
 		filter = action.replace("_", " ") + ", " + amount + " " + operator.toLowerCase() + " " + value;
 		
-		//store static pointer for csv download 'visible'
-		inmemory = this.model.getSubMatrix();
+		//store pointer for csv download 'visible'
+		ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, this.model.getSubMatrix());
 		
 		model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 		model.setHeight(this.model.getSubMatrix().getNumberOfRows());
@@ -482,8 +485,8 @@ public class Browser
 						
 			this.model.setSubMatrix(this.model.getInstance().getSubMatrix(rowNames, colNames));
 			
-			//store static pointer for csv download 'visible'
-			inmemory = this.model.getSubMatrix();
+			//store pointer for csv download 'visible'
+			ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, this.model.getSubMatrix());
 			
 			model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 			model.setHeight(this.model.getSubMatrix().getNumberOfRows());
@@ -521,8 +524,8 @@ public class Browser
 						
 			this.model.setSubMatrix(this.model.getInstance().getSubMatrix(rowNames, colNames));
 			
-			//store static pointer for csv download 'visible'
-			inmemory = this.model.getSubMatrix();
+			//store pointer for csv download 'visible'
+			ac.sessionVariables.put(MatrixManager.SESSION_MATRIX_DATA, this.model.getSubMatrix());
 			
 			model.setWidth(this.model.getSubMatrix().getNumberOfCols());
 			model.setHeight(this.model.getSubMatrix().getNumberOfRows());

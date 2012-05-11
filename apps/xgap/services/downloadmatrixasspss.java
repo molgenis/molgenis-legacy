@@ -23,10 +23,9 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.ui.ApplicationController;
 
-import plugins.matrix.manager.Browser;
+import plugins.matrix.manager.MatrixManager;
 
 public class downloadmatrixasspss implements MolgenisService {
 
@@ -67,14 +66,16 @@ public class downloadmatrixasspss implements MolgenisService {
 				//special exception for filtered content: get matrix instance from memory and do complete handle
 				if(request.getString("id").equals("inmemory"))
 				{
+					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession().getAttribute("application");
+					DataMatrixInstance dm = ((DataMatrixInstance)molgenis.sessionVariables.get(MatrixManager.SESSION_MATRIX_DATA));
 					OutputStream outSpecial = response.getResponse().getOutputStream();
-					File spssFile = Browser.inmemory.getAsSpssFile();
+					File spssFile = dm.getAsSpssFile();
 					URL localURL = spssFile.toURI().toURL();
 					URLConnection conn = localURL.openConnection();
 					InputStream in = new BufferedInputStream(conn.getInputStream());
 					response.getResponse().setContentType("application/spss");
 					response.getResponse().setContentLength((int) spssFile.length());
-					response.getResponse().setHeader("Content-disposition","attachment; filename=\""+Browser.inmemory.getData().getName()+"_"+"some"+".sav"+"\"");
+					response.getResponse().setHeader("Content-disposition","attachment; filename=\""+dm.getData().getName()+"_"+"some"+".sav"+"\"");
 					byte[] buffer = new byte[2048];
 					for (;;) {
 						int nBytes = in.read(buffer);

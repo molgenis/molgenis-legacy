@@ -23,10 +23,9 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.ui.ApplicationController;
 
-import plugins.matrix.manager.Browser;
+import plugins.matrix.manager.MatrixManager;
 
 public class downloadmatrixasexcel implements MolgenisService {
 
@@ -67,14 +66,16 @@ public class downloadmatrixasexcel implements MolgenisService {
 				//special exception for filtered content: get matrix instance from memory and do complete handle
 				if(request.getString("id").equals("inmemory"))
 				{
+					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession().getAttribute("application");
+					DataMatrixInstance dm = ((DataMatrixInstance)molgenis.sessionVariables.get(MatrixManager.SESSION_MATRIX_DATA));
+					File excelFile = dm.getAsExcelFile();
 					OutputStream outSpecial = response.getResponse().getOutputStream();
-					File excelFile = Browser.inmemory.getAsExcelFile();
 					URL localURL = excelFile.toURI().toURL();
 					URLConnection conn = localURL.openConnection();
 					InputStream in = new BufferedInputStream(conn.getInputStream());
 					response.getResponse().setContentType("application/vnd.ms-excel");
 					response.getResponse().setContentLength((int) excelFile.length());
-					response.getResponse().setHeader("Content-disposition","attachment; filename=\""+Browser.inmemory.getData().getName()+"_"+"some"+".xls"+"\"");
+					response.getResponse().setHeader("Content-disposition","attachment; filename=\""+dm.getData().getName()+"_"+"some"+".xls"+"\"");
 					byte[] buffer = new byte[2048];
 					for (;;) {
 						int nBytes = in.read(buffer);

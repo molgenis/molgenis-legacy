@@ -22,10 +22,9 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.ui.ApplicationController;
 
-import plugins.matrix.manager.Browser;
+import plugins.matrix.manager.MatrixManager;
 
 /**
  * Serves static files such as images, css files and javascript from classpath.
@@ -76,7 +75,8 @@ public class downloadmatrixascsv implements MolgenisService
 				//special exception for filtered content: get matrix instance from memory and do complete handle
 				if(request.getString("id").equals("inmemory"))
 				{
-					content = Browser.inmemory.toString();
+					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession().getAttribute("application");
+					content = ((DataMatrixInstance)molgenis.sessionVariables.get(MatrixManager.SESSION_MATRIX_DATA)).toString();
 					response.getResponse().setContentLength(content.length());
 					p.print(content);
 					p.flush();
