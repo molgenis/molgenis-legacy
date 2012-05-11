@@ -3,6 +3,7 @@ package org.molgenis.framework.ui;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -406,9 +407,16 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 		return new FreemarkerView("ApplicationView.ftl", this.getModel());
 	}
 	
-	//minor hack to get the login tab status..
-	//TODO: integrate the switching service with molgenis gui?
-	//or have a tuple/hashmap with these kinds of variables here?
+	/**
+	  Store values in a map, much like session attributes.
+	  The reaason to do this is because session variables are not always
+	  reachable inside plugin functions, and if they are, it is complex
+	  and convoluted because this applicationcontroller itself is
+	  already stored as a session attribute! (see: MolgenisGuiService.java)
+	*/
+	public Map<String, Object> sessionVariables = new HashMap<String, Object>();
+	
+	//TODO: factor out below
 	private Boolean userLoginVisible;
 	public Boolean isUserLoginVisible()
 	{ return userLoginVisible; }
