@@ -416,10 +416,4 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	*/
 	public Map<String, Object> sessionVariables = new HashMap<String, Object>();
 	
-	//TODO: factor out below
-	private Boolean userLoginVisible;
-	public Boolean isUserLoginVisible()
-	{ return userLoginVisible; }
-	public void setUserLoginVisible(Boolean b)
-	{ userLoginVisible = b; System.out.println("SETTING userLoginVisible to " + b);}
 }
