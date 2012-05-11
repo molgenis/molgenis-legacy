@@ -1,4 +1,4 @@
-package org.molgenis.matrix.Utils;
+package org.molgenis.datatable.view;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
+import org.molgenis.datatable.model.SimpleTableModel;
 import org.molgenis.fieldtypes.CategoricalType;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.TableModel;
 import org.molgenis.model.elements.Field;
 
 /**
@@ -30,7 +30,7 @@ public class newSPSSExporter<RowType extends Iterable<?>> extends CsvExporter<Ro
 
 	private  OutputStream d_spsOs;
 
-	public newSPSSExporter(TableModel<RowType> matrix, OutputStream os, OutputStream spsOs)
+	public newSPSSExporter(SimpleTableModel<RowType> matrix, OutputStream os, OutputStream spsOs)
 	{
 		super(matrix, os, new SimpleDateFormat("MM/dd/yyyy"));
 		d_spsOs = spsOs;

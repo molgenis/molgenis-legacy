@@ -1,4 +1,4 @@
-package org.molgenis.matrix.Utils;
+package org.molgenis.datatable.view;
 
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.Measurement;
@@ -9,5 +9,5 @@ public interface Exporter<T extends ObservationTarget, M extends Measurement, V 
 	public void export() throws MatrixException;
 	
 	public String getFileExtension();
-	String getMimeType();
+	public String getMimeType();
 }

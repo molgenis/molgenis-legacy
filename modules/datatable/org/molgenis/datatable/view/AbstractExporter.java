@@ -1,17 +1,17 @@
-package org.molgenis.matrix.Utils;
+package org.molgenis.datatable.view;
 
 import java.io.OutputStream;
 import java.util.List;
 
+import org.molgenis.datatable.model.SimpleTableModel;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.SimpleTableModel;
 import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 
-public abstract class AbstractExporter<RowType extends Iterable<?>> 
+public abstract class AbstractExporter<RowType> 
 	implements Exporter<ObservationTarget, Measurement, ObservedValue> {
 	
 	protected final SimpleTableModel<RowType> tableModel;
@@ -27,8 +27,9 @@ public abstract class AbstractExporter<RowType extends Iterable<?>>
 		List<Field> columns = tableModel.getColumns();
 		for (RowType row : tableModel) {
 			int iCol = 0;
-			for (Object cell : row) {
-				writeSingleCell(cell, iRow, iCol, columns.get(iCol).getType());
+			for (Field col : columns) {
+				Object cellValue = tableModel.getValue(row, col, iRow, iCol);
+				writeSingleCell(cellValue, iRow, iCol, columns.get(iCol).getType());
 				if(iCol < columns.size() - 1) {
 					writeSeparator();
 				}

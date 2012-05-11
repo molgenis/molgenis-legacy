@@ -1,4 +1,4 @@
-package org.molgenis.matrix.Utils;
+package org.molgenis.datatable.view;
 
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.molgenis.datatable.model.SimpleTableModel;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.SimpleTableModel;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.CsvWriter;
 
 
-public class CsvExporter<RowType extends Iterable<?>> extends AbstractExporter<RowType>
+public class CsvExporter<RowType> extends AbstractExporter<RowType>
 {
 	protected CsvWriter d_writer;
 	protected SimpleDateFormat d_dateFormat;
