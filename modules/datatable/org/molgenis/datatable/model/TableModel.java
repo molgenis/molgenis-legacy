@@ -3,7 +3,8 @@ package org.molgenis.datatable.model;
 import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Form.SortOrder;
 
-public interface TableModel<RowType extends Iterable<?>> extends SimpleTableModel<RowType>
+
+public interface TableModel extends TupleTable
 {
 	public Integer getRowCount();
 
