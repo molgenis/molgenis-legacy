@@ -119,6 +119,17 @@ public class SimpleTuple implements Tuple
 		return new Vector<String>(this.keys);
 	}
 
+	/**
+	 * Use getFieldNames instead.
+	 * @return
+	 */
+	@Deprecated
+	public List<String> getFields()
+	{
+		// return a copy of the keys
+		return new Vector<String>(this.keys);
+	}
+
 	public Object getObject(int column)
 	{
 		try

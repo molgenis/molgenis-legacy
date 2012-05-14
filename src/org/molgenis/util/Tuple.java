@@ -68,10 +68,16 @@ public interface Tuple
 
 	/**
 	 * Get the names used as aliases for the field indexes
-	 * 
 	 * @return column names.
 	 */
 	public List<String> getFieldNames();
+	/**
+	 * Get the names used as aliases for the field indexes
+	 * TODO: Bad function name; use getFieldNames instead.
+	 * @return column names.
+	 */
+	@Deprecated
+	public List<String> getFields();
 
 	/**
 	 * Retrieves the value of the designated column as Integer.
