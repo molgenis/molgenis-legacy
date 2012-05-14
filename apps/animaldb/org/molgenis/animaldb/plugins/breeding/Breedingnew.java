@@ -506,6 +506,8 @@ public class Breedingnew extends PluginModel<Entity>
 									if (!selectedFatherNameList.contains(fatherName)) {
 										selectedFatherNameList.add(fatherName);
 									}
+								}else{
+									this.setMessages(new ScreenMessage("Not a Female", false));
 								}
 							}
 							rowCnt++;
@@ -531,13 +533,11 @@ public class Breedingnew extends PluginModel<Entity>
 									}
 								}
 								else{
-									System.out.println("NO FEMALE");
+									this.setMessages(new ScreenMessage("Not a Female", false));
 								}
 							}
 							rowCnt++;
 						}
-						
-						
 						hashMothers.put(i, selectedMotherNameList);
 						
 					}
