@@ -39,7 +39,8 @@ public class Compute3JobGenerator implements JobGenerator
     private FoldingParser foldingParser = new FoldingParser();
 
     //grid specific imputation handler
-    GridHandler gridHandler = null;
+    private GridHandler gridHandler = null;
+    private boolean  workflowHasDependencies = false;
 
     //template sources
     private String templateGridHeader;
@@ -49,6 +50,8 @@ public class Compute3JobGenerator implements JobGenerator
     private String templateGridJDL;
     private String templateGridAfterExecution;
     private String templateGridUploadLog;
+    private String templateGridDAGNode;
+
 
     private String templateClusterSubmission;
     private String templateClusterHeader;
@@ -62,6 +65,7 @@ public class Compute3JobGenerator implements JobGenerator
     private String fileTemplateGridUploadLog = "templ-upload-grid-log.ftl";
     private String fileTemplateGridJDL = "templ-jdl-grid.ftl";
     private String fileTemplateGridAfterExecution = "templ-after-exe.ftl";
+    private String fileTemplateGridDAGNode = "templ-jdl-dag-node.ftl" ;
 
     private String fileTemplateClusterHeader = "templ-pbs-header.ftl";
     private String fileTemplateClusterFooter = "templ-pbs-footer.ftl";
@@ -74,7 +78,10 @@ public class Compute3JobGenerator implements JobGenerator
     private Hashtable<WorkflowElement, ComputeJob> pairWEtoCJ = null;
     private Hashtable<ComputeJob, WorkflowElement> pairCJtoWE = null;
 
+    //submission script for the cluster
     private String submitScript = null;
+    //dag file for submission for the grid
+    private String dagScript = null;
 
     private Hashtable<String, String> config;
 
@@ -90,6 +97,9 @@ public class Compute3JobGenerator implements JobGenerator
         //create the table with targets, which is equal to worksheet if there are no targets
         List<Hashtable> table = null;
 
+        //set current workflow
+        workflowHasDependencies = hasDependencies(workflow);
+
         //remove unused parameters from the worksheet
         List<Hashtable> worksheet = foldingMaker.transformToTable(f);
         foldingMaker.setWorkflow(workflow);
@@ -101,11 +111,16 @@ public class Compute3JobGenerator implements JobGenerator
         if (backend.equalsIgnoreCase(JobGenerator.GRID))
             pairJobTransfers = new Hashtable<String, GridTransferContainer>();
 
+        pairWEtoCJ = new Hashtable<WorkflowElement, ComputeJob>();
+        pairCJtoWE = new Hashtable<ComputeJob, WorkflowElement>();
+
         if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
         {
-            pairWEtoCJ = new Hashtable<WorkflowElement, ComputeJob>();
-            pairCJtoWE = new Hashtable<ComputeJob, WorkflowElement>();
             submitScript = "";
+        }
+        else if(backend.equalsIgnoreCase(JobGenerator.GRID) && workflowHasDependencies)
+        {
+            dagScript = "Type=\"dag\";\n\n";
         }
 
         Collection<ComputeParameter> parameters = workflow.getWorkflowComputeParameterCollection();
@@ -296,6 +311,17 @@ public class Compute3JobGenerator implements JobGenerator
         return computeJobs;
     }
 
+    private boolean hasDependencies(Workflow workflow)
+    {
+        Collection<WorkflowElement> workflowElements = workflow.getWorkflowWorkflowElementCollection();
+        for (WorkflowElement el : workflowElements)
+        {
+            if (el.getPreviousSteps().size() > 0)
+                return true;
+        }
+        return false;
+    }
+
     private boolean isTarget(String ekey, List<ComputeParameter> targets)
     {
         for(ComputeParameter par: targets)
@@ -448,6 +474,11 @@ public class Compute3JobGenerator implements JobGenerator
             gridHandler.setWorksheet(worksheet);
             generationCount = gridHandler.getNextJobID();
 
+            //adding dag dependencies
+            if(workflowHasDependencies)
+            {
+                dagScript += "nodes = [\n";
+            }
         }
         else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
             readTemplatesCluster(templatesDir);
@@ -470,8 +501,16 @@ public class Compute3JobGenerator implements JobGenerator
             writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + "submit_" + config.get(JobGenerator.GENERATION_ID) + ".sh",
                     submitScript);
         else if(backend.equalsIgnoreCase(JobGenerator.GRID))
+        {
             //produce targetsListFile
             gridHandler.writeJobsLogsToFile(config);
+
+            //write dag file
+            dagScript += "\n];";
+            writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") +
+                    "dag_" + config.get(JobGenerator.GENERATION_ID) + ".jdl",
+                    dagScript);
+        }
 
         return true;
     }
@@ -534,9 +573,15 @@ public class Compute3JobGenerator implements JobGenerator
         values.put("error_log", "err_" + computeJob.getName() + ".log");
         values.put("output_log", "out_" + computeJob.getName() + ".log");
         values.put("script_location", config.get(JobGenerator.BACK_END_DIR));
-
+        values.put("node_name", computeJob.getName());
         //create jdl
         String jdlListing = weaveFreemarker(templateGridJDL, values);
+
+        if(workflowHasDependencies)
+        {
+            String dagNodeListing = weaveFreemarker(templateGridDAGNode, values);
+            dagScript += dagNodeListing + "\n";
+        }
 
         //write jdl
         (new File(config.get(JobGenerator.OUTPUT_DIR))).mkdirs();
@@ -682,6 +727,7 @@ public class Compute3JobGenerator implements JobGenerator
             templateGridUploadLog = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridUploadLog);
             templateGridJDL = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridJDL);
             templateGridAfterExecution = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridAfterExecution);
+            templateGridDAGNode = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDAGNode);
         }
         catch (IOException e)
         {
