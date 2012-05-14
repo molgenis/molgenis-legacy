@@ -7,6 +7,9 @@
 #PBS -e ${jobname}.err
 #PBS -o ${jobname}.out
 
+# Configures the GCC bash environment
+sh ${root}/gcc.bashrc
+
 <#include "Macros.ftl"/>
 <@begin/>
 <#include "NGSHeader.ftl"/>
