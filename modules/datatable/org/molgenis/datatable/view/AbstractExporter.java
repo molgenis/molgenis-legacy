@@ -1,8 +1,8 @@
 package org.molgenis.datatable.view;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
+import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 
 public abstract class AbstractExporter
@@ -14,5 +14,5 @@ public abstract class AbstractExporter
 		this.table = tableModel;
 	}
 
-	public abstract void export(OutputStream os) throws IOException;
+	public abstract void export(OutputStream os) throws TableException;
 }

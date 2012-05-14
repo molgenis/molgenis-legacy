@@ -1,6 +1,7 @@
 package org.molgenis.datatable.model;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,8 +17,8 @@ import org.molgenis.util.Tuple;
  */
 public class CsvTable implements TupleTable
 {
-	CsvReader csv;
-	List<Field> columns = new ArrayList<Field>();
+	private final CsvReader csv;
+	private final List<Field> columns = new ArrayList<Field>();
 	
 	/**
 	 * Read table from a csv file
@@ -25,9 +26,9 @@ public class CsvTable implements TupleTable
 	 * @param csvFile
 	 * @throws Exception
 	 */
-	public CsvTable(File csvFile) throws Exception
+	public CsvTable(InputStream csvStream) throws Exception
 	{
-		csv = new CsvFileReader(csvFile);	
+		csv = new CsvFileReader(csvStream);	
 		loadColumns();
 	}
 	
@@ -81,4 +82,16 @@ public class CsvTable implements TupleTable
 		return csv.iterator();
 	}
 
+	@Override
+	public void close() throws TableException
+	{
+		try
+		{
+			csv.close();
+		}
+		catch (IOException e)
+		{
+			throw new TableException(e); 
+		}
+	}
 }

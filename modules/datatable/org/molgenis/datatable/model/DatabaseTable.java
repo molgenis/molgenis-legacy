@@ -1,7 +1,6 @@
 package org.molgenis.datatable.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class DatabaseTable implements TupleTable
 	}
 
 	@Override
-	public List<Field> getColumns()
+	public List<Field> getColumns() throws TableException
 	{
 		if (fields != null) return fields;
 		try
@@ -53,9 +52,7 @@ public class DatabaseTable implements TupleTable
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new TableException(e);
 		}
 	}
 
@@ -91,6 +88,11 @@ public class DatabaseTable implements TupleTable
 	{
 		//should be optimized
 		return this.getRows().iterator();
+	}
+
+	@Override
+	public void close() throws TableException
+	{
 	}
 
 }

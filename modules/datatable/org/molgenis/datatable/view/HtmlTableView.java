@@ -2,6 +2,7 @@ package org.molgenis.datatable.view;
 
 import java.util.List;
 
+import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.model.elements.Field;
@@ -21,7 +22,15 @@ public class HtmlTableView extends HtmlWidget
 	@Override
 	public String toHtml()
 	{
-		List<Field> columns = table.getColumns();
+		List<Field> columns;
+		try
+		{
+			columns = table.getColumns();
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
 		
 		String result = "\n<table id=\""+getId()+"\">";
 		

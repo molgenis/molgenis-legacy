@@ -1,9 +1,11 @@
 package org.molgenis.datatable.test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.datatable.model.DatabaseTable;
+import org.molgenis.datatable.model.JdbcTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
@@ -16,7 +18,7 @@ import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
 
-public class TestDatabaseTable
+public class TestJdbcTable
 {
 	List<Individual> individuals = new ArrayList<Individual>();
 	Database db = null;
@@ -49,9 +51,10 @@ public class TestDatabaseTable
 	}
 
 	@Test
-	public void test1() throws TableException
-	{
-		TupleTable table = new DatabaseTable(db, Individual.class);
+	public void test1() throws SQLException, DatabaseException, TableException
+	{	
+		final Connection connection = db.getConnection();
+		final TupleTable table = new JdbcTable("SELECT i.id, oe.name FROM Individual as i JOIN ObservationTarget as ot ON (i.id = ot.id) JOIN ObservationElement as oe ON (ot.id = oe.id) ORDER BY i.id", connection);
 		
 		// check columns
 		Assert.assertEquals("id", table.getColumns().get(0).getName());
@@ -65,5 +68,7 @@ public class TestDatabaseTable
 
 			i = i + 1;
 		}
+		table.close();
+		connection.close();
 	}
 }

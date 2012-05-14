@@ -12,11 +12,11 @@ import org.molgenis.util.Tuple;
  * <li>Column names are unique
  * <li>Column meta data (name,type,label,description,..) are available in
  * getColumns()
- * <li>Row data is availble as Tuple (hashMap)
+ * <li>Row data is available as Tuple (hashMap)
  * </ul>
  * 
  * Motivation: this can be used as facade pattern to make views that are
- * reusable accross heterogeneous backends without extra work, such as database tables, Excel files,
+ * reusable across heterogeneous backends without extra work, such as database tables, Excel files,
  * EAV models, binary formats, etc.
  * 
  * Developer note: This class or its subclasses should
@@ -31,11 +31,14 @@ import org.molgenis.util.Tuple;
 public interface TupleTable extends Iterable<Tuple>
 {
 	/** Get meta data describing the columns */
-	public List<Field> getColumns();
+	public List<Field> getColumns() throws TableException;
 
 	/** Get the data */
-	public List<Tuple> getRows();
+	public List<Tuple> getRows() throws TableException;
 
 	/** Get the data in a streaming fashion (good for large data sets) */
 	public Iterator<Tuple> iterator();
+
+	/** Closes the resources from which table reads data */
+	public void close() throws TableException;
 }

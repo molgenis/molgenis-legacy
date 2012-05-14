@@ -1,11 +1,9 @@
 package org.molgenis.datatable.test;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.datatable.model.MemoryTable;
+import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -23,7 +21,7 @@ public class TestMemoryTable
 	}
 	
 	@Test
-	public void test1()
+	public void test1() throws TableException
 	{
 		//check columns
 		Assert.assertEquals("firstName", table.getColumns().get(0).getName());
@@ -36,10 +34,10 @@ public class TestMemoryTable
 		int i = 1;
 		for(Tuple row: table)
 		{
-			Assert.assertEquals(2, row.getFields().size());
+			Assert.assertEquals(2, row.getFieldNames().size());
 			
-			Assert.assertEquals(true, row.getFields().contains("firstName"));
-			Assert.assertEquals(true, row.getFields().contains("lastName"));
+			Assert.assertEquals(true, row.getFieldNames().contains("firstName"));
+			Assert.assertEquals(true, row.getFieldNames().contains("lastName"));
 			
 			Assert.assertEquals(row.getObject("firstName"),"first"+i);
 			Assert.assertEquals(row.getObject("lastName"),"last"+i);

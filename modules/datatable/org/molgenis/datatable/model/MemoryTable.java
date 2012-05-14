@@ -1,11 +1,8 @@
 package org.molgenis.datatable.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.molgenis.fieldtypes.StringField;
 import org.molgenis.model.elements.Field;
@@ -30,7 +27,7 @@ public class MemoryTable implements TupleTable
 		// use first row
 		if (rows.size() > 0)
 		{
-			for (String field : rows.get(0).getFields())
+			for (String field : rows.get(0).getFieldNames())
 			{
 				Field f = new Field(field);
 				f.setType(new StringField());
@@ -55,6 +52,13 @@ public class MemoryTable implements TupleTable
 	public Iterator<Tuple> iterator()
 	{
 		return this.rows.iterator();
+	}
+
+	@Override
+	public void close()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

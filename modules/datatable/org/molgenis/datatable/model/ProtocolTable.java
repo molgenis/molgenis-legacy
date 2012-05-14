@@ -80,4 +80,10 @@ public class ProtocolTable implements TupleTable
 		return getRows().iterator();
 	}
 
+	@Override
+	public void close()
+	{
+		// TODO Auto-generated method stub
+	}
+
 }
