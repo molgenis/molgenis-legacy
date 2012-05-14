@@ -19,53 +19,51 @@ import app.DatabaseFactory;
 public class TestDatabaseTable
 {
 	List<Individual> individuals = new ArrayList<Individual>();
-	TupleTable table;
-	
+	Database db = null;
+
+	/**
+	 * Before: create database and load a predictable list of Individual
+	 * 
+	 * @throws DatabaseException
+	 */
 	@BeforeClass
 	public void setup() throws DatabaseException
 	{
-		//assumes empty database!
-		Database db = DatabaseFactory.create();
-		
-		//db.dropDatabase();
-		//db.createDatabase();
-		
-		//load the persons
+		// assumes empty database!
+		db = DatabaseFactory.create();
+
+		// db.dropDatabase();
+		// db.createDatabase();
+
+		// load the persons
 		db.remove(db.find(Individual.class));
-		for(int i = 1; i <= 5; i++)
+		for (int i = 1; i <= 5; i++)
 		{
 			Individual p = new Individual();
-			p.setName("individual"+i);
+			p.setName("individual" + i);
 			individuals.add(p);
 		}
 		db.add(individuals);
-		
-		//load 
-		table = new DatabaseTable(db, Individual.class);
+
+		// load
 	}
-	
+
 	@Test
 	public void test1()
 	{
-		//check columns
+		TupleTable table = new DatabaseTable(db, Individual.class);
+		
+		// check columns
 		Assert.assertEquals("id", table.getColumns().get(0).getName());
 		Assert.assertEquals("name", table.getColumns().get(1).getName());
-		
-		//check rows
+
+		// check rows
 		int i = 1;
-		for(Tuple row: table)
+		for (Tuple row : table)
 		{
-			Assert.assertEquals(row.getObject("name"), "individual"+i);
-			
+			Assert.assertEquals(row.getObject("name"), "individual" + i);
+
 			i = i + 1;
 		}
-	}
-	
-	@Test
-	public void test2()
-	{
-		HtmlTableView view =  new HtmlTableView("test",table);
-		
-		System.out.println(view.render());
 	}
 }

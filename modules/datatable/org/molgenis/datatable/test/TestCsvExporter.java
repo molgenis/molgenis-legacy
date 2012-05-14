@@ -14,6 +14,12 @@ import org.testng.annotations.Test;
 
 public class TestCsvExporter
 {
+	/**
+	 * Test by first using CsvExport to export table1, and the CsvTable to read it back as table2.
+	 * Obviously table1.equals(table2) == true.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testCsvRoundTrip() throws Exception
 	{
