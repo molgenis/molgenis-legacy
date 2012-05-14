@@ -473,26 +473,34 @@
 	<#if model.multiplot??>
 
 	<table cellpadding="30"><tr><td>
-		<h2>Results for "<#if model.query??>${model.query}</#if>"</h2><br>
+		<h2>Results for "<#if model.query??>${model.query}</#if>":</h2><br>
 		
 		<table>
 			<tr>
 				<td>
 					<#if model.multiplot.plot??>
-					<i>All-in-one plot of search matches, click to enlarge:</i><br>
+					<i>Heatplot, click to enlarge:</i><br>
 						<#assign html = "<html><head><title>QTL multiplot</title></head><body><img src=tmpfile/" + model.multiplot.plot + "></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-							<img src="tmpfile/${model.multiplot.plot}" width="320" height="320">
+							<img src="tmpfile/${model.multiplot.plot}" width="220" height="200">
 						</a>
 					</#if>
 				</td>
 				<td>
-		
 					<#if model.multiplot.cisTransPlot??>
 					<i>Cis-trans plot, click to enlarge:</i><br>
 						<#assign html = "<html><head><title>QTL cis-trans plot</title></head><body><img src=tmpfile/" + model.multiplot.cisTransPlot + "></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-							<img src="tmpfile/${model.multiplot.cisTransPlot}" width="320" height="320">
+							<img src="tmpfile/${model.multiplot.cisTransPlot}" width="220" height="200">
+						</a><br>
+					</#if>
+				</td>
+				<td>
+					<#if model.multiplot.regularPlot??>
+					<i>Profile plot, click to enlarge:</i><br>
+						<#assign html = "<html><head><title>QTL profile plot</title></head><body><img src=tmpfile/" + model.multiplot.regularPlot + "></body></html>">
+						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+							<img src="tmpfile/${model.multiplot.regularPlot}" width="220" height="200">
 						</a><br>
 					</#if>
 				</td>
@@ -501,14 +509,14 @@
 				<td>
 				<br><br>
 				<#if model.multiplot.plot??>
-					<i>Legend, click to enlarge:</i><br>
+					<span style="font-size:15px;font-weight:bold;">Legend, click to enlarge:</span><br/><br/>
 						<#assign html = "<html><head><title>Legend</title></head><body><img src=clusterdemo/wormqtl/legend.png></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=1000,height=650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-							<img src="clusterdemo/wormqtl/legend.png" width="250" height="150">
+							<img src="clusterdemo/wormqtl/legend.png" width="220" height="170">
 						</a>
 					</#if>
 				</td>
-				<td>
+				<td colspan="2">
 				<br><br>
 					<span style="font-size:15px;font-weight:bold;">More downloads:</span><br/>
 					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.cytoNetwork}">Cytoscape network</a> for this plot. (<a target="_blank" href="http://wiki.cytoscape.org/Cytoscape_User_Manual/Creating_Networks#Import_Free-Format_Table_Files">how-to import</a>)
@@ -516,16 +524,17 @@
 					<br>Note: includes <b>significant results only</b>. (LOD > 3.5)
 					<br><i>Save both files. Import network (has LOD scores), then node <br>attributes (chrom, bploc, dataset).</i> <a target="_blank" href="clusterdemo/wormqtl/cyto_example.png">Example visualization</a>
 					<br>
-					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.srcData}">source data</a> for these plots.
-					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.plot?replace(".png",".R")}">multiplot plot R script</a>.
-					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.cisTransPlot?replace(".png",".R")}">cistrans R plot script</a>.
+					<br>Get the generated <a target="_blank" href="tmpfile/${model.multiplot.srcData}">source data</a> for these plots.
+					<br>Get the generated <a target="_blank" href="tmpfile/${model.multiplot.plot?replace(".png",".R")}">multiplot plot R script</a>.
+					<br>Get the generated <a target="_blank" href="tmpfile/${model.multiplot.cisTransPlot?replace(".png",".R")}">cistrans R plot script</a>.
+					<br>Get the generated <a target="_blank" href="tmpfile/${model.multiplot.regularPlot?replace(".png",".R")}">profile R plot script</a>.
 				</td>
 			</tr>
 			<tr>
-				<td colspan="2">
+				<td colspan="3">
 				
 					<br><br>
-					<i>All items that are in the plot (click for details):</i>
+					<span style="font-size:15px;font-weight:bold;">Traits:</span><br/>
 					<div style="overflow: auto; width: 780px; max-height: 400px;">
 					<#list model.multiplot.matches?values as d>
 					<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}<#if d.label?? && d.label?length gt 0> / ${d.label}</#if></a>
@@ -534,7 +543,7 @@
 					</#list>
 					</div>
 					<br>
-					<i>All datasets used in the plot (click for details):</i>
+					<span style="font-size:15px;font-weight:bold;">Dataset IDs:</span><br/>
 					<table>
 					<#list model.multiplot.datasets?values as d>
 						<tr>

@@ -332,13 +332,13 @@ public class QtlFinder extends PluginModel<Entity>
 						if(qtlInformationIsComplete(markerInfo, colNames))
 						{
 							TreeMap<Long, QtlPlotDataPoint> data = sortQtlPlotData(colNames, DvaluesList, markerInfo);
-							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight, "LOD score", "qtl");
+						//	img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight, "LOD score", "qtl");
 						}
 						else
 						{
 							img = MakeRPlot.plot(d, instance, name, null, "row", "o", plotWidth, plotHeight);
 						}
-						qtl.setPlot(img.getName());
+				//		qtl.setPlot(img.getName());
 						
 					}
 					catch(Exception e)
@@ -381,14 +381,14 @@ public class QtlFinder extends PluginModel<Entity>
 						if(qtlInformationIsComplete(markerInfo, rowNames))
 						{
 							TreeMap<Long, QtlPlotDataPoint> data = sortQtlPlotData(rowNames, DvaluesList, markerInfo);
-							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight, "LOD score", "qtl");
+					//		img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight, "LOD score", "qtl");
 						}
 						else
 						{
 							img = MakeRPlot.plot(d, instance, null, name, "col", "o", plotWidth, plotHeight);
 						}
 						
-						qtl.setPlot(img.getName());
+				//		qtl.setPlot(img.getName());
 					}
 					catch(Exception e)
 					{

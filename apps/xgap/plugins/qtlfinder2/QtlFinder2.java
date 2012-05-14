@@ -506,15 +506,18 @@ public class QtlFinder2 extends PluginModel<Entity>
 		}
 		
 
-		File plot = MakeRPlot.qtlMultiPlot(tmpData, plotWidth, height, this.model.getQuery(), chromosomes);
-		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, this.model.getQuery(), chromosomes);
+		MakeRPlot m = new MakeRPlot();
 		
+		File plot = m.wormqtl_MultiPlot(tmpData, plotWidth, height, this.model.getQuery(), chromosomes);
+		File cisTransplot = m.wormqtl_CisTransPlot(tmpData, plotWidth, plotHeight, this.model.getQuery(), chromosomes);
+		File regularPlot = m.wormqtl_ProfilePlot(tmpData, plotWidth, height, this.model.getQuery(), chromosomes);
 		
 		QTLMultiPlotResult result = new QTLMultiPlotResult();
 		result.setSrcData(tmpData.getName());
 		result.setCytoNetwork(cytoscapeNetwork.getName());
 		result.setCytoNodes(cytoscapeNodes.getName());
 		result.setPlot(plot.getName());
+		result.setRegularPlot(regularPlot.getName());
 		result.setCisTransPlot(cisTransplot.getName());
 		result.setMatches(matches);
 		result.setDatasets(datasets);
