@@ -12,7 +12,7 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 
 /**
- * Simple in memory tuple table
+ * Wrap a List<Tuple> into a TupleTable
  */
 public class MemoryTable implements TupleTable
 {

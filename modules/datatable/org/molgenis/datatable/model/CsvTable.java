@@ -11,6 +11,9 @@ import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.Tuple;
 
+/**
+ * Wrap a CSV file into a TupleTable
+ */
 public class CsvTable implements TupleTable
 {
 	CsvReader csv;
