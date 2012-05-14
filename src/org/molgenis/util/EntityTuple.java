@@ -18,7 +18,7 @@ public class EntityTuple extends SimpleTuple
 	}
 	
 	@Override
-	public List<String> getFields()
+	public List<String> getFieldNames()
 	{
 		return entity.getFields();
 	}
@@ -26,7 +26,7 @@ public class EntityTuple extends SimpleTuple
 	@Override
 	public String getColName(int i)
 	{
-		List<String> colNames = this.getFields();
+		List<String> colNames = this.getFieldNames();
 		if(i >= 0 && i < colNames.size()) return colNames.get(i);
 		return null;
 	}
@@ -48,7 +48,7 @@ public class EntityTuple extends SimpleTuple
 	@Override
 	public int getNrColumns()
 	{
-		return this.getFields().size();
+		return this.getFieldNames().size();
 	}
 	
 	@Override
