@@ -8,7 +8,7 @@
 #PBS -o ${jobname}.out
 
 # Configures the GCC bash environment
-sh ${root}/gcc.bashrc
+. ${root}/gcc.bashrc
 
 <#include "Macros.ftl"/>
 <@begin/>
