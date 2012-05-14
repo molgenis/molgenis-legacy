@@ -472,6 +472,9 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 			
 			if (action.equals("selectParents")) {
+				hashFathers.clear();
+				hashMothers.clear();
+				
 				List<String> lis = new ArrayList<String>();
 				lis.add("");
 				numberOfPG = request.getInt("numberPG");
@@ -508,6 +511,7 @@ public class Breedingnew extends PluginModel<Entity>
 							rowCnt++;
 						}
 						hashFathers.put(i, selectedFatherNameList);
+						
 					}
 					
 					if(action.equals("selectParentsF"+(i))){
@@ -532,7 +536,10 @@ public class Breedingnew extends PluginModel<Entity>
 							}
 							rowCnt++;
 						}
+						
+						
 						hashMothers.put(i, selectedMotherNameList);
+						
 					}
 				}	
 			}
@@ -545,121 +552,72 @@ public class Breedingnew extends PluginModel<Entity>
 				
 				
 				if(action.equals("JensonButton")){
-					
+					boolean papa = false;
+					boolean mama = false;
 					List<String> pgNames = new ArrayList<String>();
-					for(Entry <Integer,List<String>> entry: hashFathers.entrySet()){
+					for(Entry<Integer,List<String>> entry : hashFathers.entrySet()){
 						
-						
-						String x = "";
-						String y = "";
-						if(request.getDate("startdate"+entry.getKey())!=null){
-							x = request.getString("startdate"+entry.getKey());
+						for(String s : entry.getValue()){
+							if(s.isEmpty()){
+								papa = true;
+							}
 						}
-						if(request.getString("remarks"+entry.getKey())!=null){
-							y = request.getString("remarks"+entry.getKey());
-						}
-						
-						System.out.println("BLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-						pgNames.add(AddParentgroup2(db, request,entry.getValue(),hashMothers.get(entry.getKey()),x,y));
-						
-						
-						// Reset matrix and add filter on name of newly added PG:
-						loadPgMatrixViewer(db);
-						pgMatrixViewer.setDatabase(db);
-						//pgMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
-						//Individual.NAME, Operator.EQUALS, pgNames));
-						pgMatrixViewer.reloadMatrix(db, null);
-						pgMatrixViewerString = pgMatrixViewer.render();
-						// Reset other fields
-						this.action = "init";
-						this.startdate = dateOnlyFormat.format(new Date());
-						this.remarks = null;
-						motherMatrixViewer = null;
-						this.setSuccess("Parentgroup " + pgNames + " successfully added; adding filter to matrix: name = " + pgNames);
 					}
-					hashFathers.clear();
-					hashMothers.clear();
-					numberOfPG = null;
+					for(Entry<Integer,List<String>> entry : hashMothers.entrySet()){
+						for(String s : entry.getValue()){
+							if(s.isEmpty()){
+								mama = true;
+							}
+						}
+					}
+					if(papa == false || mama == false){
+						
+						for(Entry <Integer,List<String>> entry: hashFathers.entrySet()){
+	
+							String x = "";
+							String y = "";
+							if(request.getDate("startdate"+entry.getKey())!=null){
+								x = request.getString("startdate"+entry.getKey());
+							}
+							if(request.getString("remarks"+entry.getKey())!=null){
+								y = request.getString("remarks"+entry.getKey());
+							}
+
+							pgNames.add(AddParentgroup2(db, request,entry.getValue(),hashMothers.get(entry.getKey()),x,y));
+							
+							
+							// Reset matrix and add filter on name of newly added PG:
+							loadPgMatrixViewer(db);
+							pgMatrixViewer.setDatabase(db);
+							//pgMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
+							//Individual.NAME, Operator.EQUALS, pgNames));
+							pgMatrixViewer.reloadMatrix(db, null);
+							pgMatrixViewerString = pgMatrixViewer.render();
+							// Reset other fields
+							this.action = "init";
+							this.startdate = newDateOnlyFormat.format(new Date());
+							this.remarks = null;
+							motherMatrixViewer = null;
+							this.setSuccess("Parentgroup " + pgNames + " successfully added; adding filter to matrix: name = " + pgNames);
+						}
+						hashFathers.clear();
+						hashMothers.clear();
+						numberOfPG = null;
+					
+					}
+					else{
+						this.setMessages(new ScreenMessage("Not all fathers or mothers are filled in", false));
+						action = "selectParents";
+					}
+					
 				}
 				
 				
 			}
 			catch(Exception e){
-				this.setMessages(new ScreenMessage("Not all fathers or mothers are filled in", false));
+				//this.setMessages(new ScreenMessage("Not all fathers or mothers are filled in", false));
 			}
-			
-			/*
-			if (action.equals("addParentgroupScreen3")) {
-				String motherNames = "";
-				@SuppressWarnings("unchecked")
-				List<ObservationElement> rows = (List<ObservationElement>) motherMatrixViewer.getSelection(db);
-				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(MOTHERMATRIX + "_selected_" + rowCnt) != null) {
-						String motherName = row.getName();
-						if (!this.selectedMotherNameList.contains(motherName)) {
-							this.selectedMotherNameList.add(motherName);
-							motherNames += motherName + " ";
-						}
-					}
-					rowCnt++;
-				}
-				// Check if at least one mother selected:
-				if (this.selectedMotherNameList.size() == 0) {
-					action = "addParentgroupScreen2"; // stay in current screen
-					throw new Exception("No mother(s) selected");
-				}
-				this.setSuccess("Mother(s) " + motherNames + "successfully added");
-				loadFatherMatrixViewer(db);
-				fatherMatrixViewer.setDatabase(db);
-				fatherMatrixViewerString = fatherMatrixViewer.render();
-			}
-			
-			if (action.equals("addParentgroupScreen4")) {
-				String fatherNames = "";
-				@SuppressWarnings("unchecked")
-				List<ObservationElement> rows = (List<ObservationElement>) fatherMatrixViewer.getSelection(db);
-				int rowCnt = 0;
-				for (ObservationElement row : rows) {
-					if (request.getBool(FATHERMATRIX + "_selected_" + rowCnt) != null) {
-						String fatherName = row.getName();
-						if (!this.selectedFatherNameList.contains(fatherName)) {
-							this.selectedFatherNameList.add(fatherName);
-							fatherNames += fatherName + " ";
-						}
-					}
-					rowCnt++;
-				}
-				// Check if at least one father selected:
-				if (this.selectedFatherNameList.size() == 0) {
-					this.action = "addParentgroupScreen3"; // stay in current screen
-					throw new Exception("No father(s) selected");
-				}
-				this.setSuccess("Father(s) " + fatherNames + "successfully added");
-			}
-	*/
-			//TODO: Look  
-			
-//			if (action.equals("addParentgroup")) {
-//				String newPgName = AddParentgroup2(db, request);
-//				// Reset matrix and add filter on name of newly added PG:
-//				loadPgMatrixViewer(db);
-//				pgMatrixViewer.setDatabase(db);
-//				pgMatrixViewer.getMatrix().getRules().add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, 
-//				Individual.NAME, Operator.EQUALS, newPgName));
-//				pgMatrixViewer.reloadMatrix(db, null);
-//				pgMatrixViewerString = pgMatrixViewer.render();
-//				// Reset other fields
-//				this.action = "init";
-//				this.selectedMotherNameList.clear();
-//				this.selectedFatherNameList.clear();
-//				this.startdate = dateOnlyFormat.format(new Date());
-//				this.remarks = null;
-//				fatherMatrixViewer = null;
-//				motherMatrixViewer = null;
-//				this.setSuccess("Parentgroup " + newPgName + " successfully added; adding filter to matrix: name = " + newPgName);
-//			}
-			
+		
 			if (action.equals("createParentgroup")) {
 				numberOfPG = -1;
 				loadMotherMatrixViewer(db);
@@ -1117,8 +1075,10 @@ public class Breedingnew extends PluginModel<Entity>
 		
 		// Populate lists (do this on every reload so they keep fresh, and do it here
 		// because we need the lineList in the init part that comes after)
+		
 		try {
 			// Populate line list
+			
 			lineList = ct.getAllMarkedPanels("Line", investigationNames);
 			// Default selected is first line
 			if (line == null && lineList.size() > 0) {

@@ -127,8 +127,8 @@
 			
 			<menu name="systemmenu" position="left" label="System">
 				<!-- PreFillDatabasePlugin; Goal: reset the database, putting back only the basic security entries; Flavor: Freemarker -->
-				<plugin name="PreFillDatabase" type="org.molgenis.animaldb.plugins.system.PreFillDatabasePlugin"
-					label="Reset database" />
+				<!--<plugin name="PreFillDatabase" type="org.molgenis.animaldb.plugins.system.PreFillDatabasePlugin"
+					label="Reset database" />-->
 				<!-- LoadLegacyPlugin; Goal: import legacy data from a ZIP, TXT or CSV file; Flavor: Freemarker -->
 				<plugin name="LoadLegacy" type="org.molgenis.animaldb.plugins.system.LoadLegacyPlugin"
 					label="Import database" />
