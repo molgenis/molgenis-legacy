@@ -984,7 +984,7 @@ public class Breedingnew extends PluginModel<Entity>
 		Date now = new Date();
 		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
 
-		Date eventDate = dateOnlyFormat.parse(startdate);
+		Date eventDate = newDateOnlyFormat.parse(startdate);
 		// Make parentgroup
 		String groupPrefix = "PG_" + line + "_";
 		int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
@@ -1103,7 +1103,7 @@ public class Breedingnew extends PluginModel<Entity>
 		if (userName != this.getLogin().getUserName()) {
 			userName = this.getLogin().getUserName();
 			ct.makeObservationTargetNameMap(userName, false);
-			this.setStartdate(dateOnlyFormat.format(new Date()));
+			this.setStartdate(newDateOnlyFormat.format(new Date()));
 			// Prepare pg matrix
 			if (pgMatrixViewer == null) {
 				loadPgMatrixViewer(db);
@@ -2199,7 +2199,7 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 	}
 	
 	public String getGenodate() {
-		return dateOnlyFormat.format(new Date());
+		return newDateOnlyFormat.format(new Date());
 	}
 
 	public int getNumberOfPG()
