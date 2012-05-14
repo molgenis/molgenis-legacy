@@ -109,7 +109,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				this.SearchFilters.clear();
 
 
-			} else if ("DownloadMeasurements".equals(request.getAction())) {
+			} else if ("SaveSelectionSubmit".equals(request.getAction())) {
 
 				// a jframe here isn't strictly necessary, but it makes the example a little more real
 				JFrame frame = new JFrame("Save Selection");
@@ -886,6 +886,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		List<String> uniqueMeasurementName = new ArrayList<String>();
 		
+		System.out.println("listOfMeasurements>>>"+listOfMeasurements);
+		
 		for(String eachMeasurement : listOfMeasurements){
 			
 			if(!uniqueMeasurementName.contains(eachMeasurement)){
@@ -959,6 +961,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			// q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT,
 			// Operator.EQUALS, false));
 			List<ShoppingCart> result = new ArrayList<ShoppingCart>();// q.find();
+			System.out.println("save selection step 0");
 
 			if (result.isEmpty()) {
 				//String shoppingCartName = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
@@ -967,11 +970,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				ShoppingCart shoppingCart = new ShoppingCart();
 				String shoppingCartName = selectionName;
 				shoppingCart.setName(shoppingCartName );
+				System.out.println("save selection step1");
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				shoppingCart.setUserID(this.getLogin().getUserName());
 				// shoppingCart.setCheckedOut(false);
 				// shoppingCart.setDateOfOrder(dateOfDownload);
+				System.out.println("save selection step2");
+
 				shoppingCart.setApproved(false);
 				db.add(shoppingCart);
 				// System.out.println("Download list has been added to the DB");
