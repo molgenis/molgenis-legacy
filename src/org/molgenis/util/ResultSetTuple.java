@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.molgenis.fieldtypes.FieldType;
 
 
 /**
@@ -77,7 +78,16 @@ public class ResultSetTuple extends SimpleTuple
 		}
 	}
 
-	public List<String> getFields()
+	/**
+	 * Deprecated: use getFieldNames instead.
+	 * @return
+	 */
+	@Deprecated
+	public List<String> getFields() {
+		return getFieldNames();
+	}
+	
+	public List<String> getFieldNames()
 	{
 		if (this.fieldNames == null)
 		{
@@ -387,7 +397,7 @@ public class ResultSetTuple extends SimpleTuple
 		}
 		return null;
 	}
-
+	
 	public boolean next() throws SQLException
 	{
 		return this.resultset.next();
@@ -396,5 +406,10 @@ public class ResultSetTuple extends SimpleTuple
 	public void close() throws SQLException
 	{
 		this.resultset.close();
+	}
+
+	public int getSqlType(int colIdx) throws SQLException
+	{
+		return this.metadata.getColumnType(colIdx);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.BoolField;
+import org.molgenis.fieldtypes.CharField;
 import org.molgenis.fieldtypes.DateField;
 import org.molgenis.fieldtypes.DatetimeField;
 import org.molgenis.fieldtypes.DecimalField;
@@ -138,6 +139,30 @@ public class MolgenisFieldTypes
 		{
 			e.printStackTrace();
 			throw new MolgenisModelException(e.getMessage());
+		}
+	}
+	
+	public static FieldType getTypeBySqlTypesCode(int sqlCode) {
+		switch(sqlCode) {
+			case java.sql.Types.BIGINT: return new LongField(); 
+			case java.sql.Types.INTEGER:
+			case java.sql.Types.SMALLINT:
+			case java.sql.Types.TINYINT: return new IntField();
+			
+			case java.sql.Types.BOOLEAN: return new BoolField();
+			case java.sql.Types.CHAR: return new CharField();
+			case java.sql.Types.DATE: return new DateField();
+			case java.sql.Types.DECIMAL: 
+			case java.sql.Types.DOUBLE: 
+			case java.sql.Types.NUMERIC:
+			case java.sql.Types.FLOAT: return new DecimalField();
+			
+			case java.sql.Types.VARCHAR:
+			case java.sql.Types.NVARCHAR: return new StringField();
+			
+			case java.sql.Types.TIME: return new DatetimeField();
+			
+			default: throw new IllegalArgumentException(String.format("unkown sql code: %d", sqlCode));
 		}
 	}
 }

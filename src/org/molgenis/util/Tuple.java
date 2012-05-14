@@ -71,7 +71,7 @@ public interface Tuple
 	 * 
 	 * @return column names.
 	 */
-	public List<String> getFields();
+	public List<String> getFieldNames();
 
 	/**
 	 * Retrieves the value of the designated column as Integer.
