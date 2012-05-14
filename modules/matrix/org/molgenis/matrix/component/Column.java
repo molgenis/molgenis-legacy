@@ -50,7 +50,6 @@ public class Column  {
 
     public String getName() {
         return measurement.getName();
-        FieldType
     }
 
     public ColumnType getType() {

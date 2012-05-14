@@ -1,80 +1,49 @@
 package org.molgenis.datatable.view;
 
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.molgenis.datatable.model.SimpleTableModel;
-import org.molgenis.fieldtypes.FieldType;
-import org.molgenis.matrix.MatrixException;
+import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.CsvWriter;
+import org.molgenis.util.Tuple;
 
-
-public class CsvExporter<RowType> extends AbstractExporter<RowType>
+/**
+ * Export TupleTable to CSV file.
+ * 
+ * This should replace CsvWriter class.
+ * TODO: 
+ */
+public class CsvExporter extends AbstractExporter
 {
-	protected CsvWriter d_writer;
-	protected SimpleDateFormat d_dateFormat;
-	
-	public CsvExporter(SimpleTableModel<RowType> matrix, OutputStream os) {
-		this(matrix, os, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-	}
-
-	public CsvExporter(SimpleTableModel<RowType> matrix, OutputStream os, SimpleDateFormat simpleDateFormat)
+	public CsvExporter(TupleTable table)
 	{
-		super(matrix, os);
-		d_writer = new CsvWriter(os);
-		d_writer.setSeparator(",");
+		super(table);
 	}
 
-	@Override	
-	public void export() throws MatrixException {
-		initHeaders();
-		writeResults();
-		d_writer.close();
-	}
-
-	protected void initHeaders() throws MatrixException {
+	@Override
+	public void export(OutputStream os) throws TableException
+	{
+		CsvWriter csv = new CsvWriter(os);
+		
+		//write headers
 		List<String> headers = new ArrayList<String>();
-		for (Field column : tableModel.getColumns())
+		for (Field column : table.getColumns())
 		{
 			headers.add(column.getName());
 		}
-		d_writer.setHeaders(headers);
-		d_writer.writeHeader();
-	}
-
-	@Override
-	public void writeSingleCell(Object value, int iRow, int iColumn, FieldType colType) {
-		// FIXME : typing
-		if (value instanceof Date) {
-			d_writer.writeValue(d_dateFormat.format(value));
-		} else {
-			d_writer.writeValue(value == null ? null : value.toString());
+		csv.setHeaders(headers);
+		csv.writeHeader();
+		
+		//write rows
+		for(Tuple row: table)
+		{
+			// FIXME : CsvWriter should use Field so it can format dates etc via FieldType!
+			csv.writeRow(row);
 		}
-	}
-	
-	@Override
-	public void writeSeparator() {
-		d_writer.writeSeparator();
-	};
-	
-	@Override
-	public void writeEndOfLine() {
-		d_writer.writeEndOfLine();
-	}
-
-	@Override
-	public String getFileExtension()
-	{
-		return ".csv";
-	}
-
-	@Override
-	public String getMimeType()
-	{
-		return "text/csv";
+		
+		csv.close();
 	}
 }

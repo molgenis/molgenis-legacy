@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
-import org.molgenis.datatable.model.SimpleTableModel;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.fieldtypes.CategoricalType;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.matrix.MatrixException;
@@ -25,12 +25,12 @@ import org.molgenis.model.elements.Field;
  *
  *	Exporter that writes to two streams; one of comma-separated values, and one SPSS script file to read them.
  */
-public class newSPSSExporter<RowType extends Iterable<?>> extends CsvExporter<RowType>
+public class newSPSSExporter extends CsvExporter
 {
 
 	private  OutputStream d_spsOs;
 
-	public newSPSSExporter(SimpleTableModel<RowType> matrix, OutputStream os, OutputStream spsOs)
+	public newSPSSExporter(TupleTable matrix, OutputStream os, OutputStream spsOs)
 	{
 		super(matrix, os, new SimpleDateFormat("MM/dd/yyyy"));
 		d_spsOs = spsOs;
