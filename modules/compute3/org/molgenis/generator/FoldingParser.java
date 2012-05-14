@@ -25,6 +25,7 @@ public class FoldingParser
 {
     private static String BAD = "The problematic instruction:";
 
+
     //is table (worksheet) folded
     private boolean isTableFoldered = false;
     //values which are lists in the worksheet
