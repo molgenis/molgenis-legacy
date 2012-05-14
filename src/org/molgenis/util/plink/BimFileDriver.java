@@ -42,14 +42,14 @@ public class BimFileDriver
 		reader = new CsvFileReader(bimFile);
 		reader.disableHeader(false);
 
-		if (reader.fileEndsWithNewlineChar())
+		if (CsvFileReader.fileEndsWithNewlineChar(bimFile))
 		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(bimFile)
+					- CsvFileReader.getAmountOfNewlinesAtFileEnd(bimFile);
 		}
 		else
 		{
-			this.nrOfElements = reader.getNumberOfLines();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(bimFile);
 		}
 
 	}

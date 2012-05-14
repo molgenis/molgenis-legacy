@@ -46,14 +46,14 @@ public class PedFileDriver
 		reader = new CsvFileReader(pedFile);
 		reader.disableHeader(false);
 
-		if (reader.fileEndsWithNewlineChar())
+		if (CsvFileReader.fileEndsWithNewlineChar(pedFile))
 		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(pedFile)
+					- CsvFileReader.getAmountOfNewlinesAtFileEnd(pedFile);
 		}
 		else
 		{
-			this.nrOfElements = reader.getNumberOfLines();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(pedFile);
 		}
 
 	}

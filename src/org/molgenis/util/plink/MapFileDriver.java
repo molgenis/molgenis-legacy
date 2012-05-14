@@ -41,14 +41,14 @@ public class MapFileDriver
 		reader = new CsvFileReader(mapFile);
 		reader.disableHeader(false);
 
-		if (reader.fileEndsWithNewlineChar())
+		if (CsvFileReader.fileEndsWithNewlineChar(mapFile))
 		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(mapFile)
+					- CsvFileReader.getAmountOfNewlinesAtFileEnd(mapFile);
 		}
 		else
 		{
-			this.nrOfElements = reader.getNumberOfLines();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(mapFile);
 		}
 
 	}
