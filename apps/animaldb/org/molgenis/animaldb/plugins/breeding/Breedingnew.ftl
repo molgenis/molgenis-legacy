@@ -334,6 +334,27 @@
 	jQuery('#namebase').chosen();
 	jQuery('#location').chosen();
 	
+			$(function() {
+		$("#birthdate").datepicker({
+			numberOfMonths: 1,
+			showButtonPanel: true,
+			dateFormat: "yy-mm-dd"
+		});
+	});
+	$(function() {
+		$( "#weandate" ).datepicker({
+			numberOfMonths: 1,
+			showButtonPanel: true,
+			dateFormat: "yy-mm-dd"
+		});
+	});
+	$(function() {
+        $( "#genodate" ).datepicker({
+            numberOfMonths: 1,
+            showButtonPanel: true,
+            dateFormat: "yy-mm-dd"
+        });
+    });
 
 
 	var oTable = jQuery('#pgstable').dataTable(
