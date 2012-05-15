@@ -172,7 +172,7 @@
 				example 'leave count' (phenotype characteristic) and 'PVV4' (marker
 				characteristic).
 			</description>
-			<unique fields="identifier"
+			<unique fields="identifier,__Type"
 				description="identifier is unique across all Characteristic (and its subclasses)" />
 		</entity>
 
