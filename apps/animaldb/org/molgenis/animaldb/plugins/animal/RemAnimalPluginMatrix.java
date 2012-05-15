@@ -53,6 +53,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 	private CommonService cs = CommonService.getInstance();
 	private List<Integer> targetList = null;
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+	private SimpleDateFormat newDateOnlyDbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
 	public RemAnimalPluginMatrix(String name, ScreenController<?> parent)
@@ -130,6 +131,8 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 					throw new Exception("No date of removal set - animals not terminated");
 				}
 				Date deathDate = newDateOnlyFormat.parse(deathDateString);
+				String deathDateStr = newDateOnlyDbFormat.format(deathDate);
+				
 				
 				String investigationName = cs.getOwnUserInvestigationName(db.getLogin().getUserName());
 				String notRemoved = "";
@@ -160,7 +163,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 					if (removal.equals("dood")) {
 						db.add(cs.createObservedValueWithProtocolApplication(investigationName, 
 								deathDate, null, "SetDeathDate", "DeathDate", animalName, 
-								newDateOnlyFormat.format(deathDate), null));
+								deathDateStr, null));
 					}
 					// Set remark
 					if (request.getString("remarks") != null) {
