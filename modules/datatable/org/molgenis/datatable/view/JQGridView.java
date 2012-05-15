@@ -1,7 +1,6 @@
 package org.molgenis.datatable.view;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.ParseException;
@@ -28,7 +27,7 @@ public class JQGridView extends HtmlWidget implements MolgenisService
 		super(id);
 		this.table = table;
 	}
-
+	
 	@Override
 	public String toHtml() {
 		try
@@ -38,7 +37,7 @@ public class JQGridView extends HtmlWidget implements MolgenisService
 			args.put("tableId", getId());
 			args.put("columns", table.getColumns());
 			args.put("dataSourceUrl", "jqGridService.do");
-			args.put("sortName", "tableId");
+			args.put("sortName", table.getColumns().get(0));
 			
 			final Configuration cfg = new Configuration();
 			cfg.setObjectWrapper(new DefaultObjectWrapper());

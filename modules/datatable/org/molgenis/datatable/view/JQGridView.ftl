@@ -10,7 +10,7 @@ var colNames = [
 
 var colModel = [
 	   		<#list columns as col>	
-	   		{name:'${col.name}',index:'${col.name}', width:55}<#if col_has_next>,</#if>
+	   		{name:'${col.name}',index:'${col.name}', width:150}<#if col_has_next>,</#if>
 	   		</#list>
 	   		];
 	   		
@@ -34,7 +34,7 @@ function createJQGrid() {
 
 $(document).ready(function(){
 	createJQGrid();	
-}
+});
 </script>
 
 <table id="${tableId}"></table>
