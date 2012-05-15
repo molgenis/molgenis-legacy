@@ -6,12 +6,12 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.TransformerUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -28,7 +28,6 @@ import org.molgenis.framework.ui.html.AbstractRefInput;
 import org.molgenis.util.Entity;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class MolgenisXrefService implements MolgenisService
@@ -125,28 +124,12 @@ public class MolgenisXrefService implements MolgenisService
 	
 	private static String toJSon(final String xrefField, final List<String> xref_labels, final List<? extends Entity> records, boolean nillable)
 			throws JSONException
-	{
-		class JsonNameValue {
-			private static final String JSON_OBJECT = "\"%1$s\":\"%2$s\"";
-			
-			public String property;
-			public String value;
-			
-			public JsonNameValue(String property, String value) {
-				this.property = property;
-				this.value = value;
-			}
-			
-			public String toString() {
-				return String.format(JSON_OBJECT, property, value);
-			}
-		}
-		
+	{		
 		// transform in JSON (JavaScript Object Notation)
-		List<JsonNameValue> jsonObjects = new ArrayList<JsonNameValue>();
+		Map<String,String> values = new LinkedHashMap<String,String>();
 		
 		if(nillable) {
-			jsonObjects.add(new JsonNameValue("", "null"));
+			values.put("&nbsp;", "&nbsp;");
 		}		
 		
 		for (int i = 0; i < records.size(); i++)
@@ -159,59 +142,10 @@ public class MolgenisXrefService implements MolgenisService
 				if (j > 0) value += "|";
 				value += records.get(i).get(xref_labels.get(j)).toString();
 			}
-			jsonObjects.add(new JsonNameValue(key, value));
+			values.put(key, value);
 		}
 
-		final StringBuilder result = new StringBuilder();
-		result.append("{");
-		result.append(StringUtils.join(jsonObjects, ","));
-		result.append("}");
-		return result.toString();
-
-		
-		
-		
-//		JSONObject jsonObject = new JSONObject();
-//		if(nillable) {
-//			jsonObject.put("", "&nbsp;");
-//		}
-//		
-//		for (int i = 0; i < records.size(); i++)
-//		{
-//			String key   = records.get(i).get(xrefField).toString();
-//			String value = "";
-//			for (int j = 0; j < xref_labels.size(); j++)
-//			{
-//				// hack
-//				if (j > 0) value += "|";
-//				value += records.get(i).get(xref_labels.get(j)).toString();
-//			}
-//			jsonObject.put(key, value);
-//		}
-//		
-//		String json = jsonObject.toString();
-//		return json;		
-		
-//		JSONObject jsonObject = new JSONObject();
-//		if(nillable) {
-//			jsonObject.put("", "&nbsp;");
-//		}
-//		
-//		for (int i = 0; i < records.size(); i++)
-//		{
-//			String key   = records.get(i).get(xrefField).toString();
-//			String value = "";
-//			for (int j = 0; j < xref_labels.size(); j++)
-//			{
-//				// hack
-//				if (j > 0) value += "|";
-//				value += records.get(i).get(xref_labels.get(j)).toString();
-//			}
-//			jsonObject.put(key, value);
-//		}
-//		
-//		String json = jsonObject.toString();
-//		return json;
+		return new JSONObject(values).toString();
 	}
 
 	public static List<? extends Entity> getRecords(final Database db, final String searchTerm,
