@@ -77,32 +77,40 @@
 					<td><label style="font-weight:bold" for="parentgroup${n}">parentgroup:${n+1}</label></td>
 				</tr>	
 				<tr>
-					<td><label for="father${n}">father:</label></td><td><input type='text' value="<#compress>
+					<td><label for="father${n}">father:</label></td><td><input type='text' class="ui-widget-content ui-corner-all" value="<#compress>
 						<#list screen.getFatherElement(n) as selParents >
 							${selParents}
 							<#if selParents_has_next>,</#if>
 						</#list>					
 					</#compress>"
 					name="father${n}" id="father${n}">
-					<input style="margin-left:2px; margin-right:5px" id="fatherB${n}"type="image" src="res/img/button_down_adb.jpg" height="16px" width="16px" onclick="__action.value='selectParentsM${n}'">
+					<input style="margin-left:2px; margin-right:5px" class="ui-widget-content ui-corner-all" id="fatherB${n}"type="image" src="res/img/button_down_adb.jpg" height="16px" width="16px" onclick="__action.value='selectParentsM${n}'">
 					</td>
 					
-					<td ><label for="mother${n}">mother:</label></td><td><input type='text' value="<#compress>
+					<td ><label for="mother${n}">mother:</label></td><td><input type='text' class="ui-widget-content ui-corner-all" value="<#compress>
 						<#list screen.getMotherElement(n) as selParents >
 							${selParents}
 							<#if selParents_has_next>,</#if>
 						</#list>					
 						</#compress>"
 						 name="mother${n}" id="mother${n}">
-						<input style="margin-left:2px; margin-right:5px" id="motherB${n}" type="image" src="res/img/button_down_adb_pink.jpg" height="16px" width="16px" onclick="__action.value='selectParentsF${n}'">
+						<input style="margin-left:2px; margin-right:5px" class="ui-widget-content ui-corner-all" id="motherB${n}" type="image" src="res/img/button_down_adb_pink.jpg" height="16px" width="16px" onclick="__action.value='selectParentsF${n}'">
 					</td>
 				</tr>
 				<tr>
 					<td><label for="startdate${n}">startdate:</label></td>
-					<td><input type="text" class="textbox" id="startdate${n}" name="startdate${n}" value='<#if screen.startdate?exists>${screen.getStartdate()}</#if>'onclick='showDateInput(this)' autocomplete='off'/></td>
-					<td><label for="remarks${n}">remarks:</label></td><td><input type='text' name="remarks${n}" id="remarks${n}"></td>	
+					<script>
+						$(function() {
+							$( "#startdate${n}" ).datepicker({
+								numberOfMonths: 1,
+								showButtonPanel: true,
+								dateFormat: "yy-mm-dd"
+							});
+						});
+					</script>
+					<td><input type="text" id="startdate${n}" class="ui-widget-content ui-corner-all" name="startdate${n}" value="<#if screen.startdate??>${screen.getStartdate()}"</#if></td>
+					<td><label for="remarks${n}">remarks:</label></td><td><input type='text' class="ui-widget-content ui-corner-all" name="remarks${n}" id="remarks${n}"></td>	
 				</tr>
-					
 			</table>
 			</div>	
 			</#list>
@@ -326,27 +334,7 @@
 	jQuery('#namebase').chosen();
 	jQuery('#location').chosen();
 	
-	$(function() {
-		$("#birthdate").datepicker({
-			numberOfMonths: 1,
-			showButtonPanel: true,
-			dateFormat: "yy-mm-dd"
-		});
-	});
-	$(function() {
-		$( "#weandate" ).datepicker({
-			numberOfMonths: 1,
-			showButtonPanel: true,
-			dateFormat: "yy-mm-dd"
-		});
-	});
-	$(function() {
-        $( "#genodate" ).datepicker({
-            numberOfMonths: 1,
-            showButtonPanel: true,
-            dateFormat: "yy-mm-dd"
-        });
-    });
+
 
 	var oTable = jQuery('#pgstable').dataTable(
 	{ "bProcessing": true,
