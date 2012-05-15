@@ -51,4 +51,5 @@ public interface JobGenerator
     void setConfig(Hashtable<String,String> config);
 
     void setWorksheet(List<Tuple> worksheet);
+
 }

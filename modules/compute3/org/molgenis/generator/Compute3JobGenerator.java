@@ -40,7 +40,7 @@ public class Compute3JobGenerator implements JobGenerator
 
     //grid specific imputation handler
     private GridHandler gridHandler = null;
-    private boolean  workflowHasDependencies = false;
+    private boolean workflowHasDependencies = false;
 
     //template sources
     private String templateGridHeader;
@@ -65,7 +65,7 @@ public class Compute3JobGenerator implements JobGenerator
     private String fileTemplateGridUploadLog = "templ-upload-grid-log.ftl";
     private String fileTemplateGridJDL = "templ-jdl-grid.ftl";
     private String fileTemplateGridAfterExecution = "templ-after-exe.ftl";
-    private String fileTemplateGridDAGNode = "templ-jdl-dag-node.ftl" ;
+    private String fileTemplateGridDAGNode = "templ-jdl-dag-node.ftl";
 
     private String fileTemplateClusterHeader = "templ-pbs-header.ftl";
     private String fileTemplateClusterFooter = "templ-pbs-footer.ftl";
@@ -78,10 +78,14 @@ public class Compute3JobGenerator implements JobGenerator
     private Hashtable<WorkflowElement, ComputeJob> pairWEtoCJ = null;
     private Hashtable<ComputeJob, WorkflowElement> pairCJtoWE = null;
 
-    //submission script for the cluster
+    //submission script for the cluster - filled when processing jobs for cluster
     private String submitScript = null;
+
     //dag file for submission for the grid
     private String dagScript = null;
+
+    //dag dependencies list - filled when processing jobs for grid
+    private String dagDependencies = null;
 
     private Hashtable<String, String> config;
 
@@ -92,12 +96,13 @@ public class Compute3JobGenerator implements JobGenerator
         this.worksheet = worksheet;
     }
 
+
     public Vector<ComputeJob> generateComputeJobsFoldedWorksheet(Workflow workflow, List<Tuple> f, String backend)
     {
         //create the table with targets, which is equal to worksheet if there are no targets
         List<Hashtable> table = null;
 
-        //set current workflow
+        //check if workflow elements have dependencies
         workflowHasDependencies = hasDependencies(workflow);
 
         //remove unused parameters from the worksheet
@@ -105,7 +110,7 @@ public class Compute3JobGenerator implements JobGenerator
         foldingMaker.setWorkflow(workflow);
         worksheet = foldingMaker.removeUnused(worksheet, (List<ComputeParameter>) workflow.getWorkflowComputeParameterCollection());
 
-        //some supplementary hashtables
+        //result jobs
         Vector<ComputeJob> computeJobs = new Vector<ComputeJob>();
 
         if (backend.equalsIgnoreCase(JobGenerator.GRID))
@@ -118,9 +123,10 @@ public class Compute3JobGenerator implements JobGenerator
         {
             submitScript = "";
         }
-        else if(backend.equalsIgnoreCase(JobGenerator.GRID) && workflowHasDependencies)
+        else if (backend.equalsIgnoreCase(JobGenerator.GRID) && workflowHasDependencies)
         {
             dagScript = "Type=\"dag\";\n\n";
+            dagDependencies = "";
         }
 
         Collection<ComputeParameter> parameters = workflow.getWorkflowComputeParameterCollection();
@@ -165,14 +171,14 @@ public class Compute3JobGenerator implements JobGenerator
                 String id = "id";
                 Hashtable<String, Object> line = table.get(i);
 
-                if(targets != null)
+                if (targets != null)
                 {
                     //use targets to create name
                     Enumeration ekeys = line.keys();
                     while (ekeys.hasMoreElements())
                     {
                         String ekey = (String) ekeys.nextElement();
-                        if(isTarget(ekey, targets))
+                        if (isTarget(ekey, targets))
                         {
                             Object eValues = line.get(ekey);
                             values.put(ekey, eValues);
@@ -266,7 +272,7 @@ public class Compute3JobGenerator implements JobGenerator
                         }
                         else
                             unweavedValues.put(value.getA(), value.getB());
-                   }
+                    }
 
                     for (String str : vecToRemove)
                         unweavedValues.remove(str);
@@ -296,7 +302,7 @@ public class Compute3JobGenerator implements JobGenerator
                     GridTransferContainer container = fillContainer(protocol, values);
                     pairJobTransfers.put(job.getName(), container);
                 }
-                else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+                //else if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
                 {
                     pairWEtoCJ.put(el, job);
                     pairCJtoWE.put(job, el);
@@ -324,10 +330,10 @@ public class Compute3JobGenerator implements JobGenerator
 
     private boolean isTarget(String ekey, List<ComputeParameter> targets)
     {
-        for(ComputeParameter par: targets)
+        for (ComputeParameter par : targets)
         {
             String name = par.getName();
-            if(name.equalsIgnoreCase(ekey))
+            if (name.equalsIgnoreCase(ekey))
                 return true;
         }
         return false;
@@ -385,7 +391,7 @@ public class Compute3JobGenerator implements JobGenerator
 
     //here, we also identify what parameters should be foldered
     private Pair<String, Object> processDependentParameter
-            (ComputeParameter par, Hashtable<String, Object> line, Hashtable<String, String> simpleValues)
+    (ComputeParameter par, Hashtable<String, Object> line, Hashtable<String, String> simpleValues)
     {
         Pair<String, Object> pair = new Pair<String, Object>();
         pair.setA(par.getName());
@@ -475,7 +481,7 @@ public class Compute3JobGenerator implements JobGenerator
             generationCount = gridHandler.getNextJobID();
 
             //adding dag dependencies
-            if(workflowHasDependencies)
+            if (workflowHasDependencies)
             {
                 dagScript += "nodes = [\n";
             }
@@ -500,17 +506,23 @@ public class Compute3JobGenerator implements JobGenerator
         if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
             writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + "submit_" + config.get(JobGenerator.GENERATION_ID) + ".sh",
                     submitScript);
-        else if(backend.equalsIgnoreCase(JobGenerator.GRID))
+        else if (backend.equalsIgnoreCase(JobGenerator.GRID))
         {
             //produce targetsListFile
             gridHandler.writeJobsLogsToFile(config);
 
-            //write dag file
+            //finilize dag
             dagScript += "\n];";
+            // cut last coma and new line
+            dagDependencies = dagDependencies.substring(0, dagDependencies.length() - 2);
+            dagDependencies = "\ndependencies = {\n" + dagDependencies + "\n}";
+            dagScript += dagDependencies;
+
+            //write dag file
             writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") +
                     "dag_" + config.get(JobGenerator.GENERATION_ID) + ".jdl",
                     dagScript);
-        }
+       }
 
         return true;
     }
@@ -577,7 +589,7 @@ public class Compute3JobGenerator implements JobGenerator
         //create jdl
         String jdlListing = weaveFreemarker(templateGridJDL, values);
 
-        if(workflowHasDependencies)
+        if (workflowHasDependencies)
         {
             String dagNodeListing = weaveFreemarker(templateGridDAGNode, values);
             dagScript += dagNodeListing + "\n";
@@ -691,8 +703,45 @@ public class Compute3JobGenerator implements JobGenerator
                 shellListing);
 
         //and computeJob to grid handler
-
         gridHandler.setComputeJob(computeJob, config);
+
+        //write job dependencies to DAG
+        WorkflowElement el = pairCJtoWE.get(computeJob);
+        if (el.getPreviousSteps().size() > 0)
+        {
+            String jobName = computeJob.getName();
+            Vector<String> dependencyNames = new Vector<String>();
+            for (WorkflowElement wEl : el.getPreviousSteps())
+            {
+                ComputeJob cJ = pairWEtoCJ.get(wEl);
+                String strDependencyName = cJ.getName();
+                dependencyNames.addElement(strDependencyName);
+            }
+
+            String strDependency = "";
+
+            //more than one previous element
+            if(dependencyNames.size() > 1)
+            {
+                for(String str : dependencyNames)
+                {
+                    strDependency += str + ", ";
+                }
+                //cut last coma
+                strDependency = strDependency.substring(0, strDependency.length() - 2);
+                strDependency = "{ " + strDependency + " }";
+            }
+            //only one dependency element
+            else
+            {
+                strDependency = dependencyNames.elementAt(0) ;
+            }
+
+            // format string and add to DAg
+            String toAdd = "{ " + jobName + ", " + strDependency + " },\n";
+            dagDependencies = toAdd + dagDependencies;
+        }
+
     }
 
     private String giveJustName(String actualName)
@@ -792,5 +841,6 @@ public class Compute3JobGenerator implements JobGenerator
         {
         }
     }
+
 
 }
