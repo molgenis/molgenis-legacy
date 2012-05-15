@@ -29,6 +29,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.matrix.component.MatrixViewer;
@@ -229,7 +230,9 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 	
 	public ScreenView getView()
     {
-    	return container;
+		MolgenisForm view = new MolgenisForm(this);
+    	view.add(container);
+    	return view;
     }
 	
 	private boolean inExperiment(Database db, String animalName, Date deathDate) throws DatabaseException, ParseException {

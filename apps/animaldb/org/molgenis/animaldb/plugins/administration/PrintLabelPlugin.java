@@ -25,6 +25,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.HorizontalRuler;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.matrix.MatrixException;
@@ -232,7 +233,9 @@ public class PrintLabelPlugin extends EasyPluginController
 	}
 
 	public ScreenView getView() {
-		return container;
+		MolgenisForm view = new MolgenisForm(this);
+    	view.add(container);
+    	return view;
 	}
 	
 	 /** 
