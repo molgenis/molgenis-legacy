@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <molgenis name="xqtl_lifelines" label="LifeLines Research Portal and Catalog">
 	<plugin name="molgenis_header" type="org.molgenis.lifelinesresearchportal.plugins.header.MolgenisHeader" />
 	<menu name="main">
@@ -19,6 +20,5 @@
 				<form name="PermittedValues" entity="Category" />
 			</menu>
 		</form>
-
 	</menu>
 </molgenis>
