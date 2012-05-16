@@ -104,105 +104,113 @@ function setValidationStudy(validationStudyName){
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-				<#if screen.isSelectedInv() == true>
-					<table class="box" width="100%" cellpadding="0" cellspacing="0">
-						<tr><td class="box-header" colspan="1">  
-								<label>Choose a prediction model:
-								<select name="investigation" id="investigation"> 
-									<#list screen.arrayInvestigations as inv>
-										<#assign invName = inv.name>
+				
+				<#if screen.getDevelopingAlgorithm() == true>
+					Hello world!</br>
+					<input type="submit" value="generate algorithm" id="continue" name="continue" onclick="__action.value='generateAlgorithm';" />
+				<#else>
+				
+					<#if screen.isSelectedInv() == true>
+						<input type="submit" value="Algorithm" id="switchToAlgorithm" name="switchToAlgorithm" onclick="__action.value='switchToAlgorithm';" />
+						<table class="box" width="100%" cellpadding="0" cellspacing="0">
+							<tr><td class="box-header" colspan="1">  
+									<label>Choose a prediction model:
+									<select name="investigation" id="investigation"> 
+										<#list screen.arrayInvestigations as inv>
+											<#assign invName = inv.name>
+												<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+										</#list>
+									</select>
+									<script>$('#investigation').chosen();</script>
+									<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
+									<input type="image" src="res/img/refresh.png" alt="Submit" 
+										name="chooseInvestigation" style="vertical-align: middle;" 
+										value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
+										DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
+									</label>
+									<div id="masstoggler"> 	
+										<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+								 			<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
+								 			<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
+					 				</div>
+								</td>
+						    	<td class="box-header" colspan="2">
+						    		<label>Choose a validation study:
+									<select name="validationStudy" id="validationStudy"> 
+										<#list screen.arrayInvestigations as inv>
+											<#assign invName = inv.name>
 											<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
-									</#list>
-								</select>
-								<script>$('#investigation').chosen();</script>
-								<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
-								<input type="image" src="res/img/refresh.png" alt="Submit" 
-									name="chooseInvestigation" style="vertical-align: middle;" 
-									value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-									DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
-								</label>
-								<div id="masstoggler"> 	
-									<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
-							 			<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
-							 			<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
-				 				</div>
-							</td>
-					    	<td class="box-header" colspan="2">
-					    		<label>Choose a validation study:
-								<select name="validationStudy" id="validationStudy"> 
-									<#list screen.arrayInvestigations as inv>
-										<#assign invName = inv.name>
-										<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
-									</#list>
-								</select></br></br>
-								<script>
-									setValidationStudy('${screen.getValidationStudyName()}');
-									$('#validationStudy').chosen();
-								</script>
-								</br>
-								Tick the box if this is baseline data<input type="checkbox" name="baseline" id="baseline"/>
-					    	</td>
-					    </tr>
-					    <tr>
-					    	<td class="box-body" style="width:50%;">
-						
-								Please upload your ontology file to extend your query (optional)<br/><br/>
-								<input type="file" name = "ontologyFile"/>	    
-					    
-					    	</td>
-					    	<td class="box-body" style="width: 50%;">
-							</td>
-						</tr>
-					    <tr>
-					    	<td class="box-body">
-								<div id="leftSideTree">  
-									${screen.getTreeView()}
-								</div><br/>
-						    </td>
-						    
-						    <td class="box-body">
-						    	<!--div id="scrollingDiv"--> 
-      								<div id="details">
-      									
-      									${screen.getHitSizeOption()}
-      									
-      								</div><br/><br/>
-      							<!--/div-->
-
-						   </td>
-						</tr>
-						<tr>
-							<td class="box-body">
-								<input class="saveSubmit" type="submit" id="startMatching" name="startMatching" value="Matching" 
-									onclick="__action.value='startMatching';" 
-									style="color: #000; background: #8EC7DE;
-										   border: 2px outset #d7b9c9;
-										   font-size:15px;
-										   font-weight:bold;"/>
-									
-							</td>
-							<td class="box-body">
-							<input class="saveMapping" type="submit" id="saveMapping" name="saveMapping" value="save Mapping" 
-									onclick="__action.value='saveMapping';" 
-									style="color: #000; background: #8EC7DE;
-										   border: 2px outset #d7b9c9;
-										   font-size:15px;
-										   font-weight:bold;"/></td>
+										</#list>
+									</select></br></br>
+									<script>
+										setValidationStudy('${screen.getValidationStudyName()}');
+										$('#validationStudy').chosen();
+									</script>
+									</br>
+									Tick the box if this is baseline data<input type="checkbox" name="baseline" id="baseline"/>
+						    	</td>
+						    </tr>
+						    <tr>
+						    	<td class="box-body" style="width:50%;">
 							
-						</tr>
-					</table>
-					
-					<#list screen.getListOfParameters() as parameter>
-						<script>
-							addingTable('${parameter}');
-						</script>
-					</#list>
-					<script>
-						refreshByHits();
-					</script>
-					<#list screen.getExecutiveScript() as executiveScript>
-							${executiveScript}
+									Please upload your ontology file to extend your query (optional)<br/><br/>
+									<input type="file" name = "ontologyFile"/>	    
+						    
+						    	</td>
+						    	<td class="box-body" style="width: 50%;">
+								</td>
+							</tr>
+						    <tr>
+						    	<td class="box-body">
+									<div id="leftSideTree">  
+										${screen.getTreeView()}
+									</div><br/>
+							    </td>
+							    
+							    <td class="box-body">
+							    	<!--div id="scrollingDiv"--> 
+	      								<div id="details">
+	      									
+	      									${screen.getHitSizeOption()}
+	      									
+	      								</div><br/><br/>
+	      							<!--/div-->
+	
+							   </td>
+							</tr>
+							<tr>
+								<td class="box-body">
+									<input class="saveSubmit" type="submit" id="startMatching" name="startMatching" value="Matching" 
+										onclick="__action.value='startMatching';" 
+										style="color: #000; background: #8EC7DE;
+											   border: 2px outset #d7b9c9;
+											   font-size:15px;
+											   font-weight:bold;"/>
+										
+								</td>
+								<td class="box-body">
+								<input class="saveMapping" type="submit" id="saveMapping" name="saveMapping" value="save Mapping" 
+										onclick="__action.value='saveMapping';" 
+										style="color: #000; background: #8EC7DE;
+											   border: 2px outset #d7b9c9;
+											   font-size:15px;
+											   font-weight:bold;"/></td>
+								
+							</tr>
+						</table>
+						
+						<#list screen.getListOfParameters() as parameter>
+							<script>
+								addingTable('${parameter}');
+							</script>
 						</#list>
+						<script>
+							refreshByHits();
+						</script>
+						<#list screen.getExecutiveScript() as executiveScript>
+								${executiveScript}
+							</#list>
+				   </#if>
 			   </#if>	
 			</div>
 		</div>

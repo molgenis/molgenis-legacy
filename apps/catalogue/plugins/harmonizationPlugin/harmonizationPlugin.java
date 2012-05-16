@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
@@ -38,6 +39,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	private String selectedInvestigation = null;
 	private String selectedField = null;
 	private boolean isSelectedInv = false;
+	private boolean developingAlgorithm = false;
 
 	/** Multiple inheritance: some measurements might have multiple parents therefore it
 	 *  will complain about the branch already exists when constructing the tree, cheating by
@@ -79,7 +81,15 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 		try {
 
-			if (request.getAction().equals("chooseInvestigation")) {
+			if (request.getAction().equals("generateAlgorithm")) {
+				
+				generateAlgorithm(db);
+
+			}else if (request.getAction().equals("switchToAlgorithm")) {
+				
+				developingAlgorithm = true;
+
+			}else if (request.getAction().equals("chooseInvestigation")) {
 				selectedInvestigation = request.getString("investigation");
 				this.setSelectedInvestigation(selectedInvestigation);
 				System.out.println("The selected investigation is : "
@@ -108,16 +118,16 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
 							Operator.EQUALS, validationStudyName))){
 
-						//						if(m.getName().endsWith("_" + validationStudyName)){
-						//							
-						//							String displayName = m.getName().substring(0, 
-						//									m.getName().length() - validationStudyName.length() -1);
-						//							
-						//							questionsAndIdentifier.put(displayName, m.getName());
-						//							
-						//						}else{
-						//							questionsAndIdentifier.put(m.getName(), m.getName());
-						//						}
+//												if(m.getName().endsWith("_" + validationStudyName)){
+//													
+//													String displayName = m.getName().substring(0, 
+//															m.getName().length() - validationStudyName.length() -1);
+//													
+//													questionsAndIdentifier.put(displayName, m.getName());
+//													
+//												}else{
+//													questionsAndIdentifier.put(m.getName(), m.getName());
+//												}
 
 						if(m.getDescription() != null && !m.getDescription().equals("")){
 							questionsAndIdentifier.put(m.getDescription().replaceAll("[\\n;]", " "), m.getName());
@@ -269,7 +279,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 									mapping.setTarget_Name(originalQuery.toLowerCase() + "_" + validationStudyName);
 
-									mapping.setInvestigation_Name("Validation Study");
+									mapping.setInvestigation_Name(validationStudyName);
 
 									mapping.setDataType("pairingrule");
 
@@ -304,6 +314,24 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			this.setError("There was a problem handling your Download: " + e.getMessage());
 		}
 
+	}
+
+	private void generateAlgorithm(Database db) throws DatabaseException {
+		
+		if(db.find(MappingMeasurement.class, new QueryRule(MappingMeasurement.INVESTIGATION_NAME, 
+				Operator.EQUALS, validationStudyName)).size() > 0){
+			
+			List<MappingMeasurement> listOfMappings = db.find(MappingMeasurement.class, new QueryRule(MappingMeasurement.INVESTIGATION_NAME, 
+					Operator.EQUALS, validationStudyName));
+			
+			for(MappingMeasurement mapping : listOfMappings){
+				
+				String mappedParameter = mapping.getMapping_Name();
+				String derivedParameter = mapping.getTarget_Name();
+				List<String> featureNames = mapping.getFeature_Name();
+				
+			}
+		}
 	}
 
 	public void stringMatching(String separator, Tuple request) throws Exception{
@@ -863,6 +891,10 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 	public void setSelectedField(String selectedField) {
 		this.selectedField = selectedField;
+	}
+	
+	public boolean getDevelopingAlgorithm() {
+		return developingAlgorithm;
 	}
 
 	public String getSelectedField() {
