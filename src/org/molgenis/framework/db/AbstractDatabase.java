@@ -11,13 +11,10 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.molgenis.MolgenisOptions;
-import org.molgenis.fieldtypes.StringField;
-import org.molgenis.fieldtypes.TextField;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCQueryGernatorUtil;
 import org.molgenis.framework.security.Login;
@@ -30,7 +27,9 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleReader;
 import org.molgenis.util.TupleWriter;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public abstract class AbstractDatabase implements Database
 {
 

@@ -42,19 +42,29 @@ import org.molgenis.util.TupleWriter;
  */
 public interface Database
 {
-	// /**
-	// * Create tables based on annotations.
-	// *
-	// * @param persistenceUnitName
-	// */
-	// public void createTables();
-	//
-	// /**
-	// * Drop tables based on annotations
-	// *
-	// * @param persistenceUnitName
-	// */
-	// public void dropTables();
+	 /**
+	 * Create tables.
+	 * @throws DatabaseException
+	 */
+	 public void createTables() throws DatabaseException;
+
+	 /**
+	  * Update tables.
+	  * @throws DatabaseException
+	  */
+	 public void updateTables() throws DatabaseException;
+	 
+	 /**
+	 * Drop tables.
+	 * @throws DatabaseException
+	 */
+	 public void dropTables() throws DatabaseException;
+
+	 /**
+	  * Load example data into database.
+	  * @throws DatabaseException
+	  */
+	 public void loadExampleData(ExampleData exampleData) throws DatabaseException;
 
 	/**
 	 * Retrieve meta data describing data structure in this Database.

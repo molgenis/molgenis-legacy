@@ -1,13 +1,15 @@
 package org.molgenis.framework.db.jdbc;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
@@ -18,8 +20,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.AbstractDatabase;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
-import org.molgenis.util.Entity;
+import org.molgenis.framework.db.ExampleData;
 
 /**
  * JDBC implementation of Database to query relational databases.
@@ -165,7 +166,7 @@ public class JDBCDatabase extends AbstractDatabase
 		}
 		else
 		{
-			this.logger.warn("db_filepath is missing");
+			logger.warn("db_filepath is missing");
 		}
 	}
 	
@@ -395,5 +396,66 @@ public class JDBCDatabase extends AbstractDatabase
 		
 	}
 
+	@Override
+	public void createTables() throws DatabaseException
+	{
+		this.executeSqlFile("/create_tables.sql");
+	}
 
+	@Override
+	public void updateTables()
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void dropTables() throws DatabaseException
+	{
+		this.executeSqlFile("/drop_tables.sql");
+	}
+
+	@Override
+	public void loadExampleData(ExampleData exampleData) throws DatabaseException
+	{
+		exampleData.load(this);
+	}
+
+	private void executeSqlFile(String filename) throws DatabaseException
+	{
+		Connection conn = null;
+		try
+		{
+			conn = this.getConnection();
+			String create_tables_sql = "";
+
+			InputStream fis = this.getClass().getResourceAsStream(filename);
+			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+			String line;
+			while ((line = in.readLine()) != null)
+			{
+				create_tables_sql += line + "\n";
+			}
+			in.close();
+
+			Statement stmt = conn.createStatement();
+			int i = 0;
+			for (String command : create_tables_sql.split(";"))
+			{
+				if (command.trim().length() > 0)
+				{
+					stmt.executeUpdate(command + ";");
+					if (i++ % 10 == 0)
+					{
+						// System.out.print(".");
+					}
+
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new DatabaseException(e);
+		}
+	}
 }

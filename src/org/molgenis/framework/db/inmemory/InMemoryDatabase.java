@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.ExampleData;
 import org.molgenis.framework.db.Mapper;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
@@ -48,7 +49,7 @@ public class InMemoryDatabase implements Database
 			db.put(c, new LinkedHashMap<Integer, Entity>());
 		}
 
-		db.get(c).put(autoid++, (Entity) entity);
+		db.get(c).put(autoid++, entity);
 
 		// set autoid unless already set
 		if (entity.get(entity.getIdField()) == null)
@@ -464,6 +465,35 @@ public class InMemoryDatabase implements Database
 	{
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void createTables()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateTables()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dropTables()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void loadExampleData(ExampleData exampleData)
+			throws DatabaseException
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 
