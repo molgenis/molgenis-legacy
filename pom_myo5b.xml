@@ -1,0 +1,309 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.molgenis</groupId>
+    <artifactId>molgenisapp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <name>mvid</name>
+
+    <properties>
+        <endorsed.dir>${basedir}/endorsed</endorsed.dir>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+    </properties>
+    
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.1.0.RELEASE</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>1.4.01</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-ext</artifactId>
+			<version>1.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- database hibernate, connectionpool, driver -->
+		<dependency>
+            <groupId>org.molgenis</groupId>
+            <artifactId>molgenis</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+		<!-- Selenium Web test framework -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>2.19.0</version>
+		</dependency>  
+
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-firefox-driver</artifactId>
+			<version>2.19.0</version>
+		</dependency>  
+
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-server</artifactId>
+			<version>2.19.0</version>
+		</dependency> 
+
+		<!-- Open ID -->
+		<dependency>
+			<groupId>org.expressme</groupId>
+			<artifactId>JOpenId</artifactId>
+			<version>1.08</version>
+		</dependency>
+
+		<!-- CAPTCHA -->
+		<dependency>
+			<groupId>org.gatein.captcha</groupId>
+			<artifactId>simplecaptcha</artifactId>
+			<version>1.1.1-GA-Patch01</version>
+		</dependency>
+
+		<!-- RSS Feeds -->
+		<dependency>
+			<groupId>org.apache.abdera</groupId>
+			<artifactId>abdera-bundle</artifactId>
+			<version>1.1.2</version>
+		</dependency>        
+
+		<!-- Collections -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>        
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>        
+
+		<!-- regular expressions -->
+<!--
+		<dependency>
+			<groupId>regexp</groupId>
+			<artifactId>regexp</artifactId>
+			<version>1.3</version>
+		</dependency>
+-->
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+	</dependencies>
+
+
+
+    <build>
+        <resources>
+            <!-- Persistence.xml -->
+            <resource>
+                <directory>generated/java/META-INF</directory>
+                <targetPath>META-INF</targetPath>
+            </resource>
+            <!-- copy freemarker templates -->
+<!--
+            <resource>
+                <directory>generated/</directory>
+                <includes>
+                    <include>**/*.ftl</include>
+                </includes>
+				<targetPath>${basedir}</targetPath>
+            </resource>
+-->
+            <resource>
+                <directory>apps/myo5b/</directory>
+                <includes>
+                    <include>apps/myo5b/**/*.ftl</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>modules/auth</directory>
+                <includes>
+                    <include>modules/auth/**/*.ftl</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>modules/pheno</directory>
+                <includes>
+                    <include>modules/pheno/**/*.ftl</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>modules/variant</directory>
+                <includes>
+                    <include>modules/variant/**/*.ftl</include>
+                </includes>
+            </resource>
+        </resources>
+        
+        <plugins>
+            <plugin> <!-- makes it possible to build project with multiple src dirs -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>generated/java</source>
+                                <source>apps/myo5b</source>
+                                <source>modules/auth</source>
+                                <source>modules/datamodel</source>
+                                <source>modules/file</source>
+                                <source>modules/news</source>
+                                <source>modules/pheno</source>
+                                <source>modules/settings</source>
+                                <source>modules/variant</source>
+                                <source>modules/decorators/auth</source>
+                                <source>modules/decorators/core</source>
+                                <source>modules/decorators/pheno</source>
+                                <source>publicdata</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+            	<groupId>org.molgenis</groupId>
+            	<artifactId>molgenis-maven-plugin</artifactId>
+            	<version>1.0-SNAPSHOT</version>
+<!--
+            	<executions>
+            		<execution>
+            			<phase>generate-sources</phase>
+            			<goals>
+            				<goal>generate</goal>
+            			</goals>
+            		</execution>
+            	</executions>
+-->
+            	<configuration>
+            		<propertiesPath>apps/myo5b/org/molgenis/myo5b/myo5b.properties</propertiesPath>
+            	</configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>jrebel-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <executions>
+                    <execution>
+                        <id>generate-rebel-xml</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <compilerArguments>
+                        <endorseddirs>${endorsed.dir}</endorseddirs>
+                    </compilerArguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <warSourceDirectory>WebContent</warSourceDirectory>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/lib</outputDirectory>              
+                        </configuration>
+                    </execution>
+                    
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${endorsed.dir}</outputDirectory>                            
+                            <silent>true</silent>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>javax</groupId>
+                                    <artifactId>javaee-endorsed-api</artifactId>
+                                    <version>6.0</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <configuration>
+                    <webAppSourceDirectory>${basedir}/WebContent</webAppSourceDirectory>
+                    <scanIntervalSeconds>3</scanIntervalSeconds>
+                    <stopPort>9966</stopPort> 
+                    <stopKey>jetty-stop</stopKey>
+                </configuration>
+            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<wtpversion>2.0</wtpversion>
+				</configuration>
+			</plugin>
+        </plugins>
+    </build>
+</project>

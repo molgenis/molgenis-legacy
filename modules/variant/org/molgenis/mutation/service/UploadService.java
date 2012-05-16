@@ -30,10 +30,10 @@ import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.pheno.AlternateId;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Patient;
 import org.molgenis.pheno.dto.ObservedValueDTO;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.variant.SequenceCharacteristic;
+import org.molgenis.variant.Patient;
+import org.molgenis.variant.Variant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,7 +93,7 @@ public class UploadService extends MolgenisVariantService
 			// Add mutations
 			for (VariantDTO variantDTO : patientSummaryVO.getVariantDTOList())
 			{
-				List<SequenceCharacteristic> mutations = this.db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.NAME, variantDTO.getCdnaNotation()).find();
+				List<Variant> mutations = this.db.query(Variant.class).equals(Variant.NAME, variantDTO.getCdnaNotation()).find();
 	
 				if (mutations.size() != 1)
 					throw new UploadServiceException("No mutation found for " + variantDTO.getCdnaNotation());
@@ -329,7 +329,7 @@ public class UploadService extends MolgenisVariantService
 		alternateId.setName(mutationUploadDTO.getIdentifier());
 		this.em.persist(alternateId);
 		
-		SequenceCharacteristic variant = new SequenceCharacteristic();
+		Variant variant = new Variant();
 		variant.setAlternateId(alternateId);
 		variant.setName(mutationUploadDTO.getCdnaNotation());
 		variant.setFeatureType(this.ontologyTermCache.get("variant"));

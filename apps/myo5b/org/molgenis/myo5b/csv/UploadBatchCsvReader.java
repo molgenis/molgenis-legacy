@@ -38,8 +38,10 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.variant.Patient;
 import org.molgenis.variant.SequenceCharacteristic;
 import org.molgenis.variant.SequenceRelation;
+import org.molgenis.variant.Variant;
 
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.MutationUploadDTO;
@@ -48,7 +50,6 @@ import org.molgenis.pheno.AlternateId;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Patient;
 import org.molgenis.core.Publication;
 import org.molgenis.core.service.PublicationService;
 import org.molgenis.submission.Submission;
@@ -116,14 +117,20 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		db.add(submission);
 
 		//cache for objects to be imported from file (in batch)
-		final Map<String, AlternateId> alternateIdList                       = new HashMap<String, AlternateId>();
-		final List<ObservedValue> observedValueList                          = new ArrayList<ObservedValue>();
-		final Map<String, Patient> patientList                               = new HashMap<String, Patient>();
-		final Set<String> pubmedStringList                                   = new HashSet<String>();
-		final Map<String, SequenceCharacteristic> sequenceCharacteristicList = new HashMap<String, SequenceCharacteristic>();
-		final List<SequenceRelation> sequenceRelationList                    = new ArrayList<SequenceRelation>();
+		final Map<String, AlternateId> alternateIdList    = new HashMap<String, AlternateId>();
+		final List<ObservedValue> observedValueList       = new ArrayList<ObservedValue>();
+		final Map<String, Patient> patientList            = new HashMap<String, Patient>();
+		final Set<String> pubmedStringList                = new HashSet<String>();
+		final Map<String, Variant> variantList            = new HashMap<String, Variant>();
+		final List<SequenceRelation> sequenceRelationList = new ArrayList<SequenceRelation>();
 
 		reader.setMissingValues(missingValues);
+		/*
+		 * Set column separator to \t
+		 * Override from CsvBufferedReaderMultiline:
+		 * public static char[] separators = { ',', '\t', ';', ' ' };
+		 */
+		reader.setSeparator('\t');
 
 		int mutationIdentifier = uploadService.findMaxMutationIdentifier();
 		int patientIdentifier  = uploadService.findMaxPatientIdentifier();
@@ -172,7 +179,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 					String aaNotation    = (ArrayUtils.getLength(aaNotations) == ArrayUtils.getLength(cdnaNotations) ? aaNotations[i] : "");
 
 					// Check whether already existing
-					List<SequenceCharacteristic> results = db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.NAME, cdnaNotation).find();
+					List<Variant> results = db.query(Variant.class).equals(Variant.NAME, cdnaNotation).find();
 
 					if (results.size() < 1)
 					{
@@ -184,68 +191,23 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 							mutationUploadDTO.setAaNotation(aaNotation);
 
 						// Add cDNA variant notation
-						SequenceCharacteristic cdnaVariant = new SequenceCharacteristic();
-						cdnaVariant.setFeatureType(uploadService.getOntologyTermCache().get("cdna-variant"));
+						Variant cdnaVariant = new Variant();
+						cdnaVariant.setFeatureType(uploadService.getOntologyTermCache().get("variant"));
 						cdnaVariant.setName(cdnaNotation);
 						cdnaVariant.setSeqlen(mutationUploadDTO.getLength());
 
-						sequenceCharacteristicList.put(cdnaVariant.getName(), cdnaVariant);
+						variantList.put(cdnaVariant.getName(), cdnaVariant);
 
-						// Add cDNA position of variant
-						SequenceCharacteristic exon = new SequenceCharacteristic();
-						exon.setId(mutationUploadDTO.getExonId());
+						cdnaVariant.setStartCdna(mutationUploadDTO.getCdnaStart());
+						cdnaVariant.setEndCdna(mutationUploadDTO.getCdnaEnd());
 
-						SequenceRelation cdnaRelation = new SequenceRelation();
-						cdnaRelation.setFeature(cdnaVariant);
-						cdnaRelation.setSequenceFeature(cdnaVariant);
-						cdnaRelation.setSequenceTarget(exon);
-						cdnaRelation.setTarget(exon);
-						cdnaRelation.setRelationType(uploadService.getOntologyTermCache().get("part-of"));
-						cdnaRelation.setFmin(mutationUploadDTO.getCdnaStart());
-						cdnaRelation.setFmax(mutationUploadDTO.getCdnaEnd());
+						cdnaVariant.setStartAa(mutationUploadDTO.getAaStart());
+						cdnaVariant.setEndAa(mutationUploadDTO.getAaEnd());
 
-						sequenceRelationList.add(cdnaRelation);
+						cdnaVariant.setStartGdna(mutationUploadDTO.getGdnaStart());
+						cdnaVariant.setEndGdna(mutationUploadDTO.getGdnaEnd());
 
-						// Add aa variant notation
-						SequenceCharacteristic aaVariant = new SequenceCharacteristic();
-						aaVariant.setFeatureType(uploadService.getOntologyTermCache().get("aa-variant"));
-						aaVariant.setName(aaNotation);
-						
-						sequenceCharacteristicList.put(aaVariant.getName(), aaVariant);
-
-						// Add relation between cDNA and aa variant notations
-
-						SequenceRelation aaRelation = new SequenceRelation();
-						aaRelation.setFeature(aaVariant);
-						aaRelation.setSequenceFeature(aaVariant);
-						aaRelation.setSequenceTarget(cdnaVariant);
-						aaRelation.setTarget(cdnaVariant);
-						aaRelation.setRelationType(uploadService.getOntologyTermCache().get("result-of"));
-						aaRelation.setFmin(mutationUploadDTO.getAaStart());
-						aaRelation.setFmax(mutationUploadDTO.getAaStart());
-
-						sequenceRelationList.add(aaRelation);
-
-						// Add gDNA variant notation
-
-						SequenceCharacteristic gdnaVariant = new SequenceCharacteristic();
-						gdnaVariant.setFeatureType(uploadService.getOntologyTermCache().get("gdna-variant"));
-						gdnaVariant.setName(mutationUploadDTO.getGdnaNotation());
-
-						sequenceCharacteristicList.put(gdnaVariant.getName(), gdnaVariant);
-						
-						// Add relation between cDNA and gDNA variant notations
-						
-						SequenceRelation gdnaRelation = new SequenceRelation();
-						gdnaRelation.setFeature(gdnaVariant);
-						gdnaRelation.setSequenceFeature(gdnaVariant);
-						gdnaRelation.setSequenceTarget(cdnaVariant);
-						gdnaRelation.setTarget(cdnaVariant);
-						gdnaRelation.setRelationType(uploadService.getOntologyTermCache().get("result-of"));
-						gdnaRelation.setFmin(mutationUploadDTO.getGdnaStart());
-						gdnaRelation.setFmax(mutationUploadDTO.getGdnaEnd());
-
-						sequenceRelationList.add(gdnaRelation);
+						cdnaVariant.setType(mutationUploadDTO.getType());
 
 						// Add stable external identifier
 
@@ -317,14 +279,6 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 						ntchangeOV.setValue(mutationUploadDTO.getNtChange());
 						observedValueList.add(ntchangeOV);
 
-						ObservedValue typeOV          = new ObservedValue();
-						ObservableFeature typeFeature = new ObservableFeature();
-						typeFeature.setName("Type of mutation");
-						typeOV.setFeature(typeFeature);
-						typeOV.setTarget(cdnaVariant);
-						typeOV.setValue(mutationUploadDTO.getType());
-						observedValueList.add(typeOV);
-
 						patient.getMutations().add(cdnaVariant);
 					}
 					else
@@ -383,13 +337,13 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		// Now finally import everything
 
 //		counter += db.add(Arrays.asList(alternateIdList.toArray(new AlternateId[alternateIdList.size()])));
-		counter += db.add(Arrays.asList(alternateIdList.values().toArray(new AlternateId[0])));
+//		counter += db.add(Arrays.asList(alternateIdList.values().toArray(new AlternateId[0])));
 		
 		// resolve foreign keys for sequenceCharacteristicList
 		
-		List<SequenceCharacteristic> resolvedSequenceCharacteristicList = new ArrayList<SequenceCharacteristic>();
+		List<Variant> resolvedVariantList = new ArrayList<Variant>();
 		
-		for (SequenceCharacteristic variant : sequenceCharacteristicList.values())
+		for (Variant variant : variantList.values())
 		{
 			if (CollectionUtils.isNotEmpty(variant.getAlternateId()))
 			{
@@ -408,10 +362,10 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 				}
 				variant.setAlternateId(resolvedAlternateIdList);
 			}
-			resolvedSequenceCharacteristicList.add(variant);
+			resolvedVariantList.add(variant);
 		}
 
-		counter += db.add(resolvedSequenceCharacteristicList);
+		counter += db.add(resolvedVariantList);
 
 		// resolve foreign keys for sequenceRelationList
 
@@ -478,20 +432,20 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 			}
 			if (CollectionUtils.isNotEmpty(patient.getMutations()))
 			{
-				List<SequenceCharacteristic> resolvedVariantList = new ArrayList<SequenceCharacteristic>();
+				List<Variant> resolvedMutationList = new ArrayList<Variant>();
 
-				for (SequenceCharacteristic variant : patient.getMutations())
+				for (Variant variant : patient.getMutations())
 				{
 					if (!em.contains(variant))
 					{
-						List<SequenceCharacteristic> variantList = db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.NAME, variant.getName()).find();
+						List<Variant> tmpList = db.query(Variant.class).equals(Variant.NAME, variant.getName()).find();
 						
-						if (variantList.size() == 1)
-							variant = variantList.get(0);
+						if (tmpList.size() == 1)
+							variant = tmpList.get(0);
 					}
-					resolvedVariantList.add(variant);
+					resolvedMutationList.add(variant);
 				}
-				patient.setMutations(resolvedVariantList);
+				patient.setMutations(resolvedMutationList);
 			}
 			if (CollectionUtils.isNotEmpty(patient.getPatientreferences()))
 			{
