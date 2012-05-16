@@ -121,7 +121,7 @@
 	</#if>
 	<#--input type='submit' name="submitswitch" id="submitswitch" class='addbutton' value='Switch' onclick="__action.value='SelectParentsswitchtofather'" /-->
 	</div>
-
+<#--
 <#elseif screen.action == "addParentgroupScreen3">
 
 	<div class="form_header">Create parentgroup, step 2/3: select father(s)</div>
@@ -151,7 +151,7 @@
 		<input type='submit' id='from4to3' class='addbutton' value='Previous' onclick="__action.value='addParentgroupScreen3'" />
 		<input type='submit' id='addpg' class='addbutton' value='Add' onclick="__action.value='addParentgroup'" />
 	</div>
-
+-->
 <#elseif screen.action == "createLitter">
 
 	<div class="form_header">Create litter from parentgroup ${screen.getSelectedParentgroup()}</div>
@@ -176,9 +176,10 @@
 		<input type='submit' id='addlitter' value='Add' onclick="__action.value='addLitter'" />
 	</div>
 
-<#elseif screen.action == "weanOrGenotypeLitter">
-	
-	<#if screen.wean == true>
+<#elseif screen.action == "WeanLitter">
+
+	<#if screen.stillToWeanYN == true>
+
 
 		<div class="form_header">Wean litter ${screen.getLitter()}</div>
 		<div style="clear:both; display:block">
@@ -237,9 +238,11 @@
 			<input type='submit' id='cancelweanlitter' value='Cancel' onclick="__action.value='init'" />
 			<input type='submit' id='wean' name='wean' value='Wean' onclick="__action.value='applyWean'" />
 		</div>
-	
-	<#else>
-	
+		
+		</#if>
+
+<#elseif screen.action == "GenotypeLitter">
+	<#if screen.stillToGenotypeYN == true>
 		<div class="form_header">Genotype litter ${screen.getLitter()}</div>
 		<p>${screen.parentInfo}</p>
 		${screen.getGenotypeTable()}
@@ -257,9 +260,8 @@
 			<input type='submit' id='cancelgenotypelitter' value='Cancel' onclick="__action.value='init'" />
 			<input type='submit' id='save' value='Save' onclick="__action.value='applyGenotype'" />
 		</div>
-	
 	</#if>
-		
+	
 <#elseif screen.action == "makeLabels">
 
 	<div class="form_header">Download cage labels for litter ${screen.getLitter()}</div>
@@ -291,8 +293,11 @@
 			<br />
 			${screen.litterMatrixViewer}
 			<br />
-			<input type='submit' id='weangenotype' value='Wean/genotype selected litter' onclick="__action.value='weanOrGenotypeLitter'" />
+			<input type='submit' id='weanlitter' value='Wean selected litter' onclick="__action.value='WeanLitter'" />
+			<br />		
+			<input type='submit' id='genotypelitter' value='Genotype selected litter' onclick="__action.value='GenotypeLitter'" />
 			<br />
+			
 			<input type='submit' id='label' value='Make cage labels for selected litter' onclick="__action.value='makeLabels'" />
 			<br />
 			<input type='submit' id='deactivate' value='(De)activate selected litter' onclick="__action.value='deActivateLitter'" />
@@ -319,7 +324,8 @@
 	jQuery('#cancel4').button();
 	jQuery('#addpg').button();
 	jQuery('#deactivate').button();
-	jQuery('#weangenotype').button();
+	jQuery('#weanlitter').button();
+	jQuery('#genotypelitter').button();
 	jQuery('#label').button();
 	jQuery('#addlitter').button();
 	jQuery('#wean').button();
