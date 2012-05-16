@@ -325,7 +325,7 @@ public class AnimaldbSeleniumTest
 		//Assert.assertTrue(selenium.isTextPresent("successfully added"));
 		// Wean litter
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=weangenotype");
+		selenium.click("id=weanlitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=weandate");
 		selenium.type("id=weandate", "2012-01-02");
@@ -345,7 +345,7 @@ public class AnimaldbSeleniumTest
 		// Genotype litter
 		// TODO: expand
 		selenium.click("id=littermatrix_selected_0");
-		selenium.click("id=weangenotype");
+		selenium.click("id=genotypelitter");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=genodate");
 		selenium.type("id=genodate", "2012-01-03");
