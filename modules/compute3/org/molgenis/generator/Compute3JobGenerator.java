@@ -506,7 +506,7 @@ public class Compute3JobGenerator implements JobGenerator
         if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
             writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + "submit_" + config.get(JobGenerator.GENERATION_ID) + ".sh",
                     submitScript);
-        else if (backend.equalsIgnoreCase(JobGenerator.GRID))
+        else if (backend.equalsIgnoreCase(JobGenerator.GRID) && workflowHasDependencies)
         {
             //produce targetsListFile
             gridHandler.writeJobsLogsToFile(config);
@@ -703,7 +703,7 @@ public class Compute3JobGenerator implements JobGenerator
                 shellListing);
 
         //and computeJob to grid handler
-        gridHandler.setComputeJob(computeJob, config);
+        gridHandler.setComputeJob(computeJob);
 
         //write job dependencies to DAG
         WorkflowElement el = pairCJtoWE.get(computeJob);
