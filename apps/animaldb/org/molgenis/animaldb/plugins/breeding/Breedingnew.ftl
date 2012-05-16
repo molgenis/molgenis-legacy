@@ -49,10 +49,15 @@
 
 <#if screen.action == "createParentgroup">
 	
-	<div class="form_header">Create parentgroup, step 1/3: select mother(s)</div>
+	<div class="form_header">Create parentgroup, step 1/2: how many parentgroups do you want to create?</div>
 	<div>
-	Select how many parent groups: <input type='text' id="numberPG" name="numberPG">
-	<input type='submit' id='selectt' class='addbutton' value='Select' onclick="__action.value='selectParents'" />
+	   <p>
+	       <label style="font-weight:bold" for"numberPG" >Select how many parent groups: </label><input type='text' class="ui-widget-content ui-corner-all" id="numberPG" name="numberPG">
+	   </p>
+	   <p>    
+	      <input type='submit' id='cancel2' class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='init'" />
+	      <input type='submit' id='selectt' class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Next' onclick="__action.value='selectParents'" />
+	   </p>
 	</div>
 	
 	
@@ -60,7 +65,7 @@
 	
 <#elseif screen.action?starts_with("selectParents")>
 
-	<div class="form_header">Create parentgroup, step 1/3: select mother(s)</div>
+	<div class="form_header">Create parentgroup, step 1/2: how many parentgroups do you want to create?</div>
 	
 	<#if screen.numberOfPG gt -1>
 
