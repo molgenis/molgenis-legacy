@@ -562,15 +562,13 @@ public class AnimaldbSeleniumTest
 		sleepHelper("yearlyReports");
 	}
 	
-	/*
+	
 	@Test(dependsOnMethods={"yearlyReports"})
 	public void removeAnimals() throws Exception {
-		// placeholder for rem animal test
+		// Remove 2 animals to test if removal by death via the remove animals plugin works.
 		Calendar calendar = Calendar.getInstance();
 		int thisYear = calendar.get(Calendar.YEAR);
 		
-		selenium.open("/animaldb/molgenis.do?__target=mainmenu&select=animalmenu");	
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=animalmenu_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=RemAnimal_tab_button");
@@ -590,7 +588,7 @@ public class AnimaldbSeleniumTest
 		
 		sleepHelper("removeAnimals");
 		
-	}	*/
+	}	
 	
 	
 	@Test(dependsOnMethods={"yearlyReports"})
