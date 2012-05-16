@@ -63,7 +63,6 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 	}
 	
 	/** Minimal constructor */
-	@Deprecated
 	public XrefInput(String name,
 			Class<? extends Entity> xrefEntityClass, E value)
 	{
@@ -72,7 +71,6 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 	}
 
 	/** Alternative minimal constructor using an entity class to configure all. */
-	@Deprecated
 	public XrefInput(String name, Class<E> xrefEntityClass)
 	{
 		super(name, xrefEntityClass, null);
@@ -94,7 +92,6 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 //	}
 
 	/** Complete constructor */
-	@Deprecated
 	public XrefInput(String name, String label, E value, Boolean nillable,
 			Boolean readonly, String description,
 			Class<? extends Entity> xrefEntityClass)

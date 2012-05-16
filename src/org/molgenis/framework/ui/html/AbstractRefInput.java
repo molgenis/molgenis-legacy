@@ -106,6 +106,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 	protected String xrefField;
 	protected String url = DEFAULT_URL;
 	protected boolean prefill = true;
+	private String placeholder = "";
 	
 	protected List<QueryRule> filters = new ArrayList<QueryRule>();
 	
@@ -187,6 +188,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 			Entity instance = xrefEntity.newInstance();
 			this.xrefField = instance.getIdField();
 			this.xrefLabels = instance.getLabelFields();
+			this.placeholder = "Choose "+instance.getClass().getSimpleName();
 			//this.xrefEntity = xrefEntity;
 		}
 		catch (Exception e)
@@ -327,8 +329,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 			return "<input type=\"hidden\" value=\"+getValue()+\"/>";
 		}
 		
-		
-		final String dataplaceHolder = getXrefEntitySimpleName(); 
+		 
 		final String cssClasses = String.format("%s %s", 
 				this.isReadonly() ? "readonly " : "",
 				this.isNillable() ? "" : "required ");
@@ -358,7 +359,7 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 //		#arg5 = class(es) --> add required class or none class or extra classes
 //		#arg6 = options for the select
 		final String select = String.format(SELECT_SCRIPT, 
-				getId(), getDescription(), getHtmlRefType(), dataplaceHolder, cssClasses, htmlOptions);
+				getId(), getDescription(), getHtmlRefType(), placeholder, cssClasses, htmlOptions);
 
 //		#arg1 = id
 //		#arg2 = url of service
@@ -498,5 +499,14 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		this.prefill = prefill;
 	}
 	
+	public String getPlaceholder()
+	{
+		return this.placeholder;
+	}
+	
+	public void setPlaceholder(String placeholder)
+	{
+		this.placeholder = placeholder;
+	}
 	
 }
