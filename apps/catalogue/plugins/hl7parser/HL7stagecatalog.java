@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 public class HL7stagecatalog {
 
     ArrayList<HL7Organizer> hl7organizer;
-    ArrayList<Measurement> measurement;
+    ArrayList<HL7Observation> measurement;
     XPath xpath;
 
     private static final String ORGANIZER = "//urn:hl7-org:v3:organizer";

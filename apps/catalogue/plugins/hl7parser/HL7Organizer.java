@@ -24,7 +24,7 @@ public class HL7Organizer {
     private static final String ORGANIZER_NAME = "urn:hl7-org:v3:code/@code";
     ArrayList<Node> allMeasurementNodes = new ArrayList<Node>();
     private String organizerName;
-     ArrayList<Measurement> measurements;
+     ArrayList<HL7Observation> measurements;
 
     public HL7Organizer (Node organizer, XPath xpath ) throws Exception{
         this.organizer = organizer;
@@ -32,9 +32,9 @@ public class HL7Organizer {
         readOrganizerName();
         
         NodeList nodes = (NodeList)xpath.compile(OBSERVATION).evaluate(organizer, XPathConstants.NODESET);
-        this.measurements = new ArrayList<Measurement>();
+        this.measurements = new ArrayList<HL7Observation>();
         for (int i = 0; i < nodes.getLength(); i++) {
-            Measurement meas = new Measurement(nodes.item(i),xpath);
+            HL7Observation meas = new HL7Observation(nodes.item(i),xpath);
             measurements.add(meas);
         }
     }

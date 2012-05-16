@@ -14,7 +14,7 @@ import org.w3c.dom.Node;
  *
  * @author roankanninga
  */
-public class Measurement {
+public class HL7Observation {
 
      private Node measurement;
      private XPath xpath;
@@ -26,7 +26,7 @@ public class Measurement {
      private static final String OBSERVATION_DATATYPE = "urn:hl7-org:v3:value/@*[local-name()='type']";
 
 
-    public Measurement (Node measurement, XPath xpath) throws Exception{
+    public HL7Observation (Node measurement, XPath xpath) throws Exception{
         this.measurement = measurement;
         this.xpath = xpath;
         readMeasurementName();
