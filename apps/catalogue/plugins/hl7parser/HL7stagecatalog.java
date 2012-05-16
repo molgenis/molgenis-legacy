@@ -6,16 +6,11 @@
 package plugins.hl7parser;
 
 import java.util.ArrayList;
-import java.util.List;
-import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Node;
-import java.io.IOException;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.*;
 import javax.xml.xpath.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  *

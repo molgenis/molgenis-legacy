@@ -5,9 +5,6 @@
 
 package plugins.hl7parser;
 
-import java.io.File;
-import javax.xml.xpath.XPathExpressionException;
-
 /**
  *
  * @author roankanninga

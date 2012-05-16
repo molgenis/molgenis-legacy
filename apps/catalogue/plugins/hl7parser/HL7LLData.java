@@ -6,7 +6,6 @@
 package plugins.hl7parser;
 
 import java.util.ArrayList;
-import javax.xml.xpath.XPathExpressionException;
 
 /**
  *
