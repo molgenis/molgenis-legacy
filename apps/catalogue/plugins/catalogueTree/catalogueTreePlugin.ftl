@@ -114,6 +114,7 @@
 									
 							</td>
 							<td class="box-body">
+							<input title="fill in selection name" type="text" name="SelectionName" >
 							<input class="saveSubmit" type="submit" id="SaveSelectionSubmit" name="SaveSelectionSubmit" value="Save selection" 
 									onclick="__action.value='SaveSelectionSubmit';" 
 									style="color: #000; background: #8EC7DE;

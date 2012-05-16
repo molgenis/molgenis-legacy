@@ -2,7 +2,7 @@ package plugins.catalogueTree;
 
 import gcc.catalogue.ShoppingCart;
 
-import java.awt.Component;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -10,16 +10,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.Icon;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.text.DateFormatter;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -29,7 +22,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.organization.Investigation;
@@ -53,6 +45,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private String InputToken = null;
 	private String comparison = null;
 	private String selectedField = null;
+	private String SelectionName = null;
 
 	private boolean isSelectedInv = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
@@ -96,9 +89,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return "plugins/catalogueTree/catalogueTreePlugin.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request) {
+	public void handleRequest(Database db, Tuple request) throws DatabaseException {
 
-		try {
+		
 
 			if ("chooseInvestigation".equals(request.getAction())) {
 				selectedInvestigation = request.getString("investigation");
@@ -110,22 +103,27 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 
 			} else if ("SaveSelectionSubmit".equals(request.getAction())) {
+				
+				if (request.getString("SelectionName") != null) {
 
-				// a jframe here isn't strictly necessary, but it makes the example a little more real
-				JFrame frame = new JFrame("Save Selection");
-				String selectionName = JOptionPane.showInputDialog(frame, "Please insert a name for your selection.");
+					this.setSelectionName(request.getString("SelectionName").trim());
+					System.out.println("The SelectionName is >>> : " + this.getSelectionName());
+					
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+					Date dat = new Date();
+					String dateOfDownload = dateFormat.format(dat);
+					System.out.println("selected investigaton >>>> "+  selectedInvestigation);
+					System.out.println("request >>" + request);
+					
+					try	{
+						this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
+					} catch (IOException e) {
+							e.printStackTrace();
+					  }
 
-				// if they press Cancel, 'name' will be null
-				System.out.printf("The selection's name is '%s'.\n", selectionName);
-
-
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-				Date dat = new Date();
-				String dateOfDownload = dateFormat.format(dat);
-				System.out.println("selected investigaton >>>> "+  selectedInvestigation);
-				System.out.println("request >>" + request);
-				this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, selectionName);
-
+				} else {
+					this.setError("Please insert a name for your selection and try again.");
+				}
 
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
@@ -191,14 +189,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
 				}
 			} else if (request.getAction().startsWith("removeFilters")) {
-				System.out.println("-------------------reached-----------------------");
+				System.out.println("-------------------removeFilters reached-----------------------");
 				
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.setError("There was a problem handling your Download: " + e.getMessage());
-		}
+		
+		
 
 	}
 //	/**
@@ -995,8 +991,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				db.update(shoppingCart);
 
-				this.setSuccess("Selection saved to 'My Selections' under name "
-						+ shoppingCart.getName());
+				this.setSuccess("Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\"");
 				// System.out.println("Shopping cart has been updated in the DB");
 			}
 
@@ -1113,6 +1108,16 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			return false;
 		}
 		return true;
+	}
+
+	public void setSelectionName(String selectionName)
+	{
+		SelectionName = selectionName;
+	}
+
+	public String getSelectionName()
+	{
+		return SelectionName;
 	}
 
 
