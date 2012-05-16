@@ -1,3 +1,11 @@
+<script src="jqGrid/grid.locale-en.js" type="text/javascript"></script>
+<script src="jqGrid/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="jqGrid/jquery.json-2.3.min.js" type="text/javascript"></script>
+
+<script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
+<script src="jquery/development-bundle/ui/jquery.ui.dialog.js" type="text/javascript"></script>
+<script src="jquery/development-bundle/ui/jquery.ui.datepicker.js" type="text/javascript"></script>
+
 <link rel="stylesheet" type="text/css" media="screen" href="jquery/development-bundle/themes/smoothness/jquery-ui-1.8.7.custom.css">
 <link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.jqgrid.css">
 <link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.multiselect.css">
@@ -15,10 +23,14 @@ var colModel = [
 	   		];
 	   		
 function createJQGrid() {
+	var myColNames = $.toJSON(colNames);
+	var myColModel = $.toJSON(colModel);
+
 	jQuery("#${tableId}").jqGrid({
 	   	url:'${dataSourceUrl}',
 		datatype: "json",
-		postData : {colNames : colNames, colModel: colModel},
+		jsonReader: { repeatitems: false },
+		postData : {colNames : myColNames, colModel: myColModel},
 	   	colNames: colNames,   	
 	   	colModel: colModel,
 	   	rowNum: 10,

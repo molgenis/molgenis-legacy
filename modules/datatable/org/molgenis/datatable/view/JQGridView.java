@@ -1,24 +1,18 @@
 package org.molgenis.datatable.view;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.server.MolgenisRequest;
-import org.molgenis.framework.server.MolgenisResponse;
-import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.ui.html.HtmlWidget;
 
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
-public class JQGridView extends HtmlWidget implements MolgenisService
+public class JQGridView extends HtmlWidget
 {
 	private final TupleTable table;
 
@@ -37,7 +31,7 @@ public class JQGridView extends HtmlWidget implements MolgenisService
 			args.put("tableId", getId());
 			args.put("columns", table.getColumns());
 			args.put("dataSourceUrl", "jqGridService.do");
-			args.put("sortName", table.getColumns().get(0));
+			args.put("sortName", table.getColumns().get(0).getName());
 			
 			final Configuration cfg = new Configuration();
 			cfg.setObjectWrapper(new DefaultObjectWrapper());
@@ -52,12 +46,5 @@ public class JQGridView extends HtmlWidget implements MolgenisService
 		{
 			throw new RuntimeException(e);
 		}
-	}
-
-	@Override
-	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
-			DatabaseException, IOException
-	{
-		
 	}
 }

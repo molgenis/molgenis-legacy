@@ -58,16 +58,30 @@ public class JdbcTable implements TupleTable
 	
 	private final Statement statement;
 	private final ResultSetTuple rs;
+	private final List<Field> columns;
 	
-	public JdbcTable(String query, Connection connection) throws SQLException
+	public JdbcTable(String query, Connection connection) throws TableException
 	{
 		super();
-		statement = connection.createStatement();
-		rs = new ResultSetTuple(statement.executeQuery(query));	
+		try
+		{
+			statement = connection.createStatement();
+			rs = new ResultSetTuple(statement.executeQuery(query));
+			columns = loadColumns();
+		}
+		catch (SQLException e)
+		{
+			throw new TableException(e);
+		}
 	}
 
 	@Override
 	public List<Field> getColumns() throws TableException
+	{
+		return columns;
+	}
+	
+	private List<Field> loadColumns() throws TableException
 	{
 		final List<Field> columns = new ArrayList<Field>();
 		final List<String> fields = rs.getFieldNames();
@@ -138,4 +152,6 @@ public class JdbcTable implements TupleTable
 			throw new TableException(e);
 		}
 	}
+
+
 }
