@@ -62,6 +62,13 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	{
 		try
 		{
+			
+			Enumeration attributeNames = request.getAttributeNames();
+			while(attributeNames.hasMoreElements()) {
+				String nextElement = (String)attributeNames.nextElement();
+				System.out.println(String.format("---> %s: %s", nextElement, request.getAttribute(nextElement)));
+			}
+			
 			//wrap request and response
 			MolgenisRequest req = new MolgenisRequest(request, response); 
 			//TODO: Bad, but needed for redirection. DISCUSS.
