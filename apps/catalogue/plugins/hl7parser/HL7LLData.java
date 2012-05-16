@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package Molgenis;
+package plugins.hl7parser;
 
 import java.util.ArrayList;
 import javax.xml.xpath.XPathExpressionException;
