@@ -563,6 +563,36 @@ public class AnimaldbSeleniumTest
 	}
 	
 	@Test(dependsOnMethods={"yearlyReports"})
+	public void removeAnimals() throws Exception {
+		// placeholder for rem animal test
+		//selenium.open("/animaldb/molgenis.do?__target=mainmenu&select=animalmenu");
+
+		Calendar calendar = Calendar.getInstance();
+		int thisYear = calendar.get(Calendar.YEAR);
+				
+		selenium.click("id=animalmenu_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=RemAnimal_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=targetmatrix_selected_6");
+		selenium.click("id=targetmatrix_selected_7");
+		selenium.click("id=Select");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.type("id=deathdate", thisYear + "-02-02");
+		selenium.click("link=31");
+		selenium.click("id=remarks");
+		selenium.type("id=remarks", "test");
+		selenium.click("id=Apply");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);		
+		
+		Assert.assertTrue(selenium.isTextPresent("Animal(s) mm_000009 mm_000010 successfully removed"));
+		
+		sleepHelper("removeAnimals");
+		
+	}	
+	
+	
+	@Test(dependsOnMethods={"yearlyReports"})
 	public void applyProtocol() throws Exception {
 		// First log in as admin to be able to do this
 		selenium.click("id=UserLogin_tab_button");
@@ -622,6 +652,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("239"));
 		sleepHelper("applyProtocol");
 	}
+	
 	
 	
 	@Test(dependsOnMethods={"applyProtocol"})
