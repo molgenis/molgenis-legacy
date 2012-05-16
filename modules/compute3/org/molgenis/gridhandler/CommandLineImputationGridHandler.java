@@ -30,7 +30,7 @@ public class CommandLineImputationGridHandler extends CommandLineGridHandler
         return 1;
     }
 
-    public void setComputeJob(ComputeJob job, Hashtable<String, String> config)
+    public void setComputeJob(ComputeJob job)
     {
         jobs.add(job);
     }
