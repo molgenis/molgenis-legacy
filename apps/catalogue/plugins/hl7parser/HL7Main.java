@@ -25,7 +25,7 @@ public class HL7Main {
 	public static void main(String [] args) throws Exception{ 
 
 
-		String file1 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/StageCatalog.xml";
+		String file1 = "/Users/pc_iverson/Desktop/input/StageCatalog.xml";
 		String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/valuessets.xml";
 		String file3 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/StageCatalog.xml";
 
@@ -71,7 +71,7 @@ public class HL7Main {
 				List<String> listOfMeasurementNames = new ArrayList<String>();
 
 				List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
-				
+
 				for(HL7Observation meas :organizer.measurements){
 
 					System.out.println(" - " + meas.getMeasurementName() + "\t" + meas.getMeasurementDescription() +"\t"+meas.getMeasurementDataType() );
@@ -81,6 +81,8 @@ public class HL7Main {
 					m.setName(meas.getMeasurementName());
 
 					m.setDescription(meas.getMeasurementDescription());
+
+					m.setInvestigation(inv);
 
 					String dataType = meas.getMeasurementDataType();
 
@@ -92,22 +94,25 @@ public class HL7Main {
 						m.setDataType("datetime");
 					}
 
-					listOfMeasurements.add(m);
-
-					listOfMeasurementNames.add(meas.getMeasurementName());
+					//					if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, meas.getMeasurementName())).size() == 0){
+					//						listOfMeasurementNames.add(meas.getMeasurementName());
+					//						db.add(m);
+					//					}
+					listOfMeasurementNames.add(meas.getMeasurementName());	
 					
+					listOfMeasurements.add(m);
 				}
 
 				db.update(listOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
-				
+
 				listOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, listOfMeasurementNames));
 
 				List<Integer> listOfMeasurementId = new ArrayList<Integer>();
-				
+
 				for(Measurement m : listOfMeasurements){
 					listOfMeasurementId.add(m.getId());
 				}
-				
+
 				protocol.setFeatures_Id(listOfMeasurementId);
 
 				listOfProtocols.add(protocol);
