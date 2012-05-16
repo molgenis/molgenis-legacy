@@ -591,7 +591,7 @@ public class AnimaldbSeleniumTest
 	}	
 	
 	
-	@Test(dependsOnMethods={"yearlyReports"})
+	@Test(dependsOnMethods={"removeAnimals"})
 	public void applyProtocol() throws Exception {
 		// First log in as admin to be able to do this
 		selenium.click("id=UserLogin_tab_button");
