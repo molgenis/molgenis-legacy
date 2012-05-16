@@ -104,11 +104,13 @@ public class Breedingnew extends PluginModel<Entity>
 	private int nrOfGenotypes = 1;
 	private Table genotypeTable = null;
 	private boolean wean = false;
-	private String parentInfo;
+	private String parentInfo = "";
 	private String labelDownloadLink;
 	Integer numberOfPG = -1;
 	List<String> pgName = new ArrayList<String>();
 	String sex = "not selected";
+	boolean stillToWeanYN = true;
+	boolean stillToGenotypeYN = true;
 	//HashMap<String,List<String>> hashMothers = new HashMap<String,List<String>>();
 	HashMap<Integer,List<String>> hashMothers = new HashMap<Integer,List<String>>();
 	HashMap<Integer,List<String>> hashFathers = new HashMap<Integer,List<String>>();
@@ -489,11 +491,9 @@ public class Breedingnew extends PluginModel<Entity>
 				}
 			}
 			if(pgName.size()!=0){
-				for(int i= 0; i < pgName.size(); i++){	
-					
+				for(int i= 0; i < pgName.size(); i++){					
 					if(action.equals("selectParentsM"+(i))){
-						List<String> selectedFatherNameList = new ArrayList<String>();
-						
+						List<String> selectedFatherNameList = new ArrayList<String>();					
 						@SuppressWarnings("unchecked")
 						List<ObservationElement> rows = (List<ObservationElement>) motherMatrixViewer.getSelection(db);
 						int rowCnt = 0;
@@ -512,8 +512,7 @@ public class Breedingnew extends PluginModel<Entity>
 							}
 							rowCnt++;
 						}
-						hashFathers.put(i, selectedFatherNameList);
-						
+						hashFathers.put(i, selectedFatherNameList);					
 					}
 					
 					if(action.equals("selectParentsF"+(i))){
@@ -549,8 +548,7 @@ public class Breedingnew extends PluginModel<Entity>
 					hashMothers.clear();
 					numberOfPG = null;
 				}
-				
-				
+
 				if(action.equals("JensonButton")){
 					boolean papa = false;
 					boolean mama = false;
@@ -608,11 +606,8 @@ public class Breedingnew extends PluginModel<Entity>
 					else{
 						this.setMessages(new ScreenMessage("Not all fathers or mothers are filled in", false));
 						action = "selectParents";
-					}
-					
-				}
-				
-				
+					}					
+				}		
 			}
 			catch(Exception e){
 				//this.setMessages(new ScreenMessage("Not all fathers or mothers are filled in", false));
@@ -735,10 +730,12 @@ public class Breedingnew extends PluginModel<Entity>
 				this.entity = "Litters";
 				this.setSuccess("Litter " + newLitterName + " successfully added; adding filter to matrix: name = " + newLitterName);
 			}
-			
-			if (action.equals("weanOrGenotypeLitter")) {
+
+			if (action.equals("WeanLitter")) {
+				stillToWeanYN = true;
 				// Get selected litter
 				List<?> rows = litterMatrixViewer.getSelection(db);
+				
 				try { 
 					int row = request.getInt(LITTERMATRIX + "_selected");
 					this.litter = ((ObservationElement) rows.get(row)).getName();
@@ -747,27 +744,56 @@ public class Breedingnew extends PluginModel<Entity>
 					this.entity = "Litters";
 					throw new Exception("No litter selected");
 				}
-				if (ct.getMostRecentValueAsString(this.litter, "WeanDate") == null) {
-					this.wean = true;
-					weanLitter(db);
-				} else if (ct.getMostRecentValueAsString(this.litter, "GenotypeDate") == null) {
-					// Prepare parent info
-					parentInfo = "";
-					String parentgroupName = ct.getMostRecentValueAsXrefName(this.litter, "Parentgroup");
-					parentInfo += ("Parentgroup: " + parentgroupName + "<br />");
-					parentInfo += ("Line: " + getLineInfo(parentgroupName) + "<br />");
-					String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
-					parentInfo += ("Mother: " + getGenoInfo(motherName, db) + "<br />");
-					String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
-					parentInfo += ("Father: " + getGenoInfo(fatherName, db) + "<br />");
-					genotypeLitter(db);
-				} else {
-					this.action = "init";
-					this.entity = "Litters";
-					throw new Exception("Litter has already been weaned and genotyped");
+				if(isWeaned(db)){
+					stillToWeanYN = false;
+					this.setMessages(new ScreenMessage("Already weaned", false));
+					action="addLitter";
 				}
+				else{
+					weanLitter(db);
+				}
+				
 			}
 			
+			if (action.equals("GenotypeLitter")) {
+			// Prepare parent info
+				stillToGenotypeYN = true;
+				List<?> rows = litterMatrixViewer.getSelection(db);
+				try { 
+					int row = request.getInt(LITTERMATRIX + "_selected");
+					this.litter = ((ObservationElement) rows.get(row)).getName();
+				} 
+				catch (Exception e) {	
+					this.action = "init";
+					this.entity = "Litters";
+					throw new Exception("No litter selected");
+				}
+				
+				if(!isWeaned(db)){
+					this.setMessages(new ScreenMessage("The litter is not weaned yet!", false));
+					action="addLitter";
+				}
+				else{
+					if(isGenotyped(db)){
+						stillToGenotypeYN = false;
+						this.setMessages(new ScreenMessage("Already genotyped", false));
+						action="addLitter";
+					}
+					else{
+						String parentgroupName = ct.getMostRecentValueAsXrefName(this.litter, "Parentgroup");
+						parentInfo = "";
+						parentInfo += ("Parentgroup: " + parentgroupName + "<br />");
+						parentInfo += ("Line: " + getLineInfo(parentgroupName) + "<br />");
+						String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
+						parentInfo += ("Mother: " + getGenoInfo(motherName, db) + "<br />");
+						String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
+						parentInfo += ("Father: " + getGenoInfo(fatherName, db) + "<br />");
+						genotypeLitter(db);
+					}
+				}
+				
+			} 
+
 			if (action.equals("applyWean")) {
 				int weanSize = Wean(db, request);
 				// Update custom label map now new animals have been added
@@ -834,7 +860,7 @@ public class Breedingnew extends PluginModel<Entity>
 			if (action.equals("AddGenoCol")) {
 				storeGenotypeTable(db, request);
 				AddGenoCol(db, request);
-				this.action = "weanOrGenotypeLitter";
+				this.action = "GenotypeLitter";
 				this.setSuccess("Gene modification + state pair successfully added");
 			}
 			
@@ -849,7 +875,7 @@ public class Breedingnew extends PluginModel<Entity>
 					this.setError("Cannot remove - at least one Gene modification + state pair has to remain");
 				}
 				storeGenotypeTable(db, request);
-				this.action = "weanOrGenotypeLitter";
+				this.action = "GenotypeLitter";
 			}
 			
 		} catch (Exception e) {
@@ -979,12 +1005,38 @@ public class Breedingnew extends PluginModel<Entity>
 		}
 	}
 
+	private Boolean isWeaned(Database db) throws Exception{
+		List<QueryRule> filterRules = new ArrayList<QueryRule>(); 				
+		filterRules.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "WeanDate"));
+		filterRules.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
+		List<ObservedValue> listId = db.find(ObservedValue.class, new QueryRule(filterRules));
+		if(listId.isEmpty()){
+			return false;
+		}else{
+			return true;
+		}
+		
+	}
+	private Boolean isGenotyped(Database db) throws Exception{
+		List<QueryRule> filterRules = new ArrayList<QueryRule>(); 				
+		filterRules.add(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, "GenotypeDate"));
+		filterRules.add(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, this.litter));
+		List<ObservedValue> listId = db.find(ObservedValue.class, new QueryRule(filterRules));
+		System.out.println("KIPJES " + listId.size());
+		if(listId.isEmpty()){
+			return false;
+		}else{
+			return true;
+		}
+		
+	}
+	
 	
 	private String AddParentgroup2(Database db, Tuple request,List<String> papa, List<String> mama,String startdate,String remarks) throws Exception{
 		Date now = new Date();
 		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
 
-		Date eventDate = newDateOnlyFormat.parse(startdate);
+		Date eventDate = dateOnlyFormat.parse(startdate);
 		// Make parentgroup
 		String groupPrefix = "PG_" + line + "_";
 		int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
@@ -1103,7 +1155,7 @@ public class Breedingnew extends PluginModel<Entity>
 		if (userName != this.getLogin().getUserName()) {
 			userName = this.getLogin().getUserName();
 			ct.makeObservationTargetNameMap(userName, false);
-			this.setStartdate(newDateOnlyFormat.format(new Date()));
+			this.setStartdate(dateOnlyFormat.format(new Date()));
 			// Prepare pg matrix
 			if (pgMatrixViewer == null) {
 				loadPgMatrixViewer(db);
@@ -2199,7 +2251,7 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 	}
 	
 	public String getGenodate() {
-		return newDateOnlyFormat.format(new Date());
+		return dateOnlyFormat.format(new Date());
 	}
 
 	public int getNumberOfPG()
@@ -2238,5 +2290,15 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 	public HashMap<Integer, List<String>> getHashFathers()
 	{
 		return hashFathers;
+	}
+
+	public boolean isStillToWeanYN()
+	{
+		return stillToWeanYN;
+	}
+
+	public boolean isStillToGenotypeYN()
+	{
+		return stillToGenotypeYN;
 	}
 }
