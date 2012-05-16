@@ -65,7 +65,7 @@
 	
 <#elseif screen.action?starts_with("selectParents")>
 
-	<div class="form_header">Create parentgroup, step 1/2: how many parentgroups do you want to create?</div>
+	<div class="form_header">Create parentgroup, step 2/2: select mother(s) and father(s) for your parentgroup(s)</div>
 	
 	<#if screen.numberOfPG gt -1>
 
