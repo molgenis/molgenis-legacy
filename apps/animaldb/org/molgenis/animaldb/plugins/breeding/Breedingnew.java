@@ -56,7 +56,7 @@ public class Breedingnew extends PluginModel<Entity>
 {
 	private static final long serialVersionUID = 203412348106990472L;
 		private CommonService ct = CommonService.getInstance();
-	private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+	//private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private String startdate = null;
 	private List<ObservationTarget> lineList;
@@ -1037,7 +1037,7 @@ public class Breedingnew extends PluginModel<Entity>
 		Date now = new Date();
 		String invName = ct.getOwnUserInvestigationNames(this.getLogin().getUserName()).get(0);
 
-		Date eventDate = dateOnlyFormat.parse(startdate);
+		Date eventDate = dbFormat.parse(startdate);
 		// Make parentgroup
 		String groupPrefix = "PG_" + line + "_";
 		int groupNr = ct.getHighestNumberForPrefix(groupPrefix) + 1;
@@ -1156,7 +1156,7 @@ public class Breedingnew extends PluginModel<Entity>
 		if (userName != this.getLogin().getUserName()) {
 			userName = this.getLogin().getUserName();
 			ct.makeObservationTargetNameMap(userName, false);
-			this.setStartdate(dateOnlyFormat.format(new Date()));
+			this.setStartdate(dbFormat.format(new Date()));
 			// Prepare pg matrix
 			if (pgMatrixViewer == null) {
 				loadPgMatrixViewer(db);
@@ -2248,11 +2248,11 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 		if (weandate != null) {
 			return weandate;
 		}
-		return newDateOnlyFormat.format(new Date());
+		return dbFormat.format(new Date());
 	}
 	
 	public String getGenodate() {
-		return dateOnlyFormat.format(new Date());
+		return dbFormat.format(new Date());
 	}
 
 	public int getNumberOfPG()
