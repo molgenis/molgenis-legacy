@@ -508,7 +508,7 @@ public class Breedingnew extends PluginModel<Entity>
 										selectedFatherNameList.add(fatherName);
 									}
 								}else{
-									this.setMessages(new ScreenMessage("Not a Female", false));
+									this.setMessages(new ScreenMessage("Not a Male", false));
 								}
 							}
 							rowCnt++;
