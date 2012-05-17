@@ -174,7 +174,8 @@ public class DecStatus extends EasyPluginController
 			int nrOfAnimalsAlive = 0;
 			int nrOfAnimalsRemoved = 0;
 			int nrOfAnimalsTotal = 0;
-			int budget = 100; // TODO: use real budget
+			//int budget = 100; // TODO: use real budget
+			Integer budget = Integer.decode(cq.getMostRecentValueAsString(subprojectName, "DecSubprojectBudget"));
 			budgetCum += budget;
 			java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 			if (aliveAnimalNameList.size() > 0) {

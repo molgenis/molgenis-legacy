@@ -174,6 +174,12 @@
 		<input type='text' id='enddate' name='enddate' <#if currentDecSubproject??><#if currentDecSubproject.getEndDate()??> value="${currentDecSubproject.endDate}"</#if></#if>  />
 	</div>
 	
+	<div class="row">
+        <label for="decsubprojectbudget">Animal budget:</label>
+        <input type="text" name="decsubprojectbudget" id="decsubprojectbudget" class="textbox" 
+        <#if currentDecSubproject??><#if currentDecSubproject.getDecSubprojectBudget()??> value="${currentDecSubproject.decSubprojectBudget}"</#if></#if> />
+    </div>
+    	
 	<div class='row'>
 		<input type='submit' id='addsubproject' class='addbutton' value='Save' onclick="__action.value='addEditDecSubproject'" />
 	</div>
@@ -372,6 +378,7 @@
 					<th>Name</th>
 					<th>Start date</th>
 					<th>End date</th>
+					<th>Animal Budget</th>
 					<th>DEC application</th>
 					<th>DEC subproject code</th>
 					<th>DEC subproject title</th>
@@ -397,6 +404,7 @@
 							<td>${expl.name}</td>
 							<td>${expl.startDate}</td>
 							<td>${expl.endDate}</td>
+							<td>${expl.decSubprojectBudget}</td>
 							<td>${expl.decApplication}</td>
 							<td>${expl.experimentNr}</td>
 							<td>${expl.experimentTitle}</td>
