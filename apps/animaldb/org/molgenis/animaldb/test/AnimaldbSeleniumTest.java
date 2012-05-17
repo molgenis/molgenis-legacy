@@ -386,7 +386,7 @@ public class AnimaldbSeleniumTest
 		int thisYear = calendar.get(Calendar.YEAR);
 		selenium.type("id=startdate", thisYear + "-01-01");
 		selenium.type("id=enddate", thisYear + "-12-31");
-		selenium.type("id=decprojectbudget", "20");
+		selenium.type("id=decbudget", "20");
 		selenium.click("id=addproject");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("DEC project successfully added"));
