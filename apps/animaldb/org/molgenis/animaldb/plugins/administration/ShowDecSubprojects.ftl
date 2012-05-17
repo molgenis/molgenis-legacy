@@ -42,7 +42,7 @@
 		<select name="decapp" id="decapp"> 
 			<#list screen.decApplicationList as decAppListItem>
 				<option 
-				<#if currentDecSubproject??><#if currentDecSubproject.decApplicationId == decAppListItem.id>selected="selected"</#if></#if>
+				<#if currentDecSubproject??><#if currentDecSubproject.decExpListId == decAppListItem.id>selected="selected"</#if></#if>
 				value="${decAppListItem.id?string.computer}">${decAppListItem.name}</option>
 			</#list>
 		</select>
