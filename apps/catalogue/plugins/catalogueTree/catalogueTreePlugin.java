@@ -50,6 +50,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private boolean isSelectedInv = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
 	private List<String> SearchFilters = new ArrayList<String>();
+	private String Status = "";
 
 	
 	private static int SEARCHINGPROTOCOL = 2;
@@ -91,8 +92,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	public void handleRequest(Database db, Tuple request) throws DatabaseException {
 
-		
-
 			if ("chooseInvestigation".equals(request.getAction())) {
 				selectedInvestigation = request.getString("investigation");
 				this.setSelectedInvestigation(selectedInvestigation);
@@ -103,7 +102,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 
 			} else if ("SaveSelectionSubmit".equals(request.getAction())) {
-				
+
+				this.setSelectionName("empty");
 				if (request.getString("SelectionName") != null) {
 				//if (request.getString("SelectionName").compareTo("empty") != 0) {
 
@@ -113,6 +113,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				} else {
 					//this.setError("Please insert a name for your selection and try again.");
 					this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
+					this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+ "</h4>" ) ;
+
 				}
 				
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
@@ -152,6 +154,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("Protocols")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Protocols ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Protocols "+ "</h4>" ) ;
 						SearchFilters.add("Protocols:" + this.getInputToken());
 
 						mode = SEARCHINGPROTOCOL;
@@ -161,6 +164,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("Measurements")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Measurements ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Measurements  "+ "</h4>" ) ;
+
 						SearchFilters.add("Measurements:" + this.getInputToken());
 						mode = SEARCHINGMEASUREMENT;
 						RetrieveProtocols(db, SEARCHINGMEASUREMENT);
@@ -168,6 +173,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("All fields")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in all fields ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in all fields "+ "</h4>" ) ;
+
 						SearchFilters.add("All:" + this.getInputToken());
 
 						mode = SEARCHINGALL;
@@ -176,6 +183,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("Details")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Details ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Details " + "</h4>" ) ;
+
 						SearchFilters.add("Details:" + this.getInputToken());
 
 						mode = SEARCHINGDETAIL;
@@ -188,6 +197,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					
 				} else {
 					this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
+					this.setStatus("<h4> Empty search string" + "</h4>" ) ;
+
 				}
 			} else if (request.getAction().startsWith("removeFilters")) {
 				System.out.println("-------------------removeFilters reached-----------------------");
@@ -403,6 +414,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		} else {
 			//Search result is empty or tree is empty 
 			this.getModel().getMessages().add(new ScreenMessage("There are no results to show. Please, redifine your search or import some data.",true));
+			this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data." + "</h4>" ) ;
 			this.setError("There are no results to show. Please, redifine your search or import some data.");
 
 		}
@@ -936,6 +948,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		if (this.shoppingCart.isEmpty()) {
 			this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. Please select item and proceed to download",true));
+			this.setStatus("<h4> Your download list is empty. Please select item and proceed to download" + "</h4>" ) ;
 			this.setError("Your download list is empty. Please select item and proceed to download");
 
 		} else {
@@ -980,12 +993,29 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				System.out.println("save selection step2");
 
 				shoppingCart.setApproved(false);
-				db.add(shoppingCart);
-				// System.out.println("Download list has been added to the DB");
+			
+				//check for duplicates
+				Query<ShoppingCart> q = db.query(ShoppingCart.class);
+				q.addRules(new QueryRule(ShoppingCart.NAME, Operator.EQUALS, shoppingCartName));
+				
+				if (q.find().size() > 0) {
+					this.setError("A user selection with name : "+ shoppingCartName +" Please insert another name for your selection and try again.");
+					this.getModel().getMessages().add(new ScreenMessage("A user selection with name : "+ shoppingCartName +" Please insert another name for your selection and try again.", true));
+					this.setStatus("<h4> A user selection with name : "+ shoppingCartName +" Please insert another name for your selection and try again."+ "</h4>" ) ;
+					System.out.println("A user selection with name : "+ shoppingCartName +" Please insert another name for your selection and try again.");
+				} else {
+					try {
+						db.add(shoppingCart);
+						// System.out.println("Download list has been added to the DB");
+						this.getModel().getMessages().add(new ScreenMessage("Selection saved to 'My Selections' under name "+ shoppingCartName , true));
+						this.setStatus("<h4> Selection saved to 'My Selections' under name "+ shoppingCartName + "</h4>" ) ;
+						this.setSuccess("Selection saved to 'My Selections' under name "+ shoppingCartName);
 
-				this.setSuccess("Selection saved to 'My Selections' under name "
-						+ shoppingCartName);
-
+					}  catch (DatabaseException e) {
+							e.printStackTrace();
+					}
+				}
+				
 			} else {
 				ShoppingCart shoppingCart = result.get(0); // assuming user can
 				// have only one
@@ -996,6 +1026,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				db.update(shoppingCart);
 
+				this.getModel().getMessages().add(new ScreenMessage("Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\"" , true));
+				this.setStatus("<h4> Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\""+ "</h4>" ) ;
 				this.setSuccess("Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\"");
 				// System.out.println("Shopping cart has been updated in the DB");
 			}
@@ -1021,13 +1053,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		for (int i = 0; i < this.shoppingCart.size(); i++) {
 			if (this.shoppingCart.get(i).getName().equals(selected)) {
 				this.shoppingCart.remove(i);
-				this.getModel()
-				.getMessages()
-				.add(new ScreenMessage(
-						"The item \""
-								+ selected
-								+ "\" has been successfully removed from your shopping cart",
-								true));
+				this.getModel().getMessages().add(new ScreenMessage("The item \"" + selected + "\" has been successfully removed from your shopping cart", true));
+				this.setStatus("<h4> The item \"" + selected + "\" has been successfully removed from your shopping cart"+ "</h4>" ) ;
+
 			}
 		}
 	}
@@ -1123,6 +1151,16 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	public String getSelectionName()
 	{
 		return SelectionName;
+	}
+
+	public void setStatus(String status)
+	{
+		Status = status;
+	}
+
+	public String getStatus()
+	{
+		return Status;
 	}
 
 

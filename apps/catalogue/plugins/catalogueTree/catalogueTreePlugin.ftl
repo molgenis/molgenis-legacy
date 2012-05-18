@@ -110,8 +110,7 @@
 						<tr>
 							<td class="box-body">
 
-									
-									
+
 							</td>
 							<td class="box-body">
 							<input title="fill in selection name" type="text" name="SelectionName" >
@@ -126,6 +125,8 @@
 						</tr>
 					</table>
 			   </#if>	
+			    				<label> 	<#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
+			   
 			</div>
 		</div>
 	</div>
