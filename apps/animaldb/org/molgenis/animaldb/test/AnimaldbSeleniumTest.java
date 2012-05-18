@@ -121,7 +121,8 @@ public class AnimaldbSeleniumTest
 		}
 		if (!selenium.isTextPresent("Pre-filling AnimalDB successful")) {
 			// If not, let's assume we're on the Hudson server
-			selenium.type("id=zip", "/data/home/erikroos/PrefillAnimalDB_2012-05-16.zip");
+			//selenium.type("id=zip", "/data/home/erikroos/PrefillAnimalDB_2012-05-16.zip");
+			selenium.type("id=zip", "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip");
 			selenium.click("id=source1");
 			selenium.click("id=load");
 			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
