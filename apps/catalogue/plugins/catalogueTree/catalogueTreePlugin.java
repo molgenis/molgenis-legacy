@@ -45,7 +45,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private String InputToken = null;
 	private String comparison = null;
 	private String selectedField = null;
-	private String SelectionName = null;
+	private String SelectionName = "empty";
 
 	private boolean isSelectedInv = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
@@ -105,25 +105,26 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			} else if ("SaveSelectionSubmit".equals(request.getAction())) {
 				
 				if (request.getString("SelectionName") != null) {
+				//if (request.getString("SelectionName").compareTo("empty") != 0) {
 
 					this.setSelectionName(request.getString("SelectionName").trim());
 					System.out.println("The SelectionName is >>> : " + this.getSelectionName());
-					
-					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-					Date dat = new Date();
-					String dateOfDownload = dateFormat.format(dat);
-					System.out.println("selected investigaton >>>> "+  selectedInvestigation);
 					System.out.println("request >>" + request);
-					
-					try	{
-						this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
-					} catch (IOException e) {
-							e.printStackTrace();
-					  }
-
 				} else {
-					this.setError("Please insert a name for your selection and try again.");
+					//this.setError("Please insert a name for your selection and try again.");
+					this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
 				}
+				
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+				Date dat = new Date();
+				String dateOfDownload = dateFormat.format(dat);
+				System.out.println("selected investigaton >>>> "+  selectedInvestigation);
+				
+				try	{
+					this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
+				} catch (IOException e) {
+						e.printStackTrace();
+				  }
 
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
@@ -960,11 +961,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			System.out.println("save selection step 0");
 
 			if (result.isEmpty()) {
-				//String shoppingCartName = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
+				String shoppingCartName ;
 
 				// Add to database
 				ShoppingCart shoppingCart = new ShoppingCart();
-				String shoppingCartName = selectionName;
+				if (selectionName.compareTo("empty") == 0) {
+					shoppingCartName = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
+				}else {
+					shoppingCartName = selectionName;
+				}
 				shoppingCart.setName(shoppingCartName );
 				System.out.println("save selection step1");
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
