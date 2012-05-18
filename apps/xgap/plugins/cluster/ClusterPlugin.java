@@ -402,7 +402,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 				// FIXME
 				toServer += "investigation = '" + inv.getName() + "',";
 				
-				String userName = db.getSecurity().getUserName();
+				String userName = db.getLogin().getUserName();
 				
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.DATE, 2);

@@ -93,7 +93,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		submission.setReleasedate(dateFormat.format(new Date()));
 		submission.setIdentifier("S" + new Date());
 		List<Integer> submitters = new ArrayList<Integer>();
-		submitters.add(db.getSecurity().getUserId());
+		submitters.add(db.getLogin().getUserId());
 		submission.setSubmitters_Id(submitters);
 		db.add(submission);
 

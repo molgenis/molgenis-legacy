@@ -67,7 +67,7 @@ public class TaskDecorator<E extends org.molgenis.scrum.Task> extends MapperDeco
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		for(Task t: entities) t.setOwner(this.getDatabase().getSecurity().getUserId());
+		for(Task t: entities) t.setOwner(this.getDatabase().getLogin().getUserId());
 		
 		int count = super.add(entities);
 
@@ -81,7 +81,7 @@ public class TaskDecorator<E extends org.molgenis.scrum.Task> extends MapperDeco
 	{
 		for(Task t: entities)
 		{
-			t.setOwner(this.getDatabase().getSecurity().getUserId());
+			t.setOwner(this.getDatabase().getLogin().getUserId());
 		}
 		
 		// here we call the standard 'update'
@@ -95,7 +95,7 @@ public class TaskDecorator<E extends org.molgenis.scrum.Task> extends MapperDeco
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
-		for(Task t: entities) t.setOwner(this.getDatabase().getSecurity().getUserId());
+		for(Task t: entities) t.setOwner(this.getDatabase().getLogin().getUserId());
 
 		// here we call the standard 'remove'
 		int count = super.remove(entities);

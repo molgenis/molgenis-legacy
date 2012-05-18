@@ -64,7 +64,7 @@ public class TokenManager extends PluginModel
 						cal.add(Calendar.DATE, nrOfDays);
 						cal.add(Calendar.HOUR, nrOfHours);
 						Date validUntil = cal.getTime();
-						String userName = db.getSecurity().getUserName();
+						String userName = db.getLogin().getUserName();
 						
 						for(int i=0; i<nrOfTokens; i++)
 						{
@@ -103,7 +103,7 @@ public class TokenManager extends PluginModel
 		
 		try
 		{
-			String user = db.getSecurity().getUserName();
+			String user = db.getLogin().getUserName();
 			this.model.setTokens(this.getTokenFactory().getAllTokens(user));
 			
 		}

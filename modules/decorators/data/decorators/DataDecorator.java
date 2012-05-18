@@ -46,9 +46,9 @@ public class DataDecorator<E extends org.molgenis.data.Data> extends MapperDecor
 		for(Data e : entities)
 		{
 			System.out.println(e.toString());
-			if(e.getPerformer_Id().size() == 0 && this.getDatabase().getSecurity() instanceof DatabaseLogin)
+			if(e.getPerformer_Id().size() == 0 && this.getDatabase().getLogin() instanceof DatabaseLogin)
 			{
-				e.setPerformer_Id(this.getDatabase().getSecurity().getUserId());
+				e.setPerformer_Id(this.getDatabase().getLogin().getUserId());
 			}
 		}
 

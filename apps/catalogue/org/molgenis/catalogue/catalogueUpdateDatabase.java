@@ -34,7 +34,7 @@ public class catalogueUpdateDatabase
 		Database db = DatabaseFactory.create("apps/catalogue/org/molgenis/catalogue/catalogue.molgenis.properties");
 		
 		// Only add  user if type of Login allows for this
-//		if (!(db.getSecurity() instanceof SimpleLogin)) {
+//		if (!(db.getLogin() instanceof SimpleLogin)) {
 //			MolgenisUser u = new MolgenisUser();
 //			u.setName("biobank");
 //			u.setPassword("biobank");

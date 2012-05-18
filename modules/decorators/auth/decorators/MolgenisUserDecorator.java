@@ -48,7 +48,7 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MapperDecorat
 		// add your post-processing here
 		// if you throw and exception the previous add will be rolled back
 		// First check if we have the kind of Login that allows the following actions!
-		if (!(this.getDatabase().getSecurity() instanceof SimpleLogin)) {
+		if (!(this.getDatabase().getLogin() instanceof SimpleLogin)) {
 			for (MolgenisUser e : entities)
 			{
 				// Try to add the user to the AllUsers group
@@ -88,11 +88,11 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MapperDecorat
 		int count = -1;
 		
 		//make security exception if the currently logged in user wants to update him/herself
-		//FIXME: we do this.getDatabase().getSecurity() == null to work with the "escaped security" solutions in the SimpleUserLogin.java..
+		//FIXME: we do this.getDatabase().getLogin() == null to work with the "escaped security" solutions in the SimpleUserLogin.java..
 		//FIXME: not good, or OK ???
-		if(this.getDatabase().getSecurity() == null || entities.size() == 1 && this.getDatabase().getSecurity().getUserName().equals(entities.get(0).getName()))
+		if(this.getDatabase().getLogin() == null || entities.size() == 1 && this.getDatabase().getLogin().getUserName().equals(entities.get(0).getName()))
 		{
-			Login saveLogin = this.getDatabase().getSecurity();
+			Login saveLogin = this.getDatabase().getLogin();
 			this.getDatabase().setLogin(null);
 			count = super.update(entities);
 			this.getDatabase().setLogin(saveLogin);
@@ -115,7 +115,7 @@ public class MolgenisUserDecorator<E extends MolgenisUser> extends MapperDecorat
 		// add your pre-processing here
 		// first remove corresponding MolgenisRoleGroupLink entries, so we will be allowed to remove the User entities
 		// First check if we have the kind of Login that allows the following actions!
-		if (!(this.getDatabase().getSecurity() instanceof SimpleLogin)) {
+		if (!(this.getDatabase().getLogin() instanceof SimpleLogin)) {
 			for (E e : entities)
 			{
 				try {

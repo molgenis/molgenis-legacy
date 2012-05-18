@@ -156,7 +156,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 				throw new Exception("Code was wrong.");
 			
 			// save current login and then set to null, to bypass security
-			Login saveLogin = db.getSecurity();
+			Login saveLogin = db.getLogin();
 			db.setLogin(null);
 			
 			MolgenisUserService userService = MolgenisUserService.getInstance(db);
@@ -209,7 +209,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 	    try
 		{
     		// save current login and then set to null, to bypass security
-    		Login saveLogin = db.getSecurity();
+    		Login saveLogin = db.getLogin();
     		db.setLogin(null);
 
 			MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();
@@ -264,7 +264,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
     		this.getApplicationController().getLogin().login(db, "admin", "admin"); //TODO
     		this.getApplicationController().getLogin().reload(db);
 	    	// save current login and then set to null, to bypass security
-    		Login saveLogin = db.getSecurity();
+    		Login saveLogin = db.getLogin();
     		db.setLogin(null);
 
     		MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();

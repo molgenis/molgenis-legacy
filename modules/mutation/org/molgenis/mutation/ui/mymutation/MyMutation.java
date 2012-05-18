@@ -56,7 +56,7 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 			patientService.setDatabase(db);
 			
 			PatientSearchCriteriaVO criteria         = new PatientSearchCriteriaVO();
-			criteria.setUserId(db.getSecurity().getUserId());
+			criteria.setUserId(db.getLogin().getUserId());
 			List<PatientSummaryVO> patientSummaryVOs = patientService.findPatients(criteria);
 	
 			this.getModel().setPatientSummaryVOList(patientSummaryVOs);
