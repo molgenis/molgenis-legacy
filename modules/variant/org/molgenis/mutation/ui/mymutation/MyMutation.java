@@ -54,7 +54,7 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 		try
 		{
 			SearchService searchService = ServiceLocator.instance().getSearchService();
-			Login securityService       = ServiceLocator.instance().getSecurityService();
+			Login securityService       = ServiceLocator.instance().getLoginService();
 
 			List<PatientSummaryDTO> patientSummaryVOs = searchService.findPatientsByUserId(securityService.getUserId());
 	
