@@ -22,6 +22,7 @@ import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.framework.ui.html.StringInput;
+import org.molgenis.framework.ui.html.VerticalLayout;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.Tuple;
@@ -72,7 +73,6 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 	{
 		logger.info("changelibrary: " + request);
 		String lib = request.getString("library");
-		if("DOJO".equals(lib)) HtmlSettings.uiToolkit = UiToolkit.DOJO;
 		if("JQUERY".equals(lib)) HtmlSettings.uiToolkit = UiToolkit.JQUERY;
 		if("DEFAULT".equals(lib)) HtmlSettings.uiToolkit = UiToolkit.ORIGINAL;
 		
@@ -84,7 +84,7 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 		
 		view.add(new Label("select demo (and to change library used)"));
 		
-		FlowLayout libraryPanel = new FlowLayout();
+		VerticalLayout libraryPanel = new VerticalLayout();
 		
 		SelectInput select = new SelectInput("library", HtmlSettings.uiToolkit.toString());
 		select.addOption("JQUERY", "Jquery toolkit");

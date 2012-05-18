@@ -168,7 +168,6 @@
 			<fileset dir="WebContent">
 				<exclude name="META-INF/**" />
 				<exclude name="WEB-INF/**" />
-				<exclude name="VAADIN/**" />
 				<exclude name="animaldb/**" />
 				<exclude name="designgg/**" />
 				<include name="**/*.*" />
@@ -198,7 +197,6 @@
 			<fileset dir="WebContent">
 				<exclude name="META-INF/**" />
 				<exclude name="WEB-INF/**" />
-				<exclude name="VAADIN/**" />
 				<exclude name="animaldb/**" />
 				<exclude name="designgg/**" />
 				<include name="**/*.*" />
