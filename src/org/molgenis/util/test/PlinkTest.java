@@ -6,18 +6,18 @@ import java.io.IOException;
 import junit.framework.Assert;
 
 import org.molgenis.util.DirectoryCompare;
-import org.molgenis.util.plink.datatypes.Biallele;
-import org.molgenis.util.plink.drivers.BedFileDriver;
-import org.molgenis.util.plink.drivers.BimFileDriver;
-import org.molgenis.util.plink.drivers.FamFileDriver;
-import org.molgenis.util.plink.drivers.MapFileDriver;
-import org.molgenis.util.plink.drivers.PedFileDriver;
-import org.molgenis.util.plink.drivers.TpedFileDriver;
-import org.molgenis.util.plink.writers.BimFileWriter;
-import org.molgenis.util.plink.writers.FamFileWriter;
-import org.molgenis.util.plink.writers.MapFileWriter;
-import org.molgenis.util.plink.writers.PedFileWriter;
-import org.molgenis.util.plink.writers.TpedFileWriter;
+import org.molgenis.util.plink.BedFileDriver;
+import org.molgenis.util.plink.Biallele;
+import org.molgenis.util.plink.BimFileDriver;
+import org.molgenis.util.plink.BimFileWriter;
+import org.molgenis.util.plink.FamFileDriver;
+import org.molgenis.util.plink.FamFileWriter;
+import org.molgenis.util.plink.MapFileDriver;
+import org.molgenis.util.plink.MapFileWriter;
+import org.molgenis.util.plink.PedFileDriver;
+import org.molgenis.util.plink.PedFileWriter;
+import org.molgenis.util.plink.TpedFileDriver;
+import org.molgenis.util.plink.TpedFileWriter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -108,26 +108,26 @@ public class PlinkTest
 	@Test
 	public void BED_getElements() throws Exception
 	{
-		String[] all = new String[]
-		{ "00", "01", "11", "01", "11", "11", "00", "00", "01", "01", "00",
-				"11", "01", "11", "00", "00" };
+//		String[] all = new String[]
+//		{ "00", "01", "11", "01", "11", "11", "00", "00", "01", "01", "00",
+//				"11", "01", "11", "00", "00" };
 
-		String[] subset1 = new String[]
-		{ all[0], all[1], all[2], all[3] };
-		String[] subset2 = new String[]
-		{ all[1], all[2], all[3], all[4] };
-		String[] subset3 = new String[]
-		{ all[2], all[3], all[4], all[5] };
-		String[] subset4 = new String[]
-		{ all[3], all[4], all[5], all[6] };
-		String[] subset5 = new String[]
-		{ all[13], all[14] };
-		String[] subset6 = new String[]
-		{ all[14], all[15] };
-		String[] subset7 = new String[]
-		{ all[10], all[11], all[12], all[13], all[14] };
-		String[] subset8 = new String[]
-		{ all[5], all[6], all[7], all[8], all[9] };
+//		String[] subset1 = new String[]
+//		{ all[0], all[1], all[2], all[3] };
+//		String[] subset2 = new String[]
+//		{ all[1], all[2], all[3], all[4] };
+//		String[] subset3 = new String[]
+//		{ all[2], all[3], all[4], all[5] };
+//		String[] subset4 = new String[]
+//		{ all[3], all[4], all[5], all[6] };
+//		String[] subset5 = new String[]
+//		{ all[13], all[14] };
+//		String[] subset6 = new String[]
+//		{ all[14], all[15] };
+//		String[] subset7 = new String[]
+//		{ all[10], all[11], all[12], all[13], all[14] };
+//		String[] subset8 = new String[]
+//		{ all[5], all[6], all[7], all[8], all[9] };
 
 		// single elements
 		/*
@@ -356,20 +356,20 @@ public class PlinkTest
 		tpedfd.close();
 	}
 
-	private boolean stringArrEqual(String[] arr1, String[] arr2)
-	{
-		if (arr1.length != arr2.length)
-		{
-			return false;
-		}
-		for (int i = 0; i < arr1.length; i++)
-		{
-			if (!arr1[i].equals(arr2[i]))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+//	private boolean stringArrEqual(String[] arr1, String[] arr2)
+//	{
+//		if (arr1.length != arr2.length)
+//		{
+//			return false;
+//		}
+//		for (int i = 0; i < arr1.length; i++)
+//		{
+//			if (!arr1[i].equals(arr2[i]))
+//			{
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 
 }

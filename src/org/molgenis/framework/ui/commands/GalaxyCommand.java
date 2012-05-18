@@ -3,23 +3,15 @@ package org.molgenis.framework.ui.commands;
 //import java.io.IOException;
 //import java.io.PrintWriter;
 import java.io.OutputStream;
-//import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-//import org.molgenis.framework.db.QueryRule;
-//import org.molgenis.framework.db.QueryRule.Operator;
-//import org.molgenis.framework.ui.FormController;
-//import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.framework.ui.html.Paragraph;
-//import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
 
 /**

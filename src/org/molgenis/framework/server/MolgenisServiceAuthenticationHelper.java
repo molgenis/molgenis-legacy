@@ -125,7 +125,7 @@ public class MolgenisServiceAuthenticationHelper
 		}
 		
 		// regular request: check if user is authenticated, and if not, display login box
-		if(!req.getDatabase().getSecurity().isAuthenticated())
+		if(!req.getDatabase().getLogin().isAuthenticated())
 		{
 			String printMe = "<form name=\"input\" action=\"\" method=\"post\">";
 			printMe += "<table><tr><td colspan=\"2\">Please log in:</td></tr>";

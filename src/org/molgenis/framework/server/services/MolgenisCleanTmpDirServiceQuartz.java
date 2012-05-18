@@ -19,7 +19,6 @@ import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
@@ -81,7 +80,7 @@ public class MolgenisCleanTmpDirServiceQuartz implements MolgenisService
 //	    	
 //	    	scheduler.start();
 //	    	scheduler.scheduleJob(job, t);
-			HashMap dataMap2 = new HashMap();
+			HashMap<Object, Object> dataMap2 = new HashMap<Object, Object>();
 //	    	dataMap2.put("cleanTmpDirTask", task);
 			schedulingService.scheduleOnce(dataMap2, CleanTmpDirJob.class);
 //			schedulingService.shutdown();

@@ -532,7 +532,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 			for (E entity : getRecords())
 			{
 				HtmlForm record = getController().getInputs(entity, false);
-				record.setReadonly(!getSecurity().canWrite(entity));
+				record.setReadonly(!getLogin().canWrite(entity));
 				records.add(record);
 			}
 		}
@@ -865,12 +865,12 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 	public boolean isReadonly()
 	{
 		// If no "real" auth is used, return value from xml-ui
-		if (this.getSecurity() instanceof SimpleLogin) return this.readonly;
+		if (this.getLogin() instanceof SimpleLogin) return this.readonly;
 
 		// Otherwise dynamically return whether form is read-only
 		try
 		{
-			return !this.getSecurity().canWrite(this.create().getClass());
+			return !this.getLogin().canWrite(this.create().getClass());
 		}
 		catch (DatabaseException e)
 		{
@@ -936,7 +936,7 @@ public class FormModel<E extends Entity> extends SimpleScreenModel
 		this.userHiddenColumns = userHiddenColumns;
 	}
 
-	public Login getSecurity()
+	public Login getLogin()
 	{
 		return getController().getApplicationController().getLogin();
 	}

@@ -15,7 +15,6 @@ package org.molgenis.framework.ui;
 
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;

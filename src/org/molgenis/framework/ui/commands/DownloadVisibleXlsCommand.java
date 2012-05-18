@@ -3,25 +3,20 @@
  */
 package org.molgenis.framework.ui.commands;
 
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.jdbc.AbstractJDBCMapper;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
-import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.XlsWriter;
 

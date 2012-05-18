@@ -27,9 +27,7 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleReader;
 import org.molgenis.util.TupleWriter;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public abstract class AbstractDatabase implements Database
 {
 
@@ -113,12 +111,9 @@ public abstract class AbstractDatabase implements Database
 		}
 	}
 
-	@Override
-	public <E extends Entity> List<E> findByExample(E example)
-			throws DatabaseException
-	{
-		return (List<E>) getMapperFor(example.getClass()).findById(example);
-	}
+//	@Override
+//	public abstract <E extends Entity> List<E> findByExample(E example)
+//			throws DatabaseException;
 
 	@Override
 	public <E extends Entity> E findById(Class<E> entityClass, Object id)
@@ -136,7 +131,7 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> Query<E> queryByExample(E entity)
 	{
-		return new QueryImp<E>(this, (Class<E>) entity.getClass())
+		return new QueryImp<E>(this, getEntityClass(entity))
 				.example(entity);
 	}
 
@@ -180,6 +175,23 @@ public abstract class AbstractDatabase implements Database
 		return success;
 	}
 
+	@Override
+	public <E extends Entity> List<E> findByExample(E example)
+			throws DatabaseException
+	{
+		Query<E> q = this.query(getClassForEntity(example));
+
+		for (String field : example.getFields())
+		{
+			if (example.get(field) != null)
+			{
+				q.equals(field, example.get(field));
+			}
+		}
+
+		return q.find();
+	}
+	
 	/**
 	 * Executes a JDBC query and returns the resultset.
 	 * 
@@ -581,7 +593,7 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int add(E entity) throws DatabaseException
 	{
-		List<E> entities = getMapperFor((Class<E>) entity.getClass())
+		List<E> entities = getMapperFor(getEntityClass(entity))
 				.createList(1);
 		entities.add(entity);
 		return add(entities);
@@ -593,7 +605,7 @@ public abstract class AbstractDatabase implements Database
 	{
 		if (entities.size() > 0)
 		{
-			Class<E> klass = (Class<E>) entities.get(0).getClass();
+			Class<E> klass = getEntityClass(entities);
 			return getMapperFor(klass).add(entities);
 		}
 		return 0;
@@ -615,7 +627,7 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int update(E entity) throws DatabaseException
 	{
-		List<E> entities = getMapperFor((Class<E>) entity.getClass())
+		List<E> entities = getMapperFor(getEntityClass(entity))
 				.createList(1);
 		entities.add(entity);
 		return update(entities);
@@ -627,7 +639,7 @@ public abstract class AbstractDatabase implements Database
 	{
 		if (entities.size() > 0)
 		{
-			Class<E> klass = (Class<E>) entities.get(0).getClass();
+			Class<E> klass = getEntityClass(entities);
 			return getMapperFor(klass).update(entities);
 		}
 		return 0;
@@ -643,7 +655,7 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int remove(E entity) throws DatabaseException
 	{
-		List<E> entities = getMapperFor((Class<E>) entity.getClass())
+		List<E> entities = getMapperFor(getEntityClass(entity))
 				.createList(1);
 		entities.add(entity);
 		return remove(entities);
@@ -655,7 +667,7 @@ public abstract class AbstractDatabase implements Database
 	{
 		if (entities.size() > 0)
 		{
-			Class<E> klass = (Class<E>) entities.get(0).getClass();
+			Class<E> klass = getEntityClass(entities);
 			return getMapperFor(klass).remove(entities);
 		}
 		return 0;
@@ -689,6 +701,7 @@ public abstract class AbstractDatabase implements Database
 			throws DatabaseException
 	{
 		// transform to generic exception
+		@SuppressWarnings("unchecked")
 		Mapper<E> mapper = (Mapper<E>) mappers.get(klazz.getName());
 		if (mapper == null)
 		{
@@ -712,6 +725,7 @@ public abstract class AbstractDatabase implements Database
 			throws DatabaseException
 	{
 		// transform to generic exception
+		@SuppressWarnings("unchecked")
 		Mapper<E> mapper = (Mapper<E>) mappers.get(name);
 		if (mapper == null)
 		{
@@ -757,11 +771,6 @@ public abstract class AbstractDatabase implements Database
 	}
 
 	public Login getLogin()
-	{
-		return login;
-	}
-
-	public Login getSecurity()
 	{
 		return login;
 	}
@@ -812,7 +821,6 @@ public abstract class AbstractDatabase implements Database
 	public List<Tuple> sql(String sql, QueryRule... rules)
 			throws DatabaseException
 	{
-		Connection con = getConnection();
 		ResultSet rs;
 		try
 		{
@@ -846,51 +854,6 @@ public abstract class AbstractDatabase implements Database
 			String searchString) throws DatabaseException
 	{
 		return find(entityClass, new QueryRule(Operator.SEARCH, searchString));
-		
-//		// naive implementation, should use hibernate search when it comes
-//		// available!
-//		List<QueryRule> searchRules = new ArrayList<QueryRule>();
-//		searchRules.addAll(Arrays.asList(rules));
-//
-//		try
-//		{
-//			boolean addAND = false;
-//			
-//			// try create big OR filter for all fields and all search elements
-//			// todo: enable string term concat using quotes
-//			for (String term : searchString.split(" "))
-//			{
-//				List<QueryRule> termRules = new ArrayList<QueryRule>();
-//
-//				// create different query rule depending on type
-//				List<Field> fields = this.getMetaData()
-//						.getEntity(entityClass.getSimpleName()).getAllFields();
-//				
-//				for (Field f : fields)
-//				{
-//					if (f.getType() instanceof StringField
-//							|| f.getType() instanceof TextField)
-//					{
-//						termRules.add(new QueryRule(f.getName(), Operator.LIKE,
-//								term.trim()));
-//						termRules.add(new QueryRule(Operator.OR));
-//					}
-//				}
-//			
-//				//add as big X or Y or Z subquery to our rules
-//				searchRules.add(new QueryRule(termRules));
-//				
-//				if(addAND) searchRules.add(new QueryRule(Operator.AND));
-//				addAND = true;
-//			}
-//		}
-//		catch (Exception e)
-//		{
-//			throw new DatabaseException(e);
-//		}
-//
-//		return this.find(entityClass,
-//				searchRules.toArray(new QueryRule[searchRules.size()]));
 	}
 	
 	public <E extends Entity> List<? extends Entity> load(Class<E> superClass, List<E> entities) throws DatabaseException
@@ -906,6 +869,7 @@ public abstract class AbstractDatabase implements Database
 			else if(superClass.isInstance(e))
 			{
 				//Entity is of subclass type, requery and add to results
+				@SuppressWarnings("unchecked")
 				Class<E> klazz = (Class<E>) this.getClassForName(e.get(Field.TYPE_FIELD).toString());
 				E r = this.findById(klazz, e.get(e.getIdField()));
 				result.add(r);
@@ -917,5 +881,24 @@ public abstract class AbstractDatabase implements Database
 			}
 		}
 		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <E extends Entity> Class<E> getEntityClass(E entity)
+	{
+		if(entity != null) return (Class<E>) entity.getClass();
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <E extends Entity> Class<E> getEntityClass(List<E> entities)
+	{
+		for(E e: entities)
+		{
+			if(e != null) return (Class<E>) e.getClass();
+		}
+		return null;
 	}
 }

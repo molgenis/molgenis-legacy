@@ -20,9 +20,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
-import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.SimpleTree;
-import org.molgenis.util.Tuple;
 
 /**
  * Base-class for a screen displaying information from the invengine system to

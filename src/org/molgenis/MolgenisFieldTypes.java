@@ -13,8 +13,6 @@ import org.molgenis.fieldtypes.EnumField;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.FileField;
 import org.molgenis.fieldtypes.FreemarkerField;
-import org.molgenis.fieldtypes.HexaField;
-import org.molgenis.fieldtypes.RichtextField;
 import org.molgenis.fieldtypes.HyperlinkField;
 import org.molgenis.fieldtypes.ImageField;
 import org.molgenis.fieldtypes.IntField;
@@ -22,6 +20,7 @@ import org.molgenis.fieldtypes.LongField;
 import org.molgenis.fieldtypes.MrefField;
 import org.molgenis.fieldtypes.NSequenceField;
 import org.molgenis.fieldtypes.OnoffField;
+import org.molgenis.fieldtypes.RichtextField;
 import org.molgenis.fieldtypes.StringField;
 import org.molgenis.fieldtypes.TextField;
 import org.molgenis.fieldtypes.UnknownField;
@@ -91,7 +90,6 @@ public class MolgenisFieldTypes
 			addType(new TextField());
 			addType(new XrefField());
 			addType(new IntField());
-			addType(new HexaField());
 			addType(new RichtextField());
 			addType(new FreemarkerField());
 

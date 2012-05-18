@@ -190,11 +190,6 @@ public class StringInput extends ValidatingInput<String>
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		if (this.uiToolkit == UiToolkit.DOJO)
-		{
-			return "<script type=\"text/javascript\">"
-					+ "	dojo.require(\"dijit.form.TextBox\");" + "</script>";
-		}
 		return "";
 	}
 }

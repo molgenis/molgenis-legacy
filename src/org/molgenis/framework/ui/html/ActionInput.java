@@ -142,10 +142,6 @@ public class ActionInput extends HtmlInput<Object>
 		{
 			return this.renderDefault();
 		}
-		else if (this.uiToolkit == UiToolkit.DOJO)
-		{
-			return this.renderDojo();
-		}
 		else if (this.uiToolkit == UiToolkit.JQUERY)
 		{
 			return this.renderJquery();
@@ -313,11 +309,6 @@ public class ActionInput extends HtmlInput<Object>
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		if (this.uiToolkit == UiToolkit.DOJO)
-		{
-			return "<script type=\"text/javascript\">"
-					+ "	dojo.require(\"dijit.form.Button\");" + "</script>";
-		}
 		return "";
 	}
 
@@ -344,24 +335,6 @@ public class ActionInput extends HtmlInput<Object>
 				+ (width > 0 ? ".width(" + width + ")" : "")
 				//+ (getIcon() != null ? ".height(" + (this.getIconHeight() + 10) + ").width(" + (this.getIconWidth() + 10) + ")" : "")
 				+ ".button(" + icons + ");</script>\n";
-
-		return result;
-	}
-
-	private String renderDojo()
-	{
-		String icon = getIcon() != null ? " iconClass=\"dijitEditorIcon "
-				+ getIcon() + "\"" : "";
-		String showLabel = showLabel() == false ? " showLabel=\"false\"" : "";
-		String result = "<button class=\"claro\" dojoType=\"dijit.form.Button\""
-				+ " type=\"submit\""
-				+ icon
-				+ showLabel
-				+ ">"
-				+ this.getLabel()
-				+ " <script type=\"dojo/method\" event=\"onClick\" args=\"evt\">"
-				+ "var __action = dojo.byId(\"#__action\"); alert(__action.value);"
-				+ this.getJavaScriptAction() + "</script></button>";
 
 		return result;
 	}

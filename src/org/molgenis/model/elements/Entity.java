@@ -20,7 +20,6 @@ import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.fieldtypes.IntField;
 import org.molgenis.fieldtypes.MrefField;
-import org.molgenis.fieldtypes.UserField;
 import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.model.MolgenisModelException;
 
@@ -1010,7 +1009,6 @@ public class Entity extends DBSchema implements Record
 		for (Field field : getFields())
 		{
 			if (field.isSystem()) continue;
-			if (field.getType() instanceof UserField ) xref_fields.add(field);
 		}
 
 		return xref_fields;

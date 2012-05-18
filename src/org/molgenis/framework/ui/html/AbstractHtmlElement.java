@@ -6,6 +6,11 @@ import java.util.UUID;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
+/**
+ * Base class for all html elements. For scripting pu
+ * @author mswertz
+ *
+ */
 public abstract class AbstractHtmlElement implements HtmlElement, ScreenView
 {
 	/** unique id of this input */

@@ -130,7 +130,7 @@ public class Pbs extends Ssh
 	
 	public void remove(PbsJob job) throws IOException {
 		// kill on cluster
-		SshResult result = this.executeCommand("qdel " + job.getId());
+//		SshResult result = this.executeCommand("qdel " + job.getId());
 		
 		// remove job from 'jobs'
 		this.jobs.remove(job.getName());

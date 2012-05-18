@@ -4,8 +4,6 @@ import org.molgenis.framework.ui.html.HtmlElement;
 
 public abstract class EasyPluginView<M extends EasyPluginModel> extends SimpleScreenView<M>
 {
-	private static final long serialVersionUID = 1L;
-	
 	public EasyPluginView(M model)
 	{
 		super(model);

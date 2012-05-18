@@ -29,35 +29,6 @@ import org.molgenis.util.Tuple;
  */
 public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 {
-	public static class Builder<E extends Entity> extends AbstractRefInput.Builder<E> {
-		public Builder(Class<E> xrefEntity) {
-			super(xrefEntity, (E)null);
-		}
-		
-		public Builder(final String name, Class<E> xrefEntity, E value) {
-			super(xrefEntity, value);
-		}
-		
-		public Builder(String name, E object)
-		{
-			super((Class<E>) object.getClass(), object);
-		}
-
-		public XrefInput<E> build() {
-			final XrefInput<E> xrefInput = new XrefInput<E>(this, UUID.randomUUID().toString());
-			return xrefInput;
-		}
-		
-		public XrefInput<E> build(String id) {
-			final XrefInput<E> xrefInput = new XrefInput<E>(this, id);
-			return xrefInput;
-		}
-	}
-
-	private XrefInput(final Builder<E> builder, final String id) {
-		super(builder, id);
-	}	
-	
 	protected XrefInput() {
 		super();
 	}
@@ -152,8 +123,6 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 			this.setXrefEntity(t.getString(XREF_ENTITY));
 	}
 
-	@SuppressWarnings("unchecked")
-	@Deprecated
 	public XrefInput(String name, String entityClassname)
 			throws HtmlInputException, ClassNotFoundException
 	{

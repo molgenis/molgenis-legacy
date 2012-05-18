@@ -2,7 +2,6 @@ package org.molgenis.util;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.molgenis.util.Pbs.State;
 
 /**
@@ -26,8 +25,6 @@ public class PbsJob
 	private String mem = "2gb";
 	private String nodes = "1:ppn=1";
 	private String owner;
-
-	private Logger logger = Logger.getLogger(PbsJob.class);
 
 	public String toString()
 	{

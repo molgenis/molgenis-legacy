@@ -1,8 +1,5 @@
 package org.molgenis.model;
 
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,8 +23,6 @@ import org.molgenis.model.elements.UISchema;
 import org.molgenis.model.elements.Unique;
 import org.molgenis.model.elements.View;
 import org.molgenis.util.Pair;
-
-import java.sql.*;
 
 public class MolgenisModelValidator
 {

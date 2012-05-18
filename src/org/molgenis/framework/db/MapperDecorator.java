@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.List;
 
 import org.molgenis.fieldtypes.FieldType;
-import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.TupleReader;
 import org.molgenis.util.TupleWriter;
@@ -105,7 +104,7 @@ public class MapperDecorator<E extends Entity> implements Mapper<E>
 	}
 
 	@Override
-	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
+	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule[] rules) throws DatabaseException
 	{
 		mapper.find(writer, fieldsToExport, rules);
 	}

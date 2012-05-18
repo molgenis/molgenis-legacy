@@ -162,8 +162,7 @@ public abstract class FieldType
 	{
 		return this.createInput(name, null);
 	}
-
-	@Deprecated //Dangerous, because can compile without being correct.  
+  
 	public abstract HtmlInput<?> createInput(String name, String xrefEntityClassNames) throws HtmlInputException;
 	//public abstract HtmlInput<?> createInput(String name, Class<? extends Entity> xrefClass ) throws HtmlInputException;
 	

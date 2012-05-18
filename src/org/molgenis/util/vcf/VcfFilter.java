@@ -1,7 +1,6 @@
 package org.molgenis.util.vcf;
 
 import org.molgenis.util.Tuple;
-import org.molgenis.util.vcf.VcfInfo.InfoType;
 
 public class VcfFilter
 {

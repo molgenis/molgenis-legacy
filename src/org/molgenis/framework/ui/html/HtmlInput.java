@@ -311,6 +311,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	}
 
 	/** Synonym to toHtml */
+	@SuppressWarnings("deprecation")
 	public String render(Tuple params) throws ParseException,
 			HtmlInputException
 	{

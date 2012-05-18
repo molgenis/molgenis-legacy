@@ -3,7 +3,6 @@ package org.molgenis.framework.ui.html;
 import java.text.ParseException;
 
 import org.molgenis.framework.ui.FreemarkerView;
-import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.Tuple;
 

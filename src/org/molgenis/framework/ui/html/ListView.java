@@ -53,7 +53,7 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 	}
 
 	@Override
-	public HtmlInput setValue(List<HtmlForm> value)
+	public ListView setValue(List<HtmlForm> value)
 	{
 		if (value instanceof List)
 		{

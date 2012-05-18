@@ -6,7 +6,6 @@ import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -31,10 +30,11 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 
 	private String label = null;
 
+	@SuppressWarnings("unchecked")
 	public EasyPluginController(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
-		this.setModel((M) this);
+		this.setModel((M)this);
 	}
 
 	/**
@@ -130,10 +130,11 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public <E extends Entity> FormModel<E> getParentForm(Class<E> entityClass)
 	{
 		// here we gonna put the parent
-		ScreenController parent = getParent();
+		ScreenController<?> parent = getParent();
 		while (parent != null)
 		{
 			if (parent instanceof FormController && ((FormController<?>) parent).getEntityClass().equals(entityClass))
@@ -142,7 +143,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			}
 			else
 			{
-				parent = (ScreenController) parent.getParent();
+				parent = (ScreenController<?>) parent.getParent();
 			}
 		}
 		throw new RuntimeException("Parent form of class " + entityClass.getName() + " is unknown in plugin name="

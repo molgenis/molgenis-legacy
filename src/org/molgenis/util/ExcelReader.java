@@ -43,8 +43,6 @@ public class ExcelReader extends AbstractTupleReader implements TupleReader, Tup
 		return result;
 	}
 	
-	private int lineCount = 0;
-
 	@Override
 	public Tuple next()
 	{
@@ -63,8 +61,6 @@ public class ExcelReader extends AbstractTupleReader implements TupleReader, Tup
 			if (hasHeader) t = new SimpleTuple(headers);
 			else
 				t = new SimpleTuple();
-
-			lineCount++;
 
 			// parse the row into a tuple
 			Cell[] cells = sheet.getRow(rowIndex);

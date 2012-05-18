@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,60 +19,60 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 {
 	private static String DEFAULT_URL = "xref/find";
 	
-	public static class Builder<E> {
-		private final E value;
-		
-		//private final String name;
-		private final Class<? extends Entity> xrefEntityClass;
-		
-		//optional arguments		
-		private String xrefField;
-		private List<QueryRule> filters;
-		private List<String> xrefLabels = new ArrayList<String>();
-		private String error;
-		private boolean includeAddButton;
-		private boolean nillable = false;
-		private String url = DEFAULT_URL;
-		private boolean prefill = true;
-		
-		public Builder(Class<? extends Entity> xrefEntityClass, E value)
-		{
-			this.xrefEntityClass = xrefEntityClass;
-			this.value = value;
-		}
-
-		public Builder<E> setXrefField(String xrefField) {
-			this.xrefField = xrefField; return this;
-		}
-		
-		public Builder<E> setError(String error) {
-			this.error = error; return this;
-		}
-
-		public Builder<E> setXrefLabels(List<String> xrefLabels) {
-			this.xrefLabels = xrefLabels; return this;
-		}
-
-		public Builder<E> setIncludeAddButton(boolean includeAddButton) {
-			this.includeAddButton = includeAddButton; return this;
-		}
-		
-		public Builder<E> setNillable(boolean nillable) {
-			this.nillable = nillable; return this;
-		}
-		
-		public Builder<E> setFilters(List<QueryRule> queryRules) {
-			this.filters = queryRules; return this;
-		}
-
-		public Builder<E> setUrl(String url) {
-			this.url = url; return this;
-		}
-	
-		public Builder<E> setPrefill(boolean prefill) {
-			this.prefill = prefill; return this;
-		}
-	}
+//	public static class Builder<E> {
+//		private final E value;
+//		
+//		//private final String name;
+//		private final Class<? extends Entity> xrefEntityClass;
+//		
+//		//optional arguments		
+//		private String xrefField;
+//		private List<QueryRule> filters;
+//		private List<String> xrefLabels = new ArrayList<String>();
+//		private String error;
+//		private boolean includeAddButton;
+//		private boolean nillable = false;
+//		private String url = DEFAULT_URL;
+//		private boolean prefill = true;
+//		
+//		public Builder(Class<? extends Entity> xrefEntityClass, E value)
+//		{
+//			this.xrefEntityClass = xrefEntityClass;
+//			this.value = value;
+//		}
+//
+//		public Builder<E> setXrefField(String xrefField) {
+//			this.xrefField = xrefField; return this;
+//		}
+//		
+//		public Builder<E> setError(String error) {
+//			this.error = error; return this;
+//		}
+//
+//		public Builder<E> setXrefLabels(List<String> xrefLabels) {
+//			this.xrefLabels = xrefLabels; return this;
+//		}
+//
+//		public Builder<E> setIncludeAddButton(boolean includeAddButton) {
+//			this.includeAddButton = includeAddButton; return this;
+//		}
+//		
+//		public Builder<E> setNillable(boolean nillable) {
+//			this.nillable = nillable; return this;
+//		}
+//		
+//		public Builder<E> setFilters(List<QueryRule> queryRules) {
+//			this.filters = queryRules; return this;
+//		}
+//
+//		public Builder<E> setUrl(String url) {
+//			this.url = url; return this;
+//		}
+//	
+//		public Builder<E> setPrefill(boolean prefill) {
+//			this.prefill = prefill; return this;
+//		}
+//	}
 	
 	
 	private static final String SELECT_SCRIPT;
@@ -113,25 +112,23 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 	protected String error = null;
 	protected boolean includeAddButton = false;	
 		
-	protected AbstractRefInput(final Builder<E> builder, final String name) {
-		super(name, builder.value);
-		setValue(builder.value);
-		xrefEntity = builder.xrefEntityClass;		
-		setXrefEntity(builder.xrefEntityClass);
-		url = builder.url;
-		
-		if(StringUtils.isNotEmpty(builder.xrefField)) { xrefField = builder.xrefField; }
-		if(CollectionUtils.isNotEmpty(builder.xrefLabels)) { xrefLabels = builder.xrefLabels; }
-		
-		filters = builder.filters;
-		error = builder.error;
-		setNillable(builder.nillable);
-		includeAddButton = builder.includeAddButton;
-		prefill = builder.prefill;		
-	}
+//	protected AbstractRefInput(final Builder<E> builder, final String name) {
+//		super(name, builder.value);
+//		setValue(builder.value);
+//		xrefEntity = builder.xrefEntityClass;		
+//		setXrefEntity(builder.xrefEntityClass);
+//		url = builder.url;
+//		
+//		if(StringUtils.isNotEmpty(builder.xrefField)) { xrefField = builder.xrefField; }
+//		if(CollectionUtils.isNotEmpty(builder.xrefLabels)) { xrefLabels = builder.xrefLabels; }
+//		
+//		filters = builder.filters;
+//		error = builder.error;
+//		setNillable(builder.nillable);
+//		includeAddButton = builder.includeAddButton;
+//		prefill = builder.prefill;		
+//	}
 	
-	@SuppressWarnings("unchecked")
-	@Deprecated
 	protected AbstractRefInput(String name, Class<? extends Entity> xrefClass, String label, E value, 
 			boolean nillable, boolean readonly, String description)
 	{
@@ -145,7 +142,6 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		xrefEntity = xrefClass;
 	}
 	
-	@Deprecated
 	protected AbstractRefInput()
 	{
 		xrefEntity = null;
@@ -180,7 +176,6 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 	 * @param xrefEntity
 	 * @throws HtmlInputException 
 	 */
-	@Deprecated
 	protected void setXrefEntity(Class<? extends Entity> xrefEntity)
 	{		
 		try
@@ -205,7 +200,6 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 	 * @throws HtmlInputException 
 	 */
 	@SuppressWarnings({ "unchecked"})
-	@Deprecated	
 	public void setXrefEntity(String xrefClassname) throws HtmlInputException
 	{
 		try

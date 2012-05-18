@@ -15,32 +15,13 @@ public class AccordeonLayout extends MultipanelLayout implements Layout
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		if (this.style == UiToolkit.DOJO)
-		{
-			return "<script type=\"text/javascript\">"
-					+ "	dojo.require(\"dijit.layout.AccordionContainer\");"
-					+ "</script>";
-		}
 		return "";
 	}
 
 	@Override
 	public String render()
 	{
-		if (this.style == UiToolkit.DOJO)
-		{
-			String returnString = "<div class=\"claro\" dojoType=\"dijit.layout.AccordionContainer\" style=\"width: 300px; height: 300px\">";
-			for (String title : elements.keySet())
-			{
-				returnString += "<div dojoType=\"dijit.layout.AccordionPane\" title=\""
-						+ title + "\">";
-				returnString += elements.get(title).render();
-				returnString += "</div>";
-			}
-			returnString += "</div>";
-			return returnString;
-		}
-		else if (this.style == UiToolkit.JQUERY)
+		if (this.style == UiToolkit.JQUERY)
 		{
 			String returnString = "<div class=\"jquery_accordion\">";
 

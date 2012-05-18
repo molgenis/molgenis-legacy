@@ -78,8 +78,8 @@ AsyncMolgenisService
 					
 					UUID connId = getSecuredDatabase(request);
 					
-					System.out.println("database status: " + (request.getDatabase().getSecurity().isAuthenticated() ? "authenticated as "
-							+ request.getDatabase().getSecurity().getUserName() : "not authenticated"));
+					System.out.println("database status: " + (request.getDatabase().getLogin().isAuthenticated() ? "authenticated as "
+							+ request.getDatabase().getLogin().getUserName() : "not authenticated"));
 					
 					request.setServicePath(p);
 					services.get(p).handleAsyncRequest(request, id);

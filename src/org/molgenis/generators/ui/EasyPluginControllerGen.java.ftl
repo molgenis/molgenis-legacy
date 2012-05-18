@@ -13,59 +13,45 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.util.Tuple;
 
-/**
- * ${clazzName}Controller takes care of all user requests and application logic.
- *
- * <li>Each user request is handled by its own method based action=methodName. 
- * <li> MOLGENIS takes care of db.commits and catches exceptions to show to the user
- * <li>${clazzName}Model holds application state and business logic on top of domain model. Get it via this.getModel()/setModel(..)
- * <li>${clazzName}View holds the template to show the layout. Get/set it via this.getView()/setView(..).
- */
-public class ${clazzName} extends EasyPluginController<${clazzName}Model>
+public class ${clazzName} extends EasyPluginController<${clazzName}>
 {
 	public ${clazzName}(String name, ScreenController<?> parent)
 	{
 		super(name, null, parent);
-		this.setModel(new ${clazzName}Model(this)); //the default model
-		<#if flavor=="freemarker">
-		this.setView(new FreemarkerView("${clazzName}View.ftl", getModel())); //<plugin flavor="freemarker"
-		<#elseif flavor=="easy">
-		this.setView(new ${clazzName}View(getModel())); //<plugin flavor="easy"
-		<#else>
-		throw new UnsupportedOperationException("plugin flavor=\"${flavor}\" is not yet supported");
-		</#if>
+		this.setModel(this); //you can create a seperate class as 'model'.
 	}
 	
-	/**
-	 * At each page view: reload data from database into model and/or change.
-	 *
-	 * Exceptions will be caught, logged and shown to the user automatically via setMessages().
-	 * All db actions are within one transaction.
-	 */ 
+	//what is shown to the user
+	public ScreenView getView()
+	{
+		//uncomment next line if you want to use template
+		//return new FreemarkerView("${clazzName}View.ftl", getModel()); 
+		
+		MolgenisForm view = new MolgenisForm();
+		
+		view.add(new StringInput("helloName"));
+		view.add(new ActionInput("sayHello"));
+		
+		return view;
+	}
+	
+	private String helloName = "UNKNOWN";
+	
+	//matches ActionInput("sayHello")
+	public void sayHello(Database db, Tuple request)
+	{
+		if(!request.isNull("helloName"))
+		{
+			this.helloName = request.getString("helloName");
+		}
+	}
+	
 	@Override
 	public void reload(Database db) throws Exception
 	{	
 //		//example: update model with data from the database
-//		Query q = db.query(Investigation.class);
-//		q.like("name", "molgenis");
+//		Query q = db.query(Person.class);
+//		q.like("name", "john");
 //		getModel().investigations = q.find();
-	}
-	
-	/**
-	 * When action="updateDate": update model and/or view accordingly.
-	 *
-	 * Exceptions will be logged and shown to the user automatically.
-	 * All db actions are within one transaction.
-	 */
-	public void updateDate(Database db, Tuple request) throws Exception
-	{
-		getModel().date = request.getDate("date");
-	
-//		//Easily create object from request and add to database
-//		Investigation i = new Investigation(request);
-//		db.add(i);
-//		this.setMessage("Added new investigation");
-
-		getModel().setSuccess("Update successful");
 	}
 }

@@ -32,11 +32,11 @@ import com.google.gson.reflect.TypeToken;
 
 public class MolgenisXrefService implements MolgenisService
 {
-	private MolgenisContext mc;
+	//private MolgenisContext mc;
 
 	public MolgenisXrefService(MolgenisContext mc)
 	{
-		this.mc = mc;
+	//	this.mc = mc;
 	}
 
 	/**
@@ -179,6 +179,7 @@ public class MolgenisXrefService implements MolgenisService
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static Class<? extends Entity> getClassForName(String entityName)
 			throws ClassNotFoundException
 	{

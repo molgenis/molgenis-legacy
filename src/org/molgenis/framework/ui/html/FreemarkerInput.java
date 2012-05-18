@@ -11,10 +11,6 @@
 
 package org.molgenis.framework.ui.html;
 
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.molgenis.framework.ui.FreemarkerView;
 
 /**
  * Renders an editor for freemarker including code higlighting and line numbers.

@@ -16,7 +16,6 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 import org.apache.log4j.Logger;
-import org.molgenis.model.elements.Field;
 
 /**
  * Write values to an Excel file
@@ -33,9 +32,6 @@ public class XlsWriter implements TupleWriter
 	
 	//need to keep track of the rownumber we're writing in!
 	public int rowIndex = 1;
-	
-	private static final transient Logger logger = Logger.getLogger(XlsWriter.class.getSimpleName());
-
 	
 	public XlsWriter(OutputStream writer, List<String> headers) throws WriteException, IOException {
 		this(writer);

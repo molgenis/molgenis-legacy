@@ -34,11 +34,9 @@ import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.json.JSONObject;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.server.services.MolgenisXrefService;
@@ -460,33 +458,33 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public void handleGUIrequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception
 	{
-		// get database session (note: this shouldn't be in the tomcat
-		// session!!!
-		Database db = null;
-		boolean dbAvailable = false;
-		String dbErrorMessage = null;
-		try
-		{
-			db = getDatabase();
-			// db.beginTx(); DISCUSSION
-			System.err.println("???" + db);
-			if (db != null)
-			{
-				dbAvailable = true;
-				logger.info("created database " + db);
-			}
-			else
-			{
-				dbErrorMessage = "database is NULL";
-			}
-		}
-		catch (Exception e)
-		{
-			logger.error("Database creation failed: " + e.getMessage());
-			e.printStackTrace();
-			// throw new DatabaseException(e);
-			dbErrorMessage = e.getMessage();
-		}
+//		// get database session (note: this shouldn't be in the tomcat
+//		// session!!!
+//		Database db = null;
+//		boolean dbAvailable = false;
+//		String dbErrorMessage = null;
+//		try
+//		{
+//			db = getDatabase();
+//			// db.beginTx(); DISCUSSION
+//			System.err.println("???" + db);
+//			if (db != null)
+//			{
+//				dbAvailable = true;
+//				logger.info("created database " + db);
+//			}
+//			else
+//			{
+//				dbErrorMessage = "database is NULL";
+//			}
+//		}
+//		catch (Exception e)
+//		{
+//			logger.error("Database creation failed: " + e.getMessage());
+//			e.printStackTrace();
+//			// throw new DatabaseException(e);
+//			dbErrorMessage = e.getMessage();
+//		}
 
 		// login/logout
 		HttpSession session = request.getSession();
@@ -1221,7 +1219,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			{
 				String username = requestTuple.getString(INPUT_DATA);
 				String password = requestTuple.getString(INPUT_SILENT);
-				boolean loggedIn = db.getSecurity().login(db, username, password);
+				boolean loggedIn = db.getLogin().login(db, username, password);
 				if(loggedIn)
 				{
 					out.println("Welcome, " + username + "!");
@@ -1368,7 +1366,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 							//allows secure uploading of data from R API
 							String username = this.__remote__login__request__username;
 							String password = this.__remote__login__request__password;
-							db.getSecurity().login(db, username, password);
+							db.getLogin().login(db, username, password);
 							nRowsChanged = db.add(entityClass, new CsvStringReader(requestTuple.getString(INPUT_DATA)), writer);
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)

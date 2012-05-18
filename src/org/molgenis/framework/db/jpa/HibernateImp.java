@@ -61,7 +61,8 @@ class HibernateImp implements JpaFramework {
         schemaExport.drop(true, true);
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public Connection getConnection(EntityManager em) {
         return ((HibernateEntityManager) em).getSession().connection();
     }

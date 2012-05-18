@@ -8,15 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.WidgetFactory;
 import org.molgenis.model.elements.Field;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
-import freemarker.cache.TemplateLoader;
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 
@@ -111,13 +107,11 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 			// merge template
 			conf.addAutoInclude("ScreenViewHelper.ftl");
 
-			WidgetFactory wf = new WidgetFactory();
-			wf.configure(conf);
+			WidgetFactory.configure(conf);
 
 			Template template = conf.getTemplate(templatePath);
 			StringWriter writer = new StringWriter();
 
-			logger.error("rendering for model " + this.getModel());
 			template.process(templateArgs, writer);
 			writer.close();
 

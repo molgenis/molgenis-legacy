@@ -13,9 +13,7 @@
 package org.molgenis.framework.ui.html;
 
 import java.util.List;
-import java.util.UUID;
 
-import org.molgenis.framework.ui.html.XrefInput.Builder;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -25,37 +23,8 @@ import org.molgenis.util.Tuple;
  * loaded dynamically via an 'ajax' service.
  */
 public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
-{
-	public static class Builder<E extends Entity> extends AbstractRefInput.Builder<List<E>> {
-		public Builder(Class<E> mrefEntity) {
-			super(mrefEntity, (List<E>)null);
-		}
-		
-		public Builder(final String name, Class<E> mrefEntity, List<E> value) {
-			super(mrefEntity, value);
-		}
-		
-		public Builder(String name, List<E> object)
-		{
-			super((Class<E>) object.getClass(), object);
-		}
-
-		public MrefInput<E> build() {
-			final MrefInput<E> mrefInput = new MrefInput<E>(this, UUID.randomUUID().toString());
-			return mrefInput;
-		}
-		
-		public MrefInput<E> build(String id) {
-			final MrefInput<E> mrefInput = new MrefInput<E>(this, id);
-			return mrefInput;
-		}
-	}
-	
-	private MrefInput(final Builder<E> builder, final String id) {
-		super(builder, id);
-	}
+{	
 	/** Minimal constructor */
-	@Deprecated
 	public MrefInput(String name, Class<? extends Entity> xrefEntityClass,
 			List<E> dummyList)
 	{
@@ -67,7 +36,6 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 * Alternative minimal constructor using an entity object instance to
 	 * configure all.
 	 */
-	@Deprecated
 	public MrefInput(String name, List<E> objects)
 	{
 		this(name, objects.get(0).getClass(), objects);
@@ -75,7 +43,6 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	}
 
 	/** Alternative minimal constructor using an entity class to configure all. */
-	@Deprecated
 	public MrefInput(String name, Class<? extends Entity> xrefEntityClass)
 	{
 		super(name, xrefEntityClass, null);
@@ -126,14 +93,11 @@ public class MrefInput<E extends Entity> extends AbstractRefInput<List<E>>
 	 * 
 	 * @throws HtmlInputException
 	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated
 	public MrefInput(Tuple t) throws HtmlInputException
 	{	
 		super(t);
 	}
 
-	@Deprecated
 	protected MrefInput()
 	{
 		super();

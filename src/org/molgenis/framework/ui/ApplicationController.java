@@ -11,7 +11,6 @@ import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.server.MolgenisContext;
-import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.FreemarkerInput;
 import org.molgenis.framework.ui.html.HtmlSettings;
@@ -40,8 +39,6 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	private Login login;
 	/** The email service used */
 	private EmailService emailService;
-	/** Other services, mapped by path */
-	private Map<String, MolgenisService> services;
 	/** The current base url that you may need in your apps */
 	private String baseUrl;
 	/** Galaxy url */

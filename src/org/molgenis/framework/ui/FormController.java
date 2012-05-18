@@ -551,7 +551,7 @@ public abstract class FormController<E extends Entity> extends
 
 		// set form level rights
 		boolean formReadonly = model.isReadonly()
-				|| !model.getSecurity().canWrite(model.create().getClass());
+				|| !model.getLogin().canWrite(model.create().getClass());
 		model.setReadonly(formReadonly);
 
 		// load the rows
@@ -565,7 +565,7 @@ public abstract class FormController<E extends Entity> extends
 		for (E record : allRecords)
 		{
 			boolean rowReadonly = formReadonly
-					|| !model.getSecurity().canWrite(record.getClass());
+					|| !model.getLogin().canWrite(record.getClass());
 
 			if (rowReadonly) record.setReadonly(true);
 			// else
