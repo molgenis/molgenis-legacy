@@ -40,6 +40,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.SimpleTuple;
 
 public class AddAnimalPlugin extends EasyPluginController
 {
@@ -81,6 +82,8 @@ public class AddAnimalPlugin extends EasyPluginController
 	private String resResearcher = null;
 	private List<String> genes = null;
 	private List<String> genestates = null;
+	
+	public DateInput fakedate = null;
 
 	public AddAnimalPlugin(String name, ScreenController<?> parent)
 	{
@@ -252,7 +255,7 @@ public class AddAnimalPlugin extends EasyPluginController
 		{
 			//FIXME --> construct to make sure that the date is saved in de Animaldb date format(yyyy-MM-dd)
 			//birthDate = birthdate.getValue();
-			Date bd = inputFormat.parse(birthdate.getValue());
+			Date bd = dbFormat.parse(birthdate.getValue());
 			birthDate = dbFormat.format(bd);
 			
 		}
@@ -260,7 +263,7 @@ public class AddAnimalPlugin extends EasyPluginController
 		if (!entrydate.getValue().equals(""))
 		{
 			String entryDateString = entrydate.getValue();
-			entryDate = dateOnlyFormat.parse(entryDateString);
+			entryDate = dbFormat.parse(entryDateString);
 		}
 		else
 		{
@@ -600,19 +603,22 @@ public class AddAnimalPlugin extends EasyPluginController
 
 		birthdate = new DateInput("birthdate");
 		birthdate.setLabel("Date of birth (if known):");
-		birthdate.setValue(null);
 		birthdate.setDescription("The date of birth of the animal(s).");
+		birthdate.setDateFormat("yyyy-MM-dd");
+		birthdate.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+		birthdate.setValue(null);
 		if (birthDate != null)
 		{
 			birthdate.setValue(dateOnlyFormat.parse(birthDate));
 		}
-
+		
 		entrydate = new DateInput("entrydate");
 		entrydate.setLabel("Date of entry:");
-		entrydate.setValue(new Date());
 		entrydate.setNillable(false);
-		entrydate
-				.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
+		entrydate.setDescription("The date of arrival of these animals in the animal facility. This date will be used as start date to count the presence of animals in the yearly report.");
+		entrydate.setDateFormat("yyyy-MM-dd");
+		entrydate.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+		entrydate.setValue(new Date());
 		if (entryDate != null)
 		{
 			entrydate.setValue(entryDate);
