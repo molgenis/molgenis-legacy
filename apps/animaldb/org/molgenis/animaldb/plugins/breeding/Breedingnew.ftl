@@ -188,8 +188,20 @@
 
 		<div class="form_header">Wean litter ${screen.getLitter()}</div>
 		<div style="clear:both; display:block">
+		  <p>
 			<label style="width:16em;float:left;" for='weandate'>Wean date:</label>		
 			<input type='text' class="text ui-widget-content ui-corner-all" id='weandate' name='weandate' value=''/>
+		      <script>
+		          $(function() {
+                    $( "#weandate" ).datepicker({
+                        numberOfMonths: 1,
+                        showButtonPanel: true,
+                        dateFormat: "yy-mm-dd",
+                        minDate: "${screen.getBirthdate()}"
+                    });
+                  });  
+              </script>
+           </p>   	
 		</div>
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for='weansizefemale'>Nr. of females:</label>
@@ -251,15 +263,21 @@
 		<div class="form_header">Genotype litter ${screen.getLitter()}</div>
 		<p>${screen.parentInfo}</p>
 		${screen.getGenotypeTable()}
-		<input type='submit' id='addgenocol' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
-		<input type='submit' id='remgenocol' value='Remove Gene modification + state' onclick="__action.value='RemGenoCol'" />
+		<p>
+		  <input type='submit' id='addgenocol' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
+		  <input type='submit' id='remgenocol' value='Remove Gene modification + state' onclick="__action.value='RemGenoCol'" />
+		<p>
 		<div style="clear:both; display:block">
+		  <p>
 			<label style="width:16em;float:left;" for='genodate'>Genotyping date:</label>
 			<input type='text' class="text ui-widget-content ui-corner-all" name='genodate' id='genodate' value='' />
+		  </p>
 		</div>
 		<div style="clear:both; display:block">
+		  <p>
 			<label style="width:16em;float:left;" for='remarks'>Genotyping remarks:</label>
 			<input type='text' class="text ui-widget-content ui-corner-all" class='textbox' name='remarks' id='remarks' />
+		  </p> 
 		</div>
 		<div style="clear:both; display:block">
 			<input type='submit' id='cancelgenotypelitter' value='Cancel' onclick="__action.value='init'" />
@@ -345,15 +363,8 @@
 	jQuery('#namebase').chosen();
 	jQuery('#location').chosen();
 	
-			$(function() {
-		$("#birthdate").datepicker({
-			numberOfMonths: 1,
-			showButtonPanel: true,
-			dateFormat: "yy-mm-dd"
-		});
-	});
 	$(function() {
-		$( "#weandate" ).datepicker({
+		$("#birthdate").datepicker({
 			numberOfMonths: 1,
 			showButtonPanel: true,
 			dateFormat: "yy-mm-dd"

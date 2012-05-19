@@ -740,6 +740,7 @@ public class Breedingnew extends PluginModel<Entity>
 				try { 
 					int row = request.getInt(LITTERMATRIX + "_selected");
 					this.litter = ((ObservationElement) rows.get(row)).getName();
+					this.birthdate = ct.getMostRecentValueAsString(this.litter, "DateOfBirth");
 				} catch (Exception e) {	
 					this.action = "init";
 					this.entity = "Litters";
@@ -913,7 +914,14 @@ public class Breedingnew extends PluginModel<Entity>
 			// Birth date
 			DateInput dateInput = new DateInput("0_" + row);
 			dateInput.setDateFormat("yyyy-MM-dd");
-			dateInput.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
+			// get the weandate, in order to limit the input for the birthdate field
+			String maxDate = "";
+			try {
+				maxDate = ct.getMostRecentValueAsString(animalName, "dateOfBirth");
+			} catch (Exception e) {
+				// do nothing.
+			}
+			dateInput.setJqueryproperties("dateFormat: 'yy-mm-dd', maxDate: '" + maxDate + "', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 			dateInput.setValue(getAnimalBirthDate(animalName));
 			
 			genotypeTable.setCell(0, row, dateInput);
@@ -1205,7 +1213,7 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 		}
 	}
-	
+		
 	public String getBirthdate() {
 		if (birthdate != null) {
 			return birthdate;
