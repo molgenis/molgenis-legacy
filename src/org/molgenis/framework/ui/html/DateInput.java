@@ -24,8 +24,14 @@ import org.molgenis.util.Tuple;
  * Input for date.
  */
 
+
 public class DateInput extends HtmlInput<Date>
 {
+	/** String constants for property name 'hidden' */
+	public static final String DATEFORMAT = "dateformat";
+	/** Description. Defaults to 'name'. */
+	private String dateformat= "dd-MM-yyyy";
+	
 	/**
 	 * Construct date input with name and using default value of today as value
 	 * 
@@ -100,6 +106,29 @@ public class DateInput extends HtmlInput<Date>
 	public DateInput(Tuple properties) throws HtmlInputException
 	{
 		set(properties);
+	}
+	
+	/**
+	 * Construct date input with name, label, value, tuple for script properties
+	 * 
+	 * @param name
+	 * @param label
+	 * @param value
+	 * @param nillable
+	 * @param readonly
+	 * @param dateformat
+	 * @param Jqueryproperties
+	 */
+	public DateInput(String name, String label, Date value, boolean nillable,
+			boolean readonly, String dateformat, String jqueryproperties) throws HtmlInputException
+	{
+		super(name, value);
+		if (label != null && !label.equals("null")) this.setLabel(label);
+		this.setReadonly(readonly);
+		this.setNillable(nillable);
+		this.setDateFormat(dateformat);
+		this.setJqueryproperties(jqueryproperties);
+		
 	}
 
 	/** Null constructor. Use with caution. */
@@ -181,7 +210,14 @@ public class DateInput extends HtmlInput<Date>
 	public String toJquery()
 	{
 		String description = getName().equals(getDescription()) ? "" : " title=\""+getDescription()+"\"";
+		//set defaults:
 		String options = "dateFormat: 'dd-mm-yy', changeMonth: true, changeYear: true, showButtonPanel: true";
+		String datevalue = this.getValue(this.getDateFormat());
+		//change defaults to Jquery scriptvalues if set
+		if (this.getJqueryproperties() != null)
+		{
+			options = this.getJqueryproperties();
+		}
 		// add clear button if nillable
 		if (this.isNillable()) options += ", beforeShow: function( input ) {"
 				+ "\n	setTimeout( function() {"
@@ -196,7 +232,7 @@ public class DateInput extends HtmlInput<Date>
 				+ (this.isReadonly() ? "readonly " : "")
 				+ "text ui-widget-content ui-corner-all" + validate
 				+ "\" id=\"" + this.getName() + "\" value=\""
-				+ this.getValue("dd-MM-yyyy") + "\" name=\"" + this.getName()
+				+ datevalue + "\" name=\"" + this.getName()
 				+ "\" autocomplete=\"off\"" + description + " />";
 
 		// add the dialog unless readonly (input is always readonly, i.e.,
@@ -211,11 +247,20 @@ public class DateInput extends HtmlInput<Date>
 				+ "\n</script>";
 		return result;
 	}
-
 	@Override
 	public String toHtml(Tuple p) throws ParseException, HtmlInputException
 	{
 		return new DateInput(p).render();
 
+	}
+
+	public String getDateFormat()
+	{
+		return dateformat;
+	}
+
+	public void setDateFormat(String dateformat)
+	{
+		this.dateformat = dateformat;
 	}
 }

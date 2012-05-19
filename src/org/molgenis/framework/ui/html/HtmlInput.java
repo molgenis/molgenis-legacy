@@ -36,6 +36,8 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 
 	/** String constants for property name 'hidden' */
 	public static final String HIDDEN = "hidden";
+	
+	public static final String JQUERYPROPERTIES = "Jqueryproperties";
 
 	// PROPERTIES
 	/** The ID of this input. Defaults to 'name'. */
@@ -77,6 +79,9 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	/** Description. Defaults to 'name'. */
 	private String description = "";
 
+	/** to pass jquery script properties. */
+	private String Jqueryproperties;
+	
 	/** Tab index of this input (optionl) */
 	protected String tabIndex = "";
 
@@ -159,6 +164,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		if (t.getBool(READONLY) != null) this.readonly = t.getBool(READONLY);
 		this.description = t.getString(DESCRIPTION);
 		if (t.getBool(HIDDEN) != null) this.hidden = t.getBool(HIDDEN);
+		this.Jqueryproperties = t.getString(JQUERYPROPERTIES);
 
 	}
 
@@ -425,6 +431,16 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	{
 		this.nillable = required;
 		return this;
+	}
+
+	public String getJqueryproperties()
+	{
+		return Jqueryproperties;
+	}
+
+	public void setJqueryproperties(String jqueryproperties)
+	{
+		Jqueryproperties = jqueryproperties;
 	}
 
 	public boolean isCollapse()
