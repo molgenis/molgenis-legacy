@@ -912,7 +912,10 @@ public class Breedingnew extends PluginModel<Entity>
 			genotypeTable.addRow(animalName);
 			// Birth date
 			DateInput dateInput = new DateInput("0_" + row);
+			dateInput.setDateFormat("yyyy-MM-dd");
+			dateInput.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
 			dateInput.setValue(getAnimalBirthDate(animalName));
+			
 			genotypeTable.setCell(0, row, dateInput);
 			// Sex
 			SelectInput sexInput = new SelectInput("1_" + row);
