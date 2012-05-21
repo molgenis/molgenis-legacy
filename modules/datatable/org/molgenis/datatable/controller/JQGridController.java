@@ -56,11 +56,15 @@ public class JQGridController implements MolgenisService
 			DatabaseException, IOException
 	{
 		int page = request.getInt("page");
-		int limit = request.getInt("rows");
-		String sidx = request.getString("sidx");
-		String sord = request.getString("sord");
+		final int limit = request.getInt("rows");
+		final String sidx = request.getString("sidx");
+		final String sord = request.getString("sord");
 		
-		String[] columnNames = new Gson().fromJson(request.getString("colNames"), String[].class);
+		final String searchOperator = request.getString("searchOper");
+		final String searchString = request.getString("searchString");
+		final String searchField= request.getString("searchField");
+		
+		final String[] columnNames = new Gson().fromJson(request.getString("colNames"), String[].class);
 		
 		String tableName = "Country"; //can be retrieved from request (put in post data)
 		String sqlCount = String.format(SQL_START, "COUNT(*)", tableName );
@@ -81,25 +85,19 @@ public class JQGridController implements MolgenisService
 
 		final List<QueryRule> rules = new ArrayList<QueryRule>(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
 		
-		if(StringUtils.isNotEmpty(sidx)) {
-			QueryRule sort = new QueryRule();
-			//sort.setField(sidx);
-			sort.setValue(sidx);
-			sort.setOperator(StringUtils.equals(sord, "asc") ? Operator.SORTASC : Operator.SORTDESC);
-			rules.add(sort);
-		}
+		addSortRules(sidx, sord, rules);
+		addFilterRules(searchOperator, searchString, searchField, rules);
 		
-//		try
-//		{
-//			final TupleTable csvTry = new JdbcTable(db, sqlSelect, rules);
-//			CsvExporter csvExporter = new CsvExporter(csvTry);
-//			csvExporter.export(System.err);
-//		}
-//		catch (TableException e1)
-//		{
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		try
+		{
+			final TupleTable csvTry = new JdbcTable(db, sqlSelect, rules);
+			final CsvExporter csvExporter = new CsvExporter(csvTry);
+			csvExporter.export(System.err);
+		}
+		catch (TableException e1)
+		{
+			e1.printStackTrace();
+		}
 		
 		
 		try
@@ -124,6 +122,30 @@ public class JQGridController implements MolgenisService
 		catch (TableException e)
 		{
 			throw new DatabaseException(e);
+		}
+	}
+
+	private void addSortRules(final String sidx, final String sord, final List<QueryRule> rules)
+	{
+		if(StringUtils.isNotEmpty(sidx)) {
+			final QueryRule sort = new QueryRule();
+			//sort.setField(sidx);
+			sort.setValue(sidx);
+			sort.setOperator(StringUtils.equals(sord, "asc") ? Operator.SORTASC : Operator.SORTDESC);
+			rules.add(sort);
+		}
+	}
+
+	private void addFilterRules(final String searchOperator, final String searchString, final String searchField,
+			final List<QueryRule> rules)
+	{
+		if(StringUtils.isNotEmpty(searchString) && 
+				StringUtils.isNotEmpty(searchField) && 
+				StringUtils.isNotEmpty(searchOperator)) {
+			Operator operator = Operator.EQUALS;
+			//switch to select correct operator
+			final QueryRule filterRule = new QueryRule(searchField, operator, searchString);
+			rules.add(filterRule);
 		}
 	}
 }
