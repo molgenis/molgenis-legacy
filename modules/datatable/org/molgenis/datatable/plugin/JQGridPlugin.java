@@ -3,6 +3,7 @@ package org.molgenis.datatable.plugin;
 
 
 import java.sql.SQLException;
+import java.util.Collections;
 
 import org.molgenis.datatable.model.JdbcTable;
 import org.molgenis.datatable.view.JQGridView;
@@ -53,7 +54,7 @@ public class JQGridPlugin extends GenericPlugin
 		
 		try
 		{
-			final JdbcTable jdbcTable = new JdbcTable("SELECT Name, Continent, SurfaceArea, Population FROM Country LIMIT 0",db.getConnection());
+			final JdbcTable jdbcTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country LIMIT 0", Collections.EMPTY_LIST);
 			gridView = new JQGridView("jqGridId", jdbcTable);
 			jdbcTable.close();
 		}
