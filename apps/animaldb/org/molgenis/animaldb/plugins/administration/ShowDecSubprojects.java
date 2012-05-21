@@ -69,6 +69,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private boolean refresh = true;
 	private int userId = -1;
+	private String projectStartDateString = null;
+	private String projectEndDateString = null;
 	
 	//hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
@@ -241,6 +243,26 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	public List<Category> getPainManagementCodeList()
 	{
 		return painManagementCodeList;
+	}
+
+	public String getProjectStartDateString()
+	{
+		return projectStartDateString;
+	}
+
+	public void setProjectStartDateString(String projectStartDateString)
+	{
+		this.projectStartDateString = projectStartDateString;
+	}
+
+	public String getProjectEndDateString()
+	{
+		return projectEndDateString;
+	}
+
+	public void setProjectEndDateString(String projectEndDateString)
+	{
+		this.projectEndDateString = projectEndDateString;
 	}
 
 	public void setAnimalEndStatusCodeList(List<Category> animalEndStatusCodeList)
@@ -447,12 +469,14 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				}
 				
 				// Get most recent Project start and end dates
-				String projectStartDateString = ct.getMostRecentValueAsString(name, "StartDate");
-				Date projectStartDate = newDateOnlyFormat.parse(projectStartDateString);
+				//String projectStartDateString = ct.getMostRecentValueAsString(name, "StartDate");
+				setProjectStartDateString(ct.getMostRecentValueAsString(name, "StartDate"));
+				Date projectStartDate = newDateOnlyFormat.parse(this.projectStartDateString);
 				Date projectEndDate = null;
-				String projectEndDateString = ct.getMostRecentValueAsString(name, "EndDate");
+				//String projectEndDateString = ct.getMostRecentValueAsString(name, "EndDate");
+				setProjectEndDateString(ct.getMostRecentValueAsString(name, "EndDate"));
 				if (!projectEndDateString.equals("")) {
-					projectEndDate = newDateOnlyFormat.parse(projectEndDateString);
+					projectEndDate = newDateOnlyFormat.parse(this.projectEndDateString);
 				}
 				
 				// Start date
