@@ -11,7 +11,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
-import org.molgenis.framework.ui.html.Label;
+//import org.molgenis.framework.ui.html.Label;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.matrix.Matrix;
