@@ -345,7 +345,7 @@
 	
 	<div class="row" style='clear:left'>
 		<label for="subprojectadditiondate">Date of entry into DEC subproject:</label>
-		<input type='text' class='textbox' id='subprojectadditiondate' name='subprojectadditiondate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' class='textbox' id='subprojectadditiondate' name='subprojectadditiondate' value='${screen.currentDate}' autocomplete='off' />
 	    <script>
             $(function() {
                 $( "#subprojectadditiondate" ).datepicker({
