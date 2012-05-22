@@ -18,19 +18,21 @@ var colNames = [
 
 var colModel = [
 	   		<#list columns as col>	
-	   		{name:'${col.name}',index:'${col.name}', width:150}<#if col_has_next>,</#if>
+	   		{name:'${col.name}',index:'${col.name}', width:150, searchrules:{required:${(!col.nillable)?string}${col.columnType}}}<#if col_has_next>,</#if>
 	   		</#list>
 	   		];
 	   		
 function createJQGrid() {
 	var myColNames = $.toJSON(colNames);
 	var myColModel = $.toJSON(colModel);
+	var ds = {type: 'jdbc', fromExpression: 'Country'};
+	var myDataSource = $.toJSON(ds);
 
 	jQuery("#${tableId}").jqGrid({
 	   	url:'${dataSourceUrl}',
 		datatype: "json",
 		jsonReader: { repeatitems: false },
-		postData : {colNames : myColNames, colModel: myColModel},
+		postData : {colNames : myColNames, colModel: myColModel, dataSource: myDataSource},
 	   	colNames: colNames,   	
 	   	colModel: colModel,
 	   	rowNum: 10,
@@ -41,7 +43,13 @@ function createJQGrid() {
 	    sortorder: "desc",
 	    caption:"jqGrid viewer"
 	});
-	jQuery("#${tableId}").jqGrid('navGrid','#${tableId}Pager',{edit:false,add:false,del:false});
+	jQuery("#${tableId}").jqGrid('navGrid','#${tableId}Pager',
+		{search:true, edit:false,add:false,del:false},
+		{}, // edit options
+		{}, // add options
+		{}, //del options
+		{multipleSearch:true} // search options
+	);
 }
 
 $(document).ready(function(){
