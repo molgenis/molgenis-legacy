@@ -234,8 +234,8 @@ public class ComputeCommandLine {
 		 */
 	}
 
-	private boolean lessOrEqualThan(int i, int wt_h, int wt_m, int wt_s) {
-		return (24 < wt_h || (wt_h == 24 && wt_m == 0 && wt_s == 0));
+	private boolean lessOrEqualThan(int min, int wt_h, int wt_m, int wt_s) {
+		return (wt_h < min || (wt_h == min && wt_m == 0 && wt_s == 0));
 	}
 
 	private String addHeaderFooter(String scripttemplate, String interpreter) {
