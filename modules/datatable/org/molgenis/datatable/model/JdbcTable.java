@@ -1,13 +1,14 @@
 package org.molgenis.datatable.model;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.MolgenisFieldTypes;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
@@ -56,21 +57,16 @@ public class JdbcTable implements TupleTable
 		}
 	}
 	
-	private final Statement statement;
 	private final ResultSetTuple rs;
 	private final List<Field> columns;
 	
-	public JdbcTable(String query, Connection connection) throws TableException
+	public JdbcTable(Database db, String query, List<QueryRule> rules) throws TableException
 	{
 		super();
-		try
-		{
-			statement = connection.createStatement();
-			rs = new ResultSetTuple(statement.executeQuery(query));
+		try {
+			rs = new ResultSetTuple(db.executeQuery(query, rules.toArray(new QueryRule[0])));
 			columns = loadColumns();
-		}
-		catch (SQLException e)
-		{
+		} catch (DatabaseException e) {
 			throw new TableException(e);
 		}
 	}
@@ -119,18 +115,7 @@ public class JdbcTable implements TupleTable
 		catch (SQLException e)
 		{
 			throw new RuntimeException(e);
-		} finally {
-			if(statement != null) {
-				try
-				{
-					statement.close();
-				}
-				catch (SQLException e)
-				{
-					throw new RuntimeException(e);
-				}
-			}			
-		}
+		} 
 	}
 
 	@Override
@@ -145,7 +130,6 @@ public class JdbcTable implements TupleTable
 		try
 		{
 			rs.close();
-			statement.close();
 		}
 		catch (SQLException e)
 		{

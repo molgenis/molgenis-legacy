@@ -35,13 +35,13 @@ function createJQGrid() {
 	   	colModel: colModel,
 	   	rowNum: 10,
 	   	rowList: [10,20,30],
-	   	pager: '#pager2',
+	   	pager: '#${tableId}Pager',
 	   	sortname: '${sortName}',
 	    viewrecords: true,
 	    sortorder: "desc",
 	    caption:"jqGrid viewer"
 	});
-	jQuery("#${tableId}").jqGrid('navGrid','#${tableId}pager',{edit:false,add:false,del:false});
+	jQuery("#${tableId}").jqGrid('navGrid','#${tableId}Pager',{edit:false,add:false,del:false});
 }
 
 $(document).ready(function(){
@@ -50,4 +50,4 @@ $(document).ready(function(){
 </script>
 
 <table id="${tableId}"></table>
-<div id="${tableId}pager"></div>
+<div id="${tableId}Pager"></div>

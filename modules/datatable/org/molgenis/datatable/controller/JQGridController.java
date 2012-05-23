@@ -1,6 +1,7 @@
 package org.molgenis.datatable.controller;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,10 +12,12 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.datatable.model.JdbcTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.datatable.view.CsvExporter;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.db.jdbc.JDBCQueryGernatorUtil;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
@@ -26,24 +29,24 @@ import com.google.gson.Gson;
 public class JQGridController implements MolgenisService
 {
 	class JQGridResult {
-		private String page;
-		private String total;
-		private String records;
+		int page;
+		int total;
+		int records;
 		
 		private ArrayList<LinkedHashMap<String,String>> rows = new ArrayList<LinkedHashMap<String, String>>();
 		
-		public JQGridResult(String page, String total, String records) {
+		public JQGridResult(int page, int total, int records) {
 			this.page = page;
 			this.total = total;
 			this.records = records; 
 		}
 	}
 	
-	private final MolgenisContext context;
+//	private final MolgenisContext context;
 
 	public JQGridController(MolgenisContext context)
 	{
-		this.context = context;
+//		this.context = context;
 	}
 
 	private final static String SQL_START = "SELECT %1$s FROM %2$s ";
@@ -76,12 +79,33 @@ public class JQGridController implements MolgenisService
 		
 		int offset = limit * page - limit; 		
 
-		final List<QueryRule> rules = Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset));
+		final List<QueryRule> rules = new ArrayList<QueryRule>(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
+		
+		if(StringUtils.isNotEmpty(sidx)) {
+			QueryRule sort = new QueryRule();
+			//sort.setField(sidx);
+			sort.setValue(sidx);
+			sort.setOperator(StringUtils.equals(sord, "asc") ? Operator.SORTASC : Operator.SORTDESC);
+			rules.add(sort);
+		}
+		
+//		try
+//		{
+//			final TupleTable csvTry = new JdbcTable(db, sqlSelect, rules);
+//			CsvExporter csvExporter = new CsvExporter(csvTry);
+//			csvExporter.export(System.err);
+//		}
+//		catch (TableException e1)
+//		{
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		
+		
 		try
-		{			
-
-			final TupleTable jdbcTable = new JdbcTable(sqlSelect, db.getConnection());
-			final JQGridResult result = new JQGridResult("1", "1", "4");
+		{				
+			final TupleTable jdbcTable = new JdbcTable(db, sqlSelect, rules);
+			final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
 			
 			for(final Tuple row : jdbcTable.getRows()) {
 				final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
@@ -89,7 +113,7 @@ public class JQGridController implements MolgenisService
 				final List<String> fieldNames = row.getFieldNames();
 				for(final String fieldName : fieldNames) {
 					final String rowValue = !row.isNull(fieldName) ? row.getString(fieldName) : "null";
-					rowMap.put(fieldName, rowValue);
+					rowMap.put(fieldName, rowValue); //TODO encode to HTML
 				}
 				result.rows.add(rowMap);
 			}
