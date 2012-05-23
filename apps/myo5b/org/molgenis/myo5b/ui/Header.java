@@ -18,7 +18,7 @@ public class Header extends org.molgenis.mutation.ui.header.Header
 	{
 		super(name, parent);
 		this.getModel().setLogo("res/img/chd7/umcg_logo.gif");
-		this.getModel().setTitle("MVID Database");
+		this.getModel().setTitle("International Microvillus Inclusion Disease (MVID) Patient Registry<br><font size=\"-1\">International registry of patients with microvillus inclusion disease and database of associated MYO5B mutations</font>");
 	}
 
 	@Override

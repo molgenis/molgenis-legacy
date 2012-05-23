@@ -440,9 +440,9 @@ public class MolgenisVariantService
 		try
 		{
 			VariantDTO variantDTO = new VariantDTO();
-			variantDTO.setAaNotation("");
+			variantDTO.setAaNotation(variant.getNameAa());
 			variantDTO.setAaStart(variant.getStartAa());
-			variantDTO.setCdnaNotation(variant.getName());
+			variantDTO.setCdnaNotation(variant.getNameCdna());
 			variantDTO.setCdnaStart(variant.getStartCdna());
 			variantDTO.setGdnaStart(variant.getStartGdna());
 			variantDTO.setId(variant.getId());
@@ -773,12 +773,13 @@ public class MolgenisVariantService
 		{
 			MutationSummaryDTO mutationSummaryDTO = new MutationSummaryDTO();
 			mutationSummaryDTO.setId(variant.getId());
-			mutationSummaryDTO.setCdnaNotation(variant.getName());
+			mutationSummaryDTO.setCdnaNotation(variant.getNameCdna());
 			mutationSummaryDTO.setCdnaStart(variant.getStartCdna());
-			mutationSummaryDTO.setGdnaNotation("");
+			mutationSummaryDTO.setGdnaNotation(variant.getNameGdna());
 			mutationSummaryDTO.setGdnaStart(variant.getStartGdna());
-			mutationSummaryDTO.setAaNotation("");
+			mutationSummaryDTO.setAaNotation(variant.getNameAa());
 			mutationSummaryDTO.setAaStart(variant.getStartAa());
+			mutationSummaryDTO.setType(variant.getType());
 	
 			/* Find the external molgenis variant id */
 			for (AlternateId alternateId : variant.getAlternateId())
@@ -858,10 +859,10 @@ public class MolgenisVariantService
 				{
 					mutationSummaryDTO.setPathogenicity(observedValue.getValue());
 				}
-				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "type of mutation"))
-				{
-					mutationSummaryDTO.setType(observedValue.getValue());
-				}
+//				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "type of mutation"))
+//				{
+//					mutationSummaryDTO.setType(observedValue.getValue());
+//				}
 			}
 
 			mutationSummaryDTO.setPatientSummaryDTOList(new ArrayList<PatientSummaryDTO>());

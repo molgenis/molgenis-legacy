@@ -222,7 +222,19 @@ public class PatientSummaryDTO implements Comparable<PatientSummaryDTO>, Seriali
 	public void setObservedValueDTOList(List<ObservedValueDTO> observedValueDTOList) {
 		this.observedValueDTOList = observedValueDTOList;
 	}
+/*	
+	@Override
+	public int compareTo(PatientSummaryDTO o)
+	{
+		if (CollectionUtils.isEmpty(this.getVariantDTOList()))
+			return -1;
+		if (CollectionUtils.isEmpty(o.getVariantDTOList()))
+			return 1;
 
+		String year1 = this.getPublicationDTOList().get(0).getYear();
+		String year2 = o.getPublicationDTOList().get(0).getYear();
+	}
+*/
 	@Override
 	public int compareTo(PatientSummaryDTO o)
 	{

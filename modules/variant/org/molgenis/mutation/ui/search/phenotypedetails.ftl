@@ -3,12 +3,19 @@
 <#-- Observable features -->
 <#assign individualDTO = vo.individualDTO>
 <#list individualDTO.protocolList as protocolDTO>
-<#assign observedValueDTOs = individualDTO.observedValues["Protocol" + protocolDTO.protocolId]>
-<#if observedValueDTOs?size &gt; 0>
+<#assign protocolKey = "Protocol" + protocolDTO.protocolId>
+
+<#if individualDTO.observedValues?keys?seq_contains(protocolKey)>
+
+<#list individualDTO.observedValues[protocolKey]?keys as paKey>
+<#assign observedValueDTOValList = individualDTO.observedValues[protocolKey][paKey]>
+<#assign tmpObservedValueDTO     = observedValueDTOValList?first>
+
+<#if observedValueDTOValList?size &gt; 0>
 <h4>${protocolDTO.protocolName}</h4>
 <table class="listtable" cellpadding="4">
 <#assign even = 1>
-<#list observedValueDTOs as observedValueDTO>
+<#list observedValueDTOValList as observedValueDTO>
 <#if even == 1>
   <#assign class = "form_listrow0">
   <#assign even = 0>
@@ -20,6 +27,11 @@
 </#list>
 </table>
 </#if>
+
+</#list>
+
+</#if>
+
 </#list>
 
 <p>

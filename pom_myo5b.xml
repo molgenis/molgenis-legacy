@@ -306,4 +306,21 @@
 			</plugin>
         </plugins>
     </build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.4.1-SNAPSHOT</version>
+				<configuration>
+					<xmlOutput>true</xmlOutput>
+					<xmlOutputDirectory>target/site</xmlOutputDirectory>
+<!--
+					<effort>Default</effort>
+					<threshold>Normal</threshold>
+-->
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

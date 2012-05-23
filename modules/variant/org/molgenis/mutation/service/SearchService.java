@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.molgenis.framework.db.Database;
@@ -123,7 +124,9 @@ public class SearchService extends MolgenisVariantService
 		try
 		{
 			List<Patient> patients = this.db.query(Patient.class).find();
-			return this.patientListToPatientSummaryDTOList(patients);
+			List<PatientSummaryDTO> result = this.patientListToPatientSummaryDTOList(patients);
+			Collections.sort(result);
+			return result;
 		}
 		catch (Exception e)
 		{

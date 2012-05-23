@@ -35,7 +35,7 @@
 			</h4>
 
 			<table class="listtable" cellpadding="4">
-			<tr><th width="50%">Feature</th><th width="50%">Value</th></tr>
+			<tr><td width="50%"><b>Feature</b></th><td width="50%">Value</th></tr>
 				
 			<#list observedValueDTOValList as observedValueDTO>
 				<#assign even = 1>
@@ -47,7 +47,7 @@
 						<#assign class = "form_listrow1">
 						<#assign even = 1>
 					</#if>
-					<tr class="${class}"><th width="50%">${observedValueDTO.featureDTO.featureName}</th><td width="50%">${observedValueDTO.value}</td></tr>
+					<tr class="${class}"><td width="50%"><b>${observedValueDTO.featureDTO.featureName}</b></th><td width="50%">${observedValueDTO.value}</td></tr>
 				</#if>
 			</#list>
 				
