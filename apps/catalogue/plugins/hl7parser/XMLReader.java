@@ -181,7 +181,14 @@ public class XMLReader {
 
 		listOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, listOfMeasurementName));
 
-		p.setFeatures_Name(listOfMeasurementName);
+		List<Integer> listOfMeasurementId = new ArrayList<Integer>();
+		
+		for(Measurement m : listOfMeasurements){
+			listOfMeasurementId.add(m.getId());
+		}
+		
+		p.setFeatures_Id(listOfMeasurementId);
+		
 		
 		if(db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, protocolName)).size() == 0){
 
