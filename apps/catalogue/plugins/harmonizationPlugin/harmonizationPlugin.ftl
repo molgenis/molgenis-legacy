@@ -74,6 +74,16 @@ function setValidationStudy(validationStudyName){
 	}
 }
 
+function checkFileExisting(){
+
+	if(!document.getElementById("ontologyFileForAlgorithm").value){
+    	alert("No file selected");
+    	 return false;
+    }else{
+    	 return true;
+    }
+}
+
 </script>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
@@ -106,12 +116,41 @@ function setValidationStudy(validationStudyName){
 			<div class="screenpadding">
 				
 				<#if screen.getDevelopingAlgorithm() == true>
-					Hello world!</br>
-					<input type="submit" value="generate algorithm" id="continue" name="continue" onclick="__action.value='generateAlgorithm';" />
+					
+					Please choose an ontology file and algorithm will be automatically generated </br></br>
+					
+					<table width="100%">
+						<tr>
+							<td class="box-body" style="width:50%;">
+								1. Choose a validation study
+								<select name="validationStudy" id="validationStudy"> 
+									<#list screen.arrayInvestigations as inv>
+										<#assign invName = inv.name>
+											<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+									</#list>
+								</select></br></br>
+								<script>
+									setValidationStudy('${screen.getValidationStudyName()}');
+									$('#validationStudy').chosen();
+								</script>
+								2. Please upload your ontology (compulsory)</br></br>
+								<input type="file" id = "ontologyFileForAlgorithm" name = "ontologyFileForAlgorithm"/></br></br>
+								
+								<input type="submit" value="generate algorithm" id="continue" name="continue" onclick="__action.value='generateAlgorithm';return checkFileExisting();" />
+								
+								<input type="submit" value="back to mapping" id="backToMapping" name="backToMapping" onclick="__action.value='backToMapping';" />
+							</td>
+							<td class="box-body" style="width:50%;">
+								<p align="justify" style="font-family:arial;margin-left:20px;font-size:12px;">${screen.getMessageForAlgorithm()}</p>
+							</td>
+						</tr>
+					</table>
+					
+					
+					
 				<#else>
 				
 					<#if screen.isSelectedInv() == true>
-						<input type="submit" value="Algorithm" id="switchToAlgorithm" name="switchToAlgorithm" onclick="__action.value='switchToAlgorithm';" />
 						<table class="box" width="100%" cellpadding="0" cellspacing="0">
 							<tr><td class="box-header" colspan="1">  
 									<label>Choose a prediction model:
@@ -186,7 +225,12 @@ function setValidationStudy(validationStudyName){
 											   border: 2px outset #d7b9c9;
 											   font-size:15px;
 											   font-weight:bold;"/>
-										
+									<input type="submit" value="Algorithm" id="switchToAlgorithm" name="switchToAlgorithm" 
+										onclick="__action.value='switchToAlgorithm';" 
+										style="color: #000; background: #8EC7DE;
+											   border: 2px outset #d7b9c9;
+											   font-size:15px;
+											   font-weight:bold;"/>	
 								</td>
 								<td class="box-body">
 								<input class="saveMapping" type="submit" id="saveMapping" name="saveMapping" value="save Mapping" 
