@@ -28,7 +28,7 @@ eff \
 -i vcf \
 -o vcf \
 GRCh37.64 \
--onlyCoding false \
+-onlyCoding true \
 -stats ${snpeffsummaryhtml} \
 ${snpsgenomicannotatedvcf} \
 > ${snpeffintermediate}
