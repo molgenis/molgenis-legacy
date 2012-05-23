@@ -35,19 +35,26 @@
 						   <#if screen.isSelectedInv() == true>
 								<table class="box" width="100%" cellpadding="0" cellspacing="0">
 								    <tr><td class="box-header" colspan="2">  
-								        <label>Choose a study:
-										<select name="investigation" id="investigation"> 
+								        <label>Choose a cohort:
+										<!--select name="investigation" id="investigation"--> 
 											<#list screen.arrayInvestigations as inv>
 												<#assign invName = inv.name>
-												<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+												<!--option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option-->			
+													<input class="cohortSelect" type="submit" id="cohortSelectSubmit" name="cohortSelectSubmit" value= ${invName}
+														onclick="__action.value='cohortSelect';" 
+														style="color: #000; background: #8EC7DE;
+												   		border: 2px outset #d7b9c9;
+												   		font-size:12px;
+												   	"/>
+											
 											</#list>
-										</select>
+										<!--/select-->
 										<script>$('#investigation').chosen();</script>
 										<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
-										<input type="image" src="res/img/refresh.png" alt="Submit" 
+										<!--input type="image" src="res/img/refresh.png" alt="Submit" 
 											name="chooseInvestigation" style="vertical-align: middle;" 
 											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
+											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/-->	
 										</label>
 										<div id="masstoggler"> 	
 										<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>

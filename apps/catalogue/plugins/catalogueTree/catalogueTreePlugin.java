@@ -3,7 +3,11 @@ package plugins.catalogueTree;
 import gcc.catalogue.ShoppingCart;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +17,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import jxl.write.WriteException;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -31,6 +37,11 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
+
+
+//import org.molgenis.util.XlsWriter;
+
+
 
 public class catalogueTreePlugin extends PluginModel<Entity> {
 
@@ -90,43 +101,72 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return "plugins/catalogueTree/catalogueTreePlugin.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request) throws DatabaseException {
+	public void handleRequest(Database db, Tuple request) throws Exception {
 
-			if ("chooseInvestigation".equals(request.getAction())) {
-				selectedInvestigation = request.getString("investigation");
+		
+		
+//			if ("chooseInvestigation".equals(request.getAction())) {
+//				selectedInvestigation = request.getString("investigation");
+//				this.setSelectedInvestigation(selectedInvestigation);
+//				System.out.println("The selected investigation is : "
+//						+ selectedInvestigation);
+//				arrayInvestigations.clear();
+//				this.SearchFilters.clear();
+
+
+			 //for now the cohorts are investigations so teh selected cohort is the selected investigation 
+			if ("cohortSelect".equals(request.getAction())) {
+				System.out.println("----------------------"+request);
+				selectedInvestigation = request.getString("cohortSelectSubmit");
 				this.setSelectedInvestigation(selectedInvestigation);
-				System.out.println("The selected investigation is : "
-						+ selectedInvestigation);
+				System.out.println("The selected investigation is : "+ selectedInvestigation);
 				arrayInvestigations.clear();
 				this.SearchFilters.clear();
-
-
-			} else if ("SaveSelectionSubmit".equals(request.getAction())) {
-
-				this.setSelectionName("empty");
-				if (request.getString("SelectionName") != null) {
-				//if (request.getString("SelectionName").compareTo("empty") != 0) {
-
-					this.setSelectionName(request.getString("SelectionName").trim());
-					System.out.println("The SelectionName is >>> : " + this.getSelectionName());
-					System.out.println("request >>" + request);
-				} else {
-					//this.setError("Please insert a name for your selection and try again.");
-					this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
-					this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+ "</h4>" ) ;
-
-				}
 				
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-				Date dat = new Date();
-				String dateOfDownload = dateFormat.format(dat);
-				System.out.println("selected investigaton >>>> "+  selectedInvestigation);
+			}else if ("SaveSelectionSubmit".equals(request.getAction())) {
+
+				WriteExcel test = new WriteExcel();
+				test.setOutputFile("/Users/despoina/out.xls");
+				List<String> columns = new ArrayList<String>();
+				columns.add("first line second column");
 				
+				test.write("User selections", 1, columns);
+				columns.clear();
+				
+				columns.add("second line first column");
+				columns.add("second line second column");
+				
+				System.out.println("Please check the result file under /Users/despoina/out.xls");
+
 				try	{
-					this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
+						this.setSelectionName("empty");
+						
+					if (request.getString("SelectionName") != null) {
+					//if (request.getString("SelectionName").compareTo("empty") != 0) {
+	
+						this.setSelectionName(request.getString("SelectionName").trim());
+						System.out.println("The SelectionName is >>> : " + this.getSelectionName());
+					
+						System.out.println("Selection request >>>>>>" + request);
+					} else {
+						//this.setError("Please insert a name for your selection and try again.");
+						this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
+						this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+ "</h4>" ) ;
+	
+					}
+					
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+					Date dat = new Date();
+					String dateOfDownload = dateFormat.format(dat);
+					System.out.println("selected investigaton >>>> "+  selectedInvestigation);
+					
+					
+						this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
 				} catch (IOException e) {
 						e.printStackTrace();
-				  }
+				} catch (WriteException e1) {
+						e1.printStackTrace();
+				}
 
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
@@ -209,30 +249,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		
 
 	}
-//	/**
-//	 * This function is used by the user interface template to show rules on the
-//	 * screen.
-//	 * 
-//	 * @return a list of query rules that can be managed by the user.
-//	 * @throws DatabaseException
-//	 */
-//	public Vector<String> getFilters() throws DatabaseException
-//	{
-//		Vector<String> filters = new Vector<String>();
-//		//Map<String, String> nameLabelMap = new TreeMap<String, String>();
-//
-//		if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
-//		else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol"); 
-//		else if (mode == SEARCHINGMEASUREMENT) filters.add("SearchingMeasurement");
-//		else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail"); 
-//		else if (mode == SEARCHINGALL) filters.add("SearchingAll"); 
-//
-//			//filters.add(label + " " + rule.getOperator().toString() + " "+ rule.getValue());
-//
-//		
-//
-//		return filters;
-//	}
+
 	
 	@Override
 	public void reload(Database db) {
@@ -828,7 +845,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				+ measurement.getName() + "</td></tr>";
 
 		if (categoryNames.size() > 0) {
-			htmlValue += "<tr><td  class='box-body-label'>Permitted values:</td><td><table>";
+			htmlValue += "<tr><td  class='box-body-label'>Category:</td><td><table>";
 
 			for (String string : categoryNames) {
 				htmlValue += "<tr><td>";
@@ -868,8 +885,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						featureName = "display name";
 					}
 
-					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td> "
-							+ value + "</td></tr>";
+//					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td> "
+//							+ value + "</td></tr>";
 				}
 			}
 		}
@@ -925,10 +942,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * @param selectedInvestigation
 	 * @param dateOfDownload
 	 * @param selectionName 
-	 * @throws DatabaseException
-	 * @throws IOException
+	 * @param x 
+	 * @throws Exception 
 	 */
-	private void addMeasurementsForDownload(Database db, Tuple request, String selectedInvestigation, String dateOfDownload, String selectionName) throws DatabaseException, IOException {
+	private void addMeasurementsForDownload(Database db, Tuple request, String selectedInvestigation, String dateOfDownload, String selectionName) throws Exception {
 
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement
@@ -958,6 +975,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			for (Measurement m : this.shoppingCart) {
 				DownloadedMeasurementIds.add(m.getId());
+				
+				//x.writeRow(m);
 				// System.out.println("DownloadedMeasurementIds >>>: " +
 				// m.getId());
 			}
@@ -984,6 +1003,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					shoppingCartName = selectionName;
 				}
 				shoppingCart.setName(shoppingCartName );
+				
 				System.out.println("save selection step1");
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
@@ -1131,17 +1151,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	//		return true;
 	//	}
 	//	
-	@Override
-	public boolean isVisible()
-	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		if (!this.getLogin().isAuthenticated()) {
-			return false;
-		}
-		return true;
-	}
+//	@Override
+//	public boolean isVisible()
+//	{
+//		//you can use this to hide this plugin, e.g. based on user rights.
+//		//e.g.
+//		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
+//		if (!this.getLogin().isAuthenticated()) {
+//			return false;
+//		}
+//		return true;
+//	}
 
 	public void setSelectionName(String selectionName)
 	{
@@ -1162,6 +1182,31 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	{
 		return Status;
 	}
+	
+//	/**
+//	 * This function is used by the user interface template to show rules on the
+//	 * screen.
+//	 * 
+//	 * @return a list of query rules that can be managed by the user.
+//	 * @throws DatabaseException
+//	 */
+//	public Vector<String> getFilters() throws DatabaseException
+//	{
+//		Vector<String> filters = new Vector<String>();
+//		//Map<String, String> nameLabelMap = new TreeMap<String, String>();
+//
+//		if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
+//		else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol"); 
+//		else if (mode == SEARCHINGMEASUREMENT) filters.add("SearchingMeasurement");
+//		else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail"); 
+//		else if (mode == SEARCHINGALL) filters.add("SearchingAll"); 
+//
+//			//filters.add(label + " " + rule.getOperator().toString() + " "+ rule.getValue());
+//
+//		
+//
+//		return filters;
+//	}
 
 
 }
