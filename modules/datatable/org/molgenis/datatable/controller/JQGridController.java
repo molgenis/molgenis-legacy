@@ -12,10 +12,12 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.datatable.model.JdbcTable;
+import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.datatable.view.CsvExporter;
+import org.molgenis.datatable.view.ExcelExporter;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisContext;
@@ -30,6 +32,10 @@ import com.google.gson.reflect.TypeToken;
 
 public class JQGridController implements MolgenisService
 {
+	private static final String EXCEL_VIEW = "excelView";
+	private static final String CSV_VIEW = "csvView";
+	private static final String JQ_GRID_VIEW = "jqGridView";
+
 	class JQGridResult
 	{
 		int page;
@@ -61,6 +67,8 @@ public class JQGridController implements MolgenisService
 	{
 		try
 		{
+			final String viewType = request.getString("viewType");
+
 			final int limit = request.getInt("rows");
 			final String sidx = request.getString("sidx");
 			final String sord = request.getString("sord");
@@ -69,15 +77,8 @@ public class JQGridController implements MolgenisService
 			final List<QueryRule> rules = addFilterRules(request);
 
 			final String[] columnNames = new Gson().fromJson(request.getString("colNames"), String[].class);
-			final String dataSourceType = dataSource.get("type"); // TODO make
-																	// correct
-																	// backend
-			final String fromExpression = dataSource.get("fromExpression"); // can
-																			// be
-			// retrieved
-			// from request
-			// (put in post
-			// data)
+			final String dataSourceType = dataSource.get("type");
+			final String fromExpression = dataSource.get("fromExpression");
 			final String sqlCount = String.format(SQL_START, "COUNT(*)", fromExpression);
 			final String sqlSelect = String.format(SQL_START, StringUtils.join(columnNames, ","), fromExpression);
 
@@ -92,22 +93,17 @@ public class JQGridController implements MolgenisService
 			rules.addAll(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
 
 			final TupleTable jdbcTable = new JdbcTable(db, sqlSelect, rules);
-			final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
-			for (final Tuple row : jdbcTable.getRows())
-			{
-				final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
-
-				final List<String> fieldNames = row.getFieldNames();
-				for (final String fieldName : fieldNames)
-				{
-					final String rowValue = !row.isNull(fieldName) ? row.getString(fieldName) : "null";
-					rowMap.put(fieldName, rowValue); // TODO encode to HTML
-				}
-				result.rows.add(rowMap);
+			
+			if(viewType.equals(JQ_GRID_VIEW)) {
+				final JQGridResult result = buildJQGridResults(rowCount, totalPages, page, jdbcTable);
+				response.getResponse().getWriter().print(new Gson().toJson(result));
+			} else if(viewType.equals(CSV_VIEW)) {
+				final CsvExporter csvExport = new CsvExporter(jdbcTable);
+				csvExport.export(response.getResponse().getOutputStream());
+			} else if(viewType.equals(EXCEL_VIEW)) {
+				final ExcelExporter excelExport = new ExcelExporter(jdbcTable);
+				excelExport.export(response.getResponse().getOutputStream());
 			}
-			jdbcTable.close();
-
-			response.getResponse().getWriter().print(new Gson().toJson(result));
 		}
 		catch (Exception e)
 		{
@@ -115,15 +111,36 @@ public class JQGridController implements MolgenisService
 		}
 	}
 
+	private JQGridResult buildJQGridResults(final int rowCount, final int totalPages, final int page,
+			final TupleTable table) throws TableException
+	{
+		final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
+		for (final Tuple row : table)
+		{
+			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
+
+			final List<String> fieldNames = row.getFieldNames();
+			for (final String fieldName : fieldNames)
+			{
+				final String rowValue = !row.isNull(fieldName) ? row.getString(fieldName) : "null";
+				rowMap.put(fieldName, rowValue); // TODO encode to HTML
+			}
+			result.rows.add(rowMap);
+		}
+		table.close();
+		return result;
+	}
+
+	@SuppressWarnings("rawtypes")
 	private List<QueryRule> addFilterRules(MolgenisRequest request)
 	{
 		final String filtersParameter = request.getString("filters");		
 		final List<QueryRule> rules = new ArrayList<QueryRule>();
 		if (StringUtils.isNotEmpty(filtersParameter))
 		{
-			@SuppressWarnings("unchecked")
 			final StringMap filters = (StringMap) new Gson().fromJson(filtersParameter, Object.class);
 			final String groupOp = (String) filters.get("groupOp");
+			@SuppressWarnings("unchecked")
 			final ArrayList<StringMap<String>> jsonRules = (ArrayList) filters.get("rules");
 			int ruleIdx = 0;
 			for (StringMap<String> rule : jsonRules)
