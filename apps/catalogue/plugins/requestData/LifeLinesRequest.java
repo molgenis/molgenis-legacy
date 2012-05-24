@@ -1,5 +1,13 @@
 package plugins.requestData;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+
+import jxl.write.WriteException;
+
 import gcc.catalogue.ShoppingCart;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +22,7 @@ import org.molgenis.framework.ui.html.BoolInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.EmailInput;
 import org.molgenis.framework.ui.html.IntInput;
+import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.RichtextInput;
@@ -22,6 +31,8 @@ import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
+
+import plugins.catalogueTree.WriteExcel;
 
 /**
  * LifeLinesRequestController takes care of all user requests and application
@@ -83,20 +94,58 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		getModel().setSuccess("Update successful");
 	}
 
-	public void submit(Database db, Tuple request) throws DatabaseException, EmailException {
+	public void submit(Database db, Tuple request) throws DatabaseException, EmailException, WriteException, IOException {
 		sentEmail(db, request);
 		this.setSuccess("Request submitted succesfully");
 		submitted = true;
 		tuple = request;
 	}
 	
-	public void sentEmail(Database db, Tuple request) throws DatabaseException, EmailException {
+	public void sentEmail(Database db, Tuple request) throws DatabaseException, EmailException, WriteException, IOException {
 		String subject   = "Data request";
 		
 		ShoppingCart shc = new ShoppingCart();
 		shc = db.query(ShoppingCart.class).eq(ShoppingCart.ID, request.getString("MyMeasurementSelection") ).find().get(0);
 		shc.getName();
 		
+		WriteExcel xlsFile = new WriteExcel();
+		xlsFile.setOutputFile("/Users/despoina/userselection.xls");
+		List<String> xlslabels = new ArrayList<String>();
+		List<String> xlslabelsrow2 = new ArrayList<String>();
+
+		List<String> row1 = new ArrayList<String>();
+		List<String> row2 = new ArrayList<String>();
+		List<String> row3 = new ArrayList<String>();
+
+
+		//HashMap UserSelections  = new HashMap<Integer, ArrayList<String>()>;
+		HashMap<Integer, ArrayList<String>> usrselect = new HashMap<Integer, ArrayList<String>>();
+		
+		xlslabels.add("  ");  //need an empty label so that name and email are under correct labels.
+		xlslabels.add("FullName");		  	
+		xlslabels.add("Email");			  
+		
+		row1.add("A user request was received from : "); 
+		row1.add(request.getString(FIRSTNAME)	+ " "+	request.getString(LASTNAME));
+		row1.add(request.getString("emailAddress")  );
+		
+		xlslabelsrow2.add("Measurements selected (id) :");		  	
+		row2.add(request.getString("MyMeasurementSelection"));
+		row2.add(shc.getName());
+
+		row3.add("third line");
+
+		usrselect.put( 1, (ArrayList<String>) row1);
+		usrselect.put( 2, (ArrayList<String>) row2); 
+		usrselect.put( 3, (ArrayList<String>) row3); 
+
+		
+		xlsFile.write(xlslabels, usrselect);
+		
+
+		
+		System.out.println("Please check the result file under /Users/despoina/userselections.xls");
+
 		String email = "Hello admin, \n\n" +
 				" User " + request.getString(FIRSTNAME)	+ " "+
 				request.getString(LASTNAME) + 

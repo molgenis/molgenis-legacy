@@ -2,15 +2,15 @@ package plugins.catalogueTree;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 
 import jxl.CellView;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.format.UnderlineStyle;
-import jxl.write.Formula;
 import jxl.write.Label;
 import jxl.write.Number;
 import jxl.write.WritableCellFormat;
@@ -32,7 +32,7 @@ public class WriteExcel {
 	}
 
 	//write a line
-	public void write(String label, int row, List<String> columns) throws IOException, WriteException {
+	public void write(List<String> label, HashMap<Integer, ArrayList<String>> usrselect) throws IOException, WriteException {
 		File file = new File(inputFile);
 		WorkbookSettings wbSettings = new WorkbookSettings();
 
@@ -42,22 +42,20 @@ public class WriteExcel {
 		workbook.createSheet("Report", 0);
 		WritableSheet excelSheet = workbook.getSheet(0);
 		createLabel(excelSheet, label);
-		createContent(excelSheet, row, columns);
+		createContent(excelSheet, usrselect);
 
 		workbook.write();
 		workbook.close();
 	}
 
-	private void createLabel(WritableSheet sheet, String label)
+	private void createLabel(WritableSheet sheet, List<String> labels)
 			throws WriteException {
 	
 		WritableFont times10pt = new WritableFont(WritableFont.TIMES, 10);
 		times = new WritableCellFormat(times10pt);
 		times.setWrap(true);
 
-		WritableFont times10ptBoldUnderline = new WritableFont(
-				WritableFont.TIMES, 10, WritableFont.BOLD, false,
-				UnderlineStyle.SINGLE);
+		WritableFont times10ptBoldUnderline = new WritableFont( WritableFont.TIMES, 10, WritableFont.BOLD, false, UnderlineStyle.SINGLE);
 		timesBoldUnderline = new WritableCellFormat(times10ptBoldUnderline);
 		timesBoldUnderline.setWrap(true);
 
@@ -67,37 +65,21 @@ public class WriteExcel {
 		cv.setAutosize(true);
 
 		//add one label 
-		addCaption(sheet, 0, 0, label);
-		//TODO : later add more parameters
-		addCaption(sheet, 1, 0, "This is another header");
-		
+		for (int i=0; i<labels.size(); i++)		addCaption(sheet, i, 0, labels.get(i));
 
 	}
 
-	
-	private void createContent(WritableSheet sheet, int row, List<String> columns) throws WriteException,
-			RowsExceededException {
-					Iterator<String> columnsIter = columns.iterator();
-				    while ( columnsIter.hasNext() ){
-				    	System.out.println( columnsIter.next() );
-				    }
-				    
-				    for (int column=0; column<columns.size(); column++) {
-						addLabel(sheet, column, row, columns.get(column));
-	
-				    }
-		for (int k = 1; k < 11; k++)  {
-			for (int l =0; l<10; l++) {
-				addLabel(sheet, l, k ," at row"+ k + "at column" + l);
-			}
+	private void createContent(WritableSheet sheet, HashMap<Integer, ArrayList<String>> usrselect) throws WriteException,
+		RowsExceededException {
+		
+		for(Entry<Integer, ArrayList<String>> eachEntry : usrselect.entrySet()){
+			
+			System.out.println(eachEntry.getValue().size());
+				for (int column=0; column<eachEntry.getValue().size(); column++) {
+				  addLabel(sheet, column ,eachEntry.getKey(), usrselect.get(eachEntry.getKey()).get(column));
+				}
 		}
-		// Now a bit of text
-		for (int i = 12; i < 20; i++) {
-			// First column
-			addLabel(sheet, 0, i, "Boring text " + i);
-			// Second column
-			addLabel(sheet, 1, i, "Another text");
-		}
+		
 	}
 
 	private void addCaption(WritableSheet sheet, int column, int row, String s)
@@ -121,22 +103,24 @@ public class WriteExcel {
 		sheet.addCell(label);
 	}
 
-	public static void main(String[] args) throws WriteException, IOException {
-		WriteExcel test = new WriteExcel();
-		test.setOutputFile("/Users/despoina/out.xls");
-		List<String> columns = new ArrayList<String>();
-		
-	
-		columns.add("first line second column");
-		test.write("User selections", 1, columns);
-		
-		List<String> columns2 = new ArrayList<String>();
-
-		columns2.add("second line first column ");
-		test.write("User selections", 2, columns2);
-		
-				
-		System.out.println("Please check the result file under /Users/despoina/out.xls");
-		
-	}
+//	public static void main(String[] args) throws WriteException, IOException {
+//		WriteExcel test = new WriteExcel();
+//		test.setOutputFile("/Users/despoina/out.xls");
+//		
+//		List<String> columns = new ArrayList<String>();
+//		
+//	
+//		columns.add("first line 1st column");
+//		columns.add("1-2");
+//		test.write("User selections", 0, columns);
+//		
+//		List<String> columns2 = new ArrayList<String>();
+//
+//		columns2.add("second line first column ");
+//		test.write("User selections", 1, columns2);
+//		
+//				
+//		System.out.println("Please check the result file under /Users/despoina/out.xls");
+//		
+//	}
 }

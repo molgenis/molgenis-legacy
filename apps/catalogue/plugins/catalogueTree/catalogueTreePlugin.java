@@ -125,19 +125,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				
 			}else if ("SaveSelectionSubmit".equals(request.getAction())) {
 
-				WriteExcel test = new WriteExcel();
-				test.setOutputFile("/Users/despoina/out.xls");
-				List<String> columns = new ArrayList<String>();
-				columns.add("first line second column");
 				
-				test.write("User selections", 1, columns);
-				columns.clear();
-				
-				columns.add("second line first column");
-				columns.add("second line second column");
-				
-				System.out.println("Please check the result file under /Users/despoina/out.xls");
-
 				try	{
 						this.setSelectionName("empty");
 						
@@ -145,6 +133,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					//if (request.getString("SelectionName").compareTo("empty") != 0) {
 	
 						this.setSelectionName(request.getString("SelectionName").trim());
+
 						System.out.println("The SelectionName is >>> : " + this.getSelectionName());
 					
 						System.out.println("Selection request >>>>>>" + request);
@@ -970,26 +959,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		} else {
 
-			// System.out.println("DownloadedMeasurementIds >>>: " +
-			// this.shoppingCart);
-
+			// System.out.println("DownloadedMeasurementIds >>>: " + this.shoppingCart);
 			for (Measurement m : this.shoppingCart) {
 				DownloadedMeasurementIds.add(m.getId());
 				
-				//x.writeRow(m);
-				// System.out.println("DownloadedMeasurementIds >>>: " +
-				// m.getId());
+				//x.writeRow(m);// System.out.println("DownloadedMeasurementIds >>>: " + m.getId());
 			}
 
 			// REWRITE SO USERS CAN HAVE MULTIPLE SHOPPINGCARTS-- there are no shopping carts any more . 
 
-			// Query<ShoppingCart> q = db.query(ShoppingCart.class);
-			// q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS,
-			// this
-			// .getLogin().getUserName()));
-			// q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT,
-			// Operator.EQUALS, false));
-			List<ShoppingCart> result = new ArrayList<ShoppingCart>();// q.find();
+			// Query<ShoppingCart> q = db.query(ShoppingCart.class);	// q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));	// q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
+			List<ShoppingCart> result = new ArrayList<ShoppingCart>();  // q.find();
 			System.out.println("save selection step 0");
 
 			if (result.isEmpty()) {
@@ -1019,14 +999,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				q.addRules(new QueryRule(ShoppingCart.NAME, Operator.EQUALS, shoppingCartName));
 				
 				if (q.find().size() > 0) {
-					this.setError("A user selection with name : "+ shoppingCartName +" Please insert another name for your selection and try again.");
-					this.getModel().getMessages().add(new ScreenMessage("A user selection with name : "+ shoppingCartName +" Please insert another name for your selection and try again.", true));
-					this.setStatus("<h4> A user selection with name : "+ shoppingCartName +" Please insert another name for your selection and try again."+ "</h4>" ) ;
-					System.out.println("A user selection with name : "+ shoppingCartName +" Please insert another name for your selection and try again.");
+					this.setError("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.");
+					this.getModel().getMessages().add(new ScreenMessage("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.", true));
+					this.setStatus("<h4> A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again."+ "</h4>" ) ;
 				} else {
 					try {
 						db.add(shoppingCart);
 						// System.out.println("Download list has been added to the DB");
+						
 						this.getModel().getMessages().add(new ScreenMessage("Selection saved to 'My Selections' under name "+ shoppingCartName , true));
 						this.setStatus("<h4> Selection saved to 'My Selections' under name "+ shoppingCartName + "</h4>" ) ;
 						this.setSuccess("Selection saved to 'My Selections' under name "+ shoppingCartName);
@@ -1037,11 +1017,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				}
 				
 			} else {
-				ShoppingCart shoppingCart = result.get(0); // assuming user can
-				// have only one
-				// shopping cart
-				// that's NOT
-				// checked out
+				ShoppingCart shoppingCart = result.get(0); // assuming user can  have only one shopping cart that's NOT checked out
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				db.update(shoppingCart);
