@@ -9,7 +9,10 @@
 package org.molgenis.model;
 
 // jdk
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +51,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * TODO: refactor: spread over multiple files.
@@ -1215,7 +1219,9 @@ public class MolgenisModelParser {
         try {
             // initialize the document
             builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            document = builder.parse(filename);
+            final InputStreamReader input = new InputStreamReader(new FileInputStream(filename), "UTF-8");
+            document = builder.parse(new InputSource(input));
+            input.close();
         } catch (Exception e) {
             try {
                 // try to load from classpath

@@ -150,13 +150,14 @@ public class MolgenisFieldTypes
 			case java.sql.Types.TINYINT: return new IntField();
 			
 			case java.sql.Types.BOOLEAN: return new BoolField();
-			case java.sql.Types.CHAR: return new CharField();
 			case java.sql.Types.DATE: return new DateField();
 			case java.sql.Types.DECIMAL: 
 			case java.sql.Types.DOUBLE: 
 			case java.sql.Types.NUMERIC:
-			case java.sql.Types.FLOAT: return new DecimalField();
+			case java.sql.Types.FLOAT:
+			case java.sql.Types.REAL: return new DecimalField();
 			
+			case java.sql.Types.CHAR:
 			case java.sql.Types.VARCHAR:
 			case java.sql.Types.NVARCHAR: return new StringField();
 			
