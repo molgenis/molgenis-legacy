@@ -28,6 +28,7 @@ import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.XrefInput;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
@@ -103,23 +104,23 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 	
 	public void sentEmail(Database db, Tuple request) throws DatabaseException, EmailException, WriteException, IOException {
 		String subject   = "Data request";
-		
 		ShoppingCart shc = new ShoppingCart();
+		WriteExcel xlsFile = new WriteExcel();
+		List<String> xlslabels = new ArrayList<String>();
+		HashMap<Integer, ArrayList<String>> userSelections = new HashMap<Integer, ArrayList<String>>();
+		String[] temp;
+		String delimiter = ",";
+		
 		shc = db.query(ShoppingCart.class).eq(ShoppingCart.ID, request.getString("MyMeasurementSelection") ).find().get(0);
 		shc.getName();
 		
-		WriteExcel xlsFile = new WriteExcel();
 		xlsFile.setOutputFile("/Users/despoina/userselection.xls");
-		List<String> xlslabels = new ArrayList<String>();
-		List<String> xlslabelsrow2 = new ArrayList<String>();
-
+		
 		List<String> row1 = new ArrayList<String>();
 		List<String> row2 = new ArrayList<String>();
 		List<String> row3 = new ArrayList<String>();
+		List<String> row4 = new ArrayList<String>();
 
-
-		//HashMap UserSelections  = new HashMap<Integer, ArrayList<String>()>;
-		HashMap<Integer, ArrayList<String>> usrselect = new HashMap<Integer, ArrayList<String>>();
 		
 		xlslabels.add("  ");  //need an empty label so that name and email are under correct labels.
 		xlslabels.add("FullName");		  	
@@ -129,30 +130,46 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		row1.add(request.getString(FIRSTNAME)	+ " "+	request.getString(LASTNAME));
 		row1.add(request.getString("emailAddress")  );
 		
-		xlslabelsrow2.add("Measurements selected (id) :");		  	
+		row2.add("Measurements selected (id,name,date) :");		  	
 		row2.add(request.getString("MyMeasurementSelection"));
 		row2.add(shc.getName());
+		row2.add(shc.getDateOfSelection().toString());
+		
+		row3.add("Measurement details:");
+		row3.add(shc.get("measurements_id").toString()); 
+		row4.add("");
+		System.out.println(">>>>>>>>>>>>>" +shc.get("measurements_id").toString()); 
+		
+		temp = shc.get("measurements_id").toString().split(delimiter);
+		
+		for(int i =0; i < temp.length ; i++) {
+		    System.out.println("########"+temp[i]);
+		    temp[i] = temp[i].replace("[", "");
+		    temp[i] = temp[i].replace("]", "");
+		    System.out.println("########"+temp[i]);
+		    
+		    Measurement m = new Measurement();
+		    
+			m = db.query(Measurement.class).eq(Measurement.ID, temp[i]).find().get(0);
 
-		row3.add("third line");
-
-		usrselect.put( 1, (ArrayList<String>) row1);
-		usrselect.put( 2, (ArrayList<String>) row2); 
-		usrselect.put( 3, (ArrayList<String>) row3); 
+			System.out.println(m.getDescription());
+			row4.add(m.getDescription());
+		}
+		
+		userSelections.put( 1, (ArrayList<String>) row1);
+		userSelections.put( 2, (ArrayList<String>) row2); 
+		userSelections.put( 3, (ArrayList<String>) row3);
+		userSelections.put( 4, (ArrayList<String>) row4); 
 
 		
-		xlsFile.write(xlslabels, usrselect);
-		
-
+		xlsFile.write(xlslabels, userSelections);
 		
 		System.out.println("Please check the result file under /Users/despoina/userselections.xls");
 
 		String email = "Hello admin, \n\n" +
-				" User " + request.getString(FIRSTNAME)	+ " "+
-				request.getString(LASTNAME) + 
-				"(" + request.getString("emailAddress") + ")" +	
-				" has requested data with id: " +
-				request.getString("MyMeasurementSelection") +
-				" and name: " + shc.getName();
+				" User " + request.getString(FIRSTNAME)	+ " "+	request.getString(LASTNAME) + 
+				"(" + request.getString("emailAddress") + ")" +	" has requested data with id: " +
+				request.getString("MyMeasurementSelection") +	" and name: " + shc.getName();
 		
 		if (request.getString("GWAS")=="true") email +=  " GWAS ";
 		
