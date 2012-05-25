@@ -6,7 +6,7 @@ import org.molgenis.model.elements.Form.SortOrder;
 
 public interface TableModel extends TupleTable
 {
-	public Integer getRowCount();
+	//public Integer getRowCount();
 
 	public int getRowLimit();
 
