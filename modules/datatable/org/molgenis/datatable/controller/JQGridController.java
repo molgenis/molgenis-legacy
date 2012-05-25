@@ -1,6 +1,11 @@
 package org.molgenis.datatable.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.RandomAccessFile;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -11,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.JdbcTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -83,7 +89,7 @@ public class JQGridController implements MolgenisService
 			final String sqlSelect = String.format(SQL_START, StringUtils.join(columnNames, ","), fromExpression);
 
 			addSortRules(sidx, sord, rules);
-			
+
 			final Database db = request.getDatabase();
 			final int rowCount = getRowCount(sqlCount, rules, db);
 			final int totalPages = (int) Math.ceil(rowCount / limit);
@@ -91,17 +97,19 @@ public class JQGridController implements MolgenisService
 			final int offset = Math.max(limit * page - limit, 0);
 
 			rules.addAll(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
-
-			final TupleTable jdbcTable = new JdbcTable(db, sqlSelect, rules);
+			
+			final TupleTable tupleTable = new JdbcTable(db, sqlSelect, rules);
+			//final CsvTable csvTable = new CsvTable(csvStream);
+			
 			
 			if(viewType.equals(JQ_GRID_VIEW)) {
-				final JQGridResult result = buildJQGridResults(rowCount, totalPages, page, jdbcTable);
+				final JQGridResult result = buildJQGridResults(rowCount, totalPages, page, tupleTable);
 				response.getResponse().getWriter().print(new Gson().toJson(result));
 			} else if(viewType.equals(CSV_VIEW)) {
-				final CsvExporter csvExport = new CsvExporter(jdbcTable);
+				final CsvExporter csvExport = new CsvExporter(tupleTable);
 				csvExport.export(response.getResponse().getOutputStream());
 			} else if(viewType.equals(EXCEL_VIEW)) {
-				final ExcelExporter excelExport = new ExcelExporter(jdbcTable);
+				final ExcelExporter excelExport = new ExcelExporter(tupleTable);
 				excelExport.export(response.getResponse().getOutputStream());
 			}
 		}

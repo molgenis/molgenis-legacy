@@ -2,6 +2,7 @@ package org.molgenis.datatable.model;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,6 +61,8 @@ public class JdbcTable implements TupleTable
 	private final ResultSetTuple rs;
 	private final List<Field> columns;
 	
+
+	
 	public JdbcTable(Database db, String query, List<QueryRule> rules) throws TableException
 	{
 		super();
@@ -69,6 +72,11 @@ public class JdbcTable implements TupleTable
 		} catch (DatabaseException e) {
 			throw new TableException(e);
 		}
+	}
+	
+	public JdbcTable(Database db, String query) throws TableException
+	{
+		this(db, query, Collections.<QueryRule>emptyList());
 	}
 
 	@Override
