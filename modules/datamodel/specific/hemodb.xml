@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="hemodb">
+		<entity name="HemoSample" extends="ObservationTarget">
+			<description></description>
+			<field name="sampleID" type="string" nillable="false" description="Illumina internal ID" />
+			<field name="Platform" type="string" nillable="false" description="Illumina Platform" />
+			<field name="RNA_Amplification" type="string" nillable="false" description="Method of amplification (Magnetic or Column)"/>
+			<field name="Sample" type="string" nillable="false" description="UMCG sample ID"/>
+			<field name="CD34" type="string" nillable="true" description="Expression of CD34, plus = expressed, minus = not expressed"/>
+			<field name="AML_normal" type="string" nillable="true" description="Sample type" />
+			<field name="Sample_Group" type="string" nillable="false" description="Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)"/>
+			<field name="age" type="string" nillable="true" description="NA, old, young, fetal, numerical"/>
+			<field name="FAB" type="string" nillable="true" description="French-American-British classification system of hematologic diseases"/>
+			<field name="risk" type="string" nillable="true" description="Risk group (Poor, intermediate, good)"/>
+			<field name="FLT3" type="string" nillable="true" description="Classification based on the FLT3 gene (ITD,NA,normal,WT)"/>
+			<field name="NPM" type="string" nillable="true" description="Classification based on NPM (cyt,NA,not determined,wt)"/>
+			<field name="PROCENT_CD34" type="decimal" nillable="true" description="Percentage of CD34"/>
+			<field name="PB_BM_cb" type="string" nillable="true" description="Sample origin (peripheral blood, bone marrow or cord blood)"/>
+			<field name="Age_years" type="decimal" nillable="true" description="Age in years"/>
+			<field name="Cytogenetics" type="string" nillable="true" description="Cytogenetics (where NK = Normal Karyotype)"/>
+			<field name="OS_months" type="string" nillable="true" description="Overall survival"/>
+			<field name="EFS_months" type="string" nillable="true" description="Event free survival"/>
+			<field name="CR" type="string" nillable="true" description="Complete remission"/>
+		</entity>
+	</module>
+</molgenis>
