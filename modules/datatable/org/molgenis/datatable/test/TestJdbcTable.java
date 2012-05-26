@@ -1,8 +1,8 @@
 package org.molgenis.datatable.test;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.datatable.model.JdbcTable;
@@ -10,6 +10,9 @@ import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.util.Tuple;
 import org.testng.Assert;
@@ -33,42 +36,47 @@ public class TestJdbcTable
 	{
 		// assumes empty database!
 		db = DatabaseFactory.create();
-
-		// db.dropDatabase();
-		// db.createDatabase();
-
-		// load the persons
-		db.remove(db.find(Individual.class));
-		for (int i = 1; i <= 5; i++)
-		{
-			Individual p = new Individual();
-			p.setName("individual" + i);
-			individuals.add(p);
-		}
-		db.add(individuals);
-
-		// load
 	}
 
 	@Test
-	public void test1() throws SQLException, DatabaseException, TableException
+	public void testJDBCTable() throws SQLException, DatabaseException, TableException
 	{	
-		final Connection connection = db.getConnection();
-		final TupleTable table = new JdbcTable("SELECT i.id, oe.name FROM Individual as i JOIN ObservationTarget as ot ON (i.id = ot.id) JOIN ObservationElement as oe ON (ot.id = oe.id) ORDER BY i.id", connection);
+		final TupleTable countryTable = new JdbcTable(db, "SELECT Name, Continent FROM Country", 
+				Arrays.asList(new QueryRule("Code", Operator.EQUALS, "NLD")));
 		
 		// check columns
-		Assert.assertEquals("id", table.getColumns().get(0).getName());
-		Assert.assertEquals("name", table.getColumns().get(1).getName());
+		Assert.assertEquals("Name", countryTable.getColumns().get(0).getName());
+		Assert.assertEquals("Continent", countryTable.getColumns().get(1).getName());
 
 		// check rows
 		int i = 1;
-		for (Tuple row : table)
+		for (Tuple row : countryTable)
 		{
-			Assert.assertEquals(row.getObject("name"), "individual" + i);
+			Assert.assertEquals("Netherlands", row.getString("Name"));
 
 			i = i + 1;
 		}
-		table.close();
-		connection.close();
+		countryTable.close();
+		
+		QueryRule sortDesc = new QueryRule();
+		sortDesc.setOperator(Operator.SORTDESC);
+		sortDesc.setValue("SurfaceArea");
+		
+		final TupleTable countryLikeCondition = new JdbcTable(db, "SELECT Name, Continent FROM Country", 
+				Arrays.asList(new QueryRule("Name", Operator.LIKE, "NETH"), sortDesc));
+		List<Tuple> rows = countryLikeCondition.getRows();
+		Assert.assertEquals("Netherlands", rows.get(0).getString("Name"));
+		Assert.assertEquals("Netherlands Antilles", rows.get(1).getString("Name"));
+
+		final TupleTable countryLikeQuery = new JdbcTable(db, "SELECT Name, Continent FROM country WHERE Name LIKE '%NETH%' ORDER BY SurfaceArea DESC");
+		int rowIdx = 0;
+		for(Tuple row : countryLikeQuery) {
+			Assert.assertEquals(row.getObject("Name"), rows.get(rowIdx).getObject("Name"));
+			Assert.assertEquals(row.getObject("Continent"), rows.get(rowIdx).getObject("Continent"));
+			++rowIdx;
+		}
+
+		
+		
 	}
 }

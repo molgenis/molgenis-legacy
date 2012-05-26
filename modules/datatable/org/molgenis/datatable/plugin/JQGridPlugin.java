@@ -56,7 +56,7 @@ public class JQGridPlugin extends GenericPlugin
 		{
 			final JdbcTable jdbcTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country LIMIT 0", Collections.EMPTY_LIST);
 			gridView = new JQGridView("jqGridId", jdbcTable);
-			jdbcTable.close();
+			//jdbcTable.close();
 		}
 		catch (Exception e)
 		{

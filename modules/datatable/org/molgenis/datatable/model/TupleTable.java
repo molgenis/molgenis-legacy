@@ -39,6 +39,9 @@ public interface TupleTable extends Iterable<Tuple>
 	/** Get the data in a streaming fashion (good for large data sets) */
 	public Iterator<Tuple> iterator();
 
+	/** Get the number of Row **/
+	public int getRowCount() throws TableException;
+	
 	/** Closes the resources from which table reads data */
 	public void close() throws TableException;
 }

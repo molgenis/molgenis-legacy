@@ -1,6 +1,12 @@
 package org.molgenis.datatable.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.RandomAccessFile;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -11,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.JdbcTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -67,6 +74,8 @@ public class JQGridController implements MolgenisService
 	{
 		try
 		{
+			TupleTable tupleTable = null;
+			
 			final String viewType = request.getString("viewType");
 
 			final int limit = request.getInt("rows");
@@ -74,36 +83,47 @@ public class JQGridController implements MolgenisService
 			final String sord = request.getString("sord");
 
 			final Map<String, String> dataSource = JsonToMap(request, "dataSource");
-			final List<QueryRule> rules = addFilterRules(request);
-
-			final String[] columnNames = new Gson().fromJson(request.getString("colNames"), String[].class);
 			final String dataSourceType = dataSource.get("type");
-			final String fromExpression = dataSource.get("fromExpression");
-			final String sqlCount = String.format(SQL_START, "COUNT(*)", fromExpression);
-			final String sqlSelect = String.format(SQL_START, StringUtils.join(columnNames, ","), fromExpression);
-
-			addSortRules(sidx, sord, rules);
 			
-			final Database db = request.getDatabase();
-			final int rowCount = getRowCount(sqlCount, rules, db);
-			final int totalPages = (int) Math.ceil(rowCount / limit);
-			final int page = Math.min(request.getInt("page"), totalPages);
-			final int offset = Math.max(limit * page - limit, 0);
+			//add filter rules
+			final List<QueryRule> rules = addFilterRules(request);
+			
+			int page = 0;
+			int offset = 0;
+			int rowCount = -1;
+			int totalPages = 1;
+			
+			final String[] columnNames = new Gson().fromJson(request.getString("colNames"), String[].class);
+			if(dataSourceType.equals("jdbc")) {
+				final String fromExpression = dataSource.get("fromExpression");
+				final String sqlSelect = String.format(SQL_START, StringUtils.join(columnNames, ","), fromExpression);
 
+				tupleTable = new JdbcTable(request.getDatabase(), sqlSelect, rules);
+				rowCount = tupleTable.getRowCount();	
+			} else if (dataSourceType.equals("csv")) {
+				tupleTable = new CsvTable("/Users/jorislops/Desktop/country.csv");
+				rowCount = tupleTable.getRowCount();
+			}
+
+			totalPages = (int) Math.ceil(rowCount / limit);
+			page = Math.min(request.getInt("page"), totalPages);
+			offset = Math.max(limit * page - limit, 0);			
+			
+			//add query Rules
 			rules.addAll(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
-
-			final TupleTable jdbcTable = new JdbcTable(db, sqlSelect, rules);
+			addSortRules(sidx, sord, rules);			
 			
 			if(viewType.equals(JQ_GRID_VIEW)) {
-				final JQGridResult result = buildJQGridResults(rowCount, totalPages, page, jdbcTable);
+				final JQGridResult result = buildJQGridResults(rowCount, totalPages, page, tupleTable);
 				response.getResponse().getWriter().print(new Gson().toJson(result));
 			} else if(viewType.equals(CSV_VIEW)) {
-				final CsvExporter csvExport = new CsvExporter(jdbcTable);
+				final CsvExporter csvExport = new CsvExporter(tupleTable);
 				csvExport.export(response.getResponse().getOutputStream());
 			} else if(viewType.equals(EXCEL_VIEW)) {
-				final ExcelExporter excelExport = new ExcelExporter(jdbcTable);
+				final ExcelExporter excelExport = new ExcelExporter(tupleTable);
 				excelExport.export(response.getResponse().getOutputStream());
 			}
+			tupleTable.close();
 		}
 		catch (Exception e)
 		{
@@ -254,20 +274,6 @@ public class JQGridController implements MolgenisService
 		return new Gson().fromJson(request.getString(fieldName), new TypeToken<Map<String, String>>()
 		{
 		}.getType());
-	}
-
-	private int getRowCount(final String sqlCount, final List<QueryRule> rules, final Database db)
-			throws DatabaseException, SQLException
-	{
-		final ResultSet countSet = db.executeQuery(sqlCount, rules.toArray(new QueryRule[0]));
-		int rowCount = 0;
-		if (countSet.next())
-		{
-			final Number count = (Number) countSet.getObject(1);
-			rowCount = count.intValue();
-		}
-		countSet.close();
-		return rowCount;
 	}
 
 	private void addSortRules(final String sidx, final String sord, final List<QueryRule> rules)
