@@ -58,20 +58,7 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 	{
 		if (request.getAction().startsWith(matrixViewer.getName()))
 		{
-			try
-			{
-				matrixViewer.handleRequest(db, request);
-			}
-			catch (MatrixException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (DatabaseException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			matrixViewer.handleRequest(db, request);
 		}
 		else
 		{

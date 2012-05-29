@@ -232,84 +232,84 @@ public class MatrixViewer extends HtmlWidget
 		this.showNameFilter = showNameFilter;
 	}
 
-	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException, MatrixException, DatabaseException
+	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
 	{		
-		//refresh db
-		((DatabaseMatrix) this.matrix).setDatabase(db);
-		
-		if (t.getAction().startsWith(REMOVEFILTER))
+		try
 		{
-			try
+			//refresh db
+			((DatabaseMatrix) this.matrix).setDatabase(db);
+			
+			if (t.getAction().startsWith(REMOVEFILTER))
 			{
 				removeFilter(t.getAction()); // in case of a remove filter action, take the whole action, as the filter number is encoded therein
+				return;
 			}
-			catch (MatrixException e)
+			else if(t.getAction().equals(this.getName() + EditableJQueryDataTable.MATRIX_EDIT_ACTION))
 			{
-				e.printStackTrace();
-				throw new HandleRequestDelegationException();
-			}
-			return;
-		}
-		else if(t.getAction().equals(this.getName() + EditableJQueryDataTable.MATRIX_EDIT_ACTION))
-		{
-		
-			List<? extends Object>[][] values = this.getMatrix().getValueLists();
 			
-			for(int rowIndex = 0 ; rowIndex < values.length; rowIndex++)
-			{
-				for(int colIndex = 0 ; colIndex < values[0].length; colIndex++)
+				List<? extends Object>[][] values = this.getMatrix().getValueLists();
+				
+				for(int rowIndex = 0 ; rowIndex < values.length; rowIndex++)
 				{
-					if(values[rowIndex][colIndex].size() > 1)
+					for(int colIndex = 0 ; colIndex < values[0].length; colIndex++)
 					{
-						//list has more than 1 element, too difficult to edit
-						//ignore for now...
-					}
-					else if(values[rowIndex][colIndex].size() == 0)
-					{
-						//empty, create new ObservedValue
-						String newValue = t.getString(
-								EditableJQueryDataTable.MATRIX_EDIT_VALUE 
-								+ "_" + colIndex + "_" + rowIndex);
-						
-						if(!(newValue == null || newValue.equals("NA") || newValue.trim().isEmpty())){
-							ObservedValue newOv = new ObservedValue();
-							newOv.setFeature_Name(((ObservationElement)this.getMatrix().getColHeaders().get(colIndex)).getName());
-							newOv.setTarget_Name(((ObservationTarget) this.getMatrix().getRowHeaders().get(rowIndex)).getName());
-							newOv.setValue(newValue);
-							db.add(newOv);
-						}
-					}
-					else if(((ObservedValue)values[rowIndex][colIndex].get(0)).getValue() == null)
-					{
-						//ignore:
-						//this happens when we try to get values from the request that are not in the form:
-						//e.g. the hyperlinked inputs that we are now not parsing!!!
-					}
-					else
-					{
-						String oldValue = ((ObservedValue)values[rowIndex][colIndex].get(0)).getValue().toString();
-						String newValue = t.getString(EditableJQueryDataTable.MATRIX_EDIT_VALUE + "_" + colIndex + "_" + rowIndex);
-						
-						int id = ((ObservedValue)values[rowIndex][colIndex].get(0)).getId();
-						if(!oldValue.equals(newValue))
+						if(values[rowIndex][colIndex].size() > 1)
 						{
+							//list has more than 1 element, too difficult to edit
+							//ignore for now...
+						}
+						else if(values[rowIndex][colIndex].size() == 0)
+						{
+							//empty, create new ObservedValue
+							String newValue = t.getString(
+									EditableJQueryDataTable.MATRIX_EDIT_VALUE 
+									+ "_" + colIndex + "_" + rowIndex);
+							
 							if(!(newValue == null || newValue.equals("NA") || newValue.trim().isEmpty())){
-								//new valid value entered! update the database...
-								ObservedValue updateMe = db.find(ObservedValue.class, new QueryRule(ObservedValue.ID, Operator.EQUALS, id)).get(0);
-								updateMe.setValue(newValue);
-								db.update(updateMe);
+								ObservedValue newOv = new ObservedValue();
+								newOv.setFeature_Name(((ObservationElement)this.getMatrix().getColHeaders().get(colIndex)).getName());
+								newOv.setTarget_Name(((ObservationTarget) this.getMatrix().getRowHeaders().get(rowIndex)).getName());
+								newOv.setValue(newValue);
+								db.add(newOv);
+							}
+						}
+						else if(((ObservedValue)values[rowIndex][colIndex].get(0)).getValue() == null)
+						{
+							//ignore:
+							//this happens when we try to get values from the request that are not in the form:
+							//e.g. the hyperlinked inputs that we are now not parsing!!!
+						}
+						else
+						{
+							String oldValue = ((ObservedValue)values[rowIndex][colIndex].get(0)).getValue().toString();
+							String newValue = t.getString(EditableJQueryDataTable.MATRIX_EDIT_VALUE + "_" + colIndex + "_" + rowIndex);
+							
+							int id = ((ObservedValue)values[rowIndex][colIndex].get(0)).getId();
+							if(!oldValue.equals(newValue))
+							{
+								if(!(newValue == null || newValue.equals("NA") || newValue.trim().isEmpty())){
+									//new valid value entered! update the database...
+									ObservedValue updateMe = db.find(ObservedValue.class, new QueryRule(ObservedValue.ID, Operator.EQUALS, id)).get(0);
+									updateMe.setValue(newValue);
+									db.update(updateMe);
+								}
 							}
 						}
 					}
 				}
 			}
 			
+			else{
+				String action = t.getAction().substring((getName() + "_").length());
+				this.delegate(action, db, t);
+			}
+			
+		}
+		catch (Exception e)
+		{
+			throw new HandleRequestDelegationException(e);
 		}
 		
-		else{
-			String action = t.getAction().substring((getName() + "_").length());
-			this.delegate(action, db, t);
-		}
 	}
 
 	public String toHtml()
