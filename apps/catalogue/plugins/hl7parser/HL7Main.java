@@ -25,9 +25,10 @@ public class HL7Main {
 	public static void main(String [] args) throws Exception{ 
 
 
-		String file1 = "/Users/pc_iverson/Desktop/input/StageCatalog.xml";
-		String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/valuessets.xml";
-		String file3 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/StageCatalog.xml";
+		//String file1 = "/Users/pc_iverson/Desktop/input/StageCatalog.xml";
+		String file1 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/StageCatalog.xml";
+		String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/org.hl7.BodyWeight-v0.108-Template.xml-valuesets.xml";
+		String file3 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/org.hl7.BodyWeight-v0.108-Template+context.xml";
 
 		HL7Data ll = new HL7LLData(file1,file2,file3);
 
@@ -61,27 +62,17 @@ public class HL7Main {
 			for(HL7Organizer organizer : ll.getHL7Organizer()){
 
 				System.out.println(organizer.getOrganizerName());
-
 				Protocol protocol = new Protocol();
-
 				protocol.setName(organizer.getOrganizerName());
-
 				protocol.setInvestigation(inv);
-
 				List<String> listOfMeasurementNames = new ArrayList<String>();
-
 				List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
 
 				for(HL7Observation meas :organizer.measurements){
-
 					System.out.println(" - " + meas.getMeasurementName() + "\t" + meas.getMeasurementDescription() +"\t"+meas.getMeasurementDataType() );
-
 					Measurement m = new Measurement();
-
 					m.setName(meas.getMeasurementName());
-
 					m.setDescription(meas.getMeasurementDescription());
-
 					m.setInvestigation(inv);
 
 					String dataType = meas.getMeasurementDataType();
@@ -94,10 +85,6 @@ public class HL7Main {
 						m.setDataType("datetime");
 					}
 
-					//					if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, meas.getMeasurementName())).size() == 0){
-					//						listOfMeasurementNames.add(meas.getMeasurementName());
-					//						db.add(m);
-					//					}
 					listOfMeasurementNames.add(meas.getMeasurementName());	
 					
 					listOfMeasurements.add(m);
