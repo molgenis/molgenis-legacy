@@ -35,7 +35,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.ActionInput;
@@ -43,6 +42,7 @@ import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DatetimeInput;
 import org.molgenis.framework.ui.html.DecimalInput;
+import org.molgenis.framework.ui.html.EditableJQueryDataTable;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.framework.ui.html.IntInput;
@@ -93,6 +93,7 @@ public class MatrixViewer extends HtmlWidget
 	private boolean showValueValidRange = false;
 	private boolean showDownloadOptions = false;
 	private boolean showNameFilter = true;
+	private boolean isEditable;
 
 	private String downloadLink = null;
 	private Measurement d_selectedMeasurement = null;
@@ -197,6 +198,24 @@ public class MatrixViewer extends HtmlWidget
 	}
 	
 	/**
+	 * Constructor for editable version
+	 */
+	public MatrixViewer(ScreenController<?> callingScreenController, String name,
+			SliceablePhenoMatrix<?, ?> matrix,
+			boolean showLimitControls, int selectMultiple, 
+			boolean showDownloadOptions, boolean showValueValidRange,
+			List<MatrixQueryRule> filterRules, MatrixQueryRule columnRule, boolean isEditable) throws Exception
+	{
+		this(callingScreenController, name, matrix, showLimitControls, selectMultiple, 
+				showDownloadOptions, showValueValidRange, filterRules);
+		if (columnRule != null && columnRule.getFilterType().equals(MatrixQueryRule.Type.colHeader))
+		{
+			this.matrix.getRules().add(columnRule);
+		}
+		this.isEditable = isEditable;
+	}
+	
+	/**
 	 * Constructor where you immediately restrict the column set by applying a
 	 * colHeader filter rule and you get to set whether you want a filter option on "name".
 	 * 
@@ -213,8 +232,11 @@ public class MatrixViewer extends HtmlWidget
 		this.showNameFilter = showNameFilter;
 	}
 
-	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException
-	{
+	public void handleRequest(Database db, Tuple t) throws HandleRequestDelegationException, MatrixException, DatabaseException
+	{		
+		//refresh db
+		((DatabaseMatrix) this.matrix).setDatabase(db);
+		
 		if (t.getAction().startsWith(REMOVEFILTER))
 		{
 			try
@@ -228,9 +250,66 @@ public class MatrixViewer extends HtmlWidget
 			}
 			return;
 		}
-		String action = t.getAction().substring((getName() + "_").length());
-		((DatabaseMatrix) this.matrix).setDatabase(db);
-		this.delegate(action, db, t);
+		else if(t.getAction().equals(this.getName() + EditableJQueryDataTable.MATRIX_EDIT_ACTION))
+		{
+		
+			List<? extends Object>[][] values = this.getMatrix().getValueLists();
+			
+			for(int rowIndex = 0 ; rowIndex < values.length; rowIndex++)
+			{
+				for(int colIndex = 0 ; colIndex < values[0].length; colIndex++)
+				{
+					if(values[rowIndex][colIndex].size() > 1)
+					{
+						//list has more than 1 element, too difficult to edit
+						//ignore for now...
+					}
+					else if(values[rowIndex][colIndex].size() == 0)
+					{
+						//empty, create new ObservedValue
+						String newValue = t.getString(
+								EditableJQueryDataTable.MATRIX_EDIT_VALUE 
+								+ "_" + colIndex + "_" + rowIndex);
+						
+						if(!(newValue == null || newValue.equals("NA") || newValue.trim().isEmpty())){
+							ObservedValue newOv = new ObservedValue();
+							newOv.setFeature_Name(((ObservationElement)this.getMatrix().getColHeaders().get(colIndex)).getName());
+							newOv.setTarget_Name(((ObservationTarget) this.getMatrix().getRowHeaders().get(rowIndex)).getName());
+							newOv.setValue(newValue);
+							db.add(newOv);
+						}
+					}
+					else if(((ObservedValue)values[rowIndex][colIndex].get(0)).getValue() == null)
+					{
+						//ignore:
+						//this happens when we try to get values from the request that are not in the form:
+						//e.g. the hyperlinked inputs that we are now not parsing!!!
+					}
+					else
+					{
+						String oldValue = ((ObservedValue)values[rowIndex][colIndex].get(0)).getValue().toString();
+						String newValue = t.getString(EditableJQueryDataTable.MATRIX_EDIT_VALUE + "_" + colIndex + "_" + rowIndex);
+						
+						int id = ((ObservedValue)values[rowIndex][colIndex].get(0)).getId();
+						if(!oldValue.equals(newValue))
+						{
+							if(!(newValue == null || newValue.equals("NA") || newValue.trim().isEmpty())){
+								//new valid value entered! update the database...
+								ObservedValue updateMe = db.find(ObservedValue.class, new QueryRule(ObservedValue.ID, Operator.EQUALS, id)).get(0);
+								updateMe.setValue(newValue);
+								db.update(updateMe);
+							}
+						}
+					}
+				}
+			}
+			
+		}
+		
+		else{
+			String action = t.getAction().substring((getName() + "_").length());
+			this.delegate(action, db, t);
+		}
 	}
 
 	public String toHtml()
@@ -350,9 +429,24 @@ public class MatrixViewer extends HtmlWidget
 		return divContents;
 	}
 
+	/**
+	 * Render a matrix, can be editable
+	 * @param editable
+	 * @return
+	 * @throws MatrixException
+	 */
 	public String renderTable() throws MatrixException
 	{
-		JQueryDataTable dataTable = new JQueryDataTable(getName() + "DataTable");
+		JQueryDataTable dataTable = null;
+		
+		if(this.isEditable)
+		{
+			dataTable = new EditableJQueryDataTable(getName() + "DataTable");
+		}
+		else
+		{
+			dataTable = new JQueryDataTable(getName() + "DataTable");
+		}
 
 		Object[][] values = null;
 		try
