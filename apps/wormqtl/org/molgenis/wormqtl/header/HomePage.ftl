@@ -24,12 +24,12 @@
 <div align="center">
 	<table width="700px">
 		<tr>
-			<td colspan="7">
+			<td>
 				<div style="height: 10px">&nbsp;</div>
 			</td>
 		</tr>
 		<tr>
-			<td align="center" colspan="7" >
+			<td align="center">
 				<div align="left">
 				<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>-->
 				<#if screen.userIsAdminAndDatabaseIsEmpty == true>
@@ -55,126 +55,35 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="7">
+			<td>
 				<div style="height: 10px">&nbsp;</div>
 			</td>
 		</tr>
-		<#if !screen.hideLoginButtons>
 		<tr>
 			<td align="center">
-				<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
-					<tr>
-						<td align="center">
-							<#if screen.loggedIn>
-								<a href="?__target=main&select=Investigations"><font style='font-size:15px; font-weight:bold;'>Browse</font> <font style='font-size:15px;'>data</font></a>
-							<#else>
-								<a href="?__target=UserLogin&__action=Login&username=bio-user&password=bio"><nobr>Login as <b>biologist</b></nobr></a> <br> <font style='font-size:12px;'><nobr>(<i>bio-user</i>, password <i>bio</i>)</nobr></font>
-							</#if>
-						</td>
-					</tr>
-				</table>
-			</td>
-			<td width="20px">
-				&nbsp;
-			</td>
-			<td align="center">
-				<#if screen.loggedIn>
-				<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
-					<tr>
-						<td align="center">
-							<a href="?__target=main&select=ImportDataMenu"><font style='font-size:15px; font-weight:bold;'>Upload</font> <font style='font-size:15px;'>data</font></a>
-						</td>
-					</tr>
-				</table>
-				</#if>
-			</td>
-			<td width="20px">
-				&nbsp;
-			</td>
-			<td valign="top" align="center">
-				<#if screen.loggedIn>
-				<table bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
-					<tr>
-						<td align="center">
-							<a href="?__target=main&select=Cluster"><font style='font-size:15px; font-weight:bold;'>Run</font> <font style='font-size:15px;'>QTL mapping</font></a>
-						</td>
-					</tr>
-				</table>
-				</#if>
-			</td>
-			<td width="20px">
-				&nbsp;
-			</td>
-			<td align="center">
-				<table bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
-					<tr>
-						<td align="center">
-							<#if screen.loggedIn>
-								<a href="?__target=main&select=AnalysisSettings"><font style='font-size:15px; font-weight:bold;'>Add</font> <font style='font-size:15px;'>analysis</font></a> <font style='font-size:10px;'><br>(must be logged in as a bioinformatician)</font>
-							<#else>
-								<a href="?__target=UserLogin&__action=Login&username=bioinfo-user&password=bioinfo"><nobr>Login as <b>bioinformatician</b></nobr></a> <br> <font style='font-size:12px;'><nobr>(<i>bioinfo-user</i>, password <i>bioinfo</i>)</nobr></font>
-							</#if>
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="7">
-				<div style="height: 20px">
-					&nbsp;
-				</div>
-			</td>
-		</tr>
-		</#if>
-		<tr>
-			<td align="center" colspan="7" >
 				<div align="left">
-					Welcome to <b>WormQTL</b>, an xQTL workbench for the storage and analysis of <i>C. elegans</i> geno- and phenotypic data. For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
-					<ul>
-						<li>Available as an <b>'in-house tool'</b> or used in a <b>collaborative setting</b> via web interfaces</li>
-						<li><b>Customizable</b> database for genetics data using software generators</li>
-					 	<li>High <b>performance</b> xQTL analysis</li>
-						<li>Three levels of users:
-							<ul>
-								<li><b>Biologists</b> - Import, browse and analyze data</li>
-					        	<li><b>Bio-informaticians</b> - Add new analysis and tools</li>
-							 	<li><b>Administrators</b> - User and database management</li>
-							</ul>
-						</li>
-					 	<li>Extensible computation interface
-						 	<ul>
-						 		<li>Biologists can run <b>pre-defined analyses</b></li>
-						     	<li>Bio-informaticians can <b>add their own (R) scripts</b></li>
-						     	<li><b>Recombine</b> datasets and scripts into new analyses</li>
-						 	</ul>
-						 </li>
-						 <li><b>Automatic annotation</b> of identifiers
-								 ${screen.linkouter.render("<ul><li>A Thaliana: AT3G1000 At1g10000 At5G20000</li>
-						         <li>C. Elegans: WBGene00000083</li>
-								 <li>NCBI: NG_006560.2 LOC729998 AC008038.1</li>
-								 <li>KEGG: K06560 K00134 K29897</li>
-							</ul>")}
-						</li>
-						<li>Fully <b>configurable</b> user management and permission system</li>
-						<li>Created using <b>software generation</b> allowing for quick tailoring to your needs</li>
-					</ul>
+					<h2>WormQTL – Public archive and analysis web portal for natural variation data in Caenorhabditis elegans</h2>
+					Over the past decade increased efforts have been made to explore the model metazoan Caenorhabditis elegans as a platform for molecular quantitative genetics and the systems biology of natural variation. These efforts have resulted in an accumulation of a huge amount of phenotypic and genotypic data across different developmental worm stages and environments in recombinant inbred populations. Next to C. elegans, C. briggsae is an emerging model organism that allows evolutionary comparisons with C. elegans and quantitative genetic exploration of its own unique biological attributes. In addition, a wealth of similar high-throughput data has been produced on hundreds of different C. elegans wild isolates.
+					<br><br>
+					This rapid increase in data calls for an easily accessible database allowing for comparative analysis and meta-analysis within and across species. Here we present WormQTL, a public portal for the management of all data on natural variation in Caenorhabditis spp. and integrated development of suitable analysis tools. The web server provides a rich set of analysis tools for genotype-phenotype mapping based on R/qtl. Users can upload and share new R scripts as ‘plugin’ for the colleagues in the community to use directly. New data can be uploaded and downloaded using XGAP, an extensible text format for genotype and phenotypes. All data  and tools can be accessed via a public web user interface as well as programming interfaces to R, REST, and SOAP web services. All software is free for download as MOLGENIS ‘app’. WormQTL is freely accessible without registration and is hosted on a large computational cluster enabling high throughput analyses to all at http://www.wormqtl.org. 
+					<br><br>
+					WormQTL is an online scalable system for QTL exploration to service the worm community. WormQTL provides many publicly available datasets and welcomes submissions from other worm researchers.
 				</div>
 			</td>
 		</tr>
 		<tr>
-			<td colspan="7">
+			<td>
 				<div style="height: 20px">&nbsp;</div>
 			</td>
 		</tr>
 		<tr>
-			<td colspan="7" width="675">
-				<i>Citation:</i>
+			<td width="675">
+				<h3>Citation:</h3>
+				<i>WormQTL – Public archive and analysis web portal for natural variation data in Caenorhabditis elegans</i><br>
+				L. Basten Snoek, Yang Li, K. Joeri Van der Velde, Danny Arends, Antje Beyer, Mark Elvin, Jasmin Fisher, Alex Hajnal, Michael Hengartner, Gino Poulin, Miriam Rodriguez, Tobias Schmid, Sabine Schrimpf, Feng Xue, Xue Zheng, Ritsert C. Jansen, Jan E. Kammenga, Morris A. Swertz - <b>in writing</b> 2012; doi: <a href="http://todo" target="_blank">todo</a>
 				<br><br>
-				<i>xQTL workbench: a scalable web environment for multi-level QTL analysis</i><br>
-				Danny Arends; K. Joeri van der Velde; Pjotr Prins; Karl W. Broman; Steffen Moller; Ritsert C. Jansen; Morris A. Swertz - <b>Bioinformatics</b> 2012; doi: <a href="http://dx.doi.org/10.1093/bioinformatics/bts049" target="_blank">10.1093/bioinformatics/bts049</a>
-				<br><br>
-				<i>References:</i>
+				<h3>References:</h3>
+				<a href="http://dx.doi.org/10.1093/bioinformatics/bts049">xQTL workbench: a scalable web environment for multi-level QTL analysis</a> - Danny Arends; K. Joeri van der Velde; Pjotr Prins; Karl W. Broman; Steffen Moller; Ritsert C. Jansen; Morris A. Swertz
 				<br><br>
 				<a href="http://www.ncbi.nlm.nih.gov/pubmed/20214801">XGAP: a uniform and extensible data model and software platform for genotype and phenotype experiments</a> - Swertz MA, Velde KJ, Tesson BM, Scheltema RA, Arends D, Vera G, Alberts R, Dijkstra M, Schofield P, Schughart K, Hancock JM, Smedley D, Wolstencroft K, Goble C, de Brock EO, Jones AR, Parkinson HE; Coordination of Mouse Informatics Resources (CASIMIR); Genotype-To-Phenotype (GEN2PHEN) Consortiums, Jansen RC.
 				<br><br>
@@ -188,12 +97,12 @@
 			</td>
 		</tr>	
 		<tr>
-			<td align="center" colspan="7" >
+			<td align="center">
 				<div style="height: 25px">&nbsp;</div>
 			</td>
 		</tr>
 		<tr>
-			<td align="center" colspan="7" >
+			<td align="center">
 				<table style="background: #FFFFFF;" cellpadding="10" cellspacing="10" border="2" width="700px">
 					<tr>
 						<td align="center">
