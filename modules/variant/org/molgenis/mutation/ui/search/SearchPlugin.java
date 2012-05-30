@@ -682,64 +682,64 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 			((IntInput) this.getModel().getExpertSearchForm().get("aano")).setValue(this.getModel().getMutationSearchCriteriaVO().getCodonNumber());
 
 		List<ValueLabel> exonIdOptions = new ArrayList<ValueLabel>();
-		exonIdOptions.add(new ValueLabel("", "Select exon/intron"));
+		exonIdOptions.add(new ValueLabel("", "Select"));
 		for (ExonDTO exonSummaryVO : searchService.findAllExons())
 			exonIdOptions.add(new ValueLabel(exonSummaryVO.getId(), exonSummaryVO.getName()));
 		((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setOptions(exonIdOptions);
 		if (this.getModel().getMutationSearchCriteriaVO().getExonId() != null)
 			((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getExonId());
 		else
-			((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setValue("Select exon/intron");
+			((SelectInput) this.getModel().getExpertSearchForm().get("exon_id")).setValue("Select");
 
 		List<ValueLabel> typeOptions = new ArrayList<ValueLabel>();
-		typeOptions.add(0, new ValueLabel("", "Select mutation type"));
+		typeOptions.add(0, new ValueLabel("", "Select"));
 		for (String mutationType : phenoService.findObservedValues("Type of mutation"))
 			typeOptions.add(new ValueLabel(mutationType, mutationType));
 		((SelectInput) this.getModel().getExpertSearchForm().get("type")).setOptions(typeOptions);
 		if (this.getModel().getMutationSearchCriteriaVO().getType() != null)
 			((SelectInput) this.getModel().getExpertSearchForm().get("type")).setValue(this.getModel().getMutationSearchCriteriaVO().getType());
 		else
-			((SelectInput) this.getModel().getExpertSearchForm().get("type")).setValue("Select mutation type");
+			((SelectInput) this.getModel().getExpertSearchForm().get("type")).setValue("Select");
 
 		List<ValueLabel> consequenceOptions = new ArrayList<ValueLabel>();
-		consequenceOptions.add(0, new ValueLabel("", "Select consequence"));
+		consequenceOptions.add(0, new ValueLabel("", "Select"));
 		for (String consequence : phenoService.findObservedValues("consequence"))
 			consequenceOptions.add(new ValueLabel(consequence, consequence));
 		((SelectInput) this.getModel().getExpertSearchForm().get("consequence")).setOptions(consequenceOptions);
 		if (this.getModel().getMutationSearchCriteriaVO().getConsequence() != null)
 			((SelectInput) this.getModel().getExpertSearchForm().get("consequence")).setValue(this.getModel().getMutationSearchCriteriaVO().getConsequence());
 		else
-			((SelectInput) this.getModel().getExpertSearchForm().get("consequence")).setValue("Select consequence");
+			((SelectInput) this.getModel().getExpertSearchForm().get("consequence")).setValue("Select");
 
 		List<ValueLabel> domainOptions = new ArrayList<ValueLabel>();
-		domainOptions.add(new ValueLabel("", "Select protein domain"));
+		domainOptions.add(new ValueLabel("", "Select"));
 		for (ProteinDomainDTO domainVO : searchService.findAllProteinDomains())
 			domainOptions.add(new ValueLabel(domainVO.getDomainId(), domainVO.getDomainName()));
 		((SelectInput) this.getModel().getExpertSearchForm().get("domain_id")).setOptions(domainOptions);
 		if (this.getModel().getMutationSearchCriteriaVO().getProteinDomainId() != null)
 			((SelectInput) this.getModel().getExpertSearchForm().get("domain_id")).setValue(this.getModel().getMutationSearchCriteriaVO().getProteinDomainId());
 		else
-			((SelectInput) this.getModel().getExpertSearchForm().get("domain_id")).setValue("Select protein domain");
+			((SelectInput) this.getModel().getExpertSearchForm().get("domain_id")).setValue("Select");
 		
 		List<ValueLabel> phenotypeOptions = new ArrayList<ValueLabel>();
-		phenotypeOptions.add(new ValueLabel("", "Select phenotype"));
+		phenotypeOptions.add(new ValueLabel("", "Select"));
 		for (String phenotypeName : phenoService.findObservedValues("Phenotype"))
 			phenotypeOptions.add(new ValueLabel(phenotypeName, phenotypeName));
 		((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setOptions(phenotypeOptions);
 		if (this.getModel().getMutationSearchCriteriaVO().getPhenotypeId() != null)
 			((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setValue(this.getModel().getMutationSearchCriteriaVO().getPhenotypeId());
 		else
-			((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setValue("Select phenotype");
+			((SelectInput) this.getModel().getExpertSearchForm().get("phenotype")).setValue("Select");
 
 		List<ValueLabel> inheritanceOptions = new ArrayList<ValueLabel>();
-		inheritanceOptions.add(0, new ValueLabel("", "Select inheritance"));
+		inheritanceOptions.add(0, new ValueLabel("", "Select"));
 		for (String inheritance : phenoService.findObservedValues("Inheritance"))
 			inheritanceOptions.add(new ValueLabel(inheritance, inheritance));
 		((SelectInput) this.getModel().getExpertSearchForm().get("inheritance")).setOptions(inheritanceOptions);
 		if (this.getModel().getMutationSearchCriteriaVO().getInheritance() != null)
 			((SelectInput) this.getModel().getExpertSearchForm().get("inheritance")).setValue(this.getModel().getMutationSearchCriteriaVO().getInheritance());
 		else
-			((SelectInput) this.getModel().getExpertSearchForm().get("inheritance")).setValue("Select inheritance");
+			((SelectInput) this.getModel().getExpertSearchForm().get("inheritance")).setValue("Select");
 	}
 	
 	private void populateDisplayOptionsForm()

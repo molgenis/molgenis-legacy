@@ -15,6 +15,10 @@ ${model.textWelcome}
 <p>
 The database currently contains ${model.numPatients} DEB patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} COL7A1 mutations. Search or browse below.
 </p>
+<#elseif model.geneDTO.symbol == "MYO5B">
+<p>
+The database currently contains ${model.numPatients} MVID patients, of which ${model.numUnpublished} unpublished, and ${model.numMutations} MYO5B mutations. Search or browse below.
+</p>
 <#elseif model.geneDTO.symbol == "CHD7">
 <p>
 The database currently contains ${model.getNumMutationsByPathogenicity("pathogenic")} pathogenic mutations in ${model.getNumPatientsByPathogenicity("pathogenic")} patients, ${model.getNumMutationsByPathogenicity("unclassified variant")} unclassified variants in ${model.getNumPatientsByPathogenicity("unclassified variant")} patients, and ${model.getNumMutationsByPathogenicity("benign")} benign variants.
@@ -69,6 +73,10 @@ ${form.expertSearch}
 <tr><td>Amino Acid No: </td><td>${form.aano}</td><td>Exon/Intron: </td><td>${form.exon_id}</td></tr>
 <tr><td>Mutation type:</td><td>${form.type}</td><td>Phenotype:</td><td>${form.phenotype}</td></tr>
 <tr><td>Inheritance:</td><td>${form.inheritance}</td><td></td><td></td></tr>
+<#elseif model.geneDTO.symbol == "MYO5B">
+<tr><td>Variation: </td><td>${form.variation}</td><td>Nucleotide No: </td><td>${form.nuclno}</td></tr>
+<tr><td>Amino Acid No: </td><td>${form.aano}</td><td>Exon/Intron: </td><td>${form.exon_id}</td></tr>
+<tr><td>Mutation type:</td><td>${form.type}</td><td>Onset:</td><td>${form.phenotype}</td></tr>
 <#else>
 <tr><td>Variation: </td><td>${form.variation}</td><td>Nucleotide No: </td><td>${form.nuclno}</td></tr>
 <tr><td>Amino Acid No: </td><td>${form.aano}</td><td>Exon/Intron: </td><td>${form.exon_id}</td></tr>
