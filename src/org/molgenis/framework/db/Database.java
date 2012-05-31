@@ -42,19 +42,29 @@ import org.molgenis.util.TupleWriter;
  */
 public interface Database
 {
-	// /**
-	// * Create tables based on annotations.
-	// *
-	// * @param persistenceUnitName
-	// */
-	// public void createTables();
-	//
-	// /**
-	// * Drop tables based on annotations
-	// *
-	// * @param persistenceUnitName
-	// */
-	// public void dropTables();
+	 /**
+	 * Create tables.
+	 * @throws DatabaseException
+	 */
+	 public void createTables() throws DatabaseException;
+
+	 /**
+	  * Update tables.
+	  * @throws DatabaseException
+	  */
+	 public void updateTables() throws DatabaseException;
+	 
+	 /**
+	 * Drop tables.
+	 * @throws DatabaseException
+	 */
+	 public void dropTables() throws DatabaseException;
+
+	 /**
+	  * Load example data into database.
+	  * @throws DatabaseException
+	  */
+	 public void loadExampleData(ExampleData exampleData) throws DatabaseException;
 
 	/**
 	 * Retrieve meta data describing data structure in this Database.
@@ -474,7 +484,6 @@ public interface Database
 	 * 
 	 * @return EntityManager
 	 */
-	@Deprecated
 	public EntityManager getEntityManager();
 
 	public void flush();
@@ -493,25 +502,13 @@ public interface Database
 	 * 
 	 * @return ResultSetTuple
 	 */
-	@Deprecated
 	public ResultSet executeQuery(String query, QueryRule... queryRules) throws DatabaseException;
 
 	/**
 	 * Generate the find SQL (use with caution!)
 	 */
-	@Deprecated
 	public <E extends Entity> String createFindSql(Class<E> entityClass, QueryRule... rules) throws DatabaseException;
 
-	/**
-	 * Return the security strategy object that takes care of authorization in
-	 * this Database.
-	 * 
-	 * Deprecated, use getLogin() instead
-	 */
-	@Deprecated
-	public Login getSecurity();
-
-	@Deprecated
 	public Connection getConnection() throws DatabaseException;
 
 	public <E extends Entity> Mapper<E> getMapper(String name) throws DatabaseException;
@@ -550,4 +547,8 @@ public interface Database
 	 */
 	public <E extends Entity> List<? extends Entity> load(Class<E> superClass, List<E> entities)
 			throws DatabaseException;
+	
+	public <E extends Entity> Class<E> getEntityClass(E entity);
+	
+	public <E extends Entity> Class<E> getEntityClass(List<E> entities);
 }

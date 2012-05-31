@@ -16,7 +16,6 @@ public class ExcelReaderTest
 	public void testIterator() throws Exception
 	{
 		//put this in file
-		String csv = "col1,col2\nval1,val2\nval3,val4";
 		File csvFile = new File("/Users/mswertz/test2.xls");
 
 		ExcelReader reader = new ExcelReader(csvFile,"test");

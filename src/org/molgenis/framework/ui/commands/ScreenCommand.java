@@ -2,7 +2,6 @@ package org.molgenis.framework.ui.commands;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.List;

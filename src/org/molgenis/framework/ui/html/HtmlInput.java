@@ -36,6 +36,8 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 
 	/** String constants for property name 'hidden' */
 	public static final String HIDDEN = "hidden";
+	
+	public static final String JQUERYPROPERTIES = "Jqueryproperties";
 
 	// PROPERTIES
 	/** The ID of this input. Defaults to 'name'. */
@@ -77,6 +79,9 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	/** Description. Defaults to 'name'. */
 	private String description = "";
 
+	/** to pass jquery script properties. */
+	private String Jqueryproperties;
+	
 	/** Tab index of this input (optionl) */
 	protected String tabIndex = "";
 
@@ -159,6 +164,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		if (t.getBool(READONLY) != null) this.readonly = t.getBool(READONLY);
 		this.description = t.getString(DESCRIPTION);
 		if (t.getBool(HIDDEN) != null) this.hidden = t.getBool(HIDDEN);
+		this.Jqueryproperties = t.getString(JQUERYPROPERTIES);
 
 	}
 
@@ -177,31 +183,29 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	 */
 	public abstract String toHtml();
 
-	@Override
 	public String getLabel()
 	{
 		if (label != null) return label;
 		return name;
 	}
 
-	@Override
-	public void setLabel(String label)
+	public HtmlInput<E> setLabel(String label)
 	{
 		//assert (label != null); fails web tests due to label -> null constructors, so allow it
 		this.label = label;
+		return this;
 	}
 
-	@Override
 	public String getName()
 	{
 		if(name == null) return this.getId();
 		return name;
 	}
 
-	@Override
-	public void setName(String name)
+	public HtmlInput<E> setName(String name)
 	{
 		this.name = name;
+		return this;
 	}
 
 	// TODO: This *needs* to be renamed to getValue()
@@ -313,6 +317,7 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	}
 
 	/** Synonym to toHtml */
+	@SuppressWarnings("deprecation")
 	public String render(Tuple params) throws ParseException,
 			HtmlInputException
 	{
@@ -333,35 +338,32 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 	}
 	
 	//BORING PROPERTIES
-
-	@Override
-	public void setValue(E value)
+	public HtmlInput<E> setValue(E value)
 	{
 		this.value = value;
+		return this;
 	}
 
-	@Override
 	public boolean isReadonly()
 	{
 		return readonly;
 	}
 
-	@Override
-	public void setReadonly(boolean readonly)
+	public HtmlInput<E> setReadonly(boolean readonly)
 	{
 		this.readonly = readonly;
+		return this;
 	}
 
-	@Override
 	public boolean isHidden()
 	{
 		return hidden;
 	}
 
-	@Override
-	public void setHidden(boolean hidden)
+	public HtmlInput<E> setHidden(boolean hidden)
 	{
 		this.hidden = hidden;
+		return this;
 	}
 
 	@Override
@@ -376,18 +378,15 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		this.id = id;
 	}
 
-
-
-	@Override
 	public String getStyle()
 	{
 		return style;
 	}
 
-	@Override
-	public void setStyle(String style)
+	public HtmlInput<E> setStyle(String style)
 	{
 		this.style = style;
+		return this;
 	}
 
 	public String getTooltip()
@@ -395,46 +394,53 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		return tooltip;
 	}
 
-	@Override
-	public void setTooltip(String tooltip)
+	public HtmlInput<E> setTooltip(String tooltip)
 	{
 		this.tooltip = tooltip;
+		return this;
 	}
 
-	@Override
 	public String getTarget()
 	{
 		return target.replace(".", "_");
 	}
 
-	@Override
-	public void setTarget(String target)
+	public HtmlInput<E> setTarget(String target)
 	{
 		this.target = target.replace(".", "_");
+		return this;
 	}
 
-	@Override
 	public String getDescription()
 	{
 		return description;
 	}
 
-	@Override
-	public void setDescription(String description)
+	public HtmlInput<E> setDescription(String description)
 	{
 		this.description = description;
+		return this;
 	}
 
-	@Override
 	public boolean isNillable()
 	{
 		return nillable;
 	}
 
-	@Override
-	public void setNillable(boolean required)
+	public HtmlInput<E> setNillable(boolean required)
 	{
 		this.nillable = required;
+		return this;
+	}
+
+	public String getJqueryproperties()
+	{
+		return Jqueryproperties;
+	}
+
+	public void setJqueryproperties(String jqueryproperties)
+	{
+		Jqueryproperties = jqueryproperties;
 	}
 
 	public boolean isCollapse()
@@ -462,18 +468,23 @@ public abstract class HtmlInput<E> extends AbstractHtmlElement implements Input<
 		return size;
 	}
 
-	public synchronized void setSize(Integer size)
+	public synchronized HtmlInput<E> setSize(Integer size)
 	{
 		this.size = size;
+		return this;
 	}
 
-	public void setTabIndex(int tabidx)
+	public HtmlInput<E> setTabIndex(int tabidx)
 	{
 		tabIndex = " tabindex=" + Integer.toString(tabidx);
+		return this;
 	}
 	
 	public UiToolkit getUiToolkit()
 	{
 		return this.uiToolkit;
 	}
+	
+
+
 }

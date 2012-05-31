@@ -12,6 +12,7 @@ import org.hibernate.criterion.Example;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.molgenis.util.Entity;
 
 /**
@@ -26,7 +27,7 @@ class HibernateImp implements JpaFramework {
         Criteria criteria = session.createCriteria(example.getClass()).add(
                 customerExample);
         @SuppressWarnings("unchecked")
-        List<E> list = (List<E>) criteria.list();
+        List<E> list = criteria.list();
         return list;
     }
 
@@ -41,6 +42,16 @@ class HibernateImp implements JpaFramework {
     }
 
     @Override
+    public void updateTables(String persistenceUnitName, final Map<String, Object> configOverwrites) {
+        final Ejb3Configuration cfg = new Ejb3Configuration();
+        cfg.configure(persistenceUnitName, configOverwrites);
+        final SchemaUpdate schemaUpdate = new SchemaUpdate(
+                cfg.getHibernateConfiguration());
+        schemaUpdate.setOutputFile("schema.sql");
+        schemaUpdate.execute(true, true);
+    }
+
+    @Override
     public void dropTables(String persistenceUnitName, final Map<String, Object> configOverwrites) {
         final Ejb3Configuration cfg = new Ejb3Configuration();
         cfg.configure(persistenceUnitName, configOverwrites);
@@ -50,7 +61,8 @@ class HibernateImp implements JpaFramework {
         schemaExport.drop(true, true);
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public Connection getConnection(EntityManager em) {
         return ((HibernateEntityManager) em).getSession().connection();
     }

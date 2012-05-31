@@ -6,7 +6,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -45,7 +44,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 	}
 	
 	@Override
-	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule... rules)
+	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule[] rules)
 			throws DatabaseException
 	{
 		try
@@ -207,8 +206,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 					+ createWhereSql(false, true,
 							this.rewriteRules(getDatabase(), rules));
 			// + createWhereSql(getMapperFor(klazz), false, true, rules);
-			@SuppressWarnings("deprecation")
-			ResultSet rs = getDatabase().executeQuery(sql, null);
+			ResultSet rs = getDatabase().executeQuery(sql);
 			rs.next();
 			int result = rs.getInt("num_rows");
 			logger.debug("counted " + result +" " + this.create().getClass().getSimpleName() + " objects");
@@ -261,19 +259,6 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 		}
 	}
 	
-	private boolean hasXrefByNameEquivalent(String field, Vector<String> fields){
-		for(String checkField: fields){
-			//must at least be "{field}" plus " _name" as length
-			if(checkField.length() >= (field.length() + 5)){
-				// ie. investigation_name vs. investigation
-				if(checkField.substring(0, checkField.length()-5).equals(field)){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
 	/**
 	 * Helper function of various find functions.
 	 * 
@@ -301,7 +286,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 		}
 		// execute the query
 		//logger.info("TEST\n"+sql);
-		return getDatabase().executeQuery(sql, null);
+		return getDatabase().executeQuery(sql);
 	}
 	
 	/**
@@ -330,7 +315,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 	}
 	
 	@Override
-	public String createFindSqlInclRules(QueryRule ... rules) throws DatabaseException
+	public String createFindSqlInclRules(QueryRule[] rules) throws DatabaseException
 	{
 		 return createFindSql()
 			+ createWhereSql(false, true, this.rewriteRules(getDatabase(), rules));
@@ -814,9 +799,9 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 	@Override
 	public List<E> findByExample(E example) throws DatabaseException
 	{
-		Query<E> q = (Query<E>) getDatabase().query(example.getClass());
+		Query<E> q = getDatabase().query(getDatabase().getEntityClass(example));
 		// add first security rules
-		// q.addRules(this.getSecurity().getRowlevelSecurityFilters(example.getClass()));
+		// q.addRules(this.getLogin().getRowlevelSecurityFilters(example.getClass()));
 
 		for (String field : example.getFields())
 		{

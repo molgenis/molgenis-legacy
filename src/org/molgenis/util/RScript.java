@@ -84,7 +84,18 @@ public class RScript {
 	 * @return the output of the script
 	 * @throws RScriptException
 	 */
-	public String execute() throws RScriptException {
+	public String execute() throws RScriptException
+	{
+		return execute(null);
+	}
+	
+	/**
+	 * Execute the R script. Extra parameter for specifying file name.
+	 * 
+	 * @return the output of the script
+	 * @throws RScriptException
+	 */
+	public String execute(String scriptPathName) throws RScriptException {
 		// add end to script script
 		this.append("q(\"no\",status=0, FALSE)");
 
@@ -96,13 +107,20 @@ public class RScript {
 		File outputfile = null;
 		try {
 			// create tempfiles
-			inputfile = File.createTempFile("run", ".R");
+			if(scriptPathName == null)
+			{
+				inputfile = File.createTempFile("run", ".R");
+			}
+			else
+			{
+				inputfile = new File(scriptPathName);
+			}
 			outputfile = File.createTempFile("run", ".output");
 
 			FileWriter fw = new FileWriter(inputfile);
 			fw.write(scriptCode);
 			fw.close();
-			logger.debug("wrote script to file " + inputfile);
+			System.out.println("wrote script to file " + inputfile);
 
 			// execute the scripts
 			if (System.getProperty("os.name").toLowerCase().indexOf("windows") == -1) {

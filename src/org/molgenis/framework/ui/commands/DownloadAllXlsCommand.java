@@ -1,7 +1,6 @@
 package org.molgenis.framework.ui.commands;
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 

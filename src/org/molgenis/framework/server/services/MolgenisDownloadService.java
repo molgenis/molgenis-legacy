@@ -79,7 +79,7 @@ public class MolgenisDownloadService implements MolgenisService
 				{
 					out.println("<html><body>");
 					out.println(authStatus.getPrintMe());
-					if(req.getDatabase().getSecurity().isAuthenticated())
+					if(req.getDatabase().getLogin().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
 					}
@@ -91,7 +91,7 @@ public class MolgenisDownloadService implements MolgenisService
 				{
 					out.println("<html><body>");
 					out.println(authStatus.getPrintMe());
-					if(req.getDatabase().getSecurity().isAuthenticated())
+					if(req.getDatabase().getLogin().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
 					}
@@ -165,7 +165,7 @@ public class MolgenisDownloadService implements MolgenisService
 	private void showAvailableDownloads(PrintWriter out, Database db, MolgenisRequest req) throws DatabaseException
 	{
 		//print message to indicate your are anonymous
-		if(!db.getSecurity().isAuthenticated())
+		if(!db.getLogin().isAuthenticated())
 		{
 			out.println("You are currently browsing as anonymous.<br>");
 		}
@@ -179,7 +179,7 @@ public class MolgenisDownloadService implements MolgenisService
 			Class<? extends Entity> klazz = db.getClassForName(name);
 
 			//hide entities without read permission
-			if(db.getSecurity().canRead(klazz))
+			if(db.getLogin().canRead(klazz))
 			{
 				out.println("<tr>");
 				out.println("<td><a href=\"" + (req.getRequest().getPathInfo().endsWith("/") ? "" :  "/" + mc.getVariant() + req.getServicePath() + "/") + name + "\">"

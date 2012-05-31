@@ -84,7 +84,6 @@ public abstract class AbstractTupleReader implements TupleReader
 	public List<String> rownames() throws IOException, DataFormatException
 	{
 		List<String> rownames = new ArrayList<String>();
-		int line_number = 0;
 		for (Tuple t : this)
 		{
 			if (!t.isNull(0)) rownames.add(t.getString(0));

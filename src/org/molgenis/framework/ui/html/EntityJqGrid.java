@@ -1,8 +1,5 @@
 package org.molgenis.framework.ui.html;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.molgenis.fieldtypes.MrefField;
 import org.molgenis.fieldtypes.XrefField;
 import org.molgenis.framework.db.Database;
@@ -49,7 +46,6 @@ public class EntityJqGrid extends HtmlWidget
 
 		try
 		{
-			boolean first = false;
 			for (Field field : entityModel.getAllFields())
 			{
 				// in this case use label

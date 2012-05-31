@@ -20,14 +20,19 @@ public interface HtmlElement
 {
 	public static final String ID = "id";
 	public static final String CLASS = "class";
-	
+
 	/**
 	 * Libraries that indicate the styling library used. Currently DEFAULT
 	 * (molgenis original standard) and JQUERY (pimped using jQuery).
 	 */
 	public enum UiToolkit
 	{
-		DOJO, JQUERY, ORIGINAL
+		/** jquery-ui */
+		JQUERY, 
+		/** old layout */
+		ORIGINAL, 
+		/** twitter bootstrap */
+		BOOTSTRAP
 	};
 
 	/** Get any html headers needed for this element */
@@ -37,21 +42,20 @@ public interface HtmlElement
 	public String render();
 
 	/** Initialize and render based on a tuple */
-	public String render(Tuple params) throws ParseException,
-			HtmlInputException;
+	public String render(Tuple params) throws ParseException, HtmlInputException;
 
 	/** Get the unique id of this html element, for scripting purposes */
 	public String getId();
-	
+
 	/** Set the unique id of this html element, for scripting purposes */
 	public void setId(String id);
 
 	/** Set the css class(es) for this element */
 	public String getClazz();
 
-	/** Set the css class(es) for this element*/
+	/** Set the css class(es) for this element */
 	public void setClazz(String clazz);
-	
+
 	/** Set the properties of this HtmlElement using a tuple */
-	public void set(Tuple properties)  throws HtmlInputException;
+	public void set(Tuple properties) throws HtmlInputException;
 }

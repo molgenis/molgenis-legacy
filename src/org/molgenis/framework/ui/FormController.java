@@ -14,7 +14,6 @@ package org.molgenis.framework.ui;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.commands.ScreenCommand;
 import org.molgenis.framework.ui.commands.SimpleCommand;
 import org.molgenis.framework.ui.html.HtmlForm;
-import org.molgenis.framework.ui.html.Input;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
@@ -65,7 +64,6 @@ public abstract class FormController<E extends Entity> extends
 	{
 		super(name, null, parent);
 		this.setModel(new FormModel<E>(this));
-		this.setView(new FreemarkerView("FormView.ftl", getModel()));
 
 		FormModel<E> model = getModel();
 		resetSystemHiddenColumns();
@@ -92,12 +90,6 @@ public abstract class FormController<E extends Entity> extends
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		this.handleRequest(db, request, null);
 	}
 
 	@Override
@@ -559,7 +551,7 @@ public abstract class FormController<E extends Entity> extends
 
 		// set form level rights
 		boolean formReadonly = model.isReadonly()
-				|| !model.getSecurity().canWrite(model.create().getClass());
+				|| !model.getLogin().canWrite(model.create().getClass());
 		model.setReadonly(formReadonly);
 
 		// load the rows
@@ -573,7 +565,7 @@ public abstract class FormController<E extends Entity> extends
 		for (E record : allRecords)
 		{
 			boolean rowReadonly = formReadonly
-					|| !model.getSecurity().canWrite(record.getClass());
+					|| !model.getLogin().canWrite(record.getClass());
 
 			if (rowReadonly) record.setReadonly(true);
 			// else
@@ -931,7 +923,7 @@ public abstract class FormController<E extends Entity> extends
 		{
 			HtmlForm f = getInputs(this.getEntityClass().newInstance(), false);
 
-			for (Input i : f.getInputs())
+			for (HtmlInput<?> i : f.getInputs())
 			{
 				if (!i.isHidden())
 				{
@@ -952,6 +944,11 @@ public abstract class FormController<E extends Entity> extends
 		return showColumns;
 	}
 
+	public ScreenView getView()
+	{
+		return new FreemarkerView("FormView.ftl", getModel());
+	}
+	
 	/**
 	 * Provides the class of the entitites managed by this form. Note: Java
 	 * erases the specific type of E, therefore we cannot say E.newInstance();

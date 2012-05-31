@@ -45,11 +45,11 @@ public class MolgenisUploadService implements MolgenisService
 	/** indicating wether uploads should return added data */
 	public static String INPUT_SILENT = "data_silent";
 	
-	private MolgenisContext mc;
+//	private MolgenisContext mc;
 	
 	public MolgenisUploadService(MolgenisContext mc)
 	{
-		this.mc = mc;
+//		this.mc = mc;
 	}
 	@Override
 	public void handleRequest(MolgenisRequest req, MolgenisResponse res)
@@ -82,7 +82,7 @@ public class MolgenisUploadService implements MolgenisService
 				{
 					out.println("<html><body>");
 					authStatus.getPrintMe();
-					if(req.getDatabase().getSecurity().isAuthenticated())
+					if(req.getDatabase().getLogin().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
 					}
@@ -95,7 +95,7 @@ public class MolgenisUploadService implements MolgenisService
 				{
 					out.println("<html><body>");
 					authStatus.getPrintMe();
-					if(req.getDatabase().getSecurity().isAuthenticated())
+					if(req.getDatabase().getLogin().isAuthenticated())
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
 					}
@@ -151,13 +151,13 @@ public class MolgenisUploadService implements MolgenisService
 	
 	private void showCsvInputForm(PrintWriter out, MolgenisRequest req) throws InstantiationException, IllegalAccessException
 	{
-		 String clazzName =
+		 //String clazzName =
 				 req.getString(INPUT_DATATYPE);
 				 
-				 String simpleEntityName = clazzName.substring(clazzName.lastIndexOf('.')+1);
+				 //String simpleEntityName = clazzName.substring(clazzName.lastIndexOf('.')+1);
 				 
-				 Class<? extends Entity> entityClass = req.getDatabase().getClassForName(simpleEntityName);
-				 Entity template = entityClass.newInstance();
+				 //Class<? extends Entity> entityClass = req.getDatabase().getClassForName(simpleEntityName);
+				 //Entity template = entityClass.newInstance();
 				
 				 out.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
 				 out.println("<h1>Data upload (step 2)</h1>");

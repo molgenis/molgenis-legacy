@@ -15,7 +15,6 @@ package org.molgenis.framework.ui;
 
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
 
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -32,13 +31,19 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		super(name, null, parent);
 		this.setModel(new MenuModel(this));
 		this.getModel().setLabel(name);
-		this.setView(new FreemarkerView("MenuView.ftl", getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("MenuView.ftl", this.getModel());
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		this.doSelect(request);
+		
+		return Show.SHOW_MAIN;
 	}
 
 	@Override
@@ -79,16 +84,6 @@ public class MenuController extends SimpleScreenController<MenuModel>
 		{
 			return false;
 		}
-	}
-
-
-	
-	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out)
-	{
-		this.handleRequest(db, request);
-		
-		return Show.SHOW_MAIN;
 	}
 	
 	public MenuModel getModel()

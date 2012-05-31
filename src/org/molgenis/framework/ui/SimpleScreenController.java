@@ -20,9 +20,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.FileLink;
-import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.SimpleTree;
-import org.molgenis.util.Tuple;
 
 /**
  * Base-class for a screen displaying information from the invengine system to
@@ -35,8 +33,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	// member variables
 	/** */
 	private MODEL model;
-	/** */
-	private ScreenView view;
+
 	/** */
 	protected final transient Logger logger = Logger.getLogger(this.getClass());
 	/** */
@@ -80,7 +77,7 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	 * @throws HandleRequestDelegationException 
 	 * @throws Exception 
 	 */
-	public abstract void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
+	//public abstract void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
 
 	// public String getFromRequest(Tuple request, String name)
 	// {
@@ -174,7 +171,6 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 		return result;
 	}
 
-	@Deprecated
 	@Override
 	public String getLabel()
 	{
@@ -229,19 +225,14 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 		return null;
 	}
 
-	public ScreenView getView()
-	{
-		return view;
-	}
-
-	public void setView(ScreenView view)
-	{
-		this.view = view;
-	}
-
 	public String render() throws HtmlInputException
 	{
-		return this.getView().render();
+		String result = this.getView().render();
+		if(result == null || "".equals(result))
+		{
+			throw new HtmlInputException("render showed nothing for "+this);
+		}
+		return result;
 	}
 
 	// @Override

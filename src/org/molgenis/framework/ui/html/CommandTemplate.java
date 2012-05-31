@@ -11,30 +11,30 @@ import org.molgenis.util.Tuple;
  * This class is used by commands as template. It must be replaced by
  * 'container' at some point.
  */
-public class CommandTemplate extends LinkedHashMap<String, Input<?>>
+public class CommandTemplate extends LinkedHashMap<String, HtmlInput<?>>
 {
 	private static final long serialVersionUID = -8565170009471766957L;
 
-	public void add(Input<?> i)
+	public void add(HtmlInput<?> i)
 	{
 		this.put(i.getName().toLowerCase(), i);
 	}
 
 	public void addAll(List<HtmlInput<?>> inputs)
 	{
-		for (Input<?> i : inputs)
+		for (HtmlInput<?> i : inputs)
 			this.add(i);
 	}
 
 	public void addAll(Vector<HtmlInput<?>> inputs)
 	{
-		for (Input<?> i : inputs)
+		for (HtmlInput<?> i : inputs)
 			this.add(i);
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Input get(Object key)
+	public HtmlInput get(Object key)
 	{
 		if (key instanceof String) return super.get(((String) key)
 				.toLowerCase());

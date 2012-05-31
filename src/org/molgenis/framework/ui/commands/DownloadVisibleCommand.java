@@ -9,9 +9,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.AbstractJDBCMapper;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
@@ -20,9 +17,7 @@ import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
-import org.molgenis.util.TupleWriter;
 import org.molgenis.util.Tuple;
-import org.molgenis.util.XlsWriter;
 
 /**
  * This command downloads the records currently shown as csv.
@@ -50,6 +45,7 @@ public class DownloadVisibleCommand extends SimpleCommand
 		FormModel<?> view = this.getFormScreen();
 		List<String> fieldsToExport = ((FormController<?>)this.getController()).getVisibleColumnNames();
 		CsvWriter writer = new CsvWriter(csvDownload, fieldsToExport);
+		writer.writeHeader();
 		for(Entity e: view.getRecords()) writer.writeRow(e);
 		writer.close();
 		return ScreenModel.Show.SHOW_MAIN;

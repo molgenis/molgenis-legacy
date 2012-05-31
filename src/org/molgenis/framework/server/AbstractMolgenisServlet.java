@@ -34,13 +34,12 @@ import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.json.JSONObject;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.security.Login;
+import org.molgenis.framework.server.services.MolgenisXrefService;
 import org.molgenis.framework.ui.ApplicationController;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
@@ -286,7 +285,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			}
 			else if (path != null && path.contains("/xref/find"))
 			{
-				this.handleXREFrequest(request, response);
+				this.handleXREFrequest(db, request, response);
 			}
 			else if (path != null && path.contains("/download/"))
 			{
@@ -459,33 +458,33 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 	public void handleGUIrequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception
 	{
-		// get database session (note: this shouldn't be in the tomcat
-		// session!!!
-		Database db = null;
-		boolean dbAvailable = false;
-		String dbErrorMessage = null;
-		try
-		{
-			db = getDatabase();
-			// db.beginTx(); DISCUSSION
-			System.err.println("???" + db);
-			if (db != null)
-			{
-				dbAvailable = true;
-				logger.info("created database " + db);
-			}
-			else
-			{
-				dbErrorMessage = "database is NULL";
-			}
-		}
-		catch (Exception e)
-		{
-			logger.error("Database creation failed: " + e.getMessage());
-			e.printStackTrace();
-			// throw new DatabaseException(e);
-			dbErrorMessage = e.getMessage();
-		}
+//		// get database session (note: this shouldn't be in the tomcat
+//		// session!!!
+//		Database db = null;
+//		boolean dbAvailable = false;
+//		String dbErrorMessage = null;
+//		try
+//		{
+//			db = getDatabase();
+//			// db.beginTx(); DISCUSSION
+//			System.err.println("???" + db);
+//			if (db != null)
+//			{
+//				dbAvailable = true;
+//				logger.info("created database " + db);
+//			}
+//			else
+//			{
+//				dbErrorMessage = "database is NULL";
+//			}
+//		}
+//		catch (Exception e)
+//		{
+//			logger.error("Database creation failed: " + e.getMessage());
+//			e.printStackTrace();
+//			// throw new DatabaseException(e);
+//			dbErrorMessage = e.getMessage();
+//		}
 
 		// login/logout
 		HttpSession session = request.getSession();
@@ -1220,7 +1219,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 			{
 				String username = requestTuple.getString(INPUT_DATA);
 				String password = requestTuple.getString(INPUT_SILENT);
-				boolean loggedIn = db.getSecurity().login(db, username, password);
+				boolean loggedIn = db.getLogin().login(db, username, password);
 				if(loggedIn)
 				{
 					out.println("Welcome, " + username + "!");
@@ -1367,7 +1366,7 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 							//allows secure uploading of data from R API
 							String username = this.__remote__login__request__username;
 							String password = this.__remote__login__request__password;
-							db.getSecurity().login(db, username, password);
+							db.getLogin().login(db, username, password);
 							nRowsChanged = db.add(entityClass, new CsvStringReader(requestTuple.getString(INPUT_DATA)), writer);
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
@@ -1517,240 +1516,20 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		reader.close();
 	}
 
-	/**
-	 * get a freemarker configuration for rendering
-	 * 
-	 * @throws IOException
-	 */
-	// @SuppressWarnings("deprecation")
-	// private Configuration getFreemarkerConfiguration(ScreenController<?,?>
-	// userInterface) throws IOException
-	// {
-	//
-	// Configuration conf = (Configuration)
-	// this.getServletContext().getAttribute("freemarker");
-	// if (conf == null)
-	// {
-	// conf = new Configuration();
-	// // set the template loading paths
-	// conf.setObjectWrapper(new DefaultObjectWrapper());
-	//
-	// //load templates from MOLGENIS
-	// ClassTemplateLoader molgenistl = new
-	// ClassTemplateLoader(MolgenisOriginalStyle.class, "");
-	// //load templates from plugins, can be anywere
-	// ClassTemplateLoader plugins = new ClassTemplateLoader();
-	//
-	// // load templates from molgenis 'style' directory
-	// /*
-	// * FileTemplateLoader plugintl; try { File f = new File(
-	// * this.getServletContext().getRealPath( ("target/classes")));
-	// * if(!f.exists()) throw new IOException(); plugintl = new
-	// * FileTemplateLoader( f ); logger.debug("path target/classes does
-	// * exist???"); } catch(IOException e) {
-	// * logger.error("getFreemarkerConfiguration failed: path to
-	// * target/classes doesn't exist"); throw e; }
-	// */
-	// // load templates from the classpath (typically used for plugins)
-	// TemplateLoader[] loaders = new TemplateLoader[]
-	// { molgenistl, plugins };
-	// MultiTemplateLoader mtl = new MultiTemplateLoader(loaders);
-	// conf.setTemplateLoader(mtl);
-	// // bring them all together as multiple loaders in freemarker
-	//
-	// // Walk trought the tree of user interface screens to find out which
-	// // template files to autoinclude
-	// if (userInterface.getTemplate() != null)
-	// conf.addAutoInclude(userInterface.getTemplate());
-	// for (ScreenController<?,?> screen : userInterface.getAllChildren())
-	// {
-	// if (screen.getTemplate() != null)
-	// {
-	// String path = screen.getTemplate();
-	// logger.debug("loading plugin template '" + path + "'");
-	// conf.addAutoInclude(path);
-	// }
-	// }
-	//
-	// this.getServletContext().setAttribute("freemarker", conf);
-	// }
-	//
-	// return conf;
-	// }
-
-	public void handleXREFrequest(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException
+	public void handleXREFrequest(final Database db,  final HttpServletRequest request, 
+			final HttpServletResponse response) throws ServletException
 	{
 		try
 		{
-			response.setHeader("Cache-Control", "max-age=0"); // allow no client
-			response.setContentType("application/json");
-			// side caching
-			// .../xref/find?xref_entity=xxx&xref_field=yyyy&xref_label=zzzz&
-			// filter=aaa
-			// .../xref/find?xref_entity=xgap.data.types.Marker&xref_field=id&
-			// xref_label=name&xref_filter=PV
-
-			// alternatief => here the 'field' is the xref input itself
-			// .../xref/find?entity=xxx&field=zzz&filter=aaaa
-
-			Tuple req = new HttpServletRequestTuple(request);
-			logger.debug("handling XREF request " + req);
-
-			Class<? extends Entity> xref_entity = getClassForName(req
-					.getString("xref_entity"));
-			String xref_field = req.getString("xref_field");
-			// get the xref labels from the string
-			List<String> xref_labels = new ArrayList<String>();
-			for (String label : req.getString("xref_label").split(","))
-			{
-				xref_labels.add(label.toString());
-			}
-
-			// List<QueryRule> xref_filters =
-			// QueryRuleUtil.fromRESTstring(req.getString("xref_filters"));
-			String xref_label_search = req.getString("xref_label_search");
-
-			logger.debug(xref_entity + " " + xref_field + " " + xref_labels
-					+ " " + xref_label_search);
-			// List<String> queryFields = new ArrayList<String>();
-			// queryFields.add(xref_field);
-			// for (String xref_label : xref_labels)
-			// {
-			// queryFields.add(xref_label);
-			// }
-
-			// create a query on xref_entity
-			Database db = getDatabase();
-
-			// get the user interface and find the login
-			HttpSession session = request.getSession();
-			ScreenController<?> molgenis = (ApplicationController) session
-					.getAttribute("application");
-//			Login login = molgenis.getApplicationController().getLogin();
-//			db.setLogin(login);
-			Query<?> q = db.query(xref_entity);
-
-			// create a CustomQuery
-			// JoinQuery q = getDatabase().query(queryFields);
-			// //q.addRules(xref_filters);
-			if (xref_label_search != null && xref_label_search != "")
-			{
-				for (String xref_label : xref_labels)
-				{
-					q.like(xref_label, "%" + xref_label_search + "%");
-					q.or();
-					q.sortASC(xref_label);
-				}
-			}
-			q.limit(100);
-
-			List<? extends Entity> result = q.find();
-
-			// transform in JSON (JavaScript Object Notation
-
-//			String json = "{";
-//			for (int i = 0; i < result.size(); i++)
-//			{
-//				 logger.debug("using: " + result.get(i));
-//				if (i > 0)
-//				{
-//					json += ",";
-//
-//				}
-//
-//				// write the xref key as set in xref_field
-//				json += "\"" + result.get(i).get(xref_field).toString()
-//						+ "\":\"";
-//
-//				// write the label(s) as set in xref_label
-//				for (int j = 0; j < xref_labels.size(); j++)
-//				{
-//					// hack
-//					if (j > 0) json += "|";
-//					json += StringEscapeUtils.escapeJavaScript(result.get(i)
-//							.get(xref_labels.get(j)).toString());
-//				}
-//				json += "\"";
-//				// logger.debug(result.get(i).get(xref_field) + ":\""
-//				// + result.get(i).get(xref_label) + "\"");
-//			}
-//			json += "}";
-//			logger.debug(json);
-
-			JSONObject jsonObject = new JSONObject();
-
-	        for (int i = 0; i < result.size(); i++)
-			{
-	        	String key   = result.get(i).get(xref_field).toString();
-	        	String value = "";
-	        	for (int j = 0; j < xref_labels.size(); j++)
-				{
-					// hack
-					if (j > 0) value += "|";
-					value += result.get(i).get(xref_labels.get(j)).toString();
-				}
-	        	jsonObject.put(key, value);
-			}
-	        
-	        String json = jsonObject.toString();
-			logger.debug(json);
-
-			// write out
-			PrintWriter out = response.getWriter();
-			out.print(json);
-			out.close();
+			MolgenisXrefService.handleXrefRequest(db, new MolgenisRequest(request),  new MolgenisResponse(response));
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
-			throw new ServletException(e.getMessage());
+			throw new ServletException(e);
 		}
 	}
 
-	// public abstract Object getRestImpl() throws DatabaseException,
-	// NamingException;
 
-	// @SuppressWarnings("unchecked")
-	// protected void setInterceptors(JAXRSServerFactoryBean bean, ServletConfig
-	// servletConfig, String paramName)
-	// {
-	// String value = servletConfig.getInitParameter(paramName);
-	// if (value == null)
-	// {
-	// return;
-	// }
-	// String[] values = value.split(" ");
-	// List<Interceptor> list = new ArrayList<Interceptor>();
-	// for (String interceptorVal : values)
-	// {
-	// String theValue = interceptorVal.trim();
-	// if (theValue.length() != 0)
-	// {
-	// try
-	// {
-	// Class<?> intClass = ClassLoaderUtils.loadClass(theValue,
-	// CXFNonSpringJaxrsServlet.class);
-	// list.add((Interceptor<? extends Message>) intClass.newInstance());
-	// }
-	// catch (Exception ex)
-	// {
-	// ex.printStackTrace();
-	// }
-	// }
-	// }
-	// if (list.size() > 0)
-	// {
-	// if ("jaxrs.outInterceptors".equals(paramName))
-	// {
-	// bean.setOutInterceptors(list);
-	// }
-	// else
-	// {
-	// bean.setInInterceptors(list);
-	// }
-	// }
-	// }
 
 	private static String getPort(HttpServletRequest req)
 	{

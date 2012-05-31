@@ -15,14 +15,10 @@ import org.json.JSONObject;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.model.MolgenisModelException;
-import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 
 /** Service to serve entities for jqGrid */
@@ -30,11 +26,8 @@ public class MolgenisJqGridService implements MolgenisService
 {
 	Logger logger = Logger.getLogger(MolgenisJqGridService.class);
 
-	private MolgenisContext mc;
-
 	public MolgenisJqGridService(MolgenisContext mc)
 	{
-		this.mc = mc;
 	}
 
 	/**
@@ -78,7 +71,7 @@ public class MolgenisJqGridService implements MolgenisService
 			{
 				throw new Exception("required parameter 'entity' is missing");
 			}
-			Class<? extends Entity> entityClass = getClassForName(req.getString("entity"));
+			Class<? extends Entity> entityClass = req.getDatabase().getClassForName(req.getString("entity"));
 
 			/****** RETRIEVE DATA ******/
 
@@ -165,10 +158,5 @@ public class MolgenisJqGridService implements MolgenisService
 			e.printStackTrace();
 			throw new DatabaseException(e);
 		}
-	}
-
-	private Class<? extends Entity> getClassForName(String entityName) throws ClassNotFoundException
-	{
-		return (Class<? extends Entity>) Class.forName(entityName);
 	}
 }

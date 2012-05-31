@@ -35,7 +35,6 @@ import org.molgenis.fieldtypes.DatetimeField;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.EnumField;
 import org.molgenis.fieldtypes.FileField;
-import org.molgenis.fieldtypes.HexaField;
 import org.molgenis.fieldtypes.HyperlinkField;
 import org.molgenis.fieldtypes.ImageField;
 import org.molgenis.fieldtypes.IntField;
@@ -58,7 +57,6 @@ import org.molgenis.generators.csv.CsvImportGen;
 import org.molgenis.generators.csv.CsvReaderGen;
 import org.molgenis.generators.db.DatabaseFactoryGen;
 import org.molgenis.generators.db.FillMetadataGen;
-import org.molgenis.generators.db.InMemoryDatabaseGen;
 import org.molgenis.generators.db.JDBCDatabaseGen;
 import org.molgenis.generators.db.JDBCMetaDatabaseGen;
 import org.molgenis.generators.db.JpaDatabaseGen;
@@ -68,7 +66,6 @@ import org.molgenis.generators.db.MapperSecurityDecoratorGen;
 import org.molgenis.generators.db.MultiqueryMapperGen;
 import org.molgenis.generators.db.PStatementMapperGen;
 import org.molgenis.generators.db.PersistenceGen;
-import org.molgenis.generators.db.ViewMapperGen;
 import org.molgenis.generators.doc.DotDocGen;
 import org.molgenis.generators.doc.DotDocMinimalGen;
 import org.molgenis.generators.doc.DotDocModuleDependencyGen;
@@ -102,8 +99,6 @@ import org.molgenis.generators.tests.TestCsvGen;
 import org.molgenis.generators.tests.TestDataSetGen;
 import org.molgenis.generators.tests.TestDatabaseGen;
 import org.molgenis.generators.ui.EasyPluginControllerGen;
-import org.molgenis.generators.ui.EasyPluginModelGen;
-import org.molgenis.generators.ui.EasyPluginViewGen;
 import org.molgenis.generators.ui.FormControllerGen;
 import org.molgenis.generators.ui.HtmlFormGen;
 import org.molgenis.generators.ui.MenuControllerGen;
@@ -261,9 +256,7 @@ public class Molgenis {
         // DATA
         // generators.add(new DataPListGen());
         // generators.add(new ViewTypeGen());
-        if (options.generate_imdb) {
-            generators.add(new InMemoryDatabaseGen());
-        }
+
 
         if (options.generate_sql) {
             if (options.mapper_implementation.equals(MapperImplementation.JPA)) {
@@ -288,7 +281,6 @@ public class Molgenis {
             } else {
                 // DATABASE
                 // mysql.org
-                generators.add(new ViewMapperGen());
                 if (options.db_driver.equals("com.mysql.jdbc.Driver")) {
                     generators.add(new MySqlCreateSubclassPerTableGen());
                     generators.add(new MySqlAlterSubclassPerTableGen());
@@ -419,9 +411,9 @@ public class Molgenis {
             //generators.add(new PluginScreenFTLTemplateGen());
             //generators.add(new PluginScreenJavaTemplateGen());
           
-            generators.add(new EasyPluginViewGen());
+            //generators.add(new EasyPluginViewGen());
             generators.add(new EasyPluginControllerGen());
-            generators.add(new EasyPluginModelGen());
+            //generators.add(new EasyPluginModelGen());
         } else {
             logger.info("Skipping generation of plugins ....");
         }
@@ -503,8 +495,6 @@ public class Molgenis {
         MolgenisFieldTypes.addType(new TextField());
         MolgenisFieldTypes.addType(new XrefField());
         MolgenisFieldTypes.addType(new IntField());
-        MolgenisFieldTypes.addType(new HexaField());
-
     }
 
     /**

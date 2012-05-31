@@ -4,7 +4,6 @@
  */
 package org.molgenis.util.trityper.reader;
 
-import java.util.ArrayList;
 
 /**
  *

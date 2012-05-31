@@ -47,7 +47,7 @@ public class HtmlTools
 	 * @return The IP address if successful. Otherwise null.
 	 * @throws Exception
 	 */
-	public static String getExposedIPAddress() throws Exception
+	public static String getExposedIPAddress()
 	{
 		String host = null;
 		try

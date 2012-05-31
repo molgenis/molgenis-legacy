@@ -3,7 +3,6 @@ package org.molgenis.framework.db.jpa;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,14 +10,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import org.apache.log4j.Logger;
-import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.AbstractMapper;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.util.Entity;
 import org.molgenis.util.TupleWriter;
 
@@ -34,6 +31,12 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 
 	@Override
 	public abstract E create();
+	
+	@SuppressWarnings("unchecked")
+	public Class<E> getEntityClass()
+	{
+		return (Class<E>) create().getClass();
+	}
 
 	@Override
 	public abstract String getTableFieldName(String field);
@@ -55,7 +58,7 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 	public int count(QueryRule ...rules) throws DatabaseException
 	{
 		TypedQuery<Long> query = JPAQueryGeneratorUtil.createCount(getDatabase(),
-				(Class<E>)this.create().getClass(), this, getDatabase().getEntityManager(), rules);
+				getEntityClass(), this, getDatabase().getEntityManager(), rules);
 		Long result = query.getSingleResult();
 		return result.intValue();
 	}
@@ -64,13 +67,13 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 	public List<E> find(QueryRule... rules) throws DatabaseException
 	{
 		TypedQuery<E> query = JPAQueryGeneratorUtil.createQuery(this.getDatabase(),
-				(Class<E>)this.create().getClass(), this, getDatabase().getEntityManager(), rules);
+				getEntityClass(), this, getDatabase().getEntityManager(), rules);
 		return query.getResultList();
 	}
 	
 	public E findById(Object id)
 	{
-		return (E) getDatabase().getEntityManager().find(create().getClass(), id);
+		return getDatabase().getEntityManager().find(getEntityClass(), id);
 	}
 	
 	@Override
@@ -98,15 +101,16 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 		//automatically done by JPA
 	}
 	
+	@SuppressWarnings("unused")
 	@Override
-	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule... rules)
+	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule[] rules)
 			throws DatabaseException
 	{
 		//TODO: implement with scrolling results set
 		try
 		{
 			//streaming result!!!!
-			ScrollableResults rs = null ; //getEntityManager().getNamedQuery("GetCustomers").scroll(ScrollMode.FORWARD_ONLY);
+			ScrollableResults rs = null; //getEntityManager().getNamedQuery("GetCustomers").scroll(ScrollMode.FORWARD_ONLY);
 			//ResultSetTuple rs = new ResultSetTuple(executeSelect(rules));
 			
 			/*logger.debug("executeSelect(rules)");
@@ -121,15 +125,15 @@ public abstract class AbstractJpaMapper<E extends Entity> extends AbstractMapper
 			writer.setHeaders(fields);
 			writer.writeHeader();
 			int i = 0;
-			List<E> entityBatch = new ArrayList<E>();
 			
-			while (rs.next())
-			{
-				entity = (E) rs.get(0);
-				writer.writeRow(entity);
-				i++;
-				
-			}
+			if(true) throw new UnsupportedOperationException("needs fixing!");
+//			while (rs.next())
+//			{
+//				entity = (E) rs.get(0);
+//				writer.writeRow(entity);
+//				i++;
+//				
+//			}
 			// write remaining
 			// load mrefs
 			logger.debug("*** mapMrefs -> LEFTOVERS"); //program does NOT crash after this

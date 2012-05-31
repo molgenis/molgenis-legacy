@@ -53,12 +53,13 @@ public class ListView extends HtmlInput<List<HtmlForm>>
 	}
 
 	@Override
-	public void setValue(List<HtmlForm> value)
+	public ListView setValue(List<HtmlForm> value)
 	{
 		if (value instanceof List)
 		{
 			this.setRows((List<HtmlForm>) value);
 		}
+		return this;
 	}
 
 	@Override

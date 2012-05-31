@@ -78,7 +78,7 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 	 * @throws HandleRequestDelegationException 
 	 * @throws Exception 
 	 */
-	public void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
+	//public void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
 
 	/**
 	 * Handle a user request (typically implemented in the subclass).

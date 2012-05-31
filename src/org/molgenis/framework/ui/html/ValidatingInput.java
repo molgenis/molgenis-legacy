@@ -110,17 +110,6 @@ public class ValidatingInput<E> extends HtmlInput<E>
 						+ "\"type=\"hidden\" value=\"" + this.getObjectString()
 						+ "\"/>";
 			}
-			else if (this.uiToolkit == UiToolkit.DOJO)
-			{
-				return "<input name=\""
-						+ this.getName()
-						+ "\"id="
-						+ this.getId()
-						+ "\""
-						+ "\"type=\"hidden\"  dojoType=\"dijit.form.TextBox\" value=\""
-						+ this.getValue() + "\"/>";
-
-			}
 		}
 		String validate = " " + this.validationString;
 		if (!this.isNillable() && !this.isReadonly()) validate += " required";
@@ -189,11 +178,6 @@ public class ValidatingInput<E> extends HtmlInput<E>
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		if (this.uiToolkit == UiToolkit.DOJO)
-		{
-			return "<script type=\"text/javascript\">"
-					+ "	dojo.require(\"dijit.form.TextBox\");" + "</script>";
-		}
 		return "";
 	}
 
@@ -212,9 +196,10 @@ public class ValidatingInput<E> extends HtmlInput<E>
 		return height;
 	}
 
-	public void setHeight(int height)
+	public ValidatingInput<E> setHeight(int height)
 	{
 		this.height = height;
+		return this;
 	}
 
 	public int getMinHeight()

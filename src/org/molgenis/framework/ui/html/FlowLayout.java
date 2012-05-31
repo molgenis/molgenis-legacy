@@ -55,11 +55,10 @@ public class FlowLayout extends AbstractHtmlElement implements Layout
 		{
 			// If the element is an HtmlInput, also include the label (render() does not do this for you) 
 			if (i instanceof HtmlInput && !(i instanceof ActionInput)) {
-				HtmlInput<?> input = (HtmlInput<?>)i;
-				if (!input.isHidden() && input.getLabel() != null && !input.getLabel().equals("")) {
-					returnString += "<label style=\"width:16em;\" for=\"" + input.getName() + "\">" + 
-						input.getLabel() + "</label>";
-				}
+//				if (!input.isHidden() && input.getLabel() != null && !input.getLabel().equals("")) {
+//					returnString += "<label style=\"width:16em;\" for=\"" + input.getName() + "\">" + 
+//						input.getLabel() + "</label>";
+//				}
 			}
 			returnString += i.render();
 		}

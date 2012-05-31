@@ -3,7 +3,6 @@ package org.molgenis.framework.ui.commands;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.FormController;
@@ -11,14 +10,14 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.html.AbstractRefInput;
 import org.molgenis.framework.ui.html.ActionInput;
+import org.molgenis.framework.ui.html.ActionInput.Type;
 import org.molgenis.framework.ui.html.EntityForm;
-import org.molgenis.framework.ui.html.EntityInput;
 import org.molgenis.framework.ui.html.HiddenInput;
+import org.molgenis.framework.ui.html.HtmlElement.UiToolkit;
 import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.XrefInput;
-import org.molgenis.framework.ui.html.ActionInput.Type;
-import org.molgenis.framework.ui.html.HtmlElement.UiToolkit;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
@@ -51,12 +50,12 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 	}
 	
 	//get the formController that this command is part of.
-	private static FormController getParentController(ScreenController<?> parent)
+	private static FormController<?> getParentController(ScreenController<?> parent)
 	{
 		ScreenController<?> formController = parent;
 		while(formController.hasParent() && !(formController instanceof FormController))
 			formController = formController.getParent();
-		return (FormController) formController;
+		return (FormController<?>) formController;
 	}
 
 	@Override
@@ -80,6 +79,7 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 		return actions;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<HtmlInput<?>> getInputs() throws DatabaseException
 	{
@@ -88,11 +88,11 @@ public class AddXrefCommand<E extends Entity> extends AddCommand<E>
 		{
 			if (inputs.get(i) instanceof XrefInput)
 			{
-				((EntityInput<Entity>) inputs.get(i)).setIncludeAddButton(false);
+				((AbstractRefInput<E>) inputs.get(i)).setIncludeAddButton(false);
 			}
 		}
 		// add three hidden fields for javascript to know entity name, id field and label field
-		inputs.add(new HiddenInput("entity_name", StringUtils.uncapitalise(xrefEntity.getClass().getSimpleName())));
+		inputs.add(new HiddenInput("entity_name", xrefEntity.getClass().getSimpleName().toLowerCase()));
 		inputs.add(new HiddenInput("id_field", this.xrefEntity.getIdField()));
 		inputs.add(new HiddenInput("label_field", this.xrefEntity.getLabelFields().get(0)));
 		return inputs;

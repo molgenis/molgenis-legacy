@@ -32,7 +32,7 @@ public class MolgenisContext
 		this.usedOptions = usedOptions;
 		this.variant = variant;
 		this.tokenFactory = new TokenFactory();
-
+		
 		//start Quartz scheduler
 //		try
 //		{

@@ -83,11 +83,27 @@ public class MrefField extends FieldType
 		return "";
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
-	{
-		return new MrefInput(name, xrefEntityClassName);
+	{	
+		try
+		{
+			Class<?> klass = Class.forName(xrefEntityClassName);
+			
+			return new MrefInput(name, klass);
+		}
+		catch (ClassNotFoundException e)
+		{
+			throw new HtmlInputException(e);
+		}		
 	}
+	
+//	@Override
+//	public HtmlInput<?> createInput(String name, Class<? extends Entity> xrefEntityClassName) throws HtmlInputException
+//	{
+//		return new MrefInput(name, xrefEntityClassName);
+//	}
 
 	@Override
 	public String getCppPropertyType() throws MolgenisModelException

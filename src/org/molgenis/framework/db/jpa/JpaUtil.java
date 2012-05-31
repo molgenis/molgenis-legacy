@@ -3,14 +3,13 @@ package org.molgenis.framework.db.jpa;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import org.apache.commons.lang.StringUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.cxf.common.util.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.HandleException;
 
@@ -36,6 +35,26 @@ public class JpaUtil
 			db.getEntityManager().clear();
 		}
 		JpaFrameworkFactory.createFramework().createTables(
+				db.getPersistenceUnitName(), configOverwrites);
+	}
+
+	public static void updateTables(final Database db, final Map<String, Object> configOverwrites)
+	{
+		JpaUtil.updateTables((JpaDatabase) db, true, configOverwrites);
+	}
+
+	public static void updateTables(final Database db, final boolean clearEm, final Map<String, Object> configOverwrites)
+	{
+		JpaUtil.updateTables((JpaDatabase) db, clearEm, configOverwrites);
+	}
+
+	public static void updateTables(final JpaDatabase db, final boolean clearEm, final Map<String, Object> configOverwrites)
+	{
+		if (clearEm)
+		{
+			db.getEntityManager().clear();
+		}
+		JpaFrameworkFactory.createFramework().updateTables(
 				db.getPersistenceUnitName(), configOverwrites);
 	}
 
@@ -82,13 +101,11 @@ public class JpaUtil
 	}
 
 	public static void executeSQLScript(final String path, final Database db)
-			throws IOException
 	{
 		executeSQLScript(new File(path), db);
 	}
 
 	public static void executeSQLScript(final File file, final Database db)
-			throws IOException
 	{
 		if (!(db instanceof JpaDatabase))
 		{

@@ -2,9 +2,10 @@ package org.molgenis.framework.ui;
 
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -12,7 +13,8 @@ import org.molgenis.util.Tuple;
 /**
  * Simplified controller that handles a lot of the hard stuff in handleRequest.
  */
-public abstract class EasyPluginController<M extends ScreenModel> extends SimpleScreenController<M>
+public abstract class EasyPluginController<M extends ScreenModel> extends SimpleScreenController<M> implements
+		ScreenModel, ScreenView
 {
 	private static final long serialVersionUID = 1L;
 
@@ -24,9 +26,15 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	// to render the resulting page + the exception on screen
 	public static Boolean HTML_WAS_ALREADY_SERVED;
 
-	public EasyPluginController(String name, M model, ScreenController<?> parent)
+	private Vector<ScreenMessage> messages = new Vector<ScreenMessage>();
+
+	private String label = null;
+
+	@SuppressWarnings("unchecked")
+	public EasyPluginController(String name, ScreenController<?> parent)
 	{
-		super(name, model, parent);
+		super(name, null, parent);
+		this.setModel((M)this);
 	}
 
 	/**
@@ -35,7 +43,6 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	 * 
 	 * @throws HandleRequestDelegationException
 	 */
-	@Override
 	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException
 	{
 		// automatically calls functions with same name as action
@@ -44,18 +51,18 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
-	{
+	{	
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request, out);
 
 		// default show
 		return Show.SHOW_MAIN;
 	}
-	
+
 	@Deprecated
 	public void delegate(String action, Database db, Tuple request) throws HandleRequestDelegationException
 	{
-		this.delegate(action,db,request,null);
+		this.delegate(action, db, request, null);
 	}
 
 	public void delegate(String action, Database db, Tuple request, OutputStream out)
@@ -123,20 +130,11 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 		}
 	}
 
-	public void setError(String message)
-	{
-		this.getModel().setMessages(new ScreenMessage(message, false));
-	}
-
-	public void setSucces(String message)
-	{
-		this.getModel().setMessages(new ScreenMessage(message, true));
-	}
-
+	@SuppressWarnings("unchecked")
 	public <E extends Entity> FormModel<E> getParentForm(Class<E> entityClass)
 	{
 		// here we gonna put the parent
-		ScreenController parent = getParent();
+		ScreenController<?> parent = getParent();
 		while (parent != null)
 		{
 			if (parent instanceof FormController && ((FormController<?>) parent).getEntityClass().equals(entityClass))
@@ -145,11 +143,88 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			}
 			else
 			{
-				parent = (ScreenController) parent.getParent();
+				parent = (ScreenController<?>) parent.getParent();
 			}
 		}
 		throw new RuntimeException("Parent form of class " + entityClass.getName() + " is unknown in plugin name="
 				+ getName());
 	}
 
+	@Override
+	public void reset()
+	{
+	}
+
+	@Override
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+
+	@Override
+	public ScreenController<?> getController()
+	{
+		return this;
+	}
+
+	@Override
+	public Vector<ScreenMessage> getMessages()
+	{
+		return this.messages;
+	}
+
+	@Override
+	public void setMessages(Vector<ScreenMessage> messages)
+	{
+		assert (messages != null);
+		this.messages = messages;
+	}
+
+	@Override
+	public void setMessages(ScreenMessage... messages)
+	{
+		this.messages.clear();
+		for (ScreenMessage m : messages)
+			this.messages.add(m);
+	}
+
+	public void setSuccess(String message)
+	{
+		this.setMessages(new ScreenMessage(message, true));
+	}
+
+	public void setError(String message)
+	{
+		this.setMessages(new ScreenMessage(message, false));
+	}
+
+	@Override
+	public void setController(ScreenController<? extends ScreenModel> controller)
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isVisible()
+	{
+		if (this.getApplicationController().getLogin().isAuthenticated()){
+		try {
+			if (this.getApplicationController().getLogin().canRead(this)) {
+				return true;
+			}
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+	}
+	return false;
+	}
+	
+	@Override
+	public String getLabel()
+	{
+		return this.label;
+	}
+	
+	@Override
+	public abstract ScreenView getView();
 }
