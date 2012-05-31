@@ -115,9 +115,9 @@ public class Importer
 		}
 		else
 		{
-			if (!importFile.exists())
+			if (importFile == null || !importFile.exists())
 			{
-				throw new Exception("Import file '" + importFile.getAbsolutePath() + " does not exist");
+				throw new Exception("No valid import file provided");
 			}
 			performImport(importFile, data, db);
 		}

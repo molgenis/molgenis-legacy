@@ -117,7 +117,7 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
     	service = PermissionManagementService.getInstance();
     	service.setDb(db);
 		try {
-			varmodel.setRole(service.findRole(db.getSecurity().getUserId()));
+			varmodel.setRole(service.findRole(db.getLogin().getUserId()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		    //TODO: add logger + screen message
@@ -134,11 +134,6 @@ public class PermissionManagementPlugin extends PluginModel<Entity> {
 
     public void setService(PermissionManagementService service) {
     	this.service = service;
-    }
-
-    public void clearMessage()
-    {
-    	this.setMessages();
     }
     
     @Override

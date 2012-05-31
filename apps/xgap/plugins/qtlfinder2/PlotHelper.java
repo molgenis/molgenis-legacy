@@ -104,11 +104,11 @@ public class PlotHelper
 					
 						if(isEffectSizeData(db, d))
 						{
-							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight,"Effect size", "eff");
+							img = new MakeRPlot().qtlPlot(name, data, locus, plotWidth, plotHeight,"Effect size", "eff");
 						}
 						else
 						{
-							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight,"LOD score", "qtl");
+							img = new MakeRPlot().qtlPlot(name, data, locus, plotWidth, plotHeight,"LOD score", "qtl");
 						}
 						
 						qtl.setPlot(img.getName());	
@@ -146,11 +146,11 @@ public class PlotHelper
 						
 						if(isEffectSizeData(db, d))
 						{
-							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight,"Effect size", "eff");
+							img = new MakeRPlot().qtlPlot(name, data, locus, plotWidth, plotHeight,"Effect size", "eff");
 						}
 						else
 						{
-							img = MakeRPlot.qtlPlot(name, data, locus, plotWidth, plotHeight,"LOD score", "qtl");
+							img = new MakeRPlot().qtlPlot(name, data, locus, plotWidth, plotHeight,"LOD score", "qtl");
 						}
 						
 						qtl.setPlot(img.getName());

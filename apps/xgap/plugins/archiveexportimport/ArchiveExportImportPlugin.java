@@ -158,10 +158,6 @@ public class ArchiveExportImportPlugin extends PluginModel<Entity>
 		}
 	}
 	
-	public void clearMessage(){
-		this.setMessages();
-	}
-	
 	public static boolean isExcelFormatXGAPArchive(File extractDir){
 		String[] filesArr = extractDir.list();
 		

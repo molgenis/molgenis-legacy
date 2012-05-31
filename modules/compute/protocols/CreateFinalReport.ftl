@@ -22,4 +22,4 @@ perl ${scriptdir}/create_per_sample_finalreport.pl \
 -inputdir ${arraydir} \
 -outputdir ${runIntermediateDir} \
 -run ${run} \
--samplecsv ${worksheet}
+-samplecsv ${McWorksheet}

@@ -14,6 +14,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.IntegratedPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.mutation.service.PatientService;
 import org.molgenis.mutation.vo.PatientSearchCriteriaVO;
 import org.molgenis.mutation.vo.PatientSummaryVO;
@@ -28,10 +29,14 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 	{
 		super(name, null, parent);
 		this.setModel(new MyMutationModel(this));
-		this.setView(new FreemarkerView("MyMutation.ftl", getModel()));
 		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
 	}
 
+	public ScreenView getView()
+	{
+		return new FreemarkerView("MyMutation.ftl", getModel());
+	}
+	
 	@Override
 	public String getCustomHtmlHeaders()
 	{
@@ -51,7 +56,7 @@ public class MyMutation extends IntegratedPluginController<MyMutationModel>
 			patientService.setDatabase(db);
 			
 			PatientSearchCriteriaVO criteria         = new PatientSearchCriteriaVO();
-			criteria.setUserId(db.getSecurity().getUserId());
+			criteria.setUserId(db.getLogin().getUserId());
 			List<PatientSummaryVO> patientSummaryVOs = patientService.findPatients(criteria);
 	
 			this.getModel().setPatientSummaryVOList(patientSummaryVOs);

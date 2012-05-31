@@ -74,7 +74,9 @@ ${form.expertSearch}
 <tr><td>Amino Acid No: </td><td>${form.aano}</td><td>Exon/Intron: </td><td>${form.exon_id}</td></tr>
 <tr><td>Mutation type:</td><td>${form.type}</td><td>Consequence:</td><td>${form.consequence}</td></tr>
 <tr><td>Protein domain:</td><td>${form.domain_id}</td><td>Phenotype:</td><td>${form.phenotype}</td></tr>
+<#--
 <tr><td>Inheritance:</td><td>${form.inheritance}</td><td></td><td></td></tr>
+-->
 </#if>
 <td colspan="4" align="center">${form.findMutations}&nbsp;<input type="reset" name="reset" value="Reset">&nbsp;<input type="button" name="clear" value="Clear" onclick="clearForm(document.forms.AdvSearch);"></td></tr>
 </form>
@@ -99,7 +101,10 @@ Click anywhere on this schematic representation of the ${model.geneDTO.symbol} g
 </p>
 <br/>
 <p>
-${model.mBrowseVO.getGenePanel()}
+<#--
+${model.controller.getChild("MBrowse").render()}
+-->
+${model.mbrowse.createGenePanel()}
 </p>
 <br/>
 ${model.textRemarks}

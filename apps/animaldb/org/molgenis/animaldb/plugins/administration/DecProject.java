@@ -8,6 +8,7 @@ public class DecProject extends DecEntity {
 	private String pdfDecApplication;
 	private String pdfDecApproval;
 	private String fieldBiology;
+	private String decBudget;
 	
 	public void setDecAppListId(int decAppListId)
 	{
@@ -53,5 +54,13 @@ public class DecProject extends DecEntity {
 	}
 	public String getFieldBiology() {
 		return fieldBiology;
+	}
+	public String getDecBudget()
+	{
+		return decBudget;
+	}
+	public void setDecBudget(String decBudget)
+	{
+		this.decBudget = decBudget;
 	}
 }

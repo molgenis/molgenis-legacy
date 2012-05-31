@@ -5,15 +5,16 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.AccordeonLayout;
 import org.molgenis.framework.ui.html.ActionInput;
-import org.molgenis.framework.ui.html.LabelInput;
+import org.molgenis.framework.ui.html.Label;
 import org.molgenis.framework.ui.html.MenuInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.MultipanelLayout;
 import org.molgenis.framework.ui.html.Newline;
-import org.molgenis.framework.ui.html.TabbedLayout;
 import org.molgenis.framework.ui.html.Paragraph;
+import org.molgenis.framework.ui.html.TabbedLayout;
 
 /**
  * LayoutTestsController takes care of all user requests and application logic.
@@ -27,9 +28,13 @@ public class LayoutTests extends EasyPluginController<LayoutTestsModel>
 {
 	public LayoutTests(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new LayoutTestsModel(this)); //the default model
-		this.setView(new FreemarkerView("LayoutTestsView.ftl", getModel())); //<plugin flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("LayoutTestsView.ftl", getModel());
 	}
 	
 	public String getCustomHtmlHeaders()
@@ -63,7 +68,7 @@ public class LayoutTests extends EasyPluginController<LayoutTestsModel>
 		
 		
 		
-		mf.add(new LabelInput("Demo of menu:"));
+		mf.add(new Label("Demo of menu:"));
 		
 		mf.add(new Newline());
 		
@@ -93,7 +98,7 @@ public class LayoutTests extends EasyPluginController<LayoutTestsModel>
 		
 		mf.add(new Newline());
 		
-		mf.add(new LabelInput("tabs:"));
+		mf.add(new Label("tabs:"));
 		
 		mf.add(new Newline());
 		

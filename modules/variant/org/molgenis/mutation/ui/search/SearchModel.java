@@ -5,18 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.molgenis.framework.ui.EasyPluginModel;
-import org.molgenis.mutation.dto.ExonSearchCriteriaDTO;
 import org.molgenis.mutation.dto.ExonDTO;
 import org.molgenis.mutation.dto.GeneDTO;
-import org.molgenis.mutation.dto.MBrowseDTO;
 import org.molgenis.mutation.dto.MutationSearchCriteriaDTO;
 import org.molgenis.mutation.dto.MutationSummaryDTO;
-import org.molgenis.mutation.dto.PatientSearchCriteriaDTO;
 import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.dto.ProteinDomainDTO;
 import org.molgenis.mutation.dto.QueryParametersDTO;
 import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.ui.LimitOffsetPager;
+import org.molgenis.mutation.ui.html.MBrowse;
 import org.molgenis.mutation.ui.search.form.DisplayOptionsForm;
 import org.molgenis.mutation.ui.search.form.ExpertSearchForm;
 import org.molgenis.mutation.ui.search.form.ListAllMutationsForm;
@@ -25,7 +23,6 @@ import org.molgenis.mutation.ui.search.form.ShowMutationForm;
 import org.molgenis.mutation.ui.search.form.SimpleSearchForm;
 import org.molgenis.mutation.ui.search.form.ToExpertSearchForm;
 import org.molgenis.mutation.ui.search.form.ToSimpleSearchForm;
-import org.molgenis.news.MolgenisNews;
 import org.molgenis.pheno.dto.IndividualDTO;
 
 public class SearchModel extends EasyPluginModel
@@ -52,9 +49,7 @@ public class SearchModel extends EasyPluginModel
 	private ShowMutationForm showMutationForm                 = new ShowMutationForm();
 	private DisplayOptionsForm displayOptionsForm             = new DisplayOptionsForm();
 
-	private ExonSearchCriteriaDTO exonSearchCriteriaVO         = new ExonSearchCriteriaDTO();
 	private MutationSearchCriteriaDTO mutationSearchCriteriaVO = new MutationSearchCriteriaDTO();
-	private PatientSearchCriteriaDTO patientSearchCriteriaVO   = new PatientSearchCriteriaDTO();
 	private QueryParametersDTO queryParametersVO               = new QueryParametersDTO();
 
 	private GeneDTO geneDTO;
@@ -63,17 +58,16 @@ public class SearchModel extends EasyPluginModel
 	private List<MutationSummaryDTO> mutationSummaryDTOList    = new ArrayList<MutationSummaryDTO>();
 	private Map<String, String> mutationSummaryVOHash;
 	private List<PatientSummaryDTO> patientSummaryVOs          = new ArrayList<PatientSummaryDTO>();
-	private ProteinDomainDTO proteinDomainSummaryVO;
+	private ProteinDomainDTO proteinDomainDTO;
 	private List<ProteinDomainDTO> proteinDomainList;
 	private PatientSummaryDTO patientSummaryVO;
 	private IndividualDTO individualDTO;
 	private Map<String, String> patientSummaryVOHash;
 	private String rawOutput; // for output from included sources
 
-	private List<MolgenisNews> news;
 	private LimitOffsetPager<?> pager;
 
-	private MBrowseDTO mBrowseVO                               = new MBrowseDTO();
+	private MBrowse mbrowse;
 	
 	private String textWelcome                                = "";
 	private String textSearch                                 = "";
@@ -276,16 +270,6 @@ public class SearchModel extends EasyPluginModel
 		this.displayOptionsForm = displayOptionsForm;
 	}
 
-	public ExonSearchCriteriaDTO getExonSearchCriteriaVO()
-	{
-		return exonSearchCriteriaVO;
-	}
-
-	public void setExonSearchCriteriaVO(ExonSearchCriteriaDTO exonSearchCriteriaVO)
-	{
-		this.exonSearchCriteriaVO = exonSearchCriteriaVO;
-	}
-
 	public MutationSearchCriteriaDTO getMutationSearchCriteriaVO()
 	{
 		return mutationSearchCriteriaVO;
@@ -295,17 +279,6 @@ public class SearchModel extends EasyPluginModel
 			MutationSearchCriteriaDTO mutationSearchCriteriaVO)
 	{
 		this.mutationSearchCriteriaVO = mutationSearchCriteriaVO;
-	}
-
-	public PatientSearchCriteriaDTO getPatientSearchCriteriaVO()
-	{
-		return patientSearchCriteriaVO;
-	}
-
-	public void setPatientSearchCriteriaVO(
-			PatientSearchCriteriaDTO patientSearchCriteriaVO)
-	{
-		this.patientSearchCriteriaVO = patientSearchCriteriaVO;
 	}
 
 	public QueryParametersDTO getQueryParametersVO()
@@ -376,23 +349,14 @@ public class SearchModel extends EasyPluginModel
 		this.patientSummaryVOs = patientSummaryVOs;
 	}
 
-//	public List<PatientDetailsVO> getPatientDetailsVO() {
-//		return patientDetailsVO;
-//	}
-//
-//	public void setPatientDetailsVO(List<PatientDetailsVO> patientDetailsVO) {
-//		this.patientDetailsVO = patientDetailsVO;
-//	}
-
-	public ProteinDomainDTO getProteinDomainSummaryVO()
+	public ProteinDomainDTO getProteinDomainDTO()
 	{
-		return proteinDomainSummaryVO;
+		return proteinDomainDTO;
 	}
 
-	public void setProteinDomainSummaryVO(
-			ProteinDomainDTO proteinDomainSummaryVO)
+	public void setProteinDomainDTO(ProteinDomainDTO proteinDomainDTO)
 	{
-		this.proteinDomainSummaryVO = proteinDomainSummaryVO;
+		this.proteinDomainDTO = proteinDomainDTO;
 	}
 
 	public List<ProteinDomainDTO> getProteinDomainList()
@@ -439,14 +403,6 @@ public class SearchModel extends EasyPluginModel
 		this.rawOutput = rawOutput;
 	}
 
-	public List<MolgenisNews> getNews() {
-		return news;
-	}
-
-	public void setNews(List<MolgenisNews> news) {
-		this.news = news;
-	}
-
 	public LimitOffsetPager<?> getPager()
 	{
 		return pager;
@@ -457,12 +413,12 @@ public class SearchModel extends EasyPluginModel
 		this.pager = pager;
 	}
 
-	public MBrowseDTO getmBrowseVO() {
-		return mBrowseVO;
+	public MBrowse getMbrowse() {
+		return mbrowse;
 	}
 
-	public void setmBrowseVO(MBrowseDTO mBrowseVO) {
-		this.mBrowseVO = mBrowseVO;
+	public void setMbrowse(MBrowse mbrowse) {
+		this.mbrowse = mbrowse;
 	}
 
 	public String getTextWelcome() {

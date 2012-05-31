@@ -29,9 +29,6 @@
 			</#if>
 		</#list>
 		
-		<#-- Hack to immediatly clear the message so it doesn't "stick". -->
-		${screen.clearMessage()}
-		
 		<div class="screenbody">
 			<div class="screenpadding">	
 <#--begin your plugin-->
@@ -75,7 +72,7 @@
 			If you see this text, your browser does not support Java-applets.
 			</applet>
 			
-			<br />If no picture appears, use IP adress, for example: ${model.getIpURl()}<br />
+			<br />If no picture appears, use IP adress, for example: ${model.db_path}<br />
 			If that does not help, your port is probably blocked and the applet cannot serve its content.
 		</#if>
 	<#elseif model.molgenisFile.extension == 'xxx'>
@@ -91,7 +88,7 @@
 <#else>
 	No file found. Please upload it here.<br>
 	<input type="file" name="upload"/>
-	<input type="submit" value="Upload" onclick="__action.value='upload';return true;"/><br><br>
+	<input type="submit" value="Upload" id="upload_file" onclick="__action.value='upload';return true;"/><br><br>
 	Alternatively, use this textarea to upload text data.<br>
 	<textarea name="inputTextArea" rows="15" cols="50"><#if model.uploadTextAreaContent?exists>${model.uploadTextAreaContent}</#if></textarea>
 	<input type="submit" id="uploadTextArea" value="Upload" onclick="__action.value='uploadTextArea';return true;"/><br>

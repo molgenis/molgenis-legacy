@@ -2,24 +2,23 @@ package plugins.catalogueTree;
 
 import gcc.catalogue.ShoppingCart;
 
-import java.awt.Component;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.Icon;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.text.DateFormatter;
+
+import jxl.write.WriteException;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -29,7 +28,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.organization.Investigation;
@@ -39,6 +37,11 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
+
+
+//import org.molgenis.util.XlsWriter;
+
+
 
 public class catalogueTreePlugin extends PluginModel<Entity> {
 
@@ -53,10 +56,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private String InputToken = null;
 	private String comparison = null;
 	private String selectedField = null;
+	private String SelectionName = "empty";
 
 	private boolean isSelectedInv = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
 	private List<String> SearchFilters = new ArrayList<String>();
+	private String Status = "";
 
 	
 	private static int SEARCHINGPROTOCOL = 2;
@@ -96,36 +101,61 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return "plugins/catalogueTree/catalogueTreePlugin.ftl";
 	}
 
-	public void handleRequest(Database db, Tuple request) {
+	public void handleRequest(Database db, Tuple request) throws Exception {
 
-		try {
+		
+		
+//			if ("chooseInvestigation".equals(request.getAction())) {
+//				selectedInvestigation = request.getString("investigation");
+//				this.setSelectedInvestigation(selectedInvestigation);
+//				System.out.println("The selected investigation is : "
+//						+ selectedInvestigation);
+//				arrayInvestigations.clear();
+//				this.SearchFilters.clear();
 
-			if ("chooseInvestigation".equals(request.getAction())) {
-				selectedInvestigation = request.getString("investigation");
+
+			 //for now the cohorts are investigations so teh selected cohort is the selected investigation 
+			if ("cohortSelect".equals(request.getAction())) {
+				System.out.println("----------------------"+request);
+				selectedInvestigation = request.getString("cohortSelectSubmit");
 				this.setSelectedInvestigation(selectedInvestigation);
-				System.out.println("The selected investigation is : "
-						+ selectedInvestigation);
+				System.out.println("The selected investigation is : "+ selectedInvestigation);
 				arrayInvestigations.clear();
 				this.SearchFilters.clear();
+				
+			}else if ("SaveSelectionSubmit".equals(request.getAction())) {
 
+				
+				try	{
+						this.setSelectionName("empty");
+						
+					if (request.getString("SelectionName") != null) {
+					//if (request.getString("SelectionName").compareTo("empty") != 0) {
+	
+						this.setSelectionName(request.getString("SelectionName").trim());
 
-			} else if ("DownloadMeasurements".equals(request.getAction())) {
-
-				// a jframe here isn't strictly necessary, but it makes the example a little more real
-				JFrame frame = new JFrame("Save Selection");
-				String selectionName = JOptionPane.showInputDialog(frame, "Please insert a name for your selection.");
-
-				// if they press Cancel, 'name' will be null
-				System.out.printf("The selection's name is '%s'.\n", selectionName);
-
-
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-				Date dat = new Date();
-				String dateOfDownload = dateFormat.format(dat);
-				System.out.println("selected investigaton >>>> "+  selectedInvestigation);
-				System.out.println("request >>" + request);
-				this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, selectionName);
-
+						System.out.println("The SelectionName is >>> : " + this.getSelectionName());
+					
+						System.out.println("Selection request >>>>>>" + request);
+					} else {
+						//this.setError("Please insert a name for your selection and try again.");
+						this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
+						this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+ "</h4>" ) ;
+	
+					}
+					
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+					Date dat = new Date();
+					String dateOfDownload = dateFormat.format(dat);
+					System.out.println("selected investigaton >>>> "+  selectedInvestigation);
+					
+					
+						this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
+				} catch (IOException e) {
+						e.printStackTrace();
+				} catch (WriteException e1) {
+						e1.printStackTrace();
+				}
 
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
@@ -153,6 +183,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("Protocols")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Protocols ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Protocols "+ "</h4>" ) ;
 						SearchFilters.add("Protocols:" + this.getInputToken());
 
 						mode = SEARCHINGPROTOCOL;
@@ -162,6 +193,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("Measurements")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Measurements ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Measurements  "+ "</h4>" ) ;
+
 						SearchFilters.add("Measurements:" + this.getInputToken());
 						mode = SEARCHINGMEASUREMENT;
 						RetrieveProtocols(db, SEARCHINGMEASUREMENT);
@@ -169,6 +202,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("All fields")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in all fields ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in all fields "+ "</h4>" ) ;
+
 						SearchFilters.add("All:" + this.getInputToken());
 
 						mode = SEARCHINGALL;
@@ -177,6 +212,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (this.getSelectedField().equals("Details")) {
 						//Show filters label 
 						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Details ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Details " + "</h4>" ) ;
+
 						SearchFilters.add("Details:" + this.getInputToken());
 
 						mode = SEARCHINGDETAIL;
@@ -189,42 +226,19 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					
 				} else {
 					this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
+					this.setStatus("<h4> Empty search string" + "</h4>" ) ;
+
 				}
 			} else if (request.getAction().startsWith("removeFilters")) {
-				System.out.println("-------------------reached-----------------------");
+				System.out.println("-------------------removeFilters reached-----------------------");
 				
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.setError("There was a problem handling your Download: " + e.getMessage());
-		}
+		
+		
 
 	}
-//	/**
-//	 * This function is used by the user interface template to show rules on the
-//	 * screen.
-//	 * 
-//	 * @return a list of query rules that can be managed by the user.
-//	 * @throws DatabaseException
-//	 */
-//	public Vector<String> getFilters() throws DatabaseException
-//	{
-//		Vector<String> filters = new Vector<String>();
-//		//Map<String, String> nameLabelMap = new TreeMap<String, String>();
-//
-//		if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
-//		else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol"); 
-//		else if (mode == SEARCHINGMEASUREMENT) filters.add("SearchingMeasurement");
-//		else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail"); 
-//		else if (mode == SEARCHINGALL) filters.add("SearchingAll"); 
-//
-//			//filters.add(label + " " + rule.getOperator().toString() + " "+ rule.getValue());
-//
-//		
-//
-//		return filters;
-//	}
+
 	
 	@Override
 	public void reload(Database db) {
@@ -406,6 +420,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		} else {
 			//Search result is empty or tree is empty 
 			this.getModel().getMessages().add(new ScreenMessage("There are no results to show. Please, redifine your search or import some data.",true));
+			this.setStatus("<h4> There are no results to show. Please, redifine your search or import some data." + "</h4>" ) ;
 			this.setError("There are no results to show. Please, redifine your search or import some data.");
 
 		}
@@ -819,7 +834,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				+ measurement.getName() + "</td></tr>";
 
 		if (categoryNames.size() > 0) {
-			htmlValue += "<tr><td  class='box-body-label'>Permitted values:</td><td><table>";
+			htmlValue += "<tr><td  class='box-body-label'>Category:</td><td><table>";
 
 			for (String string : categoryNames) {
 				htmlValue += "<tr><td>";
@@ -859,8 +874,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						featureName = "display name";
 					}
 
-					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td> "
-							+ value + "</td></tr>";
+//					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td> "
+//							+ value + "</td></tr>";
 				}
 			}
 		}
@@ -885,6 +900,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		String measurementClickEvent = "<script>";
 
 		List<String> uniqueMeasurementName = new ArrayList<String>();
+		
+		System.out.println("listOfMeasurements>>>"+listOfMeasurements);
 		
 		for(String eachMeasurement : listOfMeasurements){
 			
@@ -914,10 +931,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * @param selectedInvestigation
 	 * @param dateOfDownload
 	 * @param selectionName 
-	 * @throws DatabaseException
-	 * @throws IOException
+	 * @param x 
+	 * @throws Exception 
 	 */
-	private void addMeasurementsForDownload(Database db, Tuple request, String selectedInvestigation, String dateOfDownload, String selectionName) throws DatabaseException, IOException {
+	private void addMeasurementsForDownload(Database db, Tuple request, String selectedInvestigation, String dateOfDownload, String selectionName) throws Exception {
 
 		// fill shopping cart using selected selectboxes (measurements)
 		// the ID's and names of the selectboxes are the same as the measurement
@@ -937,60 +954,77 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		if (this.shoppingCart.isEmpty()) {
 			this.getModel().getMessages().add(new ScreenMessage("Your download list is empty. Please select item and proceed to download",true));
+			this.setStatus("<h4> Your download list is empty. Please select item and proceed to download" + "</h4>" ) ;
 			this.setError("Your download list is empty. Please select item and proceed to download");
 
 		} else {
 
-			// System.out.println("DownloadedMeasurementIds >>>: " +
-			// this.shoppingCart);
-
+			// System.out.println("DownloadedMeasurementIds >>>: " + this.shoppingCart);
 			for (Measurement m : this.shoppingCart) {
 				DownloadedMeasurementIds.add(m.getId());
-				// System.out.println("DownloadedMeasurementIds >>>: " +
-				// m.getId());
+				
+				//x.writeRow(m);// System.out.println("DownloadedMeasurementIds >>>: " + m.getId());
 			}
 
 			// REWRITE SO USERS CAN HAVE MULTIPLE SHOPPINGCARTS-- there are no shopping carts any more . 
 
-			// Query<ShoppingCart> q = db.query(ShoppingCart.class);
-			// q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS,
-			// this
-			// .getLogin().getUserName()));
-			// q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT,
-			// Operator.EQUALS, false));
-			List<ShoppingCart> result = new ArrayList<ShoppingCart>();// q.find();
+			// Query<ShoppingCart> q = db.query(ShoppingCart.class);	// q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this.getLogin().getUserName()));	// q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS, false));
+			List<ShoppingCart> result = new ArrayList<ShoppingCart>();  // q.find();
+			System.out.println("save selection step 0");
 
 			if (result.isEmpty()) {
-				//String shoppingCartName = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
+				String shoppingCartName ;
 
 				// Add to database
 				ShoppingCart shoppingCart = new ShoppingCart();
-				String shoppingCartName = selectionName;
+				if (selectionName.compareTo("empty") == 0) {
+					shoppingCartName = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
+				}else {
+					shoppingCartName = selectionName;
+				}
 				shoppingCart.setName(shoppingCartName );
+				
+				System.out.println("save selection step1");
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				shoppingCart.setUserID(this.getLogin().getUserName());
 				// shoppingCart.setCheckedOut(false);
 				// shoppingCart.setDateOfOrder(dateOfDownload);
+				System.out.println("save selection step2");
+
 				shoppingCart.setApproved(false);
-				db.add(shoppingCart);
-				// System.out.println("Download list has been added to the DB");
+			
+				//check for duplicates
+				Query<ShoppingCart> q = db.query(ShoppingCart.class);
+				q.addRules(new QueryRule(ShoppingCart.NAME, Operator.EQUALS, shoppingCartName));
+				
+				if (q.find().size() > 0) {
+					this.setError("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.");
+					this.getModel().getMessages().add(new ScreenMessage("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.", true));
+					this.setStatus("<h4> A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again."+ "</h4>" ) ;
+				} else {
+					try {
+						db.add(shoppingCart);
+						// System.out.println("Download list has been added to the DB");
+						
+						this.getModel().getMessages().add(new ScreenMessage("Selection saved to 'My Selections' under name "+ shoppingCartName , true));
+						this.setStatus("<h4> Selection saved to 'My Selections' under name "+ shoppingCartName + "</h4>" ) ;
+						this.setSuccess("Selection saved to 'My Selections' under name "+ shoppingCartName);
 
-				this.setSuccess("Selection saved to 'My Selections' under name "
-						+ shoppingCartName);
-
+					}  catch (DatabaseException e) {
+							e.printStackTrace();
+					}
+				}
+				
 			} else {
-				ShoppingCart shoppingCart = result.get(0); // assuming user can
-				// have only one
-				// shopping cart
-				// that's NOT
-				// checked out
+				ShoppingCart shoppingCart = result.get(0); // assuming user can  have only one shopping cart that's NOT checked out
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
 				db.update(shoppingCart);
 
-				this.setSuccess("Selection saved to 'My Selections' under name "
-						+ shoppingCart.getName());
+				this.getModel().getMessages().add(new ScreenMessage("Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\"" , true));
+				this.setStatus("<h4> Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\""+ "</h4>" ) ;
+				this.setSuccess("Selection saved to 'My Selections' under name " + shoppingCart.getName() + "You can browse them from menu \"My selections\"");
 				// System.out.println("Shopping cart has been updated in the DB");
 			}
 
@@ -1015,13 +1049,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		for (int i = 0; i < this.shoppingCart.size(); i++) {
 			if (this.shoppingCart.get(i).getName().equals(selected)) {
 				this.shoppingCart.remove(i);
-				this.getModel()
-				.getMessages()
-				.add(new ScreenMessage(
-						"The item \""
-								+ selected
-								+ "\" has been successfully removed from your shopping cart",
-								true));
+				this.getModel().getMessages().add(new ScreenMessage("The item \"" + selected + "\" has been successfully removed from your shopping cart", true));
+				this.setStatus("<h4> The item \"" + selected + "\" has been successfully removed from your shopping cart"+ "</h4>" ) ;
+
 			}
 		}
 	}
@@ -1097,17 +1127,62 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	//		return true;
 	//	}
 	//	
-	@Override
-	public boolean isVisible()
+//	@Override
+//	public boolean isVisible()
+//	{
+//		//you can use this to hide this plugin, e.g. based on user rights.
+//		//e.g.
+//		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
+//		if (!this.getLogin().isAuthenticated()) {
+//			return false;
+//		}
+//		return true;
+//	}
+
+	public void setSelectionName(String selectionName)
 	{
-		//you can use this to hide this plugin, e.g. based on user rights.
-		//e.g.
-		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-		if (!this.getLogin().isAuthenticated()) {
-			return false;
-		}
-		return true;
+		SelectionName = selectionName;
 	}
+
+	public String getSelectionName()
+	{
+		return SelectionName;
+	}
+
+	public void setStatus(String status)
+	{
+		Status = status;
+	}
+
+	public String getStatus()
+	{
+		return Status;
+	}
+	
+//	/**
+//	 * This function is used by the user interface template to show rules on the
+//	 * screen.
+//	 * 
+//	 * @return a list of query rules that can be managed by the user.
+//	 * @throws DatabaseException
+//	 */
+//	public Vector<String> getFilters() throws DatabaseException
+//	{
+//		Vector<String> filters = new Vector<String>();
+//		//Map<String, String> nameLabelMap = new TreeMap<String, String>();
+//
+//		if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
+//		else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol"); 
+//		else if (mode == SEARCHINGMEASUREMENT) filters.add("SearchingMeasurement");
+//		else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail"); 
+//		else if (mode == SEARCHINGALL) filters.add("SearchingAll"); 
+//
+//			//filters.add(label + " " + rule.getOperator().toString() + " "+ rule.getValue());
+//
+//		
+//
+//		return filters;
+//	}
 
 
 }

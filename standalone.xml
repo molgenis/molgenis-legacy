@@ -62,9 +62,6 @@
 
 
 		<!-- Unknown and NOT DOCUMENTED -->
-		<unjar src="WebContent/WEB-INF/lib/vaadin-6.5.2.jar" dest="${build}" overwrite="false" />
-		<unjar src="WebContent/WEB-INF/lib/vaadin-externallayout-0.5.jar" dest="${build}" overwrite="false" />
-
 		<!-- <unjar src="WebContent/WEB-INF/lib/axis.jar" dest="${build}"/>	-->
 		<!-- unjar src="WebContent/WEB-INF/lib/axis-ant.jar" dest="${build}"/ -->
 		<!-- <unjar src="WebContent/WEB-INF/lib/commons-discovery-0.4.jar" dest="${build}"/>	-->
@@ -131,7 +128,6 @@
 		<copy todir="${dist}/WebContent">
 			<fileset dir="WebContent">
 				<exclude name="WebContent/doc/*" />
-				<exclude name="WebContent/VAADIN/*" />
 				<include name="**/*.*" />
 			</fileset>
 		</copy>

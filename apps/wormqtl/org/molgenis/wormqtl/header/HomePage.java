@@ -66,6 +66,12 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					// allow to see the QTL finder
 					"app.ui.QtlFinderPublic2Plugin",
 					
+					// allow to see genome browser
+					"app.ui.GenomeBrowserPlugin",
+					
+					// allow to see experiment overview
+					"app.ui.ExpTablePlugin",
+					
 					// enable the Browse Data menu (minus Inspector and matrix removal)
 					"app.ui.InvestigationsFormController",
 					"app.ui.DatasFormController",
@@ -131,8 +137,8 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					"org.molgenis.organization.Investigation", "org.molgenis.data.Data", "org.molgenis.data.BinaryDataMatrix", "org.molgenis.data.CSVDataMatrix",
 					"org.molgenis.data.DecimalDataElement", "org.molgenis.data.TextDataElement",
 
-					// allow reading dataset backend files
-					"org.molgenis.core.MolgenisFile",
+					// allow reading dataset backend files (include seperate InvestigationFile for overview plugin)
+					"org.molgenis.core.MolgenisFile", "org.molgenis.xgap.InvestigationFile",
 
 					// allow to see how uploaded this dataset
 					"org.molgenis.protocol.ProtocolApplication_Performer",

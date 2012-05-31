@@ -22,7 +22,6 @@ import matrix.general.DataMatrixHandler;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
@@ -34,6 +33,7 @@ import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Locus;
 import org.molgenis.xgap.Marker;
 import org.molgenis.xgap.Probe;
@@ -318,10 +318,16 @@ public class QtlFinder2 extends PluginModel<Entity>
 		int overallIndex = 1;
 		List<Data> allData = db.find(Data.class);
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
+		Map<String, Chromosome> usedChromosomes = new HashMap<String, Chromosome>();
 		
 		//writer for data table
 		File tmpData = new File(System.getProperty("java.io.tmpdir") + File.separator + "rplot_data_table_" + System.nanoTime() + ".txt");
+		File cytoscapeNetwork = new File(System.getProperty("java.io.tmpdir") + File.separator + "cyto_qtl_network_" + System.nanoTime() + ".txt");
+		File cytoscapeNodes = new File(System.getProperty("java.io.tmpdir") + File.separator + "cyto_node_attr_" + System.nanoTime() + ".txt");
 		BufferedWriter bw = new BufferedWriter(new FileWriter(tmpData));
+		BufferedWriter bw_network = new BufferedWriter(new FileWriter(cytoscapeNetwork));
+		BufferedWriter bw_nodes = new BufferedWriter(new FileWriter(cytoscapeNodes));
+		List<String> nodesInFile = new ArrayList<String>();
 		
 		for(Data d : allData)
 		{
@@ -338,8 +344,8 @@ public class QtlFinder2 extends PluginModel<Entity>
 				if(d.getValueType().equals("Text")){
 					continue;
 				}
-				//check if datamatrix target/features matches any entity type
-				//and one of the dimensions is Marker
+				//check if one of the matrix dimensions if of type 'Marker'
+				//TODO: limited, could also be SNP or another potential subclass
 				if((d.getTargetType().equals("Marker") || d.getFeatureType().equals("Marker")))
 				{
 					
@@ -359,10 +365,18 @@ public class QtlFinder2 extends PluginModel<Entity>
 					//for each entity, see if the types match to the matrix
 					for(Entity e : entities)
 					{
+						//skip markers, we are interested in traits here
 						if(e.get(Field.TYPE_FIELD).equals("Marker")){
-							//System.out.println("skipping marker " + e.get("name"));
 							continue;
 						}
+						
+						//matrix may not have the trait type on rows AND columns (this is correlation data or so)
+						if(d.getTargetType().equals(e.get(Field.TYPE_FIELD)) && d.getFeatureType().equals(e.get(Field.TYPE_FIELD)))
+						{
+							continue;
+						}
+						
+						//one of the matrix dimensions must match the type of the trait
 						if(d.getTargetType().equals(e.get(Field.TYPE_FIELD)) || d.getFeatureType().equals(e.get(Field.TYPE_FIELD)))
 						{
 							//if so, use this entity to 'query' the matrix and store the values
@@ -371,60 +385,92 @@ public class QtlFinder2 extends PluginModel<Entity>
 							//find out if the name is in the row or col names
 							int rowIndex = rowNames.indexOf(name);
 							int colIndex = colNames.indexOf(name);
-						
-							//get trait bp loc
+							
+							List<String> markerNames = null;
+							Double[] Dvalues = null;
+							
+							//if its in row, do row stuff
+							if(rowIndex != -1)
+							{
+								markerNames = colNames;
+								Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
+							}
+							//if its in col, and not in row, do col stuff
+							else if(rowIndex == -1 && colIndex != -1)
+							{
+								markerNames = rowNames;
+								Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
+							}
+							else
+							{
+								//this trait is not in the matrix.. skip
+								continue;
+							}
+							
+							//add entity and dataset to matches
+							matches.put(name, e);
+							datasets.put(d.getName(), d);
+							totalAmountOfElementsInPlot++;
+							
+							//get the basepair position of the trait and chromosome name, if possible
 							long locus;
+							String traitChrName;
 							if(e instanceof Locus)
 							{
 								locus = ((Locus)e).getBpStart();
-								//System.out.println("locus of " + e.get("name") + " = " + locus);
+								traitChrName = ((Locus)e).getChromosome_Name();
 							}
 							else
 							{
 								locus = -10000000;
-								//System.out.println("locus of " + e.get("name") + " = " + "NA");
-							}
-	
-							//if its in row, do row stuff
-							if(rowIndex != -1)
-							{
-								Double[] Dvalues = Statistics.getAsDoubles(instance.getRow(rowIndex));
-		
-								matches.put(name, e);
-								datasets.put(d.getName(), d);
-								totalAmountOfElementsInPlot++;
-								
-								for(int markerIndex = 0; markerIndex < colNames.size(); markerIndex++)
-								{
-									if(nameToMarker.containsKey(colNames.get(markerIndex)))
-									{
-										String chrId = nameToMarker.get(colNames.get(markerIndex)).getChromosome_Id() != null ? nameToMarker.get(colNames.get(markerIndex)).getChromosome_Id().toString() : "-";
-										bw.write(overallIndex + " \"" + colNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(colNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex] + " " + d.getId());
-										bw.newLine();
-										overallIndex++;
-									}
-								}
+								traitChrName = "-";
 							}
 							
-							//if its in col, and not in row, do col stuff
-							//we assume its not in row and col at the same time, then its not QTL data but correlations or so
-							if(rowIndex == -1 && colIndex != -1)
+							//rewrite name to include label
+							name = e.get(ObservableFeature.NAME).toString() + (e.get(ObservableFeature.LABEL) != null ? "/" + e.get(ObservableFeature.LABEL).toString() : "");
+							
+							//iterate over the markers and write out input files for R / CytoScape
+							for(int markerIndex = 0; markerIndex < markerNames.size(); markerIndex++)
 							{
-								Double[] Dvalues = Statistics.getAsDoubles(instance.getCol(colIndex));
-								
-								matches.put(name, e);
-								datasets.put(d.getName(), d);
-								totalAmountOfElementsInPlot++;
-								
-								for(int markerIndex = 0; markerIndex < rowNames.size(); markerIndex++)
+								if(nameToMarker.containsKey(markerNames.get(markerIndex)))
 								{
-									if(nameToMarker.containsKey(rowNames.get(markerIndex)))
+									String chrId = nameToMarker.get(markerNames.get(markerIndex)).getChromosome_Id() != null ? nameToMarker.get(markerNames.get(markerIndex)).getChromosome_Id().toString() : "-";
+									
+									//query and store chromosome objects for this name if it's not there yet
+									String chrName = nameToMarker.get(markerNames.get(markerIndex)).getChromosome_Name();
+									if(!usedChromosomes.containsKey(chrName))
 									{
-										String chrId = nameToMarker.get(rowNames.get(markerIndex)).getChromosome_Id() != null ? nameToMarker.get(rowNames.get(markerIndex)).getChromosome_Id().toString() : "-";
-										bw.write(overallIndex + " \"" + rowNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(rowNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex] + " " + d.getId());
-										bw.newLine();
-										overallIndex++;
+										Chromosome c = db.find(Chromosome.class, new QueryRule(Chromosome.NAME, Operator.EQUALS, chrName)).get(0);
+										usedChromosomes.put(chrName, c);
 									}
+									
+									// index, marker, chrId, markerLoc, trait, traitLoc, LODscore, dataId
+									bw.write(overallIndex + " \"" + markerNames.get(markerIndex) + "\" " + chrId + " " + nameToMarker.get(markerNames.get(markerIndex)).getBpStart() + " \"" + name + "\" " + locus + " " + Dvalues[markerIndex] + " " + d.getId());
+									bw.newLine();
+									
+									if(Dvalues[markerIndex].doubleValue() > 3.5)
+									{
+										// trait, "QTL", marker, LODscore
+										bw_network.write(name + "\t" + "QTL" + "\t" + markerNames.get(markerIndex) + "\t" + Dvalues[markerIndex]);
+										bw_network.newLine();
+										
+										String marker_chrName = nameToMarker.get(markerNames.get(markerIndex)).getChromosome_Name() != null ? nameToMarker.get(markerNames.get(markerIndex)).getChromosome_Name() : "-";
+										if(!nodesInFile.contains(name))
+										{
+											// trait, traitChr, traitLocus, dataName
+											bw_nodes.write(name + "\t" + "trait" + "\t" + traitChrName + "\t" + locus + "\t" + d.getName());
+											bw_nodes.newLine();
+											nodesInFile.add(name);
+										}
+										if(!nodesInFile.contains(markerNames.get(markerIndex)))
+										{
+											// marker, markerChr, markerLocus, dataName
+											bw_nodes.write(markerNames.get(markerIndex) + "\t" + "marker" + "\t" + marker_chrName + "\t" + nameToMarker.get(markerNames.get(markerIndex)).getBpStart() + "\t" + d.getName());
+											bw_nodes.newLine();
+											nodesInFile.add(markerNames.get(markerIndex));
+										}
+									}
+									overallIndex++;
 								}
 							}
 						}
@@ -440,14 +486,38 @@ public class QtlFinder2 extends PluginModel<Entity>
 		}
 		
 		bw.close();
-		int height = 200 + (totalAmountOfElementsInPlot * 20);
-
-		File plot = MakeRPlot.qtlMultiPlot(tmpData, plotWidth, height, this.model.getQuery());
-		File cisTransplot = MakeRPlot.qtlCisTransPlot(tmpData, plotWidth, plotHeight, this.model.getQuery());
+		bw_network.close();
+		bw_nodes.close();
 		
+		int height = 200 + (totalAmountOfElementsInPlot * 20);
+		
+		//add chromosomes in strict order, starting at 1
+		ArrayList<Chromosome> chromosomes = new ArrayList<Chromosome>();
+		for(int orderNrIter = 1; orderNrIter <= usedChromosomes.size(); orderNrIter++ )
+		{
+			for(Chromosome c : usedChromosomes.values())
+			{
+				if(c.getOrderNr().intValue() == orderNrIter)
+				{
+					chromosomes.add(c);
+					continue;
+				}
+			}
+		}
+		
+
+		MakeRPlot m = new MakeRPlot();
+		
+		File plot = m.wormqtl_MultiPlot(tmpData, plotWidth, height, this.model.getQuery(), chromosomes);
+		File cisTransplot = m.wormqtl_CisTransPlot(tmpData, plotWidth, plotHeight, this.model.getQuery(), chromosomes);
+		File regularPlot = m.wormqtl_ProfilePlot(tmpData, plotWidth, height, this.model.getQuery(), chromosomes);
 		
 		QTLMultiPlotResult result = new QTLMultiPlotResult();
+		result.setSrcData(tmpData.getName());
+		result.setCytoNetwork(cytoscapeNetwork.getName());
+		result.setCytoNodes(cytoscapeNodes.getName());
 		result.setPlot(plot.getName());
+		result.setRegularPlot(regularPlot.getName());
 		result.setCisTransPlot(cisTransplot.getName());
 		result.setMatches(matches);
 		result.setDatasets(datasets);

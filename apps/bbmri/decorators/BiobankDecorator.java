@@ -41,10 +41,10 @@ public class BiobankDecorator<E extends Biobank> extends MapperDecorator<E>
 	{
 		// add your pre-processing here
 		Date date = new Date(); 
-		Login login = this.getDatabase().getSecurity();
+		Login login = this.getDatabase().getLogin();
 		if (login != null && !(login instanceof SimpleLogin)) {
 			if (login.getUserId() != null) {
-				int userId = this.getDatabase().getSecurity().getUserId();
+				int userId = this.getDatabase().getLogin().getUserId();
 				
 				for (Biobank e : entities)
 				{

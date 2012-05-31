@@ -9,9 +9,9 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.framework.db.jpa.JpaDatabase;
-import org.molgenis.pheno.Patient;
 import org.molgenis.util.Tuple;
-import org.molgenis.variant.SequenceCharacteristic;
+import org.molgenis.variant.Patient;
+import org.molgenis.variant.Variant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +32,7 @@ public class StatisticsService extends MolgenisVariantService
 	 */
 	public int getNumMutations() throws DatabaseException
 	{
-		return this.db.count(SequenceCharacteristic.class);
+		return this.db.count(Variant.class);
 	}
 	
 	/**

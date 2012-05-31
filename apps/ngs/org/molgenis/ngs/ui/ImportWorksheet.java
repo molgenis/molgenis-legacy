@@ -17,8 +17,8 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.EntityTable;
 import org.molgenis.framework.ui.html.FileInput;
@@ -50,7 +50,7 @@ import org.molgenis.util.Tuple;
  * ImportWorksheetView holds the template to show the layout. Get/set it via
  * this.getView()/setView(..).
  */
-public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
+public class ImportWorksheet extends EasyPluginController<ImportWorksheet>
 {
 	Map<String, Person> persons = new LinkedHashMap<String, Person>();
 	Map<String, NgsStudy> studies = new LinkedHashMap<String, NgsStudy>();
@@ -73,10 +73,8 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 
 	public ImportWorksheet(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
-		this.setModel(new ImportWorksheetModel(this)); // the default model
-		this.setView(new FreemarkerView("ImportWorksheetView.ftl", getModel())); // <plugin
-																					// flavor="freemarker"
+		super(name, parent);
+		this.setModel(this); // the default model
 	}
 
 	@Override
@@ -250,7 +248,7 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 
 		state = State.UPLOAD;
 		
-		this.setSucces("Added or updated "+count+" records succesfully");
+		this.setSuccess("Added or updated "+count+" records succesfully");
 	}
 
 	public void resetUpload(Database db, Tuple request)
@@ -259,65 +257,65 @@ public class ImportWorksheet extends EasyPluginController<ImportWorksheetModel>
 	}
 
 	@Override
-	public String render()
+	public ScreenView getView()
 	{
-		MolgenisForm f = new MolgenisForm(this);
+		MolgenisForm view = new MolgenisForm(this);
 
 		if (state == State.UPLOAD)
 		{
-			f.add(new TextInput("worksheetCsv"));
-			f.add(new Newline());
-			f.add(new FileInput("worksheetFile"));
-			f.add(new Newline());
-			f.add(new ActionInput("uploadWorksheet"));
+			view.add(new TextInput("worksheetCsv"));
+			view.add(new Newline());
+			view.add(new FileInput("worksheetFile"));
+			view.add(new Newline());
+			view.add(new ActionInput("uploadWorksheet"));
 		}
 		if (state == State.REVIEW)
 		{
-			f.add(new Paragraph("<h2>Please review uploaded data:</h2>"));
-			f.add(new ActionInput("resetUpload", "reset"));
-			f.add(new ActionInput("saveUpload", "save"));
+			view.add(new Paragraph("<h2>Please review uploaded data:</h2>"));
+			view.add(new ActionInput("resetUpload", "reset"));
+			view.add(new ActionInput("saveUpload", "save"));
 
 			EntityTable s = new EntityTable("studies", studies.values(), false, "identifier", "contact_name");
 			s.setLabel("<h3>Studies:</h3>");
-			f.add(s);
+			view.add(s);
 
 			EntityTable p = new EntityTable("persons", persons.values(), false, "name");
 			p.setLabel("<h3>Persons:</h3>");
-			f.add(p);
+			view.add(p);
 
 			EntityTable sa = new EntityTable("samples", samples.values(), false, "study_identifier", "identifier",
 					"externalIdentifier", "sampletype");
 			sa.setLabel("<h3>Samples:</h3>");
-			f.add(sa);
+			view.add(sa);
 
 			EntityTable fc = new EntityTable("flowcells", flowcells.values(), false, "identifier", "machine_name",
 					"run", "startDate");
 			fc.setLabel("<h3>Flowcells:</h3>");
-			f.add(fc);
+			view.add(fc);
 
 			EntityTable l = new EntityTable("libraryLanes", liblanes.values(), false, "flowcell_identifier", "lane",
 					"barcode_name", "sample_identifier", "prepKit_name", "capturingKit_name");
 			l.setLabel("<h3>Libraries loaded on lanes</h3>");
-			f.add(l);
+			view.add(l);
 			
 			EntityTable m = new EntityTable("machines", machines.values(), false, "name");
 			m.setLabel("<h3>Machines used:</h3>");
-			f.add(m);
+			view.add(m);
 
 			EntityTable b = new EntityTable("barcodes", barcodes.values(), false, "name","barcodeType");
 			b.setLabel("<h3>Barcodes used:</h3>");
-			f.add(b);
+			view.add(b);
 			
 			EntityTable c = new EntityTable("capturingKits", capturingKits.values(), false, "name");
 			c.setLabel("<h3>Capturing kits used:</h3>");
-			f.add(c);
+			view.add(c);
 			
 			EntityTable k = new EntityTable("prepKits", prepKits.values(), false, "name");
 			k.setLabel("<h3>Prep kits used:</h3>");
-			f.add(k);
+			view.add(k);
 		}
 
-		return f.render();
+		return view;
 	}
 
 }

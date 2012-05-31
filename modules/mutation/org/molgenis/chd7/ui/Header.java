@@ -11,16 +11,24 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 
+/**
+ * Header for CHD7
+ */
 public class Header extends EasyPluginController<HeaderModel>
 {
 	private static final long serialVersionUID = 6224612078995632056L;
 
 	public Header(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new HeaderModel(this));
-		this.setView(new FreemarkerView("Chd7Header.ftl", getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("Chd7Header.ftl", getModel());
 	}
 
 	@Override

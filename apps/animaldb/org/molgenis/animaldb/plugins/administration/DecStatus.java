@@ -21,18 +21,19 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.framework.ui.html.JQueryDataTable;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
 
-public class DecStatus extends GenericPlugin
+public class DecStatus extends EasyPluginController
 {
 	private static final long serialVersionUID = -8647856553529155758L;
 	
@@ -43,27 +44,6 @@ public class DecStatus extends GenericPlugin
 	public DecStatus(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-	}
-	
-	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		//replace example below with yours
-//		try
-//		{
-//		Database db = this.getDatabase();
-//		String action = request.getString("__action");
-//		
-//		if( action.equals("do_add") )
-//		{
-//			Experiment e = new Experiment();
-//			e.set(request);
-//			db.add(e);
-//		}
-//		} catch(Exception e)
-//		{
-//			//e.g. show a message in your form
-//		}
 	}
 	
 	public Database getDatabase() {
@@ -108,7 +88,7 @@ public class DecStatus extends GenericPlugin
 		statusTable.addColumn("Status");
 		
 		try {
-			List<String> investigationNames = cq.getAllUserInvestigationNames(this.getLogin().getUserName());
+			List<String> investigationNames = cq.getAllUserInvestigationNames(db.getLogin().getUserName());
 			int rowCount = 0;
 			List<ObservationTarget> decList = cq.getAllMarkedPanels("DecApplication", investigationNames);
 			List<ObservationTarget> expList = cq.getAllMarkedPanels("Experiment", investigationNames);
@@ -194,7 +174,8 @@ public class DecStatus extends GenericPlugin
 			int nrOfAnimalsAlive = 0;
 			int nrOfAnimalsRemoved = 0;
 			int nrOfAnimalsTotal = 0;
-			int budget = 100; // TODO: use real budget
+			//int budget = 100; // TODO: use real budget
+			Integer budget = Integer.decode(cq.getMostRecentValueAsString(subprojectName, "DecSubprojectBudget"));
 			budgetCum += budget;
 			java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 			if (aliveAnimalNameList.size() > 0) {
@@ -238,8 +219,8 @@ public class DecStatus extends GenericPlugin
 		return rowCount + expInDecList.size() + 1;
 	}
 
-	public String render()
+	public ScreenView getView()
 	{
-	  return this.tablePanel.toHtml();
+	  return this.tablePanel;
 	}
 }

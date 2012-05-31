@@ -7,6 +7,7 @@
 
 package org.molgenis.protocol;
 
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,16 +16,18 @@ import java.util.List;
 import java.util.Locale;
 
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
-public class ApplyProtocolPlugin extends GenericPlugin
+public class ApplyProtocolPlugin extends EasyPluginController
 {
     private static final long serialVersionUID = -5500131586262572567L;
     private ApplyProtocolPluginModel model;
@@ -35,12 +38,12 @@ public class ApplyProtocolPlugin extends GenericPlugin
     public ApplyProtocolPlugin(String name, ScreenController<?> parent)
     {
 		super(name, parent);
-		model = new ApplyProtocolPluginModel();
+		model = new ApplyProtocolPluginModel(this);
 		ui = new ApplyProtocolUI(model);
     }
 
     @Override
-    public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
     {
     	ScreenMessage message = null;
 	    String action = request.getString("__action");
@@ -56,7 +59,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
 		    }
 		    if( action.equals("Clear") )
 		    {
-		    	ui.initScreen(db, this, this.getLogin().getUserId(), this.getLogin().getUserName());
+		    	ui.initScreen(db, this, db.getLogin().getUserId(), db.getLogin().getUserName());
 		    }
 		    if( action.equals("Apply") )
 		    {
@@ -84,6 +87,8 @@ public class ApplyProtocolPlugin extends GenericPlugin
 	    if (message != null) {
 	    	this.setMessages(message);
 	    }
+	    
+	    return Show.SHOW_MAIN;
     }
 
   
@@ -96,21 +101,23 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	model.setService(service);
 		ui.setService(service);
 		
-		int userId = this.getLogin().getUserId();
+		int userId = db.getLogin().getUserId();
 		// Only first time or if user changed:
 		if (ui.getProtocolApplicationContainer() == null || userId != model.getUserId()) {
 			model.setUserAndInvestigationIds(db, userId);
 		    try {
-				ui.initScreen(db, this, userId, this.getLogin().getUserName());
+				ui.initScreen(db, this, userId, db.getLogin().getUserName());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
     }
 
-    public String render()
+    public ScreenView getView()
     {
-    	return ui.getProtocolApplicationContainer().toHtml();
+    	MolgenisForm form = new MolgenisForm(this.model);
+    	form.add(ui.getProtocolApplicationContainer());
+    	return form;
     }
     
     ScreenMessage handleApply(Tuple request, Database db) {
@@ -118,7 +125,7 @@ public class ApplyProtocolPlugin extends GenericPlugin
     	DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.US);
     	
 		try {
-			int userId = this.getLogin().getUserId();
+			int userId = db.getLogin().getUserId();
 			int ownInvId = service.getOwnUserInvestigationIds(db, userId).get(0);
 			List<Integer> investigationIds = service.getWritableUserInvestigationIds(db, userId);
 		    int paId = service.makeProtocolApplication(db, ownInvId, model.getProtocolName());

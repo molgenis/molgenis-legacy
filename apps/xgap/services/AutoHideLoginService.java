@@ -4,33 +4,22 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.text.ParseException;
-import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.molgenis.cluster.Job;
-import org.molgenis.cluster.Subjob;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.ui.ApplicationController;
 
-import plugins.autohidelogin.AutoHideLoginModel;
-import plugins.cluster.helper.Command;
-import plugins.cluster.implementations.LocalComputationResource;
-import plugins.cluster.interfaces.ComputationResource;
+import plugins.autohidelogin.AutoHideLogin;
 
 /**
- * Hide/unhide the login tab via a static boolean and this service to flip it.
+ * Hide/unhide the login tab via a boolean and this service to flip it.
  * See: /molgenis_apps/apps/xgap/plugins/autohidelogin/AutoHideLogin.java
  * @author joerivandervelde
  */
@@ -58,25 +47,27 @@ public class AutoHideLoginService  implements MolgenisService
 		OutputStream out = res.getOutputStream();
 		PrintStream p = new PrintStream(new BufferedOutputStream(out), false, "UTF8");
 
+		ApplicationController molgenis = (ApplicationController) request.getRequest().getSession().getAttribute("application");
+		
 		try
 		{
 			//if null, make true
-			if(AutoHideLoginModel.isVisible == null)
+			if(molgenis.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) == null)
 			{
-				AutoHideLoginModel.isVisible = true;
+				molgenis.sessionVariables.put(AutoHideLogin.AUTOHIDE_LOGIN, true);
 			}
 			else
 			{
 				//if true, make false
-				if(AutoHideLoginModel.isVisible == true)
+				if((Boolean)molgenis.sessionVariables.get(AutoHideLogin.AUTOHIDE_LOGIN) == true)
 				{
-					AutoHideLoginModel.isVisible = false;
+					molgenis.sessionVariables.put(AutoHideLogin.AUTOHIDE_LOGIN, false);
 				}
 				
 				//if false, make true
 				else
 				{
-					AutoHideLoginModel.isVisible = true;
+					molgenis.sessionVariables.put(AutoHideLogin.AUTOHIDE_LOGIN, true);
 				}
 			}
 

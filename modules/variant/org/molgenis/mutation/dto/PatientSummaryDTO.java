@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.core.dto.PublicationDTO;
 import org.molgenis.pheno.dto.ObservedValueDTO;
 
@@ -221,26 +222,42 @@ public class PatientSummaryDTO implements Comparable<PatientSummaryDTO>, Seriali
 	public void setObservedValueDTOList(List<ObservedValueDTO> observedValueDTOList) {
 		this.observedValueDTOList = observedValueDTOList;
 	}
-
+/*	
 	@Override
 	public int compareTo(PatientSummaryDTO o)
 	{
-		return 0;
-//		Integer gdnaPosition1 = this.getVariantDTOList().get(0).getGdnaStart();
-//		Integer gdnaPosition2 = o.getVariantDTOList().get(0).getGdnaStart();
-//			
-//		if (gdnaPosition1.compareTo(gdnaPosition2) == 0)
-//		{
-//			if (this.getVariantDTOList().get(1) == null)
-//				return -1;
-//			else if (o.getVariantDTOList().get(1) == null)
-//				return 1;
-//			else
-//			{
-//				gdnaPosition1 = this.getVariantDTOList().get(1).getGdnaStart();
-//				gdnaPosition2 = o.getVariantDTOList().get(1).getGdnaStart();
-//			}
-//		}
-//		return gdnaPosition1.compareTo(gdnaPosition2) * -1; // gDNA position is descending
+		if (CollectionUtils.isEmpty(this.getVariantDTOList()))
+			return -1;
+		if (CollectionUtils.isEmpty(o.getVariantDTOList()))
+			return 1;
+
+		String year1 = this.getPublicationDTOList().get(0).getYear();
+		String year2 = o.getPublicationDTOList().get(0).getYear();
+	}
+*/
+	@Override
+	public int compareTo(PatientSummaryDTO o)
+	{
+		if (CollectionUtils.isEmpty(this.getVariantDTOList()))
+			return -1;
+		if (CollectionUtils.isEmpty(o.getVariantDTOList()))
+			return 1;
+
+		Integer gdnaPosition1 = this.getVariantDTOList().get(0).getGdnaStart();
+		Integer gdnaPosition2 = o.getVariantDTOList().get(0).getGdnaStart();
+			
+		if (gdnaPosition1.compareTo(gdnaPosition2) == 0)
+		{
+			if (this.getVariantDTOList().size() == 1)
+				return -1;
+			else if (o.getVariantDTOList().size() == 1)
+				return 1;
+			else
+			{
+				gdnaPosition1 = this.getVariantDTOList().get(1).getGdnaStart();
+				gdnaPosition2 = o.getVariantDTOList().get(1).getGdnaStart();
+			}
+		}
+		return gdnaPosition1.compareTo(gdnaPosition2) * -1; // gDNA position is descending
 	}
 }

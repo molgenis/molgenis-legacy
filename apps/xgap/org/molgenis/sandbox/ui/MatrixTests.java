@@ -15,15 +15,12 @@ import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.MatrixViewer;
-import org.molgenis.matrix.component.SliceablePhenoMatrix;
-import org.molgenis.pheno.ObservationElement;
-import org.molgenis.sandbox.ui.MatrixTestsModel;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -47,9 +44,13 @@ public class MatrixTests extends EasyPluginController<MatrixTestsModel>
 
 	public MatrixTests(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new MatrixTestsModel(this));
-		this.setView(new FreemarkerView("MatrixTestsView.ftl", getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("MatrixTestsView.ftl", getModel());
 	}
 
 	@Override

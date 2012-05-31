@@ -3,6 +3,7 @@ package org.molgenis.feedback.ui;
 
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 
 /**
  * Chd7ContactController takes care of all user requests and application logic.
@@ -20,8 +21,12 @@ public class Chd7Contact extends Contact
 	{
 		super(name, parent);
 		this.setModel(new ContactModel(this)); //the default model
-		this.setView(new FreemarkerView("Contact.ftl", getModel())); //<plugin flavor="freemarker"
 		this.getModel().setEmailTo("n.janssen01@umcg.nl");
 		this.getModel().setText("If you have any comments, questions or suggestions to improve the CHD7 mutation database, please do not hesitate to contact us. Please enter your name, a valid email address and your message and press \"submit\". We will reply shortly.");
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("Contact.ftl", getModel());
 	}
 }

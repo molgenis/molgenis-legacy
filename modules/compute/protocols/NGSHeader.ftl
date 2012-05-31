@@ -1,1 +1,6 @@
-<#if externalSampleID?exists># This script is about sample: <#if externalSampleID?is_sequence>${externalSampleID[0]}<#else>${externalSampleID}</#if></#if>
+<#if externalSampleID?exists>
+<#if externalSampleID?is_sequence># This script is processing samples:
+<#list externalSampleID as sampleToProcess># ${sampleToProcess}
+</#list>
+<#else># This script is processing sample: ${externalSampleID}</#if>
+</#if>

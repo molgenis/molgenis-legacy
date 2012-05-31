@@ -36,22 +36,23 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.Entity;
 import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Marker;
 
-public class QTLDataSetWizard extends PluginModel<Entity>
+public class QTLDataSetWizard extends PluginModel
 {
 	private static final long serialVersionUID = -1810993111211947419L;
 
 	// if db rollbacks, delete this matrix file!
 	private File dataFileRollback = null;
+	
+	private QTLDataSetWizardModel model = new QTLDataSetWizardModel();
 
-	public QTLDataSetWizard(String name, ScreenController<?> parent)
+	public QTLDataSetWizardModel getMyModel()
 	{
-		super(name, parent);
+		return model;
 	}
 
 	@Override
@@ -60,17 +61,15 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 		return "plugins_xgapwizard_QTLDataSetWizard";
 	}
 
-	private QTLDataSetWizardModel model = new QTLDataSetWizardModel(this);
-
-	public QTLDataSetWizardModel getMyModel()
-	{
-		return model;
-	}
-
 	@Override
 	public String getViewTemplate()
 	{
 		return "plugins/xgapwizard/QTLDataSetWizard.ftl";
+	}
+
+	public QTLDataSetWizard(String name, ScreenController<?> parent)
+	{
+		super(name, parent);
 	}
 
 	/**
@@ -142,24 +141,17 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 								i.printStackTrace();
 							}
 						}
-						else
-						{
-						}
 					}
-					else
-					{
-					}
-
 					db.rollbackTx();
 				}
 				catch (DatabaseException e1)
 				{
 					e1.printStackTrace();
+					this.setMessages(new ScreenMessage(e.getMessage() != null ? e1.getMessage() : "null", false));
 				}
 			}
 			e.printStackTrace();
-			this.setMessages(new ScreenMessage(e.getMessage() != null ? e
-					.getMessage() : "null", false));
+			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
 	}
 
@@ -203,14 +195,6 @@ public class QTLDataSetWizard extends PluginModel<Entity>
 					.getMessage() : "null", false));
 		}
 
-	}
-
-	/**
-	 * Helper function to clear screen messages
-	 */
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package plugins.batch;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +14,9 @@ import org.molgenis.batch.ui.form.BatchEntitySelectForm;
 import org.molgenis.batch.ui.form.BatchSelectForm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.CheckboxInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
@@ -25,7 +27,7 @@ import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
 
-public class BatchPlugin extends GenericPlugin {
+public class BatchPlugin extends EasyPluginController {
 
     private static final long serialVersionUID = 6468497779526846505L;
     private Container container;
@@ -56,7 +58,7 @@ public class BatchPlugin extends GenericPlugin {
     }
 
     @Override
-    public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
     {
     	try
     	{
@@ -83,6 +85,8 @@ public class BatchPlugin extends GenericPlugin {
     	{
     		e.printStackTrace();
     	}
+    	
+    	return Show.SHOW_MAIN;
     }
 
 	/**
@@ -126,9 +130,9 @@ public class BatchPlugin extends GenericPlugin {
 	/**
      * Render the html
      */
-    public String render()
+    public ScreenView getView()
     {
-    	return this.container.toHtml();
+    	return this.container;
     }
 
     private void handleSelectRequest(Database db, Tuple request) throws DatabaseException, ParseException
@@ -142,7 +146,7 @@ public class BatchPlugin extends GenericPlugin {
     {
     	BatchSelectForm batchSelectForm = new BatchSelectForm();
     	
-    	List<MolgenisBatch> batches = service.getBatches(db, this.getLogin().getUserId());
+    	List<MolgenisBatch> batches = service.getBatches(db, db.getLogin().getUserId());
     	((SelectInput) ((DivPanel) batchSelectForm.get("batchPanel")).get("batches")).setOptions(batches, "id", "name"); 
     	
     	this.container = batchSelectForm;

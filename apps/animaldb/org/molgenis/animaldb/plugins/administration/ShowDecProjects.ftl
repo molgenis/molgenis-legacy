@@ -109,6 +109,13 @@
 		<input type='text' id='enddate' name='enddate' <#if currentDecProject?? && currentDecProject.getEndDate()??> value="${currentDecProject.endDate}"</#if> />
 	</div>
 	
+	<div class="row">
+        <label for="decbudget">Animal budget:</label>
+        <input type="text" name="decbudget" id="decbudget" class="textbox" 
+        <#if currentDecProject?? && currentDecProject.getDecBudget()??> value="${currentDecProject.decBudget}"</#if>
+        />
+    </div>
+	
 	<div class='row'>
 		<input type='submit' id="addproject" class='addbutton' value='<#if screen.listId == 0>Add<#else>Update</#if>' onclick="__action.value='addEditDecProject'" />
 	</div>
@@ -131,6 +138,7 @@
 				<th>DEC applicant</th>
 				<th>DEC application PDF</th>
 				<th>DEC approval PDF</th>
+				<th>Animal budget</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -146,6 +154,7 @@
 					<td>${decl.decApplicantName}</td>
 					<td><#if decl.pdfDecApplication??>${decl.pdfDecApplication}</#if></td>
 					<td><#if decl.pdfDecApproval??>${decl.pdfDecApproval}</#if></td>
+					<td>${decl.decBudget}</td>
 				</tr>
 			</#list>
 		</#if>

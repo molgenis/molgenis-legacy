@@ -49,10 +49,15 @@
 
 <#if screen.action == "createParentgroup">
 	
-	<div class="form_header">Create parentgroup, step 1/3: select mother(s)</div>
+	<div class="form_header">Create parentgroup, step 1/2: how many parentgroups do you want to create?</div>
 	<div>
-	Select how many parent groups: <input type='text' id="numberPG" name="numberPG">
-	<input type='submit' id='selectt' class='addbutton' value='Select' onclick="__action.value='selectParents'" />
+	   <p>
+	       <label style="font-weight:bold" for"numberPG" >Select how many parent groups: </label><input type='text' class="ui-widget-content ui-corner-all" id="numberPG" name="numberPG">
+	   </p>
+	   <p>    
+	      <input type='submit' id='cancel2' class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Cancel' onclick="__action.value='init'" />
+	      <input type='submit' id='selectt' class='addbutton ui-button ui-widget ui-state-default ui-corner-all' value='Next' onclick="__action.value='selectParents'" />
+	   </p>
 	</div>
 	
 	
@@ -60,7 +65,7 @@
 	
 <#elseif screen.action?starts_with("selectParents")>
 
-	<div class="form_header">Create parentgroup, step 1/3: select mother(s)</div>
+	<div class="form_header">Create parentgroup, step 2/2: select mother(s) and father(s) for your parentgroup(s)</div>
 	
 	<#if screen.numberOfPG gt -1>
 
@@ -77,32 +82,40 @@
 					<td><label style="font-weight:bold" for="parentgroup${n}">parentgroup:${n+1}</label></td>
 				</tr>	
 				<tr>
-					<td><label for="father${n}">father:</label></td><td><input type='text' value="<#compress>
+					<td><label for="father${n}">father:</label></td><td><input type='text' class="ui-widget-content ui-corner-all" value="<#compress>
 						<#list screen.getFatherElement(n) as selParents >
 							${selParents}
 							<#if selParents_has_next>,</#if>
 						</#list>					
 					</#compress>"
 					name="father${n}" id="father${n}">
-					<input style="margin-left:2px; margin-right:5px" id="fatherB${n}"type="image" src="res/img/button_down_adb.jpg" height="16px" width="16px" onclick="__action.value='selectParentsM${n}'">
+					<input style="margin-left:2px; margin-right:5px" class="ui-widget-content ui-corner-all" id="fatherB${n}"type="image" src="res/img/button_down_adb.jpg" height="16px" width="16px" onclick="__action.value='selectParentsM${n}'">
 					</td>
 					
-					<td ><label for="mother${n}">mother:</label></td><td><input type='text' value="<#compress>
+					<td ><label for="mother${n}">mother:</label></td><td><input type='text' class="ui-widget-content ui-corner-all" value="<#compress>
 						<#list screen.getMotherElement(n) as selParents >
 							${selParents}
 							<#if selParents_has_next>,</#if>
 						</#list>					
 						</#compress>"
 						 name="mother${n}" id="mother${n}">
-						<input style="margin-left:2px; margin-right:5px" id="motherB${n}" type="image" src="res/img/button_down_adb_pink.jpg" height="16px" width="16px" onclick="__action.value='selectParentsF${n}'">
+						<input style="margin-left:2px; margin-right:5px" class="ui-widget-content ui-corner-all" id="motherB${n}" type="image" src="res/img/button_down_adb_pink.jpg" height="16px" width="16px" onclick="__action.value='selectParentsF${n}'">
 					</td>
 				</tr>
 				<tr>
 					<td><label for="startdate${n}">startdate:</label></td>
-					<td><input type="text" class="textbox" id="startdate${n}" name="startdate${n}" value='<#if screen.startdate?exists>${screen.getStartdate()}</#if>'onclick='showDateInput(this)' autocomplete='off'/></td>
-					<td><label for="remarks${n}">remarks:</label></td><td><input type='text' name="remarks${n}" id="remarks${n}"></td>	
+					<script>
+						$(function() {
+							$( "#startdate${n}" ).datepicker({
+								numberOfMonths: 1,
+								showButtonPanel: true,
+								dateFormat: "yy-mm-dd"
+							});
+						});
+					</script>
+					<td><input type="text" id="startdate${n}" class="ui-widget-content ui-corner-all" name="startdate${n}" value="<#if screen.startdate??>${screen.getStartdate()}"</#if></td>
+					<td><label for="remarks${n}">remarks:</label></td><td><input type='text' class="ui-widget-content ui-corner-all" name="remarks${n}" id="remarks${n}"></td>	
 				</tr>
-					
 			</table>
 			</div>	
 			</#list>
@@ -113,7 +126,7 @@
 	</#if>
 	<#--input type='submit' name="submitswitch" id="submitswitch" class='addbutton' value='Switch' onclick="__action.value='SelectParentsswitchtofather'" /-->
 	</div>
-
+<#--
 <#elseif screen.action == "addParentgroupScreen3">
 
 	<div class="form_header">Create parentgroup, step 2/3: select father(s)</div>
@@ -143,13 +156,13 @@
 		<input type='submit' id='from4to3' class='addbutton' value='Previous' onclick="__action.value='addParentgroupScreen3'" />
 		<input type='submit' id='addpg' class='addbutton' value='Add' onclick="__action.value='addParentgroup'" />
 	</div>
-
+-->
 <#elseif screen.action == "createLitter">
 
 	<div class="form_header">Create litter from parentgroup ${screen.getSelectedParentgroup()}</div>
 	<div style="clear:both; display:block">
 		<label style="width:16em;float:left;" for='birthdate'>Birth date:</label>		
-		<input type='text' class="text ui-widget-content ui-corner-all" id='birthdate' name='birthdate' <#if screen.getBirthdate??> value="${screen.getBirthdate()}"</#if> />
+		<input type='text' class="text ui-widget-content ui-corner-all" id='birthdate' name='birthdate' value='' />
 	</div>
 	<div style="clear:both; display:block">
 		<label style="width:16em;float:left;" for='littersize'>Litter size:</label>
@@ -168,14 +181,27 @@
 		<input type='submit' id='addlitter' value='Add' onclick="__action.value='addLitter'" />
 	</div>
 
-<#elseif screen.action == "weanOrGenotypeLitter">
-	
-	<#if screen.wean == true>
+<#elseif screen.action == "WeanLitter">
+
+	<#if screen.stillToWeanYN == true>
+
 
 		<div class="form_header">Wean litter ${screen.getLitter()}</div>
 		<div style="clear:both; display:block">
+		  <p>
 			<label style="width:16em;float:left;" for='weandate'>Wean date:</label>		
-			<input type='text' class="text ui-widget-content ui-corner-all" id='weandate' name='weandate' <#if screen.weandate??> value="${screen.getWeandate()}"</#if> />
+			<input type='text' class="text ui-widget-content ui-corner-all" id='weandate' name='weandate' value=''/>
+		      <script>
+		          $(function() {
+                    $( "#weandate" ).datepicker({
+                        numberOfMonths: 1,
+                        showButtonPanel: true,
+                        dateFormat: "yy-mm-dd",
+                        minDate: "${screen.getBirthdate()}"
+                    });
+                  });  
+              </script>
+           </p>   	
 		</div>
 		<div style="clear:both; display:block">
 			<label style="width:16em;float:left;" for='weansizefemale'>Nr. of females:</label>
@@ -229,27 +255,34 @@
 			<input type='submit' id='cancelweanlitter' value='Cancel' onclick="__action.value='init'" />
 			<input type='submit' id='wean' name='wean' value='Wean' onclick="__action.value='applyWean'" />
 		</div>
-	
-	<#else>
-	
+		
+		</#if>
+
+<#elseif screen.action == "GenotypeLitter">
+	<#if screen.stillToGenotypeYN == true>
 		<div class="form_header">Genotype litter ${screen.getLitter()}</div>
 		<p>${screen.parentInfo}</p>
 		${screen.getGenotypeTable()}
-		<input type='submit' id='addgenocol' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
-		<input type='submit' id='remgenocol' value='Remove Gene modification + state' onclick="__action.value='RemGenoCol'" />
+		<p>
+		  <input type='submit' id='addgenocol' value='Add Gene modification + state' onclick="__action.value='AddGenoCol'" />
+		  <input type='submit' id='remgenocol' value='Remove Gene modification + state' onclick="__action.value='RemGenoCol'" />
+		<p>
 		<div style="clear:both; display:block">
+		  <p>
 			<label style="width:16em;float:left;" for='genodate'>Genotyping date:</label>
-			<input type='text' class="text ui-widget-content ui-corner-all" name='genodate' id='genodate' value='<#if screen.genodate?exists>${screen.getGenodate()}</#if>' onclick='showDateInput(this)' autocomplete='off' />
+			<input type='text' class="text ui-widget-content ui-corner-all" name='genodate' id='genodate' value='' />
+		  </p>
 		</div>
 		<div style="clear:both; display:block">
+		  <p>
 			<label style="width:16em;float:left;" for='remarks'>Genotyping remarks:</label>
 			<input type='text' class="text ui-widget-content ui-corner-all" class='textbox' name='remarks' id='remarks' />
+		  </p> 
 		</div>
 		<div style="clear:both; display:block">
 			<input type='submit' id='cancelgenotypelitter' value='Cancel' onclick="__action.value='init'" />
 			<input type='submit' id='save' value='Save' onclick="__action.value='applyGenotype'" />
 		</div>
-	
 	</#if>
 	
 <#elseif screen.action == "makeLabels">
@@ -283,8 +316,11 @@
 			<br />
 			${screen.litterMatrixViewer}
 			<br />
-			<input type='submit' id='weangenotype' value='Wean/genotype selected litter' onclick="__action.value='weanOrGenotypeLitter'" />
+			<input type='submit' id='weanlitter' value='Wean selected litter' onclick="__action.value='WeanLitter'" />
+			<br />		
+			<input type='submit' id='genotypelitter' value='Genotype selected litter' onclick="__action.value='GenotypeLitter'" />
 			<br />
+			
 			<input type='submit' id='label' value='Make cage labels for selected litter' onclick="__action.value='makeLabels'" />
 			<br />
 			<input type='submit' id='deactivate' value='(De)activate selected litter' onclick="__action.value='deActivateLitter'" />
@@ -311,7 +347,8 @@
 	jQuery('#cancel4').button();
 	jQuery('#addpg').button();
 	jQuery('#deactivate').button();
-	jQuery('#weangenotype').button();
+	jQuery('#weanlitter').button();
+	jQuery('#genotypelitter').button();
 	jQuery('#label').button();
 	jQuery('#addlitter').button();
 	jQuery('#wean').button();
@@ -334,12 +371,13 @@
 		});
 	});
 	$(function() {
-		$( "#weandate" ).datepicker({
-			numberOfMonths: 1,
-			showButtonPanel: true,
-			dateFormat: "yy-mm-dd"
-		});
-	});
+        $( "#genodate" ).datepicker({
+            numberOfMonths: 1,
+            showButtonPanel: true,
+            dateFormat: "yy-mm-dd"
+        });
+    });
+
 
 	var oTable = jQuery('#pgstable').dataTable(
 	{ "bProcessing": true,

@@ -139,14 +139,6 @@
 				xref_field="id" xref_label="name" description="Refers to the father of the individual." />
 			<field name="ethnicOrigin" description="Refers to the ethnic origin of the individual" nillable="true" />
 		</entity>
-		<entity name="Patient" extends="Individual" implements="submittable">
-			<field name="mutations" type="mref" xref_field="SequenceCharacteristic.id"
-				xref_label="name" nillable="true" label="Mutations" />
-			<field name="patientreferences" type="mref" xref_field="Publication.id"
-				nillable="true" label="PubMed ID" />
-			<field name="consent" type="enum" enum_options="publication,yes,no"
-				default="no" label="Patient consent" />
-		</entity>
 		<entity name="Location" extends="ObservationTarget">
 			<description>This class defines physical locations such as buildings,
 				departments, rooms, freezers and cages. Use ObservedValues to link

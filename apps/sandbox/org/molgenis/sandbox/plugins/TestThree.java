@@ -2,9 +2,10 @@
 package org.molgenis.sandbox.plugins;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
 /**
@@ -19,9 +20,13 @@ public class TestThree extends EasyPluginController<TestThreeModel>
 {
 	public TestThree(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new TestThreeModel(this)); //the default model
-		this.setView(new FreemarkerView("TestThreeView.ftl", getModel())); //<plugin flavor="freemarker"
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("TestThreeView.ftl", getModel());
 	}
 	
 	/**

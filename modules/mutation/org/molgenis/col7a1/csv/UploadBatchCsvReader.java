@@ -79,13 +79,13 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		if (db instanceof JDBCDatabase)
 		{
 			List<Integer> submitters            = new ArrayList<Integer>();
-			submitters.add(db.getSecurity().getUserId());
+			submitters.add(db.getLogin().getUserId());
 			submission.setSubmitters_Id(submitters);
 		}
 		else if (db instanceof JpaDatabase)
 		{
 			List<MolgenisUser> submitters       = new ArrayList<MolgenisUser>();
-			submitters.add(db.findById(MolgenisUser.class, db.getSecurity().getUserId()));
+			submitters.add(db.findById(MolgenisUser.class, db.getLogin().getUserId()));
 //			submission.setSubmitters(submitters);
 		}
 		db.add(submission);

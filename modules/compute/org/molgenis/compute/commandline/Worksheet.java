@@ -178,20 +178,13 @@ public class Worksheet
 	public static List<Tuple> foldWorksheet(List<Tuple> worksheet, List<ComputeParameter> parameterlist, List<String> targets)
 	{
 		/*
-		 * Fold worksheet based on targets. Example (targets = lane, sequencer): lane, barcode, sequencer (1, a, x); (1, b, x); (2, a, x)
+		 * Fold worksheet based on targets. Example (targets = lane, sequencer {because lane hasOne sequencer}): lane, barcode, sequencer (1, a, x); (1, b, x); (2, a, x)
 		 * 
-		 * Becomes: [1, 1], [a, b], [x, x] [2], [a], [x]
+		 * Becomes: [1, 1], [a, b], [x, x]; [2], [a], [x]
 		 * 
 		 * Use reduceTargets(worksheet, targets) to reduce the instances of the targets (for easy use in FTL templates): (1, [a, b], x); (2, [a], x)
 		 */
 
-		// if(0 == targets.size())
-		// {
-		// this.folded = this.cloneWorksheet(this.worksheet);
-		// return;
-		// }
-
-		;
 		Map<String, ArrayList<Object>> tupleset = null; // [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]
 		Map<String, Map<String, ArrayList<Object>>> wsset = new HashMap<String, Map<String, ArrayList<Object>>>(); // Suppose target is lane: [1: [(Lane: 1,1,1), (Sample: a,b,c), (Flowcell: x,y,z)]]
 
@@ -256,42 +249,17 @@ public class Worksheet
 		// check: is the worksheet (ws) that we want to return, after expansion, equal to the original worksheet?
 		// if not, throw exception
 
-		// List<Tuple> expWs = unfoldWorksheet(folded);
-		// print("this.folded: " + folded);
-		// print("expWs: " + expWs);
-		// print("worksheet: " + worksheet);
-
 		if (!equalWorksheets(unfoldWorksheet(folded), worksheet))
 		{
 			throw new RuntimeException(">> Error: folded and unfolded worksheets should be equal but are not!");
 		}
+		
+		// reduce the folded worksheet (i.e., reduce list to single value where 'allowed')
 		return reduceTargets(folded, parameterlist, targets);
-	}
-
-	private List<Tuple> cloneWorksheet(List<Tuple> otherWorksheet)
-	{
-		List<Tuple> result = new ArrayList<Tuple>();
-		for (Tuple t : worksheet)
-		{
-			result.add(this.cloneTuple(t));
-		}
-
-		return result;
 	}
 
 	private static Set<String> reduceFieldSet(List<ComputeParameter> parameterlist, List<String> targets)
 	{
-		// if (targets.size() == 0)
-		// {
-		// Set<String> reduceParams = new HashSet<String>();
-		// for (ComputeParameter cp : parameterlist)
-		// {
-		// reduceParams.add(cp.getName());
-		// }
-		// this.list = new HashSet<String>();
-		// return(reduceParams);
-		// }
-
 		// Let R and L be two sets. R contains 'reduce' parameters, L contains 'list' parameters.
 		Set<String> reduceParams = new HashSet<String>();
 		Set<String> listParams = new HashSet<String>();
@@ -327,12 +295,6 @@ public class Worksheet
 				}
 			}
 		}
-
-		// put targets and hasOnes also in global list that we print in header of script
-		// for (String field : reduceParams)
-		// {
-		// foldon.add(field);
-		// }
 
 		// (iii) put all empty parameters that are not in R, in L
 		for (ComputeParameter cp : parameterlist)
@@ -446,19 +408,7 @@ public class Worksheet
 
 	public static List<Tuple> reduceTargets(List<Tuple> folded, List<ComputeParameter> parameterlist, List<String> targets)
 	{
-		// if (1 == targets.size() && "line_number".equals(targets.get(0)))
-		// {
-		// // List<Tuple> reduced = cloneWorksheet(folded);
-		// // List<String> reducedfields = new ArrayList<String>();
-		// // for (ComputeParameter cp : parameterlist)
-		// // {
-		// // reducedfields.add(cp.getName());
-		// // }
-		// return folded;
-		// }
-
 		// reduce the targets in worksheet (eg lane = 1, 1, 1, 1) to one single value (lane = 1) for easy use in freemarker
-
 		Set<String> reducedfields = reduceFieldSet(parameterlist, targets);
 		if (1 == targets.size() && "line_number".equals(targets.get(0)))
 		{
@@ -515,6 +465,7 @@ public class Worksheet
 			}
 			reduced.add(tclone);
 		}
+		
 		return reduced;
 	}
 

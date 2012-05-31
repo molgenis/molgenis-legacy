@@ -34,21 +34,29 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
+/**
+ * Login box
+ */
 public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 {
 	private static final long serialVersionUID = -3084964114182861171L;
 
 	public SimpleUserLogin(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new SimpleUserLoginModel(this));
-		this.setView(new FreemarkerView("UserLogin.ftl", getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("UserLogin.ftl", getModel());
 	}
 
 	public void Login(Database db, Tuple request) throws Exception
@@ -148,7 +156,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 				throw new Exception("Code was wrong.");
 			
 			// save current login and then set to null, to bypass security
-			Login saveLogin = db.getSecurity();
+			Login saveLogin = db.getLogin();
 			db.setLogin(null);
 			
 			MolgenisUserService userService = MolgenisUserService.getInstance(db);
@@ -201,7 +209,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 	    try
 		{
     		// save current login and then set to null, to bypass security
-    		Login saveLogin = db.getSecurity();
+    		Login saveLogin = db.getLogin();
     		db.setLogin(null);
 
 			MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();
@@ -256,7 +264,7 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
     		this.getApplicationController().getLogin().login(db, "admin", "admin"); //TODO
     		this.getApplicationController().getLogin().reload(db);
 	    	// save current login and then set to null, to bypass security
-    		Login saveLogin = db.getSecurity();
+    		Login saveLogin = db.getLogin();
     		db.setLogin(null);
 
     		MolgenisUserSearchCriteriaVO criteria = new MolgenisUserSearchCriteriaVO();

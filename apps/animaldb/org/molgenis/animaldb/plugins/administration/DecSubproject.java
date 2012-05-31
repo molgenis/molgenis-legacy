@@ -15,6 +15,7 @@ public class DecSubproject extends DecEntity {
 	private String animalEndStatus;
 	private String remarks;
 	private String decApplication;
+	private String decSubprojectBudget;
 	private int nrOfAnimals;
 	
 	public void setDecExpListId(int decExpListId)
@@ -113,5 +114,13 @@ public class DecSubproject extends DecEntity {
 	}
 	public String getDecApplication() {
 		return decApplication;
+	}
+	public String getDecSubprojectBudget()
+	{
+		return decSubprojectBudget;
+	}
+	public void setDecSubprojectBudget(String decSubprojectBudget)
+	{
+		this.decSubprojectBudget = decSubprojectBudget;
 	}
 }

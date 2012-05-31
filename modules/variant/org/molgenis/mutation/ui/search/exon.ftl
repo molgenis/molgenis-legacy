@@ -28,7 +28,7 @@
 </table>
 </div>
 
-<#include "mbrowse.ftl">
+${model.mbrowse.createSequencePanel()}
 
 ${vo.rawOutput}
 

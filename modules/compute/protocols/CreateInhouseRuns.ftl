@@ -29,16 +29,16 @@ mkdir -p ${runIntermediateDir}
 <#list unfolded as sampleSequenceDetails>
 echo ${sampleSequenceDetails} >> ${runJobsDir}/${run}.csv
 </#list>-->
-${tooldir}/scripts/extract_samples_from_GAF_list.pl --i ${worksheet} --o ${runJobsDir}/${run}.csv --c run --q ${run}
+${scriptdir}/extract_samples_from_GAF_list.pl --i ${McWorksheet} --o ${runJobsDir}/${run}.csv --c run --q ${run}
 
 #
 # Execute MOLGENIS/compute to create job scripts to analyse this project.
 #
-sh ${molgenisComputeDir}/molgenis_compute.sh \
+sh ${McDir}/molgenis_compute.sh \
 -worksheet=${runJobsDir}/${run}.csv \
--outputscriptsdir=${runJobsDir}/ \
--parametersfile=${parametersFile} \
--workflowfile=${demultiplexWorkflowFile} \
--protocoldir=${protocoldir} \
--cluster=dummy \
--templatesdir=dummy dummy
+-parameters=${McParameters} \
+-workflow=${demultiplexWorkflowFile} \
+-protocols=${McProtocols}/ \
+-templates=${McTemplates}/ \
+-scripts=${runJobsDir}/ \
+-id=${McId}

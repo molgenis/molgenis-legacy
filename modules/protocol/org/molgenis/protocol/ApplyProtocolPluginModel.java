@@ -15,11 +15,18 @@ import java.util.Map;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.EasyPluginModel;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 
 
-public class ApplyProtocolPluginModel {
+public class ApplyProtocolPluginModel extends EasyPluginModel {
+
+	public ApplyProtocolPluginModel(EasyPluginController<?> controller)
+	{
+		super(controller);
+	}
 
 	private List<Measurement> featuresList = new ArrayList<Measurement>();
 	private List<Integer> targetsIdList = new ArrayList<Integer>();
@@ -37,9 +44,6 @@ public class ApplyProtocolPluginModel {
 	private Map<Measurement, List<ObservationTarget>> panelMap = new HashMap<Measurement, List<ObservationTarget>>();
 	private Map<Measurement, String> typeMap = new HashMap<Measurement, String>();
 	private ApplyProtocolService service;
-	
-	public ApplyProtocolPluginModel() {
-	}
 	
 	public void setService(ApplyProtocolService service) {
 		this.service = service;

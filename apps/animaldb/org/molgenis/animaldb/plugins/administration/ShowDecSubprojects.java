@@ -69,6 +69,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private boolean refresh = true;
 	private int userId = -1;
+	private String projectStartDateString = null;
+	private String projectEndDateString = null;
 	
 	//hack to pass database to toHtml() via toHtml(db)
 	private Database toHtmlDb;
@@ -243,6 +245,26 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 		return painManagementCodeList;
 	}
 
+	public String getProjectStartDateString()
+	{
+		return projectStartDateString;
+	}
+
+	public void setProjectStartDateString(String projectStartDateString)
+	{
+		this.projectStartDateString = projectStartDateString;
+	}
+
+	public String getProjectEndDateString()
+	{
+		return projectEndDateString;
+	}
+
+	public void setProjectEndDateString(String projectEndDateString)
+	{
+		this.projectEndDateString = projectEndDateString;
+	}
+
 	public void setAnimalEndStatusCodeList(List<Category> animalEndStatusCodeList)
 	{
 		this.animalEndStatusCodeList = animalEndStatusCodeList;
@@ -374,6 +396,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				String name = "DEC ";
 				if (request.getString("name") != null && !request.getString("name").equals("")) {
 					name = request.getString("name");
+					
 				}
 				
 				// Title
@@ -387,8 +410,10 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				// DEC project (Application)
 				String decappName;
 				if (request.getString("decapp") != null) {
-					decappName = ct.getObservationTargetLabel(request.getInt("decapp"));
+					Integer decappid = request.getInt("decapp");
+					decappName = ct.getObservationTargetLabel(decappid);
 					name = decappName;
+					
 				} else {
 					throw(new Exception("No DEC application given - Subproject not added"));
 				}
@@ -444,12 +469,14 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				}
 				
 				// Get most recent Project start and end dates
-				String projectStartDateString = ct.getMostRecentValueAsString(name, "StartDate");
-				Date projectStartDate = newDateOnlyFormat.parse(projectStartDateString);
+				//String projectStartDateString = ct.getMostRecentValueAsString(name, "StartDate");
+				setProjectStartDateString(ct.getMostRecentValueAsString(name, "StartDate"));
+				Date projectStartDate = newDateOnlyFormat.parse(this.projectStartDateString);
 				Date projectEndDate = null;
-				String projectEndDateString = ct.getMostRecentValueAsString(name, "EndDate");
+				//String projectEndDateString = ct.getMostRecentValueAsString(name, "EndDate");
+				setProjectEndDateString(ct.getMostRecentValueAsString(name, "EndDate"));
 				if (!projectEndDateString.equals("")) {
-					projectEndDate = newDateOnlyFormat.parse(projectEndDateString);
+					projectEndDate = newDateOnlyFormat.parse(this.projectEndDateString);
 				}
 				
 				// Start date
@@ -484,6 +511,15 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 							throw(new Exception("End date outside DEC project time span - Subproject not added"));
 						}
 					}
+				}
+				
+				// Dec Subproject budget
+				String decsubprojectbudget = "";
+				if (request.getString("decsubprojectbudget") != null && !request.getString("decsubprojectbudget").equals("")) {
+					Integer decsubprojectbudgetint = request.getInt("decsubprojectbudget");
+					decsubprojectbudget = Integer.toString(decsubprojectbudgetint);
+				} else {
+					throw(new Exception("No budget given - Subproject not added"));
 				}
 				
 				// Some variables we need later on
@@ -560,6 +596,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
 							enddate, "EndDate", name, newDateOnlyFormat.format(enddate), null));
 				}
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+						enddate, "DecSubprojectBudget", name, decsubprojectbudget, null));
 				
 				// Add everything to DB
 				db.add(valuesToAddList);
@@ -954,6 +992,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 				this.setAnimalEndStatusCodeList(ct.getAllCodesForFeature("AnimalEndStatus"));
 				// decApplicationList
 				this.setDecApplicationList(ct.getAllMarkedPanels("DecApplication", investigationNames));
+				
 				// Populate subprojects list
 				experimentList.clear();
 				List<ObservationTarget> expList = ct.getAllMarkedPanels("Experiment", investigationNames);
@@ -977,6 +1016,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					startDate = ct.getMostRecentValueAsString(expName, "StartDate");
 					String endDate = null;
 					endDate = ct.getMostRecentValueAsString(expName, "EndDate");
+					String decSubprojectBudget = null;
+					decSubprojectBudget = ct.getMostRecentValueAsString(expName, "DecSubprojectBudget");
 					java.sql.Date nowDb = new java.sql.Date(new Date().getTime());
 					int nrOfAnimals = 0;
 					if (allAnimalNameList.size() > 0) {
@@ -990,6 +1031,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					}
 					
 					DecSubproject tmpExp = new DecSubproject();
+					//tmpExp.setD
 					tmpExp.setId(currentExp.getId());
 					tmpExp.setDecExpListId(pos);
 					tmpExp.setName(expName);
@@ -1009,6 +1051,7 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					tmpExp.setNrOfAnimals(nrOfAnimals);
 					if (startDate != null) tmpExp.setStartDate(startDate);
 					if (endDate != null) tmpExp.setEndDate(endDate);
+					tmpExp.setDecSubprojectBudget(decSubprojectBudget);
 					experimentList.add(tmpExp);
 					
 					pos++;

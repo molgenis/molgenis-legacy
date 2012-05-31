@@ -14,9 +14,9 @@ public class VariantDTO implements Serializable
 	private Integer gdnaStart;
 	private String aaNotation;
 	private Integer aaStart;
-	private String pathogenicity;
 	private Integer exonId;
 	private String exonName;
+	private String observedValue;
 
 	public Integer getId() {
 		return id;
@@ -60,12 +60,6 @@ public class VariantDTO implements Serializable
 	public void setAaNotation(String aaNotation) {
 		this.aaNotation = aaNotation;
 	}
-	public String getPathogenicity() {
-		return pathogenicity;
-	}
-	public void setPathogenicity(String pathogenicity) {
-		this.pathogenicity = pathogenicity;
-	}
 	public Integer getExonId() {
 		return exonId;
 	}
@@ -77,5 +71,11 @@ public class VariantDTO implements Serializable
 	}
 	public void setExonName(String exonName) {
 		this.exonName = exonName;
+	}
+	public String getObservedValue() {
+		return observedValue;
+	}
+	public void setObservedValue(String observedValue) {
+		this.observedValue = observedValue;
 	}
 }

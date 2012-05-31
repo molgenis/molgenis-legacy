@@ -40,20 +40,16 @@ public interface JobGenerator
     public static final String DEPENDENCY_HEAD = " -W depend=afterok";
 
     public static final String FLAG = "#FOREACH";
+    public static final String GRID_TEMP_DIR = "$TMPDIR";
 
-    //folding evolution
-    Vector<ComputeJob> generateComputeJobsWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);
-    Vector<ComputeJob> generateComputeJobsWorksheetWithFolding(Workflow workflow, List<Tuple> worksheet, String backend);
-    Vector<ComputeJob> generateComputeJobsWorksheetWithFoldingNew(Workflow workflow, List<Tuple> worksheet, String backend);
-    //this misses reduce
     Vector<ComputeJob> generateComputeJobsFoldedWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);
-    //this is the one!
-    Vector<ComputeJob> generateComputeJobsFoldedWorksheetReduce(Workflow workflow, List<Tuple> worksheet, String backend);
-
 
     Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet, String backend);
 
     boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String,String> config);
 
     void setConfig(Hashtable<String,String> config);
+
+    void setWorksheet(List<Tuple> worksheet);
+
 }

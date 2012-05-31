@@ -31,9 +31,6 @@
 			</#if>
 		</#list>
 		
-		<#-- Hack to immediatly clear the message so it doesn't "stick". -->
-		${screen.clearMessage()}
-		
 		<div class="screenbody">
 			<div class="screenpadding">	
 <#--begin your plugin-->
@@ -45,7 +42,7 @@
 <i>Upload Excel file with your data</i>
 <br>
 <input type="file" name="upload"/>
-<input type="submit" value="Upload" onclick="__action.value='upload';return true;"/><br>
+<input type="submit" value="Upload" id="upload_excel" onclick="__action.value='upload';return true;"/><br>
 
 <div style="height: 25px;">&nbsp;</div>
 

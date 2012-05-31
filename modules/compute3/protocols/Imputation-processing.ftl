@@ -6,7 +6,7 @@
 #EXES path_to_impute2
 #TARGETS
 
-echo "Before execution" 2>&1 | tee -a ${log}
+echo "Before execution at $(date)" 2>&1 | tee -a ${log}
 
 ${path_to_impute2} \
 -m ${input_4} \
@@ -26,7 +26,7 @@ then
 echo "FINISHED_SUCCESS" 2>&1 | tee -a ${log}
 fi
 
-echo "After execution" 2>&1 | tee -a ${log}
+echo "After execution at $(date)" 2>&1 | tee -a ${log}
 
 echo -n "SNP1:" 2>&1 | tee -a ${log}
 wc -l ${output_1}  2>&1 | tee -a ${log}

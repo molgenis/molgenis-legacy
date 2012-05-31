@@ -16,20 +16,19 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.regexp.RESyntaxException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.SelectInput;
-import org.molgenis.pheno.Patient;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.service.SearchService;
 import org.molgenis.mutation.service.UploadService;
 import org.molgenis.mutation.ui.upload.form.BatchForm;
+import org.molgenis.variant.Patient;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
@@ -42,10 +41,22 @@ public class Upload extends EasyPluginController<UploadModel>
 
 	public Upload(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new UploadModel(this));
-		this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
+		this.view = new FreemarkerView("uploadBatch.ftl", getModel());
 		this.populateBatchForm();
+	}
+	
+	private ScreenView view;
+	
+	public ScreenView getView()
+	{
+		return view;
+	}
+	
+	public void setView(ScreenView view)
+	{
+		this.view = view;
 	}
 
 	@Override
@@ -137,7 +148,7 @@ public class Upload extends EasyPluginController<UploadModel>
 		// TODO: implement check screen
 	}
 
-	private void handleAssignMutation(Tuple request) throws RESyntaxException
+	private void handleAssignMutation(Tuple request)
 	{
 		UploadService uploadService = ServiceLocator.instance().getUploadService();
 		uploadService.assignValuesFromPosition(this.getModel().getMutationUploadVO());

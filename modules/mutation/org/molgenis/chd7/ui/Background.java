@@ -11,19 +11,26 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.mutation.service.MutationService;
 import org.molgenis.mutation.service.PatientService;
-import org.molgenis.chd7.ui.BackgroundModel;
 
+/**
+ * Information on the background of CHD7 database
+ */
 public class Background extends EasyPluginController<BackgroundModel>
 {
 	private static final long serialVersionUID = 1L;
 
 	public Background(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new BackgroundModel(this));
-		this.setView(new FreemarkerView("Background.ftl", getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("Background.ftl", getModel());
 	}
 	
 	@Override

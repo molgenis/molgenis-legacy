@@ -156,6 +156,17 @@ public class ShowDecProjects extends PluginModel<Entity>
 					enddate = newDateOnlyFormat.parse(request.getString("enddate"));
 				}
 				
+				// Budget
+				
+				String decbudget = "";
+				if (request.getString("decbudget") != null && !request.getString("decbudget").equals("")) {
+					Integer decbudgetint = request.getInt("decbudget");
+					decbudget = Integer.toString(decbudgetint);
+				} else {
+					throw(new Exception("No budget given - project not added"));
+				}
+				
+				
 				// Some variables we need later on
 				Integer decapplicantId = this.getLogin().getUserId();
 				String investigationName = ct.getOwnUserInvestigationName(this.getLogin().getUserName());
@@ -207,6 +218,8 @@ public class ShowDecProjects extends PluginModel<Entity>
 					valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
 							enddate, "EndDate", projectName,  dbFormat.format(enddate), null));
 				}
+				valuesToAddList.add(ct.createObservedValue(investigationName, protocolApplicationName, startdate, 
+						enddate, "DecBudget", projectName, decbudget, null));
 				// Add everything to DB
 				db.add(valuesToAddList);
 				
@@ -264,6 +277,10 @@ public class ShowDecProjects extends PluginModel<Entity>
 				if (startDate != null) tmpDec.setStartDate(startDate);
 				String endDate = ct.getMostRecentValueAsString(name, "EndDate");
 				if (endDate != null) tmpDec.setEndDate(endDate);
+				//??
+				String decBudget = "";
+				decBudget = ct.getMostRecentValueAsString(name, "DecBudget");
+				if (decBudget != null) tmpDec.setDecBudget(decBudget);
 				
 				decappList.add(tmpDec);
 				

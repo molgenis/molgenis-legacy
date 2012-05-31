@@ -1,9 +1,10 @@
 package org.molgenis.mutation.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.molgenis.mutation.dto.ExonDTO;
 
 public class SequenceUtils
@@ -315,17 +316,19 @@ public class SequenceUtils
 	 * @return cDNA position
 	 * @throws RESyntaxException
 	 */
-	public static int getCDNAPosition(String position) throws RESyntaxException
+	public static int getCDNAPosition(String position)
 	{
-		RE reExon   = new RE("^(\\d+)$");
-		RE reIntron = new RE("^(\\d+)([+-])(\\d+)$");
+		Pattern reExon   = Pattern.compile("^(\\d+)$");
+		Pattern reIntron = Pattern.compile("^(\\d+)([+-])(\\d+)$");
+		Matcher mExon    = reExon.matcher(position);
+		Matcher mIntron  = reIntron.matcher(position);
 		
-		if (reExon.match(position))
-			return new Integer(reExon.getParen(1));
-		else if (reIntron.match(position))
-			return new Integer(reIntron.getParen(1));
+		if (mExon.matches())
+			return new Integer(mExon.group(1));
+		else if (mIntron.matches())
+			return new Integer(mIntron.group(1));
 		else
-			throw new RESyntaxException("Invalid position notation: " + position);
+			return 0;
 	}
 	
 	/**
@@ -335,23 +338,25 @@ public class SequenceUtils
 	 * @return Added position
 	 * @throws RESyntaxException
 	 */
-	public static String getAddedPosition(String position, Integer add) throws RESyntaxException
+	public static String getAddedPosition(String position, Integer add)
 	{
-		RE reExon   = new RE("^(\\d+)$");
-		RE reIntron = new RE("^(\\d+)([+-])(\\d+)$");
-		
-		if (reExon.match(position))
-			return new Integer(new Integer(reExon.getParen(1)) + add).toString();
-		else if (reIntron.match(position))
-			if (reIntron.getParen(2).equals("-"))
-				if (add < new Integer(reIntron.getParen(3)))
-					return reIntron.getParen(1) + reIntron.getParen(2) + (new Integer(reIntron.getParen(3)).intValue() - add.intValue());
+		Pattern reExon   = Pattern.compile("^(\\d+)$");
+		Pattern reIntron = Pattern.compile("^(\\d+)([+-])(\\d+)$");
+		Matcher mExon    = reExon.matcher(position);
+		Matcher mIntron  = reIntron.matcher(position);
+
+		if (mExon.matches())
+			return new Integer(new Integer(mExon.group(1)) + add).toString();
+		else if (mIntron.matches())
+			if (mIntron.group(2).equals("-"))
+				if (add < new Integer(mIntron.group(3)))
+					return mIntron.group(1) + mIntron.group(2) + (new Integer(mIntron.group(3)).intValue() - add.intValue());
 				else
-					return String.valueOf(new Integer(reIntron.getParen(1)).intValue() - new Integer(reIntron.getParen(3)).intValue() + add.intValue());
+					return String.valueOf(new Integer(mIntron.group(1)).intValue() - new Integer(mIntron.group(3)).intValue() + add.intValue());
 			else
-				return reIntron.getParen(1) + reIntron.getParen(2) + (new Integer(reIntron.getParen(3)).intValue() + add.intValue());
+				return mIntron.group(1) + mIntron.group(2) + (new Integer(mIntron.group(3)).intValue() + add.intValue());
 		else
-			throw new RESyntaxException("Invalid position notation: " + position);
+			return "0";
 	}
 
 	/**
@@ -361,35 +366,57 @@ public class SequenceUtils
 	 * @return gDNA position
 	 * @throws RESyntaxException
 	 */
-	public static int getGDNAPosition(String position, ExonDTO exonDTO) throws RESyntaxException //Integer gDNAPositionStart, Integer cDNAPositionStart)
+	public static int getGDNAPosition(String position, ExonDTO exonDTO)
 	{
-		RE reExon   = new RE("^(\\d+)$");
-		RE reIntron = new RE("^(\\d+)([+-])(\\d+)$");
+		Pattern reExon   = Pattern.compile("^(\\d+)$");
+		Pattern reIntron = Pattern.compile("^(\\d+)([+-])(\\d+)$");
+		Matcher mExon    = reExon.matcher(position);
+		Matcher mIntron  = reIntron.matcher(position);
 
-		if (reExon.match(position))
+		if (mExon.matches())
+		{
 			if ("R".equals(exonDTO.getOrientation()))
+			{
 				// exon.gDNA - (mutation.cDNA - exon.cDNA)
-				return Math.abs(exonDTO.getGdnaStart() - (Integer.valueOf(reExon.getParen(1)) - exonDTO.getCdnaStart()));
+				return Math.abs(exonDTO.getGdnaStart() - (Integer.valueOf(mExon.group(1)) - exonDTO.getCdnaStart()));
+			}
 			else
+			{
 				// exon.gDNA + (mutation.cDNA - exon.cDNA)
-				return Math.abs(exonDTO.getGdnaStart() + (Integer.valueOf(reExon.getParen(1)) - exonDTO.getCdnaStart()));
-		else if (reIntron.match(position))
-			if (reIntron.getParen(2).equals("+"))
+				return Math.abs(exonDTO.getGdnaStart() + (Integer.valueOf(mExon.group(1)) - exonDTO.getCdnaStart()));
+			}
+		}
+		else if (mIntron.matches())
+		{
+			if (mIntron.group(2).equals("+"))
+			{
 				if ("R".equals(exonDTO.getOrientation()))
+				{
 					// intron.gdnaPos + 1 (back to exon) - difference ('+' means downstream)
-					return Math.abs(exonDTO.getGdnaStart() + 1 - Integer.valueOf(reIntron.getParen(3)));
+					return Math.abs(exonDTO.getGdnaStart() + 1 - Integer.valueOf(mIntron.group(3)));
+				}
 				else
+				{
 					// intron.gdnaPos - 1 (start at last position of exon) + difference ('+' means upstream)
-					return Math.abs(exonDTO.getGdnaStart() - 1 + Integer.valueOf(reIntron.getParen(3)));
+					return Math.abs(exonDTO.getGdnaStart() - 1 + Integer.valueOf(mIntron.group(3)));
+				}
+			}
 			else
+			{
 				if ("R".equals(exonDTO.getOrientation()))
+				{
 					// intron.gdnaPos - intron.length + difference ('-' means upstream)
-					return Math.abs(exonDTO.getGdnaStart() - exonDTO.getLength() + Integer.valueOf(reIntron.getParen(3)));
+					return Math.abs(exonDTO.getGdnaStart() - exonDTO.getLength() + Integer.valueOf(mIntron.group(3)));
+				}
 				else
+				{
 					// intron.gdnaPos - difference ('-' means downstream)
-					return Math.abs(exonDTO.getGdnaStart() - exonDTO.getLength() + Integer.valueOf(reIntron.getParen(3)));
+					return Math.abs(exonDTO.getGdnaStart() - Integer.valueOf(mIntron.group(3)));
+				}
+			}
+		}
 		else
-			throw new RESyntaxException("Invalid position notation: " + position);
+			return 0;
 	}
 	
 	/**

@@ -7,25 +7,27 @@
 
 package org.molgenis.compute.ui;
 
+import java.util.Vector;
+
+import javax.servlet.ServletContext;
+
 import org.molgenis.compute.pipelinemodel.Pipeline;
 import org.molgenis.compute.pipelinemodel.Step;
 import org.molgenis.compute.scriptserver.MCF;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
-import org.molgenis.framework.ui.PluginModel;
-import org.molgenis.framework.ui.GenericPlugin;
-import org.molgenis.framework.ui.html.TablePanel;
-import org.molgenis.framework.ui.html.LabelInput;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Table;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.ui.html.TablePanel;
 import org.molgenis.util.HttpServletRequestTuple;
+import org.molgenis.util.Tuple;
 
-import javax.servlet.ServletContext;
 
-
-public class ConsolePlugin extends GenericPlugin
+public class ConsolePlugin extends EasyPluginController
 {
     private static final String COLOR_SUMMARY_FINISHED = "#99FF66";
     private static final String COLOR_SUMMARY_ACTIVE = "#8BFEA8";
@@ -46,7 +48,7 @@ public class ConsolePlugin extends GenericPlugin
         super(name, parent);
     }
 
-    public String render()
+    public ScreenView getView()
     {
         if (mcf != null)
         {
@@ -158,7 +160,7 @@ public class ConsolePlugin extends GenericPlugin
         }
         tablePanel.add(buttonRefresh);
 
-        return tablePanel.toHtml();
+        return tablePanel;
     }
 
     @Override
@@ -171,6 +173,13 @@ public class ConsolePlugin extends GenericPlugin
             mcf = (MCF) servletContext.getAttribute("MCF");
         }
     }
+
+	@Override
+	public void reload(Database db) throws Exception
+	{
+		// TODO Auto-generated method stub
+		
+	}
 
 
 }

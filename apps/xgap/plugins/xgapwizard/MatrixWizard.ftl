@@ -27,9 +27,6 @@
 			</#if>
 		</#list>
 		
-		<#-- Hack to immediatly clear the message so it doesn't "stick". -->
-		${screen.clearMessage()}
-		
 		<div class="screenbody">
 			<div class="screenpadding">	
 <#--begin your plugin-->
@@ -125,7 +122,7 @@ examples.
 					</#list>
 					</select>
 					
-					<input type="submit" value="Tag" onclick="__dataId.value='${di.data.id?c}';__action.value='tag';return true;"/>
+					<input type="submit" value="Tag" id="tagdata_${di.data.id?c}" onclick="__dataId.value='${di.data.id?c}';__action.value='tag';return true;"/>
 					<br><br>
 				</td>
 				<td>

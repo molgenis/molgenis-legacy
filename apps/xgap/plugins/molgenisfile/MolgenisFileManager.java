@@ -102,7 +102,6 @@ public class MolgenisFileManager extends PluginModel<Entity>
 				this.setMessages(new ScreenMessage("File uploaded", true));
 			}
 
-			this.setMessages();
 		}
 
 		catch (Exception e)
@@ -110,11 +109,6 @@ public class MolgenisFileManager extends PluginModel<Entity>
 			e.printStackTrace();
 			this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	@Override
@@ -166,27 +160,11 @@ public class MolgenisFileManager extends PluginModel<Entity>
 
 			this.model.setHasFile(hasFile);
 
-			// doesnt work??
-			//String db_path = "http://" + HtmlTools.getExposedIPAddress() + ":8080/" + MolgenisServlet.getMolgenisVariantID();
-			
-			//FIXME: bad practice!!!
-			
+			//set app location
 			if(this.model.getDb_path() == null){
-				String db_path = "http://" + HtmlTools.getExposedIPAddress() + "/" + MolgenisServlet.getMolgenisVariantID();
+				String db_path = this.getApplicationController().getApplicationUrl();
 				this.model.setDb_path(db_path);
 			}
-			
-			
-			//FIXME: also bad!!
-			if(this.model.getIpURl() == null){
-				String ip = HtmlTools.getExposedIPAddress();
-				String app = MolgenisServlet.getMolgenisVariantID();
-				String url = "http://" + ip + ":8080/" + app + "/" + "molgenis.do";
-				this.model.setIpURl(url);
-			}
-			
-			// db_path = "http://" + "localhost" + ":8080/" +
-			// MolgenisServlet.getMolgenisVariantID();
 
 			if(hasFile)
 			{

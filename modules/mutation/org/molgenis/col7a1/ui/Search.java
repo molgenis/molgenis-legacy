@@ -11,6 +11,7 @@ import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.mutation.ui.search.SearchModel;
 import org.molgenis.mutation.ui.search.SearchPlugin;
 
@@ -22,13 +23,17 @@ public class Search extends SearchPlugin
 	{
 		super(name, parent);
 		this.setModel(new SearchModel(this));
-		this.setView(new FreemarkerView("init.ftl", this.getModel()));
 		this.getModel().setGeneName("COL7A1");
 		this.getModel().setPatientPager("res/mutation/col7a1/patientPager.jsp");
 		this.getModel().setMutationPager("res/mutation/col7a1/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/col7a1/ui/patient.ftl");
 	}
 
+	public ScreenView getView()
+	{
+		return new FreemarkerView("init.ftl", this.getModel());
+	}
+	
 	@Override
 	public void reload(Database db)
 	{

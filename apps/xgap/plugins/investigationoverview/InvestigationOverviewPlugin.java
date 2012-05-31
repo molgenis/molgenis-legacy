@@ -9,6 +9,8 @@ package plugins.investigationoverview;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
@@ -23,10 +25,15 @@ import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationElement;
+import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
+import org.molgenis.xgap.Marker;
+
+import app.JDBCMetaDatabase;
 
 public class InvestigationOverviewPlugin extends PluginModel<Entity>
 {
@@ -110,8 +117,7 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 				{
 					currentInvId = null;
 				}
-				
-				this.setMessages();
+
 			}
 			catch (Exception e)
 			{
@@ -119,11 +125,6 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e.getMessage() : "null", false));
 			}
 		}
-	}
-
-	public void clearMessage()
-	{
-		this.setMessages();
 	}
 
 	@Override
@@ -162,23 +163,38 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			if(reload)
 			{
 				this.model.setSelectedInv(inv);
-				QueryRule thisInv = new QueryRule("investigation", Operator.EQUALS, inv.getId());
-	
-				List<ObservationElement> ofList = db.find(ObservationElement.class, thisInv);
-	
-				// first make map of type + amount
-				HashMap<String, Integer> annotationTypeAndNr = new HashMap<String, Integer>();
-				for (ObservationElement of : ofList)
+				QueryRule thisInv = new QueryRule(ObservationElement.INVESTIGATION_NAME, Operator.EQUALS, inv.getName());
+
+				JDBCMetaDatabase metadb = new JDBCMetaDatabase();
+				Map<String, Integer> annotationTypeAndNr = new HashMap<String, Integer>();
+				Vector<org.molgenis.model.elements.Entity> entityList = metadb.getEntities();
+
+				// iterate over all entity types
+				for (org.molgenis.model.elements.Entity entityType : entityList)
 				{
-					if (!(of.get__Type().equals("Data") || of.get__Type().equals("ObservationElement")))
+					// get the ancestors for one such entity
+					for (org.molgenis.model.elements.Entity e : entityType.getAllAncestors())
 					{
-						if (annotationTypeAndNr.containsKey(of.get__Type()))
+						// if one of the ancestors is ObservationElement..
+						if (e.getName().equals(ObservationElement.class.getSimpleName()))
 						{
-							annotationTypeAndNr.put(of.get__Type(), annotationTypeAndNr.get(of.get__Type()) + 1);
-						}
-						else
-						{
-							annotationTypeAndNr.put(of.get__Type(), 1);
+							Class<? extends Entity> entityClass = db.getClassForName(entityType.getName());
+							// and the class is not ObservableFeature or ObservationTarget or Data..
+							if	(
+								!entityClass.getSimpleName().equals(ObservableFeature.class.getSimpleName())
+								&& !entityClass.getSimpleName().equals(ObservationTarget.class.getSimpleName())
+								&& !entityClass.getSimpleName().equals(Data.class.getSimpleName())
+								)
+							{
+								// count the number of entities in the database, who are also of this exact type
+								QueryRule thisType = new QueryRule(ObservationElement.__TYPE, Operator.EQUALS, (entityType.getName()));
+								int count = db.count(entityClass, thisInv, thisType);
+								if (count > 0)
+								{
+									annotationTypeAndNr.put(entityType.getName(), count);
+								}
+							}
+							break;
 						}
 					}
 	

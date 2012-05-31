@@ -14,6 +14,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.news.service.NewsService;
 import org.molgenis.util.Tuple;
 
@@ -23,9 +24,13 @@ public class News extends EasyPluginController<NewsModel>
 
 	public News(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new NewsModel(this));
-		this.setView(new FreemarkerView("News.ftl", getModel()));
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("News.ftl", getModel());
 	}
 
 	public void entry(Database db, Tuple request) throws DatabaseException

@@ -1,4 +1,3 @@
-<#macro org_molgenis_mutation_ui_upload_Upload screen>
 <form method="post" enctype="multipart/form-data" name="${screen.name}">
 	<!--needed in every form: to redirect the request to the right screen-->
 	<input type="hidden" name="__target" value="${screen.name}"/>
@@ -54,4 +53,3 @@ Use this page to submit any unpublished data. Before you can submit any data you
 		</div>
 	</div>
 </form>
-</#macro>

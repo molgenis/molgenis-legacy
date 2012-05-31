@@ -7,17 +7,20 @@
 
 package org.molgenis.animaldb.plugins.viewers;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -27,7 +30,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
 
-public class ListPluginMatrix extends GenericPlugin
+public class ListPluginMatrix extends EasyPluginController
 {
 	private static final long serialVersionUID = 8804579908239186037L;
 	MatrixViewer targetMatrixViewer = null;
@@ -45,7 +48,7 @@ public class ListPluginMatrix extends GenericPlugin
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		if (targetMatrixViewer != null) {
 			targetMatrixViewer.setDatabase(db);
@@ -64,6 +67,8 @@ public class ListPluginMatrix extends GenericPlugin
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
 		}
+		
+		return Show.SHOW_MAIN;
 	}
 
 	@Override
@@ -72,12 +77,12 @@ public class ListPluginMatrix extends GenericPlugin
 		cs.setDatabase(db);
 		
 		// If a non-matrix related request was handled or if a new user has logged in, reload the matrix
-		if (reload == true || userId != this.getLogin().getUserId().intValue()) {
-			userId = this.getLogin().getUserId().intValue();
+		if (reload == true || userId != db.getLogin().getUserId().intValue()) {
+			userId = db.getLogin().getUserId().intValue();
 			container = new Container();
 			div = new DivPanel();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				// Some measurements that we think AnimalDB users like to see most:
 				measurementsToShow.add("Active");
@@ -109,9 +114,11 @@ public class ListPluginMatrix extends GenericPlugin
 		}
     }
 	
-	public String render()
+	public ScreenView getView()
     {
-    	return container.toHtml();
+		MolgenisForm view = new MolgenisForm(this);
+		view.add(container);
+		return view;
     }
 	
 }

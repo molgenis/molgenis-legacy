@@ -18,21 +18,22 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.EntityTable;
 import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
-import org.molgenis.framework.ui.html.Newline;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
 
-public class ImportCompute extends EasyPluginController<ImportComputeModel>
+public class ImportCompute extends EasyPluginController<ImportCompute>
 {
+	private static final long serialVersionUID = -7403318653011743829L;
+
 	enum State
 	{
 		UPLOAD, REVIEW
@@ -47,10 +48,8 @@ public class ImportCompute extends EasyPluginController<ImportComputeModel>
 
 	public ImportCompute(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
-		this.setModel(new ImportComputeModel(this)); // the default model
-		this.setView(new FreemarkerView("ImportComputeView.ftl", getModel())); // <plugin
-																				// flavor="freemarker"
+		super(name, parent);
+		this.setModel(this); // the default model is itself
 	}
 
 	@Override
@@ -166,7 +165,7 @@ public class ImportCompute extends EasyPluginController<ImportComputeModel>
 
 		state = State.UPLOAD;
 
-		this.setSucces("Added or updated " + count + " records succesfully");
+		this.setSuccess("Added or updated " + count + " records succesfully");
 	}
 
 	public void resetUpload(Database db, Tuple request)
@@ -175,7 +174,7 @@ public class ImportCompute extends EasyPluginController<ImportComputeModel>
 	}
 
 	@Override
-	public String render()
+	public ScreenView getView()
 	{
 		MolgenisForm f = new MolgenisForm(this);
 
@@ -237,7 +236,7 @@ public class ImportCompute extends EasyPluginController<ImportComputeModel>
 
 		}
 
-		return f.render();
+		return f;
 	}
 
 	private static String readFileAsString(File filePath) throws java.io.IOException

@@ -132,11 +132,6 @@ public class SimpleWholeDatabaseSearch extends PluginModel<Entity>
 		return res;
 	}
 
-	public void clearMessage()
-	{
-		this.setMessages();
-	}
-
 	@Override
 	public void reload(Database db)
 	{

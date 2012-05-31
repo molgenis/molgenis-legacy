@@ -1,5 +1,5 @@
 Name,defaultValue,description,dataType,hasOne_name
-insilicorun,run04,increment each time you repeat in silico analysis,string,
+insilicorun,run05,increment each time you repeat in silico analysis,string,
 clusterQueue,umcg,,,
 mem,128m,Memory in GB,,
 walltime,00:10:00,,,
@@ -34,4 +34,4 @@ fq_barcode,${allRawNgsDataDir}/${runDir}/${fileprefix}_${barcode}.fq.gz,use thes
 fq_barcode_1,${allRawNgsDataDir}/${runDir}/${fileprefix}_${barcode}_1.fq.gz,use these in case of demultiplexed files,,
 fq_barcode_2,${allRawNgsDataDir}/${runDir}/${fileprefix}_${barcode}_2.fq.gz,use these in case of demultiplexed files,,
 #completeWorksheet,/Volumes/Users/pneerincx/EclipseWorkspace/ngs_samples/worksheet/worksheet_GAF_filteredForReanalysis_NonPriority_2012_03_12.csv,,,
-completeWorksheet,/target/gpfs2/gcc/home/wbkoetsier/BGI_reanalysis_2012_03_13.csv,,,
+completeWorksheet,/target/gpfs2/gcc/tools/molgenis_compute/../worksheets/BGI_reanalysis_2012_03_13.csv,,,

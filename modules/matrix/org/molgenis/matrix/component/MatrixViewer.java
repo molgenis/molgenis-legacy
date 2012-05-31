@@ -31,9 +31,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisFieldTypes;
-import org.molgenis.datatable.view.AbstractExporter;
-import org.molgenis.datatable.view.CsvExporter;
-import org.molgenis.datatable.view.Exporter;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -59,7 +56,10 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.matrix.MatrixException;
+import org.molgenis.matrix.Utils.AbstractExporter;
+import org.molgenis.matrix.Utils.CsvExporter;
 import org.molgenis.matrix.Utils.ExcelExporter;
+import org.molgenis.matrix.Utils.Exporter;
 import org.molgenis.matrix.Utils.SPSSExporter;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
@@ -77,6 +77,8 @@ import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
+
+import com.pmstation.spss.SPSSWriter;
 
 public class MatrixViewer extends HtmlWidget
 {
@@ -263,7 +265,7 @@ public class MatrixViewer extends HtmlWidget
 		}
 		catch (Exception e)
 		{			
-			((PluginModel<?>) this.callingScreenController).setError(e.getMessage());
+			//this.callingScreenController).setError(e.getMessage());
 			e.printStackTrace();
 			return new Paragraph("error", ExceptionUtils.getRootCauseMessage(e)).render();
 		}

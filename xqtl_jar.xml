@@ -60,7 +60,7 @@
 		<unjar src="${mlibs}commons-pool-1.5.2.jar" dest="${jarme}" overwrite="false"/> <!-- RUNTIME FrontController only??: GenericObjectPool -->
 		<unjar src="${mlibs}wsdl4j-1.6.2.jar" dest="${jarme}" overwrite="false"/><!-- RUNTIME AbstractServlet only??: WSDL Locator -->
 		<unjar src="${mlibs}quartz-1.6.0.jar" dest="${jarme}" overwrite="false"/><!-- Scheduling -->
-		<unjar src="${mlibs}icu4j_3_4.jar" dest="${jarme}" overwrite="false"/><!-- SimpleDateTime object for modules/matrix/org/molgenis/matrix/component/sqlbackend/BackendUtils.java -->
+		<unjar src="${mlibs}gson-2.1.jar" dest="${jarme}" overwrite="false"/><!-- GSON for XrefService-->
 		<!-- Application jars -->
 		<unjar src="${alibs}selenium-server-standalone-2.19.0.jar" dest="${jarme}" overwrite="false" /> <!-- Selenium webtests -->
 		<unjar src="${alibs}jaxrpc.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
@@ -90,6 +90,8 @@
 		<copy todir="${jarme}" verbose="true">
 			<fileset dir="../molgenis/src" includes="**/*.ftl" />
 		</copy>
+		<!-- Copy ajaxchosen.properties for XREF box-->
+		 <copy file="../molgenis/src/org/molgenis/framework/ui/html/ajaxchosen.properties" todir="${jarme}/org/molgenis/framework/ui/html/"/>
 	</target>
 	
 	<!-- Generate app on the unjarred content in jarme -->
@@ -166,7 +168,6 @@
 			<fileset dir="WebContent">
 				<exclude name="META-INF/**" />
 				<exclude name="WEB-INF/**" />
-				<exclude name="VAADIN/**" />
 				<exclude name="animaldb/**" />
 				<exclude name="designgg/**" />
 				<include name="**/*.*" />
@@ -196,7 +197,6 @@
 			<fileset dir="WebContent">
 				<exclude name="META-INF/**" />
 				<exclude name="WEB-INF/**" />
-				<exclude name="VAADIN/**" />
 				<exclude name="animaldb/**" />
 				<exclude name="designgg/**" />
 				<include name="**/*.*" />

@@ -107,7 +107,6 @@ public class ROnline<E extends Entity> extends PluginModel<E> {
 					}
 				}
 
-				this.setMessages();
 			} catch (Exception e) {
 				e.printStackTrace();
 				this.setMessages(new ScreenMessage(e.getMessage() != null ? e

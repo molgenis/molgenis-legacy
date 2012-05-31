@@ -18,7 +18,7 @@ public class BbmriUpdateDatabase
 		Database db = DatabaseFactory.create("apps/bbmri/org/molgenis/biobank/bbmri.molgenis.properties");
 		
 		// Only add "Margreet Brandsma" user if type of Login allows for this
-		if (!(db.getSecurity() instanceof SimpleLogin)) {
+		if (!(db.getLogin() instanceof SimpleLogin)) {
 			MolgenisUser u = new MolgenisUser();
 			u.setName("bbmri");
 			u.setPassword("bbmri");

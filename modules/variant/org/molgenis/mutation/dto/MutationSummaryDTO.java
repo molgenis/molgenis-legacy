@@ -40,6 +40,7 @@ public class MutationSummaryDTO implements Comparable<MutationSummaryDTO>, Seria
 	private List<PublicationDTO> publicationDTOList;
 	private String niceNotation;
 	private List<ProtocolDTO> protocolDTOList;
+	private String observedValue;
 	/* Hash for ObservedValues: Key: "Protocol" + id (because of freemarker issues), Value: List of ObservedValue's */
 	private Map<String, List<ObservedValueDTO>> observedValueDTOHash;
 
@@ -195,6 +196,14 @@ public class MutationSummaryDTO implements Comparable<MutationSummaryDTO>, Seria
 	public void setProtocolDTOList(List<ProtocolDTO> protocolDTOList) {
 		this.protocolDTOList = protocolDTOList;
 	}
+	public String getObservedValue() {
+		return observedValue;
+	}
+
+	public void setObservedValue(String observedValue) {
+		this.observedValue = observedValue;
+	}
+
 	public Map<String, List<ObservedValueDTO>> getObservedValueDTOHash() {
 		return observedValueDTOHash;
 	}

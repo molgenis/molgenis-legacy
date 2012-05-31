@@ -15,12 +15,12 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.pheno.Individual;
-import org.molgenis.pheno.dto.IndividualDTO;
 import org.molgenis.pheno.dto.FeatureDTO;
+import org.molgenis.pheno.dto.IndividualDTO;
 import org.molgenis.pheno.dto.ObservedValueDTO;
 import org.molgenis.pheno.dto.ProtocolApplicationDTO;
 import org.molgenis.pheno.dto.ProtocolDTO;
@@ -36,12 +36,24 @@ public class IndividualViewer extends EasyPluginController<IndividualViewerModel
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 8333436730236052413L;
 
+	private ScreenView view;
+	
 	public IndividualViewer(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new IndividualViewerModel(this));
 		this.getModel().setAction("show");
 		this.setView(new FreemarkerView("show.ftl", getModel()));
+	}
+	
+	public void setView(ScreenView view)
+	{
+		this.view = view;
+	}
+	
+	public ScreenView getView()
+	{
+		return view;
 	}
 
 	@Override

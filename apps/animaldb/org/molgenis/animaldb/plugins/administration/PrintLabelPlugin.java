@@ -8,6 +8,7 @@
 package org.molgenis.animaldb.plugins.administration;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +17,17 @@ import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.HorizontalRuler;
-import org.molgenis.framework.ui.html.SelectMultipleInput;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
+import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
@@ -37,7 +40,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
 
-public class PrintLabelPlugin extends GenericPlugin
+public class PrintLabelPlugin extends EasyPluginController
 {
 	private static final long serialVersionUID = 8416302930361487397L;
 	
@@ -58,7 +61,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		cs.setDatabase(db);
 		if (targetMatrixViewer != null) {
@@ -81,6 +84,7 @@ public class PrintLabelPlugin extends GenericPlugin
 				this.getMessages().add(new ScreenMessage(e.getMessage(), false));
 			}
 		}
+		return Show.SHOW_MAIN;
 	}
 	
 	/**
@@ -96,7 +100,7 @@ public class PrintLabelPlugin extends GenericPlugin
 		
 		cs.setDatabase(db);
 		
-		String userName = this.getLogin().getUserName();
+		String userName = db.getLogin().getUserName();
 		
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		File pdfFile = new File(tmpDir.getAbsolutePath() + File.separatorChar + "cagelabels.pdf");
@@ -223,13 +227,15 @@ public class PrintLabelPlugin extends GenericPlugin
 		container = new Container();
 		panel = new DivPanel("PrintLabelPluginDivPanel", null);
 		makeTargetsSelect(db);
-		makeFeaturesSelect();
+		makeFeaturesSelect(db);
 		makePrintButton();
 		container.add(panel);
 	}
 
-	public String render() {
-		return container.toHtml();
+	public ScreenView getView() {
+		MolgenisForm view = new MolgenisForm(this);
+    	view.add(container);
+    	return view;
 	}
 	
 	 /** 
@@ -237,7 +243,7 @@ public class PrintLabelPlugin extends GenericPlugin
 	 * @throws Exception 
      */
     public void makeTargetsSelect(Database db) throws Exception {
-    	List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+    	List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 		List<String> measurementsToShow = new ArrayList<String>();
 		measurementsToShow.add("Species");
 		List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
@@ -271,11 +277,11 @@ public class PrintLabelPlugin extends GenericPlugin
     /**
      * Create a select box with Measurements grabbed from the database.
      */
-    private void makeFeaturesSelect() {
+    private void makeFeaturesSelect(Database db) {
     	features = new SelectMultipleInput("Features", null);
 		features.setLabel("Select feature(s):");
     	try {
-    		List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+    		List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 		    for (Measurement feature : cs.getAllMeasurementsSorted(Measurement.NAME, "ASC", investigationNames)) {
 		    	features.addOption(feature.getName(), feature.getName());
 		    }

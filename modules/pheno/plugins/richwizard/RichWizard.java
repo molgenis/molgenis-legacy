@@ -154,11 +154,6 @@ public class RichWizard extends PluginModel<Entity>
 		}
 	}
 
-	public void clearMessage()
-	{
-		this.setMessages();
-	}
-
 	@Override
 	public void reload(Database db)
 	{

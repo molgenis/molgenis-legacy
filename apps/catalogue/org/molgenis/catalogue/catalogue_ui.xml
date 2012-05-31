@@ -14,9 +14,9 @@
 		<!-- plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" 
 			/ -->
 
-		<plugin name="catalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" />
+		<plugin name="CatalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" />
 
-		<plugin name="catalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Search variables" />
+		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Search variables" />
 		<!-- plugin name="Search" type="plugins.Search.Search" label="Search" /> -->
 
 
@@ -38,7 +38,7 @@
 
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
 			
-			<plugin name="harmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
+			<plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
 			<form name="mappingMeasurement" entity="MappingMeasurement"
 				label="Measurement Mappings" groups="admin" />
 			<form name="computeProtocol" entity="ComputeProtocol" label="Analysis Protocols" />
@@ -46,7 +46,7 @@
 				<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
 			</form>
 			<menu name="selectionModel" label="Select prediction model">
-				<plugin name="predictionModelSelection"
+				<plugin name="PredictionModelSelection"
 					type="plugins.predictionSelection.predictionSelectionPlugin" label="Validate Prediction Model" />
 			</menu>
 		</menu>

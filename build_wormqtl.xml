@@ -104,6 +104,8 @@
 		<copy todir="${mol_build_dir}" verbose="true">
 			<fileset dir="../molgenis/src" includes="**/*.ftl" />
 		</copy>
+		<!-- Copy ajaxchosen.properties for XREF box-->
+		 <copy file="../molgenis/src/org/molgenis/framework/ui/html/ajaxchosen.properties" todir="${mol_build_dir}/org/molgenis/framework/ui/html/"/>
 	</target>
 
 	<!--

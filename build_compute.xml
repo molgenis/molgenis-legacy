@@ -102,9 +102,11 @@
 		<echo file="${app_distro_dir}/molgenis_compute.sh">#!/bin/bash
 #
 # This script runs the MOLGENIS/compute commandline with only the jars needed added to the CLASSPATH.
-# To get path to this script use $(dirname -- "$0").
+# To get relative path to this script use $(dirname -- "$0").
 #
 
+MCDIR=$( cd -P "$( dirname "$0" )" &amp;&amp; pwd )
+			
 java -cp \
 $(dirname -- "$0")/lib/molgenis-r${svn.Revision}.jar:\
 $(dirname -- "$0")/lib/molgenis_compute-r${svn.Revision}.jar:\
@@ -112,6 +114,7 @@ $(dirname -- "$0")/lib/commons-io-1.3.1.jar:\
 $(dirname -- "$0")/lib/freemarker.jar:\
 $(dirname -- "$0")/lib/log4j-1.2.15.jar \
 org.molgenis.compute.commandline.ComputeCommandLine \
+-mcdir=${MCDIR} \
 $*
 		</echo>
 		<chmod file="${app_distro_dir}/molgenis_compute.sh" perm="755"/>

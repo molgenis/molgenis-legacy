@@ -9,9 +9,8 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
-//import org.molgenis.framework.ui.html.Label;
+import org.molgenis.framework.ui.html.LabelInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.matrix.Matrix;
@@ -40,6 +39,8 @@ public class StringMatrixViewExample extends
 			this.setModel(new StringMatrixViewExampleModel(this)); // the
 			// default
 			// model
+			this.setView(new FreemarkerView("StringMatrixViewExampleView.ftl",
+					getModel())); // <plugin flavor="freemarker"
 
 			List<String> features = Arrays.asList(new String[]
 			{ "f1", "f2", "f3", "f4", "f5" });

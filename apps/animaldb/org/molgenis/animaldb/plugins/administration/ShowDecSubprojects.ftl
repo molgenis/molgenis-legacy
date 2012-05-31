@@ -42,7 +42,7 @@
 		<select name="decapp" id="decapp"> 
 			<#list screen.decApplicationList as decAppListItem>
 				<option 
-				<#if currentDecSubproject??><#if currentDecSubproject.decApplicationId == decAppListItem.id>selected="selected"</#if></#if>
+				<#if currentDecSubproject??><#if currentDecSubproject.decExpListId == decAppListItem.id>selected="selected"</#if></#if>
 				value="${decAppListItem.id?string.computer}">${decAppListItem.name}</option>
 			</#list>
 		</select>
@@ -152,7 +152,7 @@
 				$( "#startdate" ).datepicker({
 					numberOfMonths: 1,
 					showButtonPanel: true,
-					dateFormat: "yy-mm-dd"
+					dateFormat: "yy-mm-dd",
 				});
 			});
 		</script>
@@ -161,19 +161,27 @@
 	</div>
 	
 	<div class="row">
-		<script>
-			$(function() {
-				$( "#enddate" ).datepicker({
-					numberOfMonths: 1,
-					showButtonPanel: true,
-					dateFormat: "yy-mm-dd"
-				});
-			});
-		</script>
 		<label for="enddate">Subproject end date:</label>
 		<input type='text' id='enddate' name='enddate' <#if currentDecSubproject??><#if currentDecSubproject.getEndDate()??> value="${currentDecSubproject.endDate}"</#if></#if>  />
+	    <script>
+            $(function() {
+                $( "#enddate" ).datepicker({
+                    numberOfMonths: 1,
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm-dd",
+                    changeYear: true,
+                    changeMonth: true
+                });
+            });
+        </script>
 	</div>
 	
+	<div class="row">
+        <label for="decsubprojectbudget">Animal budget:</label>
+        <input type="text" name="decsubprojectbudget" id="decsubprojectbudget" class="textbox" 
+        <#if currentDecSubproject??><#if currentDecSubproject.getDecSubprojectBudget()??> value="${currentDecSubproject.decSubprojectBudget}"</#if></#if> />
+    </div>
+    	
 	<div class='row'>
 		<input type='submit' id='addsubproject' class='addbutton' value='Save' onclick="__action.value='addEditDecSubproject'" />
 	</div>
@@ -237,7 +245,18 @@
 	
 	<div class="row">
 		<label for="subprojectremovaldate">Date of removal from DEC subproject:</label>
-		<input type='text' class='textbox' id='subprojectremovaldate' name='subprojectremovaldate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' class='textbox' id='subprojectremovaldate' name='subprojectremovaldate' value='${screen.currentDate}'  autocomplete='off' />
+	   <script>
+            $(function() {
+                $( "#subprojectremovaldate" ).datepicker({
+                    numberOfMonths: 1,
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm-dd"
+                    changeMonth: true,
+                    changeYear: true
+                });
+            });
+        </script>
 	</div>
 	
 	<div class='row'>
@@ -260,7 +279,18 @@
 	
 	<div id="deathdatediv" class="row" style="display:block">
 		<label for="deathdate">Date of death:</label>
-		<input type='text' class='textbox' id='deathdate' name='deathdate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' class='textbox' id='deathdate' name='deathdate' value='${screen.currentDate}' autocomplete='off' />
+	    <script>
+            $(function() {
+                $( "#deathdate" ).datepicker({
+                    numberOfMonths: 1,
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm-dd",
+                    changeYear: true,
+                    changeMonth: true
+                });
+            });
+        </script>
 	</div>
 	
 	<div class='row'>
@@ -315,7 +345,18 @@
 	
 	<div class="row" style='clear:left'>
 		<label for="subprojectadditiondate">Date of entry into DEC subproject:</label>
-		<input type='text' class='textbox' id='subprojectadditiondate' name='subprojectadditiondate' value='${screen.currentDate}' onclick='showDateInput(this)' autocomplete='off' />
+		<input type='text' class='textbox' id='subprojectadditiondate' name='subprojectadditiondate' value='${screen.currentDate}' autocomplete='off' />
+	    <script>
+            $(function() {
+                $( "#subprojectadditiondate" ).datepicker({
+                    numberOfMonths: 1,
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm-dd",
+                    changeYear: true,
+                    changeMonth: true
+                });
+            });
+        </script>
 	</div>
 	
 	<div class='row'>
@@ -372,6 +413,7 @@
 					<th>Name</th>
 					<th>Start date</th>
 					<th>End date</th>
+					<th>Animal Budget</th>
 					<th>DEC application</th>
 					<th>DEC subproject code</th>
 					<th>DEC subproject title</th>
@@ -392,11 +434,12 @@
 					<#assign i = 0>
 					<#list screen.experimentList as expl>
 						<tr>
-							<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${i}"><img id="edit_breedingline" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
-							<td> <a href='molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${i}'><img id="manage_breedingline" class="edit_button" title="add/remove animals to/from subproject" alt="Edit" src="generated-res/img/grid-manage-icon.gif"></a>  [${expl.nrOfAnimals}]</td>
+							<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${i}"><img id="edit_decsubproject" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
+							<td> <a href='molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${i}'><img id="manage_animals_in_subproject" class="edit_button" title="add/remove animals to/from subproject" alt="Manage" src="generated-res/img/grid-manage-icon.gif"></a>  [${expl.nrOfAnimals}]</td>
 							<td>${expl.name}</td>
 							<td>${expl.startDate}</td>
 							<td>${expl.endDate}</td>
+							<td>${expl.decSubprojectBudget}</td>
 							<td>${expl.decApplication}</td>
 							<td>${expl.experimentNr}</td>
 							<td>${expl.experimentTitle}</td>

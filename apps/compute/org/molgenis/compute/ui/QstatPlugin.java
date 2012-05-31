@@ -2,30 +2,20 @@ package org.molgenis.compute.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
-import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.html.ActionInput;
-import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.MolgenisForm;
-import org.molgenis.framework.ui.html.StringInput;
+import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.util.Pbs;
 import org.molgenis.util.PbsJob;
 import org.molgenis.util.Tuple;
 
 /**
- * QstatPluginController takes care of all user requests and application logic.
- * 
- * <li>Each user request is handled by its own method based action=methodName.
- * <li>MOLGENIS takes care of db.commits and catches exceptions to show to the
- * user <li>QstatPluginModel holds application state and business logic on top
- * of domain model. Get it via this.getModel()/setModel(..) <li>QstatPluginView
- * holds the template to show the layout. Get/set it via
- * this.getView()/setView(..).
+ * Qstat plugin enables to run Qstat via the browser.
  */
 public class QstatPlugin extends EasyPluginController<QstatPluginModel>
 {
@@ -39,10 +29,8 @@ public class QstatPlugin extends EasyPluginController<QstatPluginModel>
 
 	public QstatPlugin(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new QstatPluginModel(this)); // the default model
-		this.setView(new FreemarkerView("QstatPluginView.ftl", getModel())); // <plugin
-		// flavor="freemarker"
 	}
 
 	public void refresh(Database db, Tuple request)
@@ -66,11 +54,11 @@ public class QstatPlugin extends EasyPluginController<QstatPluginModel>
 		}
 	}
 
-	public String render()
+	public ScreenView getView()
 	{
 		// show inputs for host, username, password
 
-//		MolgenisForm f = new MolgenisForm(this.getModel());
+		MolgenisForm f = new MolgenisForm(this.getModel());
 //
 //		DivPanel panel = new DivPanel("pbs_panel", null);
 //
@@ -135,8 +123,9 @@ public class QstatPlugin extends EasyPluginController<QstatPluginModel>
 //			e.printStackTrace();
 //		}
 
-//		return f.render();
-			return "TODO";
+		f.add(new Paragraph("TODO"));
+		return f;
+
 	}
 
 	@Override

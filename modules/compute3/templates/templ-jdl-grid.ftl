@@ -11,7 +11,7 @@ InputSandbox = {"${script_location}/${script_name}.sh"};
 OutputSandbox = {"${error_log}","${output_log}"};
 
 Requirements = ((other.GlueCEInfoHostName == "creamce.gina.sara.nl" ||
-	 other.GlueCEInfoHostName == "phoebe.htc.biggrid.nl" ||
+     other.GlueCEInfoHostName == "phoebe.htc.biggrid.nl" ||
 	 other.GlueCEInfoHostName == "gb-ce-ams.els.sara.nl" ||
 	 other.GlueCEInfoHostName ==  "gb-ce-uu.science.uu.nl" ||
 	 other.GlueCEInfoHostName == "gb-ce-tud.ewi.tudelft.nl" ||

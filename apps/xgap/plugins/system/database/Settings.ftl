@@ -27,13 +27,13 @@
 
 <h2>Reset & loading</h2>
 
-<@action name="loadExampleData" label="Load example data (may take a minute)"/><br><br>
-
-<@action name="removeExampleData" label="Remove example data (investigation 'ClusterDemo' will be deleted)"/><br><br>
-
-<@action name="resetDatabase" label="Complete reset database (all data will be deleted!!)"/><br><br>
-
-<@action name="resetDatabaseSoft" label="Soft reset database (deletes all relational data, but keeps files)"/><br><br>
+<input type="submit" id="loadExampleData" onclick="$(this).closest('form').find('input[name=__action]').val('loadExampleData');" value="Load example data (may take a minute)" /><script>$("#loadExampleData").button();</script>
+<br><br>
+<input type="submit" id="removeExampleData" onclick="$(this).closest('form').find('input[name=__action]').val('removeExampleData');" value="Remove example data (investigation 'ClusterDemo' will be deleted)" /><script>$("#removeExampleData").button();</script>
+<br><br>
+<input type="submit" id="resetDatabase" onclick="$(this).closest('form').find('input[name=__action]').val('resetDatabase');" value="Complete reset database (all data will be deleted!!)" /><script>$("#resetDatabase").button();</script>
+<br><br>
+<input type="submit" id="resetDatabaseSoft" onclick="$(this).closest('form').find('input[name=__action]').val('resetDatabaseSoft');" value="Soft reset database (deletes all relational data, but keeps files)" /><script>$("#resetDatabaseSoft").button();</script>
 
 <#if screen.console?exists>
 <div style="border: 1px black; background: white; width: 100%">

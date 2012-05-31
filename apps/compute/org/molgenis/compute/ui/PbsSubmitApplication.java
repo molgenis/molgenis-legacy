@@ -9,11 +9,12 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.MolgenisForm;
-import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.Paragraph;
+import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.util.Pbs;
 import org.molgenis.util.PbsJob;
@@ -34,13 +35,16 @@ public class PbsSubmitApplication extends
 
 	public PbsSubmitApplication(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new PbsSubmitApplicationModel(this)); // the default model
-		this.setView(new FreemarkerView("PbsSubmitApplicationView.ftl",
-				getModel())); // <plugin
-		// flavor="freemarker"
 	}
 
+	public ScreenView getView()
+	{
+		return new FreemarkerView("PbsSubmitApplicationView.ftl",
+				getModel());
+	}
+	
 	public void refresh(Database db, Tuple request)
 	{
 		// nothing to do, because reload does all the work

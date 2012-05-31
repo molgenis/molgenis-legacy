@@ -47,24 +47,36 @@
 
 <br><br>
 
-<div style="position:relative;left:80px;top:20px;">
-		<select class=" ui-widget-content ui-corner-all" id="Phenotype_select" name="dataTypeSelect"  style="width:220px;" name="dataTypeSelect">
-			<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All phenotypes (${model.annotationTypeAndNr[allDataTypes]})</option>
-			<#list model.annotationTypeAndNr?keys as key>
-				<#if key != allDataTypes>
-					<option value="${key}" <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == key>selected="selected"</#if>>${key} (${model.annotationTypeAndNr[key]})</option>
-				</#if>
-			</#list>
-		</select><script>$("#Phenotype_select").chosen();</script>
-</div>
-<div style="position:relative;left:300px;top:-15px;">
-
-	<input type="text" name="query" class="searchBox" value="${query}" >
-</div>
-
-<div style="position:relative;left:580px;top:-65px;">
-	<@action name="search" label="Search"/>
-</div>
+<table>
+	<tr>
+		<td colspan="3" height="10" align="center">
+			&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<td width="290" align="right">
+			<select class=" ui-widget-content ui-corner-all" id="Phenotype_select" name="dataTypeSelect"  style="width:220px;" name="dataTypeSelect">
+				<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All phenotypes (${model.annotationTypeAndNr[allDataTypes]})</option>
+				<#list model.annotationTypeAndNr?keys as key>
+					<#if key != allDataTypes>
+						<option value="${key}" <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == key>selected="selected"</#if>>${key} (${model.annotationTypeAndNr[key]})</option>
+					</#if>
+				</#list>
+			</select><script>$("#Phenotype_select").chosen();</script>
+		</td>
+		<td width="250" align="center">
+			<input type="text" name="query" class="searchBox" value="${query}" >
+		</td>
+		<td width="290" align="left">
+			<input type="submit" id="search" onclick="$(this).closest('form').find('input[name=__action]').val('search');" value="Search" /><script>$("#search").button();</script>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3" height="70" align="center">
+			<span style="font-size:12px;">(<i>for example:</i> ctl, daf, pgp-7, gst-27, Y65B4BR, K02B12, WBGene00021562, WBGene00006727, acetylcholine, luciferase ... )</span>
+		</td>
+	</tr>
+</table>
 
 
 
@@ -80,16 +92,17 @@
 	 width:200px;
 	 z-index: 5;
 	">
-	Multiplot cart:<br><br>
+	
+	<input type="submit" id="plotShoppingCart" onclick="$(this).closest('form').find('input[name=__action]').val('plotShoppingCart');" value="Create plot" /><script>$("#plotShoppingCart").button();</script>
+	<br><br>
+	
+	<input type="submit" id="emptyShoppingCart" onclick="$(this).closest('form').find('input[name=__action]').val('emptyShoppingCart');" value="Remove all" /><script>$("#emptyShoppingCart").button();</script>
+		
+		<br><br>
 	<#list model.shoppingCart?keys as name>
 	<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
 	<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a><br>
 	</#list>
-	
-	<br><br>
-	<@action name="plotShoppingCart" label="Create plot"/>
-	<#--@action name="emptyShoppingCart" label="Clear"/-->
-	
 	</div>
 	
 </#if>
@@ -102,7 +115,7 @@
 	
 	<#assign r = model.report.entity>
 	
-	<h1>${r.get(typefield)} <a target="_blank" href="molgenis.do?select=${r.get(typefield)}s&__target=${r.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${r.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${r.name}">${r.name}</a></h1>
+	<h1>${r.get(typefield)} <a target="_blank" href="molgenis.do?select=${r.get(typefield)}s&__target=${r.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${r.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${r.name}">${r.name}<#if r.label?? && r.label?length gt 0> / ${r.label}</#if></a></h1>
 	
 	<#if model.qtls?? && model.qtls?size gt 0><#-- should have them really -->
 	<br>
@@ -113,7 +126,7 @@
 			Hit #${qtl_index+1}
 			<br>Max. <#if qtl.plot??><#if qtl.plot?starts_with('eff')>effect size<#else>LOD score</#if><#else>value</#if>: ${qtl.peakValue}<br>in <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${qtl.matrix.name}">${qtl.matrix.name}</a><br><br>
 			<#if qtl.plot??>
-				<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
+				<#assign html = "<html><head><title>QTL plot</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
 				<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 					<img src="tmpfile/${qtl.plot}" width="320" height="240">
 				</a><br>
@@ -151,7 +164,7 @@
 							
 								<#if qtl.plot??>
 									<i>Click to enlarge</i><br>
-									<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
+									<#assign html = "<html><head><title>QTL plot</title></head><body><img src=tmpfile/" + qtl.plot + "></body></html>">
 									<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 										<img src="tmpfile/${qtl.plot}" width="160" height="120">
 									</a>
@@ -180,7 +193,7 @@
 							<td>
 								<#if qtl.plot??><a target="_blank" href="molgenis.do?select=Markers&__target=Markers&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${qtl.peakMarker}">${qtl.peakMarker}</a><#else>${qtl.peakMarker}</#if>
 								<#if qtl.markerAnnotations?keys?seq_contains(qtl.peakMarker)>at bp ${qtl.markerAnnotations[qtl.peakMarker].bpstart?c}<#if qtl.markerAnnotations[qtl.peakMarker].cm??>, cM ${qtl.markerAnnotations[qtl.peakMarker].cm}</#if></#if>
-								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${qtl.peakMarker}'; document.forms.${screen.name}.submit();">explore further</a>]
+								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${qtl.peakMarker}'; document.forms.${screen.name}.submit();">explore deeper</a>]
 							</td>
 						</tr>
 					</table>
@@ -216,7 +229,7 @@
 						<tr class="form_listrow1">
 							<td>
 								<#if qtl.plot??><a target="_blank" href="molgenis.do?select=Markers&__target=Markers&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Marker_name&__filter_operator=EQUALS&__filter_value=${m}">${m}</a><#else>${m}</#if>
-								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${m}'; document.forms.${screen.name}.submit();">explore further</a>]
+								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${m}'; document.forms.${screen.name}.submit();">explore deeper</a>]
 							</td>
 							<td>
 									${qtl.valuesForMarkers[m_index]}
@@ -317,7 +330,7 @@
 						</tr>
 					</table>
 					
-					<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + ml.rowImg + "></body></html>">
+					<#assign html = "<html><head><title>Row plot</title></head><body><img src=tmpfile/" + ml.rowImg + "></body></html>">
 					<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 						<img src="tmpfile/${ml.rowImg}" width="160" height="120">
 					</a>
@@ -344,7 +357,7 @@
 						</tr>
 					</table>
 					
-					<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + ml.colImg + "></body></html>">
+					<#assign html = "<html><head><title>Column plot</title></head><body><img src=tmpfile/" + ml.colImg + "></body></html>">
 					<a href="#" onclick="var generate = window.open('', '', 'width=850,height650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
 						<img src="tmpfile/${ml.colImg}" width="160" height="120">
 					</a>
@@ -382,7 +395,7 @@
 						<#list ml.rowCorr?keys as key>
 							<tr class="form_listrow1">
 								<td>
-									${key} [<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">explore further</a>]
+									${key} [<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${key}'; document.forms.${screen.name}.submit();">explore deeper</a>]
 								</td>
 								<td>
 									<#if ml.rowCorr[key]??>${ml.rowCorr[key]}<#else>N/A</#if>
@@ -460,68 +473,90 @@
 	<#if model.multiplot??>
 
 	<table cellpadding="30"><tr><td>
-		<h2>Results for "<#if model.query??>${model.query}</#if>"</h2><br>
+		<h2>Results for "<#if model.query??>${model.query}</#if>":</h2><br>
 		
 		<table>
 			<tr>
 				<td>
 					<#if model.multiplot.plot??>
-					<i>All-in-one plot of search matches, click to enlarge:</i><br>
-						<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.multiplot.plot + "></body></html>">
+					<i>Heatplot, click to enlarge:</i><br>
+						<#assign html = "<html><head><title>QTL multiplot</title></head><body><img src=tmpfile/" + model.multiplot.plot + "></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-							<img src="tmpfile/${model.multiplot.plot}" width="320" height="320">
+							<img src="tmpfile/${model.multiplot.plot}" width="220" height="200">
 						</a>
 					</#if>
 				</td>
 				<td>
-		
 					<#if model.multiplot.cisTransPlot??>
 					<i>Cis-trans plot, click to enlarge:</i><br>
-						<#assign html = "<html><head><title>Legend</title></head><body><img src=tmpfile/" + model.multiplot.cisTransPlot + "></body></html>">
+						<#assign html = "<html><head><title>QTL cis-trans plot</title></head><body><img src=tmpfile/" + model.multiplot.cisTransPlot + "></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-							<img src="tmpfile/${model.multiplot.cisTransPlot}" width="320" height="320">
+							<img src="tmpfile/${model.multiplot.cisTransPlot}" width="220" height="200">
+						</a><br>
+					</#if>
+				</td>
+				<td>
+					<#if model.multiplot.regularPlot??>
+					<i>Profile plot, click to enlarge:</i><br>
+						<#assign html = "<html><head><title>QTL profile plot</title></head><body><img src=tmpfile/" + model.multiplot.regularPlot + "></body></html>">
+						<a href="#" onclick="var generate = window.open('', '', 'width=${plotWidth?c},height=${plotHeight?c},resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
+							<img src="tmpfile/${model.multiplot.regularPlot}" width="220" height="200">
 						</a><br>
 					</#if>
 				</td>
 			</tr>
 			<tr>
-				<td colspan="2">
+				<td>
 				<br><br>
 				<#if model.multiplot.plot??>
-					<i>Legend, click to enlarge:</i><br>
+					<span style="font-size:15px;font-weight:bold;">Legend, click to enlarge:</span><br/><br/>
 						<#assign html = "<html><head><title>Legend</title></head><body><img src=clusterdemo/wormqtl/legend.png></body></html>">
 						<a href="#" onclick="var generate = window.open('', '', 'width=1000,height=650,resizable=yes,toolbar=no,location=no,scrollbars=yes');  generate.document.write('${html}'); generate.document.close(); return false;">
-							<img src="clusterdemo/wormqtl/legend.png" width="150" height="100">
+							<img src="clusterdemo/wormqtl/legend.png" width="220" height="170">
 						</a>
 					</#if>
 				</td>
+				<td colspan="2">
+				<br><br>
+					<span style="font-size:15px;font-weight:bold;">More downloads:</span><br/>
+					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.cytoNetwork}">Cytoscape network</a> for this plot. (<a target="_blank" href="http://wiki.cytoscape.org/Cytoscape_User_Manual/Creating_Networks#Import_Free-Format_Table_Files">how-to import</a>)
+					<br>Get the <a target="_blank" href="tmpfile/${model.multiplot.cytoNodes}">Cytoscape nodes</a> for this plot. (<a target="_blank" href="http://cytoscape.org/manual/Cytoscape2_6Manual.html#Import Attribute Table Files">how-to import</a>)
+					<br>Note: includes <b>significant results only</b>. (LOD > 3.5)
+					<br><i>Save both files. Import network (has LOD scores), then node <br>attributes (chrom, bploc, dataset).</i> <a target="_blank" href="clusterdemo/wormqtl/cyto_example.png">Example visualization</a>
+					<br>
+					<br>Get the generated <a target="_blank" href="tmpfile/${model.multiplot.srcData}">source data</a> for these plots.
+					<br>Get the generated <a target="_blank" href="tmpfile/${model.multiplot.plot?replace(".png",".R")}">multiplot plot R script</a>.
+					<br>Get the generated <a target="_blank" href="tmpfile/${model.multiplot.cisTransPlot?replace(".png",".R")}">cistrans R plot script</a>.
+					<br>Get the generated <a target="_blank" href="tmpfile/${model.multiplot.regularPlot?replace(".png",".R")}">profile R plot script</a>.
+				</td>
 			</tr>
 			<tr>
-				<td colspan="2">
+				<td colspan="3">
+				
 					<br><br>
-					<i>All items that are in the plot (click for details):</i>
+					<span style="font-size:15px;font-weight:bold;">Traits:</span><br/>
 					<div style="overflow: auto; width: 780px; max-height: 400px;">
 					<#list model.multiplot.matches?values as d>
-					<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
-					[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore further</a>]
-					<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if><br>
+					<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}<#if d.label?? && d.label?length gt 0> / ${d.label}</#if></a>
+					[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore deeper</a>]
+					<#if d.description??> - <#if d.description?length gt 40>${d.description?substring(0, 40)}...<#else>${d.description}</#if></#if><br>
 					</#list>
+					</div>
 					<br>
-					<i>All datasets used in the plot (click for details):</i>
+					<span style="font-size:15px;font-weight:bold;">Dataset IDs:</span><br/>
 					<table>
 					<#list model.multiplot.datasets?values as d>
 						<tr>
 							<td>
-								ID <b>${d.id}</b>
+								<b>${d.id}</b>
 							</td>
 							<td>
 								: <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
-								<#if d.description??> - <#if d.description?length gt 70>${d.description?substring(0, 70)}...<#else>${d.description}</#if></#if>
+								<#if d.description??> - <#if d.description?length gt 40>${d.description?substring(0, 40)}...<#else>${d.description}</#if></#if>
 							</td>
 						</tr>
 					</#list>
 					</table>
-					</div>
 				</td>
 			</tr>
 		</table>
@@ -546,7 +581,7 @@
 	<#if model.hits??>
 	Found these hits:<br><br>
 	
-	
+	<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><b><i>Add all to cart</b></i><br><br>
 	
 	<#list model.hits?keys as name>
 	
@@ -558,7 +593,7 @@
 		<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shop'; document.forms.${screen.name}.__shopMeId.value = '${model.hits[name].id?c}'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();">
 	</#if>
 		
-	${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();"><b>${name}</b></a>
+	${model.hits[name].get(typefield)} <a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();"><b>${name}<#if model.hits[name].label?? && model.hits[name].label?length gt 0> / ${model.hits[name].label}</#if></b></a>
 	<#if model.hits[name].get('ReportsFor_name')?? && model.hits[name].get('ReportsFor_name')?is_string && model.hits[name].get('ReportsFor_name')?length gt 0>reports for <a target="_blank" href="molgenis.do?select=Genes&__target=Genes&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Gene_name&__filter_operator=EQUALS&__filter_value=${model.hits[name].reportsFor_name}">${model.hits[name].reportsFor_name}</a></#if> <#if model.hits[name].symbol?? && model.hits[name].symbol?length gt 0>(${model.hits[name].symbol})</#if>
 	
 	<div style="display: inline;font-size:100%"><#if model.hits[name].description??> <br> <#if model.hits[name].description?length gt 70>${model.hits[name].description?substring(0, 70)} <#else>${model.hits[name].description}</#if> <a target="_blank" href="molgenis.do?select=${model.hits[name].get(typefield)}s&__target=${model.hits[name].get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${model.hits[name].get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${name}">...more</a> </#if></div>
@@ -567,7 +602,7 @@
 	
 	</#list>
 	
-	<table cellpadding="10">
+	<#-->table cellpadding="10">
 		<tr>
 			<td>
 				<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><b><i>Add all to cart</b></i>
@@ -576,7 +611,7 @@
 				<input type="submit" class="unshop" value="" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();"><b><i>Clear current cart</b></i>
 			</td>
 		</tr>
-	</table>
+	</table-->
 	</#if>
 	
 	

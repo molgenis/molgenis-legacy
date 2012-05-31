@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.molgenis.framework.db.Database;
@@ -24,9 +25,10 @@ import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.dto.ProteinDomainDTO;
 import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.Patient;
-import org.molgenis.variant.SequenceCharacteristic;
-import org.molgenis.variant.SequenceRelation;
+import org.molgenis.variant.Exon;
+import org.molgenis.variant.Patient;
+import org.molgenis.variant.ProteinDomain;
+import org.molgenis.variant.Variant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,8 +51,8 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			SequenceCharacteristic exon = this.em.find(SequenceCharacteristic.class, id);
-			return this.sequenceCharacteristicToExonDTO(exon);
+			Exon exon = this.em.find(Exon.class, id);
+			return this.exonToExonDTO(exon);
 		}
 		catch (Exception e)
 		{
@@ -67,11 +69,9 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			String sql = "SELECT f FROM SequenceRelation r JOIN r.sequenceFeature f JOIN f.featureType ft JOIN r.sequenceTarget t JOIN t.featureType tt WHERE ft.name = 'cdna-variant' AND (tt.name = 'exon' OR tt.name = 'intron') ORDER BY r.fmin";
-			TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
-			List<SequenceCharacteristic> variantList = query.getResultList();
+			List<Variant> variantList = this.db.query(Variant.class).sortASC(Variant.STARTGDNA).find();
 
-			return this.sequenceCharacteristicListToVariantDTOList(variantList);
+			return this.variantListToVariantDTOList(variantList);
 		}
 		catch (Exception e)
 		{
@@ -88,11 +88,8 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			String sql = "SELECT s FROM SequenceCharacteristic s JOIN s.featureType t WHERE t.name = 'exon' OR t.name = 'intron'";
-			TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
-			List<SequenceCharacteristic> exonList = query.getResultList();
-
-			List<ExonDTO> exonDTOList = this.sequenceCharacteristicListToExonDTOList(exonList);
+			List<Exon> exonList = this.db.find(Exon.class);
+			List<ExonDTO> exonDTOList = this.exonListToExonDTOList(exonList);
 			Collections.sort(exonDTOList);
 
 			return exonDTOList;
@@ -112,9 +109,8 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			List<MutationSummaryDTO> mutationSummaryDTOList = this.sequenceCharacteristicListToMutationSummaryDTOList(this.db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.FEATURETYPE, this.ontologyTermCache.get("cdna-variant")).find());
-			Collections.sort(mutationSummaryDTOList);
-			return mutationSummaryDTOList;
+			List<Variant> variantList = this.db.query(Variant.class).sortASC(Variant.STARTCDNA).find();
+			return this.variantListToMutationSummaryDTOList(variantList);
 		}
 		catch (Exception e)
 		{
@@ -128,7 +124,9 @@ public class SearchService extends MolgenisVariantService
 		try
 		{
 			List<Patient> patients = this.db.query(Patient.class).find();
-			return this.patientListToPatientSummaryDTOList(patients);
+			List<PatientSummaryDTO> result = this.patientListToPatientSummaryDTOList(patients);
+			Collections.sort(result);
+			return result;
 		}
 		catch (Exception e)
 		{
@@ -148,7 +146,7 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			return this.sequenceCharacteristicListToProteinDomainDTOList(this.db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.FEATURETYPE, this.ontologyTermCache.get("protein_domain")).sortASC(SequenceCharacteristic.ID).find());
+			return this.proteinDomainListToProteinDomainDTOList(this.db.query(ProteinDomain.class).sortASC(ProteinDomain.STARTCDNA).find());
 		}
 		catch (Exception e)
 		{
@@ -354,14 +352,22 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			String sql = "SELECT f FROM SequenceRelation r JOIN r.relationType rt JOIN r.sequenceFeature f JOIN f.featureType ft JOIN r.sequenceTarget t WHERE rt.name = :relationType AND ft.name = :featureType AND t.id = :targetId";
-			TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
-			query.setParameter("relationType", "part-of");
-			query.setParameter("featureType", "cdna-variant");
-			query.setParameter("targetId", exonId);
-			List<SequenceCharacteristic> variantList = query.getResultList();
+			Exon exon = this.db.findById(Exon.class, exonId);
 
-			return this.sequenceCharacteristicListToMutationSummaryDTOList(variantList);
+			org.molgenis.framework.db.Query<Variant> query = this.db.query(Variant.class);
+			if ("-1".equals(exon.getStrand()))
+			{
+				query = query.lessOrEqual(Variant.STARTGDNA, exon.getStartGdna());
+				query = query.greaterOrEqual(Variant.ENDGDNA, exon.getEndGdna());
+			}
+			else if ("1".equals(exon.getStrand()))
+			{
+				query = query.greaterOrEqual(Variant.STARTGDNA, exon.getStartGdna());
+				query = query.lessOrEqual(Variant.ENDGDNA, exon.getEndGdna());
+			}
+			List<Variant> result = query.find();
+			
+			return this.variantListToMutationSummaryDTOList(result);
 		}
 		catch (Exception e)
 		{
@@ -379,16 +385,16 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			String sql = "SELECT s FROM SequenceCharacteristic s JOIN s.alternateId a WHERE a.definition = 'molgenis_variant_id' AND a.name = :name";
-			TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+			String sql = "SELECT s FROM Variant s JOIN s.alternateId a WHERE a.definition = 'molgenis_variant_id' AND a.name = :name";
+			TypedQuery<Variant> query = this.em.createQuery(sql, Variant.class);
 			query.setParameter("name", mutationIdentifier);
-			List<SequenceCharacteristic> variantList = query.getResultList();
+			List<Variant> variantList = query.getResultList();
 
 			if (variantList.size() > 1)
 				throw new SearchServiceException("Not exactly one variant matching " + mutationIdentifier);
 
 			if (variantList.size() == 1)
-				return this.sequenceCharacteristicToMutationSummaryDTO(variantList.get(0));
+				return this.variantToMutationSummaryDTO(variantList.get(0));
 			else
 				return null;
 		}
@@ -527,20 +533,30 @@ public class SearchService extends MolgenisVariantService
 
 	public List<MutationSummaryDTO> findMutationsByCodonChangeNumber(final int aaPosition)
 	{
-		String sql = "SELECT DISTINCT s FROM SequenceRelation r JOIN r.sequenceFeature s WHERE s.featureType.name = 'aa-variant' AND r.fmin = :fmin";
-		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
-		query.setParameter("fmin", aaPosition);
-
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		try
+		{
+			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.STARTAA, aaPosition).find();
+			return this.variantListToMutationSummaryDTOList(variantList);
+		}
+		catch (DatabaseException e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
 	}
 
 	public List<MutationSummaryDTO> findMutationsByCdnaPosition(final int cdnaPosition)
 	{
-		String sql = "SELECT DISTINCT s FROM SequenceRelation r JOIN r.sequenceFeature s WHERE s.featureType.name = 'cdna-variant' AND r.fmin = :fmin";
-		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
-		query.setParameter("fmin", cdnaPosition);
-
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		try
+		{
+			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.STARTCDNA, cdnaPosition).find();
+			return this.variantListToMutationSummaryDTOList(variantList);
+		}
+		catch (DatabaseException e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
 	}
 
 	public List<MutationSummaryDTO> findMutationsByExonNumber(final int exonNumber)
@@ -551,30 +567,30 @@ public class SearchService extends MolgenisVariantService
 
 	public List<MutationSummaryDTO> findMutationsByObservedValue(final String value)
 	{
-		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.target s WHERE s.__Type = 'SequenceCharacteristic' AND ov.value = :value";
-		Query query = this.em.createQuery(sql);
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.target s WHERE ov.value = :value";
+		TypedQuery<ObservationElement> query = this.em.createQuery(sql, ObservationElement.class);
 		query.setParameter("value", value);
 
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		return this.observationElementListToMutationSummaryDTOList(query.getResultList());
 	}
 
 	public List<MutationSummaryDTO> findMutationsByObservedValue(final String featureName, final String value)
 	{
-		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE s.__Type = 'SequenceCharacteristic' AND f.name = :featureName AND ov.value = :value";
-		Query query = this.em.createQuery(sql);
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE (f.name = :featureName OR f.description = :featureName) AND ov.value = :value";
+		TypedQuery<ObservationElement> query = this.em.createQuery(sql, ObservationElement.class);
 		query.setParameter("featureName", featureName);
 		query.setParameter("value", value);
 
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		return this.observationElementListToMutationSummaryDTOList(query.getResultList());
 	}
 
 	public List<MutationSummaryDTO> findMutationsByMeasurement(final String feature)
 	{
-		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE s.__Type = 'SequenceCharacteristic' AND f.name = :name AND ov.value IN ('yes', 'true')";
-		Query query = this.em.createQuery(sql);
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.feature f JOIN ov.target s WHERE f.name = :name AND ov.value IN ('yes', 'true')";
+		TypedQuery<ObservationElement> query = this.em.createQuery(sql, ObservationElement.class);
 		query.setParameter("name", feature);
 
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		return this.observationElementListToMutationSummaryDTOList(query.getResultList());
 	}
 
 	/**
@@ -587,11 +603,11 @@ public class SearchService extends MolgenisVariantService
 		try
 		{
 			String sql = "SELECT s FROM Patient p JOIN p.mutations s JOIN p.patientreferences r WHERE r.title LIKE :term";
-			TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+			TypedQuery<Variant> query = this.em.createQuery(sql, Variant.class);
 			query.setParameter("term", "%" + term + "%");
-			List<SequenceCharacteristic> variantList = query.getResultList();
+			List<Variant> variantList = query.getResultList();
 
-			return this.sequenceCharacteristicListToMutationSummaryDTOList(variantList);
+			return this.variantListToMutationSummaryDTOList(variantList);
 		}
 		catch (Exception e)
 		{
@@ -603,19 +619,24 @@ public class SearchService extends MolgenisVariantService
 	public List<MutationSummaryDTO> findMutationsByPatientIdentifier(final String term)
 	{
 		String sql = "SELECT DISTINCT s FROM Patient p JOIN p.mutations s JOIN p.alternateId a WHERE a.name = :name";
-		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+		TypedQuery<Variant> query = this.em.createQuery(sql, Variant.class);
 		query.setParameter("name", term);
 
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		return this.variantListToMutationSummaryDTOList(query.getResultList());
 	}
 
 	public List<MutationSummaryDTO> findMutationsByCdnaNotation(final String cdnaNotation)
 	{
-		String sql = "SELECT s FROM SequenceCharacteristic s JOIN s.featureType t WHERE t.name = 'cdna-variant' AND s.name = :name";
-		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
-		query.setParameter("name", cdnaNotation);
-
-		return this.sequenceCharacteristicListToMutationSummaryDTOList(query.getResultList());
+		try
+		{
+			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.NAME, cdnaNotation).find();
+			return this.variantListToMutationSummaryDTOList(variantList);
+		}
+		catch (DatabaseException e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
 	}
 
 	public HashMap<String, List<PatientSummaryDTO>> findPatientsByTerm(final String term)
@@ -729,19 +750,8 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			List<SequenceRelation> sequenceRelationList = this.db.query(SequenceRelation.class).equals(SequenceRelation.FMIN, mutationSummaryVO.getCdnaStart()).find();
-			
-			List<VariantDTO> result = new ArrayList<VariantDTO>();
-			
-			for (SequenceRelation relation : sequenceRelationList)
-			{
-				SequenceCharacteristic sequenceCharacteristic = relation.getSequenceFeature();
-	
-				if ("cdna-variant".equals(sequenceCharacteristic.getFeatureType().getName()) && !mutationSummaryVO.getId().equals(sequenceCharacteristic.getId()))
-					result.add(this.sequenceCharacteristicToVariantDTO(sequenceCharacteristic));
-			}
-			
-			return result;
+			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.STARTCDNA, mutationSummaryVO.getCdnaStart()).find();
+			return this.variantListToVariantDTOList(variantList);
 		}
 		catch (Exception e)
 		{
@@ -786,7 +796,7 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			return this.sequenceCharacteristicToProteinDomainDTO(this.em.find(SequenceCharacteristic.class, id), noIntrons);
+			return this.proteinDomainToProteinDomainDTO(this.em.find(ProteinDomain.class, id), noIntrons);
 		}
 		catch (Exception e)
 		{

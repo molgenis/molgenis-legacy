@@ -1,5 +1,13 @@
 package plugins.requestData;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+
+import jxl.write.WriteException;
+
 import gcc.catalogue.ShoppingCart;
 
 import org.apache.commons.lang.StringUtils;
@@ -8,20 +16,24 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.BoolInput;
 import org.molgenis.framework.ui.html.DivPanel;
 import org.molgenis.framework.ui.html.EmailInput;
 import org.molgenis.framework.ui.html.IntInput;
+import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.RichtextInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.XrefInput;
+import org.molgenis.pheno.Measurement;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.SimpleEmailService.EmailException;
 import org.molgenis.util.Tuple;
+
+import plugins.catalogueTree.WriteExcel;
 
 /**
  * LifeLinesRequestController takes care of all user requests and application
@@ -46,7 +58,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 	final static String LASTNAME = "LastName";
 
 	public LifeLinesRequest(String name, ScreenController<?> parent) {
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new LifeLinesRequestModel(this)); // the default model
 		// this.setView(new FreemarkerView("LifeLinesRequestView.ftl",
 		// getModel())); //<plugin flavor="freemarker"
@@ -83,27 +95,81 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		getModel().setSuccess("Update successful");
 	}
 
-	public void submit(Database db, Tuple request) throws DatabaseException, EmailException {
+	public void submit(Database db, Tuple request) throws DatabaseException, EmailException, WriteException, IOException {
 		sentEmail(db, request);
-		this.setSucces("Request submitted succesfully");
+		this.setSuccess("Request submitted succesfully");
 		submitted = true;
 		tuple = request;
 	}
 	
-	public void sentEmail(Database db, Tuple request) throws DatabaseException, EmailException {
+	public void sentEmail(Database db, Tuple request) throws DatabaseException, EmailException, WriteException, IOException {
 		String subject   = "Data request";
-		
 		ShoppingCart shc = new ShoppingCart();
+		WriteExcel xlsFile = new WriteExcel();
+		List<String> xlslabels = new ArrayList<String>();
+		HashMap<Integer, ArrayList<String>> userSelections = new HashMap<Integer, ArrayList<String>>();
+		String[] temp;
+		String delimiter = ",";
+		
 		shc = db.query(ShoppingCart.class).eq(ShoppingCart.ID, request.getString("MyMeasurementSelection") ).find().get(0);
 		shc.getName();
 		
+		xlsFile.setOutputFile("/Users/despoina/userselection.xls");
+		
+		List<String> row1 = new ArrayList<String>();
+		List<String> row2 = new ArrayList<String>();
+		List<String> row3 = new ArrayList<String>();
+		List<String> row4 = new ArrayList<String>();
+
+		
+		xlslabels.add("  ");  //need an empty label so that name and email are under correct labels.
+		xlslabels.add("FullName");		  	
+		xlslabels.add("Email");			  
+		
+		row1.add("A user request was received from : "); 
+		row1.add(request.getString(FIRSTNAME)	+ " "+	request.getString(LASTNAME));
+		row1.add(request.getString("emailAddress")  );
+		
+		row2.add("Measurements selected (id,name,date) :");		  	
+		row2.add(request.getString("MyMeasurementSelection"));
+		row2.add(shc.getName());
+		row2.add(shc.getDateOfSelection().toString());
+		
+		row3.add("Measurement details:");
+		row3.add(shc.get("measurements_id").toString()); 
+		row4.add("");
+		System.out.println(">>>>>>>>>>>>>" +shc.get("measurements_id").toString()); 
+		
+		temp = shc.get("measurements_id").toString().split(delimiter);
+		
+		for(int i =0; i < temp.length ; i++) {
+		    System.out.println("########"+temp[i]);
+		    temp[i] = temp[i].replace("[", "");
+		    temp[i] = temp[i].replace("]", "");
+		    System.out.println("########"+temp[i]);
+		    
+		    Measurement m = new Measurement();
+		    
+			m = db.query(Measurement.class).eq(Measurement.ID, temp[i]).find().get(0);
+
+			System.out.println(m.getDescription());
+			row4.add(m.getDescription());
+		}
+		
+		userSelections.put( 1, (ArrayList<String>) row1);
+		userSelections.put( 2, (ArrayList<String>) row2); 
+		userSelections.put( 3, (ArrayList<String>) row3);
+		userSelections.put( 4, (ArrayList<String>) row4); 
+
+		
+		xlsFile.write(xlslabels, userSelections);
+		
+		System.out.println("Please check the result file under /Users/despoina/userselections.xls");
+
 		String email = "Hello admin, \n\n" +
-				" User " + request.getString(FIRSTNAME)	+ " "+
-				request.getString(LASTNAME) + 
-				"(" + request.getString("emailAddress") + ")" +	
-				" has requested data with id: " +
-				request.getString("MyMeasurementSelection") +
-				" and name: " + shc.getName();
+				" User " + request.getString(FIRSTNAME)	+ " "+	request.getString(LASTNAME) + 
+				"(" + request.getString("emailAddress") + ")" +	" has requested data with id: " +
+				request.getString("MyMeasurementSelection") +	" and name: " + shc.getName();
 		
 		if (request.getString("GWAS")=="true") email +=  " GWAS ";
 		
@@ -124,7 +190,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		System.out.println("Email : " + admin.getEmail()+ "data request >>>"+ email);
 	}
 
-	public String render() {
+	public ScreenView getView() {
 		MolgenisForm form = new MolgenisForm(this.getModel());
 
 		if (submitted) {
@@ -136,7 +202,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 							+ " "
 							+ tuple.getString(LASTNAME)
 							+ "</b> for the request. You should have received a copy of your request in your mailbox. The LifeLines data officer will contact your shortly."));
-			return form.render();
+			return form;
 		}
 
 		DivPanel l = new DivPanel();
@@ -177,7 +243,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 
 		form.add(l);
 
-		return form.render();
+		return form;
 	}
 	
 //	@Override

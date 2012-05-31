@@ -3,6 +3,8 @@ package org.molgenis.mutation.service;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 
@@ -11,12 +13,9 @@ import jxl.Workbook;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.Publication;
 import org.molgenis.core.dto.PublicationDTO;
-import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
 import org.molgenis.mutation.ServiceLocator;
@@ -31,11 +30,10 @@ import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.pheno.AlternateId;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Patient;
 import org.molgenis.pheno.dto.ObservedValueDTO;
-import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
-import org.molgenis.variant.SequenceCharacteristic;
+import org.molgenis.variant.Patient;
+import org.molgenis.variant.Variant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +45,10 @@ public class UploadService extends MolgenisVariantService
 	private EntityManager em;
 
 	@Autowired
-	public UploadService(Database db, CsvToDatabase<Entity> uploadBatchCsvReader)
+	private UploadBatchExcelReader reader;
+
+	@Autowired
+	public UploadService(Database db)
 	{
 		super(db);
 		this.db = db;
@@ -92,7 +93,7 @@ public class UploadService extends MolgenisVariantService
 			// Add mutations
 			for (VariantDTO variantDTO : patientSummaryVO.getVariantDTOList())
 			{
-				List<SequenceCharacteristic> mutations = this.db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.NAME, variantDTO.getCdnaNotation()).find();
+				List<Variant> mutations = this.db.query(Variant.class).equals(Variant.NAME, variantDTO.getCdnaNotation()).find();
 	
 				if (mutations.size() != 1)
 					throw new UploadServiceException("No mutation found for " + variantDTO.getCdnaNotation());
@@ -273,10 +274,10 @@ public class UploadService extends MolgenisVariantService
 		{
 			Workbook workbook             = Workbook.getWorkbook(file);
 //			UploadBatchExcelReader reader = new UploadBatchExcelReader();
-			UploadBatchExcelReader reader = (UploadBatchExcelReader) org.molgenis.mutation.ServiceLocator.instance().getContext().getBean("uploadBatchExcelReader");
+//			UploadBatchExcelReader reader = (UploadBatchExcelReader) org.molgenis.mutation.ServiceLocator.instance().getContext().getBean("uploadBatchExcelReader");
 
 			this.em.getTransaction().begin();
-			int count                     = reader.importSheet(this.db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
+			int count                     = this.reader.importSheet(this.db, workbook.getSheet("Patients"), new SimpleTuple(), DatabaseAction.ADD_IGNORE_EXISTING, "");
 			this.em.getTransaction().commit();
 			return count;
 		}
@@ -328,7 +329,7 @@ public class UploadService extends MolgenisVariantService
 		alternateId.setName(mutationUploadDTO.getIdentifier());
 		this.em.persist(alternateId);
 		
-		SequenceCharacteristic variant = new SequenceCharacteristic();
+		Variant variant = new Variant();
 		variant.setAlternateId(alternateId);
 		variant.setName(mutationUploadDTO.getCdnaNotation());
 		variant.setFeatureType(this.ontologyTermCache.get("variant"));
@@ -361,29 +362,32 @@ public class UploadService extends MolgenisVariantService
 		}
 	}
 
-	public void assignValuesFromNotation(MutationUploadDTO mutationUploadDTO) throws RESyntaxException
+	public void assignValuesFromNotation(MutationUploadDTO mutationUploadDTO)
 	{
 //		logger.debug(">>> assignValuesFromNotation: cdnaNotation==" + mutationUploadVO.getMutation().getCdna_notation());
 		if (mutationUploadDTO.getCdnaNotation() != null)
 		{
-			String cdnaNotation = mutationUploadDTO.getCdnaNotation();
-//			RE reIndel          = new RE("^c.([\\d+-]+)([_]*)([\\d+-]*)del([ACGTacgt\\d]*)ins([ACGTacgt]*)$");
-			RE reIndel          = new RE("^c.([\\d+-_]+)del([ACGTacgt\\d]*)ins([ACGTacgt]*)$");
-			RE reDeletion       = new RE("^c.([\\d+-_]+)del([ACGTacgt\\d]*)$");
-			RE reDuplication    = new RE("^c.([\\d+-_]+)dup([ACGTacgt\\d]*)$");
-//			RE reInsertion      = new RE("^c.([\\d+-]+)([_]*)([\\d+-]*)ins([ACGTacgt]*)$");
-			RE reInsertion      = new RE("^c.([\\d+-_]+)ins([ACGTacgt]*)$");
-			RE reSubstitution   = new RE("^c.([\\d+-]+)([ACGTacgt]+)>([ACGTacgt]+)$");
+			String cdnaNotation    = mutationUploadDTO.getCdnaNotation();
+			Pattern reIndel        = Pattern.compile("^c.([\\d+-_]+)del([ACGTacgt\\d]*)ins([ACGTacgt]*)$");
+			Pattern reDeletion     = Pattern.compile("^c.([\\d+-_]+)del([ACGTacgt\\d]*)$");
+			Pattern reDuplication  = Pattern.compile("^c.([\\d+-_]+)dup([ACGTacgt\\d]*)$");
+			Pattern reInsertion    = Pattern.compile("^c.([\\d+-_]+)ins([ACGTacgt]*)$");
+			Pattern reSubstitution = Pattern.compile("^c.([\\d+-]+)([ACGTacgt]+)>([ACGTacgt]+)$");
+			Matcher mIndel        = reIndel.matcher(cdnaNotation);
+			Matcher mDeletion     = reDeletion.matcher(cdnaNotation);
+			Matcher mDuplication  = reDuplication.matcher(cdnaNotation);
+			Matcher mInsertion    = reInsertion.matcher(cdnaNotation);
+			Matcher mSubstitution = reSubstitution.matcher(cdnaNotation);
 
-			if (reIndel.match(cdnaNotation))
+			if (mIndel.matches())
 			{
 				mutationUploadDTO.setEvent("insertion/deletion");
 				
 				//deletion
 
-				String[] position = reIndel.getParen(1).split("_");
-				String deletion   = reIndel.getParen(2);
-				String insertion  = reIndel.getParen(3);
+				String[] position = mIndel.group(1).split("_");
+				String deletion   = mIndel.group(2);
+				String insertion  = mIndel.group(3);
 
 //				logger.debug(">>> position==" + position + ", deletion==" + deletion + ", insertion==" + insertion);
 
@@ -402,10 +406,10 @@ public class UploadService extends MolgenisVariantService
 
 				mutationUploadDTO.setNtChange(insertion);
 			}
-			else if (reDeletion.match(cdnaNotation))
+			else if (mDeletion.matches())
 			{
-				String[] position = reDeletion.getParen(1).split("_");
-				String deletion   = reDeletion.getParen(2);
+				String[] position = mDeletion.group(1).split("_");
+				String deletion   = mDeletion.group(2);
 				
 				mutationUploadDTO.setEvent("deletion");
 				mutationUploadDTO.setMutationPosition(position[0]);
@@ -418,21 +422,11 @@ public class UploadService extends MolgenisVariantService
 						mutationUploadDTO.setLength(deletion.length());
 				else
 					mutationUploadDTO.setLength(1);
-//				mutationUploadVO.getMutation().setPosition(reDeletion.getParen(1));
-//				if (StringUtils.isNotEmpty(reDeletion.getParen(3)))
-//					mutationUploadVO.getMutation().setLength(Integer.valueOf(reDeletion.getParen(3)) - Integer.valueOf(reDeletion.getParen(1)) + 1);
-//				else if (StringUtils.isNotEmpty(reDeletion.getParen(4)))
-//					if (StringUtils.isNumeric(reDeletion.getParen(4)))
-//						mutationUploadVO.getMutation().setLength(Integer.valueOf(reDeletion.getParen(4)));
-//					else
-//						mutationUploadVO.getMutation().setLength(reDeletion.getParen(4).length());
-//				else
-//					mutationUploadVO.getMutation().setLength(1);
 			}
-			else if (reDuplication.match(cdnaNotation))
+			else if (mDuplication.matches())
 			{
-				String[] position  = reDuplication.getParen(1).split("_");
-				String duplication = reDuplication.getParen(2);
+				String[] position  = mDuplication.group(1).split("_");
+				String duplication = mDuplication.group(2);
 				
 				mutationUploadDTO.setEvent("duplication");
 				mutationUploadDTO.setMutationPosition(position[0]);
@@ -445,39 +439,29 @@ public class UploadService extends MolgenisVariantService
 						mutationUploadDTO.setLength(duplication.length());
 				else
 					mutationUploadDTO.setLength(1);
-				
-//				if (StringUtils.isNotEmpty(reDuplication.getParen(3)))
-//					mutationUploadVO.getMutation().setLength(Integer.valueOf(reDuplication.getParen(3)) - Integer.valueOf(reDuplication.getParen(1)) + 1);
-//				else if (StringUtils.isNotEmpty(reDuplication.getParen(4)))
-//					if (StringUtils.isNumeric(reDeletion.getParen(4)))
-//						mutationUploadVO.getMutation().setLength(Integer.valueOf(reDeletion.getParen(4)));
-//					else
-//						mutationUploadVO.getMutation().setLength(reDuplication.getParen(4).length());
-//				else
-//					mutationUploadVO.getMutation().setLength(1);
 			}
-			else if (reInsertion.match(cdnaNotation))
+			else if (mInsertion.matches())
 			{
-				String[] position = reInsertion.getParen(1).split("_");
-				String insertion  = reInsertion.getParen(2);
+				String[] position = mInsertion.group(1).split("_");
+				String insertion  = mInsertion.group(2);
 				mutationUploadDTO.setEvent("insertion");
 				mutationUploadDTO.setMutationPosition(position[0]);
 				mutationUploadDTO.setLength(insertion.length());
 				mutationUploadDTO.setNtChange(insertion);
 			}
-			else if (reSubstitution.match(cdnaNotation))
+			else if (mSubstitution.matches())
 			{
 				mutationUploadDTO.setEvent("point mutation");
-				mutationUploadDTO.setMutationPosition(reSubstitution.getParen(1));
-				mutationUploadDTO.setLength(reSubstitution.getParen(2).length());
-				mutationUploadDTO.setNtChange(reSubstitution.getParen(3));
+				mutationUploadDTO.setMutationPosition(mSubstitution.group(1));
+				mutationUploadDTO.setLength(mSubstitution.group(2).length());
+				mutationUploadDTO.setNtChange(mSubstitution.group(3));
 			}
 //			logger.debug(">>> assignValuesFromNotation: cdnaNotation==" + cdnaNotation + ", event==" + mutationUploadVO.getMutation().getEvent() + ", pos==" + mutationUploadVO.getMutation().getPosition() + ", len==" + mutationUploadVO.getMutation().getLength() + ", ntchange==" + mutationUploadVO.getMutation().getNtchange());
 		}
 		this.assignValuesFromPosition(mutationUploadDTO);
 	}
 
-	public void assignValuesFromPosition(MutationUploadDTO mutationUploadDTO) throws RESyntaxException
+	public void assignValuesFromPosition(MutationUploadDTO mutationUploadDTO)
 	{
 		if (StringUtils.isEmpty(mutationUploadDTO.getMutationPosition()) || "0".equals(mutationUploadDTO.getMutationPosition()))
 			return;
@@ -695,7 +679,7 @@ public class UploadService extends MolgenisVariantService
 			mutationUploadDTO.setType("missense mutation");
 	}
 	
-	private String getNotation(MutationUploadDTO mutationUploadDTO, String position) throws RESyntaxException
+	private String getNotation(MutationUploadDTO mutationUploadDTO, String position)
 	{
 		if (mutationUploadDTO.getLength() == null)
 			return "";
@@ -735,7 +719,7 @@ public class UploadService extends MolgenisVariantService
 		return notation;
 	}
 	
-	private void assignGdnaNotation(MutationUploadDTO mutationUploadDTO) throws RESyntaxException
+	private void assignGdnaNotation(MutationUploadDTO mutationUploadDTO)
 	{
 		if (mutationUploadDTO.getLength() != null)
 			mutationUploadDTO.setGdnaNotation("g." + this.getNotation(mutationUploadDTO, mutationUploadDTO.getGdnaStart().toString()));
@@ -743,7 +727,7 @@ public class UploadService extends MolgenisVariantService
 			mutationUploadDTO.setGdnaNotation("");
 	}
 
-	private void assignCdnaNotation(MutationUploadDTO mutationUploadDTO) throws RESyntaxException
+	private void assignCdnaNotation(MutationUploadDTO mutationUploadDTO)
 	{
 		if (mutationUploadDTO.getLength() != null)
 			mutationUploadDTO.setCdnaNotation("c." + this.getNotation(mutationUploadDTO, mutationUploadDTO.getMutationPosition()));

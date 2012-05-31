@@ -11,6 +11,7 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -32,14 +33,15 @@ public class Test extends EasyPluginController<TestModel>
 	public Test(String name, ScreenController<?> parent)
 	{
 		//link this controller into its place in the user interface tree
-		super(name, null, parent);
+		super(name, parent);
 		
 		//configure the model with the state of your UI screen
 		this.setModel(new TestModel(this));
-		
-		//configure the view, default using Freemarker layout template TestView.ftl
-		this.setView(new FreemarkerView("TestView.ftl", getModel()));
-
+	}
+	
+	public ScreenView getView()
+	{
+		return new FreemarkerView("TestView.ftl", getModel());
 	}
 	
 	/**

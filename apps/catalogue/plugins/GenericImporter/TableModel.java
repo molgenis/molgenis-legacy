@@ -188,7 +188,7 @@ public class TableModel {
 		if(multipleSheets == true){
 			sheetSize = 1;
 		}
-		
+
 		try{
 			for(int sheetIndex = 0; sheetIndex < sheetSize; sheetIndex++){
 
@@ -546,6 +546,7 @@ public class TableModel {
 													ov.setTarget_Name(cellValue + "_" +investigationName);
 													ov.setFeature_Name("display name");
 													ov.setValue(cellValue);
+													ov.setInvestigation_Name(investigationName);
 													cellValue += "_" + investigationName;
 													checkExistingMeasurementsInDB.put(measure.getName().toLowerCase(), cellValue);
 													observedValueList.add(ov);
@@ -683,7 +684,26 @@ public class TableModel {
 
 			checkExistenceInDB(hashMapObservationTarget, ObservationTarget.class.getSimpleName());
 
-			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
+			int iterationForObservationTarget = 1;
+
+			while(observationTargetList.size() > iterationForObservationTarget * 5000){
+
+				List<InvestigationElement> subListForObservationTarget = observationTargetList.subList((iterationForObservationTarget-1) * 5000, 
+						iterationForObservationTarget * 5000);
+
+				db.update(subListForObservationTarget, Database.DatabaseAction.ADD_IGNORE_EXISTING, 
+						ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
+				
+				iterationForObservationTarget++;
+			}
+			
+			List<InvestigationElement> subListForObservationTarget = observationTargetList.subList((iterationForObservationTarget - 1)*5000, 
+					observationTargetList.size()); 
+			
+			db.update(subListForObservationTarget, Database.DatabaseAction.ADD_IGNORE_EXISTING, 
+					ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
+			
+//			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
 
 
 			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
@@ -721,11 +741,11 @@ public class TableModel {
 						//have different definitions, so we need to distinguish this kind of variables. Therefore a display name meta-measurement is created
 						//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
 						if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
-							
+
 							displayNameMeasurement = new Measurement();
 
 							displayNameMeasurement.setName("display name");
-							
+
 							db.add(displayNameMeasurement);
 
 						}else{
@@ -743,7 +763,6 @@ public class TableModel {
 						ob.setInvestigation_Name(m.getInvestigation_Name());
 						observedValueList.add(ob);
 						displayNameToMeasurement.put(ob.getValue(), m);
-
 					}
 				}
 
@@ -868,7 +887,7 @@ public class TableModel {
 							subProtocols_new.add(subProtocol);
 						}	
 					}
-					
+
 					if(subProtocols_new.size() > 0)
 					{
 						List<Protocol> subProtocolList = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, subProtocols_new));
@@ -943,7 +962,25 @@ public class TableModel {
 
 			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 
-			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);		
+			int iteration = 1;
+
+			while(observedValueList.size() > iteration * 5000){
+
+				List<ObservedValue> subList = observedValueList.subList((iteration-1) * 5000, iteration * 5000);
+
+				db.update(subList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, 
+						ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
+				iteration++;
+			}
+			
+			List<ObservedValue> subList = observedValueList.subList((iteration - 1)*5000, observedValueList.size()); 
+			
+			db.update(subList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, 
+					ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
+
+			//			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, 
+			//						ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
+			//			
 
 			db.commitTx();
 

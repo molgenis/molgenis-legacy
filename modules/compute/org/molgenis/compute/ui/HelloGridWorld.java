@@ -1,14 +1,15 @@
 package org.molgenis.compute.ui;
 
+import java.util.Hashtable;
+
 import org.molgenis.compute.workflowgenerator.WorkflowGeneratorDB;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Tuple;
-
-import java.util.Hashtable;
 
 // hardcoded test - don't be scared with listing !!
 public class HelloGridWorld extends EasyPluginController<HelloGridWorldView>
@@ -18,9 +19,13 @@ public class HelloGridWorld extends EasyPluginController<HelloGridWorldView>
 
     public HelloGridWorld(String name, ScreenController<?> parent)
     {
-        super(name, null, parent);
+        super(name, parent);
         this.setModel(new HelloGridWorldView(this)); //the default model
-        this.setView(new FreemarkerView("HelloGridWorld.ftl", getModel())); //<plugin flavor="freemarker"
+    }
+    
+    public ScreenView getView()
+    {
+    	return new FreemarkerView("HelloGridWorld.ftl", getModel());
     }
 
     @Override

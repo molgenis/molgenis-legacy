@@ -11,6 +11,7 @@ import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.HiddenInput;
 import org.molgenis.framework.ui.html.MolgenisForm;
@@ -20,14 +21,36 @@ import org.molgenis.util.CsvWriter;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheetModel>
+/**
+ * Query to show analysis worksheet
+ */
+public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheet>
 {
+	private static final long serialVersionUID = -8335795840329827132L;
+
 	List<Tuple> sheet = new ArrayList<Tuple>();
+	
 	public AnalysisWorksheet(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
-		this.setModel(new AnalysisWorksheetModel(this)); //the default model
-		this.setView(new FreemarkerView("AnalysisWorksheetView.ftl", getModel())); //<plugin flavor="freemarker"
+		super(name, parent);
+	}
+	
+	public ScreenView getView()
+	{
+		MolgenisForm f = new MolgenisForm(this);
+		
+		f.add(new TupleTable("AnalysisWorksheetTable",sheet));
+		
+		f.add(new Paragraph(""));
+		
+		f.add(new ActionInput("download_txt_all", "Download all"));
+		
+		f.add(new ActionInput("download_txt_selected", "Download selected"));
+		
+		//this plus the strange names forces download, we need to make this better!
+		f.add(new HiddenInput(FormModel.INPUT_SHOW, ScreenModel.Show.SHOW_DOWNLOAD));
+
+		return f;
 	}
 	
 	@Override
@@ -68,25 +91,6 @@ public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheetMod
 			row.set("capturingKit", t.getString("capturingKit"));
 			sheet.add(row);
 		}
-	}
-	
-	@Override
-	public String render()
-	{
-		MolgenisForm f = new MolgenisForm(this);
-		
-		f.add(new TupleTable("AnalysisWorksheetTable",sheet));
-		
-		f.add(new Paragraph(""));
-		
-		f.add(new ActionInput("download_txt_all", "Download all"));
-		
-		f.add(new ActionInput("download_txt_selected", "Download selected"));
-		
-		//this plus the strange names forces download, we need to make this better!
-		f.add(new HiddenInput(FormModel.INPUT_SHOW, ScreenModel.Show.SHOW_DOWNLOAD));
-
-		return f.render();
 	}
 	
 	public void download_txt_all(Database db, Tuple request, OutputStream out)

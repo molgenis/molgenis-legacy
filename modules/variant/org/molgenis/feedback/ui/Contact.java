@@ -17,9 +17,10 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
 import org.molgenis.util.SimpleEmailService.EmailException;
+import org.molgenis.util.Tuple;
 
 public class Contact extends EasyPluginController<ContactModel>
 {
@@ -27,11 +28,15 @@ public class Contact extends EasyPluginController<ContactModel>
 
 	public Contact(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new ContactModel(this)); //the default model
-		this.setView(new FreemarkerView("Contact.ftl", getModel())); //<plugin flavor="freemarker"
 	}
 
+	public ScreenView getView()
+	{
+		return new FreemarkerView("Contact.ftl", getModel());
+	}
+	
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{

@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.viewers;
 
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +17,14 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.Table;
 import org.molgenis.matrix.component.MatrixViewer;
@@ -35,7 +38,7 @@ import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Tuple;
 
 
-public class EventViewerPluginMatrix extends GenericPlugin
+public class EventViewerPluginMatrix extends EasyPluginController
 {
 	private static final long serialVersionUID = 8804579908239186037L;
 	MatrixViewer targetMatrixViewer = null;
@@ -52,7 +55,7 @@ public class EventViewerPluginMatrix extends GenericPlugin
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
 		cs.setDatabase(db);
 		if (targetMatrixViewer != null) {
@@ -76,6 +79,8 @@ public class EventViewerPluginMatrix extends GenericPlugin
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
 		}
+		
+		return Show.SHOW_MAIN;
 	}
 
 	private void createInfoTable(Database db, int animalId) throws DatabaseException, ParseException {
@@ -144,7 +149,7 @@ public class EventViewerPluginMatrix extends GenericPlugin
 			container = new Container();
 			div = new DivPanel();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));
@@ -173,9 +178,11 @@ public class EventViewerPluginMatrix extends GenericPlugin
 		}
     }
 	
-	public String render()
+	public ScreenView getView()
     {
-    	return container.toHtml();
+		MolgenisForm view = new MolgenisForm(this);
+    	view.add( container );
+    	return view;
     }
 	
 }

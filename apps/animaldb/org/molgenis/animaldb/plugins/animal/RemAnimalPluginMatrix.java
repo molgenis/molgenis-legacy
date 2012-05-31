@@ -7,6 +7,7 @@
 
 package org.molgenis.animaldb.plugins.animal;
 
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,13 +21,15 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.ui.GenericPlugin;
+import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.matrix.component.MatrixViewer;
@@ -40,7 +43,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
 
-public class RemAnimalPluginMatrix extends GenericPlugin
+public class RemAnimalPluginMatrix extends EasyPluginController
 {
 	private static final long serialVersionUID = 6730055654508843657L;
 	MatrixViewer targetMatrixViewer = null;
@@ -50,6 +53,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 	private CommonService cs = CommonService.getInstance();
 	private List<Integer> targetList = null;
 	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+	private SimpleDateFormat newDateOnlyDbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
 	public RemAnimalPluginMatrix(String name, ScreenController<?> parent)
@@ -58,7 +62,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 	}
 
 	@Override
-    public void handleRequest(Database db, Tuple request)
+    public Show handleRequest(Database db, Tuple request, OutputStream out)
     {
 		cs.setDatabase(db);
 		if (targetMatrixViewer != null) {
@@ -127,8 +131,10 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 					throw new Exception("No date of removal set - animals not terminated");
 				}
 				Date deathDate = newDateOnlyFormat.parse(deathDateString);
+				String deathDateStr = newDateOnlyDbFormat.format(deathDate);
 				
-				String investigationName = cs.getOwnUserInvestigationName(this.getLogin().getUserName());
+				
+				String investigationName = cs.getOwnUserInvestigationName(db.getLogin().getUserName());
 				String notRemoved = "";
 				String removed = "";
 				for (Integer animalId : targetList) {
@@ -157,7 +163,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 					if (removal.equals("dood")) {
 						db.add(cs.createObservedValueWithProtocolApplication(investigationName, 
 								deathDate, null, "SetDeathDate", "DeathDate", animalName, 
-								newDateOnlyFormat.format(deathDate), null));
+								deathDateStr, null));
 					}
 					// Set remark
 					if (request.getString("remarks") != null) {
@@ -180,6 +186,8 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
 		}
+		
+		return Show.SHOW_MAIN;
     }
 	
 	@Override
@@ -191,7 +199,7 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 			container = new Container();
 			div = new DivPanel();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(this.getLogin().getUserName());
+				List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Location");
@@ -223,9 +231,11 @@ public class RemAnimalPluginMatrix extends GenericPlugin
 		}
     }
 	
-	public String render()
+	public ScreenView getView()
     {
-    	return container.toHtml();
+		MolgenisForm view = new MolgenisForm(this);
+    	view.add(container);
+    	return view;
     }
 	
 	private boolean inExperiment(Database db, String animalName, Date deathDate) throws DatabaseException, ParseException {

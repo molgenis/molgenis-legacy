@@ -5,6 +5,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.BoolInput;
 import org.molgenis.framework.ui.html.CustomHtml;
@@ -12,9 +13,10 @@ import org.molgenis.framework.ui.html.DateInput;
 import org.molgenis.framework.ui.html.DatetimeInput;
 import org.molgenis.framework.ui.html.DecimalInput;
 import org.molgenis.framework.ui.html.FlowLayout;
+import org.molgenis.framework.ui.html.HtmlElement.UiToolkit;
 import org.molgenis.framework.ui.html.HtmlSettings;
 import org.molgenis.framework.ui.html.IntInput;
-import org.molgenis.framework.ui.html.LabelInput;
+import org.molgenis.framework.ui.html.Label;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.MrefInput;
 import org.molgenis.framework.ui.html.SelectInput;
@@ -22,7 +24,6 @@ import org.molgenis.framework.ui.html.SelectMultipleInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.VerticalLayout;
 import org.molgenis.framework.ui.html.XrefInput;
-import org.molgenis.framework.ui.html.HtmlElement.UiToolkit;
 import org.molgenis.organization.Investigation;
 import org.molgenis.util.Tuple;
 
@@ -39,7 +40,7 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 {
 	public InputsTest(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new InputsTestModel(this)); //the default model
 		//this.setView(new FreemarkerView("InputsTestView.ftl", getModel())); //<plugin flavor="freemarker"
 	}
@@ -72,19 +73,18 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 	{
 		logger.info("changelibrary: " + request);
 		String lib = request.getString("library");
-		if("DOJO".equals(lib)) HtmlSettings.uiToolkit = UiToolkit.DOJO;
 		if("JQUERY".equals(lib)) HtmlSettings.uiToolkit = UiToolkit.JQUERY;
 		if("DEFAULT".equals(lib)) HtmlSettings.uiToolkit = UiToolkit.ORIGINAL;
 		
 	}
 	
-	public String render()
+	public ScreenView getView()
 	{
-		MolgenisForm main = new MolgenisForm(this, new VerticalLayout());
+		MolgenisForm view = new MolgenisForm(this, new FlowLayout());
 		
-		main.add(new LabelInput("select demo (and to change library used)"));
+		view.add(new Label("select demo (and to change library used)"));
 		
-		FlowLayout libraryPanel = new FlowLayout();
+		VerticalLayout libraryPanel = new VerticalLayout();
 		
 		SelectInput select = new SelectInput("library", HtmlSettings.uiToolkit.toString());
 		select.addOption("JQUERY", "Jquery toolkit");
@@ -98,9 +98,9 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 		libraryPanel.add(new CustomHtml(themeSwitch));
 
 		
-		main.add(libraryPanel);
+		view.add(libraryPanel);
 		
-		main.add(new LabelInput("demos of buttons"));
+		view.add(new Label("demos of buttons"));
 	
 		FlowLayout buttonDemo = new FlowLayout();
 		
@@ -117,21 +117,23 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 		
 		buttonDemo.add(button3);
 		
-		main.add(buttonDemo);
+		view.add(buttonDemo);
 		
 		//select boxes
-		main.add(new LabelInput("demos of selects"));
-		main.add(new XrefInput("XrefInput", Investigation.class));
+		view.add(new Label("demos of selects"));
+		view.add(new XrefInput("XrefInput", Investigation.class));
 		try
 		{
-			main.add(new XrefInput("XrefInputDefault", this.getDatabase().findById(Investigation.class,1)));
+			new XrefInput<Investigation>("XrefInputDefault", 
+					Investigation.class,
+					this.getDatabase().findById(Investigation.class,1));
 		}
 		catch (DatabaseException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		main.add(new MrefInput("MrefInput", Investigation.class));
+		view.add(new MrefInput("MrefInput", Investigation.class));
 		
 		SelectMultipleInput mselect = new SelectMultipleInput("MultipleSelect");
 		mselect.addOption("EU", "Europe");
@@ -142,13 +144,13 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 		mselect.addOption("AU","Australia");
 		mselect.addOption("AN","Antartica");
 		
-		main.add(mselect);
+		view.add(mselect);
 
 		
 		//string inputs
-		main.add(new LabelInput("demos of inputs"));
+		view.add(new Label("demos of inputs"));
 		
-		main.add(new StringInput("stringInput"));
+		view.add(new StringInput("stringInput"));
 		
 		//multicol select using html, TODO
 //		SelectInput multicol = new SelectInput("MultiCol");
@@ -160,18 +162,18 @@ public class InputsTest extends EasyPluginController<InputsTestModel>
 		//required
 		StringInput req = new StringInput("requiredInput");
 		req.setNillable(false);
-		main.add(req);
+		view.add(req);
 		
-		main.add(new IntInput("IntInput"));
+		view.add(new IntInput("IntInput"));
 		
-		main.add(new DecimalInput("DecimalInput"));
+		view.add(new DecimalInput("DecimalInput"));
 		
-		main.add(new DateInput("DateInput"));
+		view.add(new DateInput("DateInput"));
 		
-		main.add(new DatetimeInput("DatetimeInput"));
+		view.add(new DatetimeInput("DatetimeInput"));
 		
-		main.add(new BoolInput("BoolInput"));
+		view.add(new BoolInput("BoolInput"));
 		
-		return main.render();
+		return view;
 	}
 }

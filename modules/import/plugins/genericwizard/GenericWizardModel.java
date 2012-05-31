@@ -2,9 +2,6 @@ package plugins.genericwizard;
 
 import java.io.File;
 
-import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.SimpleScreenModel;
-
 import app.ImportWizardExcelPrognosis;
 
 public class GenericWizardModel {

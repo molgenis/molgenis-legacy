@@ -7,11 +7,9 @@
 
 package plugins.matrix.manager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 import matrix.general.Importer;
 
@@ -31,6 +29,8 @@ public class MatrixManager extends PluginModel
 {
 
 	private DataMatrixHandler dmh = null;
+	
+	public static String SESSION_MATRIX_DATA = "session_inmemory_matrix_data";
 	
 	private MatrixManagerModel model = new MatrixManagerModel();
 
@@ -78,7 +78,6 @@ public class MatrixManager extends PluginModel
 					RequestHandler.handle(this.model, request, db);
 				}
 
-				this.setMessages();
 			}
 			catch (Exception e)
 			{
@@ -88,24 +87,6 @@ public class MatrixManager extends PluginModel
 		}
 	}
 
-	public static Browser createBrowserInstance(Database db, Data data) throws Exception
-	{
-		boolean verifiedBackend = false;
-		DataMatrixHandler dmh = new DataMatrixHandler(db); //must create new because function is static (reused)
-		verifiedBackend = dmh.isDataStoredIn(data, data.getStorage(), db);
-		if (verifiedBackend)
-		{
-			DataMatrixInstance m = dmh.createInstance(data, db);
-			Browser br = new Browser(data, m);
-			// this.model.setBrowser(br);
-			return br;
-		}
-		else
-		{
-			throw new Exception("Could not verify existence of data source");
-		}
-	}
-	
 	private void setHeaderAttr(Database db) throws DatabaseException, MolgenisModelException, InstantiationException, IllegalAccessException
 	{
 		
@@ -271,7 +252,7 @@ public class MatrixManager extends PluginModel
 				if (this.model.isHasBackend())
 				{
 					logger.info("*** creating browser instance");
-					Browser br = createBrowserInstance(db, data);
+					Browser br = new CreateBrowserInstance(db, data, this.getApplicationController()).getBrowser();
 					this.model.setBrowser(br);
 					
 					if(!br.getModel().getInstance().getData().getValueType().equals(data.getValueType()))

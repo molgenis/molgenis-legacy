@@ -257,6 +257,7 @@ public class PrefillAnimalDB
 					tuple.getString("name"), tuple.getString("description"),
 					measurementNameList));
 		}
+		System.out.println();
 	}
 
 	public void populateSex(String filename) throws Exception

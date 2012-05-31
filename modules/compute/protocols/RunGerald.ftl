@@ -17,4 +17,4 @@
 
 perl ${gafscripts}/run_GERALD.pl \
 -run ${run} \
--samplecsv ${worksheet}
+-samplecsv ${McWorksheet}

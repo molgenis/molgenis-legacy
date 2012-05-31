@@ -6,14 +6,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.core.dto.PublicationDTO;
@@ -32,15 +32,19 @@ import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.mutation.util.SequenceUtils;
 import org.molgenis.pheno.AlternateId;
 import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservedValue;
-import org.molgenis.pheno.Patient;
 import org.molgenis.pheno.dto.ObservedValueDTO;
 import org.molgenis.pheno.dto.ProtocolDTO;
 import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.submission.Submission;
+import org.molgenis.variant.Exon;
+import org.molgenis.variant.Patient;
+import org.molgenis.variant.ProteinDomain;
 import org.molgenis.variant.SequenceCharacteristic;
 import org.molgenis.variant.SequenceRelation;
+import org.molgenis.variant.Variant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,17 +92,21 @@ public class MolgenisVariantService
 	{
 		try
 		{
-			RE reExon   = new RE("^(\\d+)$");
-			RE reIntron = new RE("^(\\d+)([+-])(\\d+)$");
-	
-			if (reExon.match(position))
-				return this.findExonByCdnaPosition(Integer.parseInt(reExon.getParen(1)));
-			else if (reIntron.match(position))
+			Pattern reExon   = Pattern.compile("^(\\d+)$");
+			Pattern reIntron = Pattern.compile("^(\\d+)([+-])(\\d+)$");
+			Matcher mExon    = reExon.matcher(position);
+			Matcher mIntron  = reIntron.matcher(position);
+			
+			if (mExon.matches())
+			{
+				return this.findExonByCdnaPosition(Integer.parseInt(mExon.group(1)));
+			}
+			else if (mIntron.matches())
 			{
 				// search by gDNA position since intron don't have cDNA position
-				int cdnaPosition = Integer.parseInt(reIntron.getParen(1));
-				String operation = reIntron.getParen(2);
-				int cdnaAdder    = Integer.parseInt(reIntron.getParen(3));
+				int cdnaPosition = Integer.parseInt(mIntron.group(1));
+				String operation = mIntron.group(2);
+				int cdnaAdder    = Integer.parseInt(mIntron.group(3));
 	
 				int gdnaPosition;
 	
@@ -112,7 +120,9 @@ public class MolgenisVariantService
 				return this.findExonByGdnaPosition(gdnaPosition);
 			}
 			else
-				throw new RESyntaxException("Invalid position notation: " + position);
+			{
+				throw new SearchServiceException("Invalid position notation: " + position);
+			}
 		}
 		catch (Exception e)
 		{
@@ -318,6 +328,82 @@ public class MolgenisVariantService
 
 		return exonDTO;
 	}
+/**
+	 * Convert a SequenceCharacteristic into a ExonDTO
+	 * @param SequenceCharacteristic exon
+	 * @return ExonDTO
+	 * @throws DatabaseException 
+	 */
+	public ExonDTO exonToExonDTO(final Exon exon) throws DatabaseException
+	{
+		ExonDTO exonDTO = new ExonDTO();
+		exonDTO.setId(exon.getId());
+		exonDTO.setIsIntron("intron".equals(exon.getFeatureType().getName()) ? true : false);
+		exonDTO.setLength(exon.getSeqlen());
+		exonDTO.setName(exon.getName());
+		if (exon.getSeqlen() != null && exon.getSeqlen() % 3 == 0)
+			exonDTO.setMultiple3Nucl(true);
+		else
+			exonDTO.setMultiple3Nucl(false);
+		exonDTO.setGdnaStart(exon.getStartGdna());
+		exonDTO.setGdnaEnd(exon.getEndGdna());
+		if (!exonDTO.getIsIntron())
+		{
+			exonDTO.setCdnaStart(exon.getStartCdna());
+			exonDTO.setCdnaEnd(exon.getEndCdna());
+		}
+
+		// find protein domains
+		
+		String sql = "SELECT s FROM SequenceRelation r JOIN r.sequenceFeature s WHERE s.featureType.name = 'protein_domain' AND ((r.fmin <= :pos AND :pos <= r.fmax AND r.strand = '+1') OR (r.fmax <= :pos AND :pos <= r.fmin AND r.strand = '-1'))";
+		TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+		query.setParameter("pos", exonDTO.getGdnaStart());
+		
+		for (SequenceCharacteristic proteinDomain : query.getResultList())
+		{
+			exonDTO.getDomainId().add(proteinDomain.getId());
+			exonDTO.getDomainName().add(proteinDomain.getName());
+		}
+
+		GeneDTO geneDTO = this.findGene();
+
+		Integer gdnaStart = Math.abs(exonDTO.getGdnaStart() - geneDTO.getBpStart().intValue());
+		Integer gdnaEnd   = Math.abs(exonDTO.getGdnaEnd() - geneDTO.getBpStart().intValue());//gdnaStart + exon.getLength();
+		exonDTO.setNuclSequence(StringUtils.substring(geneDTO.getNuclSequence(), gdnaStart, gdnaEnd + 1));
+		exonDTO.setNuclSequenceFlankLeft(this.getNuclSequenceFlankLeft(exonDTO, geneDTO));
+		exonDTO.setNuclSequenceFlankRight(this.getNuclSequenceFlankRight(exonDTO, geneDTO));
+		exonDTO.setOrientation(geneDTO.getOrientation());
+
+		if (!exonDTO.getIsIntron())
+		{
+			exonDTO.setNuclSequence(exonDTO.getNuclSequence().toUpperCase());
+			exonDTO.setNuclSequenceFlankLeft(exonDTO.getNuclSequenceFlankLeft().toLowerCase());
+			exonDTO.setNuclSequenceFlankRight(exonDTO.getNuclSequenceFlankRight().toLowerCase());
+			exonDTO.setAaSequence(StringUtils.substring(geneDTO.getAaSequence(), exonDTO.getCdnaStart(), exonDTO.getCdnaEnd() + 1));
+			exonDTO.setNumFullAminoAcids(SequenceUtils.getNumFullAminoAcids(exonDTO.getAaSequence()));
+			exonDTO.setNumPartAminoAcids(SequenceUtils.getNumPartAminoAcids(exonDTO.getAaSequence()));
+			exonDTO.setNumGlyXYRepeats(SequenceUtils.getNumGlyXYRepeats(exonDTO.getAaSequence()));
+		}
+
+		if (exonDTO.getIsIntron())
+		{
+			exonDTO.setNuclSequence(exonDTO.getNuclSequence().toLowerCase());
+			exonDTO.setNuclSequenceFlankLeft(exonDTO.getNuclSequenceFlankLeft().toUpperCase());
+			exonDTO.setNuclSequenceFlankRight(exonDTO.getNuclSequenceFlankRight().toUpperCase());
+		}
+
+		return exonDTO;
+	}
+
+	public List<ExonDTO> exonListToExonDTOList(final List<Exon> exons) throws DatabaseException
+	{
+		List<ExonDTO> result = new ArrayList<ExonDTO>();
+
+		for (Exon exon : exons)
+			result.add(this.exonToExonDTO(exon));
+		
+		return result;
+	}
 
 	public List<ExonDTO> sequenceCharacteristicListToExonDTOList(final List<SequenceCharacteristic> exons) throws DatabaseException
 	{
@@ -326,6 +412,16 @@ public class MolgenisVariantService
 		for (SequenceCharacteristic exon : exons)
 			result.add(this.sequenceCharacteristicToExonDTO(exon));
 		
+		return result;
+	}
+
+	public List<VariantDTO> variantListToVariantDTOList(final List<Variant> variantList)
+	{
+		List<VariantDTO> result = new ArrayList<VariantDTO>();
+
+		for (Variant variant : variantList)
+			result.add(this.variantToVariantDTO(variant));
+				
 		return result;
 	}
 
@@ -339,6 +435,57 @@ public class MolgenisVariantService
 		return result;
 	}
 
+	public VariantDTO variantToVariantDTO(final Variant variant)
+	{
+		try
+		{
+			VariantDTO variantDTO = new VariantDTO();
+			variantDTO.setAaNotation(variant.getNameAa());
+			variantDTO.setAaStart(variant.getStartAa());
+			variantDTO.setCdnaNotation(variant.getNameCdna());
+			variantDTO.setCdnaStart(variant.getStartCdna());
+			variantDTO.setGdnaStart(variant.getStartGdna());
+			variantDTO.setId(variant.getId());
+	
+			/* Find the external molgenis variant id */
+			for (AlternateId alternateId : variant.getAlternateId())
+			{
+				if ("molgenis_variant_id".equals(alternateId.getDefinition()))
+					variantDTO.setIdentifier(alternateId.getName());
+			}
+			
+			/* Find corresponding exon/intron */
+			String exonSql = "SELECT DISTINCT r FROM SequenceRelation r JOIN r.sequenceTarget t WHERE t.featureType.name IN ('exon', 'intron') AND r.sequenceFeature = :feature";
+			TypedQuery<SequenceRelation> exonQuery = this.em.createQuery(exonSql, SequenceRelation.class);
+			exonQuery.setParameter("feature", variant);
+			
+			for (SequenceRelation relation : exonQuery.getResultList())
+			{
+				variantDTO.setExonId(relation.getSequenceTarget().getId());
+				variantDTO.setExonName(relation.getSequenceTarget().getName());
+			}
+
+			/* Find prominent value to be displayed in table view */
+			String pathoSql = "SELECT ov FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND (f.name = 'Pathogenicity' OR f.name = 'consequence')";
+			TypedQuery<ObservedValue> pathoQuery = this.em.createQuery(pathoSql, ObservedValue.class);
+			pathoQuery.setParameter("target", variant);
+			List<ObservedValue> observedValueList = pathoQuery.getResultList();
+
+			/* A proper data model would ensure that exactly one is found.
+			 * But you get what you deserve.
+			 */
+			if (observedValueList.size() == 1)
+				variantDTO.setObservedValue(observedValueList.get(0).getValue());
+
+			return variantDTO;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
+	
 	public VariantDTO sequenceCharacteristicToVariantDTO(final SequenceCharacteristic variant)
 	{
 		try
@@ -392,7 +539,7 @@ public class MolgenisVariantService
 			}
 
 			/* Find prominent value to be displayed in table view */
-			String pathoSql = "SELECT ov FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND (f.name = 'Pathogenicity' OR f.name = 'homo-/heterozygous')";
+			String pathoSql = "SELECT ov FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND (f.name = 'Pathogenicity' OR f.name = 'consequence')";
 			TypedQuery<ObservedValue> pathoQuery = this.em.createQuery(pathoSql, ObservedValue.class);
 			pathoQuery.setParameter("target", variant);
 			List<ObservedValue> observedValueList = pathoQuery.getResultList();
@@ -401,7 +548,7 @@ public class MolgenisVariantService
 			 * But you get what you deserve.
 			 */
 			if (observedValueList.size() == 1)
-				variantDTO.setPathogenicity(observedValueList.get(0).getValue());
+				variantDTO.setObservedValue(observedValueList.get(0).getValue());
 
 			return variantDTO;
 		}
@@ -505,22 +652,34 @@ public class MolgenisVariantService
 			/* Set "special" values that are displayed prominent:
 			 * Consequence, Inheritance, Pathogenicity
 			 */
-			List<ObservedValue> specialObservedValueList = this.em.createQuery("SELECT ov FROM ObservedValue ov", ObservedValue.class).getResultList();
+			String sql = "SELECT ov FROM ObservedValue ov WHERE ov.target = :target";
+			TypedQuery<ObservedValue> query = this.em.createQuery(sql, ObservedValue.class);
+			query.setParameter("target", variant);
+			List<ObservedValue> specialObservedValueList = query.getResultList();
 
 			for (ObservedValue observedValue : specialObservedValueList)
 			{
 				if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "codon change"))
+				{
 					mutationSummaryDTO.setCodonChange(observedValue.getValue());
+				}
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "consequence"))
+				{
 					mutationSummaryDTO.setConsequence(observedValue.getValue());
+					mutationSummaryDTO.setObservedValue(observedValue.getValue());
+				}
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "inheritance"))
+				{
 					mutationSummaryDTO.setInheritance(observedValue.getValue());
+				}
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "pathogenicity"))
+				{
 					mutationSummaryDTO.setPathogenicity(observedValue.getValue());
-				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "homo-/heterozygous"))
-					mutationSummaryDTO.setPathogenicity(observedValue.getValue());
+				}
 				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "type of mutation"))
+				{
 					mutationSummaryDTO.setType(observedValue.getValue());
+				}
 			}
 
 			mutationSummaryDTO.setPatientSummaryDTOList(new ArrayList<PatientSummaryDTO>());
@@ -608,6 +767,223 @@ public class MolgenisVariantService
 		}
 	}
 
+	public MutationSummaryDTO variantToMutationSummaryDTO(final Variant variant)
+	{
+		try
+		{
+			MutationSummaryDTO mutationSummaryDTO = new MutationSummaryDTO();
+			mutationSummaryDTO.setId(variant.getId());
+			mutationSummaryDTO.setCdnaNotation(variant.getNameCdna());
+			mutationSummaryDTO.setCdnaStart(variant.getStartCdna());
+			mutationSummaryDTO.setGdnaNotation(variant.getNameGdna());
+			mutationSummaryDTO.setGdnaStart(variant.getStartGdna());
+			mutationSummaryDTO.setAaNotation(variant.getNameAa());
+			mutationSummaryDTO.setAaStart(variant.getStartAa());
+			mutationSummaryDTO.setType(variant.getType());
+	
+			/* Find the external molgenis variant id */
+			for (AlternateId alternateId : variant.getAlternateId())
+			{
+				if ("molgenis_variant_id".equals(alternateId.getDefinition()))
+					mutationSummaryDTO.setIdentifier(alternateId.getName());
+			}
+	
+			/* Find all relevant SequenceRelations */
+			List<SequenceRelation> featureRelations = this.db.query(SequenceRelation.class).equals(SequenceRelation.FEATURE, variant.getId()).find();
+			
+			for (SequenceRelation relation : featureRelations)
+			{
+				if ("part-of".equals(relation.getRelationType().getName()))
+				{
+					SequenceCharacteristic target = (SequenceCharacteristic) relation.getTarget();
+					
+					if ("exon".equals(target.getFeatureType().getName()) || "intron".equals(target.getFeatureType().getName()))
+					{
+						mutationSummaryDTO.setExonId(target.getId());
+						mutationSummaryDTO.setExonName(target.getName());
+					}
+				}
+			}
+	
+			if (StringUtils.isNotEmpty(mutationSummaryDTO.getAaNotation()))
+				mutationSummaryDTO.setNiceNotation(mutationSummaryDTO.getCdnaNotation() + " (" + mutationSummaryDTO.getAaNotation() + ")");
+			else
+				mutationSummaryDTO.setNiceNotation(mutationSummaryDTO.getCdnaNotation());
+			
+			/* find ObservedValue's, separate 'Inheritance' and 'Consequence' */
+			mutationSummaryDTO.setProtocolDTOList(new ArrayList<ProtocolDTO>());
+			mutationSummaryDTO.setObservedValueDTOHash(new HashMap<String, List<ObservedValueDTO>>());
+	
+			PhenoService phenoService   = ServiceLocator.instance().getPhenoService();
+	
+			List<Protocol> protocolList = this.em.createQuery("SELECT p FROM Protocol p", Protocol.class).getResultList();
+	
+			for (Protocol protocol : protocolList)
+			{
+				String sql = "SELECT ov FROM ObservedValue ov WHERE ov.target = :target AND feature IN (:features)";
+				TypedQuery<ObservedValue> query = this.em.createQuery(sql, ObservedValue.class);
+				query.setParameter("target", variant);
+				query.setParameter("features", protocol.getFeatures());
+				List<ObservedValue> observedValueList = query.getResultList();
+				if (observedValueList.size() > 0)
+				{
+					mutationSummaryDTO.getProtocolDTOList().add(phenoService.protocolToProtocolDTO(protocol));
+					mutationSummaryDTO.getObservedValueDTOHash().put("Protocol" + protocol.getId(), phenoService.observedValueListToObservedValueDTOList(observedValueList));
+				}
+			}
+			
+			/* Set "special" values that are displayed prominent:
+			 * Consequence, Inheritance, Pathogenicity
+			 */
+			String sql = "SELECT ov FROM ObservedValue ov WHERE ov.target = :target";
+			TypedQuery<ObservedValue> query = this.em.createQuery(sql, ObservedValue.class);
+			query.setParameter("target", variant);
+			List<ObservedValue> specialObservedValueList = query.getResultList();
+
+			for (ObservedValue observedValue : specialObservedValueList)
+			{
+				if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "codon change"))
+				{
+					mutationSummaryDTO.setCodonChange(observedValue.getValue());
+				}
+				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "consequence"))
+				{
+					mutationSummaryDTO.setConsequence(observedValue.getValue());
+					mutationSummaryDTO.setObservedValue(observedValue.getValue());
+				}
+				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "inheritance"))
+				{
+					mutationSummaryDTO.setInheritance(observedValue.getValue());
+				}
+				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "pathogenicity"))
+				{
+					mutationSummaryDTO.setPathogenicity(observedValue.getValue());
+				}
+//				else if (StringUtils.equalsIgnoreCase(observedValue.getFeature().getName(), "type of mutation"))
+//				{
+//					mutationSummaryDTO.setType(observedValue.getValue());
+//				}
+			}
+
+			mutationSummaryDTO.setPatientSummaryDTOList(new ArrayList<PatientSummaryDTO>());
+			// helper hash to get distinct phenotypes
+			HashMap<String, String> phenotypeNameHash          = new HashMap<String, String>();
+			// helper hash to get distinct publications
+			HashMap<String, PublicationDTO> publicationDTOHash = new HashMap<String, PublicationDTO>();
+			
+			List<Patient> patients = this.db.query(Patient.class).equals(Patient.MUTATIONS, variant.getId()).find();
+			// Get distinct list, not available in Molgenis query language
+			HashMap<Integer, Patient> patientHash = new HashMap<Integer, Patient>();
+			for (Patient patient : patients)
+				patientHash.put(patient.getId(), patient);
+			patients = Arrays.asList(patientHash.values().toArray(new Patient[0]));
+			
+			List<ObservableFeature> features = this.db.query(ObservableFeature.class).equals(ObservableFeature.NAME, "Phenotype").or().equals(ObservableFeature.DESCRIPTION, "Phenotype").find();
+			if (features.size() != 1)
+				throw new DatabaseException("Not exactly one ObservableFeature with name 'Phenotype' found.");
+	
+			for (Patient patient : patients)
+			{
+				PatientSummaryDTO patientSummaryDTO = new PatientSummaryDTO();
+				patientSummaryDTO.setPatientIdentifier(patient.getAlternateId().get(0).getName());
+				
+				List<ObservedValue> phenotypes = this.db.query(ObservedValue.class).equals(ObservedValue.FEATURE, features.get(0).getId()).equals(ObservedValue.TARGET, patient.getId()).find();
+				List<String> phenotypeNames    = new ArrayList<String>();
+				for (ObservedValue phenotype : phenotypes)
+				{
+					phenotypeNames.add(phenotype.getValue());
+					phenotypeNameHash.put(phenotype.getValue(), phenotype.getValue());
+				}
+				patientSummaryDTO.setPhenotypeMajor(StringUtils.join(phenotypeNames, ", "));
+				patientSummaryDTO.setPhenotypeSub("");
+	
+				/* We will also retrieve the mutation that we already have 
+				 * Delete the first we find from the otherVariants list
+				 * (It can be present more than once.)
+				 */
+				boolean found = false;
+				for (SequenceCharacteristic patientVariant : patient.getMutations())
+				{
+					if (patientVariant.getId().equals(variant.getId()) && !found)
+					{
+						found = true;
+						continue;
+					}
+					patientSummaryDTO.getVariantDTOList().add(this.variantToVariantDTO((Variant) patientVariant));
+				}
+	
+				Submission submission  = patient.getSubmission();
+				MolgenisUser submitter = submission.getSubmitters().get(0);
+				patientSummaryDTO.setSubmitterDepartment(submitter.getDepartment());
+				patientSummaryDTO.setSubmitterInstitute(submitter.getAffiliation_Name());
+				patientSummaryDTO.setSubmitterCity(submitter.getCity());
+				patientSummaryDTO.setSubmitterCountry(submitter.getCountry());
+				patientSummaryDTO.setPublicationDTOList(new ArrayList<PublicationDTO>());
+	
+				if (CollectionUtils.isNotEmpty(patient.getPatientreferences()))
+				{
+					PublicationService publicationService = ServiceLocator.instance().getPublicationService();
+					List<PublicationDTO> publicationDTOList = publicationService.publicationListToPublicationDTOList(patient.getPatientreferences());
+					for (PublicationDTO publicationDTO : publicationDTOList)
+					{
+						patientSummaryDTO.getPublicationDTOList().add(publicationDTO);
+						publicationDTOHash.put(publicationDTO.getName(), publicationDTO);
+					}
+				}
+				mutationSummaryDTO.getPatientSummaryDTOList().add(patientSummaryDTO);
+			}
+	
+			mutationSummaryDTO.setPhenotypeNameList(new ArrayList<String>());
+			mutationSummaryDTO.getPhenotypeNameList().addAll(phenotypeNameHash.values());
+	
+			mutationSummaryDTO.setPublicationDTOList(new ArrayList<PublicationDTO>());
+			mutationSummaryDTO.getPublicationDTOList().addAll(publicationDTOHash.values());
+	
+			mutationSummaryDTO.setPubmedURL(PublicationService.PUBMED_URL);
+	
+			return mutationSummaryDTO;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
+
+	public List<MutationSummaryDTO> observationElementListToMutationSummaryDTOList(final List<ObservationElement> mutationList)
+	{
+		List<SequenceCharacteristic> result = new ArrayList<SequenceCharacteristic>();
+		
+		for (ObservationElement e : mutationList)
+		{
+			if (e instanceof SequenceCharacteristic)
+			{
+				result.add((SequenceCharacteristic) e);
+			}
+			else if (e instanceof Patient)
+			{
+				String sql = "SELECT s FROM Patient p JOIN p.mutations s WHERE p = :patient";
+				TypedQuery<SequenceCharacteristic> query = this.em.createQuery(sql, SequenceCharacteristic.class);
+				query.setParameter("patient", e);
+				result.addAll(query.getResultList());
+			}
+		}
+		return this.sequenceCharacteristicListToMutationSummaryDTOList(result);
+	}
+
+	public List<MutationSummaryDTO> variantListToMutationSummaryDTOList(final List<Variant> mutations)
+	{
+		List<MutationSummaryDTO> result = new ArrayList<MutationSummaryDTO>();
+
+		for (Variant mutation : mutations)
+		{
+			MutationSummaryDTO mutationSummaryVO = this.variantToMutationSummaryDTO(mutation);
+			result.add(mutationSummaryVO);
+		}
+		
+		return result;
+	}
+
 	public List<MutationSummaryDTO> sequenceCharacteristicListToMutationSummaryDTOList(final List<SequenceCharacteristic> mutations)
 	{
 		List<MutationSummaryDTO> result = new ArrayList<MutationSummaryDTO>();
@@ -626,6 +1002,7 @@ public class MolgenisVariantService
 		PatientSummaryDTO patientSummaryDTO = new PatientSummaryDTO();
 
 		patientSummaryDTO.setPatientId(patient.getId());
+		patientSummaryDTO.setPhenotypeMajor(patient.getPhenotype());
 
 		// find alternate IDs
 		for (AlternateId alternateId : patient.getAlternateId())
@@ -638,37 +1015,11 @@ public class MolgenisVariantService
 
 		/* Add variants */
 
-		List<VariantDTO> variantDTOList = this.sequenceCharacteristicListToVariantDTOList(patient.getMutations());
+		List<VariantDTO> variantDTOList = this.variantListToVariantDTOList(patient.getMutations());
 		patientSummaryDTO.setVariantDTOList(variantDTOList);
 		if (variantDTOList.size() > 0)
 			patientSummaryDTO.setGdnaStart(variantDTOList.get(0).getGdnaStart());
 
-		/* Add phenotype */
-		String pathoSql = "SELECT ov.value FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND (f.name = 'Phenotype' OR f.description = 'Phenotype')";
-		TypedQuery<String> pathoQuery = this.em.createQuery(pathoSql, String.class);
-		pathoQuery.setParameter("target", patient);
-		List<String> phenotypeList = pathoQuery.getResultList();
-
-		if (CollectionUtils.isNotEmpty(phenotypeList))
-			patientSummaryDTO.setPhenotypeMajor(StringUtils.join(phenotypeList, ", "));
-
-//		PhenoService phenoService   = ServiceLocator.instance().getPhenoService();
-//
-//		IndividualDTO individualDTO = phenoService.findPhenotypeDetails(patient.getId());
-//		
-//		HashMap<String, List<ObservedValueDTO>> features = individualDTO.getObservedValues();
-//
-//		List<ObservedValueDTO> phenotypes = features.get("Phenotype");
-//
-//		if (CollectionUtils.isNotEmpty(phenotypes))
-//		{
-//			List<String> phenotypeNames = new ArrayList<String>();
-//			for (ObservedValueDTO phenotype : phenotypes)
-//				phenotypeNames.add(phenotype.getValue());
-//			patientSummaryDTO.setPhenotypeMajor(StringUtils.join(phenotypeNames, ", "));
-//			patientSummaryDTO.setPhenotypeSub("");
-//		}
-			
 		Submission submission  = patient.getSubmission();
 		MolgenisUser submitter = submission.getSubmitters().get(0);
 		patientSummaryDTO.setSubmitterDepartment(submitter.getDepartment());
@@ -693,9 +1044,61 @@ public class MolgenisVariantService
 		List<PatientSummaryDTO> result = new ArrayList<PatientSummaryDTO>();
 
 		for (Patient patient : patients)
+		{
 			result.add(this.patientToPatientSummaryDTO(patient));
+		}
+
+		Collections.sort(result);
 
 		return result;
+	}
+
+	public ProteinDomainDTO proteinDomainToProteinDomainDTO(final ProteinDomain proteinDomain, final Boolean noIntrons)
+	{
+		try
+		{
+			ProteinDomainDTO proteinDomainDTO = new ProteinDomainDTO();
+			proteinDomainDTO.setDomainId(proteinDomain.getId());
+			proteinDomainDTO.setDomainName(proteinDomain.getName());
+			proteinDomainDTO.setGdnaEnd(proteinDomain.getEndGdna());
+			proteinDomainDTO.setGdnaStart(proteinDomain.getStartGdna());
+			proteinDomainDTO.setOrientation("");
+
+			// find exons/introns in the region of this protein domain
+			proteinDomainDTO.setExonDTOList(new ArrayList<ExonDTO>());
+	
+			Query<SequenceRelation> query = this.db.query(SequenceRelation.class);
+
+			if ("-1".equals(proteinDomainDTO.getOrientation()))
+			{
+				query = query.lessOrEqual(SequenceRelation.FMIN, proteinDomainDTO.getGdnaStart());
+				query = query.greaterOrEqual(SequenceRelation.FMAX, proteinDomainDTO.getGdnaEnd());
+			}
+			else
+			{
+				query = query.greaterOrEqual(SequenceRelation.FMIN, proteinDomainDTO.getGdnaStart());
+				query = query.lessOrEqual(SequenceRelation.FMAX, proteinDomainDTO.getGdnaEnd());
+			}
+
+			List<SequenceRelation> exonRelations = query.find();
+
+			for (SequenceRelation relation : exonRelations)
+			{
+				SequenceCharacteristic feature = relation.getSequenceFeature();
+
+				if ("exon".equals(feature.getFeatureType().getName()))
+					proteinDomainDTO.getExonDTOList().add(this.sequenceCharacteristicToExonDTO(feature));
+				if (/*!noIntrons && */"intron".equals(feature.getFeatureType().getName()))
+					proteinDomainDTO.getExonDTOList().add(this.sequenceCharacteristicToExonDTO(feature));
+			}
+	
+			return proteinDomainDTO;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
 	}
 
 	public ProteinDomainDTO sequenceCharacteristicToProteinDomainDTO(final SequenceCharacteristic proteinDomain, final Boolean noIntrons)
@@ -756,7 +1159,17 @@ public class MolgenisVariantService
 			throw new SearchServiceException(e.getMessage());
 		}
 	}
-	
+
+	public List<ProteinDomainDTO> proteinDomainListToProteinDomainDTOList(final List<ProteinDomain> proteinDomainList)
+	{
+		List<ProteinDomainDTO> result = new ArrayList<ProteinDomainDTO>();
+
+		for (ProteinDomain proteinDomain : proteinDomainList)
+			result.add(this.proteinDomainToProteinDomainDTO(proteinDomain, true));
+		
+		return result;
+	}
+
 	public List<ProteinDomainDTO> sequenceCharacteristicListToProteinDomainDTOList(final List<SequenceCharacteristic> proteinDomainList)
 	{
 		List<ProteinDomainDTO> result = new ArrayList<ProteinDomainDTO>();

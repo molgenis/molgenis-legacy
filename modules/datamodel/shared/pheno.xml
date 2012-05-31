@@ -26,6 +26,9 @@
 			<field name="AlternateId" nillable="true" type="mref"
 				xref_entity="AlternateId" label="Alternative identifiers"
 				description="Alternative identifiers or symbols that this element is known by." />
+			<field name="label" nillable="true"
+				description="User friendly textual representation of this ObservationElement. For example: 'male',
+				'mouse 3 in cage 7' or 'TRA-2 like protein'. Label allows for human-readable name that is potentially not unique." />
 			<unique fields="name" />
 		</entity>
 		<entity name="ObservationTarget" extends="ObservationElement">
@@ -102,8 +105,6 @@
 			</description>
 			<field name="code_string" type="string"
 				description="The code used to represent this category. For example: { '1' codes for 'male', '2'-'female'}" />
-			<field name="label"
-				description="User friendly textual representation of this category. For example : 'male'" />
 			<field name="description" type="text"
 				description="Description of the code.
 				Use of ontology terms references to establish unambigious descriptions is

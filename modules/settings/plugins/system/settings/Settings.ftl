@@ -48,9 +48,6 @@
 			</#if>
 		</#list>
 		
-		<#-- Hack to immediatly clear the message so it doesn't "stick". -->
-		${screen.clearMessage()}
-		
 		<div class="screenbody">
 			<div class="screenpadding">	
 <#--begin your plugin-->
@@ -97,7 +94,7 @@ System file storage path:<br>
 Set your file storage root path:<br>
 <input type="text" size="30" style="border:2px solid black; color:blue; display:inline; font-size:medium; font-family: Courier, 'Courier New', monospace" id="inputBox" name="fileDirPath" value="./data" onkeypress="if(window.event.keyCode==13){document.forms.${screen.name}.__action.value = 'setFileDirPath';}">
 
-<input type="submit" value="Set path" onclick="document.forms.${screen.name}.__action.value = 'setFileDirPath'; document.forms.${screen.name}.submit();"/>
+<input type="submit" id="filestorage_setpath" value="Set path" onclick="document.forms.${screen.name}.__action.value = 'setFileDirPath'; document.forms.${screen.name}.submit();"/>
 
 <br><br>
 Directory exists?

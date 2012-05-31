@@ -1,7 +1,6 @@
 package org.molgenis.pheno.service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -331,12 +330,15 @@ public class PhenoService
 		ObservedValueDTO observedValueDTO = new ObservedValueDTO();
 		observedValueDTO.setObservedValueId(observedValue.getId());
 		
-		ProtocolApplication protocolApplication = this.db.findById(ProtocolApplication.class, observedValue.getProtocolApplication_Id());
-		observedValueDTO.setProtocolApplicationId(protocolApplication.getId());
-		observedValueDTO.setProtocolApplicationName(protocolApplication.getName());
-		observedValueDTO.setProtocolApplicationTime(protocolApplication.getTime());
-		observedValueDTO.setPerformerNameList(protocolApplication.getPerformer_Name());
-		observedValueDTO.setProtocolId(protocolApplication.getProtocol_Id());
+		if (observedValue.getProtocolApplication_Id() != null)
+		{
+			ProtocolApplication protocolApplication = this.db.findById(ProtocolApplication.class, observedValue.getProtocolApplication_Id());
+			observedValueDTO.setProtocolApplicationId(protocolApplication.getId());
+			observedValueDTO.setProtocolApplicationName(protocolApplication.getName());
+			observedValueDTO.setProtocolApplicationTime(protocolApplication.getTime());
+			observedValueDTO.setPerformerNameList(protocolApplication.getPerformer_Name());
+			observedValueDTO.setProtocolId(protocolApplication.getProtocol_Id());
+		}
 
 		observedValueDTO.setTargetId(observedValue.getTarget_Id());
 		observedValueDTO.setTargetName(observedValue.getTarget_Name());
