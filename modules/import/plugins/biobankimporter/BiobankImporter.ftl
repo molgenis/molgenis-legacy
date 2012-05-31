@@ -333,7 +333,7 @@
 				
 				if(fieldValue != ""){
 					
-					if(rowIndex > 2){
+					if(rowIndex > 3){
 						
 						var localCount = makeTable(header);
 						
@@ -479,6 +479,17 @@
 							</div></tr>
 							<tr>
 								<#list screen.getSpreadSheetHeanders() as header>
+									<td><select id='4' name='${header}' onchange="changeFieldContent('${header}');">
+										<#list screen.getEntityType() as options>
+										  <option id="">${options}</option>
+										</#list>
+										</select>
+									</td>
+								</#list>
+							</tr>
+							
+							<tr>
+								<#list screen.getSpreadSheetHeanders() as header>
 									<td><select id='3' name='${header}' onchange="changeFieldContent('${header}');">
 										<#list screen.getColumnIndex() as options>
 										  <option id="">${options}</option>
@@ -494,6 +505,8 @@
 									</td>
 								</#list>
 							</tr>
+							
+							
 						</table>
 						</div>
 						

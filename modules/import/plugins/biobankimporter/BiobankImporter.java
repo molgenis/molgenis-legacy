@@ -18,12 +18,13 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
+import org.molgenis.auth.Institute;
+import org.molgenis.auth.Person;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
@@ -38,6 +39,7 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
+import uk.ac.ebi.ontocat.OntologyTerm;
 import app.FillMetadata;
 
 
@@ -71,6 +73,7 @@ public class BiobankImporter extends PluginModel<Entity>
 	private HashMap<Integer, String> columnIndexToClassType = new HashMap<Integer, String>();
 	private HashMap<Integer, Integer> columnIndexToRelation = new HashMap<Integer, Integer>();
 	private HashMap<Integer, String> columnIndexToFieldName = new HashMap<Integer, String>();
+	private HashMap<Integer, String> columnIndexToEntityType = new HashMap<Integer, String>();
 
 	private List<List<String>> mappingForMolgenisEntity = new ArrayList<List<String>>();
 
@@ -89,6 +92,8 @@ public class BiobankImporter extends PluginModel<Entity>
 	private Integer startingRowIndex = 0;
 
 	private Boolean multipleSheets = true;
+
+	private List<String> entityType = new ArrayList<String>();
 
 	public BiobankImporter(String name, ScreenController<?> parent)
 	{
@@ -173,7 +178,10 @@ public class BiobankImporter extends PluginModel<Entity>
 		chooseClassType.add(Panel.class.getSimpleName());
 		chooseClassType.add("NULL");
 		
-
+		entityType.add("NULL");
+		entityType.add(OntologyTerm.class.getSimpleName());
+		entityType.add(Person.class.getSimpleName());
+		entityType.add(Institute.class.getSimpleName());
 
 		dataTypeOptions.add("string");
 		dataTypeOptions.add("int");
@@ -422,6 +430,8 @@ public class BiobankImporter extends PluginModel<Entity>
 								index++;
 
 							}else if(index == 2){
+								columnIndexToEntityType.put(columnIndex, eachMember.toString());
+							}else if(index == 3){
 								System.out.println(columnIndex + "-------------------------->" + eachMember.toString());
 								columnIndexToRelation.put(columnIndex, Integer.parseInt(eachMember.toString()));
 							}
@@ -647,7 +657,11 @@ public class BiobankImporter extends PluginModel<Entity>
 		}
 	}
 
-
+	public List<String> getEntityType(){
+		
+		return entityType ;
+	}
+	
 	@Override
 	public void reload(Database db)	{
 	}
