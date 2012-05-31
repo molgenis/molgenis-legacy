@@ -2,16 +2,16 @@ package plugins.biobankimporter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-//import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-//import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jxl.Sheet;
 
+import org.molgenis.auth.Institute;
+import org.molgenis.auth.Person;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
@@ -22,18 +22,11 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.organization.InvestigationElement;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservationElement;
-//import org.molgenis.pheno.ObservationElement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-//import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
-//import org.openqa.jetty.util.Observed;
-//import org.springframework.validation.DataBinder;
-
-//import com.googlecode.charts4j.Data;
 
 import app.DatabaseFactory;
 
@@ -75,20 +68,20 @@ public class TableController {
 		configuration = new ArrayList<TableField>();
 	}
 
-	public void addField(String classType, String fieldName, int[] columnList, Boolean Vertical) 
+	public void addField(String classType, String fieldName, String entityType, int[] columnList, Boolean Vertical) 
 	{
-		this.addField(classType, fieldName, columnList, Vertical, new SimpleTuple());
+		this.addField(classType, fieldName, entityType, columnList, Vertical, new SimpleTuple());
 	}
 
-	public void addField(String ClassType, String fieldName, int[] columnList, Boolean Vertical, Tuple defaults) 
+	public void addField(String ClassType, String fieldName, String entityType, int[] columnList, Boolean Vertical, Tuple defaults) 
 	{
 
 		for(int i = 0; i < columnList.length; i++){
-			this.addField( ClassType, fieldName, columnList[i], Vertical, defaults, -1);
+			this.addField(ClassType, fieldName, entityType, columnList[i], Vertical, defaults, -1);
 		}
 	}
 
-	public void addField(String ClassType, String fieldName, boolean Vertical, int dependedIndex, int... columnIndexes) 
+	public void addField(String ClassType, String fieldName, String entityType, boolean Vertical, int dependedIndex, int... columnIndexes) 
 	{
 
 		List<Integer> columnList = new ArrayList<Integer>();
@@ -103,7 +96,7 @@ public class TableController {
 
 			}else{
 
-				this.addField(ClassType, fieldName, columnIndexes[i], Vertical, new SimpleTuple(), dependedIndex);
+				this.addField(ClassType, fieldName, entityType, columnIndexes[i], Vertical, new SimpleTuple(), dependedIndex);
 				columnIndexToTableField.get(columnIndexes[i]).setRelation(fieldName);
 			}
 			columnList.add(columnIndexes[i]);
@@ -111,40 +104,40 @@ public class TableController {
 		relationIndex.put(dependedIndex, columnList);
 	}
 
-	public void addField(String ClassType, String fieldName, int columnIndex, Boolean Vertical) 
+	public void addField(String ClassType, String fieldName, String entityType, int columnIndex, Boolean Vertical) 
 	{
-		this.addField( ClassType, fieldName, columnIndex, Vertical, new SimpleTuple(), -1);
+		this.addField( ClassType, fieldName, entityType, columnIndex, Vertical, new SimpleTuple(), -1);
 	}
 
-	public void addField(String ClassType, String fieldName, int columnIndex,
+	public void addField(String ClassType, String fieldName, String entityType, int columnIndex,
 			boolean Vertical, int... dependentColumnIndex) 
 	{
 
-		this.addField(ClassType, fieldName, columnIndex, Vertical, new SimpleTuple(), dependentColumnIndex);
+		this.addField(ClassType, fieldName, entityType, columnIndex, Vertical, new SimpleTuple(), dependentColumnIndex);
 
 	}
 
-	public void addField(String ClassType, String fieldName, int columnIndex,
+	public void addField(String ClassType, String fieldName, String entityType, int columnIndex,
 			boolean Vertical, Tuple defaults) 
 	{
-		this.addField(ClassType, fieldName, columnIndex, Vertical, defaults, -1);
+		this.addField(ClassType, fieldName, entityType, columnIndex, Vertical, defaults, -1);
 
 	}
 
-	public void addField(String ClassType, String fieldName, int[] coHeaders,
+	public void addField(String ClassType, String fieldName, String entityType, int[] coHeaders,
 			int targetIndex, boolean Vertical) 
 	{
 		observationTarget = targetIndex;
-		this.addField(ClassType, fieldName, coHeaders, Vertical, new SimpleTuple());
+		this.addField(ClassType, fieldName, entityType, coHeaders, Vertical, new SimpleTuple());
 		observationTarget = -1;
 	}
 
-	public void addField(String ClassType, String fieldName, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex)
+	public void addField(String ClassType, String fieldName, String entityType, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex)
 	{
 
 		try {					
 			//create a tableField that will take care of loading columnIndex into 'name' property
-			field = new TableField(ClassType, fieldName, columnIndex, Vertical, defaults, dependentColumnIndex);
+			field = new TableField(ClassType, fieldName, entityType, columnIndex, Vertical, defaults, dependentColumnIndex);
 			//add to the parser configuration
 			configuration.add(field);
 
@@ -182,6 +175,10 @@ public class TableController {
 		List<InvestigationElement> computeProtocolList = new ArrayList<InvestigationElement>();
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
 		List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
+		List<Person> personList = new ArrayList<Person>();
+		List<Institute> instituteList = new ArrayList<Institute>();
+
+
 
 		int sheetSize = sheets.length;
 
@@ -240,6 +237,47 @@ public class TableController {
 						if(columnIndexToTableField.get(colIndex) != null && !columnIndexToTableField.get(colIndex).getClassType().equals("NULL")){
 
 							if(columnIndexToTableField.get(colIndex).getVertical() && rowIndex != 0){
+
+								if(!field.getEntity().equals("NULL")){
+
+									if(field.getEntity().equals(Person.class.getSimpleName())){
+
+										String[] listOfValues = cellValue.split(",");
+
+										for(String eachvalue : listOfValues){
+
+											Person p = new Person();
+											p.setLastName(eachvalue.trim());
+											personList.add(p);
+
+										}
+
+									}else if(field.getEntity().equals(Institute.class.getSimpleName())){
+
+										String[] listOfValues = cellValue.split(",");
+
+										for(String eachvalue : listOfValues){
+
+											Institute institute = new Institute();
+											institute.setName(eachvalue.trim());
+											instituteList.add(institute);
+
+										}
+
+									}else if(field.getEntity().equals(OntologyTerm.class.getSimpleName())){
+										
+										String[] listOfValues = cellValue.split(",");
+
+										for(String eachvalue : listOfValues){
+
+											OntologyTerm ot = new OntologyTerm();
+											ot.setName(eachvalue.trim());
+											ontologyTermList.add(ot);
+
+										}
+									} 
+
+								}
 
 								if(!existingValuesForClassType.containsKey(field.getClassType() + field.getFieldName())){
 									Map<String, List<InvestigationElement>> tempHolder = new LinkedHashMap<String, List<InvestigationElement>>();
@@ -678,6 +716,12 @@ public class TableController {
 
 			setInvestigation();
 
+			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+			
+			db.update(personList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Person.LASTNAME);
+			
+			db.update(instituteList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Institute.NAME);
+			
 			HashMap<String, InvestigationElement> hashMapObservationTarget = removeDuplicates(observationTargetList);
 
 			observationTargetList = new ArrayList<InvestigationElement>(hashMapObservationTarget.values());
@@ -693,20 +737,17 @@ public class TableController {
 
 				db.update(subListForObservationTarget, Database.DatabaseAction.ADD_IGNORE_EXISTING, 
 						ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
-				
+
 				iterationForObservationTarget++;
 			}
-			
+
 			List<InvestigationElement> subListForObservationTarget = observationTargetList.subList((iterationForObservationTarget - 1)*5000, 
 					observationTargetList.size()); 
-			
+
 			db.update(subListForObservationTarget, Database.DatabaseAction.ADD_IGNORE_EXISTING, 
 					ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
-			
-//			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
 
-
-			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+			//			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
 
 
 			HashMap<String, InvestigationElement> hashMapCategory = removeDuplicates(categoryList);
@@ -972,9 +1013,9 @@ public class TableController {
 						ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
 				iteration++;
 			}
-			
+
 			List<ObservedValue> subList = observedValueList.subList((iteration - 1)*5000, observedValueList.size()); 
-			
+
 			db.update(subList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, 
 					ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
 

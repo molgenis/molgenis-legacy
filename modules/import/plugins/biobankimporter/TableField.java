@@ -26,6 +26,8 @@ public class TableField {
 	//e.g. 'name'
 	String fieldName = "";
 	
+	String entityType = "";
+	
 	int columnIndex;
 	
 	int[] dependentColumnIndex;
@@ -75,9 +77,10 @@ public class TableField {
 	}
 
 
-	public TableField(String ClassType, String fieldName, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex) {
+	public TableField(String ClassType, String fieldName, String entityType, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex) {
 		this.fieldName = fieldName;
 		this.classType = ClassType;
+		this.entityType = entityType;
 		this.columnIndex = columnIndex;
 		this.vertical = Vertical;
 		this.defaults = defaults;

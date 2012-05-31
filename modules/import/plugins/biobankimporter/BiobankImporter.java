@@ -589,6 +589,8 @@ public class BiobankImporter extends PluginModel<Entity>
 					String classType = columnIndexToClassType.get(columnIndex);
 
 					String fieldName = columnIndexToFieldName.get(columnIndex);
+					
+					String entityType = columnIndexToEntityType.get(columnIndex);
 
 					String splitByColon[] = fieldName.toString().split(":");
 
@@ -604,29 +606,29 @@ public class BiobankImporter extends PluginModel<Entity>
 					{
 						int coHeaders[] = {columnIndex.intValue()};
 						System.out.println(columnIndex);
-						table.addField(classType, ObservedValue.VALUE, coHeaders, dependedColumn.intValue(), TableField.COLHEADER);
+						table.addField(classType, ObservedValue.VALUE, entityType, coHeaders, dependedColumn.intValue(), TableField.COLHEADER);
 
 					}else if (classType.equals(Category.class.getSimpleName() + ":" + Category.ISMISSING)){
 
 						Tuple defaults = new SimpleTuple();
 						defaults.set(Category.ISMISSING, true);
-						table.addField(Category.class.getSimpleName(), "name", columnIndex.intValue(), TableField.COLVALUE, defaults);
-						table.addField(classType, fieldName, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
+						table.addField(Category.class.getSimpleName(), "name", entityType, columnIndex.intValue(), TableField.COLVALUE, defaults);
+						table.addField(classType, fieldName, entityType, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
 
 					}else{
 
 						if(dependedColumn.intValue() == -1)
 						{
-							table.addField(classType, fieldName, columnIndex.intValue(), TableField.COLVALUE);
+							table.addField(classType, fieldName, entityType, columnIndex.intValue(), TableField.COLVALUE);
 
 						}else{
 
 							if(referenceClass.contains(fieldName))
 							{
-								table.addField(classType, "name", columnIndex.intValue(), TableField.COLVALUE);
+								table.addField(classType, "name", entityType, columnIndex.intValue(), TableField.COLVALUE);
 							}
 
-							table.addField(classType, fieldName, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
+							table.addField(classType, fieldName, entityType, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
 
 							if(classType.equals(Measurement.class.getSimpleName()) && fieldName.equals(Measurement.DATATYPE))
 							{
