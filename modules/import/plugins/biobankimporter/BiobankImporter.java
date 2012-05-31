@@ -1,6 +1,4 @@
-package plugins.GenericImporter;
-
-
+package plugins.biobankimporter;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,15 +41,13 @@ import plugins.emptydb.emptyDatabase;
 import app.FillMetadata;
 
 
-
-
-public class GenericImporterPlugin extends PluginModel<Entity>
+public class BiobankImporter extends PluginModel<Entity>
 {
 	private String Status = "";
 
 	private List<String> headers = null;
 
-	private TableModel table = null;
+	private TableController table = null;
 
 	private File file = null;
 
@@ -94,7 +90,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 	private Boolean multipleSheets = true;
 
-	public GenericImporterPlugin(String name, ScreenController<?> parent)
+	public BiobankImporter(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 
@@ -206,13 +202,13 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_GenericImporter_GenericImporterPlugin";
+		return "BiobankImporter";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/GenericImporter/GenericImporterPlugin.ftl";
+		return "plugins/biobankimporter/BiobankImporter.ftl";
 	}
 
 	@Override
@@ -568,7 +564,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 			Sheet dictionaryCategory = workbook.getSheet(0);
 
-			table = new TableModel (dictionaryCategory.getColumns(), db);
+			table = new TableController (dictionaryCategory.getColumns(), db);
 
 			{
 				List<String> referenceClass = new ArrayList<String>();

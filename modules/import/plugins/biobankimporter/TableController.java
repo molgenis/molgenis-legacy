@@ -1,4 +1,4 @@
-package plugins.GenericImporter;
+package plugins.biobankimporter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ import org.molgenis.util.Tuple;
 
 import app.DatabaseFactory;
 
-public class TableModel {
+public class TableController {
 
 	private Database db;
 
@@ -69,7 +69,7 @@ public class TableModel {
 
 	private HashMap<String, String> checkExistingEntitesInDB = new HashMap<String, String>();
 
-	public TableModel(int i,  Database db) {
+	public TableController(int i,  Database db) {
 		this.db = db;
 		this.columnSize = i;
 		configuration = new ArrayList<TableField>();

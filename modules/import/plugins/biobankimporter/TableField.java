@@ -1,4 +1,4 @@
-package plugins.GenericImporter;
+package plugins.biobankimporter;
 
 import java.util.HashMap;
 
