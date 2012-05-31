@@ -34,7 +34,8 @@
 	<#assign modelExists = false>
 </#if>
 
-<table border="1" bgcolor="white">
+<br>
+<table border="1" bgcolor="#EAEAEA">
 	<tr>
 		<td>
 			<i>Phenotypes</i>
@@ -66,6 +67,9 @@
 		<td>
 			<i>Medium</i>
 		</td>
+		<td>
+			<i>Dataset ID</i>
+		</td>
 	</tr>
 	<tr>
 		<td>
@@ -87,7 +91,7 @@
 			<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/17196041">17196041</a>
 		</td>
 		<td>
-			16¡C and 24¡C
+			16oC and 24oC
 		</td>
 		<td>
 			(72h at 16 and 40h at 24); L4
@@ -97,6 +101,9 @@
 		</td>
 		<td>
 			NGM Plate
+		</td>
+		<td>
+			37, 38
 		</td>
 	</tr>
 	<tr>
@@ -119,7 +126,7 @@
 			<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/20610403">20610403</a>
 		</td>
 		<td>
-			24¡C
+			24oC
 		</td>
 		<td>
 			(40h) L4
@@ -129,6 +136,9 @@
 		</td>
 		<td>
 			NGM Plate
+		</td>
+		<td>
+			?
 		</td>
 	</tr>
 	<tr>
@@ -145,13 +155,13 @@
 			CB4856; N2
 		</td>
 		<td>
-			<b>Vi–uela & Snoek et al. 2010;</b> Genome-wide gene expression regulation as a function of genotype and age in C. elegans.
+			<b>Vinuela & Snoek et al. 2010;</b> Genome-wide gene expression regulation as a function of genotype and age in C. elegans.
 		</td>
 		<td>
 			<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/20488933">20488933</a>
 		</td>
 		<td>
-			24¡C
+			24oC
 		</td>
 		<td>
 			(40h, 96h and 214h) L4, Adult, Old
@@ -161,6 +171,9 @@
 		</td>
 		<td>
 			NGM Plate
+		</td>
+		<td>
+			3, 5, 6, 7
 		</td>
 	</tr>
 	<tr>
@@ -183,7 +196,7 @@
 			<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/20947766">20947766</a>
 		</td>
 		<td>
-			20¡C
+			20oC
 		</td>
 		<td>
 			YA
@@ -193,6 +206,9 @@
 		</td>
 		<td>
 			NGM Plate
+		</td>
+		<td>
+			34, 35, 36
 		</td>
 	</tr>
 	<tr>
@@ -215,7 +231,7 @@
 			<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/22004469">22004469</a>
 		</td>
 		<td>
-			20¡C
+			20oC
 		</td>
 		<td>
 			Multi-generational
@@ -225,6 +241,9 @@
 		</td>
 		<td>
 			Liquid S-medium
+		</td>
+		<td>
+			32, 33
 		</td>
 	</tr>
 	<tr>
@@ -247,7 +266,7 @@
 			<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/16955112">16955112</a>
 		</td>
 		<td>
-			12¡C and 24¡C
+			12oC and 24oC
 		</td>
 		<td>
 			Egg, L4, YA
@@ -257,6 +276,9 @@
 		</td>
 		<td>
 			NGM Plate
+		</td>
+		<td>
+			25, 26
 		</td>
 	</tr>
 	<tr>
@@ -279,7 +301,7 @@
 			<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/19542186">19542186</a>
 		</td>
 		<td>
-			20¡C
+			20oC
 		</td>
 		<td>
 			All; synchronised
@@ -290,9 +312,12 @@
 		<td>
 			NGM Plate
 		</td>
+		<td>
+			28, 29, 30
+		</td>
 	</tr>
 </table>
-
+<br>
 
 	</div>
 </form>

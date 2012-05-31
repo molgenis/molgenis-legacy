@@ -1,12 +1,12 @@
-<molgenis name="xqtl_panacea" label="Panacea xQTL workbench">
+<molgenis name="xqtl_panacea" label="WormQTL">
 
 	<plugin name="MolgenisHeader" type="org.molgenis.wormqtl.header.MolgenisHeader" />
 	<plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" />
 
 	<menu name="main">
-	
+		<plugin label="Home" name="Home" type="org.molgenis.wormqtl.header.HomePage" />
 		<plugin label="Find QTLs" name="QtlFinderPublic2" type="plugins.qtlfinder2.QtlFinder2" group="biologist" />
-		<plugin label="Genome Browser" name="GenomeBrowser" type="plugins.genomebrowser.GenomeBrowser" group="biologist" />
+		<plugin label="Genome browser" name="GenomeBrowser" type="plugins.genomebrowser.GenomeBrowser" group="biologist" />
 		<include file="apps/wormqtl/org/molgenis/wormqtl/browsedata.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml"/>
 		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
@@ -14,8 +14,6 @@
 		<include file="apps/wormqtl/org/molgenis/wormqtl/search.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/>
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
-		<plugin label="About" name="ClusterDemo" type="org.molgenis.wormqtl.header.HomePage" />
 		<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
-
 	</menu>
 </molgenis>

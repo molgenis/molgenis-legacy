@@ -76,49 +76,7 @@
 				<div style="height: 20px">&nbsp;</div>
 			</td>
 		</tr>
-		<tr>
-			<td width="675">
-				<h3>Citation:</h3>
-				<i>WormQTL Ð Public archive and analysis web portal for natural variation data in Caenorhabditis elegans</i><br>
-				L. Basten Snoek, Yang Li, K. Joeri Van der Velde, Danny Arends, Antje Beyer, Mark Elvin, Jasmin Fisher, Alex Hajnal, Michael Hengartner, Gino Poulin, Miriam Rodriguez, Tobias Schmid, Sabine Schrimpf, Feng Xue, Xue Zheng, Ritsert C. Jansen, Jan E. Kammenga, Morris A. Swertz - <b>in writing</b> 2012; doi: <a href="http://todo" target="_blank">todo</a>
-				<br><br>
-				<h3>References:</h3>
-				<a href="http://dx.doi.org/10.1093/bioinformatics/bts049">xQTL workbench: a scalable web environment for multi-level QTL analysis</a> - Danny Arends; K. Joeri van der Velde; Pjotr Prins; Karl W. Broman; Steffen Moller; Ritsert C. Jansen; Morris A. Swertz
-				<br><br>
-				<a href="http://www.ncbi.nlm.nih.gov/pubmed/20214801">XGAP: a uniform and extensible data model and software platform for genotype and phenotype experiments</a> - Swertz MA, Velde KJ, Tesson BM, Scheltema RA, Arends D, Vera G, Alberts R, Dijkstra M, Schofield P, Schughart K, Hancock JM, Smedley D, Wolstencroft K, Goble C, de Brock EO, Jones AR, Parkinson HE; Coordination of Mouse Informatics Resources (CASIMIR); Genotype-To-Phenotype (GEN2PHEN) Consortiums, Jansen RC.
-				<br><br>
-				<a href="http://www.ncbi.nlm.nih.gov/pubmed/12724300">R/qtl: QTL mapping in experimental crosses</a> - Broman KW, Wu H, Sen S, Churchill GA.
-				<br><br>
-				<a href="http://bioinformatics.oxfordjournals.org/content/early/2010/10/21/bioinformatics.btq565.abstract">R/qtl: high throughput Multiple QTL mapping</a> - Danny Arends, Pjotr Prins, Ritsert C. Jansen and Karl W. Broman
-				<br><br>
-				<a href="http://www.ncbi.nlm.nih.gov/pubmed/15059831">Molecular Genetics Information System (MOLGENIS): alternatives in developing local experimental genomics databases</a> - Swertz MA, De Brock EO, Van Hijum SA, De Jong A, Buist G, Baerends RJ, Kok J, Kuipers OP, Jansen RC.
-				<br><br>
-				<a href="http://www.biomedcentral.com/1471-2105/11/S12/S12">The MOLGENIS toolkit: rapid prototyping of biosoftware at the push of a button</a> - Morris A Swertz, Martijn Dijkstra, Tomasz Adamusiak, Joeri K van der Velde, Alexandros Kanterakis, Erik T Roos, Joris Lops, Gudmundur A Thorisson, Danny Arends, George Byelas, Juha Muilu, Anthony J Brookes, Engbert O de Brock, Ritsert C Jansen and Helen Parkinson
-			</td>
-		</tr>	
-		<tr>
-			<td align="center">
-				<div style="height: 25px">&nbsp;</div>
-			</td>
-		</tr>
-		<tr>
-			<td align="center">
-				<table style="background: #FFFFFF;" cellpadding="10" cellspacing="10" border="2" width="700px">
-					<tr>
-						<td align="center">
-							<a target="_blank" href="http://www.molgenis.org/"><img src="clusterdemo/logos/molgenis_logo.png" width="75px" height="50px" alt="logo Molgenis"></a>
-							<a target="_blank" href="http://wiki.gcc.rug.nl/"><img src="clusterdemo/logos/gcc_logo.png" width="300px" height="50px" alt="logo GCC"></a>
-							<a target="_blank" href="http://www.rug.nl/"><img src="clusterdemo/logos/rug_logo.png" width="150px" height="50px" alt="logo RUG"></a><br>
-							<a target="_blank" href="http://www.xgap.org/"><img src="clusterdemo/logos/xgap_logo.png" width="75px" height="50px" alt="logo XGAP"></a>
-							<a target="_blank" href="http://www.umcg.nl/"><img src="clusterdemo/logos/umcg_logo.png" width="150px" height="50px" alt="logo UMCG"></a>
-							<a target="_blank" href="http://www.cbsg.nl/"><img src="clusterdemo/logos/cbsg_logo.png" width="150px" height="50px" alt="logo CBSG"></a>
-							<a target="_blank" href="http://www.panaceaproject.eu/"><img src="clusterdemo/logos/panacea_logo.gif" width="150px" height="50px" alt="logo Panacea"></a>
-						</td>
-					</tr>
-				</table>
-				<font size=1>(c) 2012 GBIC Groningen</font>
-			</td>
-		</tr>
+	
 	</table>
 </div>
 
