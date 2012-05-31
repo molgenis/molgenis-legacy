@@ -35,9 +35,9 @@
 				<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
 			</menu>
 			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"	label="Mapping" />
-			<menu name="ImportMenu" position="left" label="Importing data">
+			<menu name="ImportMenu" position="left" label="Importing data"><!--
 				<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin" label="Generic Importer"/>
-				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
+				--><plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
 			</menu>
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
