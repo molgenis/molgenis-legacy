@@ -283,11 +283,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/cxf-2.3.3.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/jaxb-impl-2.2.1.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -527,5 +522,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/gson-2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/osmosisch/workspace/gitwork/molgenis/lib/cxf-2.6.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
