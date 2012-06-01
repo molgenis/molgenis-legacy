@@ -581,7 +581,6 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=Select");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=deathdate", thisYear + "-02-02");
-		selenium.click("link=31");
 		selenium.click("id=remarks");
 		selenium.type("id=remarks", "test");
 		selenium.click("id=Apply");
