@@ -333,7 +333,17 @@
 				
 				if(fieldValue != ""){
 					
-					if(rowIndex > 3){
+					if(rowIndex == 3){
+						
+						
+						
+						if(fieldValue.toLowerCase() === "true"){
+							select.checked = true;
+						}else{
+							select.checked = false;
+						}
+						
+					}else if(rowIndex > 3){
 						
 						var localCount = makeTable(header);
 						
@@ -370,18 +380,6 @@
 					return false;
 				}else{
 					return true;
-				}
-			}
-			
-			function checkMultipleValue(checkBoxName, checkedValue){
-				
-				var checkBox = document.getElementById(checkBoxName);
-				
-				if(checkedValue == true){
-				
-					checkBox.checked = true;
-				}else{
-					checkBox.checked = false;
 				}
 			}
 			
@@ -509,7 +507,7 @@
 							<tr>
 								<#list screen.getSpreadSheetHeanders() as header>
 									<td>
-										Multiple values? <input type="checkbox" name="${header}" id="multipleValues" value="multipleValues">
+										Multiple values? <input type="checkbox" name="${header}" id="multipleValues" value="true">
 									</td>
 								</#list>
 							</tr>

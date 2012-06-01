@@ -1,6 +1,7 @@
 package plugins.biobankimporter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -618,59 +619,66 @@ public class TableController {
 
 									if(!cellValue.equals("") && cellValue != null && field.getObservationTarget() != -1){
 										
+										List<String> multipleValuesInCells = new ArrayList<String>();
+										
 										if(field.multipleValues.equals("true")){
 
-											String multipleValuesInCells [] = cellValue.split(",");
+											multipleValuesInCells = Arrays.asList(cellValue.split(","));
 
-											for(String eachValue : multipleValuesInCells){
-												
-												System.out.println("Single value ----------------------->" + eachValue);
-												
-												ObservedValue observedValue = new ObservedValue();
+										}else{
+											multipleValuesInCells.add(cellValue);
+										}
+										
+										for(String eachValue : multipleValuesInCells){
+											
+											ObservedValue observedValue = new ObservedValue();
 
-												String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
+											String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
 
-												String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
-
-												//TODO: import measurements then import individual data. The measurement has to be consistent.
-
-												if(checkExistingMeasurementsInDB.keySet().contains(headerName.toLowerCase())){
-													headerName = checkExistingMeasurementsInDB.get(headerName.toLowerCase());
-												}
-
-												observedValue.setFeature_Name(headerName);
-
-												TableField targetField = columnIndexToTableField.get(field.getObservationTarget());
-
-												if(targetField.getClassType().equalsIgnoreCase(Measurement.class.getSimpleName())){
-
-													if(!checkExistingMeasurementsInDB.containsKey(targetName)){
-
-														if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, targetName)).size() > 0){
-															checkExistingMeasurementsInDB.put(targetName, targetName + "_" + investigationName);
-
-														}else{
-															checkExistingMeasurementsInDB.put(targetName, targetName);
-
-														}
-													}
-
-													observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
-
-												}else{
-													observedValue.setTarget_Name(targetName);
-												}
-
-
-
-												observedValue.setValue(eachValue);
-
-												observedValueList.add(observedValue);
-
-												if(investigationName != null)
-													observedValue.set("Investigation_name", investigationName);
-
+											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
+											
+											if(targetName.equalsIgnoreCase("UMCG")){
+												System.out.println();
 											}
+											
+											//TODO: import measurements then import individual data. The measurement has to be consistent.
+											System.out.println();
+											if(checkExistingMeasurementsInDB.keySet().contains(headerName.toLowerCase())){
+												headerName = checkExistingMeasurementsInDB.get(headerName.toLowerCase());
+											}
+
+											observedValue.setFeature_Name(headerName);
+
+											TableField targetField = columnIndexToTableField.get(field.getObservationTarget());
+
+											if(targetField.getClassType().equalsIgnoreCase(Measurement.class.getSimpleName())){
+
+												if(!checkExistingMeasurementsInDB.containsKey(targetName)){
+
+													if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, targetName)).size() > 0){
+														checkExistingMeasurementsInDB.put(targetName, targetName + "_" + investigationName);
+
+													}else{
+														checkExistingMeasurementsInDB.put(targetName, targetName);
+
+													}
+												}
+
+												observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
+
+											}else{
+												observedValue.setTarget_Name(targetName);
+											}
+
+
+
+											observedValue.setValue(eachValue);
+
+											observedValueList.add(observedValue);
+
+											if(investigationName != null)
+												observedValue.set("Investigation_name", investigationName);
+
 										}
 									}
 								}
@@ -737,15 +745,16 @@ public class TableController {
 
 			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
 			
-			List<InvestigationElement> removedPanelList = new ArrayList<InvestigationElement>(); 
+			HashMap<String, InvestigationElement> removedPanelList = removeDuplicates(panelList); 
+			
+			checkExistenceInDB(removedPanelList, Panel.class.getSimpleName());
+			
+			panelList = new ArrayList<InvestigationElement>(removedPanelList.values());
 			
 			for(InvestigationElement e : panelList){
-				if(!removedPanelList.contains(e)){
-					removedPanelList.add(e);
-				}
+				System.out.println(e.getName());
 			}
-			
-			db.update(removedPanelList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Panel.NAME);
+			db.update(panelList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Panel.NAME);
 
 //			db.update(personList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Person.LASTNAME);
 //
@@ -1032,6 +1041,8 @@ public class TableController {
 
 			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 
+			observedValueList = removeDuplicatesObservedValue(observedValueList);
+			
 			int iteration = 1;
 
 			while(observedValueList.size() > iteration * 5000){
@@ -1048,9 +1059,10 @@ public class TableController {
 			db.update(subList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, 
 					ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
 
-			//			db.update(observedValueList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, 
-			//						ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
-			//			
+//			for(ObservedValue ov : observedValueList){
+//				System.out.println(ov);
+//				db.add(ov);
+//			}
 
 			db.commitTx();
 
@@ -1088,7 +1100,7 @@ public class TableController {
 		if(names.size() > 0){
 
 			if(ClassType.equals(Category.class.getSimpleName()) || ClassType.equals(Measurement.class.getSimpleName()) 
-					|| ClassType.equals(ObservationTarget.class.getSimpleName())){
+					|| ClassType.equals(ObservationTarget.class.getSimpleName()) || ClassType.equals(Panel.class.getSimpleName()) ){
 
 				for(Category c : db.find(Category.class, new QueryRule("name", Operator.IN, names))){
 					InvestigationElement categoryToAdd =  hashMap.get(c.getName().toLowerCase());
@@ -1128,7 +1140,26 @@ public class TableController {
 			}
 		}
 	}
-
+	
+	private List<ObservedValue> removeDuplicatesObservedValue(List<ObservedValue> observedValueList){
+		
+		List<ObservedValue> uniqueValues = new ArrayList<ObservedValue>();
+		
+		List<String> uniqueCombination = new ArrayList<String>();
+		
+		for(ObservedValue ov : observedValueList){
+			
+			String combination = ov.getTarget_Name() + ov.getFeature_Name() + ov.getValue();
+			
+			if(!uniqueCombination.contains(combination)){
+				uniqueCombination.add(combination);
+				uniqueValues.add(ov);
+			}
+		}
+		
+		return uniqueValues;
+	}
+	
 	private HashMap<String, OntologyTerm> removeOntologyTermDuplicates(List<OntologyTerm> ontologyTermList) {
 
 		HashMap<String, OntologyTerm> addedName = new HashMap<String, OntologyTerm>();

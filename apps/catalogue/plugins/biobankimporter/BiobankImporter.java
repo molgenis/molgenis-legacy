@@ -287,23 +287,12 @@ public class BiobankImporter extends PluginModel<Entity>
 					investigationName = "";
 				}
 
-				if(sheet.getCell(0, startingRow).getContents().toString().equals("multipleValue")){
-
-					if(sheet.getCell(1, startingRow).getContents().toString().equals("true")){
-						multipleValue = true;
-					}
-
-					startingRow++;
-				}else{
-					multipleValue = false;
-				}
-
 				for(int j = 0; j < columns; j++){
 
 					List<String> mappingForEachColumn = new ArrayList<String>();
 
 					for(int i = startingRow; i < rows; i++){
-
+						
 						mappingForEachColumn.add(sheet.getCell(j, i).getContents().toString());
 
 					}
@@ -313,10 +302,6 @@ public class BiobankImporter extends PluginModel<Entity>
 			}
 
 		} else if("saveMapping".equals(request.getAction())){
-
-			if(request.getBool("multipleValues") != null && !request.getBool("multipleValues")){
-				multipleValue = true;
-			}
 
 			List<List<String>> twoDimensionalTable = new ArrayList<List<String>>();
 
@@ -342,12 +327,7 @@ public class BiobankImporter extends PluginModel<Entity>
 				outputExcel.addCell(new Label(1, startingRow, investigationName));
 				startingRow++;
 			}
-
-			//Add the multipleValue variable to mappingFile
-			outputExcel.addCell(new Label(0, startingRow, "multipleValue"));
-			outputExcel.addCell(new Label(1, startingRow, multipleValue.toString()));
-			startingRow++;
-
+			
 			if(headers != null)
 			{
 				for(int columnCount = 0; columnCount < headers.size(); columnCount++)
@@ -364,22 +344,26 @@ public class BiobankImporter extends PluginModel<Entity>
 
 			if(twoDimensionalTable.size() > 0){
 
-				previousAddingDataType = 0;
-
 				for(int i = 0; i < twoDimensionalTable.size(); i++){
 
-					for(int j = 0; j < twoDimensionalTable.get(0).size(); j++){
+					if(twoDimensionalTable.get(i).size() < 4){
+						twoDimensionalTable.get(i).add("false");
+					}
+					
+					for(int j = 0; j < twoDimensionalTable.get(i).size(); j++){
 
 						outputExcel.addCell(new Label(i, j + 1 + startingRow, twoDimensionalTable.get(i).get(j)));
 					}
-
+					
 					if(twoDimensionalTable.get(i).get(1).equals(Measurement.class.getSimpleName() + ":" + Measurement.DATATYPE)){
 
 						String member = headers.get(i); 
 
-						int addedNumberOfDataType = previousAddingDataType;
+						//int addedNumberOfDataType = previousAddingDataType;
 
-						for(int index = addedNumberOfDataType; index < request.getInt("__dataTypeCount"); index++){
+						previousAddingDataType = 0;
+						
+						for(int index = 0; index < request.getInt("__dataTypeCount"); index++){
 
 							if(request.getString(member + "_options_" + index) != null){
 								String eachMember = request.getString(member + "_options_" + index);
@@ -390,7 +374,7 @@ public class BiobankImporter extends PluginModel<Entity>
 								{
 									String userInputDatType = request.getString(member + "_input_" + index);
 									String dataType = MolgenisDataTypeOption + ";" + userInputDatType;
-									outputExcel.addCell(new Label(i, twoDimensionalTable.get(0).size() + index + 1 - addedNumberOfDataType + startingRow, dataType));
+									outputExcel.addCell(new Label(i, twoDimensionalTable.get(i).size() + previousAddingDataType + 1 + startingRow, dataType));
 								}
 								previousAddingDataType++;
 							}
@@ -449,11 +433,18 @@ public class BiobankImporter extends PluginModel<Entity>
 								System.out.println(columnIndex + "-------------------------->" + eachMember.toString());
 								columnIndexToRelation.put(columnIndex, Integer.parseInt(eachMember.toString()));
 								index++;
-							}else if(index == 3){
-								columnIndexToMultipleValue.put(columnIndex, "true");
-								
 							}
+//							else if(index == 3){
+//								columnIndexToMultipleValue.put(columnIndex, "true");
+//								
+//							}
 						}
+					}
+					
+					if(request.getBool(columnIndex) != null){
+						System.out.println();
+					}else{
+						
 					}
 
 					columnIndex++;
