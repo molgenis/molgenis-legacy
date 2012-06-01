@@ -2,7 +2,6 @@
 
 package app;
 
-@org.springframework.stereotype.Repository
 public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 {
 	public void initMappers(JpaDatabase db)
@@ -34,7 +33,6 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 		initMappers(this);
 	}
 
-	@org.springframework.beans.factory.annotation.Autowired
     public JpaDatabase() throws org.molgenis.framework.db.DatabaseException {
         super(EMFactory.createEntityManager(), new JDBCMetaDatabase());
         initMappers(this);
