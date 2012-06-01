@@ -24,12 +24,12 @@
 <div align="center">
 	<table width="700px">
 		<tr>
-			<td>
+			<td colspan="4">
 				<div style="height: 10px">&nbsp;</div>
 			</td>
 		</tr>
 		<tr>
-			<td align="center">
+			<td colspan="4" align="center">
 				<div align="left">
 				<!-- <font style='font-size:24px; font-weight:bold;'>xQTL workbench</font>-->
 				<#if screen.userIsAdminAndDatabaseIsEmpty == true>
@@ -55,12 +55,12 @@
 			</td>
 		</tr>
 		<tr>
-			<td>
+			<td colspan="4">
 				<div style="height: 10px">&nbsp;</div>
 			</td>
 		</tr>
 		<tr>
-			<td align="center">
+			<td colspan="4" align="center">
 				<div align="left">
 					<h2>WormQTL Ð Public archive and analysis web portal for natural variation data in Caenorhabditis elegans</h2>
 					Over the past decade increased efforts have been made to explore the model metazoan Caenorhabditis elegans as a platform for molecular quantitative genetics and the systems biology of natural variation. These efforts have resulted in an accumulation of a huge amount of phenotypic and genotypic data across different developmental worm stages and environments in recombinant inbred populations. Next to C. elegans, C. briggsae is an emerging model organism that allows evolutionary comparisons with C. elegans and quantitative genetic exploration of its own unique biological attributes. In addition, a wealth of similar high-throughput data has been produced on hundreds of different C. elegans wild isolates.
@@ -72,7 +72,28 @@
 			</td>
 		</tr>
 		<tr>
-			<td>
+			<td colspan="4">
+				<div style="height: 20px">&nbsp;</div>
+			</td>
+		</tr>
+		
+		<tr>
+			<td align="center">
+				<a href="?select=QtlFinderPublic2"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_plot_button.png" /><h3>Find and plot QTLs</h3></a>
+			</td>
+			<td align="center">
+				<a href="?select=GenomeBrowser"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_gb_button.png" /><h3>Explore QTLs genomewide</h3></a>
+			</td>
+			<td align="center">
+				<a href="?select=Investigations"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_data_button.png" /><h3>Browse the raw data</h3></a>
+			</td>
+			<td align="center">
+				<a href="?select=Help"><img height="100" width="100" src="res/img/designgg/helpicon.gif" /><h3>Help</h3></a>
+			</td>
+		</tr>
+		
+		<tr>
+			<td colspan="4">
 				<div style="height: 20px">&nbsp;</div>
 			</td>
 		</tr>
