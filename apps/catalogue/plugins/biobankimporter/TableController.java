@@ -737,7 +737,15 @@ public class TableController {
 
 			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
 			
-			db.update(panelList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Panel.NAME);
+			List<InvestigationElement> removedPanelList = new ArrayList<InvestigationElement>(); 
+			
+			for(InvestigationElement e : panelList){
+				if(!removedPanelList.contains(e)){
+					removedPanelList.add(e);
+				}
+			}
+			
+			db.update(removedPanelList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Panel.NAME);
 
 //			db.update(personList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Person.LASTNAME);
 //
