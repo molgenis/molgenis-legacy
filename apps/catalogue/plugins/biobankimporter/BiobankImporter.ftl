@@ -373,9 +373,21 @@
 				}
 			}
 			
+			function checkMultipleValue(checkBoxName, checkedValue){
+				
+				var checkBox = document.getElementById(checkBoxName);
+				
+				if(checkedValue == true){
+				
+					checkBox.checked = true;
+				}else{
+					checkBox.checked = false;
+				}
+			}
+			
 		</script>
 			<div class="screenpadding" id = "screenpadding">	
-			    <h3 id="test"> Import dataShaper data to pheno model  </h3>
+			    <h3 id="test"> Import your data to pheno model  </h3>
 		        
 		        <div id="fileChosenSection">
 			        <#if screen.isImportingFinished() == true>
@@ -437,8 +449,10 @@
 						<button type="button" onclick="updateTableContent();">Update</button> 
 						<br/><br/>
 						
-						Please select if you have multiple values (in single records separated by commas) ? <input type="checkbox" name="multipleValues">  <br><br/>
-						
+						<!--
+						Please select if you have multiple values (in single records separated by commas) ? <input type="checkbox" name="multipleValues" id="multipleValues" value="multipleValues">  <br><br/>
+						<script>checkMultipleValue('multipleValues', ${screen.getMultipleValue()});</script>
+						-->
 						<!-- this is the code for uploading the mapping file -->				
 						<p> You could upload a mapping file if you have it already </p>
 				        <input type="file" name = "uploadMapping"/>
@@ -480,10 +494,11 @@
 									</td>
 								</#list>
 							</div></tr>
+							
 							<tr>
 								<#list screen.getSpreadSheetHeanders() as header>
-									<td><select id='4' name='${header}' onchange="changeFieldContent('${header}');">
-										<#list screen.getEntityType() as options>
+									<td><select id='3' name='${header}' onchange="changeFieldContent('${header}');">
+										<#list screen.getColumnIndex() as options>
 										  <option id="">${options}</option>
 										</#list>
 										</select>
@@ -493,11 +508,8 @@
 							
 							<tr>
 								<#list screen.getSpreadSheetHeanders() as header>
-									<td><select id='3' name='${header}' onchange="changeFieldContent('${header}');">
-										<#list screen.getColumnIndex() as options>
-										  <option id="">${options}</option>
-										</#list>
-										</select>
+									<td>
+										Multiple values? <input type="checkbox" name="${header}" id="multipleValues" value="multipleValues">
 									</td>
 								</#list>
 							</tr>

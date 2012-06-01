@@ -73,7 +73,7 @@ public class BiobankImporter extends PluginModel<Entity>
 	private HashMap<Integer, String> columnIndexToClassType = new HashMap<Integer, String>();
 	private HashMap<Integer, Integer> columnIndexToRelation = new HashMap<Integer, Integer>();
 	private HashMap<Integer, String> columnIndexToFieldName = new HashMap<Integer, String>();
-	private HashMap<Integer, String> columnIndexToEntityType = new HashMap<Integer, String>();
+	private HashMap<Integer, String> columnIndexToMultipleValue = new HashMap<Integer, String>();
 
 	private List<List<String>> mappingForMolgenisEntity = new ArrayList<List<String>>();
 
@@ -92,8 +92,6 @@ public class BiobankImporter extends PluginModel<Entity>
 	private Integer startingRowIndex = 0;
 
 	private Boolean multipleSheets = true;
-
-	private List<String> entityType = new ArrayList<String>();
 
 	private Boolean multipleValue = false;
 
@@ -180,11 +178,6 @@ public class BiobankImporter extends PluginModel<Entity>
 		chooseClassType.add(Panel.class.getSimpleName());
 		chooseClassType.add("NULL");
 
-		entityType.add("NULL");
-		entityType.add(OntologyTerm.class.getSimpleName());
-		entityType.add(Person.class.getSimpleName());
-		entityType.add(Institute.class.getSimpleName());
-
 		dataTypeOptions.add("string");
 		dataTypeOptions.add("int");
 		dataTypeOptions.add("datetime");
@@ -260,6 +253,8 @@ public class BiobankImporter extends PluginModel<Entity>
 
 			importingFinished = true;
 
+			multipleValue = false;
+			
 			file = null;
 
 			filePath = null;
@@ -319,7 +314,7 @@ public class BiobankImporter extends PluginModel<Entity>
 
 		} else if("saveMapping".equals(request.getAction())){
 
-			if("multipleValue".equals(request.getString("multipleValue"))){
+			if(request.getBool("multipleValues") != null && !request.getBool("multipleValues")){
 				multipleValue = true;
 			}
 
@@ -451,10 +446,12 @@ public class BiobankImporter extends PluginModel<Entity>
 								index++;
 
 							}else if(index == 2){
-								columnIndexToEntityType.put(columnIndex, eachMember.toString());
-							}else if(index == 3){
 								System.out.println(columnIndex + "-------------------------->" + eachMember.toString());
 								columnIndexToRelation.put(columnIndex, Integer.parseInt(eachMember.toString()));
+								index++;
+							}else if(index == 3){
+								columnIndexToMultipleValue.put(columnIndex, "true");
+								
 							}
 						}
 					}
@@ -562,8 +559,6 @@ public class BiobankImporter extends PluginModel<Entity>
 				setSpreadSheetHeanders(headers);
 			}
 
-
-
 		}else {
 
 			this.setStatus("Please upload a file first!");
@@ -610,8 +605,12 @@ public class BiobankImporter extends PluginModel<Entity>
 					String classType = columnIndexToClassType.get(columnIndex);
 
 					String fieldName = columnIndexToFieldName.get(columnIndex);
-
-					String entityType = columnIndexToEntityType.get(columnIndex);
+					
+					String multipleValues = "false";
+					
+					if(columnIndexToMultipleValue.containsKey(columnIndex)){
+						multipleValues = columnIndexToMultipleValue.get(columnIndex);
+					}
 
 					String splitByColon[] = fieldName.toString().split(":");
 
@@ -627,29 +626,29 @@ public class BiobankImporter extends PluginModel<Entity>
 					{
 						int coHeaders[] = {columnIndex.intValue()};
 						System.out.println(columnIndex);
-						table.addField(classType, ObservedValue.VALUE, entityType, coHeaders, dependedColumn.intValue(), TableField.COLHEADER);
+						table.addField(classType, ObservedValue.VALUE, multipleValues, coHeaders, dependedColumn.intValue(), TableField.COLHEADER);
 
 					}else if (classType.equals(Category.class.getSimpleName() + ":" + Category.ISMISSING)){
 
 						Tuple defaults = new SimpleTuple();
 						defaults.set(Category.ISMISSING, true);
-						table.addField(Category.class.getSimpleName(), "name", entityType, columnIndex.intValue(), TableField.COLVALUE, defaults);
-						table.addField(classType, fieldName, entityType, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
+						table.addField(Category.class.getSimpleName(), "name", multipleValues ,columnIndex.intValue(), TableField.COLVALUE, defaults);
+						table.addField(classType, fieldName, multipleValues, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
 
 					}else{
 
 						if(dependedColumn.intValue() == -1)
 						{
-							table.addField(classType, fieldName, entityType, columnIndex.intValue(), TableField.COLVALUE);
+							table.addField(classType, fieldName, multipleValues, columnIndex.intValue(), TableField.COLVALUE);
 
 						}else{
 
 							if(referenceClass.contains(fieldName))
 							{
-								table.addField(classType, "name", entityType, columnIndex.intValue(), TableField.COLVALUE);
+								table.addField(classType, "name", multipleValues, columnIndex.intValue(), TableField.COLVALUE);
 							}
 
-							table.addField(classType, fieldName, entityType, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
+							table.addField(classType, fieldName, multipleValues, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
 
 							if(classType.equals(Measurement.class.getSimpleName()) && fieldName.equals(Measurement.DATATYPE))
 							{
@@ -678,11 +677,6 @@ public class BiobankImporter extends PluginModel<Entity>
 			this.setStatus("The file should be in " + file );
 
 		}
-	}
-
-	public List<String> getEntityType(){
-
-		return entityType ;
 	}
 
 	@Override
@@ -720,8 +714,8 @@ public class BiobankImporter extends PluginModel<Entity>
 		else return false;
 	}
 
-	public Boolean getMultipleValue()
+	public String getMultipleValue()
 	{
-		return multipleValue;
+		return multipleValue.toString();
 	}
 }

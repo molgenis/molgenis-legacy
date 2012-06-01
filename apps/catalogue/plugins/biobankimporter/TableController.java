@@ -68,20 +68,20 @@ public class TableController {
 		configuration = new ArrayList<TableField>();
 	}
 
-	public void addField(String classType, String fieldName, String entityType, int[] columnList, Boolean Vertical) 
+	public void addField(String classType, String fieldName, String multipleValues, int[] columnList, Boolean Vertical) 
 	{
-		this.addField(classType, fieldName, entityType, columnList, Vertical, new SimpleTuple());
+		this.addField(classType, fieldName, multipleValues, columnList, Vertical, new SimpleTuple());
 	}
 
-	public void addField(String ClassType, String fieldName, String entityType, int[] columnList, Boolean Vertical, Tuple defaults) 
+	public void addField(String ClassType, String fieldName, String multipleValues, int[] columnList, Boolean Vertical, Tuple defaults) 
 	{
 
 		for(int i = 0; i < columnList.length; i++){
-			this.addField(ClassType, fieldName, entityType, columnList[i], Vertical, defaults, -1);
+			this.addField(ClassType, fieldName, multipleValues, columnList[i], Vertical, defaults, -1);
 		}
 	}
 
-	public void addField(String ClassType, String fieldName, String entityType, boolean Vertical, int dependedIndex, int... columnIndexes) 
+	public void addField(String ClassType, String fieldName, String multipleValues, boolean Vertical, int dependedIndex, int... columnIndexes) 
 	{
 
 		List<Integer> columnList = new ArrayList<Integer>();
@@ -96,7 +96,7 @@ public class TableController {
 
 			}else{
 
-				this.addField(ClassType, fieldName, entityType, columnIndexes[i], Vertical, new SimpleTuple(), dependedIndex);
+				this.addField(ClassType, fieldName, multipleValues, columnIndexes[i], Vertical, new SimpleTuple(), dependedIndex);
 				columnIndexToTableField.get(columnIndexes[i]).setRelation(fieldName);
 			}
 			columnList.add(columnIndexes[i]);
@@ -104,40 +104,40 @@ public class TableController {
 		relationIndex.put(dependedIndex, columnList);
 	}
 
-	public void addField(String ClassType, String fieldName, String entityType, int columnIndex, Boolean Vertical) 
+	public void addField(String ClassType, String fieldName, String multipleValues, int columnIndex, Boolean Vertical) 
 	{
-		this.addField( ClassType, fieldName, entityType, columnIndex, Vertical, new SimpleTuple(), -1);
+		this.addField( ClassType, fieldName, multipleValues, columnIndex, Vertical, new SimpleTuple(), -1);
 	}
 
-	public void addField(String ClassType, String fieldName, String entityType, int columnIndex,
+	public void addField(String ClassType, String fieldName, String multipleValues, int columnIndex,
 			boolean Vertical, int... dependentColumnIndex) 
 	{
 
-		this.addField(ClassType, fieldName, entityType, columnIndex, Vertical, new SimpleTuple(), dependentColumnIndex);
+		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, new SimpleTuple(), dependentColumnIndex);
 
 	}
 
-	public void addField(String ClassType, String fieldName, String entityType, int columnIndex,
+	public void addField(String ClassType, String fieldName, String multipleValues, int columnIndex,
 			boolean Vertical, Tuple defaults) 
 	{
-		this.addField(ClassType, fieldName, entityType, columnIndex, Vertical, defaults, -1);
+		this.addField(ClassType, fieldName, multipleValues, columnIndex, Vertical, defaults, -1);
 
 	}
 
-	public void addField(String ClassType, String fieldName, String entityType, int[] coHeaders,
+	public void addField(String ClassType, String fieldName, String multipleValues, int[] coHeaders,
 			int targetIndex, boolean Vertical) 
 	{
 		observationTarget = targetIndex;
-		this.addField(ClassType, fieldName, entityType, coHeaders, Vertical, new SimpleTuple());
+		this.addField(ClassType, fieldName, multipleValues, coHeaders, Vertical, new SimpleTuple());
 		observationTarget = -1;
 	}
 
-	public void addField(String ClassType, String fieldName, String entityType, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex)
+	public void addField(String ClassType, String fieldName, String multipleValues, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex)
 	{
 
 		try {					
 			//create a tableField that will take care of loading columnIndex into 'name' property
-			field = new TableField(ClassType, fieldName, entityType, columnIndex, Vertical, defaults, dependentColumnIndex);
+			field = new TableField(ClassType, fieldName, multipleValues, columnIndex, Vertical, defaults, dependentColumnIndex);
 			//add to the parser configuration
 			configuration.add(field);
 
@@ -238,46 +238,46 @@ public class TableController {
 
 							if(columnIndexToTableField.get(colIndex).getVertical() && rowIndex != 0){
 
-								if(!field.getEntity().equals("NULL")){
-
-									if(field.getEntity().equals(Person.class.getSimpleName())){
-
-										String[] listOfValues = cellValue.split(",");
-
-										for(String eachvalue : listOfValues){
-
-											Person p = new Person();
-											p.setLastName(eachvalue.trim());
-											personList.add(p);
-
-										}
-
-									}else if(field.getEntity().equals(Institute.class.getSimpleName())){
-
-										String[] listOfValues = cellValue.split(",");
-
-										for(String eachvalue : listOfValues){
-
-											Institute institute = new Institute();
-											institute.setName(eachvalue.trim());
-											instituteList.add(institute);
-
-										}
-
-									}else if(field.getEntity().equals(OntologyTerm.class.getSimpleName())){
-										
-										String[] listOfValues = cellValue.split(",");
-
-										for(String eachvalue : listOfValues){
-
-											OntologyTerm ot = new OntologyTerm();
-											ot.setName(eachvalue.trim());
-											ontologyTermList.add(ot);
-
-										}
-									} 
-
-								}
+								//								if(!field.getEntity().equals("NULL")){
+								//
+								//									if(field.getEntity().equals(Person.class.getSimpleName())){
+								//
+								//										String[] listOfValues = cellValue.split(",");
+								//
+								//										for(String eachvalue : listOfValues){
+								//
+								//											Person p = new Person();
+								//											p.setLastName(eachvalue.trim());
+								//											personList.add(p);
+								//
+								//										}
+								//
+								//									}else if(field.getEntity().equals(Institute.class.getSimpleName())){
+								//
+								//										String[] listOfValues = cellValue.split(",");
+								//
+								//										for(String eachvalue : listOfValues){
+								//
+								//											Institute institute = new Institute();
+								//											institute.setName(eachvalue.trim());
+								//											instituteList.add(institute);
+								//
+								//										}
+								//
+								//									}else if(field.getEntity().equals(OntologyTerm.class.getSimpleName())){
+								//										
+								//										String[] listOfValues = cellValue.split(",");
+								//
+								//										for(String eachvalue : listOfValues){
+								//
+								//											OntologyTerm ot = new OntologyTerm();
+								//											ot.setName(eachvalue.trim());
+								//											ontologyTermList.add(ot);
+								//
+								//										}
+								//									} 
+								//
+								//								}
 
 								if(!existingValuesForClassType.containsKey(field.getClassType() + field.getFieldName())){
 									Map<String, List<InvestigationElement>> tempHolder = new LinkedHashMap<String, List<InvestigationElement>>();
@@ -615,48 +615,61 @@ public class TableController {
 								}else{
 
 									if(!cellValue.equals("") && cellValue != null && field.getObservationTarget() != -1){
+										
+										if(field.multipleValues.equals("true")){
 
-										ObservedValue observedValue = new ObservedValue();
+											String multipleValuesInCells [] = cellValue.split(",");
 
-										String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
+											for(String eachValue : multipleValuesInCells){
+												
+												System.out.println("Single value ----------------------->" + eachValue);
+												
+												ObservedValue observedValue = new ObservedValue();
 
-										String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
+												String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
 
-										//TODO: import measurements then import individual data. The measurement has to be consistent.
+												String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
 
-										if(checkExistingMeasurementsInDB.keySet().contains(headerName.toLowerCase())){
-											headerName = checkExistingMeasurementsInDB.get(headerName.toLowerCase());
-										}
+												//TODO: import measurements then import individual data. The measurement has to be consistent.
 
-										observedValue.setFeature_Name(headerName);
+												if(checkExistingMeasurementsInDB.keySet().contains(headerName.toLowerCase())){
+													headerName = checkExistingMeasurementsInDB.get(headerName.toLowerCase());
+												}
 
-										TableField targetField = columnIndexToTableField.get(field.getObservationTarget());
+												observedValue.setFeature_Name(headerName);
 
-										if(targetField.getClassType().equalsIgnoreCase(Measurement.class.getSimpleName())){
+												TableField targetField = columnIndexToTableField.get(field.getObservationTarget());
 
-											if(!checkExistingMeasurementsInDB.containsKey(targetName)){
+												if(targetField.getClassType().equalsIgnoreCase(Measurement.class.getSimpleName())){
 
-												if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, targetName)).size() > 0){
-													checkExistingMeasurementsInDB.put(targetName, targetName + "_" + investigationName);
+													if(!checkExistingMeasurementsInDB.containsKey(targetName)){
+
+														if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, targetName)).size() > 0){
+															checkExistingMeasurementsInDB.put(targetName, targetName + "_" + investigationName);
+
+														}else{
+															checkExistingMeasurementsInDB.put(targetName, targetName);
+
+														}
+													}
+
+													observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
 
 												}else{
-													checkExistingMeasurementsInDB.put(targetName, targetName);
-
+													observedValue.setTarget_Name(targetName);
 												}
+
+
+
+												observedValue.setValue(eachValue);
+
+												observedValueList.add(observedValue);
+
+												if(investigationName != null)
+													observedValue.set("Investigation_name", investigationName);
+
 											}
-
-											observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
-
-										}else{
-											observedValue.setTarget_Name(targetName);
 										}
-
-										observedValue.setValue(cellValue);
-
-										observedValueList.add(observedValue);
-
-										if(investigationName != null)
-											observedValue.set("Investigation_name", investigationName);
 									}
 								}
 							}
@@ -717,11 +730,11 @@ public class TableController {
 			setInvestigation();
 
 			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
-			
+
 			db.update(personList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Person.LASTNAME);
-			
+
 			db.update(instituteList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Institute.NAME);
-			
+
 			HashMap<String, InvestigationElement> hashMapObservationTarget = removeDuplicates(observationTargetList);
 
 			observationTargetList = new ArrayList<InvestigationElement>(hashMapObservationTarget.values());
