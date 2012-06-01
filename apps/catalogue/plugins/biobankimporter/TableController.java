@@ -24,6 +24,7 @@ import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -173,10 +174,11 @@ public class TableController {
 		List<InvestigationElement> protocolList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> observationTargetList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> computeProtocolList = new ArrayList<InvestigationElement>();
+		List<InvestigationElement> panelList = new ArrayList<InvestigationElement>();
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
 		List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
-		List<Person> personList = new ArrayList<Person>();
-		List<Institute> instituteList = new ArrayList<Institute>();
+//		List<Person> personList = new ArrayList<Person>();
+//		List<Institute> instituteList = new ArrayList<Institute>();
 
 
 
@@ -709,6 +711,10 @@ public class TableController {
 						{
 							computeProtocolList.addAll(list);
 						}
+						if(columnIndexToTableField.get(colIndex).getClassType().equals("Panel"))
+						{
+							panelList.addAll(list);
+						}
 					}
 
 				}
@@ -730,10 +736,12 @@ public class TableController {
 			setInvestigation();
 
 			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+			
+			db.update(panelList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Panel.NAME);
 
-			db.update(personList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Person.LASTNAME);
-
-			db.update(instituteList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Institute.NAME);
+//			db.update(personList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Person.LASTNAME);
+//
+//			db.update(instituteList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Institute.NAME);
 
 			HashMap<String, InvestigationElement> hashMapObservationTarget = removeDuplicates(observationTargetList);
 
