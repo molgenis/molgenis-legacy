@@ -84,7 +84,7 @@ public class BiobankImporter extends PluginModel<Entity>
 	private int StepsFlag = 0;
 
 	private int columnCount = 0;
-	
+
 	private int previousAddingDataType = 0; 
 
 	private String filePath = null;
@@ -94,6 +94,8 @@ public class BiobankImporter extends PluginModel<Entity>
 	private Boolean multipleSheets = true;
 
 	private List<String> entityType = new ArrayList<String>();
+
+	private Boolean multipleValue = false;
 
 	public BiobankImporter(String name, ScreenController<?> parent)
 	{
@@ -118,7 +120,7 @@ public class BiobankImporter extends PluginModel<Entity>
 	public String getInvestigationName(){
 		return investigationName;
 	}
-	
+
 	public boolean isImportingFinished() {
 		return importingFinished;
 	}
@@ -177,7 +179,7 @@ public class BiobankImporter extends PluginModel<Entity>
 		chooseClassType.add(Individual.class.getSimpleName());
 		chooseClassType.add(Panel.class.getSimpleName());
 		chooseClassType.add("NULL");
-		
+
 		entityType.add("NULL");
 		entityType.add(OntologyTerm.class.getSimpleName());
 		entityType.add(Person.class.getSimpleName());
@@ -223,7 +225,7 @@ public class BiobankImporter extends PluginModel<Entity>
 	public void handleRequest(Database db, Tuple request) throws Exception	{
 
 		mappingForMolgenisEntity.clear();
-		
+
 		investigationName = "";
 
 		if ("UploadFileByColumn".equals(request.getAction())) 
@@ -245,23 +247,23 @@ public class BiobankImporter extends PluginModel<Entity>
 			excelDirection = "UploadFileByRow";
 			System.out.println(request);
 			uploadFileName  = request.getString("uploadFile");
-			
+
 			if(uploadFileName != null && !uploadFileName.equals("")){
 				readHeaders(request);
 			}else{
 				this.setStatus("Please select a file to import!");
 			}
-			
+
 			this.setStepsFlag(1);
 
 		}else if("backToPreviousStep".equals(request.getAction())){ 
-			
+
 			importingFinished = true;
-			
+
 			file = null;
-			
+
 			filePath = null;
-		
+
 		}else if("uploadMapping".equals(request.getAction())) {//Upload the mapping file to avoid repeated work!
 
 			String mappingFileName = request.getString("uploadMapping");
@@ -277,19 +279,30 @@ public class BiobankImporter extends PluginModel<Entity>
 				int columns = sheet.getColumns();
 
 				int rows = sheet.getRows();
-				
+
 				int startingRow = 0;
-				
-				if(sheet.getCell(0, 0).getContents().toString().equals("InvestigationName")){
-					
-					investigationName = sheet.getCell(1, 0).getContents().toString();
-					
-					startingRow = 1;
-					
+
+				if(sheet.getCell(0, startingRow).getContents().toString().equals("InvestigationName")){
+
+					investigationName = sheet.getCell(1, startingRow).getContents().toString();
+
+					startingRow++;
+
 				}else{
 					investigationName = "";
 				}
-				
+
+				if(sheet.getCell(0, startingRow).getContents().toString().equals("multipleValue")){
+
+					if(sheet.getCell(1, startingRow).getContents().toString().equals("true")){
+						multipleValue = true;
+					}
+
+					startingRow++;
+				}else{
+					multipleValue = false;
+				}
+
 				for(int j = 0; j < columns; j++){
 
 					List<String> mappingForEachColumn = new ArrayList<String>();
@@ -306,6 +319,10 @@ public class BiobankImporter extends PluginModel<Entity>
 
 		} else if("saveMapping".equals(request.getAction())){
 
+			if("multipleValue".equals(request.getString("multipleValue"))){
+				multipleValue = true;
+			}
+
 			List<List<String>> twoDimensionalTable = new ArrayList<List<String>>();
 
 			WorkbookSettings ws = new WorkbookSettings();
@@ -321,17 +338,21 @@ public class BiobankImporter extends PluginModel<Entity>
 			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
 
 			String investigationName = null;
-			
+
 			int startingRow = 0;
-			
+
 			if(request.getString("investigation") != null){
 				investigationName = request.getString("investigation");
-				outputExcel.addCell(new Label(1, 0, investigationName));
-				outputExcel.addCell(new Label(0, 0, "InvestigationName"));
+				outputExcel.addCell(new Label(0, startingRow, "InvestigationName"));
+				outputExcel.addCell(new Label(1, startingRow, investigationName));
 				startingRow++;
 			}
-			
-			
+
+			//Add the multipleValue variable to mappingFile
+			outputExcel.addCell(new Label(0, startingRow, "multipleValue"));
+			outputExcel.addCell(new Label(1, startingRow, multipleValue.toString()));
+			startingRow++;
+
 			if(headers != null)
 			{
 				for(int columnCount = 0; columnCount < headers.size(); columnCount++)
@@ -349,7 +370,7 @@ public class BiobankImporter extends PluginModel<Entity>
 			if(twoDimensionalTable.size() > 0){
 
 				previousAddingDataType = 0;
-				
+
 				for(int i = 0; i < twoDimensionalTable.size(); i++){
 
 					for(int j = 0; j < twoDimensionalTable.get(0).size(); j++){
@@ -360,9 +381,9 @@ public class BiobankImporter extends PluginModel<Entity>
 					if(twoDimensionalTable.get(i).get(1).equals(Measurement.class.getSimpleName() + ":" + Measurement.DATATYPE)){
 
 						String member = headers.get(i); 
-						
+
 						int addedNumberOfDataType = previousAddingDataType;
-						
+
 						for(int index = addedNumberOfDataType; index < request.getInt("__dataTypeCount"); index++){
 
 							if(request.getString(member + "_options_" + index) != null){
@@ -483,7 +504,7 @@ public class BiobankImporter extends PluginModel<Entity>
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
 		filePath = tmpDir.getAbsolutePath() + "/" + filePath;
-		
+
 		file = new File(uploadFileName); 
 
 		importingFinished = false;
@@ -505,13 +526,13 @@ public class BiobankImporter extends PluginModel<Entity>
 			columnIndex.add(0);
 
 			startingRowIndex  = request.getInt("startingRowIndex");
-			
+
 			startingRowIndex--;
-			
+
 			if(request.getBool("multipleSheets") != null){
 				multipleSheets = request.getBool("multipleSheets");
 			}
-			
+
 			if(request.getAction().equals("UploadFileByColumn"))
 			{
 				setColumnCount(columns);
@@ -589,7 +610,7 @@ public class BiobankImporter extends PluginModel<Entity>
 					String classType = columnIndexToClassType.get(columnIndex);
 
 					String fieldName = columnIndexToFieldName.get(columnIndex);
-					
+
 					String entityType = columnIndexToEntityType.get(columnIndex);
 
 					String splitByColon[] = fieldName.toString().split(":");
@@ -643,7 +664,7 @@ public class BiobankImporter extends PluginModel<Entity>
 				}
 
 				table.setInvestigationName(investigationName);
-				
+
 				table.convertIntoPheno(workbook.getSheets(), startingRowIndex, multipleSheets);
 
 			}
@@ -660,10 +681,10 @@ public class BiobankImporter extends PluginModel<Entity>
 	}
 
 	public List<String> getEntityType(){
-		
+
 		return entityType ;
 	}
-	
+
 	@Override
 	public void reload(Database db)	{
 	}
@@ -697,5 +718,10 @@ public class BiobankImporter extends PluginModel<Entity>
 	public boolean getColumnCount() {
 		if (this.columnCount > 5) return true;
 		else return false;
+	}
+
+	public Boolean getMultipleValue()
+	{
+		return multipleValue;
 	}
 }

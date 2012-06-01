@@ -437,7 +437,7 @@
 						<button type="button" onclick="updateTableContent();">Update</button> 
 						<br/><br/>
 						
-						Please select if you have multiple values (in single records separated by commas) ? <input type="checkbox" name="multipleValues" value="multipleValues">  <br><br/>
+						Please select if you have multiple values (in single records separated by commas) ? <input type="checkbox" name="multipleValues">  <br><br/>
 						
 						<!-- this is the code for uploading the mapping file -->				
 						<p> You could upload a mapping file if you have it already </p>
