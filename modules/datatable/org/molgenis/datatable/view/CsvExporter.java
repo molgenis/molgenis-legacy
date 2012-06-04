@@ -40,10 +40,15 @@ public class CsvExporter extends AbstractExporter
 		//write rows
 		for(Tuple row: table)
 		{
-			// FIXME : CsvWriter should use Field so it can format dates etc via FieldType!
 			csv.writeRow(row);
 		}
 		
 		csv.close();
+	}
+
+	public void initHeaders(OutputStream os)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

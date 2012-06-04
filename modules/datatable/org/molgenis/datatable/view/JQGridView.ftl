@@ -57,7 +57,7 @@ var JQGridView = {
             datatype: "json",
             jsonReader: { repeatitems: false },
             postData : 
-            	{viewType : 'jqGridView',
+            	{viewType : 'JQ_GRID',
             	colNames : $.toJSON(this.colNames), 
         		colModel: $.toJSON(this.colModel), 
         		dataSource: $.toJSON(this.dataSource)},
@@ -148,17 +148,17 @@ $(document).ready(function() {
 
 <table id="${tableId}"></table>
 <div id="${tableId}Pager"></div>
-<input id="exportCsv" type="button" value="save to CSV"/>
+<input id="exportCsv" type="button" value="export data"/>
 <div id="dialog-form" title="Export data">
 	<form>
 	<fieldset>
             <label >File type</label><br>
-            <input type="radio" name="viewType" value="excelView" checked>Excel<br>
-            <input type="radio" name="viewType" value="spssView">Spss<br> 
-            <input type="radio" name="viewType" value="csvView">Csv<br> 
+            <input type="radio" name="viewType" value="EXCEL" checked>Excel<br>
+            <input type="radio" name="viewType" value="SPSS">Spss<br> 
+            <input type="radio" name="viewType" value="CSV">Csv<br> 
             <label>Export option</label><br>
-            <input type="radio" name="exportSelection" value="All" checked>All<br>
-            <input type="radio" name="exportSelection" value="Grid">Grid<br> 
+            <input type="radio" name="exportSelection" value="ALL" checked>All<br>
+            <input type="radio" name="exportSelection" value="GRID">Grid<br> 
 	</fieldset>
 	</form>
 </div>

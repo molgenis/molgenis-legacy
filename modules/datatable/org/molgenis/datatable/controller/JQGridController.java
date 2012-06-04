@@ -1,5 +1,7 @@
 package org.molgenis.datatable.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.CsvExporter;
 import org.molgenis.datatable.view.ExcelExporter;
+import org.molgenis.datatable.view.SPSSExporter;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -30,10 +33,19 @@ import com.google.gson.reflect.TypeToken;
 
 public class JQGridController implements MolgenisService
 {
-	private static final String EXCEL_VIEW = "excelView";
-	private static final String CSV_VIEW = "csvView";
-	private static final String JQ_GRID_VIEW = "jqGridView";
+	private enum eViewType {
+		JQ_GRID,
+		EXCEL,
+		CSV,
+		SPSS				
+	}	
 
+	private enum eExportSelection {
+		GRID, 
+		ALL,
+		UNKOWN
+	}
+	
 	class JQGridResult
 	{
 		int page;
@@ -50,11 +62,12 @@ public class JQGridController implements MolgenisService
 		}
 	}
 
-	// private final MolgenisContext context;
+	private final MolgenisContext context;
 
 	public JQGridController(MolgenisContext context)
 	{
-		// this.context = context;
+		this.context = context;
+		
 	}
 
 	private final static String SQL_START = "SELECT %1$s FROM %2$s ";
@@ -67,14 +80,28 @@ public class JQGridController implements MolgenisService
 		{
 			TupleTable tupleTable = null;
 			
-			final String viewType = request.getString("viewType");
+			String strViewType = request.getString("viewType");
+			eViewType viewType = eViewType.JQ_GRID;
+			if(StringUtils.isNotEmpty(strViewType)) {
+				viewType = eViewType.valueOf(strViewType);
+			}
+			
+			
+			
 
-			final int limit = request.getInt("rows");
+			final eExportSelection exportSelection = 
+				StringUtils.isNotEmpty(request.getString("exportSelection")) ?			
+						eExportSelection.valueOf(request.getString("exportSelection")) : 
+						eExportSelection.UNKOWN;
+			
+			final int limit = 	request.getInt("rows");
 			final String sidx = request.getString("sidx");
 			final String sord = request.getString("sord");
 
 			final Map<String, String> dataSource = JsonToMap(request, "dataSource");
 			final String dataSourceType = dataSource.get("type");
+			
+			
 			
 			//add filter rules
 			final List<QueryRule> rules = addFilterRules(request);
@@ -101,19 +128,44 @@ public class JQGridController implements MolgenisService
 			offset = Math.max(limit * page - limit, 0);			
 			
 			//add query Rules
-			rules.addAll(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
+			if(exportSelection != eExportSelection.ALL) {
+				rules.addAll(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
+			}
 			addSortRules(sidx, sord, rules);			
 			
-			if(viewType.equals(JQ_GRID_VIEW)) {
-				final JQGridResult result = buildJQGridResults(rowCount, totalPages, page, tupleTable);
-				response.getResponse().getWriter().print(new Gson().toJson(result));
-			} else if(viewType.equals(CSV_VIEW)) {
-				final CsvExporter csvExport = new CsvExporter(tupleTable);
-				csvExport.export(response.getResponse().getOutputStream());
-			} else if(viewType.equals(EXCEL_VIEW)) {
-				final ExcelExporter excelExport = new ExcelExporter(tupleTable);
-				excelExport.export(response.getResponse().getOutputStream());
-			}
+			switch(viewType) {
+				case JQ_GRID: 
+					final JQGridResult result = buildJQGridResults(rowCount, totalPages, page, tupleTable);
+					response.getResponse().getWriter().print(new Gson().toJson(result));
+					break;
+				case CSV:
+					final CsvExporter csvExport = new CsvExporter(tupleTable);
+					csvExport.export(response.getResponse().getOutputStream());
+					break;
+				case EXCEL:
+					final ExcelExporter excelExport = new ExcelExporter(tupleTable);
+					excelExport.export(response.getResponse().getOutputStream());
+					break;
+				case SPSS: 
+					
+					File tempDir = (File)context.getServletContext().getAttribute( "javax.servlet.context.tempdir" );
+					// create a temporary file in that directory
+					File spssFile = File.createTempFile( "spssExport", ".sps", tempDir );
+					File spssCsvFile = File.createTempFile( "csvSpssExport", ".csv", tempDir );
+					
+					FileOutputStream spssFileStream = new FileOutputStream(spssFile);
+					FileOutputStream spssCsvFileStream = new FileOutputStream(spssCsvFile);
+					final SPSSExporter spssExporter = new SPSSExporter(tupleTable);
+					spssExporter.export(spssCsvFileStream, spssFileStream, spssCsvFile.getName());
+					spssCsvFileStream.close();
+					spssFileStream.close();
+					
+					System.out.println(spssFile.getAbsolutePath());
+					System.out.println(spssCsvFile.getAbsolutePath());
+					
+					break;
+			}			
+
 			tupleTable.close();
 		}
 		catch (Exception e)
