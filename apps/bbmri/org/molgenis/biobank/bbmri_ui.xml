@@ -19,6 +19,7 @@
 		    	<form name="AdminCohorts" entity="Biobank" label="Admin Biobank" hide_fields="id" />
 				<form name="Coordinators" entity="Person" label="Person" view="list" sortby="LastName" />
 				<form name="Institutes" entity="Institute" view="list" />
+				<form name="BiobankCoordinator" entity="BiobankCoordinator" view="list" />
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
 				<form name="DataTypes" entity="BiobankDataType" />
 				<form name="Topics" entity="BiobankTopic" />
