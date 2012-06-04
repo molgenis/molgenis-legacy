@@ -135,8 +135,8 @@ $(document).ready(function() {
             '${col.name}'<#if col_has_next>,</#if>
             </#list> 
         ];		   		
-	//var myDataSource = {type: 'jdbc', fromExpression: 'Country', dataSourceUrl: '${dataSourceUrl}'};
-	var myDataSource = {type: 'csv', dataSourceUrl: '${dataSourceUrl}'};
+	var myDataSource = {type: 'jdbc', fromExpression: 'Country', dataSourceUrl: '${dataSourceUrl}'};
+	//var myDataSource = {type: 'csv', dataSourceUrl: '${dataSourceUrl}'};
 	var mySortColumn = '${sortName}';
     var myGrid = JQGridView.init({tableSelector : "#${tableId}", colModel: myColModel, colNames: myColNames, sortColumn: mySortColumn, dataSource: myDataSource});
     $("#exportCsv").click(function() {
