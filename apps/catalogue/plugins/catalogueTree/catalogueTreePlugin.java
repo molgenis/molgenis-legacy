@@ -125,38 +125,42 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				
 			}else if ("SaveSelectionSubmit".equals(request.getAction())) {
 
-				
-				try	{
-						this.setSelectionName("empty");
+				if (!this.getLogin().isAuthenticated()) {
+					this.getModel().getMessages().add(new ScreenMessage("You must register in order to save a selection. Please select register from the main menu. ",  true));
+					this.setStatus("<h4> You must register in order to save a selection. Please select register from the main menu. "+ "</h4>" ) ;
+				} else {
+									
+					try	{
+							this.setSelectionName("empty");
+							
+						if (request.getString("SelectionName") != null) {
+						//if (request.getString("SelectionName").compareTo("empty") != 0) {
+		
+							this.setSelectionName(request.getString("SelectionName").trim());
+	
+							System.out.println("The SelectionName is >>> : " + this.getSelectionName());
 						
-					if (request.getString("SelectionName") != null) {
-					//if (request.getString("SelectionName").compareTo("empty") != 0) {
-	
-						this.setSelectionName(request.getString("SelectionName").trim());
-
-						System.out.println("The SelectionName is >>> : " + this.getSelectionName());
-					
-						System.out.println("Selection request >>>>>>" + request);
-					} else {
-						//this.setError("Please insert a name for your selection and try again.");
-						this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
-						this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+ "</h4>" ) ;
-	
+							System.out.println("Selection request >>>>>>" + request);
+						} else {
+							//this.setError("Please insert a name for your selection and try again.");
+							this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
+							this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+ "</h4>" ) ;
+		
+						}
+						
+						DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+						Date dat = new Date();
+						String dateOfDownload = dateFormat.format(dat);
+						System.out.println("selected investigaton >>>> "+  selectedInvestigation);
+						
+						
+							this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
+					} catch (IOException e) {
+							e.printStackTrace();
+					} catch (WriteException e1) {
+							e1.printStackTrace();
 					}
-					
-					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-					Date dat = new Date();
-					String dateOfDownload = dateFormat.format(dat);
-					System.out.println("selected investigaton >>>> "+  selectedInvestigation);
-					
-					
-						this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
-				} catch (IOException e) {
-						e.printStackTrace();
-				} catch (WriteException e1) {
-						e1.printStackTrace();
 				}
-
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
 				String measurementName = request.getString("measurementName"); 
