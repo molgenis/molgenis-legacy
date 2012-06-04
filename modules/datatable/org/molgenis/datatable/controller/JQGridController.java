@@ -3,6 +3,8 @@ package org.molgenis.datatable.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,20 +35,64 @@ import com.google.gson.reflect.TypeToken;
 
 public class JQGridController implements MolgenisService
 {
-	private enum eViewType {
-		JQ_GRID,
-		EXCEL,
-		CSV,
-		SPSS				
+	private enum ViewType {
+		JQ_GRID {
+			@Override
+			void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException {
+				JQGridResult result = JQGridController.buildJQGridResults(tupleTable.getRowCount(), totalPages, page, tupleTable);
+				PrintWriter pout = new PrintWriter(out);
+				pout.print(new Gson().toJson(result));
+				pout.close();
+			}
+		},
+		EXCEL {
+			@Override
+			void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException {
+				final ExcelExporter excelExport = new ExcelExporter(tupleTable);
+				excelExport.export(out);		
+			}
+		},
+		CSV {
+			@Override
+			void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException {
+				final CsvExporter csvExport = new CsvExporter(tupleTable);
+				csvExport.export(out);
+			}
+		},
+		SPSS {
+			@Override
+			void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException {				
+				try {
+					File tempDir = (File)controller.context.getServletContext().getAttribute( "javax.servlet.context.tempdir" );
+					// create a temporary file in that directory
+					File spssFile = File.createTempFile( "spssExport", ".sps", tempDir );
+					File spssCsvFile = File.createTempFile( "csvSpssExport", ".csv", tempDir );
+					
+					FileOutputStream spssFileStream = new FileOutputStream(spssFile);
+					FileOutputStream spssCsvFileStream = new FileOutputStream(spssCsvFile);
+					final SPSSExporter spssExporter = new SPSSExporter(tupleTable);
+					spssExporter.export(spssCsvFileStream, spssFileStream, spssCsvFile.getName());
+					spssCsvFileStream.close();
+					spssFileStream.close();
+					
+					System.out.println(spssFile.getAbsolutePath());
+					System.out.println(spssCsvFile.getAbsolutePath());
+				} catch (Exception e) {
+					throw new TableException(e);
+				}
+			}
+		};
+		
+		abstract void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException;
 	}	
 
-	private enum eExportSelection {
+	private enum ExportRange {
 		GRID, 
 		ALL,
 		UNKOWN
 	}
 	
-	class JQGridResult
+	static class JQGridResult
 	{
 		int page;
 		int total;
@@ -81,18 +127,15 @@ public class JQGridController implements MolgenisService
 			TupleTable tupleTable = null;
 			
 			String strViewType = request.getString("viewType");
-			eViewType viewType = eViewType.JQ_GRID;
+			ViewType viewType = ViewType.JQ_GRID;
 			if(StringUtils.isNotEmpty(strViewType)) {
-				viewType = eViewType.valueOf(strViewType);
+				viewType = ViewType.valueOf(strViewType);
 			}
-			
-			
-			
 
-			final eExportSelection exportSelection = 
+			final ExportRange exportSelection = 
 				StringUtils.isNotEmpty(request.getString("exportSelection")) ?			
-						eExportSelection.valueOf(request.getString("exportSelection")) : 
-						eExportSelection.UNKOWN;
+						ExportRange.valueOf(request.getString("exportSelection")) : 
+						ExportRange.UNKOWN;
 			
 			final int limit = 	request.getInt("rows");
 			final String sidx = request.getString("sidx");
@@ -100,7 +143,6 @@ public class JQGridController implements MolgenisService
 
 			final Map<String, String> dataSource = JsonToMap(request, "dataSource");
 			final String dataSourceType = dataSource.get("type");
-			
 			
 			
 			//add filter rules
@@ -128,43 +170,12 @@ public class JQGridController implements MolgenisService
 			offset = Math.max(limit * page - limit, 0);			
 			
 			//add query Rules
-			if(exportSelection != eExportSelection.ALL) {
+			if(exportSelection != ExportRange.ALL) {
 				rules.addAll(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
 			}
 			addSortRules(sidx, sord, rules);			
 			
-			switch(viewType) {
-				case JQ_GRID: 
-					final JQGridResult result = buildJQGridResults(rowCount, totalPages, page, tupleTable);
-					response.getResponse().getWriter().print(new Gson().toJson(result));
-					break;
-				case CSV:
-					final CsvExporter csvExport = new CsvExporter(tupleTable);
-					csvExport.export(response.getResponse().getOutputStream());
-					break;
-				case EXCEL:
-					final ExcelExporter excelExport = new ExcelExporter(tupleTable);
-					excelExport.export(response.getResponse().getOutputStream());
-					break;
-				case SPSS: 
-					
-					File tempDir = (File)context.getServletContext().getAttribute( "javax.servlet.context.tempdir" );
-					// create a temporary file in that directory
-					File spssFile = File.createTempFile( "spssExport", ".sps", tempDir );
-					File spssCsvFile = File.createTempFile( "csvSpssExport", ".csv", tempDir );
-					
-					FileOutputStream spssFileStream = new FileOutputStream(spssFile);
-					FileOutputStream spssCsvFileStream = new FileOutputStream(spssCsvFile);
-					final SPSSExporter spssExporter = new SPSSExporter(tupleTable);
-					spssExporter.export(spssCsvFileStream, spssFileStream, spssCsvFile.getName());
-					spssCsvFileStream.close();
-					spssFileStream.close();
-					
-					System.out.println(spssFile.getAbsolutePath());
-					System.out.println(spssCsvFile.getAbsolutePath());
-					
-					break;
-			}			
+			viewType.export(this, tupleTable, totalPages, page, response.getResponse().getOutputStream());
 
 			tupleTable.close();
 		}
@@ -174,7 +185,7 @@ public class JQGridController implements MolgenisService
 		}
 	}
 
-	private JQGridResult buildJQGridResults(final int rowCount, final int totalPages, final int page,
+	private static JQGridResult buildJQGridResults(final int rowCount, final int totalPages, final int page,
 			final TupleTable table) throws TableException
 	{
 		final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
