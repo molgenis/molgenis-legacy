@@ -8,3 +8,5 @@ tmp/
 *,dll
 *.o
 *.tmp
+/.externalToolBuilders
+/.settings

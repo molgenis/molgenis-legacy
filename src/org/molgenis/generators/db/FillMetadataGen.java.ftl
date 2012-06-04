@@ -42,7 +42,7 @@ public class FillMetadata {
 	public static void fillMetadata(Database db, boolean useLogin) throws Exception {
         System.out.println("fillMetadata start");
 
-		Login login = db.getSecurity();
+		Login login = db.getLogin();
         if(useLogin)
         {
             if(login == null) {

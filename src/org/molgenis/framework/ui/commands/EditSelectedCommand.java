@@ -69,7 +69,7 @@ public class EditSelectedCommand extends SimpleCommand
 			
 			//cleanup the request, only use ticked (marked with 'use_'
 			Tuple updateTuple = new SimpleTuple();
-			for(HtmlInput input : this.getFormScreen().getNewRecordForm()
+			for(HtmlInput<?> input : this.getFormScreen().getNewRecordForm()
 				.getInputs())
 			{
 				if(!request.isNull("use_"+input.getName()))
@@ -170,7 +170,7 @@ public class EditSelectedCommand extends SimpleCommand
 		}
 
 		// get inputs from formscreen
-		for (HtmlInput input : this.getFormScreen().getNewRecordForm()
+		for (HtmlInput<?> input : this.getFormScreen().getNewRecordForm()
 				.getInputs())
 		{
 			if (!input.isHidden() && !input.isReadonly())

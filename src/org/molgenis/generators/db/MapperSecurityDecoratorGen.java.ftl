@@ -38,9 +38,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public int add(List<E> entities) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
 
 <#if authorizable??>
@@ -54,9 +54,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public int update(List<E> entities) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
 
 <#if authorizable??>
@@ -70,9 +70,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public int remove(List<E> entities) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
 				
 <#if authorizable??>
@@ -85,9 +85,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public int add(TupleReader reader, TupleWriter writer) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
 
 			//TODO: Add column level security filters
@@ -98,9 +98,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public int count(QueryRule... rules) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canRead(${entityClass}.class))
 				return 0;
 
 <#if authorizable??>
@@ -113,9 +113,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public List<E> find(QueryRule ...rules) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canRead(${entityClass}.class))
 				return new ArrayList<E>();
 
 <#if authorizable??>
@@ -133,9 +133,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public void find(TupleWriter writer, QueryRule ...rules) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canRead(${entityClass}.class))
 				return;
 
 <#if authorizable??>
@@ -150,9 +150,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public int remove(TupleReader reader) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
 
 			//TODO: Add row level security filters
@@ -163,9 +163,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public int update(TupleReader reader) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canWrite(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canWrite(${entityClass}.class))
 				throw new DatabaseException("No write permission on ${entityClass}");
 
 			//TODO: Add row level security filters
@@ -177,9 +177,9 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	@Override
 	public void find(TupleWriter writer, List<String> fieldsToExport, QueryRule ...rules) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity() != null && !(this.getDatabase().getSecurity() instanceof SimpleLogin))
+		if (this.getDatabase().getLogin() != null && !(this.getDatabase().getLogin() instanceof SimpleLogin))
 		{
-			if (!this.getDatabase().getSecurity().canRead(${entityClass}.class))
+			if (!this.getDatabase().getLogin().canRead(${entityClass}.class))
 				return;
 
 <#if authorizable??>
@@ -195,11 +195,11 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	//TODO: Move this to Login interface
 	private QueryRule[] addRowLevelSecurityFilters(String permission, QueryRule ...rules) throws DatabaseException
 	{
-		if (this.getDatabase().getSecurity().isAuthenticated() && this.getDatabase().getSecurity().getUserName().equals("admin"))
+		if (this.getDatabase().getLogin().isAuthenticated() && this.getDatabase().getLogin().getUserName().equals("admin"))
 			return rules;
 
 		MolgenisUserService service = MolgenisUserService.getInstance(this.getDatabase());
-		MolgenisUser user           = service.findById(this.getDatabase().getSecurity().getUserId());
+		MolgenisUser user           = service.findById(this.getDatabase().getLogin().getUserId());
 		
 		List<Integer> roleIdList;
 		try
@@ -228,7 +228,7 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	{
 		for (E entity : entities)
 		{
-			if (!(this.getDatabase().getSecurity().canWrite(entity) || entity.getOwns().equals(this.getDatabase().getSecurity().getUserId())))
+			if (!(this.getDatabase().getLogin().canWrite(entity) || entity.getOwns().equals(this.getDatabase().getLogin().getUserId())))
 			{
 				throw new DatabaseException("No row level write permission on ${entityClass}");
 			}
@@ -239,7 +239,7 @@ public class ${clazzName}<E extends ${entityClass}> extends MapperDecorator<E>
 	{
 		for (E entity : entities)
 		{
-			entity.setOwns(this.getDatabase().getSecurity().getUserId());
+			entity.setOwns(this.getDatabase().getLogin().getUserId());
 		}
 	}*/
 </#if>

@@ -8,6 +8,7 @@ import org.molgenis.framework.ui.html.HtmlInputException;
 import org.molgenis.framework.ui.html.XrefInput;
 import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
+import org.molgenis.util.Entity;
 
 public class XrefField extends FieldType 
 {	
@@ -70,7 +71,14 @@ public class XrefField extends FieldType
 	@Override
 	public HtmlInput<?> createInput(String name, String xrefEntityClassName) throws HtmlInputException
 	{
-		return new XrefInput(name, xrefEntityClassName);
+		try
+		{
+			return new XrefInput<Entity>(name, xrefEntityClassName);
+		}
+		catch (ClassNotFoundException e)
+		{
+			throw new HtmlInputException(e);
+		}
 	}
 
 	@Override

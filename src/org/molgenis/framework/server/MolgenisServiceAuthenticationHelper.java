@@ -58,8 +58,6 @@ public class MolgenisServiceAuthenticationHelper
 			String username = req.getString(LOGIN_USER_NAME);
 			String password = req.getString(LOGIN_PASSWORD);
 			
-			System.out.println("going to log in with " + username + " / " + password);
-			
 			LoginStatus login = FrontControllerAuthenticator.login(req, username, password);	
 			
 			
@@ -127,12 +125,12 @@ public class MolgenisServiceAuthenticationHelper
 		}
 		
 		// regular request: check if user is authenticated, and if not, display login box
-		if(!req.getDatabase().getSecurity().isAuthenticated())
+		if(!req.getDatabase().getLogin().isAuthenticated())
 		{
 			String printMe = "<form name=\"input\" action=\"\" method=\"post\">";
 			printMe += "<table><tr><td colspan=\"2\">Please log in:</td></tr>";
 			printMe += "<tr><td>Username:</td><td><input type=\"text\" name=\"" + LOGIN_USER_NAME + "\"></td></tr>";
-			printMe += "<tr><td>Password:</td><td><input type=\"text\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>";
+			printMe += "<tr><td>Password:</td><td><input type=\"password\" name=\"" + LOGIN_PASSWORD + "\"></td></tr>";
 			printMe += "<tr><td colspan=\"2\" align=\"right\"><input type=\"submit\" value=\"Login\"></td></tr></table>";
 			printMe += "</form>";
 			return new AuthStatus(true, printMe);

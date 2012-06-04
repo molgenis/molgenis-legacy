@@ -23,6 +23,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
 
+@Deprecated
 public class GenericPlugin extends PluginModel<Entity>
 {
 	//serialization id
@@ -176,5 +177,11 @@ public class GenericPlugin extends PluginModel<Entity>
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public ScreenView getView()
+	{
+		throw new UnsupportedOperationException();
 	}
 }

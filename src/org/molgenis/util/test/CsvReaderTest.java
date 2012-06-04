@@ -2,11 +2,9 @@ package org.molgenis.util.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.zip.DataFormatException;
 
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.CsvStringReader;

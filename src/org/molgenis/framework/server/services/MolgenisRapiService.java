@@ -170,7 +170,7 @@ public class MolgenisRapiService implements MolgenisService
 				System.out.println("filename: " + filename);
 				
 				//map to hard drive, minus path app/servlet
-				Class FC = null;
+				Class<?> FC = null;
 				try
 				{
 					FC = Class.forName("app.servlet.FrontController");

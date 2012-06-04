@@ -55,7 +55,6 @@ public class DotDocModuleDependencyGen extends Generator
 		Map<String, Integer> mapOfRelations = new LinkedHashMap<String, Integer>();
 		for (Entity e : model.getEntities())
 		{
-			String rule = null;
 			if (e.getModel() != null)
 			{
 				// interface

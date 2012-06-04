@@ -6,11 +6,11 @@ import org.molgenis.framework.ui.html.HtmlInput;
  * Decorates an input with a checkbox to disable/enable the input
  * @param <E>
  */
-public class EditSelectedInput<E> extends HtmlInput<E>
+public class EditSelectedInput extends HtmlInput<Object>
 {
-	private HtmlInput<E> input;
+	private HtmlInput<?> input;
 	
-	public EditSelectedInput(HtmlInput<E> input)
+	public EditSelectedInput(HtmlInput<?> input)
 	{
 		this.input = input;
 	}

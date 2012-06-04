@@ -15,14 +15,10 @@ import org.json.JSONObject;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
-import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.model.MolgenisModelException;
-import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 
 /** Service to serve entities for datatable */
@@ -30,11 +26,11 @@ public class MolgenisDataTableService implements MolgenisService
 {
 	Logger logger = Logger.getLogger(MolgenisDataTableService.class);
 
-	private MolgenisContext mc;
+	//private MolgenisContext mc;
 
 	public MolgenisDataTableService(MolgenisContext mc)
 	{
-		this.mc = mc;
+//		this.mc = mc;
 	}
 
 	/**
@@ -61,7 +57,7 @@ public class MolgenisDataTableService implements MolgenisService
 			}
 
 			// get parameters
-			Class<? extends Entity> entityClass = getClassForName(req
+			Class<? extends Entity> entityClass = req.getDatabase().getClassForName(req
 					.getString("entity"));
 
 			// iDisplayLenght = limit
@@ -148,11 +144,5 @@ public class MolgenisDataTableService implements MolgenisService
 			e.printStackTrace();
 			throw new DatabaseException(e);
 		}
-	}
-
-	private Class<? extends Entity> getClassForName(String entityName)
-			throws ClassNotFoundException
-	{
-		return (Class<? extends Entity>) Class.forName(entityName);
 	}
 }

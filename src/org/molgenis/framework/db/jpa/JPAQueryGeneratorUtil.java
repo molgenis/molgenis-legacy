@@ -1,7 +1,5 @@
 package org.molgenis.framework.db.jpa;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -100,6 +98,7 @@ public class JPAQueryGeneratorUtil
 		return _createWhere(db, mapper, em, root, cq, cb, limitOffset, joinHash, rul);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static <IN extends Entity, OUT> Predicate _createWhere(Database db,
 			Mapper<IN> mapper, EntityManager em, Root<IN> root, CriteriaQuery<OUT> cq,
 			CriteriaBuilder cb, int[] limitOffset, Map<String, Join<?, ?>> joinHash, QueryRule... rul)
@@ -394,19 +393,6 @@ public class JPAQueryGeneratorUtil
 		// cq.where(whereClause);
 		// }
 		return whereClause;
-	}
-
-	private static <E extends Entity> Field getIdField(Class<?> entity)
-	{
-		for (Field f : entity.getDeclaredFields())
-		{
-			Annotation annotation = f.getAnnotation(javax.persistence.Id.class);
-			if (annotation != null)
-			{
-				return f;
-			}
-		}
-		return null;
 	}
 	
 	private static <E extends Entity> Expression<?> _addJoin(QueryRule rule, Root<E> root, Map<String, Join<?, ?>> joinHash) throws DatabaseException

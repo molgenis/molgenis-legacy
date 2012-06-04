@@ -43,7 +43,6 @@ public class EntityDataTable extends HtmlWidget
 
 		try
 		{
-			boolean first = false;
 			for (Field field : entityModel.getAllFields())
 			{
 				// in this case use label

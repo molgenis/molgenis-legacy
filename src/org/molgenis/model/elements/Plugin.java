@@ -20,7 +20,7 @@ public class Plugin extends UISchema
 {
 	public enum Flavor
 	{
-		FREEMARKER("freemarker"), EASY("easy"), VAADIN("vaadin"), UNKNOWN(
+		FREEMARKER("freemarker"), EASY("easy"), UNKNOWN(
 				"unknown");
 
 		private String tag;

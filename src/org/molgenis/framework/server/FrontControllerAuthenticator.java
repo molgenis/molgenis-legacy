@@ -1,10 +1,6 @@
 package org.molgenis.framework.server;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.security.Login;
 
 public class FrontControllerAuthenticator
 {
@@ -27,13 +23,13 @@ public class FrontControllerAuthenticator
 			
 			Database db = request.getDatabase();
 			
-			if(db.getSecurity().isAuthenticated())
+			if(db.getLogin().isAuthenticated())
 			{
 				return LoginStatus.ALREADY_LOGGED_IN;
 			}
 			
 			// try to login
-			boolean loggedIn = db.getSecurity().login(db, username, password);
+			boolean loggedIn = db.getLogin().login(db, username, password);
 			
 			//System.out.println("FrontControllerAuthenticator loggedIn: " + loggedIn);
 
@@ -43,7 +39,7 @@ public class FrontControllerAuthenticator
 				//Login login = new org.molgenis.auth.DatabaseLogin(request.getDatabase(), "ClusterDemo");
 
 				// store login in session
-				request.getRequest().getSession().setAttribute("login", db.getSecurity());
+				request.getRequest().getSession().setAttribute("login", db.getLogin());
 				return LoginStatus.SUCCESSFULLY_LOGGED_IN;
 			}
 			else
@@ -66,14 +62,14 @@ public class FrontControllerAuthenticator
 			
 			Database db = request.getDatabase();
 			
-			if(!db.getSecurity().isAuthenticated())
+			if(!db.getLogin().isAuthenticated())
 			{
 				return LogoutStatus.ALREADY_LOGGED_OUT;
 			}
 			
 			//logout from database
 			//FIXME: needed??
-			request.getDatabase().getSecurity().logout(request.getDatabase());
+			request.getDatabase().getLogin().logout(request.getDatabase());
 			
 			//set session login to null
 			request.getRequest().getSession().setAttribute("login", null);
@@ -101,7 +97,7 @@ public class FrontControllerAuthenticator
 //		// get current db login and invalidate the session
 //		// if user is not logged in, and login is required
 //		Login userLogin = null;
-//		userLogin = request.getDatabase().getSecurity();
+//		userLogin = request.getDatabase().getLogin();
 //		
 //		if ((!userLogin.isAuthenticated() && userLogin.isLoginRequired()))
 //		{

@@ -483,12 +483,6 @@ public class Model
 	/** */
 	private String processing_description;
 
-	/** */
-	// private Logger logger =
-	// Logger.getLogger(this.getClass().getSimpleName());
-	/** Used for serialization purposes */
-	private static final long serialVersionUID = -93580318677645607L;
-
 	public Field findField(String f) throws MolgenisModelException
 	{
 		// pattern {entity}.{field}

@@ -3,8 +3,6 @@ package org.molgenis.framework.server.services;
 import java.io.IOException;
 import java.util.Hashtable;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;

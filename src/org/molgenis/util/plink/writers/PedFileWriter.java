@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import org.molgenis.util.CsvFileWriter;
-import org.molgenis.util.plink.datatypes.MapEntry;
 import org.molgenis.util.plink.datatypes.PedEntry;
 
 /**

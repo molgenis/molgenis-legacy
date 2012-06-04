@@ -1,7 +1,6 @@
 package org.molgenis.framework.ui;
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.Vector;
 
 import org.molgenis.framework.db.Database;
@@ -29,6 +28,11 @@ public abstract class PluginModel<E extends Entity> extends
 				this.getName().lastIndexOf("_") + 1));
 	}
 
+	public ScreenView getView()
+	{
+		throw new UnsupportedOperationException();
+	}
+	
 	public Login getLogin()
 	{
 		return this.getApplicationController().getLogin();
@@ -38,14 +42,18 @@ public abstract class PluginModel<E extends Entity> extends
 	{
 		return this.getController().getApplicationController().getMolgenisContext().getTokenFactory();
 	}
-
 	
-	@Override
+	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception
+	{
+		
+	}
+	
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception
 	{
 		this.handleRequest(db, request);
 		return Show.SHOW_MAIN;
 	}
+
 
 	/**
 	 * A plugin is actually a model-view-controller structure. The extension of
@@ -157,10 +165,7 @@ public abstract class PluginModel<E extends Entity> extends
 	 *      For example: <#macro MyPlugin screen> Hello World </#macro>
 	 */
 	public abstract String getViewName();
-
-	@Override
-	public abstract void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException, Exception;
-
+	
 	@Override
 	public abstract void reload(Database db);
 

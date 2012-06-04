@@ -103,7 +103,7 @@ public class MenuModel extends SimpleScreenModel
 		return result;
 	}
 
-//	public Login getSecurity()
+//	public Login getLogin()
 //	{
 //		return getController().getRootController().getLogin();
 //	}
@@ -151,6 +151,11 @@ public class MenuModel extends SimpleScreenModel
 	{
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public String toString()
+	{
+		return "MenuModel(name="+getName()+")";
 	}
 
 

@@ -92,9 +92,14 @@ public class Pair<T, T2>
 	@Override
 	public boolean equals(Object o)
 	{		
-		Pair<T,T2> that = ((Pair<T,T2>)o);
+		if(o instanceof Pair)
+		{
+			@SuppressWarnings("unchecked")
+			Pair<T,T2> that = ((Pair<T,T2>)o);
 		
-		return (this.a.equals(that.a) && this.b.equals(that.b));
+			return (this.a.equals(that.a) && this.b.equals(that.b));
+		}
+		return false;
 	}
 	
 	@Override

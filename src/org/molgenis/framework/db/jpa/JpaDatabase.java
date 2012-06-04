@@ -13,8 +13,8 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.molgenis.framework.db.AbstractDatabase;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.ExampleData;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.Entity;
 
@@ -29,7 +29,7 @@ import org.molgenis.util.Entity;
  * @author Morris Swertz
  * @author Joris Lops
  */
-public class JpaDatabase extends AbstractDatabase implements Database
+public class JpaDatabase extends AbstractDatabase
 {
 	protected static class EMFactory
 	{
@@ -196,6 +196,30 @@ public class JpaDatabase extends AbstractDatabase implements Database
 		{
 			throw new DatabaseException(e);
 		}
+	}
+
+	@Override
+	public void createTables()
+	{
+		JpaUtil.dropAndCreateTables(this, null);
+	}
+
+	@Override
+	public void updateTables()
+	{
+		JpaUtil.updateTables(this, null);
+	}
+
+	@Override
+	public void dropTables()
+	{
+		JpaUtil.dropTables(this, null);
+	}
+
+	@Override
+	public void loadExampleData(ExampleData exampleData) throws DatabaseException
+	{
+		exampleData.load(this);
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public class SelectInput extends OptionInput<Object>
 	{
 		super(name, null);
 	}
-	
+
 	public SelectInput(String name, Object value)
 	{
 		super(name, value);
@@ -55,16 +55,13 @@ public class SelectInput extends OptionInput<Object>
 	public String toHtml()
 	{
 
-		String readonly = (this.isReadonly()) ? " class=\"readonly\" "
-				: "";
+		String readonly = (this.isReadonly()) ? " class=\"readonly\" " : "";
 
-		String onchange = (this.onchange != null) ? " onchange=\""
-				+ this.onchange + "\"" : "";
+		String onchange = (this.onchange != null) ? " onchange=\"" + this.onchange + "\"" : "";
 
 		if (this.isHidden())
 		{
-			StringInput input = new StringInput(this.getName(), super
-					.getValue());
+			StringInput input = new StringInput(this.getName(), super.getValue());
 			input.setLabel(this.getLabel());
 			input.setDescription(this.getDescription());
 			input.setHidden(true);
@@ -77,52 +74,39 @@ public class SelectInput extends OptionInput<Object>
 		{
 			if (super.getObject() != null && super.getObject().toString().equals(choice.getValue().toString()))
 			{
-				optionsHtml += "\t<option selected value=\""
-						+ choice.getValue() + "\">" + choice.getLabel()
+				optionsHtml += "\t<option selected value=\"" + choice.getValue() + "\">" + choice.getLabel()
 						+ "</option>\n";
 			}
 			else if (!this.isReadonly())
 			{
-				optionsHtml += "\t<option value=\"" + choice.getValue()
-						+ "\">" + choice.getLabel() + "</option>\n";
+				optionsHtml += "\t<option value=\"" + choice.getValue() + "\">" + choice.getLabel() + "</option>\n";
 			}
 		}
-		//start with empty option, unless there was already a value selected
-		if ((!this.isReadonly() && this.isNillable())
-				|| ("".equals(super.getObject()) && this.isNillable()))
+		// start with empty option, unless there was already a value selected
+		if ((!this.isReadonly() && this.isNillable()) || ("".equals(super.getObject()) && this.isNillable()))
 		{
-			if(super.getObject() != null && super.getObject().toString().equals(""))
-				optionsHtml = "\t<option value=\"\">&nbsp;</option>\n" + optionsHtml;
+			if (super.getObject() != null && super.getObject().toString().equals("")) optionsHtml = "\t<option value=\"\">&nbsp;</option>\n"
+					+ optionsHtml;
 			else
 				optionsHtml += "\t<option value=\"\">&nbsp;</option>\n";
 		}
-		
-		
+
 		if (this.uiToolkit == UiToolkit.ORIGINAL)
 		{
-			return "<select class=\"" + this.getClazz() + "\" id=\""
-					+ this.getId() + "\" name=\"" + this.getName() + "\" "
-					+ readonly + onchange + ">\n" + optionsHtml.toString()
-					+ "</select>\n";
+			return "<select class=\"" + this.getClazz() + "\" id=\"" + this.getId() + "\" name=\"" + this.getName()
+					+ "\" " + readonly + onchange + ">\n" + optionsHtml.toString() + "</select>\n";
 		}
-		else if (this.uiToolkit == UiToolkit.DOJO)
-		{
-			return "<select dojoType=\"dijit.form.Select\" class=\"" + this.getClazz() + "\" id=\""
-			+ this.getId() + "\" name=\"" + this.getName() + "\" "
-			+ readonly + onchange + " style=\"width: 350px;\">\n" + optionsHtml.toString()
-			+ "</select>\n";
-		}
-		else if(this.uiToolkit == UiToolkit.JQUERY)
+		else if (this.uiToolkit == UiToolkit.JQUERY)
 		{
 			String description = " title=\"" + this.getDescription() + "\"";
 			readonly = this.isReadonly() ? "readonly " : "";
-			return "<select class=\""+readonly+" ui-widget-content ui-corner-all\" id=\"" 
-			+ this.getId() + "\" name=\"" + this.getName() + "\" " + onchange
-			+ (this.getWidth() != -1 ? " style=\"width:" + this.getWidth() + "em;\" " : "")
-			+ description+">\n" + optionsHtml.toString()
-			+ "</select><script>$(\"#"+this.getId()+"\").chosen();</script>\n";
+			return "<select class=\"" + readonly + " ui-widget-content ui-corner-all\" id=\"" + this.getId()
+					+ "\" name=\"" + this.getName() + "\" " + onchange
+					+ (this.getWidth() != -1 ? " style=\"width:" + this.getWidth() + "em;\" " : "") + description
+					+ ">\n" + optionsHtml.toString() + "</select><script>$(\"#" + this.getId()
+					+ "\").chosen();</script>\n";
 		}
-			return "STYLE NOT AVAILABLE";
+		return "STYLE NOT AVAILABLE";
 	}
 
 	public String getTargetfield()
@@ -147,8 +131,7 @@ public class SelectInput extends OptionInput<Object>
 
 	public void addOption(Object value, Object label)
 	{
-		this.getOptions().add(
-				new ValueLabel(value.toString(), label.toString()));
+		this.getOptions().add(new ValueLabel(value.toString(), label.toString()));
 	}
 
 	/**
@@ -161,8 +144,7 @@ public class SelectInput extends OptionInput<Object>
 	 * @param labelField
 	 *            field used for label (what shows on the screen)
 	 */
-	public void setOptions(List<? extends Entity> entities, String valueField,
-			String labelField)
+	public void setOptions(List<? extends Entity> entities, String valueField, String labelField)
 	{
 		// clear list
 		this.getOptions().clear();
@@ -173,7 +155,7 @@ public class SelectInput extends OptionInput<Object>
 			this.addOption(e.get(valueField), e.get(labelField));
 		}
 	}
-	
+
 	public void addEntityOptions(List<? extends Entity> entities)
 	{
 		// add new values and labels
@@ -182,7 +164,7 @@ public class SelectInput extends OptionInput<Object>
 			this.addOption(e.getIdValue(), e.getLabelValue());
 		}
 	}
-	
+
 	public void setEntityOptions(List<? extends Entity> entities)
 	{
 		// first clear list
@@ -192,24 +174,19 @@ public class SelectInput extends OptionInput<Object>
 	}
 
 	@Override
-	public String toHtml(Tuple params) throws ParseException,
-			HtmlInputException
+	public String toHtml(Tuple params) throws ParseException, HtmlInputException
 	{
 		return new SelectInput(params).render();
 	}
-	
+
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		if(this.uiToolkit == UiToolkit.DOJO)
+		if (this.uiToolkit == UiToolkit.JQUERY)
 		{
-			return "<script>"+
-		    "	dojo.require(\"dijit.form.Select\");"+
-		    "</script>";
-		} else if (this.uiToolkit == UiToolkit.JQUERY)
-		{
-//			return "<link rel=\"stylesheet\" href=\"generated-res/lib/jquery-plugins/chosen.css\">\n"+
-//					"<script src=\"generated-res/lib/jquery-plugins/chosen.js\" type=\"text/javascript\" language=\"javascript\"></script>\n";
+			// return
+			// "<link rel=\"stylesheet\" href=\"generated-res/lib/jquery-plugins/chosen.css\">\n"+
+			// "<script src=\"generated-res/lib/jquery-plugins/chosen.js\" type=\"text/javascript\" language=\"javascript\"></script>\n";
 		}
 		return "";
 	}

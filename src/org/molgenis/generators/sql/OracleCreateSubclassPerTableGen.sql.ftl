@@ -33,11 +33,9 @@ drawback of this strategy:
 <#list entities as entity>
 	<#-- Generate a table for each concrete class (so, not abstract) -->
 	<#if !entity.isAbstract()>
-		CREATE SEQUENCE ${SqlName(entity)}_seq start with 1 increment by 1;
-		CREATE TABLE ${SqlName(entity)} (
-		<#list dbFields(entity) as f>
-			<#if f_index != 0>,</#if>
-			<@compress single_line=true>
+CREATE SEQUENCE ${SqlName(entity)}_seq start with 1 increment by 1;
+CREATE TABLE ${SqlName(entity)} (<#list dbFields(entity) as f><#if f_index != 0>,</#if>
+<@compress single_line=true>
 			${SqlName(f)} ${oracle_type(model,f)}
 			<#if f.getDefaultValue()?exists && f.getDefaultValue() != "" 
 				&& f.type != "text" && f.type != "freemarker" && f.type != "richtext" && f.type != "blob" && f.type != "hyperlink">
@@ -54,29 +52,19 @@ drawback of this strategy:
 			</#if>
 			<#if !f.nillable> NOT </#if>NULL
 			<#if f.type == "bool">CHECK (${SqlName(f)} in (0,1) )</#if>
-			</@compress>
-		</#list>
-		<#list entity.getKeys() as key>
-			<#if key_index == 0>, 
-				CONSTRAINT ${SqlName(entity)}_pkey PRIMARY KEY(${csv(key.fields)}<#if key.subclass>,${typefield()}</#if>)
-			<#else>
-				, CONSTRAINT ${SqlName(entity)}_unique${key_index} UNIQUE(${csv(key.fields)}<#if key.subclass>,${typefield()}</#if>)
-			</#if>
-		</#list>
-		<#list entity.getIndices() as i>
-			, INDEX (
-			<#list i.fields as f>${SqlName(f)}
-				<#if f_has_next>,</#if>
-			</#list>)
-		</#list>
-		);
-		CREATE OR REPLACE TRIGGER ${SqlName(entity)}_insert
-		BEFORE INSERT ON ${SqlName(entity)}
-		FOR EACH ROW
-		BEGIN
-		    :new.${csv(entity.getKeys()[0].fields)} := ${SqlName(entity)}_seq.nextval;
-		END;
-		/
+</@compress></#list>
+<#list entity.getKeys() as key>,<#if key_index == 0>
+CONSTRAINT ${SqlName(entity)}_pkey PRIMARY KEY(${csv(key.fields)}<#if key.subclass>,${typefield()}</#if>)
+<#else>CONSTRAINT ${SqlName(entity)}_unique${key_index} UNIQUE(${csv(key.fields)}<#if key.subclass>,${typefield()}</#if>)</#if></#list><#list entity.getIndices() as i>,
+INDEX (<#list i.fields as f>${SqlName(f)}<#if f_has_next>,</#if></#list>)</#list>
+);
+CREATE OR REPLACE TRIGGER ${SqlName(entity)}_insert
+BEFORE INSERT ON ${SqlName(entity)}
+FOR EACH ROW
+BEGIN
+	:new.${csv(entity.getKeys()[0].fields)} := ${SqlName(entity)}_seq.nextval;
+END;
+/
 	</#if>
 </#list>
 

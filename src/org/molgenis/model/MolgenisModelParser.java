@@ -9,10 +9,7 @@
 package org.molgenis.model;
 
 // jdk
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +29,6 @@ import org.molgenis.model.elements.DBSchema;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Form;
-import org.molgenis.model.elements.Form.SortOrder;
 import org.molgenis.model.elements.Index;
 import org.molgenis.model.elements.Matrix;
 import org.molgenis.model.elements.Menu;
@@ -42,16 +38,16 @@ import org.molgenis.model.elements.Model;
 import org.molgenis.model.elements.Module;
 import org.molgenis.model.elements.Parameter;
 import org.molgenis.model.elements.Plugin;
-import org.molgenis.model.elements.Plugin.Flavor;
 import org.molgenis.model.elements.Record;
 import org.molgenis.model.elements.Tree;
 import org.molgenis.model.elements.UISchema;
 import org.molgenis.model.elements.View;
+import org.molgenis.model.elements.Form.SortOrder;
+import org.molgenis.model.elements.Plugin.Flavor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 /**
  * TODO: refactor: spread over multiple files.
@@ -1219,9 +1215,7 @@ public class MolgenisModelParser {
         try {
             // initialize the document
             builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            final InputStreamReader input = new InputStreamReader(new FileInputStream(filename), "UTF-8");
-            document = builder.parse(new InputSource(input));
-            input.close();
+            document = builder.parse(filename);
         } catch (Exception e) {
             try {
                 // try to load from classpath

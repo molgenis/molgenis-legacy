@@ -575,13 +575,13 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 		<#if field.type.toString() == "datetime">
 		result+= "${name(field)}='" + (get${JavaName(field)}() == null ? "" : new java.text.SimpleDateFormat("MMMM d, yyyy, HH:mm:ss", java.util.Locale.US).format(get${JavaName(field)}()))+"'<#if field_has_next> </#if>";
 		result+= "${name(field)}='" + (get${JavaName(field)}() == null ? "" : new java.text.SimpleDateFormat("MMMM d, yyyy", java.util.Locale.US).format(get${JavaName(field)}()))+"'<#if field_has_next> </#if>";		
-		<#else>
-		result+= "${name(field)}='" + get${JavaName(field)}()+"'<#if field_has_next> </#if>";
-			<#if field.type == "xref" || field.type == "mref">
-				<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>
+		<#elseif field.type == "xref" || field.type == "mref">
+		result+= " ${name(field)}_${name(field.xrefField)}='" + get${JavaName(field)}_${JavaName(field.xrefField)}()+"' ";	
+			<#if field.xrefLabelNames[0] != field.xrefFieldName><#list field.xrefLabelNames as label>		
 		result+= " ${name(field)}_${name(label)}='" + get${JavaName(field)}_${JavaName(label)}()+"' ";
-				</#list></#if>
-			</#if>
+			</#list></#if>
+		<#else>
+		result+= "${name(field)}='" + get${JavaName(field)}()+"'<#if field_has_next> </#if>";	
 		</#if>
 </#list>
 		result += ");";
