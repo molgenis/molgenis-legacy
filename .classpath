@@ -522,6 +522,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/gson-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/home/osmosisch/workspace/gitwork/molgenis/lib/cxf-2.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cxf-2.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gson-2.2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
