@@ -117,7 +117,8 @@ public class JDBCQueryGernatorUtil {
 					where_clause.append(")");
 					
 				}
-				else if (rule.getOperator() == QueryRule.Operator.NESTED)
+				else if (rule.getOperator() == QueryRule.Operator.NESTED || 
+						(rule.getOperator() == QueryRule.Operator.NOT && rule.getNestedRules() != null && rule.getNestedRules().length > 0) )
 				{
 					QueryRule[] nestedrules = rule.getNestedRules();
 					if (nestedrules.length > 0)
@@ -133,7 +134,11 @@ public class JDBCQueryGernatorUtil {
 								where_clause.append(" AND ");
 							}
 						}
-						where_clause.append("(");
+						
+						if(rule.getOperator() == QueryRule.Operator.NOT) {
+							where_clause.append("NOT");	
+						}
+						where_clause.append("(");						
 						where_clause.append(createWhereSql(mapper, true, false, nestedrules));
 						where_clause.append(")");
 					}
