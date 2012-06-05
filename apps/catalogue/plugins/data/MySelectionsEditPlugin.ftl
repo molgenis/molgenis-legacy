@@ -44,7 +44,7 @@
 										   font-weight:bold;
 										   "/>
 										   
-										   <a href="molgenis.do?__target=main&select=UserLogin"> aaa </a>
+										   <a href="molgenis.do?__target=main&select=CatalogueTreePlugin&select="eachDownload.getId()> load </a>
 											 
 											</td>
 											<td>  ${eachDownload.getName()}</td>
