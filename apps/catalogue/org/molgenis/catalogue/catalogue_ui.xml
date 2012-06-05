@@ -20,6 +20,9 @@
 				<form name="PermittedValues" entity="Category" />
 			</menu>
 		</form>
+		
+		<plugin name="MySelectionsEditPlugin" type="plugins.data.MySelectionsEditPlugin" label="Edit My Selections"/>
+
 
 		<form name="MySelections" entity="ShoppingCart" label="My selections" view_type="list">
 			<form name="SelectionMeasurement" entity="Measurement" label="Measurements"	readonly="true" hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
