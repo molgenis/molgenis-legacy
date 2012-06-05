@@ -34,14 +34,71 @@
 	<#assign modelExists = false>
 </#if>
 
-<br>
-HELP<br><br>
+<h2>Help</h2>
 
-Resources for biologists:<br>
-todo<br><br>
+<h3>For biologists:</h3>
 
-Resources for bioinfomaticians:<br>
-<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">xQTL wiki</a> | <a href="generated-doc/fileformat.html">Exchange format</a> | <a href="api/R/">R api</a> | <a href="api/find/">Find api</a>
+<ul>
+	<li>
+		Walkthrough of WormQTL.org (TODO)
+	</li>
+	<li>
+		Example workflows on how to mine data (TODO)
+	</li>
+</ul>
+
+<h3>For bioinformaticians:</h3>
+
+<h4>API's:</h4>
+<ul>
+	<li>
+		<a href="api/find/">Scriptable interface</a> which you can use to download annotations programmatically via the web, including the use of filters.
+	</li>
+	<li>
+		<a href="api/R/">R API</a> to query via R. Copy-paste this into an R terminal to connect. The first time you may need to install Bitops and RCurl. (see instructions)
+	</li>
+</ul>
+
+<h4>Downloaders:</h4>
+<ul>
+	<li>
+		<a href="downloadmatrixascsv">Matrix CSV downloader</a> to download all experimental data programmatically. Includes options for subsets and streaming.
+		<br>
+		Some concrete xamples:
+		<ul>
+			<li>
+				Genotypes: <a href="downloadmatrixascsv?id=24&download=all&stream=false">CBxN2_WUR_RILs</a> (Panel x Marker) / <a href="downloadmatrixascsv?id=22&download=all&stream=false">CBxN2_USA_RILs</a> (Marker x Panel)
+			</li>
+			<li>
+				Classical phenotypes: <a href="downloadmatrixascsv?id=31&download=all&stream=false">nil_pump_phe</a> (Measurement x Panel) / <a href="downloadmatrixascsv?id=27&download=all&stream=false">gut_phe</a> (Panel x Measurement)
+			</li>
+			<li>
+				Expression phenotypes: <a href="downloadmatrixascsv?id=20&download=all&stream=false">age3_exp_norm_ril</a> (Sample x Probe) / <a href="downloadmatrixascsv?id=35&download=some&stream=false&coff=0&roff=0&clim=100&rlim=1000">rock_exp_norm</a> (Sample x Probe)
+			</li>
+		</ul>
+	</li>
+	<li>
+		<a href="downloadmatrixasexcel">Matrix Excel downloader</a> to download all experimental data as Excel files. Similar to the CSV downloader, except no streaming options. Example: <a href="downloadmatrixasexcel?id=24&download=all">CBxN2_WUR_RILs</a>
+	</li>
+	<li>
+		<a href="downloadfile">File downloader</a> to get the matrices as <a href="http://www.molgenis.org/svn/molgenis_apps/trunk/apps/xgap/matrix/implementations/binary/etc/design.txt">xQTL binaries</a>. This goes by name, e.g. <a href="downloadfile?name=CBxN2_USA_RILs">CBxN2_USA_RILs</a>. You can get a list of all names of matrices by <a href="api/find/Data">via the scriptable interface</a>. In addition, you can also download all <a href="api/find/InvestigationFile">GFF files</a> with QTL results via this downloader.
+	</li>
+</ul>
+
+<h4>Documentation:</h4>
+<ul>
+	<li>
+		 <a href="generated-doc/fileformat.html">Exchange format</a>: a full description of the datamodel.
+	</li>
+	<li>
+		<a href="http://molgenis02.target.rug.nl/download/wormqtl/wormqtl_set1_annotations_minusUSAprobes.xls">WormQTL annotation data</a> (the largest part) in a single Excel file, as a resource and to help people understand the format.
+	</li>
+	<li>
+		<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">xQTL wiki</a> with all general documentation regarding installing and using <a href="http://xqtl.org/">xQTL workbench</a>.
+	</li>
+</ul>
+
+
 
 <br>
 
