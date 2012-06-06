@@ -68,6 +68,12 @@ public class catalogueUpdateDatabase
 		db.add(mrgl);
 		
 		//TODO: add anonymous user in Simple users 
+		mrgl = new MolgenisRoleGroupLink();
+		mrgl = db.find(MolgenisRoleGroupLink.class, new QueryRule(MolgenisRoleGroupLink.ROLE__NAME, Operator.EQUALS, "anonymous")).get(0);
+		mrgl.setGroup_Name("SimpleUsers");
+		System.out.println(mrgl);
+		db.update(mrgl);
+		
 		
 		//Now set permission for the demo account 
 		for (int i=2; i<95; i++) {
