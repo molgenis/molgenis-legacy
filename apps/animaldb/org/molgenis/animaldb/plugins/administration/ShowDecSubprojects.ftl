@@ -147,17 +147,21 @@
 	</div>
 	
 	<div class="row">
-		<script>
-			$(function() {
-				$( "#startdate" ).datepicker({
-					numberOfMonths: 1,
-					showButtonPanel: true,
-					dateFormat: "yy-mm-dd",
-				});
-			});
-		</script>
 		<label for="startdate">Subproject start date:</label>
 		<input type='text' id='startdate' name='startdate' <#if currentDecSubproject??><#if currentDecSubproject.getStartDate()??> value="${currentDecSubproject.startDate}"</#if></#if> />
+	    <script>
+            $(function() {
+                $( "#startdate" ).datepicker({
+                    numberOfMonths: 1,
+                    showButtonPanel: true,
+                    dateFormat: "yy-mm-dd",
+                    changeYear: true,
+                    changeMonth: true,
+                                        
+                });
+            });
+        </script>
+	
 	</div>
 	
 	<div class="row">
@@ -201,21 +205,7 @@
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action" />
 
-	<!--table cellpadding="10" cellspacing="2" border="1">
-		<tr>
-			<th>Name</th>
-			<th><input type='submit' id='startrem' class='addbutton' value='Remove selected' onclick="__action.value='RemoveAnimalsFromSubproject'" /></th>
-		</tr>
-		<assign i = 0>
-		<list screen.getAnimalIdList() as animalId>
-			<assign name = screen.getAnimalName(animalId)>
-			<tr>
-				<td style='padding:5px'>{name}</td>
-				<td style='padding:5px'><input type="checkbox" id="rem{i}" name="rem{i}" value="rem{i}" /></td>
-			</tr>
-			<assign i = i + 1>
-		</list>
-	</table-->
+	
 	
 	<input type='submit' id='startadd' class='addbutton' value='Add animals' onclick="__action.value='AddAnimalToSubproject'" />
 	<br /><hr /><br />
@@ -286,8 +276,7 @@
                     numberOfMonths: 1,
                     showButtonPanel: true,
                     dateFormat: "yy-mm-dd",
-                    changeYear: true,
-                    changeMonth: true
+                    changeYear: true
                 });
             });
         </script>

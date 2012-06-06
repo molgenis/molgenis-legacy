@@ -154,7 +154,7 @@
 					<td>${decl.decApplicantName}</td>
 					<td><#if decl.pdfDecApplication??>${decl.pdfDecApplication}</#if></td>
 					<td><#if decl.pdfDecApproval??>${decl.pdfDecApproval}</#if></td>
-					<td>${decl.decBudget}</td>
+					<td><#if decl.decBudget??>${decl.decBudget}</#if></td>
 				</tr>
 			</#list>
 		</#if>
