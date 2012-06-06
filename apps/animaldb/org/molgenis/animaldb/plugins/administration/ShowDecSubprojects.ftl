@@ -429,18 +429,18 @@
 							<td>${expl.startDate}</td>
 							<td>${expl.endDate}</td>
 							<td><#if expl.SubprojectBudget??>${expl.decSubprojectBudget}</#if></td> <! TODO remove this checkafter adding data to db, only for upgrade (2012-06-06) -->
-							<td>${expl.decApplication}</td>
-							<td>${expl.experimentNr}</td>
-							<td>${expl.experimentTitle}</td>
+							<td><#if expl.decApplication>${expl.decApplication}</#if></td>
+							<td><#if expl.experimentNr>${expl.experimentNr}</#if></td>
+							<td><#if expl.experimentTitle>${expl.experimentTitle}</#if></td>
 							<td><#if expl.decSubprojectApplicationPDF??>${expl.decSubprojectApplicationPDF}</#if></td>
-							<td>${expl.concern}</td>
-							<td>${expl.goal}</td>
-							<td>${expl.specialTechn}</td>
-							<td>${expl.lawDef}</td>
-							<td>${expl.toxRes}</td>
-							<td>${expl.anaesthesia}</td>
-							<td>${expl.painManagement}</td>
-							<td>${expl.animalEndStatus}</td>
+							<td><#if expl.concern>${expl.concern}</#if></td>
+							<td><#if expl.goal>${expl.goal}</#if></td>
+							<td><#if expl.specialTechn>${expl.specialTechn}</#if></td>
+							<td><#if expl.lawDef>${expl.lawDef}</#if></td>
+							<td><#if expl.toxRes>${expl.toxRes}</#if></td>
+							<td><#if expl.anaesthesia>${expl.anaesthesia}</#if></td>
+							<td><#if expl.painManagement>${expl.painManagement}</#if></td>
+							<td><#if expl.animalEndStatus>${expl.animalEndStatus}</#if></td>
 							<td><#if expl.remarks??>${expl.remarks}</#if></td>
 						</tr>
 						<#assign i = i + 1>
