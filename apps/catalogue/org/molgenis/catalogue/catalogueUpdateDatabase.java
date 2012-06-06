@@ -25,15 +25,15 @@ public class catalogueUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-//		//PropertyConfigurator.configure("apps/catalogue/org/molgenis/catalogue/catalogue_log4j.properties");
-//		new Molgenis("apps/catalogue/org/molgenis/catalogue/catalogue.molgenis.properties").updateDb(true);
+		//PropertyConfigurator.configure("apps/catalogue/org/molgenis/catalogue/catalogue_log4j.properties");
+		new Molgenis("apps/catalogue/org/molgenis/catalogue/catalogue.molgenis.properties").updateDb(true);
+		
+//		final Map<String, Object> config = new HashMap<String, Object>();
+//		config.put("hibernate.hbm2ddl.auto", "create-drop");
+//		Database db = DatabaseFactory.create(config);
 //		
-////		final Map<String, Object> config = new HashMap<String, Object>();
-////		config.put("hibernate.hbm2ddl.auto", "create-drop");
-////		Database db = DatabaseFactory.create(config);
-////		
-////		FillMetadata.fillMetadata(db, false);
-////		
+//		FillMetadata.fillMetadata(db, false);
+//		
 		Database db = DatabaseFactory.create("apps/catalogue/org/molgenis/catalogue/catalogue.molgenis.properties");
 		
 		// Only add  user if type of Login allows for this
@@ -87,7 +87,10 @@ public class catalogueUpdateDatabase
 
 		//requests form controller 
 		mp = new MolgenisPermission();
+		System.out.println(mp);
 		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.RequestsFormController")).get(0);
+		System.out.println(mp);
+
 		db.remove(mp);
 		
 		//import data menu  
@@ -123,8 +126,22 @@ public class catalogueUpdateDatabase
 		
 		//MolgenisGroup 
 		mp = new MolgenisPermission();
-		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.auth.MolgenisGroup")).get(0);
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.MolgenisGroupFormController")).get(0);
 		db.remove(mp);
 		
+		//app.ui.MappingsMenu 
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.MappingsMenu")).get(0);
+		db.remove(mp);
+		
+		//app.ui.selectionModelMenu	
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.selectionModelMenu")).get(0);
+		db.remove(mp);
+		
+		//PredictionModelSelection
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.PredictionModelSelectionPlugin")).get(0);
+		db.remove(mp);
 	}
 }
