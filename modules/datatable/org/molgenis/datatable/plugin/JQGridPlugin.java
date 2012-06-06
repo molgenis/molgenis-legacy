@@ -2,13 +2,13 @@ package org.molgenis.datatable.plugin;
 
 
 
-import java.sql.SQLException;
 import java.util.Collections;
 
+import org.molgenis.datatable.controller.JQGridController;
 import org.molgenis.datatable.model.JdbcTable;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -54,9 +54,9 @@ public class JQGridPlugin extends GenericPlugin
 		
 		try
 		{
-			final JdbcTable jdbcTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country LIMIT 0", Collections.EMPTY_LIST);
-			gridView = new JQGridView("jqGridId", jdbcTable);
-			//jdbcTable.close();
+			//starnge way to retrieve columns!
+			final JdbcTable jdbcTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country LIMIT 0", Collections.<QueryRule>emptyList());
+			gridView = new JQGridView("jqGridId", new JQGridController.JDBCDataSourceDescription("Country", jdbcTable.getColumns()));
 		}
 		catch (Exception e)
 		{

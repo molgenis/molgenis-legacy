@@ -8,18 +8,24 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
-import org.molgenis.datatable.model.CsvTable;
-import org.molgenis.datatable.model.JdbcTable;
+import org.molgenis.datatable.DataSourceFactory.DataSourceFactory;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.CsvExporter;
 import org.molgenis.datatable.view.ExcelExporter;
+import org.molgenis.datatable.view.JQGridColumn;
 import org.molgenis.datatable.view.SPSSExporter;
+import org.molgenis.datatable.view.ViewFactory;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -27,6 +33,7 @@ import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
+import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 
 import com.google.gson.Gson;
@@ -35,56 +42,127 @@ import com.google.gson.reflect.TypeToken;
 
 public class JQGridController implements MolgenisService
 {
-	private enum ViewType {
-		JQ_GRID {
-			@Override
-			void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException {
-				JQGridResult result = JQGridController.buildJQGridResults(tupleTable.getRowCount(), totalPages, page, tupleTable);
-				PrintWriter pout = new PrintWriter(out);
-				pout.print(new Gson().toJson(result));
-				pout.close();
-			}
-		},
-		EXCEL {
-			@Override
-			void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException {
-				final ExcelExporter excelExport = new ExcelExporter(tupleTable);
-				excelExport.export(out);		
-			}
-		},
-		CSV {
-			@Override
-			void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException {
-				final CsvExporter csvExport = new CsvExporter(tupleTable);
-				csvExport.export(out);
-			}
-		},
-		SPSS {
-			@Override
-			void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException {				
-				try {
-					File tempDir = (File)controller.context.getServletContext().getAttribute( "javax.servlet.context.tempdir" );
-					// create a temporary file in that directory
-					File spssFile = File.createTempFile( "spssExport", ".sps", tempDir );
-					File spssCsvFile = File.createTempFile( "csvSpssExport", ".csv", tempDir );
-					
-					FileOutputStream spssFileStream = new FileOutputStream(spssFile);
-					FileOutputStream spssCsvFileStream = new FileOutputStream(spssCsvFile);
-					final SPSSExporter spssExporter = new SPSSExporter(tupleTable);
-					spssExporter.export(spssCsvFileStream, spssFileStream, spssCsvFile.getName());
-					spssCsvFileStream.close();
-					spssFileStream.close();
-					
-					System.out.println(spssFile.getAbsolutePath());
-					System.out.println(spssCsvFile.getAbsolutePath());
-				} catch (Exception e) {
-					throw new TableException(e);
-				}
-			}
-		};
+	public static abstract class DataSourceDescription {
+		private final String type;
+		private final List<JQGridColumn> columns = new ArrayList<JQGridColumn>();
 		
-		abstract void export(JQGridController controller, TupleTable tupleTable, int totalPages, int page, OutputStream out) throws TableException;
+		protected DataSourceDescription(String type, List<Field> columns) {
+			this.type = type;
+			for(Field field : columns) {
+				this.columns.add(new JQGridColumn(field));
+			}
+		}
+		
+		public String toJson() {
+			return new Gson().toJson(this);
+		}
+
+		public String getType()
+		{
+			return type;
+		}
+
+		public List<JQGridColumn> getColumns()
+		{
+			return columns;
+		}
+	}
+	
+	public static class JDBCDataSourceDescription extends DataSourceDescription {
+		private final String fromExpression;
+		
+		public JDBCDataSourceDescription(String fromExpression, List<Field> columns) {
+			super("jdbc", columns);
+			this.fromExpression = fromExpression;
+		}		
+		
+		public String getFromExpression() {
+			return fromExpression;
+		}
+	}
+	
+	public static class CSVDataSourceDescription extends DataSourceDescription {
+		private final String csvUri;
+
+		public CSVDataSourceDescription(String csvUri) {
+			super("csv", Collections.<Field>emptyList());
+			this.csvUri = csvUri;
+		}
+
+		public String getCsvUri()
+		{
+			return csvUri;
+		}				
 	}	
+	
+	public interface View {
+		public void export(HttpServletResponse response, String fileName, JQGridController controller, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException;
+	} 
+	
+	public static class ViewHelper {
+		public static void setHeader(HttpServletResponse response, String contentType, String fileName) {
+			response.setContentType(contentType);
+			response.addHeader("Content-Disposition", "attachment; filename="+ fileName);
+		}
+	}
+	
+	//should be placed in own package or class
+	public static class JQGridView implements View {
+		@Override
+		public void export(HttpServletResponse response, String fileName, JQGridController controller, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+			
+			final JQGridResult result = JQGridController.buildJQGridResults(tupleTable.getRowCount(), totalPages, currentPage, tupleTable);
+			final PrintWriter pout = new PrintWriter(response.getOutputStream());
+			pout.print(new Gson().toJson(result));
+			pout.close();
+		}		
+	}
+	
+	
+
+	public static class ExcelView implements View {
+		@Override
+		public void export(HttpServletResponse response, String fileName, JQGridController controller, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+			ViewHelper.setHeader(response, "application/ms-excel", fileName + ".xlsx");
+			final ExcelExporter excelExport = new ExcelExporter(tupleTable);
+			excelExport.export(response.getOutputStream());		
+		}
+	}
+	
+	public static class CSVView implements View {
+		@Override
+		public void export(HttpServletResponse response, String fileName, JQGridController controller, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+			ViewHelper.setHeader(response, "application/ms-excel", fileName + ".csv");
+			final ExcelExporter excelExport = new ExcelExporter(tupleTable);
+			excelExport.export(response.getOutputStream());	
+		}
+	}	
+
+	public static class SPSSView implements View {
+		@Override
+		public void export(HttpServletResponse response, String fileName, JQGridController controller, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+			//ViewHelper.setHeader(response, "application/ms-excel", fileName + ".xlsx");
+			try {
+				File tempDir = (File)controller.context.getServletContext().getAttribute( "javax.servlet.context.tempdir" );
+				// create a temporary file in that directory
+				File spssFile = File.createTempFile( "spssExport", ".sps", tempDir );
+				File spssCsvFile = File.createTempFile( "csvSpssExport", ".csv", tempDir );
+				
+				FileOutputStream spssFileStream = new FileOutputStream(spssFile);
+				FileOutputStream spssCsvFileStream = new FileOutputStream(spssCsvFile);
+				final SPSSExporter spssExporter = new SPSSExporter(tupleTable);
+				spssExporter.export(spssCsvFileStream, spssFileStream, spssCsvFile.getName());
+				spssCsvFileStream.close();
+				spssFileStream.close();
+				
+				System.out.println(spssFile.getAbsolutePath());
+				System.out.println(spssCsvFile.getAbsolutePath());
+			} catch (Exception e) {
+				throw new TableException(e);
+			}		
+		}
+	}		
+		
 
 	private enum ExportRange {
 		GRID, 
@@ -92,11 +170,15 @@ public class JQGridController implements MolgenisService
 		UNKOWN
 	}
 	
-	static class JQGridResult
+	
+	private static class JQGridResult
 	{
-		int page;
-		int total;
-		int records;
+		@SuppressWarnings("unused")
+		private final int page;
+		@SuppressWarnings("unused")
+		private final int total;
+		@SuppressWarnings("unused")
+		private final int records;
 
 		private ArrayList<LinkedHashMap<String, String>> rows = new ArrayList<LinkedHashMap<String, String>>();
 
@@ -113,25 +195,14 @@ public class JQGridController implements MolgenisService
 	public JQGridController(MolgenisContext context)
 	{
 		this.context = context;
-		
 	}
-
-	private final static String SQL_START = "SELECT %1$s FROM %2$s ";
-
+	
 	@Override
 	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
 			DatabaseException, IOException
 	{
 		try
-		{
-			TupleTable tupleTable = null;
-			
-			String strViewType = request.getString("viewType");
-			ViewType viewType = ViewType.JQ_GRID;
-			if(StringUtils.isNotEmpty(strViewType)) {
-				viewType = ViewType.valueOf(strViewType);
-			}
-
+		{	
 			final ExportRange exportSelection = 
 				StringUtils.isNotEmpty(request.getString("exportSelection")) ?			
 						ExportRange.valueOf(request.getString("exportSelection")) : 
@@ -139,11 +210,7 @@ public class JQGridController implements MolgenisService
 			
 			final int limit = 	request.getInt("rows");
 			final String sidx = request.getString("sidx");
-			final String sord = request.getString("sord");
-
-			final Map<String, String> dataSource = JsonToMap(request, "dataSource");
-			final String dataSourceType = dataSource.get("type");
-			
+			final String sord = request.getString("sord");			
 			
 			//add filter rules
 			final List<QueryRule> rules = addFilterRules(request);
@@ -153,17 +220,11 @@ public class JQGridController implements MolgenisService
 			int rowCount = -1;
 			int totalPages = 1;
 			
-			final String[] columnNames = new Gson().fromJson(request.getString("colNames"), String[].class);
-			if(dataSourceType.equals("jdbc")) {
-				final String fromExpression = dataSource.get("fromExpression");
-				final String sqlSelect = String.format(SQL_START, StringUtils.join(columnNames, ","), fromExpression);
-
-				tupleTable = new JdbcTable(request.getDatabase(), sqlSelect, rules);
-				rowCount = tupleTable.getRowCount();	
-			} else if (dataSourceType.equals("csv")) {
-				tupleTable = new CsvTable("/Users/jorislops/Desktop/country.csv");
-				rowCount = tupleTable.getRowCount();
-			}
+			@SuppressWarnings("unchecked")
+			final StringMap<String> dataSource = (StringMap<String>)new Gson().fromJson(request.getString("dataSource"), Object.class);
+			final DataSourceFactory dsFactory = (DataSourceFactory) Class.forName(request.getString("dataSourceFactoryClassName")).newInstance();
+			final TupleTable tupleTable = dsFactory.createDataSource(dataSource, request.getDatabase(), rules);
+			rowCount = tupleTable.getRowCount();				
 
 			totalPages = (int) Math.ceil(rowCount / limit);
 			page = Math.min(request.getInt("page"), totalPages);
@@ -174,8 +235,8 @@ public class JQGridController implements MolgenisService
 				rules.addAll(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
 			}
 			addSortRules(sidx, sord, rules);			
-			
-			viewType.export(this, tupleTable, totalPages, page, response.getResponse().getOutputStream());
+						
+			renderData(request, response, page, totalPages, tupleTable);
 
 			tupleTable.close();
 		}
@@ -183,6 +244,20 @@ public class JQGridController implements MolgenisService
 		{
 			throw new DatabaseException(e);
 		}
+	}
+
+	private void renderData(MolgenisRequest request, MolgenisResponse response, int page, int totalPages,
+			final TupleTable tupleTable) throws InstantiationException, IllegalAccessException, ClassNotFoundException,
+			TableException, IOException
+	{
+		String strViewType = request.getString("viewType");
+		if(StringUtils.isEmpty(strViewType)) { //strange that the grid doesn't submit it in first load!
+			strViewType = "JQ_GRID";
+		}
+		final String viewFactoryClassName = request.getString("viewFactoryClassName");
+		final ViewFactory viewFactory = (ViewFactory) Class.forName(viewFactoryClassName).newInstance();
+		final View view = viewFactory.createView(strViewType);
+		view.export(response.getResponse(), request.getString("caption"), this, tupleTable, totalPages, page);
 	}
 
 	private static JQGridResult buildJQGridResults(final int rowCount, final int totalPages, final int page,

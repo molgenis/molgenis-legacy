@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.molgenis.datatable.DataSourceFactory.DataSourceFactoryImpl;
+import org.molgenis.datatable.controller.JQGridController;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.model.elements.Field;
@@ -17,23 +19,13 @@ import freemarker.template.Template;
 
 public class JQGridView extends HtmlWidget
 {
-	public JQGridView(String name)
+	private final JQGridController.DataSourceDescription dataSourceDescription; //JSON String that represents the database
+	
+	public JQGridView(String name, JQGridController.DataSourceDescription dataSource)
 	{
 		super(name);
+		this.dataSourceDescription = dataSource;
 	}
-
-
-
-
-	private TupleTable table;
-
-	public JQGridView(String id, TupleTable table)
-	{
-		super(id);
-		this.table = table;
-	}
-	
-
 	
 	
 	@Override
@@ -41,16 +33,14 @@ public class JQGridView extends HtmlWidget
 		try
 		{
 			final Map<String, Object> args = new HashMap<String, Object>();
-			final List<JQGridColumn> gridColumns = new ArrayList<JQGridColumn>();
-			for (Field field : table.getColumns())
-			{
-				gridColumns.add(new JQGridColumn(field));				
-			}
 			
 			args.put("tableId", getId());
-			args.put("columns", gridColumns);
-			args.put("dataSourceUrl", "jqGridService.do");
-			args.put("sortName", table.getColumns().get(0).getName());
+			args.put("columns", dataSourceDescription.getColumns());
+			args.put("dataSourceFactoryClassName", DataSourceFactoryImpl.class.getName());
+			args.put("viewFactoryClassName", ViewFactoryImpl.class.getName());
+			args.put("backendUrl", "jqGridService.do");
+			args.put("sortName", dataSourceDescription.getColumns().get(0).getName());
+			args.put("dataSource", dataSourceDescription.toJson());
 			
 			final Configuration cfg = new Configuration();
 			cfg.setObjectWrapper(new DefaultObjectWrapper());

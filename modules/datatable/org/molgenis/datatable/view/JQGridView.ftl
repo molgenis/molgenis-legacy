@@ -18,15 +18,21 @@ var JQGridView = {
     colNames : null, 
     dataSource : null,
     sortColumn : 'id',
-    caption : "datatable",
+    caption : "dataTable",
     jqGrid : null,
+    backendUrl : null,
+    dataSourceFactoryClassName : null,
+    viewFactory : null,
     
     init: function(config) {
     	//required parameters
+    	this.backendUrl = config.backendUrl;
         this.tableSelector = config.tableSelector;
         this.colModel = config.colModel;
         this.colNames = config.colNames;
         this.dataSource = config.dataSource;
+        this.dataSourceFactoryClassName = config.dataSourceFactoryClassName;
+        this.viewFactoryClassName = config.viewFactoryClassName;
         
         //optional parameters
         if(config.pagerSelector) {
@@ -53,14 +59,19 @@ var JQGridView = {
     
     createJQGrid : function() {
     	var grid = jQuery(this.tableSelector).jqGrid({
-            url: this.dataSource.dataSourceUrl,
+            url: this.backendUrl,
             datatype: "json",
             jsonReader: { repeatitems: false },
             postData : 
-            	{viewType : 'JQ_GRID',
+            	{
+            	viewType : 'JQ_GRID',
             	colNames : $.toJSON(this.colNames), 
         		colModel: $.toJSON(this.colModel), 
-        		dataSource: $.toJSON(this.dataSource)},
+        		dataSource: $.toJSON(this.dataSource), 
+        		dataSourceFactoryClassName: this.dataSourceFactoryClassName,
+        		viewFactoryClassName : this.viewFactoryClassName,
+        		caption: this.caption
+        		},
             colNames: this.colNames,   	
             colModel: this.colModel,
             rowNum: 10,
@@ -120,10 +131,7 @@ var JQGridView = {
 	}
 }
 
-
-
 $(document).ready(function() {
-
     var myColModel = 
         [
             <#list columns as col>	
@@ -135,10 +143,16 @@ $(document).ready(function() {
             '${col.name}'<#if col_has_next>,</#if>
             </#list> 
         ];		   		
-	var myDataSource = {type: 'jdbc', fromExpression: 'Country', dataSourceUrl: '${dataSourceUrl}'};
-	//var myDataSource = {type: 'csv', dataSourceUrl: '${dataSourceUrl}'};
+	var myDataSource = ${dataSource};
 	var mySortColumn = '${sortName}';
-    var myGrid = JQGridView.init({tableSelector : "#${tableId}", colModel: myColModel, colNames: myColNames, sortColumn: mySortColumn, dataSource: myDataSource});
+	
+    var myGrid = JQGridView.init(
+    	{	backendUrl : "${backendUrl}",     
+    		dataSourceFactoryClassName: "${dataSourceFactoryClassName}",   
+    		viewFactoryClassName: "${viewFactoryClassName}",
+    		dataSource: myDataSource, 
+    		tableSelector : "#${tableId}", 
+    		colModel: myColModel, colNames: myColNames, sortColumn: mySortColumn});
     $("#exportCsv").click(function() {
         $( "#dialog-form" ).dialog( "open" );    	
     });
