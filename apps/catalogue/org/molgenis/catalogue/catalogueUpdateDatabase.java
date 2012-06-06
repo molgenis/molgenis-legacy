@@ -12,7 +12,10 @@ import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.auth.Person;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.security.SimpleLogin;
+import org.molgenis.pheno.Measurement;
 
 import app.DatabaseFactory;
 import app.FillMetadata;
@@ -22,15 +25,15 @@ public class catalogueUpdateDatabase
 {
 	public static void main(String[] args) throws Exception
 	{
-		//PropertyConfigurator.configure("apps/catalogue/org/molgenis/catalogue/catalogue_log4j.properties");
-		new Molgenis("apps/catalogue/org/molgenis/catalogue/catalogue.molgenis.properties").updateDb(true);
-		
-//		final Map<String, Object> config = new HashMap<String, Object>();
-//		config.put("hibernate.hbm2ddl.auto", "create-drop");
-//		Database db = DatabaseFactory.create(config);
+//		//PropertyConfigurator.configure("apps/catalogue/org/molgenis/catalogue/catalogue_log4j.properties");
+//		new Molgenis("apps/catalogue/org/molgenis/catalogue/catalogue.molgenis.properties").updateDb(true);
 //		
-//		FillMetadata.fillMetadata(db, false);
-//		
+////		final Map<String, Object> config = new HashMap<String, Object>();
+////		config.put("hibernate.hbm2ddl.auto", "create-drop");
+////		Database db = DatabaseFactory.create(config);
+////		
+////		FillMetadata.fillMetadata(db, false);
+////		
 		Database db = DatabaseFactory.create("apps/catalogue/org/molgenis/catalogue/catalogue.molgenis.properties");
 		
 		// Only add  user if type of Login allows for this
@@ -64,6 +67,8 @@ public class catalogueUpdateDatabase
 		mrgl.setGroup_Name("SimpleUsers");
 		db.add(mrgl);
 		
+		//TODO: add anonymous user in Simple users 
+		
 		//Now set permission for the demo account 
 		for (int i=2; i<95; i++) {
 			MolgenisPermission mp = new MolgenisPermission();
@@ -73,6 +78,53 @@ public class catalogueUpdateDatabase
 			db.add(mp);
 			System.out.println("Inserting molgenis permisssion for :" + i);
 		}
-		//TODO : do batch import
+		
+		//except from : admin
+		MolgenisPermission mp = new MolgenisPermission();
+		System.out.println(db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.AdminMenu")));
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.AdminMenu")).get(0);
+		db.remove(mp);
+
+		//requests form controller 
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.RequestsFormController")).get(0);
+		db.remove(mp);
+		
+		//import data menu  
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.ImportDataMenu")).get(0);
+		db.remove(mp);
+		
+		//BiobankImporterPlugin  
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.BiobankImporterPlugin")).get(0);
+		db.remove(mp);
+	
+		//generic wizard 	
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.GenericWizardPlugin")).get(0);
+		db.remove(mp);
+		
+		//settings 	
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.SettingsPlugin")).get(0);
+		db.remove(mp);
+		
+		//usermanagement 
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.usermanagementMenu")).get(0);
+		db.remove(mp);
+		
+		
+		//app.ui.MolgenisUserFormController 
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.MolgenisUserFormController")).get(0);
+		db.remove(mp);
+		
+		//MolgenisGroup 
+		mp = new MolgenisPermission();
+		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.auth.MolgenisGroup")).get(0);
+		db.remove(mp);
+		
 	}
 }
