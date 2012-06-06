@@ -426,21 +426,21 @@
 							<td><a href="molgenis.do?__target=${screen.name}&__action=AddEdit&id=${i}"><img id="edit_decsubproject" class="edit_button" title="edit current record" alt="Edit" src="generated-res/img/editview.gif"></a></td>
 							<td> <a href='molgenis.do?__target=${screen.name}&__action=EditAnimals&id=${i}'><img id="manage_animals_in_subproject" class="edit_button" title="add/remove animals to/from subproject" alt="Manage" src="generated-res/img/grid-manage-icon.gif"></a>  [${expl.nrOfAnimals}]</td>
 							<td>${expl.name}</td>
-							<td>${expl.startDate}</td>
-							<td>${expl.endDate}</td>
+							<td><#if expl.startDate??>${expl.startDate}</#if></td>
+							<td><#if expl.endDate??>${expl.endDate}</#if></td>
 							<td><#if expl.SubprojectBudget??>${expl.decSubprojectBudget}</#if></td> <! TODO remove this checkafter adding data to db, only for upgrade (2012-06-06) -->
-							<td><#if expl.decApplication>${expl.decApplication}</#if></td>
-							<td><#if expl.experimentNr>${expl.experimentNr}</#if></td>
-							<td><#if expl.experimentTitle>${expl.experimentTitle}</#if></td>
+							<td><#if expl.decApplication??>${expl.decApplication}</#if></td>
+							<td><#if expl.experimentNr??>${expl.experimentNr}</#if></td>
+							<td><#if expl.experimentTitle??>${expl.experimentTitle}</#if></td>
 							<td><#if expl.decSubprojectApplicationPDF??>${expl.decSubprojectApplicationPDF}</#if></td>
-							<td><#if expl.concern>${expl.concern}</#if></td>
-							<td><#if expl.goal>${expl.goal}</#if></td>
-							<td><#if expl.specialTechn>${expl.specialTechn}</#if></td>
-							<td><#if expl.lawDef>${expl.lawDef}</#if></td>
-							<td><#if expl.toxRes>${expl.toxRes}</#if></td>
-							<td><#if expl.anaesthesia>${expl.anaesthesia}</#if></td>
-							<td><#if expl.painManagement>${expl.painManagement}</#if></td>
-							<td><#if expl.animalEndStatus>${expl.animalEndStatus}</#if></td>
+							<td><#if expl.concern??>${expl.concern}</#if></td>
+							<td><#if expl.goal??>${expl.goal}</#if></td>
+							<td><#if expl.specialTechn??>${expl.specialTechn}</#if></td>
+							<td><#if expl.lawDef??>${expl.lawDef}</#if></td>
+							<td><#if expl.toxRes??>${expl.toxRes}</#if></td>
+							<td><#if expl.anaesthesia??>${expl.anaesthesia}</#if></td>
+							<td><#if expl.painManagement??>${expl.painManagement}</#if></td>
+							<td><#if expl.animalEndStatus??>${expl.animalEndStatus}</#if></td>
 							<td><#if expl.remarks??>${expl.remarks}</#if></td>
 						</tr>
 						<#assign i = i + 1>
