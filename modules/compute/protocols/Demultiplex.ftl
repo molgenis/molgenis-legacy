@@ -48,7 +48,7 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		#
 		# Demultiplex the multiplexed, gzipped FastQ file.
 		#
-		${demultiplexscript} --bcs '${csv(barcode)}' \
+		Rscript ${demultiplexscript} --bcs '${csv(barcode)}' \
 		--mpr1 ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenameSR} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathSR)}' \
 		--ukr1 ${runIntermediateDir}/${compressedDemultiplexedDiscardedFastqFilenameSR} \
@@ -142,7 +142,7 @@ alloutputsexist "${runIntermediateDir}/demultiplex.${filenamePrefix}.read_count_
 		#
 		# Demultiplex the multiplexed, gzipped FastQ file.
 		#
-		${demultiplexscript} --bcs '${csv(barcode)}' \
+		Rscript ${demultiplexscript} --bcs '${csv(barcode)}' \
 		--mpr1 ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE1} \
 		--mpr2 ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE2} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathPE1)}' \
