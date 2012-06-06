@@ -57,7 +57,7 @@
 		<unjar src="WebContent/WEB-INF/lib/lucene-core-3.0.2.jar" dest="${build}" overwrite="false" />
 		<unjar src="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar" dest="${build}" overwrite="false" />
 		<unjar src="WebContent/WEB-INF/lib/spssw-1.66.jar" dest="${build}" overwrite="false" />
-		<unjar src="WebContent/WEB-INF/lib/simplecaptcha-1.1.1.jar" dest="${build}" overwrite="false" />
+		<unjar src="WebContent/WEB-INF/lib/simplecaptcha-1.2.1.jar" dest="${build}" overwrite="false" />
 		<unjar src="WebContent/WEB-INF/lib/pircbot.jar" dest="${build}" overwrite="false" />
 
 
