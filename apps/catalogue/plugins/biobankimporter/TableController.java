@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 
 import jxl.Sheet;
 
-import org.molgenis.auth.Institute;
-import org.molgenis.auth.Person;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
@@ -178,10 +176,6 @@ public class TableController {
 		List<InvestigationElement> panelList = new ArrayList<InvestigationElement>();
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
 		List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
-//		List<Person> personList = new ArrayList<Person>();
-//		List<Institute> instituteList = new ArrayList<Institute>();
-
-
 
 		int sheetSize = sheets.length;
 
@@ -213,7 +207,6 @@ public class TableController {
 				//third dimension of valueIndex is to deal with multiple values in one cell
 				//we made colIndex key because not all colIndexes are used
 				Map<Integer,List<List<InvestigationElement>>> colValues = new LinkedHashMap<Integer,List<List<InvestigationElement>>>();
-				Map<Integer,Map<String, List<InvestigationElement>>> existingValues = new LinkedHashMap<Integer, Map<String, List<InvestigationElement>>>();
 				Map<String, Map<String, List<InvestigationElement>>> existingValuesForClassType = new LinkedHashMap<String, Map<String,List<InvestigationElement>>>();
 
 
@@ -1158,19 +1151,6 @@ public class TableController {
 		}
 		
 		return uniqueValues;
-	}
-	
-	private HashMap<String, OntologyTerm> removeOntologyTermDuplicates(List<OntologyTerm> ontologyTermList) {
-
-		HashMap<String, OntologyTerm> addedName = new HashMap<String, OntologyTerm>();
-
-		for(OntologyTerm eachElement : ontologyTermList){
-
-			if(!addedName.containsKey(eachElement.getName().toLowerCase())){
-				addedName.put(eachElement.getName().toLowerCase(), eachElement);
-			}
-		}
-		return addedName;
 	}
 
 	private HashMap<String, InvestigationElement> removeDuplicates(List<InvestigationElement> listOfObjectsToAdd) throws DatabaseException {
