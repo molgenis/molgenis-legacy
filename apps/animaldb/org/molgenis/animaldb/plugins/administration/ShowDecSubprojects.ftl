@@ -432,7 +432,7 @@
 							<td>${expl.decApplication}</td>
 							<td>${expl.experimentNr}</td>
 							<td>${expl.experimentTitle}</td>
-							<td>${expl.decSubprojectApplicationPDF}</td>
+							<td><#if expl.decSubprojectApplicationPDF??>${expl.decSubprojectApplicationPDF}</#if></td>
 							<td>${expl.concern}</td>
 							<td>${expl.goal}</td>
 							<td>${expl.specialTechn}</td>
@@ -441,7 +441,7 @@
 							<td>${expl.anaesthesia}</td>
 							<td>${expl.painManagement}</td>
 							<td>${expl.animalEndStatus}</td>
-							<td>${expl.remarks}</td>
+							<td><#if expl.remarks??>${expl.remarks}</#if></td>
 						</tr>
 						<#assign i = i + 1>
 					</#list>
