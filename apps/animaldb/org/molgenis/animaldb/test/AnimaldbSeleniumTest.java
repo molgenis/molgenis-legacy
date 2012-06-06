@@ -250,7 +250,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=animalmenu_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		//selenium.click("id=Breeding_tab_button");
-		selenium.click("id=BreedingNew_tab_button");
+		selenium.click("id=Breeding_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Parentgroups"));
 		// Add a parentgroup

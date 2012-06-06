@@ -28,18 +28,18 @@
 			<plugin name="AddAnimal" type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
 			<!-- Breeding; Goal: create and browse parentgroups + create, wean, genotype and browse litters, print cage labels; Flavor: Freemarker -->
-			<plugin name="BreedingNew" type="org.molgenis.animaldb.plugins.breeding.Breedingnew"
-				label="BreedingNew" />
-			<plugin name="Breeding" type="org.molgenis.animaldb.plugins.breeding.Breeding"
+			<plugin name="Breeding" type="org.molgenis.animaldb.plugins.breeding.Breedingnew"
 				label="Breeding" />
-			<menu name="breedingmodule" position="left" label="Breeding (old)">
+			<plugin name="BreedingOld" type="org.molgenis.animaldb.plugins.breeding.Breeding"
+				label="Breeding (Old)" />
+			 <!-- <menu name="breedingmodule" position="left" label="Breeding (old)"> -->
 				<!-- ManageParentgroups; Goal: create and browse parentgroups; Flavor: Freemarker -->
-				<plugin name="ManageParentgroups" type="org.molgenis.animaldb.plugins.breeding.ManageParentgroups"
-					label="Parentgroups" />
+				<!--<plugin name="ManageParentgroups" type="org.molgenis.animaldb.plugins.breeding.ManageParentgroups"
+					label="Parentgroups" />-->
 				<!-- ManageLitters; Goal: create, wean, genotype and browse litters, print cage labels; Flavor: Freemarker -->
-				<plugin name="ManageLitters" type="org.molgenis.animaldb.plugins.breeding.ManageLitters"
-					label="Litters" />
-			</menu>
+				<!--<plugin name="ManageLitters" type="org.molgenis.animaldb.plugins.breeding.ManageLitters"
+					label="Litters" />-->
+			<!-- </menu> -->
 			<!-- RemAnimalPluginMatrix; Goal: remove animals; Flavor: Java-only -->
 			<plugin name="RemAnimal" type="org.molgenis.animaldb.plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />
