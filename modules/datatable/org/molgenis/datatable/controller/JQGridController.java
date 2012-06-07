@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +37,6 @@ import org.molgenis.util.ZipUtils.DirectoryStructure;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
-import com.google.gson.reflect.TypeToken;
 
 public class JQGridController implements MolgenisService
 {
@@ -174,14 +172,12 @@ public class JQGridController implements MolgenisService
 			out.close();			
 		}
 	}		
-		
 
 	private enum ExportRange {
 		GRID, 
 		ALL,
 		UNKOWN
 	}
-	
 	
 	private static class JQGridResult
 	{
@@ -227,20 +223,16 @@ public class JQGridController implements MolgenisService
 			//add filter rules
 			final List<QueryRule> rules = addFilterRules(request);
 			
-			int page = 0;
-			int offset = 0;
-			int rowCount = -1;
-			int totalPages = 1;
-			
 			@SuppressWarnings("unchecked")
 			final StringMap<String> dataSource = (StringMap<String>)new Gson().fromJson(request.getString("dataSource"), Object.class);
 			final DataSourceFactory dsFactory = (DataSourceFactory) Class.forName(request.getString("dataSourceFactoryClassName")).newInstance();
 			final TupleTable tupleTable = dsFactory.createDataSource(dataSource, request.getDatabase(), rules);
+			int rowCount = -1;
 			rowCount = tupleTable.getRowCount();				
-
+			int totalPages = 1;
 			totalPages = (int) Math.ceil(rowCount / limit);
-			page = Math.min(request.getInt("page"), totalPages);
-			offset = Math.max(limit * page - limit, 0);			
+			int page = Math.min(request.getInt("page"), totalPages);
+			int offset = Math.max(limit * page - limit, 0);			
 			
 			//add query Rules
 			if(exportSelection != ExportRange.ALL) {
@@ -405,7 +397,7 @@ public class JQGridController implements MolgenisService
 		return rule;
 	}
 	
-	public String getColumnType(Field f) {
+	public String getJQGirdColumnType(Field f) {
 		final FieldTypeEnum fieldType = f.getType().getEnumType();
 		switch(fieldType) {
 			case DATE: return ",date: true";
@@ -422,13 +414,6 @@ public class JQGridController implements MolgenisService
 	private QueryRule toNotRule(QueryRule rule)
 	{
 		return new QueryRule(Operator.NOT, rule);
-	}
-
-	private Map<String, String> JsonToMap(MolgenisRequest request, String fieldName)
-	{
-		return new Gson().fromJson(request.getString(fieldName), new TypeToken<Map<String, String>>()
-		{
-		}.getType());
 	}
 
 	private void addSortRules(final String sidx, final String sord, final List<QueryRule> rules)
