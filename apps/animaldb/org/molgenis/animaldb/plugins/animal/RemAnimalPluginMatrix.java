@@ -207,6 +207,9 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Location");
 				measurementsToShow.add("Experiment");
+				measurementsToShow.add("Sex");
+				measurementsToShow.add("Species");
+				measurementsToShow.add("Line");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));
