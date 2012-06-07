@@ -23,7 +23,6 @@ public class JQGridPlugin extends GenericPlugin
 {
 	private static final long serialVersionUID = 8804579908239186037L;
 	private Container container = null;
-	private DivPanel div = null;
 	private JQGridView gridView;
 	
 	public JQGridPlugin(String name, ScreenController<?> parent)
@@ -39,16 +38,13 @@ public class JQGridPlugin extends GenericPlugin
 		{
 			//strange way to retrieve columns!
 			final JdbcTable jdbcTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country LIMIT 0", Collections.<QueryRule>emptyList());
-			gridView = new JQGridView("jqGridId", new JQGridController.JDBCDataSourceDescription("Country", jdbcTable.getColumns()));
+			gridView = new JQGridView("myGrid", new JQGridController.JDBCDataSourceDescription("Country", jdbcTable.getColumns()));
+			container.add(gridView);
 		}
 		catch (Exception e)
 		{
 			throw new RuntimeException(e);
 		}
-		container = new Container();
-		div = new DivPanel();
-		container.add(div);
-		div.add(gridView);
     }
 	
 	public ScreenView getView()
@@ -57,6 +53,6 @@ public class JQGridPlugin extends GenericPlugin
     }
 
 	public String render() {
-		return container.render();
+		return gridView.render();
 	}
 }
