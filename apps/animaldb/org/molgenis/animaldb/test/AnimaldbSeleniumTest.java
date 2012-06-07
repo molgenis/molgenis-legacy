@@ -140,18 +140,23 @@ public class AnimaldbSeleniumTest
 		sleepHelper("loginAdmin");
 	}
 	
-	//TODO !!
-//	@Test(dependsOnMethods =
-//	{ "returnHome" })
-//	public void fileStoragePlugin() throws Exception
-//	{
-//		clickAndWait("id=Admin_tab_button");
-//		clickAndWait("id=FileStorage_tab_button");
-//		Assert.assertTrue(selenium.isTextPresent("File storage property status:"));
-//		Assert.assertTrue(selenium.isTextPresent("Properties are set"));
-//		clickAndWait("id=filestorage_setpath");
-//		Assert.assertTrue(selenium.isTextPresent("Could not set file storage: Properties already present. Please delete first."));
-//	}
+	@Test (dependsOnMethods={"loginAdmin"})
+	public void testFilestorageSettings() throws Exception {
+		selenium.click("id=Admin_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=systemmenu_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.click("id=FileStorage_tab_button");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		Assert.assertTrue(selenium.isTextPresent("File storage property status:"));
+		selenium.type("id=inputBox", "/tmp");
+		selenium.click("id=filestorage_setpath");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		//Assert.assertTrue(selenium.isTextPresent("Could not set file storage: Properties already present. Please delete first."));
+		selenium.click("//input[@value='Validate']");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		Assert.assertTrue(selenium.isTextPresent("Validation status: VALIDATED"));
+	}
 	
 	@Test(dependsOnMethods={"loginAdmin"})
 	public void makeUser() throws InterruptedException
@@ -383,7 +388,7 @@ public class AnimaldbSeleniumTest
 	
 	@Test(dependsOnMethods={"breedingWorkflow"})
 	public void decWorkflow() throws Exception {
-		/**
+		
 		Calendar calendar = Calendar.getInstance();
 		//String[] months = new String[] {"January", "February", "March", "April", "May", "June",
 		//								"July", "August", "September", "October", "November", "December"};
@@ -394,21 +399,46 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("DEC applications"));
 		// Make a DEC project
-		selenium.click("id=add_decproject");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.type("id=dectitle", "MyDEC");
-		selenium.type("id=decnumber", "12345");
-		//pretend like these are PDFs...
-		selenium.type("id=decapppdf", "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip");
-		selenium.type("id=decapprovalpdf", "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip");
-		int thisYear = calendar.get(Calendar.YEAR);
-		selenium.type("id=startdate", thisYear + "-01-01");
-		selenium.type("id=enddate", thisYear + "-12-31");
-		selenium.type("id=decbudget", "20");
-		selenium.click("id=addproject");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("DEC project successfully added"));
-		Assert.assertTrue(selenium.isTextPresent("MyDEC"));
+		boolean keepTrying = true;
+		int test = 0; //Check if we are on ate's laptop";
+		//String pdfFileName = "/Users/roankanninga/Work/AnimalDB/PrefillAnimalDB_2012-05-16.zip";
+		String pdfFileName = "/home/paraiko/Projects/AnimalDB/prefill data/PrefillAnimalDB_2012-05-16.zip";
+		while(keepTrying){
+			// first check if we are running a local tests, otherwise asume we are on hudson, if not, fail horribly.:
+			selenium.click("id=add_decproject");
+			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+			selenium.type("id=dectitle", "MyDEC");
+			selenium.type("id=decnumber", "12345");
+			//pretend like these are PDFs...
+			selenium.type("id=decapppdf", pdfFileName);
+			selenium.type("id=decapprovalpdf", pdfFileName);
+			int thisYear = calendar.get(Calendar.YEAR);
+			selenium.type("id=startdate", thisYear + "-01-01");
+			selenium.type("id=enddate", thisYear + "-12-31");
+			selenium.type("id=decbudget", "20");
+			selenium.click("id=addproject");
+			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+			
+			if (!selenium.isTextPresent(("DEC project successfully added"))) {
+				switch(test) {
+					case 0:
+						pdfFileName = "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip";
+						test = 1; // Check if we are on hudson
+						break;
+					case 1:
+						//pdfFileName = "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip";
+						test = 2; // Check if we are on hudson
+						break;
+										
+				}
+			}else {
+				Assert.assertTrue(selenium.isTextPresent("DEC project successfully added"));
+				Assert.assertTrue(selenium.isTextPresent("MyDEC"));
+				keepTrying = false;
+			}
+		}
+		
+		
 		// Go to DEC subproject plugin
 		selenium.click("id=AddSubproject_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -420,6 +450,7 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=expnumber", "A");
 		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		//int thisMonth = calendar.get(Calendar.MONTH);
+		int thisYear = calendar.get(Calendar.YEAR);
 		selenium.type("id=startdate", thisYear + "-01-01");
 		selenium.type("id=enddate", thisYear + "-02-01");
 		selenium.type("id=decsubprojectbudget", "10");
@@ -464,7 +495,7 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[8]"), "2");
 		
 		sleepHelper("decWorkflow");
-		*/
+		
 	}
 	
 	@Test(dependsOnMethods={"decWorkflow"})
