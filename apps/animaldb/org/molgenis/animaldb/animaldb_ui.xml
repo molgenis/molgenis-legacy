@@ -157,11 +157,15 @@
 					<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
 					<form name="prefix" entity="NamePrefix" view="list" label="Name prefixes" />
 					<form name="news" entity="MolgenisNews" view="list" label="Frontpage items" />
+					<form name="files" entity="AnimalDbFile" view="list" label="Files">
+						<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager" />
+					</form>
 				</menu>
 				<menu name="deltablemenu" position="left" label="Deletion tables">
 					<form name="delindividual" entity="DeletedIndividual" view="list" label="Individuals" />
 					<form name="delobservedvalue" entity="DeletedObservedValue" view="list" label="Values" />
 				</menu>
+				<plugin label="File storage" name="FileStorage" type="org.molgenis.animaldb.plugins.viewers.AnimalDbFileViewer" />
 			</menu>
 		</menu>
 
