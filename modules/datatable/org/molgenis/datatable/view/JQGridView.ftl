@@ -135,7 +135,7 @@ $(document).ready(function() {
     var myColModel = 
         [
             <#list columns as col>	
-            {name:'${col.name}',index:'${col.name}', width:150, searchrules:{required:${(!col.nillable)?string}${col.columnType}}}<#if col_has_next>,</#if>
+            {name:'${col.name}',index:'${col.name}', width:150, searchrules:{required:${(!col.nillable)?string}}}<#if col_has_next>,</#if>
             </#list>
         ];
     var myColNames = [
@@ -147,12 +147,14 @@ $(document).ready(function() {
 	var mySortColumn = '${sortName}';
 	
     var myGrid = JQGridView.init(
-    	{	backendUrl : "${backendUrl}",     
+    	{	
+    		backendUrl : "${backendUrl}",     
     		dataSourceFactoryClassName: "${dataSourceFactoryClassName}",   
     		viewFactoryClassName: "${viewFactoryClassName}",
     		dataSource: myDataSource, 
     		tableSelector : "#${tableId}", 
-    		colModel: myColModel, colNames: myColNames, sortColumn: mySortColumn});
+    		colModel: myColModel, colNames: myColNames, sortColumn: mySortColumn
+		});
     $("#exportCsv").click(function() {
         $( "#dialog-form" ).dialog( "open" );    	
     });
