@@ -1,9 +1,9 @@
 package org.molgenis.datatable.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -14,16 +14,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.datatable.DataSourceFactory.DataSourceFactory;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.datatable.view.CsvExporter;
 import org.molgenis.datatable.view.ExcelExporter;
-import org.molgenis.datatable.view.JQGridColumn;
 import org.molgenis.datatable.view.SPSSExporter;
 import org.molgenis.datatable.view.ViewFactory;
 import org.molgenis.framework.db.DatabaseException;
@@ -35,6 +33,8 @@ import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.ZipUtils;
+import org.molgenis.util.ZipUtils.DirectoryStructure;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
@@ -44,13 +44,11 @@ public class JQGridController implements MolgenisService
 {
 	public static abstract class DataSourceDescription {
 		private final String type;
-		private final List<JQGridColumn> columns = new ArrayList<JQGridColumn>();
+		private final List<Field> columns;
 		
 		protected DataSourceDescription(String type, List<Field> columns) {
 			this.type = type;
-			for(Field field : columns) {
-				this.columns.add(new JQGridColumn(field));
-			}
+			this.columns = columns;
 		}
 		
 		public String toJson() {
@@ -62,7 +60,7 @@ public class JQGridController implements MolgenisService
 			return type;
 		}
 
-		public List<JQGridColumn> getColumns()
+		public List<Field> getColumns()
 		{
 			return columns;
 		}
@@ -110,15 +108,12 @@ public class JQGridController implements MolgenisService
 	public static class JQGridView implements View {
 		@Override
 		public void export(HttpServletResponse response, String fileName, JQGridController controller, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
-			
 			final JQGridResult result = JQGridController.buildJQGridResults(tupleTable.getRowCount(), totalPages, currentPage, tupleTable);
 			final PrintWriter pout = new PrintWriter(response.getOutputStream());
 			pout.print(new Gson().toJson(result));
 			pout.close();
 		}		
 	}
-	
-	
 
 	public static class ExcelView implements View {
 		@Override
@@ -141,25 +136,42 @@ public class JQGridController implements MolgenisService
 	public static class SPSSView implements View {
 		@Override
 		public void export(HttpServletResponse response, String fileName, JQGridController controller, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
-			//ViewHelper.setHeader(response, "application/ms-excel", fileName + ".xlsx");
+
 			try {
-				File tempDir = (File)controller.context.getServletContext().getAttribute( "javax.servlet.context.tempdir" );
+				final File tempDir = (File)controller.context.getServletContext().getAttribute( "javax.servlet.context.tempdir" );
 				// create a temporary file in that directory
-				File spssFile = File.createTempFile( "spssExport", ".sps", tempDir );
-				File spssCsvFile = File.createTempFile( "csvSpssExport", ".csv", tempDir );
+				final File spssFile = File.createTempFile( "spssExport", ".sps", tempDir );
+				final File spssCsvFile = File.createTempFile( "csvSpssExport", ".csv", tempDir );
+				final File zipExport = File.createTempFile( "spssExport", ".zip", tempDir );
 				
-				FileOutputStream spssFileStream = new FileOutputStream(spssFile);
-				FileOutputStream spssCsvFileStream = new FileOutputStream(spssCsvFile);
+				final FileOutputStream spssFileStream = new FileOutputStream(spssFile);
+				final FileOutputStream spssCsvFileStream = new FileOutputStream(spssCsvFile);
 				final SPSSExporter spssExporter = new SPSSExporter(tupleTable);
 				spssExporter.export(spssCsvFileStream, spssFileStream, spssCsvFile.getName());
+				
 				spssCsvFileStream.close();
 				spssFileStream.close();
-				
-				System.out.println(spssFile.getAbsolutePath());
-				System.out.println(spssCsvFile.getAbsolutePath());
+				ZipUtils.compress(Arrays.asList(spssFile, spssCsvFile), zipExport, DirectoryStructure.EXCLUDE_DIR);
+				ViewHelper.setHeader(response, "application/octet-stream", fileName + ".zip");
+				exportFile(zipExport, response);
 			} catch (Exception e) {
 				throw new TableException(e);
 			}		
+		}
+		
+		private void exportFile(File file, HttpServletResponse response) throws IOException {
+			FileInputStream fileIn = new FileInputStream(file);
+			ServletOutputStream out = response.getOutputStream();
+			 
+			byte[] outputByte = new byte[4096];
+			//copy binary contect to output stream
+			while(fileIn.read(outputByte, 0, 4096) != -1)
+			{
+				out.write(outputByte, 0, 4096);
+			}
+			fileIn.close();
+			out.flush();
+			out.close();			
 		}
 	}		
 		
@@ -391,6 +403,20 @@ public class JQGridController implements MolgenisService
 			throw new IllegalArgumentException(String.format("Unkown Operator: %s", op));
 		}
 		return rule;
+	}
+	
+	public String getColumnType(Field f) {
+		final FieldTypeEnum fieldType = f.getType().getEnumType();
+		switch(fieldType) {
+			case DATE: return ",date: true";
+			case DATE_TIME: return ",date: true, time: true";
+			case DECIMAL: return ",number: 'true'";
+			//case ENUM: return "";
+			case INT: return ",integer: 'true'";
+			case LONG: return ",integer: 'true'";
+			default:
+				return ""; //handle as text
+		}
 	}
 
 	private QueryRule toNotRule(QueryRule rule)
