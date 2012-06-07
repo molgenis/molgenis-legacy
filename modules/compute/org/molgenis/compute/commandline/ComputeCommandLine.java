@@ -143,20 +143,20 @@ public class ComputeCommandLine {
 				// This you can find out on the cluster
 				Integer cores = (protocol.getCores() == null ? Integer.parseInt(worksheet.getdefaultvalue("cores")) : protocol.getCores());
 				String mem = (protocol.getMem() == null ? worksheet.getdefaultvalue("mem").toString() : protocol.getMem().toString());
-				int m = Integer.parseInt(mem); // memory in GB?
-				queue = (4 < m && 2 < cores ? "quads" : "nodes");
+				//int m = Integer.parseInt(mem); // memory in GB?
+				//queue = (4 < m && 2 < cores ? "quads" : "nodes");
 
-				int wt_h = Integer.parseInt(walltime.substring(0, 2));
-				int wt_m = Integer.parseInt(walltime.substring(3, 5));
-				int wt_s = Integer.parseInt(walltime.substring(6, 8));
-				if (lessOrEqualThan(24, wt_h, wt_m, wt_s)) {
+				//int wt_h = Integer.parseInt(walltime.substring(0, 2));
+				//int wt_m = Integer.parseInt(walltime.substring(3, 5));
+				//int wt_s = Integer.parseInt(walltime.substring(6, 8));
+				//if (lessOrEqualThan(24, wt_h, wt_m, wt_s)) {
 					// done
-				} else if (lessOrEqualThan(72, wt_h, wt_m, wt_s)) {
-					queue = queue + "medium";
-				} else if (lessOrEqualThan(240, wt_h, wt_m, wt_s)) {
-					queue = queue + "long";
-				} else
-					throw new Exception("Walltime too large: " + walltime + ". Maximum is 240h.");
+				//} else if (lessOrEqualThan(72, wt_h, wt_m, wt_s)) {
+					//queue = queue + "medium";
+				//} else if (lessOrEqualThan(240, wt_h, wt_m, wt_s)) {
+					//queue = queue + "long";
+				//} else
+					//throw new Exception("Walltime too large: " + walltime + ". Maximum is 240h.");
 
 				work.set("clusterQueue", queue);
 				work.set("cores", cores);
