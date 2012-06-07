@@ -14,7 +14,6 @@ import org.molgenis.datatable.controller.JQGridController.JQGridResult;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.ExcelExporter;
-import org.molgenis.datatable.view.Exporter;
 import org.molgenis.datatable.view.SPSSExporter;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.ZipUtils;
@@ -24,12 +23,11 @@ import com.google.gson.Gson;
 
 /**
  * Class containing a series of simple renderers to do the administrative busywork required to render from a particular
- * {@link TupleTable} to a particular view (current options are an {@link Exporter} or a {@link HtmlWidget}. See the 
+ * {@link TupleTable} to a particular view (current options are an {@link AbstractExporter} or a {@link HtmlWidget}. See the 
  * org.molgenis.modules.datatable.view package.
  */
 public class Renderers {
 
-	
 	public static class HeaderHelper {
 		public static void setHeader(HttpServletResponse response, String contentType, String fileName) {
 			response.setContentType(contentType);

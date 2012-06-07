@@ -11,11 +11,9 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.ui.GenericPlugin;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
-import org.molgenis.util.Tuple;
 
 
 /**
@@ -34,27 +32,12 @@ public class JQGridPlugin extends GenericPlugin
 	}
 
 	@Override
-	public void handleRequest(Database db, Tuple request)
-	{
-		System.out.println(this);
-		final String action = request.getAction();
-		System.out.println("test!");
-		try {
-
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
-		}
-	}
-
-	@Override
 	public void reload(Database db)
 	{
 		
 		try
 		{
-			//starnge way to retrieve columns!
+			//strange way to retrieve columns!
 			final JdbcTable jdbcTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country LIMIT 0", Collections.<QueryRule>emptyList());
 			gridView = new JQGridView("jqGridId", new JQGridController.JDBCDataSourceDescription("Country", jdbcTable.getColumns()));
 		}

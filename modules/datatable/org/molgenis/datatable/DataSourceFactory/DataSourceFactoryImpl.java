@@ -14,8 +14,12 @@ import org.molgenis.framework.db.QueryRule;
 
 import com.google.gson.internal.StringMap;
 
+/**
+ * General implementation of {@link DataSourceFactory} for several types of data source.
+ * Wraps a particular type of datasource in the appropriate implementation of {@link TupleTable}.
+ */
 public class DataSourceFactoryImpl implements DataSourceFactory {
-	private final static String SQL_START = "SELECT %1$s FROM %2$s ";
+	private final static String SQL_SELECT_START = "SELECT %1$s FROM %2$s ";
 	
 	public TupleTable createDataSource(StringMap<?> dataSource, Database db, List<QueryRule> rules) throws Exception {
 		final String type = (String) dataSource.get("type");
@@ -23,7 +27,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
 			final String fromExpression = (String) dataSource.get("fromExpression");
 						
 			final List<String> columnNames = getColumnNames(dataSource);				
-			final String sqlSelect = String.format(SQL_START, StringUtils.join(columnNames, ","), fromExpression);
+			final String sqlSelect = String.format(SQL_SELECT_START, StringUtils.join(columnNames, ","), fromExpression);
 			return new JdbcTable(db, sqlSelect, rules);
 		} else if(type.equals("csv")) {
 			final String csvUri = (String) dataSource.get("uri");
@@ -32,13 +36,17 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
 		return null;
 	}
 
+	/**
+	 * Gets the column names from a particular datasource, represented by a Gson StringMap.
+	 * @param dataSource	The data source.
+	 * @return	A list of strings, containing the column names.
+	 */
 	private List<String> getColumnNames(StringMap<?> dataSource)
 	{
 		final List<String> columnNames = new ArrayList<String>();
 		final ArrayList<?> columns = (ArrayList<?>) dataSource.get("columns");
 		CollectionUtils.forAllDo(columns, new Closure()
 		{					
-			@Override
 			public void execute(Object arg0)
 			{	
 				final String name = (String) ((StringMap<?>)arg0).get("name");
