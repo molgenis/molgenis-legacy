@@ -26,8 +26,8 @@
 			<div class="screenpadding">	
 				
 				  <#if screen.getUsersSelections()??>
-				   <div id="ShoppingCartLabel"> ${screen.getChoiceLabel()}</div>
-							<table id="oldDownloads">
+				   <div> ${screen.getChoiceLabel()}</div>
+							<table border="1">
 								<tr>
 									<th></th>
 									<th>Name</th>
@@ -38,13 +38,13 @@
 								<tr>
 								<#list screen.getUsersSelections() as eachDownload>
 										<tr class="alt">
-											<td>  <input class="editSelection" type="submit" id="editSelection" name="editSelection" value="edit selection" onclick="__action.value='editSelection';" 					style="color: #000; background: #8EC7DE;
+											<td>  <!--input class="editSelection" type="submit" id="editSelection" name="editSelection" value="edit selection" onclick="__action.value='editSelection';" 					style="color: #000; background: #8EC7DE;
 										   border: 2px outset #d7b9c9;
 										   font-size:15px;
 										   font-weight:bold;
-										   "/>
+										   "/--->
 										   
-										   <a href="molgenis.do?__target=main&select=CatalogueTreePlugin?measurementId=${eachDownload.getId()}"> Load </a>
+										   <a href="molgenis.do?__target=main&select=CatalogueTreePlugin&measurementId=${eachDownload.getId()}"> Load </a>
 											 
 											</td>
 											<td>  ${eachDownload.getName()}</td>

@@ -103,18 +103,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
-		
-		
-//			if ("chooseInvestigation".equals(request.getAction())) {
-//				selectedInvestigation = request.getString("investigation");
-//				this.setSelectedInvestigation(selectedInvestigation);
-//				System.out.println("The selected investigation is : "
-//						+ selectedInvestigation);
-//				arrayInvestigations.clear();
-//				this.SearchFilters.clear();
-
-
-			 //for now the cohorts are investigations so teh selected cohort is the selected investigation 
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
+		//for now the cohorts are investigations 
 			if ("cohortSelect".equals(request.getAction())) {
 				System.out.println("----------------------"+request);
 				selectedInvestigation = request.getString("cohortSelectSubmit");
@@ -233,8 +223,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					this.setStatus("<h4> Empty search string" + "</h4>" ) ;
 
 				}
-			} else if (request.getAction().startsWith("removeFilters")) {
-				System.out.println("-------------------removeFilters reached-----------------------");
+			} else if (request.getString("measurementId") != null) {
+				System.out.println("-request.getString(measurementId-----------" +  request.getString("measurementId"));
 				
 			}
 
@@ -246,7 +236,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	
 	@Override
 	public void reload(Database db) {
-
+		
+		System.out.println("-------------In reload---------------------" + this.getApplicationUrl());
+		
+		
+//		if (this.request!=null && this.request.getString("measurementId") != null) {
+//			System.out.println("-request.getString(measurementId-----------" +  request.getString("measurementId"));
+//		}
 		// default set selected investigation to first
 		if (this.getSelectedInvestigation() == null) {
 			try {

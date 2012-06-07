@@ -1,24 +1,18 @@
 package org.molgenis.catalogue;
 
 
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.log4j.PropertyConfigurator;
+
 import org.molgenis.Molgenis;
 import org.molgenis.auth.MolgenisGroup;
 import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.auth.MolgenisRoleGroupLink;
 import org.molgenis.auth.MolgenisUser;
-import org.molgenis.auth.Person;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.security.SimpleLogin;
-import org.molgenis.pheno.Measurement;
 
 import app.DatabaseFactory;
-import app.FillMetadata;
 
 
 public class catalogueUpdateDatabase
@@ -68,17 +62,26 @@ public class catalogueUpdateDatabase
 		db.add(mrgl);
 		
 		//TODO: add anonymous user in Simple users 
-		mrgl = new MolgenisRoleGroupLink();
-		mrgl = db.find(MolgenisRoleGroupLink.class, new QueryRule(MolgenisRoleGroupLink.ROLE__NAME, Operator.EQUALS, "anonymous")).get(0);
-		mrgl.setGroup_Name("SimpleUsers");
-		System.out.println(mrgl);
-		db.update(mrgl);
+		MolgenisRoleGroupLink mrgl2 = db.query(MolgenisRoleGroupLink.class).eq(MolgenisRoleGroupLink.ROLE__NAME, "anonymous").find().get(0);
+		mrgl2.setGroup_Name("SimpleUsers");
+		System.out.println(mrgl2);
+		db.update(mrgl2);
 		
+	
 		
-		//Now set permission for the demo account 
+//		//Now set permission for the demo account 
+//		for (int i=2; i<95; i++) {
+//			MolgenisPermission mp = new MolgenisPermission();
+//			mp.setRole_Name("SimpleUsers");
+//			mp.setEntity_Id(i);
+//			mp.setPermission("own");
+//			db.add(mp);
+//			System.out.println("Inserting molgenis permisssion for :" + i);
+//		}
+		
 		for (int i=2; i<95; i++) {
 			MolgenisPermission mp = new MolgenisPermission();
-			mp.setRole_Name("SimpleUsers");
+			mp.setRole_Name("AllUsers");
 			mp.setEntity_Id(i);
 			mp.setPermission("own");
 			db.add(mp);
