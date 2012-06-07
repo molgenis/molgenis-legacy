@@ -61,4 +61,10 @@ public class MemoryTable implements TupleTable
 		
 	}
 
+	@Override
+	public int getRowCount() throws TableException
+	{
+		return rows.size();
+	}
+
 }

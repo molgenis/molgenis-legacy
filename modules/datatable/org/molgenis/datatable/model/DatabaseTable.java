@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
@@ -93,6 +94,19 @@ public class DatabaseTable implements TupleTable
 	@Override
 	public void close() throws TableException
 	{
+	}
+
+	@Override
+	public int getRowCount() throws TableException
+	{
+		try
+		{
+			return db.find(entityClass).size();
+		}
+		catch (DatabaseException e)
+		{
+			throw new TableException(e);
+		}
 	}
 
 }

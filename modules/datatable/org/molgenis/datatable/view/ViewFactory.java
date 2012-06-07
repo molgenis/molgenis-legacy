@@ -1,7 +1,7 @@
 package org.molgenis.datatable.view;
 
-import org.molgenis.datatable.controller.JQGridController.View;
+import org.molgenis.datatable.controller.Renderers.Renderer;
 
 public interface ViewFactory {
-	public View createView(String viewName);
+	public Renderer createView(String viewName);
 }

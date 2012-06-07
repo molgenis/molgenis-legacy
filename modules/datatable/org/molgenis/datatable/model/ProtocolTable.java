@@ -86,4 +86,11 @@ public class ProtocolTable implements TupleTable
 		// TODO Auto-generated method stub
 	}
 
+	@Override
+	public int getRowCount() throws TableException
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

@@ -13,7 +13,7 @@ public class TestJqGridView
 	{
 		TupleTable table = MemoryTableFactory.create();
 		
-		JQGridView view = new JQGridView("test", table);
+		JQGridView view = null; // new JQGridView("test", table);
 
 		String html = view.render();
 		
