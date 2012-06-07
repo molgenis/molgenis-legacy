@@ -101,7 +101,7 @@ public class JQGridController implements MolgenisService
 			return csvUri;
 		}				
 	}	
-		
+	
 	/**
 	 * The options for export ranges:
 	 *<ul>
@@ -110,12 +110,14 @@ public class JQGridController implements MolgenisService
 	 * <li>UNKNOWN	: unknown.</li>
 	 * </ul>
 	 */
+
 	private enum ExportRange {
 		GRID, 
 		ALL,
 		UNKOWN
 	}
 	
+
 	/**
 	 * Class wrapping the results of a jqGrid query. To be serialized by Gson, hence no accessors necessary for private datamembers.
 	 */
@@ -173,20 +175,16 @@ public class JQGridController implements MolgenisService
 			//add filter rules
 			final List<QueryRule> rules = addFilterRules(request);
 			
-			int page = 0;
-			int offset = 0;
-			int rowCount = -1;
-			int totalPages = 1;
-			
 			@SuppressWarnings("unchecked")
 			final StringMap<String> dataSource = (StringMap<String>)new Gson().fromJson(request.getString("dataSource"), Object.class);
 			final DataSourceFactory dsFactory = (DataSourceFactory) Class.forName(request.getString("dataSourceFactoryClassName")).newInstance();
 			final TupleTable tupleTable = dsFactory.createDataSource(dataSource, request.getDatabase(), rules);
+			int rowCount = -1;
 			rowCount = tupleTable.getRowCount();				
-
+			int totalPages = 1;
 			totalPages = (int) Math.ceil(rowCount / limit);
-			page = Math.min(request.getInt("page"), totalPages);
-			offset = Math.max(limit * page - limit, 0);			
+			int page = Math.min(request.getInt("page"), totalPages);
+			int offset = Math.max(limit * page - limit, 0);			
 			
 			//add query Rules
 			if(exportSelection != ExportRange.ALL) {
@@ -390,7 +388,7 @@ public class JQGridController implements MolgenisService
 	 * @param f The field to convert
 	 * @return A string representing the field's type in jquery syntax.
 	 */
-	public String getColumnType(Field f) {
+	public String getJQGirdColumnType(Field f) {
 		final FieldTypeEnum fieldType = f.getType().getEnumType();
 		switch(fieldType) {
 			case DATE: return ",date: true";

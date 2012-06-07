@@ -32,8 +32,7 @@ public class JQGridPlugin extends GenericPlugin
 
 	@Override
 	public void reload(Database db)
-	{
-		
+	{	
 		try
 		{
 			//strange way to retrieve columns!

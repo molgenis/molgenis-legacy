@@ -9,6 +9,11 @@
 <link rel="stylesheet" type="text/css" media="screen" href="jquery/development-bundle/themes/smoothness/jquery-ui-1.8.7.custom.css">
 <link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.jqgrid.css">
 <link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.multiselect.css">
+
+<link href="dynatree-1.2.0/src/skin/ui.dynatree.css" rel="stylesheet" type="text/css" id="skinSheet">
+<script src="dynatree-1.2.0/src/jquery.dynatree.js" type="text/javascript"></script>
+
+
 <script type="text/javascript">
 //TODO: place in JS file after dev!
 var JQGridView = {
@@ -29,7 +34,7 @@ var JQGridView = {
     	this.backendUrl = config.backendUrl;
         this.tableSelector = config.tableSelector;
         this.colModel = config.colModel;
-        this.colNames = config.colNames;
+        this.colNames = this.getColumnNames(this.colModel);
         this.dataSource = config.dataSource;
         this.dataSourceFactoryClassName = config.dataSourceFactoryClassName;
         this.viewFactoryClassName = config.viewFactoryClassName;
@@ -51,10 +56,20 @@ var JQGridView = {
         
         this.grid = this.createJQGrid();
         this.createDialog();
+        
+        return JQGridView;
     },
     
     getGrid: function() {
     	return $(this.tableSelector);
+    },
+    
+    changeColumns: function(columnModel) {
+    	var self = JQGridView;
+    	this.colModel = columnModel;
+    	self.colNames = this.getColumnNames(columnModel);
+    	$(this.tableSelector).jqGrid('GridUnload');
+    	this.createJQGrid();
     },
     
     createJQGrid : function() {
@@ -91,6 +106,14 @@ var JQGridView = {
         );
         return grid;
 	},
+    
+    getColumnNames : function(colModel) {
+    	result = new Array();
+    	$.each(colModel, function(index, value) {
+    		result.push(value.name);
+    	});
+    	return result;
+    },
     
     createDialog : function() {
     	var self = JQGridView;
@@ -132,49 +155,108 @@ var JQGridView = {
 }
 
 $(document).ready(function() {
-    var myColModel = 
+	var $self = this;
+    this.myColModel = 
         [
             <#list columns as col>	
-            {name:'${col.name}',index:'${col.name}', width:150, searchrules:{required:${(!col.nillable)?string}}}<#if col_has_next>,</#if>
+            {title:'${col.name}', key:'${col.name}', name:'${col.name}',index:'${col.name}', width:150, searchrules:{required:${(!col.nillable)?string}}, table:'Country'}<#if col_has_next>,</#if>
             </#list>
         ];
-    var myColNames = [
-            <#list columns as col>
-            '${col.name}'<#if col_has_next>,</#if>
-            </#list> 
-        ];		   		
-	var myDataSource = ${dataSource};
-	var mySortColumn = '${sortName}';
+   
+	this.myDataSource = ${dataSource};
+	this.mySortColumn = '${sortName}';
 	
-    var myGrid = JQGridView.init(
+    this.myGrid = JQGridView.init(
     	{	
     		backendUrl : "${backendUrl}",     
     		dataSourceFactoryClassName: "${dataSourceFactoryClassName}",   
     		viewFactoryClassName: "${viewFactoryClassName}",
-    		dataSource: myDataSource, 
+    		dataSource: this.myDataSource, 
     		tableSelector : "#${tableId}", 
-    		colModel: myColModel, colNames: myColNames, sortColumn: mySortColumn
+    		colModel: this.myColModel, sortColumn: this.mySortColumn
 		});
-    $("#exportCsv").click(function() {
+    $("#exportButton").click(function() {
         $( "#dialog-form" ).dialog( "open" );    	
     });
+    
+    $("#testChangeColumns").click(function() {
+    	$self.myColModel.pop();
+    	$self.myGrid.changeColumns($self.myColModel);	
+	});
+	
+	$("#tree3").dynatree({
+      checkbox: true,
+      selectMode: 3,
+      children: this.myColModel,
+      onSelect: function(select, node) {
+        // Get a list of all selected nodes, and convert to a key array:
+        
+        var colModel = new Array();        
+        var selectedColumns = node.tree.getSelectedNodes();
+        for(i = 0; i < selectedColumns.length; ++i) {
+        	var x = selectedColumns[i].data;
+        	colModel.push(x);
+        }
+        $self.myGrid.changeColumns(colModel);        
+        
+        var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
+          return node.data;
+        });
+        $("#echoSelection3").text(selKeys.join(", "));
+
+        // Get a list of all selected TOP nodes
+        var selRootNodes = node.tree.getSelectedNodes(true);
+        // ... and convert to a key array:
+        var selRootKeys = $.map(selRootNodes, function(node){
+          return node.data.key;
+        });
+        $("#echoSelectionRootKeys3").text(selRootKeys.join(", "));
+        $("#echoSelectionRoots3").text(selRootNodes.join(", "));
+      },
+      onDblClick: function(node, event) {
+        node.toggleSelect();
+      },
+      onKeydown: function(node, event) {
+        if( event.which == 32 ) {
+          node.toggleSelect();
+          return false;
+        }
+      },
+      // The following options are only required, if we have more than one tree on one page:
+//        initId: "treeData",
+      cookieId: "dynatree-Cb3",
+      idPrefix: "dynatree-Cb3-"
+    });
+	
+	
 });
 
 </script>
 
-<table id="${tableId}"></table>
-<div id="${tableId}Pager"></div>
-<input id="exportCsv" type="button" value="export data"/>
-<div id="dialog-form" title="Export data">
-	<form>
-	<fieldset>
-            <label >File type</label><br>
-            <input type="radio" name="viewType" value="EXCEL" checked>Excel<br>
-            <input type="radio" name="viewType" value="SPSS">Spss<br> 
-            <input type="radio" name="viewType" value="CSV">Csv<br> 
-            <label>Export option</label><br>
-            <input type="radio" name="exportSelection" value="ALL" checked>All<br>
-            <input type="radio" name="exportSelection" value="GRID">Grid<br> 
-	</fieldset>
-	</form>
+<div id="treeBox">
+  <div id="tree3"></div>
 </div>
+
+<div id="gridBox">
+	<table id="${tableId}"></table>
+	<div id="${tableId}Pager"></div>
+	<input id="exportButton" type="button" value="export data"/>
+	<div id="dialog-form" title="Export data">
+		<form>
+		<fieldset>
+	            <label >File type</label><br>
+	            <input type="radio" name="viewType" value="EXCEL" checked>Excel<br>
+	            <input type="radio" name="viewType" value="SPSS">Spss<br> 
+	            <input type="radio" name="viewType" value="CSV">Csv<br> 
+	            <label>Export option</label><br>
+	            <input type="radio" name="exportSelection" value="ALL" checked>All<br>
+	            <input type="radio" name="exportSelection" value="GRID">Grid<br> 
+		</fieldset>
+		</form>
+	</div>
+</div>
+<!--
+  <div>Selected keys: <span id="echoSelection3">-</span></div>
+  <div>Selected root keys: <span id="echoSelectionRootKeys3">-</span></div>
+  <div>Selected root nodes: <span id="echoSelectionRoots3">-</span></div>
+-->

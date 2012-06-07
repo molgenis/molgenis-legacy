@@ -205,5 +205,4 @@ public class JdbcTable implements TupleTable
 			throw new TableException(ex);
 		}
 	}
-
 }
