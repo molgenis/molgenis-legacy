@@ -1,5 +1,5 @@
 Name,defaultValue,description,dataType,hasOne_name
-clusterQueue,nodes,,,
+clusterQueue,umcg,,,
 mem,4,Memory in GB,,
 walltime,23:59:00,,,
 cores,1,,,
