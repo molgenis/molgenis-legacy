@@ -37,7 +37,7 @@ allRawNgsDataDir,${datadir}/rawdata/ngs/,"Contains all rawdata (i.e., *.fq files
 allRunDemultiplexDir,${datadir}/runs/,Demultiplex historical data specific runs directory,string,
 runPrefix,${sequencingStartDate}_${sequencer}_${run}_${flowcell},,string,
 runJobsDir,${allRunDemultiplexDir}/${runPrefix}/jobs/,Run specific job scripts directory,string,
-runIntermediateDir,${allRunDemultiplexDir}/${runPrefix}/intermediate/,Store demultiplexed results here,string,
+runResultsDir,${allRunDemultiplexDir}/${runPrefix}/results/,Store demultiplexed results here,string,
 rawdatadir,${allRawNgsDataDir}/${runPrefix},"contains rawdata (i.e., *.fq files)",string,
 arraydir,${datadir}/rawdata/array,,,
 fileprefix,${sequencingStartDate}_${sequencer}_${run}_${flowcell}_L${lane},first part of file name,string,
@@ -57,8 +57,8 @@ projectResultsDir,${projectdir}/results/,Store final results here; a sub set of 
 project,,,,"contact,allRawNgsDataDir"
 sequencingStartDate,,,,
 sequencer,,,,
-run,,,,"sequencer,sequencingStartDate,runJobsDir,runIntermediateDir"
-flowcell,,,,"run,runJobsDir,runIntermediateDir"
+run,,,,"sequencer,sequencingStartDate,runJobsDir,runResultsDir"
+flowcell,,,,"run,runJobsDir,runResultsDir"
 seqType,,,,
 lane,,,,"flowcell,seqType"
 barcode,,,,
@@ -248,9 +248,9 @@ compressedDemultiplexedDiscardedFastqFilenameSR,${demultiplexedDiscardedFastqFil
 compressedDemultiplexedDiscardedFastqFilenamePE1,${demultiplexedDiscardedFastqFilenamePE1}${gzipExtension},use these for demultiplexed reads assigned to a sample,,
 compressedDemultiplexedDiscardedFastqFilenamePE2,${demultiplexedDiscardedFastqFilenamePE2}${gzipExtension},use these for demultiplexed reads assigned to a sample,,
 #,,,,
-compressedDemultiplexedSampleFastqFilepathSR,${runIntermediateDir}/${compressedDemultiplexedSampleFastqFilenameSR},,,
-compressedDemultiplexedSampleFastqFilepathPE1,${runIntermediateDir}/${compressedDemultiplexedSampleFastqFilenamePE1},,,
-compressedDemultiplexedSampleFastqFilepathPE2,${runIntermediateDir}/${compressedDemultiplexedSampleFastqFilenamePE2},,,
+compressedDemultiplexedSampleFastqFilepathSR,${runResultsDir}/${compressedDemultiplexedSampleFastqFilenameSR},,,
+compressedDemultiplexedSampleFastqFilepathPE1,${runResultsDir}/${compressedDemultiplexedSampleFastqFilenamePE1},,,
+compressedDemultiplexedSampleFastqFilepathPE2,${runResultsDir}/${compressedDemultiplexedSampleFastqFilenamePE2},,,
 #,,,,
 demultiplexedSampleFastqChecksumFilenameSR,${demultiplexedSampleFastqFilenameSR}${md5sumExtension},use these for demultiplexed reads assigned to a sample,,
 demultiplexedSampleFastqChecksumFilenamePE1,${demultiplexedSampleFastqFilenamePE1}${md5sumExtension},use these for demultiplexed reads assigned to a sample,,
