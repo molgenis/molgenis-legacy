@@ -111,6 +111,8 @@ public class CommonService
 			if(overwriteExisting)
 			{
 				db.remove(afList.get(0));
+				
+				
 			}
 			else
 			{
@@ -121,7 +123,7 @@ public class CommonService
 		file.setName(fileName);
 		file.setExtension(originalFileExt);
 		db.add(file);
-		PerformUpload.doUpload(db, file, fileFromRequest, false);
+		PerformUpload.doUpload(db, file, fileFromRequest, true);
 		return fileName;
 	}
 	
