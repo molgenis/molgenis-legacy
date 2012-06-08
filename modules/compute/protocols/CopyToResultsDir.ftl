@@ -21,7 +21,7 @@
 
 inputs "${dedupmetrics}"
 inputs "${mergedbam}"
-inputs "${mergedbambai}"
+inputs "${mergedbamindex}"
 inputs "${samplealignmentmetrics}"
 inputs "${sampleinsertsizemetrics}"
 inputs "${samplehsmetrics}"
@@ -69,7 +69,7 @@ cp ${dedupmetrics} ${projectResultsDir}/qc
 
 # Copy merged BAM plus index to results directory
 cp ${mergedbam} ${projectResultsDir}/alignment
-cp ${mergedbambai} ${projectResultsDir}/alignment
+cp ${mergedbamindex} ${projectResultsDir}/alignment
 
 
 # Copy alignment stats to results directory
