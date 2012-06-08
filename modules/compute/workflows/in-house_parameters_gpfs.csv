@@ -50,7 +50,7 @@ projectdir,${datadir}/projects/${project}/${McId},project folder for this insili
 runtimelog,${projectdir}/${fileprefix}.runtime.log,,,
 projectrawdatadir,${projectdir}/rawdata/ngs/,project specific rawdata directory for (demultiplexed) reads,string,
 projectrawarraydatadir,${projectdir}/rawdata/array/,"Contains project specific rawdata (i.e., Genome Studio files)",string,
-intermediatedir,${projectdir}/intermediate/,store intermediate results here; empty at end of project,,
+intermediatedir,${tempdir}/${project}/${McId}/,store intermediate results here; empty at end of project,,
 projectJobsDir,${projectdir}/jobs/,Project specific job scripts directory,string,
 projectLogsDir,${projectdir}/logs/,Project specific log directory,string,
 projectResultsDir,${projectdir}/results/,Store final results here; a sub set of the primary outputs that we want to keep/archive are moved to this dir; afterwards the remaining files from the intermediate dir will be lost when we clean up.,string,
