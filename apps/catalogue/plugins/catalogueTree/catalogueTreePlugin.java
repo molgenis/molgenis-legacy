@@ -25,6 +25,7 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -104,7 +105,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
-		//for now the cohorts are investigations 
+		    //for now the cohorts are investigations 
 			if ("cohortSelect".equals(request.getAction())) {
 				System.out.println("----------------------"+request);
 				selectedInvestigation = request.getString("cohortSelectSubmit");
@@ -124,27 +125,21 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							this.setSelectionName("empty");
 							
 						if (request.getString("SelectionName") != null) {
-						//if (request.getString("SelectionName").compareTo("empty") != 0) {
 		
 							this.setSelectionName(request.getString("SelectionName").trim());
-	
-							System.out.println("The SelectionName is >>> : " + this.getSelectionName());
-						
+							System.out.println("The SelectionName is >>> : " + this.getSelectionName());					
 							System.out.println("Selection request >>>>>>" + request);
 						} else {
 							//this.setError("Please insert a name for your selection and try again.");
 							this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
 							this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+ "</h4>" ) ;
-		
 						}
 						
 						DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 						Date dat = new Date();
 						String dateOfDownload = dateFormat.format(dat);
 						System.out.println("selected investigaton >>>> "+  selectedInvestigation);
-						
-						
-							this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
+					    this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
 					} catch (IOException e) {
 							e.printStackTrace();
 					} catch (WriteException e1) {
@@ -154,8 +149,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
 				String measurementName = request.getString("measurementName"); 
-
-
 				measurementName = request.getAction().substring( "DeleteMeasurement".length() + 2+ "measurementName".length(),	request.getAction().length());
 				this.deleteShoppingItem(measurementName);
 
@@ -163,13 +156,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				
 				if (request.getString("InputToken") != null) {
 
-					this.setInputToken(request.getString("InputToken").trim());
-
-					
+					this.setInputToken(request.getString("InputToken").trim());		
 					System.out.println("The request string : " + request);
-
 					this.setSelectedField(request.getString("selectedField"));
-
 					System.out.println("Input token: >>>>>>"
 							+ this.getInputToken() + ">>> selectedField >>"
 							+ selectedField + "comparison >>>"
@@ -237,7 +226,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	@Override
 	public void reload(Database db) {
 		
+		 //where is request oeo???
+		//request content: select='CatalogueTreePlugin' measurementId='1' __target='main' 
+
+//		this.getParent().getRoot().getModel().getController()
+//		Login login = (Login)request.getRequest().getSession().getAttribute("login");
+
+		//db.getLogin().getClass().getGenericSuperclass().g
 		System.out.println("-------------In reload---------------------" + this.getApplicationUrl());
+		
 		
 		
 //		if (this.request!=null && this.request.getString("measurementId") != null) {
@@ -999,9 +996,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				q.addRules(new QueryRule(ShoppingCart.NAME, Operator.EQUALS, shoppingCartName));
 				
 				if (q.find().size() > 0) {
-					this.setError("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.");
-					this.getModel().getMessages().add(new ScreenMessage("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.", true));
-					this.setStatus("<h4> A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again."+ "</h4>" ) ;
+					//if user selection already exists use an automated name 
+					String shoppingCartName2 = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
+
+					this.setError("A user selection with name : "+ shoppingCartName +" already exists. An automatic generated name will be used: "+ shoppingCartName2);
+					//this.getModel().getMessages().add(new ScreenMessage("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.", true));
+					this.setStatus("<h4> A user selection with name : "+ shoppingCartName +" already exists. An automatic generated name will be used: "+ shoppingCartName2+ "</h4>" ) ;
+					shoppingCartName = shoppingCartName2;
+					
 				} else {
 					try {
 						db.add(shoppingCart);
