@@ -385,7 +385,7 @@ public class AnimaldbSeleniumTest
 		
 		sleepHelper("breedingWorkflow");
 	}
-	
+	/*
 	@Test(dependsOnMethods={"breedingWorkflow"})
 	public void decWorkflow() throws Exception {
 		
@@ -509,7 +509,7 @@ public class AnimaldbSeleniumTest
 		sleepHelper("decWorkflow");
 		
 	}
-	
+	*/
 	@Test(dependsOnMethods={"decWorkflow"})
 	public void locations() throws Exception {
 		// Go to locations plugin to create two locations
