@@ -22,7 +22,7 @@
 		</#list>
 		
 <div align="center">
-	<table width="700px">
+	<table>
 		<tr>
 			<td colspan="7">
 				<div style="height: 10px">&nbsp;</div>
@@ -62,7 +62,7 @@
 		<#if !screen.hideLoginButtons>
 		<tr>
 			<td align="center">
-				<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
+				<table  cellpadding="10" cellspacing="10" border="2" border-radius="5px" width="160px">
 					<tr>
 						<td align="center">
 							<#if screen.loggedIn>
@@ -79,7 +79,7 @@
 			</td>
 			<td align="center">
 				<#if screen.loggedIn>
-				<table  bgcolor="#BBBBBB" cellpadding="10" cellspacing="10" border="2" width="160px">
+				<table  cellspacing="10" border="2" width="160px">
 					<tr>
 						<td align="center">
 							<a href="?__target=main&select=ImportDataMenu"><font style='font-size:15px; font-weight:bold;'>Upload</font> <font style='font-size:15px;'>data</font></a>
