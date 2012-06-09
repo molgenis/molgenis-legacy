@@ -510,7 +510,8 @@ public class AnimaldbSeleniumTest
 		
 	}
 	*/
-	@Test(dependsOnMethods={"decWorkflow"})
+	//@Test(dependsOnMethods={"decWorkflow"})
+	@Test(dependsOnMethods={"breedingWorkflow"})
 	public void locations() throws Exception {
 		// Go to locations plugin to create two locations
 		selenium.click("id=Settings_tab_button");
