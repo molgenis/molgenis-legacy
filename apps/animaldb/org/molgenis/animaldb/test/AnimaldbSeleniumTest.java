@@ -385,7 +385,7 @@ public class AnimaldbSeleniumTest
 		
 		sleepHelper("breedingWorkflow");
 	}
-	/*
+	
 	@Test(dependsOnMethods={"breedingWorkflow"})
 	public void decWorkflow() throws Exception {
 		
@@ -401,55 +401,27 @@ public class AnimaldbSeleniumTest
 		// Make a DEC project
 		boolean keepTrying = true;
 		int test = 0; //Check if we are on ate's laptop";
-		String pdfFileName = "/home/paraiko/Projects/AnimalDB/prefill data/PrefillAnimalDB_default.zip";
-		while(keepTrying){
-			// first check if we are running a local tests, otherwise asume we are on hudson, if not, fail horribly.:
-			selenium.click("id=add_decproject");
-			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-			selenium.type("id=dectitle", "MyDEC");
-			selenium.type("id=decnumber", "12345");
-			//pretend like these are PDFs...
-			selenium.type("id=decapppdf", pdfFileName);
-			selenium.type("id=decapprovalpdf", pdfFileName);
-			int thisYear = calendar.get(Calendar.YEAR);
-			selenium.type("id=startdate", thisYear + "-01-01");
-			selenium.type("id=enddate", thisYear + "-12-31");
-			selenium.type("id=decbudget", "20");
-			selenium.click("id=addproject");
-			selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-			
-			//BIG TODO, find a more elegant solution to discriminate between different local environments and remote test environments
-			if (!selenium.isTextPresent(("DEC project successfully added"))) {
-				switch(test) {
-					case 0:
-						//check if we are on Roans mac
-						pdfFileName = "/Users/roankanninga/Work/AnimalDB/PrefillAnimalDB_2012-05-16.zip";
-						test = 1;
-						break;
-					case 1:
-						//check if we are on Joeri's mac
-						pdfFileName = "/Users/joerivandervelde/Dropbox/GCC/AnimalDB/Data/legacy/PrefillAnimalDB_2012-05-16.zip";
-						test = 2;
-						break;
-					case 2:
-						// If not, asume we are on hudson.
-						pdfFileName = "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip";
-						test = 3;
-						break;
-					case 3:
-						//pdfFileName = "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip";
-						test = 4; // huge test fail.
-						break;
-										
-				}
-			}else {
-				Assert.assertTrue(selenium.isTextPresent("DEC project successfully added"));
-				Assert.assertTrue(selenium.isTextPresent("MyDEC"));
-				keepTrying = false;
-				break;
-			}
-		}
+		// for now just assume we are running on hudson.
+		String pdfFileName = "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip";
+		//String pdfFileName = "/home/paraiko/Projects/AnimalDB/prefill data/PrefillAnimalDB_default.zip";
 		
+		selenium.click("id=add_decproject");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		selenium.type("id=dectitle", "MyDEC");
+		selenium.type("id=decnumber", "12345");
+		//pretend like these are PDFs...
+		selenium.type("id=decapppdf", pdfFileName);
+		selenium.type("id=decapprovalpdf", pdfFileName);
+		int thisYear = calendar.get(Calendar.YEAR);
+		selenium.type("id=startdate", thisYear + "-01-01");
+		selenium.type("id=enddate", thisYear + "-12-31");
+		selenium.type("id=decbudget", "20");
+		selenium.click("id=addproject");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		
+		Assert.assertTrue(selenium.isTextPresent("DEC project successfully added"));
+		Assert.assertTrue(selenium.isTextPresent("MyDEC"));
+			
 		
 		// Go to DEC subproject plugin
 		selenium.click("id=AddSubproject_tab_button");
@@ -462,7 +434,7 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=expnumber", "A");
 		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		//int thisMonth = calendar.get(Calendar.MONTH);
-		int thisYear = calendar.get(Calendar.YEAR);
+		//int thisYear = calendar.get(Calendar.YEAR);
 		selenium.type("id=startdate", thisYear + "-01-01");
 		selenium.type("id=enddate", thisYear + "-02-01");
 		selenium.type("id=decsubprojectbudget", "10");
@@ -509,7 +481,7 @@ public class AnimaldbSeleniumTest
 		sleepHelper("decWorkflow");
 		
 	}
-	*/
+	
 	//@Test(dependsOnMethods={"decWorkflow"})
 	@Test(dependsOnMethods={"breedingWorkflow"})
 	public void locations() throws Exception {
