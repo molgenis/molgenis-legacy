@@ -152,10 +152,10 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=inputBox", "/tmp");
 		selenium.click("id=filestorage_setpath");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		//Assert.assertTrue(selenium.isTextPresent("Could not set file storage: Properties already present. Please delete first."));
-		selenium.click("//input[@value='Validate']");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("Validation status: VALIDATED"));
+		Assert.assertTrue(selenium.isTextPresent("Properties are set"));
+		//selenium.click("//input[@value='Validate']");
+		//selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		//Assert.assertTrue(selenium.isTextPresent("Validation status: VALIDATED"));
 	}
 	
 	@Test(dependsOnMethods={"loginAdmin"})
