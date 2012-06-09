@@ -141,7 +141,7 @@ public class AnimaldbSeleniumTest
 	}
 	
 	@Test (dependsOnMethods={"loginAdmin"})
-	public void testFilestorageSettings() throws Exception {
+	public void fileStorageSettings() throws Exception {
 		selenium.click("id=Admin_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=systemmenu_tab_button");
@@ -153,12 +153,12 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=filestorage_setpath");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Properties are set"));
-		//selenium.click("//input[@value='Validate']");
-		//selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		//Assert.assertTrue(selenium.isTextPresent("Validation status: VALIDATED"));
+		selenium.click("//input[@value='Validate']");
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		Assert.assertTrue(selenium.isTextPresent("Validation status: VALIDATED"));
 	}
 	
-	@Test(dependsOnMethods={"loginAdmin"})
+	@Test(dependsOnMethods={"fileStorageSettings"})
 	public void makeUser() throws InterruptedException
 	{
 		// Go to AnimalDB user mgmt. plugin (first item in Admin -> Security  menu)
