@@ -11,11 +11,11 @@
 #MOLGENIS walltime=23:59:00
 
 <#if seqType == "SR">
-	inputs "${leftfastqczip}"
+	#inputs "${leftfastqczip}"
 
 <#else>
-	inputs "${leftfastqczip}"
-	inputs "${rightfastqczip}"
+	#inputs "${leftfastqczip}"
+	#inputs "${rightfastqczip}"
 
 </#if>
 
@@ -27,7 +27,12 @@ inputs "${sampleinsertsizemetrics}"
 inputs "${samplehsmetrics}"
 inputs "${snpsfinalvcf}"
 inputs "${snpsfinalvcftable}"
-inputs "${sample}.genotypeArray.updated.header.vcf"
+
+if [ -f "${sample}.genotypeArray.updated.header.vcf" ]
+then
+	inputs "${sample}.genotypeArray.updated.header.vcf"
+fi
+
 
 alloutputsexist "${projectResultsDir}/${project}.zip"
 
@@ -87,8 +92,8 @@ cp ${snpsfinalvcftable} ${projectResultsDir}/snps
 
 # Copy genotype array vcf to results directory
 
-if test ! -e ${finalreport};
-	do
+if [ -f "${sample}.genotypeArray.updated.header.vcf" ]
+then
 	cp ${sample}.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
 fi
 
@@ -104,9 +109,7 @@ echo "http://www.blaat.nl" > ${projectResultsDir}/README.txt
 
 # Create zip file for all "small text" files
 
-zip -r ${projectResultsDir}/${project}.zip ${projectResultsDir}/rawdata
-zip -gr ${projectResultsDir}/${project}.zip ${projectResultsDir}/alignment
-zip -gr ${projectResultsDir}/${project}.zip ${projectResultsDir}/snps
+zip -r ${projectResultsDir}/${project}.zip ${projectResultsDir}/snps
 zip -gr ${projectResultsDir}/${project}.zip ${projectResultsDir}/qc
 zip -g ${projectResultsDir}/${project}.zip ${projectResultsDir}/${project}.csv
 zip -g ${projectResultsDir}/${project}.zip ${projectResultsDir}/README.txt
