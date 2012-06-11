@@ -3,53 +3,47 @@ package org.molgenis.datatable.model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes;
-import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-public class JdbcTable implements TupleTable
+import com.mysema.query.sql.SQLQuery;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.Predicate;
+
+public class QueryDSLTable implements TupleTable
 {
+	private boolean loaded = false;
+	private final SQLQuery query;
+	
 	private ResultSetTuple rs;
 	private List<Field> columns;
-	private final String query;
-	private final List<QueryRule> rules;
-	private final Database db;
-	private final String countQuery;	
-	private boolean loaded = false;
+	private final List<Expression> select;
 	
-
-	public JdbcTable(Database db, String query, List<QueryRule> rules) throws TableException
-	{
-		super();
-		this.db = db;
+	
+	public QueryDSLTable(SQLQuery query, List<Expression> select, List<Expression> from, List<Predicate> where) throws TableException {
 		this.query = query;
-		this.rules = rules;		
-
-		String fromExpression = StringUtils.substringBetween(query, "SELECT", "FROM");
-		this.countQuery = StringUtils.replace(query, fromExpression, " COUNT(*) ");
-	}
-
-	public JdbcTable(Database db, String query) throws TableException
-	{
-		this(db, query, Collections.<QueryRule> emptyList());
-	}
-
+		this.select = select;
+		
+		query.from((Expression<?>[]) from.toArray());
+		query.where((Predicate[]) where.toArray());	
+		
+		load();
+	}	
+	
 	private void load() throws TableException
 	{
 		if(!loaded) {
 			loaded = true;
 			try
-			{
-				rs = new ResultSetTuple(db.executeQuery(query, rules.toArray(new QueryRule[0])));
+			{				
+				ResultSet r = query.getResults((Expression<?>[]) select.toArray());
+				rs = new ResultSetTuple(r);
 				columns = loadColumns();
 			}
 			catch (Exception e)
@@ -57,15 +51,8 @@ public class JdbcTable implements TupleTable
 				throw new TableException(e);
 			}
 		}
-	}
-
-	@Override
-	public List<Field> getColumns() throws TableException
-	{
-		load();
-		return columns;
-	}
-
+	}	
+	
 	private List<Field> loadColumns() throws TableException
 	{
 		load();
@@ -86,6 +73,13 @@ public class JdbcTable implements TupleTable
 			columns.add(field);
 			++colIdx;
 		}
+		return columns;
+	}	
+
+	@Override
+	public List<Field> getColumns() throws TableException
+	{
+		load();
 		return columns;
 	}
 
@@ -115,7 +109,7 @@ public class JdbcTable implements TupleTable
 	public Iterator<Tuple> iterator()
 	{
 		try {
-			load();
+			load();			
 			return new RSIterator(rs);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -123,33 +117,16 @@ public class JdbcTable implements TupleTable
 	}
 
 	@Override
-	public void close() throws TableException
+	public int getRowCount() throws TableException
 	{
-		try
-		{
-			rs.close();
-		}
-		catch (SQLException e)
-		{
-			throw new TableException(e);
-		}
+		return new Long(query.count()).intValue();
 	}
 
 	@Override
-	public int getRowCount() throws TableException
+	public void close() throws TableException
 	{
-		try {
-			final ResultSet countSet = db.executeQuery(countQuery, rules.toArray(new QueryRule[0]));
-			int rowCount = 0;
-			if (countSet.next())
-			{
-				final Number count = (Number) countSet.getObject(1);
-				rowCount = count.intValue();
-			}
-			countSet.close();
-			return rowCount;
-		} catch (Exception ex) {
-			throw new TableException(ex);
-		}
+		// TODO Auto-generated method stub
+		
 	}
+
 }
