@@ -33,6 +33,18 @@ then
 	inputs "${sample}.genotypeArray.updated.header.vcf"
 fi
 
+alloutputsexist \
+ "${alignmentmetrics}" \
+ "${gcbiasmetrics}" \
+ "${gcbiasmetricspdf}" \
+ "${insertsizemetrics}" \
+ "${insertsizemetricspdf}" \
+ "${meanqualitybycycle}" \
+ "${meanqualitybycyclepdf}" \
+ "${qualityscoredistribution}" \
+ "${qualityscoredistributionpdf}" \
+ "${hsmetrics}" \
+ "${bamindexstats}"
 
 alloutputsexist "${projectResultsDir}/${project}.zip"
 
@@ -44,6 +56,7 @@ umask 0007
 # Make result directories
 mkdir -p ${projectResultsDir}/rawdata
 mkdir -p ${projectResultsDir}/alignment
+mkdir -p ${projectResultsDir}/coverage
 mkdir -p ${projectResultsDir}/snps
 mkdir -p ${projectResultsDir}/qc
 
@@ -59,7 +72,7 @@ cp ${projectJobsDir}/*.log ${projectLogsDir}
 cp ${projectJobsDir}/${project}.csv ${projectResultsDir}
 
 
-# Create symlinks for all fastq files to the project results directory
+# Create symlinks for all fastq and md5 files to the project results directory
 
 cp -rs ${projectrawdatadir} ${projectResultsDir}/rawdata
 
@@ -77,11 +90,21 @@ cp ${mergedbam} ${projectResultsDir}/alignment
 cp ${mergedbamindex} ${projectResultsDir}/alignment
 
 
-# Copy alignment stats to results directory
+# Copy alignment stats (lane and sample) to results directory
 
-cp ${samplealignmentmetrics} ${projectResultsDir}/qc
-cp ${sampleinsertsizemetrics} ${projectResultsDir}/qc
-cp ${samplehsmetrics} ${projectResultsDir}/qc
+cp ${intermediatedir}/*.alignmentmetrics ${projectResultsDir}/qc
+cp ${intermediatedir}/*.gcbiasmetrics ${projectResultsDir}/qc
+cp ${intermediatedir}/*.insertsizemetrics ${projectResultsDir}/qc
+cp ${intermediatedir}/*.meanqualitybycycle ${projectResultsDir}/qc
+cp ${intermediatedir}/*.qualityscoredistribution ${projectResultsDir}/qc
+cp ${intermediatedir}/*.hsmetrics ${projectResultsDir}/qc
+cp ${intermediatedir}/*.bamindexstats ${projectResultsDir}/qc
+cp ${intermediatedir}/*.pdf ${projectResultsDir}/qc
+
+
+# Copy coverage stats (for future reference) to results directory
+
+cp ${intermediatedir}/*.coverage* ${projectResultsDir}/coverage
 
 
 # Copy final vcf and vcf.table to results directory
@@ -96,16 +119,19 @@ if [ -f "${sample}.genotypeArray.updated.header.vcf" ]
 then
 	cp ${sample}.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
 fi
-
+cp ${sampleconcordancefile} ${projectResultsDir}/qc
 
 # Copy QC report to results directory
 
-cp ${qcstatisticstexreport} ${projectResultsDir}/qc
+cp ${qcdir}/${project}_QCReport.pdf ${projectResultsDir}
 
 
+###########################################
+##################TO DO####################
 # Create README.txt containing link to documentation of zipfile on GCC wiki page
 echo "http://www.blaat.nl" > ${projectResultsDir}/README.txt
-
+###########################################
+###########################################
 
 # Create zip file for all "small text" files
 
@@ -113,3 +139,8 @@ zip -r ${projectResultsDir}/${project}.zip ${projectResultsDir}/snps
 zip -gr ${projectResultsDir}/${project}.zip ${projectResultsDir}/qc
 zip -g ${projectResultsDir}/${project}.zip ${projectResultsDir}/${project}.csv
 zip -g ${projectResultsDir}/${project}.zip ${projectResultsDir}/README.txt
+zip -g ${projectResultsDir}/${project}.zip ${projectResultsDir}/${project}_QCReport.pdf
+
+
+# Create md5sum for zip file
+md5sum ${projectResultsDir}/${project}.zip ${projectResultsDir}/${project}.zip.md5
