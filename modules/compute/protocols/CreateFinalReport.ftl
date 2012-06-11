@@ -20,6 +20,6 @@ umask 0007
 
 perl ${scriptdir}/create_per_sample_finalreport.pl \
 -inputdir ${arraydir} \
--outputdir ${runIntermediateDir} \
+-outputdir ${arraydir} \
 -run ${run} \
 -samplecsv ${McWorksheet}
