@@ -21,12 +21,10 @@ var JQGridView = {
 	pagerSelector : null,
     colModel : null,
     colNames : null, 
-    dataSource : null,
     sortColumn : 'id',
     caption : "dataTable",
     jqGrid : null,
     backendUrl : null,
-    dataSourceFactoryClassName : null,
     viewFactory : null,
     
     init: function(config) {
@@ -35,8 +33,6 @@ var JQGridView = {
         this.tableSelector = config.tableSelector;
         this.colModel = config.colModel;
         this.colNames = this.getColumnNames(this.colModel);
-        this.dataSource = config.dataSource;
-        this.dataSourceFactoryClassName = config.dataSourceFactoryClassName;
         this.viewFactoryClassName = config.viewFactoryClassName;
         
         //optional parameters
@@ -79,11 +75,10 @@ var JQGridView = {
             jsonReader: { repeatitems: false },
             postData : 
             	{
+            	__show: 'jqGrid',
             	viewType : 'JQ_GRID',
             	colNames : $.toJSON(this.colNames), 
         		colModel: $.toJSON(this.colModel), 
-        		dataSource: $.toJSON(this.dataSource), 
-        		dataSourceFactoryClassName: this.dataSourceFactoryClassName,
         		viewFactoryClassName : this.viewFactoryClassName,
         		caption: this.caption
         		},
@@ -163,15 +158,12 @@ $(document).ready(function() {
             </#list>
         ];
    
-	this.myDataSource = ${dataSource};
 	this.mySortColumn = '${sortName}';
 	
     this.myGrid = JQGridView.init(
     	{	
     		backendUrl : "${backendUrl}",     
-    		dataSourceFactoryClassName: "${dataSourceFactoryClassName}",   
     		viewFactoryClassName: "${viewFactoryClassName}",
-    		dataSource: this.myDataSource, 
     		tableSelector : "#${tableId}", 
     		colModel: this.myColModel, sortColumn: this.mySortColumn
 		});

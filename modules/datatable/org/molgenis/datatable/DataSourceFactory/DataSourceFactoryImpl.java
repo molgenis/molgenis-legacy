@@ -8,11 +8,15 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.JdbcTable;
+import org.molgenis.datatable.model.QueryDSLTable;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 
 import com.google.gson.internal.StringMap;
+import com.mysema.query.Query;
+import com.mysema.query.sql.SQLQuery;
+import com.mysema.query.types.path.PathBuilder;
 
 /**
  * General implementation of {@link DataSourceFactory} for several types of data source.
@@ -32,6 +36,12 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
 		} else if(type.equals("csv")) {
 			final String csvUri = (String) dataSource.get("uri");
 			return new CsvTable(csvUri);
+		} else if(type.equals("QueryDSL")) {
+			System.out.println("xxxxx");
+			return null;
+//			final SQLQuery query = (SQLQuery)dataSource.get("query");
+//			List<PathBuilder<?>> projection = (List<PathBuilder<?>>) dataSource.get("projection");
+//			return new QueryDSLTable(query, projection );
 		}
 		return null;
 	}

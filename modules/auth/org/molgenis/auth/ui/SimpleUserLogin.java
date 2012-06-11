@@ -512,4 +512,5 @@ public class SimpleUserLogin extends EasyPluginController<SimpleUserLoginModel>
 	{
 		this.getModel().setForgotForm(new ForgotForm());
 	}
+
 }
