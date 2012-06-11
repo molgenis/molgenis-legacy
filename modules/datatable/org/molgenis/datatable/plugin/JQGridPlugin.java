@@ -2,9 +2,9 @@ package org.molgenis.datatable.plugin;
 
 
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
 import org.molgenis.datatable.controller.Renderers.Renderer;
-import org.molgenis.datatable.model.QueryDSLTable;
+import org.molgenis.datatable.model.JdbcTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
@@ -36,14 +36,6 @@ import org.molgenis.util.Tuple;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
-import com.mysema.query.sql.MySQLTemplates;
-import com.mysema.query.sql.RelationalPath;
-import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.sql.SQLQueryImpl;
-import com.mysema.query.sql.SQLTemplates;
-import com.mysema.query.types.Expression;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.path.PathBuilder;
 
 
 /**
@@ -67,21 +59,9 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	{
 		try
 		{
-	        final Connection conn = db.getConnection();
-	        final SQLTemplates dialect = new MySQLTemplates(); // SQL-dialect
-	        final SQLQuery query = new SQLQueryImpl(conn, dialect);
-	        
-	        PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class, "Country");
-	        PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
-	        
-	        List<Expression> select = Arrays.<Expression>asList(country.get("name"), city.get("name"));
-	        List<Expression> from = Arrays.<Expression>asList(country, city);
-	        List<Predicate> where = Arrays.<Predicate>asList(country.get("code").eq(city.get("countrycode")));
-			
-			tupleTable = new QueryDSLTable(query, select, from, where);
-			
-			gridView = new JQGridView("myGrid", tupleTable.getColumns());
-			container.add(gridView);
+			//strange way to retrieve columns!
+			final JdbcTable jdbcTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country LIMIT 0", Collections.<QueryRule>emptyList());
+			gridView = new JQGridView("myGrid", jdbcTable.getColumns());
 		}
 		catch (Exception e)
 		{
