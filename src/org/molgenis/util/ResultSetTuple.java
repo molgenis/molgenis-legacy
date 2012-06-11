@@ -47,7 +47,10 @@ public class ResultSetTuple extends SimpleTuple
 	private ResultSetMetaData metadata;
 
 	/** cache of the field names */
-	private List<String> fieldNames;
+	private List<String> fieldNames = null;
+	
+	/** cach of column labels */
+	private List<String> columnLabels = null;
 
 	/**
 	 * Construct a Tuple for a JDBC ResultSet
@@ -89,33 +92,42 @@ public class ResultSetTuple extends SimpleTuple
 	
 	public List<String> getFieldNames()
 	{
-		if (this.fieldNames == null)
+		if (fieldNames == null)
 		{
-			this.fieldNames = new ArrayList<String>();
+			fieldNames = new ArrayList<String>();
 			try
 			{
 				int colcount = metadata.getColumnCount();
 				for (int i = 1; i <= colcount; i++)
 				{
-					if (metadata.getColumnName(i) != null)
-					{
-						this.fieldNames.add(metadata.getColumnName(i));
-					}
-					//can have multiple labels, thanks Henrikki
-					if (metadata.getColumnLabel(i) != null)
-					{
-						if(!this.fieldNames.contains(metadata.getColumnLabel(i)))
-							this.fieldNames.add(metadata.getColumnLabel(i));
-					}					
+					fieldNames.add(metadata.getColumnName(i));
 				}
 
 			}
 			catch (Exception e)
 			{
-				logger.error("getColumnNames(): failed " + e);
+				final String errorMsg = "getColumnNames(): failed " + e;
+				logger.error(errorMsg);
+				throw new RuntimeException(errorMsg);
 			}
 		}
-		return this.fieldNames;
+		return fieldNames;
+	}
+	
+	public List<String> getColumnLabels() {
+		if(columnLabels == null) {
+			columnLabels = new ArrayList<String>();
+			try {
+				for(int colIdx = 1, n = metadata.getColumnCount(); colIdx < n; ++colIdx) {
+					columnLabels.add(metadata.getColumnLabel(colIdx));
+				}				
+			} catch (Exception ex) {
+				final String errorMsg = "getColumnNames(): failed " + ex;
+				logger.error(errorMsg);
+				throw new RuntimeException(errorMsg);
+			}
+		}
+		return columnLabels;		
 	}
 
 	/**
