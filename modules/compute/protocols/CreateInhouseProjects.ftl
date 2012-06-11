@@ -54,8 +54,8 @@ mkdir -p ${qcdir}
 		<#else>
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedDemultiplexedSampleFastqFilenamePE1[sample_index]} ${projectrawdatadir}/
 			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${compressedDemultiplexedSampleFastqFilenamePE2[sample_index]} ${projectrawdatadir}/
-			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${demultiplexedSampleFastqChecksumFilenamePE1} ${projectrawdatadir}/
-			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${demultiplexedSampleFastqChecksumFilenamePE2} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${demultiplexedSampleFastqChecksumFilenamePE1[sample_index]} ${projectrawdatadir}/
+			ln -s ${allRawNgsDataDir}/${runPrefix[sample_index]}/${demultiplexedSampleFastqChecksumFilenamePE2[sample_index]} ${projectrawdatadir}/
 		</#if>
 		
 	</#if>
