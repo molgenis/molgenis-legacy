@@ -61,7 +61,7 @@ public abstract class MolgenisGuiService
 		this.db = db;
 
 		// logout
-		HttpSession session = request.getRequest().getSession();
+		final HttpSession session = request.getRequest().getSession();
 		if (request.getRequest().getParameter("__action") != null
 				&& request.getRequest().getParameter("__action").equalsIgnoreCase("Logout"))
 		{
@@ -69,14 +69,14 @@ public abstract class MolgenisGuiService
 		}
 		
 		// Get application from session
-		ApplicationController molgenis = (ApplicationController) session
+		ApplicationController appController = (ApplicationController) session
 				.getAttribute("application");
 		
 		// Login credentials from FrontController
 		Login userLogin = request.getDatabase().getLogin();
 		
 		// Create GUI if null
-		if (molgenis == null)
+		if (appController == null)
 		{
 			//FIXME: never reached? isLoginRequired is FALSE in both implementations?
 			// also, what is request.getRequest().getParameter("logout") ?
@@ -85,24 +85,23 @@ public abstract class MolgenisGuiService
 					|| (request.getRequest().getParameter("logout") != null && !session
 							.isNew()))
 			{
-				response.getResponse().setHeader("WWW-Authenticate",
-						"BASIC realm=\"MOLGENIS\"");
+				response.getResponse().setHeader("WWW-Authenticate", "BASIC realm=\"MOLGENIS\"");
 				response.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED);
 				session.invalidate();
 				return;
 			}
-			molgenis = createUserInterface();
+			appController = createUserInterface();
 			
 			//determine the real application base URL (once)
 			if (StringUtils.startsWith(session.getServletContext().getServerInfo(), "Apache Tomcat"))
 			{
-				molgenis.setBaseUrl(request.getRequest().getRequestURL().toString());
+				appController.setBaseUrl(request.getRequest().getRequestURL().toString());
 			}
 			else
 			{
 				try
 				{
-					new getExposedIP(molgenis, request);
+					new getExposedIP(appController, request);
 				}
 				catch(Exception e)
 				{
@@ -112,31 +111,32 @@ public abstract class MolgenisGuiService
 		}
 		
 		// Always pass login to GUI
-		molgenis.setLogin(userLogin);
+		appController.setLogin(userLogin);
 		
 		// this should work unless complicated load balancing without proxy
 		// rewriting...
-//		molgenis.setBaseUrl(request.getRequest().getScheme() + "://"
-//				+ request.getRequest().getServerName() + getPort(request.getRequest())
-//				+ request.getRequest().getContextPath());
+		//		molgenis.setBaseUrl(request.getRequest().getScheme() + "://"
+		//				+ request.getRequest().getServerName() + getPort(request.getRequest())
+		//				+ request.getRequest().getContextPath());
 
 		// handle request
 		try
 		{
-		
-			Tuple requestTuple = request;
-
+			
+			if (Show.SHOW_JQGRID.equals(request.getString(FormModel.INPUT_SHOW))) {
+				ScreenController<? extends ScreenModel> controller = appController.get(request.getString(ScreenModel.INPUT_TARGET));			
+				controller.handleRequest(db, request, response.getResponse().getOutputStream());
+			}
 			// action == download an attached file
 			// FIXME move to form controllers handlerequest...
-			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple
-					.getString(ScreenModel.INPUT_ACTION)))
+			 else if (FileInput.ACTION_DOWNLOAD.equals(request.getString(ScreenModel.INPUT_ACTION)))
 			{
 				//logger.info(requestTuple);
 
 				File file = new File(
 						db.getFilesource()
 								+ "/"
-								+ requestTuple
+								+ request
 										.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
 
 				FileInputStream filestream = new FileInputStream(file);
@@ -146,7 +146,7 @@ public abstract class MolgenisGuiService
 				response.getResponse().setHeader(
 						"Content-Disposition",
 						"attachment; filename="
-								+ requestTuple
+								+ request
 										.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
 
 				BufferedOutputStream out = new BufferedOutputStream(
@@ -164,17 +164,17 @@ public abstract class MolgenisGuiService
 
 			// action == download, but now in a standard way, handled by
 			// controller
-			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple
+			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(request
 					.getString(FormModel.INPUT_SHOW)))
 			{
 				// get the screen that will hande the download request
-				ScreenController<? extends ScreenModel> controller = molgenis
-						.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
+				ScreenController<? extends ScreenModel> controller = appController
+						.get(request.getString(ScreenModel.INPUT_TARGET));
 
 				// set the headers for the download
 				response.getResponse().setContentType("application/x-download");
 
-				String action = requestTuple
+				String action = request
 						.getString(ScreenModel.INPUT_ACTION);
 				String extension = null;
 				if (action.startsWith("download_txt_"))
@@ -191,14 +191,13 @@ public abstract class MolgenisGuiService
 							+ "' unsupported!");
 				}
 
-				ScreenModel.Show.values();
 				response.getResponse().setHeader("Content-Disposition",
 						"attachment; filename="
 								+ controller.getName().toLowerCase() + "."
 								+ extension);
 
 				// let the handleRequest produce the content
-				controller.handleRequest(db, requestTuple,
+				controller.handleRequest(db, request,
 						response.getResponse().getOutputStream());
 
 				// TODO: does this fail when stream is already closed??
@@ -210,16 +209,16 @@ public abstract class MolgenisGuiService
 			else
 			{
 				// capture select
-				if (requestTuple.getString("select") != null)
+				if (request.getString("select") != null)
 				{
 					// get the screen to be selected
-					ScreenController<?> toBeSelected = molgenis
-							.get(requestTuple.getString("select"));
+					ScreenController<?> toBeSelected = appController
+							.get(request.getString("select"));
 					// select leaf in its parent
 					try
 					{
 						toBeSelected.getParent().setSelected(
-								requestTuple.getString("select"));
+								request.getString("select"));
 					}
 					catch (NullPointerException npe)
 					{
@@ -227,8 +226,8 @@ public abstract class MolgenisGuiService
 					}
 				}
 
-				if (Show.SHOW_CLOSE.equals(molgenis.handleRequest(db,
-						requestTuple, null)))
+				if (Show.SHOW_CLOSE.equals(appController.handleRequest(db,
+						request, null)))
 				{
 					//if close, then write a close script
 					PrintWriter writer = response.getResponse().getWriter();
@@ -247,10 +246,10 @@ public abstract class MolgenisGuiService
 				}
 
 				// handle request
-				molgenis.reload(db); // reload the application
+				appController.reload(db);
 
 				// session are automatically synchronized...
-				session.setAttribute("application", molgenis);
+				session.setAttribute("application", appController);
 
 				// prepare the response
 				response.getResponse().setContentType("text/html");
@@ -258,25 +257,25 @@ public abstract class MolgenisGuiService
 				PrintWriter writer = response.getResponse().getWriter();
 
 				// Render result
-				String show = requestTuple.getString(FormModel.INPUT_SHOW);
+				String show = request.getString(FormModel.INPUT_SHOW);
 				if (ScreenModel.Show.SHOW_DIALOG.equals(show))
 				{
-					molgenis.getModel().setShow(show);
-					ScreenController<?> target = molgenis.get(requestTuple
+					appController.getModel().setShow(show);
+					ScreenController<?> target = appController.get(request
 							.getString("__target"));
-					molgenis.getModel().setTarget(target);
-					writer.write(molgenis.render());
+					appController.getModel().setTarget(target);
+					writer.write(appController.render());
 				}
 				else if ("massupdate".equals(show))
 				{
-					molgenis.getModel().setShow("show");
-					writer.write(molgenis.render());
+					appController.getModel().setShow("show");
+					writer.write(appController.render());
 
 				}
 				else
 				{
-					molgenis.getModel().setShow("root");
-					writer.write(molgenis.render());
+					appController.getModel().setShow("root");
+					writer.write(appController.render());
 					
 					//special: set a different selected screen after rendering is done
 					//this enables you to for example create a filtered linkout from a plugin,
@@ -289,17 +288,17 @@ public abstract class MolgenisGuiService
 					//'__target' will send the request to the 'Markers' screen
 					//'select' will tell the controller to render the the 'Markers' screen
 					//'__comebacktoscreen' will set the view state back to the plugin so you can continue using it normally
-					if(requestTuple.getString("__comebacktoscreen") != null)
+					if(request.getString("__comebacktoscreen") != null)
 					{
-						ScreenController<?> toBeSelected = molgenis.get(requestTuple.getString("__comebacktoscreen"));
-						toBeSelected.getParent().setSelected(requestTuple.getString("__comebacktoscreen"));
+						ScreenController<?> toBeSelected = appController.get(request.getString("__comebacktoscreen"));
+						toBeSelected.getParent().setSelected(request.getString("__comebacktoscreen"));
 					}
 				}
 				
 				writer.close();
 
 				// done, get rid of screen messages here?
-				molgenis.clearAllMessages();
+				appController.clearAllMessages();
 
 			}
 		}
