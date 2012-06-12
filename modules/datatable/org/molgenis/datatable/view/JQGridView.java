@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.molgenis.datatable.DataSourceFactory.DataSourceFactoryImpl;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.model.elements.Field;
 
@@ -33,9 +32,8 @@ public class JQGridView extends HtmlWidget
 			
 			args.put("tableId", getId());
 			args.put("columns", columns);
-			args.put("dataSourceFactoryClassName", DataSourceFactoryImpl.class.getName());
 			args.put("viewFactoryClassName", ViewFactoryImpl.class.getName());
-			args.put("backendUrl", "jqGridService.do");
+			args.put("backendUrl", "molgenis.do");
 			args.put("sortName", columns.get(0).getName());
 			
 			final Configuration cfg = new Configuration();
