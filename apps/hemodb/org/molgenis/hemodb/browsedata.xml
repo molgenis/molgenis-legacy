@@ -22,7 +22,7 @@
 				<form name="Measurements" entity="Measurement"
 					hide_fields="targettypeAllowedForRelation,panelLabelAllowedForRelation"
 					group="biologist" />
-				<form name="Probes" entity="Probe" group="biologist" />
+				<form name="Probes" entity="HemoProbe" group="biologist" />
 				<form name="ProbeCollection" entity="ProbeSet"
 					hide_fields="cm,bpstart,bpend,seq,symbol" group="biologist" />
 				<form name="Genes" entity="HemoGene" group="biologist">

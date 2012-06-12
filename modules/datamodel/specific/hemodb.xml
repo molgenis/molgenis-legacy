@@ -50,7 +50,7 @@
 				nillable="true"
 				description="Orientation of the gene on the genome (F=forward, R=reverse)" />
 		</entity>
-		<entity name="HemoProbe" extends="ObservableFeature">
+		<entity name="HemoProbe" extends="ObservableFeature" implements="Locus">
 			<description> A piece of sequence that reports for the expression of
 				a gene, typically spotted onto a microarray.
 			</description>
@@ -62,7 +62,7 @@
 				description="The gene this probe reports for." />
 			<field name="EntrezID" type="string" nillable="true"
 				description="The entrez ID for the probe" />
-			<field name="RefseqID" type="decimal" nillable="true"
+			<field name="RefseqID" type="string" nillable="true"
 				description="The refseq ID for the probe" />
 		</entity>
 	</module>
