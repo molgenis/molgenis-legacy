@@ -2,6 +2,7 @@ package org.molgenis.datatable.plugin;
 
 
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,8 +61,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		try
 		{
 			//strange way to retrieve columns!
-			final JdbcTable jdbcTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country LIMIT 0", Collections.<QueryRule>emptyList());
-			gridView = new JQGridView("myGrid", jdbcTable.getColumns());
+			tupleTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country", Collections.<QueryRule>emptyList());
+			gridView = new JQGridView("myGrid", tupleTable.getColumns());
 		}
 		catch (Exception e)
 		{
@@ -120,7 +121,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	
 	
 	@Override
-	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException {
+	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
 
 	
 //	@Override
@@ -128,7 +129,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 //			DatabaseException, IOException
 //	{
 		try
-		{	
+		{
 			final ExportRange exportSelection = 
 				StringUtils.isNotEmpty(request.getString("exportSelection")) ?			
 						ExportRange.valueOf(request.getString("exportSelection")) : 
@@ -162,6 +163,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		{
 			throw new HandleRequestDelegationException();
 		}
+		return null;
 	}
 
 	/**

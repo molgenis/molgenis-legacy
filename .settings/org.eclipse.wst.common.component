@@ -18,7 +18,6 @@
     <wb-resource deploy-path="/WEB-INF/classes" source-path="modules/datatable"/>
     <wb-resource deploy-path="/WEB-INF/classes" source-path="modules/decorators/core"/>
     <wb-resource deploy-path="/WEB-INF/classes" source-path="modules/decorators/auth"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/sql"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/java"/>
   </wb-module>
 </project-modules>

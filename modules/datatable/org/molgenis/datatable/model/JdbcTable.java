@@ -63,6 +63,7 @@ public class JdbcTable implements TupleTable
 	public List<Field> getColumns() throws TableException
 	{
 		load();
+		close();
 		return columns;
 	}
 
@@ -128,6 +129,7 @@ public class JdbcTable implements TupleTable
 		try
 		{
 			rs.close();
+			loaded = false;
 		}
 		catch (SQLException e)
 		{
