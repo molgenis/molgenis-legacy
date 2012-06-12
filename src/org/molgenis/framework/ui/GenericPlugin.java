@@ -74,24 +74,6 @@ public class GenericPlugin extends PluginModel<Entity>
 	}
 
 	@Override
-	public void reload(Database db)
-	{
-		// try
-		// {
-		// Database db = this.getDatabase();
-		// Query q = db.query(Experiment.class);
-		// q.like("name", "test");
-		// List<Experiment> recentExperiments = q.find();
-		//			
-		// //do somethings
-		// }
-		// catch(Exception e)
-		// {
-		// //...
-		// }
-	}
-
-	@Override
 	public boolean isVisible()
 	{
 		if (this.getLogin().isAuthenticated()){
@@ -183,5 +165,12 @@ public class GenericPlugin extends PluginModel<Entity>
 	public ScreenView getView()
 	{
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void reload(Database db)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

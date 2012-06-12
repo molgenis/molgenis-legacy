@@ -61,7 +61,7 @@ public abstract class MolgenisGuiService
 		this.db = db;
 
 		// logout
-		HttpSession session = request.getRequest().getSession();
+		final HttpSession session = request.getRequest().getSession();
 		if (request.getRequest().getParameter("__action") != null
 				&& request.getRequest().getParameter("__action").equalsIgnoreCase("Logout"))
 		{
@@ -85,8 +85,7 @@ public abstract class MolgenisGuiService
 					|| (request.getRequest().getParameter("logout") != null && !session
 							.isNew()))
 			{
-				response.getResponse().setHeader("WWW-Authenticate",
-						"BASIC realm=\"MOLGENIS\"");
+				response.getResponse().setHeader("WWW-Authenticate", "BASIC realm=\"MOLGENIS\"");
 				response.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED);
 				session.invalidate();
 				return;
@@ -116,23 +115,20 @@ public abstract class MolgenisGuiService
 		
 		// this should work unless complicated load balancing without proxy
 		// rewriting...
-//		molgenis.setBaseUrl(request.getRequest().getScheme() + "://"
-//				+ request.getRequest().getServerName() + getPort(request.getRequest())
-//				+ request.getRequest().getContextPath());
+		//		molgenis.setBaseUrl(request.getRequest().getScheme() + "://"
+		//				+ request.getRequest().getServerName() + getPort(request.getRequest())
+		//				+ request.getRequest().getContextPath());
 
 		// handle request
 		try
 		{
-			
-			if (ScreenModel.Show.SHOW_JQGRID.equals(request.getString(FormModel.INPUT_SHOW))) {
-				ScreenController<? extends ScreenModel> controller = appController
-						.get(request.getString(ScreenModel.INPUT_TARGET));
+			if (Show.SHOW_JQGRID.equals(request.getString(FormModel.INPUT_SHOW))) {
+				ScreenController<? extends ScreenModel> controller = appController.get(request.getString(ScreenModel.INPUT_TARGET));			
 				controller.handleRequest(db, request, response.getResponse().getOutputStream());
-			} else 
+			}
 			// action == download an attached file
 			// FIXME move to form controllers handlerequest...
-			if (FileInput.ACTION_DOWNLOAD.equals(request
-					.getString(ScreenModel.INPUT_ACTION)))
+			 else if (FileInput.ACTION_DOWNLOAD.equals(request.getString(ScreenModel.INPUT_ACTION)))
 			{
 				//logger.info(requestTuple);
 
@@ -194,7 +190,6 @@ public abstract class MolgenisGuiService
 							+ "' unsupported!");
 				}
 
-				ScreenModel.Show.values();
 				response.getResponse().setHeader("Content-Disposition",
 						"attachment; filename="
 								+ controller.getName().toLowerCase() + "."
@@ -248,8 +243,8 @@ public abstract class MolgenisGuiService
 					return;
 				}
 
-				// handle request
-				appController.reload(db); // reload the application
+				// handle request by reloading (...)
+				appController.reload(db);
 
 				// session are automatically synchronized...
 				session.setAttribute("application", appController);

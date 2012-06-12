@@ -56,6 +56,11 @@ public interface ScreenModel extends Serializable
 		 * Show the current screen as JSON
 		 */
 		SHOW_JSON("json"),
+		
+		/**
+		 * Show the jqGrid
+		 */
+		SHOW_JQGRID("jqGrid"),
 		/**
 		 * Show the current screen as part of its parent. This means the layout template is called on the root of the user interface.
 		 */
