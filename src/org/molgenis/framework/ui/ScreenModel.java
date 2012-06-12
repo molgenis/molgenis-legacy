@@ -72,7 +72,11 @@ public interface ScreenModel extends Serializable
 		/**
 		 * Don't show anything
 		 */
-		SHOW_CLOSE("close");
+		SHOW_CLOSE("close"),
+		/**
+		 * Show the jqGrid
+		 */
+		SHOW_JQGRID("jqGrid");
 		
 		private String TAG;
 		Show(String name)
