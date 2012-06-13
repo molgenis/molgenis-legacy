@@ -28,7 +28,7 @@
           <property name="hibernate.cache.use_query_cache" value="false"/>
           <property name="hibernate.cache.use_second_level_cache" value="false"/>
           <property name="hibernate.search.default.directory_provider" value="filesystem"/>
-          <property name="hibernate.search.default.indexBase" value="/var/lucene/indexes"/>
+          <property name="hibernate.search.default.indexBase" value="/tmp/lucene"/>
           
           <!--
           Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
