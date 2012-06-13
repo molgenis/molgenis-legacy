@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
@@ -24,6 +25,9 @@ public class DatabaseTable implements TupleTable
 
 	// copy of the fields from meta database
 	private List<Field> fields;
+	
+	// current query rules (includes all: limit, offset, paging, filters)
+	private List<QueryRule> rules = new ArrayList<QueryRule>();
 
 	/**
 	 * Constructor
@@ -62,7 +66,10 @@ public class DatabaseTable implements TupleTable
 	{
 		try
 		{
-			List<? extends Entity> entities = db.find(entityClass);
+			List<? extends Entity> entities;
+			if(rules.size() > 0) entities = db.find(entityClass, rules.toArray(new QueryRule[rules.size()]));
+			else entities = db.find(entityClass);
+			
 			List<Tuple> result = new ArrayList<Tuple>();
 			for (Entity e : entities)
 			{
@@ -99,14 +106,31 @@ public class DatabaseTable implements TupleTable
 	@Override
 	public int getRowCount() throws TableException
 	{
+		//should get rid of limit clause!
 		try
 		{
-			return db.find(entityClass).size();
+			if(rules.size() > 0) return db.count(entityClass, rules.toArray(new QueryRule[rules.size()]));
+			else return db.count(entityClass);
 		}
 		catch (DatabaseException e)
 		{
 			throw new TableException(e);
 		}
+	}
+
+	public List<QueryRule> getFilters()
+	{
+		return rules;
+	}
+
+	public Database getDb()
+	{
+		return db;
+	}
+
+	public void setDb(Database db)
+	{
+		this.db = db;
 	}
 
 }
