@@ -115,6 +115,7 @@ public class ListPluginMatrix extends EasyPluginController
 				measurementsToShow.add("OldUliDbTiernummer");
 				measurementsToShow.add("OldRhutDbAnimalId");
 				measurementsToShow.add("Location");
+				measurementsToShow.add("Background");
 				//measurementsToShow.add("Remark");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 

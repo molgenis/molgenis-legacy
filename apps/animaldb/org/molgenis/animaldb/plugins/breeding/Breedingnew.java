@@ -12,8 +12,10 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections.ListUtils;
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.animaldb.plugins.administration.LabelGenerator;
 import org.molgenis.animaldb.plugins.administration.LabelGeneratorException;
@@ -28,8 +31,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
-import org.molgenis.framework.db.QueryRule.Operator; 
-
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -40,7 +42,6 @@ import org.molgenis.framework.ui.html.Table;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Location;
@@ -1531,10 +1532,58 @@ public class Breedingnew extends PluginModel<Entity>
 				// Make new or use existing cross background
 				if (motherBackgroundName.equals(fatherBackgroundName)) {
 					backgroundName = fatherBackgroundName;
-				} else {
-					//FIXME this will cause new backround to be addes starting from a mixed background every generation...
-					backgroundName = fatherBackgroundName + " X " + motherBackgroundName;
+				} else 
+				{
+					// check for cross background
+					// split motherbckgr
+					List<String> mbgNames = Arrays.asList(motherBackgroundName.split(" X "));
+					List<String> fbgNames = Arrays.asList(fatherBackgroundName.split(" X "));
+					
+					int fbgSize = fbgNames.size();
+					int mbgSize = mbgNames.size();
+					List<String> newbgs;
+					List<String> oldbgs;
+					backgroundName = "";
+					if (fbgSize + mbgSize == 2) 
+					{
+						oldbgs = ListUtils.sum(mbgNames, fbgNames);
+						Collections.sort(oldbgs);
+						backgroundName = "";
+						backgroundName += oldbgs.get(0);
+						backgroundName += " X ";
+						backgroundName += oldbgs.get(1);
+					} else
+					{
+						// sort the single background options in categories same and different
+						if (fbgSize >= mbgSize) 
+						{
+							oldbgs = fbgNames;
+							newbgs = ListUtils.subtract(mbgNames,fbgNames);
+						}else
+						{	
+							oldbgs = mbgNames;
+							newbgs= ListUtils.subtract(fbgNames,mbgNames);
+						}
+											
+						int oldbgsSize = oldbgs.size();
+						backgroundName += oldbgs.get(0);
+						for (int i=1; i<oldbgsSize; i++ )
+						{
+							backgroundName += " X ";
+							backgroundName += oldbgs.get(i);
+						}
+						if (newbgs.size() > 0)
+						{
+							Collections.sort(newbgs);
+							for (int i=0; i<oldbgsSize; i++ )
+							{
+								backgroundName += " X ";
+								backgroundName += newbgs.get(i);
+							}
+						}
+					}					
 				}
+
 				if (ct.getObservationTargetByName(backgroundName) == null) { // create if not exists
 					ct.makePanel(invName, backgroundName, userName);
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, 
