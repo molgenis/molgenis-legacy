@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package plugins.hl7parser;
+package plugins.hl7parser.StageLRA;
 
 
 import javax.xml.xpath.XPath;
@@ -14,7 +14,7 @@ import org.w3c.dom.Node;
  *
  * @author roankanninga
  */
-public class HL7Observation {
+public class HL7ObservationLRA {
 
      private Node measurement;
      private XPath xpath;
@@ -26,7 +26,7 @@ public class HL7Observation {
      private static final String OBSERVATION_DATATYPE = "urn:hl7-org:v3:value/@*[local-name()='type']";
 
 
-    public HL7Observation (Node measurement, XPath xpath) throws Exception{
+    public HL7ObservationLRA (Node measurement, XPath xpath) throws Exception{
         this.measurement = measurement;
         this.xpath = xpath;
         readMeasurementName();

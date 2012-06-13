@@ -7,6 +7,9 @@ package plugins.hl7parser;
 
 import java.util.ArrayList;
 
+import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
+import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
+
 /**
  *
  * @author roankanninga
@@ -14,6 +17,6 @@ import java.util.ArrayList;
 interface HL7Data {
 
     //
-    ArrayList<HL7Organizer> getHL7Organizer();
-
+    ArrayList<HL7OrganizerLRA> getHL7OrganizerLRA();
+    ArrayList<HL7OrganizerDCM> getHL7OrganizerDCM();
 }
