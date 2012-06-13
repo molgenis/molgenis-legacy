@@ -28,7 +28,7 @@ public interface ${JavaName(entity)} extends <#if entity.hasImplements()><#list 
 <#-- disables many-to-many relationships (makes it compatible with no-JPA database)   -->
 	<#if !entity.description?contains("Link table for many-to-many relationship") >
 @javax.persistence.Entity
-//@org.hibernate.search.annotations.Indexed
+@org.hibernate.search.annotations.Indexed
 @javax.persistence.Table(name = "${SqlName(entity)}"<#list entity.getUniqueKeysWithoutPk() as uniqueKeys ><@compress single_line=true>
 	<#if uniqueKeys_index = 0 >, uniqueConstraints={
 	@javax.persistence.UniqueConstraint( columnNames={<#else>), @javax.persistence.UniqueConstraint( columnNames={</#if>
@@ -170,8 +170,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 			<#if key_found == 1>
 				<#break>
 			</#if>
-			<#if index.name == field.name>
-//	@org.hibernate.search.annotations.Field(index=org.hibernate.search.annotations.Index.TOKENIZED, store=org.hibernate.search.annotations.Store.NO)
+			<#if index.name == field.name && field.type != "mref" && field.type != "xref">
+	@org.hibernate.search.annotations.Field(index=org.hibernate.search.annotations.Index.TOKENIZED, store=org.hibernate.search.annotations.Store.NO)
 				<#assign key_found = 1>
 			</#if>
 		</#foreach>
@@ -180,8 +180,8 @@ public class ${JavaName(entity)} extends <#if entity.hasAncestor()>${entity.getA
 				<#break>
 			</#if>
 			<#foreach unique_field in unique.fields>
-				<#if unique_field.name == field.name>
-//	@org.hibernate.search.annotations.Field(index=org.hibernate.search.annotations.Index.TOKENIZED, store=org.hibernate.search.annotations.Store.NO)
+				<#if unique_field.name == field.name && field.type != "mref" && field.type != "xref">
+	@org.hibernate.search.annotations.Field(index=org.hibernate.search.annotations.Index.TOKENIZED, store=org.hibernate.search.annotations.Store.NO)
 					<#assign key_found = 1>
 				</#if>
 			</#foreach>
