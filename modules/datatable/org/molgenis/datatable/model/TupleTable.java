@@ -3,6 +3,7 @@ package org.molgenis.datatable.model;
 import java.util.Iterator;
 import java.util.List;
 
+import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
@@ -48,4 +49,6 @@ public interface TupleTable extends Iterable<Tuple>
 	
 	/** If a tupletable can use rules to filter, can be placed in different Interface */
 	public void setQueryRules(List<QueryRule> rules);
+
+	public void setDatabase(Database db);
 }

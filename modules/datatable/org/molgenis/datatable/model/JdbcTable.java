@@ -22,15 +22,14 @@ public class JdbcTable implements TupleTable
 	private List<Field> columns;
 	private final String query;
 	private List<QueryRule> rules;
-	private final Database db;
+	private Database db;
 	private final String countQuery;	
 	private boolean loaded = false;
 	
 
-	public JdbcTable(Database db, String query, List<QueryRule> rules) throws TableException
+	public JdbcTable(String query, List<QueryRule> rules)
 	{
 		super();
-		this.db = db;
 		this.query = query;
 		this.setQueryRules(rules);		
 
@@ -38,9 +37,9 @@ public class JdbcTable implements TupleTable
 		this.countQuery = StringUtils.replace(query, fromExpression, " COUNT(*) ");
 	}
 
-	public JdbcTable(Database db, String query) throws TableException
+	public JdbcTable(String query) throws TableException
 	{
-		this(db, query, Collections.<QueryRule> emptyList());
+		this(query, Collections.<QueryRule> emptyList());
 	}
 	
 	private void load() throws TableException
@@ -163,5 +162,11 @@ public class JdbcTable implements TupleTable
 	public List<QueryRule> getRules()
 	{
 		return rules;
+	}
+
+	@Override
+	public void setDatabase(Database db)
+	{
+		this.db = db;
 	}
 }

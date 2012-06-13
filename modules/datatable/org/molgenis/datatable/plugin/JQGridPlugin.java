@@ -48,11 +48,12 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	private Container container = new Container();
 	private JQGridView gridView;
 	
-	private TupleTable tupleTable;
+	private final TupleTable tupleTable;
 	
-	public JQGridPlugin(String name, ScreenController<?> parent)
+	public JQGridPlugin(String name, ScreenController<?> parent, TupleTable tupleTable)
 	{
 		super(name, parent);
+		this.tupleTable = tupleTable;
 	}
 	
 	@Override
@@ -61,7 +62,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		try
 		{
 			//strange way to retrieve columns!
-			tupleTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country", Collections.<QueryRule>emptyList());
+			//tupleTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country", Collections.<QueryRule>emptyList());
+			tupleTable.setDatabase(db);
 			gridView = new JQGridView("myGrid", tupleTable.getColumns());
 			tupleTable.close();
 		}
@@ -119,16 +121,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	 *  <li>Select and render the data.</li>
 	 * </ul>
 	 */
-	
-	
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
-
-	
-//	@Override
-//	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
-//			DatabaseException, IOException
-//	{
 		try
 		{
 			final ExportRange exportSelection = 
@@ -142,6 +136,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			
 			//add filter rules
 			final List<QueryRule> rules = addFilterRules(request);
+			tupleTable.setQueryRules(rules);
 			
 			int rowCount = -1;
 			rowCount = tupleTable.getRowCount();
