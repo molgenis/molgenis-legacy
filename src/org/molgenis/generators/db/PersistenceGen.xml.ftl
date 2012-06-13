@@ -17,7 +17,7 @@
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
           <property name="javax.persistence.validation.mode" value="none"/>    
           <property name="hibernate.dialect" value="org.hibernate.dialect.${options.hibernateDialect}"/>
-          <property name="hibernate.show_sql" value="true"/>
+          <property name="hibernate.show_sql" value="false"/>
           <property name="hibernate.format_sql" value="false"/>
           <property name="hibernate.query.substitutions" value="true=1, false=0"/>
           <property name="hibernate.jdbc.batch_size" value="50"/>
