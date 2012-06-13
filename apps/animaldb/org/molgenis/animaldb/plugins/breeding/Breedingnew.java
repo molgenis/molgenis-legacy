@@ -2086,7 +2086,7 @@ private void createDefCageLabels(Database db) throws LabelGeneratorException, Da
 			elementLabelList.add("Line:");
 			elementList.add(line);
 			// Background + GeneModification + GeneState
-			elementLabelList.add("Backround:");
+			elementLabelList.add("Background:");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "Background"));
 			
 			//FIXME (can only show one gene modification....
