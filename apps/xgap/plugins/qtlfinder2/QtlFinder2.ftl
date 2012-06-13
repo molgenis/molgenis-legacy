@@ -235,7 +235,7 @@
 									${qtl.valuesForMarkers[m_index]}
 							</td>
 							<td>
-									<#if qtl.markerAnnotations?keys?seq_contains(m)><#if qtl.markerAnnotations[qtl.peakMarker].cm??>${qtl.markerAnnotations[qtl.peakMarker].cm}</#if></#if>
+									<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].cm?c}</#if>
 							</td>
 							<td>
 									<#if qtl.markerAnnotations?keys?seq_contains(m)>${qtl.markerAnnotations[m].bpstart?c}</#if>
