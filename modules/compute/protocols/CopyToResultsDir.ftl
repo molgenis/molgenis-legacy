@@ -148,7 +148,7 @@ cp ${qcdir}/${project}_QCReport.pdf ${projectResultsDir}
 echo "http://www.blaat.nl" > ${projectResultsDir}/README.txt
 
 # save latex README template in file
-echo "<#include "CopyFqToRawdataDirREADMEtemplate.tex"/>" > ${projectResultsDir}/README.txt
+echo "<#include "CopyToResultsDirREADMEtemplate.tex"/>" > ${projectResultsDir}/README.txt
 
 pdflatex -output-directory=${projectResultsDir} ${projectResultsDir}/README.txt
 
