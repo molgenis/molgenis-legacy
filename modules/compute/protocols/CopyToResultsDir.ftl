@@ -142,18 +142,11 @@ cp ${sampleconcordancefile} ${projectResultsDir}/qc
 cp ${qcdir}/${project}_QCReport.pdf ${projectResultsDir}
 
 
-###########################################
-##################TO DO####################
-# Create README.txt containing link to documentation of zipfile on GCC wiki page
-echo "http://www.blaat.nl" > ${projectResultsDir}/README.txt
-
 # save latex README template in file
 echo "<#include "CopyToResultsDirREADMEtemplate.tex"/>" > ${projectResultsDir}/README.txt
 
 pdflatex -output-directory=${projectResultsDir} ${projectResultsDir}/README.txt
 
-###########################################
-###########################################
 
 # Create zip file for all "small text" files
 
