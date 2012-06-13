@@ -854,10 +854,11 @@ public class Breedingnew extends PluginModel<Entity>
 					this.action = "init";
 					this.entity = "Litters";
 					throw new Exception("Cannot make labels for an unweaned litter");
-				} else if (ct.getMostRecentValueAsString(this.litter, "GenotypeDate") == null) {
-					makeTempCageLabels(db);
+				// disable temporary cage label for now, because it is not part of the flow anymore
+				//} else if (ct.getMostRecentValueAsString(this.litter, "GenotypeDate") == null) {
+				//	makeTempCageLabels(db);
 				} else {
-					makeDefCageLabels(db);
+					createDefCageLabels(db);
 				}
 			}
 			
@@ -1404,13 +1405,18 @@ public class Breedingnew extends PluginModel<Entity>
 		String motherAnimalType = ct.getMostRecentValueAsString(motherName, "AnimalType");
 		String color = ct.getMostRecentValueAsString(motherName, "Color");
 		String motherBackgroundName = ct.getMostRecentValueAsXrefName(motherName, "Background");
-		String geneName = ct.getMostRecentValueAsString(motherName, "GeneModification");
-		String geneState = ct.getMostRecentValueAsString(motherName, "GeneState");
+		//BIG FIXME: This only works in case of one genemod + geneState, when multiple, only the most recent is used
+		// we need something like: ct.getObservedValuesByTargetAndFeature(motherName, "GeneModification", "", investigationToBeAddedToName)
+
+		String motherGeneName = ct.getMostRecentValueAsString(motherName, "GeneModification");
+		String motherGeneState = ct.getMostRecentValueAsString(motherName, "GeneState");
 		// Find father and his background
 		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
 		String fatherBackgroundName = ct.getMostRecentValueAsXrefName(fatherName, "Background");
 		String fatherAnimalType = ct.getMostRecentValueAsString(fatherName, "AnimalType");
-		// Deduce animal type
+		String fatherGeneName = ct.getMostRecentValueAsString(fatherName, "GeneModification");
+		String fatherGeneState = ct.getMostRecentValueAsString(fatherName, "GeneState");
+				// Deduce animal type
 		String animalType = motherAnimalType;
 		// If one of the parents is GMO, animal is GMO
 		if (motherAnimalType.equals("B. Transgeen dier") || fatherAnimalType.equals("B. Transgeen dier")) {
@@ -1526,6 +1532,7 @@ public class Breedingnew extends PluginModel<Entity>
 				if (motherBackgroundName.equals(fatherBackgroundName)) {
 					backgroundName = fatherBackgroundName;
 				} else {
+					//FIXME this will cause new backround to be addes starting from a mixed background every generation...
 					backgroundName = fatherBackgroundName + " X " + motherBackgroundName;
 				}
 				if (ct.getObservationTargetByName(backgroundName) == null) { // create if not exists
@@ -1540,14 +1547,14 @@ public class Breedingnew extends PluginModel<Entity>
 			}
 			// Set genotype
 			// TODO: Set based on mother's X father's and ONLY if you can know the outcome
-			if (geneName != null && !geneName.equals("") && geneState != null && !geneState.equals("")) {
+			if (motherGeneName != null && !motherGeneName.equals("") && motherGeneState != null && !motherGeneState.equals("")) {
 				String paName = ct.makeProtocolApplication(invName, "SetGenotype");
 				// Set gene mod name based on mother's (can be changed during genotyping)
 				valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-						null, "GeneModification", animalName, geneName, null));
-				// Set gene state based on mother's (can be changed during genotyping)
+						null, "GeneModification", animalName, motherGeneName, null));
+				// Set gene state always on unknown, based on mother's (can be changed during genotyping)
 				valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-						null, "GeneState", animalName, geneState, null));
+						null, "GeneState", animalName, "unknown", null));
 			}
 			
 			animalNumber++;
@@ -2037,7 +2044,7 @@ public class Breedingnew extends PluginModel<Entity>
 		return genotypeTable.render();
 	}
 	
-private void makeDefCageLabels(Database db) throws LabelGeneratorException, DatabaseException, ParseException {
+private void createDefCageLabels(Database db) throws LabelGeneratorException, DatabaseException, ParseException {
 		
 		// PDF file stuff
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -2050,9 +2057,9 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 		String parentgroupName = ct.getMostRecentValueAsXrefName(litter, "Parentgroup");
 		String line = this.getLineInfo(parentgroupName);
 		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
-		String motherInfo = this.getGenoInfo(motherName, db);
+		//String motherInfo = this.getGenoInfo(motherName, db);
 		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
-		String fatherInfo = this.getGenoInfo(fatherName, db);
+		//String fatherInfo = this.getGenoInfo(fatherName, db);
 		
 		List<String> elementLabelList;	
 		List<String> elementList;
@@ -2065,6 +2072,13 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 			// Name / custom label
 			elementLabelList.add("Name:");
 			elementList.add(animalName);
+			//Species
+			elementLabelList.add("Species:");
+			elementList.add(ct.getMostRecentValueAsXrefName(animalName, "Species"));
+			//Sex
+			String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
+			elementLabelList.add("Sex:");
+			elementList.add(sex);
 			// Earmark
 			elementLabelList.add("Earmark:");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "Earmark"));
@@ -2072,31 +2086,40 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 			elementLabelList.add("Line:");
 			elementList.add(line);
 			// Background + GeneModification + GeneState
+			elementLabelList.add("Backround:");
+			elementList.add(ct.getMostRecentValueAsString(animalName, "Background"));
+			
+			//FIXME (can only show one gene modification....
 			elementLabelList.add("Genotype:");
-			elementList.add(this.getGenoInfo(animalName, db));
+			String genoTypeString = ct.getMostRecentValueAsString(animalName, "GeneModification") 
+								+ ": " 
+								+ ct.getMostRecentValueAsString(animalName, "GeneState");
+			elementList.add(genoTypeString);
 			// Color + Sex
-			elementLabelList.add("Color and Sex:");
-			String color = ct.getMostRecentValueAsString(animalName, "Color");
-			if (color == null || color.equals("null") || color.equals("")) {
-				color = "unknown";
-			}
-			String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
-			elementList.add(color + "\t\t" + sex);
+			//elementLabelList.add("Color and Sex:");
+			//String color = ct.getMostRecentValueAsString(animalName, "Color");
+			//if (color == null || color.equals("null") || color.equals("")) {
+			//	color = "unknown";
+			//}
+			//String sex = ct.getMostRecentValueAsXrefName(animalName, "Sex");
+			//elementList.add(color + "\t\t" + sex);
 			//Birthdate
 			elementLabelList.add("Birthdate:");
 			elementList.add(ct.getMostRecentValueAsString(animalName, "DateOfBirth"));
 			// Geno mother
-			elementLabelList.add("Genotype mother:");
-			elementList.add(motherInfo);
-			// Geno father
-			elementLabelList.add("Genotype father:");
-			elementList.add(fatherInfo);
+			elementLabelList.add("Father:\nMother:");
+			elementList.add(fatherName + "\n" + motherName);
 			// Add DEC nr, if present, or empty if not
+			elementLabelList.add("Researcher: ");
+			elementList.add(ct.getMostRecentValueAsString(animalName, "ResponsibleResearcher"));
+			
 			elementLabelList.add("DEC:");
 			String decNr = ct.getMostRecentValueAsString(animalName, "DecNr");
 			String expNr = ct.getMostRecentValueAsString(animalName, "ExperimentNr");
 			String decInfo = (decNr != null ? decNr : "") + " " + (expNr != null ? expNr : "");
 			elementList.add(decInfo);
+			elementLabelList.add("Remarks");
+			elementList.add("\n\n\n\n\n");
 			// Not needed at this time, maybe later:
 			// Birthdate
 			//elementList.add("Birthdate: " + ct.getMostRecentValueAsString(animalId, ct.getMeasurementId("DateOfBirth")));
@@ -2113,10 +2136,11 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 		}
 		
 		labelgenerator.finishDocument();
-		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download definitive cage labels as pdf</a>");
+		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download cage labels as pdf</a>");
 	}
 
-	private void makeTempCageLabels(Database db) throws Exception {
+	    /*
+		private void makeTempCageLabels(Database db) throws Exception {
 		
 		// PDF file stuff
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
@@ -2247,7 +2271,7 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 		
 		labelgenerator.finishDocument();
 		this.setLabelDownloadLink("<a href=\"tmpfile/" + filename + "\" target=\"blank\">Download temporary wean labels as pdf</a>");
-	}
+	} */
 	
 	public String getLabelDownloadLink() {
 		return labelDownloadLink;
