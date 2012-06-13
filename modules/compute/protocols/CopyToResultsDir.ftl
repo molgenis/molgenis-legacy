@@ -158,6 +158,8 @@ zip -g ${projectResultsDir}/${project}.zip ${project}.csv
 zip -g ${projectResultsDir}/${project}.zip README.pdf
 zip -g ${projectResultsDir}/${project}.zip ${project}_QCReport.pdf
 
-
 # Create md5sum for zip file
-md5sum ${projectResultsDir}/${project}.zip ${projectResultsDir}/${project}.zip.md5
+
+cd ${projectResultsDir}
+
+md5sum ${project}.zip > ${projectResultsDir}/${project}.zip.md5
