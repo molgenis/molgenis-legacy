@@ -292,7 +292,12 @@ public class CommonService
 	public ObservationTarget getObservationTargetByName(String targetName)
 			throws DatabaseException, ParseException
 	{
-		return db.query(ObservationTarget.class).eq(ObservationTarget.NAME, targetName).find().get(0);
+		if(db.query(ObservationTarget.class).eq(ObservationTarget.NAME, targetName).find().isEmpty())
+		{
+			return null;
+		}else {
+			return db.query(ObservationTarget.class).eq(ObservationTarget.NAME, targetName).find().get(0);
+		}
 	}
 	
 	/**
