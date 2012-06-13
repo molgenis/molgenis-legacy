@@ -173,10 +173,13 @@ public class ListPluginMatrix extends EasyPluginController
 					targetMatrixViewer.getMatrix().setRowOffset(oldOffset);
 					targetMatrixViewer.getMatrix().setRowLimit(oldLimit);
 					
-					ActionInput editButton = new ActionInput(EDIT_BUTTON_ACTION, "", "Edit");
-					editButton.setId(EDIT_BUTTON_ACTION);
-					div.add(editButton);
-					
+					// Temporarily make this function admin only, because it is to dangerous for normal users in its current form
+					String userName = db.getLogin().getUserName();
+					if (userName.equals("admin")) {
+						ActionInput editButton = new ActionInput(EDIT_BUTTON_ACTION, "", "Edit");
+						editButton.setId(EDIT_BUTTON_ACTION);
+						div.add(editButton);
+					}					
 				}
 				
 				targetMatrixViewer.setDatabase(db);
