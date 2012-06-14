@@ -21,35 +21,34 @@ public class JdbcTable implements TupleTable
 	private ResultSetTuple rs;
 	private List<Field> columns;
 	private final String query;
-	private final List<QueryRule> rules;
-	private final Database db;
+	private List<QueryRule> rules;
+	private Database db;
 	private final String countQuery;	
 	private boolean loaded = false;
 	
 
-	public JdbcTable(Database db, String query, List<QueryRule> rules) throws TableException
+	public JdbcTable(String query, List<QueryRule> rules)
 	{
 		super();
-		this.db = db;
 		this.query = query;
-		this.rules = rules;		
+		this.setQueryRules(rules);		
 
 		String fromExpression = StringUtils.substringBetween(query, "SELECT", "FROM");
 		this.countQuery = StringUtils.replace(query, fromExpression, " COUNT(*) ");
 	}
 
-	public JdbcTable(Database db, String query) throws TableException
+	public JdbcTable(String query) throws TableException
 	{
-		this(db, query, Collections.<QueryRule> emptyList());
+		this(query, Collections.<QueryRule> emptyList());
 	}
-
+	
 	private void load() throws TableException
 	{
 		if(!loaded) {
 			loaded = true;
 			try
 			{
-				rs = new ResultSetTuple(db.executeQuery(query, rules.toArray(new QueryRule[0])));
+				rs = new ResultSetTuple(db.executeQuery(query, getRules().toArray(new QueryRule[0])));
 				columns = loadColumns();
 			}
 			catch (Exception e)
@@ -102,8 +101,6 @@ public class JdbcTable implements TupleTable
 			{
 				result.add(new SimpleTuple(rs));
 			}
-			close();
-
 			return result;
 		}
 		catch (SQLException e)
@@ -112,6 +109,9 @@ public class JdbcTable implements TupleTable
 		}
 	}
 
+	/**
+	 * Don't forget to call close after done with Iterator
+	 */	
 	@Override
 	public Iterator<Tuple> iterator()
 	{
@@ -141,7 +141,7 @@ public class JdbcTable implements TupleTable
 	public int getRowCount() throws TableException
 	{
 		try {
-			final ResultSet countSet = db.executeQuery(countQuery, rules.toArray(new QueryRule[0]));
+			final ResultSet countSet = db.executeQuery(countQuery, getRules().toArray(new QueryRule[0]));
 			int rowCount = 0;
 			if (countSet.next())
 			{
@@ -153,5 +153,28 @@ public class JdbcTable implements TupleTable
 		} catch (Exception ex) {
 			throw new TableException(ex);
 		}
+	}
+
+	public List<QueryRule> getRules()
+	{
+		return rules;
+	}
+
+	@Override
+	public void setDatabase(Database db)
+	{
+		this.db = db;
+	}
+
+	@Override
+	public List<QueryRule> getFilters()
+	{
+		return rules;
+	}
+
+	@Override
+	public void setQueryRules(List<QueryRule> rules)
+	{
+		this.rules = rules;		
 	}
 }

@@ -1,4 +1,6 @@
 *.svn
 *.orig
 *.java~
-
+/build
+/bin
+/test-output

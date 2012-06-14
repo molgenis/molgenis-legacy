@@ -5,7 +5,6 @@ package org.molgenis.datatable.plugin;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
 import org.molgenis.datatable.controller.Renderers.Renderer;
-import org.molgenis.datatable.model.JdbcTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
@@ -48,11 +46,12 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	private Container container = new Container();
 	private JQGridView gridView;
 	
-	private TupleTable tupleTable;
+	private final TupleTable tupleTable;
 	
-	public JQGridPlugin(String name, ScreenController<?> parent)
+	public JQGridPlugin(String name, ScreenController<?> parent, TupleTable tupleTable)
 	{
 		super(name, parent);
+		this.tupleTable = tupleTable;
 	}
 	
 	@Override
@@ -61,8 +60,10 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		try
 		{
 			//strange way to retrieve columns!
-			tupleTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country", Collections.<QueryRule>emptyList());
+			//tupleTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country", Collections.<QueryRule>emptyList());
+			tupleTable.setDatabase(db);
 			gridView = new JQGridView("myGrid", tupleTable.getColumns());
+			tupleTable.close();
 		}
 		catch (Exception e)
 		{
@@ -118,16 +119,9 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	 *  <li>Select and render the data.</li>
 	 * </ul>
 	 */
-	
-	
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
 
-	
-//	@Override
-//	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
-//			DatabaseException, IOException
-//	{
 		try
 		{
 			final ExportRange exportSelection = 
@@ -141,9 +135,11 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			
 			//add filter rules
 			final List<QueryRule> rules = addFilterRules(request);
+			tupleTable.setQueryRules(rules);
 			
 			int rowCount = -1;
-			rowCount = tupleTable.getRowCount();				
+			rowCount = tupleTable.getRowCount();
+			tupleTable.close();
 			int totalPages = 1;
 			totalPages = (int) Math.ceil(rowCount / limit);
 			int page = Math.min(request.getInt("page"), totalPages);
@@ -153,7 +149,9 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			if(exportSelection != ExportRange.ALL) {
 				rules.addAll(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
 			}
-			addSortRules(sidx, sord, rules);			
+			addSortRules(sidx, sord, rules);		
+			
+			tupleTable.setQueryRules(rules);
 						
 			renderData(((MolgenisRequest)request).getRequest(), ((MolgenisRequest)request).getResponse(), page, totalPages, tupleTable);
 
@@ -183,10 +181,10 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			strViewType = "JQ_GRID";
 		}
 		try {
-			final String viewFactoryClassName = (String)request.getAttribute("viewFactoryClassName");
+			final String viewFactoryClassName = request.getParameter("viewFactoryClassName");
 			final ViewFactory viewFactory = (ViewFactory) Class.forName(viewFactoryClassName).newInstance();
 			final Renderer view = viewFactory.createView(strViewType);
-			view.export(response, (String)request.getAttribute("caption"), this, tupleTable, totalPages, page);
+			view.export(response, request.getParameter("caption"), this, tupleTable, totalPages, page);
 		} catch (Exception e) {
 			throw new TableException(e);
 		}
@@ -217,7 +215,6 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			}
 			result.rows.add(rowMap);
 		}
-		table.close();
 		return result;
 	}
 
