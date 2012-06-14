@@ -1,5 +1,7 @@
 package org.molgenis.datatable.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +14,7 @@ import java.util.List;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
+import org.molgenis.util.CsvStringReader;
 import org.molgenis.util.Tuple;
 
 /**
@@ -29,15 +32,7 @@ public class CsvTable implements TupleTable
 	 * @param csvFile
 	 * @throws Exception
 	 */
-//if there is one underlying stream getRowCount will now work, should be fixed
-//	public CsvTable(InputStream csvStream) throws Exception
-//	{		
-//		csv = new CsvFileReader(csvStream);
-//		inputStream = csvStream;
-//		loadColumns();
-//	}
-
-	public CsvTable(String csvFile) throws Exception
+	public CsvTable(File csvFile) throws Exception
 	{		
 		csv = new CsvFileReader(new FileInputStream(csvFile));
 		countStream = new FileInputStream(csvFile);
@@ -52,16 +47,20 @@ public class CsvTable implements TupleTable
 	 * @param csvString
 	 * @throws Exception
 	 */
-//	public CsvTable(String csvString) throws Exception
-//	{
-//		inputStream = new BufferedInputStream(new FileInputStream(csvString));
-//		csv = new CsvStringReader(inputStream);
-//		
-//		loadColumns();
-//	}
+	public CsvTable(String csvString) throws Exception
+	{		
+		csv = new CsvStringReader(csvString);
+		countStream = new ByteArrayInputStream(csvString.getBytes());
+		
+		loadColumns();
+	}
 	
 	int rowCount = -1;
 	
+	/**
+	 * Count rows (not including header of csv file)
+	 */
+	@Override
 	public int getRowCount() throws TableException {
 		if(rowCount == -1) {
 			try {
@@ -70,7 +69,9 @@ public class CsvTable implements TupleTable
 			    while ((line = lineReader.readLine()) != null) {
 			    	line = line.trim();
 			    }
-			    rowCount = lineReader.getLineNumber();
+			    
+			    //substract 1 because of header
+			    rowCount = lineReader.getLineNumber() - 1;
 			} catch (Exception e) {
 				throw new TableException(e);
 			}

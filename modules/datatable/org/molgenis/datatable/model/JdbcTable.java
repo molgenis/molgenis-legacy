@@ -154,11 +154,6 @@ public class JdbcTable implements TupleTable
 		}
 	}
 
-	public void setQueryRules(List<QueryRule> rules)
-	{
-		this.rules = rules;
-	}
-
 	public List<QueryRule> getRules()
 	{
 		return rules;
@@ -168,5 +163,17 @@ public class JdbcTable implements TupleTable
 	public void setDatabase(Database db)
 	{
 		this.db = db;
+	}
+
+	@Override
+	public List<QueryRule> getFilters()
+	{
+		return rules;
+	}
+
+	@Override
+	public void setQueryRules(List<QueryRule> rules)
+	{
+		this.rules = rules;		
 	}
 }
