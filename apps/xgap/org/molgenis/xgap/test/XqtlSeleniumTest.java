@@ -573,6 +573,7 @@ public class XqtlSeleniumTest
 			{ "returnHome" })
 			public void userRoleMenuVisibility() throws Exception
 			{
+				Thread.sleep(1000); //seems to help the test succeed..
 				//find out if admin can see the correct tabs
 				Assert.assertTrue(selenium.isTextPresent("Home*Browse data*Upload data*Run QTL mapping*Configure analysis*Search / report*Utilities*Admin panel"));
 				clickAndWait("id=Admin_tab_button");
