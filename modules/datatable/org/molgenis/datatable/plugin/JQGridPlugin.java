@@ -161,7 +161,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		}
 		catch (Exception e)
 		{
-			throw new HandleRequestDelegationException();
+			throw new HandleRequestDelegationException(e);
 		}
 		return null;
 	}
