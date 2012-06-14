@@ -6,11 +6,9 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
@@ -129,8 +127,7 @@ public class MolgenisXrefService implements MolgenisService
 			throws JSONException
 	{		
 		// transform in JSON (JavaScript Object Notation)
-		Map<String,String> values = new LinkedHashMap<String,String>();
-		SortedMap<String, String> sorted_map = new TreeMap<String, String>();
+		Map<String, String> values = new TreeMap<String, String>(new sortStringInt());
 		
 		if(nillable) {
 			values.put("&nbsp;", "&nbsp;");
@@ -138,7 +135,7 @@ public class MolgenisXrefService implements MolgenisService
 		
 		for (int i = 0; i < records.size(); i++)
 		{
-			String key   = records.get(i).get(xrefField).toString();
+			String key = records.get(i).get(xrefField).toString();
 			String value = "";
 			for (int j = 0; j < xref_labels.size(); j++)
 			{
@@ -148,23 +145,9 @@ public class MolgenisXrefService implements MolgenisService
 			}
 			values.put(key, value);
 		}
-		
-		//sort after values is completed
-		for (int i=0; i< values.size(); i++) {
-			System.out.println("unsorted map");
-	        
-			for (String key1 : values.keySet()) {
-	            System.out.println("key/value: " + key1 + "/"+values.get(key1));
-	        	
-	        sorted_map.put(key1, values.get(key1));
-			}
-	        Iterator<String> iterator = sorted_map.keySet().iterator();
-	        while (iterator.hasNext()) {
-	        Object key1 = iterator.next();
-	        System.out.println("key : " + key1 + " value :" + sorted_map.get(key1));
-	        }
-		}
-		return new JSONObject(sorted_map).toString();
+
+		//still not sorted due to JSON toString?
+		return new JSONObject(values).toString();
 	}
 
 	public static List<? extends Entity> getRecords(final Database db, final String searchTerm,
@@ -205,4 +188,33 @@ public class MolgenisXrefService implements MolgenisService
 		return (Class<? extends Entity>) Class.forName(entityName);
 	}
 
+}
+
+/**
+ * Needed to sort the string-integer IDs in the result.
+ * Using Integer would be much better, but then you'd need to
+ * put a -1 ID in the map for '&nbsp;' which then fails when saved
+ *
+ */
+class sortStringInt implements Comparator<String>
+{
+	public int compare(String a, String b)
+	{
+		if(a.equals("&nbsp;") || b.equals("&nbsp;"))
+		{
+			return 1; //so it gets on top
+		}
+		if (Integer.parseInt(a) < Integer.parseInt(b))
+		{
+			return 1;
+		}
+		else if (Integer.parseInt(a) == Integer.parseInt(b))
+		{
+			return 0;
+		}
+		else
+		{
+			return -1;
+		}
+	}
 }
