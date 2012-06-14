@@ -4,3 +4,6 @@
 /build
 /bin
 /test-output
+/generated
+/target
+logger.out*
