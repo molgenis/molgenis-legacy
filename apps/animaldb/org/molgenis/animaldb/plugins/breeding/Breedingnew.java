@@ -1408,7 +1408,21 @@ public class Breedingnew extends PluginModel<Entity>
 		String motherBackgroundName = ct.getMostRecentValueAsXrefName(motherName, "Background");
 		//BIG FIXME: This only works in case of one genemod + geneState, when multiple, only the most recent is used
 		// we need something like: ct.getObservedValuesByTargetAndFeature(motherName, "GeneModification", "", investigationToBeAddedToName)
-
+		
+		
+		/* TODO temporarily comment out since this is work in progress.
+		 * 
+		 * List<Integer> investigationIds = ct.getAllUserInvestigationIds(userName);
+		//HUGE FIXME, how to make sure that GeneModification and state belong to each other?, via prot app?? 
+		List<ObservedValue> motherAllGeneMods = ct.getAllObservedValues(ct.getMeasurementId("GeneModification"), investigationIds);
+		List<ObservedValue> motherAllGeneStates = ct.getAllObservedValues(ct.getMeasurementId("GeneState"), investigationIds);
+		
+		int ctr = 0 ;
+		for (ObservedValue blaat : motherAllGeneMods) {
+			logger.info("GENES for MOTHER:  " + blaat.getValue() + " : " +  motherAllGeneStates.get(ctr).getValue() );
+			ctr++;
+		}*/
+		
 		String motherGeneName = ct.getMostRecentValueAsString(motherName, "GeneModification");
 		String motherGeneState = ct.getMostRecentValueAsString(motherName, "GeneState");
 		// Find father and his background
@@ -1584,10 +1598,14 @@ public class Breedingnew extends PluginModel<Entity>
 					}					
 				}
 
-				if (ct.getObservationTargetByName(backgroundName) == null) { // create if not exists
+				if (ct.getObservationTargetByName(backgroundName) == null) { 
+					// create the new mixed background if it does not exist
 					ct.makePanel(invName, backgroundName, userName);
 					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, 
 							"SetTypeOfGroup", "TypeOfGroup", backgroundName, "Background", null));
+					// set the correct species on the newly created background
+					valuesToAddList.add(ct.createObservedValueWithProtocolApplication(invName, weanDate, null, 
+							"SetSpecies", "Species", backgroundName, null, speciesName));
 				}
 			}
 			if (backgroundName != null) {
