@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>mvid</name>
+    <name>arvc</name>
 
     <properties>
         <endorsed.dir>${basedir}/endorsed</endorsed.dir>
@@ -190,7 +190,7 @@
             </resource>
 -->
             <resource>
-                <directory>apps/myo5b/</directory>
+                <directory>apps/arvc/</directory>
                 <includes>
                     <include>**/*.ftl</include>
                 </includes>
@@ -235,7 +235,7 @@
                         <configuration>
                             <sources>
                                 <source>generated/java</source>
-                                <source>apps/myo5b</source>
+                                <source>apps/arvc</source>
                                 <source>modules/auth</source>
                                 <source>modules/datamodel</source>
                                 <source>modules/file</source>
@@ -267,7 +267,7 @@
             	</executions>
 -->
             	<configuration>
-            		<propertiesPath>apps/myo5b/org/molgenis/myo5b/myo5b.properties</propertiesPath>
+            		<propertiesPath>apps/arvc/org/molgenis/arvc/arvc.properties</propertiesPath>
             	</configuration>
             </plugin>
             <plugin>
@@ -317,10 +317,10 @@
 <!--
 					<webResources>
 						<resource>
-							<directory>${project.basedir}/apps/myo5b/</directory>
+							<directory>${project.basedir}/apps/arvc/</directory>
 							<targetPath>WEB-INF/classes</targetPath>
 							<includes>
-								<include>apps/myo5b/**/*.ftl</include>
+								<include>apps/arvc/**/*.ftl</include>
 							</includes>
 						</resource>
 					</webResources>
