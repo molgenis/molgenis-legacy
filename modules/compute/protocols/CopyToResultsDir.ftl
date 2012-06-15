@@ -9,16 +9,8 @@
 #
 
 #MOLGENIS walltime=23:59:00
-#FOREACH project
+#FOREACH project,seqType
 
-<#if seqType == "SR">
-	#inputs "${leftfastqczip}"
-
-<#else>
-	#inputs "${leftfastqczip}"
-	#inputs "${rightfastqczip}"
-
-</#if>
 
 inputs "${alignmentmetrics}"
 inputs "${gcbiasmetrics}"
