@@ -38,6 +38,27 @@ public class TestCsvTable
 		helper(new CsvTable(csv));
 	}
 	
+	@Test
+	public void testLimitOffsetString() throws Exception
+	{
+		//create csv
+		String csv = "firstName\tlastName";
+		csv += "\nlucky\tluke";
+		csv += "\ncalamity\tjane";
+		csv += "\njolly\tjumper";
+		
+		TupleTable table = new CsvTable(csv);
+		
+		table.setLimitOffset(1,1);
+		
+		Assert.assertEquals(table.getRowCount(), 3);
+		
+		Assert.assertEquals(table.getRows().size(), 1);
+		
+		Assert.assertEquals(table.getRows().get(0).getString("firstName"), "calamity");
+		
+	}
+	
 	public void helper(TupleTable table) throws TableException
 	{
 		//verfiy

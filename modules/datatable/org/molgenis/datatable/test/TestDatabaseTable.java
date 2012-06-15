@@ -87,6 +87,20 @@ public class TestDatabaseTable
 	}
 	
 	@Test
+	public void testLimitOffset() throws TableException
+	{
+		TupleTable table = new DatabaseTable(db, Individual.class);
+		
+		table.setLimitOffset(3, 2);
+		
+		Assert.assertEquals(table.getRowCount(), 51);
+
+		Assert.assertEquals(table.getRows().size(), 3);
+		
+		Assert.assertEquals(table.getRows().get(0).getString("name"), "individual3");
+	}
+	
+	@Test
 	public void testLimit() throws TableException
 	{
 		TupleTable table = new DatabaseTable(db, Individual.class);

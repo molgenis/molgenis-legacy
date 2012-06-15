@@ -12,9 +12,14 @@ public class MemoryTableFactory
 {
 	public static TupleTable create()
 	{
+		return create(5);
+	}
+	
+	public static TupleTable create(int size)
+	{
 		List<Tuple> rows = new ArrayList<Tuple>();
 		
-		for(int i = 1; i <= 5; i++)
+		for(int i = 1; i <= size; i++)
 		{
 			Tuple t = new SimpleTuple();
 			t.set("firstName", "first"+i);
