@@ -397,6 +397,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 				@SuppressWarnings("unchecked")
 				final ArrayList<StringMap<String>> jsonRules = (ArrayList<StringMap<String>>) filters.get("rules");
 				int ruleIdx = 0;
+				
+				BooleanExpression expr = null;
 				for (StringMap<String> rule : jsonRules)
 				{
 					final String field = rule.get("field");
@@ -407,15 +409,21 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					final SimpleExpression<? extends Object> selectExpr = selectMap.get(field);
 					final Field column = queryTable.getColumn(field);
 					final FieldTypeEnum type = column.getType().getEnumType();
-					final BooleanExpression expr = getExpression(op, value, selectExpr, column, type);
-					query.where(expr);
-	
-					final boolean notLast = jsonRules.size() - 1 != ruleIdx++;
-					if (groupOp.equals("OR") && notLast)
+					BooleanExpression rhs = getExpression(op, value, selectExpr, column, type);
+					if (expr != null)
 					{
-						// rules.add(new QueryRule(Operator.OR));
+						if(groupOp.equals("AND")) {
+							expr = expr.and(rhs);
+						} else if(groupOp.equals("OR")) {
+							expr = expr.or(rhs);
+						} else {
+							throw new IllegalArgumentException(String.format("Unkown groupOp: %s", groupOp));
+						}
+					} else {
+						expr = rhs;
 					}
 				}
+				query.where(expr);
 			}
 		} catch (Exception ex) {
 			throw new TableException(ex);
