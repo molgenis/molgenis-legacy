@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
@@ -21,26 +20,28 @@ public class QueryTable implements TupleTable
 {
 	private final SQLQueryImpl query;
 	private final LinkedHashMap<String, SimpleExpression<? extends Object>> select;
-	private final LinkedHashMap<String, Field> columns;
+	private final LinkedHashMap<String, Field> columnsByName;
+	private final List<Field> columns;
 	
 	public QueryTable(SQLQueryImpl query, LinkedHashMap<String, SimpleExpression<? extends Object>> select, List<Field> columns) {
 		this.query = query;
 		this.select = select;
 		
-		this.columns = new LinkedHashMap<String, Field>();
+		this.columns = columns;
+		this.columnsByName = new LinkedHashMap<String, Field>();
 		for(Field col : columns) {
-			this.columns.put(col.getName(), col);
+			this.columnsByName.put(col.getName(), col);
 		}
 	}
 	
 	@Override
 	public List<Field> getColumns() throws TableException
 	{
-		return new ArrayList<Field>(columns.values());
+		return columns;
 	}
 	
 	public Field getColumn(String name) {
-		return columns.get(name);
+		return columnsByName.get(name);
 	}
 	
 	@Override
@@ -52,14 +53,14 @@ public class QueryTable implements TupleTable
 		int valSize = select.values().size();
 		Expression<?>[] selectArray = new Expression<?>[valSize];
 		int idx = 0;
-		for (Iterator iterator = select.values().iterator(); iterator.hasNext();)
+		for (Iterator<SimpleExpression<? extends Object>> iterator = select.values().iterator(); iterator.hasNext();)
 		{			
-			selectArray[idx] = (Expression<?>) iterator.next();
+			selectArray[idx] = iterator.next();
 			++idx;
 		}
 		
 		final List<Object[]> rows = query.list(selectArray);
-		final ArrayList<Field> cols = new ArrayList<Field>(columns.values());
+		final ArrayList<Field> cols = new ArrayList<Field>(columns);
 		for(final Object[] obj : rows) {
 			
 			final SimpleTuple row = new SimpleTuple();

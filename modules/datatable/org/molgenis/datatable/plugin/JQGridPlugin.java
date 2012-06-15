@@ -382,22 +382,20 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void addQueryRulesFromJQGridRequest(Tuple request, QueryTable queryTable) throws TableException
+	private static void addQueryRulesFromJQGridRequest(final Tuple request, final QueryTable queryTable) throws TableException
 	{
 		try {
 			final SQLQuery query = queryTable.getQuery();
 			final LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = queryTable.getSelect();
 	
 			final String filtersParameter = request.getString("filters");
-			// final List<QueryRule> rules = new ArrayList<QueryRule>();
 			if (StringUtils.isNotEmpty(filtersParameter))
 			{
 				final StringMap filters = (StringMap) new Gson().fromJson(filtersParameter, Object.class);
 				final String groupOp = (String) filters.get("groupOp");
-				@SuppressWarnings("unchecked")
-				final ArrayList<StringMap<String>> jsonRules = (ArrayList<StringMap<String>>) filters.get("rules");
-				int ruleIdx = 0;
 				
+				final ArrayList<StringMap<String>> jsonRules = (ArrayList<StringMap<String>>) filters.get("rules");
+
 				BooleanExpression expr = null;
 				for (StringMap<String> rule : jsonRules)
 				{
