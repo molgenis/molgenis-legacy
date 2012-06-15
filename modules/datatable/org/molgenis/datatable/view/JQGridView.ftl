@@ -76,6 +76,7 @@ var JQGridView = {
             postData : 
             	{
             	__show: 'jqGrid',
+            	__target: 'jqGridView',
             	viewType : 'JQ_GRID',
             	colNames : $.toJSON(this.colNames), 
         		colModel: $.toJSON(this.colModel), 
