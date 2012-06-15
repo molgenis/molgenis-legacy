@@ -9,6 +9,7 @@
 #
 
 #MOLGENIS walltime=23:59:00
+#FOREACH project
 
 <#if seqType == "SR">
 	#inputs "${leftfastqczip}"

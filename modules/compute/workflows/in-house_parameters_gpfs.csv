@@ -30,7 +30,7 @@ baitintervals,${intervallistdir}/${capturingKit}_baits_${genome}_${indexfileIDte
 targetintervals,${intervallistdir}/${capturingKit}_exons_${genome}_${indexfileIDtest}.interval_list,,,
 baitsbed,${intervallistdir}/${capturingKit}_baits_${genome}_${indexfileIDtest}.bed,,,
 tempdir,/target/gpfs2/gcc/tmp/processing,,,
-tempprojectdir,/target/gpfs2/gcc/tmp/processing,,,
+tempprojectdir,/target/gpfs2/gcc/tmp,,,
 genome,hg19,,,
 indexfileID,human_g1k_v37,,,
 indexfileIDtest,human_g1k_v37,Append .chr1 if you want to test only on chr 1,,
