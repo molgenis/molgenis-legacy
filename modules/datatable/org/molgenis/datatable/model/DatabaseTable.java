@@ -7,6 +7,7 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
@@ -15,7 +16,7 @@ import org.molgenis.util.Tuple;
 /**
  * Wrap a database table (entity) into a TupleTable
  */
-public class DatabaseTable implements TupleTable
+public class DatabaseTable implements FilterableTupleTable
 {
 	// database connection
 	private Database db;
@@ -24,10 +25,10 @@ public class DatabaseTable implements TupleTable
 	private Class<? extends Entity> entityClass;
 
 	// copy of the fields from meta database
-	private List<Field> fields;
-	
+	private List<Field> columns;
+
 	// current query rules (includes all: limit, offset, paging, filters)
-	private List<QueryRule> rules = new ArrayList<QueryRule>();
+	private List<QueryRule> filters = new ArrayList<QueryRule>();
 
 	/**
 	 * Constructor
@@ -49,11 +50,11 @@ public class DatabaseTable implements TupleTable
 	@Override
 	public List<Field> getColumns() throws TableException
 	{
-		if (fields != null) return fields;
+		if (columns != null) return columns;
 		try
 		{
-			fields = db.getMetaData().getEntity(entityClass.getSimpleName()).getAllFields();
-			return fields;
+			columns = db.getMetaData().getEntity(entityClass.getSimpleName()).getAllFields();
+			return columns;
 		}
 		catch (Exception e)
 		{
@@ -67,9 +68,10 @@ public class DatabaseTable implements TupleTable
 		try
 		{
 			List<? extends Entity> entities;
-			if(rules.size() > 0) entities = db.find(entityClass, rules.toArray(new QueryRule[rules.size()]));
-			else entities = db.find(entityClass);
-			
+			if (filters.size() > 0) entities = db.find(entityClass, filters.toArray(new QueryRule[filters.size()]));
+			else
+				entities = db.find(entityClass);
+
 			List<Tuple> result = new ArrayList<Tuple>();
 			for (Entity e : entities)
 			{
@@ -94,7 +96,7 @@ public class DatabaseTable implements TupleTable
 	@Override
 	public Iterator<Tuple> iterator()
 	{
-		//should be optimized
+		// should be optimized
 		return this.getRows().iterator();
 	}
 
@@ -106,11 +108,12 @@ public class DatabaseTable implements TupleTable
 	@Override
 	public int getRowCount() throws TableException
 	{
-		//should get rid of limit clause!
+		// should get rid of limit clause!
 		try
 		{
-			if(rules.size() > 0) return db.count(entityClass, rules.toArray(new QueryRule[rules.size()]));
-			else return db.count(entityClass);
+			if (filters.size() > 0) return db.count(entityClass, filters.toArray(new QueryRule[filters.size()]));
+			else
+				return db.count(entityClass);
 		}
 		catch (DatabaseException e)
 		{
@@ -120,7 +123,7 @@ public class DatabaseTable implements TupleTable
 
 	public List<QueryRule> getFilters()
 	{
-		return rules;
+		return filters;
 	}
 
 	public Database getDb()
@@ -131,6 +134,31 @@ public class DatabaseTable implements TupleTable
 	public void setDb(Database db)
 	{
 		this.db = db;
+	}
+
+	@Override
+	public void setFilters(List<QueryRule> filters)
+	{
+		assert (filters != null);
+		this.filters = filters;
+	}
+
+	@Override
+	public void setLimitOffset(int limit, int offset)
+	{
+		// TODO remove previous limit/offset
+		List<QueryRule> newFilters = new ArrayList<QueryRule>();
+		for (QueryRule r : this.filters)
+		{
+			if (!Operator.LIMIT.equals(r.getOperator()) && !Operator.OFFSET.equals(r.getOperator()))
+			{
+				newFilters.add(r);
+			}
+		}
+		this.filters = newFilters;
+
+		this.filters.add(new QueryRule(Operator.LIMIT, limit));
+		this.filters.add(new QueryRule(Operator.OFFSET, offset));
 	}
 
 }
