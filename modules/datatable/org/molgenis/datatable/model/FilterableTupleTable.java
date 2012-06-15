@@ -12,64 +12,14 @@ import org.molgenis.model.elements.Form.SortOrder;
  * Should replace org.molgenis.framework.db.paging.DatabasePager (but without
  * all the additionall fuss). We should also look if we can reuse parts of the
  * org.molgenis.db.Query for this (i.e. factor out common parts).
+ * 
+ * TODO: make implement the Query interface for easy manipulation
  */
 public interface FilterableTupleTable extends TupleTable
 {
-	/**
-	 * Set the row filters
-	 */
-	public void setFilters(List<QueryRule> rules);
-
-	/**
-	 * Get the column filters
-	 */
+	/** Get and manipulate the query rules for this TupleTable (if supported) */
 	public List<QueryRule> getFilters();
-
-	/**
-	 * Limit the visible columns by name
-	 */
-	public void setVisibleColumns(List<String> fieldNames);
 	
-	/**
-	 * Get visible columns
-	 */
-	public List<Field> getVisibleColumns();
-
-	/**
-	 * Get count of all records in the TupleTable
-	 */
-	public Integer getCount();
-
-	/**
-	 * This we can inherit from Query interface?
-	 */
-	public int getLimit();
-
-	/**
-	 * This we can inherit from Query interface?
-	 */
-	public void setLimit(int limit);
-
-	/**
-	 * This we can inherit from Query interface?
-	 */
-	public int getOffset();
-
-	/**
-	 * This we can inherit from Query interface?
-	 */
-	public void setOffset(int offset);
-
-	/**
-	 * This we can inherit from Query interface?
-	 * 
-	 * nb: multiple columns are not allowed for now.
-	 */
-	public Field getSortColumn();
-
-	/**
-	 * This we can inherit from Query interface?
-	 */
-	public SortOrder getSortOrder();
-
+	/** Set filters, includes validation at set time. */
+	public void setFilters(List<QueryRule> filters);
 }
