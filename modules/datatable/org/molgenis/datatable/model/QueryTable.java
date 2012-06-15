@@ -49,7 +49,6 @@ public class QueryTable implements TupleTable
 	{
 		final List<Tuple> tuples = new ArrayList<Tuple>();
 		
-		
 		int valSize = select.values().size();
 		Expression<?>[] selectArray = new Expression<?>[valSize];
 		int idx = 0;
@@ -98,8 +97,7 @@ public class QueryTable implements TupleTable
 
 	@Override
 	public void setQueryRules(List<QueryRule> rules)
-	{
-		
+	{		
 	}
 
 	@Override
@@ -108,7 +106,6 @@ public class QueryTable implements TupleTable
 		return Collections.emptyList();
 	}
 
-
 	public SQLQuery getQuery()
 	{
 		return query;
@@ -116,6 +113,5 @@ public class QueryTable implements TupleTable
 	
 	public LinkedHashMap<String, SimpleExpression<? extends Object>> getSelect() {
 		return select;
-	}
-	
+	}	
 }
