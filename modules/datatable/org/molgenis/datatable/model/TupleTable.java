@@ -33,6 +33,12 @@ public interface TupleTable extends Iterable<Tuple>
 {
 	/** Get meta data describing the columns */
 	public List<Field> getColumns() throws TableException;
+	
+	/** Get meta data describing currently visible columns */
+	//todo public List<Field> getVisibleColumns() throws TableException;
+	
+	/** Change visible columns */
+	//todo public void setVisibleColumns(List<String> columnNames) throws TableException;
 
 	/** Get the data */
 	public List<Tuple> getRows() throws TableException;
@@ -47,5 +53,8 @@ public interface TupleTable extends Iterable<Tuple>
 	public void close() throws TableException;
 
 	/** Get and manipulate the query rules for this TupleTable (if supported) */
-	public List<QueryRule> getFilters();
+	//moved to FilterableTupleTable public List<QueryRule> getFilters();
+	
+	/** Change the visible rows */
+	public void setLimitOffset(int limit, int offset);
 }
