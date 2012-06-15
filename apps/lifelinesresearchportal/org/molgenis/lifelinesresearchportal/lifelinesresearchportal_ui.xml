@@ -12,6 +12,10 @@
 
 		<plugin name="jqGridView2"
 			type="org.molgenis.datatable.plugin.JQGridPlugin2" />
+			
+		
+		<plugin name="jqGridViewMemory"
+			type="org.molgenis.datatable.plugin.JQGridPluginMemory" />	
 
 		<!-- <plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" 
 			/> -->
