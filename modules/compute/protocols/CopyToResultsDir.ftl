@@ -12,11 +12,6 @@
 #FOREACH project,seqType
 
 
-if [ -f "${sample}.genotypeArray.updated.header.vcf" ]
-then
-	inputs "${sample}.genotypeArray.updated.header.vcf"
-fi
-
 alloutputsexist "${projectResultsDir}/${project}.zip"
 
 # Change permissions
