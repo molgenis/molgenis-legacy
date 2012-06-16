@@ -250,6 +250,26 @@ public class CommonService
 	}
 	
 	/**
+	 * Gets the Ids of the investigations owned, readable or writable by the user with name 'userName'.
+	 * 
+	 * @param userName
+	 * @return
+	 */
+	public List<Integer> getAllUserInvestigationIds(String userName) {
+		
+		List<Integer> returnList = new ArrayList<Integer>();
+		List<Investigation> invList = getAllUserInvestigations(userName);
+		if (invList != null) {
+			for (Investigation inv : invList) {
+				if (!returnList.contains(inv.getName())) {
+					returnList.add(inv.getId());
+				}
+			}
+		}
+		return returnList;
+	}
+	
+	/**
 	 * Gets the names of the investigation owned or writable by the user with name 'userName'.
 	 * 
 	 * @param userName
@@ -1423,6 +1443,43 @@ public class CommonService
 	}
 	
 	/** 
+	 * Returns all observed values for a given ObservationTarget and measurement,
+	 * sorted so that the most recent one comes first.
+	 * @param targetname
+	 *            The name of the target
+	 * @param measurementname
+	 *            The name of the measurement
+	 * @param investigation list
+	 * 			  A list of investigations of which the target can be part of.           
+	 * @throws IOException
+	 * @throws DatabaseException
+	 * @return a list of observed values.
+	 * 
+	 */
+	
+	public List<ObservedValue> getObservedValuesByTargetAndMeasurement (
+			String targetName, String mName, List<Integer> investigationIds) throws DatabaseException, ParseException
+	{
+		List<ObservedValue> obsVal = new ArrayList<ObservedValue>();
+		
+		Query<ObservedValue> q = db.query(ObservedValue.class);
+		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
+		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, mName));
+		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
+		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
+		List<ObservedValue> vals = q.find();
+		
+		if (vals.isEmpty()) {
+			return null;
+		}else 
+		{
+			obsVal.addAll(vals);
+			return obsVal;
+		}
+	}
+	
+	
+	/** 
 	 * Returns all observed values for a given ObservationTarget and list of features,
 	 * sorted so that the most recent one comes first.
 	 * NOTE: Creates a default "" value if observedValue doesn't exist yet for
@@ -1444,6 +1501,7 @@ public class CommonService
 			q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 			List<ObservedValue> vals = q.find();
+			// FIXME Why the heck does this "get"function add an empty value to the DB ? //ate 2012-06-14
 			if (vals.isEmpty())
 			{ // if value doesn't exist, create new one
 				ObservedValue newOV = new ObservedValue();

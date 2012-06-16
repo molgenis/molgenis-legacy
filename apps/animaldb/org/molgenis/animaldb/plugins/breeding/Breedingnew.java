@@ -1400,38 +1400,29 @@ public class Breedingnew extends PluginModel<Entity>
 		// Find Line for this Parentgroup
 		String lineName = ct.getMostRecentValueAsXrefName(parentgroupName, "Line");
 		// Find first mother, plus her animal type, species, color, background, gene modification and gene state
-		// TODO: find ALL gene info
+
+		// TODO: handle situation where one of the parents is not known properly.
+		// TODO: properly handle the situation of harem breeding (basicly group of possible mothers/fathers) / maybe make a totally different plugin for this situation?
 		String motherName = findParentForParentgroup(parentgroupName, "Mother", db);
 		String speciesName = ct.getMostRecentValueAsXrefName(motherName, "Species");
 		String motherAnimalType = ct.getMostRecentValueAsString(motherName, "AnimalType");
 		String color = ct.getMostRecentValueAsString(motherName, "Color");
 		String motherBackgroundName = ct.getMostRecentValueAsXrefName(motherName, "Background");
-		//BIG FIXME: This only works in case of one genemod + geneState, when multiple, only the most recent is used
-		// we need something like: ct.getObservedValuesByTargetAndFeature(motherName, "GeneModification", "", investigationToBeAddedToName)
-		
-		
-		/* TODO temporarily comment out since this is work in progress.
-		 * 
-		 * List<Integer> investigationIds = ct.getAllUserInvestigationIds(userName);
+		  
+		List<Integer> investigationIds = ct.getAllUserInvestigationIds(userName);
 		//HUGE FIXME, how to make sure that GeneModification and state belong to each other?, via prot app?? 
-		List<ObservedValue> motherAllGeneMods = ct.getAllObservedValues(ct.getMeasurementId("GeneModification"), investigationIds);
-		List<ObservedValue> motherAllGeneStates = ct.getAllObservedValues(ct.getMeasurementId("GeneState"), investigationIds);
+		List<ObservedValue> motherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(motherName, "GeneModification", investigationIds); // this does not work, only get the ones for the current animal.
+		//List<ObservedValue> motherAllGeneStates = ct.getObservedValuesByTargetAndMeasurement(motherName, "GeneModification", investigationIds);
 		
-		int ctr = 0 ;
-		for (ObservedValue blaat : motherAllGeneMods) {
-			logger.info("GENES for MOTHER:  " + blaat.getValue() + " : " +  motherAllGeneStates.get(ctr).getValue() );
-			ctr++;
-		}*/
-		
-		String motherGeneName = ct.getMostRecentValueAsString(motherName, "GeneModification");
-		String motherGeneState = ct.getMostRecentValueAsString(motherName, "GeneState");
 		// Find father and his background
 		String fatherName = findParentForParentgroup(parentgroupName, "Father", db);
 		String fatherBackgroundName = ct.getMostRecentValueAsXrefName(fatherName, "Background");
 		String fatherAnimalType = ct.getMostRecentValueAsString(fatherName, "AnimalType");
-		String fatherGeneName = ct.getMostRecentValueAsString(fatherName, "GeneModification");
-		String fatherGeneState = ct.getMostRecentValueAsString(fatherName, "GeneState");
-				// Deduce animal type
+		List<ObservedValue> fatherAllGeneMods = ct.getObservedValuesByTargetAndMeasurement(fatherName, "GeneModification", investigationIds); // this does not work, only get the ones for the current animal.
+		//List<ObservedValue> fatherAllGeneStates = ct.getObservedValuesByTargetAndMeasurement(fatherName, "GeneModification", investigationIds);
+
+
+		// Deduce animal type
 		String animalType = motherAnimalType;
 		// If one of the parents is GMO, animal is GMO
 		if (motherAnimalType.equals("B. Transgeen dier") || fatherAnimalType.equals("B. Transgeen dier")) {
@@ -1501,10 +1492,10 @@ public class Breedingnew extends PluginModel<Entity>
 						null, "SetLocation", "Location", animalName, null, locName));
 			}
 			// Set sex
-			String sexName = "Female";
-			if (animalNumber >= weanSizeFemale) {
+			String sexName = "Male";
+			if (animalNumber >= weanSizeMale) {
 				if (animalNumber < weanSizeFemale + weanSizeMale) {
-					sexName = "Male";
+					sexName = "Female";
 				} else {
 					sexName = "UnknownSex";
 				}
@@ -1613,15 +1604,65 @@ public class Breedingnew extends PluginModel<Entity>
 							null, "SetBackground", "Background", animalName, null, backgroundName));
 			}
 			// Set genotype
-			// TODO: Set based on mother's X father's and ONLY if you can know the outcome
-			if (motherGeneName != null && !motherGeneName.equals("") && motherGeneState != null && !motherGeneState.equals("")) {
-				String paName = ct.makeProtocolApplication(invName, "SetGenotype");
-				// Set gene mod name based on mother's (can be changed during genotyping)
-				valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-						null, "GeneModification", animalName, motherGeneName, null));
-				// Set gene state always on unknown, based on mother's (can be changed during genotyping)
-				valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
-						null, "GeneState", animalName, "unknown", null));
+			// TODO: Set based on mother's X father's and ONLY if you can know the outcome, like homozygous double knockouts for both parents
+			//For now just set all genestates of children to unknown.
+			
+			
+			if (motherAllGeneMods != null && fatherAllGeneMods != null) // first handle situation where both parents have genemods
+			{ 
+				// compare the list of genemods of father and mother, and keep unique ones.
+				List<String> mfGeneModNames = new ArrayList<String>();
+				for (ObservedValue mgm : motherAllGeneMods) 
+				{
+					mfGeneModNames.add(mgm.getValue());
+				}
+				for (ObservedValue fgm : fatherAllGeneMods) 
+				{
+					if (!mfGeneModNames.contains(fgm.getValue()))
+					{
+						mfGeneModNames.add(fgm.getValue());
+					}
+					
+				}
+				
+				for (String gm : mfGeneModNames) 
+				{
+					String paName = ct.makeProtocolApplication(invName, "SetGenotype");
+					// Set gene mod name based on mother's (can be changed during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
+							null, "GeneModification", animalName, gm, null));
+					// Set gene state always on unknown, based on mother's (can be changed during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
+							null, "GeneState", animalName, "unknown", null));
+				}
+				
+			} else if (motherAllGeneMods != null && fatherAllGeneMods == null) // than handle situation where only the mother has genemods
+			{
+				for (ObservedValue mgm : motherAllGeneMods) 
+				{
+					String paName = ct.makeProtocolApplication(invName, "SetGenotype");
+					// Set gene mod name based on mother's (can be changed during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
+							null, "GeneModification", animalName, mgm.getValue(), null));
+					// Set gene state always on unknown, based on mother's (can be changed during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
+							null, "GeneState", animalName, "unknown", null));
+				}
+			} else if (motherAllGeneMods == null && fatherAllGeneMods != null) // than handle situation where only the father has genemods
+			{
+				for (ObservedValue fgm : fatherAllGeneMods) 
+				{
+					String paName = ct.makeProtocolApplication(invName, "SetGenotype");
+					// Set gene mod name based on mother's (can be changed during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
+							null, "GeneModification", animalName, fgm.getValue(), null));
+					// Set gene state always on unknown, based on mother's (can be changed during genotyping)
+					valuesToAddList.add(ct.createObservedValue(invName, paName, weanDate, 
+							null, "GeneState", animalName, "unknown", null));
+				}
+			} else 
+			{
+				// do not add any genotypes because there are none.
 			}
 			
 			animalNumber++;
