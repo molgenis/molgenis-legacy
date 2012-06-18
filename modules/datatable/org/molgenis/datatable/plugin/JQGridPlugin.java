@@ -17,6 +17,7 @@ import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
 import org.molgenis.datatable.controller.Renderers.Renderer;
 import org.molgenis.datatable.model.QueryTable;
+import org.molgenis.datatable.model.QueryTables;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
@@ -101,34 +102,36 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					SQLTemplates dialect = new MySQLTemplates();
 					SQLQueryImpl query = new SQLQueryImpl(conn, dialect);
 
-					PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
-							"Country");
-					PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
-					query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
-
-					final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(Integer.class,
-							"Population"));
-					final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(Integer.class,
-							"Population"));
-					final NumberExpression<Double> cityPopulationRatio = cityPopulation.divide(countryPopulation);
-					query.where(country.get("code").eq(city.get("countrycode")));
-					query.limit(10);
-					query.orderBy(cityPopulationRatio.desc());
-
-					// create select
-					Field countryName = new Field("Country.Name");
-					countryName.setType(new StringField());
-					Field cityName = new Field("City.Name");
-					cityName.setType(new StringField());
-					Field ratio = new Field("ratio");
-					ratio.setType(new DecimalField());
+					return new QueryTables(query, Arrays.asList("Country"), db);
 					
-					LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
-					selectMap.put("Country.Name", country.get(new StringPath("name")));
-					selectMap.put("City.Name", city.get(new StringPath("name")));
-					selectMap.put("ratio", cityPopulationRatio);
-					List<Field> columns = Arrays.asList(countryName, cityName, ratio);
-					return new QueryTable(query, selectMap, columns);
+//					PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
+//							"Country");
+//					PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
+//					query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
+//
+//					final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(Integer.class,
+//							"Population"));
+//					final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(Integer.class,
+//							"Population"));
+//					final NumberExpression<Double> cityPopulationRatio = cityPopulation.divide(countryPopulation);
+//					query.where(country.get("code").eq(city.get("countrycode")));
+//					query.limit(10);
+//					query.orderBy(cityPopulationRatio.desc());
+//
+//					// create select
+//					Field countryName = new Field("Country.Name");
+//					countryName.setType(new StringField());
+//					Field cityName = new Field("City.Name");
+//					cityName.setType(new StringField());
+//					Field ratio = new Field("ratio");
+//					ratio.setType(new DecimalField());
+//					
+//					LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
+//					selectMap.put("Country.Name", country.get(new StringPath("name")));
+//					selectMap.put("City.Name", city.get(new StringPath("name")));
+//					selectMap.put("ratio", cityPopulationRatio);
+//					List<Field> columns = Arrays.asList(countryName, cityName, ratio);
+//					return new QueryTable(query, selectMap, columns);
 				}
 				catch (Exception ex)
 				{

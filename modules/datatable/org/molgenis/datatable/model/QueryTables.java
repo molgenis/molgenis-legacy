@@ -5,9 +5,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,21 +13,16 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
-import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.framework.db.Database;
 import org.molgenis.model.elements.Field;
 
-import com.hp.hpl.jena.sparql.function.library.date;
 import com.mindbright.jca.security.UnsupportedOperationException;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
-import com.mysema.query.types.Expression;
-import com.mysema.query.types.expr.DateExpression;
 import com.mysema.query.types.expr.SimpleExpression;
 import com.mysema.query.types.path.BooleanPath;
 import com.mysema.query.types.path.DatePath;
-import com.mysema.query.types.path.EnumPath;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.query.types.path.StringPath;
@@ -38,39 +31,41 @@ public class QueryTables extends QueryTable
 {	
 	public QueryTables(final SQLQuery query, final List<String> tableNames, final Database db)
 	{
-		super((SQLQueryImpl) query, createSelect(tableNames, db), getFields(db, tableNames));
+		super((SQLQueryImpl) query, createSelect(query, tableNames, db), getFields(db, tableNames));
 	}
 
-	private static LinkedHashMap<String,SimpleExpression<? extends Object>> createSelect(final List<String> tableNames, final Database db)
+	private static LinkedHashMap<String,SimpleExpression<? extends Object>> createSelect(final SQLQuery query, final List<String> tableNames, final Database db)
 	{
 		final LinkedHashMap<String, SimpleExpression<? extends Object>> select = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
 		final Map<String, List<Field>> tableColumns = loadColumnData(db, tableNames);
 		for(final String tableName : tableNames) {
 			final PathBuilder<RelationalPath> table = new PathBuilder<RelationalPath>(RelationalPath.class, tableName);
-			for(final Field f : tableColumns.get(tableName)) {
-				final SimpleExpression<?> path = createPath(f);
+			query.from(table);
+			for(final Field f : tableColumns.get(tableName.toLowerCase())) {
+				final SimpleExpression<?> path = createPath(f, table);
 				select.put(f.getName(), path);	
 			}
 		}
 		return select;
 	}
 	
-	private static SimpleExpression<?> createPath(Field f)
+	private static SimpleExpression<?> createPath(Field f, PathBuilder<RelationalPath> table)
 	{
 		FieldTypeEnum type = f.getType().getEnumType();
+		String name = f.getName().toLowerCase();
 		switch(type) {
 			case STRING:
-				return new StringPath(f.getName());
+				return table.get(new StringPath(name));
 			case INT:
-				return new NumberPath<Integer>(Integer.class, f.getName());
+				return table.get(new NumberPath<Integer>(Integer.class, name));
 			case DECIMAL:
-				return new NumberPath<Double>(Double.class, f.getName());
+				return table.get(new NumberPath<Double>(Double.class, name));
 			case LONG:
-				return new NumberPath<Long>(Long.class, f.getName());
+				return table.get(new NumberPath<Long>(Long.class, name));
 			case BOOL:
-				return new BooleanPath(f.getName()); 
+				return table.get(new BooleanPath(name)); 
 			case DATE: case DATE_TIME:
-				return new DatePath<Date>(Date.class, f.getName());
+				return table.get(new DatePath<Date>(Date.class, name));
 			default:
 				throw new UnsupportedOperationException("create path not implemented for " +type.toString());
 		}
@@ -91,7 +86,7 @@ public class QueryTables extends QueryTable
 	private static Map<String, List<Field>> loadColumnData(final Database db, List<String> tableNames) {
 		final Map<String, List<Field>> tableColumns = new LinkedHashMap<String, List<Field>>();
 		for(String tableName : tableNames) {
-			tableColumns.put(tableName, new ArrayList<Field>());
+			tableColumns.put(tableName.toLowerCase(), new ArrayList<Field>());
 		}
 		
 		try {
@@ -106,7 +101,7 @@ public class QueryTables extends QueryTable
 				final Field field = new Field(columnName);
 				field.setType(MolgenisFieldTypes.getTypeBySqlTypesCode(metaData.getColumnType(i)));
 				
-				tableColumns.get(tableName).add(field);
+				tableColumns.get(tableName.toLowerCase()).add(field);
 				
 			}
 			rs.close();
