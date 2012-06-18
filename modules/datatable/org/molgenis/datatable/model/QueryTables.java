@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -37,16 +38,13 @@ public class QueryTables extends QueryTable
 {	
 	public QueryTables(final SQLQuery query, final List<String> tableNames, final Database db)
 	{
-		
-		super(query, createSelect(), );
-		//super(query, 
-		
+		super((SQLQueryImpl) query, createSelect(tableNames, db), getFields(db, tableNames));
 	}
 
 	private static LinkedHashMap<String,SimpleExpression<? extends Object>> createSelect(final List<String> tableNames, final Database db)
 	{
 		final LinkedHashMap<String, SimpleExpression<? extends Object>> select = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
-		Map<String, List<Field>> tableColumns = loadColumnData(db, tableNames);
+		final Map<String, List<Field>> tableColumns = loadColumnData(db, tableNames);
 		for(final String tableName : tableNames) {
 			final PathBuilder<RelationalPath> table = new PathBuilder<RelationalPath>(RelationalPath.class, tableName);
 			for(final Field f : tableColumns.get(tableName)) {
@@ -78,8 +76,19 @@ public class QueryTables extends QueryTable
 		}
 		
 	}
+	
+	private static List<Field> getFields(Database db, List<String> tableNames) {
+		final List<Field> columns = new ArrayList<Field>();
+		final Map<String, List<Field>> columnsByTable = loadColumnData(db, tableNames);
+		for(String table : columnsByTable.keySet()) {
+			for(Field field : columnsByTable.get(table)) {
+				columns.add(field);
+			}
+		}
+		return columns;
+	}
 
-	public static Map<String, List<Field>> loadColumnData(final Database db, List<String> tableNames) {
+	private static Map<String, List<Field>> loadColumnData(final Database db, List<String> tableNames) {
 		final Map<String, List<Field>> tableColumns = new LinkedHashMap<String, List<Field>>();
 		for(String tableName : tableNames) {
 			tableColumns.put(tableName, new ArrayList<Field>());
