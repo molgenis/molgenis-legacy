@@ -15,6 +15,9 @@ package org.molgenis.framework.ui;
 import java.io.IOException;
 import java.io.Serializable;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -61,11 +64,11 @@ public abstract class SimpleScreenController<MODEL extends ScreenModel> extends
 	 * recordset.
 	 * 
 	 * @throws Exception
-	 * @throws Exception
-	 * @throws Exception
 	 */
 	public abstract void reload(Database db) throws Exception;
 
+	
+	
 	/**
 	 * This is the actual control-method, which changes the view. The view
 	 * itself may delegate requests to other objects (e.g. delegate insert to

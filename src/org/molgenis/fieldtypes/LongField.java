@@ -79,7 +79,7 @@ public class LongField extends FieldType
 		return "Ljava/lang/Long;";
 	}
 
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return Long.class;
 	}

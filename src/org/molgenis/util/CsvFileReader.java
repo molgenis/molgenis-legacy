@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.RandomAccessFile;
@@ -18,33 +19,40 @@ import java.util.zip.DataFormatException;
 public class CsvFileReader extends CsvBufferedReaderMultiline
 {
 	/** the File that is being read */
-	private File file;
+	private final InputStream csvStream;
 
 	public CsvFileReader(File file) throws IOException, DataFormatException
 	{
 		super(new BufferedReader(new FileReader(file)));
-		this.file = file;
+		this.csvStream = new FileInputStream(file);
 	}
 
 	public CsvFileReader(final File file, final String encoding) throws IOException, DataFormatException
 	{		
 		super(new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding)));
-		this.file = file;
+		this.csvStream = new FileInputStream(file);
 	}		
 	
+	public CsvFileReader(InputStream csvStream) throws IOException, DataFormatException
+	{
+		super(new BufferedReader(new InputStreamReader(csvStream)));
+		this.csvStream = csvStream;
+	}
+
 	/**
 	 * Count number of lines in the file. Add 1 extra because this only counts
 	 * newlines, therefore 1 newline = 2 lines in the file. Consider using
 	 * fileEndsWithNewlineChar() in combination with this function. See:
 	 * http://stackoverflow
 	 * .com/questions/453018/number-of-lines-in-a-file-in-java
+	 * @param inFile 
 	 * 
 	 * @return
 	 * @throws IOException
 	 */
-	public int getNumberOfLines() throws IOException
+	public static int getNumberOfLines(File inFile) throws IOException
 	{
-		LineNumberReader lnr = new LineNumberReader(new FileReader(this.file));
+		LineNumberReader lnr = new LineNumberReader(new FileReader(inFile));
 		lnr.skip(Long.MAX_VALUE);
 		return lnr.getLineNumber() + 1;
 	}
@@ -52,13 +60,14 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	/**
 	 * Find out if the source file ends with a newline character. Useful in
 	 * combination with getNumberOfLines().
+	 * @param inFile 
 	 * 
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean fileEndsWithNewlineChar() throws Exception
+	public static boolean fileEndsWithNewlineChar(File inFile) throws Exception
 	{
-		RandomAccessFile raf = new RandomAccessFile(this.file, "r");
+		RandomAccessFile raf = new RandomAccessFile(inFile, "r");
 		raf.seek(raf.length() - 1);
 		char c = (char) raf.readByte();
 		raf.close();
@@ -80,13 +89,14 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	 * combination \r\n is reduced to \n before counting. You will probably want
 	 * to use this in combination with the more lightweight check of
 	 * fileEndsWithNewlineChar().
+	 * @param inFile 
 	 * 
 	 * @return
 	 * @throws Exception
 	 */
-	public int getAmountOfNewlinesAtFileEnd() throws Exception
+	public static int getAmountOfNewlinesAtFileEnd(File inFile) throws Exception
 	{
-		RandomAccessFile raf = new RandomAccessFile(this.file, "r");
+		RandomAccessFile raf = new RandomAccessFile(inFile, "r");
 
 		int nrOfNewLines = 1;
 		boolean countingNewlines = true;
@@ -126,7 +136,7 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	public void reset() throws IOException, DataFormatException
 	{
 		if(this.reader != null) this.reader.close();
-		this.reader = new BufferedReader(new FileReader(file));
+		this.reader = new BufferedReader(new InputStreamReader(csvStream));
 		super.reset();
 	}
 }

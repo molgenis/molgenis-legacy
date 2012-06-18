@@ -88,7 +88,7 @@ public class ListField extends FieldType
 		return "Ljava/util/List;";
 	}
 
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return java.util.List.class;
 	}

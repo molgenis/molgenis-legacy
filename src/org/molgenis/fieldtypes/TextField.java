@@ -81,7 +81,7 @@ public class TextField extends FieldType
 	}
 
 	@Override
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return String.class;
 	}
