@@ -47,6 +47,7 @@ import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.query.types.expr.BooleanExpression;
+import com.mysema.query.types.expr.ComparableExpressionBase;
 import com.mysema.query.types.expr.NumberExpression;
 import com.mysema.query.types.expr.SimpleExpression;
 import com.mysema.query.types.expr.StringExpression;
@@ -236,7 +237,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			// createQueryRulesFromJQGridRequest(request);
 			// tupleTable.setQueryRules(rules);
 
-			addQueryRulesFromJQGridRequest(request, (QueryTable) tupleTable);
+			addFilters(request, (QueryTable) tupleTable);
+			
 
 			int rowCount = -1;
 			rowCount = tupleTable.getRowCount();
@@ -256,6 +258,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			// addSortRules(sidx, sord, rules);
 			//
 			// tupleTable.setQueryRules(rules);
+			addSortOrderLimitOffset(request, (QueryTable) tupleTable, offset);
+			
 
 			renderData(((MolgenisRequest) request).getRequest(), ((MolgenisRequest) request).getResponse(), page,
 					totalPages, tupleTable);
@@ -267,6 +271,25 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			throw new HandleRequestDelegationException();
 		}
 		return null;
+	}
+
+	private void addSortOrderLimitOffset(Tuple request, QueryTable queryTable, int offset)
+	{
+		final int limit = request.getInt("rows");
+		final String sidx = request.getString("sidx");
+		final String sord = request.getString("sord");
+		
+		final SQLQuery query = queryTable.getQuery();
+		final LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = queryTable.getSelect();
+		
+		query.limit(limit);
+		query.offset(offset);
+		ComparableExpressionBase<?> sortColumn = ((ComparableExpressionBase<?>)selectMap.get(sidx));
+		if(sord.equalsIgnoreCase("ASC")) {
+			query.orderBy(sortColumn.asc());	
+		} else {
+			query.orderBy(sortColumn.desc());
+		}		
 	}
 
 	/**
@@ -385,7 +408,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void addQueryRulesFromJQGridRequest(final Tuple request, final QueryTable queryTable) throws TableException
+	private static void addFilters(final Tuple request, final QueryTable queryTable) throws TableException
 	{
 		try {
 			final SQLQuery query = queryTable.getQuery();
@@ -456,9 +479,42 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 				else if (op.equals("gt"))
 				{
 					expr = ((NumberExpression<Double>) selectExpr).gt(val);
+				} else {
+					throw new UnsupportedOperationException(
+							String.format("Operation: %s not implemented yet for type %s!", 
+									op, type
+					));
 				}
 			}
 				break;
+				
+			case INT:
+			{
+				final Integer val = (Integer) column.getType().getTypedValue(value);
+				if (op.equals("eq"))
+				{
+					expr = ((NumberExpression<Integer>) selectExpr).eq(val);
+				}
+				else if (op.equals("ne"))
+				{
+					expr = ((NumberExpression<Integer>) selectExpr).ne(val);
+				}
+				else if (op.equals("le"))
+				{
+					expr = ((NumberExpression<Integer>) selectExpr).lt(val);
+				}
+				else if (op.equals("gt"))
+				{
+					expr = ((NumberExpression<Integer>) selectExpr).gt(val);
+				} else {
+					throw new UnsupportedOperationException(
+							String.format("Operation: %s not implemented yet for type %s!", 
+									op, type
+					));
+				}
+			}
+				break;				
+				
 			case STRING:
 			{
 				final String val = (String) column.getType().getTypedValue(value);
@@ -476,6 +532,11 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					if(op.equals("bn")) {
 						expr = expr.not();
 					}
+				} else {
+					throw new UnsupportedOperationException(
+							String.format("Operation: %s not implemented yet for type %s!", 
+									op, type
+					));
 				}
 			}
 			break;
