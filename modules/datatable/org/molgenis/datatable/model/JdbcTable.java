@@ -27,19 +27,15 @@ public class JdbcTable implements TupleTable
 	private boolean loaded = false;
 	
 
-	public JdbcTable(String query, List<QueryRule> rules)
+	public JdbcTable(Database db, String query, List<QueryRule> rules)
 	{
 		super();
+		this.db = db;
 		this.query = query;
 		this.setQueryRules(rules);		
 
 		String fromExpression = StringUtils.substringBetween(query, "SELECT", "FROM");
 		this.countQuery = StringUtils.replace(query, fromExpression, " COUNT(*) ");
-	}
-
-	public JdbcTable(String query) throws TableException
-	{
-		this(query, Collections.<QueryRule> emptyList());
 	}
 	
 	private void load() throws TableException
@@ -128,7 +124,9 @@ public class JdbcTable implements TupleTable
 	{
 		try
 		{
-			rs.close();
+			if(rs != null) {
+				rs.close();
+			}
 			loaded = false;
 		}
 		catch (SQLException e)
@@ -160,11 +158,6 @@ public class JdbcTable implements TupleTable
 		return rules;
 	}
 
-	@Override
-	public void setDatabase(Database db)
-	{
-		this.db = db;
-	}
 
 	@Override
 	public List<QueryRule> getFilters()

@@ -52,6 +52,4 @@ public interface TupleTable extends Iterable<Tuple>
 
 	/** Get and manipulate the query rules for this TupleTable (if supported) */
 	public List<QueryRule> getFilters();
-	
-	public void setDatabase(Database db);
 }
