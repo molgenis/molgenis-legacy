@@ -6,9 +6,12 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -127,6 +130,7 @@ public class MolgenisXrefService implements MolgenisService
 	{		
 		// transform in JSON (JavaScript Object Notation)
 		Map<String,String> values = new LinkedHashMap<String,String>();
+		SortedMap<String, String> sorted_map = new TreeMap<String, String>();
 		
 		if(nillable) {
 			values.put("&nbsp;", "&nbsp;");
@@ -144,8 +148,23 @@ public class MolgenisXrefService implements MolgenisService
 			}
 			values.put(key, value);
 		}
-
-		return new JSONObject(values).toString();
+		
+		//sort after values is completed
+		for (int i=0; i< values.size(); i++) {
+			System.out.println("unsorted map");
+	        
+			for (String key1 : values.keySet()) {
+	            System.out.println("key/value: " + key1 + "/"+values.get(key1));
+	        	
+	        sorted_map.put(key1, values.get(key1));
+			}
+	        Iterator<String> iterator = sorted_map.keySet().iterator();
+	        while (iterator.hasNext()) {
+	        Object key1 = iterator.next();
+	        System.out.println("key : " + key1 + " value :" + sorted_map.get(key1));
+	        }
+		}
+		return new JSONObject(sorted_map).toString();
 	}
 
 	public static List<? extends Entity> getRecords(final Database db, final String searchTerm,

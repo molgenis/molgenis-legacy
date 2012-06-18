@@ -106,7 +106,8 @@ public class Table extends HtmlWidget
 		return result;
 	}
 	
-	private String printRow(String row, int rowCount) {
+	//default visibility for subclassing in the same package
+	String printRow(String row, int rowCount) {
 		String result = "<tr>";
 		if(headerColumn){
 			result += ("<th style=\"" + getHeaderCellStyle() + "\">" + row + "</th>");

@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class TokenFactory implements Serializable
 {
 	private static final long serialVersionUID = -1669938881359317765L;

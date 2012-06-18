@@ -95,7 +95,7 @@ public class MolgenisDownloadService implements MolgenisService
 					{
 						out.println(MolgenisServiceAuthenticationHelper.displayLogoutForm());
 					}
-					showFilterableDownload(out, entityName);
+					showFilterableDownload(out, entityName, db);
 					out.println("</body></html>");
 				}
 				else
@@ -124,7 +124,7 @@ public class MolgenisDownloadService implements MolgenisService
 
 	}
 	
-	private void showFilterableDownload(PrintWriter out, String entityName) throws InstantiationException, IllegalAccessException, ClassNotFoundException
+	private void showFilterableDownload(PrintWriter out, String entityName, Database db) throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		//System.out.println("show 'set filters' dialogue");
 		out.println("<form>");
@@ -132,8 +132,11 @@ public class MolgenisDownloadService implements MolgenisService
 				+ entityName //FIXME: bad, hardcoded location!
 				+ "' data. (<a href=\"../find\">back</a>)<br><br> Here you can set filters before downloading:<br>");
 		out.println("<table>");
-		for (String field : ((Entity) Class.forName(entityName)
-				.newInstance()).getFields())
+		
+		String simpleEntityName = entityName.substring(entityName.lastIndexOf('.')+1);	
+		Class<? extends Entity> klazz = db.getClassForName(simpleEntityName);
+		
+		for (String field : ((Entity) klazz.newInstance()).getFields())
 		{
 			out.println("<tr><td>" + field
 					+ "</td><td>=</td><td><input name=\"" + field
