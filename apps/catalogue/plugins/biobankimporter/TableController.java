@@ -212,9 +212,9 @@ public class TableController {
 						String cellValue;
 
 						if(excelDirection.equals("UploadFileByRow"))
-							cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("[^(a-zA-Z0-9_)]", "").trim();
+							cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", "").trim();
 						else
-							cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_)]", "").trim();
+							cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", "").trim();
 						if(cellValue.equalsIgnoreCase("CHFYETIOL")){
 							System.out.println();
 						}
@@ -346,7 +346,7 @@ public class TableController {
 
 										//									InvestigationElement addingPropertyToEntity = colValues.get(dependentColumn).get(rowIndex - 1).get(0);
 
-										cellValue = cellValue.replaceAll("[^(a-zA-Z0-9_)]", "");
+										cellValue = cellValue.replaceAll("[^(a-zA-Z0-9_\\s)]", "");
 
 										String multipleValues[] = cellValue.split(dependendField.getValueSplitter());
 
@@ -576,9 +576,9 @@ public class TableController {
 											
 											ObservedValue observedValue = new ObservedValue();
 
-											String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_)]", "").trim();
+											String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", "").trim();
 
-											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_)]", "").trim();
+											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", "").trim();
 											
 											
 											//TODO: import measurements then import individual data. The measurement has to be consistent.
