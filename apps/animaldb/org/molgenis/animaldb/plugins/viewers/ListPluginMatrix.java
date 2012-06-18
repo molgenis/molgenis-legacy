@@ -18,8 +18,10 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.DivPanel;
+import org.molgenis.framework.ui.html.EditableJQueryDataTable;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.matrix.component.MatrixViewer;
 import org.molgenis.matrix.component.SliceablePhenoMatrix;
@@ -35,12 +37,14 @@ public class ListPluginMatrix extends EasyPluginController
 	private static final long serialVersionUID = 8804579908239186037L;
 	MatrixViewer targetMatrixViewer = null;
 	static String TARGETMATRIX = "targetmatrix";
+	static String EDIT_BUTTON_ACTION = "switch_to_edit_mode";
 	private Container container = null;
 	private DivPanel div = null;
 	private String action = "init";
 	private CommonService cs = CommonService.getInstance();
 	private boolean reload = true;
 	private int userId = -1;
+	private Boolean inEditMode;
 	
 	public ListPluginMatrix(String name, ScreenController<?> parent)
 	{
@@ -63,6 +67,19 @@ public class ListPluginMatrix extends EasyPluginController
 	    		reload = false;
 			}
 			
+			if(action.equals(EDIT_BUTTON_ACTION) || action.equals(targetMatrixViewer.getName() + EditableJQueryDataTable.MATRIX_EDIT_ACTION))
+			{
+				if(inEditMode)
+				{
+					inEditMode = false;
+				}
+				else
+				{
+					inEditMode = true;
+				}
+				reload = true;
+			}
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
@@ -74,6 +91,11 @@ public class ListPluginMatrix extends EasyPluginController
 	@Override
 	public void reload(Database db)
 	{
+		if(inEditMode == null)
+		{
+			inEditMode = false;
+		}
+		
 		cs.setDatabase(db);
 		
 		// If a non-matrix related request was handled or if a new user has logged in, reload the matrix
@@ -87,21 +109,76 @@ public class ListPluginMatrix extends EasyPluginController
 				// Some measurements that we think AnimalDB users like to see most:
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Sex");
+				measurementsToShow.add("Species");
 				measurementsToShow.add("Line");
-				measurementsToShow.add("OldUliDbId");
+				//measurementsToShow.add("OldUliDbId");
 				measurementsToShow.add("OldUliDbTiernummer");
 				measurementsToShow.add("OldRhutDbAnimalId");
-				measurementsToShow.add("Remark");
+				measurementsToShow.add("Location");
+				//measurementsToShow.add("Remark");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
 						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
 						"Alive"));
-				targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
-						new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-						true, 0, true, false, filterRules, 
-						new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow));
+				
+				if(inEditMode)
+				{
+					//restore filters and measurements to show
+					filterRules = targetMatrixViewer.getMatrix().getRules();
+					int oldOffset = targetMatrixViewer.getMatrix().getRowOffset();
+					int oldLimit = targetMatrixViewer.getMatrix().getRowLimit();
+					
+					targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
+							new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+							true, 0, true, false, filterRules, 
+							null, true);
+					
+					//restore paging
+					targetMatrixViewer.getMatrix().setRowOffset(oldOffset);
+					targetMatrixViewer.getMatrix().setRowLimit(oldLimit);
+
+					String nameIdSave = targetMatrixViewer.getName() + EditableJQueryDataTable.MATRIX_EDIT_ACTION;
+					ActionInput saveButton = new ActionInput(nameIdSave, "", "Save");
+					saveButton.setId(nameIdSave);
+					div.add(saveButton);
+					
+					ActionInput editButton = new ActionInput(EDIT_BUTTON_ACTION, "", "Cancel");
+					editButton.setId(EDIT_BUTTON_ACTION);
+					div.add(editButton);
+					
+				}
+				else
+				{
+					int oldOffset = 0;
+					int oldLimit = 10;	
+					MatrixQueryRule measurements = new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow);
+					
+					if(targetMatrixViewer != null)
+					{
+						//restore filters and measurements to show
+						filterRules = targetMatrixViewer.getMatrix().getRules();
+						oldOffset = targetMatrixViewer.getMatrix().getRowOffset();
+						oldLimit = targetMatrixViewer.getMatrix().getRowLimit();
+						measurements = null;
+					}
+
+					targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
+							new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
+							true, 0, true, false, filterRules, 
+							measurements, false);
+					
+					//restore paging
+					targetMatrixViewer.getMatrix().setRowOffset(oldOffset);
+					targetMatrixViewer.getMatrix().setRowLimit(oldLimit);
+					
+					ActionInput editButton = new ActionInput(EDIT_BUTTON_ACTION, "", "Edit");
+					editButton.setId(EDIT_BUTTON_ACTION);
+					div.add(editButton);
+					
+				}
+				
 				targetMatrixViewer.setDatabase(db);
 				div.add(targetMatrixViewer);
 				container.add(div);

@@ -41,7 +41,6 @@ public class MolgenisHeader extends org.molgenis.xgap.xqtlworkbench.header.Molge
 	@Override
 	public String getCustomHtmlHeaders()
 	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/xqtl_icc_colors.css\">" + "\n" +
-			   "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/main_override.css\">" ;
+		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"clusterdemo/hemodb.css\">" + "\n" ;
 	}
 }

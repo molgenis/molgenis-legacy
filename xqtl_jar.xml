@@ -68,7 +68,7 @@
 		<unjar src="${alibs}keggapi.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
 		<unjar src="${alibs}mindterm.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: Mindterm SSH -->
 		<unjar src="${alibs}commons-math-2.2.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: Report builder statistics -->
-		<unjar src="${alibs}simplecaptcha-1.1.1.jar" dest="${jarme}" overwrite="false" /> <!-- Auth captcha service -->
+		<unjar src="${alibs}simplecaptcha-1.2.1.jar" dest="${jarme}" overwrite="false" /> <!-- Auth captcha service -->
 		<unjar src="${alibs}jopenid-1.07.jar" dest="${jarme}" overwrite="false" /> <!-- Auth OpenID login -->
 		<unjar src="${alibs}spssw-1.66.jar" dest="${jarme}" overwrite="false" /> <!-- SPSS writer -->
 		<unjar src="${alibs}pircbot.jar" dest="${jarme}" overwrite="false" /> <!-- IRC client -->

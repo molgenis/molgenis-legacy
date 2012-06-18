@@ -6,6 +6,7 @@
     <dependent-module archiveName="molgenis.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/molgenis/molgenis">
       <dependency-type>uses</dependency-type>
     </dependent-module>
+<<<<<<< HEAD
     <wb-resource deploy-path="/" source-path="/WebContent"/>
     <wb-resource deploy-path="/WEB-INF/classes" source-path="generated/sql"/>
     <wb-resource deploy-path="/WEB-INF/classes" source-path="generated/java"/>
@@ -18,6 +19,6 @@
     <wb-resource deploy-path="/WEB-INF/classes" source-path="modules/datatable"/>
     <wb-resource deploy-path="/WEB-INF/classes" source-path="modules/decorators/core"/>
     <wb-resource deploy-path="/WEB-INF/classes" source-path="modules/decorators/auth"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/java"/>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/java"/>
   </wb-module>
 </project-modules>

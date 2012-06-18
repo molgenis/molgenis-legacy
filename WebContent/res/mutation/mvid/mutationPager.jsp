@@ -20,7 +20,7 @@
 <display:column property="cdnaNotation" title="cDNA change" sortable="true" headerClass="sortable" sortProperty="gdnaStart"/>
 <display:column property="aaNotation" title="Protein change" sortable="true" headerClass="sortable" sortProperty="gdnaStart"/>
 <display:column property="exonName" title="Exon/Intron" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=#results" paramId="exon_id" paramProperty="exonId"/>
-<display:column property="pathogenicity" title="Homo-/heterozygous" sortable="true" headerClass="sortable"/>
+<display:column property="observedValue" title="Consequence" sortable="true" headerClass="sortable"/>
 <display:column media="html" title="Patient ID">
 	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=${patientDTO.patientIdentifier}#results"/>

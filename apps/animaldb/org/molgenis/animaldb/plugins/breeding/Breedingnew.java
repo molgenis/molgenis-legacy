@@ -14,8 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -113,8 +115,8 @@ public class Breedingnew extends PluginModel<Entity>
 	boolean stillToWeanYN = true;
 	boolean stillToGenotypeYN = true;
 	//HashMap<String,List<String>> hashMothers = new HashMap<String,List<String>>();
-	HashMap<Integer,List<String>> hashMothers = new HashMap<Integer,List<String>>();
-	HashMap<Integer,List<String>> hashFathers = new HashMap<Integer,List<String>>();
+	Map<Integer,List<String>> hashMothers = new LinkedHashMap<Integer,List<String>>();
+	Map<Integer,List<String>> hashFathers = new LinkedHashMap<Integer,List<String>>();
 	
 	public Breedingnew(String name, ScreenController<?> parent)
 	{
@@ -2281,7 +2283,7 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 //		return hashMothers;
 //	}
 
-	public HashMap<Integer, List<String>> getHashMothers()
+	public Map<Integer, List<String>> getHashMothers()
 	{
 		return hashMothers;
 	}
@@ -2299,7 +2301,7 @@ private void makeDefCageLabels(Database db) throws LabelGeneratorException, Data
 		return sex;
 	}
 
-	public HashMap<Integer, List<String>> getHashFathers()
+	public Map<Integer, List<String>> getHashFathers()
 	{
 		return hashFathers;
 	}

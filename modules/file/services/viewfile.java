@@ -1,4 +1,4 @@
-package servlets.file;
+package services;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -8,31 +8,37 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
 import java.util.List;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.server.MolgenisContext;
+import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.server.MolgenisResponse;
+import org.molgenis.framework.server.MolgenisService;
 
 import decorators.MolgenisFileHandler;
 
-@Deprecated
-public class downloadfile extends app.servlet.MolgenisServlet {
+public class viewfile  implements MolgenisService {
 
-	private static final long serialVersionUID = -6004240016846336249L;
-	private static Logger logger = Logger.getLogger(downloadfile.class);
+	private static Logger logger = Logger.getLogger(viewfile.class);
 
-	public void service(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	private MolgenisContext mc;
+	
+	public viewfile(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+	
+	@Override
+	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
+			DatabaseException, IOException
+	{
 
 		boolean databaseIsAvailable = false;
 		boolean paramsPresent = false;
@@ -45,11 +51,11 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 		String name = null;
 
 		try {
-			db = this.createDatabase();
+			db = request.getDatabase();
 			databaseIsAvailable = true;
 		} catch (Exception e) {
-			PrintWriter out = response.getWriter();
-			response.setContentType("text/plain");
+			PrintWriter out = response.getResponse().getWriter();
+			response.getResponse().setContentType("text/plain");
 			out.print("Database unavailable.");
 			out.print("\n\n");
 			e.printStackTrace(out);
@@ -58,18 +64,29 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 
 		if (databaseIsAvailable) {
 			try {
-				Tuple req = new HttpServletRequestTuple(request);
 			
-//				type = req.getString("type");
-//				investigationname = req.getString("investigationname");
-				name = req.getString("name");
+//				type = request.getString("type");
+//				investigationname = request.getString("investigationname");
+				name = request.getString("name");
 		
 //				if(type == null){
 //					throw new NullPointerException("Not specified: 'type'");
 //				}
 				
+				//regular syntax: http://localhost:8080/xqtl/viewfile?name=hapmap1_bim
 				if(name == null){
-					throw new NullPointerException("Not specified: 'name'");
+					
+					//allow alternative syntax: http://localhost:8080/xqtl/viewfile/hapmap1_bim
+					//required for linking to external services, e.g. UCSC browser
+					String reqUrl = request.getRequestPath().substring(request.getServicePath().length());
+					if(reqUrl.startsWith("/") && reqUrl.length() > 1)
+					{
+						name = reqUrl.substring(1);
+						System.out.println("special syntax, getting name: "+ name);
+					}
+					else{
+						throw new NullPointerException("Not specified: 'name'");
+					}
 				}
 				
 //				if(investigationname == null){
@@ -79,8 +96,8 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 				paramsPresent = true;
 				
 			} catch (Exception e) {
-				PrintWriter out = response.getWriter();
-				response.setContentType("text/plain");
+				PrintWriter out = response.getResponse().getWriter();
+				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
@@ -114,8 +131,8 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 			fileFound = true;
 			
 			}catch (Exception e) {
-				PrintWriter out = response.getWriter();
-				response.setContentType("text/plain");
+				PrintWriter out = response.getResponse().getWriter();
+				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
 				out.print("\n\n");
 				e.printStackTrace(out);
@@ -124,15 +141,14 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 		}
 
 		if (fileFound) {
-			OutputStream outFile = response.getOutputStream();
+			OutputStream outFile = response.getResponse().getOutputStream();
 			try {
 				URL localURL = file.toURI().toURL();
 				URLConnection conn = localURL.openConnection();
 				InputStream in = new BufferedInputStream(conn.getInputStream());
-				ServletContext sc = getServletContext();
-				response.setContentType(sc.getMimeType(mf.getExtension()));
-				response.setContentLength((int) file.length());
-				response.setHeader("Content-disposition","attachment; filename=\""+mf.getName()+"."+mf.getExtension()+"\"");
+				response.getResponse().setContentType(mc.getServletContext().getMimeType(mf.getExtension()));
+				response.getResponse().setContentLength((int) file.length());
+				//response.setHeader("Content-disposition","attachment; filename=\""+mf.getName()+"."+mf.getExtension()+"\"");
 				//response.setStatus(arg0)
 				byte[] buffer = new byte[(int) file.length()];
 				while (in.available() != 0) {
@@ -150,7 +166,7 @@ public class downloadfile extends app.servlet.MolgenisServlet {
 	}
 
 	public void displayUsage(PrintWriter out, Database db) {
-		String usage = "To download file content, please specify 'name' (ie. downloadfile?name=myresultfile\n\n";
+		String usage = "To view file content, please specify 'name' (ie. /viewfile?name=myresultfile or /viewfile/myresultfile) \n\n";
 		out.print(usage);
 	}
 

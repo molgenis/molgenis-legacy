@@ -38,6 +38,7 @@
 		<input id="name" name="name" type="text" />
 		<input type="hidden" name="plugin" id="plugin" value="${screen.getActivePlugin()}" />
 		<br /><br />
+		<img src="captchaImg"/><br>Enter code:<input id="code" name="code" type="text" /><br /><br />
 		<input type="submit" value="Send" onclick="display('hide', 'feedbackDiv'); __action.value='sendFeedback'" />
 		<input type="reset" value="Cancel" onclick="display('hide', 'feedbackDiv'); __action.value='resetFeedbackForm'" />
 		</fieldset>

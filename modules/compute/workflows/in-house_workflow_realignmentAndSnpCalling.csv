@@ -1,7 +1,7 @@
 name,protocol_name,PreviousSteps_name
 Fastqc,Fastqc,
-BwaAlignLeft,BwaAlignLeft,Fastqc
-BwaAlignRight,BwaAlignRight,Fastqc
+BwaAlignLeft,BwaAlignLeft,
+BwaAlignRight,BwaAlignRight,
 BwaSampe,BwaSampe,"BwaAlignLeft, BwaAlignRight"
 SamToBam,SamToBam,BwaSampe
 SamSort,SamSort,SamToBam
@@ -28,3 +28,4 @@ VariantAnnotator,VariantAnnotator,GenomicAnnotator
 VcfToTable,VcfToTable,VariantAnnotator
 ConcordanceCheck,ConcordanceCheck,"MergeBam, UnifiedGenotyper"
 QCReport,QCReport,"PicardQCrecal, Markduplicates, ConcordanceCheck, Coverage, VcfToTable"
+CopyToResultsDir,CopyToResultsDir,"Fastqc, MergeBam, PicardQCrecal, VariantAnnotator, VcfToTable, ConcordanceCheck, QCReport"

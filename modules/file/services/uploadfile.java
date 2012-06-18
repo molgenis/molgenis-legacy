@@ -1,56 +1,59 @@
-package servlets.file;
+package services;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.HashMap;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.molgenis.framework.db.Database;
-import org.molgenis.util.HttpServletRequestTuple;
-import org.molgenis.util.Tuple;
+import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisContext;
+import org.molgenis.framework.server.MolgenisRequest;
+import org.molgenis.framework.server.MolgenisResponse;
+import org.molgenis.framework.server.MolgenisService;
 
 import filehandling.generic.PerformUpload;
 
-@Deprecated
-public class uploadfile extends app.servlet.MolgenisServlet
+public class uploadfile implements MolgenisService
 {
-	private static final long serialVersionUID = 8579428014673624684L;
-	//TODO: Danny: unused, but i guess we do want to use it
-	//private static Logger logger = Logger.getLogger(uploadfile.class);
-
 	/**
 	 * File upload service. Callable by Curl, RCurl, and other post services.
 	 * Currently used to images, expandable to all other files.
 	 */
-	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	
+	private MolgenisContext mc;
+	
+	public uploadfile(MolgenisContext mc)
+	{
+		this.mc = mc;
+	}
+
+	@Override
+	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
+			DatabaseException, IOException
 	{
 
-		PrintWriter out = response.getWriter();
-		response.setContentType("text/plain");
+		PrintWriter out = response.getResponse().getWriter();
+		response.getResponse().setContentType("text/plain");
 		Database db = null;
 
 		try
 		{
-			db = this.createDatabase();
-			Tuple req = new HttpServletRequestTuple(request);
+			db = request.getDatabase();
 
-			String fileName = req.getString("name"); // the 'real' file name
-			String fileType = req.getString("type"); // file type, must correspond to a subclass of MolgenisFile
-			File fileContent = req.getFile("file"); // has a tmp name, so content only
+			String fileName = request.getString("name"); // the 'real' file name
+			String fileType = request.getString("type"); // file type, must correspond to a subclass of MolgenisFile
+			File fileContent = request.getFile("file"); // has a tmp name, so content only
 			
 			HashMap<String, String> extraFields = new HashMap<String, String>();
 		
-			for(int cIndex = 0; cIndex < req.size(); cIndex++){
-				String colName = req.getColName(cIndex);
+			for(int cIndex = 0; cIndex < request.size(); cIndex++){
+				String colName = request.getColName(cIndex);
 				if(colName.equals("name") || colName.equals("type") || colName.equals("file")){
 					//already handled
 				}else{
-					extraFields.put(colName, req.getString(colName));
-					System.out.println("uploadfile -> adding extra field '" + colName + "' with value '" + req.getSet(colName) +"'");
+					extraFields.put(colName, request.getString(colName));
 				}
 			}
 	

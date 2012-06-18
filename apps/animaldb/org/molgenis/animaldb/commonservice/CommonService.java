@@ -1,5 +1,7 @@
 package org.molgenis.animaldb.commonservice;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.molgenis.animaldb.AnimalDbFile;
 import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.auth.MolgenisUser;
@@ -32,6 +35,10 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
+import org.molgenis.util.Tuple;
+
+import decorators.NameConvention;
+import filehandling.generic.PerformUpload;
 
 /**
  * @author erikroos
@@ -75,6 +82,51 @@ public class CommonService
 	    CommonService.db = db;
 	}
 
+	/**
+	 * Helper funtion to upload Dec application files. Note the use of name and uniquePostfix!
+	 * @param name
+	 * @param uniquePostfix
+	 * @param request
+	 * @throws Exception
+	 */
+	public String addAnimalDbFile(String name, String uniquePostfix, Tuple request, boolean overwriteExisting) throws Exception
+	{
+		// DEC application PDF
+		File fileFromRequest = request.getFile(name.toLowerCase());
+		if (fileFromRequest == null)
+		{
+			throw new FileNotFoundException("No "+name.toLowerCase()+" selected");
+		}
+		String originalFileName = request.getString(name.toLowerCase() + "OriginalFileName");
+		if(!originalFileName.contains("."))
+		{
+			throw new FileNotFoundException("The uploaded file does not have an extension");
+		}
+		String originalFileExt = originalFileName.substring(originalFileName.lastIndexOf(".")+1);
+		String fileName = name.toLowerCase() + "_" + NameConvention.escapeFileName(uniquePostfix); //use DEC name to make it 'unique'
+		//if the name exists: delete the old one!
+		List<AnimalDbFile> afList = db.find(AnimalDbFile.class, new QueryRule(AnimalDbFile.NAME, Operator.EQUALS, fileName));
+		if(afList.size() == 1) // if there are more: you are in really big trouble because name is unique constraint!
+		{
+			if(overwriteExisting)
+			{
+				db.remove(afList.get(0));
+				
+				
+			}
+			else
+			{
+				throw new FileNotFoundException("File already exists, overwriting not allowed!");
+			}
+		}
+		AnimalDbFile file = new AnimalDbFile();
+		file.setName(fileName);
+		file.setExtension(originalFileExt);
+		db.add(file);
+		PerformUpload.doUpload(db, file, fileFromRequest, true);
+		return fileName;
+	}
+	
 	/**
 	 * Retrieve an investigation id based on an investigation name.
 	 * Returns -1 if none found.

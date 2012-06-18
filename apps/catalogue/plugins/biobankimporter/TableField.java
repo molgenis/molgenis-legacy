@@ -1,4 +1,4 @@
-package plugins.GenericImporter;
+package plugins.biobankimporter;
 
 import java.util.HashMap;
 
@@ -25,6 +25,8 @@ public class TableField {
 	
 	//e.g. 'name'
 	String fieldName = "";
+	
+	String multipleValues = "";
 	
 	int columnIndex;
 	
@@ -75,10 +77,11 @@ public class TableField {
 	}
 
 
-	public TableField(String ClassType, String fieldName, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex) {
+	public TableField(String ClassType, String fieldName, String multipleValues, int columnIndex, Boolean Vertical, Tuple defaults, int... dependentColumnIndex) {
 		this.fieldName = fieldName;
 		this.classType = ClassType;
 		this.columnIndex = columnIndex;
+		this.multipleValues = multipleValues;
 		this.vertical = Vertical;
 		this.defaults = defaults;
 		this.dependentColumnIndex = dependentColumnIndex;

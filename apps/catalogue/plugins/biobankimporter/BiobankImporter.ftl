@@ -1,4 +1,4 @@
-<#macro plugins_GenericImporter_GenericImporterPlugin screen>
+<#macro BiobankImporter screen>
 
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
@@ -333,7 +333,17 @@
 				
 				if(fieldValue != ""){
 					
-					if(rowIndex > 2){
+					if(rowIndex == 3){
+						
+						
+						
+						if(fieldValue.toLowerCase() === "true"){
+							select.checked = true;
+						}else{
+							select.checked = false;
+						}
+						
+					}else if(rowIndex > 3){
 						
 						var localCount = makeTable(header);
 						
@@ -375,7 +385,7 @@
 			
 		</script>
 			<div class="screenpadding" id = "screenpadding">	
-			    <h3 id="test"> Import dataShaper data to pheno model  </h3>
+			    <h3 id="test"> Import your data to pheno model  </h3>
 		        
 		        <div id="fileChosenSection">
 			        <#if screen.isImportingFinished() == true>
@@ -437,11 +447,16 @@
 						<button type="button" onclick="updateTableContent();">Update</button> 
 						<br/><br/>
 						
+						<!--
+						Please select if you have multiple values (in single records separated by commas) ? <input type="checkbox" name="multipleValues" id="multipleValues" value="multipleValues">  <br><br/>
+						<script>checkMultipleValue('multipleValues', ${screen.getMultipleValue()});</script>
+						-->
 						<!-- this is the code for uploading the mapping file -->				
 						<p> You could upload a mapping file if you have it already </p>
 				        <input type="file" name = "uploadMapping"/>
 				        <input type="submit" value="upload mapping" onclick="__action.value='uploadMapping';return true;"/>
-				        <input type="submit" value="save mapping" onclick="__action.value='saveMapping';return true;"/><br /><br/><br/>
+				        <input type="submit" value="save mapping" onclick="__action.value='saveMapping';return true;"/><br /><br/>						
+						
 						
 						<div id="addScrollBar"  style="overflow:scroll;">
 						<table id="table" name="mappingTable" border="1">
@@ -477,6 +492,7 @@
 									</td>
 								</#list>
 							</div></tr>
+							
 							<tr>
 								<#list screen.getSpreadSheetHeanders() as header>
 									<td><select id='3' name='${header}' onchange="changeFieldContent('${header}');">
@@ -490,10 +506,20 @@
 							
 							<tr>
 								<#list screen.getSpreadSheetHeanders() as header>
+									<td>
+										Multiple values? <input type="checkbox" name="${header}" id="multipleValues" value="true">
+									</td>
+								</#list>
+							</tr>
+							
+							<tr>
+								<#list screen.getSpreadSheetHeanders() as header>
 									<td><div id='${header}'>data type</div>
 									</td>
 								</#list>
 							</tr>
+							
+							
 						</table>
 						</div>
 						

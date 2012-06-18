@@ -33,18 +33,14 @@
 		<!-- Create folder structure for distro -->
 		<property name="root_distro_dir" value="${basedir}/dist/"/>
 		<property name="app_distro_dir" value="${root_distro_dir}/molgenis_${app_name}/"/>
-		<property name="lib_dir" value="${app_distro_dir}/lib/"/>
-		<property name="templates_dir" value="${app_distro_dir}/templates/"/>
-		<property name="protocols_dir" value="${app_distro_dir}/protocols/"/>
-		<property name="workflows_dir" value="${app_distro_dir}/workflows/"/>
-		<property name="app_module_dir" value="${basedir}/modules/compute/" />
 		
 		<mkdir dir="${app_distro_dir}"/>
 		
 		<!-- Get SVN revision info from the commandline SVN client-->
 		<exec executable="svn" output="${app_distro_dir}/svn.properties">
 			<arg value="info"/>
-			<arg value="http://www.molgenis.org/svn/molgenis_apps/trunk"/>
+			<!--<arg value="http://www.molgenis.org/svn/molgenis_apps/trunk"/>-->
+			<arg value="${basedir}"/>
 		</exec>
 		<exec executable="sed" output="${app_distro_dir}/svn.properties">		
 			<arg value="s/[[:space:]]//g"/>
@@ -62,9 +58,17 @@
 		<delete includeEmptyDirs="true" failonerror="false">
 				<fileset dir="${app_distro_dir}" />
 		</delete>
+
+		<!-- Create folder substructure for distro -->
+		<property name="app-r_distro_dir" value="${app_distro_dir}/molgenis_${app_name}-r${svn.Revision}/"/>
+		<property name="lib_dir" value="${app-r_distro_dir}/lib/"/>
+		<property name="templates_dir" value="${app-r_distro_dir}/templates/"/>
+		<property name="protocols_dir" value="${app-r_distro_dir}/protocols/"/>
+		<property name="workflows_dir" value="${app-r_distro_dir}/workflows/"/>
+		<property name="app_module_dir" value="${basedir}/modules/compute/" />
 		
 		<!-- Copy README to the distro dir -->
-		<copy todir="${app_distro_dir}">
+		<copy todir="${app-r_distro_dir}">
 			<fileset dir="${basedir}/apps/${app_name}/org/molgenis/${app_name}/">
 				<include name="README*"/>
 			</fileset>
@@ -72,7 +76,7 @@
 		
 		<!-- Copy all generic templates, protocols and workflows to the distro dir -->
 		<copy todir="${templates_dir}">
-		    <fileset dir="${app_module_dir}/org/molgenis/compute/templates/"/>
+		    <fileset dir="${app_module_dir}/org/molgenis/${app_name}/templates/"/>
 		</copy>
 		<copy todir="${protocols_dir}">
 		    <fileset dir="${app_module_dir}/protocols/"/>
@@ -91,15 +95,15 @@
 			</fileset>
 		</copy>
 		
-		<!-- Create molgenis.jar  -->
+		<!-- Create molgenis.jar -->
 		<jar jarfile="${lib_dir}/molgenis-r${svn.Revision}.jar" basedir="${build.molgenis.dir}" update="false"/>
 
 						
-		<!-- Create molgenis_app.jar in folder dist/${app}-->
-		<jar jarfile="${lib_dir}/molgenis_compute-r${svn.Revision}.jar" basedir="${build.molgenis_apps.dir}" update="false"/>
+		<!-- Create molgenis_app.jar in folder dist/${app} -->
+		<jar jarfile="${lib_dir}/molgenis_${app_name}-r${svn.Revision}.jar" basedir="${build.molgenis_apps.dir}" update="false"/>
 		
-		<!-- Make package with 'lib','workflows','protocols' and shell script to start all -->
-		<echo file="${app_distro_dir}/molgenis_compute.sh">#!/bin/bash
+		<!-- Make shell script to start molgenis app from the commandline -->
+		<echo file="${app-r_distro_dir}/molgenis_${app_name}.sh">#!/bin/bash
 #
 # This script runs the MOLGENIS/compute commandline with only the jars needed added to the CLASSPATH.
 # To get relative path to this script use $(dirname -- "$0").
@@ -117,10 +121,10 @@ org.molgenis.compute.commandline.ComputeCommandLine \
 -mcdir=${MCDIR} \
 $*
 		</echo>
-		<chmod file="${app_distro_dir}/molgenis_compute.sh" perm="755"/>
+		<chmod file="${app-r_distro_dir}/molgenis_${app_name}.sh" perm="755"/>
 
-		
-		<zip destfile="${root_distro_dir}/molgenis_compute-r${svn.Revision}.zip" basedir="${app_distro_dir}" update="false" />
+		<!-- Make package with 'lib','workflows','protocols' and shell script -->
+		<zip destfile="${root_distro_dir}/molgenis_${app_name}-r${svn.Revision}.zip" basedir="${app_distro_dir}" update="false" />
 		
 		<!-- Cleanup -->
 		<delete includeEmptyDirs="true" failonerror="false">

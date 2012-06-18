@@ -1,6 +1,4 @@
-package plugins.GenericImporter;
-
-
+package plugins.biobankimporter;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,12 +18,13 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
+import org.molgenis.auth.Institute;
+import org.molgenis.auth.Person;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
@@ -40,18 +39,17 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
+import uk.ac.ebi.ontocat.OntologyTerm;
 import app.FillMetadata;
 
 
-
-
-public class GenericImporterPlugin extends PluginModel<Entity>
+public class BiobankImporter extends PluginModel<Entity>
 {
 	private String Status = "";
 
 	private List<String> headers = null;
 
-	private TableModel table = null;
+	private TableController table = null;
 
 	private File file = null;
 
@@ -75,6 +73,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 	private HashMap<Integer, String> columnIndexToClassType = new HashMap<Integer, String>();
 	private HashMap<Integer, Integer> columnIndexToRelation = new HashMap<Integer, Integer>();
 	private HashMap<Integer, String> columnIndexToFieldName = new HashMap<Integer, String>();
+	private HashMap<Integer, String> columnIndexToMultipleValue = new HashMap<Integer, String>();
 
 	private List<List<String>> mappingForMolgenisEntity = new ArrayList<List<String>>();
 
@@ -85,7 +84,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 	private int StepsFlag = 0;
 
 	private int columnCount = 0;
-	
+
 	private int previousAddingDataType = 0; 
 
 	private String filePath = null;
@@ -94,7 +93,9 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 	private Boolean multipleSheets = true;
 
-	public GenericImporterPlugin(String name, ScreenController<?> parent)
+	private Boolean multipleValue = false;
+
+	public BiobankImporter(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
 
@@ -117,7 +118,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 	public String getInvestigationName(){
 		return investigationName;
 	}
-	
+
 	public boolean isImportingFinished() {
 		return importingFinished;
 	}
@@ -176,8 +177,6 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		chooseClassType.add(Individual.class.getSimpleName());
 		chooseClassType.add(Panel.class.getSimpleName());
 		chooseClassType.add("NULL");
-		
-
 
 		dataTypeOptions.add("string");
 		dataTypeOptions.add("int");
@@ -206,20 +205,20 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 	@Override
 	public String getViewName()
 	{
-		return "plugins_GenericImporter_GenericImporterPlugin";
+		return "BiobankImporter";
 	}
 
 	@Override
 	public String getViewTemplate()
 	{
-		return "plugins/GenericImporter/GenericImporterPlugin.ftl";
+		return "plugins/biobankimporter/BiobankImporter.ftl";
 	}
 
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception	{
 
 		mappingForMolgenisEntity.clear();
-		
+
 		investigationName = "";
 
 		if ("UploadFileByColumn".equals(request.getAction())) 
@@ -241,23 +240,25 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			excelDirection = "UploadFileByRow";
 			System.out.println(request);
 			uploadFileName  = request.getString("uploadFile");
-			
+
 			if(uploadFileName != null && !uploadFileName.equals("")){
 				readHeaders(request);
 			}else{
 				this.setStatus("Please select a file to import!");
 			}
-			
+
 			this.setStepsFlag(1);
 
 		}else if("backToPreviousStep".equals(request.getAction())){ 
-			
+
 			importingFinished = true;
+
+			multipleValue = false;
 			
 			file = null;
-			
+
 			filePath = null;
-		
+
 		}else if("uploadMapping".equals(request.getAction())) {//Upload the mapping file to avoid repeated work!
 
 			String mappingFileName = request.getString("uploadMapping");
@@ -273,25 +274,25 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 				int columns = sheet.getColumns();
 
 				int rows = sheet.getRows();
-				
+
 				int startingRow = 0;
-				
-				if(sheet.getCell(0, 0).getContents().toString().equals("InvestigationName")){
-					
-					investigationName = sheet.getCell(1, 0).getContents().toString();
-					
-					startingRow = 1;
-					
+
+				if(sheet.getCell(0, startingRow).getContents().toString().equals("InvestigationName")){
+
+					investigationName = sheet.getCell(1, startingRow).getContents().toString();
+
+					startingRow++;
+
 				}else{
 					investigationName = "";
 				}
-				
+
 				for(int j = 0; j < columns; j++){
 
 					List<String> mappingForEachColumn = new ArrayList<String>();
 
 					for(int i = startingRow; i < rows; i++){
-
+						
 						mappingForEachColumn.add(sheet.getCell(j, i).getContents().toString());
 
 					}
@@ -317,16 +318,15 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
 
 			String investigationName = null;
-			
+
 			int startingRow = 0;
-			
+
 			if(request.getString("investigation") != null){
 				investigationName = request.getString("investigation");
-				outputExcel.addCell(new Label(1, 0, investigationName));
-				outputExcel.addCell(new Label(0, 0, "InvestigationName"));
+				outputExcel.addCell(new Label(0, startingRow, "InvestigationName"));
+				outputExcel.addCell(new Label(1, startingRow, investigationName));
 				startingRow++;
 			}
-			
 			
 			if(headers != null)
 			{
@@ -344,22 +344,26 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 			if(twoDimensionalTable.size() > 0){
 
-				previousAddingDataType = 0;
-				
 				for(int i = 0; i < twoDimensionalTable.size(); i++){
 
-					for(int j = 0; j < twoDimensionalTable.get(0).size(); j++){
+					if(twoDimensionalTable.get(i).size() < 4){
+						twoDimensionalTable.get(i).add("false");
+					}
+					
+					for(int j = 0; j < twoDimensionalTable.get(i).size(); j++){
 
 						outputExcel.addCell(new Label(i, j + 1 + startingRow, twoDimensionalTable.get(i).get(j)));
 					}
-
+					
 					if(twoDimensionalTable.get(i).get(1).equals(Measurement.class.getSimpleName() + ":" + Measurement.DATATYPE)){
 
 						String member = headers.get(i); 
+
+						//int addedNumberOfDataType = previousAddingDataType;
+
+						previousAddingDataType = 0;
 						
-						int addedNumberOfDataType = previousAddingDataType;
-						
-						for(int index = addedNumberOfDataType; index < request.getInt("__dataTypeCount"); index++){
+						for(int index = 0; index < request.getInt("__dataTypeCount"); index++){
 
 							if(request.getString(member + "_options_" + index) != null){
 								String eachMember = request.getString(member + "_options_" + index);
@@ -370,7 +374,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 								{
 									String userInputDatType = request.getString(member + "_input_" + index);
 									String dataType = MolgenisDataTypeOption + ";" + userInputDatType;
-									outputExcel.addCell(new Label(i, twoDimensionalTable.get(0).size() + index + 1 - addedNumberOfDataType + startingRow, dataType));
+									outputExcel.addCell(new Label(i, twoDimensionalTable.get(i).size() + previousAddingDataType + 1 + startingRow, dataType));
 								}
 								previousAddingDataType++;
 							}
@@ -428,8 +432,19 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 							}else if(index == 2){
 								System.out.println(columnIndex + "-------------------------->" + eachMember.toString());
 								columnIndexToRelation.put(columnIndex, Integer.parseInt(eachMember.toString()));
+								index++;
 							}
+//							else if(index == 3){
+//								columnIndexToMultipleValue.put(columnIndex, "true");
+//								
+//							}
 						}
+					}
+					
+					if(request.getBool(columnIndex) != null){
+						System.out.println();
+					}else{
+						
 					}
 
 					columnIndex++;
@@ -477,7 +492,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 		File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
 		filePath = tmpDir.getAbsolutePath() + "/" + filePath;
-		
+
 		file = new File(uploadFileName); 
 
 		importingFinished = false;
@@ -499,13 +514,13 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 			columnIndex.add(0);
 
 			startingRowIndex  = request.getInt("startingRowIndex");
-			
+
 			startingRowIndex--;
-			
+
 			if(request.getBool("multipleSheets") != null){
 				multipleSheets = request.getBool("multipleSheets");
 			}
-			
+
 			if(request.getAction().equals("UploadFileByColumn"))
 			{
 				setColumnCount(columns);
@@ -534,8 +549,6 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 				setSpreadSheetHeanders(headers);
 			}
-
-
 
 		}else {
 
@@ -568,7 +581,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 			Sheet dictionaryCategory = workbook.getSheet(0);
 
-			table = new TableModel (dictionaryCategory.getColumns(), db);
+			table = new TableController (dictionaryCategory.getColumns(), db);
 
 			{
 				List<String> referenceClass = new ArrayList<String>();
@@ -583,6 +596,12 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 					String classType = columnIndexToClassType.get(columnIndex);
 
 					String fieldName = columnIndexToFieldName.get(columnIndex);
+					
+					String multipleValues = "false";
+					
+					if(columnIndexToMultipleValue.containsKey(columnIndex)){
+						multipleValues = columnIndexToMultipleValue.get(columnIndex);
+					}
 
 					String splitByColon[] = fieldName.toString().split(":");
 
@@ -598,29 +617,29 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 					{
 						int coHeaders[] = {columnIndex.intValue()};
 						System.out.println(columnIndex);
-						table.addField(classType, ObservedValue.VALUE, coHeaders, dependedColumn.intValue(), TableField.COLHEADER);
+						table.addField(classType, ObservedValue.VALUE, multipleValues, coHeaders, dependedColumn.intValue(), TableField.COLHEADER);
 
 					}else if (classType.equals(Category.class.getSimpleName() + ":" + Category.ISMISSING)){
 
 						Tuple defaults = new SimpleTuple();
 						defaults.set(Category.ISMISSING, true);
-						table.addField(Category.class.getSimpleName(), "name", columnIndex.intValue(), TableField.COLVALUE, defaults);
-						table.addField(classType, fieldName, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
+						table.addField(Category.class.getSimpleName(), "name", multipleValues ,columnIndex.intValue(), TableField.COLVALUE, defaults);
+						table.addField(classType, fieldName, multipleValues, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
 
 					}else{
 
 						if(dependedColumn.intValue() == -1)
 						{
-							table.addField(classType, fieldName, columnIndex.intValue(), TableField.COLVALUE);
+							table.addField(classType, fieldName, multipleValues, columnIndex.intValue(), TableField.COLVALUE);
 
 						}else{
 
 							if(referenceClass.contains(fieldName))
 							{
-								table.addField(classType, "name", columnIndex.intValue(), TableField.COLVALUE);
+								table.addField(classType, "name", multipleValues, columnIndex.intValue(), TableField.COLVALUE);
 							}
 
-							table.addField(classType, fieldName, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
+							table.addField(classType, fieldName, multipleValues, TableField.COLVALUE, dependedColumn.intValue(), columnIndex.intValue());
 
 							if(classType.equals(Measurement.class.getSimpleName()) && fieldName.equals(Measurement.DATATYPE))
 							{
@@ -635,7 +654,7 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 				}
 
 				table.setInvestigationName(investigationName);
-				
+
 				table.convertIntoPheno(workbook.getSheets(), startingRowIndex, multipleSheets);
 
 			}
@@ -650,7 +669,6 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 
 		}
 	}
-
 
 	@Override
 	public void reload(Database db)	{
@@ -685,5 +703,10 @@ public class GenericImporterPlugin extends PluginModel<Entity>
 	public boolean getColumnCount() {
 		if (this.columnCount > 5) return true;
 		else return false;
+	}
+
+	public String getMultipleValue()
+	{
+		return multipleValue.toString();
 	}
 }
