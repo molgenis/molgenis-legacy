@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.lang.WordUtils;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
@@ -30,7 +31,7 @@ public class QueryTable implements TupleTable
 		this.columns = columns;
 		this.columnsByName = new LinkedHashMap<String, Field>();
 		for(Field col : columns) {
-			this.columnsByName.put(col.getName(), col);
+			this.columnsByName.put(col.getSqlName(), col);
 		}
 	}
 	
@@ -61,10 +62,9 @@ public class QueryTable implements TupleTable
 		final List<Object[]> rows = query.list(selectArray);
 		final ArrayList<Field> cols = new ArrayList<Field>(columns);
 		for(final Object[] obj : rows) {
-			
 			final SimpleTuple row = new SimpleTuple();
-			for(int i = 0; i < cols.size(); ++i) {
-				row.set(cols.get(i).getName(), obj[i]);
+			for(int i = 0; i < selectArray.length; ++i) {
+				row.set(cols.get(i).getSqlName(), obj[i]);	
 			}			
 			tuples.add(row);
 		}

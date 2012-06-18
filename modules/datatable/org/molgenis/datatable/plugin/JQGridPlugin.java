@@ -2,7 +2,6 @@ package org.molgenis.datatable.plugin;
 
 import java.io.OutputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,47 +92,46 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			{
 				try
 				{
-//					String userName = "molgenis";
-//					String password = "molgenis";
-//					String url = "jdbc:mysql://localhost:3306/world";
-//
-//					Class.forName("com.mysql.jdbc.Driver").newInstance();
-//					Connection conn = DriverManager.getConnection(url, userName, password);
 					final Connection connection = db.getConnection();
 
 					final SQLTemplates dialect = new MySQLTemplates();
 					final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-					return new QueryTables(query, Arrays.asList("Country"), db);
+					boolean joinTable = true;
+					if(joinTable) {
+						final List<QueryTables.Join> joins = Arrays.asList(new QueryTables.Join("Country.Code", "City.CountryCode"));
+						return new QueryTables(query, Arrays.asList("Country", "City"), joins, db);						
+					} 
+
 					
-//					PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
-//							"Country");
-//					PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
-//					query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
-//
-//					final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(Integer.class,
-//							"Population"));
-//					final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(Integer.class,
-//							"Population"));
-//					final NumberExpression<Double> cityPopulationRatio = cityPopulation.divide(countryPopulation);
-//					query.where(country.get("code").eq(city.get("countrycode")));
-//					query.limit(10);
-//					query.orderBy(cityPopulationRatio.desc());
-//
-//					// create select
-//					Field countryName = new Field("Country.Name");
-//					countryName.setType(new StringField());
-//					Field cityName = new Field("City.Name");
-//					cityName.setType(new StringField());
-//					Field ratio = new Field("ratio");
-//					ratio.setType(new DecimalField());
-//					
-//					LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
-//					selectMap.put("Country.Name", country.get(new StringPath("name")));
-//					selectMap.put("City.Name", city.get(new StringPath("name")));
-//					selectMap.put("ratio", cityPopulationRatio);
-//					List<Field> columns = Arrays.asList(countryName, cityName, ratio);
-//					return new QueryTable(query, selectMap, columns);
+					PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
+							"Country");
+					PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
+					query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
+
+					final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(Integer.class,
+							"Population"));
+					final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(Integer.class,
+							"Population"));
+					final NumberExpression<Double> cityPopulationRatio = cityPopulation.divide(countryPopulation);
+					query.where(country.get("code").eq(city.get("countrycode")));
+					query.limit(10);
+					query.orderBy(cityPopulationRatio.desc());
+
+					// create select
+					Field countryName = new Field("Country.Name");
+					countryName.setType(new StringField());
+					Field cityName = new Field("City.Name");
+					cityName.setType(new StringField());
+					Field ratio = new Field("ratio");
+					ratio.setType(new DecimalField());
+					
+					LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
+					selectMap.put("Country.Name", country.get(new StringPath("name")));
+					selectMap.put("City.Name", city.get(new StringPath("name")));
+					selectMap.put("ratio", cityPopulationRatio);
+					List<Field> columns = Arrays.asList(countryName, cityName, ratio);
+					return new QueryTable(query, selectMap, columns);
 				}
 				catch (Exception ex)
 				{
@@ -230,8 +228,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					.valueOf(request.getString("exportSelection")) : ExportRange.UNKOWN;
 
 			final int limit = request.getInt("rows");
-			final String sidx = request.getString("sidx");
-			final String sord = request.getString("sord");
+//			final String sidx = request.getString("sidx");
+//			final String sord = request.getString("sord");
 
 			// add filter rules
 			// final List<QueryRule> rules =
