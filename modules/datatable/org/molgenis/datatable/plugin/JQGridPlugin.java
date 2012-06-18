@@ -93,15 +93,16 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			{
 				try
 				{
-					String userName = "molgenis";
-					String password = "molgenis";
-					String url = "jdbc:mysql://localhost:3306/test_gcc";
+//					String userName = "molgenis";
+//					String password = "molgenis";
+//					String url = "jdbc:mysql://localhost:3306/world";
+//
+//					Class.forName("com.mysql.jdbc.Driver").newInstance();
+//					Connection conn = DriverManager.getConnection(url, userName, password);
+					final Connection connection = db.getConnection();
 
-					Class.forName("com.mysql.jdbc.Driver").newInstance();
-					Connection conn = DriverManager.getConnection(url, userName, password);
-
-					SQLTemplates dialect = new MySQLTemplates();
-					SQLQueryImpl query = new SQLQueryImpl(conn, dialect);
+					final SQLTemplates dialect = new MySQLTemplates();
+					final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
 					return new QueryTables(query, Arrays.asList("Country"), db);
 					
