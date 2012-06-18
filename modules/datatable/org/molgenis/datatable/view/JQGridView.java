@@ -34,7 +34,7 @@ public class JQGridView extends HtmlWidget
 			args.put("columns", columns);
 			args.put("viewFactoryClassName", ViewFactoryImpl.class.getName());
 			args.put("backendUrl", "molgenis.do");
-			args.put("sortName", columns.get(0).getName());
+			args.put("sortName", columns.get(0).getSqlName());
 			
 			final Configuration cfg = new Configuration();
 			cfg.setObjectWrapper(new DefaultObjectWrapper());
