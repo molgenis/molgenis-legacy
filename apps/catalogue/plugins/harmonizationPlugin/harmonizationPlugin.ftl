@@ -42,6 +42,7 @@ function refreshByHits(){
 	var hits = document.getElementById('changeHits').value;
 	var divForTable = document.getElementById('details');
 	var tables = divForTable.getElementsByTagName('table');	
+	
 	for(var i = 0; i < tables.length; i++){
 		
 		var eachTable = tables[i];
