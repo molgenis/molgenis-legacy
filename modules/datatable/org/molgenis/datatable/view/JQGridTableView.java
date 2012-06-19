@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.molgenis.datatable.model.DatabaseTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
@@ -51,7 +50,7 @@ public class JQGridTableView extends HtmlWidget
 	 *            the TupleTable being viewed
 	 * @throws TableException
 	 */
-	public JQGridTableView(String id, ScreenController<?> plugin, DatabaseTable table) throws TableException
+	public JQGridTableView(String id, ScreenController<?> plugin, TupleTable table) throws TableException
 	{
 		super(id);
 		this.plugin = plugin;
