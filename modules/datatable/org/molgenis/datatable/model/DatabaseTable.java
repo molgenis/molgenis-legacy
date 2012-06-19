@@ -133,4 +133,11 @@ public class DatabaseTable implements TupleTable
 		this.db = db;
 	}
 
+	@Override
+	public void setQueryRules(List<QueryRule> rules)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
