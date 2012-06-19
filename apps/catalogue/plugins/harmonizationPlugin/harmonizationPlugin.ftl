@@ -51,7 +51,7 @@ function refreshByHits(){
 		
 		for(var j = 0; j < rowElements.length; j++){
 			
-			if(j < hits){
+			if(j <= hits){
 				rowElements[j].style.display = "table-row";
 			}else{
 				rowElements[j].style.display = "none";

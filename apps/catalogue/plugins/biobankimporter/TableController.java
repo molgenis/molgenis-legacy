@@ -212,9 +212,9 @@ public class TableController {
 						String cellValue;
 
 						if(excelDirection.equals("UploadFileByRow"))
-							cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+							cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
 						else
-							cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+							cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
 						if(cellValue.equalsIgnoreCase("CHFYETIOL")){
 							System.out.println();
 						}
@@ -281,8 +281,7 @@ public class TableController {
 												//create the entity
 												entity = (InvestigationElement) DatabaseFactory.create().getClassForName(field.getClassType()).newInstance();
 											}
-
-
+											
 											if(!value.equalsIgnoreCase(""))
 											{
 
@@ -293,11 +292,13 @@ public class TableController {
 													//therefore it`s separated from other entites.
 													String categoryName = value;
 
-													if(value.split("=").length > 1)
-													{
-														categoryName = value.split("=")[1].trim();
-													}
-
+//													if(value.split("=").length > 1)
+//													{
+//														categoryName = value.split("=")[1].trim();
+//													}
+													
+													categoryName = categoryName.substring(categoryName.indexOf("=") + 1).replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+													
 													entity.set(Category.NAME, categoryName);
 													entity.set(Category.DESCRIPTION, value);
 													entity.set(Category.CODE_STRING, value);
@@ -346,8 +347,6 @@ public class TableController {
 
 										//									InvestigationElement addingPropertyToEntity = colValues.get(dependentColumn).get(rowIndex - 1).get(0);
 
-										cellValue = cellValue.replaceAll("[^(a-zA-Z0-9_\\s)]", " ");
-
 										String multipleValues[] = cellValue.split(dependendField.getValueSplitter());
 
 										List<Object> values = new ArrayList<Object>();
@@ -357,19 +356,24 @@ public class TableController {
 
 											for(int i = 0; i < multipleValues.length; i++)
 											{
-
+												multipleValues[i] = multipleValues[i].substring(multipleValues[i].indexOf("=") + 1).replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+												
 												String categoryCodeString = multipleValues[i];
+//
+//												if(categoryCodeString.split("=").length > 1)
+//												{	
+//													multipleValues[i] = categoryCodeString.split("=")[1];
+//												}
 
-												if(categoryCodeString.split("=").length > 1)
-												{	
-													multipleValues[i] = categoryCodeString.split("=")[1];
-												}
-
-												values.add(multipleValues[i].trim());
+												values.add(categoryCodeString.trim());
 
 											}
 										}else{
-
+											
+											cellValue = cellValue.replaceAll("[^(a-zA-Z0-9_\\s)]", " ");
+											
+											multipleValues = cellValue.split(dependendField.getValueSplitter());
+											
 											for(int i = 0; i < multipleValues.length; i++){
 												values.add(multipleValues[i].trim());
 											}
@@ -576,9 +580,9 @@ public class TableController {
 											
 											ObservedValue observedValue = new ObservedValue();
 
-											String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+											String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
 
-											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
 											
 											
 											//TODO: import measurements then import individual data. The measurement has to be consistent.
@@ -736,9 +740,16 @@ public class TableController {
 			HashMap<String, InvestigationElement> hashMapCategory = removeDuplicates(categoryList);
 
 			categoryList = new ArrayList<InvestigationElement> (hashMapCategory.values());
-
+			
 			checkExistenceInDB(hashMapCategory, Category.class.getSimpleName());
-
+			
+			for(InvestigationElement c : categoryList){
+				System.out.println(c.getName());
+				if(c.getName().equals("")){
+					System.out.println();
+				}
+			}
+			
 			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
 
 			HashMap<String, InvestigationElement> displayNameToMeasurement = new HashMap<String, InvestigationElement>();
