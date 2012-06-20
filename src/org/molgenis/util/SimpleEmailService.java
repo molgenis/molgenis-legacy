@@ -1,13 +1,23 @@
 package org.molgenis.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
 import javax.mail.Message;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 
 public class SimpleEmailService implements EmailService
 {
@@ -72,6 +82,54 @@ public class SimpleEmailService implements EmailService
 			transport.connect(smtpHostname, smtpPort, smtpUser, (deObf ? HtmlTools.fromSafeUrlStringO_b_f(smtpAu) : smtpAu));
 			transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
 			transport.close();
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new EmailException(e);
+		}
+	}
+	
+	public boolean email(String subject, String body, String toEmail, String fileAttachment, ByteArrayOutputStream outputStream, boolean deObf) throws EmailException
+	{
+		Properties props = new Properties();
+		props.put("mail.transport.protocol", smtpProtocol);	
+		Session session = Session.getDefaultInstance(props, null);
+		//session.setDebug(true);
+		Message message = new MimeMessage(session);
+
+		try
+		{
+			message.setFrom(new InternetAddress(this.smtpFromAddress, "MOLGENIS"));
+			message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+			message.setSubject(subject);
+				
+			message.setSentDate(new Date());
+			//message.saveChanges();
+
+			BodyPart messageBodyPart = new MimeBodyPart();
+			messageBodyPart.setText(body);
+		    
+		    Multipart multipart = new MimeMultipart();
+	        MimeBodyPart htmlPart = new MimeBodyPart();        
+
+	        htmlPart.setContent(body, "text/html");
+	        multipart.addBodyPart(htmlPart);
+
+	        MimeBodyPart attachment = new MimeBodyPart();
+	        attachment.setFileName("attachment.xls");
+	        attachment.setContent(outputStream.toByteArray(), "application/vnd.ms-excel");              
+	        multipart.addBodyPart(attachment);
+
+	        message.setContent(multipart);
+	        
+	        message.setContent(multipart);
+	        Transport transport = session.getTransport();
+			transport.connect(smtpHostname, smtpPort, smtpUser, (deObf ? HtmlTools.fromSafeUrlStringO_b_f(smtpAu) : smtpAu));
+			transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+			transport.close();
+
 			return true;
 		}
 		catch (Exception e)
