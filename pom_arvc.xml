@@ -171,7 +171,7 @@
 
 
     <build>
-		<testSourceDirectory>generated</testSourceDirectory>
+		<testSourceDirectory>generated/java</testSourceDirectory>
 
         <resources>
             <!-- Persistence.xml -->
@@ -180,15 +180,6 @@
                 <targetPath>META-INF</targetPath>
             </resource>
             <!-- copy freemarker templates -->
-<!--
-            <resource>
-                <directory>generated/</directory>
-                <includes>
-                    <include>**/*.ftl</include>
-                </includes>
-				<targetPath>${basedir}</targetPath>
-            </resource>
--->
             <resource>
                 <directory>apps/arvc/</directory>
                 <includes>
@@ -314,17 +305,17 @@
 							<addClasspath>true</addClasspath>
 						</manifest>
 					</archive>
-<!--
 					<webResources>
 						<resource>
-							<directory>${project.basedir}/apps/arvc/</directory>
-							<targetPath>WEB-INF/classes</targetPath>
+							<directory>apps/arvc/res</directory>
+							<targetPath>/</targetPath>
+<!--
 							<includes>
-								<include>apps/arvc/**/*.ftl</include>
+								<include>**/*.jsp</include>
 							</includes>
+-->
 						</resource>
 					</webResources>
--->
                 </configuration>
             </plugin>
             <plugin>
