@@ -73,7 +73,6 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	public JQGridPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-
 		// tupleTableBuilder = new TupleTableBuilder()
 		// {
 		// @Override
@@ -97,12 +96,14 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					final SQLTemplates dialect = new MySQLTemplates();
 					final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-					boolean joinTable = true;
+					boolean joinTable = false;
 					if(joinTable) {
 						final List<QueryTables.Join> joins = Arrays.asList(new QueryTables.Join("Country.Code", "City.CountryCode"));
 						return new QueryTables(query, Arrays.asList("Country", "City"), joins, db);						
 					} 
 
+					
+					
 					
 					PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
 							"Country");
@@ -267,7 +268,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		}
 		catch (Exception e)
 		{
-			throw new HandleRequestDelegationException();
+			//getModel().setError(e.getMessage());
+			throw new HandleRequestDelegationException(e);
 		}
 		return null;
 	}

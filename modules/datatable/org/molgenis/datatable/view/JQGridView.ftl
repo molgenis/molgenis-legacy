@@ -155,7 +155,7 @@ $(document).ready(function() {
     this.myColModel = 
         [
             <#list columns as col>	
-            {title:'${col.name}', key:'${col.name}', name:'${col.name}',index:'${col.name}', width:150, searchrules:{required:${(!col.nillable)?string}}, table:'Country'}<#if col_has_next>,</#if>
+            {title:'${col.sqlName}', key:'${col.sqlName}', name:'${col.sqlName}',index:'${col.sqlName}', width:150, searchrules:{required:${(!col.nillable)?string}}, table:'Country'}<#if col_has_next>,</#if>
             </#list>
         ];
    
