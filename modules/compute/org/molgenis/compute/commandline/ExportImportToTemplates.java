@@ -1,12 +1,17 @@
 package org.molgenis.compute.commandline;
 
-import app.DatabaseFactory;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.framework.db.Database;
-import org.molgenis.ngs.LibraryLane;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.protocol.WorkflowElementParameter;
@@ -14,12 +19,7 @@ import org.molgenis.util.CsvFileWriter;
 import org.molgenis.util.CsvWriter;
 import org.molgenis.util.Tuple;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.List;
+import app.DatabaseFactory;
 
 /**
  * This class can import/export data out of compute into/from
@@ -66,7 +66,7 @@ public class ExportImportToTemplates
 		List<ComputeProtocol> protocols = db.find(ComputeProtocol.class);
 		List<ComputeParameter> parameters = db.find(ComputeParameter.class);
 		List<WorkflowElement> elements = db.find(WorkflowElement.class);
-		List<Tuple> worksheet = this.generateWorksheet(db, LibraryLane.class);
+		//List<Tuple> worksheet = this.generateWorksheet(db, LibraryLane.class);
         List<WorkflowElementParameter> elementParameters = db.find(WorkflowElementParameter.class);
 
 		// write out parameters and workflowelements just as before to
