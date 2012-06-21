@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.molgenis.datatable.model.QueryTable;
+import org.molgenis.datatable.model.QueryTables;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.model.elements.Field;
 
@@ -15,12 +18,12 @@ import freemarker.template.Template;
 
 public class JQGridView extends HtmlWidget
 {
-	private final List<Field> columns;
+	private final TupleTable tupleTable;
 	
-	public JQGridView(String name, List<Field> columns)
+	public JQGridView(String name, TupleTable tupleTable)
 	{
 		super(name);
-		this.columns = columns;
+		this.tupleTable = tupleTable;
 	}
 	
 	
@@ -31,10 +34,11 @@ public class JQGridView extends HtmlWidget
 			final Map<String, Object> args = new HashMap<String, Object>();
 			
 			args.put("tableId", getId());
-			args.put("columns", columns);
+			args.put("columns", tupleTable.getColumns());
 			args.put("viewFactoryClassName", ViewFactoryImpl.class.getName());
 			args.put("backendUrl", "molgenis.do");
-			args.put("sortName", columns.get(0).getSqlName());
+			args.put("sortName", tupleTable.getColumns().get(0).getSqlName());
+			args.put("treeModel", ((QueryTable)tupleTable).getDynaTreeNodes());
 			
 			final Configuration cfg = new Configuration();
 			cfg.setObjectWrapper(new DefaultObjectWrapper());

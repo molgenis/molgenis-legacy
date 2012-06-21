@@ -96,14 +96,11 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					final SQLTemplates dialect = new MySQLTemplates();
 					final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-					boolean joinTable = false;
+					boolean joinTable = true;
 					if(joinTable) {
 						final List<QueryTables.Join> joins = Arrays.asList(new QueryTables.Join("Country.Code", "City.CountryCode"));
 						return new QueryTables(query, Arrays.asList("Country", "City"), joins, db);						
 					} 
-
-					
-					
 					
 					PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
 							"Country");
@@ -132,7 +129,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					selectMap.put("City.Name", city.get(new StringPath("name")));
 					selectMap.put("ratio", cityPopulationRatio);
 					List<Field> columns = Arrays.asList(countryName, cityName, ratio);
-					return new QueryTable(query, selectMap, columns);
+					final QueryTable queryTable = new QueryTable(query, selectMap, columns);
+					return queryTable;
 				}
 				catch (Exception ex)
 				{
@@ -161,7 +159,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			final TupleTable tupleTable = tupleTableBuilder.create(db);
 			// strange way to retrieve columns! Sould be in a ajax call when
 			// grid is constructed!
-			gridView = new JQGridView("myGrid", tupleTable.getColumns());
+			gridView = new JQGridView("myGrid", tupleTable);
 			tupleTable.close();
 		}
 		catch (Exception e)
