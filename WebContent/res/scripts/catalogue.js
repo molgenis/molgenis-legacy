@@ -1,5 +1,6 @@
 //debugger;"
 //This hashmap contains the details of the measurements that are shown when we click on a tree leaf. 
+//http://www.dynamicdrive.com/dynamicindex1/treeview/index.htm
 HashMap = function(){
 	this._dict = [];
 }
@@ -65,6 +66,8 @@ $("li>span").hover(function(){
 $(document).ready(function(){
 	$("#splitter").splitter();
 	$("#browser").treeview({control: "#masstoggler"});
+	//$("#browser").treeview({control: "#masstoggler", collapsed: false, prerendered: true, expandable:true});
+	//$("#browser").treeview({initialState:"expanded", control: "#masstoggler" });
 
 	var $scrollingDiv = $("#scrollingDiv");
 

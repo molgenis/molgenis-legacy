@@ -1,18 +1,23 @@
 package plugins.harmonizationPlugin;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
-
-import org.semanticweb.owlapi.model.IRI;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
+import org.semanticweb.owlapi.model.IRI;
+
 public class levenshteinDistance {
 
 	private OWLFunction owlFunction = null;
+	
+	private double cutOff = 50.0;
 
 	public static void main(String args[]) throws Exception{
 
@@ -27,7 +32,7 @@ public class levenshteinDistance {
 
 	public void startMatching() throws Exception{
 		
-		WritableWorkbook workbook = Workbook.createWorkbook(new File("/Users/pc_iverson/Desktop/Ontology_term_pilot/result.xls")); 
+		WritableWorkbook workbook = Workbook.createWorkbook(new File("/Users/pc_iverson/Desktop/Ontology_term_pilot/result2.xls")); 
 		
 		WritableSheet sheet = workbook.createSheet("result", 0); 
 		
@@ -59,6 +64,10 @@ public class levenshteinDistance {
 			
 			String synonymForOntologyTerm = "";
 			
+			Map<String, Double> candidateMatching = new HashMap<String, Double>();
+			
+			Map<String, String> candidateHPOId = new HashMap<String, String>();
+			
 			for(String ontologyTerm : listOfOntologyTerms){
 				
 				double similarity = matchingModel.stringMatching(eachTerm, ontologyTerm, false);
@@ -67,6 +76,10 @@ public class levenshteinDistance {
 					bestScore = similarity;
 					matchedOntologyTerm = ontologyTerm;
 					synonymForOntologyTerm = "";
+				}
+				
+				if(bestScore != 100 && similarity > cutOff){
+					candidateMatching.put(matchedOntologyTerm, similarity);
 				}
 				
 				List<String> synonyms = owlFunction.getAnnotation(ontologyTerm, IRI.create(
@@ -81,10 +94,16 @@ public class levenshteinDistance {
 						synonymForOntologyTerm = eachSynonym;
 						matchedOntologyTerm = ontologyTerm;
 					}
+					
+					if(bestScore != 100 && similarity2 > cutOff){
+						String output = "Synonym match: " + synonymForOntologyTerm + "; The ontology term: " + matchedOntologyTerm;
+						candidateMatching.put(output, similarity);
+						candidateHPOId.put(output, owlFunction.getOntologyTermID(matchedOntologyTerm));
+					}
 				}
 			}
 			
-			System.out.println(eachTerm + "\t" + matchedOntologyTerm + "\t" + owlFunction.getOntologyTermID(matchedOntologyTerm) + "\t" + bestScore);
+			//System.out.println(eachTerm + "\t" + matchedOntologyTerm + "\t" + owlFunction.getOntologyTermID(matchedOntologyTerm) + "\t" + bestScore);
 			
 			Label originalTermCell = new Label(0, rowIndex, eachTerm);
 			
@@ -107,6 +126,29 @@ public class levenshteinDistance {
 			sheet.addCell(scoreCell);
 			
 			rowIndex++;
+			
+			for(Entry<String, Double> eachEntry : candidateMatching.entrySet()){
+				
+				String term = eachEntry.getKey();
+				
+				Double similarity = eachEntry.getValue();
+				
+				String HPOId = candidateHPOId.get(term);
+				
+				ontologyTermCell = new Label(1, rowIndex, term);
+				
+				termIDCell = new Label(2, rowIndex, HPOId);
+				
+				scoreCell = new Label(3, rowIndex, "" + similarity);
+				
+				sheet.addCell(ontologyTermCell);
+				
+				sheet.addCell(termIDCell);
+				
+				sheet.addCell(scoreCell);
+				
+				rowIndex++;
+			}	
 		}
 		
 		workbook.write();
