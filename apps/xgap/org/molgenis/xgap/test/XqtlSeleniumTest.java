@@ -74,7 +74,7 @@ public class XqtlSeleniumTest
 			}
 			else
 			{
-				throw new Exception("HSQL database directory does not exist");
+				//throw new Exception("HSQL database directory does not exist");
 			}
 	
 //			if (dbDir.list().length != 1)
