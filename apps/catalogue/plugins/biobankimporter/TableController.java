@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import jxl.Sheet;
 
-import org.apache.cxf.binding.corba.wsdl.Array;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
