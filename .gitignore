@@ -22,5 +22,8 @@ nbproject/private/
 *.dll
 *.o
 *.tmp
+tmp*
+log*
+.classpath
 /.externalToolBuilders
 /.settings
