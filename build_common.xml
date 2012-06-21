@@ -105,7 +105,7 @@ It should be used via 'import' plus passing of properties
 		<!-- copy sql and other resources from generate sql -->
 		
 		<copy todir="${build.molgenis_apps.dir}" verbose="true">
-			<fileset dir="${output_sql}" includes="**/*.sql" />
+			<fileset dir="${output_sql}" includes="**/*.sql" erroronmissingdir="false"/>
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
 
