@@ -17,7 +17,7 @@ public class levenshteinDistance {
 
 	private OWLFunction owlFunction = null;
 	
-	private double cutOff = 50.0;
+	private double cutOff = 60.0;
 
 	public static void main(String args[]) throws Exception{
 
@@ -78,8 +78,9 @@ public class levenshteinDistance {
 					synonymForOntologyTerm = "";
 				}
 				
-				if(bestScore != 100 && similarity > cutOff){
-					candidateMatching.put(matchedOntologyTerm, similarity);
+				if(similarity > cutOff){
+					candidateMatching.put(ontologyTerm, similarity);
+					candidateHPOId.put(ontologyTerm, owlFunction.getOntologyTermID(ontologyTerm));
 				}
 				
 				List<String> synonyms = owlFunction.getAnnotation(ontologyTerm, IRI.create(
@@ -95,15 +96,15 @@ public class levenshteinDistance {
 						matchedOntologyTerm = ontologyTerm;
 					}
 					
-					if(bestScore != 100 && similarity2 > cutOff){
-						String output = "Synonym match: " + synonymForOntologyTerm + "; The ontology term: " + matchedOntologyTerm;
-						candidateMatching.put(output, similarity);
-						candidateHPOId.put(output, owlFunction.getOntologyTermID(matchedOntologyTerm));
+					if(similarity2 > cutOff){
+						String output = "Synonym match: " + eachSynonym + "; The ontology term: " + ontologyTerm;
+						candidateMatching.put(output, similarity2);
+						candidateHPOId.put(output, owlFunction.getOntologyTermID(ontologyTerm));
 					}
 				}
 			}
 			
-			//System.out.println(eachTerm + "\t" + matchedOntologyTerm + "\t" + owlFunction.getOntologyTermID(matchedOntologyTerm) + "\t" + bestScore);
+			System.out.println(eachTerm + "\t" + matchedOntologyTerm + "\t" + owlFunction.getOntologyTermID(matchedOntologyTerm) + "\t" + bestScore);
 			
 			Label originalTermCell = new Label(0, rowIndex, eachTerm);
 			
@@ -127,28 +128,36 @@ public class levenshteinDistance {
 			
 			rowIndex++;
 			
-			for(Entry<String, Double> eachEntry : candidateMatching.entrySet()){
+			if(bestScore < 90){
 				
-				String term = eachEntry.getKey();
+				for(Entry<String, Double> eachEntry : candidateMatching.entrySet()){
+					
+					String term = eachEntry.getKey();
+					
+					Double similarity = eachEntry.getValue();
+					
+					String HPOId = candidateHPOId.get(term);
+					
+					originalTermCell = new Label(0, rowIndex, eachTerm);
+					
+					ontologyTermCell = new Label(1, rowIndex, term);
+					
+					termIDCell = new Label(2, rowIndex, HPOId);
+					
+					scoreCell = new Label(3, rowIndex, "" + similarity);
+					
+					sheet.addCell(originalTermCell);
+					
+					sheet.addCell(ontologyTermCell);
+					
+					sheet.addCell(termIDCell);
+					
+					sheet.addCell(scoreCell);
+					
+					rowIndex++;
+				}
+			}
 				
-				Double similarity = eachEntry.getValue();
-				
-				String HPOId = candidateHPOId.get(term);
-				
-				ontologyTermCell = new Label(1, rowIndex, term);
-				
-				termIDCell = new Label(2, rowIndex, HPOId);
-				
-				scoreCell = new Label(3, rowIndex, "" + similarity);
-				
-				sheet.addCell(ontologyTermCell);
-				
-				sheet.addCell(termIDCell);
-				
-				sheet.addCell(scoreCell);
-				
-				rowIndex++;
-			}	
 		}
 		
 		workbook.write();
