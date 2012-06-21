@@ -308,12 +308,7 @@
 					<webResources>
 						<resource>
 							<directory>apps/arvc/res</directory>
-							<targetPath>/</targetPath>
-<!--
-							<includes>
-								<include>**/*.jsp</include>
-							</includes>
--->
+							<targetPath>/generated-res</targetPath>
 						</resource>
 					</webResources>
                 </configuration>

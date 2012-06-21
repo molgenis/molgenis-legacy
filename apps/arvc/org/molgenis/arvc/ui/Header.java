@@ -17,7 +17,7 @@ public class Header extends org.molgenis.mutation.ui.header.Header
 	public Header(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.getModel().setLogo("arvc/img/umcg_logo.gif");
+		this.getModel().setLogo("generated-res/arvc/img/umcg_logo.gif");
 		this.getModel().setTitle("Department of Genetics - Cardiogenetics Research Group<br>ARVD/C Genetic Variants Database");
 	}
 
@@ -35,14 +35,14 @@ public class Header extends org.molgenis.mutation.ui.header.Header
 //		cp res/scripts/all.js generated-res/scripts
 //		cp res/img/*.jpg generated-res/img
 
-		headers += String.format(cssFormat, "displaytag/css/displaytag.css");
+		headers += String.format(cssFormat, "generated-res/displaytag/css/displaytag.css");
 		//headers += String.format(cssFormat, "res/displaytag/css/screen.css");
 		//headers += String.format(cssFormat, "res/displaytag/css/site.css");
-		headers += String.format(cssFormat, "arvc/css/colors.css");
-		headers += String.format(cssFormat, "arvc/css/data.css");
+		headers += String.format(cssFormat, "generated-res/arvc/css/colors.css");
+		headers += String.format(cssFormat, "generated-res/arvc/css/data.css");
 		//headers += String.format(cssFormat, "res/css/main.css");
 		//headers += String.format(cssFormat, "res/css/menu.css");
-		headers += String.format(jsFormat, "arvc/res/scripts/all.js");
+		headers += String.format(jsFormat, "generated-res/arvc/res/scripts/all.js");
 		
 		return headers;
 	}
