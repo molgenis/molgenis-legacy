@@ -538,5 +538,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/cxf-bundle-minimal-2.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/selenium-server-standalone-2.19.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
