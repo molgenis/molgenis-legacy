@@ -17,7 +17,7 @@
 	      <property name="javax.persistence.jdbc.user" value="${options.dbUser}"/>
           <property name="javax.persistence.validation.mode" value="none"/>    
           <property name="hibernate.dialect" value="org.hibernate.dialect.${options.hibernateDialect}"/>
-          <property name="hibernate.show_sql" value="true"/>
+          <property name="hibernate.show_sql" value="false"/>
           <property name="hibernate.format_sql" value="false"/>
           <property name="hibernate.query.substitutions" value="true=1, false=0"/>
           <property name="hibernate.jdbc.batch_size" value="50"/>
@@ -28,7 +28,7 @@
           <property name="hibernate.cache.use_query_cache" value="false"/>
           <property name="hibernate.cache.use_second_level_cache" value="false"/>
           <property name="hibernate.search.default.directory_provider" value="filesystem"/>
-          <property name="hibernate.search.default.indexBase" value="/var/lucene/indexes"/>
+          <property name="hibernate.search.default.indexBase" value="${options.hibernateSearchIndexBase}"/>
           
           <!--
           Automatically validates or exports schema DDL to the database when the SessionFactory is created. 
