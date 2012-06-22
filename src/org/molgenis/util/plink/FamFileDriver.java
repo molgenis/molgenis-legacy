@@ -42,14 +42,14 @@ public class FamFileDriver
 		reader = new CsvFileReader(famFile);
 		reader.disableHeader(false);
 
-		if (reader.fileEndsWithNewlineChar())
+		if (CsvFileReader.fileEndsWithNewlineChar(famFile))
 		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(famFile)
+					- CsvFileReader.getAmountOfNewlinesAtFileEnd(famFile);
 		}
 		else
 		{
-			this.nrOfElements = reader.getNumberOfLines();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(famFile);
 		}
 
 	}

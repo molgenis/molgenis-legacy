@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.HtmlInputException;

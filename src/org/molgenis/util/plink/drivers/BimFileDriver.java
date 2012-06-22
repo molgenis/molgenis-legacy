@@ -1,11 +1,9 @@
 package org.molgenis.util.plink.drivers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.Biallele;
 import org.molgenis.util.plink.datatypes.BimEntry;
@@ -17,22 +15,8 @@ import org.molgenis.util.plink.datatypes.BimEntry;
  * 
  * Content of a BIM file: chromosome, SNP, cM, base-position, allele 1, allele 2
  */
-public class BimFileDriver
+public class BimFileDriver extends AbstractFileDriver
 {
-
-	private CsvFileReader reader;
-	private long nrOfElements;
-
-	/**
-	 * Get the number of retrievable annotation elements of this BIM file.
-	 * 
-	 * @return
-	 */
-	public long getNrOfElements()
-	{
-		return nrOfElements;
-	}
-
 	/**
 	 * Construct a BimFileDriver on this file
 	 * 
@@ -41,29 +25,7 @@ public class BimFileDriver
 	 */
 	public BimFileDriver(File bimFile) throws Exception
 	{
-		reader = new CsvFileReader(bimFile);
-		reader.disableHeader(false);
-
-		if (reader.fileEndsWithNewlineChar())
-		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
-		}
-		else
-		{
-			this.nrOfElements = reader.getNumberOfLines();
-		}
-
-	}
-
-	/**
-	 * Close the underlying file reader
-	 * 
-	 * @throws IOException
-	 */
-	public void close() throws IOException
-	{
-		this.reader.close();
+		super(bimFile);
 	}
 
 	/**

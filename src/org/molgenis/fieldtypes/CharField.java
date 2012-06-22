@@ -79,7 +79,7 @@ public class CharField extends FieldType
 	}
 
 	@Override
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return String.class;
 	}
