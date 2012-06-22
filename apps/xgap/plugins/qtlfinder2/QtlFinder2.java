@@ -114,9 +114,22 @@ public class QtlFinder2 extends PluginModel<Entity>
 					this.model.setCartView(true);
 				}
 				
+				if(action.equals("reset"))
+				{
+					this.model.setQuery(null);
+					this.model.setHits(null);
+					this.model.setShortenedQuery(null);
+					this.model.setShoppingCart(null);
+					this.model.setMultiplot(null);
+					this.model.setReport(null);
+					this.model.setQtls(null);
+					this.model.setCartView(false);
+				}
+				
 				if (action.equals("gotoSearch"))
 				{
 					this.model.setCartView(false);
+					this.model.setMultiplot(null);
 				}
 				
 				if(action.equals("shopAll"))

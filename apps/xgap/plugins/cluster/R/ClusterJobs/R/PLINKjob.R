@@ -24,8 +24,10 @@ run_PLINK <- function(dbpath = "", subjob, item, jobid, outname, myanalysisfile,
   cat("info: Get your parameters\n")
   inputname <- getparameter("inputname",jobparams)
   
+  invId <- find.investigation(name=investigationname)$id #needed since JPA merge
+  
   cat(Generate_Statement(paste("system(paste(\"plink --noweb --file run",jobid,"/",inputname," --assoc --pheno run",jobid,"/phenotypes.txt --mpheno \",item,\" --out \",outname,item,\"\",sep=\"\"))\n",sep="")),file=myanalysisfile,append=T)
   cat("report(2,\"beforeUpload\")\n",file=myanalysisfile,append=T)
-  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',Investigation_name='",investigationname,"', name='",paste(outname,"_trait_",item,sep=""),".qassoc', type = 'InvestigationFile',curl=ch, file = fileUpload(filename='",paste(outname,item,sep=""),".qassoc'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
+  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',investigation_name='",investigationname,"', investigation_id='",invId,"', name='",paste(outname,"_trait_",item,sep=""),".qassoc', type = 'InvestigationFile',curl=ch, file = fileUpload(filename='",paste(outname,item,sep=""),".qassoc'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
   cat("report(3,\"PLINK%20finished\")\n",file=myanalysisfile,append=T)
 }
