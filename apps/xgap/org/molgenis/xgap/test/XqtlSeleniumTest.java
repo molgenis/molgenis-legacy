@@ -105,7 +105,10 @@ public class XqtlSeleniumTest
 		int appNameLength = appName.length();
 		String storagePath = new StorageHandler(db).getFileStorage(true, db).getAbsolutePath();
 		File storageRoot = new File(storagePath.substring(0, storagePath.length() - appNameLength));
-		TarGz.recursiveDeleteContent(new File(storagePath));
+		if(new File(storagePath).exists())
+		{
+			TarGz.recursiveDeleteContent(new File(storagePath));
+		}
 		TarGz.delete(storageRoot, false);
 	}
 
