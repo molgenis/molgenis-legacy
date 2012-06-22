@@ -94,7 +94,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				String ontologyFileName = request.getString("ontologyFileForAlgorithm");
 
 				owlFunction = new OWLFunction(ontologyFileName);
-				owlFunction.labelMapURI("alternative_term");
+				owlFunction.labelMapURI(listOfParameters, "alternative_term");
 				variableFormula  = owlFunction.getFormula();
 
 				validationStudyName = request.getString("validationStudy");
@@ -186,7 +186,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						owlFunction  = new OWLFunction(uploadFileName);
 						//owlFunction.labelMapURI("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN");
 						//OWLRDFVocabulary.RDFS_COMMENT.getIRI().toString(), 
-						owlFunction.labelMapURI("alternative_term");
+						owlFunction.labelMapURI(listOfParameters, "alternative_term");
 						expandedQueries = owlFunction.getExpandedQueries();
 						expandedQueries.remove("Prediction Model");
 						expandedQueries.remove("Composite");
@@ -277,13 +277,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 							List<Integer> measurementIds = new ArrayList<Integer>();
 
-							List<Integer> featuresInMapping = validationStudyProtocol.getFeatures_Id();
-
 							for(Measurement m : measurements){
 								measurementIds.add(m.getId());
-								//								if(!featuresInMapping.contains(m.getId())){
-								//									featuresInMapping.add(m.getId());
-								//								}
 							}
 
 							if(measurementIds.size() > 0){
@@ -332,16 +327,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 									db.add(mapping);
 
 								}
-
-								//								List<Integer> oldFeatureIds = validationStudyProtocol.getFeatures_Id();
-								//
-								//								for(Integer id : featuresInMapping){
-								//									if(!oldFeatureIds.contains(id)){
-								//										oldFeatureIds.add(id);
-								//									}
-								//								}
-								//
-								//								validationStudyProtocol.setFeatures_Id(oldFeatureIds);
 							}
 						}
 					}
@@ -537,47 +522,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			}
 		}
 	}
-
-	private List<String> createAllPossibleCombination(HashMap<String, List<String>> classToSubClass,
-			LinkedHashMap<Integer, String> indexToClassLabel)
-			{
-
-		List<String> combinations = new ArrayList<String>();
-
-		int size = classToSubClass.size();
-
-		if(size >= 2){
-
-			String classLabelOne = indexToClassLabel.get(size - 2);
-
-			String classLabelTwo = indexToClassLabel.get(size - 1);
-
-			for(String first : classToSubClass.get(classLabelOne)){
-
-				for(String second : classToSubClass.get(classLabelTwo)){
-
-					combinations.add(first + " " + second);
-
-				}
-			}
-
-			classToSubClass.remove(classLabelOne);
-
-			classToSubClass.remove(classLabelTwo);
-
-			classToSubClass.put(classLabelOne + classLabelTwo, combinations);
-
-			indexToClassLabel.remove(size - 1);
-
-			indexToClassLabel.put(size - 2, classLabelOne + classLabelTwo);
-
-			List<String> temp = createAllPossibleCombination(classToSubClass, indexToClassLabel);
-
-			combinations.addAll(temp);
-		}
-
-		return combinations;
-			}
 
 	public void stringMatching(String separator, Tuple request) throws Exception{
 

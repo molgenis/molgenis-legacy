@@ -56,8 +56,6 @@ public class TableController {
 
 	private String excelDirection = "UploadFileByColumn";
 
-	private Measurement displayNameMeasurement = null;
-
 	private HashMap<String, String> checkExistingMeasurementsInDB = new HashMap<String, String>();
 
 	private HashMap<String, String> checkExistingEntitesInDB = new HashMap<String, String>();
@@ -165,14 +163,13 @@ public class TableController {
 		return configuration;
 	}
 
-	public void convertIntoPheno(Sheet[] sheets, int startingRowIndex, boolean multipleSheets) throws DatabaseException
+	public void convertIntoPheno(Sheet[] sheets, int startingRowIndex, boolean multipleSheets, boolean sheetImportProtocol) throws DatabaseException
 	{
 		List<Measurement> headerMeasurements = new ArrayList<Measurement>();
 		List<InvestigationElement> measurementList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> categoryList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> protocolList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> observationTargetList = new ArrayList<InvestigationElement>();
-		List<InvestigationElement> computeProtocolList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> panelList = new ArrayList<InvestigationElement>();
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
 		List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
@@ -182,13 +179,12 @@ public class TableController {
 		if(multipleSheets == true){
 			sheetSize = 1;
 		}
-
+		
 		try{
 			for(int sheetIndex = 0; sheetIndex < sheetSize; sheetIndex++){
 
-
 				Sheet sheet = sheets[sheetIndex];
-
+				
 				int row = sheet.getRows();
 
 				int column = sheet.getColumns();
@@ -200,8 +196,6 @@ public class TableController {
 					row = sheet.getColumns();
 					column = sheet.getRows();
 				}
-
-
 
 				//three dimensional matrix of<colIndex, rowIndex, valueIndex>
 				//third dimension of valueIndex is to deal with multiple values in one cell
@@ -217,9 +211,9 @@ public class TableController {
 						String cellValue;
 
 						if(excelDirection.equals("UploadFileByRow"))
-							cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
+							cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
 						else
-							cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
+							cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
 						if(cellValue.equalsIgnoreCase("CHFYETIOL")){
 							System.out.println();
 						}
@@ -234,58 +228,10 @@ public class TableController {
 
 							if(columnIndexToTableField.get(colIndex).getVertical() && rowIndex != 0){
 
-								//								if(!field.getEntity().equals("NULL")){
-								//
-								//									if(field.getEntity().equals(Person.class.getSimpleName())){
-								//
-								//										String[] listOfValues = cellValue.split(",");
-								//
-								//										for(String eachvalue : listOfValues){
-								//
-								//											Person p = new Person();
-								//											p.setLastName(eachvalue.trim());
-								//											personList.add(p);
-								//
-								//										}
-								//
-								//									}else if(field.getEntity().equals(Institute.class.getSimpleName())){
-								//
-								//										String[] listOfValues = cellValue.split(",");
-								//
-								//										for(String eachvalue : listOfValues){
-								//
-								//											Institute institute = new Institute();
-								//											institute.setName(eachvalue.trim());
-								//											instituteList.add(institute);
-								//
-								//										}
-								//
-								//									}else if(field.getEntity().equals(OntologyTerm.class.getSimpleName())){
-								//										
-								//										String[] listOfValues = cellValue.split(",");
-								//
-								//										for(String eachvalue : listOfValues){
-								//
-								//											OntologyTerm ot = new OntologyTerm();
-								//											ot.setName(eachvalue.trim());
-								//											ontologyTermList.add(ot);
-								//
-								//										}
-								//									} 
-								//
-								//								}
-
 								if(!existingValuesForClassType.containsKey(field.getClassType() + field.getFieldName())){
 									Map<String, List<InvestigationElement>> tempHolder = new LinkedHashMap<String, List<InvestigationElement>>();
 									existingValuesForClassType.put(field.getClassType() + field.getFieldName(), tempHolder);
 								}
-
-								//								//Keep track of the entities
-								//								if(!existingValues.containsKey(colIndex))
-								//								{
-								//									Map<String, List<InvestigationElement>> tempHolder = new LinkedHashMap<String, List<InvestigationElement>>();
-								//									existingValues.put(colIndex, tempHolder);
-								//								}
 
 								if(existingValuesForClassType.get(field.getClassType() + field.getFieldName()).containsKey(cellValue)){
 
@@ -300,18 +246,7 @@ public class TableController {
 									colValues.get(colIndex).get(rowIndex - 1).addAll(existingValuesForClassType.get(field.getClassType() + field.getFieldName()).get(cellValue));
 
 								}
-
-								//								if(existingValues.get(colIndex).containsKey(cellValue))
-								//								{
-								//									if(colValues.get(colIndex).size() != rowIndex)
-								//									{
-								//										colValues.get(colIndex).add(new ArrayList<InvestigationElement>());
-								//									}
-								//
-								//									colValues.get(colIndex).get(rowIndex - 1).addAll(existingValues.get(colIndex).get(cellValue));
-								//
-								//
-								//								}
+								
 								else{
 									//we split on multivalue
 									String[] multiValue = cellValue.split(field.getValueSplitter());
@@ -345,8 +280,7 @@ public class TableController {
 												//create the entity
 												entity = (InvestigationElement) DatabaseFactory.create().getClassForName(field.getClassType()).newInstance();
 											}
-
-
+											
 											if(!value.equalsIgnoreCase(""))
 											{
 
@@ -357,11 +291,13 @@ public class TableController {
 													//therefore it`s separated from other entites.
 													String categoryName = value;
 
-													if(value.split("=").length > 1)
-													{
-														categoryName = value.split("=")[1].trim();
-													}
-
+//													if(value.split("=").length > 1)
+//													{
+//														categoryName = value.split("=")[1].trim();
+//													}
+													
+													categoryName = categoryName.substring(categoryName.indexOf("=") + 1).replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+													
 													entity.set(Category.NAME, categoryName);
 													entity.set(Category.DESCRIPTION, value);
 													entity.set(Category.CODE_STRING, value);
@@ -410,8 +346,6 @@ public class TableController {
 
 										//									InvestigationElement addingPropertyToEntity = colValues.get(dependentColumn).get(rowIndex - 1).get(0);
 
-										cellValue = cellValue.replaceAll("[%#$^&л@аде]", "");
-
 										String multipleValues[] = cellValue.split(dependendField.getValueSplitter());
 
 										List<Object> values = new ArrayList<Object>();
@@ -421,19 +355,24 @@ public class TableController {
 
 											for(int i = 0; i < multipleValues.length; i++)
 											{
-
+												multipleValues[i] = multipleValues[i].substring(multipleValues[i].indexOf("=") + 1).replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+												
 												String categoryCodeString = multipleValues[i];
+//
+//												if(categoryCodeString.split("=").length > 1)
+//												{	
+//													multipleValues[i] = categoryCodeString.split("=")[1];
+//												}
 
-												if(categoryCodeString.split("=").length > 1)
-												{	
-													multipleValues[i] = categoryCodeString.split("=")[1];
-												}
-
-												values.add(multipleValues[i].trim());
+												values.add(categoryCodeString.trim());
 
 											}
 										}else{
-
+											
+											cellValue = cellValue.replaceAll("[^(a-zA-Z0-9_\\s)]", " ");
+											
+											multipleValues = cellValue.split(dependendField.getValueSplitter());
+											
 											for(int i = 0; i < multipleValues.length; i++){
 												values.add(multipleValues[i].trim());
 											}
@@ -537,12 +476,6 @@ public class TableController {
 									}
 								}
 
-
-								//								if(!existingValues.get(colIndex).containsKey(cellValue) && colValues.containsKey(colIndex))
-								//								{
-								//									existingValues.get(colIndex).put(cellValue, colValues.get(colIndex).get(rowIndex - 1));
-								//								}
-
 								if(!existingValuesForClassType.get(field.getClassType() + field.getFieldName()).containsKey(cellValue) && colValues.containsKey(colIndex)){
 									existingValuesForClassType.get(field.getClassType() + field.getFieldName()).put(cellValue, colValues.get(colIndex).get(rowIndex - 1));
 								}
@@ -556,56 +489,76 @@ public class TableController {
 
 										Measurement measurement = new Measurement();
 
+										measurement.setName(cellValue);
+										
+										measurement.setInvestigation_Name(investigationName);
+										
 										if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).size() != 0){
-
+											
 											Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
-
-											//TODO this needs to be re-written!
-											//The measurement already exists but not "display name. 
-											if(!cellValue.equals("display name")){
-
-												if(!measure.getInvestigation_Name().equals(investigationName)){
-
-													if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
-
-														displayNameMeasurement = new Measurement();
-
-														displayNameMeasurement.setName("display name");
-
-														db.add(displayNameMeasurement);
-
-													}
-
-													ObservedValue ov = new ObservedValue();
-													ov.setTarget_Name(cellValue + "_" +investigationName);
-													ov.setFeature_Name("display name");
-													ov.setValue(cellValue);
-													ov.setInvestigation_Name(investigationName);
-													cellValue += "_" + investigationName;
-													checkExistingMeasurementsInDB.put(measure.getName().toLowerCase(), cellValue);
-													observedValueList.add(ov);
-												}
+											
+											if(!measure.getInvestigation_Name().equals(investigationName)){
+												measurement.setName(cellValue + "_" +investigationName);
+												measurement.setLabel(cellValue);
+												checkExistingMeasurementsInDB.put(measure.getName(), cellValue);
+												headerMeasurements.add(measurement);
 											}
-
-										}
-										if(cellValue.equals("display name")){
-
-											if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
-
-												displayNameMeasurement = new Measurement();
-
-												displayNameMeasurement.setName("display name");
-
-												db.add(displayNameMeasurement);
-
-											}
+											
 										}else{
-											measurement.setName(cellValue);
 											headerMeasurements.add(measurement);
-
-											if(investigationName != null)
-												measurement.set("Investigation_name", investigationName);
 										}
+										
+										
+//										if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).size() != 0){
+//
+//											Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
+//											
+//											//TODO this needs to be re-written!
+//											//The measurement already exists but not "display name. 
+//											if(!cellValue.equals("display name")){
+//
+//												if(!measure.getInvestigation_Name().equals(investigationName)){
+//
+//													if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
+//
+//														displayNameMeasurement = new Measurement();
+//
+//														displayNameMeasurement.setName("display name");
+//
+//														db.add(displayNameMeasurement);
+//
+//													}
+//
+//													ObservedValue ov = new ObservedValue();
+//													ov.setTarget_Name(cellValue + "_" +investigationName);
+//													ov.setFeature_Name("display name");
+//													ov.setValue(cellValue);
+//													ov.setInvestigation_Name(investigationName);
+//													cellValue += "_" + investigationName;
+//													checkExistingMeasurementsInDB.put(measure.getName().toLowerCase(), cellValue);
+//													observedValueList.add(ov);
+//												}
+//											}
+//
+//										}
+//										if(cellValue.equals("display name")){
+//
+//											if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
+//
+//												displayNameMeasurement = new Measurement();
+//
+//												displayNameMeasurement.setName("display name");
+//
+//												db.add(displayNameMeasurement);
+//
+//											}
+//										}else{
+//											measurement.setName(cellValue);
+//											headerMeasurements.add(measurement);
+//
+//											if(investigationName != null)
+//												measurement.set("Investigation_name", investigationName);
+//										}
 									}
 									//The rest of the column is observedValue!
 								}else{
@@ -626,18 +579,15 @@ public class TableController {
 											
 											ObservedValue observedValue = new ObservedValue();
 
-											String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
+											String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
 
-											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[%#$^&л@аде']", "").trim();
+											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
 											
-											if(targetName.equalsIgnoreCase("UMCG")){
-												System.out.println();
-											}
 											
 											//TODO: import measurements then import individual data. The measurement has to be consistent.
-											System.out.println();
-											if(checkExistingMeasurementsInDB.keySet().contains(headerName.toLowerCase())){
-												headerName = checkExistingMeasurementsInDB.get(headerName.toLowerCase());
+											
+											if(checkExistingMeasurementsInDB.keySet().contains(headerName)){
+												headerName = checkExistingMeasurementsInDB.get(headerName);
 											}
 
 											observedValue.setFeature_Name(headerName);
@@ -663,8 +613,6 @@ public class TableController {
 												observedValue.setTarget_Name(targetName);
 											}
 
-
-
 											observedValue.setValue(eachValue);
 
 											observedValueList.add(observedValue);
@@ -687,7 +635,9 @@ public class TableController {
 				//			List<InvestigationElement> observationTargetList = new ArrayList<InvestigationElement>();
 				//			List<InvestigationElement> computeProtocolList = new ArrayList<InvestigationElement>();
 				//			
-
+				
+				List<InvestigationElement> measurementListForEachSheet = new ArrayList<InvestigationElement>();
+				
 				for(Integer colIndex: colValues.keySet())
 				{
 					for(List<InvestigationElement> list: colValues.get(colIndex))
@@ -695,6 +645,7 @@ public class TableController {
 						if(columnIndexToTableField.get(colIndex).getClassType().equals("Measurement"))
 						{
 							measurementList.addAll(list);
+							measurementListForEachSheet.addAll(list);
 						}
 						if(columnIndexToTableField.get(colIndex).getClassType().equals("Category"))
 						{
@@ -708,16 +659,27 @@ public class TableController {
 						{
 							observationTargetList.addAll(list);
 						}
-						if(columnIndexToTableField.get(colIndex).getClassType().equals("ComputeProtocol"))
-						{
-							computeProtocolList.addAll(list);
-						}
 						if(columnIndexToTableField.get(colIndex).getClassType().equals("Panel"))
 						{
 							panelList.addAll(list);
 						}
 					}
 
+				}
+				
+
+				String sheetName = sheet.getName();
+				
+				if(sheetImportProtocol == false){
+					Protocol sheetNameProtocol = new Protocol();
+					sheetNameProtocol.setName(sheetName);
+					sheetNameProtocol.setInvestigation_Name(investigationName);
+					List<String> nameOfMeasurements = new ArrayList<String>();
+					for(InvestigationElement e : measurementListForEachSheet){
+						nameOfMeasurements.add(e.getName());
+					}
+					sheetNameProtocol.setFeatures_Name(nameOfMeasurements);
+					protocolList.add(sheetNameProtocol);
 				}
 
 				for(String ontologyTermName : ontologyTermOfList.keySet()){
@@ -749,10 +711,6 @@ public class TableController {
 			}
 			db.update(panelList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Panel.NAME);
 
-//			db.update(personList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Person.LASTNAME);
-//
-//			db.update(instituteList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Institute.NAME);
-
 			HashMap<String, InvestigationElement> hashMapObservationTarget = removeDuplicates(observationTargetList);
 
 			observationTargetList = new ArrayList<InvestigationElement>(hashMapObservationTarget.values());
@@ -778,22 +736,24 @@ public class TableController {
 			db.update(subListForObservationTarget, Database.DatabaseAction.ADD_IGNORE_EXISTING, 
 					ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
 
-			//			db.update(observationTargetList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservationTarget.NAME, ObservationTarget.INVESTIGATION_NAME);
-
-
 			HashMap<String, InvestigationElement> hashMapCategory = removeDuplicates(categoryList);
 
 			categoryList = new ArrayList<InvestigationElement> (hashMapCategory.values());
-
+			
 			checkExistenceInDB(hashMapCategory, Category.class.getSimpleName());
-
+			
+			for(InvestigationElement c : categoryList){
+				System.out.println(c.getName());
+				if(c.getName().equals("")){
+					System.out.println();
+				}
+			}
+			
 			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
-
 
 			HashMap<String, InvestigationElement> displayNameToMeasurement = new HashMap<String, InvestigationElement>();
 
 			for(InvestigationElement m : measurementList){
-
 
 				String measurementName = m.getName();
 
@@ -812,29 +772,9 @@ public class TableController {
 						//Resolving importing the measurements with the same name. In the different studies, measurements with the same name could
 						//have different definitions, so we need to distinguish this kind of variables. Therefore a display name meta-measurement is created
 						//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
-						if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
-
-							displayNameMeasurement = new Measurement();
-
-							displayNameMeasurement.setName("display name");
-
-							db.add(displayNameMeasurement);
-
-						}else{
-							displayNameMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).get(0);
-						}
-
-						//else the measurement comes from different investigation, that means there are duplicated measurements, import with investigation name
-						ObservedValue ob = new ObservedValue();
-						ob.setValue(measurementName);
+						m.set(Measurement.LABEL, measurementName);
 						measurementName += "_" + m.get(Measurement.INVESTIGATION_NAME);
 						m.setName(measurementName);
-						m.setInvestigation_Name(investigationName);
-						ob.setTarget_Name(measurementName);
-						ob.setFeature_Name(displayNameMeasurement.getName());
-						ob.setInvestigation_Name(m.getInvestigation_Name());
-						observedValueList.add(ob);
-						displayNameToMeasurement.put(ob.getValue(), m);
 					}
 				}
 
@@ -876,7 +816,6 @@ public class TableController {
 			db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 
 			//Try to update measurements
-
 			HashMap<String, InvestigationElement> hashMapProtocol = removeDuplicates(protocolList);
 
 			protocolList = new ArrayList<InvestigationElement>(hashMapProtocol.values());
@@ -907,23 +846,13 @@ public class TableController {
 					if(features.size() > 0)
 					{
 						List<Integer> featuresId = new ArrayList<Integer>();
+						
 						for(Measurement m : features){
-
-							if(displayNameToMeasurement.keySet().contains(m.getName())){
-
-								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).size() > 0){
-
-									m = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).get(0);
-
-									if(!featuresId.contains(m.getId()))
-										featuresId.add(m.getId());
-								}
-
-							}else{
-								if(!featuresId.contains(m.getId()))
-									featuresId.add(m.getId());
-							}
+							
+							if(!featuresId.contains(m.getId()))
+								featuresId.add(m.getId());
 						}
+						
 						p.set(Protocol.FEATURES, featuresId);
 					}
 				}
@@ -982,56 +911,6 @@ public class TableController {
 				}
 			}
 
-			HashMap<String, InvestigationElement> hashMapComputeProtocol = removeDuplicates(computeProtocolList);
-
-			computeProtocolList = new ArrayList<InvestigationElement>(hashMapComputeProtocol.values());
-
-			for(InvestigationElement p :computeProtocolList){
-
-				List<String> feature_names = (List<String>) p.get(ComputeProtocol.FEATURES_NAME);
-
-				String templateScript = (String) p.get(ComputeProtocol.SCRIPTTEMPLATE);
-
-				if(templateScript == null){
-					p.set(ComputeProtocol.SCRIPTTEMPLATE, "N/A");
-				}
-				//TODO 
-				if(p.get(ComputeProtocol.MEM) == null)
-					p.set(ComputeProtocol.MEM, "512");
-				if(p.get(ComputeProtocol.CORES) == null)
-					p.set(ComputeProtocol.CORES, "2");
-
-				if(feature_names.size() > 0)
-				{
-					List<Measurement> features = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, feature_names));
-
-					if(features.size() > 0)
-					{
-						List<Integer> featuresId = new ArrayList<Integer>();
-						for(Measurement m : features){
-
-							if(displayNameToMeasurement.keySet().contains(m.getName())){
-
-								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).size() > 0){
-
-									m = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, m.getName())).get(0);
-
-									if(!featuresId.contains(m.getId()))
-										featuresId.add(m.getId());
-								}
-
-							}else{
-								if(!featuresId.contains(m.getId()))
-									featuresId.add(m.getId());
-							}
-						}
-						p.set(ComputeProtocol.FEATURES, featuresId);
-					}
-				}
-			}
-
-			db.update(computeProtocolList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ComputeProtocol.NAME, ComputeProtocol.INVESTIGATION_NAME);
-
 			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 
 			observedValueList = removeDuplicatesObservedValue(observedValueList);
@@ -1065,8 +944,6 @@ public class TableController {
 
 			protocolList.clear();
 
-			computeProtocolList.clear();
-
 			categoryList.clear();
 
 			observationTargetList.clear();
@@ -1088,7 +965,7 @@ public class TableController {
 
 		List<String> names = new ArrayList<String>(hashMap.keySet());
 
-		checkExistingEntitesInDB.clear();
+//		checkExistingEntitesInDB.clear();
 
 		if(names.size() > 0){
 

@@ -74,6 +74,13 @@
 			</fileset>
 		</copy>
 		
+		<!-- Copy example script to analyze a test data set -->
+		<copy todir="${app_distro_dir}">
+			<fileset dir="${basedir}/apps/${app_name}/org/molgenis/${app_name}/">
+				<include name="test_molgenis_compute.sh"/>
+			</fileset>
+		</copy>
+		
 		<!-- Copy all generic templates, protocols and workflows to the distro dir -->
 		<copy todir="${templates_dir}">
 		    <fileset dir="${app_module_dir}/org/molgenis/${app_name}/templates/"/>

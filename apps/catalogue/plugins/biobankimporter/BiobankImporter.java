@@ -95,6 +95,8 @@ public class BiobankImporter extends PluginModel<Entity>
 
 	private Boolean multipleValue = false;
 
+	private Boolean sheetImportProtocol = true;
+
 	public BiobankImporter(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
@@ -145,6 +147,7 @@ public class BiobankImporter extends PluginModel<Entity>
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.NAME);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.DESCRIPTION);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.DATATYPE);
+		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.LABEL);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.UNIT_NAME);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.TEMPORAL);
 		chooseFieldName.add(Measurement.class.getSimpleName() + ":" + Measurement.INVESTIGATION_NAME);
@@ -521,6 +524,12 @@ public class BiobankImporter extends PluginModel<Entity>
 				multipleSheets = request.getBool("multipleSheets");
 			}
 
+			if(request.getBool("sheetImportProtocol") != null){
+				sheetImportProtocol  = request.getBool("sheetImportProtocol");
+			}
+			
+			
+			
 			if(request.getAction().equals("UploadFileByColumn"))
 			{
 				setColumnCount(columns);
@@ -654,8 +663,8 @@ public class BiobankImporter extends PluginModel<Entity>
 				}
 
 				table.setInvestigationName(investigationName);
-
-				table.convertIntoPheno(workbook.getSheets(), startingRowIndex, multipleSheets);
+				
+				table.convertIntoPheno(workbook.getSheets(), startingRowIndex, multipleSheets, sheetImportProtocol);
 
 			}
 

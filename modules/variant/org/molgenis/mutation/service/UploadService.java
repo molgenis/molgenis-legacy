@@ -18,6 +18,7 @@ import org.molgenis.core.Publication;
 import org.molgenis.core.dto.PublicationDTO;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Database.DatabaseAction;
+import org.molgenis.framework.db.jpa.JpaDatabase;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.ExonDTO;
 import org.molgenis.mutation.dto.GeneDTO;
@@ -53,6 +54,14 @@ public class UploadService extends MolgenisVariantService
 		super(db);
 		this.db = db;
 		this.em = db.getEntityManager();
+	}
+
+	public void reindex()
+	{
+		if (this.db instanceof JpaDatabase)
+		{
+			((JpaDatabase) this.db).index();
+		}
 	}
 
 	/**
