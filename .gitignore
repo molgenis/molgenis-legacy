@@ -1,6 +1,7 @@
 ## Build folders
 bin/
 build/
+target/
 tmp/
 
 ## Always ignore these
