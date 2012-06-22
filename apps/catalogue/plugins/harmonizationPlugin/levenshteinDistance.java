@@ -146,7 +146,7 @@ public class levenshteinDistance {
 					
 					scoreCell = new Label(3, rowIndex, "" + similarity);
 					
-					sheet.addCell(originalTermCell);
+					//sheet.addCell(originalTermCell);
 					
 					sheet.addCell(ontologyTermCell);
 					

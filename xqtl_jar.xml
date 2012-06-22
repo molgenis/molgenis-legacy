@@ -48,7 +48,7 @@
 		<unjar src="${mlibs}ant-apache-log4j.jar" dest="${jarme}" overwrite="false"/> <!-- Log4jListener Molgenis.java -->
 	  	<unjar src="${mlibs}commons-dbcp-1.2.1.jar" dest="${jarme}" overwrite="false"/> <!-- BasicDataSource -->
 	  	<unjar src="${mlibs}commons-fileupload-1.1.jar" dest="${jarme}" overwrite="false"/> <!-- HttpServletRequestTuple files -->
-	  	<unjar src="${mlibs}cxf-2.3.3.jar" dest="${jarme}" overwrite="false"/> <!-- CXFNonSpringJaxrsServlet -->
+	  	<unjar src="${mlibs}cxf-bundle-minimal-2.5.2.jar" dest="${jarme}" overwrite="false"/> <!-- CXFNonSpringJaxrsServlet -->
 	  	<unjar src="${mlibs}freemarker.jar" dest="${jarme}" overwrite="false"/> <!-- Template processing -->
 	  	<unjar src="${mlibs}jxl.jar" dest="${jarme}" overwrite="false"/> <!-- Excel import/export -->
 	  	<unjar src="${mlibs}log4j-1.2.15.jar" dest="${jarme}" overwrite="false"/> <!-- org.apache.log4j.Logger -->
@@ -62,7 +62,7 @@
 		<unjar src="${mlibs}quartz-1.6.0.jar" dest="${jarme}" overwrite="false"/><!-- Scheduling -->
 		<unjar src="${mlibs}gson-2.1.jar" dest="${jarme}" overwrite="false"/><!-- GSON for XrefService-->
 		<!-- Application jars -->
-		<unjar src="${alibs}selenium-server-standalone-2.19.0.jar" dest="${jarme}" overwrite="false" /> <!-- Selenium webtests -->
+		<unjar src="${mlibs}selenium-server-standalone-2.19.0.jar" dest="${jarme}" overwrite="false" /> <!-- Selenium webtests -->
 		<unjar src="${alibs}jaxrpc.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
 		<unjar src="${alibs}axis.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
 		<unjar src="${alibs}keggapi.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->

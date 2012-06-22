@@ -74,14 +74,14 @@ public class XqtlSeleniumTest
 			}
 			else
 			{
-				throw new Exception("HSQL database directory does not exist");
+				//throw new Exception("HSQL database directory does not exist");
 			}
 	
-			if (dbDir.list().length != 1)
-			{
-				throw new Exception("HSQL database directory does not contain 1 file (.svn) after deletion! it contains: "
-						+ dbDir.list().toString());
-			}
+//			if (dbDir.list().length != 1)
+//			{
+//				throw new Exception("HSQL database directory does not contain 1 file (.svn) after deletion! it contains: "
+//						+ dbDir.list().toString());
+//			}
 		}
 	}
 	

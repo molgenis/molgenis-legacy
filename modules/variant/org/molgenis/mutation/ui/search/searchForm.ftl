@@ -82,6 +82,7 @@ ${muta.expertSearch}
 	
 	
 -->
+<#if model.mbrowse.isVisible>
 <br/><br/>
 <h3>Browse the ${model.geneDTO.symbol} gene</h3>
 <p>
@@ -94,6 +95,8 @@ ${model.controller.getChild("MBrowse").render()}
 -->
 ${model.mbrowse.createGenePanel()}
 </p>
+</#if>
+
 <br/>
 ${model.textRemarks}
 <br/>

@@ -40,6 +40,7 @@ import org.molgenis.pheno.service.PhenoService;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.submission.Submission;
 import org.molgenis.variant.Exon;
+import org.molgenis.variant.Gene;
 import org.molgenis.variant.Patient;
 import org.molgenis.variant.ProteinDomain;
 import org.molgenis.variant.SequenceCharacteristic;
@@ -178,13 +179,12 @@ public class MolgenisVariantService
 	{
 		try
 		{
-			List<SequenceCharacteristic> geneList =
-					this.db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.FEATURETYPE, this.ontologyTermCache.get("gene")).find();
+			List<Gene> geneList = this.db.query(Gene.class).find();
 	
-			if (geneList.size() != 1)
-				throw new SearchServiceException("Not exactly one gene found in database.");
+			if (geneList.size() == 0)
+				throw new SearchServiceException("No gene found in database.");
 			
-			SequenceCharacteristic gene = geneList.get(0);
+			Gene gene = geneList.get(0);
 	
 			return this.sequenceCharacteristicToGeneDTO(gene);
 		}

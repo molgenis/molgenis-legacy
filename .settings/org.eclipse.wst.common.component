@@ -25,4 +25,3 @@
     <wb-resource deploy-path="/WEB-INF/classes" source-path="modules/matrix"></wb-resource>
   </wb-module>
 </project-modules>
-

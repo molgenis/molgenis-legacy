@@ -70,6 +70,8 @@
 		<td width="290" align="left">
 			<#--<input type="submit" id="search" onclick="$(this).closest('form').find('input[name=__action]').val('search');" value="Search" /><script>$("#search").addClass('grayButton').button();</script>-->
 			 <div class="buttons"><button type="submit" id="search" onclick="document.forms.${screen.name}.__action.value = 'search'; document.forms.${screen.name}.submit();"><img src="generated-res/img/recordview.png" alt=""/>Search</button></div>
+			 
+			 <div class="buttons"><button type="submit" id="search" onclick="document.forms.${screen.name}.__action.value = 'reset'; document.forms.${screen.name}.submit();"><img src="generated-res/img/reset.png" alt=""/>Reset</button></div>
     </button>
 		</td>
 	</tr>
@@ -84,21 +86,26 @@
 
 <#if model.cartView>
 
-<h3>Shopping cart (${model.shoppingCart?size} items)</h3>
 <#if model.shoppingCart?? && model.shoppingCart?size gt 0>
+	
 
-<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/cancel.png" alt=""/> Remove all items</button></div>
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+
+	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 	
-	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> Return to search results</button></div>
-	
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/cancel.png" alt=""/> Clear cart</button></div>
 	
 	<div class="buttons"><button class="positive" type="submit" onclick="document.forms.${screen.name}.__action.value = 'plotShoppingCart'; document.forms.${screen.name}.submit();"><img src="clusterdemo/icons/icon_plaintext_plot.png" alt=""/> Plot cart now</button></div>
 
-<br><br><br>
+	<br><br><br>
+
+	<h3>Shopping cart</h3>
+
+	<br>
 
 <#list model.shoppingCart?keys as name>
 	
-	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();"><img src="generated-res/img/reset.png" alt=""/> Remove</button></div>
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'unshop'; document.forms.${screen.name}.__shopMeName.value = '${name}'; document.forms.${screen.name}.submit();"><img src="generated-res/img/cancel.png" alt=""/> Remove</button></div>
 	
 	<#--<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${name}'; document.forms.${screen.name}.submit();">${name}</a><br><br>-->
 	
@@ -111,9 +118,21 @@
 	
 	</#list>
 <#else>
-	<h4>Your shopping cart is empty.</h4>
-	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> Return to search results</button></div>
-	<br><br><br><br>
+
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+
+	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
+	
+	<div class="buttons"><button type="submit"><img src="generated-res/img/cancel.png" alt=""/> Clear cart</button></div>
+	
+	<div class="buttons"><button class="positive" type="submit" onclick="document.forms.${screen.name}.__action.value = 'plotShoppingCart'; document.forms.${screen.name}.submit();"><img src="clusterdemo/icons/icon_plaintext_plot.png" alt=""/> Plot cart now</button></div>
+	
+	<br><br><br>
+	
+	<h3>Your shopping cart is empty.</h3>
+	
+	<br>
+	
 </#if>
 
 
@@ -481,6 +500,17 @@
 <#else>
 
 	<#if model.multiplot??>
+	
+		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+
+		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
+		
+		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/cancel.png" alt=""/> Clear cart</button></div>
+		
+		<div class="buttons"><button class="positive" style="background: #ccc;" type="submit" onclick="document.forms.${screen.name}.__action.value = 'plotShoppingCart'; document.forms.${screen.name}.submit();"><img src="clusterdemo/icons/icon_plaintext_plot.png" alt=""/> Plot cart now</button></div>
+		
+		<br><br><br>
+		
 
 	<table cellpadding="30"><tr><td>
 		<h2>Results for "<#if model.query??>${model.query}</#if>":</h2><br>
@@ -597,19 +627,39 @@
 			<#assign shopped = shopped+1>
 		</#if>
 	</#list>
-	<h3>Found ${model.hits?size} hits <#if shopped gt 0>(${shopped} not shown - already in your cart)</#if>:</h3>
+	
+	
+	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
 
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 	
-	
-	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><img src="generated-res/img/run.png" alt=""/> Add all hits to cart</button></div>
-	
-	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size} items)</button></div>
-	
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'emptyShoppingCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/cancel.png" alt=""/> Clear cart</button></div>
 	
 	<div class="buttons"><button class="positive" type="submit" onclick="document.forms.${screen.name}.__action.value = 'plotShoppingCart'; document.forms.${screen.name}.submit();"><img src="clusterdemo/icons/icon_plaintext_plot.png" alt=""/> Plot cart now</button></div>
 	
 	
 	<br><br><br>
+	<h3>Found ${model.hits?size} hits.</h3>
+	
+
+	
+	<#if shopped gt 0>
+		<#if shopped == model.hits?size>
+			<h4>All ${shopped} search results are currently in your cart.</h4>
+		<#else>
+			<h4>Please note: ${shopped} search results are not shown because they are already in your cart.</h4>
+		</#if>
+	</#if>
+	
+	<#if shopped gt 0 && shopped == model.hits?size>
+		<#-- do not show 'add all hits' button when there is nothing to be added -->
+	<#else>
+		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><img src="generated-res/img/run.png" alt=""/><img src="clusterdemo/icons/shoppingcart.png" alt=""/> Add all hits to cart</button></div>
+		<br><br>
+	</#if>
+	
+	<br>
+	
 	
 	<#--<input type="submit" id="shopAll" onclick="$(this).closest('form').find('input[name=__action]').val('shopAll');" value="Add all to cart" /><script>$("#shopAll").addClass('grayButton').button();</script><br><br>-->
 	<#--<input type="submit" class="shop" value="" onclick="document.forms.${screen.name}.__action.value = 'shopAll'; document.forms.${screen.name}.submit();"><b><i>Add all to cart</b></i><br><br>-->
