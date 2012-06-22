@@ -19,24 +19,24 @@ import java.util.zip.DataFormatException;
 public class CsvFileReader extends CsvBufferedReaderMultiline
 {
 	/** the File that is being read */
-	private final InputStream csvStream;
+	private final File sourceFile;
 
 	public CsvFileReader(File file) throws IOException, DataFormatException
 	{
 		super(new BufferedReader(new FileReader(file)));
-		this.csvStream = new FileInputStream(file);
+		this.sourceFile = file;
 	}
 
 	public CsvFileReader(final File file, final String encoding) throws IOException, DataFormatException
 	{		
 		super(new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding)));
-		this.csvStream = new FileInputStream(file);
+		this.sourceFile = file;
 	}		
 	
 	public CsvFileReader(InputStream csvStream) throws IOException, DataFormatException
 	{
 		super(new BufferedReader(new InputStreamReader(csvStream)));
-		this.csvStream = csvStream;
+		this.sourceFile = null;
 	}
 
 	/**
@@ -135,8 +135,12 @@ public class CsvFileReader extends CsvBufferedReaderMultiline
 	@Override
 	public void reset() throws IOException, DataFormatException
 	{
-		if(this.reader != null) this.reader.close();
-		this.reader = new BufferedReader(new InputStreamReader(csvStream));
+		if(this.reader != null)
+		{ 
+			this.reader.close();
+		}
+		//create a fresh InputStream to read from, the old one is closed
+		this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile)));
 		super.reset();
 	}
 }
