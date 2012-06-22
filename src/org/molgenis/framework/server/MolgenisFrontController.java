@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 //import java.util.Date;
 //import java.util.Enumeration;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.UUID;
 
@@ -62,6 +63,14 @@ public abstract class MolgenisFrontController extends HttpServlet implements
 	{
 		try
 		{
+			
+			@SuppressWarnings("rawtypes")
+			Enumeration attributeNames = request.getAttributeNames();
+			while(attributeNames.hasMoreElements()) {
+				String nextElement = (String)attributeNames.nextElement();
+				System.out.println(String.format("---> %s: %s", nextElement, request.getAttribute(nextElement)));
+			}
+			
 			//wrap request and response
 			MolgenisRequest req = new MolgenisRequest(request, response); 
 			//TODO: Bad, but needed for redirection. DISCUSS.

@@ -68,7 +68,7 @@ public class SimpleTuple implements Tuple
 	 */
 	public SimpleTuple(Tuple t)
 	{
-		for (String name : t.getFields())
+		for (String name : t.getFieldNames())
 		{
 			this.set(name, t.getObject(name));
 		}
@@ -113,6 +113,17 @@ public class SimpleTuple implements Tuple
 		return values.size();
 	}
 
+	public List<String> getFieldNames()
+	{
+		// return a copy of the keys
+		return new Vector<String>(this.keys);
+	}
+
+	/**
+	 * Use getFieldNames instead.
+	 * @return
+	 */
+	@Deprecated
 	public List<String> getFields()
 	{
 		// return a copy of the keys

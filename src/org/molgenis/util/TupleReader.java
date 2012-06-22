@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
-public interface TupleReader extends Iterable<Tuple>
+public interface TupleReader extends TupleIterable
 {
 	/** Iterate through available tuples */
 	public abstract Iterator<Tuple> iterator();

@@ -1,11 +1,9 @@
 package org.molgenis.util.plink.drivers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.Biallele;
 import org.molgenis.util.plink.datatypes.TpedEntry;
@@ -13,22 +11,8 @@ import org.molgenis.util.plink.datatypes.TpedEntry;
 /**
  * Driver to query TPED files.
  */
-public class TpedFileDriver
+public class TpedFileDriver extends AbstractFileDriver
 {
-
-	private CsvFileReader reader;
-	private long nrOfElements;
-
-	/**
-	 * Get the number of retrievable annotation elements of this TPED file.
-	 * 
-	 * @return
-	 */
-	public long getNrOfElements()
-	{
-		return nrOfElements;
-	}
-
 	/**
 	 * Construct a TpedFileDriver on this file
 	 * 
@@ -37,29 +21,7 @@ public class TpedFileDriver
 	 */
 	public TpedFileDriver(File tpedFile) throws Exception
 	{
-		reader = new CsvFileReader(tpedFile);
-		reader.disableHeader(false);
-
-		if (reader.fileEndsWithNewlineChar())
-		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
-		}
-		else
-		{
-			this.nrOfElements = reader.getNumberOfLines();
-		}
-
-	}
-
-	/**
-	 * Close the underlying file reader
-	 * 
-	 * @throws IOException
-	 */
-	public void close() throws IOException
-	{
-		this.reader.close();
+		super(tpedFile);
 	}
 
 	/**

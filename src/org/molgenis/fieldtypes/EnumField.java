@@ -78,7 +78,7 @@ public class EnumField extends FieldType
 	}
 
 	@Override
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return Enum.class;
 	}
