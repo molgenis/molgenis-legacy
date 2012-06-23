@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.MolgenisOptions.MapperImplementation;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.DetectOS;
-import org.molgenis.util.TarGz;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
@@ -70,7 +70,7 @@ public class XqtlSeleniumTest
 			if (dbDir.exists())
 			{
 
-				TarGz.recursiveDeleteContentIgnoreSvn(dbDir);
+				FileUtils.deleteDirectory(dbDir);
 			}
 			else
 			{
@@ -105,11 +105,7 @@ public class XqtlSeleniumTest
 		int appNameLength = appName.length();
 		String storagePath = new StorageHandler(db).getFileStorage(true, db).getAbsolutePath();
 		File storageRoot = new File(storagePath.substring(0, storagePath.length() - appNameLength));
-		if(new File(storagePath).exists())
-		{
-			TarGz.recursiveDeleteContent(new File(storagePath));
-		}
-		TarGz.delete(storageRoot, false);
+		FileUtils.deleteDirectory(storageRoot);
 	}
 
 	/**

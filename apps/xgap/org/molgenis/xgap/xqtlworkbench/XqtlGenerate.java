@@ -3,8 +3,8 @@ package org.molgenis.xgap.xqtlworkbench;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.Molgenis;
-import org.molgenis.util.TarGz;
 
 public class XqtlGenerate
 {
@@ -28,7 +28,7 @@ public class XqtlGenerate
 	{
 		try
 		{
-			TarGz.recursiveDeleteContentIgnoreSvn(new File("hsqldb"));
+			FileUtils.deleteDirectory(new File("hsqldb"));
 			new Molgenis("apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties").generate();
 			
 		} catch(Exception e)
