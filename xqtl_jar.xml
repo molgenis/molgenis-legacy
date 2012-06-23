@@ -48,6 +48,7 @@
 		<unjar src="${mlibs}ant-apache-log4j.jar" dest="${jarme}" overwrite="false"/> <!-- Log4jListener Molgenis.java -->
 	  	<unjar src="${mlibs}commons-dbcp-1.2.1.jar" dest="${jarme}" overwrite="false"/> <!-- BasicDataSource -->
 	  	<unjar src="${mlibs}commons-fileupload-1.1.jar" dest="${jarme}" overwrite="false"/> <!-- HttpServletRequestTuple files -->
+		<unjar src="${mlibs}commons-io-2.4.jar" dest="${jarme}" overwrite="false"/> <!-- File I/O helpers -->
 	  	<unjar src="${mlibs}cxf-bundle-minimal-2.5.2.jar" dest="${jarme}" overwrite="false"/> <!-- CXFNonSpringJaxrsServlet -->
 	  	<unjar src="${mlibs}freemarker.jar" dest="${jarme}" overwrite="false"/> <!-- Template processing -->
 	  	<unjar src="${mlibs}jxl.jar" dest="${jarme}" overwrite="false"/> <!-- Excel import/export -->
