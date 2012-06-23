@@ -62,8 +62,8 @@ import org.springframework.stereotype.Component;
 public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 {
 	public final transient Logger logger    = Logger.getLogger(UploadBatchCsvReader.class);
-	private final String[] patientValueCols = { "ancestry", "consanguinity", "gender", "onset", "diagnosis (LM, EM)", "PAS/CD10/EM data available", "Additional IHC data available", "Tx (SB, C, L)", "age at Tx (years)", "rejection (yes/no)", "Jaundice+pruritis episodes", "result of last liver biopsy", "COD (+age)", "additional diseases", "height at last follow up", "psychomotor development" };
-	private final String[] variantValueCols = { "par/mat", "homo-/heterozygous", "consequence", "MYO5B domain", "3D structure (only for motor domain)", "conserved (yes/no)", "function of affected residue", "mRNA expression", "protein expression", "protein IHC", "rab11-binding site affected (predicted)", "rab8-binding site affected (predicted)" };
+	private final String[] patientValueCols = { };
+	private final String[] variantValueCols = { "Reported Classification", "Grantham Score", "SIFT", "PolyPhen", "Domain", "Notes" };
 
 	/**
 	 * Imports UploadBatch from tab/comma delimited File
@@ -139,39 +139,39 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		{
 			//parse object, setting defaults and values from file
 
-			Patient patient = new Patient();
-
-			patient.setSubmission(submission);
-
-			// Add stable external identifier
-
-			patientIdentifier = patientIdentifier + 1;
-			patient.setName("P" + patientIdentifier);
-
-			AlternateId patientId = new AlternateId();
-			patientId.setDefinition("molgenis_patient_id");
-			patientId.setName("P" + patientIdentifier);
-			alternateIdList.put(patientId.getName(), patientId);
-
-			patient.getAlternateId().add(patientId);
-			
-			// Add local id
-
-			String localIdString = tuple.getString("patient ID");
-
-			AlternateId localId = new AlternateId();
-			localId.setDefinition("local_patient_no");
-			localId.setName(localIdString);
-			alternateIdList.put(localId.getName(), localId);
-			
-			patient.getAlternateId().add(localId);
+//			Patient patient = new Patient();
+//
+//			patient.setSubmission(submission);
+//
+//			// Add stable external identifier
+//
+//			patientIdentifier = patientIdentifier + 1;
+//			patient.setName("P" + patientIdentifier);
+//
+//			AlternateId patientId = new AlternateId();
+//			patientId.setDefinition("molgenis_patient_id");
+//			patientId.setName("P" + patientIdentifier);
+//			alternateIdList.put(patientId.getName(), patientId);
+//
+//			patient.getAlternateId().add(patientId);
+//			
+//			// Add local id
+//
+//			String localIdString = tuple.getString("patient ID");
+//
+//			AlternateId localId = new AlternateId();
+//			localId.setDefinition("local_patient_no");
+//			localId.setName(localIdString);
+//			alternateIdList.put(localId.getName(), localId);
+//			
+//			patient.getAlternateId().add(localId);
 
 			// Add variants
 
 			if (StringUtils.isNotEmpty(tuple.getString("cDNA change")))
 			{
-				String[] cdnaNotations   = StringUtils.split(tuple.getString("cDNA change"), ", ");
-				String[] aaNotations     = StringUtils.split(tuple.getString("protein change"), ", ");
+				String[] cdnaNotations   = StringUtils.split(tuple.getString("DNA change"), ", ");
+				String[] aaNotations     = StringUtils.split(tuple.getString("Protein change"), ", ");
 
 				for (int i = 0; i < cdnaNotations.length; i++)
 				{
@@ -279,57 +279,57 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 						ntchangeOV.setValue(mutationUploadDTO.getNtChange());
 						observedValueList.add(ntchangeOV);
 
-						patient.getMutations().add(cdnaVariant);
+//						patient.getMutations().add(cdnaVariant);
 					}
 					else
 					{
-						patient.getMutations().add(results.get(0));
+//						patient.getMutations().add(results.get(0));
 					}
 				}
 			}
 
 			// Add publications
-			if (StringUtils.isNotEmpty(tuple.getString("Pubmed ID")))
-			{
-				for (String pubmedString : tuple.getString("PubMed ID").split("[,;]"))
-				{
-					pubmedString = StringUtils.deleteWhitespace(pubmedString);
-
-					List<Publication> results = db.query(Publication.class).equals(Publication.NAME, pubmedString).find();
-
-					if (results.size() < 1)
-					{
-						pubmedStringList.add(pubmedString);
-
-						Publication publication = new Publication();
-						publication.setName(pubmedString);
-
-						patient.getPatientreferences().add(publication);
-					}
-					else
-					{
-						patient.getPatientreferences().add(results.get(0));
-					}
-				}
-			}
+//			if (StringUtils.isNotEmpty(tuple.getString("Pubmed ID")))
+//			{
+//				for (String pubmedString : tuple.getString("PubMed ID").split("[,;]"))
+//				{
+//					pubmedString = StringUtils.deleteWhitespace(pubmedString);
+//
+//					List<Publication> results = db.query(Publication.class).equals(Publication.NAME, pubmedString).find();
+//
+//					if (results.size() < 1)
+//					{
+//						pubmedStringList.add(pubmedString);
+//
+//						Publication publication = new Publication();
+//						publication.setName(pubmedString);
+//
+//						patient.getPatientreferences().add(publication);
+//					}
+//					else
+//					{
+//						patient.getPatientreferences().add(results.get(0));
+//					}
+//				}
+//			}
 
 			// Add observed values for patients
 
-			for (String patientValueCol : patientValueCols)
-			{
-				String value = ObjectUtils.toString(tuple.getString(patientValueCol), "unknown");
-					
-				ObservedValue observedValue = new ObservedValue();
-				ObservableFeature feature   = new ObservableFeature();
-				feature.setName(patientValueCol);
-				observedValue.setFeature(feature);
-				observedValue.setTarget(patient);
-				observedValue.setValue(value);
-					
-				observedValueList.add(observedValue);
-			}
-			
-			patientList.put(patient.getName(), patient);
+//			for (String patientValueCol : patientValueCols)
+//			{
+//				String value = ObjectUtils.toString(tuple.getString(patientValueCol), "unknown");
+//					
+//				ObservedValue observedValue = new ObservedValue();
+//				ObservableFeature feature   = new ObservableFeature();
+//				feature.setName(patientValueCol);
+//				observedValue.setFeature(feature);
+//				observedValue.setTarget(patient);
+//				observedValue.setValue(value);
+//					
+//				observedValueList.add(observedValue);
+//			}
+//			
+//			patientList.put(patient.getName(), patient);
 		}
 
 		int counter = 0;
