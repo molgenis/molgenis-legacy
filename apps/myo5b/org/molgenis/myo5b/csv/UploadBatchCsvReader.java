@@ -104,7 +104,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		final EntityManager em                      = db.getEntityManager();
 		final UploadService uploadService           = ServiceLocator.instance().getUploadService();
 		final PublicationService publicationService = ServiceLocator.instance().getPublicationService();
-		final Login securityService                 = ServiceLocator.instance().getSecurityService();
+		final Login securityService                 = ServiceLocator.instance().getLoginService();
 
 		final Submission submission       = new Submission();
 		DateFormat dateFormat             = new SimpleDateFormat("yyyy-MM-dd");
