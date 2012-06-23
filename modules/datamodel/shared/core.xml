@@ -193,6 +193,14 @@
 			<field name="Journal" nillable="true" label="Journal Title" description="The title of the Journal" />
 			<unique fields="Name" />
 		</entity>
+		<entity name="UseCase" label="Use Cases">
+			<description> All the use cases send to the server are stored in this
+				entity .</description>
+			<field name="UseCaseId" type="autoid" />
+			<field name="UseCaseName" type="string" />
+			<field name="SearchType" type="string" />
+			<unique fields="UseCaseId" />
+		</entity>
 		<entity name="MolgenisEntity" system="true" implements="Identifiable" xref_label="className" >
 			<description>Referenceable catalog of entity names, menus, forms and
 				plugins.</description>
