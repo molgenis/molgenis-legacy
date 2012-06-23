@@ -147,7 +147,7 @@
 			<field name="Extension" nillable="false" length="8"
 				description="The file extension. This will be mapped to MIME type at runtime. For example, a type 'png' will be served out as 'image/png'." />
 		</entity>
-		<entity name="RuntimeProperty" system="true" implements="Nameable">
+		<entity name="RuntimeProperty" implements="Nameable">
 			<field name="Value" length="127" type="varchar" nillable="false" />
 			<unique fields="name" description="Name is unique within its type " />
 		</entity>
@@ -197,9 +197,8 @@
 			<description> All the use cases send to the server are stored in this
 				entity .</description>
 			<field name="UseCaseId" type="autoid" />
-			<field name="UseCaseName" type="string" />
+			<field name="UseCaseName" type="string" unique="true"/>
 			<field name="SearchType" type="string" />
-			<unique fields="UseCaseId" />
 		</entity>
 		<entity name="MolgenisEntity" system="true" implements="Identifiable" xref_label="className" >
 			<description>Referenceable catalog of entity names, menus, forms and
