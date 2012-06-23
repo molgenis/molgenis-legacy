@@ -131,7 +131,7 @@
 			system.</description> <field name="className" description="Full
 			classpath name of the entity type" /> </entity>
 		-->
-		<entity name="MolgenisFile" implements="Nameable"
+		<entity name="MolgenisFile" abstract="false" implements="Nameable"
 			decorator="decorators.MolgenisFileDecorator">
 			<description>
 				Helper entity to deal with files. Has a decorator to regulate
@@ -147,7 +147,7 @@
 			<field name="Extension" nillable="false" length="8"
 				description="The file extension. This will be mapped to MIME type at runtime. For example, a type 'png' will be served out as 'image/png'." />
 		</entity>
-		<entity name="RuntimeProperty" system="true" implements="Nameable">
+		<entity name="RuntimeProperty" abstract="false" system="true" implements="Nameable">
 			<field name="Value" length="127" type="varchar" nillable="false" />
 			<unique fields="name" description="Name is unique within its type " />
 		</entity>
@@ -196,7 +196,6 @@
 		<entity name="UseCase" label="Use Cases">
 			<description> All the use cases send to the server are stored in this
 				entity .</description>
-				<field name="id" type="autoid"/>
 			<field name="UseCaseId" type="autoid" />
 			<field name="UseCaseName" type="string" />
 			<field name="SearchType" type="string" />
