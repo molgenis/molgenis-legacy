@@ -64,7 +64,6 @@
   <classpathentry kind="src" path="apps/maze"></classpathentry>
   <classpathentry kind="src" path="apps/xgap"></classpathentry>
   <classpathentry kind="src" path="publicdata"></classpathentry>
-  <classpathentry kind="src" path="generated/sql"></classpathentry>
   <classpathentry kind="src" path="generated/java"></classpathentry>
 </classpath>
 
