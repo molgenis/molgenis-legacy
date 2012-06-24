@@ -108,6 +108,35 @@ public class DatabaseFactory
             }
 	}  
 	
+	public static Database create(String propertiesFilePath) throws DatabaseException
+	{
+		try
+		{
+			return new ${package}.JDBCDatabase(propertiesFilePath);
+		}
+		catch (Exception ex)
+		{
+			throw new DatabaseException(ex);
+		}
+	}
+	
+	public static Database create(Connection conn) throws DatabaseException
+	{
+		try
+		{
+			return new ${package}.JDBCDatabase(conn);
+		}
+		catch (Exception ex)
+		{
+			throw new DatabaseException(ex);
+		}
+	}
+	
+		@Deprecated
+    public static Database createTest(String propertiesFilePath) throws DatabaseException {
+        return create(propertiesFilePath, true);
+    }
+    
 	@Deprecated
 	private static Database create(String propertiesFilePath, boolean test) throws DatabaseException
 	{
