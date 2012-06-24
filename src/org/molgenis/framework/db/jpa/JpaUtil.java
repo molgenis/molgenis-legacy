@@ -70,23 +70,14 @@ public class JpaUtil
 
 	public static void dropAndCreateTables(final JpaDatabase db, final boolean clear, final Map<String, Object> configOverwrites)
 	{
-		//db.getEntityManager().flush();
 		if (clear)
 		{
 			db.getEntityManager().clear();
 		}
-		
 		JpaFrameworkFactory.createFramework().dropTables(
 				db.getPersistenceUnitName(), configOverwrites);
-		
 		JpaFrameworkFactory.createFramework().createTables(
 				db.getPersistenceUnitName(), configOverwrites);
-		if (clear)
-		{
-			db.getEntityManager().clear();
-			//db.getEntityManager().flush();
-		}
-		
 	}
 
 	public static void dropTables(Database db, final Map<String, Object> configOverwrites)
@@ -106,11 +97,6 @@ public class JpaUtil
 			db.getEntityManager().clear();
 		}
 		JpaFrameworkFactory.createFramework().dropTables(db.getPersistenceUnitName(), configOverwrites);
-		
-		if (clear)
-		{
-			db.getEntityManager().clear();
-		}
 
 	}
 

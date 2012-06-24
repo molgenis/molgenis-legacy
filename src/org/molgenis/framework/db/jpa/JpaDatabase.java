@@ -1,18 +1,18 @@
 package org.molgenis.framework.db.jpa;
 
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
-import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.AbstractDatabase;
-import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.ExampleData;
 import org.molgenis.model.elements.Model;
@@ -29,78 +29,105 @@ import org.molgenis.util.Entity;
  * @author Morris Swertz
  * @author Joris Lops
  */
-public abstract class JpaDatabase extends AbstractDatabase
+public class JpaDatabase extends AbstractDatabase
 {
-	//not thread safe to use static!
-	private EntityManager singleton;
-	private String persistenceUnitName = "molgenis"; // default
-	private Map<String,Object> configOverrides = null;
-
-	public JpaDatabase(Model model) throws DatabaseException
+	protected static class EMFactory
 	{
-		if (singleton == null)
-		{
-			this.singleton = Persistence.createEntityManagerFactory(persistenceUnitName).createEntityManager();
-		}
-		this.model = model;
+		private static Map<String, EntityManagerFactory> emfs = new HashMap<String, EntityManagerFactory>();
+		private static EMFactory instance = null;
 
-		initMappers(this);
+		private EMFactory(String persistenceUnit, Map<String, Object> configOverrides)
+		{
+			addEntityManagerFactory(persistenceUnit, configOverrides);
+		}
+		
+		private static void addEntityManagerFactory(String persistenceUnitName,
+				Map<String, Object> configOverwrite)
+		{
+			if (!emfs.containsKey(persistenceUnitName))
+			{
+				EntityManagerFactory emFactory = null;
+				if (configOverwrite != null)
+				{
+					emFactory = Persistence.createEntityManagerFactory(
+							persistenceUnitName, configOverwrite);
+				}
+				else
+				{
+					emFactory = Persistence
+							.createEntityManagerFactory(persistenceUnitName);
+				}
+				emfs.put(persistenceUnitName, emFactory);
+			}
+		}
+
+		public static EntityManager createEntityManager(String persistenceUnit)
+		{
+			if (instance == null)
+			{
+				instance = new EMFactory(persistenceUnit, null);
+			}
+			if (!emfs.containsKey(persistenceUnit))
+			{
+				addEntityManagerFactory(persistenceUnit, null);
+			}
+			EntityManager result = emfs.get(persistenceUnit)
+					.createEntityManager();
+			return result;
+		}
+
+		public static EntityManager createEntityManager()
+		{
+			if (instance == null)
+			{
+				instance = new EMFactory("molgenis", null);
+			}
+			EntityManager result = emfs.get("molgenis").createEntityManager();
+			return result;
+		}
+
+		public static EntityManagerFactory getEntityManagerFactoryByName(
+				String name)
+		{
+			return emfs.get(name);
+		}
+
+		public static EntityManager createEntityManager(
+				String persistenceUnitName, Map<String, Object> configOverrides)
+		{
+			if (instance == null)
+			{
+				instance = new EMFactory(persistenceUnitName, configOverrides);
+			}
+			if (!emfs.containsKey(persistenceUnitName))
+			{
+				addEntityManagerFactory(persistenceUnitName, configOverrides);
+			}
+			EntityManager result = emfs.get(persistenceUnitName)
+					.createEntityManager();
+			return result;
+		}
 	}
 
-	/**
-	 * @param model
-	 *            preloaded meta model (required)
-	 * @param persistenceUnitName
-	 *            name of the jpa unit
-	 * @throws DatabaseException
-	 */
-	@SuppressWarnings("static-access")
-	protected JpaDatabase(Model model, String persistenceUnitName) throws DatabaseException
+	private final EntityManager em;
+	private String persistenceUnitName = "molgenis"; //default
+
+	protected JpaDatabase(String persistenceUnitName)
 	{
 		this.persistenceUnitName = persistenceUnitName;
-		
-		if (singleton == null)
-		{
-			this.singleton = Persistence.createEntityManagerFactory(persistenceUnitName).createEntityManager();
-		}
-		this.model = model;
-
-		initMappers(this);
+		this.em = EMFactory.createEntityManager();
 	}
 
-	@SuppressWarnings("static-access")
-	public JpaDatabase(Model model, Map<String, Object> configOverrides) throws DatabaseException
+	public JpaDatabase(EntityManager em, Model model)
 	{
-		this.configOverrides = configOverrides;
-		
-		if (singleton == null)
-		{
-			this.singleton = Persistence.createEntityManagerFactory(persistenceUnitName, configOverrides)
-					.createEntityManager();
-		}
+		this.em = em;
 		this.model = model;
-
-		initMappers(this);
 	}
-
-	@SuppressWarnings("static-access")
-	public JpaDatabase(Model model, MolgenisOptions options) throws DatabaseException
-	{
-		if (singleton == null)
-		{
-			this.singleton = Persistence.createEntityManagerFactory(persistenceUnitName).createEntityManager();
-		}
-		this.model = model;
-
-		initMappers(this);
-	}
-
-	public abstract void initMappers(Database db);
 
 	@Override
 	public EntityManager getEntityManager()
 	{
-		return singleton;
+		return em;
 	}
 
 	@Override
@@ -108,9 +135,9 @@ public abstract class JpaDatabase extends AbstractDatabase
 	{
 		try
 		{
-			if (singleton.getTransaction() != null && !singleton.getTransaction().isActive())
+			if (em.getTransaction() != null && !em.getTransaction().isActive())
 			{
-				singleton.getTransaction().begin();
+				em.getTransaction().begin();
 			}
 		}
 		catch (Exception e)
@@ -122,7 +149,7 @@ public abstract class JpaDatabase extends AbstractDatabase
 	@Override
 	public boolean inTx()
 	{
-		return singleton.getTransaction().isActive();
+		return em.getTransaction().isActive();
 	}
 
 	@Override
@@ -130,9 +157,9 @@ public abstract class JpaDatabase extends AbstractDatabase
 	{
 		try
 		{
-			if (singleton.getTransaction() != null && singleton.getTransaction().isActive())
+			if (em.getTransaction() != null && em.getTransaction().isActive())
 			{
-				singleton.getTransaction().commit();
+				em.getTransaction().commit();
 			}
 		}
 		catch (Exception e)
@@ -146,9 +173,9 @@ public abstract class JpaDatabase extends AbstractDatabase
 	{
 		try
 		{
-			if (singleton.getTransaction().isActive())
+			if (em.getTransaction().isActive())
 			{
-				singleton.getTransaction().rollback();
+				em.getTransaction().rollback();
 			}
 		}
 		catch (Exception e)
@@ -162,7 +189,7 @@ public abstract class JpaDatabase extends AbstractDatabase
 	{
 		try
 		{
-			singleton.close();
+			em.close();
 		}
 		catch (Exception e)
 		{
@@ -198,26 +225,27 @@ public abstract class JpaDatabase extends AbstractDatabase
 	@Deprecated
 	public Connection getConnection() throws DatabaseException
 	{
-		return JpaFrameworkFactory.createFramework().getConnection(singleton);
+		return JpaFrameworkFactory.createFramework().getConnection(em);
 	}
 
 	@Override
 	public void flush()
 	{
-		singleton.flush();
+		em.flush();
 	}
 
 	@SuppressWarnings("rawtypes")
 	public List executeSQLQuery(String sqlQuery)
 	{
-		return singleton.createNativeQuery(sqlQuery).getResultList();
+		return em.createNativeQuery(sqlQuery).getResultList();
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public <T> List<T> executeSQLQuery(String sqlQuery, Class<T> resultClass)
 	{
-		return singleton.createNativeQuery(sqlQuery, resultClass).getResultList();
+		return em.createNativeQuery(sqlQuery, resultClass).getResultList();
 	}
+	
 
 	public String getPersistenceUnitName()
 	{
@@ -228,7 +256,7 @@ public abstract class JpaDatabase extends AbstractDatabase
 	{
 		try
 		{
-			FullTextEntityManager ftem = Search.getFullTextEntityManager(this.singleton);
+			FullTextEntityManager ftem = Search.getFullTextEntityManager(this.em);
 			ftem.createIndexer().startAndWait();
 		}
 		catch (InterruptedException e)
@@ -239,12 +267,12 @@ public abstract class JpaDatabase extends AbstractDatabase
 
 	public <E extends Entity> List<E> search(Class<E> entityClass, String fieldList, String searchString)
 	{
-		FullTextEntityManager ftem = Search.getFullTextEntityManager(this.singleton);
-		QueryBuilder qb = ftem.getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
-		org.apache.lucene.search.Query query = qb.keyword().onFields(fieldList).matching(searchString).createQuery();
+		FullTextEntityManager ftem               = Search.getFullTextEntityManager(this.em);
+		QueryBuilder qb                          = ftem.getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
+		org.apache.lucene.search.Query query     = qb.keyword().onFields(fieldList).matching(searchString).createQuery();
 		javax.persistence.Query persistenceQuery = ftem.createFullTextQuery(query, entityClass);
 		@SuppressWarnings("unchecked")
-		List<E> result = persistenceQuery.getResultList();
+		List<E> result                           = persistenceQuery.getResultList();
 		return result;
 	}
 }
