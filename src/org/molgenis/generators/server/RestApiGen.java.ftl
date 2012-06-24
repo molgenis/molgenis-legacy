@@ -124,7 +124,7 @@ public class RestApi
 	private Database getDatabase() throws DatabaseException, NamingException
 	{
 		<#if databaseImp = 'jpa'>
-		return ${package}.DatabaseFactory.createInsecure();
+		return ${package}.DatabaseFactory.create();
 		<#else>
 		//The datasource is created by the servletcontext!				
 		DataSource dataSource = (DataSource)sc.getAttribute("DataSource");

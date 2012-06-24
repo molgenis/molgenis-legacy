@@ -2,9 +2,35 @@
 
 package app;
 
+import java.util.Map;
+
+import org.molgenis.MolgenisOptions;
+import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.DatabaseException;
+
 public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 {
-	public void initMappers(JpaDatabase db)
+	public JpaDatabase(Map<String, Object> configOverrides) throws DatabaseException
+	{
+		super(new JDBCMetaDatabase(), configOverrides);
+	}
+
+	public JpaDatabase(MolgenisOptions options) throws DatabaseException
+	{
+		super(new JDBCMetaDatabase(), options);
+	}
+
+	public JpaDatabase() throws DatabaseException
+	{
+		super(new JDBCMetaDatabase());
+	}
+
+	public JpaDatabase(String propertiesFilePath) throws DatabaseException
+	{
+		super(new JDBCMetaDatabase(), propertiesFilePath);
+	}
+	
+	public void initMappers(Database db)
 	{
 		<#list model.entities as entity><#if !entity.isAbstract()>
 			<#if disable_decorators>
@@ -24,48 +50,4 @@ public class JpaDatabase extends org.molgenis.framework.db.jpa.JpaDatabase
 			</#if>
 		</#if></#list>	
 	}
-	
-	//TODO: Does not function - Connection conn should be an EntityManager instance or so?
-	//TODO: What about decorator overriders?
-	public JpaDatabase(java.sql.Connection conn) throws org.molgenis.framework.db.DatabaseException
-	{
-		super(EMFactory.createEntityManager(), new JDBCMetaDatabase());
-		initMappers(this);
-	}
-
-    public JpaDatabase() throws org.molgenis.framework.db.DatabaseException {
-        super(EMFactory.createEntityManager(), new JDBCMetaDatabase());
-        initMappers(this);
-    }
-
-    public JpaDatabase(String persistenceUnitName) throws org.molgenis.framework.db.DatabaseException {
-        super(EMFactory.createEntityManager(persistenceUnitName), new JDBCMetaDatabase());
-        initMappers(this);
-    }
-
-	public JpaDatabase(boolean testDatabase) throws org.molgenis.framework.db.DatabaseException {
-		super(EMFactory.createEntityManager(), new JDBCMetaDatabase());
-        throw new UnsupportedOperationException();
-    }
-
-	public JpaDatabase(java.util.Map<String, Object> configOverwrites) throws org.molgenis.framework.db.DatabaseException {
-		super(EMFactory.createEntityManager("molgenis", configOverwrites), new JDBCMetaDatabase());  
-		initMappers(this);
-	}
-
-    <#--public javax.persistence.EntityManagerFactory getEntityManagerFactory() {
-        return EMFactory.getEntityManagerFactoryByName(persistenceUnitName);
-    }
-
-    public static javax.persistence.EntityManagerFactory getEntityManagerFactoryByName(String name) {
-        return EMFactory.getEntityManagerFactoryByName(name);
-    }
-
-    public static javax.persistence.EntityManagerFactory getEntityManagerFactory(boolean testDatabase) {
-        if(testDatabase) {
-            return EMFactory.getEntityManagerFactoryByName("molgenis_test");    
-        } else {
-            return EMFactory.getEntityManagerFactoryByName("molgenis");    
-        }            
-    }-->
 }
