@@ -63,7 +63,7 @@ public class DatabaseSearch_XqtlTestNG
 //			System.out.println("T/T: " + e.getName());
 //		}
 		
-		Assert.assertEquals(db.getMetaData().getEntities(false, false).size(), 67);
+		Assert.assertEquals(db.getMetaData().getEntities(false, false).size(), 66);
 		Assert.assertEquals(db.getMetaData().getEntities(true, false).size(), 73);
 		Assert.assertEquals(db.getMetaData().getEntities(false, true).size(), 74);
 		Assert.assertEquals(db.getMetaData().getEntities(true, true).size(), 82);
