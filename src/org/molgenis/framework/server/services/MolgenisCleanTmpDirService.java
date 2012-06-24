@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisContext;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
-import org.molgenis.util.TarGz;
 
 /**
  * A MolgenisService to clean the tmp dir every hour. Files older than 12 hours
@@ -99,7 +99,7 @@ class CleanTmpDirProcess implements Runnable
 						if (age > maxAge)
 						{
 							System.out.println("MolgenisCleanTmpDirService: tmp file " + f.getName() + " is older than " + mfa + " hours, deleting...");
-							TarGz.delete(f, false);
+							FileUtils.deleteQuietly(f);
 						}
 						else
 						{
@@ -109,7 +109,7 @@ class CleanTmpDirProcess implements Runnable
 				}
 
 			}
-			catch (InterruptedException e)
+			catch (Exception e)
 			{
 				System.out.println("SEVERE: Breaking execution of CleanTmpDirProcess! InterruptedException on file delete");
 				e.printStackTrace();
