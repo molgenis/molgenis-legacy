@@ -14,6 +14,7 @@
 		<entity name="MolgenisRoleGroupLink" system="true" implements="Identifiable">
 			<field name="group_" type="xref" xref_field="MolgenisGroup.id" xref_label="name" />
 			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name" />
+			<unique fields="group_,role_"/>
 		</entity>
 		
 		<entity name="Contact" implements="Identifiable" abstract="true">
@@ -87,6 +88,7 @@
 			<field name="role_" type="xref" xref_field="MolgenisRole.id" xref_label="name"/>
 			<field name="entity" type="xref" xref_field="MolgenisEntity.id" />
 			<field name="permission" type="enum" enum_options="[read,write,own]"/>
+			<unique fields="role_,entity,permission"/>
 			<!-- no use case for 'execute' so don't use it -->
 		</entity>
 		<entity name="Authorizable" abstract="true" decorator="decorators.AuthorizableDecorator">
