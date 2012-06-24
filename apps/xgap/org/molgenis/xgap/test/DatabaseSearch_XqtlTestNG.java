@@ -64,9 +64,9 @@ public class DatabaseSearch_XqtlTestNG
 //		}
 		
 		Assert.assertEquals(db.getMetaData().getEntities(false, false).size(), 66);
-		Assert.assertEquals(db.getMetaData().getEntities(true, false).size(), 73);
-		Assert.assertEquals(db.getMetaData().getEntities(false, true).size(), 74);
-		Assert.assertEquals(db.getMetaData().getEntities(true, true).size(), 82);
+		Assert.assertEquals(db.getMetaData().getEntities(true, false).size(), 72);
+		Assert.assertEquals(db.getMetaData().getEntities(false, true).size(), 73);
+		Assert.assertEquals(db.getMetaData().getEntities(true, true).size(), 81);
 	}
 	
 	
