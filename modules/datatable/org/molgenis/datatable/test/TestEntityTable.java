@@ -35,9 +35,6 @@ public class TestEntityTable
 		// assumes empty database!
 		db = DatabaseFactory.create();
 
-		// db.dropDatabase();
-		// db.createDatabase();
-
 		// load the persons
 		db.remove(db.find(Individual.class));
 		for (int i = 1; i <= size; i++)

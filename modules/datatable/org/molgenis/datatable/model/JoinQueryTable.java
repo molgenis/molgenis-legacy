@@ -28,7 +28,7 @@ import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.query.types.path.StringPath;
 
-public class QueryTables extends QueryTable
+public class JoinQueryTable extends QueryTable
 {	
 	/**
 	 *  Will this not limit join possibilities? 
@@ -45,17 +45,18 @@ public class QueryTables extends QueryTable
 		}
 	}
 	
-	public QueryTables(final SQLQuery query, final List<String> tableNames, final List<Join> joins, final Database db)
+	public JoinQueryTable(final SQLQuery query, final List<String> tableNames, final List<Join> joins, final Database db)
 	{
 		super((SQLQueryImpl) query, createSelectAndJoin(query, tableNames, joins, db), getFields(db, tableNames));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static LinkedHashMap<String,SimpleExpression<? extends Object>> createSelectAndJoin(final SQLQuery query, final List<String> tableNames, List<Join> joins, final Database db)
 	{
 		final LinkedHashMap<String, SimpleExpression<? extends Object>> select = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
 		final Map<String, List<Field>> tableColumns = loadColumnData(db, tableNames);
 		for(final String tableName : tableNames) {
-			final PathBuilder<RelationalPath> table = new PathBuilder<RelationalPath>(RelationalPath.class, tableName);
+			final PathBuilder table = new PathBuilder<RelationalPath>(RelationalPath.class, tableName);
 			query.from(table);
 			for(final Field f : tableColumns.get(tableName.toLowerCase())) {
 				final SimpleExpression<?> path = createPath(f, table);

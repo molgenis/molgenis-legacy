@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
@@ -93,19 +92,4 @@ public class ProtocolTable implements TupleTable
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	@Override
-	public void setQueryRules(List<QueryRule> rules)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<QueryRule> getFilters()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.fieldtypes.StringField;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 
@@ -67,19 +66,4 @@ public class MemoryTable implements TupleTable
 	{
 		return rows.size();
 	}
-
-	@Override
-	public void setQueryRules(List<QueryRule> rules)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<QueryRule> getFilters()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
