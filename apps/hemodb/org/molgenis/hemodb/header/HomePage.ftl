@@ -1,4 +1,4 @@
-<#macro org_molgenis_wormqtl_header_HomePage screen>
+<#macro org_molgenis_hemodb_header_HomePage screen>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -130,7 +130,7 @@
 		<tr>
 			<td align="center" colspan="7" >
 				<div align="left">
-					Welcome to <b>WormQTL</b>, an xQTL workbench for the storage and analysis of <i>C. elegans</i> geno- and phenotypic data. For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
+					Welcome to <b>HemoDB</b>, an xQTL workbench for the storage and analysis of <i>C. elegans</i> geno- and phenotypic data. For manuals and	more information, see <a href="http://www.xgap.org/wiki/xQTL">xQTL workbench wiki</a>.<br><br> xQTL workbench provides the following features: 
 					<ul>
 						<li>Available as an <b>'in-house tool'</b> or used in a <b>collaborative setting</b> via web interfaces</li>
 						<li><b>Customizable</b> database for genetics data using software generators</li>

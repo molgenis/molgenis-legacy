@@ -424,7 +424,7 @@ public class levenshteinDistance {
 
 		OWLFunction owlFunctionLocal = new OWLFunction(factory, localOntology);
 
-		owlFunctionLocal.labelMapURI(localOntology.getOntologyID().getOntologyIRI().toString() + "#additionalInfo");
+		owlFunctionLocal.labelMapURI(null, localOntology.getOntologyID().getOntologyIRI().toString() + "#additionalInfo");
 
 		this.expandedQueries = owlFunctionLocal.getExpandedQueries();
 	}
@@ -442,7 +442,7 @@ public class levenshteinDistance {
 
 		owlFunction = new OWLFunction(factory, referenceOntology);
 
-		owlFunction.labelMapURI(annotationProperty);
+		owlFunction.labelMapURI(null, annotationProperty);
 		
 		labelToOWLClass = owlFunction.getLabelToClass();
 

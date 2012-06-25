@@ -2,7 +2,7 @@
 	<plugin name="MolgenisHeader" type="org.molgenis.hemodb.header.MolgenisHeader" />
 	<plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" />
 	<menu name="main">
-		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
+		<plugin label="Home" name="Home" type="org.molgenis.hemodb.header.HomePage" />
 		<plugin label="Login" name="UserLogin"
 			type="plugins.autohidelogin.AutoHideLogin" />
 		<include file="apps/hemodb/org/molgenis/hemodb/browsedata.xml" />
