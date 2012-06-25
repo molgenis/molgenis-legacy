@@ -3,7 +3,7 @@ package org.molgenis.datatable.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.datatable.model.DatabaseTable;
+import org.molgenis.datatable.model.EntityTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
@@ -52,7 +52,7 @@ public class TestDatabaseTable
 	@Test
 	public void testAll() throws TableException
 	{
-		TupleTable table = new DatabaseTable(db, Individual.class);
+		TupleTable table = new EntityTable(db, Individual.class);
 		
 		// check columns
 		Assert.assertEquals("id", table.getColumns().get(0).getName());
@@ -74,9 +74,9 @@ public class TestDatabaseTable
 	@Test
 	public void testFiltered() throws TableException
 	{
-		TupleTable table = new DatabaseTable(db, Individual.class);
+		TupleTable table = new EntityTable(db, Individual.class);
 		
-		((DatabaseTable)table).getFilters().add(new QueryRule("name", Operator.EQUALS, "individual2"));
+		((EntityTable)table).getFilters().add(new QueryRule("name", Operator.EQUALS, "individual2"));
 		
 		//check count
 		Assert.assertEquals(table.getRowCount(), 1);
@@ -89,9 +89,9 @@ public class TestDatabaseTable
 	@Test
 	public void testLimit() throws TableException
 	{
-		TupleTable table = new DatabaseTable(db, Individual.class);
+		TupleTable table = new EntityTable(db, Individual.class);
 		
-		((DatabaseTable)table).getFilters().add(new QueryRule(Operator.LIMIT, 2));
+		((EntityTable)table).getFilters().add(new QueryRule(Operator.LIMIT, 2));
 		
 		//check count (this bypasses the limit rule)
 		Assert.assertEquals(table.getRowCount(), size);

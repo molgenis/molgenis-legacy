@@ -150,47 +150,54 @@ var JQGridView = {
 	}
 }
 
+
+
+
 $(document).ready(function() {
-	var $self = this;
-    this.myColModel = 
+    colModel = 
         [
             <#list columns as col>	
-            {title:'${col.name}', key:'${col.name}', name:'${col.name}',index:'${col.name}', width:150, searchrules:{required:${(!col.nillable)?string}}, table:'Country'}<#if col_has_next>,</#if>
+            {title:'${col.sqlName}', key:'${col.sqlName}', name:'${col.sqlName}',index:'${col.sqlName}', width:150, searchrules:{required:${(!col.nillable)?string}}, table:'Country'}<#if col_has_next>,</#if>
             </#list>
         ];
-   
-	this.mySortColumn = '${sortName}';
+	treeModel = ${treeModel};	
+	sortColumn = '${sortName}';
 	
-    this.myGrid = JQGridView.init(
+    grid = JQGridView.init(
     	{	
     		backendUrl : "${backendUrl}",     
     		viewFactoryClassName: "${viewFactoryClassName}",
     		tableSelector : "#${tableId}", 
-    		colModel: this.myColModel, sortColumn: this.mySortColumn
+    		colModel: colModel, sortColumn: sortColumn
 		});
     $("#exportButton").click(function() {
         $( "#dialog-form" ).dialog( "open" );    	
     });
     
     $("#testChangeColumns").click(function() {
-    	$self.myColModel.pop();
-    	$self.myGrid.changeColumns($self.myColModel);	
+    	colModel.pop();
+    	grid.changeColumns($self.myColModel);	
 	});
 	
 	$("#tree3").dynatree({
       checkbox: true,
       selectMode: 3,
-      children: this.myColModel,
+      children: treeModel,
       onSelect: function(select, node) {
         // Get a list of all selected nodes, and convert to a key array:
         
-        var colModel = new Array();        
+        var selectedColModel = new Array();        
         var selectedColumns = node.tree.getSelectedNodes();
         for(i = 0; i < selectedColumns.length; ++i) {
+        	
         	var x = selectedColumns[i].data;
-        	colModel.push(x);
+        	if(!x.isFolder) {
+        		var cols = colModel.filter(function(obj) { return obj.title == x.path; } );        	
+        		selectedColModel.push(cols[0]);
+        	}
+        	
         }
-        $self.myGrid.changeColumns(colModel);        
+        grid.changeColumns(selectedColModel);        
         
         var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
           return node.data;

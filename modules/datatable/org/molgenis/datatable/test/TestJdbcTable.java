@@ -68,7 +68,8 @@ public class TestJdbcTable
 		Assert.assertEquals("Netherlands", rows.get(0).getString("Name"));
 		Assert.assertEquals("Netherlands Antilles", rows.get(1).getString("Name"));
 
-		final TupleTable countryLikeQuery = new JdbcTable(db, "SELECT Name, Continent FROM country WHERE Name LIKE '%NETH%' ORDER BY SurfaceArea DESC", Collections.<QueryRule>emptyList());
+		String query = "SELECT Name, Continent FROM country WHERE Name LIKE '%NETH%' ORDER BY SurfaceArea DESC";
+		final TupleTable countryLikeQuery = new JdbcTable(db, query, Collections.<QueryRule>emptyList());
 		int rowIdx = 0;
 		for(Tuple row : countryLikeQuery) {
 			Assert.assertEquals(row.getObject("Name"), rows.get(rowIdx).getObject("Name"));
