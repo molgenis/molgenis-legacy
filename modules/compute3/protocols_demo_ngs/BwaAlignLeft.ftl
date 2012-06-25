@@ -10,10 +10,10 @@
 
 #MOLGENIS walltime=15:00:00 nodes=1 cores=4 mem=6
 
-#INPUTS
-#OUTPUTS
+#INPUTS indexfile,leftbarcodefqgz
+#OUTPUTS leftbwaout
 #LOGS log
-#EXES
+#EXES bwaalignjar
 #TARGETS
 
 inputs "${indexfile}" 

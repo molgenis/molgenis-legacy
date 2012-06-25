@@ -72,6 +72,9 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					// allow to see experiment overview
 					"app.ui.ExpTablePlugin",
 					
+					// allow to see help
+					"app.ui.HelpPlugin",
+					
 					// enable the Browse Data menu (minus Inspector and matrix removal)
 					"app.ui.InvestigationsFormController",
 					"app.ui.DatasFormController",

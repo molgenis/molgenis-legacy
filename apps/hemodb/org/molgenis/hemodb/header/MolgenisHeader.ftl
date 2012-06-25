@@ -8,7 +8,7 @@
 
 <div style="height:10px;">&nbsp;</div>
 
-<a href="?__target=main&select=QtlFinderPublic2"><img src="clusterdemo/bg/baner_wf.png" /></a>
+<a href="?__target=main&select=QtlFinderPublic2"><img src="clusterdemo/logo/hemodb_logo.jpg" /></a>
 
 <table style="width: 100%;">
 	<tr>

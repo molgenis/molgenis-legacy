@@ -42,7 +42,8 @@ run_HAPPY <- function(dbpath = "", subjob, item, jobid, outname, myanalysisfile,
   cat(Generate_Statement(paste("plot(results)","\n",sep="")),file=myanalysisfile,append=T)
   cat(paste("dev.off()","\n",sep=""),file=myanalysisfile,append=T)
   cat("report(2,\"PlotInTemp.fig\")\n",file=myanalysisfile,append=T)
-  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',Investigation_name='",investigationname,"', name='",imagefilename,"', type = 'InvestigationFile', file = fileUpload(filename='",imagefilename,"'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
+  invId <- find.investigation(name=investigationname)$id #needed since JPA merge
+  cat(Generate_Statement(paste("postForm('",paste(dbpath,"/uploadfile",sep=""),"',Investigation_name='",investigationname,"', investigation_id='",invId,"', name='",imagefilename,"', type = 'InvestigationFile', file = fileUpload(filename='",imagefilename,"'), style='HTTPPOST')","\n",sep="")),file=myanalysisfile,append=T)
   cat("report(2,\"UploadedFIGtoDatabase\")\n",file=myanalysisfile,append=T)
   cat("report(2,\"StoringQTLResults\")\n",file=myanalysisfile,append=T)
   cat("info: Store QTL results by using ResultsToMolgenis function or any other function provided in the molgenis R API\n")

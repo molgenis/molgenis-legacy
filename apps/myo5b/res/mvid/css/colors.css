@@ -1,0 +1,444 @@
+body {
+	font-size: 10pt;
+	font-family: verdana;
+}
+
+/**5DA55B*/ 
+
+/**color of title*/
+.colorOfTitle,#subheader,#separator {
+	color: #ff7d00;
+}
+
+#header {
+	color: #000000;
+}
+
+/**overall background*/
+.overallBackground,.matrixRowColorEmpty,body,#header,#navigation,#information,#footer {
+	background: white;
+	border-top-color: #ff7d00;
+}
+
+/**matrix inner table and cells*/
+.tableBorder,.matrixTableCell{
+	border-color: white;
+}
+
+/**highlight background*/
+.highlightBackground,.formscreen, .form_new, .form_filter, .embedtable, .popup, .form_new,.form_filter {
+	background: #F8FAFB;
+}
+
+/**shade header*/
+.shadeHeader,.leftNavigationSelected,.navigationSelected,.form_header, td.submenuitem:hover {
+	background: #ff7d00;
+}
+
+/**highlight*/
+.highlight,.leftNavigationNotSelected,.navigationNotSelected, .form_menu, .submenuitem   {
+	background: white;
+	border: none;
+	color: #2142FD;
+}
+
+.submenuitem{
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#5B82A4'; this.style.color='#fff';"),
+                       onmouseout=new Function("this.style.backgroundColor='#BDCDDA'; this.style.color='black';"));	
+	/*ie hack for td.submenuitem:hover*/
+	
+}
+
+/**shade borders*/
+.shadeBorder,.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup, .form_menu 
+{
+	border-color: #ff7d00;
+}
+
+/**font color*/
+.fontColor,.leftNavigationSelected,.navigationSelected {
+	color: white;
+}
+
+.matrixRowColor0,.form_listrow0,.tableheader {
+	background: #CACACA;
+}
+
+.matrixRowColor1,.form_listrow1 {
+	/*background: #BCD6DA;*/
+	background: #EEEEEE;
+}
+
+.form_listrow2 {
+	background: #DDDDDD;
+}
+	
+input, select {
+	color: #666666;
+	background: #DDDDDD;
+}
+
+.pd84 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd85 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd86 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd87 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd88 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd89 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd90 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd91 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd92 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd93 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd94 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd95 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd96 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd97 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd98 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd99 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd100 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd101 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd102 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd103 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd104 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd105 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd106 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd107 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd108 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd109 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd110 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd111 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd112 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd113 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd114 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd115 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd116 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd117 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+
+.pd118 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd119 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd120 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd121 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd122 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd123 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd124 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd125 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd126 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd127 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd128 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd129 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd130 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd131 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd132 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd133 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd134 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd135 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd136 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd137 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd138 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd139 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd140 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd141 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd142 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd143 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd144 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd145 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd146 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd147 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd148 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd149 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd150 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd151 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd152 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd153 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd154 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd155 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd156 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd157 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd158 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd159 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd160 {
+	background: #ff7d00;
+	border-color:#000000;
+}
+
+.pd161 {
+	background: #6dcbfe;
+	border-color:#000000;
+}
+.pd162 {
+	background: #ff7d00;
+	border-color:#000000;
+}

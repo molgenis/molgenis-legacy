@@ -19,7 +19,7 @@
 <display:column title="No."><c:out value="${current_rowNum}"/></display:column>
 <display:column media="html" property="patientIdentifier" title="Patient ID" sortable="true" headerClass="sortable" href="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=#results" paramId="pid" paramProperty="patientIdentifier"/>
 <display:column media="csv excel pdf" property="patientIdentifier" title="Patient ID" sortable="true" headerClass="sortable"/>
-<display:column title="Phenotype" sortable="true">
+<display:column title="Onset" sortable="true">
 	<c:out value="${current.phenotypeMajor}"/><c:if test="${fn:length(current.phenotypeSub) > 1}">, <c:out value="${current.phenotypeSub}"/></c:if>
 </display:column>
 <display:column media="html" title="cDNA change" sortable="true" headerClass="sortable" sortProperty="gdnaStart">
@@ -39,16 +39,16 @@
 	<a href="<c:out value="${url}"/>"><c:out value="${variantDTO.exonName}"/></a><br>
 	</c:forEach>
 </display:column>
-<display:column media="html" title="Homo-/heterozygous" sortable="true" headerClass="sortable">
+<display:column media="html" title="Consequence" sortable="true" headerClass="sortable">
 	<c:forEach var="variantDTO" items="${current.variantDTOList}">
-	<c:out value="${variantDTO.pathogenicity}"/><br>
+	<c:out value="${variantDTO.observedValue}"/><br>
 	</c:forEach>
 </display:column>
 <display:column media="html" title="Reference">
 	<c:choose>
 	<c:when test="${fn:length(current.publicationDTOList) > 0}">
 	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="PM:${publicationDTO.pubmedId}"/></a><br/>
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="PM:${publicationDTO.pubmedId}"/> ${publicationDTO.year}</a><br/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
@@ -72,9 +72,9 @@
 	<c:out value="${variantDTO.exonName}" escapeXml="false"/>
 	</c:forEach>
 </display:column>
-<display:column media="csv excel pdf" title="Homo-/heterozygous">
+<display:column media="csv excel pdf" title="Consequence">
 	<c:forEach var="variantDTO" items="${current.variantDTOList}">
-	<c:out value="${variantDTO.pathogenicity}" escapeXml="false"/>
+	<c:out value="${variantDTO.observedValue}" escapeXml="false"/>
 	</c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="Reference">

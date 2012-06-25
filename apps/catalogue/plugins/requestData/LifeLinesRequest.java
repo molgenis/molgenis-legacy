@@ -1,5 +1,7 @@
 package plugins.requestData;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,15 +108,18 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		String subject   = "Data request";
 		ShoppingCart shc = new ShoppingCart();
 		WriteExcel xlsFile = new WriteExcel();
+
+		
 		List<String> xlslabels = new ArrayList<String>();
 		HashMap<Integer, ArrayList<String>> userSelections = new HashMap<Integer, ArrayList<String>>();
 		String[] temp;
 		String delimiter = ",";
+		String filename = "/Users/despoina/userselection.xls"; 
 		
 		shc = db.query(ShoppingCart.class).eq(ShoppingCart.ID, request.getString("MyMeasurementSelection") ).find().get(0);
 		shc.getName();
 		
-		xlsFile.setOutputFile("/Users/despoina/userselection.xls");
+		xlsFile.setOutputFile(filename);
 		
 		List<String> row1 = new ArrayList<String>();
 		List<String> row2 = new ArrayList<String>();
@@ -122,9 +127,7 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		List<String> row4 = new ArrayList<String>();
 
 		
-		xlslabels.add("  ");  //need an empty label so that name and email are under correct labels.
-		xlslabels.add("FullName");		  	
-		xlslabels.add("Email");			  
+		xlslabels.add("User details (FullName, Email)");			  
 		
 		row1.add("A user request was received from : "); 
 		row1.add(request.getString(FIRSTNAME)	+ " "+	request.getString(LASTNAME));
@@ -183,7 +186,10 @@ public class LifeLinesRequest extends EasyPluginController<LifeLinesRequestModel
 		
 		
 		EmailService ses = this.getEmailService();
-		ses.email(subject, email, admin.getEmail(), true);
+        ByteArrayOutputStream outputStream = xlsFile.getFile(); 
+
+		ses.email(subject, email, admin.getEmail(), filename, outputStream , true);		
+		//ses.email(subject, email, admin.getEmail(), true);
 		
 		//this.getMessages().add(new ScreenMessage(feedback, true));
 		

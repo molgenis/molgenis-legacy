@@ -408,7 +408,7 @@ public class AddAnimalPlugin extends EasyPluginController
 		protocolNameList.add("SetDateOfBirth");
 		protocolNameList.add("SetResponsibleResearcher");
 		protocolNameList.add("SetLocation");
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < 11; j++)
 		{
 			ProtocolApplication newApp = ct.createProtocolApplication(invName, protocolNameList.get(j));
 			appsToAddList.add(newApp);

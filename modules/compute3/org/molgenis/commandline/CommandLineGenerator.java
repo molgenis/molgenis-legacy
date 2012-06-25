@@ -1,7 +1,7 @@
 package org.molgenis.commandline;
 
 import org.molgenis.compute.ComputeJob;
-import org.molgenis.compute.commandline.options.Options;
+import org.molgenis.commandline.options.Options;
 import org.molgenis.generator.Compute3JobGenerator;
 import org.molgenis.generator.JobGenerator;
 import org.molgenis.generator.ModelLoader;

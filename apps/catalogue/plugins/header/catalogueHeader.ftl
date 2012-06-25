@@ -44,6 +44,7 @@
 					<span style="color:black">&nbsp;|&nbsp;</span>
 					<a href="molgenis.do?__target=catalogueHeader&select=catalogueHeader&__action=doLogout">Logout</a>
 				<#else>
+					<a href="molgenis.do?__target=UserLogin&__action=Register">Register | </a> 
 					<a href="molgenis.do?__target=main&select=UserLogin">Login</a>
 				</#if>
 					   	<a href="api/R"> | R-project API</a><br/>

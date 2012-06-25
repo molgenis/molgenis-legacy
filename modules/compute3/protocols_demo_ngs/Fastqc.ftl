@@ -10,30 +10,22 @@
 
 #MOLGENIS walltime=08:00:00 nodes=1 cores=1 mem=1
 
-#INPUTS
-#OUTPUTS
+#INPUTS leftbarcodefqgz,rightbarcodefqgz
+#OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog,rightfastqczip,rightfastqcsummarytxt,rightfastqcsummarylog
 #LOGS log
-#EXES
+#EXES fastqcjar
 #TARGETS
 
-<#if seqType == "SR">
-	inputs "${srbarcodefqgz}"
-	alloutputsexist \
-	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
-<#else>
-	inputs "${leftbarcodefqgz}"
-	inputs "${rightbarcodefqgz}"
-	
-	alloutputsexist \
-	 "${leftfastqczip}" \
-	 "${leftfastqcsummarytxt}" \
-	 "${leftfastqcsummarylog}" \
-	 "${rightfastqczip}" \
-	 "${rightfastqcsummarytxt}" \
-	 "${rightfastqcsummarylog}"
-</#if>
+inputs "${leftbarcodefqgz}"
+inputs "${rightbarcodefqgz}"
+
+alloutputsexist \
+ "${leftfastqczip}" \
+ "${leftfastqcsummarytxt}" \
+ "${leftfastqcsummarylog}" \
+ "${rightfastqczip}" \
+ "${rightfastqcsummarytxt}" \
+ "${rightfastqcsummarylog}"
 
 # first make logdir...
 mkdir -p "${intermediatedir}"

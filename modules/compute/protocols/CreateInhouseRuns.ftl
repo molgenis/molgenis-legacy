@@ -20,7 +20,7 @@ umask 0007
 # Create run dirs.
 #
 mkdir -p ${runJobsDir}
-mkdir -p ${runIntermediateDir}
+mkdir -p ${runResultsDir}
 
 #
 # Create subset of samples for this project.
