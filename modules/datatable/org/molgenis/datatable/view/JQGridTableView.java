@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.molgenis.datatable.model.DatabaseTable;
+import org.molgenis.datatable.model.EntityTable;
+import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
@@ -31,13 +31,13 @@ public class JQGridTableView extends HtmlWidget
 	// plugin that will handle the ajax requests for us (also our handle to any
 	// other state)
 
-	ScreenController<?> plugin;
+	private ScreenController<?> plugin;
 
 	// table serving the data
-	TupleTable table;
+	private FilterableTupleTable table;
 
 	// jqgrid config
-	JQGridConfiguration config;
+	private JQGridConfiguration config;
 
 	/**
 	 * Construct an Ajax html table for TupleTable
@@ -51,7 +51,7 @@ public class JQGridTableView extends HtmlWidget
 	 *            the TupleTable being viewed
 	 * @throws TableException
 	 */
-	public JQGridTableView(String id, ScreenController<?> plugin, DatabaseTable table) throws TableException
+	public JQGridTableView(String id, ScreenController<?> plugin, EntityTable table) throws TableException
 	{
 		super(id);
 		this.plugin = plugin;

@@ -3,14 +3,11 @@ package org.molgenis.datatable.view;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.molgenis.datatable.model.QueryTable;
-import org.molgenis.datatable.model.QueryTables;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.ui.html.HtmlWidget;
-import org.molgenis.model.elements.Field;
 
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;

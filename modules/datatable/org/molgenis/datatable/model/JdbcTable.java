@@ -3,7 +3,6 @@ package org.molgenis.datatable.model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-public class JdbcTable implements TupleTable
+public class JdbcTable extends AbstractFilterableTupleTable
 {
 	private ResultSetTuple rs;
 	private List<Field> columns;
@@ -29,10 +28,9 @@ public class JdbcTable implements TupleTable
 
 	public JdbcTable(Database db, String query, List<QueryRule> rules)
 	{
-		super();
+		super(rules);
 		this.db = db;
-		this.query = query;
-		this.setQueryRules(rules);		
+		this.query = query;		
 
 		String fromExpression = StringUtils.substringBetween(query, "SELECT", "FROM");
 		this.countQuery = StringUtils.replace(query, fromExpression, " COUNT(*) ");
@@ -44,7 +42,7 @@ public class JdbcTable implements TupleTable
 			loaded = true;
 			try
 			{
-				rs = new ResultSetTuple(db.executeQuery(query, getRules().toArray(new QueryRule[0])));
+				rs = new ResultSetTuple(db.executeQuery(query, rules.toArray(new QueryRule[0])));
 				columns = loadColumns();
 			}
 			catch (Exception e)
@@ -138,7 +136,7 @@ public class JdbcTable implements TupleTable
 	public int getRowCount() throws TableException
 	{
 		try {
-			final ResultSet countSet = db.executeQuery(countQuery, getRules().toArray(new QueryRule[0]));
+			final ResultSet countSet = db.executeQuery(countQuery, rules.toArray(new QueryRule[0]));
 			int rowCount = 0;
 			if (countSet.next())
 			{
@@ -152,21 +150,4 @@ public class JdbcTable implements TupleTable
 		}
 	}
 
-	public List<QueryRule> getRules()
-	{
-		return rules;
-	}
-
-
-	@Override
-	public List<QueryRule> getFilters()
-	{
-		return rules;
-	}
-
-	@Override
-	public void setQueryRules(List<QueryRule> rules)
-	{
-		this.rules = rules;		
-	}
 }

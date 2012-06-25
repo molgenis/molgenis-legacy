@@ -11,6 +11,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
@@ -61,7 +62,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 {
 	public interface TupleTableBuilder
 	{
-		TupleTable create(Database db) throws TableException;
+		TupleTable create(Database db, Tuple request) throws TableException;
 	}
 
 	private static final long serialVersionUID = 8804579908239186037L;
@@ -87,7 +88,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		tupleTableBuilder = new TupleTableBuilder()
 		{
 			@Override
-			public TupleTable create(Database db) throws TableException
+			public TupleTable create(Database db, Tuple request) throws TableException
 			{
 				try
 				{
@@ -98,8 +99,31 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 
 					boolean joinTable = true;
 					if(joinTable) {
+						List<String> tableNames = new ArrayList<String>();
+						List<String> columnNames = new ArrayList<String>();
+						if(request != null) {
+							@SuppressWarnings("unchecked")
+							final List<String> columns = (List<String>) new Gson().fromJson((String) request.getObject("colNames"), Object.class);
+							for(final String column : columns) {
+								if(StringUtils.contains(column, ".")) {
+									final String tableName = StringUtils.substringBefore(column, ".");
+									final String columnName = StringUtils.substringAfter(column, ".");
+									if(!tableNames.contains(tableName)) {
+										tableNames.add(tableName);	
+									}
+									columnNames.add(columnName);
+								} else {
+									columnNames.add(column);
+								}
+							}
+						}
+						
+						if(CollectionUtils.isEmpty(tableNames)) {
+							tableNames = Arrays.asList("Country", "City");
+						}
+						
 						final List<QueryTables.Join> joins = Arrays.asList(new QueryTables.Join("Country.Code", "City.CountryCode"));
-						return new QueryTables(query, Arrays.asList("Country", "City"), joins, db);						
+						return new QueryTables(query, tableNames, joins, db);						
 					} 
 					
 					PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
@@ -156,7 +180,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	{
 		try
 		{
-			final TupleTable tupleTable = tupleTableBuilder.create(db);
+			final TupleTable tupleTable = tupleTableBuilder.create(db, null);
 			// strange way to retrieve columns! Sould be in a ajax call when
 			// grid is constructed!
 			gridView = new JQGridView("myGrid", tupleTable);
@@ -221,7 +245,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	{
 		try
 		{
-			final TupleTable tupleTable = tupleTableBuilder.create(db);
+			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
 
 			final ExportRange exportSelection = StringUtils.isNotEmpty(request.getString("exportSelection")) ? ExportRange
 					.valueOf(request.getString("exportSelection")) : ExportRange.UNKOWN;

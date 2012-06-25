@@ -66,7 +66,9 @@ public class QueryTables extends QueryTable
 		for(Join join : joins) {
 			SimpleExpression<? extends Object> leftExpr = select.get(join.leftColumnExpr);
 			SimpleExpression<? extends Object> rightExpr = select.get(join.rightColumnExpr);
-			query.where(leftExpr.eq((Expression) rightExpr));
+			if(leftExpr != null && rightExpr != null) {
+				query.where(leftExpr.eq((Expression) rightExpr));
+			}
 		}
 		
 		

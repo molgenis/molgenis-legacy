@@ -13,9 +13,9 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 /**
- * Wrap a database table (entity) into a TupleTable
+ * Wrap an Entity (that is stored in a database) into a TupleTable
  */
-public class DatabaseTable implements TupleTable
+public class EntityTable extends AbstractFilterableTupleTable
 {
 	// database connection
 	private Database db;
@@ -26,9 +26,6 @@ public class DatabaseTable implements TupleTable
 	// copy of the fields from meta database
 	private List<Field> fields;
 	
-	// current query rules (includes all: limit, offset, paging, filters)
-	private List<QueryRule> rules = new ArrayList<QueryRule>();
-
 	/**
 	 * Constructor
 	 * 
@@ -37,10 +34,15 @@ public class DatabaseTable implements TupleTable
 	 * @param entityClass
 	 *            class of entities to query
 	 */
-	public DatabaseTable(Database database, Class<? extends Entity> entityClass)
+	public EntityTable(final Database database, final Class<? extends Entity> entityClass)
 	{
-		assert (database != null);
-		assert (entityClass != null);
+		super();
+		if(database == null) {
+			throw new NullPointerException("database can't be null");
+		}
+		if(entityClass == null) {
+			throw new NullPointerException("entityClass can't be null");
+		}
 
 		this.db = database;
 		this.entityClass = entityClass;
@@ -49,7 +51,9 @@ public class DatabaseTable implements TupleTable
 	@Override
 	public List<Field> getColumns() throws TableException
 	{
-		if (fields != null) return fields;
+		if (fields != null) {
+			return fields;
+		}
 		try
 		{
 			fields = db.getMetaData().getEntity(entityClass.getSimpleName()).getAllFields();
@@ -66,14 +70,14 @@ public class DatabaseTable implements TupleTable
 	{
 		try
 		{
-			List<? extends Entity> entities;
-			if(rules.size() > 0) entities = db.find(entityClass, rules.toArray(new QueryRule[rules.size()]));
-			else entities = db.find(entityClass);
+			final List<? extends Entity> entities = rules.isEmpty() ?
+				db.find(entityClass) :
+				db.find(entityClass, rules.toArray(new QueryRule[rules.size()]));
 			
-			List<Tuple> result = new ArrayList<Tuple>();
-			for (Entity e : entities)
+			final List<Tuple> result = new ArrayList<Tuple>();
+			for (final Entity e : entities)
 			{
-				Tuple t = new SimpleTuple();
+				final Tuple t = new SimpleTuple();
 				for (Field f : getColumns())
 				{
 					t.set(f.getName(), e.get(f.getName()));
@@ -84,10 +88,7 @@ public class DatabaseTable implements TupleTable
 		}
 		catch (Exception e)
 		{
-			// todo: throw exception
-			e.printStackTrace();
-			return null;
-
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -106,31 +107,15 @@ public class DatabaseTable implements TupleTable
 	@Override
 	public int getRowCount() throws TableException
 	{
-		//should get rid of limit clause!
 		try
 		{
-			if(rules.size() > 0) return db.count(entityClass, rules.toArray(new QueryRule[rules.size()]));
-			else return db.count(entityClass);
+			return rules.isEmpty() ?
+				db.count(entityClass):
+				db.count(entityClass, rules.toArray(new QueryRule[rules.size()]));
 		}
 		catch (DatabaseException e)
 		{
 			throw new TableException(e);
 		}
 	}
-
-	public List<QueryRule> getFilters()
-	{
-		return rules;
-	}
-
-	public Database getDb()
-	{
-		return db;
-	}
-
-	public void setDb(Database db)
-	{
-		this.db = db;
-	}
-
 }

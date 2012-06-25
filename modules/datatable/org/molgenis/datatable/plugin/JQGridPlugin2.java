@@ -2,9 +2,8 @@ package org.molgenis.datatable.plugin;
 
 import java.io.OutputStream;
 
-import org.molgenis.datatable.model.DatabaseTable;
+import org.molgenis.datatable.model.EntityTable;
 import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridTableView;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -30,7 +29,7 @@ public class JQGridPlugin2 extends EasyPluginController<JQGridPlugin2>
 		// need to (re) load the table
 		try
 		{
-			DatabaseTable table = new DatabaseTable(db, Individual.class);
+			EntityTable table = new EntityTable(db, Individual.class);
 			tableView = new JQGridTableView("test", this, table);
 		}
 		catch (TableException e)
