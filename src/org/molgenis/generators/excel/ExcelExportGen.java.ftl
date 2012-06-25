@@ -28,11 +28,11 @@ import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
 
 public class ExcelExport
@@ -128,7 +128,7 @@ public class ExcelExport
 	    workbook.close();
 	    
 	    // Remove temporary directory
-		TarGz.recursiveDeleteContent(directory);
+		FileUtils.deleteDirectory(directory);
 	}
 
 	/**
