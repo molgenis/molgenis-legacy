@@ -106,6 +106,10 @@ public class Upload extends EasyPluginController<UploadModel>
 			{
 				this.handleInsertMutation(request);
 			}
+			else if (StringUtils.equals(action, "reindex"))
+			{
+				this.handleReindex();
+			}
 		}
 		catch(Exception e)
 		{
@@ -199,6 +203,13 @@ public class Upload extends EasyPluginController<UploadModel>
 		this.getModel().getMessages().add(new ScreenMessage("Successfully inserted " + count + " rows", true));
 		
 		this.setView(new FreemarkerView("uploadBatch.ftl", getModel()));
+	}
+
+	private void handleReindex()
+	{
+		UploadService uploadService = ServiceLocator.instance().getUploadService();
+		uploadService.reindex();
+		this.getModel().getMessages().add(new ScreenMessage("Successfully rebuilt the full text index", true));
 	}
 
 	private void populateBatchForm()

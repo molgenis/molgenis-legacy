@@ -5,6 +5,7 @@ import java.io.File;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.EasyPluginController;
+import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.util.Tuple;
 
 import app.CsvImport;
@@ -28,9 +29,9 @@ public class LoadFromDirectory extends
 
 	public LoadFromDirectory(String name, ScreenController<?> parent)
 	{
-		super(name, null, parent);
+		super(name, parent);
 		this.setModel(new LoadFromDirectoryModel(this)); // the default model
-		this.setView(new LoadFromDirectoryView(this.getModel())); // <plugin
+//		this.setView(new LoadFromDirectoryView(this.getModel())); // <plugin
 																					// flavor="freemarker"
 	}
 
@@ -46,5 +47,11 @@ public class LoadFromDirectory extends
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public ScreenView getView()
+	{
+		return new LoadFromDirectoryView(this.getModel());
 	}
 }

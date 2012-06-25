@@ -58,7 +58,8 @@ public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheet>
 	{	
 		String sql = "select study.identifier as project, person.name as contact, ngsstudy.seqType, s.identifier as internalSampleId, ngssample.externalIdentifier as externalSampleId, " +
 				"machine.name as sequencer, flowcell.startDate as sequencingStartDate, " +
-				"flowcell.run, f.identifier as flowcell, l.lane, b.name as barcode, c.name as capturingKit, k.name as prepKit " +
+				"flowcell.run, f.identifier as flowcell, l.lane, b.name as barcode, c.name as capturingKit, k.name as prepKit, " +
+				"a.arrayFile as arrayFile " +
 				"from study natural join ngsstudy " +
 				"left join person on study.contact = person.id "+
 				"left join ngssample natural join characteristic s on ngssample.study=study.id " +
@@ -67,7 +68,8 @@ public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheet>
 				"left join NgsBarcode b on b.id=l.barcode " +
 				"left join NgsCapturingKit c on c.id=l.capturingKit " +
 				"left join NgsPrepKit k on k.id=l.prepKit " +
-				"left join machine on flowcell.machine=machine.id";
+				"left join machine on flowcell.machine=machine.id " +
+				"left join array a on a.sample=ngssample.id";
 		
 		List<Tuple> result = db.sql(sql);
 		
@@ -89,6 +91,7 @@ public class AnalysisWorksheet extends EasyPluginController<AnalysisWorksheet>
 			row.set("lane", t.getString("lane"));
 			row.set("barcode", t.getString("barcode"));
 			row.set("capturingKit", t.getString("capturingKit"));
+			row.set("arrayFile", t.getString("arrayFile"));
 			sheet.add(row);
 		}
 	}

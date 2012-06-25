@@ -1,3 +1,11 @@
-/build
+*.svn
+*.orig
+*.java~
 /bin
 /test-output
+/generated
+/target
+logger.out*
+/dist
+/build
+/generated/java

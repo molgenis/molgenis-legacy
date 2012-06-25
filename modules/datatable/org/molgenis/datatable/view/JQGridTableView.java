@@ -40,7 +40,7 @@ public class JQGridTableView extends HtmlWidget
 	private JQGridConfiguration config;
 
 	/**
-	 * Construct an Ajax html table for TupleTable
+	 * Construct an Ajax html table for EntityTable
 	 * 
 	 * @param id
 	 *            unique id of this html element
@@ -48,10 +48,11 @@ public class JQGridTableView extends HtmlWidget
 	 *            the plugin that will host this plugin (and take care of
 	 *            routing the AJAX requests back to this view
 	 * @param table
-	 *            the TupleTable being viewed
+	 *            the EntityTable being viewed
 	 * @throws TableException
 	 */
 	public JQGridTableView(String id, ScreenController<?> plugin, EntityTable table) throws TableException
+
 	{
 		super(id);
 		this.plugin = plugin;

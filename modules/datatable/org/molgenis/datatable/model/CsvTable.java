@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
@@ -129,5 +130,21 @@ public class CsvTable implements TupleTable
 		{
 			throw new TableException(e); 
 		}
+	}
+
+
+	@Override
+	public void setQueryRules(List<QueryRule> rules)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public List<QueryRule> getFilters()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

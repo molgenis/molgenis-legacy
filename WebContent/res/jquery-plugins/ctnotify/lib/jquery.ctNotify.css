@@ -1,7 +1,7 @@
 .ctNotify{
   background-color: #000;
   color:#fff;
-  padding: .5em;
+  padding: .2em;
   margin: 0;
   font-size: 16px;
   cursor: pointer;
@@ -38,7 +38,6 @@
 
 .ctNotify li.confirmation{
   background-image: url('images/ok.png');
-  
 }
 
 .ctNotify li.warning{
@@ -48,13 +47,17 @@
 
 .ctNotify li.error{
   background-image: url('images/error.png');
+
   
 }
 .ctNotify li.error, li.error .sticky{
-  color: #ff0000;
+  background-color: #ff0000;
+  color: #ffffff;
+  font-size: 18px;
 }
-.ctNotify li.confirmation{
-  color: #ffffff;	
+.ctNotify li.confirmation li.message{
+  color: #ffffff;
+  background-color: #00ff00;
 }
 
 .ctNotify li .sticky{

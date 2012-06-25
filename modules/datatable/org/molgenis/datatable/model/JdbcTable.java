@@ -56,6 +56,7 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	public List<Field> getColumns() throws TableException
 	{
 		load();
+		close();
 		return columns;
 	}
 
