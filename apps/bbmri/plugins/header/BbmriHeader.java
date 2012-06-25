@@ -30,7 +30,7 @@ public class BbmriHeader extends PluginModel<Entity>
 	
 	public BbmriHeader(String name, ScreenController<?> parent)
 	{
-		super(name, parent);
+		super(name, parent);	
 	}
 	
 	@Override
