@@ -7,15 +7,20 @@
 
 package org.molgenis.animaldb.plugins.administration;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.molgenis.animaldb.AnimalDbFile;
 import org.molgenis.animaldb.commonservice.CommonService;
 import org.molgenis.auth.MolgenisUser;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -24,6 +29,9 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+
+import decorators.NameConvention;
+import filehandling.generic.PerformUpload;
 
 
 public class ShowDecProjects extends PluginModel<Entity>
@@ -129,15 +137,34 @@ public class ShowDecProjects extends PluginModel<Entity>
 				
 				// DEC application PDF
 				String decapplicationpdf = null;
-				if (request.getString("decapplicationpdf") != null && !request.getString("decapplicationpdf").equals("")) {
-					decapplicationpdf = request.getString("decapplicationpdf");
+				if (listId == 0)
+				{
+					decapplicationpdf = ct.addAnimalDbFile("DecApplicationPdf", decnumber, request, true);
+				}
+				else
+				{
+					File fileFromRequest = request.getFile("DecApplicationPdf".toLowerCase());
+					if(fileFromRequest != null)
+					{
+						decapplicationpdf = ct.addAnimalDbFile("DecApplicationPdf", decnumber, request, true);
+					}
 				}
 				
 				// DEC approval PDF
 				String decapprovalpdf = null;
-				if (request.getString("decapprovalpdf") != null && !request.getString("decapprovalpdf").equals("")) {
-					decapprovalpdf = request.getString("decapprovalpdf");
+				if (listId == 0)
+				{
+					decapprovalpdf = ct.addAnimalDbFile("DecApprovalPdf", decnumber, request, true);
 				}
+				else
+				{
+					File fileFromRequest = request.getFile("DecApplicationPdf".toLowerCase());
+					if(fileFromRequest != null)
+					{
+						decapprovalpdf = ct.addAnimalDbFile("DecApprovalPdf", decnumber, request, true);
+					}
+				}
+
 				
 				// Start date
 				Date startdate = null;

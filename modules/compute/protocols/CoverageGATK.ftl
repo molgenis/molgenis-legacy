@@ -34,7 +34,7 @@ ${genomeAnalysisTKjar} \
 -I ${mergedbam} \
 -o ${coveragegatk} \
 -ct 1 -ct 2 -ct 5 -ct 10 -ct 15 -ct 20 -ct 30 -ct 40 -ct 50<#if capturingKit != "None"> \
--L ${targetintervals}"</#if>
+-L ${targetintervals}</#if>
 
 #Create coverage graphs for sample
 ${rscript} ${cumcoveragescriptgatk} \

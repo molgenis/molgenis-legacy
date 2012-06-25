@@ -3,25 +3,67 @@
 	<module name="hemodb">
 		<entity name="HemoSample" extends="ObservationTarget">
 			<description></description>
-			<field name="sampleID" type="string" nillable="false" description="Illumina internal ID" />
-			<field name="Platform" type="string" nillable="false" description="Illumina Platform" />
-			<field name="RNA_Amplification" type="string" nillable="false" description="Method of amplification (Magnetic or Column)"/>
-			<field name="Sample" type="string" nillable="false" description="UMCG sample ID"/>
-			<field name="CD34" type="string" nillable="true" description="Expression of CD34, plus = expressed, minus = not expressed"/>
-			<field name="AML_normal" type="string" nillable="true" description="Sample type" />
-			<field name="Sample_Group" type="string" nillable="false" description="Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)"/>
-			<field name="age" type="string" nillable="true" description="NA, old, young, fetal, numerical"/>
-			<field name="FAB" type="string" nillable="true" description="French-American-British classification system of hematologic diseases"/>
-			<field name="risk" type="string" nillable="true" description="Risk group (Poor, intermediate, good)"/>
-			<field name="FLT3" type="string" nillable="true" description="Classification based on the FLT3 gene (ITD,NA,normal,WT)"/>
-			<field name="NPM" type="string" nillable="true" description="Classification based on NPM (cyt,NA,not determined,wt)"/>
-			<field name="PROCENT_CD34" type="decimal" nillable="true" description="Percentage of CD34"/>
-			<field name="PB_BM_cb" type="string" nillable="true" description="Sample origin (peripheral blood, bone marrow or cord blood)"/>
-			<field name="Age_years" type="decimal" nillable="true" description="Age in years"/>
-			<field name="Cytogenetics" type="string" nillable="true" description="Cytogenetics (where NK = Normal Karyotype)"/>
-			<field name="OS_months" type="string" nillable="true" description="Overall survival"/>
-			<field name="EFS_months" type="string" nillable="true" description="Event free survival"/>
-			<field name="CR" type="string" nillable="true" description="Complete remission"/>
+			<field name="name" type="string" nillable="false"
+				description="Illumina internal ID" />
+			<field name="Platform" type="string" nillable="true"
+				description="Illumina Platform" />
+			<field name="RNA_Amplification" type="string" nillable="true"
+				description="Method of amplification (Magnetic or Column)" />
+			<field name="Sample" type="string" nillable="true" description="UMCG sample ID" />
+			<field name="expr_CD34" type="string" nillable="true"
+				description="Expression of CD34, plus = expressed, minus = not expressed" />
+			<field name="AML_normal" type="string" nillable="true"
+				description="Sample type" />
+			<field name="Sample_Group" type="string" nillable="true"
+				description="Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)" />
+			<field name="age" type="string" nillable="true"
+				description="NA, old, young, fetal, numerical" />
+			<field name="FAB" type="string" nillable="true"
+				description="French-American-British classification system of hematologic diseases" />
+			<field name="risk" type="string" nillable="true"
+				description="Risk group (Poor, intermediate, good)" />
+			<field name="FLT3_class" type="string" nillable="true"
+				description="Classification based on the FLT3 gene (ITD,NA,normal,WT)" />
+			<field name="NPM" type="string" nillable="true"
+				description="Classification based on NPM (cyt,NA,not determined,wt)" />
+			<field name="PROCENT_CD34" type="decimal" nillable="true"
+				description="Percentage of CD34" />
+			<field name="PB_BM_cb" type="string" nillable="true"
+				description="Sample origin (peripheral blood, bone marrow or cord blood)" />
+			<field name="Age_years" type="decimal" nillable="true"
+				description="Age in years" />
+			<field name="Cytogenetics" type="string" nillable="true"
+				description="Cytogenetics (where NK = Normal Karyotype)" />
+			<field name="OS_months" type="string" nillable="true"
+				description="Overall survival" />
+			<field name="EFS_months" type="string" nillable="true"
+				description="Event free survival" />
+			<field name="CR" type="string" nillable="true" description="Complete remission" />
+		</entity>
+		<entity name="HemoGene" extends="ObservableFeature">
+			<description> Trait annotations specific for genes.</description>
+			<field name="Symbol" nillable="true"
+				description="Main symbol this gene is known by (not necessarily unique, in constrast to 'name')" />
+			<field name="Control" type="bool" nillable="true"
+				description="Indicating whether this is a 'housekeeping' gene that can be used as control." />
+			<field name="Orientation" type="enum" enum_options="[?,F,R]"
+				nillable="true"
+				description="Orientation of the gene on the genome (F=forward, R=reverse)" />
+		</entity>
+		<entity name="HemoProbe" extends="ObservableFeature" implements="Locus">
+			<description> A piece of sequence that reports for the expression of
+				a gene, typically spotted onto a microarray.
+			</description>
+			<field name="ProbeSet" type="xref" nillable="true" xref_entity="ProbeSet"
+				xref_field="id" xref_label="name"
+				description="Optional: probeset this probe belongs to (e.g., in Affymetrix assays)." />
+			<field name="ReportsFor" label="ReportsFor" type="xref"
+				xref_entity="HemoGene" xref_field="id" xref_label="name" nillable="true"
+				description="The gene this probe reports for." />
+			<field name="EntrezID" type="string" nillable="true"
+				description="The entrez ID for the probe" />
+			<field name="RefseqID" type="string" nillable="true"
+				description="The refseq ID for the probe" />
 		</entity>
 	</module>
 </molgenis>

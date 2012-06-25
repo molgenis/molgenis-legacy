@@ -73,12 +73,14 @@
 	
 	<div class="row">
 		<label for="decapplicationpdf">DEC application PDF:</label>
-		<input type="text" name="decapplicationpdf" id="decapppdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApplication()??> value="${currentDecProject.pdfDecApplication}"</#if> />
+		<#if currentDecProject?? && currentDecProject.pdfDecApplication??>File already present! <a href="downloadfile?name=${currentDecProject.pdfDecApplication}">${currentDecProject.pdfDecApplication}</a> </#if>
+		<input type="file" name="decapplicationpdf" id="decapppdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApplication()??> value="${currentDecProject.pdfDecApplication}"</#if> />
 	</div>
 	
 	<div class="row">
 		<label for="decapprovalpdf">DEC approval PDF:</label>
-		<input type="text" name="decapprovalpdf" id="decapprovalpdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApproval()??> value="${currentDecProject.pdfDecApproval}"</#if> />
+		<#if currentDecProject?? && currentDecProject.pdfDecApproval??>File already present! <a href="downloadfile?name=${currentDecProject.pdfDecApproval}">${currentDecProject.pdfDecApproval}</a> </#if>
+		<input type="file" name="decapprovalpdf" id="decapprovalpdf" class="textbox" <#if currentDecProject?? && currentDecProject.getPdfDecApproval()??> value="${currentDecProject.pdfDecApproval}"</#if> />
 	</div>
 	
 	<div class="row">
@@ -152,9 +154,9 @@
 					<td>${decl.startDate}</td>
 					<td>${decl.endDate}</td>					
 					<td>${decl.decApplicantName}</td>
-					<td><#if decl.pdfDecApplication??>${decl.pdfDecApplication}</#if></td>
-					<td><#if decl.pdfDecApproval??>${decl.pdfDecApproval}</#if></td>
-					<td>${decl.decBudget}</td>
+					<td><#if decl.pdfDecApplication??><a href="downloadfile?name=${decl.pdfDecApplication}">${decl.pdfDecApplication}</a></#if></td>
+					<td><#if decl.pdfDecApproval??><a href="downloadfile?name=${decl.pdfDecApproval}">${decl.pdfDecApproval}</a></#if></td>
+					<td><#if decl.decBudget??>${decl.decBudget}</#if></td>
 				</tr>
 			</#list>
 		</#if>

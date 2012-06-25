@@ -57,6 +57,8 @@ public class SimpleInputsDemo extends EasyPluginController
 		String themeSwitch = "<div id=\"switcher\"></div><script>$('#switcher').themeswitcher();</script>";
 		view.add(new CustomHtml(themeSwitch).setLabel("changeJqueryTheme"));
 
+		view.add(new BoolInput("BoolInput").setLabel("BoolInput").setValue(false).setNillable(true));
+		
 		view.add(new StringInput("StringInput"));
 
 		view.add(new StringInput("RequiredInput").setNillable(false));
@@ -68,8 +70,6 @@ public class SimpleInputsDemo extends EasyPluginController
 		view.add(new DateInput("DateInput"));
 
 		view.add(new DatetimeInput("DatetimeInput"));
-
-		view.add(new BoolInput("BoolInput"));
 
 		view.add(new ActionInput("submit"));
 		view.add(new Paragraph(requestString));

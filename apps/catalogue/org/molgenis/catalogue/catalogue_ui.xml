@@ -2,17 +2,8 @@
 <!-- DOCTYPE molgenis PUBLIC "MOLGENIS 1.0" "http://molgenis.sourceforge.net/dtd/molgenis_v_1_0.dtd" -->
 <molgenis name="Catalogue" label="LifeLines Biobank Catalogue">
 	<plugin name="catalogueHeader" type="plugins.header.catalogueHeader" />
-	<!-- plugin label="About" name="Catalogue" type="org.molgenis.catalogue.header.HomePage" 
-		/> -->
 
 	<menu name="main" position="top_left" startswith="catalogueWelcomeScreen">
-		<!-- <plugin name="catalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" 
-			label="Welcome" /> -->
-		<!-- plugin name="SimpleUserLogin" type="org.molgenis.auth.ui.SimpleUserLogin" 
-			label="Login" / -->
-
-		<!-- plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" 
-			/ -->
 
 		<plugin name="CatalogueWelcomeScreen" type="plugins.welcome.catalogueWelcomeScreenPlugin" label="Welcome" />
 
@@ -29,6 +20,9 @@
 				<form name="PermittedValues" entity="Category" />
 			</menu>
 		</form>
+		
+		<plugin name="MySelectionsEditPlugin" type="plugins.data.MySelectionsEditPlugin" label="Edit My Selections"/>
+
 
 		<form name="MySelections" entity="ShoppingCart" label="My selections" view_type="list">
 			<form name="SelectionMeasurement" entity="Measurement" label="Measurements"	readonly="true" hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
@@ -52,22 +46,11 @@
 		</menu>
 
 		<menu name="Admin">
-			<!-- <plugin name="LLcatalogueSplitter" type="plugins.LLcatalogueSplitter.LLcatalogueSplitterPlugin" 
-				label="Protocols" /> -->
-			<!--<plugin name="AdminIndexes" type="plugins.Search.AdminIndexes" label="Admin Indexes" />-->
 			
 			<form name="Requests" entity="LifeLinesRequest" />
 			<menu name="ImportData" label="Import Data">
-				<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin"
-					label="Generic Importer" />
-				<!--<plugin name="LLDataImportExcel" type="plugins.data.LLDataImportExcel"
-					label="Import LL data" />
-				<plugin name="DataShaperImportExcel" type="plugins.data.DataShaperImportExcel"
-					label="Import DataShaper data" />
-				--><!-- <plugin name="OwlToPheno" label="import owl" type="plugins.data.importOwlToPheno" 
-					/> -->
-				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"
-					label="Batch Upload" />
+				<plugin name="BiobankImporter" type="plugins.biobankimporter.BiobankImporter" label="Biobank Importer" />
+				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard"	label="Batch Upload" />
 			</menu>
 			<plugin name="Settings" type="plugins.system.settings.Settings" />
 			<menu name="usermanagement" position="left" label="User management">
@@ -84,12 +67,8 @@
 			<form name="OntologyTerms" entity="OntologyTerm" />
 
 		</menu>
-		<!-- <plugin name="catalogueHelp" type="plugins.help.catalogueHelpPlugin" 
-			label="Help" /> <plugin name="catalogueContact" type="plugins.contact.catalogueContactPlugin" 
-			label="Contact" /> -->
-
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin"
-			label="Login" />
+			label="Register/Login" />
 
 	</menu>
 </molgenis>

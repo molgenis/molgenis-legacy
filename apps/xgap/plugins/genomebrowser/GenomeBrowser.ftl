@@ -40,12 +40,12 @@
 	<#assign release = "ce10">
 </#if>
 
-<#--assign ucscMirror = "http://genome.ucsc.edu/"-->
-<#--assign ucscMirror = "http://genome-mirror.moma.ki.au.dk/"-->
-<#assign ucscMirror = "http://genome-mirror.bscb.cornell.edu/">
-<#--assign ucscMirror = "http://genome.hmgc.mcw.edu/"-->
-<#--assign ucscMirror = "http://genome-mirror.duhs.duke.edu/"-->
-<#--assign ucscMirror = "http://genome.qfab.org/"-->
+<#assign ucscMirror = "http://genome.ucsc.edu/">						<#-- NOTE: original and probably most stressed server, avoid if possible -->
+<#--assign ucscMirror = "http://genome-mirror.moma.ki.au.dk/"-->		<#-- NOTE, doesn't work: error reading GFF "Unrecognized format line 8" -->
+<#--assign ucscMirror = "http://genome-mirror.bscb.cornell.edu/"-->		<#-- NOTE, doesn't work: since June 2012 server error "can't find profile backupcentral in hg.conf" -->
+<#--assign ucscMirror = "http://genome.hmgc.mcw.edu/"-->				<#-- NOTE, doesn't work: server error "can not find custom track tmp load directory: '/data/tmp/ct'" -->
+<#--assign ucscMirror = "http://genome-mirror.duhs.duke.edu/"-->		<#-- NOTE, doesn't work: error reading GFF "Unrecognized format line 8" -->
+<#--assign ucscMirror = "http://genome.qfab.org/"-->					<#-- NOTE, doesn't work: server error "You don't have permission to access /cgi-bin/hgTracks on this server." -->
 
 <h2>Genome browser plugin (UCSC)</h2>
 

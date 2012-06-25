@@ -37,8 +37,21 @@ public class QtlFinderModel2{
 	private Report report;
 	private List<QTLInfo> qtls;
 	
+	//if true, display contents of cart
+	private Boolean cartView;
 	
 	
+	
+	public Boolean getCartView()
+	{
+		return cartView;
+	}
+
+	public void setCartView(Boolean cartView)
+	{
+		this.cartView = cartView;
+	}
+
 	public List<QTLInfo> getQtls()
 	{
 		return qtls;
