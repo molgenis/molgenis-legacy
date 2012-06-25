@@ -217,7 +217,7 @@
 				xref_field="id" xref_label="name"
 				description="References the ObservationTarget that this feature was made on. For example 'individual1'. In a correlation matrix this could be also 'probe123'." />
 		</entity>
-		<entity name="ObservedValue" implements="Identifiable,Observation">
+		<entity name="ObservedValue" implements="Observation">
 			<description>
 				Generic storage of values, relationships and optional ontology
 				mapping of the value/relation. Values can be atomatic observations,
@@ -243,12 +243,6 @@
 				description="(Optional) Time when the value was observed. For example in time series or if feature is time-dependent like 'age'" />
 			<field nillable="true" auto="false" name="endtime" type="datetime"
 				description="(Optional) Time when the value's validity ended" />
-			<!-- JORIS CODE THAT SHOULD NOT BE IN THE SHARED STUFF! <indices> <index 
-				name="valueIdx"> <indexfield name="value"/> </index> <index name="featureIdx"> 
-				<indexfield name="Feature"/> </index> <index name="targetIdx"> <indexfield 
-				name="Target"/> </index> <index name="protocolApplicationIdx"> <indexfield 
-				name="protocolApplication"/> </index> <index name="featurePaIdx"> <indexfield 
-				name="Feature"/> <indexfield name="protocolApplication"/> </index> </indices> -->
 		</entity>
 	</module>
 	<!-- version: release candidate 2010-02-08 <p /> GEN2PHEN Phenotype Model 
