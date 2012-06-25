@@ -129,6 +129,25 @@ public class SimpleTuple implements Tuple
 		// return a copy of the keys
 		return new Vector<String>(this.keys);
 	}
+	
+	/**
+	 * Watch out! should keep order the same
+	 */
+	public void setFields(List<String> fields)
+	{
+		if(fields.size() != this.keys.size()) throw new RuntimeException("SetFields expects vector of same length as original getFields");
+		this.keys = fields;
+
+		for (Integer i = 0; i < this.keys.size(); i++)
+		{
+			this.lowercaseKeyToId.put(this.keys.get(i).toLowerCase(), i);
+			// values need to be of same size as keys
+			//this.values.add(null);
+			// temporary check
+
+			// assert this.keys.size() <= this.values.size();
+		}
+	}
 
 	public Object getObject(int column)
 	{

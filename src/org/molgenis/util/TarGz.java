@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.io.FileUtils;
+
 import com.ice.tar.InvalidHeaderException;
 import com.ice.tar.TarArchive;
 import com.ice.tar.TarBuffer;
@@ -177,8 +179,7 @@ public class TarGz
 		}
 		else
 		{
-			recursiveDeleteContent(extractDir);
-			extractDir.mkdir();
+			FileUtils.cleanDirectory(extractDir);
 		}
 
 		TarArchive tarchive = null;
@@ -353,101 +354,6 @@ public class TarGz
 
 		}
 		return tars;
-	}
-	
-	/**
-	 * Recursive delete of all content of a directory, except .svn files.
-	 * Does not delete the directory itself.
-	 * 
-	 * FIXME: STILL UNCLEAR TO ME IF THE INITIAL DIR IS REMOVED OR NOT - SEEMS TO VARY
-	 * 
-	 * @param dir
-	 * @throws InterruptedException
-	 */
-	public static void recursiveDeleteContentIgnoreSvn(File dir) throws InterruptedException
-	{
-		if(!dir.exists()){
-			throw new InterruptedException("File location '"+dir.getAbsolutePath()+"' does not exist");
-		}
-		if (dir.isDirectory())
-		{
-			for (File f : dir.listFiles())
-			{
-				if(!f.toString().endsWith(".svn")){
-					recursiveDeleteContentIgnoreSvn(f);
-				}
-			}
-		}
-		else
-		{
-			delete(dir, true);
-		}
-		
-		// Delete empty dirs (but not the original input dir)
-		if(dir.isDirectory() && dir.list().length == 0){
-			delete(dir, true);
-		}
-	}
-
-	/**
-	 * Recursive delete of all content in a directory.
-	 * 
-	 * @param dir
-	 * @throws InterruptedException
-	 */
-	public static void recursiveDeleteContent(File dir) throws InterruptedException
-	{
-		if(!dir.exists()){
-			throw new InterruptedException("File location '"+dir.getAbsolutePath()+"' does not exist");
-		}
-		if (dir.isDirectory())
-		{
-			for (File f : dir.listFiles())
-			{
-				recursiveDeleteContent(f);
-			}
-		}
-		else
-		{
-			delete(dir, true);
-		}
-
-		// Delete empty dirs (but not the original input dir)
-		if(dir.isDirectory() && dir.list().length == 0){
-			delete(dir, true);
-		}
-	}
-
-	/**
-	 * Helper function to delete a file. Wraps a workaround for ms windows.
-	 * 
-	 * @param f
-	 *            File to be deleted
-	 * @throws InterruptedException
-	 */
-	public static void delete(File f, boolean throwOnFail)
-			throws InterruptedException
-	{
-		System.gc(); // hotfixes a known ms windows bug. see:
-		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4715154
-		boolean delSuccess = f.delete();
-		if (!delSuccess)
-		{
-			Thread.sleep(10);
-			System.gc();
-			delSuccess = f.delete();
-			if(delSuccess)
-			{
-				System.out.println("Deleted on second attempt: " + f.getAbsolutePath());
-			}
-			if (!delSuccess && throwOnFail)
-			{
-				throw new InterruptedException("Could not delete "
-						+ f.getAbsolutePath());
-			}
-		}else{
-			System.out.println("Deleted: " + f.getAbsolutePath());
-		}
 	}
 
 	/**

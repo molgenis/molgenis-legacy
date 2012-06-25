@@ -88,10 +88,10 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			}
 			catch (NoSuchMethodException e1)
 			{
-				this.getModel().setMessages(new ScreenMessage("Unknown action: " + action, false));
-				logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
-						+ "(db,tuple) failed: " + e1.getMessage());
-				db.rollbackTx();
+//				this.getModel().setMessages(new ScreenMessage("Unknown action: " + action, false));
+//				logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+//						+ "(db,tuple) failed: " + e1.getMessage());
+//				db.rollbackTx();
 				// useless - can't do this on every error! we cannot distinguish
 				// exceptions because they are all InvocationTargetException
 				// anyway
@@ -100,7 +100,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 
 				if (out != null) try
 				{
-					db.beginTx();
+					//db.beginTx();
 					logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
 					Method m = this.getClass().getMethod(action, Database.class, Tuple.class, OutputStream.class);
 					m.invoke(this, db, request, out);
