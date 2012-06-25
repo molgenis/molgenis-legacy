@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Build folders
 bin/
 build/
@@ -27,3 +28,8 @@ log*
 .classpath
 /.externalToolBuilders
 /.settings
+=======
+/dist
+/build
+/generated/java
+>>>>>>> refs/remotes/blessed/master
