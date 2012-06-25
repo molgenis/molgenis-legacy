@@ -22,7 +22,8 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>3.1.1.RELEASE</version>
+			<version>3.1.0.RELEASE</version>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>xml-apis</groupId>
@@ -44,46 +45,28 @@
 
 		<!-- database hibernate, connectionpool, driver -->
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-search</artifactId>
-			<version>3.4.2.Final</version>
-		</dependency>
-		<dependency>
             <groupId>org.molgenis</groupId>
             <artifactId>molgenis</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- Testing -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.4</version>
-			<scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-			<scope>test</scope>
-        </dependency>
+		<!-- Selenium Web test framework -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
 			<version>2.19.0</version>
-			<scope>test</scope>
 		</dependency>  
+
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-firefox-driver</artifactId>
 			<version>2.19.0</version>
-			<scope>test</scope>
 		</dependency>  
+
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-server</artifactId>
 			<version>2.19.0</version>
-			<scope>test</scope>
 		</dependency> 
 
 		<!-- Open ID -->
@@ -119,8 +102,15 @@
 			<version>3.2.1</version>
 		</dependency>        
 
+		<!-- regular expressions -->
+<!--
+		<dependency>
+			<groupId>regexp</groupId>
+			<artifactId>regexp</artifactId>
+			<version>1.3</version>
+		</dependency>
+-->
 		<!-- Logging -->
-<!--
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -131,48 +121,11 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.6.4</version>
 		</dependency>
--->
-		<dependency>
-			<groupId>displaytag</groupId>
-			<artifactId>displaytag</artifactId>
-			<version>1.2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>jcl104-over-slf4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>displaytag</groupId>
-			<artifactId>displaytag-export-poi</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<!-- Logging for displaytag -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-<!--
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl104-over-slf4j</artifactId>
-			<version>1.6.1</version>
-		</dependency>
--->
 	</dependencies>
 
 
 
     <build>
-		<testSourceDirectory>generated/java</testSourceDirectory>
-
         <resources>
             <!-- Persistence.xml -->
             <resource>
@@ -180,35 +133,37 @@
                 <targetPath>META-INF</targetPath>
             </resource>
             <!-- copy freemarker templates -->
+<!--
+            <resource>
+                <directory>generated/</directory>
+                <includes>
+                    <include>**/*.ftl</include>
+                </includes>
+				<targetPath>${basedir}</targetPath>
+            </resource>
+-->
             <resource>
                 <directory>apps/myo5b/</directory>
                 <includes>
-                    <include>**/*.ftl</include>
+                    <include>apps/myo5b/**/*.ftl</include>
                 </includes>
             </resource>
             <resource>
                 <directory>modules/auth</directory>
                 <includes>
-                    <include>**/*.ftl</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>modules/news</directory>
-                <includes>
-                    <include>**/*.ftl</include>
+                    <include>modules/auth/**/*.ftl</include>
                 </includes>
             </resource>
             <resource>
                 <directory>modules/pheno</directory>
                 <includes>
-                    <include>**/*.ftl</include>
+                    <include>modules/pheno/**/*.ftl</include>
                 </includes>
             </resource>
             <resource>
                 <directory>modules/variant</directory>
                 <includes>
-                    <include>**/*.ftl</include>
-                    <include>**/*.xml</include>
+                    <include>modules/variant/**/*.ftl</include>
                 </includes>
             </resource>
         </resources>
@@ -285,12 +240,6 @@
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
-					<excludes>
-						<exclude>**/test/**</exclude>
-					</excludes>
-					<testIncludes>
-						<testInclude>**/test/**</testInclude>
-					</testIncludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -300,17 +249,6 @@
                 <configuration>
                     <warSourceDirectory>WebContent</warSourceDirectory>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-						</manifest>
-					</archive>
-					<webResources>
-						<resource>
-							<directory>apps/myo5b/res</directory>
-							<targetPath>/generated-res</targetPath>
-						</resource>
-					</webResources>
                 </configuration>
             </plugin>
             <plugin>
@@ -364,16 +302,6 @@
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<configuration>
 					<wtpversion>2.0</wtpversion>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<suiteXmlFiles>
-						<suiteXmlFile>modules/datamodel/testngJpa1.xml</suiteXmlFile>
-						<suiteXmlFile>modules/datamodel/testngJpa2.xml</suiteXmlFile>
-					</suiteXmlFiles>
 				</configuration>
 			</plugin>
         </plugins>

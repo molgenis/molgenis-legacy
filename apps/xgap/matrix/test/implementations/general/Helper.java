@@ -16,7 +16,6 @@ import loaders.XgapLoadPanelTypes;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
 import matrix.implementations.memory.MemoryDataMatrixInstance;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.core.OntologyTerm;
@@ -139,7 +138,8 @@ public class Helper
 		}
 		else
 		{
-			FileUtils.cleanDirectory(inputFilesDir);
+			TarGz.recursiveDeleteContent(inputFilesDir);
+			inputFilesDir.mkdir(); //should not be needed, but half of the tests fail without it!
 		}
 
 		logger.info("Randomizing data matrix filling and adding data files to input directory..");

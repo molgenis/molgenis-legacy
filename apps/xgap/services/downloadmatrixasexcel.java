@@ -68,14 +68,6 @@ public class downloadmatrixasexcel implements MolgenisService {
 				{
 					ApplicationController molgenis = (ApplicationController) request.getRequest().getSession().getAttribute("application");
 					DataMatrixInstance dm = ((DataMatrixInstance)molgenis.sessionVariables.get(MatrixManager.SESSION_MATRIX_DATA));
-					if(dm.getNumberOfCols() > 256)
-					{
-						throw new Exception("Too many columns selected. The maximum for Excel is 256.");
-					}
-					if(dm.getNumberOfRows() > 100000)
-					{
-						throw new Exception("Too many rows selected. The maximum is limited to 100k.");
-					}
 					File excelFile = dm.getAsExcelFile();
 					OutputStream outSpecial = response.getResponse().getOutputStream();
 					URL localURL = excelFile.toURI().toURL();
@@ -106,21 +98,13 @@ public class downloadmatrixasexcel implements MolgenisService {
 				Data data = dataList.get(0);
 				DataMatrixHandler dmh = new DataMatrixHandler(db);
 				instance = dmh.createInstance(data, db);
-				if(instance.getNumberOfCols() > 256)
-				{
-					throw new Exception("Too many columns selected. The maximum for Excel is 256.");
-				}
-				if(instance.getNumberOfRows() > 100000)
-				{
-					throw new Exception("Too many rows selected. The maximum is limited to 100k.");
-				}
 				setupSuccess = true;
 			} catch (Exception e) {
 				PrintWriter out = response.getResponse().getWriter();
-				e.printStackTrace(out);
-				out.print("\n\n");
 				response.getResponse().setContentType("text/plain");
 				displayUsage(out, db);
+				out.print("\n\n");
+				e.printStackTrace(out);
 				out.close();
 			}
 		}

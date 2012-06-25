@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<molgenis name="gonl" label="GoNL Variant Catalogue">
+<molgenis name="org.molgenis.gonl" label="Genome NL Variant Catalogue">
 	<description>
 		This database firstly allows efficient storage of variants reported in
 		individuals and/or cohorts. (TODO pathogenecity).

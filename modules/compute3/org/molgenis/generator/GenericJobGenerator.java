@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
-//import org.molgenis.compute.commandline.Worksheet;
+import org.molgenis.compute.commandline.Worksheet;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.protocol.WorkflowElement;
@@ -263,7 +263,7 @@ public class GenericJobGenerator implements JobGenerator
 
         return container;
     }
-/*
+
     public Vector<ComputeJob> generateComputeJobsWorksheetWithFolding(Workflow workflow, List<Tuple> worksheet, String backend)
     {
         Vector<ComputeJob> computeJobs = new Vector<ComputeJob>();
@@ -427,7 +427,7 @@ public class GenericJobGenerator implements JobGenerator
         }
         return computeJobs;
     }
-*/
+
     public Vector<ComputeJob> generateComputeJobsWorksheetWithFoldingNew(Workflow workflow, List<Tuple> f, String backend)
     {
         //create the table with targets, which is equal to worksheet if there are no targets

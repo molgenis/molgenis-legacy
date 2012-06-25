@@ -10,12 +10,6 @@
 
 #MOLGENIS walltime=35:59:00 mem=4
 
-#INPUTS bamfile
-#OUTPUTS sortedbam,sortedbamindex
-#LOGS log
-#EXES sortsamjar,buildbamindexjar
-#TARGETS
-
 inputs "${bamfile}"
 alloutputsexist \
  "${sortedbam}" \

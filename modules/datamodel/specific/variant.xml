@@ -20,17 +20,16 @@
 			<unique fields="Name" />
 		</entity>
 		<entity name="Chromosome" extends="ObservableFeature">
-			<description>Name of a nucleotide sequence located on a genome assembly/build. 
-			Usually a chromosome, but can also be a chromosomal fragment like a clone, contig, super-contig, scaffold, etc.. 
-			E.g. '1', 'Chr1', 'X' or 'Mt'.
+			<description>List of chromosome names (or contig names) within a
+				genomebuild. E.g. '1' or 'X' or 'chr1'.
 			</description>
 			<field name="genomeBuild" type="xref" xref_entity="GenomeBuild" />
 			<field name="orderNr" type="int"
-				description="Sorting order of chromosomes within the species." />
+				description="Sorting order of chromosomes within the species" />
 			<field name="isAutosomal" type="bool"
-				description="If true there is an equal number of chromosomes in male/females. If false, it's a sex chromosome." />
+				description="equal number of chromosomes in male/females, i.e., not sex chromosomes." />
 			<field name="bpLength" type="int" nillable="true"
-				description="Length of the chromosome in the genome build." />
+				description="length of the chromosome in the genome build" />
 			<unique fields="genomeBuild,name" description="Chromosome belongs to species. E.g. hg19:chr1" />
 		</entity>
 		<entity name="SequenceFeature" abstract="true">

@@ -13,10 +13,10 @@ import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.dto.ProteinDomainDTO;
 import org.molgenis.mutation.dto.QueryParametersDTO;
 import org.molgenis.mutation.dto.VariantDTO;
-import org.molgenis.mutation.ui.HtmlFormWrapper;
 import org.molgenis.mutation.ui.LimitOffsetPager;
 import org.molgenis.mutation.ui.html.MBrowse;
 import org.molgenis.mutation.ui.search.form.DisplayOptionsForm;
+import org.molgenis.mutation.ui.search.form.ExpertSearchForm;
 import org.molgenis.mutation.ui.search.form.ListAllMutationsForm;
 import org.molgenis.mutation.ui.search.form.ListAllPatientsForm;
 import org.molgenis.mutation.ui.search.form.ShowMutationForm;
@@ -40,12 +40,12 @@ public class SearchModel extends EasyPluginModel
 	private int numMutations;
 	private Map<String, Integer> numMutationsByPathogenicity;
 	private Map<String, Integer> numPatientsByPathogenicity;
-	private HtmlFormWrapper expertSearchFormWrapper;
 	private SimpleSearchForm simpleSearchForm                 = new SimpleSearchForm();
 	private ListAllMutationsForm listAllMutationsForm         = new ListAllMutationsForm();
 	private ListAllPatientsForm listAllPatientsForm           = new ListAllPatientsForm();
 	private ToExpertSearchForm toExpertSearchForm             = new ToExpertSearchForm();
 	private ToSimpleSearchForm toSimpleSearchForm             = new ToSimpleSearchForm();
+	private ExpertSearchForm expertSearchForm                 = new ExpertSearchForm();
 	private ShowMutationForm showMutationForm                 = new ShowMutationForm();
 	private DisplayOptionsForm displayOptionsForm             = new DisplayOptionsForm();
 
@@ -190,14 +190,6 @@ public class SearchModel extends EasyPluginModel
 		this.numPatientsByPathogenicity = numPatientsByPathogenicity;
 	}
 
-	public HtmlFormWrapper getExpertSearchFormWrapper() {
-		return expertSearchFormWrapper;
-	}
-
-	public void setExpertSearchFormWrapper(HtmlFormWrapper expertSearchFormWrapper) {
-		this.expertSearchFormWrapper = expertSearchFormWrapper;
-	}
-
 	public SimpleSearchForm getSimpleSearchForm()
 	{
 		return simpleSearchForm;
@@ -246,6 +238,16 @@ public class SearchModel extends EasyPluginModel
 	public void setToSimpleSearchForm(ToSimpleSearchForm toSimpleSearchForm)
 	{
 		this.toSimpleSearchForm = toSimpleSearchForm;
+	}
+
+	public ExpertSearchForm getExpertSearchForm()
+	{
+		return expertSearchForm;
+	}
+
+	public void setExpertSearchForm(ExpertSearchForm expertSearchForm)
+	{
+		this.expertSearchForm = expertSearchForm;
 	}
 
 	public ShowMutationForm getShowMutationForm()

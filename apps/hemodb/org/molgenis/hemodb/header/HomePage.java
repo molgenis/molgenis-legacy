@@ -51,15 +51,105 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 		if (action.equals("setPathAndLoad"))
 		{
 			setupStorageAndLoadExample(db, request.getString("fileDirPath"));
-			addHemoPermissionsAndTryToImportData(db);
+			addPanaceaPermissionsAndTryToImportData(db);
 		}
 	}
 
-	private void addHemoPermissionsAndTryToImportData(Database db)
+	private void addPanaceaPermissionsAndTryToImportData(Database db)
 	{
 		try
 		{
 
+			String[] qtlFinderPerms = new String[]
+			{
+
+					// allow to see the QTL finder
+					"app.ui.QtlFinderPublic2Plugin",
+					
+					// enable the Browse Data menu (minus Inspector and matrix removal)
+					"app.ui.InvestigationsFormController",
+					"app.ui.DatasFormController",
+					"app.ui.OverviewPlugin",
+					"app.ui.ManagerPlugin",
+					
+					// needed to query elements for investigation overview
+					"org.molgenis.pheno.ObservationElement",
+					
+					// needed to view the generated annotation menus
+					"app.ui.IndividualsFormController",
+					"org.molgenis.pheno.Individual",
+					
+					"app.ui.PanelsFormController",
+					"org.molgenis.pheno.Panel",
+					
+					"app.ui.ChromosomesFormController",
+					"org.molgenis.xgap.Chromosome",
+					
+					"app.ui.MarkersFormController",
+					"org.molgenis.xgap.Marker",
+					
+					"app.ui.GenesFormController",
+					"org.molgenis.xgap.Gene",
+					
+					"app.ui.TranscriptsFormController",
+					"org.molgenis.xgap.Transcript",
+					
+					"app.ui.MeasurementsFormController",
+					"org.molgenis.pheno.Measurement",
+					
+					"app.ui.DerivedTraitsFormController",
+					"org.molgenis.xgap.DerivedTrait",
+					
+					"app.ui.EnvironmentalFactorsFormController",
+					"org.molgenis.xgap.EnvironmentalFactor",
+					
+					"app.ui.MassPeaksFormController",
+					"org.molgenis.xgap.MassPeak",
+					
+					"app.ui.MetabolitesFormController",
+					"org.molgenis.xgap.Metabolite",
+					
+					"app.ui.ProbesFormController",
+					"org.molgenis.xgap.Probe",
+					
+					"app.ui.ProbeSetsFormController",
+					"org.molgenis.xgap.ProbeSet",
+					
+					"app.ui.SNPsFormController",
+					"org.molgenis.xgap.SNP",
+					
+					"app.ui.PolymorphismsFormController",
+					"org.molgenis.xgap.Polymorphism",
+					
+					"app.ui.SamplesFormController",
+					"org.molgenis.xgap.Sample",
+					
+					"app.ui.SpotsFormController",
+					"org.molgenis.xgap.Spot",
+
+					// allow reading datasets and investigations
+					"org.molgenis.organization.Investigation", "org.molgenis.data.Data", "org.molgenis.data.BinaryDataMatrix", "org.molgenis.data.CSVDataMatrix",
+					"org.molgenis.data.DecimalDataElement", "org.molgenis.data.TextDataElement",
+
+					// allow reading dataset backend files
+					"org.molgenis.core.MolgenisFile",
+
+					// allow to see how uploaded this dataset
+					"org.molgenis.protocol.ProtocolApplication_Performer",
+					
+					// allow to see analysis metadata
+					"org.molgenis.cluster.DataSet", "org.molgenis.cluster.DataName", "org.molgenis.cluster.DataValue", 
+
+			};
+
+			for (String e : qtlFinderPerms)
+			{
+				MolgenisPermission mp = new MolgenisPermission();
+				mp.setEntity_ClassName(e);
+				mp.setRole_Name("anonymous");
+				mp.setPermission("read");
+				db.add(mp);
+			}
 			
 			DataMatrixHandler dmh = new DataMatrixHandler(db);
 			
@@ -71,13 +161,21 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 				String importDir = path + File.separator + "imports";
 				
 				//excel with everything minus USA probes
-				File hemoAnnotations = new File(importDir + File.separator + "hemodbAnnotations.xls");
-				if(!hemoAnnotations.exists())
+				File wormQtlAnnotations = new File(importDir + File.separator + "wormqtl_set1_annotations_minusUSAprobes.xls");
+				if(!wormQtlAnnotations.exists())
 				{
-					throw new Exception("Annotation Excel file" + hemoAnnotations.getAbsolutePath() +  " is missing!");
+					throw new Exception("Annotation Excel file is missing!");
 				}
 				
-				ExcelImport.importAll(hemoAnnotations, db, null);
+				//USA probes (original name: 'probes_usa.txt', but renamed for CsvImport)
+				File probes = new File(importDir + File.separator + "probe.txt");
+				if(!probes.exists())
+				{
+					throw new Exception("USA probe file is missing!");
+				}
+				
+				ExcelImport.importAll(wormQtlAnnotations, db, null);
+				CsvImport.importAll(new File(importDir), db, null);
 				
 				//relink datasets
 				relinkDatasets(db, dmh);
@@ -86,11 +184,11 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 				Settings.deleteExampleInvestigation("ClusterDemo", db);
 				
 				//all done
-				this.setMessages(new ScreenMessage("HemoDb specific annotation import and data relink succeeded", true));
+				this.setMessages(new ScreenMessage("WormQTL specific annotation import and data relink succeeded", true));
 			}
 			else
 			{
-				this.setMessages(new ScreenMessage("HemoDb permissions loaded, but could not import annotations because storagedir setup failed", false));
+				this.setMessages(new ScreenMessage("WormQTL permissions loaded, but could not import annotations because storagedir setup failed", false));
 			}
 			
 			

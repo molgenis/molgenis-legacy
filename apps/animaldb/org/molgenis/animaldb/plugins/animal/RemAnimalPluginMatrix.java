@@ -52,7 +52,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 	private DivPanel div = null;
 	private CommonService cs = CommonService.getInstance();
 	private List<Integer> targetList = null;
-	//private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+	private SimpleDateFormat newDateOnlyFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 	private SimpleDateFormat newDateOnlyDbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 	private SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
@@ -102,12 +102,9 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				// show date input for removal date
 				DateInput deathdate = new DateInput("deathdate");
 				deathdate.setLabel("Date of removal:");
+				deathdate.setValue(new Date());
 				deathdate.setNillable(false);
-				deathdate.setDescription("The date at which these animals died.");
-				deathdate.setDateFormat("yyyy-MM-dd");
-				deathdate.setJqueryproperties("dateFormat: 'yy-mm-dd', changeMonth: true, changeYear: true, showButtonPanel: true, numberOfMonths: 1");
-				//deathdate.setValue(new Date());
-				div.add(deathdate);				
+				div.add(deathdate);
 				
 				// show a Remarks field
 				StringInput remarks = new StringInput("remarks");
@@ -133,7 +130,7 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				if (deathDateString == null) {
 					throw new Exception("No date of removal set - animals not terminated");
 				}
-				Date deathDate = newDateOnlyDbFormat.parse(deathDateString);
+				Date deathDate = newDateOnlyFormat.parse(deathDateString);
 				String deathDateStr = newDateOnlyDbFormat.format(deathDate);
 				
 				
@@ -207,9 +204,6 @@ public class RemAnimalPluginMatrix extends EasyPluginController
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Location");
 				measurementsToShow.add("Experiment");
-				measurementsToShow.add("Sex");
-				measurementsToShow.add("Species");
-				measurementsToShow.add("Line");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
 				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
 						Operator.IN, investigationNames));

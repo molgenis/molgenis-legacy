@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="org.molgenis">
 	<module name="animaldb">
-		<entity name="AnimalDbFile" extends="MolgenisFile">
-			<description>Does not have special fields yet, but in the future this may be expanded with e.g. user that uploaded this file.</description>
-		</entity>
 		<entity name="CustomLabelFeature">
 			<description>Stores the features users use to custom-label their targets.</description>
 			<field name="id" type="autoid" description="automatically generated id" />

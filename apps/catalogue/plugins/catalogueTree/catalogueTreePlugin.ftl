@@ -120,7 +120,6 @@
 
 							</td>
 							<td class="box-body">
-							<label>Fill in selection name</label>
 							<input title="fill in selection name" type="text" name="SelectionName" >
 							<input class="saveSubmit" type="submit" id="SaveSelectionSubmit" name="SaveSelectionSubmit" value="Save selection" 
 									onclick="__action.value='SaveSelectionSubmit';" 

@@ -1,12 +1,10 @@
 package org.molgenis.animaldb.test;
 
-import java.io.File;
 import java.util.Calendar;
 
 import org.molgenis.MolgenisOptions.MapperImplementation;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.jpa.JpaUtil;
-import org.molgenis.util.DetectOS;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
@@ -140,25 +138,7 @@ public class AnimaldbSeleniumTest
 		sleepHelper("loginAdmin");
 	}
 	
-	@Test (dependsOnMethods={"loginAdmin"})
-	public void fileStorageSettings() throws Exception {
-		selenium.click("id=Admin_tab_button");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.click("id=systemmenu_tab_button");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		selenium.click("id=FileStorage_tab_button");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("File storage property status:"));
-		selenium.type("id=inputBox", "/tmp");
-		selenium.click("id=filestorage_setpath");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("Properties are set"));
-		selenium.click("//input[@value='Validate']");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("Validation status: VALIDATED"));
-	}
-	
-	@Test(dependsOnMethods={"fileStorageSettings"})
+	@Test(dependsOnMethods={"loginAdmin"})
 	public void makeUser() throws InterruptedException
 	{
 		// Go to AnimalDB user mgmt. plugin (first item in Admin -> Security  menu)
@@ -270,7 +250,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=animalmenu_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		//selenium.click("id=Breeding_tab_button");
-		selenium.click("id=Breeding_tab_button");
+		selenium.click("id=BreedingNew_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("Parentgroups"));
 		// Add a parentgroup
@@ -284,12 +264,12 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=showHideSettingsButton");
 		Thread.sleep(1000);
 		selenium.click("id=mothermatrix_removeFilter_2");
-		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
+		Thread.sleep(1000);
 		selenium.click("id=mothermatrix_selected_0"); //select first mother
 		selenium.click("id=motherB0");
-		//Thread.sleep(1000);
+		Thread.sleep(1000);
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		//Thread.sleep(1000);
+		Thread.sleep(1000);
 		
 		selenium.click("id=mothermatrix_selected_1"); //select second mother
 		selenium.click("id=motherB1");
@@ -311,6 +291,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=fatherB2");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=from2to3");
+		
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("successfully added"));		
 		
@@ -359,7 +340,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=littermatrix_selected_0");
 		selenium.click("id=label");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
+		Assert.assertTrue(selenium.isTextPresent("Download temporary wean labels as pdf"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		// Genotype litter
@@ -378,7 +359,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=littermatrix_selected_0");
 		selenium.click("id=label");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
+		Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		
@@ -387,7 +368,6 @@ public class AnimaldbSeleniumTest
 	
 	@Test(dependsOnMethods={"breedingWorkflow"})
 	public void decWorkflow() throws Exception {
-		
 		Calendar calendar = Calendar.getInstance();
 		//String[] months = new String[] {"January", "February", "March", "April", "May", "June",
 		//								"July", "August", "September", "October", "November", "December"};
@@ -398,30 +378,20 @@ public class AnimaldbSeleniumTest
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("DEC applications"));
 		// Make a DEC project
-		boolean keepTrying = true;
-		int test = 0; //Check if we are on ate's laptop";
-		// for now just assume we are running on hudson.
-		String pdfFileName = "/data/hudson/jobs/molgenis_animaldb/workspace/molgenis_apps/apps/animaldb/org/molgenis/animaldb/configurations/PrefillAnimalDB_default.zip";
-		//String pdfFileName = "/home/paraiko/Projects/AnimalDB/prefill data/PrefillAnimalDB_default.zip";
-		
 		selenium.click("id=add_decproject");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=dectitle", "MyDEC");
 		selenium.type("id=decnumber", "12345");
-		//pretend like these are PDFs...
-		selenium.type("id=decapppdf", pdfFileName);
-		selenium.type("id=decapprovalpdf", pdfFileName);
+		selenium.type("id=decapppdf", "/home/test/app.pdf");
+		selenium.type("id=decapprovalpdf", "/home/test/app2.pdf");
 		int thisYear = calendar.get(Calendar.YEAR);
 		selenium.type("id=startdate", thisYear + "-01-01");
 		selenium.type("id=enddate", thisYear + "-12-31");
 		selenium.type("id=decbudget", "20");
 		selenium.click("id=addproject");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		
 		Assert.assertTrue(selenium.isTextPresent("DEC project successfully added"));
 		Assert.assertTrue(selenium.isTextPresent("MyDEC"));
-			
-		
 		// Go to DEC subproject plugin
 		selenium.click("id=AddSubproject_tab_button");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
@@ -433,7 +403,6 @@ public class AnimaldbSeleniumTest
 		selenium.type("id=expnumber", "A");
 		selenium.type("id=decapppdf", "/home/test/subapp.pdf");
 		//int thisMonth = calendar.get(Calendar.MONTH);
-		//int thisYear = calendar.get(Calendar.YEAR);
 		selenium.type("id=startdate", thisYear + "-01-01");
 		selenium.type("id=enddate", thisYear + "-02-01");
 		selenium.type("id=decsubprojectbudget", "10");
@@ -478,11 +447,9 @@ public class AnimaldbSeleniumTest
 		Assert.assertEquals(selenium.getText("//table[@id='StatusTable']/tbody/tr[2]/td[8]"), "2");
 		
 		sleepHelper("decWorkflow");
-		
 	}
 	
-	//@Test(dependsOnMethods={"decWorkflow"})
-	@Test(dependsOnMethods={"breedingWorkflow"})
+	@Test(dependsOnMethods={"decWorkflow"})
 	public void locations() throws Exception {
 		// Go to locations plugin to create two locations
 		selenium.click("id=Settings_tab_button");
@@ -614,6 +581,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=Select");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.type("id=deathdate", thisYear + "-02-02");
+		selenium.click("link=31");
 		selenium.click("id=remarks");
 		selenium.type("id=remarks", "test");
 		selenium.click("id=Apply");
@@ -625,7 +593,7 @@ public class AnimaldbSeleniumTest
 		
 	}	
 	
-	/*
+	
 	@Test(dependsOnMethods={"removeAnimals"})
 	public void applyProtocol() throws Exception {
 		// First log in as admin to be able to do this
@@ -685,11 +653,11 @@ public class AnimaldbSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Weight"));
 		Assert.assertTrue(selenium.isTextPresent("239"));
 		sleepHelper("applyProtocol");
-	} */
+	}
 	
 	
 	
-	@Test(dependsOnMethods={"removeAnimals"})
+	@Test(dependsOnMethods={"applyProtocol"})
 	public void logoutUser() throws InterruptedException
 	{
 		selenium.click("id=UserLogin_tab_button");
@@ -718,20 +686,6 @@ public class AnimaldbSeleniumTest
 		}
 		//Helper.deleteStorage();
 		//Helper.deleteDatabase();
-	}
-	
-	//helper function to get a good storage path
-	private String storagePath()
-	{
-		String storagePath = new File(".").getAbsolutePath() + File.separator + "tmp_selenium_test_data";
-		if (DetectOS.getOS().startsWith("windows"))
-		{
-			return storagePath.replace("\\", "/");
-		}
-		else
-		{
-			return storagePath;
-		}
 	}
 	
 	private void sleepHelper(String who) throws InterruptedException

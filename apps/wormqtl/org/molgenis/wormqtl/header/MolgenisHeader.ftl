@@ -8,15 +8,14 @@
 
 <div style="height:10px;">&nbsp;</div>
 
-<a href="molgenis.do?select=Home"><img src="clusterdemo/bg/baner_wf.png" /></a>
+<a href="?__target=main&select=QtlFinderPublic2"><img src="clusterdemo/bg/baner_wf.png" /></a>
 
 <table style="width: 100%;">
 	<tr>
 		<td align="right">
 			<font style="font-size:14px;">
 				<#-->| <a href="api/REST/">JSON api</a> | <a href="api/SOAP/">SOAP api</a> | <a href="api/REST/">REST api</a> | -->
-				<#--a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="generated-doc/fileformat.html">Exchange format</a> | <a href="api/R/">R api</a> | <a href="api/find/">Find api</a> | ${screen.userLogin}-->
-				<a href="molgenis.do?select=Home">Home</a> | <a href="wormqtl_contact.html">Contact</a> | <a href="wormqtl_about.html">About</a>
+				<a target="_blank" href="http://www.molgenis.org/wiki/xQTL">Help</a> | <a href="generated-doc/fileformat.html">Exchange format</a> | <a href="api/R/">R api</a> | <a href="api/find/">Find api</a> | ${screen.userLogin}
 			</font>
 		</td>
 	</tr>

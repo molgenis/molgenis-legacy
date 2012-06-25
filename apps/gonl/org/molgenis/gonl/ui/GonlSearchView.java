@@ -27,17 +27,16 @@ public class GonlSearchView implements ScreenView
 		MolgenisForm form = new MolgenisForm(this.model);
 
 		form.add(new Paragraph(
-				"Welcome to the first alpha release of GoNL variants. " 
-					+ "This release contains only SNPs and is based on 500 independent Dutch individuals (250 males + 250 females). "
-					+ "Future releases will also contain other types of genetic variation and will be based on enhanced filtering using trio-aware variant calling on 250 trios. "
-					+ "For more information visit <a href=\"http://www.nlgenome.nl\">www.nlgenome.nl</a>. "
-					+ "Use GRCh37 / HG19 genomic coordinates to find matching SNPs."));
+				"Welcome to the first alpha release of GoNL variants, based on 500 independent Dutch individuals. "
+						+ "Future releases will be based on enhanced filtering using trio-aware calling on 250 trios. "
+						+ "For more information visit <a href=\"http://www.nlgenome.nl\">www.nlgenome.nl</a>. "
+						+ "Please type in your genomic coordinates to find matching SNPs."));
 
 		form.add(new Newline());
 
 		// provide a search box
 		SelectInput chromosomes = new SelectInput("chromosome",
-				model.getSelectedChrName());
+				model.getSelectedChrId());
 		chromosomes.setOptions(model.getChromosomes(), model.getChromosomes());
 		chromosomes.setNillable(false);
 		form.add(chromosomes);

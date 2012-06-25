@@ -42,7 +42,6 @@ function refreshByHits(){
 	var hits = document.getElementById('changeHits').value;
 	var divForTable = document.getElementById('details');
 	var tables = divForTable.getElementsByTagName('table');	
-	
 	for(var i = 0; i < tables.length; i++){
 		
 		var eachTable = tables[i];
@@ -51,7 +50,7 @@ function refreshByHits(){
 		
 		for(var j = 0; j < rowElements.length; j++){
 			
-			if(j <= hits){
+			if(j < hits){
 				rowElements[j].style.display = "table-row";
 			}else{
 				rowElements[j].style.display = "none";

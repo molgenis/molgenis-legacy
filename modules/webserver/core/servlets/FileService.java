@@ -3,6 +3,7 @@ package core.servlets;
 import java.io.IOException;
 import java.text.ParseException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.molgenis.framework.db.DatabaseException;

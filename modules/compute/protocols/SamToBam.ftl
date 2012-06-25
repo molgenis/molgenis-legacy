@@ -10,12 +10,6 @@
 
 #MOLGENIS walltime=35:59:00 mem=3
 
-#INPUTS samfile
-#OUTPUTS bamfile
-#LOGS log
-#EXES samtobamjar
-#TARGETS
-
 inputs "${samfile}"
 alloutputsexist "${bamfile}"
 

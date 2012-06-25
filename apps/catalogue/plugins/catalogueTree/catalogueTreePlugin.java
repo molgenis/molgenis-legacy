@@ -25,7 +25,6 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -64,7 +63,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<String> SearchFilters = new ArrayList<String>();
 	private String Status = "";
 
-
+	
 	private static int SEARCHINGPROTOCOL = 2;
 
 	private static int SEARCHINGMEASUREMENT = 3;
@@ -72,7 +71,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private static int SEARCHINGALL = 4;
 
 	private static int SEARCHINGDETAIL = 5;
-
+	
 	Integer mode;
 
 	/** Multiple inheritance: some measurements might have multiple parents therefore it
@@ -104,149 +103,146 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
-		//for now the cohorts are investigations 
-		if ("cohortSelect".equals(request.getAction())) {
-			System.out.println("----------------------"+request);
-			selectedInvestigation = request.getString("cohortSelectSubmit");
-			this.setSelectedInvestigation(selectedInvestigation);
-			System.out.println("The selected investigation is : "+ selectedInvestigation);
-			arrayInvestigations.clear();
-			this.SearchFilters.clear();
+		
+		
+//			if ("chooseInvestigation".equals(request.getAction())) {
+//				selectedInvestigation = request.getString("investigation");
+//				this.setSelectedInvestigation(selectedInvestigation);
+//				System.out.println("The selected investigation is : "
+//						+ selectedInvestigation);
+//				arrayInvestigations.clear();
+//				this.SearchFilters.clear();
 
-		}else if ("SaveSelectionSubmit".equals(request.getAction())) {
 
-			if (!this.getLogin().isAuthenticated()) {
-				this.getModel().getMessages().add(new ScreenMessage("You must register in order to save a selection. Please select register from the main menu. ",  true));
-				this.setStatus("<h4> You must register in order to save a selection. Please select register from the main menu. "+ "</h4>" ) ;
-			} else {
+			 //for now the cohorts are investigations so teh selected cohort is the selected investigation 
+			if ("cohortSelect".equals(request.getAction())) {
+				System.out.println("----------------------"+request);
+				selectedInvestigation = request.getString("cohortSelectSubmit");
+				this.setSelectedInvestigation(selectedInvestigation);
+				System.out.println("The selected investigation is : "+ selectedInvestigation);
+				arrayInvestigations.clear();
+				this.SearchFilters.clear();
+				
+			}else if ("SaveSelectionSubmit".equals(request.getAction())) {
 
+				
 				try	{
-					this.setSelectionName("empty");
-
+						this.setSelectionName("empty");
+						
 					if (request.getString("SelectionName") != null) {
-
+					//if (request.getString("SelectionName").compareTo("empty") != 0) {
+	
 						this.setSelectionName(request.getString("SelectionName").trim());
-						System.out.println("The SelectionName is >>> : " + this.getSelectionName());					
+
+						System.out.println("The SelectionName is >>> : " + this.getSelectionName());
+					
 						System.out.println("Selection request >>>>>>" + request);
 					} else {
 						//this.setError("Please insert a name for your selection and try again.");
 						this.getModel().getMessages().add(new ScreenMessage("No name was inserted for the selection. An automatic name will be generated. ",  true));
 						this.setStatus("<h4> No name was inserted for the selection. An automatic name will be generated. "+ "</h4>" ) ;
+	
 					}
-
+					
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 					Date dat = new Date();
 					String dateOfDownload = dateFormat.format(dat);
 					System.out.println("selected investigaton >>>> "+  selectedInvestigation);
-					this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
+					
+					
+						this.addMeasurementsForDownload(db, request, selectedInvestigation, dateOfDownload, this.getSelectionName());
 				} catch (IOException e) {
-					e.printStackTrace();
+						e.printStackTrace();
 				} catch (WriteException e1) {
-					e1.printStackTrace();
+						e1.printStackTrace();
 				}
+
+			} else if (request.getAction().startsWith("DeleteMeasurement")) {
+
+				String measurementName = request.getString("measurementName"); 
+
+
+				measurementName = request.getAction().substring( "DeleteMeasurement".length() + 2+ "measurementName".length(),	request.getAction().length());
+				this.deleteShoppingItem(measurementName);
+
+			} else if (request.getAction().startsWith("SearchCatalogueTree")) {
+				
+				if (request.getString("InputToken") != null) {
+
+					this.setInputToken(request.getString("InputToken").trim());
+
+					
+					System.out.println("The request string : " + request);
+
+					this.setSelectedField(request.getString("selectedField"));
+
+					System.out.println("Input token: >>>>>>"
+							+ this.getInputToken() + ">>> selectedField >>"
+							+ selectedField + "comparison >>>"
+							+ this.getComparison());
+					if (this.getSelectedField().equals("Protocols")) {
+						//Show filters label 
+						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Protocols ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Protocols "+ "</h4>" ) ;
+						SearchFilters.add("Protocols:" + this.getInputToken());
+
+						mode = SEARCHINGPROTOCOL;
+						RetrieveProtocols(db, SEARCHINGPROTOCOL);
+					}
+					// Search "Any field" ==> All fields LIKE input token
+					if (this.getSelectedField().equals("Measurements")) {
+						//Show filters label 
+						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Measurements ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Measurements  "+ "</h4>" ) ;
+
+						SearchFilters.add("Measurements:" + this.getInputToken());
+						mode = SEARCHINGMEASUREMENT;
+						RetrieveProtocols(db, SEARCHINGMEASUREMENT);
+					}
+					if (this.getSelectedField().equals("All fields")) {
+						//Show filters label 
+						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in all fields ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in all fields "+ "</h4>" ) ;
+
+						SearchFilters.add("All:" + this.getInputToken());
+
+						mode = SEARCHINGALL;
+						RetrieveProtocols(db, SEARCHINGALL);
+					}
+					if (this.getSelectedField().equals("Details")) {
+						//Show filters label 
+						this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Details ",  true));
+						this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Details " + "</h4>" ) ;
+
+						SearchFilters.add("Details:" + this.getInputToken());
+
+						mode = SEARCHINGDETAIL;
+						RetrieveProtocols(db, SEARCHINGDETAIL);
+					}
+
+					
+					//show a label with the search filter and an option to remove it 
+					//in case of removal of filter , reload the tree
+					
+				} else {
+					this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
+					this.setStatus("<h4> Empty search string" + "</h4>" ) ;
+
+				}
+			} else if (request.getAction().startsWith("removeFilters")) {
+				System.out.println("-------------------removeFilters reached-----------------------");
+				
 			}
-		} else if (request.getAction().startsWith("DeleteMeasurement")) {
 
-			String measurementName = request.getString("measurementName"); 
-			measurementName = request.getAction().substring( "DeleteMeasurement".length() + 2+ "measurementName".length(),	request.getAction().length());
-			this.deleteShoppingItem(measurementName);
-
-		} else if (request.getAction().startsWith("SearchCatalogueTree")) {
-
-			if (request.getString("InputToken") != null) {
-
-				this.setInputToken(request.getString("InputToken").trim());		
-				System.out.println("The request string : " + request);
-				this.setSelectedField(request.getString("selectedField"));
-				System.out.println("Input token: >>>>>>"
-						+ this.getInputToken() + ">>> selectedField >>"
-						+ selectedField + "comparison >>>"
-						+ this.getComparison());
-				if (this.getSelectedField().equals("Protocols")) {
-					//Show filters label 
-					this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Protocols ",  true));
-					this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Protocols "+ "</h4>" ) ;
-					SearchFilters.add("Protocols:" + this.getInputToken());
-
-					mode = SEARCHINGPROTOCOL;
-					RetrieveProtocols(db, SEARCHINGPROTOCOL);
-				}
-				// Search "Any field" ==> All fields LIKE input token
-				if (this.getSelectedField().equals("Measurements")) {
-					//Show filters label 
-					this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Measurements ",  true));
-					this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Measurements  "+ "</h4>" ) ;
-
-					SearchFilters.add("Measurements:" + this.getInputToken());
-					mode = SEARCHINGMEASUREMENT;
-					RetrieveProtocols(db, SEARCHINGMEASUREMENT);
-				}
-				if (this.getSelectedField().equals("All fields")) {
-					//Show filters label 
-					this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in all fields ",  true));
-					this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in all fields "+ "</h4>" ) ;
-
-					SearchFilters.add("All:" + this.getInputToken());
-
-					mode = SEARCHINGALL;
-					RetrieveProtocols(db, SEARCHINGALL);
-				}
-				if (this.getSelectedField().equals("Details")) {
-					//Show filters label 
-					this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Details ",  true));
-					this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Details " + "</h4>" ) ;
-
-					SearchFilters.add("Details:" + this.getInputToken());
-
-					mode = SEARCHINGDETAIL;
-					RetrieveProtocols(db, SEARCHINGDETAIL);
-				}
-
-
-				//show a label with the search filter and an option to remove it 
-				//in case of removal of filter , reload the tree
-
-			} else {
-				this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
-				this.setStatus("<h4> Empty search string" + "</h4>" ) ;
-
-			}
-		} else if (request.getString("measurementId") != null) {
-			System.out.println("-request.getString(measurementId-----------" +  request.getString("measurementId"));
-
-		}
-
-
-
+		
+		
 
 	}
 
-
+	
 	@Override
 	public void reload(Database db) {
 
-
-		//where is request oeo???
-
-		
-		 //where is request oeo???
-
-		//where is request oeo???
-
-		//request content: select='CatalogueTreePlugin' measurementId='1' __target='main' 
-
-		//		this.getParent().getRoot().getModel().getController()
-		//		Login login = (Login)request.getRequest().getSession().getAttribute("login");
-
-		//db.getLogin().getClass().getGenericSuperclass().g
-		System.out.println("-------------In reload---------------------" + this.getApplicationUrl());
-
-
-
-		//		if (this.request!=null && this.request.getString("measurementId") != null) {
-		//			System.out.println("-request.getString(measurementId-----------" +  request.getString("measurementId"));
-		//		}
 		// default set selected investigation to first
 		if (this.getSelectedInvestigation() == null) {
 			try {
@@ -319,7 +315,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		List<String> middleProtocols = new ArrayList<String>();
 		protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
 		listOfMeasurements.clear();
-
+		
 		// measurementsInTree = new HashMap<String, JQueryTreeViewElement>();
 		// protocolsInTree = new HashMap<String, JQueryTreeViewElement>();
 
@@ -466,15 +462,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			boolean findInputTokenInEachNode = false;
 
-			if(protocolName.equalsIgnoreCase("residence")){
-				System.out.println();
-			}
-
 			Protocol protocol = nameToProtocol.get(protocolName);
 
-			JQueryTreeViewElement childTree = null;
+			if (!protocolName.equals(parentClassName) && protocol != null) {
 
-			if (protocol != null) {
+				JQueryTreeViewElement childTree = null;
 
 				/**
 				 *  Resolve the issue of duplicated names in the tree. For any
@@ -504,56 +496,29 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
 
-				if(!protocolName.equals(parentClassName)){
+				// find all the sub-protocols and recursively call itself
+				if (protocol.getSubprotocols_Name() != null
+						&& protocol.getSubprotocols_Name().size() > 0) {
 
-					boolean subProtocolRepeatProtocol = false;
-
-					// find all the sub-protocols and recursively call itself
-					if (protocol.getSubprotocols_Name() != null
-							&& protocol.getSubprotocols_Name().size() > 0) {
-
-						List<String> subProtocolNames = protocol.getSubprotocols_Name();
-
-						if(subProtocolNames.contains(protocolName)){
-							subProtocolRepeatProtocol = true;
-						}
-						if(subProtocolNames.contains(parentClassName)){
-							subProtocolNames.remove(parentClassName);
-						}
-						findInputTokenInEachNode = recursiveAddingNodesToTree(
-								subProtocolNames,
-								protocol.getName(), childTree, db,
-								foundTokenInParentProtocol, mode);
-					}
-
-					// On the last branch of the tree, we`ll find measurements and
-					// add them to the tree.
-					if (subProtocolRepeatProtocol == false && protocol.getFeatures_Name() != null
-							&& protocol.getFeatures_Name().size() > 0) { // error
-						// checking
-
-						if (mode != SEARCHINGPROTOCOL) {
-							findInputTokenInEachNode = addingMeasurementsToTree(
-									protocol.getFeatures_Name(), childTree, db,
-									false, mode); // .. so normally it goes always
-							// this way
-						}
-					}
-				}else if(protocolName.equals(parentClassName)){
-
-					if (protocol.getFeatures_Name() != null
-							&& protocol.getFeatures_Name().size() > 0) { // error
-						// checking
-
-						if (mode != SEARCHINGPROTOCOL) {
-							findInputTokenInEachNode = addingMeasurementsToTree(
-									protocol.getFeatures_Name(), childTree, db,
-									false, mode); // .. so normally it goes always
-							// this way
-						}
-					}
+					findInputTokenInEachNode = recursiveAddingNodesToTree(
+							protocol.getSubprotocols_Name(),
+							protocol.getName(), childTree, db,
+							foundTokenInParentProtocol, mode);
 				}
 
+				// On the last branch of the tree, we`ll find measurements and
+				// add them to the tree.
+				if (protocol.getFeatures_Name() != null
+						&& protocol.getFeatures_Name().size() > 0) { // error
+					// checking
+
+					if (mode != SEARCHINGPROTOCOL) {
+						findInputTokenInEachNode = addingMeasurementsToTree(
+								protocol.getFeatures_Name(), childTree, db,
+								false, mode); // .. so normally it goes always
+						// this way
+					}
+				}
 
 				// If the input token is not null, the tree will be filtered, in
 				// another word, part of the tree elements
@@ -561,91 +526,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				// selected.
 				if (InputToken != null) {
 
-
-
 					// If none of the child nodes, such as none of the
 					// measurements of this protocol, contains the input token,
 					// this protocol is not added but removed.
-					if (findInputTokenInEachNode == true) {
-
-						if (mode == SEARCHINGALL){
-
-							if (protocolName.toLowerCase().matches(
-									".*" + InputToken.toLowerCase()
-									+ ".*")) {
-
-								for(JQueryTreeViewElement element : childTree.getAllChildren()){
-									element.remove();
-								}
-
-								if (!foundTokenInParentProtocol
-										&& !protocolName.toLowerCase().matches(
-												".*" + InputToken.toLowerCase()
-												+ ".*")) {
-
-									childTree.remove();
-
-								} else {
-
-									if(!protocolName.equals(parentClassName)){
-
-										boolean subProtocolRepeatProtocol = false;
-										// If the input token is found in the current
-										// protocol, re-add all its descendants to the
-										// tree. Because
-										// its sub-nodes might not contain the input
-										// token therefore they might have been removed
-										// from the tree already.
-										// Therefore need to be re-added
-										if (protocol.getSubprotocols_Name().size() > 0) {
-
-											List<String> subProtocolNames = protocol.getSubprotocols_Name();
-
-											if(subProtocolNames.contains(protocolName)){
-												subProtocolRepeatProtocol = true;
-											}
-											if(subProtocolNames.contains(parentClassName)){
-												subProtocolNames.remove(parentClassName);
-											}
-
-											findInputTokenInEachNode = recursiveAddingNodesToTree(
-													protocol.getSubprotocols_Name(),
-													protocol.getName(), childTree, db,
-													true, mode);
-											findInputTokenInEachNode = true;
-										}
-										// This is the case where none of the
-										// measurements of this protocol match the input
-										// token, but the current protocol
-										// matches input token. Therefore its
-										// measurements need to be re-added to the tree
-										if (subProtocolRepeatProtocol == false && protocol.getFeatures_Name() != null
-												&& protocol.getFeatures_Name().size() > 0) {
-											findInputTokenInEachNode = addingMeasurementsToTree(
-													protocol.getFeatures_Name(),
-													childTree, db, true, mode);
-											findInputTokenInEachNode = true;
-										}
-									}else{
-										// This is the case where none of the
-										// measurements of this protocol match the input
-										// token, but the current protocol
-										// matches input token. Therefore its
-										// measurements need to be re-added to the tree
-										if (protocol.getFeatures_Name() != null
-												&& protocol.getFeatures_Name().size() > 0) {
-											findInputTokenInEachNode = addingMeasurementsToTree(
-													protocol.getFeatures_Name(),
-													childTree, db, true, mode);
-											findInputTokenInEachNode = true;
-										}
-									}
-								}
-
-							}
-						}
-
-					}else if (findInputTokenInEachNode == false) {
+					if (findInputTokenInEachNode == false) {
 
 						if (mode == SEARCHINGMEASUREMENT || mode == SEARCHINGDETAIL) {// filter in measurements
 
@@ -668,59 +552,31 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 								childTree.remove();
 
 							} else {
-
-								if(!protocolName.equals(parentClassName)){
-
-									boolean subProtocolRepeatProtocol = false;
-									// If the input token is found in the current
-									// protocol, re-add all its descendants to the
-									// tree. Because
-									// its sub-nodes might not contain the input
-									// token therefore they might have been removed
-									// from the tree already.
-									// Therefore need to be re-added
-									if (protocol.getSubprotocols_Name().size() > 0) {
-
-										List<String> subProtocolNames = protocol.getSubprotocols_Name();
-
-										if(subProtocolNames.contains(protocolName)){
-											subProtocolRepeatProtocol = true;
-										}
-										if(subProtocolNames.contains(parentClassName)){
-											subProtocolNames.remove(parentClassName);
-										}
-
-										findInputTokenInEachNode = recursiveAddingNodesToTree(
-												protocol.getSubprotocols_Name(),
-												protocol.getName(), childTree, db,
-												true, mode);
-										findInputTokenInEachNode = true;
-									}
-									// This is the case where none of the
-									// measurements of this protocol match the input
-									// token, but the current protocol
-									// matches input token. Therefore its
-									// measurements need to be re-added to the tree
-									if (subProtocolRepeatProtocol == false && protocol.getFeatures_Name() != null
-											&& protocol.getFeatures_Name().size() > 0) {
-										findInputTokenInEachNode = addingMeasurementsToTree(
-												protocol.getFeatures_Name(),
-												childTree, db, true, mode);
-										findInputTokenInEachNode = true;
-									}
-								}else{
-									// This is the case where none of the
-									// measurements of this protocol match the input
-									// token, but the current protocol
-									// matches input token. Therefore its
-									// measurements need to be re-added to the tree
-									if (protocol.getFeatures_Name() != null
-											&& protocol.getFeatures_Name().size() > 0) {
-										findInputTokenInEachNode = addingMeasurementsToTree(
-												protocol.getFeatures_Name(),
-												childTree, db, true, mode);
-										findInputTokenInEachNode = true;
-									}
+								// If the input token is found in the current
+								// protocol, re-add all its descendants to the
+								// tree. Because
+								// its sub-nodes might not contain the input
+								// token therefore they might have been removed
+								// from the tree already.
+								// Therefore need to be re-added
+								if (protocol.getSubprotocols_Name().size() > 0) {
+									findInputTokenInEachNode = recursiveAddingNodesToTree(
+											protocol.getSubprotocols_Name(),
+											protocol.getName(), childTree, db,
+											true, mode);
+									findInputTokenInEachNode = true;
+								}
+								// This is the case where none of the
+								// measurements of this protocol match the input
+								// token, but the current protocol
+								// matches input token. Therefore its
+								// measurements need to be re-added to the tree
+								if (protocol.getFeatures_Name() != null
+										&& protocol.getFeatures_Name().size() > 0) {
+									findInputTokenInEachNode = addingMeasurementsToTree(
+											protocol.getFeatures_Name(),
+											childTree, db, true, mode);
+									findInputTokenInEachNode = true;
 								}
 							}
 						}
@@ -755,7 +611,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * @param childNode
 	 * @param parentTree
 	 * @param db
-	 * @throws DatabaseException 
 	 */
 	public boolean addingMeasurementsToTree(List<String> childNode,
 			JQueryTreeViewElement parentTree, Database db,
@@ -777,42 +632,39 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		// has been found under mode searchingMeasurement
 		List<String> filteredNode = new ArrayList<String>();
 
-		try {
+		// If the input token is available, we need to check which mode it is
+		// and decide what we do with it here
+		if (InputToken != null) {
 
-			// If the input token is available, we need to check which mode it is
-			// and decide what we do with it here
-			if (InputToken != null) {
+			// In mode of searching for measurements, we check if the name of
+			// measurements contain the input token
+			// If the token is not in the name, the measurement is removed from
+			// list.
+			if (mode == SEARCHINGMEASUREMENT) {
 
-				// In mode of searching for measurements, we check if the name of
-				// measurements contain the input token
-				// If the token is not in the name, the measurement is removed from
-				// list.
-				if (mode == SEARCHINGMEASUREMENT) {
+				for (String eachMeasurementName : childNode) {
 
-					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode))){
-
-						if (m.getName().toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")) {
-							filteredNode.add(m.getName());
-							findTokenInMeasurements = true;
-						} else if (m.getLabel() != null && m.getLabel().toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")) {
-							filteredNode.add(m.getName());
-							findTokenInMeasurements = true;
-						}
-						
+					if (eachMeasurementName.toLowerCase().matches(
+							".*" + InputToken.toLowerCase() + ".*")) {
+						filteredNode.add(eachMeasurementName);
+						findTokenInMeasurements = true;
 					}
-
-				} else {
-					// In mode of searching for all fields, details, we need to loop
-					// through all the measurements, therefore
-					// we do not care whether the measurement name contains the
-					// input token or not.
-					filteredNode = childNode;
 				}
 
 			} else {
-				// Normal mode when the input token is not available
+				// In mode of searching for all fields, details, we need to loop
+				// through all the measurements, therefore
+				// we do not care whether the measurement name contains the
+				// input token or not.
 				filteredNode = childNode;
 			}
+
+		} else {
+			// Normal mode when the input token is not available
+			filteredNode = childNode;
+		}
+
+		try {
 
 			List<Measurement> measurementList = new ArrayList<Measurement>();
 
@@ -833,13 +685,24 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				// use the measurement name as label
 				String displayName = "";
 
-				if (measurement.getLabel() != null && !measurement.getLabel().equals("")) {
+				Query<ObservedValue> queryDisplayNames = db
+						.query(ObservedValue.class);
 
-					displayName = measurement.getLabel();
+				queryDisplayNames.addRules(new QueryRule(
+						ObservedValue.TARGET_NAME, Operator.EQUALS, measurement
+						.getName()));
+
+				queryDisplayNames.addRules(new QueryRule(
+						ObservedValue.FEATURE_NAME, Operator.LIKE,
+						"display name"));
+
+				if (queryDisplayNames.find().size() > 0) {
+
+					displayName = queryDisplayNames.find().get(0).getValue();
 				} else {
 					displayName = measurement.getName();
 				}
-
+				
 				// Query the all the detail information about this measurement,
 				// in molgenis terminology, the detail information
 				// are all the observedValue and some of the fields from the
@@ -853,9 +716,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				// jquery tree here. Therefore if the element already existed, a
 				// suffix will be added at the end of string to
 				// make the name unique
-
-				//				displayName = displayName.replaceAll("[%#]", "");
-
+				
+//				displayName = displayName.replaceAll("[%#]", "");
+				
 				if (protocolsAndMeasurementsinTree.containsKey(displayName)) {
 
 					if (!multipleInheritance.containsKey(displayName)) {
@@ -872,10 +735,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							+ multipleInheritance.get(displayName),
 							displayName, parentTree,
 							previousChildTree.getHtmlValue());
-
+					
 					listOfMeasurements.add(displayName
 							+ multipleInheritance.get(displayName));
-
+					
 					childTree.setHtmlValue(htmlValue);
 
 				} else {
@@ -884,7 +747,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							parentTree, htmlValue);
 
 					listOfMeasurements.add(displayName);
-
+					
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
 
@@ -1011,8 +874,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						featureName = "display name";
 					}
 
-					//					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td> "
-					//							+ value + "</td></tr>";
+//					htmlValue += "<tr><td class='box-body-label'>" + featureName + "</td><td> "
+//							+ value + "</td></tr>";
 				}
 			}
 		}
@@ -1037,15 +900,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		String measurementClickEvent = "<script>";
 
 		List<String> uniqueMeasurementName = new ArrayList<String>();
-
+		
 		System.out.println("listOfMeasurements>>>"+listOfMeasurements);
-
+		
 		for(String eachMeasurement : listOfMeasurements){
-
+			
 			if(!uniqueMeasurementName.contains(eachMeasurement)){
-
+				
 				uniqueMeasurementName.add(eachMeasurement);
-
+				
 				if(eachMeasurement.equals("Year partner son daughter 3")){
 					System.out.println();
 				}
@@ -1099,7 +962,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			// System.out.println("DownloadedMeasurementIds >>>: " + this.shoppingCart);
 			for (Measurement m : this.shoppingCart) {
 				DownloadedMeasurementIds.add(m.getId());
-
+				
 				//x.writeRow(m);// System.out.println("DownloadedMeasurementIds >>>: " + m.getId());
 			}
 
@@ -1120,7 +983,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					shoppingCartName = selectionName;
 				}
 				shoppingCart.setName(shoppingCartName );
-
+				
 				System.out.println("save selection step1");
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
 				shoppingCart.setMeasurements_Id(DownloadedMeasurementIds);
@@ -1130,34 +993,29 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				System.out.println("save selection step2");
 
 				shoppingCart.setApproved(false);
-
+			
 				//check for duplicates
 				Query<ShoppingCart> q = db.query(ShoppingCart.class);
 				q.addRules(new QueryRule(ShoppingCart.NAME, Operator.EQUALS, shoppingCartName));
-
+				
 				if (q.find().size() > 0) {
-					//if user selection already exists use an automated name 
-					String shoppingCartName2 = this.getLogin().getUserName() + "_" + System.currentTimeMillis();
-
-					this.setError("A user selection with name : "+ shoppingCartName +" already exists. An automatic generated name will be used: "+ shoppingCartName2);
-					//this.getModel().getMessages().add(new ScreenMessage("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.", true));
-					this.setStatus("<h4> A user selection with name : "+ shoppingCartName +" already exists. An automatic generated name will be used: "+ shoppingCartName2+ "</h4>" ) ;
-					shoppingCartName = shoppingCartName2;
-
+					this.setError("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.");
+					this.getModel().getMessages().add(new ScreenMessage("A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again.", true));
+					this.setStatus("<h4> A user selection with name : "+ shoppingCartName +" already exists. Please insert another name for your selection and try again."+ "</h4>" ) ;
 				} else {
 					try {
 						db.add(shoppingCart);
 						// System.out.println("Download list has been added to the DB");
-
+						
 						this.getModel().getMessages().add(new ScreenMessage("Selection saved to 'My Selections' under name "+ shoppingCartName , true));
 						this.setStatus("<h4> Selection saved to 'My Selections' under name "+ shoppingCartName + "</h4>" ) ;
 						this.setSuccess("Selection saved to 'My Selections' under name "+ shoppingCartName);
 
 					}  catch (DatabaseException e) {
-						e.printStackTrace();
+							e.printStackTrace();
 					}
 				}
-
+				
 			} else {
 				ShoppingCart shoppingCart = result.get(0); // assuming user can  have only one shopping cart that's NOT checked out
 				// shoppingCart.setMeasurements(DownloadedMeasurementIds);
@@ -1255,13 +1113,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	}
 
 	public List<String> getFilters() {
-		//		if (!SearchFilters.isEmpty()) {
-		//			return this.SearchFilters;
-		//		}
+//		if (!SearchFilters.isEmpty()) {
+//			return this.SearchFilters;
+//		}
 		//return "filters";
 		return SearchFilters;
 	}
-
+	
 	//	@Override
 	//	public boolean isVisible()
 	//	{
@@ -1269,17 +1127,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	//		return true;
 	//	}
 	//	
-	//	@Override
-	//	public boolean isVisible()
-	//	{
-	//		//you can use this to hide this plugin, e.g. based on user rights.
-	//		//e.g.
-	//		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
-	//		if (!this.getLogin().isAuthenticated()) {
-	//			return false;
-	//		}
-	//		return true;
-	//	}
+//	@Override
+//	public boolean isVisible()
+//	{
+//		//you can use this to hide this plugin, e.g. based on user rights.
+//		//e.g.
+//		//if(!this.getLogin().hasEditPermission(myEntity)) return false;
+//		if (!this.getLogin().isAuthenticated()) {
+//			return false;
+//		}
+//		return true;
+//	}
 
 	public void setSelectionName(String selectionName)
 	{
@@ -1300,31 +1158,31 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	{
 		return Status;
 	}
-
-	//	/**
-	//	 * This function is used by the user interface template to show rules on the
-	//	 * screen.
-	//	 * 
-	//	 * @return a list of query rules that can be managed by the user.
-	//	 * @throws DatabaseException
-	//	 */
-	//	public Vector<String> getFilters() throws DatabaseException
-	//	{
-	//		Vector<String> filters = new Vector<String>();
-	//		//Map<String, String> nameLabelMap = new TreeMap<String, String>();
-	//
-	//		if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
-	//		else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol"); 
-	//		else if (mode == SEARCHINGMEASUREMENT) filters.add("SearchingMeasurement");
-	//		else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail"); 
-	//		else if (mode == SEARCHINGALL) filters.add("SearchingAll"); 
-	//
-	//			//filters.add(label + " " + rule.getOperator().toString() + " "+ rule.getValue());
-	//
-	//		
-	//
-	//		return filters;
-	//	}
+	
+//	/**
+//	 * This function is used by the user interface template to show rules on the
+//	 * screen.
+//	 * 
+//	 * @return a list of query rules that can be managed by the user.
+//	 * @throws DatabaseException
+//	 */
+//	public Vector<String> getFilters() throws DatabaseException
+//	{
+//		Vector<String> filters = new Vector<String>();
+//		//Map<String, String> nameLabelMap = new TreeMap<String, String>();
+//
+//		if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail");
+//		else if (mode != SEARCHINGPROTOCOL) filters.add("SearchingProtocol"); 
+//		else if (mode == SEARCHINGMEASUREMENT) filters.add("SearchingMeasurement");
+//		else if (mode == SEARCHINGDETAIL) filters.add("SearchingDetail"); 
+//		else if (mode == SEARCHINGALL) filters.add("SearchingAll"); 
+//
+//			//filters.add(label + " " + rule.getOperator().toString() + " "+ rule.getValue());
+//
+//		
+//
+//		return filters;
+//	}
 
 
 }

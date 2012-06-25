@@ -1,7 +1,5 @@
 package org.molgenis.animaldb.commonservice;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -11,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.molgenis.animaldb.AnimalDbFile;
 import org.molgenis.animaldb.CustomLabelFeature;
 import org.molgenis.animaldb.NamePrefix;
 import org.molgenis.auth.MolgenisUser;
@@ -35,10 +32,6 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.pheno.Panel;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.Tuple;
-
-import decorators.NameConvention;
-import filehandling.generic.PerformUpload;
 
 /**
  * @author erikroos
@@ -82,51 +75,6 @@ public class CommonService
 	    CommonService.db = db;
 	}
 
-	/**
-	 * Helper funtion to upload Dec application files. Note the use of name and uniquePostfix!
-	 * @param name
-	 * @param uniquePostfix
-	 * @param request
-	 * @throws Exception
-	 */
-	public String addAnimalDbFile(String name, String uniquePostfix, Tuple request, boolean overwriteExisting) throws Exception
-	{
-		// DEC application PDF
-		File fileFromRequest = request.getFile(name.toLowerCase());
-		if (fileFromRequest == null)
-		{
-			throw new FileNotFoundException("No "+name.toLowerCase()+" selected");
-		}
-		String originalFileName = request.getString(name.toLowerCase() + "OriginalFileName");
-		if(!originalFileName.contains("."))
-		{
-			throw new FileNotFoundException("The uploaded file does not have an extension");
-		}
-		String originalFileExt = originalFileName.substring(originalFileName.lastIndexOf(".")+1);
-		String fileName = name.toLowerCase() + "_" + NameConvention.escapeFileName(uniquePostfix); //use DEC name to make it 'unique'
-		//if the name exists: delete the old one!
-		List<AnimalDbFile> afList = db.find(AnimalDbFile.class, new QueryRule(AnimalDbFile.NAME, Operator.EQUALS, fileName));
-		if(afList.size() == 1) // if there are more: you are in really big trouble because name is unique constraint!
-		{
-			if(overwriteExisting)
-			{
-				db.remove(afList.get(0));
-				
-				
-			}
-			else
-			{
-				throw new FileNotFoundException("File already exists, overwriting not allowed!");
-			}
-		}
-		AnimalDbFile file = new AnimalDbFile();
-		file.setName(fileName);
-		file.setExtension(originalFileExt);
-		db.add(file);
-		PerformUpload.doUpload(db, file, fileFromRequest, true);
-		return fileName;
-	}
-	
 	/**
 	 * Retrieve an investigation id based on an investigation name.
 	 * Returns -1 if none found.
@@ -250,26 +198,6 @@ public class CommonService
 	}
 	
 	/**
-	 * Gets the Ids of the investigations owned, readable or writable by the user with name 'userName'.
-	 * 
-	 * @param userName
-	 * @return
-	 */
-	public List<Integer> getAllUserInvestigationIds(String userName) {
-		
-		List<Integer> returnList = new ArrayList<Integer>();
-		List<Investigation> invList = getAllUserInvestigations(userName);
-		if (invList != null) {
-			for (Investigation inv : invList) {
-				if (!returnList.contains(inv.getName())) {
-					returnList.add(inv.getId());
-				}
-			}
-		}
-		return returnList;
-	}
-	
-	/**
 	 * Gets the names of the investigation owned or writable by the user with name 'userName'.
 	 * 
 	 * @param userName
@@ -312,12 +240,7 @@ public class CommonService
 	public ObservationTarget getObservationTargetByName(String targetName)
 			throws DatabaseException, ParseException
 	{
-		if(db.query(ObservationTarget.class).eq(ObservationTarget.NAME, targetName).find().isEmpty())
-		{
-			return null;
-		}else {
-			return db.query(ObservationTarget.class).eq(ObservationTarget.NAME, targetName).find().get(0);
-		}
+		return db.query(ObservationTarget.class).eq(ObservationTarget.NAME, targetName).find().get(0);
 	}
 	
 	/**
@@ -1443,43 +1366,6 @@ public class CommonService
 	}
 	
 	/** 
-	 * Returns all observed values for a given ObservationTarget and measurement,
-	 * sorted so that the most recent one comes first.
-	 * @param targetname
-	 *            The name of the target
-	 * @param measurementname
-	 *            The name of the measurement
-	 * @param investigation list
-	 * 			  A list of investigations of which the target can be part of.           
-	 * @throws IOException
-	 * @throws DatabaseException
-	 * @return a list of observed values.
-	 * 
-	 */
-	
-	public List<ObservedValue> getObservedValuesByTargetAndMeasurement (
-			String targetName, String mName, List<Integer> investigationIds) throws DatabaseException, ParseException
-	{
-		List<ObservedValue> obsVal = new ArrayList<ObservedValue>();
-		
-		Query<ObservedValue> q = db.query(ObservedValue.class);
-		q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, targetName));
-		q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, mName));
-		q.addRules(new QueryRule(ObservedValue.INVESTIGATION, Operator.IN, investigationIds));
-		q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
-		List<ObservedValue> vals = q.find();
-		
-		if (vals.isEmpty()) {
-			return null;
-		}else 
-		{
-			obsVal.addAll(vals);
-			return obsVal;
-		}
-	}
-	
-	
-	/** 
 	 * Returns all observed values for a given ObservationTarget and list of features,
 	 * sorted so that the most recent one comes first.
 	 * NOTE: Creates a default "" value if observedValue doesn't exist yet for
@@ -1501,7 +1387,6 @@ public class CommonService
 			q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.IN, investigationNames));
 			q.addRules(new QueryRule(Operator.SORTDESC, ObservedValue.TIME));
 			List<ObservedValue> vals = q.find();
-			// FIXME Why the heck does this "get"function add an empty value to the DB ? //ate 2012-06-14
 			if (vals.isEmpty())
 			{ // if value doesn't exist, create new one
 				ObservedValue newOV = new ObservedValue();

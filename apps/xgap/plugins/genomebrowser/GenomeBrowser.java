@@ -87,20 +87,7 @@ public class GenomeBrowser extends PluginModel<Entity>
 			
 			if(this.model.getAppUrl() == null)
 			{
-				boolean appUrlSet = false;
-				while(!appUrlSet)
-				{
-					if(this.getApplicationController().getApplicationUrl() == null)
-					{
-						System.out.println("GenomeBrowser waiting for application URL.. sleeping 1 sec");
-						Thread.sleep(1000);
-					}
-					else{
-						this.model.setAppUrl(this.getApplicationController().getApplicationUrl());
-						System.out.println("GenomeBrowser application URL set!");
-						appUrlSet = true;
-					}
-				}
+				this.model.setAppUrl(this.getApplicationController().getApplicationUrl());
 			}
 			
 			if(this.model.getFilesAreVisible() == null){

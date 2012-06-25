@@ -18,14 +18,14 @@
 		<entity name="Variant" extends="SequenceCharacteristic">
 			<description>Serves as a view on SequenceCharacteristics that are variants.</description>
 			<field name="type_" nillable="false" description="Type of the variant."/>
-			<field name="nameCdna" nillable="false" index="true" description="cDNA name of the variant, e.g. c.123C>T"/>
-			<field name="startCdna" type="int" nillable="false" index="true" description="Start position on cDNA sequence."/>
+			<field name="nameCdna" nillable="false" description="cDNA name of the variant, e.g. c.123C>T"/>
+			<field name="startCdna" type="int" nillable="false" description="Start position on cDNA sequence."/>
 			<field name="endCdna" type="int" nillable="false" description="End position on cDNA sequence."/>
-			<field name="nameGdna" nillable="false" index="true" description="gDNA name of the variant, e.g. g.1234567C>T"/>
-			<field name="startGdna" type="int" nillable="false" index="true" description="Start position on genomic sequence."/>
+			<field name="nameGdna" nillable="false" description="gDNA name of the variant, e.g. g.1234567C>T"/>
+			<field name="startGdna" type="int" nillable="false" description="Start position on genomic sequence."/>
 			<field name="endGdna" type="int" nillable="false" description="End position on genomic sequence."/>
-			<field name="nameAa" nillable="true" index="true" description="Aa name of the variant, e.g. p.Ser123ArgfsX12"/>
-			<field name="startAa" type="int" nillable="true" index="true" description="Start position on amino acid sequence."/>
+			<field name="nameAa" nillable="true" description="Aa name of the variant, e.g. p.Ser123ArgfsX12"/>
+			<field name="startAa" type="int" nillable="true" description="Start position on amino acid sequence."/>
 			<field name="endAa" type="int" nillable="true" description="End position on amino acid sequence."/>
 			<field name="gene" type="xref" nillable="false" xref_field="Gene.id" description="The gene this variant lies on."/>
 		</entity>
@@ -58,7 +58,7 @@
 		</entity>
 		<entity name="Exon" extends="SequenceCharacteristic">
 			<description>Serves as a view on SequenceCharacteristics that are exons or introns.</description>
-			<field name="isIntron" type="bool" nillable="false" index="true" description="Is this exon actually an intron?"/>
+			<field name="isIntron" type="bool" nillable="false" description="Is this exon actually an intron?"/>
 			<field name="startCdna" type="int" nillable="true" description="Start position on cDNA sequence. Can be null in case of an intron."/>
 			<field name="endCdna" type="int" nillable="true" description="End position on cDNA sequence. Can be null in case of an intron."/>
 			<field name="startGdna" type="int" nillable="false" description="Start position on genomic sequence."/>
@@ -67,13 +67,13 @@
 			<field name="gene" type="xref" nillable="false" xref_field="Gene.id" description="The gene this exon belongs to."/>
 		</entity>
 		<entity name="Patient" extends="Individual" implements="submittable">
-			<field name="phenotype" nillable="false" index="true" description="Phenotypic diagnosis of the patient."/>
+			<field name="phenotype" nillable="false" description="Phenotypic diagnosis of the patient."/>
 			<field name="mutations" type="mref" xref_field="Variant.id"
 				xref_label="name" nillable="true" label="Mutations" />
 			<field name="patientreferences" type="mref" xref_field="Publication.id"
 				nillable="true" label="PubMed ID" />
 			<field name="consent" type="enum" enum_options="publication,yes,no"
-				default="no" index="true" label="Patient consent" />
+				default="no" label="Patient consent" />
 		</entity>
 	</module>
 </molgenis>

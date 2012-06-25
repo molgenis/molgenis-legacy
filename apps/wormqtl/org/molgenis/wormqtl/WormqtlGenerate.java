@@ -3,7 +3,6 @@ package org.molgenis.wormqtl;
 
 import java.io.File;
 
-import org.apache.commons.io.FileUtils;
 import org.molgenis.Molgenis;
 import org.molgenis.util.TarGz;
 
@@ -13,7 +12,7 @@ public class WormqtlGenerate
 	{
 		try
 		{
-			FileUtils.deleteDirectory(new File("hsqldb"));
+			TarGz.recursiveDeleteContentIgnoreSvn(new File("hsqldb"));
 			new Molgenis("apps/wormqtl/org/molgenis/wormqtl/wormqtl.properties").generate();
 			
 		} catch(Exception e)

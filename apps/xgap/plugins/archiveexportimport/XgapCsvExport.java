@@ -3,12 +3,12 @@ package plugins.archiveexportimport;
 import java.io.File;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
+import org.molgenis.util.TarGz;
 
 public class XgapCsvExport extends CsvWriterNoExportDataElement
 {
@@ -33,7 +33,8 @@ public class XgapCsvExport extends CsvWriterNoExportDataElement
 		}
 		else
 		{
-			FileUtils.cleanDirectory(directory);
+			TarGz.recursiveDeleteContent(directory);
+			//directory.mkdir();
 		}
 		
 		//File excelFile = new File(directory.getAbsolutePath() + File.separator + "xgap.xls");

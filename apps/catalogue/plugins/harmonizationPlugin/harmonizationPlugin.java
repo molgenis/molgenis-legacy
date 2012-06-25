@@ -2,14 +2,14 @@ package plugins.harmonizationPlugin;
 
 import gcc.catalogue.MappingMeasurement;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -94,7 +94,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				String ontologyFileName = request.getString("ontologyFileForAlgorithm");
 
 				owlFunction = new OWLFunction(ontologyFileName);
-				owlFunction.labelMapURI(listOfParameters, "alternative_term");
+				owlFunction.labelMapURI("alternative_term");
 				variableFormula  = owlFunction.getFormula();
 
 				validationStudyName = request.getString("validationStudy");
@@ -186,7 +186,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						owlFunction  = new OWLFunction(uploadFileName);
 						//owlFunction.labelMapURI("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#FULL_SYN");
 						//OWLRDFVocabulary.RDFS_COMMENT.getIRI().toString(), 
-						owlFunction.labelMapURI(listOfParameters, "alternative_term");
+						owlFunction.labelMapURI("alternative_term");
 						expandedQueries = owlFunction.getExpandedQueries();
 						expandedQueries.remove("Prediction Model");
 						expandedQueries.remove("Composite");
@@ -241,8 +241,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 						validationStudyProtocol = new Protocol();
 						validationStudyProtocol.setName(validationStudyName);
-						//validationStudyProtocol.setInvestigation_Name("Validation Study");
-						validationStudyProtocol.setInvestigation_Name(validationStudyName);
+						validationStudyProtocol.setInvestigation_Name("Validation Study");
 						db.add(validationStudyProtocol);
 					}
 
@@ -277,29 +276,29 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 							List<Integer> measurementIds = new ArrayList<Integer>();
 
+							List<Integer> featuresInMapping = validationStudyProtocol.getFeatures_Id();
+
 							for(Measurement m : measurements){
 								measurementIds.add(m.getId());
+								if(!featuresInMapping.contains(m.getId())){
+									featuresInMapping.add(m.getId());
+								}
 							}
 
 							if(measurementIds.size() > 0){
 
 								if(db.find(Measurement.class, new QueryRule(Measurement.NAME, 
 										Operator.EQUALS, originalQuery.replaceAll(" ", "_") + "_" + validationStudyName)).size() == 0){
-
 									Measurement m = new Measurement();
 									m.setName(originalQuery.toLowerCase().replaceAll(" ", "_") + "_" + validationStudyName);
-									m.setInvestigation_Name(validationStudyName);
+									m.setInvestigation_Name("Validation Study");
 									db.add(m);
-
-									List<String> listOfFeatures = validationStudyProtocol.getFeatures_Name();
-									listOfFeatures.add(m.getName());
-									validationStudyProtocol.setFeatures_Name(listOfFeatures);
 								}
 
 								Query<MappingMeasurement> queryForMapping = db.query(MappingMeasurement.class);
 
 								queryForMapping.addRules(new QueryRule(MappingMeasurement.TARGET_NAME, 
-										Operator.EQUALS, originalQuery.replaceAll(" ", "_") + "_" + validationStudyName));
+										Operator.EQUALS, originalQuery + "_" + validationStudyName));
 
 								queryForMapping.addRules(new QueryRule(MappingMeasurement.MAPPING_NAME, 
 										Operator.EQUALS, originalQuery));
@@ -327,6 +326,16 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 									db.add(mapping);
 
 								}
+
+								List<Integer> oldFeatureIds = validationStudyProtocol.getFeatures_Id();
+
+								for(Integer id : featuresInMapping){
+									if(!oldFeatureIds.contains(id)){
+										oldFeatureIds.add(id);
+									}
+								}
+
+								validationStudyProtocol.setFeatures_Id(oldFeatureIds);
 							}
 						}
 					}
@@ -359,17 +368,15 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				String mappedParameter = mapping.getMapping_Name();
 				String derivedParameter = mapping.getTarget_Name();
 				List<String> featureNames = mapping.getFeature_Name();
-
-				HashMap<String, String> featureToBuildingBlock = new HashMap<String, String>();
 				
 				String script = derivedParameter + " = 0;\n";
 				String variableType = "none";
-
+				
 				if(owlFunction.getAnnotation(mappedParameter, "Variable_Type").size() > 0){
 					variableType = owlFunction.getAnnotation(mappedParameter, "Variable_Type").get(0);
 				}
-
-				if(variableFormula.containsKey(mappedParameter) && featureNames.size() > 1){
+				
+				if(variableFormula.containsKey(mappedParameter)){
 
 					String formula = variableFormula.get(mappedParameter);
 
@@ -381,64 +388,39 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 					List<String> composites = owlFunction.getComposites(mappedParameter);
 
-					composites.add(mappedParameter);
-					
-					for(String variable : featureNames){
+					for(String buildingBlock : composites){
 
-						//TODO replace baseline with empty string right now, but later on it needs to be more generic
-						String description = identifierAndDescription.get(variable).replaceAll("[B|b]aseline", "");
+						List<String> synonyms = owlFunction.getSynonyms(buildingBlock);
 
-						List<String> tokensForDataItem = model.createNGrams(description.toLowerCase().trim(), false);
+						synonyms.add(buildingBlock);
 
 						double maxSimilarity = 0;
 
 						String matchedItem = "";
-						
-						for(String buildingBlock : composites){
 
-							List<String> synonyms = owlFunction.getSynonyms(buildingBlock);
+						for(String eachMatchingString : synonyms){
 
-							synonyms.add(buildingBlock);
+							List<String> tokensForBuildingBlock = model.createNGrams(eachMatchingString.toLowerCase().trim(), false);
 
-							for(String eachMatchingString : synonyms){
+							for(String variable : featureNames){
 
-								List<String> tokensForBuildingBlock = model.createNGrams(eachMatchingString.toLowerCase().trim(), false);
+								String description = identifierAndDescription.get(variable);
+
+								List<String> tokensForDataItem = model.createNGrams(description.toLowerCase().trim(), false);
 
 								double similarity = model.calculateScore(tokensForBuildingBlock, tokensForDataItem);		
 
 								if(maxSimilarity < similarity){
 									maxSimilarity = similarity;
 									matchedItem = variable;
-									featureToBuildingBlock.put(matchedItem, buildingBlock);
 								}
 							}
 						}
-//						featureNames.remove(matchedItem);
-//						formula = formula.replaceAll(buildingBlock.toLowerCase(), "as.numeric(dataSet[rowIndex,\"" + matchedItem + "\"])");
+						featureNames.remove(matchedItem);
+						formula = formula.replaceAll(buildingBlock.toLowerCase(), "as.numeric(dataSet[rowIndex,\"" + matchedItem + "\"])");
 
 					}
-					
-					composites.removeAll(featureToBuildingBlock.values());
-					
-					
-					for(Entry<String, String> eachEntry : featureToBuildingBlock.entrySet()){
-						
-						Pattern pattern = Pattern.compile(eachEntry.getValue().toLowerCase());
-						
-						Matcher matcher = pattern.matcher(formula);
-						
-						if(matcher.find()){
-							featureNames.remove(eachEntry.getKey());
-						}
-						
-						formula = formula.replaceAll("\"" + eachEntry.getValue().toLowerCase() + "\"", "as.numeric(dataSet[rowIndex,\"" + eachEntry.getKey() + "\"])");
-						
-					}
-					
-					for(String restOfComposite : composites){
-						formula = formula.replaceAll("\"" + restOfComposite.toLowerCase() + "\"", "NULL");
-					}
-					
+
 					formula = formula.replaceAll(substitute, derivedParameter);
 
 					System.out.println(formula);
@@ -448,7 +430,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 				//There are two types of variables, one is continuous and the other is categorical
 				if(variableType.equalsIgnoreCase("Categorical")){
-
+					
 					if(featureNames.size() == 1){
 
 						List<String> listOfCode = owlFunction.getAnnotation(mappedParameter, "codeString");
@@ -483,7 +465,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						}
 
 					}else{
-
+						
 						for(String variable : featureNames){
 
 							script += "if(as.numeric(dataSet[rowIndex, \"" + variable +"\"]) == 1 || as.numeric(dataSet[rowIndex, \"" + variable +"\"]) == \"yes\"){\n" 
@@ -491,12 +473,10 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 									+ "}\n";
 						}
 					}
-
-				}else{
-
-					if(featureNames.size() == 1){
-						script += derivedParameter + " = as.numeric(dataSet[rowIndex, \"" + featureNames.get(0) + "\"]);";
-					}
+					
+				}else if(featureNames.size() == 1){
+					
+					script += derivedParameter + " = as.numeric(dataSet[rowIndex, \"" + featureNames.get(0) + "\"]);";
 				}
 
 				variableToScript.put(derivedParameter, script);
@@ -523,15 +503,56 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 		}
 	}
 
+	private List<String> createAllPossibleCombination(HashMap<String, List<String>> classToSubClass,
+			LinkedHashMap<Integer, String> indexToClassLabel)
+			{
+
+		List<String> combinations = new ArrayList<String>();
+
+		int size = classToSubClass.size();
+
+		if(size >= 2){
+
+			String classLabelOne = indexToClassLabel.get(size - 2);
+
+			String classLabelTwo = indexToClassLabel.get(size - 1);
+
+			for(String first : classToSubClass.get(classLabelOne)){
+
+				for(String second : classToSubClass.get(classLabelTwo)){
+
+					combinations.add(first + " " + second);
+
+				}
+			}
+
+			classToSubClass.remove(classLabelOne);
+
+			classToSubClass.remove(classLabelTwo);
+
+			classToSubClass.put(classLabelOne + classLabelTwo, combinations);
+
+			indexToClassLabel.remove(size - 1);
+
+			indexToClassLabel.put(size - 2, classLabelOne + classLabelTwo);
+
+			List<String> temp = createAllPossibleCombination(classToSubClass, indexToClassLabel);
+
+			combinations.addAll(temp);
+		}
+
+		return combinations;
+			}
+
 	public void stringMatching(String separator, Tuple request) throws Exception{
 
 		mappingResultAndSimiarity.clear();
 
 		for(String eachParameter : listOfParameters){
 
-			//			if(eachParameter.equalsIgnoreCase("body mass index")){
-			//				System.out.println();
-			//			}
+			if(eachParameter.equalsIgnoreCase("Parental diabetes mellitus")){
+				System.out.println();
+			}
 
 			List<String> expandedQuery = new ArrayList<String>();
 

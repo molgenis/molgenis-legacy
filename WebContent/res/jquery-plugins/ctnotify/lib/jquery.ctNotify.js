@@ -103,7 +103,7 @@
       sticky: false,
       autoWidth: 'fitWindow', //fit,fitWindow, disabled
       width: null, //if autoWidth is set to other than disabled, this option is not used
-      opacity: .9,
+      opacity: .7,
       position: "fixed",
       align: null, //horizontal align based on calculation
       bodyIdSuffix: '_body_', //the element ID which contains the notificationc children

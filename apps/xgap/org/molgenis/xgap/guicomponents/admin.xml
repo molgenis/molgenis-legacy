@@ -1,5 +1,5 @@
 <molgenis>
-	<menu label="Admin" name="Admin">
+	<menu label="Admin panel" name="Admin">
 		<menu name="Auth" label="Users and permissions">
 			<menu label="Basic management" name="Management">
 				<form name="MolgenisUser" entity="MolgenisUser" />

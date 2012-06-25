@@ -39,7 +39,6 @@ For obtaining consent, you can download the provided <a href="res/mutation/col7a
 	<td><a href="molgenis.do?__target=${screen.name}&__action=newPatient">Submit single patient</a></td>
 </tr>
 </table>
-${form.reindex}
 </form>
 			</div>
 		</div>

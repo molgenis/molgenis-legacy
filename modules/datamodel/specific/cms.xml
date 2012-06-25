@@ -8,7 +8,6 @@
 			<field name="name" description="section inside the web page"/>
 			<field name="content" type="text" description="the content of the web page section"/>
 			<field name="prevParagraph" type="xref" xref_field="Paragraph.id" nillable="true" description="Prev Section in List"/>
-			<unique fields="name"/>
 		</entity>
 	</module>
 </molgenis>

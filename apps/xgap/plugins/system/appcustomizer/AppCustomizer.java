@@ -69,7 +69,7 @@ public class AppCustomizer extends PluginModel
 				
 				File oldBanner = new File("WebContent/clusterdemo/bg/xqtl_default_banner.png");
 				
-				FileUtils.forceDelete(oldBanner);
+				TarGz.delete(oldBanner, false);
 				
 				FileUtils.copyFile(newBanner, oldBanner);
 				
@@ -92,7 +92,7 @@ public class AppCustomizer extends PluginModel
 				
 				File oldCss = new File("WebContent/clusterdemo/colors.css");
 				
-				FileUtils.forceDelete(oldCss);
+				TarGz.delete(oldCss, false);
 				
 				FileUtils.copyFile(newCss, oldCss);
 				

@@ -10,10 +10,10 @@
 
 #MOLGENIS walltime=23:59:00
 
-#INPUTS indexfile,leftbwaout,rightbwaout,leftbarcodefqgz,rightbarcodefqgz
-#OUTPUTS samfile
+#INPUTS
+#OUTPUTS
 #LOGS log
-#EXES bwasampejar
+#EXES
 #TARGETS
 
 inputs "${indexfile}"

@@ -9,15 +9,11 @@
 #
 
 #MOLGENIS walltime=35:59:00 mem=4
-
 inputs "${sortedbam}"
 inputs "${indexfile}"
 <#if capturingKit != "None">
 inputs ${baitintervals}
 inputs ${targetintervals}
-#INPUTS sortedbam,indexfile,baitintervals,targetintervals
-<#else>
-#INPUTS sortedbam,indexfile
 </#if>
 
 alloutputsexist \
@@ -32,11 +28,6 @@ alloutputsexist \
  "${qualityscoredistributionpdf}" \
  "${hsmetrics}" \
  "${bamindexstats}"
-
-#OUTPUTS alignmentmetrics,gcbiasmetrics,gcbiasmetricspdf,insertsizemetrics,insertsizemetricspdf,meanqualitybycycle,meanqualitybycyclepdf,qualityscoredistribution,qualityscoredistributionpdf,hsmetrics,bamindexstats
-#LOGS log
-#EXES alignmentmetricsjar,gcbiasmetricsjar,insertsizemetricsjar,meanqualitybycyclejar,qualityscoredistributionjar,hsmetricsjar,bamindexstatsjar
-#TARGETS
 
 java -jar -Xmx4g ${alignmentmetricsjar} \
 I=${sortedbam} \

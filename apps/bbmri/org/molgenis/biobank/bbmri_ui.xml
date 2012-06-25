@@ -19,7 +19,6 @@
 		    	<form name="AdminCohorts" entity="Biobank" label="Admin Biobank" hide_fields="id" />
 				<form name="Coordinators" entity="Person" label="Person" view="list" sortby="LastName" />
 				<form name="Institutes" entity="Institute" view="list" />
-				<form name="BiobankCoordinator" entity="BiobankCoordinator" view="list" />
 				<form name="Categories" sortby="name" view="list" entity="BiobankCategory" />
 				<form name="DataTypes" entity="BiobankDataType" />
 				<form name="Topics" entity="BiobankTopic" />
@@ -36,9 +35,9 @@
 				<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
 			</menu>
 			<plugin name="GenerateN3andRDF" type="plugins.mapping.GenerateN3andRDF"	label="Mapping" />
-			<menu name="ImportMenu" position="left" label="Importing data"><!--
+			<menu name="ImportMenu" position="left" label="Importing data">
 				<plugin name="GenericImporter" type="plugins.GenericImporter.GenericImporterPlugin" label="Generic Importer"/>
-				--><plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
+				<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Batch Upload" />
 			</menu>
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 			<plugin name="Settings" type="plugins.system.settings.Settings" />

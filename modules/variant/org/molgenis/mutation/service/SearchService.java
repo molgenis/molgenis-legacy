@@ -12,12 +12,11 @@ import java.util.Set;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.molgenis.core.Publication;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.jpa.JpaDatabase;
 
 import org.molgenis.mutation.dto.ExonDTO;
 import org.molgenis.mutation.dto.MutationSearchCriteriaDTO;
@@ -26,7 +25,6 @@ import org.molgenis.mutation.dto.PatientSummaryDTO;
 import org.molgenis.mutation.dto.ProteinDomainDTO;
 import org.molgenis.mutation.dto.VariantDTO;
 import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservedValue;
 import org.molgenis.variant.Exon;
 import org.molgenis.variant.Patient;
 import org.molgenis.variant.ProteinDomain;
@@ -42,6 +40,7 @@ public class SearchService extends MolgenisVariantService
 	{
 		super(db);
 	}
+
 
 	/**
 	 * Find exon by its primary key
@@ -423,7 +422,7 @@ public class SearchService extends MolgenisVariantService
 					mutations.add(tmp);
 			}
 			if (criteria.getCdnaPosition() != null)
-				mutations.addAll(this.findMutationsByPosition(criteria.getCdnaPosition()));
+				mutations.addAll(this.findMutationsByCdnaPosition(criteria.getCdnaPosition()));
 			if (criteria.getCodonChangeNumber() != null)
 				mutations.addAll(this.findMutationsByCodonChangeNumber(criteria.getCodonChangeNumber()));
 			if (criteria.getExonId() != null)
@@ -522,7 +521,11 @@ public class SearchService extends MolgenisVariantService
 
 		if (NumberUtils.isNumber(term))
 		{
-			result.put("position", this.findMutationsByPosition(Integer.parseInt(term)));
+			result.put("exon number", this.findMutationsByExonNumber(Integer.parseInt(term)));
+
+			result.put("nucleotide position", this.findMutationsByCdnaPosition(Integer.parseInt(term)));
+
+			result.put("protein position", this.findMutationsByCodonChangeNumber(Integer.parseInt(term)));
 		}
 		
 		return result;
@@ -542,11 +545,11 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
-	public List<MutationSummaryDTO> findMutationsByPosition(final int position)
+	public List<MutationSummaryDTO> findMutationsByCdnaPosition(final int cdnaPosition)
 	{
 		try
 		{
-			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.STARTCDNA, position).or().equals(Variant.STARTGDNA, position).or().equals(Variant.STARTAA, position).find();
+			List<Variant> variantList = this.db.query(Variant.class).equals(Variant.STARTCDNA, cdnaPosition).find();
 			return this.variantListToMutationSummaryDTOList(variantList);
 		}
 		catch (DatabaseException e)
@@ -556,17 +559,19 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
+	public List<MutationSummaryDTO> findMutationsByExonNumber(final int exonNumber)
+	{
+		// TODO Auto-generated method stub
+		return new ArrayList<MutationSummaryDTO>();
+	}
+
 	public List<MutationSummaryDTO> findMutationsByObservedValue(final String value)
 	{
-		List<ObservationElement> observationElementList = new ArrayList<ObservationElement>();
+		String sql = "SELECT DISTINCT s FROM ObservedValue ov JOIN ov.target s WHERE ov.value = :value";
+		TypedQuery<ObservationElement> query = this.em.createQuery(sql, ObservationElement.class);
+		query.setParameter("value", value);
 
-		List<ObservedValue> valueList = ((JpaDatabase) this.db).search(ObservedValue.class, "value", value);
-		for (ObservedValue observedValue : valueList)
-		{
-			observationElementList.add(observedValue.getTarget());
-		}
-
-		return this.observationElementListToMutationSummaryDTOList(observationElementList);
+		return this.observationElementListToMutationSummaryDTOList(query.getResultList());
 	}
 
 	public List<MutationSummaryDTO> findMutationsByObservedValue(final String featureName, final String value)
@@ -597,16 +602,10 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			List<Variant> variantList = new ArrayList<Variant>();
-
-			List<Publication> publicationList = ((JpaDatabase) this.db).search(Publication.class, "title", term);
-			for (Publication publication : publicationList)
-			{
-				String sql = "SELECT s FROM Patient p JOIN p.mutations s JOIN p.patientreferences r WHERE r.id = :id";
-				TypedQuery<Variant> query = this.em.createQuery(sql, Variant.class);
-				query.setParameter("id", publication.getId());
-				variantList.addAll(query.getResultList());
-			}
+			String sql = "SELECT s FROM Patient p JOIN p.mutations s JOIN p.patientreferences r WHERE r.title LIKE :term";
+			TypedQuery<Variant> query = this.em.createQuery(sql, Variant.class);
+			query.setParameter("term", "%" + term + "%");
+			List<Variant> variantList = query.getResultList();
 
 			return this.variantListToMutationSummaryDTOList(variantList);
 		}
@@ -644,7 +643,7 @@ public class SearchService extends MolgenisVariantService
 	{
 		HashMap<String, List<PatientSummaryDTO>> result = new HashMap<String, List<PatientSummaryDTO>>();
 
-		result.put("variation", this.findPatientsByMutationNotation(term));
+		result.put("variation", this.findPatientsByCdnaNotation(term));
 
 		result.put("MID", this.findPatientsByMutationIdentifier(term));
 
@@ -662,19 +661,27 @@ public class SearchService extends MolgenisVariantService
 
 		if (NumberUtils.isNumber(term))
 		{
-			result.put("mutation position", this.findPatientsByPosition(Integer.parseInt(term)));
+			result.put("exon number", this.findPatientsByExonNumber(Integer.parseInt(term)));
+
+			result.put("nucleotide position", this.findPatientsByCdnaPosition(Integer.parseInt(term)));
+
+			result.put("protein position", this.findPatientsByCodonChangeNumber(Integer.parseInt(term)));
 		}
 		
 		return result;
 	}
 
-	public List<PatientSummaryDTO> findPatientsByPosition(final int position)
+	public List<PatientSummaryDTO> findPatientsByCodonChangeNumber(final int parseInt)
 	{
-		String sql = "SELECT DISTINCT p FROM Patient p JOIN p.mutations m WHERE m.startCdna = :position OR m.startGdna = :position OR m.startAa = :position";
-		TypedQuery<Patient> query = this.em.createQuery(sql, Patient.class);
-		query.setParameter("position", position);
+		// TODO Auto-generated method stub
+		return new ArrayList<PatientSummaryDTO>();
+	}
 
-		return this.patientListToPatientSummaryDTOList(query.getResultList());
+
+	public List<PatientSummaryDTO> findPatientsByCdnaPosition(final int parseInt)
+	{
+		// TODO Auto-generated method stub
+		return new ArrayList<PatientSummaryDTO>();
 	}
 
 
@@ -687,27 +694,11 @@ public class SearchService extends MolgenisVariantService
 
 	public List<PatientSummaryDTO> findPatientsByObservedValue(final String value)
 	{
-		List<Patient> patientList = new ArrayList<Patient>();
+		String sql = "SELECT DISTINCT p FROM ObservedValue ov JOIN ov.target p WHERE p.__Type = 'Patient' AND ov.value = :value";
+		Query query = this.em.createQuery(sql);
+		query.setParameter("value", value);
 
-		// Search for "normal" observed values
-		List<ObservedValue> valueList = ((JpaDatabase) this.db).search(ObservedValue.class, "value", value);
-		for (ObservedValue observedValue : valueList)
-		{
-			if (observedValue.getTarget() instanceof Variant)
-			{
-				Variant variant = (Variant) observedValue.getTarget();
-				patientList.addAll(variant.getMutationsPatientCollection());
-			}
-			else if (observedValue.getTarget() instanceof Patient)
-			{
-				patientList.add((Patient) observedValue.getTarget());
-			}
-		}
-
-		// Search for the phenotype
-		patientList.addAll(((JpaDatabase) this.db).search(Patient.class, "phenotype", value));
-
-		return this.patientListToPatientSummaryDTOList(patientList);
+		return this.patientListToPatientSummaryDTOList(query.getResultList());
 	}
 
 
@@ -725,13 +716,10 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			List<Patient> patientList = new ArrayList<Patient>();
-
-			List<Publication> publicationList = ((JpaDatabase) this.db).search(Publication.class, "title", term);
-			for (Publication publication : publicationList)
-			{
-				patientList.addAll(publication.getPatientreferencesPatientCollection());
-			}
+			String sql = "SELECT p FROM Patient p JOIN p.patientreferences r WHERE r.title LIKE :term";
+			TypedQuery<Patient> query = this.em.createQuery(sql, Patient.class);
+			query.setParameter("term", "%" + term + "%");
+			List<Patient> patientList = query.getResultList();
 
 			return this.patientListToPatientSummaryDTOList(patientList);
 		}
@@ -743,11 +731,11 @@ public class SearchService extends MolgenisVariantService
 	}
 
 
-	public List<PatientSummaryDTO> findPatientsByMutationNotation(final String notation)
+	public List<PatientSummaryDTO> findPatientsByCdnaNotation(final String cdnaNotation)
 	{
-		String sql = "SELECT DISTINCT p FROM Patient p JOIN p.mutations m WHERE m.nameCdna = :notation OR m.nameGdna = :notation OR m.nameAa = :notation";
+		String sql = "SELECT DISTINCT p FROM Patient p JOIN p.mutations m WHERE m.name = :cdnaNotation";
 		TypedQuery<Patient> query = this.em.createQuery(sql, Patient.class);
-		query.setParameter("notation", notation);
+		query.setParameter("cdnaNotation", cdnaNotation);
 
 		return this.patientListToPatientSummaryDTOList(query.getResultList());
 	}

@@ -1,5 +1,4 @@
 package plugins.catalogueTree;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,11 +25,7 @@ public class WriteExcel {
 
 	private WritableCellFormat timesBoldUnderline;
 	private WritableCellFormat times;
-	private String inputFile =  "/Users/despoina/userselection.xls";
-    ByteArrayOutputStream file = new ByteArrayOutputStream();
-
-	//private ByteArrayOutputStream file = new File(inputFile);
-
+	private String inputFile;
 	
 	public void setOutputFile(String inputFile) {
 		this.inputFile = inputFile;
@@ -38,6 +33,7 @@ public class WriteExcel {
 
 	//write a line
 	public void write(List<String> label, HashMap<Integer, ArrayList<String>> usrselect) throws IOException, WriteException {
+		File file = new File(inputFile);
 		WorkbookSettings wbSettings = new WorkbookSettings();
 
 		wbSettings.setLocale(new Locale("en", "EN"));
@@ -107,9 +103,6 @@ public class WriteExcel {
 		sheet.addCell(label);
 	}
 
-	public ByteArrayOutputStream getFile() {
-		return this.file;
-	}
 //	public static void main(String[] args) throws WriteException, IOException {
 //		WriteExcel test = new WriteExcel();
 //		test.setOutputFile("/Users/despoina/out.xls");

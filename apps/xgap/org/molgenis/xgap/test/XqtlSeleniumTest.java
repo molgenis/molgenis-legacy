@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.molgenis.MolgenisOptions.MapperImplementation;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.DetectOS;
+import org.molgenis.util.TarGz;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
@@ -70,18 +70,18 @@ public class XqtlSeleniumTest
 			if (dbDir.exists())
 			{
 
-				FileUtils.deleteDirectory(dbDir);
+				TarGz.recursiveDeleteContentIgnoreSvn(dbDir);
 			}
 			else
 			{
-				//throw new Exception("HSQL database directory does not exist");
+				throw new Exception("HSQL database directory does not exist");
 			}
 	
-//			if (dbDir.list().length != 1)
-//			{
-//				throw new Exception("HSQL database directory does not contain 1 file (.svn) after deletion! it contains: "
-//						+ dbDir.list().toString());
-//			}
+			if (dbDir.list().length != 1)
+			{
+				throw new Exception("HSQL database directory does not contain 1 file (.svn) after deletion! it contains: "
+						+ dbDir.list().toString());
+			}
 		}
 	}
 	
@@ -105,7 +105,8 @@ public class XqtlSeleniumTest
 		int appNameLength = appName.length();
 		String storagePath = new StorageHandler(db).getFileStorage(true, db).getAbsolutePath();
 		File storageRoot = new File(storagePath.substring(0, storagePath.length() - appNameLength));
-		FileUtils.deleteDirectory(storageRoot);
+		TarGz.recursiveDeleteContent(new File(storagePath));
+		TarGz.delete(storageRoot, false);
 	}
 
 	/**
@@ -369,10 +370,10 @@ public class XqtlSeleniumTest
 			// assert content of enum fields
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
-					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNPPromoterChipPeak");
+					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNP");
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.9.1"),
-					"Metabolite\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNPPromoterChipPeak");
+					"Metabolite\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNP");
 
 			// change Individual to Gene and save
 			selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
@@ -385,7 +386,7 @@ public class XqtlSeleniumTest
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
-					"Gene\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNPPromoterChipPeak");
+					"Gene\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNP");
 
 			// change back to Individual and save
 			selenium.click("css=#Data_FeatureType_chzn > a.chzn-single > span");
@@ -397,7 +398,7 @@ public class XqtlSeleniumTest
 			selenium.click("id=Datas_collapse_button_id");
 			Assert.assertEquals(
 					selenium.getTable("css=#Datas_form > div.screenbody > div.screenpadding > table > tbody > tr > td > table.8.1"),
-					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNPPromoterChipPeak");
+					"Individual\n\nChromosomeDerivedTraitEnvironmentalFactorGeneIndividualMarkerMassPeakMeasurementMetabolitePanelProbeProbeSetSampleSpotSNP");
 
 		}
 
@@ -572,12 +573,6 @@ public class XqtlSeleniumTest
 			{ "returnHome" })
 			public void userRoleMenuVisibility() throws Exception
 			{
-			
-			
-			if(gbicdev_dontrunthis)
-			{
-				
-			
 				//find out if admin can see the correct tabs
 				Assert.assertTrue(selenium.isTextPresent("Home*Browse data*Upload data*Run QTL mapping*Configure analysis*Search / report*Utilities*Admin panel"));
 				clickAndWait("id=Admin_tab_button");
@@ -636,7 +631,6 @@ public class XqtlSeleniumTest
 				selenium.type("id=password", "admin");
 				clickAndWait("id=Login");
 
-				}
 			}
 			
 			@Test(dependsOnMethods =

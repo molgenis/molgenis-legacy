@@ -11,24 +11,12 @@
 #MOLGENIS walltime=08:00:00 nodes=1 cores=1 mem=1
 
 <#if seqType == "SR">
-#INPUTS srbarcodefqgz,
-#OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog
-#LOGS log
-#EXES fastqcjar
-#TARGETS
-
 	inputs "${srbarcodefqgz}"
 	alloutputsexist \
 	 "${leftfastqczip}" \
 	 "${leftfastqcsummarytxt}" \
 	 "${leftfastqcsummarylog}" \
 <#else>
-#INPUTS leftbarcodefqgz,rightbarcodefqgz
-#OUTPUTS leftfastqczip,leftfastqcsummarytxt,leftfastqcsummarylog,rightfastqczip,rightfastqcsummarytxt,rightfastqcsummarylog
-#LOGS log
-#EXES fastqcjar
-#TARGETS
-
 	inputs "${leftbarcodefqgz}"
 	inputs "${rightbarcodefqgz}"
 	

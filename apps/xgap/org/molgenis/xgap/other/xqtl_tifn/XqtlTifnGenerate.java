@@ -3,7 +3,6 @@ package org.molgenis.xgap.other.xqtl_tifn;
 
 import java.io.File;
 
-import org.apache.commons.io.FileUtils;
 import org.molgenis.Molgenis;
 import org.molgenis.util.TarGz;
 
@@ -15,7 +14,7 @@ public class XqtlTifnGenerate
 	{
 		try
 		{
-			FileUtils.deleteDirectory(new File("hsqldb"));
+			TarGz.recursiveDeleteContentIgnoreSvn(new File("hsqldb"));
 			new Molgenis("apps/xgap/org/molgenis/xgap/other/xqtl_tifn/xqtl_tifn.properties").generate();
 			
 		} catch(Exception e)

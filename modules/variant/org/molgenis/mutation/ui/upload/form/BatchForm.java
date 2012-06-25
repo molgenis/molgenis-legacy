@@ -20,10 +20,5 @@ public class BatchForm extends Container
 		((ActionInput) this.get("insertBatch")).setLabel("Upload");
 		((ActionInput) this.get("insertBatch")).setTooltip("Upload");
 		((ActionInput) this.get("insertBatch")).setButtonValue("Upload");
-		ActionInput reindexInput = new ActionInput("reindex");
-		reindexInput.setLabel("Rebuild full text index");
-		reindexInput.setTooltip("Rebuild full text index");
-		reindexInput.setButtonValue("Rebuild full text index");
-		this.add(reindexInput);
 	}
 }

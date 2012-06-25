@@ -30,7 +30,6 @@ public class GonlSearchModel extends EasyPluginModel
 
 	// selected parameters
 	private int selectedChrId;
-	private String selectedChrName;
 	private int selectedFrom;
 	private int selectedTo;
 	
@@ -62,16 +61,6 @@ public class GonlSearchModel extends EasyPluginModel
 	protected void setSelectedChrId(int selectedChrId)
 	{
 		this.selectedChrId = selectedChrId;
-	}
-
-	public String getSelectedChrName()
-	{
-		return selectedChrName;
-	}
-
-	public void setSelectedChrName(String selectedChrName)
-	{
-		this.selectedChrName = selectedChrName;
 	}
 
 	protected int getSelectedFrom()

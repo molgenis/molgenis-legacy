@@ -28,9 +28,18 @@
 			<plugin name="AddAnimal" type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
 			<!-- Breeding; Goal: create and browse parentgroups + create, wean, genotype and browse litters, print cage labels; Flavor: Freemarker -->
-			<plugin name="Breeding" type="org.molgenis.animaldb.plugins.breeding.Breedingnew"
+			<plugin name="BreedingNew" type="org.molgenis.animaldb.plugins.breeding.Breedingnew"
+				label="BreedingNew" />
+			<plugin name="Breeding" type="org.molgenis.animaldb.plugins.breeding.Breeding"
 				label="Breeding" />
-			
+			<menu name="breedingmodule" position="left" label="Breeding (old)">
+				<!-- ManageParentgroups; Goal: create and browse parentgroups; Flavor: Freemarker -->
+				<plugin name="ManageParentgroups" type="org.molgenis.animaldb.plugins.breeding.ManageParentgroups"
+					label="Parentgroups" />
+				<!-- ManageLitters; Goal: create, wean, genotype and browse litters, print cage labels; Flavor: Freemarker -->
+				<plugin name="ManageLitters" type="org.molgenis.animaldb.plugins.breeding.ManageLitters"
+					label="Litters" />
+			</menu>
 			<!-- RemAnimalPluginMatrix; Goal: remove animals; Flavor: Java-only -->
 			<plugin name="RemAnimal" type="org.molgenis.animaldb.plugins.animal.RemAnimalPluginMatrix"
 				label="Remove animals" />
@@ -148,15 +157,11 @@
 					<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
 					<form name="prefix" entity="NamePrefix" view="list" label="Name prefixes" />
 					<form name="news" entity="MolgenisNews" view="list" label="Frontpage items" />
-					<form name="files" entity="AnimalDbFile" view="list" label="Files">
-						<plugin name="Viewer" type="org.molgenis.animaldb.plugins.viewers.AnimalDbFileViewer" />
-					</form>
 				</menu>
 				<menu name="deltablemenu" position="left" label="Deletion tables">
 					<form name="delindividual" entity="DeletedIndividual" view="list" label="Individuals" />
 					<form name="delobservedvalue" entity="DeletedObservedValue" view="list" label="Values" />
 				</menu>
-				<plugin label="File storage" name="FileStorage" type="plugins.system.settings.Settings" />
 			</menu>
 		</menu>
 

@@ -1,9 +1,5 @@
 package org.molgenis.feedback;
 
-import javax.servlet.http.HttpServletRequest;
-
-import nl.captcha.Captcha;
-
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.auth.DatabaseLogin;
 import org.molgenis.auth.MolgenisUser;
@@ -15,7 +11,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.util.EmailService;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 
 public class FeedbackForm extends PluginModel<Entity>
@@ -45,19 +40,6 @@ public class FeedbackForm extends PluginModel<Entity>
 	{
 		try
 		{	
-			//capcha verification
-			if(request.getString("code") == null || request.getString("code").trim().isEmpty())
-			{
-				throw new Exception("Please fill in the code.");
-			}
-			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-			HttpServletRequest httpRequest   = rt.getRequest();
-			Captcha captcha = (Captcha) httpRequest.getSession().getAttribute(Captcha.NAME);
-			if (!captcha.isCorrect(request.getString("code")))
-			{
-				throw new Exception("Code was wrong.");
-			}
-			
 			String appName = this.getController().getApplicationController().getMolgenisContext().getVariant();
 			if ("sendFeedback".equals(request.getAction())) {
 				feedback = "User: " + request.getString("name") + " (username: " + this.getLogin().getUserName() + 
@@ -66,7 +48,7 @@ public class FeedbackForm extends PluginModel<Entity>
 				// get admin email
 				MolgenisUser admin = db.query(MolgenisUser.class).eq(MolgenisUser.NAME, "admin").find().get(0);
 				if (StringUtils.isEmpty(admin.getEmail()))
-					throw new DatabaseException("Sending feedback failed: the administrator did not enter an email address. Please contact your administrator about this.");
+					throw new DatabaseException("Sending feedback failed: the administrator has no email address set. Please contact your administrator about this.");
 				
 				EmailService ses = this.getEmailService();
 				ses.email("New feedback on "+appName+"", feedback, admin.getEmail(), true);
@@ -86,7 +68,7 @@ public class FeedbackForm extends PluginModel<Entity>
 	
 	public String getActivePlugin() {
 		if (this.getParent().getSelected() == null) {
-			return "Home"; //need a nice default when no screen is explicitly selected... should be the screen that is currently shown, though! might be easy to fix?
+			return "";
 		}
 		ScreenModel model = this.getParent().getSelected();
 		while (model.getSelected() != null) {

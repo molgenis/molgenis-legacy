@@ -27,21 +27,12 @@ public class GonlHeader extends PluginModel<Entity>
 		super(name, parent);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.molgenis.framework.ui.SimpleScreenController#getCustomHtmlHeaders()
-	 */
-	@Override
-	public String getCustomHtmlHeaders()
-	{
-		return "<link rel=\"stylesheet\" style=\"text/css\" href=\"bbmri/css/bbmri_colors.css\">" + "\n";
-	}
-
 	@Override
 	public String getViewName()
 	{
-		return "plugins_header_GonlHeader";
+		return "plugins_header_PhenoHeader";
 	}
-	
+
 	@Override
 	public String getViewTemplate()
 	{

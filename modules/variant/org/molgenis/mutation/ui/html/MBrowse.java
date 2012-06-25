@@ -21,12 +21,10 @@ public class MBrowse implements Serializable
 	private ExonDTO exonDTO;
 	private List<ExonDTO> exonDTOList;
 	private Boolean showNames;
-	private Boolean isVisible;
 
 	public MBrowse()
 	{
 		this.showNames = true;
-		this.isVisible = true;
 	}
 
 	public String getTarget() {
@@ -139,15 +137,5 @@ public class MBrowse implements Serializable
 		sequencePanel.setBaseUrl("molgenis.do?__target=" + this.getTarget() + "&select=" + this.getTarget() + "&__action=showMutation&mid=#results");
 
 		return sequencePanel;
-	}
-
-	public Boolean getIsVisible()
-	{
-		return isVisible;
-	}
-
-	public void setIsVisible(Boolean isVisible)
-	{
-		this.isVisible = isVisible;
 	}
 }

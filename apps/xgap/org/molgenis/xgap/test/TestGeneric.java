@@ -1,9 +1,12 @@
 package org.molgenis.xgap.test;
 
+import java.io.File;
+
 import generic.CommandExecutor;
 import generic.JavaCompiler;
 import generic.JavaCompiler.CompileUnit;
 import generic.Utils;
+import generic.FileUtils;
 
 import org.testng.annotations.Test;
 
@@ -21,6 +24,13 @@ public class TestGeneric {
 		org.testng.Assert.assertEquals(c.getCommands().size(), 2);
 		c.clearCommands();
 		org.testng.Assert.assertEquals(c.getCommands().size(), 0);
+	}
+	
+	@Test
+	void FileUtils(){
+		File f = new File("Harry");
+		f.mkdir();
+		org.testng.Assert.assertEquals(FileUtils.deleteDirectory("Harry"), true);
 	}
 	
 	@Test

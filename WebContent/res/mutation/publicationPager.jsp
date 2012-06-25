@@ -18,7 +18,7 @@
 
 <display:column title="No."><c:out value="${current_rowNum}"/></display:column>
 <display:column title="Title" property="title" sortable="true"/>
-<display:column title="Authors" property="authors" sortable="true" maxWords="6"/>
+<display:column title="Authors" property="authors" sortable="true" maxWords="2"/>
 <display:column title="Journal" property="journal" sortable="true"/>
 <display:column title="Year" property="year" sortable="true"/>
 <display:column media="html" title="External link" sortable="true">

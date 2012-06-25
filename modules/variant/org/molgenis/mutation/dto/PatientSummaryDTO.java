@@ -222,22 +222,19 @@ public class PatientSummaryDTO implements Comparable<PatientSummaryDTO>, Seriali
 	public void setObservedValueDTOList(List<ObservedValueDTO> observedValueDTOList) {
 		this.observedValueDTOList = observedValueDTOList;
 	}
-
+/*	
 	@Override
 	public int compareTo(PatientSummaryDTO o)
 	{
-		if (CollectionUtils.isEmpty(this.getPublicationDTOList()) || CollectionUtils.isEmpty(o.getPublicationDTOList()))
-			return 0;
+		if (CollectionUtils.isEmpty(this.getVariantDTOList()))
+			return -1;
+		if (CollectionUtils.isEmpty(o.getVariantDTOList()))
+			return 1;
 
-		if ("".equals(this.getPublicationDTOList().get(0).getYear()) || "".equals(o.getPublicationDTOList().get(0).getYear()))
-			return 0;
-
-		Integer year1 = Integer.parseInt(this.getPublicationDTOList().get(0).getYear());
-		Integer year2 = Integer.parseInt(o.getPublicationDTOList().get(0).getYear());
-		
-		return year2.compareTo(year1);
+		String year1 = this.getPublicationDTOList().get(0).getYear();
+		String year2 = o.getPublicationDTOList().get(0).getYear();
 	}
-/*
+*/
 	@Override
 	public int compareTo(PatientSummaryDTO o)
 	{
@@ -263,5 +260,4 @@ public class PatientSummaryDTO implements Comparable<PatientSummaryDTO>, Seriali
 		}
 		return gdnaPosition1.compareTo(gdnaPosition2) * -1; // gDNA position is descending
 	}
-*/
 }
