@@ -18,7 +18,7 @@ import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
 
-public class TestDatabaseTable
+public class TestEntityTable
 {
 	List<Individual> individuals = new ArrayList<Individual>();
 	Database db = null;
