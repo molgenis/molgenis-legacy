@@ -24,6 +24,7 @@ public class tableModel {
 	public tableModel(String spreadSheetName, boolean allSheets){
 		this.spreadSheetName = spreadSheetName;
 		this.allSheets = allSheets;
+		this.processingTable();
 	}
 
 	public void setStartingRow (int startingRow){

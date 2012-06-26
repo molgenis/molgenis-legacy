@@ -42,8 +42,6 @@ public class levenshteinDistance {
 
 		tableModel model = new tableModel(fileName, false);
 
-		model.processingTable();
-
 		List<String> originalTerms = model.getColumn("Symptom");
 		
 		String ontologyFileName = "/Users/pc_iverson/Desktop/Ontology_term_pilot/human-phenotype-ontology.obo";
@@ -53,6 +51,12 @@ public class levenshteinDistance {
 		owlFunction.labelMapURI();
 		
 		List<String> listOfOntologyTerms = owlFunction.getAllTerms();
+		
+		String file2 = "/Users/pc_iverson/Desktop/Ontology_term_pilot/CineasDiagnoses.xls";
+		
+		tableModel model2 = new tableModel(file2, false);
+		
+		List<String> listOfSympotoms = model2.getColumn("ZIEKTETEKST");
 		
 		int rowIndex = 0;
 		
@@ -126,38 +130,64 @@ public class levenshteinDistance {
 			
 			sheet.addCell(scoreCell);
 			
-			rowIndex++;
 			
-			if(bestScore < 90){
+			
+//			if(bestScore < 90){
+//				
+//				for(Entry<String, Double> eachEntry : candidateMatching.entrySet()){
+//					
+//					String term = eachEntry.getKey();
+//					
+//					Double similarity = eachEntry.getValue();
+//					
+//					String HPOId = candidateHPOId.get(term);
+//					
+//					originalTermCell = new Label(0, rowIndex, eachTerm);
+//					
+//					ontologyTermCell = new Label(1, rowIndex, term);
+//					
+//					termIDCell = new Label(2, rowIndex, HPOId);
+//					
+//					scoreCell = new Label(3, rowIndex, "" + similarity);
+//					
+//					//sheet.addCell(originalTermCell);
+//					
+//					sheet.addCell(ontologyTermCell);
+//					
+//					sheet.addCell(termIDCell);
+//					
+//					sheet.addCell(scoreCell);
+//					
+//					rowIndex++;
+//				}
+//			}
+			
+			double bestScoreForSympotom = 0;
+			
+			String matchedSympotom = "";
+			
+			for(String sympotom : listOfSympotoms){
 				
-				for(Entry<String, Double> eachEntry : candidateMatching.entrySet()){
+				double similiarityScore = matchingModel.stringMatching(eachTerm, sympotom, false);
+				
+				if(bestScoreForSympotom < similiarityScore){
 					
-					String term = eachEntry.getKey();
+					bestScoreForSympotom = similiarityScore;
 					
-					Double similarity = eachEntry.getValue();
+					matchedSympotom = sympotom;
 					
-					String HPOId = candidateHPOId.get(term);
-					
-					originalTermCell = new Label(0, rowIndex, eachTerm);
-					
-					ontologyTermCell = new Label(1, rowIndex, term);
-					
-					termIDCell = new Label(2, rowIndex, HPOId);
-					
-					scoreCell = new Label(3, rowIndex, "" + similarity);
-					
-					//sheet.addCell(originalTermCell);
-					
-					sheet.addCell(ontologyTermCell);
-					
-					sheet.addCell(termIDCell);
-					
-					sheet.addCell(scoreCell);
-					
-					rowIndex++;
 				}
 			}
-				
+			
+			Label symptomCell = new Label(4, rowIndex, matchedSympotom);
+			
+			Label scoreForSymptomCell = new Label(5, rowIndex, "" + bestScoreForSympotom);
+			
+			sheet.addCell(symptomCell);
+			
+			sheet.addCell(scoreForSymptomCell);
+			
+			rowIndex++;
 		}
 		
 		workbook.write();
