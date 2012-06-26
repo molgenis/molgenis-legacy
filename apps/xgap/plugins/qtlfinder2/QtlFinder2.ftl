@@ -608,15 +608,7 @@
 	
 	
 	
-	<#if model.shortenedQuery??><i>Your query was too specific for any hits, so it was shortened to:</i> <b>${model.shortenedQuery}</b>. </#if>
 	
-	<#if model.hits?? && model.hits?size == 100 && model.shortenedQuery??>
-		<i>These results were limited to the first 100.</i><br><br>
-	<#elseif model.hits?? && model.hits?size == 100>
-		<i>Your results were limited to the first 100. Please be more specific.</i><br><br>
-	<#else>
-
-	</#if>
 	
 	<#if model.hits??>
 	
@@ -641,6 +633,19 @@
 	<br><br><br>
 	<h3>Found ${model.hits?size} hits.</h3>
 	
+	<h4>
+		<#if model.shortenedQuery??>
+			<br>Your query was too specific for any hits, so it was shortened to <u>${model.shortenedQuery}</u>.
+		</#if>
+		
+		<#if model.hits?? && model.hits?size == 100 && model.shortenedQuery??>
+			<br>These results were limited to the first 100.
+		<#elseif model.hits?? && model.hits?size == 100>
+			<br>Your results were limited to the first 100. Please be more specific.
+		<#else>
+	
+		</#if>
+	</h4>
 
 	
 	<#if shopped gt 0>
