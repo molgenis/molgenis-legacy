@@ -648,7 +648,7 @@ public class MolgenisModelValidator
 	 * Validate the unique constraints
 	 * <ul>
 	 * <li>Do unique field names refer to existing fields?
-	 * <li>Is there a unique column?
+	 * <li>Is there a unique column id + unique label?
 	 * </ul>
 	 * 
 	 * @param model
@@ -701,13 +701,33 @@ public class MolgenisModelValidator
 					"there should be only one auto column and it must be the primary key for entity '" + entityname
 							+ "'");
 
+			// should have secondary key if there is a reference to this entity
+			if (!entity.isAbstract() && autocount >= 1)
+			{
+				if (entity.getAllKeys().size() < 2)
+				{
+					//check references
+					boolean ref = false;
+					for(Entity otherEntity: model.getEntities())
+					{
+						for(Field f: otherEntity.getAllFields()){
+							if( (f.getType() instanceof XrefField || f.getType() instanceof MrefField) && entity.getName().equals(f.getXrefEntityName()))
+							{
+								throw new MolgenisModelException("if primary key is autoid, there should be secondary key for entity '"
+										+ entityname + "' because of reference by "+otherEntity.getName() +"."+f.getName());
+							}
+						}
+					}
+				}
+			}
+
 			// to strict, the unique field may be non-automatic
-			// if (!entity.isAbstract() && autocount < 1)
-			// {
-			// throw new MolgenisModelException(
-			// "there should be one auto column for each root entity and it must be the primary key for entity '"
-			// + entityname + "'");
-			// }
+			if (!entity.isAbstract() && autocount < 1)
+			{
+				throw new MolgenisModelException(
+						"there should be one auto column for each root entity and it must be the primary key for entity '"
+								+ entityname + "'");
+			}
 		}
 
 	}

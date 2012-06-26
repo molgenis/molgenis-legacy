@@ -109,7 +109,6 @@ public class JpaDatabase extends AbstractDatabase
 	}
 
 	private final EntityManager em;
-	private FullTextEntityManager ftem = null;
 	private String persistenceUnitName = "molgenis"; //default
 
 	protected JpaDatabase(String persistenceUnitName)
@@ -252,23 +251,27 @@ public class JpaDatabase extends AbstractDatabase
 		return persistenceUnitName;
 	}
 
-	public void initFullTextSearch() throws InterruptedException
+	public void index()
 	{
-		this.ftem = Search.getFullTextEntityManager(this.em);
-		this.ftem.createIndexer().startAndWait();
+		try
+		{
+			FullTextEntityManager ftem = Search.getFullTextEntityManager(this.em);
+			ftem.createIndexer().startAndWait();
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
-	public <E extends Entity> List<E> findByFullTextSearch(String searchString,
-			Class<E> entityClass, String... fieldList)
+	public <E extends Entity> List<E> search(Class<E> entityClass, String fieldList, String searchString)
 	{
-		QueryBuilder qb = this.ftem.getSearchFactory().buildQueryBuilder()
-				.forEntity(entityClass).get();
-		org.apache.lucene.search.Query query = qb.keyword().onFields(fieldList)
-				.matching(searchString).createQuery();
-		javax.persistence.Query persistenceQuery = this.ftem
-				.createFullTextQuery(query, entityClass);
+		FullTextEntityManager ftem               = Search.getFullTextEntityManager(this.em);
+		QueryBuilder qb                          = ftem.getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
+		org.apache.lucene.search.Query query     = qb.keyword().onFields(fieldList).matching(searchString).createQuery();
+		javax.persistence.Query persistenceQuery = ftem.createFullTextQuery(query, entityClass);
 		@SuppressWarnings("unchecked")
-		List<E> result = persistenceQuery.getResultList();
+		List<E> result                           = persistenceQuery.getResultList();
 		return result;
 	}
 }

@@ -294,7 +294,10 @@ public class MolgenisOptions implements Serializable
 	/** The log level of log4j used by your application. Used by FrontController. **/
 	@Option(name = "log_target", param = Option.Param.ENUM, type = Option.Type.OPTIONAL_ARGUMENT, usage="Use this log target to initialize log4j. Default: console")
 	public LogTarget log_target = LogTarget.CONSOLE;
-	
+
+	@Option(name = "hibernate_search_index_base", param = Option.Param.STRING, type = Type.OPTIONAL_ARGUMENT, usage = "Directory where the full text index is created. Default: /tmp/lucene")
+	public String hibernate_search_index_base = "/tmp/lucene";
+
 	// @Option(name = "force_lowercase_names", param = "force_lowercase_names",
 	// type = Option.Type.REQUIRED_ARGUMENT, usage =
 	// "Expert option. Wether all names should be converted to lowercase. Default: true"
@@ -473,6 +476,10 @@ public class MolgenisOptions implements Serializable
 	
 	public String getHibernateDialect() {
 		return this.hibernate_dialect;
+	}
+
+	public String getHibernateSearchIndexBase() {
+		return this.hibernate_search_index_base;
 	}
 
 	public ArrayList<String> getModelDatabase()

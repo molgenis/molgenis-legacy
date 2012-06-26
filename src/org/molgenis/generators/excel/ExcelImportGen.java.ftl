@@ -19,6 +19,7 @@ package ${package};
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import jxl.Workbook;
 
@@ -57,6 +58,11 @@ public class ExcelImport
 
 	public static ImportResult importAll(File excelFile, Database db, Tuple defaults, List<String> components, DatabaseAction dbAction, String missingValue, boolean useDbTransaction) throws Exception
 	{
+		//fixes the problem where, even though decimals have a "." they are still read as "," because of the locale!
+		//TODO: dangerous: entire application locale changes! but workbook locale settings don't seem to have an effect...
+		Locale saveTheDefault = Locale.getDefault();
+		Locale.setDefault(Locale.US);
+		
 		Workbook workbook = Workbook.getWorkbook(excelFile);
 		ArrayList<String> sheetNames = new ArrayList<String>();
 		for(String sheetName : workbook.getSheetNames()){
@@ -146,6 +152,8 @@ public class ExcelImport
 			}
 			throw e;
 		}finally{
+			//restore the locale settings (important!)
+			Locale.setDefault(saveTheDefault);
 			workbook.close();
 		}
 		return result;
