@@ -18,7 +18,7 @@ import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
 
-public class TestDatabaseTable
+public class TestEntityTable
 {
 	List<Individual> individuals = new ArrayList<Individual>();
 	Database db = null;
@@ -34,9 +34,6 @@ public class TestDatabaseTable
 	{
 		// assumes empty database!
 		db = DatabaseFactory.create();
-
-		// db.dropDatabase();
-		// db.createDatabase();
 
 		// load the persons
 		db.remove(db.find(Individual.class));

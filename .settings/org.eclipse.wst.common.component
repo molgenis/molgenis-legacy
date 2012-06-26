@@ -21,3 +21,4 @@
     <wb-resource deploy-path="/WEB-INF/classes" source-path="modules/decorators/auth"></wb-resource>
   </wb-module>
 </project-modules>
+

@@ -16,8 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
 import org.molgenis.datatable.controller.Renderers.Renderer;
+import org.molgenis.datatable.model.JoinQueryTable;
 import org.molgenis.datatable.model.QueryTable;
-import org.molgenis.datatable.model.QueryTables;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
@@ -97,7 +97,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					final SQLTemplates dialect = new MySQLTemplates();
 					final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-					boolean joinTable = true;
+					boolean joinTable = false;
 					if(joinTable) {
 						List<String> tableNames = new ArrayList<String>();
 						List<String> columnNames = new ArrayList<String>();
@@ -122,8 +122,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 							tableNames = Arrays.asList("Country", "City");
 						}
 						
-						final List<QueryTables.Join> joins = Arrays.asList(new QueryTables.Join("Country.Code", "City.CountryCode"));
-						return new QueryTables(query, tableNames, joins, db);						
+						final List<JoinQueryTable.Join> joins = Arrays.asList(new JoinQueryTable.Join("Country.Code", "City.CountryCode"));
+						return new JoinQueryTable(query, tableNames, joins, db);						
 					} 
 					
 					PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
@@ -135,6 +135,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 							"Population"));
 					final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(Integer.class,
 							"Population"));
+					
 					final NumberExpression<Double> cityPopulationRatio = cityPopulation.divide(countryPopulation);
 					query.where(country.get("code").eq(city.get("countrycode")));
 					query.limit(10);
@@ -447,13 +448,13 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 				BooleanExpression expr = null;
 				for (StringMap<String> rule : jsonRules)
 				{
-					final String field = rule.get("field");
+					final String fieldName = rule.get("field");
 					final String op = rule.get("op");
 					final String value = rule.get("data");
 					//final String index = rule.get("index");
 	
-					final SimpleExpression<? extends Object> selectExpr = selectMap.get(field);
-					final Field column = queryTable.getColumn(field);
+					final SimpleExpression<? extends Object> selectExpr = selectMap.get(fieldName);
+					final Field column = queryTable.getColumnByName(fieldName);
 					final FieldTypeEnum type = column.getType().getEnumType();
 					BooleanExpression rhs = getExpression(op, value, selectExpr, column, type);
 					if (expr != null)

@@ -1,27 +1,23 @@
 package org.molgenis.datatable.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.StringUtils;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Multimaps;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.expr.SimpleExpression;
 
+/**
+ * A class to wrap a specific {@link SQLQuery} in a TupleTable. 
+ */
 public class QueryTable implements TupleTable
 {
 	private final SQLQueryImpl query;
@@ -49,7 +45,7 @@ public class QueryTable implements TupleTable
 		return columns;
 	}
 
-	public Field getColumn(String name)
+	public Field getColumnByName(String name)
 	{
 		return columnsByName.get(name);
 	}
@@ -59,14 +55,7 @@ public class QueryTable implements TupleTable
 	{
 		final List<Tuple> tuples = new ArrayList<Tuple>();
 
-		int valSize = select.values().size();
-		Expression<?>[] selectArray = new Expression<?>[valSize];
-		int idx = 0;
-		for (Iterator<SimpleExpression<? extends Object>> iterator = select.values().iterator(); iterator.hasNext();)
-		{
-			selectArray[idx] = iterator.next();
-			++idx;
-		}
+		final Expression<?>[] selectArray = getSelectAsArray();
 
 		final List<Object[]> rows = query.list(selectArray);
 		final ArrayList<Field> cols = new ArrayList<Field>(columns);
@@ -82,52 +71,23 @@ public class QueryTable implements TupleTable
 		return tuples;
 	}
 
-	public String getDynaTreeNodes()
+	/**
+	 * Convert the {@link Collection} of values in the select field to an array of {@link Expression}s,
+	 * for use in the {@link SQLQuery.list()} function.
+	 * @return The array of expressions.
+	 */
+	private Expression<?>[] getSelectAsArray()
 	{
-		// K = tableName, V = Field
-		final ImmutableListMultimap<String, Field> fieldsByTable = Multimaps.index(columns,
-				new Function<Field, String>()
-				{
-					@Override
-					public String apply(Field field)
-					{
-						if (StringUtils.isEmpty(field.getTableName()))
-						{
-							if(StringUtils.contains(field.getName(), ".")) {
-								return StringUtils.substringBefore(field.getName(), ".");	
-							} else {
-								return "Other";
-							}
-						}
-						return field.getTableName();
-					}
-				});
-
-		final Map<String, String> rs = new LinkedHashMap<String, String>();
-		for (final String tableName : fieldsByTable.keys())
+		final Collection<SimpleExpression<?>> values = select.values();
+		int valSize = values.size();
+		final Expression<?>[] selectArray = new Expression<?>[valSize];
+		int idx = 0;
+		for (Iterator<SimpleExpression<? extends Object>> iterator = values.iterator(); iterator.hasNext();)
 		{
-			final StringBuilder tableNode = new StringBuilder();
-			final ImmutableList<Field> fieldByTable = fieldsByTable.get(tableName);
-			tableNode.append("{");
-			tableNode.append(String.format("title : \"%s\", ", tableName));
-			if (CollectionUtils.isNotEmpty(fieldByTable))
-			{
-				tableNode.append("isFolder: true,");
-				tableNode.append(String.format("children: [%s]",
-						StringUtils.join(CollectionUtils.collect(fieldByTable, new Transformer()
-						{
-							@Override
-							public Object transform(Object arg0)
-							{
-								final Field f = (Field) arg0;
-								return String.format("{title : \"%s\", path : \"%s\"}", f.getName(), f.getSqlName());
-							}
-						}), ",")));
-			}
-			tableNode.append("}");
-			rs.put(tableName, tableNode.toString());
+			selectArray[idx] = iterator.next();
+			++idx;
 		}
-		return String.format("[%s]", StringUtils.join(rs.values(), ","));
+		return selectArray;
 	}
 
 	@Override
