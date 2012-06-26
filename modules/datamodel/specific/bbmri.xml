@@ -42,6 +42,7 @@
 			<!-- this has to become a xref to publication -->
 			<field name="Publications" label="Publications" type="text" nillable="true" />
 			<field name="Approved" default="false" type="bool" nillable="false" description="This field indicates whether the record is approved by admin/curator" ></field>
+			<unique fields="Cohort"/>
 		</entity>
 		
 		<entity name="ChangeLog" implements="Identifiable">

@@ -1,0 +1,436 @@
+/**helper classes for reuse of colors*/
+.colorOfTitle{
+}
+
+.overallBackground{
+}
+
+.highlightBackground{
+}
+
+.shadeHeader{
+}
+
+.highlight{
+}
+
+.shadeBorder{
+}
+
+.fontColor{
+}
+
+.matrixRowColor0{
+}
+
+.matrixRowColor1{
+}
+
+.matrixRowColorEmpty{
+}
+
+/**additional formatting for xgap matrix*/
+.matrixTableCell{
+	border: solid 4px;
+}
+
+.tableBorder{
+		border:10px;
+		border-style:solid;
+}
+
+/**settings within the iframe*/
+input[type=text], input[type=password], input[type=file], textarea, select {
+	background-color:#DDDDDD;
+	font-size: 9pt;
+	border: 0px #aaa solid;
+	padding: 4px;
+}
+
+input[type=submit], input[type=reset], input[type=button] {
+	font-size: 9pt;
+	padding: 3px;
+}
+
+select{
+	min-width: 100px;
+}
+
+td {
+	vertical-align: middle;
+}
+
+input[type=hidden] {
+	margin: 0px;
+	padding: 0px;
+}
+
+.readonly{
+	background: #eee;
+	/*readonly fields are greyed out (not automatic in ie)*/
+}
+
+table {
+	/*border-collapse: collapse;*/
+}
+
+.form_header {
+	font-family: arial;
+	font-size: 10pt;
+    font-weight: bold;
+    color: #ffffff;
+	text-align: center;
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+}
+
+.form_title {
+	font-family: arial;
+	font-size: 10pt;
+    font-weight: bold;
+    color: #ffffff;
+	text-align: center;
+}
+.navigation_button {
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.edit_button {
+	cursor: pointer;
+}
+
+.tableheader {
+	cursor: pointer;
+}
+
+.screenbody
+{	
+	width: 100%;
+	padding: 10px;
+}
+
+label {
+	font-family: arial;
+	font-size: 9pt;
+    font-weight: bold;	
+}
+
+.formscreen{
+	border-style: solid;
+	border-width: thin;
+	margin-top: 0px;
+}
+
+.subscreen{
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+}
+
+.menuscreen{
+	margin: 0px;
+	height: 20px;
+}
+      
+.errormessage{
+	background: red;
+	color: white;
+	text-align: center;
+	font-size: 8pt;
+	margin: 0px;
+	font-weight: bold;
+}
+
+.warningmessage{
+	background: #FBB117;
+	color: white;
+	text-align: center;
+	font-size: 8pt;
+	margin: 0px;
+	font-weight: bold;
+}
+
+.successmessage {
+	background:#52D017;
+	color: black;
+	text-align: center;
+	font-size: 8pt;
+	margin: 0px;
+}
+
+/*form*/
+
+.simple_search {
+	width: 300px;
+}
+
+.adv_search {
+	width: 300px;
+}
+
+.form_toolbar {
+	float: left;
+	position: absolute;
+	padding: 5px;
+}
+
+.form_new, .form_filter {
+    border-style: solid;
+    border-width: 1px;
+	padding: 0px;
+	margin: 0px;
+	z-index: 20;
+	display: none;
+	position: absolute;
+}
+.listtable {
+	width: 100%;
+    font-family: arial;
+    font-size: 9pt;
+    border-collapse: collapse;
+    margin-top: 3px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.screenpadding {
+	margin: 10px;
+	/* margin: expression('0px'); */
+}
+
+.listtable th {
+	white-space: nowrap;
+	text-align: left;
+	padding: 5px;
+}
+
+.listtable td {
+	white-space: nowrap;
+	text-align: left;
+	padding: 5px;
+}
+
+.listtable2 {
+	width: 100%;
+    font-family: arial;
+    font-size: 9pt;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    margin: 0px;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.listtable2 th {
+	font-family: arial;
+    font-size: 9pt;
+	white-space: nowrap;
+	text-align: left;
+	padding: 5px;
+	border-style: solid;
+    border-width: 1px;
+}
+
+.listtable2 td {
+	font-family: arial;
+    font-size: 9pt;
+	white-space: nowrap;
+	text-align: left;
+	padding: 5px;
+	border-style: solid;
+    border-width: 1px;
+}
+
+.form_listrow0 {
+	vertical-align: top;
+}
+
+td .screenbody{
+	vertical-align: top;
+}
+
+td .form_listrow0{
+	vertical-align: top;
+}	
+
+.form_listrow1 {
+	vertical-align: top;
+}
+
+td .form_listrow1 {
+	vertical-align: top;
+}
+
+.embedtable {
+	width: 100%;
+	height: 100%;
+    font-family: arial;
+    font-size: 9pt;
+    border-collapse: separate;
+    margin: 0px;
+}
+
+.link {
+	color: blue;
+	cursor: pointer;
+}
+
+.popup {
+	margin: auto;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.recordview_datavalue {
+	background: white;
+	margin: 2px;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+.listview_smallcolumn{
+	width: 50px;
+
+}
+
+/*tree*/
+.tree_element {
+	color: #000000;
+	text-decoration: none;
+	font: menu;
+	white-space: nowrap;
+	cursor: pointer;
+}		
+
+.tree_element_open {
+	display: block;
+	color: #000000;  
+	font: menu;
+}	
+
+.tree_element_close {
+	display: none;
+	color: #000000;  
+	font: menu;
+}
+
+.seqQual {
+	font-size: 5pt;
+	font-family: courier, courier new;
+}
+.seqQual0 {
+	background: #cccccc;
+}
+.seqQual1 {
+	background: #ffaaaa;
+}
+.seqQual2 {
+	background: #ffeeee;
+}
+.seqQual3 {
+	background: #ffff99;
+}
+.seqQual4 {
+	background: #88ddff;
+}
+.seqQual5 {
+	background: #88ffdd;
+}
+.exonbox {
+        border-color: #000000;
+        border-top-width: 2px;
+        border-bottom-width: 2px;
+        border-left-width: 0px;
+        border-right-width:0px;
+}
+
+.scrollable {
+		height: 120px;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-top: 10px;
+        padding-bottom: 10px;
+}
+pre {
+        color: #000000;
+        font-family: monospace, sans-serif;
+        font-size: 10pt;
+}
+.seq {
+        background-color: #ffdddd; /* #fd9f6d; */
+        border-width: 0px;
+}
+.mut {
+        background-color: #ffdddd; /* #fd9f6d; */
+        border-width: 0px;
+        color: #ff0000;
+        text-decoration: none;
+}
+.basenum {
+        font-size: 6pt;
+}
+
+/**edits*/
+.navigationSelected {
+	border-bottom: none;
+}
+
+.navigationSelected, .navigationNotSelected {
+	margin-right: 10px;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+#header{
+	color: #FD6C20;
+	font-family: verdana;
+}
+
+.screenpadding {
+	padding-right: 10px;
+}
+
+.listtable td {
+	white-space: normal;
+}
+
+body {
+	text-align: center;
+}
+
+#container {
+	text-align: left;
+}
+
+.printbox {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+.news_box {
+	vertical-align: top;
+	width: 350px;
+}
+	
+.news_title {
+	font-family: arial;
+	font-size: 11pt;
+    font-weight: bold;
+}
+
+.news_subtitle {
+	font-family: arial;
+	font-size: 10pt;
+    font-weight: bold;
+}
+
+.clickable_block {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+/*end of edits*/

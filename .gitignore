@@ -10,5 +10,3 @@ dist/
 generated/
 handwritten/
 logger.out
-.settings/org.eclipse.wst.common.component
-schema.sql

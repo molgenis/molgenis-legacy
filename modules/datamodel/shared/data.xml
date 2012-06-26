@@ -4,7 +4,7 @@
 			data model as data matrix. is essential for Entity Attribute Value
 			modeling such as used in xgap and pheno.</description>
 
-		<entity name="ObservedInference" extends="ObservedValue">
+		<!-- entity name="ObservedInference" extends="ObservedValue">
 			<description> The InferredValue class defines ObservedValues that are
 				inferred as result of human or computational post-processing of
 				other ObservedValues. For example: hypertensive = yes when mean
@@ -22,7 +22,7 @@
 			<field name="inferenceType" type="xref" xref_entity="OntologyTerm"
 				nillable="true"
 				description="(Optional) Reference to the ontology definition for this inference. For example: mean" />
-		</entity>
+		</entity-->
 		<entity name="DataFile" extends="ObservationTarget">
 			<description>ObservedFile is to store observations that result in a
 				file. Mapping to other models: MAGE-TAB 1.1 has the column

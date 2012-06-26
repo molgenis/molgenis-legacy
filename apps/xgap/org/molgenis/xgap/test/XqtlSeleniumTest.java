@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.MolgenisOptions.MapperImplementation;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.DetectOS;
-import org.molgenis.util.TarGz;
 import org.openqa.selenium.server.RemoteControlConfiguration;
 import org.openqa.selenium.server.SeleniumServer;
 import org.testng.Assert;
@@ -70,18 +70,18 @@ public class XqtlSeleniumTest
 			if (dbDir.exists())
 			{
 
-				TarGz.recursiveDeleteContentIgnoreSvn(dbDir);
+				FileUtils.deleteDirectory(dbDir);
 			}
 			else
 			{
-				throw new Exception("HSQL database directory does not exist");
+				//throw new Exception("HSQL database directory does not exist");
 			}
 	
-			if (dbDir.list().length != 1)
-			{
-				throw new Exception("HSQL database directory does not contain 1 file (.svn) after deletion! it contains: "
-						+ dbDir.list().toString());
-			}
+//			if (dbDir.list().length != 1)
+//			{
+//				throw new Exception("HSQL database directory does not contain 1 file (.svn) after deletion! it contains: "
+//						+ dbDir.list().toString());
+//			}
 		}
 	}
 	
@@ -105,8 +105,7 @@ public class XqtlSeleniumTest
 		int appNameLength = appName.length();
 		String storagePath = new StorageHandler(db).getFileStorage(true, db).getAbsolutePath();
 		File storageRoot = new File(storagePath.substring(0, storagePath.length() - appNameLength));
-		TarGz.recursiveDeleteContent(new File(storagePath));
-		TarGz.delete(storageRoot, false);
+		FileUtils.deleteDirectory(storageRoot);
 	}
 
 	/**

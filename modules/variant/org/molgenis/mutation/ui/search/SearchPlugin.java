@@ -52,8 +52,8 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		super(name, null, parent);
 		this.setModel(new SearchModel(this));
 		this.view = new FreemarkerView("init.ftl", getModel());
-		this.getModel().setPatientPager("res/mutation/patientPager.jsp");
-		this.getModel().setMutationPager("res/mutation/mutationPager.jsp");
+		this.getModel().setPatientPager("/mutation/patientPager.jsp");
+		this.getModel().setMutationPager("/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
 		this.getModel().setMbrowse(new MBrowse());
 		this.getModel().getMbrowse().setTarget(this.getName());
@@ -527,12 +527,15 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		{
 			SearchService searchService = ServiceLocator.instance().getSearchService();
 			this.getModel().setGeneDTO(searchService.findGene());
-			
-			if (this.getModel().getMbrowse().getGeneDTO() == null)
-				this.getModel().getMbrowse().setGeneDTO(this.getModel().getGeneDTO());
-			
-			if (this.getModel().getMbrowse().getProteinDomainDTOList() == null)
-				this.getModel().getMbrowse().setProteinDomainDTOList(searchService.findAllProteinDomains());
+
+			if (this.getModel().getMbrowse().getIsVisible())
+			{
+				if (this.getModel().getMbrowse().getGeneDTO() == null)
+					this.getModel().getMbrowse().setGeneDTO(this.getModel().getGeneDTO());
+				
+				if (this.getModel().getMbrowse().getProteinDomainDTOList() == null)
+					this.getModel().getMbrowse().setProteinDomainDTOList(searchService.findAllProteinDomains());
+			}
 
 			CmsService cmsService = ServiceLocator.instance().getCmsService();
 
