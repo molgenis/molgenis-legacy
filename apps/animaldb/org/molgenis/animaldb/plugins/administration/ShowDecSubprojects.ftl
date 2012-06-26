@@ -428,7 +428,7 @@
 							<td>${expl.name}</td>
 							<td><#if expl.startDate??>${expl.startDate}</#if></td>
 							<td><#if expl.endDate??>${expl.endDate}</#if></td>
-							<td><#if expl.SubprojectBudget??>${expl.decSubprojectBudget}</#if></td> <! TODO remove this checkafter adding data to db, only for upgrade (2012-06-06) -->
+							<td><#if expl.decSubprojectBudget??>${expl.decSubprojectBudget}</#if></td> <! TODO remove this checkafter adding data to db, only for upgrade (2012-06-06) -->
 							<td><#if expl.decApplication??>${expl.decApplication}</#if></td>
 							<td><#if expl.experimentNr??>${expl.experimentNr}</#if></td>
 							<td><#if expl.experimentTitle??>${expl.experimentTitle}</#if></td>
