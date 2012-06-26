@@ -11,7 +11,7 @@
 		</plugin>
 		<plugin name="UploadPlugin" type="org.molgenis.mutation.ui.upload.Upload" label="Submit data"/>
 		<plugin name="Contact" type="org.molgenis.feedback.ui.Contact" label="Contact"/>
-		<plugin name="Publications" type="org.molgenis.core.ui.AllPublications" label="References"/>
+		<plugin name="Publications" type="org.molgenis.myo5b.ui.AllPublications" label="References"/>
 		<plugin name="Background" type="org.molgenis.myo5b.ui.Background" label="Background"/>
 		<plugin name="NewsPlugin" type="org.molgenis.news.ui.News" label="News"/>
 		<menu name="Management" position="left" label="Management">
