@@ -109,6 +109,29 @@ public class QtlFinder2 extends PluginModel<Entity>
 					this.model.getShoppingCart().remove((shopMeName));
 				}
 				
+				if (action.equals("gotoCart"))
+				{
+					this.model.setCartView(true);
+				}
+				
+				if(action.equals("reset"))
+				{
+					this.model.setQuery(null);
+					this.model.setHits(null);
+					this.model.setShortenedQuery(null);
+					this.model.setShoppingCart(null);
+					this.model.setMultiplot(null);
+					this.model.setReport(null);
+					this.model.setQtls(null);
+					this.model.setCartView(false);
+				}
+				
+				if (action.equals("gotoSearch"))
+				{
+					this.model.setCartView(false);
+					this.model.setMultiplot(null);
+				}
+				
 				if(action.equals("shopAll"))
 				{
 					this.model.getShoppingCart().putAll(this.model.getHits());
@@ -116,6 +139,17 @@ public class QtlFinder2 extends PluginModel<Entity>
 				
 				if(action.equals("plotShoppingCart"))
 				{
+					if(this.model.getShoppingCart().size() == 0)
+					{
+						throw new Exception("Your shopping cart is empty!");
+					}
+					else if(this.model.getShoppingCart().size() > 500)
+					{
+						throw new Exception("You cannot plot more than 500 items.");
+					}
+					
+					this.model.setCartView(false);
+					
 					QTLMultiPlotResult res = multiplot(new ArrayList<Entity>(this.model.getShoppingCart().values()), db);
 					this.model.setReport(null);
 					this.model.setMultiplot(res);
@@ -128,7 +162,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 				
 				if(action.startsWith("__entity__report__for__"))
 				{
-					System.out.println("action.startsWith(\"__entity__report__for__\")");
+					this.model.setCartView(false);
 					
 					String name = action.substring("__entity__report__for__".length());
 					
@@ -153,6 +187,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 				
 				if (action.equals("search"))
 				{
+					this.model.setCartView(false);
 					this.model.setShortenedQuery(null);
 					this.model.setMultiplot(null);
 					this.model.setReport(null);
@@ -543,6 +578,10 @@ public class QtlFinder2 extends PluginModel<Entity>
 				this.model.setShoppingCart(shoppingCart);
 			}
 			
+			if(this.model.getCartView() == null)
+			{
+				this.model.setCartView(false);
+			}
 			
 			if (model.getAnnotationTypeAndNr() == null)
 			{

@@ -19,6 +19,7 @@ import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 import matrix.implementations.binary.BinaryDataMatrixWriter;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.cluster.DataName;
 import org.molgenis.cluster.DataSet;
 import org.molgenis.cluster.DataValue;
@@ -36,7 +37,6 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.CsvFileReader;
-import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.Chromosome;
 import org.molgenis.xgap.Marker;
@@ -132,19 +132,12 @@ public class QTLDataSetWizard extends PluginModel
 						// should exist
 						if (dataFileRollback.exists())
 						{
-							try
-							{
-								TarGz.delete(dataFileRollback, true);
-							}
-							catch (InterruptedException i)
-							{
-								i.printStackTrace();
-							}
+							FileUtils.forceDelete(dataFileRollback);
 						}
 					}
 					db.rollbackTx();
 				}
-				catch (DatabaseException e1)
+				catch (Exception e1)
 				{
 					e1.printStackTrace();
 					this.setMessages(new ScreenMessage(e.getMessage() != null ? e1.getMessage() : "null", false));

@@ -3,6 +3,7 @@ package org.molgenis.hemodb;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.Molgenis;
 import org.molgenis.util.TarGz;
 
@@ -12,7 +13,7 @@ public class HemodbGenerate
 	{
 		try
 		{
-			//TarGz.recursiveDeleteContentIgnoreSvn(new File("hsqldb"));
+			FileUtils.deleteDirectory(new File("hsqldb"));
 			new Molgenis("apps/hemodb/org/molgenis/hemodb/hemodb.properties").generate();
 			
 		} catch(Exception e)

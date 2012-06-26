@@ -54,7 +54,6 @@ ${model.textSearch}
 </tr>
 </table>
 <#else>
-<#assign form = model.expertSearchForm>
 <#assign back = model.toSimpleSearchForm>
 <#assign muta = model.showMutationForm>
 <!--<form method="post">${back.__target}${back.__action}${back.expertSearch}${back.submit}</form>-->
@@ -64,29 +63,10 @@ Perform a more advanced search on the ${model.geneDTO.symbol} mutation database.
 </p>
 <table cellpadding="4" cellspacing="4">
 <form action="molgenis.do#results" method="post" name="AdvSearch">
-${form.__target}
-${form.select}
-${form.__action}
-${form.expertSearch}
-<#if model.geneDTO.symbol == "CHD7">
-<tr><td>Variation: </td><td>${form.variation}</td><td>Nucleotide No: </td><td>${form.nuclno}</td></tr>
-<tr><td>Amino Acid No: </td><td>${form.aano}</td><td>Exon/Intron: </td><td>${form.exon_id}</td></tr>
-<tr><td>Mutation type:</td><td>${form.type}</td><td>Phenotype:</td><td>${form.phenotype}</td></tr>
-<tr><td>Inheritance:</td><td>${form.inheritance}</td><td></td><td></td></tr>
-<#elseif model.geneDTO.symbol == "MYO5B">
-<tr><td>Variation: </td><td>${form.variation}</td><td>Nucleotide No: </td><td>${form.nuclno}</td></tr>
-<tr><td>Amino Acid No: </td><td>${form.aano}</td><td>Exon/Intron: </td><td>${form.exon_id}</td></tr>
-<tr><td>Mutation type:</td><td>${form.type}</td><td>Onset:</td><td>${form.phenotype}</td></tr>
-<#else>
-<tr><td>Variation: </td><td>${form.variation}</td><td>Nucleotide No: </td><td>${form.nuclno}</td></tr>
-<tr><td>Amino Acid No: </td><td>${form.aano}</td><td>Exon/Intron: </td><td>${form.exon_id}</td></tr>
-<tr><td>Mutation type:</td><td>${form.type}</td><td>Consequence:</td><td>${form.consequence}</td></tr>
-<tr><td>Protein domain:</td><td>${form.domain_id}</td><td>Phenotype:</td><td>${form.phenotype}</td></tr>
-<#--
-<tr><td>Inheritance:</td><td>${form.inheritance}</td><td></td><td></td></tr>
--->
-</#if>
-<td colspan="4" align="center">${form.findMutations}&nbsp;<input type="reset" name="reset" value="Reset">&nbsp;<input type="button" name="clear" value="Clear" onclick="clearForm(document.forms.AdvSearch);"></td></tr>
+${model.expertSearchFormWrapper.render()}
+<tr>
+<td colspan="4" align="center"><input type="submit" value="Search">&nbsp;<input type="reset" name="reset" value="Reset">&nbsp;<input type="button" name="clear" value="Clear" onclick="clearForm(document.forms.AdvSearch);"></td>
+</tr>
 </form>
 <form action="molgenis.do#results" method="post">
 ${muta.__target}
@@ -102,6 +82,7 @@ ${muta.expertSearch}
 	
 	
 -->
+<#if model.mbrowse.isVisible>
 <br/><br/>
 <h3>Browse the ${model.geneDTO.symbol} gene</h3>
 <p>
@@ -114,6 +95,8 @@ ${model.controller.getChild("MBrowse").render()}
 -->
 ${model.mbrowse.createGenePanel()}
 </p>
+</#if>
+
 <br/>
 ${model.textRemarks}
 <br/>

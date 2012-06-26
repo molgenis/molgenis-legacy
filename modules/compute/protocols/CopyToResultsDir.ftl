@@ -9,42 +9,8 @@
 #
 
 #MOLGENIS walltime=23:59:00
+#FOREACH project,seqType
 
-<#if seqType == "SR">
-	#inputs "${leftfastqczip}"
-
-<#else>
-	#inputs "${leftfastqczip}"
-	#inputs "${rightfastqczip}"
-
-</#if>
-
-inputs "${dedupmetrics}"
-inputs "${mergedbam}"
-inputs "${mergedbamindex}"
-inputs "${samplealignmentmetrics}"
-inputs "${sampleinsertsizemetrics}"
-inputs "${samplehsmetrics}"
-inputs "${snpsfinalvcf}"
-inputs "${snpsfinalvcftable}"
-
-if [ -f "${sample}.genotypeArray.updated.header.vcf" ]
-then
-	inputs "${sample}.genotypeArray.updated.header.vcf"
-fi
-
-alloutputsexist \
- "${alignmentmetrics}" \
- "${gcbiasmetrics}" \
- "${gcbiasmetricspdf}" \
- "${insertsizemetrics}" \
- "${insertsizemetricspdf}" \
- "${meanqualitybycycle}" \
- "${meanqualitybycyclepdf}" \
- "${qualityscoredistribution}" \
- "${qualityscoredistributionpdf}" \
- "${hsmetrics}" \
- "${bamindexstats}"
 
 alloutputsexist "${projectResultsDir}/${project}.zip"
 
@@ -58,7 +24,7 @@ mkdir -p ${projectResultsDir}/rawdata
 mkdir -p ${projectResultsDir}/alignment
 mkdir -p ${projectResultsDir}/coverage
 mkdir -p ${projectResultsDir}/snps
-mkdir -p ${projectResultsDir}/qc
+mkdir -p ${projectResultsDir}/qc/statistics
 
 
 # Copy error, out and finished logs to project jobs directory
@@ -78,12 +44,11 @@ cp -rs ${projectrawdatadir} ${projectResultsDir}/rawdata
 
 
 # Copy fastQC output to results directory
-cp ${leftfastqczip} ${projectResultsDir}/qc
-cp ${rightfastqczip} ${projectResultsDir}/qc
+cp ${intermediatedir}/*_fastqc.zip ${projectResultsDir}/qc
 
 
 # Copy dedup metrics to results directory
-cp ${dedupmetrics} ${projectResultsDir}/qc
+cp ${dedupmetrics} ${projectResultsDir}/qc/statistics
 
 # Copy merged BAM plus index to results directory
 cp ${mergedbam} ${projectResultsDir}/alignment
@@ -92,14 +57,14 @@ cp ${mergedbamindex} ${projectResultsDir}/alignment
 
 # Copy alignment stats (lane and sample) to results directory
 
-cp ${intermediatedir}/*.alignmentmetrics ${projectResultsDir}/qc
-cp ${intermediatedir}/*.gcbiasmetrics ${projectResultsDir}/qc
-cp ${intermediatedir}/*.insertsizemetrics ${projectResultsDir}/qc
-cp ${intermediatedir}/*.meanqualitybycycle ${projectResultsDir}/qc
-cp ${intermediatedir}/*.qualityscoredistribution ${projectResultsDir}/qc
-cp ${intermediatedir}/*.hsmetrics ${projectResultsDir}/qc
-cp ${intermediatedir}/*.bamindexstats ${projectResultsDir}/qc
-cp ${intermediatedir}/*.pdf ${projectResultsDir}/qc
+cp ${intermediatedir}/*.alignmentmetrics ${projectResultsDir}/qc/statistics
+cp ${intermediatedir}/*.gcbiasmetrics ${projectResultsDir}/qc/statistics
+cp ${intermediatedir}/*.insertsizemetrics ${projectResultsDir}/qc/statistics
+cp ${intermediatedir}/*.meanqualitybycycle ${projectResultsDir}/qc/statistics
+cp ${intermediatedir}/*.qualityscoredistribution ${projectResultsDir}/qc/statistics
+cp ${intermediatedir}/*.hsmetrics ${projectResultsDir}/qc/statistics
+cp ${intermediatedir}/*.bamindexstats ${projectResultsDir}/qc/statistics
+cp ${intermediatedir}/*.pdf ${projectResultsDir}/qc/statistics
 
 
 # Copy coverage stats (for future reference) to results directory
@@ -126,21 +91,24 @@ cp ${sampleconcordancefile} ${projectResultsDir}/qc
 cp ${qcdir}/${project}_QCReport.pdf ${projectResultsDir}
 
 
-###########################################
-##################TO DO####################
-# Create README.txt containing link to documentation of zipfile on GCC wiki page
-echo "http://www.blaat.nl" > ${projectResultsDir}/README.txt
-###########################################
-###########################################
+# save latex README template in file
+echo "<#include "CopyToResultsDirREADMEtemplate.tex"/>" > ${projectResultsDir}/README.txt
+
+pdflatex -output-directory=${projectResultsDir} ${projectResultsDir}/README.txt
+
 
 # Create zip file for all "small text" files
 
-zip -r ${projectResultsDir}/${project}.zip ${projectResultsDir}/snps
-zip -gr ${projectResultsDir}/${project}.zip ${projectResultsDir}/qc
-zip -g ${projectResultsDir}/${project}.zip ${projectResultsDir}/${project}.csv
-zip -g ${projectResultsDir}/${project}.zip ${projectResultsDir}/README.txt
-zip -g ${projectResultsDir}/${project}.zip ${projectResultsDir}/${project}_QCReport.pdf
+cd ${projectResultsDir}
 
+zip -r ${projectResultsDir}/${project}.zip snps
+zip -gr ${projectResultsDir}/${project}.zip qc
+zip -g ${projectResultsDir}/${project}.zip ${project}.csv
+zip -g ${projectResultsDir}/${project}.zip README.pdf
+zip -g ${projectResultsDir}/${project}.zip ${project}_QCReport.pdf
 
 # Create md5sum for zip file
-md5sum ${projectResultsDir}/${project}.zip ${projectResultsDir}/${project}.zip.md5
+
+cd ${projectResultsDir}
+
+md5sum ${project}.zip > ${projectResultsDir}/${project}.zip.md5
