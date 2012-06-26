@@ -1,3 +1,10 @@
+/bin
 /dist
 /build
 /generated/java
+/endorsed
+/target
+/test-output
+
+.classpath
+.settings
