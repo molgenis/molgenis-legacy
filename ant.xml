@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="molgenis" basedir=".">
+	<property name="dir.lib" value="lib" />
+	<property name="dir.src" value="src" />
+	<property name="dir.javadoc" value="build/javadoc" />
+	<path id="classpath">
+		<fileset dir="${dir.lib}" includes="**/*.jar" />
+	</path>
+	<target name="javadoc">
+		<javadoc access="public" destdir="${dir.javadoc}" author="true"
+			version="true" noindex="false" use="true" classpathref="classpath">
+			<fileset dir="${dir.src}" defaultexcludes="yes">
+				<include name="**/*.java" />
+				<exclude name="org/test/**/*.java" />
+			</fileset>
+		</javadoc>
+	</target>
+</project>
