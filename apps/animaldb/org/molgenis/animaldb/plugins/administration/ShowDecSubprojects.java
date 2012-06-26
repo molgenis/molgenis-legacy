@@ -543,7 +543,8 @@ public class ShowDecSubprojects extends PluginModel<Entity>
 					// check if the subprojectr changed and modify name of the observationtarget accordingly:
 					String previousexpnumber = ct.getMostRecentValueAsString(selName, "ExperimentNr");
 					if (expnumber != previousexpnumber) {
-						name = selName + expnumber;
+						name = decappName + expnumber; 
+						
 						ObservationTarget subproject = ct.getObservationTargetByName(selName);
 						subproject.setName(name);
 						db.update(subproject);
