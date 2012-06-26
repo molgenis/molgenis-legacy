@@ -62,7 +62,7 @@
 		<tr>
 			<td colspan="4" align="center">
 				<div align="left">
-					<h2>WormQTL Ð Public archive and analysis web portal for natural variation data in Caenorhabditis spp.</h2>
+					<h2>WormQTL - Public archive and analysis web portal for natural variation data in Caenorhabditis spp.</h2>
 					WormQTL is an online scalable system for QTL exploration to service the worm community. WormQTL provides many publicly available datasets and welcomes submissions from other worm researchers.
 				</div>
 			</td>
