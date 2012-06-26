@@ -80,7 +80,7 @@ public class NSequenceField extends FieldType
 		return "Ljava/lang/String;";
 	}
 
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return String.class;
 	}

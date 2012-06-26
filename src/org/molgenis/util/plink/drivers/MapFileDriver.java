@@ -1,11 +1,9 @@
 package org.molgenis.util.plink.drivers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.MapEntry;
 
@@ -15,21 +13,8 @@ import org.molgenis.util.plink.datatypes.MapEntry;
  * chromosome, SNP, cM, base-position. See:
  * http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#map
  */
-public class MapFileDriver
+public class MapFileDriver extends AbstractFileDriver
 {
-
-	private CsvFileReader reader;
-	private long nrOfElements;
-
-	/**
-	 * Get the number of retrievable annotation elements of this MAP file.
-	 * 
-	 * @return
-	 */
-	public long getNrOfElements()
-	{
-		return nrOfElements;
-	}
 
 	/**
 	 * Construct a MapFileDriver on this file
@@ -39,29 +24,7 @@ public class MapFileDriver
 	 */
 	public MapFileDriver(File mapFile) throws Exception
 	{
-		reader = new CsvFileReader(mapFile);
-		reader.disableHeader(false);
-
-		if (reader.fileEndsWithNewlineChar())
-		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
-		}
-		else
-		{
-			this.nrOfElements = reader.getNumberOfLines();
-		}
-
-	}
-
-	/**
-	 * Close the underlying file reader
-	 * 
-	 * @throws IOException
-	 */
-	public void close() throws IOException
-	{
-		this.reader.close();
+		super(mapFile);
 	}
 
 	/**

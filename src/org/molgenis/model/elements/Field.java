@@ -9,7 +9,6 @@
  */
 package org.molgenis.model.elements;
 
-// jdk
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +31,6 @@ import org.molgenis.model.MolgenisModelException;
 import org.molgenis.util.SimpleTree;
 import org.molgenis.util.Tree;
 
-// invengine
 /**
  * Describes a field in an entity.
  * 
@@ -232,11 +230,8 @@ public class Field implements Serializable {
     }
 
     public String getFormatString() {
-        //if (type.equals == Type.XREF_SINGLE || type == Type.XREF_MULTIPLE)
         if (type instanceof XrefField || type instanceof MrefField) {
             try {
-                //DBSchema root = entity.getRoot();
-
                 return this.getXrefField().getFormatString();
             } catch (Exception e) {
                 ;

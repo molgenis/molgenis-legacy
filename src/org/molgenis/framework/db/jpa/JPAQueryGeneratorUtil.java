@@ -86,7 +86,14 @@ public class JPAQueryGeneratorUtil
 			Class<E> entityClass, AbstractJpaMapper<E> abstractJpaMapper, EntityManager em,
 			QueryRule... rules) throws DatabaseException
 	{
-		return createQuery(db, entityClass, Long.class, abstractJpaMapper, em, rules);
+		//remove any 'offset' from the query as this screws up count
+		List<QueryRule> limitLess = new ArrayList<QueryRule>();
+		for(QueryRule r: rules)
+		{
+			if(!Operator.OFFSET.equals(r.getOperator())) limitLess.add(r);
+		}
+		
+		return createQuery(db, entityClass, Long.class, abstractJpaMapper, em, limitLess.toArray(new QueryRule[limitLess.size()]));
 	}
 
 	private static <IN extends Entity, OUT> Predicate createWhere(Database db,

@@ -6,6 +6,9 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
@@ -182,32 +185,7 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 				s.getModel().getMessages().add(new ScreenMessage("reload failed: " + e.getMessage(), false));
 			}
 		}
-
-		// if(this.getController() != this)
-		// {
-		// this.getController().reload(db);
-		// }
-		// else
-		// {
-		// //refresh whole selected subtree
-		// if(this.getSelected() != null)
-		// this.getSelected().getController().reload(db);
-		// }
 	}
-
-	// removed to cleanup MVC pattern where controller manages all
-	// @Override
-	// public Templateable getScreen()
-	// {
-	// // TODO Auto-generated method stub
-	// return this;
-	// }
-	//
-	// @Override
-	// public String getViewName()
-	// {
-	// return this.getClass().getSimpleName();
-	// }
 
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException,
@@ -412,5 +390,7 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	  already stored as a session attribute! (see: MolgenisGuiService.java)
 	*/
 	public Map<String, Object> sessionVariables = new HashMap<String, Object>();
+
+
 	
 }
