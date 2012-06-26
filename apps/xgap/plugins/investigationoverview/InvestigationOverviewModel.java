@@ -26,9 +26,20 @@ public class InvestigationOverviewModel{
 	private Boolean viewDataByTags;
 	
 	
+	private Boolean fileLinkoutIsVisible;
 	
 	
 	
+
+	public Boolean getFileLinkoutIsVisible()
+	{
+		return fileLinkoutIsVisible;
+	}
+
+	public void setFileLinkoutIsVisible(Boolean fileLinkoutIsVisible)
+	{
+		this.fileLinkoutIsVisible = fileLinkoutIsVisible;
+	}
 
 	public HashMap<String, String> getExpDimensions()
 	{
