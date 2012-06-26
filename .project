@@ -3,8 +3,9 @@
 	<name>molgenis_apps</name>
 	<comment></comment>
 	<projects>
-		<project>molgenis3_2</project>
 		<project>molgenis</project>
+		<project>molgenis3_2</project>
+		<project>Servers</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
