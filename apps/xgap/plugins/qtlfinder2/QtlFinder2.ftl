@@ -574,25 +574,34 @@
 				<td colspan="3">
 				
 					<br><br>
-					<span style="font-size:15px;font-weight:bold;">Traits:</span><br/>
+					<span style="font-size:15px;font-weight:bold;">Hits plotted:</span><br/>
 					<div style="overflow: auto; width: 780px; max-height: 400px;">
+					<table border="0">
 					<#list model.multiplot.matches?values as d>
-					<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}<#if d.label?? && d.label?length gt 0> / ${d.label}</#if></a>
-					[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore deeper</a>]
-					<#if d.description??> - <#if d.description?length gt 40>${d.description?substring(0, 40)}...<#else>${d.description}</#if></#if><br>
+						<tr>
+							<td>
+								<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}<#if d.label?? && d.label?length gt 0> / ${d.label}</#if></a>
+							</td>
+							<td>
+								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore deeper</a>]
+							</td>
+							<td>
+								<#if d.description??>&nbsp;&nbsp;&nbsp;&nbsp;<#if d.description?length gt 50>${d.description?substring(0, 50)}...<#else>${d.description}</#if></#if><br>
+							</td>
+						</tr>
 					</#list>
+					</table>
 					</div>
 					<br>
-					<span style="font-size:15px;font-weight:bold;">Dataset IDs:</span><br/>
-					<table>
+					<span style="font-size:15px;font-weight:bold;">From datasets:</span><br/>
+					<table border="0">
 					<#list model.multiplot.datasets?values as d>
 						<tr>
 							<td>
-								<b>${d.id}</b>
+								<nobr><b>${d.id}</b>: <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a></nobr>
 							</td>
 							<td>
-								: <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
-								<#if d.description??> - <#if d.description?length gt 40>${d.description?substring(0, 40)}...<#else>${d.description}</#if></#if>
+								<#if d.description??>${d.description}</#if>
 							</td>
 						</tr>
 					</#list>
