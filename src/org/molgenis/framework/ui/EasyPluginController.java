@@ -4,8 +4,12 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -52,6 +56,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
 	{	
+		final HttpServletRequest realRequest = ((MolgenisRequest)request).getRequest();
 		// automatically calls functions with same name as action
 		delegate(request.getAction(), db, request, out);
 
@@ -84,10 +89,10 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 			}
 			catch (NoSuchMethodException e1)
 			{
-				this.getModel().setMessages(new ScreenMessage("Unknown action: " + action, false));
-				logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
-						+ "(db,tuple) failed: " + e1.getMessage());
-				db.rollbackTx();
+//				this.getModel().setMessages(new ScreenMessage("Unknown action: " + action, false));
+//				logger.error("call of " + this.getClass().getName() + "(name=" + this.getName() + ")." + action
+//						+ "(db,tuple) failed: " + e1.getMessage());
+//				db.rollbackTx();
 				// useless - can't do this on every error! we cannot distinguish
 				// exceptions because they are all InvocationTargetException
 				// anyway
@@ -96,7 +101,7 @@ public abstract class EasyPluginController<M extends ScreenModel> extends Simple
 
 				if (out != null) try
 				{
-					db.beginTx();
+					//db.beginTx();
 					logger.debug("trying to use reflection to call " + this.getClass().getName() + "." + action);
 					Method m = this.getClass().getMethod(action, Database.class, Tuple.class, OutputStream.class);
 					m.invoke(this, db, request, out);

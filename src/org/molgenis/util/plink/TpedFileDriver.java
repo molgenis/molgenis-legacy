@@ -38,14 +38,14 @@ public class TpedFileDriver
 		reader = new CsvFileReader(tpedFile);
 		reader.disableHeader(false);
 
-		if (reader.fileEndsWithNewlineChar())
+		if (CsvFileReader.fileEndsWithNewlineChar(tpedFile))
 		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(tpedFile)
+					- CsvFileReader.getAmountOfNewlinesAtFileEnd(tpedFile);
 		}
 		else
 		{
-			this.nrOfElements = reader.getNumberOfLines();
+			this.nrOfElements = CsvFileReader.getNumberOfLines(tpedFile);
 		}
 
 	}

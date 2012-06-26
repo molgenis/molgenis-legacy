@@ -77,7 +77,7 @@ public class FileField extends FieldType
 		return "Ljava/lang/String;";
 	}
 
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return File.class;
 	}

@@ -1,11 +1,9 @@
 package org.molgenis.util.plink.drivers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.FamEntry;
 
@@ -16,22 +14,8 @@ import org.molgenis.util.plink.datatypes.FamEntry;
  * Content of a FAM file: Family ID Individual ID Paternal ID Maternal ID Sex
  * (1=male; 2=female; other=unknown) Phenotype
  */
-public class FamFileDriver
+public class FamFileDriver extends AbstractFileDriver
 {
-
-	private CsvFileReader reader;
-	private long nrOfElements;
-
-	/**
-	 * Get the number of retrievable family elements of this FAM file.
-	 * 
-	 * @return
-	 */
-	public long getNrOfElements()
-	{
-		return nrOfElements;
-	}
-
 	/**
 	 * Construct a FamFileDriver on this file
 	 * 
@@ -40,19 +24,7 @@ public class FamFileDriver
 	 */
 	public FamFileDriver(File famFile) throws Exception
 	{
-		reader = new CsvFileReader(famFile);
-		reader.disableHeader(false);
-
-		if (reader.fileEndsWithNewlineChar())
-		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
-		}
-		else
-		{
-			this.nrOfElements = reader.getNumberOfLines();
-		}
-
+		super(famFile);
 	}
 
 	/**
@@ -117,15 +89,4 @@ public class FamFileDriver
 		}
 		return result;
 	}
-
-	/**
-	 * Close the underlying file reader
-	 * 
-	 * @throws IOException
-	 */
-	public void close() throws IOException
-	{
-		this.reader.close();
-	}
-
 }

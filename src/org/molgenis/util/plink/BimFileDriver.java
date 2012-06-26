@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
+import static org.molgenis.util.TextFileUtils.*;
 
 /**
  * Driver to query BIM files. BIM files annotate the genotypes of BED files.
@@ -42,14 +43,14 @@ public class BimFileDriver
 		reader = new CsvFileReader(bimFile);
 		reader.disableHeader(false);
 
-		if (reader.fileEndsWithNewlineChar())
+		if (fileEndsWithNewlineChar(bimFile))
 		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
+			this.nrOfElements = getNumberOfLines(bimFile)
+					- getAmountOfNewlinesAtFileEnd(bimFile);
 		}
 		else
 		{
-			this.nrOfElements = reader.getNumberOfLines();
+			this.nrOfElements = getNumberOfLines(bimFile);
 		}
 
 	}

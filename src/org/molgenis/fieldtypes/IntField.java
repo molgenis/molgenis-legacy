@@ -83,7 +83,7 @@ public class IntField extends FieldType
 		return "Ljava/lang/Integer;";
 	}
 
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return Integer.class;
 	}
