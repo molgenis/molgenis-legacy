@@ -67,7 +67,8 @@
 	<h3>Load GFF file tracks into browser:</h3>
 	<ul>
 		<#list model.gffFiles as f>
-			<li>Add track <a target="ucsc_iframe" href="${ucscMirror}cgi-bin/hgTracks?db=${release}&hgt.customText=${model.appUrl}/viewfile/${f.name}">${f.name}</a></li>
+			<li>Add track <a target="ucsc_iframe" href="${ucscMirror}cgi-bin/hgTracks?db=${release}&hgt.customText=${model.appUrl}/viewfile/${f.name}">${f.name}</a>
+			<#if f.description??> - <#if f.description?length gt 70>${f.description?substring(0, 70)} ... <#else>${f.description}</#if></#if></li>
 		</#list>
 	</ul>
 		<br>

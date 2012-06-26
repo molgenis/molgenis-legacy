@@ -2,14 +2,13 @@ package plugins.genomebrowser;
 
 import java.util.List;
 
-import org.molgenis.core.MolgenisFile;
 import org.molgenis.xgap.InvestigationFile;
 
 public class GenomeBrowserModel
 {
 	private String appUrl;
 	private String release;
-	private List<MolgenisFile> gffFiles;
+	private List<InvestigationFile> gffFiles;
 	private Boolean filesAreVisible;
 
 	public Boolean getFilesAreVisible()
@@ -32,12 +31,12 @@ public class GenomeBrowserModel
 		this.release = release;
 	}
 
-	public List<MolgenisFile> getGffFiles()
+	public List<InvestigationFile> getGffFiles()
 	{
 		return gffFiles;
 	}
 
-	public void setGffFiles(List<MolgenisFile> gffFiles)
+	public void setGffFiles(List<InvestigationFile> gffFiles)
 	{
 		this.gffFiles = gffFiles;
 	}
