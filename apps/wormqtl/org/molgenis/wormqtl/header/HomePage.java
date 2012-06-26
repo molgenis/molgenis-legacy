@@ -85,9 +85,7 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					"org.molgenis.pheno.ObservationElement",
 					
 					// needed to view the generated annotation menus
-					"app.ui.IndividualsFormController",
-					"org.molgenis.pheno.Individual",
-					
+					// some unused datatypes in the current wormqtl release are left out for anonymous
 					"app.ui.PanelsFormController",
 					"org.molgenis.pheno.Panel",
 					
@@ -109,15 +107,6 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					"app.ui.DerivedTraitsFormController",
 					"org.molgenis.xgap.DerivedTrait",
 					
-					"app.ui.EnvironmentalFactorsFormController",
-					"org.molgenis.xgap.EnvironmentalFactor",
-					
-					"app.ui.MassPeaksFormController",
-					"org.molgenis.xgap.MassPeak",
-					
-					"app.ui.MetabolitesFormController",
-					"org.molgenis.xgap.Metabolite",
-					
 					"app.ui.ProbesFormController",
 					"org.molgenis.xgap.Probe",
 					
@@ -127,14 +116,8 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 					"app.ui.SNPsFormController",
 					"org.molgenis.xgap.SNP",
 					
-					"app.ui.PolymorphismsFormController",
-					"org.molgenis.xgap.Polymorphism",
-					
 					"app.ui.SamplesFormController",
 					"org.molgenis.xgap.Sample",
-					
-					"app.ui.SpotsFormController",
-					"org.molgenis.xgap.Spot",
 
 					// allow reading datasets and investigations
 					"org.molgenis.organization.Investigation", "org.molgenis.data.Data", "org.molgenis.data.BinaryDataMatrix", "org.molgenis.data.CSVDataMatrix",
