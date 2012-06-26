@@ -1,0 +1,14 @@
+# Git ignores this:
+.classpath
+WebContent/META-INF/context.xml
+WebContent/WEB-INF/molgenis-rdf-mapping.n3
+WebContent/doc/
+WebContent/generated-res/
+bin/
+build/
+dist/
+generated/
+handwritten/
+logger.out
+.settings/org.eclipse.wst.common.component
+schema.sql
