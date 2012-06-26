@@ -16,7 +16,6 @@ import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.framework.db.Database;
 import org.molgenis.model.elements.Field;
 
-import com.mindbright.jca.security.UnsupportedOperationException;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;

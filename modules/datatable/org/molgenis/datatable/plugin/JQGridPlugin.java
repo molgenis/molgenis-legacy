@@ -40,7 +40,6 @@ import org.molgenis.util.Tuple;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
-import com.mindbright.jca.security.UnsupportedOperationException;
 import com.mysema.query.sql.MySQLTemplates;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
@@ -100,23 +99,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					boolean joinTable = false;
 					if(joinTable) {
 						List<String> tableNames = new ArrayList<String>();
-						List<String> columnNames = new ArrayList<String>();
-						if(request != null) {
-							@SuppressWarnings("unchecked")
-							final List<String> columns = (List<String>) new Gson().fromJson((String) request.getObject("colNames"), Object.class);
-							for(final String column : columns) {
-								if(StringUtils.contains(column, ".")) {
-									final String tableName = StringUtils.substringBefore(column, ".");
-									final String columnName = StringUtils.substringAfter(column, ".");
-									if(!tableNames.contains(tableName)) {
-										tableNames.add(tableName);	
-									}
-									columnNames.add(columnName);
-								} else {
-									columnNames.add(column);
-								}
-							}
-						}
+						final List<String> columnNames = new ArrayList<String>();
+						getTableAndColumnNames(request, tableNames, columnNames);
 						
 						if(CollectionUtils.isEmpty(tableNames)) {
 							tableNames = Arrays.asList("Country", "City");
@@ -160,6 +144,26 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 				catch (Exception ex)
 				{
 					throw new TableException(ex);
+				}
+			}
+
+			private void getTableAndColumnNames(Tuple request, List<String> inTableNames, List<String> inColumnNames)
+			{
+				if(request != null) {
+					@SuppressWarnings("unchecked")
+					final List<String> columns = (List<String>) new Gson().fromJson((String) request.getObject("colNames"), Object.class);
+					for(final String column : columns) {
+						if(StringUtils.contains(column, ".")) {
+							final String tableName = StringUtils.substringBefore(column, ".");
+							final String columnName = StringUtils.substringAfter(column, ".");
+							if(!inTableNames.contains(tableName)) {
+								inTableNames.add(tableName);	
+							}
+							inColumnNames.add(columnName);
+						} else {
+							inColumnNames.add(column);
+						}
+					}
 				}
 			}
 		};
