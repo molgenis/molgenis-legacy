@@ -62,7 +62,7 @@
 		<tr>
 			<td colspan="4" align="center">
 				<div align="left">
-					<h2>WormQTL - Public archive and analysis web portal for natural variation data in Caenorhabditis elegans</h2>
+					<h2>WormQTL Ð Public archive and analysis web portal for natural variation data in Caenorhabditis spp.</h2>
 					WormQTL is an online scalable system for QTL exploration to service the worm community. WormQTL provides many publicly available datasets and welcomes submissions from other worm researchers.
 				</div>
 			</td>
@@ -75,13 +75,13 @@
 		
 		<tr>
 			<td align="center">
-				<a href="?select=QtlFinderPublic2"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_plot_button.png" /><h3>Find and plot QTLs</h3></a>
+				<a href="?select=QtlFinderPublic2"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_plot_button.png" /><h3>Find QTLs</h3></a>
 			</td>
 			<td align="center">
-				<a href="?select=GenomeBrowser"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_gb_button.png" /><h3>Explore QTLs genomewide</h3></a>
+				<a href="?select=GenomeBrowser"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_gb_button.png" /><h3>Genome browser</h3></a>
 			</td>
 			<td align="center">
-				<a href="?select=Investigations"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_data_button.png" /><h3>Browse the raw data</h3></a>
+				<a href="?select=Investigations"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_data_button.png" /><h3>Browse data</h3></a>
 			</td>
 			<td align="center">
 				<a href="?select=Help"><img height="100" width="100" src="res/img/designgg/helpicon.gif" /><h3>Help</h3></a>
@@ -100,11 +100,11 @@
 				<h3>What can you do?</h3>
 					<ul>
 						<li>
-							<h4>I want to search (e)QTLs for my trait</h4>
+							<h4>I want to search (e)QTLs for my trait or gene</h4>
 							<ol>
 								<li>Go to <a href="?select=QtlFinderPublic2">Find QTLs</a></li>
-								<li>Type the name or identifier of your trait and press <i>Search</i></li>
-								<li>Put any relevant matching traits in the shopping cart</li>
+								<li>Type the name or identifier of your trait or gene and press <i>Search</i></li>
+								<li>Put any relevant hits in the shopping cart</li>
 								<li>Click <i>Plot cart</i> now and explore the results</li>
 							</ol>
 						</li>
@@ -119,22 +119,22 @@
 							</ol>
 						</li>
 						<li>
-							<h4>I want to compare the QTLs of two and more traits</h4>
+							<h4>I want to compare the QTLs of two and more traits or genes</h4>
 							<ol>
 								<li>Go to <a href="?select=QtlFinderPublic2">Find QTLs</a></li>
-								<li>Type the name or identifier of your trait and press <i>Search</i></li>
-								<li>Put any relevant matching traits in the shopping cart</li>
-								<li>Repeat from step 2 to add more traits, up to 500</li>
+								<li>Type the name or identifier of your trait or gene and press <i>Search</i></li>
+								<li>Put any relevant matching hits in the shopping cart</li>
+								<li>Repeat from step 2 to add more hits, up to 500</li>
 								<li>Press <i>Plot cart now</i> and explore the results</li>
 							</ol>
 						</li>
 						<li>
-							<h4>I want to know everything about my trait</h4>
+							<h4>I want to know everything about my trait or gene</h4>
 							<ol>
 								<li>Go to <a href="?select=QtlFinderPublic2">Find QTLs</a></li>
-								<li>Type the name or identifier of your trait and press <i>Search</i></li>
-								<li>Click the bold hyperlink of your trait name (e.g. <b>AGIUSA9288 / gst-30</b>)</li>
-								<li>After a while, you are presented with an aggregate of all WormQTL data for this trait</li>
+								<li>Type the name or identifier of your trait or gene and press <i>Search</i></li>
+								<li>Click the bold hyperlink of the hit (e.g. <b>AGIUSA9288 / gst-30</b>)</li>
+								<li>After a while, you are presented with an aggregate of all WormQTL data for this hit</li>
 							</ol>
 						</li>
 					</ul>
