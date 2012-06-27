@@ -171,7 +171,7 @@ public class MakeRPlot
 		script.append("probenames                      <- paste(plotMe[,5],plotMe[,8],sep=\":\")");
 		script.append("plotMe[,5] <- probenames");
 		script.append("  par(fig=c(0,0.85,0,1),mgp=c(4,2,0),mai=c(1,1.5,1,0.05))");
-		script.append("plot(0,0,type=\"n\",xlim=c(0,102),ylim=c(0,max(as.numeric(plotMe[,7]))),cex.lab=3,cex.axis=3,main=\""+title+"\",");
+		script.append("plot(0,0,type=\"n\",xlim=c(0,102),ylim=c(0,max(as.numeric(plotMe[,7]))),cex.lab=3,cex.axis=3,main=\"Profile plot for "+title+"\",");
 		script.append("      xlab=\"Genome (MB)\", ylab=\"LOD\",cex.main=4)");
 		script.append("drawChrRect()");
 		script.append("nr.of.lines <- length(unique(probenames))");
@@ -303,7 +303,7 @@ public class MakeRPlot
 		script.append("}");
 		script.append("cl <- c(cl,length(datasetids))");
 		script.append("op <- par(mai=c(1,2,1,1))");
-		script.append("plot(c(0, max(as.numeric(plotMe[,4])/1000000)),c(1,length(unique(probenames))),type='n',main=\""+title+"\", yaxt='n',ylab=\"\", xlab=\"Location (cumulative Mbp)\")");
+		script.append("plot(c(0, max(as.numeric(plotMe[,4])/1000000)),c(1,length(unique(probenames))),type='n',main=\"Heat plot for "+title+"\", yaxt='n',ylab=\"\", xlab=\"Location (cumulative Mbp)\")");
 		script.append("cnt <- 1");
 		script.append("for(x in unique(probenames)){");
 		script.append("  toplot <- which(plotMe[,5]==x)");
@@ -458,7 +458,7 @@ public class MakeRPlot
 		script.append("my.scale <- 4");
 		appendDrawChromosomes(script, chromosomes);
 		script.append("my.offset <- 1000000/10^6");
-		script.append("plot(c(0,max(as.numeric(plotMe[,4]))),c(0,max(as.numeric(plotMe[,6]))),type='n',main=\"CisTrans plot for "+title+"\",ylab=\"Probe position (Mb)\", xlab=\"Marker position (Mb)\",xlim=c(0,101),ylim=c(0,101),cex.lab=1.5,cex.main=1.5,cex.axis=1.5)");
+		script.append("plot(c(0,max(as.numeric(plotMe[,4]))),c(0,max(as.numeric(plotMe[,6]))),type='n',main=\"Cis-trans plot for "+title+"\",ylab=\"Probe position (Mb)\", xlab=\"Marker position (Mb)\",xlim=c(0,101),ylim=c(0,101),cex.lab=1.5,cex.main=1.5,cex.axis=1.5)");
 		script.append("drawChrStrips()");
 		script.append("points(as.numeric(plotMe[,4])/10^6,as.numeric(plotMe[,6])/10^6,cex=(plotMe[,7]/my.scale) * as.numeric(plotMe[,7] >= min.qtl), col=as.numeric(plotMe[,3]),pch=20)");
 		script.append("abline(-my.offset,1,col=\"gray\",lty=2)");
