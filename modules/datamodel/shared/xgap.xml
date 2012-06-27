@@ -166,7 +166,7 @@
 			<field name="RetentionTime" type="decimal" nillable="true"
 				description="The retention-time of this peak in minutes." />
 		</entity>
-		<entity name="InvestigationFile" extends="MolgenisFile">
+		<entity name="InvestigationFile" extends="MolgenisFile" implements="Describable">
 			<field name="Investigation" type="xref" xref_entity="Investigation"
 				description="Reference to the Study." />
 		</entity>
