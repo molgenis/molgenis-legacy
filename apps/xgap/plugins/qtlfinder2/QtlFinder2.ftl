@@ -513,7 +513,7 @@
 		
 
 	<table cellpadding="30"><tr><td>
-		<h2>Hits for "<#if model.query??>${model.query}</#if>":</h2><br>
+		<h2>Results for my selected hits:</h2><br>
 		
 		<table>
 			<tr>
