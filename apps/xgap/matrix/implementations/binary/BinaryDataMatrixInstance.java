@@ -14,18 +14,16 @@ import matrix.implementations.memory.MemoryDataMatrixInstance;
 
 import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.pheno.ObservationElement;
 
 public class BinaryDataMatrixInstance extends
 		AbstractDataMatrixInstance<Object>
 {
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
-
+	
 	private int textElementLength;
 	private int startOfElementsPointer;
+	private int endOfElementsPointer; //FIXME: is this big enough? whats the approx. file size then?
 	private byte[] textDataElementLengths;
 	private File bin;
 	private String nullChar;
@@ -34,7 +32,6 @@ public class BinaryDataMatrixInstance extends
 	public BinaryDataMatrixInstance(File bin) throws Exception
 	{
 		this.setBin(bin);
-		// this.setName(bin.getName().replace(".bin", ""));
 
 		FileInputStream fis;
 		DataInputStream dis;
@@ -50,14 +47,10 @@ public class BinaryDataMatrixInstance extends
 
 		this.setNullChar(readNextChars(dis, 1));
 		dataDescription.setName(readNextChars(dis, dis.readUnsignedByte()));
-		dataDescription.setInvestigation_Name(readNextChars(dis,
-				dis.readUnsignedByte()));
-		dataDescription.setFeatureType(readNextChars(dis,
-				dis.readUnsignedByte()));
-		dataDescription
-				.setTargetType(readNextChars(dis, dis.readUnsignedByte()));
-		dataDescription.setValueType(dis.readBoolean() == true ? "Decimal"
-				: "Text");
+		dataDescription.setInvestigation_Name(readNextChars(dis, dis.readUnsignedByte()));
+		dataDescription.setFeatureType(readNextChars(dis, dis.readUnsignedByte()));
+		dataDescription.setTargetType(readNextChars(dis, dis.readUnsignedByte()));
+		dataDescription.setValueType(dis.readBoolean() == true ? "Decimal" : "Text");
 		this.setNumberOfCols(dis.readInt());
 		this.setNumberOfRows(dis.readInt());
 
@@ -69,7 +62,7 @@ public class BinaryDataMatrixInstance extends
 		startOfElements += 1 + 4 + 4;
 
 		this.setData(dataDescription);
-
+		
 		// now the information contained within the actual matrix file
 
 		int[] colNameLengths = new int[this.getNumberOfCols()];
@@ -88,10 +81,8 @@ public class BinaryDataMatrixInstance extends
 		startOfElements += colNameLengths.length;
 		startOfElements += rowNameLengths.length;
 
-		ArrayList<String> colNames = new ArrayList<String>(
-				this.getNumberOfCols());
-		ArrayList<String> rowNames = new ArrayList<String>(
-				this.getNumberOfRows());
+		ArrayList<String> colNames = new ArrayList<String>(this.getNumberOfCols());
+		ArrayList<String> rowNames = new ArrayList<String>(this.getNumberOfRows());
 
 		for (int i = 0; i < this.getNumberOfCols(); i++)
 		{
@@ -111,27 +102,47 @@ public class BinaryDataMatrixInstance extends
 		if (dataDescription.getValueType().equals("Text"))
 		{
 			this.setTextElementLength(dis.readUnsignedByte());
-			logger.debug("this.getTextElementLength() = "
-					+ this.getTextElementLength());
+			logger.debug("this.getTextElementLength() = " + this.getTextElementLength());
 			startOfElements += 1;
 			if (this.getTextElementLength() == 0)
 			{
-				byte[] textDataElementLengths = new byte[this.getNumberOfCols()
-						* this.getNumberOfRows()];
+				byte[] textDataElementLengths = new byte[this.getNumberOfCols() * this.getNumberOfRows()];
 				dis.read(textDataElementLengths);
 				startOfElements += textDataElementLengths.length;
 				this.setTextDataElementLengths(textDataElementLengths);
-
 			}
 		}
 
 		// now prepare for random access querying
-		this.startOfElementsPointer = startOfElements;
+		this.setStartOfElementsPointer(startOfElements);
 		this.setNullCharPattern(Pattern.compile(this.getNullChar() + "+"));
 
+		if (dataDescription.getValueType().equals("Text"))
+		{
+			if (this.getTextElementLength() == 0)
+			{
+				int endOfElementsPointer = this.getStartOfElementsPointer();
+				for (byte b : this.getTextDataElementLengths())
+				{
+					endOfElementsPointer += b;
+				}
+				this.setEndOfElementsPointer(endOfElementsPointer);
+			}
+			else
+			{
+				int endOfElementsPointer = startOfElements
+						+ (this.getNumberOfCols() * this.getNumberOfRows() * this.getTextElementLength());
+				this.setEndOfElementsPointer(endOfElementsPointer);
+			}
+		}
+		else
+		{
+			int endOfElementsPointer = startOfElements + (this.getNumberOfCols() * this.getNumberOfRows() * 8);
+			this.setEndOfElementsPointer(endOfElementsPointer);
+		}
 	}
 
-	public Double readNextDoubleFromRAF(RandomAccessFile raf)
+	private Double readNextDoubleFromRAF(RandomAccessFile raf)
 			throws IOException
 	{
 		byte[] arr = new byte[8];
@@ -144,7 +155,7 @@ public class BinaryDataMatrixInstance extends
 		return d;
 	}
 
-	public Double[] readNextDoublesFromRAF(RandomAccessFile raf, int nr)
+	private Double[] readNextDoublesFromRAF(RandomAccessFile raf, int nr)
 			throws IOException
 	{
 		byte[] arr = new byte[nr * 8];
@@ -152,7 +163,7 @@ public class BinaryDataMatrixInstance extends
 		return byteArrayToDoubles(arr);
 	}
 
-	public static Double[] byteArrayToDoubles(byte[] arr)
+	private Double[] byteArrayToDoubles(byte[] arr)
 	{
 		int nr = arr.length / 8;
 		Double[] res = new Double[nr];
@@ -177,7 +188,7 @@ public class BinaryDataMatrixInstance extends
 		return res;
 	}
 
-	public static double byteArrayToDouble(byte[] arr)
+	private double byteArrayToDouble(byte[] arr)
 	{
 		long longBits = 0;
 		for (int i = 0; i < arr.length; i++)
@@ -188,7 +199,7 @@ public class BinaryDataMatrixInstance extends
 		return Double.longBitsToDouble(longBits);
 	}
 
-	public String readNextCharsFromRAF(RandomAccessFile raf, int stringLength)
+	private String readNextCharsFromRAF(RandomAccessFile raf, int stringLength)
 			throws IOException
 	{
 		byte[] string = new byte[stringLength];
@@ -211,7 +222,7 @@ public class BinaryDataMatrixInstance extends
 		return result;
 	}
 
-	public String readNextChars(DataInputStream dis, int stringLength)
+	private String readNextChars(DataInputStream dis, int stringLength)
 			throws IOException
 	{
 		byte[] string = new byte[stringLength];
@@ -614,55 +625,75 @@ public class BinaryDataMatrixInstance extends
 		return result;
 	}
 
-	public byte[] getTextDataElementLengths()
+	byte[] getTextDataElementLengths()
 	{
 		return textDataElementLengths;
 	}
 
-	private void setTextDataElementLengths(byte[] textDataElementLengths)
+	void setTextDataElementLengths(byte[] textDataElementLengths)
 	{
 		this.textDataElementLengths = textDataElementLengths;
 	}
 
-	public int getTextElementLength()
+	int getTextElementLength()
 	{
 		return textElementLength;
 	}
 
-	private void setTextElementLength(int textElementLength)
+	void setTextElementLength(int textElementLength)
 	{
 		this.textElementLength = textElementLength;
 	}
 
 	// redundant with getAsFile(), but used internally
-	private File getBin()
+	File getBin()
 	{
 		return bin;
 	}
 
-	private void setBin(File bin)
+	void setBin(File bin)
 	{
 		this.bin = bin;
 	}
 
-	public String getNullChar()
+	String getNullChar()
 	{
 		return nullChar;
 	}
 
-	private void setNullChar(String nullChar)
+	void setNullChar(String nullChar)
 	{
 		this.nullChar = nullChar;
 	}
 
-	public Pattern getNullCharPattern()
+	Pattern getNullCharPattern()
 	{
 		return nullCharPattern;
 	}
 
-	private void setNullCharPattern(Pattern nullCharPattern)
+	void setNullCharPattern(Pattern nullCharPattern)
 	{
 		this.nullCharPattern = nullCharPattern;
+	}
+	
+	int getStartOfElementsPointer()
+	{
+		return startOfElementsPointer;
+	}
+
+	void setStartOfElementsPointer(int startOfElementsPointer)
+	{
+		this.startOfElementsPointer = startOfElementsPointer;
+	}
+
+	int getEndOfElementsPointer()
+	{
+		return endOfElementsPointer;
+	}
+
+	void setEndOfElementsPointer(int endOfElementsPointer)
+	{
+		this.endOfElementsPointer = endOfElementsPointer;
 	}
 
 	/**
