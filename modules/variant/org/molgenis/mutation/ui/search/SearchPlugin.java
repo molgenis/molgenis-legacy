@@ -75,8 +75,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
-		ServiceLocator.instance().getContext().getAutowireCapableBeanFactory().initializeBean(db, "org.molgenis.framework.db.Database");
-
 		try
 		{
 			if (StringUtils.isEmpty(request.getAction()))
@@ -522,7 +520,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	@Override
 	public void reload(Database db)
 	{
-		ServiceLocator.instance().getContext().getAutowireCapableBeanFactory().initializeBean(db, "org.molgenis.framework.db.Database");
 		try
 		{
 			SearchService searchService = ServiceLocator.instance().getSearchService();
