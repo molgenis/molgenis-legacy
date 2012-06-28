@@ -26,14 +26,20 @@
 	
 <#--begin your plugin-->	
 
-<div id="vraag">
+
+<div id="geneExpression">
+<form action="">
+<input type="radio" name="geneExp" value="raw" /> Raw expression<br />
+<input type="radio" name="geneExp" value="quanLog" /> Quantile normalized & log2 transformed expression
+</form>
+</div>
+<div id="submit">
 
 <input type='submit' id='jetty' value='Submit' onclick="__action.value='verstuurJetty2'" />
 
 ${model.action}
 
 </div>
-
 
 
 
