@@ -1,3 +1,4 @@
 /dist
 /build
 /generated/java
+*.so
