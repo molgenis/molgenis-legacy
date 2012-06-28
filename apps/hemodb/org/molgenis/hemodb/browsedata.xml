@@ -28,6 +28,7 @@
 				<form name="Genes" entity="HemoGene" group="biologist">
 					<form name="Transcripts" entity="Transcript" group="biologist" />
 				</form>
+				<form name="SampleGroup" entity="HemoSampleGroup" group="biologist" />
 			</menu>
 		</menu>
 	</form>
