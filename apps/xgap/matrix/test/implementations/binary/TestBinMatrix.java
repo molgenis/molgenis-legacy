@@ -46,6 +46,7 @@ public class TestBinMatrix
 		logger.info("Creating database instance and erasing all existing data..");
 		Helper h = new Helper(db);
 		h.printSettings(storage, params);
+		System.out.println("OLD IMPLEMENTATION");
 		h.prepareDatabaseAndFiles(storage, params);
 
 		logger.info("Transforming the files into their binary counterpart in the storage directory..");

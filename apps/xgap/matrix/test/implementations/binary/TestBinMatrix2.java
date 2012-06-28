@@ -47,6 +47,7 @@ public class TestBinMatrix2
 		logger.info("Creating database instance and erasing all existing data..");
 		Helper h = new Helper(db);
 		h.printSettings(storage, params);
+		System.out.println("NEW IMPLEMENTATION");
 		h.prepareDatabaseAndFiles(storage, params);
 
 		logger.info("Transforming the files into their binary counterpart in the storage directory..");
@@ -76,6 +77,7 @@ public class TestBinMatrix2
 		{
 			for (String method : methods)
 			{
+				System.out.println("---> METHOD: " + method);
 				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, bm, bm.getData(),
 						h.getInputFilesDir(), method, true, true));
 			}
