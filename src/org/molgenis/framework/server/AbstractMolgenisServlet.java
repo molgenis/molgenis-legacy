@@ -22,15 +22,12 @@ import javax.naming.NamingException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.ws.Endpoint;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.Bus;
-import org.apache.cxf.BusFactory;
-import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -61,7 +58,7 @@ import org.molgenis.util.TupleWriter;
  * TODO: make it use either context.xml or a properties file for configuration.
  */
 @Deprecated
-public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
+public abstract class AbstractMolgenisServlet extends HttpServlet
 {
 	/** the name of the datatype input */
 	public static String INPUT_DATATYPE = "data_type_input";
@@ -380,9 +377,9 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 		// this.getRestImpl()
 		// != null))
 		{
-			super.loadBus(this.getServletConfig());
-
-			Bus bus = this.getBus();
+//			super.loadBus(this.getServletConfig());
+//
+//			Bus bus = this.getBus();
 
 			// from samples/restfull directory
 
@@ -400,8 +397,8 @@ public abstract class AbstractMolgenisServlet extends CXFNonSpringServlet
 
 			// sf.create();
 
-			BusFactory.setDefaultBus(bus);
-			Endpoint.publish("/soap/", this.getSoapImpl());
+//			BusFactory.setDefaultBus(bus);
+//			Endpoint.publish("/soap/", this.getSoapImpl());
 			// Endpoint.publish("/rest/", this.getSoapImpl());
 
 			// JAX-RS
