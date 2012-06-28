@@ -2,3 +2,7 @@
 /build
 /generated/java
 *.so
+/bin
+/logs
+.classpath
+
