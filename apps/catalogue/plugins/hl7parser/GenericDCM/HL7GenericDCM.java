@@ -26,7 +26,7 @@ public class HL7GenericDCM {
     private static final String ORGANIZER = "urn:hl7-org:v3:component/urn:hl7-org:v3:organizer/urn:hl7-org:v3:component";
 
     public HL7GenericDCM(Node parentNode, XPath xpath) throws Exception {
-    	System.out.println("parentNode:" + parentNode.getNodeName());
+
         ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
         NodeList nodes = (NodeList)xpath.compile(ORGANIZER).evaluate(parentNode, XPathConstants.NODESET);
        
