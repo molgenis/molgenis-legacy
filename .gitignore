@@ -1,3 +1,8 @@
-/dist
-/build
-/generated/java
+*settings/*
+.classpath
+generated/
+hsqldb/
+logger.out
+build/
+logs/
+.gitignore
