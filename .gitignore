@@ -4,3 +4,5 @@ generated/
 hsqldb/
 logger.out
 build/
+logs/
+.gitignore
