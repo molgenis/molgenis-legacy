@@ -245,7 +245,7 @@
 	<#else>
 		<#list model.otherList?keys as a>
 			<td>
-				<a href="${model.otherList[a]}">${greenSquare} ${a}</a>
+				<#if model.fileLinkoutIsVisible><a href="${model.otherList[a]}"></#if>${greenSquare} ${a}<#if model.fileLinkoutIsVisible></a></#if>
 			</td>
 			
 			<#if !model.showAllOther && a_index == 3>
@@ -295,7 +295,7 @@
 					<input type="submit" value="Show all" onclick="document.forms.${screen.name}.__action.value = 'showAllOther'; document.forms.${screen.name}.submit();"/>
 				</#if>
 			</#if>
-			<input type="button" value="Browse" onclick="window.location.href='molgenis.do?__target=ImportDataMenu&select=Files'">
+			<#if model.fileLinkoutIsVisible><input type="button" value="Browse" onclick="window.location.href='molgenis.do?__target=ImportDataMenu&select=Files'"></#if>
 		</td>
 	</tr>
 </table>

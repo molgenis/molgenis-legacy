@@ -20,6 +20,7 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.xgap.InvestigationFile;
 
 public class GenomeBrowser extends PluginModel<Entity>
 {
@@ -106,8 +107,8 @@ public class GenomeBrowser extends PluginModel<Entity>
 			if(this.model.getFilesAreVisible() == null){
 				//find out if molgenisfiles are readable by anonymous
 				Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-//				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.xgap.InvestigationFile"));
-				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.core.MolgenisFile"));
+				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.xgap.InvestigationFile"));
+//				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.core.MolgenisFile"));
 				q.addRules((new QueryRule(MolgenisPermission.ROLE__NAME, Operator.EQUALS, "anonymous")));
 				if(q.find().size() > 0)
 				{
@@ -122,9 +123,9 @@ public class GenomeBrowser extends PluginModel<Entity>
 			
 			if(this.model.getFilesAreVisible())
 			{
-				Query<MolgenisFile> q = db.query(MolgenisFile.class);
+				Query<InvestigationFile> q = db.query(InvestigationFile.class);
 				q.addRules(new QueryRule(MolgenisFile.EXTENSION, Operator.EQUALS, "gff"));
-				List<MolgenisFile> mf = q.find();
+				List<InvestigationFile> mf = q.find();
 				this.model.setGffFiles(mf);
 			}
 			
