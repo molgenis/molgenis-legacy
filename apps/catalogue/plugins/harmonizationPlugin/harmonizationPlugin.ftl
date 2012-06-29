@@ -149,17 +149,38 @@ function checkFileExisting(){
 					</table>
 					
 				<#elseif screen.getManualMatch() == true>
-	
-					You have chosen prediction model selectedInvestigation
+					<table border=1 width="100%" height="600px">
+						<tr height="50px">
+							<td width="50%">
+								<font size="3">Selected prediction model: <b>${screen.getSelectedPredictionModel()}</b></br>
+								<font size="3">Selected validation study: <b>${screen.getValidationStudyName()}</b></font>
+							</td>
+						</tr>
+						<tr height="550px">
+							<td><font size="3">
+								</br>Choose a parameter from <b>${screen.getSelectedPredictionModel()}</b>
+								and search this term in <b>${screen.getValidationStudyName()}</b> study</br>
+								<select name="selectParameter" id="selectParameter"> 
+									<#list screen.getListOfParameters() as parameter>
+										<option value="${parameter}">${parameter}</option>			
+									</#list>
+								</select>
+								<script>$('#selectParameter').chosen();</script>
+								</br></br>1.You can either search for the term itself and it will become the searching tokens
+								</br></br>2.You can also give the definition for the term and this definition will become your searching tokens 
+								</br></br>Example: For term "Age", you can directly search Age or search "How old are you?"
+								</br></br>Define your term here: <input type="text" name="userDefinedQuery" size="25" value="">
+								
+								</br></br><input type="submit" name="saveManualMapping" value="save manual mapping" onclick="__action.value='saveManualMapping';"/>
+							</font></td>
+							<td><font size="3"><i>
+								</br>The matchings will be done using Levenshtein string matching algorithms. 
+								</br></br>The mapping result will be shown here!
+							</i></font></td>
+						</tr>
+					</table>
 					
-					<select name="selectParameter" id="selectParameter"> 
-						<#list screen.getListOfParameters() as parameter>
-							<option value="${parameter}">${parameter}</option>			
-						</#list>
-					</select>
-					<script>$('#selectParameter').chosen();</script>
-					</br></br>
-					<input type="submit" value="back to mapping" id="backToMapping" name="backToMapping" onclick="__action.value='backToMapping';" />
+					</br><input type="submit" value="back to mapping" id="backToMapping" name="backToMapping" onclick="__action.value='backToMapping';" />
 				
 				<#else>
 					<#if screen.isSelectedInv() == true>

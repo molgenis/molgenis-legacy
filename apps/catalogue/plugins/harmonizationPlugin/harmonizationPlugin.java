@@ -137,7 +137,13 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 			}else if(request.getAction().equals("manaulMatching")){
 				
+				validationStudyName = request.getString("validationStudy");
+				
 				manualMatch = true;
+				
+			}else if(request.getAction().equals("saveManualMapping")){
+				
+				System.out.println(request.getString("userDefinedQuery"));
 				
 			}else if (request.getAction().equals("chooseInvestigation")) {
 				selectedPredictionModel = request.getString("investigation");
