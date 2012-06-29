@@ -12,7 +12,8 @@ import org.molgenis.matrix.MatrixException;
 public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 {
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
-	int HD_BLOCK_SIZE = 8000000; //FIXME: how to determine? whats best general size?
+	RandomAccessFile raf;
+	long[] textDataElementLenghtsCumulative;
 
 	/***********/
 	/** CONSTRUCTOR */
@@ -20,122 +21,129 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 	public BinaryDataMatrixInstance_NEW(File bin) throws Exception
 	{
 		super(bin);
+		this.raf = new RandomAccessFile(this.getBin(), "r");
+		
+		if(this.getTextDataElementLengths() != null){
+			this.textDataElementLenghtsCumulative = new long[this.getTextDataElementLengths().length+1];
+			textDataElementLenghtsCumulative[0] = 0; //convenient when adding to pointer position
+			long cumulative = 0;
+			for(int i = 0; i < this.getTextDataElementLengths().length; i++)
+			{
+				cumulative = cumulative + this.getTextDataElementLengths()[i];
+				textDataElementLenghtsCumulative[i+1] = cumulative;
+			}
+		}
 	}
 
-	/***********/
-	/** HELPER FUNCTIONS */
-	/***********/
-
-	// Primary function to read doubles
-	public Double[] readNextDoublesFromRAF(RandomAccessFile raf, int elementAmount) throws IOException
-	{
-		byte[] arr = new byte[elementAmount * 8];
-		raf.read(arr);
-		return byteArrayToDoubles(arr);
-	}
 
 	/**
-	 * Output includes the nullcharacters so it is parseable with the text lenghts.
-	 * @param raf
-	 * @param elementAmount
-	 * @param isDecimal
-	 * @param elementLength
-	 * @return
+	 * General purpose function to read a chunk of data from a RandomAccessFile.
+	 * @param startElement The element to start reading from
+	 * @param elementAmount The amount of elements to read, sequentially, row-based
+	 * @param replaceNulls If true, replace the nullChar with empty in Text data.
+	 * @return Object[] The resulting list of elements
 	 * @throws IOException
 	 */
-	public Object[] readBlock(RandomAccessFile raf, int elementAmount, boolean isDecimal, int elementLength) throws IOException
+	private Object[] readBlock(int startElement, int elementAmount, boolean replaceNulls) throws IOException
 	{
 		Object[] result = new Object[elementAmount];
 		
-		if(isDecimal)
+		if(this.getData().getValueType().equals("Decimal"))
 		{
+			int startPointer = this.getStartOfElementsPointer() + (startElement * 8);
+		
+			if(startPointer != raf.getFilePointer())
+			{
+				raf.seek(startPointer);
+			}
+			
 			byte[] arr = new byte[elementAmount * 8];
 			raf.read(arr);
 			return byteArrayToDoubles(arr);
 		}
 		else
 		{
-			if(elementLength == 0)
+			if(this.getTextElementLength() != 0)
 			{
-				int totalBytes = elementAmount * elementLength;
-
+				int startPointer = this.getStartOfElementsPointer() + (startElement * this.getTextElementLength());
+				
+				if(startPointer != raf.getFilePointer())
+				{
+					raf.seek(startPointer);
+				}
+				
+				//allocate array of the exact size
+				int totalBytes = elementAmount * this.getTextElementLength();
 				byte[] bytes = new byte[totalBytes];
-				char[] chars = new char[totalBytes];
 
+				//single read action from raf
 				raf.read(bytes);
 
-				for (int i = 0; i < bytes.length; i++)
-				{
-					chars[i] = (char) bytes[i];
-				}
-
+				//cut up the result 
 				for (int i = 0; i < elementAmount; i++)
 				{
-					int start = i * elementLength;
-					int stop = start + elementLength;
-					char[] subArr = new char[elementLength];
+					int start = i * this.getTextElementLength();
+					int stop = start + this.getTextElementLength();
+					char[] subArr = new char[this.getTextElementLength()];
 					int count = 0;
 					for (int j = start; j < stop; j++)
 					{
-						subArr[count] = chars[j];
+						subArr[count] = (char) bytes[j];
 						count++;
 					}
 					String fromChars = new String(subArr);
 					result[i] = fromChars;
+					if(replaceNulls && result[i].equals(this.getNullChar()))
+					{
+						result[i] = "";
+					}
 				}
 				return result;
 			}
 			else
 			{
-				//read a big chunk and parse it out!!
 				
+				long startPointer = this.getStartOfElementsPointer() + this.textDataElementLenghtsCumulative[startElement];
 				
+				if(startPointer != raf.getFilePointer())
+				{
+					raf.seek(startPointer);
+				}
+				
+				//find out how many bytes we're going to read
+				//allocate array of the exact size
+				int totalBytes = (int) (this.textDataElementLenghtsCumulative[startElement+elementAmount] - this.textDataElementLenghtsCumulative[startElement]);
+				byte[] bytes = new byte[totalBytes];
+	
+				
+				//single read action from raf
+				raf.read(bytes);
+				
+				//cut up the result 
+				int stop = 0;
+				for (int i = 0; i < elementAmount; i++)
+				{
+					int start = stop;
+					stop = start + this.getTextDataElementLengths()[startElement+i];
+					char[] subArr = new char[stop-start];
+					int count = 0;
+					for (int j = start; j < stop; j++)
+					{
+						subArr[count] = (char) bytes[j];
+						count++;
+					}
+					String fromChars = new String(subArr);
+					result[i] = fromChars;
+					if(replaceNulls && result[i].equals(this.getNullChar()))
+					{
+						result[i] = "";
+					}
+				}
+				return result;
 			}
 		}
-	
-		return result;
 	}
 	
-	/**
-	 * Primary function to read strings. Performs one read action from the hard drive.
-	 */
-	public Object[] readStringsFromRAF(RandomAccessFile raf, int elementAmount, int elementLength) throws IOException
-	{
-		Object[] result = new Object[elementAmount];
-		int totalBytes = elementAmount * elementLength;
-
-		byte[] bytes = new byte[totalBytes];
-		char[] chars = new char[totalBytes];
-
-		raf.read(bytes);
-
-		for (int i = 0; i < bytes.length; i++)
-		{
-			chars[i] = (char) bytes[i];
-		}
-
-		for (int i = 0; i < elementAmount; i++)
-		{
-			int start = i * elementLength;
-			int stop = start + elementLength;
-			char[] subArr = new char[elementLength];
-			int count = 0;
-			for (int j = start; j < stop; j++)
-			{
-				subArr[count] = chars[j];
-				count++;
-			}
-			String fromChars = new String(subArr);
-//			if (this.getNullCharPattern().matcher(fromChars).matches())
-//			{
-//				result[i] = "";
-//			}else{
-				result[i] = fromChars;
-//			}
-		}
-		return result;
-	}
-
 	/**
 	 * Convert bytes to doubles
 	 * @param arr
@@ -166,172 +174,73 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		return res;
 	}
 
-
-	
-	
-
 	/***********/
 	/** MATRIX IMPLEMENTATION */
 	/***********/
 	@Override
 	/**
-	 * Get only one element (from a RandomAccessFile instance), therefore extremely inefficient to retrieve many elements and not optimizable.
-	 * @status: Done
+	 * Get one element. Still fast if the elements are sequentially retrieved. (index increment of 1, by row)
 	 */
 	public Object getElement(int rowindex, int colindex) throws Exception
 	{
-		Object result = new Object();
-		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
-		int startIndex = (rowindex * this.getNumberOfCols()) + colindex;
-		if (this.getData().getValueType().equals("Decimal"))
-		{
-			raf.seek(this.getStartOfElementsPointer() + (startIndex * 8));
-			result = readBlock(raf, 1, true, -1)[0];
-		}
-		else
-		{
-			if (this.getTextElementLength() != 0)
-			{
-				raf.seek(this.getStartOfElementsPointer() + (startIndex * this.getTextElementLength()));
-				result = readBlock(raf, 1, false, this.getTextElementLength())[0];
-			}
-			else
-			{
-				long byteOffset = 0;
-				for (int i = 0; i < startIndex; i++)
-				{
-					byteOffset += this.getTextDataElementLengths()[i];
-				}
-				raf.seek(this.getStartOfElementsPointer() + byteOffset);
-				result = readBlock(raf, 1, false, this.getTextDataElementLengths()[startIndex])[0];
-				if(result.equals(this.getNullChar()))
-				{
-					result = "";
-				}
-			}
-		}
-		raf.close();
-		return result;
+		return readBlock((rowindex * this.getNumberOfCols()) + colindex, 1, true)[0];
 	}
 
 	@Override
 	/**
-	 * Get a row (from a RandomAccessFile instance), optimized by reading the entire row at once
-	 * @status: Done
+	 * Get one row. Still fast if the rows are sequentially retrieved. (index increment of 1)
 	 */
 	public Object[] getRow(int rowIndex) throws Exception
 	{
-		Object[] result = new Object[this.getNumberOfCols()];
-		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
-
-		if (this.getData().getValueType().equals("Decimal"))
-		{
-			raf.seek(this.getStartOfElementsPointer() + (rowIndex * this.getNumberOfCols() * 8));
-			result = readNextDoublesFromRAF(raf, result.length);
-		}
-		else
-		{
-			if (this.getTextElementLength() != 0)
-			{
-				raf.seek(this.getStartOfElementsPointer()
-						+ (rowIndex * this.getNumberOfCols() * this.getTextElementLength()));
-				result = readStringsFromRAF(raf, this.getNumberOfCols(), this.getTextElementLength());
-			}
-			else
-			{
-				int startIndex = rowIndex * this.getNumberOfCols();
-				long byteOffset = 0;
-				for (int i = 0; i < startIndex; i++)
-				{
-					byteOffset += this.getTextDataElementLengths()[i];
-				}
-				raf.seek(this.getStartOfElementsPointer() + byteOffset);
-				
-				int diff = (int) (this.getEndOfElementsPointer() - (this.getStartOfElementsPointer() + byteOffset));
-			
-				// read the row as 1 big element
-				Object[] tmpResult = readStringsFromRAF(raf, 1, diff);
-				String rowLine = tmpResult[0].toString();
-				System.out.println("ROWLINE: '" + rowLine+"'");
-				//cut up the result
-				int startAt = 0;
-				for (int i = 0; i <  this.getNumberOfCols(); i++)
-				{
-					int elementLength = this.getTextDataElementLengths()[i+startIndex];
-					result[i] = rowLine.substring(startAt, startAt+elementLength);
-					if(this.getNullCharPattern().matcher(result[i].toString()).matches())
-					{
-						result[i] = "";
-					}
-					startAt += elementLength;
-				}
-			}
-		}
-		raf.close();
-		return result;
+		return readBlock((rowIndex * this.getNumberOfCols()), this.getNumberOfCols(), true);
 	}
 
 	@Override
 	/**
-	 * Get a column (from a RandomAccessFile instance), optimized by reading in blocks of HD_BLOCK_SIZE bytes
-	 * to get multiple values at once - unless the colums are further apart than HD_BLOCK_SIZE bytes ofcourse.
-	 * (for variable length text elements this cannot be guessed...)
-	 * @status: TODO
+	 * Get one column.
 	 */
 	public Object[] getCol(int colIndex) throws Exception
 	{
 		Object[] result = new Object[this.getNumberOfRows()];
-		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
 		
-		if (this.getData().getValueType().equals("Decimal"))
+		long halfOfFreeMem = (Runtime.getRuntime().freeMemory()/2);
+		long totalElementSize = this.getEndOfElementsPointer() - this.getStartOfElementsPointer();
+		
+		if(halfOfFreeMem > totalElementSize)
 		{
-			raf.seek(this.getStartOfElementsPointer() + (colIndex * 8));
-			
-			//find out if next column value is more than HD_BLOCK_SIZE away
-			//if so: seperate queries
-			//if not.. read in ??
-			
-			//retrieve by skipping over, time it
-			//if closer than HD_BLOCK_SIZE together, retrieve multiple and time it
-			//pick fastest for the rest
-			
-			int theEnd = this.getEndOfElementsPointer();
-			
-			if(this.getNumberOfCols() > HD_BLOCK_SIZE){
-				//retrieve per element because we can't use block retrieve anyway!
-				//TODO
-			}else{
-				//maybe retrieving blocks is useful now...
-				
-				if(this.getNumberOfRows() < 30){
-					//test of speed difference only useful when retrieving many elements
-					//
-				}else{
-					//find out per-element speed, retrieve 10
-				//	for()
-				//	readNextDoublesFromRAF(raf, 1)[0];
-				}
-				
-				
-			}
-			
-			if(theEnd > 32412343){
-				result = readNextDoublesFromRAF(raf, result.length);
-			}
-			
-			
+			System.out.println("enough memory to read complete file");
 		}
 		else
 		{
-			if (this.getTextElementLength() != 0)
+			long sizeOfOneRow = (totalElementSize/this.getNumberOfRows()); //note: this is an estimation for variable text length
+
+			if(halfOfFreeMem > sizeOfOneRow)
 			{
+				System.out.println("enough memory ("+halfOfFreeMem+") to hold one row ("+sizeOfOneRow+")");
 				
+				long howMany = halfOfFreeMem / sizeOfOneRow;
+				System.out.println("--> in fact, " + howMany + " rows will fit in memory at once ("+((((double)howMany)/((double)this.getNumberOfRows()))*100)+"% of total)");
+				
+				if(howMany > this.getNumberOfRows())
+				{
+					System.out.println("that means we can get everything (ERROR, file didn't fit at first?!?!)");
+				}
+
 			}
 			else
 			{
-				
+				System.out.println("not enough memory: must seek for each col element");
 			}
 		}
+
+		
+		//516594840 = 516 meg
+
+		
+//		raf.seek(this.getEndOfElementsPointer()-8);
+//		byte[] read = new byte[8];
+//		raf.read(read);
+//		System.out.println("READ: " + byteArrayToDoubles(read)[0]);
 			
 		return result;
 	}
@@ -369,7 +278,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 	@Override
 	public Object[][] getElements() throws MatrixException
 	{
-		// TODO Auto-generated method stub
+		//return readBlock(0, this.getNumberOfRows() * this.getNumberOfCols(), true);
 		return null;
 	}
 
