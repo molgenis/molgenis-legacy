@@ -41,8 +41,8 @@
 </#if>
 
 <#assign ucscMirror = "http://genome.ucsc.edu/">						<#-- NOTE: original and probably most stressed server, avoid if possible -->
-<#--assign ucscMirror = "http://genome-mirror.moma.ki.au.dk/"-->		<#-- NOTE, doesn't work: error reading GFF "Unrecognized format line 8" -->
-<#--assign ucscMirror = "http://genome-mirror.bscb.cornell.edu/"-->		<#-- NOTE, doesn't work: since June 2012 server error "can't find profile backupcentral in hg.conf" -->
+<#--assign ucscMirror = "http://genome-mirror.moma.ki.au.dk/"-->		<#-- NOTE, doesn't work: unresponsive to URL parameters -->
+<#--assign ucscMirror = "http://genome-mirror.bscb.cornell.edu/"-->		<#-- NOTE: works, but incredibly slow -->
 <#--assign ucscMirror = "http://genome.hmgc.mcw.edu/"-->				<#-- NOTE, doesn't work: server error "can not find custom track tmp load directory: '/data/tmp/ct'" -->
 <#--assign ucscMirror = "http://genome-mirror.duhs.duke.edu/"-->		<#-- NOTE, doesn't work: error reading GFF "Unrecognized format line 8" -->
 <#--assign ucscMirror = "http://genome.qfab.org/"-->					<#-- NOTE, doesn't work: server error "You don't have permission to access /cgi-bin/hgTracks on this server." -->
@@ -64,12 +64,19 @@
 	<#if model.gffFiles?size == 0>
 		There are currently no GFF files in your database!<br>
 	<#else>
-	<h3>Load GFF file tracks into browser:</h3>
-	<ul>
-		<#list model.gffFiles as f>
-			<li>Add track <a target="ucsc_iframe" href="${ucscMirror}cgi-bin/hgTracks?db=${release}&hgt.customText=${model.appUrl}/viewfile/${f.name}">${f.name}</a></li>
-		</#list>
-	</ul>
+		<h3>Load GFF file tracks into browser</h3>
+		<table border="1">
+			<#list model.gffFiles as f>
+			<tr>
+				<td>
+					<b>Add track: <a target="ucsc_iframe" href="${ucscMirror}cgi-bin/hgTracks?db=${release}&hgt.customText=${model.appUrl}/viewfile/${f.name}">${f.name}</a></b>
+				</td>
+				<td>
+					<#if f.description??>${f.description}</#if>
+				</td>
+			</tr>
+			</#list>
+		</table>
 		<br>
 	</#if>
 <#else>
