@@ -31,7 +31,7 @@ public class HL7Main {
 
 
 		//String file1 = "/Users/pc_iverson/Desktop/input/StageCatalog.xml";
-		String file1 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/GenericCatalog-EX02.xml";
+		String file1 = "/Users/pc_iverson/Documents/HL7/GenericCatalog-EX02.xml";
 		String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/org.hl7.BodyWeight-v0.108-Template.xml-valuesets.xml";
 		String file3 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/org.hl7.BodyWeight-v0.108-Template+context.xml";
 

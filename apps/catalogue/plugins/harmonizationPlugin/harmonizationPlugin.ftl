@@ -19,7 +19,8 @@
 <script type="text/javascript">
 function addingTable(tableId){
 	
-	if(map.get(tableId) != "null"){
+	if(map.get(tableId) != "null" && map.get(tableId) != null){
+		
 		document.getElementById('details').innerHTML += map.get(tableId);
 		document.getElementById(tableId + " table").style.display = "none";		
 	}
@@ -147,18 +148,27 @@ function checkFileExisting(){
 						</tr>
 					</table>
 					
+				<#elseif screen.getManualMatch() == true>
+	
+					You have chosen prediction model selectedInvestigation
 					
-					
-				<#else>
+					<select name="selectParameter" id="selectParameter"> 
+						<#list screen.getListOfParameters() as parameter>
+							<option value="${parameter}">${parameter}</option>			
+						</#list>
+					</select>
+					<script>$('#selectParameter').chosen();</script>
+					</br></br>
+					<input type="submit" value="back to mapping" id="backToMapping" name="backToMapping" onclick="__action.value='backToMapping';" />
 				
+				<#else>
 					<#if screen.isSelectedInv() == true>
 						<table class="box" width="100%" cellpadding="0" cellspacing="0">
 							<tr><td class="box-header" colspan="1">  
 									<label>Choose a prediction model:
 									<select name="investigation" id="investigation"> 
-										<#list screen.arrayInvestigations as inv>
-											<#assign invName = inv.name>
-												<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+										<#list screen.getPredictionModel() as inv>
+											<option value="${inv}">${inv}</option>			
 										</#list>
 									</select>
 									<script>$('#investigation').chosen();</script>
@@ -169,7 +179,7 @@ function checkFileExisting(){
 										DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
 									</label>
 									<div id="masstoggler"> 	
-										<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+										<label>Browse protocols and their variables '${screen.getSelectedPredictionModel()}':click to expand, collapse or show details</label>
 								 			<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 								 			<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
 					 				</div>
@@ -231,7 +241,13 @@ function checkFileExisting(){
 										style="color: #000; background: #8EC7DE;
 											   border: 2px outset #d7b9c9;
 											   font-size:15px;
-											   font-weight:bold;"/>	
+											   font-weight:bold;"/>
+									<input type="submit" value="Manual mapping" id="manaulMatching" name="manaulMatching" 
+										onclick="__action.value='manaulMatching';" 
+										style="color: #000; background: #8EC7DE;
+											   border: 2px outset #d7b9c9;
+											   font-size:15px;
+											   font-weight:bold;"/>		
 								</td>
 								<td class="box-body">
 								<input class="saveMapping" type="submit" id="saveMapping" name="saveMapping" value="save Mapping" 
@@ -253,8 +269,8 @@ function checkFileExisting(){
 							refreshByHits();
 						</script>
 						<#list screen.getExecutiveScript() as executiveScript>
-								${executiveScript}
-							</#list>
+							${executiveScript}
+						</#list>
 				   </#if>
 			   </#if>	
 			</div>

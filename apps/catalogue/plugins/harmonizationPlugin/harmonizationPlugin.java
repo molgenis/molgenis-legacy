@@ -39,11 +39,12 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 	private List<String> listOfParameters = new ArrayList<String>();
-	private String selectedInvestigation = null;
+	private String selectedPredictionModel = null;
 	private String selectedField = null;
 	private String messageForAlgorithm = "";
 	private boolean isSelectedInv = false;
 	private boolean developingAlgorithm = false;
+	private boolean manualMatch = false;
 
 	/** Multiple inheritance: some measurements might have multiple parents therefore it
 	 *  will complain about the branch already exists when constructing the tree, cheating by
@@ -56,7 +57,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	private HashMap<String, String> parameterWithHtmlTable = new HashMap<String, String>();
 	private HashMap<String, String> questionsAndIdentifier = new HashMap<String, String>();
 	private HashMap<String, String> identifierAndDescription = new HashMap<String, String>();
-	private ArrayList<String> validationStudy = new ArrayList<String>();
+	private ArrayList<String> predictionModel = new ArrayList<String>();
 	private String validationStudyName = "";
 	private int maxQuerySize = 0;
 	private String hitSizeOption = "";
@@ -123,6 +124,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			}else if(request.getAction().equals("backToMapping")){
 
 				developingAlgorithm = false;
+				
+				manualMatch = false;
 
 			}else if (request.getAction().equals("switchToAlgorithm")) {
 
@@ -132,11 +135,15 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						+ "Algorithms could convert the source data to the prediction model variables. </br>" 
 						+ "Upload an ontology file that includes the crucial information for generating algorithms.";
 
+			}else if(request.getAction().equals("manaulMatching")){
+				
+				manualMatch = true;
+				
 			}else if (request.getAction().equals("chooseInvestigation")) {
-				selectedInvestigation = request.getString("investigation");
-				this.setSelectedInvestigation(selectedInvestigation);
-				System.out.println("The selected investigation is : "
-						+ selectedInvestigation);
+				selectedPredictionModel = request.getString("investigation");
+				this.setSelectedPredictionModel(selectedPredictionModel);
+				System.out.println("The selected model is : "
+						+ selectedPredictionModel);
 				arrayInvestigations.clear();
 
 			}else if (request.getAction().equals("startMatching")){
@@ -706,12 +713,15 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	public void reload(Database db) {
 
 		// default set selected investigation to first
-		if (this.getSelectedInvestigation() == null) {
+		if (this.getSelectedPredictionModel() == null) {
 			try {
-				List<Investigation> inv = db.query(Investigation.class)
-						.limit(1).find();
-				if (inv.size() > 0)
-					this.setSelectedInvestigation(inv.get(0).getName());
+				List<Investigation> inv = db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, "Prediction Model"));
+				
+				if (inv.size() > 0){
+					
+					List<Protocol> listOfPredictionModels = db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "Prediction Model")); 
+					this.setSelectedPredictionModel(listOfPredictionModels.get(0).getName());
+				}
 			} catch (DatabaseException e1) {
 				e1.printStackTrace();
 			}
@@ -724,14 +734,14 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 		// false));
 		try {
 
-			if(db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "Validation Study")) != null){
+			if(db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "Prediction Model")) != null){
 
-				List<Protocol> protocols = db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "Validation Study"));
+				List<Protocol> protocols = db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "Prediction Model"));
 
-				validationStudy.clear();
+				predictionModel.clear();
 
 				for(Protocol p : protocols){
-					validationStudy.add(p.getName());
+					predictionModel.add(p.getName());
 				}
 			}
 
@@ -781,7 +791,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			Query<Protocol> q = db.query(Protocol.class);
 
 			q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME,
-					Operator.EQUALS, this.selectedInvestigation));
+					Operator.EQUALS, "Prediction Model"));
 
 			// Iterate through all the found protocols
 			for (Protocol p : q.find()) {
@@ -835,7 +845,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 		// Create a starting point of the tree! The root of the tree!
 		JQueryTreeViewElement protocolsTree = new JQueryTreeViewElement(
-				"Study: " + this.getSelectedInvestigation(), null);
+				"Study: " + this.getSelectedPredictionModel(), null);
 
 		// Variable indicating whether the input token has been found.
 
@@ -928,20 +938,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				// use the measurement name as label
 				String displayName = "";
 
-				Query<ObservedValue> queryDisplayNames = db
-						.query(ObservedValue.class);
-
-				queryDisplayNames.addRules(new QueryRule(
-						ObservedValue.TARGET_NAME, Operator.EQUALS, measurement
-						.getName()));
-
-				queryDisplayNames.addRules(new QueryRule(
-						ObservedValue.FEATURE_NAME, Operator.LIKE,
-						"display name"));
-
-				if (queryDisplayNames.find().size() > 0) {
-
-					displayName = queryDisplayNames.find().get(0).getValue();
+				if (measurement.getLabel() != null) {
+					displayName = measurement.getLabel();
 				} else {
 					displayName = measurement.getName();
 				}
@@ -972,7 +970,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 							.get(displayName);
 
 					childTree = new JQueryTreeViewElement(displayName
-							+ multipleInheritance.get(displayName),
+							+ "_" +  multipleInheritance.get(displayName),
 							displayName, parentTree,
 							previousChildTree.getHtmlValue());
 
@@ -1051,7 +1049,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	}
 
 	public List<String> getValidationStudy() {
-		return validationStudy;
+		return predictionModel;
 	}
 
 	public List<String> getListOfParameters() {
@@ -1070,12 +1068,12 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 		return isSelectedInv;
 	}
 
-	public String getSelectedInvestigation() {
-		return selectedInvestigation;
+	public String getSelectedPredictionModel() {
+		return selectedPredictionModel;
 	}
 
-	public void setSelectedInvestigation(String selectedInvestigation) {
-		this.selectedInvestigation = selectedInvestigation;
+	public void setSelectedPredictionModel(String selectedInvestigation) {
+		this.selectedPredictionModel = selectedInvestigation;
 	}
 
 	public void setSelectedField(String selectedField) {
@@ -1086,12 +1084,21 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 		return developingAlgorithm;
 	}
 
+	public boolean getManualMatch()
+	{
+		return manualMatch;
+	}
 
 	public String getMessageForAlgorithm()
 	{
 		return messageForAlgorithm;
 	}
-
+	
+	public List<String> getPredictionModel()
+	{
+		return predictionModel;
+	}
+	
 	public String getSelectedField() {
 		return selectedField;
 	}
