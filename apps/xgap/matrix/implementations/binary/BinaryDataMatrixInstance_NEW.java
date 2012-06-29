@@ -186,14 +186,14 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		if (this.getData().getValueType().equals("Decimal"))
 		{
 			raf.seek(this.getStartOfElementsPointer() + (startIndex * 8));
-			result = readNextDoublesFromRAF(raf, 1)[0];
+			result = readBlock(raf, 1, true, -1)[0];
 		}
 		else
 		{
 			if (this.getTextElementLength() != 0)
 			{
 				raf.seek(this.getStartOfElementsPointer() + (startIndex * this.getTextElementLength()));
-				result = readStringsFromRAF(raf, 1, this.getTextElementLength())[0];
+				result = readBlock(raf, 1, false, this.getTextElementLength())[0];
 			}
 			else
 			{
@@ -203,7 +203,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 					byteOffset += this.getTextDataElementLengths()[i];
 				}
 				raf.seek(this.getStartOfElementsPointer() + byteOffset);
-				result = readStringsFromRAF(raf, 1, this.getTextDataElementLengths()[startIndex])[0];
+				result = readBlock(raf, 1, false, this.getTextDataElementLengths()[startIndex])[0];
 				if(result.equals(this.getNullChar()))
 				{
 					result = "";
