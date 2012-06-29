@@ -45,7 +45,7 @@ export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
 export R_LIBS=${R_LIBS}
 
 # get general sample statistics
-${getStatisticsScript} \
+Rscript ${getStatisticsScript} \
 --hsmetrics ${csvQuoted(samplehsmetrics)} \
 --alignment ${csvQuoted(samplealignmentmetrics)} \
 --insertmetrics ${csvQuoted(sampleinsertsizemetrics)} \
@@ -60,7 +60,7 @@ ${getStatisticsScript} \
 --qcdedupmetricsout ${qcdedupmetricsout}
 
 # get dedup info per flowcell-lane-barcode/sample
-${getDedupInfoScript} \
+Rscript ${getDedupInfoScript} \
 --dedupmetrics ${csvQuoted(dedupmetrics)} \
 --flowcell ${csvQuoted(flowcell)} \
 --lane ${csvQuoted(lane)} \
@@ -69,7 +69,7 @@ ${getDedupInfoScript} \
 --qcdedupmetricsout "${qcdedupmetricsout}"
 
 # get snp stats per sample
-${createsnptablescript} \
+Rscript ${createsnptablescript} \
 --sample ${csvQuoted(externalSampleIDfolded)} \
 --type ${csvQuoted(snpsfinalvcftabletypefolded)} \
 --class ${csvQuoted(snpsfinalvcftableclassfolded)} \
