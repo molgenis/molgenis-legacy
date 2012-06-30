@@ -1,0 +1,937 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="catissue">
+    <entity name="association">
+        <field unique="true" type="long" name="ASSOCIATION_ID"/>
+        <field type="int" name="ASSOCIATION_TYPE"/>
+    </entity>
+    <entity name="categorial_attribute">
+        <field unique="true" auto="true" type="long" name="ID"/>
+        <field xref_field="categorial_class.ID" nillable="true" type="xref" name="CATEGORIAL_CLASS_ID"/>
+        <field nillable="true" type="long" name="DE_CATEGORY_ATTRIBUTE_ID"/>
+        <field nillable="true" type="long" name="DE_SOURCE_CLASS_ATTRIBUTE_ID"/>
+    </entity>
+    <entity name="categorial_class">
+        <field unique="true" auto="true" type="long" name="ID"/>
+        <field nillable="true" type="long" name="DE_ENTITY_ID"/>
+        <field nillable="true" type="long" name="PATH_FROM_PARENT_ID"/>
+        <field xref_field="categorial_class.ID" nillable="true" type="xref" name="PARENT_CATEGORIAL_CLASS_ID"/>
+    </entity>
+    <entity name="category" extends="categorial_class">
+        <field unique="true" auto="true" type="long" name="ID"/>
+        <field nillable="true" type="long" name="DE_ENTITY_ID"/>
+        <field xref_field="category.ID" nillable="true" type="xref" name="PARENT_CATEGORY_ID"/>
+    </entity>
+    <entity name="catissue_abs_speci_coll_group">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="150" nillable="true" name="CLINICAL_DIAGNOSIS"/>
+        <field length="50" nillable="true" name="CLINICAL_STATUS"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SITE_ID"/>
+    </entity>
+    <entity name="catissue_abstract_application">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="REASON_DEVIATION"/>
+        <field auto="true" type="datetime" name="TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_DETAILS"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+    </entity>
+    <entity name="catissue_abstract_position">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="POSITION_DIMENSION_ONE"/>
+        <field nillable="true" type="int" name="POSITION_DIMENSION_TWO"/>
+    </entity>
+    <entity name="catissue_abstract_specimen">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="50" default="" name="SPECIMEN_CLASS"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+        <field length="50" nillable="true" name="LINEAGE"/>
+        <field length="50" nillable="true" name="PATHOLOGICAL_STATUS"/>
+        <field nillable="true" type="long" name="PARENT_SPECIMEN_ID"/>
+        <field xref_field="catissue_specimen_char.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_CHARACTERISTICS_ID"/>
+        <field nillable="true" type="decimal" name="INITIAL_QUANTITY"/>
+    </entity>
+    <entity name="catissue_action">
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field length="50" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="long" name="ACTION_ORDER"/>
+        <field xref_field="catissue_action_app_rcd_entry.IDENTIFIER" nillable="true" type="xref" name="ACTION_APP_RECORD_ENTRY_ID"/>
+        <field xref_field="catissue_spp.IDENTIFIER" nillable="true" type="xref" name="SPP_IDENTIFIER"/>
+        <field length="50" name="UNIQUE_ID"/>
+        <field default="b'0'" nillable="true" type="bool" name="IS_SKIPPED"/>
+        <unique fields="SPP_IDENTIFIER,UNIQUE_ID"/>
+    </entity>
+    <entity name="catissue_action_app_rcd_entry">
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_action_application.IDENTIFIER" nillable="true" type="xref" name="ACTION_APP_ID"/>
+    </entity>
+    <entity name="catissue_action_application" extends="catissue_abstract_application">
+        <field xref_field="catissue_spp_application.IDENTIFIER" nillable="true" type="xref" name="SPP_APP_IDENTIFIER"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SCG_ID"/>
+        <field xref_field="catissue_action.IDENTIFIER" nillable="true" type="xref" name="ACTION_IDENTIFIER"/>
+        <field xref_field="catissue_action_app_rcd_entry.IDENTIFIER" nillable="true" type="xref" name="ACTION_APP_RECORD_ENTRY_ID"/>
+    </entity>
+    <entity name="catissue_address">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="STREET"/>
+        <field length="50" nillable="true" name="CITY"/>
+        <field length="50" nillable="true" name="STATE"/>
+        <field length="50" nillable="true" name="COUNTRY"/>
+        <field length="30" nillable="true" name="ZIPCODE"/>
+        <field length="50" nillable="true" name="PHONE_NUMBER"/>
+        <field length="50" nillable="true" name="FAX_NUMBER"/>
+    </entity>
+    <entity name="catissue_audit_event">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="20" nillable="true" name="IP_ADDRESS"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="200" nillable="true" name="EVENT_TYPE"/>
+    </entity>
+    <entity name="catissue_audit_event_details">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="150" nillable="true" name="ELEMENT_NAME"/>
+        <field nillable="true" type="text" name="PREVIOUS_VALUE"/>
+        <field nillable="true" type="text" name="CURRENT_VALUE"/>
+        <field xref_field="catissue_audit_event_log.IDENTIFIER" nillable="true" type="xref" name="AUDIT_EVENT_LOG_ID"/>
+    </entity>
+    <entity name="catissue_audit_event_log">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_audit_event.IDENTIFIER" nillable="true" type="xref" name="AUDIT_EVENT_ID"/>
+    </entity>
+    <entity name="catissue_audit_event_query_log">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="QUERY_DETAILS"/>
+        <field xref_field="catissue_audit_event.IDENTIFIER" nillable="true" type="xref" name="AUDIT_EVENT_ID"/>
+        <field nillable="true" type="long" name="QUERY_ID"/>
+        <field length="150" nillable="true" name="TEMP_TABLE_NAME"/>
+        <field default="0" nillable="true" type="bool" name="IF_TEMP_TABLE_DELETED"/>
+        <field length="150" nillable="true" name="ROOT_ENTITY_NAME"/>
+        <field nillable="true" type="long" name="COUNT_OF_ROOT_RECORDS"/>
+    </entity>
+    <entity name="catissue_base_shipment">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="50" nillable="true" name="LABEL"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SENDER_SITE_ID"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="RECEIVER_SITE_ID"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="SENDER_USER_ID"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="RECEIVER_USER_ID"/>
+        <field nillable="true" name="SENDER_COMMENTS"/>
+        <field nillable="true" name="RECEIVER_COMMENTS"/>
+        <field nillable="true" type="date" name="CREATED_DATE"/>
+        <field nillable="true" type="datetime" name="SEND_DATE"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+    </entity>
+    <entity name="catissue_biohazard">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="50" nillable="true" name="TYPE"/>
+    </entity>
+    <entity name="catissue_bulk_operation">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" length="100" name="OPERATION"/>
+        <field type="text" name="CSV_TEMPLATE"/>
+        <field type="text" name="XML_TEMPALTE"/>
+        <field unique="true" length="100" name="DROPDOWN_NAME"/>
+    </entity>
+    <entity name="catissue_cancer_research_group">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+    </entity>
+    <entity name="catissue_capacity">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="ONE_DIMENSION_CAPACITY"/>
+        <field nillable="true" type="int" name="TWO_DIMENSION_CAPACITY"/>
+    </entity>
+    <entity name="catissue_ccts_application">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="32" name="NAME"/>
+    </entity>
+    <entity name="catissue_ccts_data_queue">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="text" name="PAYLOAD"/>
+        <field type="datetime" name="DATE_TIME"/>
+        <field nillable="true" type="long" name="NOTIFICATION_ID"/>
+        <field type="long" name="PROCESSING_STATUS_ID"/>
+        <field nillable="true" type="long" name="USER_ID"/>
+        <field nillable="true" type="long" name="PARTICIPANT_ID"/>
+        <field nillable="true" type="long" name="registration_id"/>
+        <field default="1" type="bool" name="incoming"/>
+    </entity>
+    <entity name="catissue_ccts_event_type">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="64" name="NAME"/>
+    </entity>
+    <entity name="catissue_ccts_notif">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="datetime" name="DATE_SENT"/>
+        <field type="datetime" name="DATE_RECEIVED"/>
+        <field type="long" name="EVENT_TYPE_ID"/>
+        <field nillable="true" type="long" name="APPLICATION_ID"/>
+        <field type="long" name="OBJECT_ID_TYPE"/>
+        <field length="128" name="OBJECT_ID_VALUE"/>
+        <field type="long" name="PROCESSING_STATUS_ID"/>
+    </entity>
+    <entity name="catissue_ccts_notif_log">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="NOTIFICATION_ID"/>
+        <field type="datetime" name="DATE_TIME"/>
+        <field nillable="true" type="text" name="PAYLOAD"/>
+        <field nillable="true" name="ERROR_CODE"/>
+        <field type="long" name="PROCESSING_RESULT_ID"/>
+        <field nillable="true" type="long" name="USER_ID"/>
+    </entity>
+    <entity name="catissue_ccts_obj_id_type">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="64" name="NAME"/>
+    </entity>
+    <entity name="catissue_ccts_proc_result">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="64" name="NAME"/>
+    </entity>
+    <entity name="catissue_ccts_proc_status">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="64" name="NAME"/>
+    </entity>
+    <entity name="catissue_cde">
+        <field unique="true" length="30" name="PUBLIC_ID"/>
+        <field length="200" nillable="true" name="LONG_NAME"/>
+        <field nillable="true" type="text" name="DEFINITION"/>
+        <field length="50" nillable="true" name="VERSION"/>
+        <field nillable="true" type="date" name="LAST_UPDATED"/>
+    </entity>
+    <entity name="catissue_cell_req_specimen" extends="catissue_cp_req_specimen"/>
+    <entity name="catissue_cell_spe_review_param" extends="catissue_event_param">
+        <field nillable="true" type="decimal" name="NEOPLASTIC_CELLULARITY_PER"/>
+        <field nillable="true" type="decimal" name="VIABLE_CELL_PERCENTAGE"/>
+    </entity>
+    <entity name="catissue_cell_specimen" extends="catissue_specimen"/>
+    <entity name="catissue_clinical_diagnosis">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="CLINICAL_DIAGNOSIS"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_coll_coordinators">
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field xref_field="catissue_user.IDENTIFIER" type="xref" name="USER_ID"/>
+        <unique fields="COLLECTION_PROTOCOL_ID,USER_ID"/>
+    </entity>
+    <entity name="catissue_coll_distribution_rel">
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field xref_field="catissue_distribution_protocol.IDENTIFIER" type="xref" name="DISTRIBUTION_PROTOCOL_ID"/>
+        <unique fields="COLLECTION_PROTOCOL_ID,DISTRIBUTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_coll_event_param" extends="catissue_specimen_event_param">
+        <field length="50" nillable="true" name="COLLECTION_PROCEDURE"/>
+        <field length="50" nillable="true" name="CONTAINER"/>
+    </entity>
+    <entity name="catissue_coll_prot_event" extends="catissue_abs_speci_coll_group">
+        <field length="50" nillable="true" name="CLINICAL_STATUS"/>
+        <field nillable="true" name="COLLECTION_POINT_LABEL"/>
+        <field nillable="true" type="decimal" name="STUDY_CALENDAR_EVENT_POINT"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field nillable="true" name="LABELFORMAT"/>
+        <unique fields="COLLECTION_PROTOCOL_ID,COLLECTION_POINT_LABEL"/>
+    </entity>
+    <entity name="catissue_coll_prot_reg">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="PROTOCOL_PARTICIPANT_ID"/>
+        <field nillable="true" type="date" name="REGISTRATION_DATE"/>
+        <field xref_field="catissue_participant.IDENTIFIER" type="xref" name="PARTICIPANT_ID"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="datetime" name="CONSENT_SIGN_DATE"/>
+        <field nillable="true" type="text" name="CONSENT_DOC_URL"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="CONSENT_WITNESS"/>
+        <field unique="true" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="int" name="DATE_OFFSET"/>
+        <field length="128" nillable="true" name="GRID_ID"/>
+    </entity>
+    <entity name="catissue_collection_protocol" extends="catissue_specimen_protocol">
+        <field nillable="true" type="bool" name="ALIQUOT_IN_SAME_CONTAINER"/>
+        <field nillable="true" type="text" name="UNSIGNED_CONSENT_DOC_URL"/>
+        <field nillable="true" type="bool" name="CONSENTS_WAIVED"/>
+        <field length="50" nillable="true" name="CP_TYPE"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="PARENT_CP_ID"/>
+        <field nillable="true" type="int" name="SEQUENCE_NUMBER"/>
+        <field nillable="true" type="decimal" name="STUDY_CALENDAR_EVENT_POINT"/>
+        <field nillable="true" type="int" name="DIRTY_EDIT_FLAG"/>
+        <field unique="true" nillable="true" type="long" name="REMOTE_IDENTIFIER"/>
+        <field nillable="true" type="int" name="REMOTE_MANAGED_FLAG"/>
+    </entity>
+    <entity name="catissue_concept">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="30" nillable="true" name="CONCEPT_UNIQUE_ID"/>
+        <field nillable="true" type="text" name="NAME"/>
+        <field xref_field="catissue_semantic_type.IDENTIFIER" nillable="true" type="xref" name="SEMANTIC_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_concept_classificatn">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="NAME"/>
+    </entity>
+    <entity name="catissue_concept_referent">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_concept.IDENTIFIER" nillable="true" type="xref" name="CONCEPT_ID"/>
+        <field xref_field="catissue_concept_classificatn.IDENTIFIER" nillable="true" type="xref" name="CONCEPT_CLASSIFICATION_ID"/>
+        <field xref_field="catissue_deidentified_report.IDENTIFIER" nillable="true" type="xref" name="DEIDENTIFIED_REPORT_ID"/>
+        <field nillable="true" type="long" name="END_OFFSET"/>
+        <field nillable="true" type="bool" name="IS_MODIFIER"/>
+        <field nillable="true" type="bool" name="IS_NEGATED"/>
+        <field nillable="true" type="long" name="START_OFFSET"/>
+    </entity>
+    <entity name="catissue_consent_tier">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="STATEMENT"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="COLL_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_consent_tier_response">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="RESPONSE"/>
+        <field xref_field="catissue_consent_tier.IDENTIFIER" nillable="true" type="xref" name="CONSENT_TIER_ID"/>
+        <field xref_field="catissue_coll_prot_reg.IDENTIFIER" nillable="true" type="xref" name="COLL_PROT_REG_ID"/>
+    </entity>
+    <entity name="catissue_consent_tier_status">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_consent_tier.IDENTIFIER" nillable="true" type="xref" name="CONSENT_TIER_ID"/>
+        <field nillable="true" name="STATUS"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLL_GROUP_ID"/>
+    </entity>
+    <entity name="catissue_cont_holds_sparrtype">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" type="xref" name="SPECIMEN_ARRAY_TYPE_ID"/>
+        <unique fields="STORAGE_CONTAINER_ID,SPECIMEN_ARRAY_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_container">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field unique="true" nillable="true" name="BARCODE"/>
+        <field xref_field="catissue_capacity.IDENTIFIER" nillable="true" type="xref" name="CAPACITY_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field nillable="true" type="bool" name="CONT_FULL"/>
+        <field unique="true" name="NAME"/>
+    </entity>
+    <entity name="catissue_container_position" extends="catissue_abstract_position">
+        <field xref_field="catissue_container.IDENTIFIER" nillable="true" type="xref" name="PARENT_CONTAINER_ID"/>
+        <field xref_field="catissue_container.IDENTIFIER" nillable="true" type="xref" name="CONTAINER_ID"/>
+    </entity>
+    <entity name="catissue_container_type">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_capacity.IDENTIFIER" nillable="true" type="xref" name="CAPACITY_ID"/>
+        <field unique="true" nillable="true" name="NAME"/>
+        <field nillable="true" name="ONE_DIMENSION_LABEL"/>
+        <field nillable="true" name="TWO_DIMENSION_LABEL"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+    </entity>
+    <entity name="catissue_cp_grid_prvg">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="GROUP_NAME"/>
+        <field name="STEM_NAME"/>
+        <field nillable="true" name="PRIVILEGES_STRING"/>
+        <field nillable="true" name="STATUS"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field nillable="true" name="ROLE_ID"/>
+    </entity>
+    <entity name="catissue_cp_req_specimen" extends="catissue_abstract_specimen">
+        <field default="" name="STORAGE_TYPE"/>
+        <field xref_field="catissue_coll_prot_event.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_EVENT_ID"/>
+        <field nillable="true" name="LABELFORMAT"/>
+        <field xref_field="catissue_spp.IDENTIFIER" nillable="true" type="xref" name="SPP_IDENTIFIER"/>
+        <field xref_field="catissue_action.IDENTIFIER" nillable="true" type="xref" name="ACTION_IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_cp_studyformcontext">
+        <field type="long" name="STUDY_FORM_CONTEXT_ID"/>
+        <field type="long" name="COLLECTION_PROTOCOL_ID"/>
+        <unique fields="STUDY_FORM_CONTEXT_ID,COLLECTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_cpe_spp">
+        <field xref_field="catissue_coll_prot_event.IDENTIFIER" nillable="true" type="xref" name="cpe_identifier"/>
+        <field xref_field="catissue_spp.IDENTIFIER" nillable="true" type="xref" name="spp_identifier"/>
+    </entity>
+    <entity name="catissue_data_audit_event_log" extends="catissue_audit_event_log">
+        <field nillable="true" type="long" name="OBJECT_IDENTIFIER"/>
+        <field length="50" nillable="true" name="OBJECT_NAME"/>
+        <field xref_field="catissue_data_audit_event_log.IDENTIFIER" nillable="true" type="xref" name="PARENT_LOG_ID"/>
+    </entity>
+    <entity name="catissue_default_action">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_deidentified_report" extends="catissue_pathology_report">
+        <field length="100" nillable="true" name="STATUS"/>
+    </entity>
+    <entity name="catissue_department">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+    </entity>
+    <entity name="catissue_derieved_sp_ord_item" extends="catissue_new_spec_ord_item">
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_disposal_event_param" extends="catissue_specimen_event_param">
+        <field nillable="true" name="REASON"/>
+    </entity>
+    <entity name="catissue_distributed_item">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="decimal" name="QUANTITY"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_distribution.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_ID"/>
+        <field xref_field="catissue_specimen_array.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_ID"/>
+    </entity>
+    <entity name="catissue_distribution">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="TO_SITE_ID"/>
+        <field xref_field="catissue_distribution_protocol.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_PROTOCOL_ID"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field xref_field="catissue_order.IDENTIFIER" nillable="true" type="xref" name="ORDER_ID"/>
+    </entity>
+    <entity name="catissue_distribution_protocol" extends="catissue_specimen_protocol"/>
+    <entity name="catissue_distribution_spec_req">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="SPECIMEN_CLASS"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+        <field length="150" nillable="true" name="TISSUE_SITE"/>
+        <field length="50" nillable="true" name="PATHOLOGY_STATUS"/>
+        <field nillable="true" type="decimal" name="QUANTITY"/>
+        <field xref_field="catissue_distribution_protocol.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_embedded_event_param" extends="catissue_specimen_event_param">
+        <field length="50" nillable="true" name="EMBEDDING_MEDIUM"/>
+    </entity>
+    <entity name="catissue_event_param" extends="catissue_specimen_event_param"/>
+    <entity name="catissue_exist_sp_ar_ord_item" extends="catissue_sp_array_order_item">
+        <field xref_field="catissue_specimen_array.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_ID"/>
+    </entity>
+    <entity name="catissue_existing_sp_ord_item" extends="catissue_specimen_order_item">
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_external_identifier">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="NAME"/>
+        <field nillable="true" name="VALUE"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_fixed_event_param" extends="catissue_specimen_event_param">
+        <field length="50" name="FIXATION_TYPE"/>
+        <field nillable="true" type="int" name="DURATION_IN_MINUTES"/>
+    </entity>
+    <entity name="catissue_fluid_req_specimen" extends="catissue_cp_req_specimen"/>
+    <entity name="catissue_fluid_spe_event_param" extends="catissue_event_param">
+        <field nillable="true" type="decimal" name="CELL_COUNT"/>
+    </entity>
+    <entity name="catissue_fluid_specimen" extends="catissue_specimen"/>
+    <entity name="catissue_frozen_event_param" extends="catissue_specimen_event_param">
+        <field length="50" nillable="true" name="METHOD"/>
+    </entity>
+    <entity name="catissue_grid_groups">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="GRID_GROUP_NAME"/>
+        <field name="CSM_GROUP_NAME"/>
+    </entity>
+    <entity name="catissue_grid_institution">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="GRID_INSTITUTION_NAME"/>
+        <field type="long" name="LOCAL_IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_grid_institution_groups">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="GRID_GROUP_ID"/>
+        <field type="long" name="GRID_INSTITUTION_ID"/>
+    </entity>
+    <entity name="catissue_grid_user_groups">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="USER_ID"/>
+        <field type="long" name="GROUP_ID"/>
+    </entity>
+    <entity name="catissue_identified_report" extends="catissue_pathology_report">
+        <field xref_field="catissue_deidentified_report.IDENTIFIER" nillable="true" type="xref" name="DEID_REPORT"/>
+    </entity>
+    <entity name="catissue_in_out_event_param" extends="catissue_specimen_event_param">
+        <field length="100" name="STORAGE_STATUS"/>
+    </entity>
+    <entity name="catissue_institution">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+        <field nillable="true" type="int" name="DIRTY_EDIT_FLAG"/>
+        <field unique="true" nillable="true" type="long" name="REMOTE_IDENTIFIER"/>
+        <field nillable="true" type="int" name="REMOTE_MANAGED_FLAG"/>
+    </entity>
+    <entity name="catissue_interface_column_data">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="TABLE_ID"/>
+        <field length="50" nillable="true" name="COLUMN_NAME"/>
+        <field length="30" nillable="true" name="ATTRIBUTE_TYPE"/>
+    </entity>
+    <entity name="catissue_login_audit_event_log">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="datetime" name="LOGIN_TIMESTAMP"/>
+        <field nillable="true" type="long" name="USER_LOGIN_ID"/>
+        <field nillable="true" type="long" name="LOGIN_SOURCE_ID"/>
+        <field length="20" nillable="true" name="LOGIN_IP_ADDRESS"/>
+        <field nillable="true" type="bool" name="IS_LOGIN_SUCCESSFUL"/>
+    </entity>
+    <entity name="catissue_mol_req_specimen" extends="catissue_cp_req_specimen">
+        <field nillable="true" type="decimal" name="CONCENTRATION"/>
+    </entity>
+    <entity name="catissue_mol_spe_review_param" extends="catissue_event_param">
+        <field nillable="true" name="GEL_IMAGE_URL"/>
+        <field length="50" nillable="true" name="QUALITY_INDEX"/>
+        <field length="50" nillable="true" name="LANE_NUMBER"/>
+        <field nillable="true" type="int" name="GEL_NUMBER"/>
+        <field nillable="true" type="decimal" name="ABSORBANCE_AT_260"/>
+        <field nillable="true" type="decimal" name="ABSORBANCE_AT_280"/>
+        <field nillable="true" type="decimal" name="RATIO_28S_TO_18S"/>
+    </entity>
+    <entity name="catissue_molecular_specimen" extends="catissue_specimen">
+        <field nillable="true" type="decimal" name="CONCENTRATION"/>
+    </entity>
+    <entity name="catissue_new_sp_ar_order_item" extends="catissue_sp_array_order_item">
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" nillable="true" type="xref" name="ARRAY_TYPE_ID"/>
+        <field nillable="true" name="NAME"/>
+        <field xref_field="catissue_specimen_array.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_ID"/>
+    </entity>
+    <entity name="catissue_new_spec_ord_item" extends="catissue_specimen_order_item">
+        <field nillable="true" name="SPECIMEN_CLASS"/>
+        <field nillable="true" name="SPECIMEN_TYPE"/>
+    </entity>
+    <entity name="catissue_order">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field xref_field="catissue_distribution_protocol.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_PROTOCOL_ID"/>
+        <field nillable="true" type="text" name="NAME"/>
+        <field nillable="true" type="datetime" name="REQUESTED_DATE"/>
+        <field length="50" nillable="true" name="STATUS"/>
+    </entity>
+    <entity name="catissue_order_item">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="DESCRIPTION"/>
+        <field xref_field="catissue_distributed_item.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTED_ITEM_ID"/>
+        <field length="50" nillable="true" name="STATUS"/>
+        <field nillable="true" type="decimal" name="REQUESTED_QUANTITY"/>
+        <field xref_field="catissue_order.IDENTIFIER" nillable="true" type="xref" name="ORDER_ID"/>
+    </entity>
+    <entity name="catissue_part_medical_id">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="MEDICAL_RECORD_NUMBER"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SITE_ID"/>
+        <field xref_field="catissue_participant.IDENTIFIER" nillable="true" type="xref" name="PARTICIPANT_ID"/>
+        <unique fields="MEDICAL_RECORD_NUMBER,SITE_ID"/>
+    </entity>
+    <entity name="catissue_participant">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="LAST_NAME"/>
+        <field nillable="true" name="FIRST_NAME"/>
+        <field nillable="true" name="MIDDLE_NAME"/>
+        <field nillable="true" type="date" name="BIRTH_DATE"/>
+        <field length="20" nillable="true" name="GENDER"/>
+        <field length="50" nillable="true" name="GENOTYPE"/>
+        <field length="50" nillable="true" name="ETHNICITY"/>
+        <field unique="true" length="50" nillable="true" name="SOCIAL_SECURITY_NUMBER"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="date" name="DEATH_DATE"/>
+        <field length="50" nillable="true" name="VITAL_STATUS"/>
+        <field length="50" nillable="true" name="LNAME_METAPHONE"/>
+        <field length="128" nillable="true" name="GRID_ID"/>
+    </entity>
+    <entity name="catissue_participant_rec_ntry">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="PARTICIPANT_ID"/>
+    </entity>
+    <entity name="catissue_password">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="PASSWORD"/>
+        <field nillable="true" type="date" name="UPDATE_DATE"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+    </entity>
+    <entity name="catissue_path_case_order_item" extends="catissue_new_spec_ord_item">
+        <field nillable="true" name="PATHOLOGICAL_STATUS"/>
+        <field nillable="true" name="TISSUE_SITE"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLL_GROUP_ID"/>
+    </entity>
+    <entity name="catissue_pathology_report">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="100" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="bool" name="REVIEW_FLAG"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SOURCE_ID"/>
+        <field length="100" nillable="true" name="REPORT_STATUS"/>
+        <field nillable="true" type="date" name="COLLECTION_DATE_TIME"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SCG_ID"/>
+    </entity>
+    <entity name="catissue_permissible_value">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="40" nillable="true" name="CONCEPT_CODE"/>
+        <field nillable="true" type="text" name="DEFINITION"/>
+        <field xref_field="catissue_permissible_value.IDENTIFIER" nillable="true" type="xref" name="PARENT_IDENTIFIER"/>
+        <field length="225" nillable="true" name="VALUE"/>
+        <field xref_field="catissue_cde.PUBLIC_ID" length="30" nillable="true" type="xref" name="PUBLIC_ID"/>
+    </entity>
+    <entity name="catissue_procedure_event_param" extends="catissue_specimen_event_param">
+        <field name="URL"/>
+        <field name="NAME"/>
+    </entity>
+    <entity name="catissue_quarantine_params">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_deidentified_report.IDENTIFIER" nillable="true" type="xref" name="DEID_REPORT_ID"/>
+        <field nillable="true" type="bool" name="IS_QUARANTINED"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="100" nillable="true" name="STATUS"/>
+    </entity>
+    <entity name="catissue_query_editlink_cols">
+        <field type="long" name="TABLE_ID"/>
+        <field type="long" name="COL_ID"/>
+    </entity>
+    <entity name="catissue_query_table_data">
+        <field unique="true" auto="true" type="long" name="TABLE_ID"/>
+        <field length="50" nillable="true" name="TABLE_NAME"/>
+        <field length="50" nillable="true" name="DISPLAY_NAME"/>
+        <field length="50" nillable="true" name="ALIAS_NAME"/>
+        <field nillable="true" type="int" name="PRIVILEGE_ID"/>
+        <field nillable="true" type="bool" name="FOR_SQI"/>
+    </entity>
+    <entity name="catissue_race">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_participant.IDENTIFIER" nillable="true" type="xref" name="PARTICIPANT_ID"/>
+        <field length="50" nillable="true" name="RACE_NAME"/>
+    </entity>
+    <entity name="catissue_received_event_param" extends="catissue_specimen_event_param">
+        <field nillable="true" name="RECEIVED_QUALITY"/>
+    </entity>
+    <entity name="catissue_related_tables_map">
+        <field nillable="true" type="long" name="FIRST_TABLE_ID"/>
+        <field nillable="true" type="long" name="SECOND_TABLE_ID"/>
+        <field length="50" nillable="true" name="FIRST_TABLE_JOIN_COLUMN"/>
+        <field length="50" nillable="true" name="SECOND_TABLE_JOIN_COLUMN"/>
+    </entity>
+    <entity name="catissue_report_bicontent" extends="catissue_report_content">
+        <field xref_field="catissue_pathology_report.IDENTIFIER" nillable="true" type="xref" name="REPORT_ID"/>
+    </entity>
+    <entity name="catissue_report_content">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="REPORT_DATA"/>
+    </entity>
+    <entity name="catissue_report_particip_rel">
+        <field nillable="true" type="long" name="PARTICIPANT_ID"/>
+        <field nillable="true" type="long" name="REPORT_ID"/>
+    </entity>
+    <entity name="catissue_report_queue">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="50" nillable="true" name="STATUS"/>
+        <field length="50" nillable="true" name="SURGICAL_PATHOLOGY_NUMBER"/>
+        <field nillable="true" name="PARTICIPANT_NAME"/>
+        <field nillable="true" name="SITE_NAME"/>
+        <field nillable="true" type="date" name="REPORT_LOADED_DATE"/>
+        <field nillable="true" type="text" name="REPORT_TEXT"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLL_GRP_ID"/>
+        <field nillable="true" type="date" name="REPORT_COLLECTION_DATE"/>
+    </entity>
+    <entity name="catissue_report_section">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="DOCUMENT_FRAGMENT"/>
+        <field nillable="true" type="int" name="END_OFFSET"/>
+        <field length="100" nillable="true" name="NAME"/>
+        <field nillable="true" type="int" name="START_OFFSET"/>
+        <field nillable="true" type="long" name="TEXT_CONTENT_ID"/>
+    </entity>
+    <entity name="catissue_report_textcontent" extends="catissue_report_content">
+        <field xref_field="catissue_pathology_report.IDENTIFIER" nillable="true" type="xref" name="REPORT_ID"/>
+    </entity>
+    <entity name="catissue_report_xmlcontent" extends="catissue_report_content">
+        <field xref_field="catissue_pathology_report.IDENTIFIER" nillable="true" type="xref" name="REPORT_ID"/>
+    </entity>
+    <entity name="catissue_reported_problem">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="AFFILIATION"/>
+        <field name="NAME_OF_REPORTER"/>
+        <field name="REPORTERS_EMAIL_ID"/>
+        <field length="500" type="text" name="MESSAGE_BODY"/>
+        <field nillable="true" name="SUBJECT"/>
+        <field nillable="true" type="date" name="REPORTED_DATE"/>
+        <field length="100" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+    </entity>
+    <entity name="catissue_review_params">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="100" nillable="true" name="REVIEWER_ROLE"/>
+        <field xref_field="catissue_pathology_report.IDENTIFIER" nillable="true" type="xref" name="REPORT_ID"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="100" nillable="true" name="STATUS"/>
+    </entity>
+    <entity name="catissue_scg_rec_ntry">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="SPECIMEN_COLLECTION_GROUP_ID"/>
+    </entity>
+    <entity name="catissue_search_display_data">
+        <field type="long" name="RELATIONSHIP_ID"/>
+        <field type="long" name="COL_ID"/>
+        <field length="50" nillable="true" name="DISPLAY_NAME"/>
+        <field default="b'0'" nillable="true" type="bool" name="DEFAULT_VIEW_ATTRIBUTE"/>
+        <field nillable="true" type="int" name="ATTRIBUTE_ORDER"/>
+    </entity>
+    <entity name="catissue_semantic_type">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="LABEL"/>
+    </entity>
+    <entity name="catissue_shipment" extends="catissue_base_shipment">
+        <field xref_field="catissue_shipment_request.IDENTIFIER" nillable="true" type="xref" name="SHIPMENT_REQUEST_ID"/>
+        <field nillable="true" name="BARCODE"/>
+    </entity>
+    <entity name="catissue_shipment_containr_rel">
+        <field xref_field="catissue_base_shipment.IDENTIFIER" type="xref" name="BASE_SHIPMENT_ID"/>
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="CONTAINER_ID"/>
+        <unique fields="BASE_SHIPMENT_ID,CONTAINER_ID"/>
+    </entity>
+    <entity name="catissue_shipment_request" extends="catissue_base_shipment"/>
+    <entity name="catissue_site">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+        <field length="50" nillable="true" name="TYPE"/>
+        <field nillable="true" name="EMAIL_ADDRESS"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_address.IDENTIFIER" nillable="true" type="xref" name="ADDRESS_ID"/>
+        <field unique="true" length="50" nillable="true" name="CTEP_ID"/>
+    </entity>
+    <entity name="catissue_site_cp">
+        <field xref_field="catissue_site.IDENTIFIER" default="0" type="xref" name="SITE_ID"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" default="0" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <unique fields="SITE_ID,COLLECTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_site_users">
+        <field xref_field="catissue_site.IDENTIFIER" default="0" type="xref" name="SITE_ID"/>
+        <field xref_field="catissue_user.IDENTIFIER" default="0" type="xref" name="USER_ID"/>
+        <unique fields="SITE_ID,USER_ID"/>
+    </entity>
+    <entity name="catissue_sp_array_order_item" extends="catissue_order_item"/>
+    <entity name="catissue_speci_array_content">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="decimal" name="CONC_IN_MICROGM_PER_MICROLTR"/>
+        <field nillable="true" type="decimal" name="INITIAL_QUANTITY"/>
+        <field nillable="true" type="int" name="POSITION_DIMENSION_ONE"/>
+        <field nillable="true" type="int" name="POSITION_DIMENSION_TWO"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_specimen_array.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_ID"/>
+    </entity>
+    <entity name="catissue_speci_shipmnt_req_rel">
+        <field xref_field="catissue_base_shipment.IDENTIFIER" type="xref" name="SHIPMENT_REQ_ID"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" type="xref" name="SPECIMEN_ID"/>
+        <unique fields="SHIPMENT_REQ_ID,SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_specimen" extends="catissue_abstract_specimen">
+        <field unique="true" nillable="true" name="LABEL"/>
+        <field nillable="true" type="bool" name="AVAILABLE"/>
+        <field unique="true" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLLECTION_GROUP_ID"/>
+        <field xref_field="catissue_cp_req_specimen.IDENTIFIER" nillable="true" type="xref" name="REQ_SPECIMEN_ID"/>
+        <field nillable="true" type="decimal" name="AVAILABLE_QUANTITY"/>
+        <field nillable="true" type="datetime" name="CREATED_ON_DATE"/>
+        <field length="50" nillable="true" name="COLLECTION_STATUS"/>
+        <field xref_field="catissue_spp_application.IDENTIFIER" nillable="true" type="xref" name="SPP_APPLICATION_ID"/>
+        <field xref_field="catissue_action_application.IDENTIFIER" nillable="true" type="xref" name="ACTION_APPLICATION_ID"/>
+        <field length="50" nillable="true" name="GLOBAL_SPECIMEN_IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_specimen_array" extends="catissue_container">
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="CREATED_BY_ID"/>
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_TYPE_ID"/>
+        <field xref_field="catissue_distribution.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_ID"/>
+        <field nillable="true" type="bool" name="AVAILABLE"/>
+    </entity>
+    <entity name="catissue_specimen_array_type" extends="catissue_container_type">
+        <field length="50" nillable="true" name="SPECIMEN_CLASS"/>
+    </entity>
+    <entity name="catissue_specimen_biohz_rel">
+        <field xref_field="catissue_specimen.IDENTIFIER" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_biohazard.IDENTIFIER" type="xref" name="BIOHAZARD_ID"/>
+        <unique fields="SPECIMEN_ID,BIOHAZARD_ID"/>
+    </entity>
+    <entity name="catissue_specimen_char">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="150" nillable="true" name="TISSUE_SITE"/>
+        <field length="50" nillable="true" name="TISSUE_SIDE"/>
+    </entity>
+    <entity name="catissue_specimen_coll_group" extends="catissue_abs_speci_coll_group">
+        <field unique="true" nillable="true" name="NAME"/>
+        <field unique="true" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field nillable="true" type="datetime" name="ENCOUNTER_TIMESTAMP"/>
+        <field xref_field="catissue_coll_prot_reg.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_REG_ID"/>
+        <field length="50" nillable="true" name="SURGICAL_PATHOLOGY_NUMBER"/>
+        <field xref_field="catissue_coll_prot_event.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_EVENT_ID"/>
+        <field length="50" nillable="true" name="COLLECTION_STATUS"/>
+        <field nillable="true" type="int" name="DATE_OFFSET"/>
+        <field xref_field="catissue_deidentified_report.IDENTIFIER" nillable="true" type="xref" name="DSPR_ID"/>
+        <field xref_field="catissue_identified_report.IDENTIFIER" nillable="true" type="xref" name="ISPR_ID"/>
+        <field nillable="true" type="int" name="AGE_AT_COLLECTION"/>
+    </entity>
+    <entity name="catissue_specimen_event_param">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLL_GRP_ID"/>
+        <field xref_field="catissue_abstract_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="50" default="Active" nillable="true" name="ACTIVITY_STATUS"/>
+    </entity>
+    <entity name="catissue_specimen_label_count">
+        <field unique="true" type="long" name="LABEL_COUNT"/>
+    </entity>
+    <entity name="catissue_specimen_order_item" extends="catissue_order_item">
+        <field xref_field="catissue_new_sp_ar_order_item.IDENTIFIER" nillable="true" type="xref" name="ARRAY_ORDER_ITEM_ID"/>
+    </entity>
+    <entity name="catissue_specimen_position" extends="catissue_abstract_position">
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_storage_container.IDENTIFIER" nillable="true" type="xref" name="CONTAINER_ID"/>
+    </entity>
+    <entity name="catissue_specimen_protocol">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="PRINCIPAL_INVESTIGATOR_ID"/>
+        <field unique="true" name="TITLE"/>
+        <field nillable="true" name="SHORT_TITLE"/>
+        <field nillable="true" name="IRB_IDENTIFIER"/>
+        <field nillable="true" type="date" name="START_DATE"/>
+        <field nillable="true" type="date" name="END_DATE"/>
+        <field nillable="true" type="int" name="ENROLLMENT"/>
+        <field nillable="true" name="DESCRIPTION_URL"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" name="LABEL_FORMAT"/>
+        <field nillable="true" name="DERIV_LABEL_FORMAT"/>
+        <field nillable="true" name="ALIQUOT_LABEL_FORMAT"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="irb_site_id"/>
+    </entity>
+    <entity name="catissue_specimen_rec_ntry">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_specimen_requirement">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="SPECIMEN_CLASS"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+        <field length="150" nillable="true" name="TISSUE_SITE"/>
+        <field length="50" nillable="true" name="PATHOLOGY_STATUS"/>
+        <field nillable="true" type="long" name="QUANTITY_ID"/>
+    </entity>
+    <entity name="catissue_specimen_type">
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" type="xref" name="SPECIMEN_ARRAY_TYPE_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+    </entity>
+    <entity name="catissue_spp">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" length="150" nillable="true" name="NAME"/>
+        <field unique="true" length="50" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="text" name="spp_template_xml"/>
+    </entity>
+    <entity name="catissue_spp_application" extends="catissue_abstract_application">
+        <field xref_field="catissue_spp.IDENTIFIER" nillable="true" type="xref" name="SPP_IDENTIFIER"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SCG_IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_spun_event_parameters" extends="catissue_specimen_event_param">
+        <field nillable="true" type="decimal" name="GFORCE"/>
+        <field nillable="true" type="int" name="DURATION_IN_MINUTES"/>
+    </entity>
+    <entity name="catissue_st_cont_coll_prot_rel">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <unique fields="STORAGE_CONTAINER_ID,COLLECTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_st_cont_st_type_rel">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <unique fields="STORAGE_CONTAINER_ID,STORAGE_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_stor_cont_spec_class">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_CLASS"/>
+    </entity>
+    <entity name="catissue_stor_cont_spec_type">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+    </entity>
+    <entity name="catissue_stor_type_holds_type">
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="HOLDS_STORAGE_TYPE_ID"/>
+        <unique fields="STORAGE_TYPE_ID,HOLDS_STORAGE_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_stor_type_spec_class">
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_CLASS"/>
+    </entity>
+    <entity name="catissue_stor_type_spec_type">
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+    </entity>
+    <entity name="catissue_storage_container" extends="catissue_container">
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SITE_ID"/>
+        <field nillable="true" type="decimal" name="TEMPERATURE"/>
+        <field xref_field="catissue_storage_type.IDENTIFIER" nillable="true" type="xref" name="STORAGE_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_storage_type" extends="catissue_container_type">
+        <field nillable="true" type="decimal" name="DEFAULT_TEMPERATURE"/>
+    </entity>
+    <entity name="catissue_storty_holds_sparrty">
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" type="xref" name="SPECIMEN_ARRAY_TYPE_ID"/>
+        <unique fields="STORAGE_TYPE_ID,SPECIMEN_ARRAY_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_study_form_context">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="NO_OF_ENTRIES"/>
+    </entity>
+    <entity name="catissue_table_relation">
+        <field unique="true" auto="true" type="long" name="RELATIONSHIP_ID"/>
+        <field nillable="true" type="long" name="PARENT_TABLE_ID"/>
+        <field nillable="true" type="long" name="CHILD_TABLE_ID"/>
+        <field length="50" nillable="true" name="TABLES_IN_PATH"/>
+    </entity>
+    <entity name="catissue_thaw_event_parameters" extends="catissue_specimen_event_param"/>
+    <entity name="catissue_tis_spe_event_param" extends="catissue_event_param">
+        <field nillable="true" type="decimal" name="NEOPLASTIC_CELLULARITY_PER"/>
+        <field nillable="true" type="decimal" name="NECROSIS_PERCENTAGE"/>
+        <field nillable="true" type="decimal" name="LYMPHOCYTIC_PERCENTAGE"/>
+        <field nillable="true" type="decimal" name="TOTAL_CELLULARITY_PERCENTAGE"/>
+        <field length="50" nillable="true" name="HISTOLOGICAL_QUALITY"/>
+    </entity>
+    <entity name="catissue_tissue_req_specimen" extends="catissue_cp_req_specimen"/>
+    <entity name="catissue_tissue_specimen" extends="catissue_specimen"/>
+    <entity name="catissue_transfer_event_param" extends="catissue_specimen_event_param">
+        <field nillable="true" type="int" name="FROM_POSITION_DIMENSION_ONE"/>
+        <field nillable="true" type="int" name="FROM_POSITION_DIMENSION_TWO"/>
+        <field nillable="true" type="int" name="TO_POSITION_DIMENSION_ONE"/>
+        <field nillable="true" type="int" name="TO_POSITION_DIMENSION_TWO"/>
+        <field xref_field="catissue_storage_container.IDENTIFIER" nillable="true" type="xref" name="TO_STORAGE_CONTAINER_ID"/>
+        <field xref_field="catissue_storage_container.IDENTIFIER" nillable="true" type="xref" name="FROM_STORAGE_CONTAINER_ID"/>
+    </entity>
+    <entity name="catissue_user">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="EMAIL_ADDRESS"/>
+        <field nillable="true" name="FIRST_NAME"/>
+        <field nillable="true" name="LAST_NAME"/>
+        <field unique="true" name="LOGIN_NAME"/>
+        <field nillable="true" type="date" name="START_DATE"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_department.IDENTIFIER" nillable="true" type="xref" name="DEPARTMENT_ID"/>
+        <field xref_field="catissue_cancer_research_group.IDENTIFIER" nillable="true" type="xref" name="CANCER_RESEARCH_GROUP_ID"/>
+        <field xref_field="catissue_institution.IDENTIFIER" nillable="true" type="xref" name="INSTITUTION_ID"/>
+        <field xref_field="catissue_address.IDENTIFIER" nillable="true" type="xref" name="ADDRESS_ID"/>
+        <field nillable="true" type="long" name="CSM_USER_ID"/>
+        <field nillable="true" type="text" name="STATUS_COMMENT"/>
+        <field default="b'1'" nillable="true" type="bool" name="FIRST_TIME_LOGIN"/>
+        <field nillable="true" type="int" name="DIRTY_EDIT_FLAG"/>
+        <field unique="true" nillable="true" type="long" name="REMOTE_IDENTIFIER"/>
+        <field nillable="true" type="int" name="REMOTE_MANAGED_FLAG"/>
+    </entity>
+    <entity name="catissue_user_cp">
+        <field xref_field="catissue_user.IDENTIFIER" default="0" type="xref" name="USER_ID"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" default="0" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <unique fields="USER_ID,COLLECTION_PROTOCOL_ID"/>
+    </entity>
+</molgenis>
