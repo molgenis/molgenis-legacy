@@ -56,7 +56,7 @@
 	<tr>
 		<td width="290" align="right">
 			<select class=" ui-widget-content ui-corner-all" id="Phenotype_select" name="dataTypeSelect"  style="width:220px;" name="dataTypeSelect">
-				<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All phenotypes (${model.annotationTypeAndNr[allDataTypes]})</option>
+				<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All data (${model.annotationTypeAndNr[allDataTypes]})</option>
 				<#list model.annotationTypeAndNr?keys as key>
 					<#if key != allDataTypes>
 						<option value="${key}" <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == key>selected="selected"</#if>>${key} (${model.annotationTypeAndNr[key]})</option>
@@ -89,7 +89,7 @@
 <#if model.shoppingCart?? && model.shoppingCart?size gt 0>
 	
 
-	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View hits (${model.hits?size})</button></div>
 
 	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 	
@@ -119,7 +119,7 @@
 	</#list>
 <#else>
 
-	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View hits (${model.hits?size})</button></div>
 
 	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 	
@@ -501,7 +501,7 @@
 
 	<#if model.multiplot??>
 	
-		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View hits (${model.hits?size})</button></div>
 
 		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 		
@@ -513,7 +513,7 @@
 		
 
 	<table cellpadding="30"><tr><td>
-		<h2>Results for "<#if model.query??>${model.query}</#if>":</h2><br>
+		<h2>Results for my selected hits:</h2><br>
 		
 		<table>
 			<tr>
@@ -574,25 +574,34 @@
 				<td colspan="3">
 				
 					<br><br>
-					<span style="font-size:15px;font-weight:bold;">Traits:</span><br/>
+					<span style="font-size:15px;font-weight:bold;">Hits plotted:</span><br/>
 					<div style="overflow: auto; width: 780px; max-height: 400px;">
+					<table border="0">
 					<#list model.multiplot.matches?values as d>
-					<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}<#if d.label?? && d.label?length gt 0> / ${d.label}</#if></a>
-					[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore deeper</a>]
-					<#if d.description??> - <#if d.description?length gt 40>${d.description?substring(0, 40)}...<#else>${d.description}</#if></#if><br>
+						<tr>
+							<td>
+								<a target="_blank" href="molgenis.do?select=${d.get(typefield)}s&__target=${d.get(typefield)}s&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=${d.get(typefield)}_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}<#if d.label?? && d.label?length gt 0> / ${d.label}</#if></a>
+							</td>
+							<td>
+								[<a href="#" onclick="document.forms.${screen.name}.__action.value = '__entity__report__for__${d.name}'; document.forms.${screen.name}.submit();">explore deeper</a>]
+							</td>
+							<td>
+								<#if d.description??>&nbsp;&nbsp;&nbsp;&nbsp;<#if d.description?length gt 50>${d.description?substring(0, 50)}...<#else>${d.description}</#if></#if><br>
+							</td>
+						</tr>
 					</#list>
+					</table>
 					</div>
 					<br>
-					<span style="font-size:15px;font-weight:bold;">Dataset IDs:</span><br/>
-					<table>
+					<span style="font-size:15px;font-weight:bold;">From datasets:</span><br/>
+					<table border="0">
 					<#list model.multiplot.datasets?values as d>
 						<tr>
 							<td>
-								<b>${d.id}</b>
+								<nobr><b>${d.id}</b>: <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a></nobr>
 							</td>
 							<td>
-								: <a target="_blank" href="molgenis.do?select=Datas&__target=Datas&__comebacktoscreen=${screen.name}&__action=filter_set&__filter_attribute=Data_name&__filter_operator=EQUALS&__filter_value=${d.name}">${d.name}</a>
-								<#if d.description??> - <#if d.description?length gt 40>${d.description?substring(0, 40)}...<#else>${d.description}</#if></#if>
+								<#if d.description??>${d.description}</#if>
 							</td>
 						</tr>
 					</#list>
@@ -608,15 +617,7 @@
 	
 	
 	
-	<#if model.shortenedQuery??><i>Your query was too specific for any hits, so it was shortened to:</i> <b>${model.shortenedQuery}</b>. </#if>
 	
-	<#if model.hits?? && model.hits?size == 100 && model.shortenedQuery??>
-		<i>These results were limited to the first 100.</i><br><br>
-	<#elseif model.hits?? && model.hits?size == 100>
-		<i>Your results were limited to the first 100. Please be more specific.</i><br><br>
-	<#else>
-
-	</#if>
 	
 	<#if model.hits??>
 	
@@ -629,7 +630,7 @@
 	</#list>
 	
 	
-	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View hits (${model.hits?size})</button></div>
 
 	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 	
@@ -641,13 +642,26 @@
 	<br><br><br>
 	<h3>Found ${model.hits?size} hits.</h3>
 	
+	<h4>
+		<#if model.shortenedQuery??>
+			<br>Your query was too specific for any hits, so it was shortened to <u>${model.shortenedQuery}</u>.
+		</#if>
+		
+		<#if model.hits?? && model.hits?size == 100 && model.shortenedQuery??>
+			<br>These results were limited to the first 100.
+		<#elseif model.hits?? && model.hits?size == 100>
+			<br>Your results were limited to the first 100. Please be more specific.
+		<#else>
+	
+		</#if>
+	</h4>
 
 	
 	<#if shopped gt 0>
 		<#if shopped == model.hits?size>
-			<h4>All ${shopped} search results are currently in your cart.</h4>
+			<h4>All ${shopped} hits are currently in your cart.</h4>
 		<#else>
-			<h4>Please note: ${shopped} search results are not shown because they are already in your cart.</h4>
+			<h4>Please note: ${shopped} hits are not shown because they are already in your cart.</h4>
 		</#if>
 	</#if>
 	
