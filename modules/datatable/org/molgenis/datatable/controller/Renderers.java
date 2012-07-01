@@ -43,7 +43,7 @@ public class Renderers {
 	public static class JQGridRenderer implements Renderer {
 		@Override
 		public void export(HttpServletResponse response, String fileName, JQGridPlugin jqGridPlugin, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
-			final JQGridResult result = JQGridPlugin.buildJQGridResults(tupleTable.getRowCount(), totalPages, currentPage, tupleTable);
+			final JQGridResult result = JQGridPlugin.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage, tupleTable);
 			final PrintWriter pout = new PrintWriter(response.getOutputStream());
 			pout.print(new Gson().toJson(result));
 			pout.close();
