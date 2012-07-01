@@ -2,6 +2,8 @@
 bin/
 build/
 tmp/
+hsqldb/
+handwritten/
 
 ## Always ignore these
 *~
@@ -27,10 +29,13 @@ log*
 .classpath
 /.externalToolBuilders
 /.settings
+*.svn
+*.orig
+*.java~
+/bin
+/test-output
+/generated
+/target
+logger.out*
 /dist
 /generated/java
-/hsqldb
-/handwritten
-logger.out
-build/
-logs/

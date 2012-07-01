@@ -97,5 +97,4 @@ public class MemoryTable implements TupleTable
 		this.offset = offset;
 
 	}
-
 }

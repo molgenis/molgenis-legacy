@@ -2,10 +2,9 @@ package org.molgenis.datatable.plugin;
 
 
 
-import java.io.OutputStream;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
 import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
 import org.molgenis.datatable.controller.Renderers.Renderer;
-import org.molgenis.datatable.model.JdbcTable;
+import org.molgenis.datatable.model.QueryDSLTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
@@ -37,6 +36,14 @@ import org.molgenis.util.Tuple;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
+import com.mysema.query.sql.MySQLTemplates;
+import com.mysema.query.sql.RelationalPath;
+import com.mysema.query.sql.SQLQuery;
+import com.mysema.query.sql.SQLQueryImpl;
+import com.mysema.query.sql.SQLTemplates;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.path.PathBuilder;
 
 
 /**
@@ -48,12 +55,11 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	private Container container = new Container();
 	private JQGridView gridView;
 	
-	private final TupleTable tupleTable;
+	private TupleTable tupleTable;
 	
-	public JQGridPlugin(String name, ScreenController<?> parent, TupleTable tupleTable)
+	public JQGridPlugin(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.tupleTable = tupleTable;
 	}
 	
 	@Override
@@ -61,11 +67,21 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	{
 		try
 		{
-			//strange way to retrieve columns!
-			//tupleTable = new JdbcTable(db, "SELECT Name, Continent, SurfaceArea, Population FROM Country", Collections.<QueryRule>emptyList());
-			tupleTable.setDatabase(db);
+	        final Connection conn = db.getConnection();
+	        final SQLTemplates dialect = new MySQLTemplates(); // SQL-dialect
+	        final SQLQuery query = new SQLQueryImpl(conn, dialect);
+	        
+	        PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class, "Country");
+	        PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
+	        
+	        List<Expression> select = Arrays.<Expression>asList(country.get("name"), city.get("name"));
+	        List<Expression> from = Arrays.<Expression>asList(country, city);
+	        List<Predicate> where = Arrays.<Predicate>asList(country.get("code").eq(city.get("countrycode")));
+			
+			tupleTable = new QueryDSLTable(query, select, from, where);
+			
 			gridView = new JQGridView("myGrid", tupleTable.getColumns());
-			tupleTable.close();
+			container.add(gridView);
 		}
 		catch (Exception e)
 		{
@@ -121,10 +137,18 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	 *  <li>Select and render the data.</li>
 	 * </ul>
 	 */
+	
+	
 	@Override
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
+	public void handleRequest(Database db, Tuple request) throws HandleRequestDelegationException {
+
+	
+//	@Override
+//	public void handleRequest(MolgenisRequest request, MolgenisResponse response) throws ParseException,
+//			DatabaseException, IOException
+//	{
 		try
-		{
+		{	
 			final ExportRange exportSelection = 
 				StringUtils.isNotEmpty(request.getString("exportSelection")) ?			
 						ExportRange.valueOf(request.getString("exportSelection")) : 
@@ -136,11 +160,9 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			
 			//add filter rules
 			final List<QueryRule> rules = addFilterRules(request);
-			tupleTable.setQueryRules(rules);
 			
 			int rowCount = -1;
-			rowCount = tupleTable.getRowCount();
-			tupleTable.close();
+			rowCount = tupleTable.getRowCount();				
 			int totalPages = 1;
 			totalPages = (int) Math.ceil(rowCount / limit);
 			int page = Math.min(request.getInt("page"), totalPages);
@@ -150,9 +172,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			if(exportSelection != ExportRange.ALL) {
 				rules.addAll(Arrays.asList(new QueryRule(Operator.LIMIT, limit), new QueryRule(Operator.OFFSET, offset)));
 			}
-			addSortRules(sidx, sord, rules);		
-			
-			tupleTable.setQueryRules(rules);
+			addSortRules(sidx, sord, rules);			
 						
 			renderData(((MolgenisRequest)request).getRequest(), ((MolgenisRequest)request).getResponse(), page, totalPages, tupleTable);
 
@@ -162,7 +182,6 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		{
 			throw new HandleRequestDelegationException();
 		}
-		return null;
 	}
 
 	/**
@@ -182,10 +201,10 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			strViewType = "JQ_GRID";
 		}
 		try {
-			final String viewFactoryClassName = request.getParameter("viewFactoryClassName");
+			final String viewFactoryClassName = (String)request.getAttribute("viewFactoryClassName");
 			final ViewFactory viewFactory = (ViewFactory) Class.forName(viewFactoryClassName).newInstance();
 			final Renderer view = viewFactory.createView(strViewType);
-			view.export(response, request.getParameter("caption"), this, tupleTable, totalPages, page);
+			view.export(response, (String)request.getAttribute("caption"), this, tupleTable, totalPages, page);
 		} catch (Exception e) {
 			throw new TableException(e);
 		}
@@ -216,6 +235,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			}
 			result.rows.add(rowMap);
 		}
+		table.close();
 		return result;
 	}
 

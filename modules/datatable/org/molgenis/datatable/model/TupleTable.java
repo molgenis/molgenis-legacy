@@ -3,7 +3,6 @@ package org.molgenis.datatable.model;
 import java.util.Iterator;
 import java.util.List;
 
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 
@@ -33,12 +32,6 @@ public interface TupleTable extends Iterable<Tuple>
 {
 	/** Get meta data describing the columns */
 	public List<Field> getColumns() throws TableException;
-	
-	/** Get meta data describing currently visible columns */
-	//todo public List<Field> getVisibleColumns() throws TableException;
-	
-	/** Change visible columns */
-	//todo public void setVisibleColumns(List<String> columnNames) throws TableException;
 
 	/** Get the data */
 	public List<Tuple> getRows() throws TableException;
@@ -51,9 +44,6 @@ public interface TupleTable extends Iterable<Tuple>
 	
 	/** Closes the resources from which table reads data */
 	public void close() throws TableException;
-
-	/** Get and manipulate the query rules for this TupleTable (if supported) */
-	//moved to FilterableTupleTable public List<QueryRule> getFilters();
 	
 	/** Change the visible rows */
 	public void setLimitOffset(int limit, int offset);

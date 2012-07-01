@@ -16,7 +16,7 @@ import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-public class JdbcTable implements TupleTable
+public class JdbcTable extends AbstractFilterableTupleTable
 {
 	private ResultSetTuple rs;
 	private List<Field> columns;
@@ -27,20 +27,24 @@ public class JdbcTable implements TupleTable
 	private boolean loaded = false;
 	
 
+
 	public JdbcTable(String query, List<QueryRule> rules)
 	{
 		super();
 		this.query = query;
 		this.setQueryRules(rules);		
 
+
 		String fromExpression = StringUtils.substringBetween(query, "SELECT", "FROM");
 		this.countQuery = StringUtils.replace(query, fromExpression, " COUNT(*) ");
 	}
+
 
 	public JdbcTable(String query) throws TableException
 	{
 		this(query, Collections.<QueryRule> emptyList());
 	}
+
 	
 	private void load() throws TableException
 	{
@@ -62,6 +66,7 @@ public class JdbcTable implements TupleTable
 	public List<Field> getColumns() throws TableException
 	{
 		load();
+		close();
 		return columns;
 	}
 
@@ -127,7 +132,9 @@ public class JdbcTable implements TupleTable
 	{
 		try
 		{
-			rs.close();
+			if(rs != null) {
+				rs.close();
+			}
 			loaded = false;
 		}
 		catch (SQLException e)

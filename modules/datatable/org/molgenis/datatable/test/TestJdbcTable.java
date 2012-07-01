@@ -3,6 +3,7 @@ package org.molgenis.datatable.test;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.molgenis.datatable.model.JdbcTable;
@@ -12,7 +13,6 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.util.Tuple;
 import org.testng.Assert;
@@ -68,7 +68,8 @@ public class TestJdbcTable
 		Assert.assertEquals("Netherlands", rows.get(0).getString("Name"));
 		Assert.assertEquals("Netherlands Antilles", rows.get(1).getString("Name"));
 
-		final TupleTable countryLikeQuery = new JdbcTable(db, "SELECT Name, Continent FROM country WHERE Name LIKE '%NETH%' ORDER BY SurfaceArea DESC");
+		String query = "SELECT Name, Continent FROM country WHERE Name LIKE '%NETH%' ORDER BY SurfaceArea DESC";
+		final TupleTable countryLikeQuery = new JdbcTable(db, query, Collections.<QueryRule>emptyList());
 		int rowIdx = 0;
 		for(Tuple row : countryLikeQuery) {
 			Assert.assertEquals(row.getObject("Name"), rows.get(rowIdx).getObject("Name"));

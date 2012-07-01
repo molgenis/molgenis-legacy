@@ -159,5 +159,4 @@ public class ProtocolTable implements TupleTable
 		this.limit = limit;
 		this.offset = offset;
 	}
-
 }
