@@ -21,18 +21,18 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	private ResultSetTuple rs;
 	private List<Field> columns;
 	private final String query;
-	private List<QueryRule> rules;
 	private Database db;
 	private final String countQuery;	
 	private boolean loaded = false;
 	
 
 
-	public JdbcTable(String query, List<QueryRule> rules)
+	public JdbcTable(Database db, String query, List<QueryRule> rules)
 	{
 		super();
+		this.db = db;
 		this.query = query;
-		this.setQueryRules(rules);		
+		this.setFilters(rules);		
 
 
 		String fromExpression = StringUtils.substringBetween(query, "SELECT", "FROM");
@@ -40,9 +40,9 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	}
 
 
-	public JdbcTable(String query) throws TableException
+	public JdbcTable(Database db, String query) throws TableException
 	{
-		this(query, Collections.<QueryRule> emptyList());
+		this(db, query, new ArrayList<QueryRule>());
 	}
 
 	
@@ -52,7 +52,7 @@ public class JdbcTable extends AbstractFilterableTupleTable
 			loaded = true;
 			try
 			{
-				rs = new ResultSetTuple(db.executeQuery(query, getRules().toArray(new QueryRule[0])));
+				rs = new ResultSetTuple(db.executeQuery(query, getFilters().toArray(new QueryRule[0])));
 				columns = loadColumns();
 			}
 			catch (Exception e)
@@ -144,10 +144,10 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	}
 
 	@Override
-	public int getRowCount() throws TableException
+	public int getCount() throws TableException
 	{
 		try {
-			final ResultSet countSet = db.executeQuery(countQuery, getRules().toArray(new QueryRule[0]));
+			final ResultSet countSet = db.executeQuery(countQuery, getFilters().toArray(new QueryRule[0]));
 			int rowCount = 0;
 			if (countSet.next())
 			{
@@ -161,26 +161,24 @@ public class JdbcTable extends AbstractFilterableTupleTable
 		}
 	}
 
-	public List<QueryRule> getRules()
-	{
-		return rules;
-	}
-
-	@Override
 	public void setDatabase(Database db)
 	{
 		this.db = db;
 	}
 
-	@Override
-	public List<QueryRule> getFilters()
-	{
-		return rules;
-	}
 
 	@Override
-	public void setQueryRules(List<QueryRule> rules)
+	public void setVisibleColumns(List<String> fieldNames)
 	{
-		this.rules = rules;		
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public List<Field> getVisibleColumns()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
