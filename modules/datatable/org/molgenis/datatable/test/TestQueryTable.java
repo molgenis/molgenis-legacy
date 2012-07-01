@@ -76,7 +76,7 @@ public class TestQueryTable
 	
 	@Test
 	public void testGetRowsBasic() throws TableException {
-		Assert.assertEquals(table.getRowCount(), 4079);
+		Assert.assertEquals(table.getCount(), 4079);
 		
 		// test top 7 ratios
 		// 	Singapore					Singapore		1.1264

@@ -36,7 +36,7 @@ public class testFilterableTupleTable
 		}
 
 		@Override
-		public int getRowCount() throws TableException
+		public int getCount() throws TableException
 		{
 			// TODO Auto-generated method stub
 			return 0;
@@ -47,6 +47,20 @@ public class testFilterableTupleTable
 		{
 			// TODO Auto-generated method stub
 			
+		}
+
+		@Override
+		public void setVisibleColumns(List<String> fieldNames)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public List<Field> getVisibleColumns()
+		{
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
