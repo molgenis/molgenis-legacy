@@ -1,6 +1,5 @@
 package org.molgenis.datatable.test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.datatable.model.TableException;
