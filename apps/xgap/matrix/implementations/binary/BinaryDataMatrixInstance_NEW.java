@@ -198,10 +198,79 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 	@Override
 	/**
 	 * Get one column.
+	 * Special case of getSubMatrix(int[] rowIndices, int[] colIndices) where we want all rows and only 1 column.
 	 */
 	public Object[] getCol(int colIndex) throws Exception
 	{
-		Object[] result = new Object[this.getNumberOfRows()];
+		int[] cols = new int[]{ colIndex };
+		int[] rows = new int[this.getNumberOfRows()];
+		for(int r = 0; r < this.getNumberOfRows(); r++)
+		{
+			rows[r] = r;
+		}
+
+		// submatrix should have only 1 column: get this
+		// (from in memory implementation) and return
+		return getSubMatrix(rows, cols).getCol(0);
+	}
+
+	/**
+	 * Get a submatrix by 
+	 */
+	@Override
+	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException
+	{
+		
+		//find out the lowest row index in the list
+		//in case it is not incremental
+		int lowestRowIndex = Integer.MAX_VALUE;
+		int highestRowIndex = Integer.MIN_VALUE;
+		for(int i = 0; i < rowIndices.length; i ++)
+		{
+			if(rowIndices[i] < lowestRowIndex)
+			{
+				lowestRowIndex = rowIndices[i];
+			}
+			if(rowIndices[i] >= highestRowIndex)
+			{
+				highestRowIndex = rowIndices[i];
+			}
+		}
+		
+		//find out the lowest row index in the list
+		//in case it is not incremental
+		int lowestColIndex = Integer.MAX_VALUE;
+		int highestColIndex = Integer.MIN_VALUE;
+		for(int i = 0; i < colIndices.length; i ++)
+		{
+			if(colIndices[i] < lowestColIndex)
+			{
+				lowestColIndex = colIndices[i];
+			}
+			if(colIndices[i] >= highestColIndex)
+			{
+				highestColIndex = colIndices[i];
+			}
+		}
+		
+		int firstElement = (this.getNumberOfCols() * lowestRowIndex) + lowestColIndex;
+		int lastElement = (this.getNumberOfCols() * highestRowIndex) + highestColIndex;
+		
+		System.out.println("lowestRowIndex: " + lowestRowIndex);
+		System.out.println("lowestColIndex: " + lowestColIndex);
+		System.out.println("highestRowIndex: " + highestRowIndex);
+		System.out.println("highestColIndex: " + highestColIndex);
+		
+		System.out.println("firstElement: " + firstElement);
+		System.out.println("lastElement: " + lastElement);
+		
+		//516594840 = 516 meg
+
+		
+//		raf.seek(this.getEndOfElementsPointer()-8);
+//		byte[] read = new byte[8];
+//		raf.read(read);
+//		System.out.println("READ: " + byteArrayToDoubles(read)[0]);
 		
 		long halfOfFreeMem = (Runtime.getRuntime().freeMemory()/2);
 		long totalElementSize = this.getEndOfElementsPointer() - this.getStartOfElementsPointer();
@@ -232,54 +301,53 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 				System.out.println("not enough memory: must seek for each col element");
 			}
 		}
-
 		
-		//516594840 = 516 meg
-
-		
-//		raf.seek(this.getEndOfElementsPointer()-8);
-//		byte[] read = new byte[8];
-//		raf.read(read);
-//		System.out.println("READ: " + byteArrayToDoubles(read)[0]);
-			
-		return result;
-	}
-
-	/**
-	 * Get a submatrix by intersecting indices (from a RandomAccessFile
-	 * instance), optimized by reading in blocks of 8 megabyte so get multiple
-	 * values at once - unless some colums are further apart than 8 megabyte.
-	 * (for variable length text elements this cannot be guessed...)
-	 * 
-	 * @status: TODO
-	 */
-	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException
-	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	/**
-	 * Get a submatrix by index-offsets (from a RandomAccessFile instance),
-	 * optimized by reading in blocks of 8 megabyte so get multiple values at
-	 * once - unless some colums are further apart than 8 megabyte. (for
-	 * variable length text elements this cannot be guessed...)
-	 * 
-	 * @status: TODO
+	 * Get a submatrix by starts plus offsets.
+	 * Special case of getSubMatrix(int[] rowIndices, int[] colIndices) where all indices are sequential.
 	 */
 	@Override
 	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nRows, int col, int nCols) throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		int[] rows = new int[nRows];
+		int[] cols = new int[nCols];
+		
+		int counter = 0;
+		for(int r = row; r < row + nRows; r++)
+		{
+			rows[counter] = r;
+			counter++;
+		}
+		counter = 0;
+		for(int c = col; c < col + nCols; c++)
+		{
+			cols[counter] = c;
+			counter++;
+		}
+		
+		return this.getSubMatrix(rows, cols);
 	}
 
 	@Override
 	public Object[][] getElements() throws MatrixException
 	{
-		//return readBlock(0, this.getNumberOfRows() * this.getNumberOfCols(), true);
-		return null;
+		int[] rows = new int[this.getNumberOfRows()];
+		int[] cols = new int[this.getNumberOfCols()];
+		
+		for(int r = 0; r < this.getNumberOfRows(); r++)
+		{
+			rows[r] = r;
+		}
+		for(int c = 0; c < this.getNumberOfCols() ; c++)
+		{
+			cols[c] = c;
+		}
+		
+		//should be a memorymatrix, meaning the getElements just returns current memory location
+		return this.getSubMatrix(rows, cols).getElements();
 	}
 
 }
