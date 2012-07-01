@@ -27,9 +27,6 @@ public class EntityTable extends AbstractFilterableTupleTable
 	// copy of the fields from meta database
 	private List<Field> columns;
 
-	// current query rules (includes all: limit, offset, paging, filters)
-	private List<QueryRule> filters = new ArrayList<QueryRule>();
-
 	/**
 	 * Constructor
 	 * 
@@ -74,7 +71,7 @@ public class EntityTable extends AbstractFilterableTupleTable
 		try
 		{
 			List<? extends Entity> entities;
-			if (filters.size() > 0) entities = db.find(entityClass, filters.toArray(new QueryRule[filters.size()]));
+			if (getFilters().size() > 0) entities = db.find(entityClass, getFilters().toArray(new QueryRule[getFilters().size()]));
 			else
 				entities = db.find(entityClass);
 
@@ -110,12 +107,12 @@ public class EntityTable extends AbstractFilterableTupleTable
 	}
 
 	@Override
-	public int getRowCount() throws TableException
+	public int getCount() throws TableException
 	{
 		// should get rid of limit clause!
 		try
 		{
-			if (filters.size() > 0) return db.count(entityClass, filters.toArray(new QueryRule[filters.size()]));
+			if (getFilters().size() > 0) return db.count(entityClass, getFilters().toArray(new QueryRule[getFilters().size()]));
 			else
 				return db.count(entityClass);
 		}
@@ -123,11 +120,6 @@ public class EntityTable extends AbstractFilterableTupleTable
 		{
 			throw new TableException(e);
 		}
-	}
-
-	public List<QueryRule> getFilters()
-	{
-		return filters;
 	}
 
 	public Database getDb()
@@ -141,28 +133,20 @@ public class EntityTable extends AbstractFilterableTupleTable
 	}
 
 	@Override
-	public void setFilters(List<QueryRule> filters)
+	public void setVisibleColumns(List<String> fieldNames)
 	{
-		assert (filters != null);
-		this.filters = filters;
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void setLimitOffset(int limit, int offset)
+	public List<Field> getVisibleColumns()
 	{
-		// TODO remove previous limit/offset
-		List<QueryRule> newFilters = new ArrayList<QueryRule>();
-		for (QueryRule r : this.filters)
-		{
-			if (!Operator.LIMIT.equals(r.getOperator()) && !Operator.OFFSET.equals(r.getOperator()))
-			{
-				newFilters.add(r);
-			}
-		}
-		this.filters = newFilters;
-
-		this.filters.add(new QueryRule(Operator.LIMIT, limit));
-		this.filters.add(new QueryRule(Operator.OFFSET, offset));
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+
+	
 
 }
