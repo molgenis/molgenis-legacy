@@ -5,14 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-<<<<<<< HEAD
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
-=======
-import org.molgenis.datatable.model.EntityTable;
->>>>>>> 5ac77f4f0849243e0a29ea3cf38269fc5251a1ff
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryImp;
@@ -42,13 +39,13 @@ public class JQGridTableView extends HtmlWidget
 	private ScreenController<?> plugin;
 
 	// table serving the data
-	private FilterableTupleTable table;
+	private TupleTable table;
 
 	// jqgrid config
 	private JQGridConfiguration config;
 
 	// jqgrid navGrid config
-	JQGridToolbar toolbar;
+	private JQGridToolbar toolbar;
 
 	/**
 	 * Construct an Ajax html table for EntityTable
@@ -96,6 +93,7 @@ public class JQGridTableView extends HtmlWidget
 				ColModel m = new ColModel();
 				m.name = f.getName();
 				m.index = f.getName();
+				if(table instanceof FilterableTupleTable) m.sortable = true;
 				config.colModel.add(m);
 			}
 		}
@@ -147,7 +145,7 @@ public class JQGridTableView extends HtmlWidget
 			// update the table with filters (TODO)
 
 			// filtered count
-			int recordCount = table.getRowCount();
+			int recordCount = table.getCount();
 
 			// calculate the total pages for the query
 			int total_pages = 1;
@@ -398,6 +396,7 @@ public class JQGridTableView extends HtmlWidget
 		public String name;
 		public String index;
 		public int width = 100;
+		public boolean sortable = false;
 	}
 
 	/** JqGrid representation of fields */
