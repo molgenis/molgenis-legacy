@@ -8,7 +8,7 @@
 
 
 
-		<plugin name="jqGridView2" type="org.molgenis.datatable.plugin.JQGridPlugin2" />
+		<plugin name="jqGridViewEntity" type="org.molgenis.datatable.plugin.JQGridPluginEntity" />
 
 
 		<plugin name="jqGridViewMemory" type="org.molgenis.datatable.plugin.JQGridPluginMemory" />
