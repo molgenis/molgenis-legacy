@@ -38,13 +38,36 @@ public interface TupleTable extends Iterable<Tuple>
 
 	/** Get the data in a streaming fashion (good for large data sets) */
 	public Iterator<Tuple> iterator();
-
-	/** Get the number of Row **/
-	public int getRowCount() throws TableException;
 	
 	/** Closes the resources from which table reads data */
 	public void close() throws TableException;
 	
 	/** Change the visible rows */
 	public void setLimitOffset(int limit, int offset);
+
+	/**
+	 * Get count of all records in the TupleTable
+	 * @throws TableException 
+	 */
+	public int getCount() throws TableException;
+
+	/**
+	 * This we can inherit from Query interface?
+	 */
+	public int getLimit();
+
+	/**
+	 * This we can inherit from Query interface?
+	 */
+	public void setLimit(int limit);
+
+	/**
+	 * This we can inherit from Query interface?
+	 */
+	public int getOffset();
+
+	/**
+	 * This we can inherit from Query interface?
+	 */
+	public void setOffset(int offset);
 }

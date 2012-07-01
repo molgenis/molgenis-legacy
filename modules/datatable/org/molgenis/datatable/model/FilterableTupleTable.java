@@ -36,31 +36,6 @@ public interface FilterableTupleTable extends TupleTable
 	public List<Field> getVisibleColumns();
 
 	/**
-	 * Get count of all records in the TupleTable
-	 */
-	public Integer getCount();
-
-	/**
-	 * This we can inherit from Query interface?
-	 */
-	public int getLimit();
-
-	/**
-	 * This we can inherit from Query interface?
-	 */
-	public void setLimit(int limit);
-
-	/**
-	 * This we can inherit from Query interface?
-	 */
-	public int getOffset();
-
-	/**
-	 * This we can inherit from Query interface?
-	 */
-	public void setOffset(int offset);
-
-	/**
 	 * This we can inherit from Query interface?
 	 * 
 	 * nb: multiple columns are not allowed for now.

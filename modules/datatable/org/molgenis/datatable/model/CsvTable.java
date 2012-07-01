@@ -66,7 +66,7 @@ public class CsvTable implements TupleTable
 	 * Count rows (not including header of csv file)
 	 */
 	@Override
-	public int getRowCount() throws TableException
+	public int getCount() throws TableException
 	{
 		if (rowCount == -1)
 		{
@@ -174,6 +174,30 @@ public class CsvTable implements TupleTable
 	public void setLimitOffset(int limit, int offset)
 	{
 		this.limit = limit;
+		this.offset = offset;
+	}
+
+	@Override
+	public int getLimit()
+	{
+		return limit;
+	}
+
+	@Override
+	public void setLimit(int limit)
+	{
+		this.limit = limit;
+	}
+
+	@Override
+	public int getOffset()
+	{
+		return limit;
+	}
+
+	@Override
+	public void setOffset(int offset)
+	{
 		this.offset = offset;
 	}
 }

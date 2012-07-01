@@ -51,7 +51,7 @@ public class TestCsvTable
 		
 		table.setLimitOffset(1,1);
 		
-		Assert.assertEquals(table.getRowCount(), 3);
+		Assert.assertEquals(table.getCount(), 3);
 		
 		Assert.assertEquals(table.getRows().size(), 1);
 		
@@ -66,7 +66,7 @@ public class TestCsvTable
 		Assert.assertEquals("firstName",table.getColumns().get(0).getName());
 		Assert.assertEquals("lastName",table.getColumns().get(1).getName());
 		
-		Assert.assertEquals(2,table.getRowCount());		
+		Assert.assertEquals(2,table.getCount());		
 		
 		List<Tuple> rows = table.getRows();
 		Tuple row = rows.get(0);
