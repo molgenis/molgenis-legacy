@@ -23,13 +23,11 @@ import org.molgenis.util.TupleIterator;
 /**
  * Wrap a CSV file into a TupleTable
  */
-public class CsvTable implements TupleTable
+public class CsvTable extends AbstractTupleTable
 {
 	private CsvReader csv;
 	private InputStream countStream;
 	private List<Field> columns = new ArrayList<Field>();
-	int limit = 0;
-	int offset = 0;
 
 	File csvFile;
 	String csvString;
@@ -135,9 +133,9 @@ public class CsvTable implements TupleTable
 			e.printStackTrace();
 		}
 		
-		if (limit > 0 || offset > 0)
+		if (getLimit() > 0 || getOffset() > 0)
 		{
-			return new TupleIterator(csv, limit, offset);
+			return new TupleIterator(csv, getLimit(), getOffset());
 		}
 		return csv.iterator();
 	}
@@ -168,36 +166,5 @@ public class CsvTable implements TupleTable
 			csv = new CsvStringReader(csvString);
 			countStream = new ByteArrayInputStream(csvString.getBytes());
 		}
-	}
-
-	@Override
-	public void setLimitOffset(int limit, int offset)
-	{
-		this.limit = limit;
-		this.offset = offset;
-	}
-
-	@Override
-	public int getLimit()
-	{
-		return limit;
-	}
-
-	@Override
-	public void setLimit(int limit)
-	{
-		this.limit = limit;
-	}
-
-	@Override
-	public int getOffset()
-	{
-		return limit;
-	}
-
-	@Override
-	public void setOffset(int offset)
-	{
-		this.offset = offset;
 	}
 }

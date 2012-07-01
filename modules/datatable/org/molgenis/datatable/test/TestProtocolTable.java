@@ -123,7 +123,7 @@ public class TestProtocolTable
 		Assert.assertEquals(table.getRows().size(), 2);
 		
 		//offset = 3, so we skip first1-first3 and expect first4
-		Assert.assertEquals(table.getRows().get(0).getString("meas1"), "val4,1");
+		Assert.assertEquals(table.getRows().get(0).getString("meas1"), "meas1:val3");
 		
 		//remove filters again
 		table.setLimitOffset(0, 0);

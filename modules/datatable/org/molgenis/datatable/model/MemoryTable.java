@@ -5,20 +5,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.fieldtypes.StringField;
-import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 
 /**
  * Wrap a List<Tuple> into a TupleTable
  */
-public class MemoryTable implements TupleTable
+public class MemoryTable extends AbstractTupleTable
 {
 	private List<Field> columns = new ArrayList<Field>();
 	private List<Tuple> rows = new ArrayList<Tuple>();
-	int limit = 0;
-	int offset = 0;
-
 	/**
 	 * Construct from list of tuples. Field will be derived based on column
 	 * names and value type of first tuple. Otherwise field type will be String.
@@ -48,7 +44,7 @@ public class MemoryTable implements TupleTable
 	@Override
 	public List<Tuple> getRows()
 	{
-		if (limit > 0 || offset > 0)
+		if (getLimit() > 0 || getOffset() > 0)
 		{
 			List<Tuple> result = new ArrayList<Tuple>();
 			
@@ -56,11 +52,11 @@ public class MemoryTable implements TupleTable
 			int index = 1;
 			for(Tuple row: this.rows)
 			{
-				if(index > offset)
+				if(index > getOffset())
 				{
 					result.add(row);
 					count++;
-					if(count >= limit) break;
+					if(count >= getLimit()) break;
 				}
 				index++;
 			}
@@ -88,37 +84,5 @@ public class MemoryTable implements TupleTable
 	public int getCount() throws TableException
 	{
 		return rows.size();
-	}
-
-	@Override
-	public void setLimitOffset(int limit, int offset)
-	{
-		this.limit = limit;
-		this.offset = offset;
-
-	}
-
-	@Override
-	public int getLimit()
-	{
-		return limit;
-	}
-
-	@Override
-	public void setLimit(int limit)
-	{
-		this.limit = limit;
-	}
-
-	@Override
-	public int getOffset()
-	{
-		return offset;
-	}
-
-	@Override
-	public void setOffset(int offset)
-	{
-		this.offset = offset;
 	}
 }

@@ -26,7 +26,7 @@ import org.molgenis.util.Tuple;
  * added as first column. Optionally, the ProtocolApplication metadata can be
  * viewed (future todo).
  */
-public class ProtocolTable implements TupleTable
+public class ProtocolTable extends AbstractTupleTable
 {
 	// protocol to query
 	private Protocol protocol;
@@ -36,10 +36,6 @@ public class ProtocolTable implements TupleTable
 
 	// mapping to Field (so we only have to convert once)
 	private List<Field> columns;
-
-	// limit offset
-	private int limit = 0;
-	private int offset = 0;
 
 	public ProtocolTable(Database db, Protocol protocol)
 	{
@@ -92,8 +88,8 @@ public class ProtocolTable implements TupleTable
 			// get protocol applications
 			Query<ProtocolApplication> q = db.query(ProtocolApplication.class).eq(ProtocolApplication.PROTOCOL,
 					protocol.getId());
-			if (limit > 0) q.limit(limit);
-			if (offset > 0) q.offset(offset);
+			if (getLimit() > 0) q.limit(getLimit());
+			if (getOffset() > 0) q.offset(getOffset());
 			List<ProtocolApplication> apps = q.find();
 
 			// for each protocol application get all values
@@ -141,7 +137,7 @@ public class ProtocolTable implements TupleTable
 	}
 
 	@Override
-	public int getRowCount() throws TableException
+	public int getCount() throws TableException
 	{
 		try
 		{
@@ -151,12 +147,5 @@ public class ProtocolTable implements TupleTable
 		{
 			throw new TableException(e);
 		}
-	}
-
-	@Override
-	public void setLimitOffset(int limit, int offset)
-	{
-		this.limit = limit;
-		this.offset = offset;
 	}
 }
