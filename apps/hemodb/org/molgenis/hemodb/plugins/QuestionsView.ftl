@@ -12,7 +12,7 @@
 		
 		<#--optional: mechanism to show messages-->
 		<#list model.getMessages() as message>
-			<#if message.success>
+			<#if message.success>	
 		<p class="successmessage">${message.text}</p>
 			<#else>
 		<p class="errormessage">${message.text}</p>
@@ -26,14 +26,26 @@
 	
 <#--begin your plugin-->	
 
-<div id="vraag">
 
-<input type='submit' id='jetty' value='Submit' onclick="__action.value='verstuurJetty2'" />
+<div id="geneExpression">
+	Choose the type of gene expression:<br />
 
-${model.action}
+		<input type="radio" id="geneExpRaw" name="geneExp" value="raw" /> Raw expression<br />
+		<input type="radio" id="geneExpLog" name="geneExp" value="quanLog" checked /> Quantile normalized & log2 transformed expression<br />
 
 </div>
+<div id="geneList">
+		<br />Supply the gene(s) you want to select (one per line):<br />
+		<textarea rows="10" cols="51" name="geneText"value="genes"></textarea>
+</div>
+<div id="groupSelection">
+<br/>Here will be a dropdown thingy for group selection<br />
+	<input type="text" name="dropdownThingy" value="dropdownThingy"/>
+</div>
 
+<div id="submit">
+	<input type='submit' id='jetty' value='Submit' onclick="__action.value='verstuurJetty2'" />
+</div>
 
 
 

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="psi">
+    <entity name="any">
+        <field type="autoid" name="any_id"/>
+        <field xref_field="null_flavour.null_flavour_id" nillable="true" type="xref" name="null_flavour_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="beeld">
+        <field type="autoid" name="beeld_id"/>
+        <field xref_field="levering_beeld.levering_beeld_id" type="xref" name="levering_beeld_id"/>
+        <field length="512" type="text" name="dicom_uid"/>
+    </entity>
+    <entity name="bewerking">
+        <field type="autoid" name="bewerking_id"/>
+        <field xref_field="code.code_id" type="xref" name="code_id"/>
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="datum_bewerking_id"/>
+        <field xref_field="bool.boolean_id" nillable="true" type="xref" name="presentie_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="biomateriaal">
+        <field type="autoid" name="biomateriaal_id"/>
+        <field xref_field="code.code_id" type="xref" name="code_id"/>
+        <field xref_field="physical_quantity.physical_quantity_id" nillable="true" type="xref" name="hoeveelheid_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="wijze_opslag_code_id"/>
+        <field xref_field="procedure.procedure_id" nillable="true" type="xref" name="procedure_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="biomateriaal_bewerking">
+        <field xref_field="biomateriaal.biomateriaal_id" type="xref" name="biomateriaal_id"/>
+        <field xref_field="bewerking.bewerking_id" type="xref" name="bewerking_id"/>
+        <unique fields="bewerking_id,biomateriaal_id"/>
+    </entity>
+    <entity name="bool" extends="any">
+        <field nillable="true" type="bool" name="value"/>
+    </entity>
+    <entity name="code" extends="any">
+        <field nillable="true" name="code"/>
+        <field xref_field="code_systeem.code_systeem_id" nillable="true" type="xref" name="code_systeem_id"/>
+        <field nillable="true" name="display_naam"/>
+        <field nillable="true" name="original_tekst"/>
+        <field xref_field="procedure.procedure_id" nillable="true" type="xref" name="procedure_id"/>
+        <field xref_field="observatie.observatie_id" nillable="true" type="xref" name="observatie_id"/>
+    </entity>
+    <entity name="code_systeem">
+        <field type="autoid" name="code_systeem_id"/>
+        <field length="128" name="oid"/>
+        <field length="128" name="naam"/>
+        <field length="128" nillable="true" name="omschrijving"/>
+    </entity>
+    <entity name="coded_ordinal" extends="any">
+        <field nillable="true" type="int" name="code_id"/>
+        <field nillable="true" type="decimal" name="value"/>
+        <field xref_field="code_systeem.code_systeem_id" nillable="true" type="xref" name="code_systeem_id"/>
+        <field nillable="true" name="code"/>
+        <field nillable="true" name="display_naam"/>
+        <field nillable="true" name="original_tekst"/>
+    </entity>
+    <entity name="consent">
+        <field type="autoid" name="consent_id"/>
+        <field xref_field="code.code_id" type="xref" name="code_id"/>
+        <field xref_field="bool.boolean_id" nillable="true" type="xref" name="presentie_id"/>
+        <field xref_field="dossier.dossier_id" nillable="true" type="xref" name="dossier_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+        <field xref_field="ts_interval.timestamp_interval_id" nillable="true" type="xref" name="geldigheids_interval_id"/>
+    </entity>
+    <entity name="contact" extends="klinische_handeling">
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="datum_tijd_contact_id"/>
+    </entity>
+    <entity name="container">
+        <field type="autoid" name="container_id"/>
+        <field xref_field="physical_quantity.physical_quantity_id" nillable="true" type="xref" name="capaciteit_id"/>
+        <field xref_field="code.code_id" type="xref" name="code_id"/>
+        <field xref_field="instance_identifier.instance_identifier_id" nillable="true" type="xref" name="instance_identifier_id"/>
+        <field xref_field="biomateriaal.biomateriaal_id" nillable="true" type="xref" name="biomateriaal_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="diagnose" extends="klinische_handeling">
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="datum_vaststelling"/>
+    </entity>
+    <entity name="dossier">
+        <field type="autoid" name="dossier_id"/>
+        <field xref_field="levering.levering_id" type="xref" name="levering_id"/>
+        <field xref_field="rol.rol_id" nillable="true" type="xref" name="subject_rol_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="edited_tekst" extends="any">
+        <field nillable="true" type="text" name="tekst"/>
+    </entity>
+    <entity name="handeling_relatie">
+        <field type="autoid" name="handeling_relatie_id"/>
+        <field xref_field="code.code_id" type="xref" name="code_id"/>
+        <field xref_field="klinische_handeling.klinische_handeling_id" nillable="true" type="xref" name="handeling_id"/>
+        <field xref_field="klinische_handeling.klinische_handeling_id" nillable="true" type="xref" name="subject_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="instance_identifier" extends="any">
+        <field length="128" nillable="true" name="extension"/>
+        <field length="128" nillable="true" name="naam"/>
+        <field length="128" nillable="true" name="root"/>
+    </entity>
+    <entity name="int" extends="any">
+        <field nillable="true" type="int" name="value"/>
+    </entity>
+    <entity name="klinische_handeling">
+        <field type="autoid" name="klinische_handeling_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="code_id"/>
+        <field xref_field="sectie.sectie_id" nillable="true" type="xref" name="sectie_id"/>
+        <field xref_field="rol.rol_id" nillable="true" type="xref" name="subject_rol_id"/>
+        <field xref_field="rol.rol_id" nillable="true" type="xref" name="uitvoerende_rol_id"/>
+        <field xref_field="bool.boolean_id" nillable="true" type="xref" name="presentie_id"/>
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="registratie_moment_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="temporele_context_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="levering">
+        <field type="autoid" name="levering_id"/>
+        <field xref_field="ziekenhuis.code" type="xref" name="ziekenhuis_id"/>
+        <field type="datetime" name="aangeleverd"/>
+        <field xref_field="parel.code" type="xref" name="parel_id"/>
+        <field type="int" name="volgnummer"/>
+        <field length="32" name="versie"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+        <field length="32" name="status"/>
+    </entity>
+    <entity name="levering_beeld">
+        <field type="autoid" name="levering_beeld_id"/>
+        <field xref_field="ziekenhuis.code" type="xref" name="ziekenhuis_id"/>
+        <field type="datetime" name="aangeleverd"/>
+        <field xref_field="parel.code" type="xref" name="parel_id"/>
+        <field type="int" name="volgnummer"/>
+        <field length="32" name="versie"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+        <field length="32" name="status"/>
+    </entity>
+    <entity name="levering_status">
+        <field type="autoid" name="levering_status_id"/>
+        <field length="32" name="status"/>
+        <field xref_field="levering.levering_id" type="xref" name="levering_id"/>
+        <field length="512" type="text" name="omschrijving"/>
+        <field type="datetime" name="aangemaakt"/>
+    </entity>
+    <entity name="node_identifier">
+        <field type="autoid" name="node_identifier_id"/>
+        <field length="128" nillable="true" name="value"/>
+    </entity>
+    <entity name="null_flavour">
+        <field type="autoid" name="null_flavour_id"/>
+        <field length="64" name="naam"/>
+        <field length="128" name="omschrijving"/>
+    </entity>
+    <entity name="observatie" extends="klinische_handeling">
+        <field xref_field="int.int_id" nillable="true" type="xref" name="aantal"/>
+        <field xref_field="ts_interval.timestamp_interval_id" nillable="true" type="xref" name="geldigheids_interval_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="methode_code_id"/>
+        <field xref_field="any.any_id" nillable="true" type="xref" name="waarde_id"/>
+    </entity>
+    <entity name="organisatie">
+        <field type="autoid" name="organisatie_id"/>
+        <field xref_field="instance_identifier.instance_identifier_id" nillable="true" type="xref" name="instance_identifier_id"/>
+        <field xref_field="null_flavour.null_flavour_id" nillable="true" type="xref" name="null_flavour_id"/>
+        <field xref_field="rol.rol_id" nillable="true" type="xref" name="rol_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="parel">
+        <field unique="true" type="int" name="code"/>
+        <field length="50" name="omschrijving"/>
+        <field length="50" nillable="true" name="toelichting"/>
+    </entity>
+    <entity name="persoon">
+        <field type="autoid" name="persoon_id"/>
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="datum_overlijden_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="etniciteit_id"/>
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="geboortedatum_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="geboorteland_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="geslacht_id"/>
+        <field xref_field="instance_identifier.instance_identifier_id" nillable="true" type="xref" name="id"/>
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="datum_registratie_id"/>
+        <field xref_field="null_flavour.null_flavour_id" nillable="true" type="xref" name="null_flavour_id"/>
+        <field xref_field="rol.rol_id" nillable="true" type="xref" name="rol_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="persoonlijke_relatie">
+        <field type="autoid" name="persoonlijke_relatie_id"/>
+        <field xref_field="persoon.persoon_id" nillable="true" type="xref" name="subject_persoon_id"/>
+        <field xref_field="code.code_id" type="xref" name="code_id"/>
+        <field xref_field="persoon.persoon_id" type="xref" name="object_persoon_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="physical_quantity" extends="any">
+        <field length="128" nillable="true" name="unit"/>
+        <field nillable="true" type="decimal" name="value"/>
+    </entity>
+    <entity name="procedure" extends="klinische_handeling">
+        <field xref_field="int.int_id" nillable="true" type="xref" name="herhaling"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="methode_id"/>
+        <field xref_field="ts_interval.timestamp_interval_id" nillable="true" type="xref" name="tijd_uitvoering_id"/>
+    </entity>
+    <entity name="product">
+        <field type="autoid" name="product_id"/>
+        <field xref_field="code.code_id" type="xref" name="code_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="vorm_code_id"/>
+        <field xref_field="procedure.procedure_id" nillable="true" type="xref" name="procedure_id"/>
+        <field xref_field="toediening.toediening_id" nillable="true" type="xref" name="toediening_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="ratio_physical_quantity" extends="any">
+        <field xref_field="physical_quantity.physical_quantity_id" type="xref" name="numerator"/>
+        <field xref_field="physical_quantity.physical_quantity_id" type="xref" name="denominator"/>
+    </entity>
+    <entity name="real" extends="any">
+        <field nillable="true" type="decimal" name="value"/>
+    </entity>
+    <entity name="rol">
+        <field type="autoid" name="rol_id"/>
+        <field xref_field="code.code_id" type="xref" name="code_id"/>
+        <field xref_field="persoon.persoon_id" nillable="true" type="xref" name="persoon_id"/>
+        <field xref_field="organisatie.organisatie_id" nillable="true" type="xref" name="organisatie_id"/>
+        <field xref_field="dossier.dossier_id" nillable="true" type="xref" name="dossier_id"/>
+        <field xref_field="klinische_handeling.klinische_handeling_id" nillable="true" type="xref" name="klinische_handeling_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="sectie">
+        <field type="autoid" name="sectie_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="code_id"/>
+        <field xref_field="dossier.dossier_id" nillable="true" type="xref" name="dossier_id"/>
+        <field xref_field="node_identifier.node_identifier_id" nillable="true" type="xref" name="node_identifier_id"/>
+    </entity>
+    <entity name="sectie_sectie">
+        <field xref_field="sectie.sectie_id" type="xref" name="sectie_id"/>
+        <field xref_field="sectie.sectie_id" type="xref" name="sub_sectie_id"/>
+        <unique fields="sub_sectie_id,sectie_id"/>
+    </entity>
+    <entity name="toediening" extends="klinische_handeling">
+        <field xref_field="physical_quantity.physical_quantity_id" nillable="true" type="xref" name="dosering_id"/>
+        <field xref_field="ratio_physical_quantity.ratio_pq_id" nillable="true" type="xref" name="frequentie_id"/>
+        <field xref_field="code.code_id" nillable="true" type="xref" name="route_code_id"/>
+        <field xref_field="ts_interval.timestamp_interval_id" nillable="true" type="xref" name="toedienings_periode_id"/>
+    </entity>
+    <entity name="ts" extends="any">
+        <field nillable="true" type="datetime" name="value"/>
+        <field nillable="true" type="int" name="jaar"/>
+        <field nillable="true" type="int" name="maand"/>
+        <field nillable="true" type="int" name="dag"/>
+        <field nillable="true" type="int" name="uur"/>
+        <field nillable="true" type="int" name="minuut"/>
+        <field nillable="true" type="int" name="seconde"/>
+    </entity>
+    <entity name="ts_interval" extends="any">
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="low"/>
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="high"/>
+        <field nillable="true" type="datetime" name="value"/>
+        <field xref_field="ts.timestamp_id" nillable="true" type="xref" name="value_new"/>
+    </entity>
+    <entity name="verzendlijst">
+        <field type="autoid" name="verzendlijst_id"/>
+        <field type="int" name="parel_id"/>
+        <field type="int" name="ziekenhuis_id"/>
+        <field length="1024" type="text" name="verzendlijst"/>
+    </entity>
+    <entity name="ziekenhuis">
+        <field unique="true" type="int" name="code"/>
+        <field length="50" name="omschrijving"/>
+        <field length="50" name="plaats"/>
+        <field nillable="true" type="int" name="ttp_domein_id"/>
+    </entity>
+</molgenis>

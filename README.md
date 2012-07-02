@@ -1,37 +1,47 @@
-Advanced Application and Computation Framework
-----------------------------------------------
-Users can build and start an app on the commandline like this:
+MOLGENIS
+--------
+MOLGENIS is an collaborative open source project on a mission to generate great 
+software infrastructure for life science research. Each app in the MOLGENIS 
+family comes with rich data management interface and plug-in integration of 
+analysis tools in R, Java and web services.
+
+Developing your own
+-------------------
+Generate generate your own in three steps:
+
+1) Clone the MOLGENIS generator and an empty distro
 
      git clone https://www.github.com/molgenis/molgenis.git
      git clone https://www.github.com/molgenis/molgenis_distro.git
      cd molgenis_distro
-     ant <appname>.build clean-generate-compile-test
-     ant <appname>.build run
-     
-Then browse to http://<yourhost>:8080/<appname>/
 
-APPNAME
--------
+2) Model what you want for your experiment in a simple XML file example db, example ui
 
-     - xQTL       - Workbench for multi-level QTL mapping
-     - DebCentral - Dystrophic Epidermolysis Bullosa mutation database
-     - XGAP       - eXtensible Genotype and Phenotype database
-     - designGG   - Design of Genetical Genomics Experiments
-     - BBMRI      - BBMRI-NL biobank catalague
-     - MAGETAB    - Microarray Gene experiment object model
-     - AnimalDB   - Animal observation database
-     - PhenoOM    - Phenotype observation model
-     - MRB        - Mouse Resource Browser
-     - FINDIS     - Findis Finnish disease database
-     - NORDIC     - Nordic GWAS control database
-     - GWASCHK    - GWAS Central curation tool
-     - HMPD       - Human Metabolic Pathway Database
+     <editor> molgenis.properties
+     <editor> molgenis_db.xml
+     <editor> molgenis_ui.xml
 
-About
------
-[MOLGENIS](http://www.molgenis.org/ "Molgenis.org - a collaborative open source project") is a collaborative open 
-source project on a mission to generate great software infrastructure for life science research. Each app in the
-[MOLGENIS](http://www.molgenis.org/ "Molgenis.org - a collaborative open source project") family comes with rich 
-data management interface and plug-in integration of analysis tools in R, Java and Web services.
+3) Run the MOLGENIS generator, after that you're able to use your web 
+application.
 
-For more information visit: [MOLGENIS](http://www.molgenis.org/ "Molgenis.org - a collaborative open source project")
+MOLGENIS applications
+---------------------
+Many molgenis applications have been developed, a not so short overview:
+
+ - xQTL Workbench for multi-level QTL mapping ([project](http://www.xqtl.nl/ "www.xqtl.nl"))
+ - Dystrophic Epidermolysis Bullosa (deb-central) mutation database ([project](http://www.deb-central.org/ "www.deb-central.org/"), publication)
+ - eXtensible Genotype and Phenotype database (XGAP) ([project](http://www.xqap.nl/ "www.xqap.nl"), publication)
+ - Design of Genetical Genomics Experiments (designGG)] ([project](http://gbic.biol.rug.nl/designGG "DesignGG"), publication)
+ - BBMRI-NL biobank catalague ([project](http://www.phenoflow.org/wiki/BiobankCatalog "BBMRI")) 
+ - MAGE-TAB microarray gene experiment object model (MAGETAB-OM)] ([project](http://www.phenoflow.org/wiki/PhenoFlow "MAGETAB"),  demo)
+ - Pheno-OM Phenotype observation model ([project](http://www.phenoflow.org/wiki/PhenoFlow "Pheno-OM"), demo)
+ - Mouse Resource Browser (MRB) project] (project, publication)
+ - MOLGENIS as data wrapper in Taverna (publication)
+ - Animal observation database (AnimalDB) ([project](http://www.animaldb.org/ "www.animaldb.org"))
+ - Nordic GWAS control database (project,  publication)
+ - GWAS Central curation tool (project)
+ - Finnish disease database (FINDIS) (project)
+ - Bacterial microarrays database (MOLGEN-IS) (publication)
+ - Human Metabolic Pathway Database (project, publication)
+
+If you think your project should be listed (differently) please let us know

@@ -11,7 +11,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
@@ -39,6 +42,7 @@ public class PlinkDownload extends EasyPluginController
 //	private AbstractRefInput<Measurement> measurements;
 	private ActionInput genPlink;
 	
+
 	@Override
 	public void reload(Database db)
 	{
