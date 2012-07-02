@@ -58,10 +58,24 @@ public class JDBCModelExtractor
 	{
 		Properties props = new Properties();
 		props.load(new FileInputStream("molgenis.properties"));
-		extract(props);
+		extractXml(props);
+	}
+	
+	public static String extractXml(MolgenisOptions options)
+	{
+		try
+		{
+			return toString(extractModel(options));
+		}
+		catch (JAXBException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 
-	public static String extract(MolgenisOptions options)
+	public static Model extractModel(MolgenisOptions options)
 	{
 		BasicDataSource data_src = new BasicDataSource();
 
@@ -71,10 +85,24 @@ public class JDBCModelExtractor
 		data_src.setPassword(options.db_password.trim());
 		data_src.setUrl(options.db_uri.trim());
 
-		return extract(data_src);
+		return extractModel(data_src);
 	}
 
-	public static String extract(Properties p)
+	public static String extractXml(Properties p)
+	{
+		try
+		{
+			return toString(extractModel(p));
+		}
+		catch (JAXBException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static Model extractModel(Properties p)
 	{
 		BasicDataSource data_src = new BasicDataSource();
 
@@ -84,11 +112,25 @@ public class JDBCModelExtractor
 		data_src.setPassword(p.getProperty("db_password").trim());
 		data_src.setUrl(p.getProperty("db_uri").trim());
 
-		return extract(data_src);
+		return extractModel(data_src);
 
 	}
 
-	private static String extract(BasicDataSource data_src)
+	private static String extractXml(BasicDataSource data_src)
+	{
+		try
+		{
+			return toString(extractModel(data_src));
+		}
+		catch (JAXBException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static Model extractModel(BasicDataSource data_src)
 	{
 		Model m = new Model();
 
@@ -367,10 +409,10 @@ public class JDBCModelExtractor
 			}
 
 			// TODO GUESS the type="mref"
-			// rule: any entity with two xref fields and optional autoid field
+			// rule: any entity that is not a subclass and that has maximum two xref fields and autoid field
 			// should be a mref
 			List<Entity> toBeRemoved = new ArrayList<Entity>();
-			for (Entity e : m.getEntities())
+			for (Entity e : m.getEntities()) if("".equals(e.getExtends()))
 			{
 
 				if (e.getFields().size() <= 3)
@@ -417,8 +459,8 @@ public class JDBCModelExtractor
 						}
 					}
 
-					// if valid mref, drop this entity and add mref field to
-					// entity
+					// if valid mref, drop this entity and add mref fields to
+					// the other entities. 
 					if (xrefs == 2 && (e.getFields().size() == 2 || idField != null))
 					{
 						// add mref on 'local' end
@@ -428,6 +470,7 @@ public class JDBCModelExtractor
 						{
 							localField.setName(e.getName());
 						}
+						
 						localField.setType(Field.Type.XREF_MULTIPLE);
 						localField.setXrefField(remoteEntity + "." + remoteEntityField);
 						localField.setMrefName(e.getName());
@@ -438,16 +481,22 @@ public class JDBCModelExtractor
 						// add mref to remote end
 						Entity remoteContainer = m.getEntity(remoteEntity);
 						Field remoteField = new Field();
-						if (remoteContainer.getField(e.getName()) == null)
-						{
-							remoteField.setName(e.getName());
-						}
 						remoteField.setType(Field.Type.XREF_MULTIPLE);
 						remoteField.setXrefField(localEntity + "." + localEntityField);
 						remoteField.setMrefName(e.getName());
 						// don't need to add local id as it is refering back
 						remoteField.setMrefLocalid(remoteIdField);
 						remoteField.setMrefRemoteid(localIdField);
+						
+						if (remoteContainer.getField(e.getName()) == null)
+						{
+							remoteField.setName(e.getName());
+						}
+						else
+						{
+							throw new RuntimeException("MREF creation failed: there is already a field "+remoteContainer.getName()+"."+e.getName());
+						}
+						
 						remoteContainer.getFields().add(remoteField);
 
 						// remove the link table as separate entity
@@ -460,7 +509,7 @@ public class JDBCModelExtractor
 
 			// logger.info(MolgenisLanguage.summarize(m));
 			logger.info(toString(m));
-			return toString(m);
+			return m;
 		}
 		catch (Exception e)
 		{

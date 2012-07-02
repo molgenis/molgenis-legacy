@@ -216,8 +216,23 @@ public class Field
 					return DATETIME;
 				case Types.NUMERIC:
 					return DECIMAL;
+				case Types.LONGVARBINARY:
+					return TEXT;	
 				default:
 				{
+					for(java.lang.reflect.Field f: java.sql.Types.class.getFields())
+					{
+						try
+						{
+							if( ((Integer)f.get(null)).equals(type))
+							{
+								logger.error("Unknown type: "+f.getName());
+								return UNKNOWN;
+							}
+						}
+						catch (Exception e){}
+					}
+					
 					logger.error("Unknown type: "+type);
 					return UNKNOWN;
 				}
