@@ -34,7 +34,7 @@ public class OWLFunction {
 	private HashMap<String, List<String>> classLabelToSynonyms = new HashMap<String, List<String>>();
 	private HashMap<String, String> synonymToClassLabel = new HashMap<String, String>();
 	private HashMap<String, OWLClass> labelToClass = new HashMap<String, OWLClass>();
-
+	private List<String> allTerms = new ArrayList<String>();
 
 	private HashMap<String, List<String>> expandedQueries = new HashMap<String, List<String>>();
 	private HashMap<String, String> variableFormula = new HashMap<String, String>();
@@ -82,7 +82,44 @@ public class OWLFunction {
 	public HashMap<String, List<String>> getClassLabelToSynonyms() {
 		return classLabelToSynonyms;
 	}
+	
+	public List<String> getAllTerms(){
+		
+		for(OWLClass cls : owlontology.getClassesInSignature()){
+			allTerms.add(getLabel(cls, owlontology));
+		}
+		return allTerms;
+	}
+	
+	public String getOntologyTermID(String ontologyTerm){
+		
+		OWLClass cls = labelToClass.get(ontologyTerm.toLowerCase());
+		
+		String owlClassID = cls.getIRI().toString().substring(ontologyIRI.length() - 2);
+		
+		return owlClassID;
+	}
+	
+	public void labelMapURI(){
+		
+		for (OWLClass cls : owlontology.getClassesInSignature()) {
 
+			OWLAnnotationProperty label = factory.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI());
+
+			String labelString = "";
+			// Get the annotations on the class that use the label property
+			for (OWLAnnotation annotation : cls.getAnnotations(owlontology, label)) {
+
+				if (annotation.getValue() instanceof OWLLiteral) {
+					OWLLiteral val = (OWLLiteral) annotation.getValue();
+					labelString = val.getLiteral().toLowerCase();
+					labelToClass.put(labelString.toLowerCase(), cls);
+				}
+			}
+		}
+		
+	}
+	
 	public void labelMapURI(List<String> listOfParameters, String... annotationProperty){
 
 		List<IRI> AnnotataionProperty = new ArrayList<IRI>();
@@ -354,7 +391,7 @@ public class OWLFunction {
 
 				if(!expandedQueries.containsKey(labelOfClass)){
 					expandedClassLabel = new ArrayList<String>();
-					expandedClassLabel.add(labelOfProperty + separtor + firstToken);
+					expandedClassLabel.add( labelOfProperty + separtor + firstToken);
 				}else{
 					expandedClassLabel = expandedQueries.get(labelOfClass);
 					if(!expandedClassLabel.contains(labelOfProperty + separtor + firstToken)){
@@ -593,5 +630,27 @@ public class OWLFunction {
 			}      
 		}
 		return listOfAnnotation;
+	}
+	
+	public List<String> getAnnotation(String classLabel, IRI annotationProperty)
+	{
+		List<String> listOfAnnotation = new ArrayList<String>();
+
+		OWLClass cls = labelToClass.get(classLabel.toLowerCase());
+
+		OWLAnnotationProperty synonymsAnnotationProperty = factory.getOWLAnnotationProperty(annotationProperty);
+
+		for (OWLAnnotation annotation : cls.getAnnotations(owlontology, synonymsAnnotationProperty)) {
+			if (annotation.getValue() instanceof OWLLiteral) {
+				OWLLiteral val = (OWLLiteral) annotation.getValue();
+				listOfAnnotation.add(val.getLiteral().toString());
+			}      
+		}
+		return listOfAnnotation;
+	}
+	
+	public String getOntologyIRI()
+	{
+		return ontologyIRI;
 	}
 }
