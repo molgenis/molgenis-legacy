@@ -56,7 +56,7 @@ import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.TextInput;
 import org.molgenis.matrix.MatrixException;
-
+import org.molgenis.matrix.Utils.Exporter;
 import org.molgenis.matrix.component.Column.ColumnType;
 import org.molgenis.matrix.component.general.MatrixQueryRule;
 import org.molgenis.matrix.component.interfaces.DatabaseMatrix;
@@ -969,30 +969,30 @@ public class MatrixViewer extends HtmlWidget
 		}
 	}
 
-//	private void exportAll(File file, Exporter<ObservationTarget, Measurement, ObservedValue> exporter)
-//			throws MatrixException {
-//		try {
-//			FileOutputStream os = new FileOutputStream(file);
-//			exporter.exportAll();
-//			os.flush();
-//			os.close();
-//			downloadLink = file.getName();
-//		} catch (Exception e1) {
-//			e1.printStackTrace();
-//			throw new MatrixException(e1);
-//		}
-//	}
+	private void exportAll(File file, Exporter<ObservationTarget, Measurement, ObservedValue> exporter)
+			throws MatrixException {
+		try {
+			FileOutputStream os = new FileOutputStream(file);
+			exporter.exportAll();
+			os.flush();
+			os.close();
+			downloadLink = file.getName();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			throw new MatrixException(e1);
+		}
+	}
 	
-//	private void exportVisible(String fileName, Exporter<ObservationTarget, Measurement, ObservedValue> exporter)
-//			throws MatrixException {
-//		try {
-//			exporter.exportVisible();
-//			downloadLink = fileName;
-//		} catch (Exception e1) {
-//			e1.printStackTrace();
-//			throw new MatrixException(e1);
-//		}
-//	}
+	private void exportVisible(String fileName, Exporter<ObservationTarget, Measurement, ObservedValue> exporter)
+			throws MatrixException {
+		try {
+			exporter.exportVisible();
+			downloadLink = fileName;
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			throw new MatrixException(e1);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public void downloadVisibleCsv(Database db, Tuple t) throws MatrixException, IOException
