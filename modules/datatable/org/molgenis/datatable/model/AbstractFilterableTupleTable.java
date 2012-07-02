@@ -21,33 +21,6 @@ public abstract class AbstractFilterableTupleTable implements FilterableTupleTab
 			this.rules = rules;
 		}
 	}
-
-	private Object getRuleValue(final Operator operator)
-	{
-		if (CollectionUtils.isEmpty(rules))
-		{
-			return -1;
-		}
-		else
-		{
-			final QueryRule rule = getRule(operator);
-			return rule == null ? -1 : rule.getValue();
-		}
-	}
-
-	private QueryRule getRule(final Operator operator)
-	{
-		final QueryRule rule = (QueryRule) CollectionUtils.find(rules, new Predicate()
-		{
-			@Override
-			public boolean evaluate(Object arg0)
-			{
-				return ((QueryRule) arg0).getOperator() == operator;
-			}
-		});
-		return rule;
-	}
-
 	@Override
 	public void setFilters(List<QueryRule> rules)
 	{
@@ -84,5 +57,32 @@ public abstract class AbstractFilterableTupleTable implements FilterableTupleTab
 		{
 			return getRule(Operator.SORTDESC);
 		}
+	}
+	
+	// Util
+	private Object getRuleValue(final Operator operator)
+	{
+		if (CollectionUtils.isEmpty(rules))
+		{
+			return -1;
+		}
+		else
+		{
+			final QueryRule rule = getRule(operator);
+			return rule == null ? -1 : rule.getValue();
+		}
+	}
+
+	private QueryRule getRule(final Operator operator)
+	{
+		final QueryRule rule = (QueryRule) CollectionUtils.find(rules, new Predicate()
+		{
+			@Override
+			public boolean evaluate(Object arg0)
+			{
+				return ((QueryRule) arg0).getOperator() == operator;
+			}
+		});
+		return rule;
 	}
 }
