@@ -39,6 +39,9 @@
           options.data = {};
         }
         options.data[options.jsonTermKey] = val;
+        if (options.dataCallback != null) {
+          options.data = options.dataCallback(options.data);
+        }
         success = options.success;
         options.success = function(data) {
           var items, selected_values;
@@ -54,9 +57,9 @@
             }
           });
           items = callback(data);
-          $.each(items, function(value, text) {
-            if ($.inArray(value + "-" + text, selected_values) === -1) {
-              return $("<option />").attr('value', value).html(text).appendTo(select);
+          $.each(items, function(key, item) {
+            if ($.inArray(item.value + "-" + item.text, selected_values) === -1) {
+              return $("<option />").attr('value', item.value).html(item.text).appendTo(select);
             }
           });
           select.trigger("liszt:updated");
