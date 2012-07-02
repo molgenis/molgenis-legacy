@@ -231,7 +231,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 			{
 				lowestRowIndex = rowIndices[i];
 			}
-			if(rowIndices[i] >= highestRowIndex)
+			if(rowIndices[i] >= highestRowIndex) //TODO: correct?
 			{
 				highestRowIndex = rowIndices[i];
 			}
@@ -247,7 +247,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 			{
 				lowestColIndex = colIndices[i];
 			}
-			if(colIndices[i] >= highestColIndex)
+			if(colIndices[i] >= highestColIndex) //TODO: correct?
 			{
 				highestColIndex = colIndices[i];
 			}
@@ -256,51 +256,59 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		int firstElement = (this.getNumberOfCols() * lowestRowIndex) + lowestColIndex;
 		int lastElement = (this.getNumberOfCols() * highestRowIndex) + highestColIndex;
 		
-		System.out.println("lowestRowIndex: " + lowestRowIndex);
-		System.out.println("lowestColIndex: " + lowestColIndex);
-		System.out.println("highestRowIndex: " + highestRowIndex);
-		System.out.println("highestColIndex: " + highestColIndex);
+//		System.out.println("lowestRowIndex: " + lowestRowIndex);
+//		System.out.println("lowestColIndex: " + lowestColIndex);
+//		System.out.println("highestRowIndex: " + highestRowIndex);
+//		System.out.println("highestColIndex: " + highestColIndex);
+//		
+//		System.out.println("firstElement: " + firstElement);
+//		System.out.println("lastElement: " + lastElement);
 		
-		System.out.println("firstElement: " + firstElement);
-		System.out.println("lastElement: " + lastElement);
+		//int howManyBytesToRead = lastElement - firstElement;
 		
-		//516594840 = 516 meg
-
+		int howManyBytesToRead = -1;
 		
-//		raf.seek(this.getEndOfElementsPointer()-8);
-//		byte[] read = new byte[8];
-//		raf.read(read);
-//		System.out.println("READ: " + byteArrayToDoubles(read)[0]);
-		
-		long halfOfFreeMem = (Runtime.getRuntime().freeMemory()/2);
-		long totalElementSize = this.getEndOfElementsPointer() - this.getStartOfElementsPointer();
-		
-		if(halfOfFreeMem > totalElementSize)
+		if(this.getData().getValueType().equals("Decimal"))
 		{
-			System.out.println("enough memory to read complete file");
+			howManyBytesToRead = (lastElement - firstElement) * 8;
 		}
 		else
 		{
-			long sizeOfOneRow = (totalElementSize/this.getNumberOfRows()); //note: this is an estimation for variable text length
-
-			if(halfOfFreeMem > sizeOfOneRow)
+			if(this.getTextElementLength() != 0)
 			{
-				System.out.println("enough memory ("+halfOfFreeMem+") to hold one row ("+sizeOfOneRow+")");
-				
-				long howMany = halfOfFreeMem / sizeOfOneRow;
-				System.out.println("--> in fact, " + howMany + " rows will fit in memory at once ("+((((double)howMany)/((double)this.getNumberOfRows()))*100)+"% of total)");
-				
-				if(howMany > this.getNumberOfRows())
-				{
-					System.out.println("that means we can get everything (ERROR, file didn't fit at first?!?!)");
-				}
-
+				howManyBytesToRead = (lastElement - firstElement) * this.getTextElementLength();
 			}
 			else
 			{
-				System.out.println("not enough memory: must seek for each col element");
+				howManyBytesToRead = (int) (this.textDataElementLenghtsCumulative[lastElement] - this.textDataElementLenghtsCumulative[firstElement]); //TODO: correct?
 			}
 		}
+		System.out.println("need to get " + howManyBytesToRead + " bytes");
+		
+		long halfOfFreeMem = (Runtime.getRuntime().freeMemory()/2);
+		
+		
+
+		
+		//long totalElementSize = this.getEndOfElementsPointer() - this.getStartOfElementsPointer();
+		
+		double readActions = 1;
+		if(halfOfFreeMem > howManyBytesToRead)
+		{
+			System.out.println("enough memory to read complete chunk");
+		}
+		else
+		{
+			readActions = (double)howManyBytesToRead/(double)halfOfFreeMem;
+		}
+		
+		System.out.println("need to read " + readActions + " times using " + halfOfFreeMem + " bytes of memory");
+		
+		//perform read actions
+		//figure out if we are going to retrieve a requested element by performing this action
+		//if not: skip RAF to the next element to be read
+		//smart when: getting 1 column from a file with very long rows
+		//or when getting e.g. the first and last row of a big file
 		
 		return null;
 	}
