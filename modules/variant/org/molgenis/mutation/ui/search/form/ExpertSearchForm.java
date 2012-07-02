@@ -6,6 +6,7 @@ import java.util.List;
 import org.molgenis.framework.ui.html.ActionInput;
 import org.molgenis.framework.ui.html.Container;
 import org.molgenis.framework.ui.html.HiddenInput;
+import org.molgenis.framework.ui.html.HtmlInput;
 import org.molgenis.framework.ui.html.IntInput;
 import org.molgenis.framework.ui.html.SelectInput;
 import org.molgenis.framework.ui.html.TextLineInput;
@@ -75,7 +76,39 @@ public class ExpertSearchForm extends Container
 		((ActionInput) this.get("findMutations")).setTooltip("Search");
 		((ActionInput) this.get("findMutations")).setButtonValue("Search");
 	}
-	
+
+	@Override
+	public String toHtml()
+	{
+		StringBuffer buf = new StringBuffer();
+		
+		buf.append("<tr>");
+
+		for (int i = 0; i < this.getInputs().size(); ++i)
+		{
+			HtmlInput input = this.getInputs().get(i);
+
+			buf.append("<td>");
+			buf.append(input.getLabel());
+			buf.append("</td><td>");
+			buf.append(input.toHtml());
+			buf.append("</td>");
+			
+			if (i % 2 == 1)
+			{
+				buf.append("</tr>\n");
+				buf.append("<tr>");
+			}
+		}
+		
+		if (this.getInputs().size() % 2 == 1)
+		{
+			buf.append("</tr>\n");
+		}
+		
+		return buf.toString();
+	}
+
 	public void setSelect(String select)
 	{
 		

@@ -1,6 +1,7 @@
 package generic;
 
 import java.io.File;
+import org.apache.commons.io.FileUtils;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -177,7 +178,7 @@ public class JavaCompiler extends CommandExecutor{
       }
 	  
       File[] files = fromfp.listFiles();
-      FileUtils.writeInJar(zos,files,"",true);
+      generic.FileUtils.writeInJar(zos,files,"",true);
       zos.close();
       System.out.println("Build a JAR: " + jarfilepath);
 	}catch(Exception e){
@@ -188,18 +189,18 @@ public class JavaCompiler extends CommandExecutor{
 	public void run() {
 		if(!tocompile.active)return;
 		File f = new File(tocompile.loc_output);
-		FileUtils.deleteDirectory(f);
+		FileUtils.deleteQuietly(f);
 		f.mkdirs();
 		for(String location : tocompile.loc_class){
-			FileUtils.unJar(location, tocompile.loc_output, false);	
+			generic.FileUtils.unJar(location, tocompile.loc_output, false);	
 		}
 		super.run();
 		if(tocompile.packToJar){
 			if(tocompile.isRunnableJar()){
-				FileUtils.createManifestFile(tocompile.loc_output, tocompile.mainClass,"Danny Arends");
+				generic.FileUtils.createManifestFile(tocompile.loc_output, tocompile.mainClass,"Danny Arends");
 			}
 			toJarFile(tocompile.getJarName());
-			FileUtils.deleteDirectory(f);
+			FileUtils.deleteQuietly(f);
 		}
 	}
 	

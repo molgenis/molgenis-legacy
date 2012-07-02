@@ -27,17 +27,17 @@ public class LibraryLaneDecorator extends MapperDecorator<LibraryLane>
 		return super.update(entities);
 	}
 
-	private void generateIdentifiers(List<LibraryLane> entities)
+	public void generateIdentifiers(List<LibraryLane> entities)
 	{
 		for (LibraryLane e : entities)
 		{
 			if (e.getBarcode_Name() != null)
 			{
-				e.setIdentifier(e.getFlowcell_Identifier() + "_L" + e.getLane() + "_" + e.getBarcode_Name());
+				e.setIdentifier(e.getFlowcell_Identifier() + "_L" + e.getLane() + "_" + e.getBarcode_Name() + "_" + e.getSample_Identifier());
 			}
 			else
 			{
-				e.setIdentifier(e.getFlowcell_Identifier() + "_L" + e.getLane());
+				e.setIdentifier(e.getFlowcell_Identifier() + "_L" + e.getLane() + "_" + e.getSample_Identifier());
 			}
 		}
 	}

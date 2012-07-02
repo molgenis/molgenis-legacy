@@ -149,8 +149,8 @@ else
 		-eval:eval,VCF ${sample}.concordance.q20.dp10.vcf \
 		-comp:comp_immuno,VCF ${sample}.genotypeArray.updated.header.vcf \
 		-o ${sample}.concordance.q20.dp10.eval \
-		-R ${resdir}/${genome}/indices/human_g1k_v37.fa \
-		-D:dbSNP,VCF ${resdir}/${genome}/dbsnp/dbsnp_132.b37.excluding_sites_after_129.vcf \
+		-R ${indexfile} \
+		-D:dbSNP,VCF ${dbsnpexsitesafter129vcf} \
 		-EV GenotypeConcordance
 	
 		##Create concordance output file with header
@@ -216,8 +216,8 @@ else
 		-eval:eval,VCF ${sample}.concordance.q20.dp10.vcf \
 		-comp:comp_immuno,VCF ${sample}.genotypeArray.updated.header.vcf \
 		-o ${sample}.concordance.q20.dp10.eval \
-		-R ${resdir}/${genome}/indices/human_g1k_v37.fa \
-		-D:dbSNP,VCF ${resdir}/${genome}/dbsnp/dbsnp_132.b37.excluding_sites_after_129.vcf \
+		-R ${indexfile} \
+		-D:dbSNP,VCF ${dbsnpexsitesafter129vcf} \
 		-EV GenotypeConcordance
 	
 		##Create concordance output file with header
