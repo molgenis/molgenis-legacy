@@ -169,6 +169,10 @@ public class Molgenis {
         this(new MolgenisOptions(propertiesFile), generatorsToUse);
     }
 
+	public Molgenis(String propertiesFile) throws Exception {
+        this(new MolgenisOptions(propertiesFile), new Class[] {});
+    }
+
     public Molgenis()
     {
     }
