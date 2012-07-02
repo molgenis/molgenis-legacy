@@ -1,3 +1,41 @@
+## Build folders
+bin/
+build/
+tmp/
+hsqldb/
+handwritten/
+
+## Always ignore these
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+
+## Netbeans private
+nbproject/private/
+
+## General java
+*.class
+
+## Other ignored files
+*.so
+*.si
+*.dll
+*.o
+*.tmp
+tmp*
+log*
+.classpath
+/.externalToolBuilders
+/.settings
+*.svn
+*.orig
+*.java~
+/bin
+/test-output
+/generated
+/target
+logger.out*
 /dist
-/build
 /generated/java

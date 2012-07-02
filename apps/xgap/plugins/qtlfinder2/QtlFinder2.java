@@ -543,7 +543,7 @@ public class QtlFinder2 extends PluginModel<Entity>
 
 		MakeRPlot m = new MakeRPlot();
 		
-		String plotTitle = "Results for hits"; //this.model.getQuery()
+		String plotTitle = "hits"; //this.model.getQuery()
 		
 		File plot = m.wormqtl_MultiPlot(tmpData, plotWidth, height, plotTitle, chromosomes);
 		File cisTransplot = m.wormqtl_CisTransPlot(tmpData, plotWidth, plotHeight, plotTitle, chromosomes);
