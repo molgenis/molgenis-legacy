@@ -56,7 +56,7 @@ public class TestEntityTable
 		Assert.assertEquals("name", table.getColumns().get(1).getName());
 
 		//check count
-		Assert.assertEquals(table.getRowCount(), size);
+		Assert.assertEquals(table.getCount(), size);
 		
 		//check rows
 		int i = 1;
@@ -76,11 +76,25 @@ public class TestEntityTable
 		((EntityTable)table).getFilters().add(new QueryRule("name", Operator.EQUALS, "individual2"));
 		
 		//check count
-		Assert.assertEquals(table.getRowCount(), 1);
+		Assert.assertEquals(table.getCount(), 1);
 		
 		//check rows
 		Assert.assertEquals(table.getRows().get(0).getString("name"), "individual2");
 		
+	}
+	
+	@Test
+	public void testLimitOffset() throws TableException
+	{
+		TupleTable table = new EntityTable(db, Individual.class);
+		
+		table.setLimitOffset(3, 2);
+		
+		Assert.assertEquals(table.getCount(), 51);
+
+		Assert.assertEquals(table.getRows().size(), 3);
+		
+		Assert.assertEquals(table.getRows().get(0).getString("name"), "individual3");
 	}
 	
 	@Test
@@ -91,7 +105,7 @@ public class TestEntityTable
 		((EntityTable)table).getFilters().add(new QueryRule(Operator.LIMIT, 2));
 		
 		//check count (this bypasses the limit rule)
-		Assert.assertEquals(table.getRowCount(), size);
+		Assert.assertEquals(table.getCount(), size);
 		
 		//check limit (so shown in result size only)
 		Assert.assertEquals(table.getRows().size(), 2);

@@ -56,7 +56,7 @@
 	<tr>
 		<td width="290" align="right">
 			<select class=" ui-widget-content ui-corner-all" id="Phenotype_select" name="dataTypeSelect"  style="width:220px;" name="dataTypeSelect">
-				<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All phenotypes (${model.annotationTypeAndNr[allDataTypes]})</option>
+				<option value=${allDataTypes} <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == allDataTypes>selected="selected"</#if>>All data (${model.annotationTypeAndNr[allDataTypes]})</option>
 				<#list model.annotationTypeAndNr?keys as key>
 					<#if key != allDataTypes>
 						<option value="${key}" <#if model.selectedAnnotationTypeAndNr?? && model.selectedAnnotationTypeAndNr == key>selected="selected"</#if>>${key} (${model.annotationTypeAndNr[key]})</option>
@@ -89,7 +89,7 @@
 <#if model.shoppingCart?? && model.shoppingCart?size gt 0>
 	
 
-	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View hits (${model.hits?size})</button></div>
 
 	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 	
@@ -119,7 +119,7 @@
 	</#list>
 <#else>
 
-	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View hits (${model.hits?size})</button></div>
 
 	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 	
@@ -501,7 +501,7 @@
 
 	<#if model.multiplot??>
 	
-		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View hits (${model.hits?size})</button></div>
 
 		<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 		
@@ -513,7 +513,7 @@
 		
 
 	<table cellpadding="30"><tr><td>
-		<h2>Results for "<#if model.query??>${model.query}</#if>":</h2><br>
+		<h2>Results for my selected hits:</h2><br>
 		
 		<table>
 			<tr>
@@ -630,7 +630,7 @@
 	</#list>
 	
 	
-	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View search results (${model.hits?size})</button></div>
+	<div class="buttons"><button style="background: #ccc" type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoSearch'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View hits (${model.hits?size})</button></div>
 
 	<div class="buttons"><button type="submit" onclick="document.forms.${screen.name}.__action.value = 'gotoCart'; document.forms.${screen.name}.submit();"><img src="generated-res/img/listview.png" alt=""/> View cart (${model.shoppingCart?keys?size})</button></div>
 	
@@ -659,9 +659,9 @@
 	
 	<#if shopped gt 0>
 		<#if shopped == model.hits?size>
-			<h4>All ${shopped} search results are currently in your cart.</h4>
+			<h4>All ${shopped} hits are currently in your cart.</h4>
 		<#else>
-			<h4>Please note: ${shopped} search results are not shown because they are already in your cart.</h4>
+			<h4>Please note: ${shopped} hits are not shown because they are already in your cart.</h4>
 		</#if>
 	</#if>
 	

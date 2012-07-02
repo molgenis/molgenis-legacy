@@ -45,15 +45,29 @@ public class TestFilterableTupleTable
 		}
 
 		@Override
-		public int getRowCount() throws TableException
+		public int getCount() throws TableException
 		{
-			return d_nested.getRowCount();
+			return d_nested.getCount();
 		}
 
 		@Override
 		public void close() throws TableException
 		{
 			d_nested.close();
+		}
+
+		@Override
+		public void setVisibleColumns(List<String> fieldNames)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public List<Field> getVisibleColumns()
+		{
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
@@ -69,7 +83,7 @@ public class TestFilterableTupleTable
 		assertEquals(table.getLimit(), -1);
 		assertEquals(table.getOffset(), -1);
 		assertEquals(table.getSortRule(), null);
-		assertEquals(table.getRowCount(), 5);
+		assertEquals(table.getCount(), 5);
 	}
 	
 	@Test

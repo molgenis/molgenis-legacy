@@ -1,6 +1,6 @@
 package org.molgenis.datatable.model;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -10,27 +10,31 @@ import org.molgenis.framework.db.QueryRule.Operator;
 
 public abstract class AbstractFilterableTupleTable implements FilterableTupleTable
 {
-	protected List<QueryRule> rules = Collections.emptyList();
+	private List<QueryRule> filters = new ArrayList<QueryRule>();
 
 	protected AbstractFilterableTupleTable()
-	{}
-	
+	{
+	}
+
 	protected AbstractFilterableTupleTable(List<QueryRule> rules)
 	{
-		if(rules != null) {
-			this.rules = rules;
+		if (rules != null)
+		{
+			this.filters = rules;
 		}
 	}
+
 	@Override
 	public void setFilters(List<QueryRule> rules)
 	{
-		this.rules = rules;
+		if(rules == null) throw new NullPointerException("rules cannot be null");
+		this.filters = rules;
 	}
 
 	@Override
 	public List<QueryRule> getFilters()
 	{
-		return rules;
+		return filters;
 	}
 
 	@Override
@@ -59,10 +63,45 @@ public abstract class AbstractFilterableTupleTable implements FilterableTupleTab
 		}
 	}
 	
-	// Util
+
+	@Override
+	public void setLimit(int limit)
+	{
+		if(this.getRule(Operator.LIMIT) != null)
+		{
+			this.getRule(Operator.LIMIT).setValue(limit);
+		}
+		else
+		{
+			this.getFilters().add(new QueryRule(Operator.LIMIT, limit));
+		}
+	}
+
+	@Override
+	public void setOffset(int offset)
+	{
+		if(this.getRule(Operator.OFFSET) != null)
+		{
+			this.getRule(Operator.OFFSET).setValue(offset);
+		}
+		else
+		{
+			this.getFilters().add(new QueryRule(Operator.OFFSET, offset));
+		}
+	}
+	
+	@Override
+	public void setLimitOffset(int limit, int offset)
+	{
+		this.setLimit(limit);
+		this.setOffset(offset);
+	}
+	
+	// UTIL
+	
 	private Object getRuleValue(final Operator operator)
 	{
-		if (CollectionUtils.isEmpty(rules))
+		if (CollectionUtils.isEmpty(filters))
 		{
 			return -1;
 		}
@@ -75,7 +114,7 @@ public abstract class AbstractFilterableTupleTable implements FilterableTupleTab
 
 	private QueryRule getRule(final Operator operator)
 	{
-		final QueryRule rule = (QueryRule) CollectionUtils.find(rules, new Predicate()
+		final QueryRule rule = (QueryRule) CollectionUtils.find(filters, new Predicate()
 		{
 			@Override
 			public boolean evaluate(Object arg0)
@@ -84,5 +123,5 @@ public abstract class AbstractFilterableTupleTable implements FilterableTupleTab
 			}
 		});
 		return rule;
-	}
+	}	
 }

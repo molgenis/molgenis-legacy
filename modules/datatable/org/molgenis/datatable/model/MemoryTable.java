@@ -11,11 +11,10 @@ import org.molgenis.util.Tuple;
 /**
  * Wrap a List<Tuple> into a TupleTable
  */
-public class MemoryTable implements TupleTable
+public class MemoryTable extends AbstractTupleTable
 {
 	private List<Field> columns = new ArrayList<Field>();
 	private List<Tuple> rows = new ArrayList<Tuple>();
-
 	/**
 	 * Construct from list of tuples. Field will be derived based on column
 	 * names and value type of first tuple. Otherwise field type will be String.
@@ -45,24 +44,44 @@ public class MemoryTable implements TupleTable
 	@Override
 	public List<Tuple> getRows()
 	{
-		return this.rows;
+		if (getLimit() > 0 || getOffset() > 0)
+		{
+			List<Tuple> result = new ArrayList<Tuple>();
+			
+			int count = 0;
+			int index = 1;
+			for(Tuple row: this.rows)
+			{
+				if(index > getOffset())
+				{
+					result.add(row);
+					count++;
+					if(count >= getLimit()) break;
+				}
+				index++;
+			}
+			return result;
+		}
+		else
+		{
+			return this.rows;
+		}
 	}
 
 	@Override
 	public Iterator<Tuple> iterator()
 	{
-		return this.rows.iterator();
+		return this.getRows().iterator();
 	}
 
 	@Override
 	public void close()
 	{
-		// TODO Auto-generated method stub
-		
+		// nothing todo
 	}
 
 	@Override
-	public int getRowCount() throws TableException
+	public int getCount() throws TableException
 	{
 		return rows.size();
 	}

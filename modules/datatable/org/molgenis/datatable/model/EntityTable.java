@@ -7,6 +7,7 @@ import java.util.List;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
 import org.molgenis.util.SimpleTuple;
@@ -24,8 +25,8 @@ public class EntityTable extends AbstractFilterableTupleTable
 	private Class<? extends Entity> entityClass;
 
 	// copy of the fields from meta database
-	private List<Field> fields;
-	
+	private List<Field> columns;
+
 	/**
 	 * Constructor
 	 * 
@@ -51,13 +52,12 @@ public class EntityTable extends AbstractFilterableTupleTable
 	@Override
 	public List<Field> getColumns() throws TableException
 	{
-		if (fields != null) {
-			return fields;
-		}
+		if (columns != null) return columns;
+
 		try
 		{
-			fields = db.getMetaData().getEntity(entityClass.getSimpleName()).getAllFields();
-			return fields;
+			columns = db.getMetaData().getEntity(entityClass.getSimpleName()).getAllFields();
+			return columns;
 		}
 		catch (Exception e)
 		{
@@ -70,12 +70,14 @@ public class EntityTable extends AbstractFilterableTupleTable
 	{
 		try
 		{
-			final List<? extends Entity> entities = rules.isEmpty() ?
-				db.find(entityClass) :
-				db.find(entityClass, rules.toArray(new QueryRule[rules.size()]));
-			
-			final List<Tuple> result = new ArrayList<Tuple>();
-			for (final Entity e : entities)
+			List<? extends Entity> entities;
+			if (getFilters().size() > 0) entities = db.find(entityClass, getFilters().toArray(new QueryRule[getFilters().size()]));
+			else
+				entities = db.find(entityClass);
+
+			List<Tuple> result = new ArrayList<Tuple>();
+			for (Entity e : entities)
+
 			{
 				final Tuple t = new SimpleTuple();
 				for (Field f : getColumns())
@@ -95,7 +97,7 @@ public class EntityTable extends AbstractFilterableTupleTable
 	@Override
 	public Iterator<Tuple> iterator()
 	{
-		//should be optimized
+		// should be optimized
 		return this.getRows().iterator();
 	}
 
@@ -105,17 +107,46 @@ public class EntityTable extends AbstractFilterableTupleTable
 	}
 
 	@Override
-	public int getRowCount() throws TableException
+	public int getCount() throws TableException
 	{
+		// should get rid of limit clause!
 		try
 		{
-			return rules.isEmpty() ?
-				db.count(entityClass):
-				db.count(entityClass, rules.toArray(new QueryRule[rules.size()]));
+			if (getFilters().size() > 0) return db.count(entityClass, getFilters().toArray(new QueryRule[getFilters().size()]));
+			else
+				return db.count(entityClass);
 		}
 		catch (DatabaseException e)
 		{
 			throw new TableException(e);
 		}
 	}
+
+	public Database getDb()
+	{
+		return db;
+	}
+
+	public void setDb(Database db)
+	{
+		this.db = db;
+	}
+
+	@Override
+	public void setVisibleColumns(List<String> fieldNames)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Field> getVisibleColumns()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	
+
 }

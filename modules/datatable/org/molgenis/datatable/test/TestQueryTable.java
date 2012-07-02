@@ -76,10 +76,9 @@ public class TestQueryTable
 		selectMap.put("City.Name", city.get(new StringPath("name")));
 		selectMap.put("ratio", cityPopulationRatio);
 		List<Field> columns = Arrays.asList(countryName, cityName, ratio);
-		table = new QueryTable(query, selectMap, columns);
+		table = new QueryTable(query, selectMap, columns);		
 		
-		
-		Assert.assertEquals(table.getRowCount(), 4079);
+		Assert.assertEquals(table.getCount(), 4079);
 		// test top 10 ratios (query is limit 10)
 		// 
 		// 	Singapore					Singapore		1.1264

@@ -1,6 +1,5 @@
 package org.molgenis.datatable.test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.molgenis.datatable.model.TableException;
@@ -45,5 +44,20 @@ public class TestMemoryTable
 			
 			i=i+1;
 		}
+	}
+	
+	@Test
+	public void testLimitOffset() throws TableException
+	{
+		table.setLimitOffset(2, 3);
+		
+		//limit == 2
+		Assert.assertEquals(table.getRows().size(), 2);
+		
+		//offset = 3, so we skip first1-first3 and expect first4
+		Assert.assertEquals(table.getRows().get(0).getString("firstName"), "first4");
+		
+		//remove filters again
+		table.setLimitOffset(0, 0);
 	}
 }

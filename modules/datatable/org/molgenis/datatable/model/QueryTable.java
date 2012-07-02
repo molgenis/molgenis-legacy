@@ -104,7 +104,7 @@ public class QueryTable implements TupleTable
 	}
 
 	@Override
-	public int getRowCount() throws TableException
+	public int getCount() throws TableException
 	{
 		return (int) query.count();
 	}
@@ -122,5 +122,40 @@ public class QueryTable implements TupleTable
 	public LinkedHashMap<String, SimpleExpression<? extends Object>> getSelect()
 	{
 		return select;
+	}
+
+	@Override
+	public void setLimitOffset(int limit, int offset)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getLimit()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setLimit(int limit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getOffset()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setOffset(int offset)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

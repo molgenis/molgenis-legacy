@@ -268,7 +268,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			
 
 			int rowCount = -1;
-			rowCount = tupleTable.getRowCount();
+			rowCount = tupleTable.getCount();
 			tupleTable.close(); // Not nice! We should fix this!
 			int totalPages = 1;
 			totalPages = (int) Math.ceil(rowCount / limit);

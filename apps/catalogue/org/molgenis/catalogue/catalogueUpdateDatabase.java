@@ -152,10 +152,5 @@ public class catalogueUpdateDatabase
 		mp = new MolgenisPermission();
 		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.PredictionModelSelectionPlugin")).get(0);
 		db.remove(mp);
-		
-		//MySelection
-		mp = new MolgenisPermission();
-		mp = db.find(MolgenisPermission.class, new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "app.ui.MySelectionsFormController")).get(0);
-		db.remove(mp);
 	}
 }
