@@ -64,7 +64,7 @@ the <a href="http://www.nbic.nl">NBIC/biobanking task force</a>,
 <h2>&nbsp;</h2>
 <div style="line-height: 200%; background-color: #DCE3F7; height: 100%;">
 <b>Using this catalogue:</b>
-<ul><li><a href="molgenis.do?__target=main&select=CatalogueTreePlugin">Search</a> and select variables.</li>
+<ul><li><a href="molgenis.do?__target=main&select=catalogueTreePlugin">Search</a> and select variables.</li>
 <li><a href="molgenis.do?__target=main&select=investigation">Browse</a> studies and their protocol details.</li>
 <li><a href="molgenis.do?__target=main&select=MySelections">Create</a> personal variable selections.</li>
 <li><a href="molgenis.do?__target=main&select=Request">Request</a> a data set.</li>
