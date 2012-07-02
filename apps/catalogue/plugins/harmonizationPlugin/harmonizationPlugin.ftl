@@ -15,7 +15,6 @@
 
 </style>
 
-
 <script type="text/javascript">
 function addingTable(tableId){
 	
@@ -38,28 +37,20 @@ function insertTable(tableId){
 	
 }
 
-function refreshByHits(){
-	
-	var hits = document.getElementById('changeHits').value;
-	var divForTable = document.getElementById('details');
-	var tables = divForTable.getElementsByTagName('table');	
-	
-	for(var i = 0; i < tables.length; i++){
+function refreshByHits () {
+  
+	$('#details >table').each(function(i) {
 		
-		var eachTable = tables[i];
-		
-		var rowElements = eachTable.getElementsByTagName('tr');
-		
-		for(var j = 0; j < rowElements.length; j++){
-			
-			if(j <= hits){
-				rowElements[j].style.display = "table-row";
+		$('>tbody >tr',this).each(function(j){
+			if(j <= $('#changeHits').val()){
+				$(this).show();
 			}else{
-				rowElements[j].style.display = "none";
-			}
-		}
-	}
+				$(this).hide();
+			}	
+		});
+	});
 }
+
 
 function setValidationStudy(validationStudyName){
 	
@@ -95,7 +86,7 @@ function checkFileExisting(){
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
-	<input type="hidden" name="DemoName" id="DemoName" value="%= demoName %">
+	<input type="hidden" name="validationStudyName" id="validationStudyName" value="${screen.getValidationStudyName()}">
 	
 <!-- this shows a title and border -->
 
@@ -116,11 +107,8 @@ function checkFileExisting(){
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-				
-				<#if screen.getDevelopingAlgorithm() == true>
-					
+				<#if screen.getDevelopingAlgorithm() == true>	
 					Please choose an ontology file and algorithm will be automatically generated </br></br>
-					
 					<table width="100%">
 						<tr>
 							<td class="box-body" style="width:50%;">
@@ -146,8 +134,7 @@ function checkFileExisting(){
 								<p align="justify" style="font-family:arial;margin-left:20px;font-size:12px;">${screen.getMessageForAlgorithm()}</p>
 							</td>
 						</tr>
-					</table>
-					
+					</table>	
 				<#elseif screen.getManualMatch() == true>
 					<table border=1 width="100%" height="600px">
 						<tr height="50px">
@@ -162,20 +149,45 @@ function checkFileExisting(){
 								and search this term in <b>${screen.getValidationStudyName()}</b> study</br>
 								<select name="selectParameter" id="selectParameter"> 
 									<#list screen.getListOfParameters() as parameter>
-										<option value="${parameter}">${parameter}</option>			
+										<option value="${parameter}" <#if screen.getSelectedManualParameter()??><#if screen.getSelectedManualParameter() == parameter> selected="selected"</#if></#if>>${parameter}</option>			
+									</#list>
+									
+									<#list screen.arrayInvestigations as inv>
+										<#assign invName = inv.name>
+											<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
 									</#list>
 								</select>
 								<script>$('#selectParameter').chosen();</script>
 								</br></br>1.You can either search for the term itself and it will become the searching tokens
 								</br></br>2.You can also give the definition for the term and this definition will become your searching tokens 
 								</br></br>Example: For term "Age", you can directly search Age or search "How old are you?"
-								</br></br>Define your term here: <input type="text" name="userDefinedQuery" size="25" value="">
-								
-								</br></br><input type="submit" name="saveManualMapping" value="save manual mapping" onclick="__action.value='saveManualMapping';"/>
+								</br></br>Define your term here: <input type="text" name="userDefinedQuery" size="25" value="<#if screen.getUserDefinedQuery()??>${screen.getUserDefinedQuery()}</#if>">
+								</br></br>You can set your cut off value (%) here:  <input type="text" name="cutOffValue" size="5"> e.g. 50
+								</br></br><input type="submit" style="font-size: larger" name="customizedSearch" value="customized search" onclick="__action.value='customizedSearch';"/></br></br>
+								<table>
+									<tr>
+										<td>
+											</br><input type="submit" style="font-size: small" name="addToExistingMapping" value="add to existing mapping" onclick="__action.value='addToExistingMapping';"/>
+										</td>
+										<td>
+											</br><input type="button" style="font-size: small" name="saveManualMapping" value="save manual mapping" onclick="refreshByHits();"/>
+										</td>
+									</tr>
+								</table>
 							</font></td>
 							<td><font size="3"><i>
-								</br>The matchings will be done using Levenshtein string matching algorithms. 
+								</br>The matchings will be done using Levenshtein string matching algorithms.
 								</br></br>The mapping result will be shown here!
+								</br><div id="tableDisplay">
+									<#if screen.getManualMappingResultTable()??>
+										<#list screen.getManualMappingResultTable() as eachMapping>
+											${eachMapping}
+										</#list>
+									</#if>
+									<#list screen.getExecutiveScript() as executiveScript>
+										${executiveScript}
+									</#list>
+								</div>
 							</i></font></td>
 						</tr>
 					</table>
@@ -280,7 +292,6 @@ function checkFileExisting(){
 								
 							</tr>
 						</table>
-						
 						<#list screen.getListOfParameters() as parameter>
 							<script>
 								addingTable('${parameter}');

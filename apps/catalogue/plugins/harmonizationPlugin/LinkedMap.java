@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.molgenis.pheno.Measurement;
+
 public class LinkedMap {
 	
 	private List<LinkedInformation> links = new ArrayList<LinkedInformation>();
@@ -17,24 +19,24 @@ public class LinkedMap {
 		return links;
 	}
 	
-	public void add(String expandedQuery, String matchedItem, Double similarity) throws Exception{
+	public void add(String expandedQuery, String matchedItem, Double similarity, String measurementName) throws Exception{
 		
-		if(expandedQuery == null || matchedItem == null || similarity == null)
+		if(expandedQuery == null || matchedItem == null || similarity == null || measurementName == null)
 			throw new Exception ("Parameters have to be not null!");
 			
 		if(expandedQuery.equals("") || matchedItem.equals(""))
 			throw new Exception ("Parameters have to be not empty");
 		
-		LinkedInformation inf = new LinkedInformation(expandedQuery, matchedItem, similarity);
+		LinkedInformation inf = new LinkedInformation(expandedQuery, matchedItem, similarity, measurementName);
 		
-		if(uniqueElements.containsKey(inf.expandedQuery)){
+		if(uniqueElements.containsKey(inf.expandedQuery + measurementName)){
 			
-			if(similarity > uniqueElements.get(inf.expandedQuery).similarity){
-				uniqueElements.get(inf.expandedQuery).similarity = similarity;
+			if(similarity > uniqueElements.get(inf.expandedQuery + measurementName).similarity){
+				uniqueElements.get(inf.expandedQuery + measurementName).similarity = similarity;
 			}
 		}else{
 			links.add(inf);
-			uniqueElements.put(inf.expandedQuery, inf);
+			uniqueElements.put(inf.expandedQuery + measurementName, inf);
 		}
 	}
 	

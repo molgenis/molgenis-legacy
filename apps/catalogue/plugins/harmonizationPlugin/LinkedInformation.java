@@ -1,6 +1,10 @@
 package plugins.harmonizationPlugin;
 
+import org.molgenis.pheno.Measurement;
+
 public class LinkedInformation implements Comparable<LinkedInformation>{
+	
+	public String measurementName = "";
 	
 	public String name = "";
 	
@@ -10,7 +14,7 @@ public class LinkedInformation implements Comparable<LinkedInformation>{
 	
 	public Double similarity = 0.0;
 	
-	public LinkedInformation(String expandedQuery, String matchedItem, Double similarity) throws Exception{
+	public LinkedInformation(String expandedQuery, String matchedItem, Double similarity, String measurementName) throws Exception{
 		
 		if(expandedQuery == null || matchedItem == null || similarity == null)
 			throw new Exception ("Parameters have to be not null!");
@@ -22,6 +26,7 @@ public class LinkedInformation implements Comparable<LinkedInformation>{
 		this.matchedItem = matchedItem;
 		this.similarity = similarity;
 		this.name = expandedQuery + matchedItem;
+		this.measurementName = measurementName;
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import gcc.catalogue.MappingMeasurement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,7 +23,6 @@ import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
-import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
@@ -42,6 +40,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	private String selectedPredictionModel = null;
 	private String selectedField = null;
 	private String messageForAlgorithm = "";
+	private String baseLineData = "";
+	private String selectedManualParameter = null;
 	private boolean isSelectedInv = false;
 	private boolean developingAlgorithm = false;
 	private boolean manualMatch = false;
@@ -55,9 +55,11 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	private HashMap<String, List<String>> expandedQueries = new HashMap<String, List<String>>();
 	private LevenshteinDistanceModel model = new LevenshteinDistanceModel();
 	private HashMap<String, String> parameterWithHtmlTable = new HashMap<String, String>();
-	private HashMap<String, String> questionsAndIdentifier = new HashMap<String, String>();
+	private List<String> manualMappingResultTable = new ArrayList<String>();
+	//private HashMap<String, Measurement> questionsAndIdentifier = new HashMap<String, Measurement>();
+	private List<Measurement> measurementsInStudy = new ArrayList<Measurement>();
 	private HashMap<String, String> identifierAndDescription = new HashMap<String, String>();
-	private ArrayList<String> predictionModel = new ArrayList<String>();
+	private List<String> predictionModel = new ArrayList<String>();
 	private String validationStudyName = "";
 	private int maxQuerySize = 0;
 	private String hitSizeOption = "";
@@ -67,6 +69,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	private OWLFunction owlFunction = null;
 	private testModel testModel = new testModel();
 	private RScriptGenerator generator = new RScriptGenerator();
+	private double cutOffValue = 40;
+	private String userDefinedQuery = "";
 
 	public harmonizationPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -100,21 +104,11 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 				validationStudyName = request.getString("validationStudy");
 
-				for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
-						Operator.EQUALS, validationStudyName))){
+				if(db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
+						Operator.EQUALS, validationStudyName)).size() > 0){
 
-					if(m.getDescription() != null && !m.getDescription().equals("")){
-						questionsAndIdentifier.put(m.getDescription().replaceAll("[\\n;]", " "), m.getName());
-						identifierAndDescription.put(m.getName(), m.getDescription().replaceAll("[\\n;]", " "));
-					}
-					if(m.getCategories_Name() != null && m.getCategories_Name().size() > 0){
-
-						if(m.getDescription() != null && !m.getDescription().equals("")){
-							for(String eachCategory : m.getCategories_Name()){
-								questionsAndIdentifier.put(eachCategory + " " + m.getDescription().replaceAll("[\\n;]", " "),  m.getName());
-							}
-						}
-					}
+					measurementsInStudy = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
+							Operator.EQUALS, validationStudyName));
 				}
 
 				generateAlgorithm(db);
@@ -141,9 +135,44 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				
 				manualMatch = true;
 				
+			}else if(request.getAction().equals("customizedSearch")){
+				
+				manualMappingResultTable.clear();
+				
+				userDefinedQuery  = request.getString("userDefinedQuery");
+				
+				selectedManualParameter = request.getString("selectParameter");
+				
+				System.out.println(userDefinedQuery);
+				
+				if(request.getString("cutOffValue") != null && !request.getString("cutOffValue").equals("")){
+					cutOffValue = Double.parseDouble(request.getString("cutOffValue"));
+				}else{
+					cutOffValue = 50;
+				}
+				
+				if(userDefinedQuery != null){
+					
+					if(db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
+							Operator.EQUALS, validationStudyName)).size() > 0){
+
+						measurementsInStudy = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
+								Operator.EQUALS, validationStudyName));
+					}
+					
+					List<String> query = new ArrayList<String>();
+					
+					query.add(userDefinedQuery);
+					
+					this.stringMatching(query, " ", request, true);
+					
+					this.manualMappingResultTable  = new ArrayList<String>(this.makeHtmlTable(mappingResultAndSimiarity).values());
+				}
+				
 			}else if(request.getAction().equals("saveManualMapping")){
 				
 				System.out.println(request.getString("userDefinedQuery"));
+				
 				
 			}else if (request.getAction().equals("chooseInvestigation")) {
 				selectedPredictionModel = request.getString("investigation");
@@ -160,7 +189,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 				parameterWithHtmlTable.clear();
 
-				questionsAndIdentifier.clear();
+				measurementsInStudy.clear();
 
 				identifierAndDescription.clear();
 
@@ -173,26 +202,29 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				if(db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
 						Operator.EQUALS, validationStudyName)).size() > 0){
 
-					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
-							Operator.EQUALS, validationStudyName))){
-
-						if(m.getDescription() != null && !m.getDescription().equals("")){
-							questionsAndIdentifier.put(m.getDescription().replaceAll("[\\n;]", " "), m.getName());
-							identifierAndDescription.put(m.getName(), m.getDescription().replaceAll("[\\n;]", " "));
-						}
-						if(m.getCategories_Name() != null && m.getCategories_Name().size() > 0){
-
-							if(m.getDescription() != null && !m.getDescription().equals("")){
-								for(String eachCategory : m.getCategories_Name()){
-									questionsAndIdentifier.put(eachCategory + " " + m.getDescription().replaceAll("[\\n;]", " "),  m.getName());
-								}
-							}
-						}
-					}
+					measurementsInStudy = db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
+							Operator.EQUALS, validationStudyName));
+					
+//					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME, 
+//							Operator.EQUALS, validationStudyName))){
+//
+//						if(m.getDescription() != null && !m.getDescription().equals("")){
+//							questionsAndIdentifier.put(m.getDescription().replaceAll("[\\n;]", " "), m.getName());
+//							identifierAndDescription.put(m.getName(), m.getDescription().replaceAll("[\\n;]", " "));
+//						}
+//						if(m.getCategories_Name() != null && m.getCategories_Name().size() > 0){
+//
+//							if(m.getDescription() != null && !m.getDescription().equals("")){
+//								for(String eachCategory : m.getCategories_Name()){
+//									questionsAndIdentifier.put(eachCategory + " " + m.getDescription().replaceAll("[\\n;]", " "),  m.getName());
+//								}
+//							}
+//						}
+//					}
 
 				}
 
-				if(questionsAndIdentifier.size() > 0){
+				if(measurementsInStudy.size() > 0){
 
 					if(uploadFileName != null){
 
@@ -206,7 +238,11 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						separator = owlFunction.getSeparator();
 					}
 
-					this.stringMatching(separator, request);
+					this.stringMatching(listOfParameters, separator, request, false);
+					
+					listOfScripts.clear();
+					
+					parameterWithHtmlTable = this.makeHtmlTable(mappingResultAndSimiarity);
 
 					int residue = maxQuerySize / 10;
 
@@ -228,7 +264,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 					this.setMessages(new ScreenMessage("Please choose the correct cohort study with data item", false));
 				}
 
-			}else if(request.getAction().equals("saveMapping")){
+			}else if(request.getAction().equals("saveMapping") || request.getAction().equals("addToExistingMapping")){
 
 				validationStudyName  = "";
 
@@ -260,8 +296,13 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 					}
 
 					for(Entry<String, LinkedMap> entry : mappingResultAndSimiarity.entrySet()){
-
+						
 						String originalQuery = entry.getKey();
+						
+						if(request.getAction().equals("addToExistingMapping")){
+							originalQuery = request.getString("selectParameter");
+						}
+						
 						List<LinkedInformation> listOfMatchedResult = entry.getValue().getSortedInformation();
 						List<String> listOFMatchedItem = new ArrayList<String>();
 
@@ -269,11 +310,11 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 						for(LinkedInformation eachMatching : listOfMatchedResult){
 
-							String identifier = originalQuery + " " + eachMatching.matchedItem;
+							String identifier = entry.getKey() + " " + eachMatching.matchedItem;
 
 							if(request.getBool(identifier.replaceAll(" ", "_")) != null){
 
-								String dataItemName = questionsAndIdentifier.get(eachMatching.matchedItem);
+								String dataItemName = eachMatching.measurementName;
 
 								listOFMatchedItem.add(dataItemName);
 							}
@@ -320,7 +361,13 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 								if(queryForMapping.find().size() > 0){
 
 									mapping = queryForMapping.find().get(0);
-
+									
+									for(Integer id : mapping.getFeature_Id()){
+										if(!measurementIds.contains(id)){
+											measurementIds.add(id);
+										}
+									}
+									
 									mapping.setFeature_Id(measurementIds);
 
 									db.update(mapping);
@@ -399,8 +446,12 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 					for(String variable : featureNames){
 
 						//TODO replace baseline with empty string right now, but later on it needs to be more generic
-						String description = identifierAndDescription.get(variable).replaceAll("[B|b]aseline", "");
+						//String description = identifierAndDescription.get(variable).replaceAll("[B|b]aseline", "");
 
+						Measurement m = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, variable)).get(0);
+						
+						String description = m.getDescription();
+						
 						List<String> tokensForDataItem = model.createNGrams(description.toLowerCase().trim(), false);
 
 						double maxSimilarity = 0;
@@ -536,16 +587,12 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 		}
 	}
 
-	public void stringMatching(String separator, Tuple request) throws Exception{
+	public void stringMatching(List<String> listOfParameters, String separator, Tuple request, boolean cutOff) throws Exception{
 
 		mappingResultAndSimiarity.clear();
 
 		for(String eachParameter : listOfParameters){
-
-			//			if(eachParameter.equalsIgnoreCase("body mass index")){
-			//				System.out.println();
-			//			}
-
+			
 			List<String> expandedQuery = new ArrayList<String>();
 
 			List<String> finalQuery = new ArrayList<String>();
@@ -555,7 +602,11 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			}else{
 				expandedQuery.add(eachParameter.toLowerCase());
 			}
-
+			
+			if(eachParameter.equals("Body Mass Index")){
+				System.out.println();
+			}
+			
 			for(String eachQuery : expandedQuery){
 
 				String[] blocks = eachQuery.split(separator);
@@ -563,15 +614,25 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				finalQuery.add(eachQuery.replaceAll(separator, " "));
 
 				if(request.getBool("baseline") != null){
-					finalQuery.add(eachQuery.replaceAll(separator, " ") + " Baseline");
+					finalQuery.add(eachQuery.replaceAll(separator, " ") + " baseline");
 				}
+//				else{
+//					finalQuery.add(eachQuery.replaceAll(separator, " "));
+//				}
 
 				for(int i = 0; i < blocks.length; i++){
+					
 					if(!finalQuery.contains(blocks[i].toLowerCase()))
 						finalQuery.add(blocks[i].toLowerCase());
+					
 					if(request.getBool("baseline") != null){
-						finalQuery.add(blocks[i].toLowerCase() + " Baseline");
+						if(!finalQuery.contains(blocks[i].toLowerCase() + " baseline"))
+							finalQuery.add(blocks[i].toLowerCase() + " baseline");
 					}
+//					else{
+//						if(!finalQuery.contains(blocks[i].toLowerCase()))
+//							finalQuery.add(blocks[i].toLowerCase());
+//					}
 				}
 			}
 
@@ -582,45 +643,92 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				double maxSimilarity = 0;
 
 				String matchedDataItem = "";
+				
+				String measurementName = "";
 
-				List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), false);
+				List<String> tokens = model.createNGrams(eachQuery.toLowerCase().trim(), true);
 
-				for(Entry<String, String> eachEntry : questionsAndIdentifier.entrySet()){
+				for(Measurement m : measurementsInStudy){
 
-					String question = eachEntry.getKey();
-
-					List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
-
-					double similarity = model.calculateScore(dataItemTokens, tokens);
-
-					if(similarity > maxSimilarity){
-
-						maxSimilarity = similarity;
-						matchedDataItem = question;
+					List<String> fields = new ArrayList<String>();
+					
+					if(m.getDescription() != null && !m.getDescription().equals("")){
+						
+						fields.add(m.getDescription());
+						
+						if(m.getCategories_Name().size() > 0){
+							for(String categoryName : m.getCategories_Name()){
+								fields.add(categoryName + " " + m.getDescription());
+							}
+						}
 					}
+					
+					if(cutOff == true)
+						fields.add(m.getName());
+					
+					for(String question : fields){
+						
+						List<String> dataItemTokens = model.createNGrams(question.toLowerCase().trim(), true);
+
+						double similarity = model.calculateScore(dataItemTokens, tokens);
+
+						if(cutOff == false && similarity > maxSimilarity){
+							
+							if(m.getDescription() != null){
+								matchedDataItem = m.getDescription();
+							}else{
+								matchedDataItem = question;
+							}
+							maxSimilarity = similarity;
+							measurementName = m.getName();
+						}
+						
+						if(cutOff == true && similarity >= cutOffValue ){
+							
+							LinkedMap temp = null;
+
+							if(mappingResultAndSimiarity.containsKey(eachParameter)){
+								temp = mappingResultAndSimiarity.get(eachParameter);
+							}else{
+								temp = new LinkedMap();
+							}
+							
+							if(m.getDescription() != null){
+								matchedDataItem = m.getDescription();
+							}else{
+								matchedDataItem = question;
+							}
+							
+							temp.add(eachQuery, matchedDataItem, similarity, m.getName());
+
+							mappingResultAndSimiarity.put(eachParameter, temp);
+						}
+					}
+					
 				}
+				
+				if(cutOff == false){
+					
+					LinkedMap temp = null;
 
-				LinkedMap temp = null;
+					if(mappingResultAndSimiarity.containsKey(eachParameter)){
+						temp = mappingResultAndSimiarity.get(eachParameter);
+					}else{
+						temp = new LinkedMap();
+					}
 
-				if(mappingResultAndSimiarity.containsKey(eachParameter)){
-					temp = mappingResultAndSimiarity.get(eachParameter);
-				}else{
-					temp = new LinkedMap();
+					temp.add(eachQuery, matchedDataItem, maxSimilarity, measurementName);
+
+					mappingResultAndSimiarity.put(eachParameter, temp);
 				}
-
-				temp.add(eachQuery, matchedDataItem, maxSimilarity);
-
-				mappingResultAndSimiarity.put(eachParameter, temp);
 			}
 		}
-
-		makeHtmlTable(mappingResultAndSimiarity);
 	}
 
-	public void makeHtmlTable (HashMap<String, LinkedMap>mappingResultAndSimiarity) {
-
-		listOfScripts.clear();
-
+	public HashMap<String, String> makeHtmlTable (HashMap<String, LinkedMap>mappingResultAndSimiarity) {
+		
+		HashMap<String, String> parameterWithHtmlTable = new HashMap<String, String>();
+		
 		for(String eachOriginalQuery : mappingResultAndSimiarity.keySet()){
 
 			LinkedMap map = mappingResultAndSimiarity.get(eachOriginalQuery);
@@ -642,29 +750,29 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				String expandedQuery = eachRow.expandedQuery;
 				String matchedItem = eachRow.matchedItem;
 				Double similarity = eachRow.similarity;
+				String measurementName = eachRow.measurementName;
+				String identifier = measurementName + "_" + eachOriginalQuery ;
 
-				if(!uniqueMapping.containsKey(matchedItem)){
+				if(!uniqueMapping.containsKey(identifier)){
 
 					Map<String, Double> queryAndSimilarity = new HashMap<String, Double>();
 
 					queryAndSimilarity.put(expandedQuery, similarity);
 
-					uniqueMapping.put(matchedItem, queryAndSimilarity);
-
-					String identifier = eachOriginalQuery + "_" + matchedItem;
+					uniqueMapping.put(identifier, queryAndSimilarity);
 
 					matchingResult += "<tr border='1' id='" + identifier.replaceAll(" ", "_") + "'>" 
-							+ "<td>"+ questionsAndIdentifier.get(matchedItem) +"</td>"
+							+ "<td>"+ measurementName +"</td>"
 							+ "<td><div id='" + identifier.replaceAll(" ", "_") + "_div'>" 
 							+ matchedItem + "</div></td><td><input type='checkbox' name='" 
 							+ identifier.replaceAll(" ", "_") + "'></td></tr>";
 				}else{
 
-					Map<String, Double> queryAndSimilarity = uniqueMapping.get(matchedItem);
+					Map<String, Double> queryAndSimilarity = uniqueMapping.get(identifier);
 
 					queryAndSimilarity.put(expandedQuery, similarity);
 
-					uniqueMapping.put(matchedItem, queryAndSimilarity);
+					uniqueMapping.put(identifier, queryAndSimilarity);
 
 				}
 
@@ -672,23 +780,21 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				//				System.out.println();
 			}
 
-			matchingResult += "</table></div>";
+			matchingResult += "</table>";
 
 			String executiveScript  = "<script>";
-
+			
 			if(maxQuerySize < uniqueMapping.keySet().size()){
 				maxQuerySize = uniqueMapping.keySet().size();
 			}
 
-			for(String matchedItem : uniqueMapping.keySet()){
+			for(String identifier : uniqueMapping.keySet()){
 
-				String identifier = eachOriginalQuery + "_" + matchedItem;
-
-				if(uniqueMapping.get(matchedItem).size() > 0){
-					String table = "<table class='insertTable' id='" + identifier.replaceAll(" ", "_") +"_table'>" 
+				if(uniqueMapping.get(identifier).size() > 0){
+					String table = "<table class='insertTable' id='" + identifier.replaceAll(" ", "_") +"_table' style='display: none'>" 
 							+ "<tr><td>expanded query</td><td>similarity</td></tr>";
 
-					for(Entry<String, Double> entry : uniqueMapping.get(matchedItem).entrySet()){
+					for(Entry<String, Double> entry : uniqueMapping.get(identifier).entrySet()){
 
 						String expandedQuery = entry.getKey();
 						Double similarity = entry.getValue();
@@ -708,11 +814,14 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			}
 
 			executiveScript += "</script>\n\n\n";
-
-			listOfScripts.add(executiveScript);
+			
+			if(!listOfParameters.contains(executiveScript))
+				listOfScripts.add(executiveScript);
 
 			parameterWithHtmlTable.put(eachOriginalQuery, matchingResult);
 		}
+		
+		return parameterWithHtmlTable;
 	}
 
 	@Override
@@ -1022,10 +1131,6 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			if(!uniqueMeasurementName.contains(eachMeasurement)){
 
 				uniqueMeasurementName.add(eachMeasurement);
-
-				if(eachMeasurement.equals("Year partner son daughter 3")){
-					System.out.println();
-				}
 				measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
 						+ "getClickedTable(\"" + eachMeasurement + "\");});"
 						+ "";
@@ -1104,7 +1209,18 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	{
 		return predictionModel;
 	}
-	
+	public String getSelectedManualParameter()
+	{
+		return selectedManualParameter;
+	}
+	public List<String> getManualMappingResultTable()
+	{
+		return manualMappingResultTable;
+	}
+	public String getUserDefinedQuery()
+	{
+		return userDefinedQuery;
+	}
 	public String getSelectedField() {
 		return selectedField;
 	}

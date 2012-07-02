@@ -80,13 +80,6 @@ public class LevenshteinDistanceModel {
 		return similarityScore;
 	}
 
-	public HashMap<String, HashMap<String, Double>> stringMatching(List<String> query, List<String> query_2, boolean removeStopWords){
-		
-		
-		
-		return null;
-	}
-
 	public List<String> removeStopWords(List<String> listOfWords){
 
 		List<String> removedStopWordsList = new ArrayList<String>();

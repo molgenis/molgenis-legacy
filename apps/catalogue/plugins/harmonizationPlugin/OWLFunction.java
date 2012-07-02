@@ -391,7 +391,7 @@ public class OWLFunction {
 
 				if(!expandedQueries.containsKey(labelOfClass)){
 					expandedClassLabel = new ArrayList<String>();
-					expandedClassLabel.add( labelOfProperty + separtor + firstToken);
+					expandedClassLabel.add(labelOfProperty + separtor + firstToken);
 				}else{
 					expandedClassLabel = expandedQueries.get(labelOfClass);
 					if(!expandedClassLabel.contains(labelOfProperty + separtor + firstToken)){
