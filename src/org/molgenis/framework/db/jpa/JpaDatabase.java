@@ -54,8 +54,7 @@ public class JpaDatabase extends AbstractDatabase
 				}
 				else
 				{
-					emFactory = Persistence
-							.createEntityManagerFactory(persistenceUnitName);
+					emFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 				}
 				emfs.put(persistenceUnitName, emFactory);
 			}

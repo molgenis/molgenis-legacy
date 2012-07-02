@@ -65,6 +65,9 @@ public class JDBCMetaDatabase extends Model
 					<#if entity.hasAncestor()>
 			${name(entity)}_entity.setParents(new String[]{"${entity.getAncestor().name}"});
 					</#if>
+					<#if entity.getDescription()?exists || entity.getDescription() != ''>
+			${name(entity)}_entity.setDescription("${entity.description?j_string}");
+					</#if>						
 					<#if entity.xrefLabels?exists>
 			${name(entity)}_entity.setXrefLabels(Arrays.asList(new String[]{${csv(entity.xrefLabels)}}));
 					</#if>			
@@ -84,6 +87,9 @@ public class JDBCMetaDatabase extends Model
 							<#if field.defaultValue != ''>
 			${name(entity)}_${name(field)}_field.setDevaultValue("${field.defaultValue}");
 							</#if>
+							<#if field.description != ''>
+			${name(entity)}_${name(field)}_field.setDescription("${field.description?j_string}");
+							</#if>				
 			${name(entity)}_${name(field)}_field.setNillable(<#if field.isNillable() == true>true<#else>false</#if>);
 							<#if field.type == "xref" || field.type == "mref">
 			${name(entity)}_${name(field)}_field.setXRefVariables("${field.xrefEntityName}", "${field.xrefFieldName}",Arrays.asList(new String[]{${csv(field.xrefLabelNames)}}));
