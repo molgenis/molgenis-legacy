@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app>
-
-	<!-- FrontController mapping for Tomcat -->
+	<!-- FrontController mapping -->
 	<servlet>
 		<servlet-name>FrontController</servlet-name>
 		<servlet-class>app.servlet.FrontController</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>FrontController</servlet-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>FrontController</servlet-name>
+		<url-pattern>/xref/*</url-pattern>
 	</servlet-mapping>
 	
 	<!-- Quartz scheduling -->
