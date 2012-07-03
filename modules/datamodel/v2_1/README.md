@@ -35,6 +35,7 @@ We need:
 * definition on the role of such annotation inside a Measurement (doesn't exist)
 * E.g. ProtocolApplication = { Target="Patient1", Genotype(Marker=rs1234) = AB,  Genotype(Marker=rs1235) = BB), ...}
 
+Proposed solution: 
 
 # Set of protocolApplication aka Matrix
 We need:
@@ -79,6 +80,8 @@ Proposed solutions: Contributions have a link to
 #Citations
 We need to:
 * list citations 
+
+Proposed solutions:
 
 #Tags/annotations/ontology terms
 We need to:
