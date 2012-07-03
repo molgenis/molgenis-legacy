@@ -57,9 +57,9 @@ It should be used via 'import' plus passing of properties
 	<target name="generate" depends="update-eclipse">
 		<!-- clean generated folders -->
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${output_src}" />
-			<fileset dir="${output_sql}" />
-			<fileset dir="${output_ccp}" />
+			<fileset dir="${output_src}" excludes=".gitignore"/>
+			<fileset dir="${output_sql}" excludes=".gitignore"/>
+			<fileset dir="${output_ccp}" excludes=".gitignore"/>
 		</delete>
 		
 		<mkdir dir="${output_src}" />
