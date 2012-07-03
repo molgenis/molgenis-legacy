@@ -37,6 +37,3 @@ log*
 /generated
 /target
 logger.out*
-/dist
-/generated/java
-*.so
