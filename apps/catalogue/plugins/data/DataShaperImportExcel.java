@@ -289,8 +289,12 @@ public class DataShaperImportExcel extends PluginModel<Entity>
 						ontology_Term.setName(measurementName);
 
 						mea.setName(measurementName);
-
-						mea.setOntologyReference_Name(measurementName);
+						
+						List<String> ontologyTermRef = new ArrayList<String>();
+						
+						ontologyTermRef.add(measurementName);
+						
+						mea.setOntologyReference_Name(ontologyTermRef);
 						
 						mea.setInvestigation(inv);
 
