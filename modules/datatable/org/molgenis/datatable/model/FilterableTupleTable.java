@@ -3,6 +3,8 @@ package org.molgenis.datatable.model;
 import java.util.List;
 
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.model.elements.Field;
+import org.molgenis.model.elements.Form.SortOrder;
 
 /**
  * Extension of TupleTable that allows filterings, sortings, etc on the table.
@@ -24,16 +26,14 @@ public interface FilterableTupleTable extends TupleTable
 	public List<QueryRule> getFilters();
 
 	/**
-	 * This we can inherit from Query interface?
+	 * Limit the visible columns by name
 	 */
-	public int getLimit();
-
-
+	public void setVisibleColumns(List<String> fieldNames);
+	
 	/**
-	 * This we can inherit from Query interface?
+	 * Get visible columns
 	 */
-	public int getOffset();
-
+	public List<Field> getVisibleColumns();
 
 	/**
 	 * This we can inherit from Query interface?

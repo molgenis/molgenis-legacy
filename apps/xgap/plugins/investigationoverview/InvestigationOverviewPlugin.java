@@ -148,6 +148,16 @@ public class InvestigationOverviewPlugin extends PluginModel<Entity>
 			{
 				this.model.setViewDataByTags(false);
 			}
+			
+			//find out if File viewer is visible for linkouts
+			if(this.getLogin().canRead(this.get("Files")))
+			{
+				this.model.setFileLinkoutIsVisible(true);
+			}
+			else
+			{
+				this.model.setFileLinkoutIsVisible(false);
+			}
 
 			ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
 			FormModel<Investigation> parentForm = (FormModel<Investigation>) ((FormController)parentController).getModel();

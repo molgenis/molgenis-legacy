@@ -7,11 +7,10 @@
 			type="org.molgenis.lifelinesresearchportal.plugins.homepage.LifeLines" />
 
 
-		<plugin label="jqGridView" name="jqGridView"
-			type="org.molgenis.datatable.plugin.JQGridPlugin" />
-
-		<plugin name="jqGridView2"
-			type="org.molgenis.datatable.plugin.JQGridPlugin2" />
+		<plugin name="jqGridView" type="org.molgenis.datatable.plugin.JQGridPlugin" />
+		<plugin name="jqGridViewEntity" type="org.molgenis.datatable.plugin.JQGridPluginEntity" />
+		<plugin name="jqGridViewMemory" type="org.molgenis.datatable.plugin.JQGridPluginMemory" />
+		<plugin name="jqGridViewProtocol" type="org.molgenis.datatable.plugin.JQGridPluginMemory" />
 
 		<!-- <plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" 
 			/> -->

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.util.JQueryUtil;
+
 import org.molgenis.framework.ui.html.HtmlWidget;
 
 import freemarker.template.Configuration;
@@ -31,11 +32,13 @@ public class JQGridView extends HtmlWidget
 			final Map<String, Object> args = new HashMap<String, Object>();
 			
 			args.put("tableId", getId());
+
 			args.put("columns", tupleTable.getColumns());
 			args.put("viewFactoryClassName", ViewFactoryImpl.class.getName());
 			args.put("backendUrl", "molgenis.do");
 			args.put("sortName", tupleTable.getColumns().get(0).getSqlName());
 			args.put("treeModel", JQueryUtil.getDynaTreeNodes(tupleTable.getColumns()));
+
 			
 			final Configuration cfg = new Configuration();
 			cfg.setObjectWrapper(new DefaultObjectWrapper());

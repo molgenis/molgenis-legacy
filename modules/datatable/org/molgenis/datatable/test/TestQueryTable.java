@@ -1,8 +1,6 @@
 package org.molgenis.datatable.test;
 
-import java.sql.Connection;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -35,15 +33,22 @@ public class TestQueryTable
 
 	private static final double EPSILON = 0.0001;
 	private QueryTable table;
+	private Database db;
 
 	@BeforeClass
 	public void setUp() throws DatabaseException {
-		final Database db = DatabaseFactory.create();
-		final Connection connection = db.getConnection();
-
+		db = DatabaseFactory.create();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void testGetRowsBasic() throws TableException, DatabaseException {
 		final SQLTemplates dialect = new MySQLTemplates();
-		final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
-
+		SQLQueryImpl query = new SQLQueryImpl(db.getConnection(), dialect);
+	
+		// create select
+		// SELECT Country.Name, City.Name, City.Population / Country.Population AS ratio 
+		// FROM Country, City where Country.code = City.countrycode ORDER BY ratio DESC LIMIT 10;
 		final PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
 				"Country");
 		final PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
@@ -58,7 +63,7 @@ public class TestQueryTable
 		query.limit(10);
 		query.orderBy(cityPopulationRatio.desc());
 
-		// create select
+
 		Field countryName = new Field("Country.Name");
 		countryName.setType(new StringField());
 		Field cityName = new Field("City.Name");
@@ -71,14 +76,11 @@ public class TestQueryTable
 		selectMap.put("City.Name", city.get(new StringPath("name")));
 		selectMap.put("ratio", cityPopulationRatio);
 		List<Field> columns = Arrays.asList(countryName, cityName, ratio);
-		table = new QueryTable(query, selectMap, columns);
-	}
-	
-	@Test
-	public void testGetRowsBasic() throws TableException {
-		Assert.assertEquals(table.getRowCount(), 4079);
+		table = new QueryTable(query, selectMap, columns);		
 		
-		// test top 7 ratios
+		Assert.assertEquals(table.getCount(), 4079);
+		// test top 10 ratios (query is limit 10)
+		// 
 		// 	Singapore					Singapore		1.1264
 		//	Gibraltar					Gibraltar		1.081
 		//	Macao						Macao			0.9249
@@ -86,6 +88,9 @@ public class TestQueryTable
 		//	Cocos (Keeling) Islands		Bantam			0.8383
 		//	Saint Pierre and Miquelon	Saint-Pierre	0.8297
 		//	Falkland Islands			Stanley			0.818
+		//	Palau						Koror			0.6316
+		//	Djibouti					Djibouti		0.6003
+		//	Cook Islands				Avarua			0.595
 		final List<Tuple> rows = table.getRows();
 		Assert.assertEquals(rows.get(0).getDecimal("ratio"), 1.1264, EPSILON);
 		Assert.assertEquals(rows.get(1).getDecimal("ratio"), 1.081, EPSILON);
@@ -94,11 +99,10 @@ public class TestQueryTable
 		Assert.assertEquals(rows.get(4).getDecimal("ratio"), 0.8383, EPSILON);
 		Assert.assertEquals(rows.get(5).getDecimal("ratio"), 0.8297, EPSILON);
 		Assert.assertEquals(rows.get(6).getDecimal("ratio"), 0.818, EPSILON);
-		
-		final Iterator<Tuple> iterator = table.iterator();
-		while (iterator.hasNext()) {
-			System.out.println(iterator.next());
-		}
+		Assert.assertEquals(rows.get(7).getDecimal("ratio"), 0.6316, EPSILON);
+		Assert.assertEquals(rows.get(8).getDecimal("ratio"), 0.6003, EPSILON);
+		Assert.assertEquals(rows.get(9).getDecimal("ratio"), 0.595, EPSILON);
+		Assert.assertEquals(rows.size(), 10);
 	}
 	
 	

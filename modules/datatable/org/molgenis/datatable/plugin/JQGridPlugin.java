@@ -97,7 +97,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					final SQLTemplates dialect = new MySQLTemplates();
 					final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-					boolean joinTable = false;
+					boolean joinTable = true;
 					if(joinTable) {
 						List<String> tableNames = new ArrayList<String>();
 						final List<String> columnNames = new ArrayList<String>();
@@ -108,7 +108,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 						}
 						
 						final List<JoinQueryTable.Join> joins = Arrays.asList(new JoinQueryTable.Join("Country.Code", "City.CountryCode"));
-						return new JoinQueryTable(query, tableNames, joins, db);						
+						final JoinQueryTable table = new JoinQueryTable(query, tableNames, columnNames, joins, db);
+						return table;						
 					} 
 					
 					PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
@@ -156,14 +157,11 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					for(final String column : columns) {
 						if(StringUtils.contains(column, ".")) {
 							final String tableName = StringUtils.substringBefore(column, ".");
-							final String columnName = StringUtils.substringAfter(column, ".");
 							if(!inTableNames.contains(tableName)) {
 								inTableNames.add(tableName);	
 							}
-							inColumnNames.add(columnName);
-						} else {
-							inColumnNames.add(column);
 						}
+						inColumnNames.add(column);
 					}
 				}
 			}
@@ -268,7 +266,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			
 
 			int rowCount = -1;
-			rowCount = tupleTable.getRowCount();
+			rowCount = tupleTable.getCount();
 			tupleTable.close(); // Not nice! We should fix this!
 			int totalPages = 1;
 			totalPages = (int) Math.ceil(rowCount / limit);

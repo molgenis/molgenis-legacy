@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/charts4j-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/jaxrpc.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/keggapi.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lucene-core-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lucene-highlighter-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mindterm.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/mydas-1.6.0.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/molgenis"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spssw-1.66.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/iText-5.0.6.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/pircbot.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/axis.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/commons-discovery-0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ontocat-0.9.7.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/simplecaptcha-1.2.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="src" path="apps/lifelinesresearchportal"/>
+	<classpathentry kind="src" path="apps/lifelinesresearchportalimporter"/>
+	<classpathentry kind="src" path="modules/datamodel"/>
+	<classpathentry kind="src" path="modules/auth"/>
+	<classpathentry kind="src" path="modules/file"/>
+	<classpathentry kind="src" path="modules/webserver"/>
+	<classpathentry kind="src" path="modules/datatable"/>
+	<classpathentry kind="src" path="modules/decorators/core"/>
+	<classpathentry kind="src" path="modules/decorators/auth"/>
+	<classpathentry kind="src" path="generated/java"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/QueryDSL"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

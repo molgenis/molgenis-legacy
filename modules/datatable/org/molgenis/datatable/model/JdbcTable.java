@@ -3,6 +3,7 @@ package org.molgenis.datatable.model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,21 +21,30 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	private ResultSetTuple rs;
 	private List<Field> columns;
 	private final String query;
-	private List<QueryRule> rules;
 	private Database db;
 	private final String countQuery;	
 	private boolean loaded = false;
 	
 
+
 	public JdbcTable(Database db, String query, List<QueryRule> rules)
 	{
-		super(rules);
+		super();
 		this.db = db;
-		this.query = query;		
+		this.query = query;
+		this.setFilters(rules);		
+
 
 		String fromExpression = StringUtils.substringBetween(query, "SELECT", "FROM");
 		this.countQuery = StringUtils.replace(query, fromExpression, " COUNT(*) ");
 	}
+
+
+	public JdbcTable(Database db, String query) throws TableException
+	{
+		this(db, query, new ArrayList<QueryRule>());
+	}
+
 	
 	private void load() throws TableException
 	{
@@ -42,7 +52,7 @@ public class JdbcTable extends AbstractFilterableTupleTable
 			loaded = true;
 			try
 			{
-				rs = new ResultSetTuple(db.executeQuery(query, rules.toArray(new QueryRule[0])));
+				rs = new ResultSetTuple(db.executeQuery(query, getFilters().toArray(new QueryRule[0])));
 				columns = loadColumns();
 			}
 			catch (Exception e)
@@ -134,10 +144,10 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	}
 
 	@Override
-	public int getRowCount() throws TableException
+	public int getCount() throws TableException
 	{
 		try {
-			final ResultSet countSet = db.executeQuery(countQuery, rules.toArray(new QueryRule[0]));
+			final ResultSet countSet = db.executeQuery(countQuery, getFilters().toArray(new QueryRule[0]));
 			int rowCount = 0;
 			if (countSet.next())
 			{
@@ -151,4 +161,24 @@ public class JdbcTable extends AbstractFilterableTupleTable
 		}
 	}
 
+	public void setDatabase(Database db)
+	{
+		this.db = db;
+	}
+
+
+	@Override
+	public void setVisibleColumns(List<String> fieldNames)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public List<Field> getVisibleColumns()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

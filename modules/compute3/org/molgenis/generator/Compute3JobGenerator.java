@@ -665,6 +665,9 @@ public class Compute3JobGenerator implements JobGenerator
 
         //generate uploading section
         //and change job listing to execute in the grid
+
+        String outputsString = "";
+
         Hashtable<String, String> outputs = container.getOutputs();
         actuals = outputs.elements();
         while (actuals.hasMoreElements())
@@ -685,8 +688,11 @@ public class Compute3JobGenerator implements JobGenerator
             justName = "\\" + justName;
             shellListing = shellListing.replaceAll(actualName, justName);
 
-            shellListing += outputListing;
+            //shellListing += outputListing;
+            outputsString += outputListing;
         }
+
+        shellListing += outputsString;
 
         //add upload log
         Hashtable<String, String> local = new Hashtable<String, String>();
