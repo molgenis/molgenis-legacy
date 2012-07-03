@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="cbm">
+    <entity name="address">
+        <field length="50" nillable="true" name="city"/>
+        <field length="50" nillable="true" name="country"/>
+        <field length="50" nillable="true" name="department_or_division"/>
+        <field length="50" nillable="true" name="entity_name"/>
+        <field length="50" nillable="true" name="entity_number"/>
+        <field length="50" nillable="true" name="floor_or_premises"/>
+        <field length="50" nillable="true" name="post_office_box"/>
+        <field length="50" nillable="true" name="zip_code"/>
+        <field length="50" nillable="true" name="state"/>
+        <field length="50" nillable="true" name="street_post_directional"/>
+        <field length="50" nillable="true" name="street_pre_directional"/>
+        <field length="150" nillable="true" name="street_or_thoroughfare_name_and_type"/>
+        <field length="50" nillable="true" name="street_or_thoroughfare_number"/>
+        <field length="50" nillable="true" name="street_or_thoroughfare_section_name"/>
+        <field length="50" nillable="true" name="street_or_thoroughfare_extension_name"/>
+        <field unique="true" type="int" name="address_ID"/>
+    </entity>
+    <entity name="anatomic_source">
+        <field unique="true" type="int" name="id"/>
+        <field unique="true" length="150" name="anatomic_source"/>
+        <field unique="true" length="50" nillable="true" name="NCI_code"/>
+        <field nillable="true" type="text" name="NCI_Definition"/>
+    </entity>
+    <entity name="annotation_availability_profile">
+        <field nillable="true" type="bool" name="has_additional_patient_demographics"/>
+        <field nillable="true" type="bool" name="has_exposure_history"/>
+        <field nillable="true" type="bool" name="has_family_history"/>
+        <field nillable="true" type="bool" name="has_histopathologic_information"/>
+        <field nillable="true" type="bool" name="has_lab_data"/>
+        <field nillable="true" type="bool" name="has_longitudinal_specimens"/>
+        <field nillable="true" type="bool" name="has_matched_specimens"/>
+        <field nillable="true" type="bool" name="has_outcome_information"/>
+        <field nillable="true" type="bool" name="has_participants_available_for_followup"/>
+        <field nillable="true" type="bool" name="has_treatment_information"/>
+        <field unique="true" type="int" name="annotation_availability_profile_ID"/>
+    </entity>
+    <entity name="collection_protocol">
+        <field nillable="true" type="date" name="date_last_updated"/>
+        <field nillable="true" type="date" name="end_date"/>
+        <field nillable="true" name="name"/>
+        <field nillable="true" type="date" name="start_date"/>
+        <field length="50" nillable="true" name="identifier"/>
+        <field nillable="true" type="int" name="makes_available"/>
+        <field nillable="true" type="int" name="is_assigned_to"/>
+        <field unique="true" type="int" name="collectionProtocolID"/>
+        <field nillable="true" type="int" name="is_constrained_by"/>
+    </entity>
+    <entity name="diagnosis">
+        <field unique="true" length="225" name="diagnosisType"/>
+        <field unique="true" type="int" name="diagnosis_ID"/>
+        <field unique="true" length="50" nillable="true" name="NCI_code"/>
+        <field nillable="true" type="text" name="NCI_Definition"/>
+    </entity>
+    <entity name="ethnicity">
+        <field unique="true" length="50" name="ethnicity"/>
+        <field unique="true" type="int" name="id"/>
+        <field unique="true" length="50" nillable="true" name="NCI_code"/>
+        <field nillable="true" type="text" name="NCI_definition"/>
+    </entity>
+    <entity name="gender">
+        <field unique="true" length="50" name="gender"/>
+        <field unique="true" type="int" name="id"/>
+        <field unique="true" length="50" nillable="true" name="NCI_code"/>
+        <field nillable="true" type="text" name="NCI_Definition"/>
+    </entity>
+    <entity name="institution">
+        <field length="50" nillable="true" name="homepage_URL"/>
+        <field unique="true" type="int" name="institution_ID"/>
+    </entity>
+    <entity name="join_collection_protocol_to_institution">
+        <field nillable="true" type="int" name="institution_ID"/>
+        <field nillable="true" type="int" name="collection_protocol_ID"/>
+    </entity>
+    <entity name="join_participant_collection_summary_to_race">
+        <field nillable="true" type="int" name="participant_collection_summary_ID"/>
+        <field nillable="true" type="int" name="race_id"/>
+    </entity>
+    <entity name="join_participant_collection_summary_todiagnosis">
+        <field nillable="true" type="int" name="diagnosis_id"/>
+        <field nillable="true" type="int" name="participant_collection_summary_ID"/>
+    </entity>
+    <entity name="organization">
+        <field length="150" nillable="true" name="name"/>
+        <field unique="true" type="int" name="organization_ID"/>
+    </entity>
+    <entity name="participant_collection_summary">
+        <field nillable="true" type="int" name="participant_count"/>
+        <field nillable="true" type="int" name="registered_to"/>
+        <field unique="true" type="int" name="participant_collection_summary_ID"/>
+        <field length="50" nillable="true" name="ethnicity"/>
+        <field nillable="true" type="int" name="ethnicity_id"/>
+        <field length="50" nillable="true" name="gender"/>
+        <field nillable="true" type="int" name="gender_id"/>
+    </entity>
+    <entity name="patient_age_group_at_collection">
+        <field unique="true" type="int" name="id"/>
+        <field nillable="true" type="int" name="age_group_low"/>
+        <field nillable="true" type="int" name="age_group_high"/>
+    </entity>
+    <entity name="person">
+        <field length="50" nillable="true" name="full_name"/>
+        <field length="50" nillable="true" name="first_name"/>
+        <field length="50" nillable="true" name="last_name"/>
+        <field length="50" nillable="true" name="middle_name_or_initial"/>
+        <field length="50" nillable="true" name="email_address"/>
+        <field unique="true" type="int" name="person_ID"/>
+    </entity>
+    <entity name="preservation">
+        <field length="100" nillable="true" name="preservation_type"/>
+        <field nillable="true" type="int" name="storage_temperature_in_centigrade"/>
+        <field unique="true" type="int" name="preservation_ID"/>
+    </entity>
+    <entity name="preservation_type">
+        <field unique="true" type="int" name="id"/>
+        <field unique="true" length="100" name="preservation_type"/>
+        <field unique="true" length="50" nillable="true" name="NCI_code"/>
+        <field nillable="true" type="text" name="NCI_Definition"/>
+    </entity>
+    <entity name="race">
+        <field unique="true" length="50" name="race"/>
+        <field unique="true" type="int" name="race_ID"/>
+        <field unique="true" length="50" nillable="true" name="NCI_code"/>
+        <field nillable="true" type="text" name="NCI_Definition"/>
+    </entity>
+    <entity name="specimen_availability_summary_profile">
+        <field nillable="true" type="bool" name="is_available_to_commercial_organizations"/>
+        <field nillable="true" type="bool" name="is_available_to_foreign_investigators"/>
+        <field nillable="true" type="bool" name="is_available_to_outside_institution"/>
+        <field nillable="true" type="bool" name="is_collaboration_required"/>
+        <field unique="true" type="int" name="specimen_availability_summary_profile_ID"/>
+    </entity>
+    <entity name="specimen_collection_contact">
+        <field length="50" nillable="true" name="phone"/>
+        <field unique="true" type="int" name="specimen_collection_contact_ID"/>
+        <field nillable="true" type="int" name="address_id"/>
+    </entity>
+    <entity name="specimen_collection_summary">
+        <field unique="true" type="int" name="specimen_collection_summary_ID"/>
+        <field nillable="true" type="int" name="anatomic_source_id"/>
+        <field length="150" nillable="true" name="anatomic_source"/>
+        <field nillable="true" type="int" name="specimen_count"/>
+        <field nillable="true" type="int" name="patient_age_group_at_collection"/>
+        <field nillable="true" type="int" name="specimen_type_id"/>
+        <field length="50" nillable="true" name="specimen_type"/>
+        <field nillable="true" type="int" name="is_collected_from"/>
+        <field nillable="true" type="int" name="undergoes"/>
+        <field nillable="true" type="int" name="qualifiesPatientAgeAtSpecimenCollection"/>
+    </entity>
+    <entity name="specimen_type">
+        <field unique="true" type="int" name="id"/>
+        <field unique="true" length="50" name="specimen_type"/>
+        <field unique="true" length="50" nillable="true" name="NCI_code"/>
+        <field nillable="true" type="text" name="NCI_Definition"/>
+    </entity>
+</molgenis>

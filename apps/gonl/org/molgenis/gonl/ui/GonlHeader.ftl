@@ -1,4 +1,4 @@
-<#macro plugins_header_PhenoHeader screen>
+<#macro plugins_header_GonlHeader screen>
 <div id="header">	
 	<p>
 		<a href="http://www.molgenis.org">

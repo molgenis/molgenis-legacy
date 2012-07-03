@@ -56,8 +56,6 @@ public class TableField {
 	
 	private Tuple defaults = new SimpleTuple();
 
-	private ProtocolApplication protocolApplication = null;
-
 	private int observationTarget = -1;
 	
 	private InvestigationElement entity = null;

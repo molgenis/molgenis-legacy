@@ -284,12 +284,12 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=showHideSettingsButton");
 		Thread.sleep(1000);
 		selenium.click("id=mothermatrix_removeFilter_2");
-		Thread.sleep(1000);
+		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=mothermatrix_selected_0"); //select first mother
 		selenium.click("id=motherB0");
-		Thread.sleep(1000);
+		//Thread.sleep(1000);
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Thread.sleep(1000);
+		//Thread.sleep(1000);
 		
 		selenium.click("id=mothermatrix_selected_1"); //select second mother
 		selenium.click("id=motherB1");
@@ -311,7 +311,6 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=fatherB2");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		selenium.click("id=from2to3");
-		
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		Assert.assertTrue(selenium.isTextPresent("successfully added"));		
 		
@@ -360,7 +359,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=littermatrix_selected_0");
 		selenium.click("id=label");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("Download temporary wean labels as pdf"));
+		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		// Genotype litter
@@ -379,7 +378,7 @@ public class AnimaldbSeleniumTest
 		selenium.click("id=littermatrix_selected_0");
 		selenium.click("id=label");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
-		Assert.assertTrue(selenium.isTextPresent("Download definitive cage labels as pdf"));
+		Assert.assertTrue(selenium.isTextPresent("Download cage labels as pdf"));
 		selenium.click("link=Back to overview");
 		selenium.waitForPageToLoad(PAGE_LOAD_TIME_OUT);
 		

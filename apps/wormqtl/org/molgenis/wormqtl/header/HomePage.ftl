@@ -62,11 +62,7 @@
 		<tr>
 			<td colspan="4" align="center">
 				<div align="left">
-					<h2>WormQTL - Public archive and analysis web portal for natural variation data in Caenorhabditis elegans</h2>
-					Over the past decade increased efforts have been made to explore the model metazoan Caenorhabditis elegans as a platform for molecular quantitative genetics and the systems biology of natural variation. These efforts have resulted in an accumulation of a huge amount of phenotypic and genotypic data across different developmental worm stages and environments in recombinant inbred populations. Next to C. elegans, C. briggsae is an emerging model organism that allows evolutionary comparisons with C. elegans and quantitative genetic exploration of its own unique biological attributes. In addition, a wealth of similar high-throughput data has been produced on hundreds of different C. elegans wild isolates.
-					<br><br>
-					This rapid increase in data calls for an easily accessible database allowing for comparative analysis and meta-analysis within and across species. Here we present WormQTL, a public portal for the management of all data on natural variation in Caenorhabditis spp. and integrated development of suitable analysis tools. The web server provides a rich set of analysis tools for genotype-phenotype mapping based on R/qtl. Users can upload and share new R scripts as 'plugin' for the colleagues in the community to use directly. New data can be uploaded and downloaded using XGAP, an extensible text format for genotype and phenotypes. All data  and tools can be accessed via a public web user interface as well as programming interfaces to R, REST, and SOAP web services. All software is free for download as MOLGENIS 'app'. WormQTL is freely accessible without registration and is hosted on a large computational cluster enabling high throughput analyses to all at http://www.wormqtl.org. 
-					<br><br>
+					<h2>WormQTL - Public archive and analysis web portal for natural variation data in Caenorhabditis spp.</h2>
 					WormQTL is an online scalable system for QTL exploration to service the worm community. WormQTL provides many publicly available datasets and welcomes submissions from other worm researchers.
 				</div>
 			</td>
@@ -79,19 +75,72 @@
 		
 		<tr>
 			<td align="center">
-				<a href="?select=QtlFinderPublic2"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_plot_button.png" /><h3>Find and plot QTLs</h3></a>
+				<a href="?select=QtlFinderPublic2"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_plot_button.png" /><h3>Find QTLs</h3></a>
 			</td>
 			<td align="center">
-				<a href="?select=GenomeBrowser"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_gb_button.png" /><h3>Explore QTLs genomewide</h3></a>
+				<a href="?select=GenomeBrowser"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_gb_button.png" /><h3>Genome browser</h3></a>
 			</td>
 			<td align="center">
-				<a href="?select=Investigations"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_data_button.png" /><h3>Browse the raw data</h3></a>
+				<a href="?select=Investigations"><img height="100" width="100" src="clusterdemo/wormqtl/qtl_data_button.png" /><h3>Browse data</h3></a>
 			</td>
 			<td align="center">
 				<a href="?select=Help"><img height="100" width="100" src="res/img/designgg/helpicon.gif" /><h3>Help</h3></a>
 			</td>
 		</tr>
 		
+		<tr>
+			<td colspan="4">
+				<div style="height: 20px">&nbsp;</div>
+			</td>
+		</tr>
+		
+		<tr>
+			<td colspan="4" align="center">
+				<div align="left">
+				<h3>What can you do?</h3>
+					<ul>
+						<li>
+							<h4>I want to search (e)QTLs for my trait or gene</h4>
+							<ol>
+								<li>Go to <a href="?select=QtlFinderPublic2">Find QTLs</a></li>
+								<li>Type the name or identifier of your trait or gene and press <i>Search</i></li>
+								<li>Put any relevant hits in the shopping cart</li>
+								<li>Click <i>Plot cart</i> now and explore the results</li>
+							</ol>
+						</li>
+						<li>
+							<h4>I want to know which genes have a QTL on my favourite position</h4>
+							<ol>
+								<li>Go to <a href="?select=GenomeBrowser">Genome browser</a></li>
+								<li>Add tracks from experiments of interest</li>
+								<li>Navigate to your favourite location (tip: use <i>open in new window</i>)</li>
+								<li>Collect significant probe identifiers from that region</li>
+								<li>Use the identifiers to e.g. search with <a href="?select=QtlFinderPublic2">Find QTLs</a></li>
+							</ol>
+						</li>
+						<li>
+							<h4>I want to compare the QTLs of two and more traits or genes</h4>
+							<ol>
+								<li>Go to <a href="?select=QtlFinderPublic2">Find QTLs</a></li>
+								<li>Type the name or identifier of your trait or gene and press <i>Search</i></li>
+								<li>Put any relevant matching hits in the shopping cart</li>
+								<li>Repeat from step 2 to add more hits, up to 500</li>
+								<li>Press <i>Plot cart now</i> and explore the results</li>
+							</ol>
+						</li>
+						<li>
+							<h4>I want to know everything about my trait or gene</h4>
+							<ol>
+								<li>Go to <a href="?select=QtlFinderPublic2">Find QTLs</a></li>
+								<li>Type the name or identifier of your trait or gene and press <i>Search</i></li>
+								<li>Click the bold hyperlink of the hit (e.g. <b>AGIUSA9288 / gst-30</b>)</li>
+								<li>After a while, you are presented with an aggregate of all WormQTL data for this hit</li>
+							</ol>
+						</li>
+					</ul>
+				</div>
+			</td>
+		</tr>
 		<tr>
 			<td colspan="4">
 				<div style="height: 20px">&nbsp;</div>

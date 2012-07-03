@@ -74,6 +74,13 @@
 			</fileset>
 		</copy>
 		
+		<!-- Copy example script to analyze a test data set -->
+		<copy todir="${app_distro_dir}">
+			<fileset dir="${basedir}/apps/${app_name}/org/molgenis/${app_name}/">
+				<include name="test_molgenis_compute.sh"/>
+			</fileset>
+		</copy>
+		
 		<!-- Copy all generic templates, protocols and workflows to the distro dir -->
 		<copy todir="${templates_dir}">
 		    <fileset dir="${app_module_dir}/org/molgenis/${app_name}/templates/"/>
@@ -89,7 +96,7 @@
 		<!-- This is a manually maintained list of libs for now, but we should collect this from include statements -->
 		<copy todir="${lib_dir}">
 			<fileset dir="${molgenis.dir}/lib/">
-				<include name="commons-io-1.3.1.jar"/>
+				<include name="commons-io-2.4.jar"/>
 				<include name="freemarker.jar"/>
 				<include name="log4j-1.2.15.jar"/>
 			</fileset>
@@ -114,7 +121,7 @@ MCDIR=$( cd -P "$( dirname "$0" )" &amp;&amp; pwd )
 java -cp \
 $(dirname -- "$0")/lib/molgenis-r${svn.Revision}.jar:\
 $(dirname -- "$0")/lib/molgenis_compute-r${svn.Revision}.jar:\
-$(dirname -- "$0")/lib/commons-io-1.3.1.jar:\
+$(dirname -- "$0")/lib/commons-io-2.4.jar:\
 $(dirname -- "$0")/lib/freemarker.jar:\
 $(dirname -- "$0")/lib/log4j-1.2.15.jar \
 org.molgenis.compute.commandline.ComputeCommandLine \
