@@ -40,10 +40,7 @@
 
 <ul>
 	<li>
-		Walkthrough of WormQTL.org (TODO)
-	</li>
-	<li>
-		Example workflows on how to mine data (TODO)
+		Download the <a href="walkthrough.docx">walkthrough of WormQTL.org</a>.
 	</li>
 </ul>
 

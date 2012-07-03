@@ -24,8 +24,6 @@ import org.molgenis.util.cmdline.CmdLineException;
 
 import app.DatabaseFactory;
 
-//import app.JDBCDatabase;
-
 public class TestPhenoMatrix
 {
 	Logger logger = Logger.getLogger(TestPhenoMatrix.class);

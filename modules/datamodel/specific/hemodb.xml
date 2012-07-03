@@ -14,7 +14,8 @@
 				description="Expression of CD34, plus = expressed, minus = not expressed" />
 			<field name="AML_normal" type="string" nillable="true"
 				description="Sample type" />
-			<field name="SampleGroup" label="SampleGroup" type="xref" xref_entity="HemoSampleGroup" xref_field="id" xref_label="name" nillable="true" />
+			<field name="Sample_Group" type="string" nillable="true"
+				description="Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)" />
 			<field name="age" type="string" nillable="true"
 				description="NA, old, young, fetal, numerical" />
 			<field name="FAB" type="string" nillable="true"
@@ -49,8 +50,7 @@
 				nillable="true"
 				description="Orientation of the gene on the genome (F=forward, R=reverse)" />
 		</entity>
-		<entity name="HemoProbe" extends="ObservableFeature"
-			implements="Locus">
+		<entity name="HemoProbe" extends="ObservableFeature" implements="Locus">
 			<description> A piece of sequence that reports for the expression of
 				a gene, typically spotted onto a microarray.
 			</description>
@@ -64,11 +64,6 @@
 				description="The entrez ID for the probe" />
 			<field name="RefseqID" type="string" nillable="true"
 				description="The refseq ID for the probe" />
-		</entity>
-		<entity name="HemoSampleGroup" implements="Identifiable">
-			<description>Sample classification (ALL CD34+, AML CD34-, AML CD34+, AML MNC, BC CML, BM CD34+, BM post ASCT, BM retroviral model, CB CD34+, CB retroviral model, mob PBSC, NA, NSG, stroma)
-			</description>
-			<field name="name" type="string" nillable="true" unique="true" />
 		</entity>
 	</module>
 </molgenis>

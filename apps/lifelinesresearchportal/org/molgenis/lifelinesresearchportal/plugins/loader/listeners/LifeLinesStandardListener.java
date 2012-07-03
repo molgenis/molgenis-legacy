@@ -82,7 +82,7 @@ public class LifeLinesStandardListener extends ImportTupleLoader
 
 			// we iterate through all fields. Each field that is also a
 			// Measurement
-			for (String field : tuple.getFields())
+			for (String field : tuple.getFieldNames())
 			{
 				// only include fields that are selected as measurement
 				String mName = protocol.getName() + "_" + field; // temporarily
