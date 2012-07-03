@@ -28,7 +28,7 @@ public class TryOut
 //		System.out.println("new, row = " + printObjArr(nieuw.getRow(5)));
 		
 //		System.out.println("old, col = " + printObjArr(old.getCol(35)));
-		System.out.println("new, col = " + printObjArr(nieuw.getCol(5)));
+		System.out.println(nieuw.getSubMatrix(new int[]{ 0,1,2,3,4 }, new int[]{ 0 }).toString());
 	}
 	
 	private String printObjArr(Object[] arr)

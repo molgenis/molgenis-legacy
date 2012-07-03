@@ -3,8 +3,15 @@ package matrix.implementations.binary;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
+import matrix.implementations.memory.MemoryDataMatrixInstance;
 
 import org.apache.log4j.Logger;
 import org.molgenis.matrix.MatrixException;
@@ -44,7 +51,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 	 * @return Object[] The resulting list of elements
 	 * @throws IOException
 	 */
-	private Object[] readBlock(int startElement, int elementAmount, boolean replaceNulls) throws IOException
+	private Object[] readChunk(int startElement, int elementAmount, boolean replaceNulls) throws IOException
 	{
 		Object[] result = new Object[elementAmount];
 		
@@ -55,6 +62,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 			if(startPointer != raf.getFilePointer())
 			{
 				raf.seek(startPointer);
+				System.out.println("ADJUSTED RAF POINTER TO " + startPointer);
 			}
 			
 			byte[] arr = new byte[elementAmount * 8];
@@ -70,6 +78,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 				if(startPointer != raf.getFilePointer())
 				{
 					raf.seek(startPointer);
+					System.out.println("ADJUSTED RAF POINTER TO " + startPointer);
 				}
 				
 				//allocate array of the exact size
@@ -108,6 +117,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 				if(startPointer != raf.getFilePointer())
 				{
 					raf.seek(startPointer);
+					System.out.println("ADJUSTED RAF POINTER TO " + startPointer);
 				}
 				
 				//find out how many bytes we're going to read
@@ -183,7 +193,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 	 */
 	public Object getElement(int rowindex, int colindex) throws Exception
 	{
-		return readBlock((rowindex * this.getNumberOfCols()) + colindex, 1, true)[0];
+		return readChunk((rowindex * this.getNumberOfCols()) + colindex, 1, true)[0];
 	}
 
 	@Override
@@ -192,7 +202,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 	 */
 	public Object[] getRow(int rowIndex) throws Exception
 	{
-		return readBlock((rowIndex * this.getNumberOfCols()), this.getNumberOfCols(), true);
+		return readChunk((rowIndex * this.getNumberOfCols()), this.getNumberOfCols(), true);
 	}
 
 	@Override
@@ -220,89 +230,230 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 	@Override
 	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException
 	{
+		//result
+		Object[][] result = new Object[rowIndices.length][colIndices.length];
 		
-		//find out the lowest row index in the list
-		//in case it is not incremental
-		int lowestRowIndex = Integer.MAX_VALUE;
-		int highestRowIndex = Integer.MIN_VALUE;
+		//keys: the indices to retrieve, values: the original location of this index in the provided array
+		//we sort the keys from low to high
+		TreeMap<Integer, Integer> rowIndexPositions = new TreeMap<Integer, Integer>(new sortInt());
+		TreeMap<Integer, Integer> colIndexPositions = new TreeMap<Integer, Integer>(new sortInt());
+		
 		for(int i = 0; i < rowIndices.length; i ++)
 		{
-			if(rowIndices[i] < lowestRowIndex)
-			{
-				lowestRowIndex = rowIndices[i];
-			}
-			if(rowIndices[i] >= highestRowIndex) //TODO: correct?
-			{
-				highestRowIndex = rowIndices[i];
-			}
+			rowIndexPositions.put(rowIndices[i], i);
 		}
-		
-		//find out the lowest row index in the list
-		//in case it is not incremental
-		int lowestColIndex = Integer.MAX_VALUE;
-		int highestColIndex = Integer.MIN_VALUE;
+
 		for(int i = 0; i < colIndices.length; i ++)
 		{
-			if(colIndices[i] < lowestColIndex)
-			{
-				lowestColIndex = colIndices[i];
-			}
-			if(colIndices[i] >= highestColIndex) //TODO: correct?
-			{
-				highestColIndex = colIndices[i];
-			}
+			colIndexPositions.put(colIndices[i], i);
 		}
+		
+//		System.out.println("row index map:");
+//		for(Integer key : rowIndexPositions.keySet())
+//		{
+//			System.out.println("k: " + key + ", v: " + rowIndexPositions.get(key));
+//		}
+//		
+//		System.out.println("col index map:");
+//		for(Integer key : colIndexPositions.keySet())
+//		{
+//			System.out.println("k: " + key + ", v: " + colIndexPositions.get(key));
+//		}
+		
+		int lowestRowIndex = rowIndexPositions.firstKey();
+		int highestRowIndex = rowIndexPositions.lastKey();
+		
+		int lowestColIndex = colIndexPositions.firstKey();
+		int highestColIndex = colIndexPositions.lastKey();
 		
 		int firstElement = (this.getNumberOfCols() * lowestRowIndex) + lowestColIndex;
 		int lastElement = (this.getNumberOfCols() * highestRowIndex) + highestColIndex;
 		
-//		System.out.println("lowestRowIndex: " + lowestRowIndex);
-//		System.out.println("lowestColIndex: " + lowestColIndex);
-//		System.out.println("highestRowIndex: " + highestRowIndex);
-//		System.out.println("highestColIndex: " + highestColIndex);
-//		
-//		System.out.println("firstElement: " + firstElement);
-//		System.out.println("lastElement: " + lastElement);
+		System.out.println("lowestRowIndex: " + lowestRowIndex);
+		System.out.println("lowestColIndex: " + lowestColIndex);
+		System.out.println("highestRowIndex: " + highestRowIndex);
+		System.out.println("highestColIndex: " + highestColIndex);
+		System.out.println("firstElement: " + firstElement);
+		System.out.println("lastElement: " + lastElement);
 		
-		//int howManyBytesToRead = lastElement - firstElement;
+		long memAlloc = (Runtime.getRuntime().freeMemory()/4); //25% of available memory for reading
 		
-		int howManyBytesToRead = -1;
+		boolean done = false;
 		
+		System.out.println("total elements we're goign to read (provided no 'empty' chunks to be skipped): " + (lastElement - firstElement));
 		if(this.getData().getValueType().equals("Decimal"))
 		{
-			howManyBytesToRead = (lastElement - firstElement) * 8;
+			int maxElementsToRead = (int )(memAlloc / 8.0);
+			System.out.println("maximum elements to read " + maxElementsToRead + " elements (" + (lastElement - firstElement)/maxElementsToRead+" times, remainder at the end: "+ (lastElement - firstElement)%maxElementsToRead + ")");
+			
+			if(maxElementsToRead > (lastElement-firstElement))
+			{
+				System.out.println("no need to get that many elements: " + (lastElement-firstElement) + " is enough");
+				maxElementsToRead = (lastElement-firstElement);
+			}
+		
+			
+			int currentStartElement = firstElement;
+			while(!done)
+			{
+					
+				//find out if we're going to get elements we want in the next read action
+				//if not: seek the RAF and adjust start element!
+				boolean skipChunkAndSeek = true;
+				for(int elementIndex = currentStartElement; elementIndex < currentStartElement+maxElementsToRead; elementIndex++)
+				{
+					//e.g. if we're at element 12 in a 5-col matrix, we check if colIndex 2 if part of the result, and so on
+					//if there is at least one, we'll get the chunk
+					if(colIndexPositions.containsKey(elementIndex%this.getNumberOfCols()))
+					{
+						System.out.println("colIndexPositions has key " + elementIndex%this.getNumberOfCols() +", getting next chunk!");
+						skipChunkAndSeek = false;
+						break;
+					}
+				}
+				
+				try
+				{
+					if(skipChunkAndSeek)
+					{
+						System.out.println("NO DATA IN NEXT CHUNK - SKIPPING AND SEEKING");
+						//find next element
+						
+//						int currentColPos = currentStartElement%this.getNumberOfCols();
+//						int nextColPos = -1;
+//						
+//						//iterate colIndexPositions, which are sorted low -> high
+//						//find the next col index that has an element we want
+//						for(Integer key : colIndexPositions.keySet())
+//						{
+//							if(key.intValue() > currentColPos)
+//							{
+//								nextColPos = key.intValue();
+//								break;
+//							}
+//						}
+//						
+//						//if we didn't find out, assign the first from the map
+//						//(no more col indices on this row, start on the next one)
+//						if(nextColPos == -1)
+//						{
+//							nextColPos = colIndexPositions.firstKey(); //equal to "lowestColIndex"
+//						}
+//						
+//						//extrapolate the corresponding element index
+//						
+//						//currentStartElement = currentStartElement + 
+//						
+//						//seek
+//						raf.seek(1121212);
+					}
+					else
+					{
+						//read the chunk
+						System.out.println("reading from " + currentStartElement + " to " + (currentStartElement+maxElementsToRead));
+						Object[] elements = readChunk(currentStartElement, maxElementsToRead, false);
+						
+						System.out.println("RETRIEVED ("+elements.length+"): " + printObjArr(elements));
+						
+						int currentColStartPos = currentStartElement % this.getNumberOfCols();
+						int currentRowStartPos = (currentStartElement - currentColStartPos) / this.getNumberOfRows(); //TODO correct?
+						
+						System.out.println("currentColStartPos = " + currentColStartPos);
+						System.out.println("currentRowStartPos = " + currentRowStartPos);
+						
+						for(int i = 0; i < elements.length; i ++)
+						{
+							int colPos = (currentColStartPos + i) % this.getNumberOfCols();
+							
+							System.out.println("checking of colIndexPositions contains " + colPos);
+							if(colIndexPositions.containsKey(colPos))
+							{
+								int rowPos = (currentRowStartPos + i) % this.getNumberOfRows(); //wrong
+								System.out.println("yep.. row pos = " + rowPos);
+								
+								//map to the correct position in the output (usually the same, but could be different!)
+								result[rowIndexPositions.get(rowPos)]
+										[colIndexPositions.get(colPos)] 
+										= elements[i];
+							}
+						}
+						
+						currentStartElement = currentStartElement + maxElementsToRead;
+						
+					}
+				} 
+				catch (IOException e)
+				{
+					throw new MatrixException(e);
+				}
+				
+//				if(currentStartElement > lastElement){ //TODO: how about the trailing bit etc?
+					done = true;
+//				}
+			}
 		}
 		else
 		{
 			if(this.getTextElementLength() != 0)
 			{
-				howManyBytesToRead = (lastElement - firstElement) * this.getTextElementLength();
+				
 			}
 			else
 			{
-				howManyBytesToRead = (int) (this.textDataElementLenghtsCumulative[lastElement] - this.textDataElementLenghtsCumulative[firstElement]); //TODO: correct?
+				
 			}
 		}
-		System.out.println("need to get " + howManyBytesToRead + " bytes");
-		
-		long halfOfFreeMem = (Runtime.getRuntime().freeMemory()/2);
 		
 		
-
+		//int howManyBytesToRead = lastElement - firstElement;
 		
-		//long totalElementSize = this.getEndOfElementsPointer() - this.getStartOfElementsPointer();
-		
-		double readActions = 1;
-		if(halfOfFreeMem > howManyBytesToRead)
-		{
-			System.out.println("enough memory to read complete chunk");
-		}
-		else
-		{
-			readActions = (double)howManyBytesToRead/(double)halfOfFreeMem;
-		}
-		
-		System.out.println("need to read " + readActions + " times using " + halfOfFreeMem + " bytes of memory");
+//		int howManyBytesToRead = -1;
+//		
+//		if(this.getData().getValueType().equals("Decimal"))
+//		{
+//			howManyBytesToRead = (lastElement - firstElement) * 8;
+//		}
+//		else
+//		{
+//			if(this.getTextElementLength() != 0)
+//			{
+//				howManyBytesToRead = (lastElement - firstElement) * this.getTextElementLength();
+//			}
+//			else
+//			{
+//				howManyBytesToRead = (int) (this.textDataElementLenghtsCumulative[lastElement] - this.textDataElementLenghtsCumulative[firstElement]); //TODO: correct?
+//			}
+//		}
+//		System.out.println("need to get " + howManyBytesToRead + " bytes");
+//		
+//		long halfOfFreeMem = (Runtime.getRuntime().freeMemory()/2);
+//		
+//		
+//
+//		
+//		//long totalElementSize = this.getEndOfElementsPointer() - this.getStartOfElementsPointer();
+//		
+//		double readActions = 1;
+//		if(halfOfFreeMem > howManyBytesToRead)
+//		{
+//			System.out.println("enough memory to read complete chunk");
+//		}
+//		else
+//		{
+//			readActions = (double)howManyBytesToRead/(double)halfOfFreeMem;
+//		}
+//		
+//		System.out.println("need to read " + readActions + " times using " + halfOfFreeMem + " bytes of memory");
+//		
+//		
+//		boolean notDone = false;
+//		
+//		while(notDone)
+//		{
+//			int currentPointer = 0;
+//			
+//			Object[] chunk = readBlock(currentPointer, int elementAmount, boolean replaceNulls);
+//		}
 		
 		//perform read actions
 		//figure out if we are going to retrieve a requested element by performing this action
@@ -310,7 +461,24 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		//smart when: getting 1 column from a file with very long rows
 		//or when getting e.g. the first and last row of a big file
 		
-		return null;
+		
+		List<String> rowNames = new ArrayList<String>();
+		List<String> colNames = new ArrayList<String>();
+
+		for (int rowIndex : rowIndices)
+		{
+			rowNames.add(this.getRowNames().get(rowIndex).toString());
+		}
+
+		for (int colIndex : colIndices)
+		{
+			colNames.add(this.getColNames().get(colIndex).toString());
+		}
+		
+		AbstractDataMatrixInstance dm = new MemoryDataMatrixInstance(rowNames, colNames, result,
+				this.getData());
+		
+		return dm;
 	}
 
 	/**
@@ -357,5 +525,34 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		//should be a memorymatrix, meaning the getElements just returns current memory location
 		return this.getSubMatrix(rows, cols).getElements();
 	}
+	
+	private String printObjArr(Object[] arr)
+	{
+		String printMe = "";
+		for(Object o : arr)
+		{
+			printMe += "'" + o.toString() + "', ";
+		}
+		return printMe;
+	}
 
+}
+
+class sortInt implements Comparator<Integer>
+{
+	public int compare(Integer a, Integer b)
+	{
+		if (a.intValue() < b.intValue())
+		{
+			return -1;
+		}
+		else if (a.intValue() == b.intValue())
+		{
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+	}
 }
