@@ -39,3 +39,4 @@ log*
 logger.out*
 /dist
 /generated/java
+*.so
