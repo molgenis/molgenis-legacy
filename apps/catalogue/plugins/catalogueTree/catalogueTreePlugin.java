@@ -54,7 +54,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<Measurement> shoppingCart = new ArrayList<Measurement>();
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 	private String selectedInvestigation = null;
-	private String InputToken = null;
+	//	private String InputToken = null;
 	private String comparison = null;
 	private String selectedField = null;
 	private String SelectionName = "empty";
@@ -65,13 +65,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private String Status = "";
 
 
-	private static int SEARCHINGPROTOCOL = 2;
-
-	private static int SEARCHINGMEASUREMENT = 3;
-
-	private static int SEARCHINGALL = 4;
-
-	private static int SEARCHINGDETAIL = 5;
+	//	private static int SEARCHINGPROTOCOL = 2;
+	//
+	//	private static int SEARCHINGMEASUREMENT = 3;
+	//
+	//	private static int SEARCHINGALL = 4;
+	//
+	//	private static int SEARCHINGDETAIL = 5;
 
 	Integer mode;
 
@@ -112,7 +112,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			this.setSelectedInvestigation(selectedInvestigation);
 			System.out.println("The selected investigation is : "+ selectedInvestigation);
 			arrayInvestigations.clear();
-			this.SearchFilters.clear();
 
 		}else if ("SaveSelectionSubmit".equals(request.getAction())) {
 
@@ -152,73 +151,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			measurementName = request.getAction().substring( "DeleteMeasurement".length() + 2+ "measurementName".length(),	request.getAction().length());
 			this.deleteShoppingItem(measurementName);
 
-		} else if (request.getAction().startsWith("SearchCatalogueTree")) {
-
-			if (request.getString("InputToken") != null) {
-
-				this.setInputToken(request.getString("InputToken").trim());		
-				System.out.println("The request string : " + request);
-				this.setSelectedField(request.getString("selectedField"));
-				System.out.println("Input token: >>>>>>"
-						+ this.getInputToken() + ">>> selectedField >>"
-						+ selectedField + "comparison >>>"
-						+ this.getComparison());
-				if (this.getSelectedField().equals("Protocols")) {
-					//Show filters label 
-					this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Protocols ",  true));
-					this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Protocols "+ "</h4>" ) ;
-					SearchFilters.add("Protocols:" + this.getInputToken());
-
-					mode = SEARCHINGPROTOCOL;
-					RetrieveProtocols(db, SEARCHINGPROTOCOL);
-				}
-				// Search "Any field" ==> All fields LIKE input token
-				if (this.getSelectedField().equals("Measurements")) {
-					//Show filters label 
-					this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Measurements ",  true));
-					this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Measurements  "+ "</h4>" ) ;
-
-					SearchFilters.add("Measurements:" + this.getInputToken());
-					mode = SEARCHINGMEASUREMENT;
-					RetrieveProtocols(db, SEARCHINGMEASUREMENT);
-				}
-				if (this.getSelectedField().equals("All fields")) {
-					//Show filters label 
-					this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in all fields ",  true));
-					this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in all fields "+ "</h4>" ) ;
-
-					SearchFilters.add("All:" + this.getInputToken());
-
-					mode = SEARCHINGALL;
-					RetrieveProtocols(db, SEARCHINGALL);
-				}
-				if (this.getSelectedField().equals("Details")) {
-					//Show filters label 
-					this.getModel().getMessages().add(new ScreenMessage("Showing results for :" + this.getInputToken() + " in Details ",  true));
-					this.setStatus("<h4> Showing results for :" + this.getInputToken() + " in Details " + "</h4>" ) ;
-
-					SearchFilters.add("Details:" + this.getInputToken());
-
-					mode = SEARCHINGDETAIL;
-					RetrieveProtocols(db, SEARCHINGDETAIL);
-				}
-
-
-				//show a label with the search filter and an option to remove it 
-				//in case of removal of filter , reload the tree
-
-			} else {
-				this.getModel().getMessages().add(new ScreenMessage("Empty search string", true));
-				this.setStatus("<h4> Empty search string" + "</h4>" ) ;
-
-			}
-		} else if (request.getString("measurementId") != null) {
-			System.out.println("-request.getString(measurementId-----------" +  request.getString("measurementId"));
-
 		}
-
-
-
 
 	}
 
@@ -281,11 +214,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 		}
-
-		if (this.getInputToken() == null)
-			RetrieveProtocols(db, 1); // mode 1: gets all protocols without filters!
-
-		this.setInputToken(null);
+		RetrieveProtocols(db); // mode 1: gets all protocols without filters!
 
 	}
 
@@ -305,7 +234,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * @param db
 	 * @param mode
 	 */
-	public void RetrieveProtocols(Database db, Integer mode) {
+	public void RetrieveProtocols(Database db) {
 
 		List<String> topProtocols = new ArrayList<String>();
 		List<String> bottomProtocols = new ArrayList<String>();
@@ -395,9 +324,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsTree, db, foundInputToken, mode);
 		}
 
-		if(mode == 1){
+//		if(mode == 1){
 			directChildrenOfTop = protocolsTree.getChildren();
-		}
+//		}
 
 		System.out.println(protocolsTree.getName());
 		System.out.println(">>>Protocols tree: "+ protocolsTree + "tree elements: "+ protocolsTree.getTreeElements().containsKey("Questionnaire"));
@@ -440,7 +369,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * @return
 	 */
 
-	public boolean recursiveAddingNodesToTree(List<String> nextNodes,
+	public void recursiveAddingNodesToTree(List<String> nextNodes,
 			String parentClassName, JQueryTreeViewElement parentTree,
 			Database db, boolean foundTokenInParentProtocol, Integer mode) {
 
@@ -448,7 +377,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		// the sub-nodes contain any input token. If neither of the children
 		// contains the input token
 		// this variable should be false.
-		boolean findInputTokenInNextAllNodes = false;
+		//		boolean findInputTokenInNextAllNodes = false;
 
 		// Create a variable to keep track of ONLY ONE sub-node of the current
 		// node. If the variable is false, that means there is no token found in
@@ -457,12 +386,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		// Loop through all the nodes on this level.
 		for (String protocolName : nextNodes) {
 
-			boolean findInputTokenInEachNode = false;
-
-			if(protocolName.equalsIgnoreCase("residence")){
-				System.out.println();
-			}
-
+		
 			Protocol protocol = nameToProtocol.get(protocolName);
 
 			JQueryTreeViewElement childTree = null;
@@ -513,7 +437,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						if(subProtocolNames.contains(parentClassName)){
 							subProtocolNames.remove(parentClassName);
 						}
-						findInputTokenInEachNode = recursiveAddingNodesToTree(
+						recursiveAddingNodesToTree(
 								subProtocolNames,
 								protocol.getName(), childTree, db,
 								foundTokenInParentProtocol, mode);
@@ -525,220 +449,27 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							&& protocol.getFeatures_Name().size() > 0) { // error
 						// checking
 
-						if (mode != SEARCHINGPROTOCOL) {
-							findInputTokenInEachNode = addingMeasurementsToTree(
-									protocol.getFeatures_Name(), childTree, db,
-									false, mode); // .. so normally it goes always
-							// this way
-						}
+
+						addingMeasurementsToTree(
+								protocol.getFeatures_Name(), childTree, db,
+								false, mode); // .. so normally it goes always
+						// this way
 					}
+					
 				}else if(protocolName.equals(parentClassName)){
 
 					if (protocol.getFeatures_Name() != null
 							&& protocol.getFeatures_Name().size() > 0) { // error
 						// checking
 
-						if (mode != SEARCHINGPROTOCOL) {
-							findInputTokenInEachNode = addingMeasurementsToTree(
-									protocol.getFeatures_Name(), childTree, db,
-									false, mode); // .. so normally it goes always
-							// this way
-						}
-					}
-				}
-
-
-				// If the input token is not null, the tree will be filtered, in
-				// another word, part of the tree elements
-				// will be deleted according to different mode that has been
-				// selected.
-				if (InputToken != null) {
-
-
-
-					// If none of the child nodes, such as none of the
-					// measurements of this protocol, contains the input token,
-					// this protocol is not added but removed.
-					if (findInputTokenInEachNode == true) {
-
-						if (mode == SEARCHINGALL){
-
-							if (protocolName.toLowerCase().matches(
-									".*" + InputToken.toLowerCase()
-									+ ".*")) {
-
-								for(JQueryTreeViewElement element : childTree.getAllChildren()){
-									element.remove();
-								}
-
-								if (!foundTokenInParentProtocol
-										&& !protocolName.toLowerCase().matches(
-												".*" + InputToken.toLowerCase()
-												+ ".*")) {
-
-									childTree.remove();
-
-								} else {
-
-									if(!protocolName.equals(parentClassName)){
-
-										boolean subProtocolRepeatProtocol = false;
-										// If the input token is found in the current
-										// protocol, re-add all its descendants to the
-										// tree. Because
-										// its sub-nodes might not contain the input
-										// token therefore they might have been removed
-										// from the tree already.
-										// Therefore need to be re-added
-										if (protocol.getSubprotocols_Name().size() > 0) {
-
-											List<String> subProtocolNames = protocol.getSubprotocols_Name();
-
-											if(subProtocolNames.contains(protocolName)){
-												subProtocolRepeatProtocol = true;
-											}
-											if(subProtocolNames.contains(parentClassName)){
-												subProtocolNames.remove(parentClassName);
-											}
-
-											findInputTokenInEachNode = recursiveAddingNodesToTree(
-													protocol.getSubprotocols_Name(),
-													protocol.getName(), childTree, db,
-													true, mode);
-											findInputTokenInEachNode = true;
-										}
-										// This is the case where none of the
-										// measurements of this protocol match the input
-										// token, but the current protocol
-										// matches input token. Therefore its
-										// measurements need to be re-added to the tree
-										if (subProtocolRepeatProtocol == false && protocol.getFeatures_Name() != null
-												&& protocol.getFeatures_Name().size() > 0) {
-											findInputTokenInEachNode = addingMeasurementsToTree(
-													protocol.getFeatures_Name(),
-													childTree, db, true, mode);
-											findInputTokenInEachNode = true;
-										}
-									}else{
-										// This is the case where none of the
-										// measurements of this protocol match the input
-										// token, but the current protocol
-										// matches input token. Therefore its
-										// measurements need to be re-added to the tree
-										if (protocol.getFeatures_Name() != null
-												&& protocol.getFeatures_Name().size() > 0) {
-											findInputTokenInEachNode = addingMeasurementsToTree(
-													protocol.getFeatures_Name(),
-													childTree, db, true, mode);
-											findInputTokenInEachNode = true;
-										}
-									}
-								}
-
-							}
-						}
-
-					}else if (findInputTokenInEachNode == false) {
-
-						if (mode == SEARCHINGMEASUREMENT || mode == SEARCHINGDETAIL) {// filter in measurements
-
-							childTree.remove();
-
-						} else if (mode == SEARCHINGPROTOCOL || mode == SEARCHINGALL) { // get all
-							// measurements and
-							// protocols in
-							// descendant class.
-							// Because the input token was found in current
-							// protocol!
-
-							// Remove all protocols that don`t match the input
-							// token
-							if (!foundTokenInParentProtocol
-									&& !protocolName.toLowerCase().matches(
-											".*" + InputToken.toLowerCase()
-											+ ".*")) {
-
-								childTree.remove();
-
-							} else {
-
-								if(!protocolName.equals(parentClassName)){
-
-									boolean subProtocolRepeatProtocol = false;
-									// If the input token is found in the current
-									// protocol, re-add all its descendants to the
-									// tree. Because
-									// its sub-nodes might not contain the input
-									// token therefore they might have been removed
-									// from the tree already.
-									// Therefore need to be re-added
-									if (protocol.getSubprotocols_Name().size() > 0) {
-
-										List<String> subProtocolNames = protocol.getSubprotocols_Name();
-
-										if(subProtocolNames.contains(protocolName)){
-											subProtocolRepeatProtocol = true;
-										}
-										if(subProtocolNames.contains(parentClassName)){
-											subProtocolNames.remove(parentClassName);
-										}
-
-										findInputTokenInEachNode = recursiveAddingNodesToTree(
-												protocol.getSubprotocols_Name(),
-												protocol.getName(), childTree, db,
-												true, mode);
-										findInputTokenInEachNode = true;
-									}
-									// This is the case where none of the
-									// measurements of this protocol match the input
-									// token, but the current protocol
-									// matches input token. Therefore its
-									// measurements need to be re-added to the tree
-									if (subProtocolRepeatProtocol == false && protocol.getFeatures_Name() != null
-											&& protocol.getFeatures_Name().size() > 0) {
-										findInputTokenInEachNode = addingMeasurementsToTree(
-												protocol.getFeatures_Name(),
-												childTree, db, true, mode);
-										findInputTokenInEachNode = true;
-									}
-								}else{
-									// This is the case where none of the
-									// measurements of this protocol match the input
-									// token, but the current protocol
-									// matches input token. Therefore its
-									// measurements need to be re-added to the tree
-									if (protocol.getFeatures_Name() != null
-											&& protocol.getFeatures_Name().size() > 0) {
-										findInputTokenInEachNode = addingMeasurementsToTree(
-												protocol.getFeatures_Name(),
-												childTree, db, true, mode);
-										findInputTokenInEachNode = true;
-									}
-								}
-							}
-						}
-					}
-					// if any branch of node contains input token, we indicate
-					// to keep the parent node in the tree.
-					// For example protocolA has protocolB and protocolC,
-					// protoclB contains input token whereas protocolC dose not.
-					// We`ll delete C and tells
-					// its parent node A that the token has been found
-					if (findInputTokenInEachNode == true) {
-						findInputTokenInNextAllNodes = true;
+						addingMeasurementsToTree(
+								protocol.getFeatures_Name(), childTree, db,
+								false, mode); // .. so normally it goes always
+						// this way
 					}
 				}
 			}
 		}
-
-		// If the input token is null, that means it`s not in the searching mode
-		// but in normal tree view.
-		if (InputToken == null) {
-
-			findInputTokenInNextAllNodes = true;
-		}
-
-		return findInputTokenInNextAllNodes;
 	}
 
 	/**
@@ -768,50 +499,48 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		// requirements by the mode that has been selected.
 		// For example, it only contains the measurement where the input token
 		// has been found under mode searchingMeasurement
-		List<String> filteredNode = new ArrayList<String>();
+		//		List<String> filteredNode = new ArrayList<String>();
 
 		try {
 
-			// If the input token is available, we need to check which mode it is
-			// and decide what we do with it here
-			if (InputToken != null) {
+			//			// If the input token is available, we need to check which mode it is
+			//			// and decide what we do with it here
+			//			if (InputToken != null) {
+			//
+			//				// In mode of searching for measurements, we check if the name of
+			//				// measurements contain the input token
+			//				// If the token is not in the name, the measurement is removed from
+			//				// list.
+			//				if (mode == SEARCHINGMEASUREMENT) {
+			//
+			//					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode))){
+			//
+			//						if (m.getName().toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")) {
+			//							filteredNode.add(m.getName());
+			//							findTokenInMeasurements = true;
+			//						} else if (m.getLabel() != null && m.getLabel().toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")) {
+			//							filteredNode.add(m.getName());
+			//							findTokenInMeasurements = true;
+			//						}
+			//						
+			//					}
+			//
+			//				} else {
+			//					// In mode of searching for all fields, details, we need to loop
+			//					// through all the measurements, therefore
+			//					// we do not care whether the measurement name contains the
+			//					// input token or not.
+			//					filteredNode = childNode;
+			//				}
+			//
+			//			} else {
+			//				// Normal mode when the input token is not available
+			//				filteredNode = childNode;
+			//			}
+			//
 
-				// In mode of searching for measurements, we check if the name of
-				// measurements contain the input token
-				// If the token is not in the name, the measurement is removed from
-				// list.
-				if (mode == SEARCHINGMEASUREMENT) {
-
-					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode))){
-
-						if (m.getName().toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")) {
-							filteredNode.add(m.getName());
-							findTokenInMeasurements = true;
-						} else if (m.getLabel() != null && m.getLabel().toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")) {
-							filteredNode.add(m.getName());
-							findTokenInMeasurements = true;
-						}
-						
-					}
-
-				} else {
-					// In mode of searching for all fields, details, we need to loop
-					// through all the measurements, therefore
-					// we do not care whether the measurement name contains the
-					// input token or not.
-					filteredNode = childNode;
-				}
-
-			} else {
-				// Normal mode when the input token is not available
-				filteredNode = childNode;
-			}
-
-			List<Measurement> measurementList = new ArrayList<Measurement>();
-
-			if (filteredNode.size() > 0)
-				measurementList = db.find(Measurement.class, new QueryRule(
-						Measurement.NAME, Operator.IN, filteredNode));
+			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(
+					Measurement.NAME, Operator.IN, childNode));
 
 			for (Measurement measurement : measurementList) {
 
@@ -881,54 +610,54 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
 
-				// Searching for the details. Since htmlValue has all the
-				// information about this measurement,
-				// therefore we search for the input tokenin this variable
-				if (mode == SEARCHINGDETAIL) {
-
-					if (htmlValue.toLowerCase().matches(
-							".*" + InputToken.toLowerCase() + ".*")) {
-						findTokenInDetailInformation = true;
-					} else {
-						findTokenInDetailInformation = false;
-						childTree.remove();
-					}
-
-					if (findTokenInDetailInformation == true) {
-						findTokenInMeasurements = true;
-					}
-				}
-
-				// Searching for the details and measurement name. If either
-				// name of measurement or detail information
-				// of measurement contains the input token, this is a matching!
-				if (mode == SEARCHINGALL) {
-
-					if (htmlValue.toLowerCase().matches(
-							".*" + InputToken.toLowerCase() + ".*")) {
-						findTokenInDetailInformation = true;
-					} else {
-
-						if (measurement
-								.getName()
-								.toLowerCase()
-								.matches(".*" + InputToken.toLowerCase() + ".*")) {
-							findTokenInDetailInformation = true;
-						} else {
-
-							if (foundInParent != true) {
-								findTokenInDetailInformation = false;
-								childTree.remove();
-							} else {
-								findTokenInDetailInformation = true;
-							}
-						}
-					}
-
-					if (findTokenInDetailInformation == true) {
-						findTokenInMeasurements = true;
-					}
-				}
+				//				// Searching for the details. Since htmlValue has all the
+				//				// information about this measurement,
+				//				// therefore we search for the input tokenin this variable
+				//				if (mode == SEARCHINGDETAIL) {
+				//
+				//					if (htmlValue.toLowerCase().matches(
+				//							".*" + InputToken.toLowerCase() + ".*")) {
+				//						findTokenInDetailInformation = true;
+				//					} else {
+				//						findTokenInDetailInformation = false;
+				//						childTree.remove();
+				//					}
+				//
+				//					if (findTokenInDetailInformation == true) {
+				//						findTokenInMeasurements = true;
+				//					}
+				//				}
+				//
+				//				// Searching for the details and measurement name. If either
+				//				// name of measurement or detail information
+				//				// of measurement contains the input token, this is a matching!
+				//				if (mode == SEARCHINGALL) {
+				//
+				//					if (htmlValue.toLowerCase().matches(
+				//							".*" + InputToken.toLowerCase() + ".*")) {
+				//						findTokenInDetailInformation = true;
+				//					} else {
+				//
+				//						if (measurement
+				//								.getName()
+				//								.toLowerCase()
+				//								.matches(".*" + InputToken.toLowerCase() + ".*")) {
+				//							findTokenInDetailInformation = true;
+				//						} else {
+				//
+				//							if (foundInParent != true) {
+				//								findTokenInDetailInformation = false;
+				//								childTree.remove();
+				//							} else {
+				//								findTokenInDetailInformation = true;
+				//							}
+				//						}
+				//					}
+				//
+				//					if (findTokenInDetailInformation == true) {
+				//						findTokenInMeasurements = true;
+				//					}
+				//				}
 			}
 
 		} catch (DatabaseException e) {
@@ -1227,13 +956,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return arraySearchFields;
 	}
 
-	public void setInputToken(String inputToken) {
-		InputToken = inputToken;
-	}
-
-	public String getInputToken() {
-		return InputToken;
-	}
+	//	public void setInputToken(String inputToken) {
+	//		InputToken = inputToken;
+	//	}
+	//
+	//	public String getInputToken() {
+	//		return InputToken;
+	//	}
 
 	public void setSelectedField(String selectedField) {
 		this.selectedField = selectedField;
