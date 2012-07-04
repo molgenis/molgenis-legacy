@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import jxl.write.WriteException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
@@ -53,6 +55,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	private List<Measurement> shoppingCart = new ArrayList<Measurement>();
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
+	private List<String> listOfJSONs = new ArrayList<String>();
+
 	private String selectedInvestigation = null;
 	//	private String InputToken = null;
 	private String comparison = null;
@@ -240,6 +244,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		List<String> bottomProtocols = new ArrayList<String>();
 		List<String> middleProtocols = new ArrayList<String>();
 		protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
+		multipleInheritance.clear();
 		listOfMeasurements.clear();
 
 		// measurementsInTree = new HashMap<String, JQueryTreeViewElement>();
@@ -493,7 +498,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		// indicate with the input token has been found in detail information in
 		// the measurement.
-		boolean findTokenInDetailInformation = false;
+//		boolean findTokenInDetailInformation = false;
 
 		// This variables store the measurements that conform to the
 		// requirements by the mode that has been selected.
@@ -545,7 +550,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			for (Measurement measurement : measurementList) {
 
 				// reset the the variable to false
-				findTokenInDetailInformation = false;
+//				findTokenInDetailInformation = false;
 
 				JQueryTreeViewElement childTree = null;
 
@@ -578,6 +583,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 				//				displayName = displayName.replaceAll("[%#]", "");
 
+				String uniqueName = "";
+				
 				if (protocolsAndMeasurementsinTree.containsKey(displayName)) {
 
 					if (!multipleInheritance.containsKey(displayName)) {
@@ -595,6 +602,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							displayName, parentTree,
 							previousChildTree.getHtmlValue());
 
+					uniqueName = displayName + "_" + multipleInheritance.get(displayName);
+					
 					listOfMeasurements.add(displayName
 							+ multipleInheritance.get(displayName));
 
@@ -605,11 +614,27 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree = new JQueryTreeViewElement(displayName,
 							parentTree, htmlValue);
 
+					uniqueName = displayName;
+					
 					listOfMeasurements.add(displayName);
 
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
-
+				
+				JSONObject json = new JSONObject();
+				
+				try {
+					
+					json.put(uniqueName.replaceAll(" ", "_"), htmlValue);
+//					json.put("tableID", measurement.getName().replaceAll(" ", "_") + "_table");
+//					json.put("table", htmlValue);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				listOfJSONs.add(json.toString());
+				
 				//				// Searching for the details. Since htmlValue has all the
 				//				// information about this measurement,
 				//				// therefore we search for the input tokenin this variable
@@ -687,8 +712,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		String measurementDataType = measurement.getDataType();
 
 		// String htmlValue = "<table id = 'detailInformation'  border = 2>" +
-		String htmlValue = "<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = 'measurementDetail"
-				+ measurement.getId() + "'  >";
+		String htmlValue = "<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = '"
+				+ measurement.getName().replaceAll(" ", "_") + "_table'>";
 		htmlValue += "<tr><td class='box-body-label'>Item name:</th><td>"
 				+ measurement.getName() + "</td></tr>";
 
@@ -1003,11 +1028,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	//		return true;
 	//	}
 
+	public List<String> getListOfJSONs() {
+		return listOfJSONs;
+	}
+	
 	public void setSelectionName(String selectionName)
 	{
 		SelectionName = selectionName;
 	}
-
+	
 	public String getSelectionName()
 	{
 		return SelectionName;

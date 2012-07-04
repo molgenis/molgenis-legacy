@@ -12,8 +12,16 @@
 	<input type="hidden" name="DemoName" id="DemoName" value="%= demoName %">
 	
 <!-- this shows a title and border -->
-
-
+	
+	<script type="text/javascript">
+		
+		function getClickTable(){
+		
+		
+		}
+		
+	</script>
+	
 	<div class="formscreen">
 		
 		<div class="form_header" id="${screen.getName()}">
@@ -103,15 +111,28 @@
 					    </td><td class="box-body" style="width: 50%;">Details:</td></tr>
 					    <tr><td class="box-body">
 								<div id="leftSideTree">  
-									${screen.getTreeView()}
-								</div><br/>
+									${screen.getTreeView()}<br/>
+								</div>
+								<div>
+								</div>
 						    </td>
-						    
-						    <td class="box-body">
-						    	<!--div id="scrollingDiv"--> 
-      								<div id="details"></div><br/><br/>
-      							<!--/div-->
-
+						    <td class="box-body"> 
+      							<div id="details">
+      								<script>
+										<#if screen.getListOfJSONs()??>
+											<#list screen.getListOfJSONs() as eachJSON>
+										   		var json = eval(${eachJSON});
+										   		$.each(json, function(measurementID, htmlTable){
+										   			$('#' + measurementID).click(function(){
+										   				$('#details > table').hide();
+										   				$('#details').append(htmlTable);
+										   			});
+										   		});
+										    </#list>
+										</#if> 
+										
+									</script>		
+      							</div>
 						   </td>
 						</tr>
 						<tr>
