@@ -30,42 +30,56 @@ import plugins.hl7parser.StageLRA.HL7StageLRA;
  */
 public class HL7LLData implements HL7Data{
 
-	
-	private static final String ORGANIZER = "/urn:hl7-org:v3:genericCatalog/urn:hl7-org:v3:component/urn:hl7-org:v3:organizer/urn:hl7-org:v3:code";
+    
+    private static final String ORGANIZER = "/urn:hl7-org:v3:genericCatalog/urn:hl7-org:v3:component/urn:hl7-org:v3:organizer/urn:hl7-org:v3:code";
+    private static final String VALUESET = "/urn:hl7-org:v3:ValueSets";
     XPath xpath;
     public HL7GenericDCM hl7GenericDCM;
     public HL7StageLRA hl7StageLRA;
     
-    public HL7LLData(String file1,String file2,String file3, int j) throws Exception{
-    	String xpathExpres = ORGANIZER;
+    private NodeList readFile(String file, XPath xpath,String xpathExpres) throws Exception{
+        
+        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        domFactory.setNamespaceAware(true);
+        DocumentBuilder builder = domFactory.newDocumentBuilder();
+        Document doc = builder.parse(file);
+        NodeList nodesFile = (NodeList)xpath.compile(xpathExpres).evaluate(doc, XPathConstants.NODESET);
+        System.out.println("Hallo! " + nodesFile.getLength());
+        return nodesFile;
+    }
+    
+    public HL7LLData(String file1,String file2,String file3) throws Exception{
+        
         ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
         XPathFactory factory = XPathFactory.newInstance();
         this.xpath = factory.newXPath();
+        
+       
+        NodeList nodesFile1 = readFile(file1,xpath, ORGANIZER);
+        
+        NodeList nodesFile2 = readFile(file2,xpath, VALUESET);
+        
+        //Normal xml file
+        for (int i = 0; i < nodesFile1.getLength(); i++) {
+            if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("GenericDCM")){
+                System.out.println(nodesFile1.item(i).getParentNode());
+                hl7GenericDCM = new HL7GenericDCM (nodesFile1.item(i).getParentNode(),xpath);
 
-        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-        domFactory.setNamespaceAware(true);
-
-        DocumentBuilder builder = domFactory.newDocumentBuilder();
-        Document doc = builder.parse(file1);
-        NodeList nodes = (NodeList)xpath.compile(xpathExpres).evaluate(doc, XPathConstants.NODESET);
-
-//        NodeList nodesCode = (NodeList)xpath.compile(xpathExpres+"").evaluate(doc, XPathConstants.NODESET);
-
-        //genericDCM 1 en 3
-        //stageLRA 2 en 3
-        for (int i = 0; i < nodes.getLength(); i++) {
-            if(nodes.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("GenericDCM") && j!=2){
-                hl7GenericDCM = new HL7GenericDCM (nodes.item(i).getParentNode(),xpath);
-                
             }
-            else if(nodes.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("StageLRA")&& j!=1){
-            	
-            	hl7StageLRA = new HL7StageLRA (nodes.item(i).getParentNode(),xpath);
+            else if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("StageLRA")){
+                hl7StageLRA = new HL7StageLRA (nodesFile1.item(i).getParentNode(),xpath);
             }
             else{
                 System.out.println("Error");
             }
-            allOrganizerNodes.add(nodes.item(i));
+            allOrganizerNodes.add(nodesFile1.item(i));
+        }
+        
+        //Valuesets xml file
+        for (int i = 0; i < nodesFile2.getLength(); i++) {
+            
+            System.out.println(nodesFile2.item(i).getAttributes().getNamedItem("name"));
+            
         }
     }
 
