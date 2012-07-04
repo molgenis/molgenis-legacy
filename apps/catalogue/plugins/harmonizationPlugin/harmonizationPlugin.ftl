@@ -202,17 +202,6 @@ function getClickedTableById(key){
 				
 				<#else>
 					<#if screen.isSelectedInv() == true>
-						<script>
-							var jsonObject = eval(${screen.getJsonObject()});
-							
-							var jsonArray = jsonObject.table;
-							
-							for(var i = 0; i < jsonArray.length; i++){
-								$.each(jsonArray[i], function(j, val) {
-							  		
-								});
-							}
-						</script>
 						<table class="box" width="100%" cellpadding="0" cellspacing="0">
 							<tr><td class="box-header" colspan="1">  
 									<label>Choose a prediction model:
