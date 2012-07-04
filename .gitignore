@@ -37,3 +37,4 @@ log*
 logger.out*
 /dist
 /.settings
+.project
