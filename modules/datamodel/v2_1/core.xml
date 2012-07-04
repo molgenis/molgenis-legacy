@@ -52,6 +52,7 @@
 				xref_entity="Ontology" />
 			<field nillable="true" auto="false" name="termAccession" type="varchar"
 				description="(Optional) The accession number assigned to the ontology term in its source ontology. If empty it is assumed to be a locally defined term. " />
+			<field name="name" description="human readable name for the term"/>
 			<field nillable="true" auto="false" name="definition" type="string"
 				description="(Optional) The definition of the term." />
 			<unique fields="ontology,termAccession"
