@@ -37,4 +37,5 @@ log*
 logger.out*
 /dist
 /.settings
+!/.settings/template*
 .project
