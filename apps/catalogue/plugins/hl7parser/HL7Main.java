@@ -42,7 +42,7 @@ public class HL7Main {
 
 		//Read file, fill arraylists
 
-		HL7Data ll = new HL7LLData(file1,file2,file3, i);
+		HL7Data ll = new HL7LLData(file1,file2,file3);
 
 
 		System.out.println("--------");
