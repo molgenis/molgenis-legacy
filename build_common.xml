@@ -240,6 +240,10 @@ It should be used via 'import' plus passing of properties
 
 		<echo>Restoring .setting/sorg.eclipse.wst.common.component from template file ${basedir}/.settings/template.org.eclipse.wst.common.component</echo>
 		<copy file="${basedir}/.settings/template.org.eclipse.wst.common.component" tofile="${basedir}/.settings/org.eclipse.wst.common.component" overwrite="true" />
+		<copy file="${basedir}/.settings/template.jsdtscope" tofile="${basedir}/.settings/jsdtscope" overwrite="yes" />
+		<copy file="${basedir}/.settings/template.org.eclipse.jdt.core.prefs" tofile="org.eclipse.jdt.core.prefs" overwrite="yes" />
+		<copy file="${basedir}/.settings/template.org.eclipse.wst.common.project.facet.core.xml" tofile="${basedir}/.settings/org.eclipse.wst.common.project.facet.core.xml" overwrite="yes" />
+		<copy file="${basedir}/.project.template" tofile="${basedir}/.project" overwrite="yes" />
 
 		<!-- <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/src"/> -->
 
