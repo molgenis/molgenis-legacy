@@ -21,6 +21,7 @@
 /**.menuscreen**/
 .menuscreen {
 	border-style: dashed;
+	background: #008EE6;
 	overflow: hidden;
 	text-align: center;
 }
@@ -31,17 +32,38 @@
 	border-width:2px;
 	border-radius:5px;
 	border-margin:2px;
+	background: #FFFFFF;
+	color: #008EE6;
 	float: left;
 	margin: 5px;
+
 }
 
 .navigationNotSelected {
 	float: left;
 	margin: 5px;
+	border-style:solid;
+	border-width:2px;
+	border-radius:5px;
+	border-margin:2px;
+	background: #FFFFFF;
+	color: #000000;
 }
 
 #container {
 	align: justify;
+}
+
+.form_header{
+	border-style:solid;
+	border-width:2px;
+	border-radius:25px;
+	border-margin:2px;
+	background: #008EE6;
+	color: #FFFFFF;
+	float: left;
+	margin: 5px;
+
 }
 
 #footer{
