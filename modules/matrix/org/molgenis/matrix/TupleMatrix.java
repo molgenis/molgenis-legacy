@@ -20,7 +20,7 @@ public class TupleMatrix extends MemoryMatrix<String,String,String>
 		
 		//columns
 		Tuple first = values.get(0);
-		this.setColNames(first.getFields());
+		this.setColNames(first.getFieldNames());
 		
 		//rows
 		List<String> rownames = new ArrayList<String>();
