@@ -22,12 +22,11 @@ public class HL7OrganizerDCM {
     private XPath xpath;
     private static final String OBSERVATION = "urn:hl7-org:v3:organizer/urn:hl7-org:v3:component";
     private static final String ORGANIZER_NAME = "comment()";
-    ArrayList<Node> allMeasurementNodes = new ArrayList<Node>();
-    private String organizerName;
+    public ArrayList<Node> allMeasurementNodes = new ArrayList<Node>();
+    public String organizerName;
     public ArrayList<HL7MeasurementDCM> measurements;
 
     public HL7OrganizerDCM (Node organizer, XPath xpath ) throws Exception{
-        System.out.println("Organizer node name: " + organizer.getNodeName());
         this.organizer = organizer;
         this.xpath = xpath;      
         readOrganizerName();
