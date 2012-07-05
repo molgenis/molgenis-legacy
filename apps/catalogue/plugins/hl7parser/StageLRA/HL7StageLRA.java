@@ -23,20 +23,21 @@ public class HL7StageLRA {
     ArrayList<HL7ObservationLRA> measurement;
     
 
-    private static final String ORGANIZER = "//urn:hl7-org:v3:organizer";
+    private static final String ORGANIZER = "urn:hl7-org:v3:component/urn:hl7-org:v3:organizer";
 
     
 	public HL7StageLRA(Node parentNode, XPath xpath) throws Exception
 	{
+		
 		ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
         NodeList nodes = (NodeList)xpath.compile(ORGANIZER).evaluate(parentNode, XPathConstants.NODESET);
-
+        System.out.println(nodes.getLength());
         for (int i = 0; i < nodes.getLength(); i++) {
             allOrganizerNodes.add(nodes.item(i));           
         }
 
         hl7organizer = new ArrayList<HL7OrganizerLRA>(allOrganizerNodes.size());
-
+        
 
         for(Node y : allOrganizerNodes){
             HL7OrganizerLRA hl7org = new HL7OrganizerLRA(y,xpath);
