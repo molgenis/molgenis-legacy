@@ -121,7 +121,7 @@ public class MolgenisModelValidator
 		for (Entity e : model.getEntities())
 		{
 			// maximum num of chars in oracle table name of column is 30
-			if (e.getName().length() > 30)
+			if (e.getName().length() > 50)
 			{
 				throw new MolgenisModelException(String.format("table name %s is longer than %d", e.getName(), 30));
 			}
