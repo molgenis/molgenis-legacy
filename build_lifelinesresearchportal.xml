@@ -19,7 +19,7 @@
 		<pathelement location="modules/webserver" />
 		
 
-		<pathelement location="modules/matrix" />
+		<pathelement location="modules/datatable" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 
