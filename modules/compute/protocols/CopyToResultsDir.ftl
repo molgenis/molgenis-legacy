@@ -53,8 +53,6 @@ cp ${dedupmetrics} ${projectResultsDir}/qc/statistics
 md5sum ${mergedbam} > ${mergedbam}.md5
 md5sum ${mergedbamindex} > ${mergedbamindex}.md5
 cp ${mergedbam}* ${projectResultsDir}/alignment
-cp ${mergedbamindex}* ${projectResultsDir}/alignment
-
 
 # Copy alignment stats (lane and sample) to results directory
 cp ${intermediatedir}/*.alignmentmetrics ${projectResultsDir}/qc/statistics
