@@ -70,8 +70,8 @@ public class JQueryTreeView<E> extends HtmlWidget
 			returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\"><span class=\"point\"><input type=\"checkbox\" id=\"" 
 						  +	node.getLabel() + "\" name=\"" + node.getLabel() + "\"" 
 						  +	(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
-						  +	" />" + node.getLabel() + "</span></li>\n" 
-						  +	"<script>createHashMap(\"" + node.getName() + "\",\"" + node.getHtmlValue() + "\")</script>\n";
+						  +	" />" + node.getLabel() + "</span></li>\n"; 
+//						  +	"<script>createHashMap(\"" + node.getName() + "\",\"" + node.getHtmlValue() + "\")</script>\n";
 				
 			listOfMeasurements.add(node.getName());
 		}
