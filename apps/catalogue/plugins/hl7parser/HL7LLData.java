@@ -36,7 +36,7 @@ public class HL7LLData implements HL7Data{
     public HL7GenericDCM hl7GenericDCM;
     public HL7StageLRA hl7StageLRA;
     
-    public HL7LLData(String file1,String file2,String file3) throws Exception{
+    public HL7LLData(String file1,String file2,String file3, int j) throws Exception{
     	String xpathExpres = ORGANIZER;
         ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
         XPathFactory factory = XPathFactory.newInstance();
@@ -51,13 +51,15 @@ public class HL7LLData implements HL7Data{
 
 //        NodeList nodesCode = (NodeList)xpath.compile(xpathExpres+"").evaluate(doc, XPathConstants.NODESET);
 
+        //genericDCM 1 en 3
+        //stageLRA 2 en 3
         for (int i = 0; i < nodes.getLength(); i++) {
-            if(nodes.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("GenericDCM")){
-                System.out.println(nodes.item(i).getParentNode());
+            if(nodes.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("GenericDCM") && j!=2){
                 hl7GenericDCM = new HL7GenericDCM (nodes.item(i).getParentNode(),xpath);
-
+                
             }
-            else if(nodes.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("StageLRA")){
+            else if(nodes.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("StageLRA")&& j!=1){
+            	
             	hl7StageLRA = new HL7StageLRA (nodes.item(i).getParentNode(),xpath);
             }
             else{

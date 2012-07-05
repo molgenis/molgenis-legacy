@@ -211,6 +211,9 @@
 		<!-- Copy contact and about pages into place -->
 		<copy file="WebContent/clusterdemo/wormqtl/wormqtl_contact.html" tofile="WebContent/wormqtl_contact.html" overwrite="true"/>
 		<copy file="WebContent/clusterdemo/wormqtl/wormqtl_about.html" tofile="WebContent/wormqtl_about.html" overwrite="true"/>
+		
+		<!-- Copy walkthrough document to downloadable location -->
+		<copy file="apps/wormqtl/org/molgenis/wormqtl/help/walkthrough.docx" tofile="WebContent/walkthrough.docx" overwrite="true"/>
 	</target>
 	
 	<!--
