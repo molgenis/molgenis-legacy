@@ -277,8 +277,10 @@ public class ModelLoader
             else
             {
                 if(s.equalsIgnoreCase(name))
+                {
                     pars.add(par);
                     return pars;
+                }
             }
         }
 
