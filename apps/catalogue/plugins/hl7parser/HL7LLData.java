@@ -80,20 +80,16 @@ public class HL7LLData implements HL7Data{
             }
             allOrganizerNodes.add(nodesFile1.item(i));
         }
-       int count = 0;
        
         //Valuesets xml file
         for (int i = 0; i < nodesFile2.getLength(); i++) {
         	
         	HL7ValueSetLRA valueSetLRA = new HL7ValueSetLRA(nodesFile2.item(i), xpath);
         	hashValueSetLRA.put(valueSetLRA.getValueSetsName(), valueSetLRA);
-        	System.out.println("i "+i+": " +valueSetLRA.getValueSetsName() + "-----------" + valueSetLRA);
+//        	System.out.println("i "+i+": " +valueSetLRA.getValueSetsName() + "-----------" + valueSetLRA);
 //            System.out.println(valueSetLRA.getListOFAnswers().get(0).getName());
         }
-        for(Entry<String,HL7ValueSetLRA> bla : hashValueSetLRA.entrySet()){
-        	System.out.println("count "+count+ ": " +bla.getKey());
-        	count++;
-        }
+        
         System.out.println("Damn it!------------->" + hashValueSetLRA.size());
     }
 

@@ -19,7 +19,7 @@ public class HL7ValueSetLRA {
 	public HL7ValueSetLRA(Node node, XPath xpath) throws Exception {
 		
 		listOFAnswers = new ArrayList<HL7ValueSetAnswerLRA>();
-		valueSetsName = node.getAttributes().getNamedItem("name").getNodeValue().toString();
+		valueSetsName = node.getAttributes().getNamedItem("name").getNodeValue().trim();
 		NodeList nodesFile = (NodeList)xpath.compile(CODE).evaluate(node, XPathConstants.NODESET);
 		for(int i = 0 ; i < nodesFile.getLength(); i++){
 			HL7ValueSetAnswerLRA answer = new HL7ValueSetAnswerLRA(nodesFile.item(i), xpath);

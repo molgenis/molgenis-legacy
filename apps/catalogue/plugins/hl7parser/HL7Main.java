@@ -73,11 +73,7 @@ public class HL7Main {
 				inv = db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName)).get(0);
 			}
 			//////
-			List<Protocol> listOfProtocols = new ArrayList<Protocol>();
-
-			List<String> listOfProtocolName = new ArrayList<String>();
-
-			List<Integer> listOfProtocolIds = new ArrayList<Integer>();
+			
 
 			Protocol stageCatalogue;
 
@@ -94,7 +90,16 @@ public class HL7Main {
 
 			HashMap<String,HL7ValueSetLRA> hashValueSetLRA = ll.getHashValueSetLRA();
 
-
+			
+			List<Integer> listOfProtocolIds = new ArrayList<Integer>();
+			
+			List<String> listOfMeasurementNames = new ArrayList<String>();
+			List<Measurement> uniqueListOfMeasurements = new ArrayList<Measurement>();
+			List<Category> uniqueListOfCategory = new ArrayList<Category>();
+			List<String> uniqueCategoryName = new ArrayList<String>();
+			List<Protocol> uniqueProtocol = new ArrayList<Protocol>();
+			List<String> uniqueListOfProtocolName = new ArrayList<String>();
+			
 			for(HL7OrganizerLRA organizer : ll.getHL7OrganizerLRA()){
 
 				System.out.println(organizer.getHL7OrganizerNameLRA());
@@ -102,14 +107,12 @@ public class HL7Main {
 				Protocol protocol = new Protocol();
 				protocol.setName(protocolName);
 				protocol.setInvestigation(inv);
-				List<String> listOfMeasurementNames = new ArrayList<String>();
-				List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
-				List<Category> uniqueListOfCategory = new ArrayList<Category>();
-				List<String> uniqueCategoryName = new ArrayList<String>();
+				
 				List<String> measurementCategory = new ArrayList<String>();
+				List<String> protocolFeature = new ArrayList<String>();
 				
 				for(HL7ObservationLRA meas :organizer.measurements){
-					System.out.println(" - " + meas.getMeasurementName() + "\t" + meas.getMeasurementDescription() +"\t"+meas.getMeasurementDataType() );
+//					System.out.println(" - " + meas.getMeasurementName() + "\t" + meas.getMeasurementDescription() +"\t"+meas.getMeasurementDataType() );
 
 					Measurement m = new Measurement();
 					m.setName(meas.getMeasurementName());
@@ -117,22 +120,28 @@ public class HL7Main {
 					m.setDescription(meas.getMeasurementDisplayName());
 					m.setInvestigation(inv);	
 					
+					protocolFeature.add(m.getName());
+					
 					if(hashValueSetLRA.containsKey(protocolName +"." + meas.getMeasurementName().trim())){
 						HL7ValueSetLRA valueSetLRA = hashValueSetLRA.get(protocolName +"." + meas.getMeasurementName());
 						for(HL7ValueSetAnswerLRA eachAnswer : valueSetLRA.getListOFAnswers()){
 
 							String codeValue = eachAnswer.getCodeValue();
 							String categoryName = eachAnswer.getName();
-							measurementCategory.add(categoryName);
+							
 
 							if(!uniqueCategoryName.contains(categoryName)){
 								uniqueCategoryName.add(categoryName);
 								Category c = new Category();
-								c.setName(codeValue + categoryName);
-								c.setCode_String(codeValue + " = " + categoryName);
-								c.setDescription(codeValue + " = " + categoryName);
+								String indentifier = codeValue + categoryName.replaceAll("[^(a-zA-Z0-9)]", "");
+								c.setName(indentifier.trim().toLowerCase());
+								c.setCode_String(codeValue);
+								c.setDescription(categoryName);
+								c.setInvestigation(inv);
 								uniqueListOfCategory.add(c);
 							}
+							String indentifier = codeValue + categoryName.replaceAll("[^(a-zA-Z0-9)]", "");
+							measurementCategory.add(indentifier.trim().toLowerCase());
 						}
 					}
 					m.setCategories_Name(measurementCategory);
@@ -145,57 +154,85 @@ public class HL7Main {
 						m.setDataType("string");
 					}else if(dataType.equals("TS")){
 						m.setDataType("datetime");
+					}else if(dataType.equals("CO")){
+						m.setDataType("categorical");
 					}else{
 						m.setDataType("string");
 					}
 
-					listOfMeasurementNames.add(meas.getMeasurementName());	
-
-					listOfMeasurements.add(m);
-
-				}
-				
-				db.update(uniqueListOfCategory, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
-				
-				for(Measurement m : listOfMeasurements){
-					
-					if(m.getCategories_Name().size() > 0){
-						
-						List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name()));
-						
-						List<Integer> listOfCategoryID = new ArrayList<Integer>();
-						
-						for(Category c : listOfCategory){
-							listOfCategoryID.add(c.getId());
-						}
-						m.setCategories_Id(listOfCategoryID);
+					if(!listOfMeasurementNames.contains(m.getName())){
+						listOfMeasurementNames.add(m.getName());
+						uniqueListOfMeasurements.add(m);
 					}
-					
 				}
+				protocol.setFeatures_Name(protocolFeature);
+				uniqueProtocol.add(protocol);
+				uniqueListOfProtocolName.add(protocolName);
+//				db.update(uniqueListOfCategory, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
+//				
 				
-				
-				db.update(listOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
-
-				listOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, listOfMeasurementNames));
-
-				List<Integer> listOfMeasurementId = new ArrayList<Integer>();
-
-				for(Measurement m : listOfMeasurements){
-					listOfMeasurementId.add(m.getId());
-				}
-
-				protocol.setFeatures_Id(listOfMeasurementId);
-
-				listOfProtocols.add(protocol);
-
-				listOfProtocolName.add(protocol.getName());
+//				
+//				
+//				db.update(uniqueListOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
+//
+//				uniqueListOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, listOfMeasurementNames));
+//
+//				List<Integer> listOfMeasurementId = new ArrayList<Integer>();
+//
+//				for(Measurement m : uniqueListOfMeasurements){
+//					listOfMeasurementId.add(m.getId());
+//				}
+//
+//				protocol.setFeatures_Id(listOfMeasurementId);
+//
+//				listOfProtocols.add(protocol);
+//
+//				listOfProtocolName.add(protocol.getName());
 			}
+			
+			for(Category c : uniqueListOfCategory){
+				System.out.println("-------------." + c.getName());
+			}
+			
+			db.update(uniqueListOfCategory, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
+			
+			for(Measurement m : uniqueListOfMeasurements){
+				
+				if(m.getCategories_Name().size() > 0){
+					
+					List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name()));
+					
+					List<Integer> listOfCategoryID = new ArrayList<Integer>();
+					
+					for(Category c : listOfCategory){
+						listOfCategoryID.add(c.getId());
+					}
+					m.setCategories_Id(listOfCategoryID);
+				}
+			}
+			
+			db.update(uniqueListOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
+			
+			for(Protocol p : uniqueProtocol){
+				
+				if(p.getFeatures_Name().size() > 0){
+					
+					List<Measurement> listOfMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, p.getFeatures_Name()));
+					
+					List<Integer> listOfMeasurementID = new ArrayList<Integer>();
+					
+					for(Measurement m : listOfMeasurement){
+						listOfMeasurementID.add(m.getId());
+					}
+					p.setFeatures_Id(listOfMeasurementID);
+				}
+			}
+			
+			db.update(uniqueProtocol, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
 
-			db.update(listOfProtocols, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
+			uniqueProtocol = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, uniqueListOfProtocolName));
 
-			listOfProtocols = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, listOfProtocolName));
-
-			for(Protocol p : listOfProtocols){
+			for(Protocol p : uniqueProtocol){
 				listOfProtocolIds.add(p.getId());
 			}
 
@@ -220,9 +257,9 @@ public class HL7Main {
 			}
 
 
-			listOfProtocols = new ArrayList<Protocol>();
+			uniqueProtocol = new ArrayList<Protocol>();
 
-			listOfProtocolName = new ArrayList<String>();
+			uniqueListOfProtocolName = new ArrayList<String>();
 
 			listOfProtocolIds = new ArrayList<Integer>();
 
@@ -234,8 +271,8 @@ public class HL7Main {
 					Protocol protocol = new Protocol();
 					protocol.setName(organizer.getHL7OrganizerNameDCM().trim());
 					protocol.setInvestigation(inv);
-					List<String> listOfMeasurementNames = new ArrayList<String>();
-					List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
+//					List<String> listOfMeasurementNames = new ArrayList<String>();
+//					List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
 
 					for(HL7MeasurementDCM meas :organizer.measurements){
 
@@ -259,35 +296,35 @@ public class HL7Main {
 
 						listOfMeasurementNames.add(meas.getMeasurementName());	
 
-						listOfMeasurements.add(m);
+						uniqueListOfMeasurements.add(m);
 					}
 
-					db.update(listOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
+					db.update(uniqueListOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
 
-					listOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, listOfMeasurementNames));
+					uniqueListOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, listOfMeasurementNames));
 
 					List<Integer> listOfMeasurementId = new ArrayList<Integer>();
 
-					for(Measurement m : listOfMeasurements){
+					for(Measurement m : uniqueListOfMeasurements){
 						listOfMeasurementId.add(m.getId());
 					}
 
 					protocol.setFeatures_Id(listOfMeasurementId);
 
-					listOfProtocols.add(protocol);
+					uniqueProtocol.add(protocol);
 
-					listOfProtocolName.add(protocol.getName());
+					uniqueListOfProtocolName.add(protocol.getName());
 				}
 
-				db.update(listOfProtocols, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
+				db.update(uniqueProtocol, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
 
-				listOfProtocols = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, listOfProtocolName));
+				uniqueProtocol = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, uniqueListOfProtocolName));
 
-				for(Protocol p : listOfProtocols){
+				for(Protocol p : uniqueProtocol){
 					listOfProtocolIds.add(p.getId());
 				}
 
-				db.update(listOfProtocols, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
+				db.update(uniqueProtocol, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
 
 				genericDCM.setSubprotocols_Id(listOfProtocolIds);
 

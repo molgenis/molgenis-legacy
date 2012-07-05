@@ -18,9 +18,9 @@ public class HL7ValueSetAnswerLRA {
 	public HL7ValueSetAnswerLRA(Node node, XPath xpath) throws Exception {
 		
 		Node nameNode = (Node) xpath.compile(DISPLAYNAME).evaluate(node, XPathConstants.NODE);
-		name = nameNode.getNodeValue();
+		name = nameNode.getNodeValue().trim();
 		Node codeNode = (Node) xpath.compile(CODE).evaluate(node, XPathConstants.NODE);
-		codeValue = codeNode.getNodeValue();
+		codeValue = codeNode.getNodeValue().trim();
 	}
 
 	public String getName() {

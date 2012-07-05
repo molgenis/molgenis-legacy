@@ -45,20 +45,20 @@ public class HL7ObservationLRA {
 
 		Node nameNode = (Node) xpath.evaluate(OBSERVATION_NAME, measurement, XPathConstants.NODE);
 
-		this.measurementName = nameNode.getNodeValue();
+		this.measurementName = nameNode.getNodeValue().trim();
 	}
 	
 	private void readMeasurementLabel() throws Exception{
 
 		Node nameNode = (Node) xpath.evaluate(OBSERVATION_LABEL, measurement, XPathConstants.NODE);
-		this.measurementDisplayName = nameNode.getNodeValue();
+		this.measurementDisplayName = nameNode.getNodeValue().trim();
 	}
 
 	private void readMeasurementDescription()throws Exception{
 		try{
 			Node nameNode = (Node) xpath.evaluate(OBSERVATION_DESCRIPTION, measurement, XPathConstants.NODE);
 
-			this.measurementDescription = nameNode.getNodeValue();
+			this.measurementDescription = nameNode.getNodeValue().trim();
 		}catch (Exception e){
 			this.measurementDescription = "NO DESCRIPTION";
 		}
