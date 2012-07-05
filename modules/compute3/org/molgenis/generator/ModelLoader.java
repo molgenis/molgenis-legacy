@@ -50,7 +50,7 @@ public class ModelLoader
 
     private Workflow workflow = null;
 
-    public Workflow loadWorkflowFromFiles(File fileWorkflow, File dirProtocol, File fileParameters) throws Exception
+    public Workflow loadWorkflowFromFiles(File fileWorkflow, File dirProtocol, File fileParameters, File fileEnvironment) throws Exception
     {
         workflow = new Workflow();
         String name = fileWorkflow.getName();
@@ -62,9 +62,16 @@ public class ModelLoader
         List<WorkflowElement> workflowElements = readEntitiesFromFile(fileWorkflow, WorkflowElement.class);
         workflow.setWorkflowWorkflowElementCollection(workflowElements);
 
+        //read workflow environment parameters
+        List<ComputeParameter> workflowParameters1 = readEntitiesFromFile(fileEnvironment, ComputeParameter.class);
+
         //read workflow parameters
-        List<ComputeParameter> workflowParameters = readEntitiesFromFile(fileParameters, ComputeParameter.class);
-        workflow.setWorkflowComputeParameterCollection(workflowParameters);
+        List<ComputeParameter> workflowParameters2 = readEntitiesFromFile(fileParameters, ComputeParameter.class);
+
+        //add parameters and environment parameters
+        workflowParameters1.addAll(workflowParameters2);
+        workflow.setWorkflowComputeParameterCollection(workflowParameters1);
+
 
         //set protocols and workflow_name to elements
         Iterator<WorkflowElement> iterator = workflow.getWorkflowWorkflowElementCollection().iterator();
