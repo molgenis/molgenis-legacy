@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="org.molgenis">
+	<module name="gwascentral">
+		<entity name="GWASExperiment" extends="Experiment" implements="Identifiable">
+			 <field name="IndividualDataStatement" label="Individual data statement"
+				type="text" nillable="true"
+				default="Access to individual-level data must be made to the study authors" /> 
+		<field name="TotalMarkersTested" label="Total markers tested"
+				type="int" nillable="true" />
+			<field name="TotalMarkersImported" label="Total markers imported"
+				type="int" readonly="true" nillable="true" /> 
+		<field name="Assayedpanels" label="Assayed panels"  default="0" type="mref" xref_entity="AssayedPanel" xref_label="identifier" mref_name="ExperimentAssayedpanel"/>
+		</entity>
+		
+		<entity name="GWASDataSet" extends="DataSet" implements="Identifiable">
+			
+		<field name="ExperimentRef" label="Experiment identifier" type="xref" xref_entity="Experiment" xref_label="id"/>
+			
+			
+			
+			
+		</entity>
+		
+		<!-- phenotype property -->
+		<entity name="PhenotypeProperty" extends="ObservableFeature" implements="Identifiable">
+			<field name="Name" label="Phenotype Property" length="100" nillable="true"/>
+		</entity>
+		
+		<!-- How do we measure the our measurements? -->
+		<entity name="PhenotypeMethod" extends="ProtocolApplication" implements="Identifiable">
+			<field name="StudyID" label="Study identifier" type="xref" description="Points to study that this method came in" xref_entity="Study" />
+			<field name="PhenotypePropertyID" label="Phenotype property name" type="xref" xref_entity="PhenotypeProperty"/>
+			<field name="Name" length="255" nillable="true"/>
+			<field name="Sample" length="100" nillable="true" description="Biological system or sample type being assessed"/>
+		</entity>
+		
+		<entity name="PhenotypeValue" extends="ObservedValue" implements="Identifiable">
+			<field name="PhenotypePropertyID" label="Phenotype property name" type="xref" xref_entity="PhenotypeProperty"/>
+			<field name="Name" length="255" nillable="true"/>
+			<field name="Value" label="Value"/>
+			<field name="ValueRank" label="Value Rank"/>
+			<field name="ValueIsMean" label="Value is mean"/>
+			<field name="STD" label="Standard Deviation"/>
+			<field name="Min" label="Minimum value"/>
+			<field name="Max" label="Maximum value"/>
+		</entity>
+
+		<entity name="SamplePanel" extends="Panel" implements="Identifiable">
+			<field name="CentralIdentifier" label="" type="xref"
+				xref_entity="OntologyTerm" nillable="true"
+				description="The central GWAS identifier for this panel" />
+				<field name="Name" length="100" nillable="true"/>
+				<field name="Label" hidden="true" length="10" nillable="true"/>
+				<field name="Accession" hidden="true" length="15" nillable="true"/>
+				<field name="AccessionVersion" hidden="true" length="10" label="Accession version" nillable="true"/>
+				<field name="Description" type="text" nillable="true"/>
+				<field name="Composition" type="text" nillable="true"/>
+				<field name="TotalNumberOfIndividuals" label="Total number of individuals" type="int" nillable="true" description="*...but required for association datasets"/>
+				<field name="NumberOfSexMale" label="Number of males" type="int" nillable="true"/>
+				<field name="NumberOfSexFemale" label="Number of females" type="int" nillable="true"/>
+				<field name="NumberOfSexUnknown" label="Number of unknown sex" type="int" nillable="true"/>
+				<field name="NumberOfProbands" label="Number of probands" type="int" nillable="true" description="field used only if Composition = 'Trios'"/>
+				<field name="NumberOfParents" label="Number of parents" type="int" nillable="true" description="field used only if Composition = 'Trios'"/>
+				<field name="ModeOfRecruitment" label="Mode of recruitment" nillable="true"/>
+				<field name="DiagnosisAgeRange" length="150" label="Diagnosis age range" nillable="true"/>
+				<field name="DiagnosisPeriod" length="150" label="Diagnosis period" nillable="true"/>
+				<field name="SamplingAgeRange" length="150" label="Sampling age range" nillable="true"/>
+				<field name="SamplingPeriod" length="150" label="Sampling period" nillable="true"/>
+				<field name="PopulationInfo" length="250" label="Population information" nillable="true"/>
+				<field name="GeographicRegionInfo" length="250" label="Geographic region information" nillable="true"/>
+				<field name="EthnicityInfo" length="250" label="Ethnicity information" nillable="true"/>
+				<field name="BirthPlaceInfo" length="250" label="Birth place information" nillable="true"/>
+				<field name="AdmixtureInfo" length="250" label="Admixture information" nillable="true"/>
+				<field name="EnvironmentInfo" label="Environment information" type="text" nillable="true"/>
+				<field name="SourceOfDNA" length="100" label="Source of DNA" nillable="true" description="In (SELECT [SourceOfDNA] FROM [Sampleset_SourceOfDNAList];)"/>
+				<field name="DNAsArePooled" label="Are DNAs pooled?" type="enum" enum_options="[Undefined,Pre-prep,Post-prep,No]" default="Undefined"/>
+				<field name="DNAsAreWGA" label="Are DNAs WGA?" type="enum" enum_options="[Undefined,None,All,Some]" default="Undefined"/>
+			
+			 
+			<!-- contain all fields of assayedPanel that are not yet in Panel: composition, 
+				number of males, number of females, number of probands, number of parents, 
+				mode recruitment, diagnosis age range, diagnosis period, sample age range, 
+				sampling period, population information, geographis region info, ehtnic info, 
+				birht place, admixture, environment, admixyure, source of DNA, DNAsArePooled, 
+				DNAsAreWGA -->
+		</entity>
+
+		<entity name="AssayedPanel" extends="Panel" implements="Identifiable">
+			<!--<field name="Type" label="" type="xref" nillable="true" xref_entity="DataSet"/>-->
+			<field name="Name" length="100" nillable="true"/>
+			<field name="Description" type="text" nillable="true"/>
+			<field name="TotalNumberOfIndividuals" label="Total number of individuals" type="int" nillable="true" description="*...but required for association datasets"/>
+			<field name="NumberOfSexMale" label="Number of males" type="int" nillable="true"/>
+			<field name="NumberOfSexFemale" label="Number of females" type="int" nillable="true"/>
+			<field name="NumberOfSexUnknown" label="Number of unknown sex" type="int" nillable="true"/>
+			<field name="NumberOfProbands" label="Number of probands" type="int" nillable="true" description="field used only if Composition = 'Trios'"/>
+			<field name="NumberOfParents" label="Number of parents" type="int" nillable="true" description="field used only if Composition = 'Trios'"/>
+			
+			
+			<!-- why is there a studyId in there?study id was a short cut i think -->
+		</entity>
+		
+		
+		
+		<!-- was selection criteria shsorten do to long name issues -->
+		
+		<entity name="Criteria"  implements="Identifiable">
+			<field name="AssayedpanelID" label="Assayed panel identifier" type="xref" xref_entity="AssayedPanel" />
+			<field name="SamplepanelID" label="Sample panel identifier" type="mref" nillable="true" xref_entity="SamplePanel" />
+			<field name="SourceAssayedpanelID" label="Source assayed panel ID" nillable="true" description="Points to assayedpanel (usually more than one) that a given apanel is made up from" />
+			<field name="EnvironmentCriteria" length="500" label="Environment criteria" nillable="true" default="No selection"/>
+			<field name="NumberOfIndividuals" label="Number of individuals" type="int" nillable="true"/>
+			<!-- <unique fields="AssayedpanelID,SamplepanelID"/>
+			<unique fields="SourceAssayedpanelID,AssayedpanelID"/> -->
+		</entity>
+		
+<entity name="StudyCitation" implements="Identifiable">
+	<field name="CitedinStudy" label="Cited in Study" type="mref" nillable="true" xref_entity="Study" />
+	<field name="StudyCitations" label="Study Citations" type="mref" nillable="true" xref_entity="Citation" />
+			
+		</entity> 
+		
+		<entity name="StudyPanel" implements="Identifiable">
+			<field name="StudyPanels" label="Sample panels used in Studies" type="mref" nillable="true" xref_entity="SamplePanel" />
+		</entity> 
+		
+		<!-- would like a generic way to make (a) marker list and (b) attach it 
+			to experiment -->
+		<entity name="UsedMarkerSet" extends="ObservableFeature">
+			<field name="ExperimentID" label="Exp identifier" type="xref"  xref_entity="GWASExperiment" xref_label="id" />
+			<field name="MarkerID" label="Marker identifier" type="xref"  xref_entity="Marker" xref_label="id" />
+		</entity>
+		
+		
+		
+		
+		<entity name="Significance">
+			<field name="SignificanceID" label="Significance ID" type="autoid"/>
+			<field name="DatasetID" label="Data set identifier" type="xref" nillable="true" xref_entity="DataSet"  />
+			<field name="UsedmarkersetID" label="Used marker set ID" type="xref" xref_entity="UsedMarkerSet"/>
+			<field name="NegLogPValue" label="Negative log p-value" type="decimal" nillable="true" />
+			<field name="UnadjustedPValue" label="Unadjusted p-value" type="text" nillable="true"/>
+			<field name="AdjustedPValue" label="Adjusted p-value" type="decimal" nillable="true"/>
+		</entity>
+		
+		
+		<entity name="EffectSize" extends="ProtocolApplication">
+			<field name="UsedMarkerSetID" label="Used Marker ID" type="xref"
+				nillable="true" xref_entity="UsedMarkerSet" />
+			<field name="Lower95Bound" type="decimal" />
+			<field name="Upper95Bound" type="decimal" />
+			<field name="StdError" type="decimal" />
+		</entity>
+		
+
+	</module>
+	
+	
+	<!-- 	Rationale for inclusion from STREGA http://www.sciencedirect.com/science/article/pii/S0140673609612654
+Genotyping errors:	Non-differential genotyping errors will usually bias associations towards the null; when there are systematic differences in genotyping according to outcome status (differential error) bias in any direction can occur
+Population stratification:	This type of confounding can occur if study subpopulations differ both in allele (or genotype) frequencies and disease risks, and if these subpopulations are unevenly distributed across exposure groups (or between cases and controls)
+Modelling haplotype variation:	In studies with a design covered by STREGA, haplotypes have to be inferred because of absence of available family information; because there are diverse methods for inferring haplotypes, they should be reported
+Hardy-Weinberg equilibrium:	Departure from HWE might suggest errors or peculiarities in the data; reports of genetic associations do not always include information about conformity with HWE and some have limitations or errors in HWE assessment
+Replication:	Publications that present and synthesise data from several studies in a single report are becoming more common; in particular, many genome-wide association analyses describe several study populations, sometimes with different study designs and genotyping platforms, and in various stages of discovery and replication
+Selection of participants:	Selection bias can occur if genetic associations are investigated in one or more subsets of participants (subsamples) from a particular study, if there is differential non-participation in groups being compared, or if there are differential genotyping call rates in groups being compared
+Rationale for choice of genes and variants selected:	Without an explicit rationale, potential for selective reporting of study results is difficult to judge; empirical evidence exists for other types of studies (eg, randomised trials) that the reporting of outcomes is frequently incomplete and biased in favour of statistically significant findings
+Treatment effects in studying quantitative traits:	Study of a quantitative variable can be compromised when the trait is subjected to effects of treatment (eg, lipid-related trait for which several individuals are taking lipid-lowering drugs); without appropriate correction, this effect can lead to bias in effect estimates and loss of power
+Statistical methods:	Analysis methods should be transparent and replicable; genetic association studies are often done with specialised software, which should be reported
+Relatedness of participants	Methods: of analysis used in family-based studies are different from those used in studies based on unrelated cases and controls; even in studies based on apparently unrelated individuals, some might be (distant) relatives; this possibility might need to be probed with appropriate methods and adjusted for in data analysis
+Reporting of descriptive and outcome data:	Synthesis of findings across published studies depends on availability of sufficiently detailed data from the individual studies
+Issues of data volume:	Key problem is of possible selective reporting of false-positive results; type I errors are especially relevant in genome-wide association studies because large searches among genetic variants can be expected to find positive results with odds ratios significantly different from 1 by chance alone 
+	-->
+	
+	<entity name="SequenceVariant" implements="SequenceFeature"
+		extends="ObservableFeature">
+		<description>
+			Describe sequence variants respective to a reference chromosome/contig. Example
+			usage:
+			<table>
+				<tr>
+					<td>target</td>
+					<td>feature</td>
+					<td>relation</td>
+					<td>value</td>
+				</tr>
+				<tr>
+					<td>Individual(Patient1)</td>
+					<td>SequenceVariant(variantType=snp,ref=A,alt=T)</td>
+					<td>OntologyTerm(Phased Genotype)</td>
+					<td>T/A</td>
+				</tr>
+				<tr>
+					<td>Panel(GoNL)</td>
+					<td>SequenceVariant(variantType=snp,ref=A,alt=T)</td>
+					<td>OntologyTerm(Allele Count)</td>
+					<td>6</td>
+				</tr>
+			</table>
+		</description>
+		<field name="variantType" type="enum" enum_options="[snp,indel,cnv]"
+			default="snp" description="type of the variant" />
+		<field name="ref"
+			description="sequence in the reference. Very long sequences variants will be stored elsewhere." />
+		<field name="alt"
+			description="alternative sequences observed, if multiple then seperated by ','" />
+		<!--  field name="parentalOrigin" label="Parental origin" type="enum" enum_options="[maternal,paternal,unknown]"
+				default="unknown" description="where this variant was inherited from" /> -->
+	</entity>
+	
+	
+	
+	
+</molgenis>
