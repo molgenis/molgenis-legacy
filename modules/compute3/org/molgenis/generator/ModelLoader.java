@@ -50,7 +50,7 @@ public class ModelLoader
 
     private Workflow workflow = null;
 
-    public Workflow loadWorkflowFromFiles(File fileWorkflow, File dirProtocol, File fileParameters) throws Exception
+    public Workflow loadWorkflowFromFiles(File fileWorkflow, File dirProtocol, File fileParameters, File fileEnvironment) throws Exception
     {
         workflow = new Workflow();
         String name = fileWorkflow.getName();
@@ -62,9 +62,16 @@ public class ModelLoader
         List<WorkflowElement> workflowElements = readEntitiesFromFile(fileWorkflow, WorkflowElement.class);
         workflow.setWorkflowWorkflowElementCollection(workflowElements);
 
+        //read workflow environment parameters
+        List<ComputeParameter> workflowParameters1 = readEntitiesFromFile(fileEnvironment, ComputeParameter.class);
+
         //read workflow parameters
-        List<ComputeParameter> workflowParameters = readEntitiesFromFile(fileParameters, ComputeParameter.class);
-        workflow.setWorkflowComputeParameterCollection(workflowParameters);
+        List<ComputeParameter> workflowParameters2 = readEntitiesFromFile(fileParameters, ComputeParameter.class);
+
+        //add parameters and environment parameters
+        workflowParameters1.addAll(workflowParameters2);
+        workflow.setWorkflowComputeParameterCollection(workflowParameters1);
+
 
         //set protocols and workflow_name to elements
         Iterator<WorkflowElement> iterator = workflow.getWorkflowWorkflowElementCollection().iterator();
@@ -237,15 +244,18 @@ public class ModelLoader
 
         for(int i = 0; i < names.size(); i++)
         {
-            ComputeParameter par = findParameter(names.elementAt(i));
-            list.add(par);
+            Vector<ComputeParameter> pars = findParameter(names.elementAt(i));
+            list.addAll(pars);
         }
 
         return list;
     }
 
-    private ComputeParameter findParameter(String s)
+    private Vector<ComputeParameter> findParameter(String s)
     {
+        //here we manage wildcards in the parameter names
+        Vector<ComputeParameter> pars = new Vector<ComputeParameter>();
+
         Collection<ComputeParameter> parameters = workflow.getWorkflowComputeParameterCollection();
 
         Iterator<ComputeParameter> itr = parameters.iterator();
@@ -254,9 +264,26 @@ public class ModelLoader
             ComputeParameter par = itr.next();
             String name = par.getName();
 
-            if(s.equalsIgnoreCase(name))
-                return par;
+            if(s.contains(".*"))
+            {
+                String prefix = s.substring(0, s.lastIndexOf("."));
+                if(name.contains(prefix))
+                {
+                    int prefixIndex = name.indexOf(prefix);
+                    if(prefixIndex == 0)
+                        pars.add(par);
+                }
+            }
+            else
+            {
+                if(s.equalsIgnoreCase(name))
+                    pars.add(par);
+                    return pars;
+            }
         }
+
+        if(pars.size() > 0)
+            return pars;
 
         logger.log(Level.ERROR, "parameter " + s + " does not exist");
         System.exit(1);
