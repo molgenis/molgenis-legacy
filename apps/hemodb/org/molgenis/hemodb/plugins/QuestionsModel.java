@@ -25,7 +25,11 @@ public class QuestionsModel extends EasyPluginModel
 {
 
 	String action = null;
-
+	ArrayList <String> names = new ArrayList <String>();
+	String state = "";
+	
+	
+	
 	public QuestionsModel(Questions controller)
 	{
 		//each Model can access the controller to notify it when needed.
@@ -41,5 +45,25 @@ public class QuestionsModel extends EasyPluginModel
 	public void setAction(String action)
 	{
 		this.action = action;
+	}
+
+	public ArrayList<String> getNames()
+	{
+		return names;
+	}
+
+	public void setNames(ArrayList<String> names)
+	{
+		this.names = names;
+	}
+
+	public String getState()
+	{
+		return state;
+	}
+
+	public void setState(String state)
+	{
+		this.state = state;
 	}
 }
