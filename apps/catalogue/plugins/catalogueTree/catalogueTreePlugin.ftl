@@ -15,9 +15,48 @@
 	
 	<script type="text/javascript">
 		
-		function getClickTable(){
+		var inheritance = eval(${screen.getInheritance()});
 		
+		function searchInTree(){
 		
+			var inputToken = $('#InputToken').val();
+			
+			if($('#selectedField').val() == "Measurements"){
+				
+				$('#leftSideTree li').each(function(){
+					
+					if($(this).find('li').length == 0){
+						var name = $(this).attr('id').replace(/_/g,' ');
+						var id = $(this).attr('id');
+						if(name.search(new RegExp(inputToken, "gi")) != -1){
+							$(this).show();
+							displayParents($(this).attr('id'), true);
+						}else{
+							$(this).hide();
+							displayParents($(this).attr('id'), false);
+						}
+					}
+				});
+				
+			}else if($('#selectedField').val() == "Protocols"){
+				alert('protocols');
+			}else if($('#selectedField').val() == "All fields"){
+				alert('All fields');
+			}else if($('#selectedField').val() == "Details"){
+				alert('details');
+			}
+			
+			if(inputToken === ""){
+				$('#leftSideTree').find().show();
+			}
+		}
+		
+		function displayParents(currentNode, display){
+			
+			if(inheritance.currentNode != null){
+				
+				currentNode = inheritance.currentNode;	
+			}
 		}
 		
 	</script>
@@ -83,11 +122,11 @@
 					 <!--option value="All fields">All fields</option-->
 				</select>
 				
-				<input title="fill in search term" type="text" name="InputToken" 
+				<input title="fill in search term" type="text" name="InputToken" id="InputToken"
 					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';searchingInvestigation.style.display='inline'; searchingInvestigation.style.display='inline'; " 
 					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
 				
-				<input type="submit" name="SearchCatalogueTree" value="search" onclick="__action.value='SearchCatalogueTree';"/>
+				<input type="button" name="SearchCatalogueTree" value="search" onclick="searchInTree()"/>
 					    <!--
 					    <#list screen.getFilters() as filters>
 							<div class="filterslabel">
@@ -130,7 +169,6 @@
 										   		});
 										    </#list>
 										</#if> 
-										
 									</script>		
       							</div>
 						   </td>

@@ -2,12 +2,7 @@ package plugins.catalogueTree;
 
 import gcc.catalogue.ShoppingCart;
 
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,13 +22,13 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.security.Login;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
@@ -56,6 +51,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<Measurement> shoppingCart = new ArrayList<Measurement>();
 	private List<Investigation> arrayInvestigations = new ArrayList<Investigation>();
 	private List<String> listOfJSONs = new ArrayList<String>();
+	private JSONObject inheritance = new JSONObject();
 
 	private String selectedInvestigation = null;
 	//	private String InputToken = null;
@@ -243,9 +239,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		List<String> topProtocols = new ArrayList<String>();
 		List<String> bottomProtocols = new ArrayList<String>();
 		List<String> middleProtocols = new ArrayList<String>();
+		inheritance = new JSONObject();
 		protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
 		multipleInheritance.clear();
 		listOfMeasurements.clear();
+		
 
 		// measurementsInTree = new HashMap<String, JQueryTreeViewElement>();
 		// protocolsInTree = new HashMap<String, JQueryTreeViewElement>();
@@ -414,7 +412,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					}
 
 					childTree = new JQueryTreeViewElement(protocolName
-							+ multipleInheritance.get(protocolName),
+							+ "_" + multipleInheritance.get(protocolName),
 							protocolName, parentTree);
 
 				} else {
@@ -425,9 +423,16 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree.setCollapsed(true);
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
-
+				
+				try {
+					inheritance.put(childTree.getName().replaceAll(" ", "_"), parentTree.getName().replaceAll(" ", "_"));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				if(!protocolName.equals(parentClassName)){
-
+					
 					boolean subProtocolRepeatProtocol = false;
 
 					// find all the sub-protocols and recursively call itself
@@ -453,7 +458,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					if (subProtocolRepeatProtocol == false && protocol.getFeatures_Name() != null
 							&& protocol.getFeatures_Name().size() > 0) { // error
 						// checking
-
 
 						addingMeasurementsToTree(
 								protocol.getFeatures_Name(), childTree, db,
@@ -621,6 +625,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
 				
+				try {
+					inheritance.put(childTree.getName().replaceAll(" ", "_"), parentTree.getName().replaceAll(" ", "_"));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				JSONObject json = new JSONObject();
 				
 				try {
@@ -718,15 +729,29 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				+ measurement.getName() + "</td></tr>";
 
 		if (categoryNames.size() > 0) {
+			
+			List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categoryNames));
+			
 			htmlValue += "<tr><td  class='box-body-label'>Category:</td><td><table>";
-
-			for (String string : categoryNames) {
-				htmlValue += "<tr><td>";
-				htmlValue += string;
-				htmlValue += "</td></tr>";
-
+			
+			String missingCategory = "<tr><td  class='box-body-label'>Missing category:</td><td><table>";
+			
+			for (Category c : listOfCategory) {
+				
+				if(c.getIsMissing()){
+					htmlValue += "<tr><td>";
+					htmlValue += c.getCode_String() + " = " + c.getDescription();
+					htmlValue += "</td></tr>";
+				}else{
+					missingCategory += "<tr><td>";
+					missingCategory += c.getCode_String() + " = " + c.getDescription();
+					missingCategory += "</td></tr>";
+				}
 			}
+			
 			htmlValue += "</table></td></tr>";
+			
+			htmlValue += missingCategory + "</table>";
 		}
 
 		htmlValue += "<tr><td class='box-body-label'>Description:</td><td>"
@@ -1009,6 +1034,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return SearchFilters;
 	}
 
+	public String getInheritance(){
+		System.out.println(inheritance.toString());
+		return inheritance.toString();
+	}
+	
 	//	@Override
 	//	public boolean isVisible()
 	//	{
