@@ -36,6 +36,7 @@ log*
 /target
 logger.out*
 /dist
+/generated/java
 /.settings
 !/.settings/template*
 .project
