@@ -6,12 +6,14 @@
 package plugins.hl7parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 
@@ -19,7 +21,8 @@ import plugins.hl7parser.GenericDCM.HL7MeasurementDCM;
 import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
 import plugins.hl7parser.StageLRA.HL7ObservationLRA;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
-
+import plugins.hl7parser.StageLRA.HL7ValueSetAnswerLRA;
+import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
 import app.DatabaseFactory;
 
 /**
@@ -30,9 +33,10 @@ public class HL7Main {
 	public static void main(String [] args) throws Exception{ 
 
 
-		//String file1 = "/Users/pc_iverson/Desktop/input/StageCatalog.xml";
-		String file1 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/GenericCatalog-EX02.xml";
-		String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/org.hl7.BodyWeight-v0.108-Template.xml-valuesets.xml";
+		String file1 = "/Users/pc_iverson/Desktop/input/Catalog-EX03.xml";
+		//		String file1 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/GenericCatalog-EX02.xml";
+		String file2 = "/Users/pc_iverson/Desktop/input/Catalog-EX03-valuesets.xml";
+		//		String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/org.hl7.BodyWeight-v0.108-Template.xml-valuesets.xml";
 		String file3 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/org.hl7.BodyWeight-v0.108-Template+context.xml";
 
 		//1 = genericDCM
@@ -42,7 +46,7 @@ public class HL7Main {
 
 		//Read file, fill arraylists
 
-		HL7Data ll = new HL7LLData(file1,file2,file3, i);
+		HL7Data ll = new HL7LLData(file1,file2,file3);
 
 
 		System.out.println("--------");
@@ -88,22 +92,50 @@ public class HL7Main {
 				stageCatalogue = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "stageCatalogue")).get(0);
 			}
 
+			HashMap<String,HL7ValueSetLRA> hashValueSetLRA = ll.getHashValueSetLRA();
+
 
 			for(HL7OrganizerLRA organizer : ll.getHL7OrganizerLRA()){
 
 				System.out.println(organizer.getHL7OrganizerNameLRA());
+				String protocolName = organizer.getHL7OrganizerNameLRA().trim();
 				Protocol protocol = new Protocol();
-				protocol.setName(organizer.getHL7OrganizerNameLRA().trim());
+				protocol.setName(protocolName);
 				protocol.setInvestigation(inv);
 				List<String> listOfMeasurementNames = new ArrayList<String>();
 				List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
-
+				List<Category> uniqueListOfCategory = new ArrayList<Category>();
+				List<String> uniqueCategoryName = new ArrayList<String>();
+				List<String> measurementCategory = new ArrayList<String>();
+				
 				for(HL7ObservationLRA meas :organizer.measurements){
 					System.out.println(" - " + meas.getMeasurementName() + "\t" + meas.getMeasurementDescription() +"\t"+meas.getMeasurementDataType() );
+
 					Measurement m = new Measurement();
 					m.setName(meas.getMeasurementName());
-					m.setDescription(meas.getMeasurementDescription().replaceAll("\\\n", ""));
-					m.setInvestigation(inv);
+					//					m.setDescription(meas.getMeasurementDescription().replaceAll("\\\n", ""));
+					m.setDescription(meas.getMeasurementDisplayName());
+					m.setInvestigation(inv);	
+					
+					if(hashValueSetLRA.containsKey(protocolName +"." + meas.getMeasurementName().trim())){
+						HL7ValueSetLRA valueSetLRA = hashValueSetLRA.get(protocolName +"." + meas.getMeasurementName());
+						for(HL7ValueSetAnswerLRA eachAnswer : valueSetLRA.getListOFAnswers()){
+
+							String codeValue = eachAnswer.getCodeValue();
+							String categoryName = eachAnswer.getName();
+							measurementCategory.add(categoryName);
+
+							if(!uniqueCategoryName.contains(categoryName)){
+								uniqueCategoryName.add(categoryName);
+								Category c = new Category();
+								c.setName(codeValue + categoryName);
+								c.setCode_String(codeValue + " = " + categoryName);
+								c.setDescription(codeValue + " = " + categoryName);
+								uniqueListOfCategory.add(c);
+							}
+						}
+					}
+					m.setCategories_Name(measurementCategory);
 
 					String dataType = meas.getMeasurementDataType();
 
@@ -122,7 +154,26 @@ public class HL7Main {
 					listOfMeasurements.add(m);
 
 				}
-
+				
+				db.update(uniqueListOfCategory, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
+				
+				for(Measurement m : listOfMeasurements){
+					
+					if(m.getCategories_Name().size() > 0){
+						
+						List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name()));
+						
+						List<Integer> listOfCategoryID = new ArrayList<Integer>();
+						
+						for(Category c : listOfCategory){
+							listOfCategoryID.add(c.getId());
+						}
+						m.setCategories_Id(listOfCategoryID);
+					}
+					
+				}
+				
+				
 				db.update(listOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
 
 				listOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, listOfMeasurementNames));
@@ -141,7 +192,7 @@ public class HL7Main {
 			}
 
 			db.update(listOfProtocols, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
-			
+
 			listOfProtocols = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, listOfProtocolName));
 
 			for(Protocol p : listOfProtocols){
@@ -175,74 +226,80 @@ public class HL7Main {
 
 			listOfProtocolIds = new ArrayList<Integer>();
 
-			for(HL7OrganizerDCM organizer : ll.getHL7OrganizerDCM()){
+			if(ll.getHl7GenericDCM() != null){
 
-				System.out.println(organizer.getHL7OrganizerNameDCM());
-				Protocol protocol = new Protocol();
-				protocol.setName(organizer.getHL7OrganizerNameDCM().trim());
-				protocol.setInvestigation(inv);
-				List<String> listOfMeasurementNames = new ArrayList<String>();
-				List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
+				for(HL7OrganizerDCM organizer : ll.getHL7OrganizerDCM()){
 
-				for(HL7MeasurementDCM meas :organizer.measurements){
-					System.out.println(" - " + meas.getMeasurementName() +"\t"+meas.getMeasurementDataType() );
-					Measurement m = new Measurement();
-					m.setName(meas.getMeasurementName());
-					//m.setDescription(meas.getMeasurementDescription());
-					m.setInvestigation(inv);
+					System.out.println(organizer.getHL7OrganizerNameDCM());
+					Protocol protocol = new Protocol();
+					protocol.setName(organizer.getHL7OrganizerNameDCM().trim());
+					protocol.setInvestigation(inv);
+					List<String> listOfMeasurementNames = new ArrayList<String>();
+					List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
 
-					String dataType = meas.getMeasurementDataType();
+					for(HL7MeasurementDCM meas :organizer.measurements){
 
-					if(dataType.equals("INT")){
-						m.setDataType("int");
-					}else if(dataType.equals("ST")){
-						m.setDataType("string");
-					}else if(dataType.equals("TS")){
-						m.setDataType("datetime");
-					}else{
-						m.setDataType("string");
+						System.out.println(" - " + meas.getMeasurementName() +"\t"+meas.getMeasurementDataType() );
+						Measurement m = new Measurement();
+						m.setName(meas.getMeasurementName());
+						//m.setDescription(meas.getMeasurementDescription());
+						m.setInvestigation(inv);
+
+						String dataType = meas.getMeasurementDataType();
+
+						if(dataType.equals("INT")){
+							m.setDataType("int");
+						}else if(dataType.equals("ST")){
+							m.setDataType("string");
+						}else if(dataType.equals("TS")){
+							m.setDataType("datetime");
+						}else{
+							m.setDataType("string");
+						}
+
+						listOfMeasurementNames.add(meas.getMeasurementName());	
+
+						listOfMeasurements.add(m);
 					}
 
-					listOfMeasurementNames.add(meas.getMeasurementName());	
+					db.update(listOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
 
-					listOfMeasurements.add(m);
+					listOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, listOfMeasurementNames));
+
+					List<Integer> listOfMeasurementId = new ArrayList<Integer>();
+
+					for(Measurement m : listOfMeasurements){
+						listOfMeasurementId.add(m.getId());
+					}
+
+					protocol.setFeatures_Id(listOfMeasurementId);
+
+					listOfProtocols.add(protocol);
+
+					listOfProtocolName.add(protocol.getName());
 				}
 
-				db.update(listOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
+				db.update(listOfProtocols, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
 
-				listOfMeasurements = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, listOfMeasurementNames));
+				listOfProtocols = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, listOfProtocolName));
 
-				List<Integer> listOfMeasurementId = new ArrayList<Integer>();
-
-				for(Measurement m : listOfMeasurements){
-					listOfMeasurementId.add(m.getId());
+				for(Protocol p : listOfProtocols){
+					listOfProtocolIds.add(p.getId());
 				}
 
-				protocol.setFeatures_Id(listOfMeasurementId);
+				db.update(listOfProtocols, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
 
-				listOfProtocols.add(protocol);
-				
-				listOfProtocolName.add(protocol.getName());
+				genericDCM.setSubprotocols_Id(listOfProtocolIds);
+
+				db.update(genericDCM);
+
 			}
 
-			db.update(listOfProtocols, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
-
-			listOfProtocols = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, listOfProtocolName));
-
-			for(Protocol p : listOfProtocols){
-				listOfProtocolIds.add(p.getId());
-			}
-
-			db.update(listOfProtocols, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
-
-			genericDCM.setSubprotocols_Id(listOfProtocolIds);
-
-			db.update(genericDCM);
 
 			db.commitTx();
 
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			db.rollbackTx();
 		}
 	}
