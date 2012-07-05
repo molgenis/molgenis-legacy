@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -122,7 +123,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					
 					final NumberExpression<Double> cityPopulationRatio = cityPopulation.divide(countryPopulation);
 					query.where(country.get("code").eq(city.get("countrycode")));
-					query.limit(10);
+					//query.limit(10);
 					query.orderBy(cityPopulationRatio.desc());
 
 					// create select
@@ -250,10 +251,9 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	{
 		try
 		{
+			final ServletContext context = ((MolgenisRequest)request).getRequest().getSession().getServletContext();
+			
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
-
-			final ExportRange exportSelection = StringUtils.isNotEmpty(request.getString("exportSelection")) ? ExportRange
-					.valueOf(request.getString("exportSelection")) : ExportRange.UNKOWN;
 
 			final int limit = request.getInt("rows");
 //			final String sidx = request.getString("sidx");
@@ -288,7 +288,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			addSortOrderLimitOffset(request, (QueryTable) tupleTable, offset);
 			
 
-			renderData(((MolgenisRequest) request).getRequest(), ((MolgenisRequest) request).getResponse(), page,
+			renderData(context, ((MolgenisRequest) request).getRequest(), ((MolgenisRequest) request).getResponse(), page,
 					totalPages, tupleTable);
 
 			tupleTable.close();
@@ -302,6 +302,9 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 
 	private void addSortOrderLimitOffset(Tuple request, QueryTable queryTable, int offset)
 	{
+		final ExportRange exportSelection = StringUtils.isNotEmpty(request.getString("exportSelection")) ? ExportRange
+				.valueOf(request.getString("exportSelection")) : ExportRange.UNKOWN;
+		
 		final int limit = request.getInt("rows");
 		final String sidx = request.getString("sidx");
 		final String sord = request.getString("sord");
@@ -309,8 +312,12 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		final SQLQuery query = queryTable.getQuery();
 		final LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = queryTable.getSelect();
 		
-		query.limit(limit);
-		query.offset(offset);
+		if(exportSelection != ExportRange.ALL) {
+			query.limit(limit);
+			query.offset(offset);
+		}
+		
+		
 		ComparableExpressionBase<?> sortColumn = ((ComparableExpressionBase<?>)selectMap.get(sidx));
 		if(sord.equalsIgnoreCase("ASC")) {
 			query.orderBy(sortColumn.asc());	
@@ -337,11 +344,10 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	 * @param tupleTable
 	 *            The table from which to render the data.
 	 */
-	private void renderData(HttpServletRequest request, HttpServletResponse response, int page, int totalPages,
+	private void renderData(ServletContext context, HttpServletRequest request, HttpServletResponse response, int page, int totalPages,
 			final TupleTable tupleTable) throws TableException
 	{
-
-		String strViewType = (String) request.getAttribute("viewType");
+		String strViewType = (String) request.getParameter("viewType");
 		if (StringUtils.isEmpty(strViewType))
 		{ // strange that the grid doesn't submit it in first load!
 			strViewType = "JQ_GRID";
@@ -351,7 +357,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			final String viewFactoryClassName = request.getParameter("viewFactoryClassName");
 			final ViewFactory viewFactory = (ViewFactory) Class.forName(viewFactoryClassName).newInstance();
 			final Renderer view = viewFactory.createView(strViewType);
-			view.export(response, request.getParameter("caption"), this, tupleTable, totalPages, page);
+			view.export(context, response, request.getParameter("caption"), this, tupleTable, totalPages, page);
 		}
 		catch (Exception e)
 		{
