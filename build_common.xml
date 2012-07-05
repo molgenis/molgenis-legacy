@@ -57,9 +57,9 @@ It should be used via 'import' plus passing of properties
 	<target name="generate" depends="update-eclipse">
 		<!-- clean generated folders -->
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${output_src}" />
-			<fileset dir="${output_sql}" />
-			<fileset dir="${output_ccp}" />
+			<fileset dir="${output_src}" excludes=".gitignore"/>
+			<fileset dir="${output_sql}" excludes=".gitignore"/>
+			<fileset dir="${output_ccp}" excludes=".gitignore"/>
 		</delete>
 		
 		<mkdir dir="${output_src}" />
@@ -240,6 +240,10 @@ It should be used via 'import' plus passing of properties
 
 		<echo>Restoring .setting/sorg.eclipse.wst.common.component from template file ${basedir}/.settings/template.org.eclipse.wst.common.component</echo>
 		<copy file="${basedir}/.settings/template.org.eclipse.wst.common.component" tofile="${basedir}/.settings/org.eclipse.wst.common.component" overwrite="true" />
+		<copy file="${basedir}/.settings/template.jsdtscope" tofile="${basedir}/.settings/jsdtscope" overwrite="yes" />
+		<copy file="${basedir}/.settings/template.org.eclipse.jdt.core.prefs" tofile="org.eclipse.jdt.core.prefs" overwrite="yes" />
+		<copy file="${basedir}/.settings/template.org.eclipse.wst.common.project.facet.core.xml" tofile="${basedir}/.settings/org.eclipse.wst.common.project.facet.core.xml" overwrite="yes" />
+		<copy file="${basedir}/.project.template" tofile="${basedir}/.project" overwrite="yes" />
 
 		<!-- <wb-resource deploy-path="/WEB-INF/classes" source-path="/generated/src"/> -->
 
