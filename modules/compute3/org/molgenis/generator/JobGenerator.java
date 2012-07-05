@@ -41,12 +41,14 @@ public interface JobGenerator
 
     public static final String FLAG = "#FOREACH";
     public static final String GRID_TEMP_DIR = "$TMPDIR";
+    public static final String GRID_LOCATION_PREFIX = "lfn://grid/";
 
     Vector<ComputeJob> generateComputeJobsFoldedWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);
 
     Vector<ComputeJob> generateComputeJobsDB(Workflow workflow, List<ObservationTarget> worksheet, String backend);
 
     boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String,String> config);
+    boolean generateActualJobsWithMacros(Vector<ComputeJob> computeJobs, String backend, Hashtable<String,String> config);
 
     void setConfig(Hashtable<String,String> config);
 

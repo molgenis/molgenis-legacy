@@ -38,9 +38,14 @@ public class Compute3JobGenerator implements JobGenerator
     private FoldingMaker foldingMaker = new FoldingMaker();
     private FoldingParser foldingParser = new FoldingParser();
 
+    //to reuse few methods
+    ModelLoader loader = new ModelLoader();
+
     //grid specific imputation handler
     private GridHandler gridHandler = null;
     private boolean workflowHasDependencies = false;
+
+
 
     //template sources
     private String templateGridHeader;
@@ -51,6 +56,7 @@ public class Compute3JobGenerator implements JobGenerator
     private String templateGridAfterExecution;
     private String templateGridUploadLog;
     private String templateGridDAGNode;
+    private String templateMacro;
 
 
     private String templateClusterSubmission;
@@ -70,6 +76,7 @@ public class Compute3JobGenerator implements JobGenerator
     private String fileTemplateClusterHeader = "templ-pbs-header.ftl";
     private String fileTemplateClusterFooter = "templ-pbs-footer.ftl";
     private String fileTemplateClusterSubmission = "templ-submit.ftl";
+    private String fileTemplateMacro = "templ-macro.ftl";
 
     //used for grid generation
     private Hashtable<String, GridTransferContainer> pairJobTransfers = null;
@@ -244,7 +251,7 @@ public class Compute3JobGenerator implements JobGenerator
                 int weavingCount = 0;
                 logger.log(Level.DEBUG, "loop " + weavingCount + " -> " + unweavedValues.size());
                 //in a loop weave complex parameters with values
-                while (unweavedValues.size() > 0 && weavingCount < 10)
+                while (unweavedValues.size() > 0 && weavingCount < 100)
                 {
                     Enumeration unkeys = unweavedValues.keys();
                     while (unkeys.hasMoreElements())
@@ -467,6 +474,134 @@ public class Compute3JobGenerator implements JobGenerator
         return null;
     }
 
+    public boolean generateActualJobsWithMacros(Vector<ComputeJob> computeJobs, String backend, Hashtable<String, String> config)
+    {
+        //read templates
+        String templatesDir = config.get(JobGenerator.TEMPLATE_DIR);
+        readTemplates(templatesDir);
+
+
+        for (ComputeJob computeJob : computeJobs)
+        {
+
+            GridTransferContainer container = pairJobTransfers.get(computeJob.getName());
+
+            String strMacrosInput = makeMacros(container, computeJob.getComputeScript(), "input");
+            String strMacrosOutput = makeMacros(container, computeJob.getComputeScript(), "output");;
+
+            System.out.println(">>> generation job: " + computeJob.getName());
+            if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+            {
+                generateActualJobCluster(computeJob, config, strMacrosInput, strMacrosOutput);
+            }
+            else if (backend.equalsIgnoreCase(JobGenerator.GRID))
+            {
+                generateActualJobGridMacro(computeJob, config, strMacrosInput, strMacrosOutput);
+            }
+        }
+
+        //write cluster submit script
+        if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+            writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + "submit_" + config.get(JobGenerator.GENERATION_ID) + ".sh",
+                    submitScript);
+
+        return true;
+    }
+
+    private String makeMacros(GridTransferContainer container, String script, String type)
+    {
+        String text = "";
+        if(type.equalsIgnoreCase("input"))
+        {
+            Vector<String> nameInputs = loader.findInputs(script, ModelLoader.FLAG_INPUTS);
+
+            Vector<String> nameExes = loader.findInputs(script, ModelLoader.FLAG_EXES);
+
+        }
+        else if(type.equalsIgnoreCase("output"))
+        {
+            Vector<String> nameOutputs = loader.findInputs(script, ModelLoader.FLAG_OUTPUTS);
+        }
+        return text;
+    }
+
+    private void generateActualJobGridMacro(ComputeJob computeJob, Hashtable<String, String> config, String strMacrosInput, String strMacrosOutput)
+    {
+        Hashtable<String, String> values = new Hashtable<String, String>();
+
+        values.put("script_name", computeJob.getName());
+        values.put("error_log", "err_" + computeJob.getName() + ".log");
+        values.put("output_log", "out_" + computeJob.getName() + ".log");
+        values.put("script_location", config.get(JobGenerator.BACK_END_DIR));
+        values.put("node_name", computeJob.getName());
+        //create jdl
+        String jdlListing = weaveFreemarker(templateGridJDL, values);
+
+        //write jdl
+        (new File(config.get(JobGenerator.OUTPUT_DIR))).mkdirs();
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".jdl",
+                jdlListing);
+
+        //create shell
+        String shellListing = templateGridHeader;
+        String initialScript = computeJob.getComputeScript();
+        GridTransferContainer container = pairJobTransfers.get(computeJob.getName());
+
+        //generate downloading section (transfer inputs and executable)
+        //and change job listing to execute in the grid
+        Hashtable<String, String> inputs = container.getInputs();
+        Enumeration actuals = inputs.elements();
+        while (actuals.hasMoreElements())
+        {
+            Hashtable<String, String> local = new Hashtable<String, String>();
+
+            String actualName = (String) actuals.nextElement();
+            String justName = giveJustName(actualName);
+
+            //escapes are required to avoid $ sign processing in String replaceAll method
+            justName = "\\" + justName;
+            initialScript = initialScript.replaceAll(actualName, justName);
+        }
+
+        Hashtable<String, String> exes = container.getExes();
+        actuals = exes.elements();
+        while (actuals.hasMoreElements())
+        {
+            Hashtable<String, String> local = new Hashtable<String, String>();
+
+            String actualName = (String) actuals.nextElement();
+            String justName = giveJustName(actualName);
+
+            justName = "\\" + justName;
+            initialScript = initialScript.replaceAll(actualName, justName);
+        }
+        shellListing += strMacrosInput;
+        shellListing += initialScript;
+        String outputsString = "";
+
+        Hashtable<String, String> outputs = container.getOutputs();
+        actuals = outputs.elements();
+        while (actuals.hasMoreElements())
+        {
+            Hashtable<String, String> local = new Hashtable<String, String>();
+
+            String actualName = (String) actuals.nextElement();
+            String justName = giveJustName(actualName);
+
+            justName = "\\" + justName;
+            shellListing = shellListing.replaceAll(actualName, justName);
+
+        }
+
+        shellListing += strMacrosOutput;
+
+        //write shell
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".sh",
+                shellListing);
+
+    }
+
+
     public boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String, String> config)
     {
         int generationCount = -1;
@@ -522,7 +657,7 @@ public class Compute3JobGenerator implements JobGenerator
             writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") +
                     "dag_" + config.get(JobGenerator.GENERATION_ID) + ".jdl",
                     dagScript);
-       }
+        }
 
         return true;
     }
@@ -547,6 +682,54 @@ public class Compute3JobGenerator implements JobGenerator
         String main = computeJob.getComputeScript();
         String footer = weaveFreemarker(templateClusterFooter, values);
         String actualJob = header + main + footer;
+
+        //write script
+        (new File(config.get(JobGenerator.OUTPUT_DIR))).mkdirs();
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".sh",
+                actualJob);
+
+        //create job submission part
+        WorkflowElement el = pairCJtoWE.get(computeJob);
+
+        if (el.getPreviousSteps().size() > 0)
+        {
+            String dependency = JobGenerator.DEPENDENCY_HEAD;
+            for (WorkflowElement wEl : el.getPreviousSteps())
+            {
+                ComputeJob cJ = pairWEtoCJ.get(wEl);
+                dependency += ":" + cJ.getName();
+                values.put(JobGenerator.JOB_DEPENDENCIES, dependency);
+            }
+        }
+        else
+            values.put(JobGenerator.JOB_DEPENDENCIES, "");
+
+        String strSubmit = weaveFreemarker(templateClusterSubmission, values);
+
+        submitScript += strSubmit;
+
+    }
+
+    private void generateActualJobCluster(ComputeJob computeJob, Hashtable<String, String> config, String macrosInput, String macrosOutput)
+    {
+
+        //create values hashtable to fill templates
+        Hashtable<String, String> values = new Hashtable<String, String>();
+
+        ComputeProtocol protocol = (ComputeProtocol) computeJob.getProtocol();
+
+        values.put(JobGenerator.JOB_ID, computeJob.getName());
+        values.put(ModelLoader.FLAG_CLUSTER_QUEUE, protocol.getClusterQueue());
+        values.put(ModelLoader.FLAG_CORES, protocol.getCores().toString());
+        values.put(ModelLoader.FLAG_NODES, protocol.getNodes().toString());
+        values.put(ModelLoader.FLAG_MEMORY, protocol.getMem());
+        values.put(ModelLoader.FLAG_WALLTIME, protocol.getWalltime());
+
+        //create actual cluster job
+        String header = weaveFreemarker(templateClusterHeader, values);
+        String main = computeJob.getComputeScript();
+        String footer = weaveFreemarker(templateClusterFooter, values);
+        String actualJob = header + macrosInput + main + macrosOutput + footer;
 
         //write script
         (new File(config.get(JobGenerator.OUTPUT_DIR))).mkdirs();
@@ -665,6 +848,9 @@ public class Compute3JobGenerator implements JobGenerator
 
         //generate uploading section
         //and change job listing to execute in the grid
+
+        String outputsString = "";
+
         Hashtable<String, String> outputs = container.getOutputs();
         actuals = outputs.elements();
         while (actuals.hasMoreElements())
@@ -685,8 +871,11 @@ public class Compute3JobGenerator implements JobGenerator
             justName = "\\" + justName;
             shellListing = shellListing.replaceAll(actualName, justName);
 
-            shellListing += outputListing;
+            //shellListing += outputListing;
+            outputsString += outputListing;
         }
+
+        shellListing += outputsString;
 
         //add upload log
         Hashtable<String, String> local = new Hashtable<String, String>();
@@ -721,9 +910,9 @@ public class Compute3JobGenerator implements JobGenerator
             String strDependency = "";
 
             //more than one previous element
-            if(dependencyNames.size() > 1)
+            if (dependencyNames.size() > 1)
             {
-                for(String str : dependencyNames)
+                for (String str : dependencyNames)
                 {
                     strDependency += str + ", ";
                 }
@@ -734,7 +923,7 @@ public class Compute3JobGenerator implements JobGenerator
             //only one dependency element
             else
             {
-                strDependency = dependencyNames.elementAt(0) ;
+                strDependency = dependencyNames.elementAt(0);
             }
 
             // format string and add to DAg
@@ -777,6 +966,29 @@ public class Compute3JobGenerator implements JobGenerator
             templateGridJDL = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridJDL);
             templateGridAfterExecution = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridAfterExecution);
             templateGridDAGNode = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDAGNode);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void readTemplates(String templatesDir)
+    {
+        try
+        {
+            templateClusterHeader = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterHeader);
+            templateClusterFooter = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterFooter);
+            templateClusterSubmission = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterSubmission);
+            templateGridHeader = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridHeader);
+            templateGridDownload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownload);
+            templateGridDownloadExe = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownloadExe);
+            templateGridUpload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridUpload);
+            templateGridUploadLog = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridUploadLog);
+            templateGridJDL = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridJDL);
+            templateGridAfterExecution = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridAfterExecution);
+            templateMacro = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateMacro);
+
         }
         catch (IOException e)
         {
