@@ -7,7 +7,7 @@
 <!-- this shows a title and border -->
 	<div class="formscreen">
 		<div class="form_header" id="${model.getName()}">
-		${model.label}
+			${model.label}
 		</div>
 		
 		<#--optional: mechanism to show messages-->
@@ -19,38 +19,36 @@
 			</#if>
 		</#list>
 	
-    
-    
 		<div class="screenbody">
 			<div class="screenpadding">	
 	
-<#--begin your plugin-->	
-
-
-<div id="geneExpression">
-	Choose the type of gene expression:<br />
-
-		<input type="radio" id="geneExpRaw" name="geneExp" value="raw" /> Raw expression<br />
-		<input type="radio" id="geneExpLog" name="geneExp" value="quanLog" checked /> Quantile normalized & log2 transformed expression<br />
-
-</div>
-<div id="geneList">
-		<br />Supply the gene(s) you want to select (one per line):<br />
-		<textarea rows="10" cols="51" name="geneText"value="genes"></textarea>
-</div>
-<div id="groupSelection">
-<br/>Here will be a dropdown thingy for group selection<br />
-	<input type="text" name="dropdownThingy" value="dropdownThingy"/>
-</div>
-
-<div id="submit">
-	<input type='submit' id='jetty' value='Submit' onclick="__action.value='verstuurJetty2'" />
-</div>
-
-
-
-
-<#--end of your plugin-->	
+			<#--begin your plugin-->	
+	
+				<div id="geneExpression">
+					Choose the type of gene expression:<br />
+					<input type="radio" id="geneExpRaw" name="geneExp" value="raw" /> Raw expression<br />
+					<input type="radio" id="geneExpLog" name="geneExp" value="quanLog" checked /> Quantile normalized & log2 transformed expression<br />
+				</div>
+	
+				<div id="geneList">
+					<br />Supply the gene(s) you want to select (one per line):<br />
+					<textarea rows="10" cols="51" name="geneText"value="genes"></textarea>
+				</div>
+		
+				<div id="groupSelection">
+					<br/>Hold down the Ctrl (windows) / Command (Mac) button to select multiple groups.<br />
+					<select multiple="multiple" name="sampleGroups" id="sGroups" style="margin-right:10px">
+					<#list model.names as samplenames>
+						<option value="${samplenames}">${samplenames}</option>			
+					</#list>
+					</select>
+				</div>
+		
+				<div id="submit">
+					<input type='submit' id='jetty' value='Submit' onclick="__action.value='verstuurJetty2'" />
+				</div>
+	
+			<#--end of your plugin-->	
 			</div>
 		</div>
 	</div>
