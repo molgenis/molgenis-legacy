@@ -37,6 +37,16 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
+	<servlet>
+		<servlet-name>jqGrid</servlet-name>
+		<servlet-class>org.molgenis.lifelinesresearchportal.controllers.MatrixController</servlet-class>
+	</servlet>	
+	<servlet-mapping>
+		<servlet-name>jqGrid</servlet-name>
+		<url-pattern>/jqGridBackend</url-pattern>
+	</servlet-mapping>	
+
+
 	<!-- ############### -->
 	<!-- DEPRECATED / UNKNOWN -->
 	<!-- ############### -->

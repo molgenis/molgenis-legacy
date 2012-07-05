@@ -10,13 +10,13 @@ import java.util.Map;
 import java.util.zip.DataFormatException;
 
 import matrix.general.VerifyCsv;
-import molgenis.euratrans.ChipPeak;
-import molgenis.euratrans.Promoter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.molgenis.data.Data;
+import org.molgenis.euratrans.ChipPeak;
+import org.molgenis.euratrans.Promoter;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.Panel;
 import org.molgenis.util.CsvFileReader;
