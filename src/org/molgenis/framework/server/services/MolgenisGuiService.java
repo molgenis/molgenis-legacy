@@ -243,7 +243,7 @@ public abstract class MolgenisGuiService
 					return;
 				}
 
-				// handle request
+				// handle request by reloading (...)
 				appController.reload(db);
 
 				// session are automatically synchronized...

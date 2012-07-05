@@ -37,3 +37,4 @@ log*
 .classpath
 /.externalToolBuilders
 /.settings
+/test-output
