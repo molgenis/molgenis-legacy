@@ -266,37 +266,63 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		int lowestColIndex = colIndexPositions.firstKey();
 		int highestColIndex = colIndexPositions.lastKey();
 		
-		int firstElement = (this.getNumberOfCols() * lowestRowIndex) + lowestColIndex;
-		int lastElement = (this.getNumberOfCols() * highestRowIndex) + highestColIndex;
+		int firstElement = (this.getNumberOfCols() * lowestRowIndex) + lowestColIndex; //inclusive
+		int lastElement = (this.getNumberOfCols() * highestRowIndex) + highestColIndex + 1; //exclusive
 		
+		int totalElements = lastElement - firstElement;
+		
+		System.out.println("row indices + return position:");
+		for(Integer key : rowIndexPositions.keySet())
+		{
+			System.out.print(key + "->" + rowIndexPositions.get(key) + " ");
+		}
+		System.out.println();
+		System.out.println("col indices + return position:");
+		for(Integer key : colIndexPositions.keySet())
+		{
+			System.out.print(key + "->" + colIndexPositions.get(key) + " ");
+		}
+		System.out.println();
 		System.out.println("lowestRowIndex: " + lowestRowIndex);
-		System.out.println("lowestColIndex: " + lowestColIndex);
 		System.out.println("highestRowIndex: " + highestRowIndex);
+		System.out.println("lowestColIndex: " + lowestColIndex);
 		System.out.println("highestColIndex: " + highestColIndex);
-		System.out.println("firstElement: " + firstElement);
-		System.out.println("lastElement: " + lastElement);
+		System.out.println("nr of rows: " + this.getNumberOfRows());
+		System.out.println("nr of columns: " + this.getNumberOfCols());
+		System.out.println("in 2D: firstElement (incluse): " + firstElement);
+		System.out.println("in 2D: lastElement (exclusive): " + lastElement);
+		System.out.println("total elements we're going to read over (==last-first, but we might skip 'empty' chunks in the middle): " + totalElements);
 		
 		long memAlloc = (Runtime.getRuntime().freeMemory()/4); //25% of available memory for reading
 		
-		boolean done = false;
+		System.out.println("bytes of memory reserved for reading chunks: " + memAlloc);
 		
-		System.out.println("total elements we're goign to read (provided no 'empty' chunks to be skipped): " + (lastElement - firstElement));
+		boolean done = false;
+
 		if(this.getData().getValueType().equals("Decimal"))
 		{
 			int maxElementsToRead = (int )(memAlloc / 8.0);
-			System.out.println("maximum elements to read " + maxElementsToRead + " elements (" + (lastElement - firstElement)/maxElementsToRead+" times, remainder at the end: "+ (lastElement - firstElement)%maxElementsToRead + ")");
 			
-			if(maxElementsToRead > (lastElement-firstElement))
+			System.out.println("data type: DECIMAL, meaning we can hold " + maxElementsToRead + " elements in memory");
+			
+			int readLoops = (lastElement - firstElement)/maxElementsToRead;
+			int remainder = (lastElement - firstElement)%maxElementsToRead;
+			
+			System.out.println("--> so we need to read " + readLoops +" times (provided no skipping of empty chunks of variable size), \n--> PLUS a remainder of "+ remainder);
+			
+			if(maxElementsToRead > totalElements)
 			{
-				System.out.println("no need to get that many elements: " + (lastElement-firstElement) + " is enough");
-				maxElementsToRead = (lastElement-firstElement);
+				System.out.println("OPTIMIZATION: maxElementsToRead ("+maxElementsToRead+") > totalElements ("+totalElements+"), adjusting maxElementsToRead to " + totalElements);
+				maxElementsToRead = totalElements;
 			}
 		
-			
+			int iterationCounter = 0;
 			int currentStartElement = firstElement;
 			while(!done)
 			{
-					
+				System.out.println("iteration nr " + iterationCounter + ", currentStartElement: " + currentStartElement);
+				iterationCounter++;
+				
 				//find out if we're going to get elements we want in the next read action
 				//if not: seek the RAF and adjust start element!
 				boolean skipChunkAndSeek = true;
@@ -304,9 +330,9 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 				{
 					//e.g. if we're at element 12 in a 5-col matrix, we check if colIndex 2 if part of the result, and so on
 					//if there is at least one, we'll get the chunk
-					if(colIndexPositions.containsKey(elementIndex%this.getNumberOfCols()))
+					if(colIndexPositions.containsKey(elementIndex % this.getNumberOfCols()))
 					{
-						System.out.println("colIndexPositions has key " + elementIndex%this.getNumberOfCols() +", getting next chunk!");
+						System.out.println("the coming chunk has data we want (at least colindex " + elementIndex%this.getNumberOfCols() +")");
 						skipChunkAndSeek = false;
 						break;
 					}
@@ -317,6 +343,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 					if(skipChunkAndSeek)
 					{
 						System.out.println("NO DATA IN NEXT CHUNK - SKIPPING AND SEEKING");
+						System.out.println("### TODO ###");
 						//find next element
 						
 //						int currentColPos = currentStartElement%this.getNumberOfCols();
@@ -349,32 +376,35 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 					}
 					else
 					{
+						int currentCol = currentStartElement % this.getNumberOfCols();
+						int currentRow = (currentStartElement - currentCol) / this.getNumberOfRows();
+						
+						System.out.println("currentCol = " + currentCol);
+						System.out.println("currentRow = " + currentRow);
+						
 						//read the chunk
 						System.out.println("reading from " + currentStartElement + " to " + (currentStartElement+maxElementsToRead));
+						
 						Object[] elements = readChunk(currentStartElement, maxElementsToRead, false);
 						
 						System.out.println("RETRIEVED ("+elements.length+"): " + printObjArr(elements));
-						
-						int currentColStartPos = currentStartElement % this.getNumberOfCols();
-						int currentRowStartPos = (currentStartElement - currentColStartPos) / this.getNumberOfRows(); //TODO correct?
-						
-						System.out.println("currentColStartPos = " + currentColStartPos);
-						System.out.println("currentRowStartPos = " + currentRowStartPos);
-						
+
 						for(int i = 0; i < elements.length; i ++)
 						{
-							int colPos = (currentColStartPos + i) % this.getNumberOfCols();
+							//System.out.println("i == "+i);
 							
-							System.out.println("checking of colIndexPositions contains " + colPos);
-							if(colIndexPositions.containsKey(colPos))
+							int inChunkColPos = (currentCol + i) % this.getNumberOfCols();
+							int inChunkRowPos = (int)(((double)(currentRow + i)) / ((double)this.getNumberOfCols()));
+							
+							if(colIndexPositions.containsKey(inChunkColPos) && rowIndexPositions.containsKey(inChunkRowPos))
 							{
-								int rowPos = (currentRowStartPos + i) % this.getNumberOfRows(); //wrong
-								System.out.println("yep.. row pos = " + rowPos);
+								
+								System.out.println("match on colPos " + inChunkColPos + ", rowPos " + inChunkRowPos + " - assigning " + elements[i] + " to " + rowIndexPositions.get(inChunkRowPos) + "," + colIndexPositions.get(inChunkColPos) + " in result matrix");
 								
 								//map to the correct position in the output (usually the same, but could be different!)
-								result[rowIndexPositions.get(rowPos)]
-										[colIndexPositions.get(colPos)] 
-										= elements[i];
+								result[rowIndexPositions.get(inChunkRowPos)][colIndexPositions.get(inChunkColPos)] = elements[i];
+								
+								
 							}
 						}
 						
