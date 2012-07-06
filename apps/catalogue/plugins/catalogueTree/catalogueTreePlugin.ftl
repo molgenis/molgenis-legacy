@@ -11,34 +11,36 @@
 	<input type="hidden" name="measurementId" id="measureId" value="">
 	<input type="hidden" name="DemoName" id="DemoName" value="%= demoName %">
 	
-<!-- this shows a title and border -->
-	
 	<script type="text/javascript">
-		
-		var inheritance = eval(${screen.getInheritance()});
 		function searchInTree(){
 		
 			var inputToken = $('#InputToken').val();
 			
+			$('#detail').empty();
+			
 			if($('#selectedField').val() == "Measurements"){
 				
+				$('#leftSideTree li').hide();
+					
 				$('#leftSideTree li').each(function(){
 					
 					if($(this).find('li').length == 0){
-						var name = $(this).attr('id').replace(/_/g,' ');
+						
+						var name = $(this).text().replace(/_/g,' ');
+						
 						var id = $(this).attr('id');
+						
+						inputToken = inputToken.replace(/_/g,' ');
+						
 						if(name.search(new RegExp(inputToken, "gi")) != -1){
 							$(this).show();
-							displayParents($(this).attr('id'), true);
-						}else{
-							$(this).hide();
-							displayParents($(this).attr('id'), false);
+							$('#leftSideTree li#' + id).parents().show();
 						}
 					}
 				});
 				
 			}else if($('#selectedField').val() == "Protocols"){
-				alert('protocols');
+				
 			}else if($('#selectedField').val() == "All fields"){
 				alert('All fields');
 			}else if($('#selectedField').val() == "Details"){
@@ -46,20 +48,9 @@
 			}
 			
 			if(inputToken === ""){
-				$('#leftSideTree').find().show();
+				$('#leftSideTree li').find().show();
 			}
-		}
-		
-		function displayParents(currentNode, display){
-			
-			if(inheritance.currentNode != null){
-				
-				currentNode = inheritance.currentNode;	
-			}
-		}
-		
-		
-		
+		}		
 	</script>
 	
 	<div class="formscreen">
@@ -79,10 +70,9 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-				
-						   <#if screen.isSelectedInv() == true>
-								<table class="box" width="100%" cellpadding="0" cellspacing="0">
-								    <tr><td class="box-header" colspan="2">  
+				<#if screen.isSelectedInv() == true>
+					<table class="box" width="100%" cellpadding="0" cellspacing="0">
+						<tr><td class="box-header" colspan="2">  
 								        <label>Choose a cohort:
 										<!--select name="investigation" id="investigation"--> 
 											<#list screen.arrayInvestigations as inv>
@@ -164,7 +154,7 @@
 										   		var json = eval(${eachJSON});
 										   		$.each(json, function(measurementID, htmlTable){
 										   			$('#' + measurementID).click(function(){
-										   				$('#details > table').hide();
+										   				$('#details').empty();
 										   				$('#details').append(htmlTable);
 										   			});
 										   		});
