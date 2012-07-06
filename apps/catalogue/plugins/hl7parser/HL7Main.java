@@ -108,12 +108,12 @@ public class HL7Main {
 				protocol.setName(protocolName);
 				protocol.setInvestigation(inv);
 				
-				List<String> measurementCategory = new ArrayList<String>();
+				
 				List<String> protocolFeature = new ArrayList<String>();
 				
 				for(HL7ObservationLRA meas :organizer.measurements){
 //					System.out.println(" - " + meas.getMeasurementName() + "\t" + meas.getMeasurementDescription() +"\t"+meas.getMeasurementDataType() );
-
+					List<String> measurementCategory = new ArrayList<String>();
 					Measurement m = new Measurement();
 					m.setName(meas.getMeasurementName());
 					//					m.setDescription(meas.getMeasurementDescription().replaceAll("\\\n", ""));
@@ -123,7 +123,9 @@ public class HL7Main {
 					protocolFeature.add(m.getName());
 					
 					if(hashValueSetLRA.containsKey(protocolName +"." + meas.getMeasurementName().trim())){
+						
 						HL7ValueSetLRA valueSetLRA = hashValueSetLRA.get(protocolName +"." + meas.getMeasurementName());
+						
 						for(HL7ValueSetAnswerLRA eachAnswer : valueSetLRA.getListOFAnswers()){
 
 							String codeValue = eachAnswer.getCodeValue();
@@ -152,12 +154,18 @@ public class HL7Main {
 						m.setDataType("int");
 					}else if(dataType.equals("ST")){
 						m.setDataType("string");
-					}else if(dataType.equals("TS")){
-						m.setDataType("datetime");
 					}else if(dataType.equals("CO")){
 						m.setDataType("categorical");
-					}else{
-						m.setDataType("string");
+					}else if(dataType.equals("CD")){
+						m.setDataType("code");
+					}else if(dataType.equals("PQ")){
+						m.setDataType("decimal");
+					}else if(dataType.equals("TS")){
+						m.setDataType("datetime");
+					}else if(dataType.equals("REAL")){
+						m.setDataType("decimal");
+					}else if(dataType.equals("BL")){
+						m.setDataType("bool");
 					}
 
 					if(!listOfMeasurementNames.contains(m.getName())){
