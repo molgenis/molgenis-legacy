@@ -1,208 +1,165 @@
 package matrix.implementations.binary;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.TreeMap;
 
 import matrix.AbstractDataMatrixInstance;
+import matrix.DataMatrixInstance;
+import matrix.implementations.memory.MemoryDataMatrixInstance;
 
 import org.apache.log4j.Logger;
-import org.molgenis.data.Data;
-import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.pheno.ObservationElement;
-import org.molgenis.pheno.ObservedValue;
 
-public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<E>
+public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 {
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
-	int HD_BLOCK_SIZE = 8000000; //FIXME: how to determine? whats best general size?
+	RandomAccessFile raf;
+	long[] textDataElementLenghtsCumulative;
 
 	/***********/
 	/** CONSTRUCTOR */
 	/***********/
 	public BinaryDataMatrixInstance_NEW(File bin) throws Exception
 	{
-		this.setBin(bin);
-
-		FileInputStream fis;
-		DataInputStream dis;
-
-		fis = new FileInputStream(bin);
-		dis = new DataInputStream(fis);
-
-		Data dataDescription = new Data();
-
-		int startOfElements = 0;
-
-		// first 'Data' object metadata contained in the bin file
-
-		this.setNullChar(readStringFromDIS(dis, 1));
-		dataDescription.setName(readStringFromDIS(dis, dis.readUnsignedByte()));
-		dataDescription.setInvestigation_Name(readStringFromDIS(dis, dis.readUnsignedByte()));
-		dataDescription.setFeatureType(readStringFromDIS(dis, dis.readUnsignedByte()));
-		dataDescription.setTargetType(readStringFromDIS(dis, dis.readUnsignedByte()));
-		dataDescription.setValueType(dis.readBoolean() == true ? "Decimal" : "Text");
-		this.setNumberOfCols(dis.readInt());
-		this.setNumberOfRows(dis.readInt());
-
-		startOfElements += 1;
-		startOfElements += dataDescription.getName().length() + 1;
-		startOfElements += dataDescription.getInvestigation_Name().length() + 1;
-		startOfElements += dataDescription.getFeatureType().length() + 1;
-		startOfElements += dataDescription.getTargetType().length() + 1;
-		startOfElements += 1 + 4 + 4;
-
-		this.setData(dataDescription);
+		super(bin);
+		this.raf = new RandomAccessFile(this.getBin(), "r");
 		
-		// now the information contained within the actual matrix file
-
-		int[] colNameLengths = new int[this.getNumberOfCols()];
-		int[] rowNameLengths = new int[this.getNumberOfRows()];
-
-		for (int i = 0; i < colNameLengths.length; i++)
-		{
-			colNameLengths[i] = dis.readUnsignedByte();
-		}
-
-		for (int i = 0; i < rowNameLengths.length; i++)
-		{
-			rowNameLengths[i] = dis.readUnsignedByte();
-		}
-
-		startOfElements += colNameLengths.length;
-		startOfElements += rowNameLengths.length;
-
-		ArrayList<String> colNames = new ArrayList<String>(this.getNumberOfCols());
-		ArrayList<String> rowNames = new ArrayList<String>(this.getNumberOfRows());
-
-		for (int i = 0; i < this.getNumberOfCols(); i++)
-		{
-			colNames.add(i, readStringFromDIS(dis, colNameLengths[i]));
-			startOfElements += colNameLengths[i];
-		}
-
-		for (int i = 0; i < this.getNumberOfRows(); i++)
-		{
-			rowNames.add(i, readStringFromDIS(dis, rowNameLengths[i]));
-			startOfElements += rowNameLengths[i];
-		}
-
-		this.setColNames(colNames);
-		this.setRowNames(rowNames);
-
-		if (dataDescription.getValueType().equals("Text"))
-		{
-			this.setTextElementLength(dis.readUnsignedByte());
-			logger.debug("this.getTextElementLength() = " + this.getTextElementLength());
-			startOfElements += 1;
-			if (this.getTextElementLength() == 0)
+		if(this.getTextDataElementLengths() != null){
+			this.textDataElementLenghtsCumulative = new long[this.getTextDataElementLengths().length+1];
+			textDataElementLenghtsCumulative[0] = 0; //convenient when adding to pointer position
+			long cumulative = 0;
+			for(int i = 0; i < this.getTextDataElementLengths().length; i++)
 			{
-				byte[] textDataElementLengths = new byte[this.getNumberOfCols() * this.getNumberOfRows()];
-				dis.read(textDataElementLengths);
-				startOfElements += textDataElementLengths.length;
-				this.setTextDataElementLengths(textDataElementLengths);
+				cumulative = cumulative + this.getTextDataElementLengths()[i];
+				textDataElementLenghtsCumulative[i+1] = cumulative;
 			}
 		}
+	}
 
-		// now prepare for random access querying
-		this.setStartOfElementsPointer(startOfElements);
-		this.setNullCharPattern(Pattern.compile(this.getNullChar() + "+"));
 
-		if (dataDescription.getValueType().equals("Text"))
+	/**
+	 * General purpose function to read a chunk of data from a RandomAccessFile.
+	 * @param startElement The element to start reading from
+	 * @param elementAmount The amount of elements to read, sequentially, row-based
+	 * @param replaceNulls If true, replace the nullChar with empty in Text data.
+	 * @return Object[] The resulting list of elements
+	 * @throws IOException
+	 */
+	private Object[] readChunk(int startElement, int elementAmount, boolean replaceNulls) throws IOException
+	{
+		Object[] result = new Object[elementAmount];
+		
+		if(this.getData().getValueType().equals("Decimal"))
 		{
-			if (this.getTextElementLength() == 0)
+			int startPointer = this.getStartOfElementsPointer() + (startElement * 8);
+		
+			if(startPointer != raf.getFilePointer())
 			{
-				int endOfElementsPointer = this.getStartOfElementsPointer();
-				for (byte b : this.getTextDataElementLengths())
-				{
-					endOfElementsPointer += b;
-				}
-				this.setEndOfElementsPointer(endOfElementsPointer);
+				raf.seek(startPointer);
+				System.out.println("ADJUSTED RAF POINTER TO " + startPointer);
 			}
-			else
-			{
-				int endOfElementsPointer = startOfElements
-						+ (this.getNumberOfCols() * this.getNumberOfRows() * this.getTextElementLength());
-				this.setEndOfElementsPointer(endOfElementsPointer);
-			}
+			
+			byte[] arr = new byte[elementAmount * 8];
+			raf.read(arr);
+			return byteArrayToDoubles(arr);
 		}
 		else
 		{
-			int endOfElementsPointer = startOfElements + (this.getNumberOfCols() * this.getNumberOfRows() * 8);
-			this.setEndOfElementsPointer(endOfElementsPointer);
+			if(this.getTextElementLength() != 0)
+			{
+				int startPointer = this.getStartOfElementsPointer() + (startElement * this.getTextElementLength());
+				
+				if(startPointer != raf.getFilePointer())
+				{
+					raf.seek(startPointer);
+					System.out.println("ADJUSTED RAF POINTER TO " + startPointer);
+				}
+				
+				//allocate array of the exact size
+				int totalBytes = elementAmount * this.getTextElementLength();
+				byte[] bytes = new byte[totalBytes];
+
+				//single read action from raf
+				raf.read(bytes);
+
+				//cut up the result 
+				for (int i = 0; i < elementAmount; i++)
+				{
+					int start = i * this.getTextElementLength();
+					int stop = start + this.getTextElementLength();
+					char[] subArr = new char[this.getTextElementLength()];
+					int count = 0;
+					for (int j = start; j < stop; j++)
+					{
+						subArr[count] = (char) bytes[j];
+						count++;
+					}
+					String fromChars = new String(subArr);
+					result[i] = fromChars;
+					if(replaceNulls && result[i].equals(this.getNullChar()))
+					{
+						result[i] = "";
+					}
+				}
+				return result;
+			}
+			else
+			{
+				
+				long startPointer = this.getStartOfElementsPointer() + this.textDataElementLenghtsCumulative[startElement];
+				
+				if(startPointer != raf.getFilePointer())
+				{
+					raf.seek(startPointer);
+					System.out.println("ADJUSTED RAF POINTER TO " + startPointer);
+				}
+				
+				//find out how many bytes we're going to read
+				//allocate array of the exact size
+				int totalBytes = (int) (this.textDataElementLenghtsCumulative[startElement+elementAmount] - this.textDataElementLenghtsCumulative[startElement]);
+				byte[] bytes = new byte[totalBytes];
+	
+				
+				//single read action from raf
+				raf.read(bytes);
+				
+				//cut up the result 
+				int stop = 0;
+				for (int i = 0; i < elementAmount; i++)
+				{
+					int start = stop;
+					stop = start + this.getTextDataElementLengths()[startElement+i];
+					char[] subArr = new char[stop-start];
+					int count = 0;
+					for (int j = start; j < stop; j++)
+					{
+						subArr[count] = (char) bytes[j];
+						count++;
+					}
+					String fromChars = new String(subArr);
+					result[i] = fromChars;
+					if(replaceNulls && result[i].equals(this.getNullChar()))
+					{
+						result[i] = "";
+					}
+				}
+				return result;
+			}
 		}
 	}
-
-	/***********/
-	/** HELPER FUNCTIONS */
-	/***********/
-
-	// Primary function to read doubles
-	public Double[] readNextDoublesFromRAF(RandomAccessFile raf, int elementAmount) throws IOException
-	{
-		byte[] arr = new byte[elementAmount * 8];
-		raf.read(arr);
-		return byteArrayToDoubles(arr);
-	}
-
+	
 	/**
-	 * Primary function to read strings. Performs one read action from the hard drive.
+	 * Convert bytes to doubles
+	 * @param arr
+	 * @return
 	 */
-	public Object[] readStringsFromRAF(RandomAccessFile raf, int elementAmount, int elementLength) throws IOException
-	{
-		Object[] result = new Object[elementAmount];
-		int totalBytes = elementAmount * elementLength;
-
-		byte[] bytes = new byte[totalBytes];
-		char[] chars = new char[totalBytes];
-
-		raf.read(bytes);
-
-		for (int i = 0; i < bytes.length; i++)
-		{
-			chars[i] = (char) bytes[i];
-		}
-
-		for (int i = 0; i < elementAmount; i++)
-		{
-			int start = i * elementLength;
-			int stop = start + elementLength;
-			char[] subArr = new char[elementLength];
-			int count = 0;
-			for (int j = start; j < stop; j++)
-			{
-				subArr[count] = chars[j];
-				count++;
-			}
-			String fromChars = new String(subArr);
-			if (this.getNullCharPattern().matcher(fromChars).matches())
-			{
-				result[i] = "";
-			}else{
-				result[i] = fromChars;
-			}
-		}
-		return result;
-	}
-
-	// Function to help read the header from a DataInputStream
-	public String readStringFromDIS(DataInputStream dis, int stringLength) throws IOException
-	{
-		byte[] string = new byte[stringLength];
-		dis.read(string);
-		return new String(string);
-	}
-
-	// Wrapped by readNextDoublesFromRAF
-	public static Double[] byteArrayToDoubles(byte[] arr)
+	private Double[] byteArrayToDoubles(byte[] arr)
 	{
 		int nr = arr.length / 8;
 		Double[] res = new Double[nr];
@@ -228,298 +185,374 @@ public class BinaryDataMatrixInstance_NEW<E> extends AbstractDataMatrixInstance<
 	}
 
 	/***********/
-	/** MODEL */
-	/***********/
-	int textElementLength;
-	int startOfElementsPointer;
-	int endOfElementsPointer; //FIXME: is this big enough? whats the approx. file size then?
-	byte[] textDataElementLengths;
-	File bin;
-	String nullChar;
-	Pattern nullCharPattern;
-
-	public int getTextElementLength()
-	{
-		return textElementLength;
-	}
-
-	private void setTextElementLength(int textElementLength)
-	{
-		this.textElementLength = textElementLength;
-	}
-
-	public int getStartOfElementsPointer()
-	{
-		return startOfElementsPointer;
-	}
-
-	private void setStartOfElementsPointer(int startOfElementsPointer)
-	{
-		this.startOfElementsPointer = startOfElementsPointer;
-	}
-
-	public int getEndOfElementsPointer()
-	{
-		return endOfElementsPointer;
-	}
-
-	private void setEndOfElementsPointer(int endOfElementsPointer)
-	{
-		this.endOfElementsPointer = endOfElementsPointer;
-	}
-
-	public byte[] getTextDataElementLengths()
-	{
-		return textDataElementLengths;
-	}
-
-	private void setTextDataElementLengths(byte[] textDataElementLengths)
-	{
-		this.textDataElementLengths = textDataElementLengths;
-	}
-
-	public File getBin()
-	{
-		return bin;
-	}
-
-	private void setBin(File bin)
-	{
-		this.bin = bin;
-	}
-
-	public String getNullChar()
-	{
-		return nullChar;
-	}
-
-	private void setNullChar(String nullChar)
-	{
-		this.nullChar = nullChar;
-	}
-
-	public Pattern getNullCharPattern()
-	{
-		return nullCharPattern;
-	}
-
-	private void setNullCharPattern(Pattern nullCharPattern)
-	{
-		this.nullCharPattern = nullCharPattern;
-	}
-
-	/***********/
 	/** MATRIX IMPLEMENTATION */
 	/***********/
 	@Override
 	/**
-	 * Get only one element (from a RandomAccessFile instance), therefore extremely inefficient to retrieve many elements and not optimizable.
-	 * @status: Done
+	 * Get one element. Still fast if the elements are sequentially retrieved. (index increment of 1, by row)
 	 */
 	public Object getElement(int rowindex, int colindex) throws Exception
 	{
-		Object result = new Object();
-		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
-		int startIndex = (rowindex * this.getNumberOfCols()) + colindex;
-		if (this.getData().getValueType().equals("Decimal"))
-		{
-			raf.seek(this.startOfElementsPointer + (startIndex * 8));
-			result = readNextDoublesFromRAF(raf, 1)[0];
-		}
-		else
-		{
-			if (this.getTextElementLength() != 0)
-			{
-				raf.seek(this.startOfElementsPointer + (startIndex * this.getTextElementLength()));
-				result = readStringsFromRAF(raf, 1, this.getTextElementLength())[0];
-			}
-			else
-			{
-				long byteOffset = 0;
-				for (int i = 0; i < startIndex; i++)
-				{
-					byteOffset += this.getTextDataElementLengths()[i];
-				}
-				raf.seek(this.startOfElementsPointer + byteOffset);
-				result = readStringsFromRAF(raf, 1, this.getTextDataElementLengths()[startIndex])[0];
-			}
-		}
-		raf.close();
-		return result;
+		return readChunk((rowindex * this.getNumberOfCols()) + colindex, 1, true)[0];
 	}
 
 	@Override
 	/**
-	 * Get a row (from a RandomAccessFile instance), optimized by reading the entire row at once
-	 * @status: Done
+	 * Get one row. Still fast if the rows are sequentially retrieved. (index increment of 1)
 	 */
 	public Object[] getRow(int rowIndex) throws Exception
 	{
-		Object[] result = new Object[this.getNumberOfCols()];
-		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
-
-		if (this.getData().getValueType().equals("Decimal"))
-		{
-			raf.seek(this.startOfElementsPointer + (rowIndex * this.getNumberOfCols() * 8));
-			result = readNextDoublesFromRAF(raf, result.length);
-		}
-		else
-		{
-			if (this.getTextElementLength() != 0)
-			{
-				raf.seek(this.startOfElementsPointer
-						+ (rowIndex * this.getNumberOfCols() * this.getTextElementLength()));
-				result = readStringsFromRAF(raf, this.getNumberOfCols(), this.getTextElementLength());
-			}
-			else
-			{
-				int startIndex = rowIndex * this.getNumberOfCols();
-				long byteOffset = 0;
-				for (int i = 0; i < startIndex; i++)
-				{
-					byteOffset += this.getTextDataElementLengths()[i];
-				}
-				raf.seek(this.startOfElementsPointer + byteOffset);
-				
-				int diff = (int) (this.endOfElementsPointer - (this.startOfElementsPointer + byteOffset));
-			
-				// read the row as 1 big element
-				Object[] tmpResult = readStringsFromRAF(raf, 1, diff);
-				String rowLine = tmpResult[0].toString();
-				
-				//cut up the result
-				int startAt = 0;
-				for (int i = 0; i <  this.getNumberOfCols(); i++)
-				{
-					int elementLength = this.getTextDataElementLengths()[i+startIndex];
-					result[i] = rowLine.substring(startAt, startAt+elementLength);
-					startAt += elementLength;
-				}
-			}
-		}
-		raf.close();
-		return result;
+		return readChunk((rowIndex * this.getNumberOfCols()), this.getNumberOfCols(), true);
 	}
 
 	@Override
 	/**
-	 * Get a column (from a RandomAccessFile instance), optimized by reading in blocks of HD_BLOCK_SIZE bytes
-	 * to get multiple values at once - unless the colums are further apart than HD_BLOCK_SIZE bytes ofcourse.
-	 * (for variable length text elements this cannot be guessed...)
-	 * @status: TODO
+	 * Get one column.
+	 * Special case of getSubMatrix(int[] rowIndices, int[] colIndices) where we want all rows and only 1 column.
 	 */
 	public Object[] getCol(int colIndex) throws Exception
 	{
-		Object[] result = new Object[this.getNumberOfRows()];
-		RandomAccessFile raf = new RandomAccessFile(this.getBin(), "r");
-		
-		if (this.getData().getValueType().equals("Decimal"))
+		int[] cols = new int[]{ colIndex };
+		int[] rows = new int[this.getNumberOfRows()];
+		for(int r = 0; r < this.getNumberOfRows(); r++)
 		{
-			raf.seek(this.startOfElementsPointer + (colIndex * 8));
-			
-			//find out if next column value is more than HD_BLOCK_SIZE away
-			//if so: seperate queries
-			//if not.. read in ??
-			
-			//retrieve by skipping over, time it
-			//if closer than HD_BLOCK_SIZE together, retrieve multiple and time it
-			//pick fastest for the rest
-			
-			int theEnd = this.getEndOfElementsPointer();
-			
-			if(this.getNumberOfCols() > HD_BLOCK_SIZE){
-				//retrieve per element because we can't use block retrieve anyway!
-				//TODO
-			}else{
-				//maybe retrieving blocks is useful now...
-				
-				if(this.getNumberOfRows() < 30){
-					//test of speed difference only useful when retrieving many elements
-					//
-				}else{
-					//find out per-element speed, retrieve 10
-				//	for()
-				//	readNextDoublesFromRAF(raf, 1)[0];
-				}
-				
-				
-			}
-			
-			if(theEnd > 32412343){
-				result = readNextDoublesFromRAF(raf, result.length);
-			}
-			
-			
+			rows[r] = r;
 		}
-		else
-		{
-			if (this.getTextElementLength() != 0)
-			{
-				
-			}
-			else
-			{
-				
-			}
-		}
-			
-		return result;
+
+		// submatrix should have only 1 column: get this
+		// (from in memory implementation) and return
+		return getSubMatrix(rows, cols).getCol(0);
 	}
 
 	/**
-	 * Get a submatrix by intersecting indices (from a RandomAccessFile
-	 * instance), optimized by reading in blocks of 8 megabyte so get multiple
-	 * values at once - unless some colums are further apart than 8 megabyte.
-	 * (for variable length text elements this cannot be guessed...)
-	 * 
-	 * @status: TODO
+	 * Get a submatrix by 
 	 */
 	@Override
 	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		//result
+		Object[][] result = new Object[rowIndices.length][colIndices.length];
+		
+		//keys: the indices to retrieve, values: the original location of this index in the provided array
+		//we sort the keys from low to high
+		TreeMap<Integer, Integer> rowIndexPositions = new TreeMap<Integer, Integer>(new sortInt());
+		TreeMap<Integer, Integer> colIndexPositions = new TreeMap<Integer, Integer>(new sortInt());
+		
+		for(int i = 0; i < rowIndices.length; i ++)
+		{
+			rowIndexPositions.put(rowIndices[i], i);
+		}
+
+		for(int i = 0; i < colIndices.length; i ++)
+		{
+			colIndexPositions.put(colIndices[i], i);
+		}
+		
+//		System.out.println("row index map:");
+//		for(Integer key : rowIndexPositions.keySet())
+//		{
+//			System.out.println("k: " + key + ", v: " + rowIndexPositions.get(key));
+//		}
+//		
+//		System.out.println("col index map:");
+//		for(Integer key : colIndexPositions.keySet())
+//		{
+//			System.out.println("k: " + key + ", v: " + colIndexPositions.get(key));
+//		}
+		
+		int lowestRowIndex = rowIndexPositions.firstKey();
+		int highestRowIndex = rowIndexPositions.lastKey();
+		
+		int lowestColIndex = colIndexPositions.firstKey();
+		int highestColIndex = colIndexPositions.lastKey();
+		
+		int firstElement = (this.getNumberOfCols() * lowestRowIndex) + lowestColIndex;
+		int lastElement = (this.getNumberOfCols() * highestRowIndex) + highestColIndex;
+		
+		System.out.println("lowestRowIndex: " + lowestRowIndex);
+		System.out.println("lowestColIndex: " + lowestColIndex);
+		System.out.println("highestRowIndex: " + highestRowIndex);
+		System.out.println("highestColIndex: " + highestColIndex);
+		System.out.println("firstElement: " + firstElement);
+		System.out.println("lastElement: " + lastElement);
+		
+		long memAlloc = (Runtime.getRuntime().freeMemory()/4); //25% of available memory for reading
+		
+		boolean done = false;
+		
+		System.out.println("total elements we're goign to read (provided no 'empty' chunks to be skipped): " + (lastElement - firstElement));
+		if(this.getData().getValueType().equals("Decimal"))
+		{
+			int maxElementsToRead = (int )(memAlloc / 8.0);
+			System.out.println("maximum elements to read " + maxElementsToRead + " elements (" + (lastElement - firstElement)/maxElementsToRead+" times, remainder at the end: "+ (lastElement - firstElement)%maxElementsToRead + ")");
+			
+			if(maxElementsToRead > (lastElement-firstElement))
+			{
+				System.out.println("no need to get that many elements: " + (lastElement-firstElement) + " is enough");
+				maxElementsToRead = (lastElement-firstElement);
+			}
+		
+			
+			int currentStartElement = firstElement;
+			while(!done)
+			{
+					
+				//find out if we're going to get elements we want in the next read action
+				//if not: seek the RAF and adjust start element!
+				boolean skipChunkAndSeek = true;
+				for(int elementIndex = currentStartElement; elementIndex < currentStartElement+maxElementsToRead; elementIndex++)
+				{
+					//e.g. if we're at element 12 in a 5-col matrix, we check if colIndex 2 if part of the result, and so on
+					//if there is at least one, we'll get the chunk
+					if(colIndexPositions.containsKey(elementIndex%this.getNumberOfCols()))
+					{
+						System.out.println("colIndexPositions has key " + elementIndex%this.getNumberOfCols() +", getting next chunk!");
+						skipChunkAndSeek = false;
+						break;
+					}
+				}
+				
+				try
+				{
+					if(skipChunkAndSeek)
+					{
+						System.out.println("NO DATA IN NEXT CHUNK - SKIPPING AND SEEKING");
+						//find next element
+						
+//						int currentColPos = currentStartElement%this.getNumberOfCols();
+//						int nextColPos = -1;
+//						
+//						//iterate colIndexPositions, which are sorted low -> high
+//						//find the next col index that has an element we want
+//						for(Integer key : colIndexPositions.keySet())
+//						{
+//							if(key.intValue() > currentColPos)
+//							{
+//								nextColPos = key.intValue();
+//								break;
+//							}
+//						}
+//						
+//						//if we didn't find out, assign the first from the map
+//						//(no more col indices on this row, start on the next one)
+//						if(nextColPos == -1)
+//						{
+//							nextColPos = colIndexPositions.firstKey(); //equal to "lowestColIndex"
+//						}
+//						
+//						//extrapolate the corresponding element index
+//						
+//						//currentStartElement = currentStartElement + 
+//						
+//						//seek
+//						raf.seek(1121212);
+					}
+					else
+					{
+						//read the chunk
+						System.out.println("reading from " + currentStartElement + " to " + (currentStartElement+maxElementsToRead));
+						Object[] elements = readChunk(currentStartElement, maxElementsToRead, false);
+						
+						System.out.println("RETRIEVED ("+elements.length+"): " + printObjArr(elements));
+						
+						int currentColStartPos = currentStartElement % this.getNumberOfCols();
+						int currentRowStartPos = (currentStartElement - currentColStartPos) / this.getNumberOfRows(); //TODO correct?
+						
+						System.out.println("currentColStartPos = " + currentColStartPos);
+						System.out.println("currentRowStartPos = " + currentRowStartPos);
+						
+						for(int i = 0; i < elements.length; i ++)
+						{
+							int colPos = (currentColStartPos + i) % this.getNumberOfCols();
+							
+							System.out.println("checking of colIndexPositions contains " + colPos);
+							if(colIndexPositions.containsKey(colPos))
+							{
+								int rowPos = (currentRowStartPos + i) % this.getNumberOfRows(); //wrong
+								System.out.println("yep.. row pos = " + rowPos);
+								
+								//map to the correct position in the output (usually the same, but could be different!)
+								result[rowIndexPositions.get(rowPos)]
+										[colIndexPositions.get(colPos)] 
+										= elements[i];
+							}
+						}
+						
+						currentStartElement = currentStartElement + maxElementsToRead;
+						
+					}
+				} 
+				catch (IOException e)
+				{
+					throw new MatrixException(e);
+				}
+				
+//				if(currentStartElement > lastElement){ //TODO: how about the trailing bit etc?
+					done = true;
+//				}
+			}
+		}
+		else
+		{
+			if(this.getTextElementLength() != 0)
+			{
+				
+			}
+			else
+			{
+				
+			}
+		}
+		
+		
+		//int howManyBytesToRead = lastElement - firstElement;
+		
+//		int howManyBytesToRead = -1;
+//		
+//		if(this.getData().getValueType().equals("Decimal"))
+//		{
+//			howManyBytesToRead = (lastElement - firstElement) * 8;
+//		}
+//		else
+//		{
+//			if(this.getTextElementLength() != 0)
+//			{
+//				howManyBytesToRead = (lastElement - firstElement) * this.getTextElementLength();
+//			}
+//			else
+//			{
+//				howManyBytesToRead = (int) (this.textDataElementLenghtsCumulative[lastElement] - this.textDataElementLenghtsCumulative[firstElement]); //TODO: correct?
+//			}
+//		}
+//		System.out.println("need to get " + howManyBytesToRead + " bytes");
+//		
+//		long halfOfFreeMem = (Runtime.getRuntime().freeMemory()/2);
+//		
+//		
+//
+//		
+//		//long totalElementSize = this.getEndOfElementsPointer() - this.getStartOfElementsPointer();
+//		
+//		double readActions = 1;
+//		if(halfOfFreeMem > howManyBytesToRead)
+//		{
+//			System.out.println("enough memory to read complete chunk");
+//		}
+//		else
+//		{
+//			readActions = (double)howManyBytesToRead/(double)halfOfFreeMem;
+//		}
+//		
+//		System.out.println("need to read " + readActions + " times using " + halfOfFreeMem + " bytes of memory");
+//		
+//		
+//		boolean notDone = false;
+//		
+//		while(notDone)
+//		{
+//			int currentPointer = 0;
+//			
+//			Object[] chunk = readBlock(currentPointer, int elementAmount, boolean replaceNulls);
+//		}
+		
+		//perform read actions
+		//figure out if we are going to retrieve a requested element by performing this action
+		//if not: skip RAF to the next element to be read
+		//smart when: getting 1 column from a file with very long rows
+		//or when getting e.g. the first and last row of a big file
+		
+		
+		List<String> rowNames = new ArrayList<String>();
+		List<String> colNames = new ArrayList<String>();
+
+		for (int rowIndex : rowIndices)
+		{
+			rowNames.add(this.getRowNames().get(rowIndex).toString());
+		}
+
+		for (int colIndex : colIndices)
+		{
+			colNames.add(this.getColNames().get(colIndex).toString());
+		}
+		
+		AbstractDataMatrixInstance dm = new MemoryDataMatrixInstance(rowNames, colNames, result,
+				this.getData());
+		
+		return dm;
 	}
 
 	/**
-	 * Get a submatrix by index-offsets (from a RandomAccessFile instance),
-	 * optimized by reading in blocks of 8 megabyte so get multiple values at
-	 * once - unless some colums are further apart than 8 megabyte. (for
-	 * variable length text elements this cannot be guessed...)
-	 * 
-	 * @status: TODO
+	 * Get a submatrix by starts plus offsets.
+	 * Special case of getSubMatrix(int[] rowIndices, int[] colIndices) where all indices are sequential.
 	 */
 	@Override
 	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nRows, int col, int nCols) throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		int[] rows = new int[nRows];
+		int[] cols = new int[nCols];
+		
+		int counter = 0;
+		for(int r = row; r < row + nRows; r++)
+		{
+			rows[counter] = r;
+			counter++;
+		}
+		counter = 0;
+		for(int c = col; c < col + nCols; c++)
+		{
+			cols[counter] = c;
+			counter++;
+		}
+		
+		return this.getSubMatrix(rows, cols);
 	}
 
 	@Override
 	public Object[][] getElements() throws MatrixException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		int[] rows = new int[this.getNumberOfRows()];
+		int[] cols = new int[this.getNumberOfCols()];
+		
+		for(int r = 0; r < this.getNumberOfRows(); r++)
+		{
+			rows[r] = r;
+		}
+		for(int c = 0; c < this.getNumberOfCols() ; c++)
+		{
+			cols[c] = c;
+		}
+		
+		//should be a memorymatrix, meaning the getElements just returns current memory location
+		return this.getSubMatrix(rows, cols).getElements();
 	}
 	
-	public File getAsFile() throws Exception {
-		return bin;
-	}
-	
-	@Override
-	public void addColumn() throws Exception {
-		throw new Exception("Action not possible");
-	}
-
-	@Override
-	public void addRow() throws Exception {
-		throw new Exception("Action not possible");
+	private String printObjArr(Object[] arr)
+	{
+		String printMe = "";
+		for(Object o : arr)
+		{
+			printMe += "'" + o.toString() + "', ";
+		}
+		return printMe;
 	}
 
-	@Override
-	public void updateElement() throws Exception {
-		throw new Exception("Action not possible");
-	}
+}
 
+class sortInt implements Comparator<Integer>
+{
+	public int compare(Integer a, Integer b)
+	{
+		if (a.intValue() < b.intValue())
+		{
+			return -1;
+		}
+		else if (a.intValue() == b.intValue())
+		{
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+	}
 }

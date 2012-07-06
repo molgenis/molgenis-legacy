@@ -5,6 +5,7 @@ import java.util.List;
 
 import matrix.general.DataMatrixHandler;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
+import matrix.implementations.binary.BinaryDataMatrixInstance_NEW;
 import matrix.implementations.binary.BinaryDataMatrixWriter;
 import matrix.test.implementations.general.Helper;
 import matrix.test.implementations.general.Params;
@@ -15,7 +16,7 @@ import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.testng.Assert;
 
-public class TestBinMatrix
+public class TestBinMatrix2
 {
 	List<String> uniqueNames = new ArrayList<String>();
 	Logger logger = Logger.getLogger(getClass().getSimpleName());
@@ -32,7 +33,7 @@ public class TestBinMatrix
 	 * @param sparse
 	 * @throws Exception
 	 */
-	public TestBinMatrix(Database db, Params params)
+	public TestBinMatrix2(Database db, Params params)
 			throws Exception
 	{
 		/**
@@ -46,17 +47,17 @@ public class TestBinMatrix
 		logger.info("Creating database instance and erasing all existing data..");
 		Helper h = new Helper(db);
 		h.printSettings(storage, params);
-		System.out.println("OLD IMPLEMENTATION");
+		System.out.println("NEW IMPLEMENTATION");
 		h.prepareDatabaseAndFiles(storage, params);
 
 		logger.info("Transforming the files into their binary counterpart in the storage directory..");
 		new BinaryDataMatrixWriter(h.getDataList(), h.getInputFilesDir(), db);
 	
 		logger.info("Instantiating the matrices..");
-		List<BinaryDataMatrixInstance> bmList = new ArrayList<BinaryDataMatrixInstance>();
+		List<BinaryDataMatrixInstance_NEW> bmList = new ArrayList<BinaryDataMatrixInstance_NEW>();
 		for (Data data : h.getDataList())
 		{
-			BinaryDataMatrixInstance bm = (BinaryDataMatrixInstance) new DataMatrixHandler(db).createInstance(data, db);
+			BinaryDataMatrixInstance_NEW bm = new BinaryDataMatrixInstance_NEW(new DataMatrixHandler(db).findSourceFile(data, db));
 			bmList.add(bm);
 		}
 
@@ -72,10 +73,11 @@ public class TestBinMatrix
 					"submatrixbyindexoffset", "submatrixbynameoffset" };
 
 		}
-		for (BinaryDataMatrixInstance bm : bmList)
+		for (BinaryDataMatrixInstance_NEW bm : bmList)
 		{
 			for (String method : methods)
 			{
+				System.out.println("---> METHOD: " + method);
 				Assert.assertTrue(TestingMethods.parseToPlainAndCompare(logger, bm, bm.getData(),
 						h.getInputFilesDir(), method, true, true));
 			}
