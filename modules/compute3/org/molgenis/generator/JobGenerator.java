@@ -31,6 +31,7 @@ public interface JobGenerator
     public static final String LFN_NAME = "lfn_name";
     public static final String INPUT = "input";
     public static final String OUTPUT = "output";
+    public static final String EXE = "exe";
     public static final String LOG = "log";
 
     //key words in templates for cluster (other cluster key words are reused from ModelLoader)
@@ -42,6 +43,15 @@ public interface JobGenerator
     public static final String FLAG = "#FOREACH";
     public static final String GRID_TEMP_DIR = "$TMPDIR";
     public static final String GRID_LOCATION_PREFIX = "lfn://grid/";
+    public static final String SOURCE_SCRIPT = "source getdata.sh";
+
+    //key words in template for macros
+    public static final String MACRO_BACKEND = "backend";
+    public static final String MACRO_TYPE = "type";
+    public static final String MACRO_PATH = "path";
+    public static final String MACRO_NAME = "name";
+    public static final String MACRO_EXTENSIONS = "extensions";
+
 
     Vector<ComputeJob> generateComputeJobsFoldedWorksheet(Workflow workflow, List<Tuple> worksheet, String backend);
 

@@ -398,12 +398,12 @@ public class ModelLoader
         }
     }
 
-    public Vector<String> findInputs(String script, String flag)
+    public Vector<String> findFlagValues(String script, String flag)
     {
-        if (script.indexOf(FLAG_INPUTS) > -1)
+        if (script.indexOf(flag) > -1)
         {
-            String str = script.substring(script.indexOf(FLAG_INPUTS),
-                    script.indexOf("\n", script.indexOf(FLAG_INPUTS)));
+            String str = script.substring(script.indexOf(flag),
+                    script.indexOf("\n", script.indexOf(flag)));
 
             Vector<String> names = findNames(str);
             return names;
