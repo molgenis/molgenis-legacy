@@ -363,7 +363,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * 
 	 * @param nextNodes
 	 * @param parentClassName
-	 * @param parentTree
+	 * @param parentNode
 	 * @param db
 	 * @param foundTokenInParentProtocol
 	 *            found token in parent protocol but not in its sub-protocols or
@@ -373,7 +373,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 */
 
 	public void recursiveAddingNodesToTree(List<String> nextNodes,
-			String parentClassName, JQueryTreeViewElement parentTree,
+			String parentClassName, JQueryTreeViewElement parentNode,
 			Database db, boolean foundTokenInParentProtocol, Integer mode) {
 
 		// Create a findInputInNextAllToken variable to keep track of whether
@@ -388,7 +388,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		// Loop through all the nodes on this level.
 		for (String protocolName : nextNodes) {
-
 		
 			Protocol protocol = nameToProtocol.get(protocolName);
 
@@ -402,7 +401,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				 *  we try to create the same element twice
 				 *  Therefore we need to give a unique identifier to the tree element but assign the same value to the display name.
 				 */
-
+				
 				if (protocolsAndMeasurementsinTree.containsKey(protocolName)) {
 					if (!multipleInheritance.containsKey(protocolName)) {
 						multipleInheritance.put(protocolName, 1);
@@ -413,19 +412,29 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					childTree = new JQueryTreeViewElement(protocolName
 							+ "_" + multipleInheritance.get(protocolName),
-							protocolName, parentTree);
+							protocolName, parentNode);
 
 				} else {
 
 					// The tree first time is being created.
-					childTree = new JQueryTreeViewElement(protocolName,
-							parentTree);
+					childTree = new JQueryTreeViewElement(protocolName, parentNode);
 					childTree.setCollapsed(true);
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
 				
+				if(protocolName.equals("GenericDCM")){
+					childTree.setCheckBox(true);
+				}
+//				else{
+//					childTree.setCheckBox(false);
+//				}
+				
+				if(childTree.getParent().getCheckBox()){
+					childTree.setCheckBox(true);
+				}
+				
 				try {
-					inheritance.put(childTree.getName().replaceAll(" ", "_"), parentTree.getName().replaceAll(" ", "_"));
+					inheritance.put(childTree.getName().replaceAll(" ", "_"), parentNode.getName().replaceAll(" ", "_"));
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -486,12 +495,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * recursiveAddingNodesToTree().
 	 * 
 	 * @param childNode
-	 * @param parentTree
+	 * @param parentNode
 	 * @param db
 	 * @throws DatabaseException 
 	 */
 	public boolean addingMeasurementsToTree(List<String> childNode,
-			JQueryTreeViewElement parentTree, Database db,
+			JQueryTreeViewElement parentNode, Database db,
 			boolean foundInParent, Integer mode) {
 
 		// Create a variable to store the boolean value with which we could know
@@ -603,7 +612,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					childTree = new JQueryTreeViewElement(displayName
 							+ "_" + multipleInheritance.get(displayName),
-							displayName, parentTree,
+							displayName, parentNode,
 							previousChildTree.getHtmlValue());
 
 					uniqueName = displayName + "_" + multipleInheritance.get(displayName);
@@ -614,9 +623,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree.setHtmlValue(htmlValue);
 
 				} else {
-
-					childTree = new JQueryTreeViewElement(displayName,
-							parentTree, htmlValue);
+		
+					childTree = new JQueryTreeViewElement(displayName, parentNode);
 
 					uniqueName = displayName;
 					
@@ -625,8 +633,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
 				
-				try {
-					inheritance.put(childTree.getName().replaceAll(" ", "_"), parentTree.getName().replaceAll(" ", "_"));
+				try { 
+					inheritance.put(childTree.getName().replaceAll(" ", "_"), parentNode.getName().replaceAll(" ", "_"));
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -738,7 +746,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			
 			for (Category c : listOfCategory) {
 				
-				if(c.getIsMissing()){
+				if(!c.getIsMissing()){
 					htmlValue += "<tr><td>";
 					htmlValue += c.getCode_String() + " = " + c.getDescription();
 					htmlValue += "</td></tr>";

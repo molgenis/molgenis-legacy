@@ -16,7 +16,6 @@
 	<script type="text/javascript">
 		
 		var inheritance = eval(${screen.getInheritance()});
-		
 		function searchInTree(){
 		
 			var inputToken = $('#InputToken').val();
@@ -58,6 +57,8 @@
 				currentNode = inheritance.currentNode;	
 			}
 		}
+		
+		
 		
 	</script>
 	
@@ -191,9 +192,25 @@
 							</td>
 						</tr>
 					</table>
-			   </#if>	
-			    				<label> 	<#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
-			   
+			   	</#if>	
+			    <label><#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>
+ 				<script>
+ 					$('div#leftSideTree input:checkbox').each(function(index){
+ 						$(this).click(function() {
+							 if($(this).attr('checked')){
+								 $(this).parent()
+								.siblings('ul')
+								.find('input:checkbox')
+						     	.attr('checked',true);
+							 }else{
+							 	 $(this).parent()
+								.siblings('ul')
+								.find('input:checkbox')
+						     	.attr('checked',false);
+							 }
+						});
+ 					});
+ 				</script>
 			</div>
 		</div>
 	</div>
