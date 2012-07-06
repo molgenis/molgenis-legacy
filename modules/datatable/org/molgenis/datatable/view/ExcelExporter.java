@@ -89,7 +89,7 @@ public class ExcelExporter extends AbstractExporter
 	private void writeTypedCell(Cell c, Field column, Tuple row) throws TableException
 	{
 		try {
-			String columnName = column.getName();
+			String columnName = column.getSqlName();
 			switch(column.getType().getEnumType()) {
 				case RICHTEXT:
 				case CHAR:
@@ -100,18 +100,26 @@ public class ExcelExporter extends AbstractExporter
 				case INT:
 				case CATEGORICAL: // TODO : check the crap out of this
 				case LONG :
-					c.setCellValue(row.getInt(columnName));
+                                        if(row.getInt(columnName) != null) {
+                                            c.setCellValue(row.getInt(columnName));
+                                        }
 					break;
 				case DATE:
-					c.setCellStyle(dateCellStyle);
-					c.setCellValue(row.getDate(columnName));
+                                        if(row.getDate(columnName) != null) {
+                                            c.setCellStyle(dateCellStyle);
+                                            c.setCellValue(row.getDate(columnName));
+                                        }
 					break;
 				case DATE_TIME:
-					c.setCellStyle(dateTimeCellStyle);
-					c.setCellValue(row.getDate(columnName));
+                                        if(row.getDate(columnName) != null) {
+                                            c.setCellStyle(dateTimeCellStyle);
+                                            c.setCellValue(row.getDate(columnName));
+                                        }
 					break;
 				case DECIMAL:
-					c.setCellValue(row.getDouble(columnName));
+                                        if(row.getDouble(columnName) != null) {
+                                            c.setCellValue(row.getDouble(columnName));
+                                        }
 					break;
 				default :
 					throw new IllegalArgumentException(String.format("Type %s not available", column.getType()));

@@ -37,6 +37,7 @@ public interface TupleTable extends Iterable<Tuple>
 	public List<Tuple> getRows() throws TableException;
 
 	/** Get the data in a streaming fashion (good for large data sets) */
+        @Override
 	public Iterator<Tuple> iterator();
 	
 	/** Closes the resources from which table reads data */
