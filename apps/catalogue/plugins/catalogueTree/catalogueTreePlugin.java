@@ -814,29 +814,29 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		String htmlTreeView = treeView.toHtml(selected);
 
 		// This piece of javascript need to be here because some java calls are needed.  
-		String measurementClickEvent = "<script>";
-
-		List<String> uniqueMeasurementName = new ArrayList<String>();
-
-		System.out.println("listOfMeasurements>>>"+listOfMeasurements);
-
-		for(String eachMeasurement : listOfMeasurements){
-
-			if(!uniqueMeasurementName.contains(eachMeasurement)){
-
-				uniqueMeasurementName.add(eachMeasurement);
-
-				if(eachMeasurement.equals("Year partner son daughter 3")){
-					System.out.println();
-				}
-				measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
-						+ "getHashMapContent(\"" + eachMeasurement + "\");});"
-						+ "";
-			}
-		}
-		measurementClickEvent += "</script>";
-
-		htmlTreeView += measurementClickEvent;
+//		String measurementClickEvent = "<script>";
+//
+//		List<String> uniqueMeasurementName = new ArrayList<String>();
+//
+//		System.out.println("listOfMeasurements>>>"+listOfMeasurements);
+//
+//		for(String eachMeasurement : listOfMeasurements){
+//
+//			if(!uniqueMeasurementName.contains(eachMeasurement)){
+//
+//				uniqueMeasurementName.add(eachMeasurement);
+//
+//				if(eachMeasurement.equals("Year partner son daughter 3")){
+//					System.out.println();
+//				}
+//				measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
+//						+ "getHashMapContent(\"" + eachMeasurement + "\");});"
+//						+ "";
+//			}
+//		}
+//		measurementClickEvent += "</script>";
+//
+//		htmlTreeView += measurementClickEvent;
 
 		return htmlTreeView;
 	}
