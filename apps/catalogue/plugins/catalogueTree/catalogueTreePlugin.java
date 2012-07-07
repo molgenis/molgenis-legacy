@@ -433,13 +433,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree.setCheckBox(true);
 				}
 				
-				try {
-					inheritance.put(childTree.getName().replaceAll(" ", "_"), parentNode.getName().replaceAll(" ", "_"));
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
 				if(!protocolName.equals(parentClassName)){
 					
 					boolean subProtocolRepeatProtocol = false;
@@ -580,14 +573,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					displayName = measurement.getName();
 				}
 
-				// Query the all the detail information about this measurement,
-				// in molgenis terminology, the detail information
-				// are all the observedValue and some of the fields from the
-				// measurement
-				String htmlValue = null;
-
-				htmlValue = htmlTableForTreeInformation(db, measurement);
-
 				// Check if the tree has already had the treeElement with the
 				// same name cos the name can not be duplicated in
 				// jquery tree here. Therefore if the element already existed, a
@@ -607,20 +592,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						multipleInheritance.put(displayName, ++number);
 					}
 
-					JQueryTreeViewElement previousChildTree = protocolsAndMeasurementsinTree
-							.get(displayName);
-
 					childTree = new JQueryTreeViewElement(displayName
 							+ "_" + multipleInheritance.get(displayName),
-							displayName, parentNode,
-							previousChildTree.getHtmlValue());
+							displayName, parentNode);
 
 					uniqueName = displayName + "_" + multipleInheritance.get(displayName);
 					
 					listOfMeasurements.add(displayName
 							+ multipleInheritance.get(displayName));
-
-					childTree.setHtmlValue(htmlValue);
 
 				} else {
 		
@@ -633,18 +612,20 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
 				
-				try { 
-					inheritance.put(childTree.getName().replaceAll(" ", "_"), parentNode.getName().replaceAll(" ", "_"));
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				// Query the all the detail information about this measurement,
+				// in molgenis terminology, the detail information
+				// are all the observedValue and some of the fields from the
+				// measurement
+				String htmlValue = null;
+
+				htmlValue = htmlTableForTreeInformation(db, measurement, uniqueName);
 				
 				JSONObject json = new JSONObject();
 				
 				try {
 					
 					json.put(uniqueName.replaceAll(" ", "_"), htmlValue);
+					inheritance.put(uniqueName.replaceAll(" ", "_"), htmlValue);
 //					json.put("tableID", measurement.getName().replaceAll(" ", "_") + "_table");
 //					json.put("table", htmlValue);
 				} catch (JSONException e) {
@@ -722,19 +703,25 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 * @throws DatabaseException
 	 */
 	public String htmlTableForTreeInformation(Database db,
-			Measurement measurement) throws DatabaseException {
+			Measurement measurement, String nodeName) throws DatabaseException {
 
 		List<String> categoryNames = measurement.getCategories_Name();
 
 		String measurementDescription = measurement.getDescription();
 
 		String measurementDataType = measurement.getDataType();
-
+		
+		String displayName = measurement.getName();
+		
+		if(measurement.getLabel() != null && !measurement.getLabel().equals("")){
+			displayName = measurement.getLabel();
+		}
+		
 		// String htmlValue = "<table id = 'detailInformation'  border = 2>" +
 		String htmlValue = "<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = '"
-				+ measurement.getName().replaceAll(" ", "_") + "_table'>";
+				+ nodeName + "_table'>";
 		htmlValue += "<tr><td class='box-body-label'>Item name:</th><td>"
-				+ measurement.getName() + "</td></tr>";
+				+ displayName + "</td></tr>";
 
 		if (categoryNames.size() > 0) {
 			

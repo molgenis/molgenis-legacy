@@ -9,19 +9,19 @@
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
-	<input type="hidden" name="DemoName" id="DemoName" value="%= demoName %">
 	
 	<script type="text/javascript">
+		
 		function searchInTree(){
 		
 			var inputToken = $('#InputToken').val();
 			
-			$('#detail').empty();
+			$('#details').empty();
 			
-			if($('#selectedField').val() == "Measurements"){
-				
-				$('#leftSideTree li').hide();
+			$('#leftSideTree li').hide();
 					
+			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All fields"){
+				
 				$('#leftSideTree li').each(function(){
 					
 					if($(this).find('li').length == 0){
@@ -39,18 +39,59 @@
 					}
 				});
 				
-			}else if($('#selectedField').val() == "Protocols"){
-				
-			}else if($('#selectedField').val() == "All fields"){
-				alert('All fields');
-			}else if($('#selectedField').val() == "Details"){
-				alert('details');
 			}
-			
-			if(inputToken === ""){
-				$('#leftSideTree li').find().show();
+			if($('#selectedField').val() == "Protocols" || $('#selectedField').val() == "All fields"){
+				
+				$('#leftSideTree li').each(function(){
+					
+					if($(this).find('li').length > 0){
+						
+						var name = $(this).children('span').text().replace(/_/g,' ');
+						
+						var id = $(this).attr('id');
+						
+						inputToken = inputToken.replace(/_/g,' ');
+						
+						if(name.search(new RegExp(inputToken, "gi")) != -1){
+							$(this).show();
+							$('#leftSideTree li#' + id).parents().show();
+							$('#leftSideTree li#' + id).find('li').show();
+						}
+					}
+				});
+				
+			}
+			if($('#selectedField').val() == "Details" || $('#selectedField').val() == "All fields"){
+				
+				var json = eval(${screen.getInheritance()});
+				
+				$('#leftSideTree li').each(function(){
+					
+					if($(this).find('li').length == 0){
+						
+						var id = $(this).attr('id');
+						
+						var table = json[id];
+						
+						table = table.replace(/_/g,' ');
+						
+						inputToken = inputToken.replace(/_/g,' ');
+						
+						if(table.search(new RegExp(inputToken, "gi")) != -1){
+							$(this).show();
+							$('#leftSideTree li#' + id).parents().show();
+						}
+					}
+				});
 			}
 		}		
+		
+		function checkSearchingStatus(){
+			
+			if($('#InputToken').val() === ""){
+				$('#leftSideTree li').show();
+			}
+		}
 	</script>
 	
 	<div class="formscreen">
@@ -94,11 +135,13 @@
 											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
 											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/-->	
 										</label>
-										<div id="masstoggler"> 	
-										<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
-						 				
-						 				<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
-						 				<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
+										
+										
+										
+										<div id="masstoggler"> 		
+						 					<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+						 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
+						 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
 			 							</div>
 					    			</td></tr>
 					    			<tr><td class="box-body" style="width:50%;">
@@ -113,9 +156,9 @@
 					 <!--option value="All fields">All fields</option-->
 				</select>
 				
-				<input title="fill in search term" type="text" name="InputToken" id="InputToken"
-					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';searchingInvestigation.style.display='inline'; searchingInvestigation.style.display='inline'; " 
-					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
+				<input title="fill in search term" type="textfield" name="InputToken" id="InputToken"
+					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
+					onkeyup="checkSearchingStatus();">
 				
 				<input type="button" name="SearchCatalogueTree" value="search" onclick="searchInTree()"/>
 					    <!--
@@ -159,7 +202,7 @@
 										   			});
 										   		});
 										    </#list>
-										</#if> 
+										</#if>		
 									</script>		
       							</div>
 						   </td>

@@ -13,8 +13,10 @@ $("li>span").hover(function(){
 
 $(document).ready(function(){
 	$("#splitter").splitter();
-	$("#browser").treeview({control: "#masstoggler"});
-
+	$("#browser").treeview({
+		control:"#masstoggler",
+	});
+	
 	var $scrollingDiv = $("#scrollingDiv");
 
 	$(window).scroll(function(){			
@@ -23,7 +25,7 @@ $(document).ready(function(){
 		.animate({"marginTop": ($(window).scrollTop() + 30) + "px"}, "slow" );			
 	});
 
-
+	$('#expand').click(function(){$('#browser').find('ul').show()});
 });
 
 $(document).unload(function() {
