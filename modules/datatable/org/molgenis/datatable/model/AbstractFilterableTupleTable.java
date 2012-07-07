@@ -24,32 +24,6 @@ public abstract class AbstractFilterableTupleTable implements FilterableTupleTab
 		}
 	}
 
-	private Object getRuleValue(final Operator operator)
-	{
-		if (CollectionUtils.isEmpty(filters))
-		{
-			return -1;
-		}
-		else
-		{
-			final QueryRule rule = getRule(operator);
-			return rule == null ? -1 : rule.getValue();
-		}
-	}
-
-	private QueryRule getRule(final Operator operator)
-	{
-		final QueryRule rule = (QueryRule) CollectionUtils.find(filters, new Predicate()
-		{
-			@Override
-			public boolean evaluate(Object arg0)
-			{
-				return ((QueryRule) arg0).getOperator() == operator;
-			}
-		});
-		return rule;
-	}
-
 	@Override
 	public void setFilters(List<QueryRule> rules)
 	{
@@ -89,6 +63,7 @@ public abstract class AbstractFilterableTupleTable implements FilterableTupleTab
 		}
 	}
 	
+
 	@Override
 	public void setLimit(int limit)
 	{
@@ -121,4 +96,32 @@ public abstract class AbstractFilterableTupleTable implements FilterableTupleTab
 		this.setLimit(limit);
 		this.setOffset(offset);
 	}
+	
+	// UTIL
+	
+	private Object getRuleValue(final Operator operator)
+	{
+		if (CollectionUtils.isEmpty(filters))
+		{
+			return -1;
+		}
+		else
+		{
+			final QueryRule rule = getRule(operator);
+			return rule == null ? -1 : rule.getValue();
+		}
+	}
+
+	private QueryRule getRule(final Operator operator)
+	{
+		final QueryRule rule = (QueryRule) CollectionUtils.find(filters, new Predicate()
+		{
+			@Override
+			public boolean evaluate(Object arg0)
+			{
+				return ((QueryRule) arg0).getOperator() == operator;
+			}
+		});
+		return rule;
+	}	
 }
