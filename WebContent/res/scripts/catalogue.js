@@ -24,8 +24,12 @@ $(document).ready(function(){
 		.stop()
 		.animate({"marginTop": ($(window).scrollTop() + 30) + "px"}, "slow" );			
 	});
+	
+	$(document).ready(function() {$('ul#browser li').show();});
 
-	$('#expand').click(function(){$('#browser').find('ul').show()});
+	$('#expand').click(function(){$('#browser').find('ul').show();});
+	
+	$('#expand').trigger('click');
 });
 
 $(document).unload(function() {
