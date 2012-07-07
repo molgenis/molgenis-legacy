@@ -15,6 +15,8 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 
 	private String category;
 
+	private boolean checked = false;
+
 	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent)
 	{
 		super(name, parent);
@@ -49,7 +51,15 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 		this.setCategory(category);
 
 	}
-
+	
+	public void setCheckBox(boolean checked){
+		this.checked = checked;
+	}
+	
+	public boolean getCheckBox(){
+		return checked;
+	}
+	
 	public String getNodeName(){
 		return nodeName;
 	}

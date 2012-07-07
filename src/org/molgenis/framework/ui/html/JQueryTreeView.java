@@ -55,19 +55,32 @@ public class JQueryTreeView<E> extends HtmlWidget
 	private String renderTree(JQueryTreeViewElement node, List<String> selectedLabels) {
 		String returnString;
 		
-		 
 		if (node.hasChildren()) {
-			returnString = "<li class=\"" + (nodeOpen(node, selectedLabels) ? "opened" : "closed") 
-			 			+  "\"><span class=\"folder\">" + node.getLabel() + "</span>\n"
-			 			+  "<ul>\n";
+			
+			if(!node.getChildren().get(0).hasChildren() && node.getCheckBox() == true){
+				
+				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") 
+							+  "\" class=\"closed"
+							+  "\" style=\"display:none;\"><span class=\"folder\"><input type=\"checkbox\" id=\"" 
+							+  node.getLabel() + "\" name=\"" + node.getLabel() + "\"" 
+							+  (selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
+							+  " />" + node.getLabel() + "</span>\n"
+							+  "<ul>\n";
+			}else{
+				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") 
+							+  "\" class=\"closed"
+							+  "\" style=\"display:none;\"><span class=\"folder\">" + node.getLabel() + "</span>\n"
+							+  "<ul>\n";
+			}
 			
 			Vector<JQueryTreeViewElement> children = node.getChildren();
+			
 			for (JQueryTreeViewElement child : children) {
 				returnString += renderTree(child, selectedLabels);
 			}
 			returnString += "</ul>\n</li>\n";
 		} else {
-			returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\"><span class=\"point\"><input type=\"checkbox\" id=\"" 
+			returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\" style=\"display:none;\"><span class=\"point\"><input type=\"checkbox\" id=\"" 
 						  +	node.getLabel() + "\" name=\"" + node.getLabel() + "\"" 
 						  +	(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
 						  +	" />" + node.getLabel() + "</span></li>\n"; 
@@ -86,7 +99,6 @@ public class JQueryTreeView<E> extends HtmlWidget
 			+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n" 
 			+ "<link rel=\"stylesheet\" href=\"res/css/catalogue.css\" type=\"text/css\" media=\"screen\" />\n" 
 			+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>\n"
-			+ "<script>var map = new HashMap();\n</script>" 			
 			+ "<ul id=\"browser\" class=\"pointtree\">\n"
 			+ renderTree(treeData.getRoot(), selected)
 			+ "</ul>\n";	
