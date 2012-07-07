@@ -36,6 +36,4 @@ log*
 /target
 logger.out*
 /dist
-/.settings
-!/.settings/template*
-.project
+/.settings/org.eclipse.wst.common.component
