@@ -123,8 +123,8 @@ var JQGridView = {
 		            	var viewType = $("input[name='viewType']:checked").val();
 		            	var exportSelection = $("input[name='exportSelection']:checked").val();
 		
-		              	var myUrl = self.grid.jqGrid('getGridParam', 'url') + "?";
-		              	var postData = self.grid.jqGrid('getGridParam', 'postData');
+		              	var myUrl = $(self.tableSelector).jqGrid('getGridParam', 'url') + "?";
+                                var postData = $(self.tableSelector).jqGrid('getGridParam', 'postData');		              	
 		
 						var first = true;
 						$.each(postData, function(key, value) {
@@ -136,7 +136,7 @@ var JQGridView = {
 								first = false;
 							}
 						});
-		            	
+
 		                //e.preventDefault();  //stop the browser from following
 		                window.location.href = myUrl + "&viewType=" + viewType + "&exportSelection=" + exportSelection;
 		            },
