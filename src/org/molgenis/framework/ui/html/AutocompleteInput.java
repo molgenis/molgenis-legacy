@@ -32,10 +32,11 @@ public class AutocompleteInput<E> extends HtmlInput<E>
 				"               alert(textStatus);\n" +
 				"           };\n" +
 				"			var dataHash = new Object();\n" +
-				"			dataHash['xref_entity'] = '" + this.entityClass + "';\n" +
-				"			dataHash['xref_field']  = '" + this.entityField + "';\n" +
-				"			dataHash['xref_label']  = '" + this.entityField + "';\n" +
-				"			dataHash['xref_label_search'] = req.term;\n" +
+				"			dataHash['" + AbstractRefInput.XREF_ENTITY + "'] = '" + this.entityClass + "';\n" +
+				"			dataHash['" + AbstractRefInput.XREF_FIELD + "']  = '" + this.entityField + "';\n" +
+				"			dataHash['" + AbstractRefInput.XREF_LABELS + "']  = '" + this.entityField + "';\n" +
+				"			dataHash['" + AbstractRefInput.SEARCH_TERM + "'] = req.term;\n" +
+				"           dataHash['" + AbstractRefInput.NILLABLE + "'] = 1;\n" +
 				"			jQuery.ajax({ url: url, data: dataHash, dataType: \"json\", type: \"POST\", async: false, success: successFunction, error: errorFunction });\n" +
 				"			resp(suggestions);\n" +
 				"		},\n" +

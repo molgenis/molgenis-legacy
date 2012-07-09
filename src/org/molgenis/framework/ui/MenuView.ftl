@@ -86,6 +86,7 @@
 	<form name="${screen.getName()}" method="get" action="">
 		<input type="hidden" name="__target" value="">
 		<input type="hidden" name="select" value="">
+<#if screen.getSelected()?exists>
 <#assign selectedItem = screen.getSelected()/>
 <#list screen.getVisibleChildren() as item>
 <#if item == selectedItem>
@@ -94,9 +95,11 @@
 	<div id="${item.name}_tab_button" class="navigationNotSelected" onClick="document.forms.${screen.getName()}.__target.value='${screen.name}';document.forms.${screen.getName()}.select.value='${item.name}';document.forms.${screen.getName()}.submit();">${item.label}</div>
 </#if>
 </#list>
+</#if>
 	</form>
 </div>
 
+<#if screen.getSelected()?exists>
 <#assign subscreen = screen.getSelected()/>
 <#if subscreen.position?exists  && (subscreen.position == "TOP_LEFT" || subscreen.position == "TOP_RIGHT")>
 <div class="formscreen">
@@ -118,5 +121,5 @@
 <#else>
 	<@layout screen.getSelected() />
 </#if>
-
+</#if>
 </#if>

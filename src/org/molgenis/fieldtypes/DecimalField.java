@@ -80,7 +80,7 @@ public class DecimalField extends FieldType
 		return "double";
 	}
 
-	public Class<?> getJavaType() throws MolgenisModelException
+	public Class<?> getJavaType()
 	{
 		return Date.class;
 	}

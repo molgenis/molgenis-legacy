@@ -19,6 +19,7 @@ public class LinkoutRenderDecorator implements RenderDecorator
 		mypatterns.put("A[tT][0-9]{1}[gG][0-9]{4,6}", "http://www.arabidopsis.org/servlets/Search?type=general&search_action=detail&method=1&show_obsolete=F&sub_type=gene&SEARCH_EXACT=4&SEARCH_CONTAINS=1&name=");
 		mypatterns.put("CS[0-9]{5}", "http://www.arabidopsis.org/servlets/Search?type=general&search_action=detail&method=1&show_obsolete=F&sub_type=germplasm&SEARCH_EXACT=4&SEARCH_CONTAINS=1&name=");	
 		mypatterns.put("WBGene[0-9]{8}", "http://www.wormbase.org/db/gene/gene?class=Gene&name=");
+		mypatterns.put("ENSRNOG[0-9]+", "http://www.ensembl.org/Rattus_norvegicus/Gene/Summary?g=");
 	}
 	
 	public String render(String in){

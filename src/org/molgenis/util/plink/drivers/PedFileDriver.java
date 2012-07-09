@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.plink.datatypes.Biallele;
 import org.molgenis.util.plink.datatypes.PedEntry;
@@ -21,22 +20,8 @@ import org.molgenis.util.plink.datatypes.PedEntry;
  * this? or just PED? See:
  * http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped
  */
-public class PedFileDriver
+public class PedFileDriver extends AbstractFileDriver
 {
-
-	private CsvFileReader reader;
-	private long nrOfElements;
-
-	/**
-	 * Get the number of retrievable family elements of this PED file.
-	 * 
-	 * @return
-	 */
-	public long getNrOfElements()
-	{
-		return nrOfElements;
-	}
-
 	/**
 	 * Construct a PedFileDriver on this file
 	 * 
@@ -45,19 +30,7 @@ public class PedFileDriver
 	 */
 	public PedFileDriver(File pedFile) throws Exception
 	{
-		reader = new CsvFileReader(pedFile);
-		reader.disableHeader(false);
-
-		if (reader.fileEndsWithNewlineChar())
-		{
-			this.nrOfElements = reader.getNumberOfLines()
-					- reader.getAmountOfNewlinesAtFileEnd();
-		}
-		else
-		{
-			this.nrOfElements = reader.getNumberOfLines();
-		}
-
+		super(pedFile);
 	}
 
 	/**

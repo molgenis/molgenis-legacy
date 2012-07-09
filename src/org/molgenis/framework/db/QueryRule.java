@@ -206,6 +206,16 @@ public class QueryRule implements Cloneable {
 					+ operator + " cannot be used with one argument");
 		}
 	}
+	
+	public QueryRule(Operator operator, QueryRule nestedRules) {
+		if (operator == Operator.NOT || operator == Operator.IN_SUBQUERY) {
+			this.operator = operator;
+			this.nestedRules = new QueryRule[] { nestedRules };
+		} else {
+			throw new IllegalArgumentException("QueryRule(): Operator."
+					+ operator + " cannot be used with one argument");
+		}
+	}	
 
 	/**
 	 * Specific constructor for rules that don't have a value or field such as

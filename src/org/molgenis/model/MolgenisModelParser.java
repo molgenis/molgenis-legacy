@@ -9,6 +9,7 @@
 package org.molgenis.model;
 
 // jdk
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import org.molgenis.model.elements.DBSchema;
 import org.molgenis.model.elements.Entity;
 import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Form;
+import org.molgenis.model.elements.Form.SortOrder;
 import org.molgenis.model.elements.Index;
 import org.molgenis.model.elements.Matrix;
 import org.molgenis.model.elements.Menu;
@@ -38,12 +40,11 @@ import org.molgenis.model.elements.Model;
 import org.molgenis.model.elements.Module;
 import org.molgenis.model.elements.Parameter;
 import org.molgenis.model.elements.Plugin;
+import org.molgenis.model.elements.Plugin.Flavor;
 import org.molgenis.model.elements.Record;
 import org.molgenis.model.elements.Tree;
 import org.molgenis.model.elements.UISchema;
 import org.molgenis.model.elements.View;
-import org.molgenis.model.elements.Form.SortOrder;
-import org.molgenis.model.elements.Plugin.Flavor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -472,7 +473,7 @@ public class MolgenisModelParser
 		}
 		if (name.equals(""))
 		{
-			throw new MolgenisModelException("name is missing for field of entity '" + entity.getName() + "'");
+			throw new MolgenisModelException("name is missing for a field in entity '" + entity.getName() + "'");
 		}
 		if (hidden.equals("true") && !nillable.equals("true") && (default_value.equals("") && !auto.equals("true")))
 		{
@@ -852,6 +853,30 @@ public class MolgenisModelParser
 				.getAttribute("parameter")));
 	}
 
+	/** Simple parse an xml string*/
+	public static Model parseDbSchema(String xml) throws MolgenisModelException
+	{
+		Model model = new Model("molgenis");
+
+		try
+		{
+			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			
+			ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
+			
+			Document document = builder.parse(is);
+
+			parseXmlDocument(model, document);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new MolgenisModelException(e.getMessage());
+		}
+
+		return model;
+	}
+
 	// db parser
 	public static Model parseDbSchema(ArrayList<String> filenames) throws MolgenisModelException
 	{
@@ -861,8 +886,6 @@ public class MolgenisModelParser
 		// initialize the document
 		for (String filename : filenames)
 		{
-			filesIncludedSoFar.add(filename);
-			
 			DocumentBuilder builder = null;
 			try
 			{
@@ -883,31 +906,30 @@ public class MolgenisModelParser
 					throw new MolgenisModelException("Parsing of DSL (schema) failed: " + e.getMessage());
 				}
 			}
-			// retrieve the document-root
-			Element document_root = document.getDocumentElement();
-			if (document_root.getAttribute("name") == "")
-			{
-				document_root.setAttribute("name", "molgenis");
-			}
 
-			String modelName = document_root.getAttribute("name");
-			String modelLabel = document_root.getAttribute("label");
-
-			model.setName(modelName);
-			if (!"".equals(modelLabel))
-			{
-				model.setLabel(modelLabel);
-			}
-
-			parseDbSchema(document_root, model);
+			parseXmlDocument(model, document);
 		}
 
 		return model;
-
 	}
 
-	public static Model parseDbSchema(Element document_root, Model model) throws MolgenisModelException
+	private static Document parseXmlDocument(Model model, Document document) throws MolgenisModelException
 	{
+		// retrieve the document-root
+		Element document_root = document.getDocumentElement();
+		if (document_root.getAttribute("name") == "")
+		{
+			document_root.setAttribute("name", "molgenis");
+		}
+
+		String modelName = document_root.getAttribute("name");
+		String modelLabel = document_root.getAttribute("label");
+
+		model.setName(modelName);
+		if (!"".equals(modelLabel))
+		{
+			model.setLabel(modelLabel);
+		}
 
 		// retrieve the children
 		NodeList children = document_root.getChildNodes();
@@ -942,47 +964,12 @@ public class MolgenisModelParser
 			{
 				parseMethod(model, element);
 			}
-			else if (element.getTagName().equals("include"))
-			{
-				parseInclude(model, element);
-			}
 			else if (element.getTagName().equals("description"))
 			{
 				model.setDBDescription(model.getDBDescription() + elementValueToString(element));
 			}
 		}
-
-		return model;
-	}
-
-	static List<String> filesIncludedSoFar = new ArrayList<String>();
-
-	public static void parseInclude(Model model, Element element) throws MolgenisModelException
-	{
-		if (element.getTagName().equals("include"))
-		{
-			String fileName = element.getAttribute("file");
-			if (fileName == null || fileName.equals(""))
-			{
-				throw new MolgenisModelException("include failed: no file attribute set");
-			}
-			try
-			{
-				if (!filesIncludedSoFar.contains(fileName))
-				{
-					filesIncludedSoFar.add(fileName);
-					
-					Document document = parseXmlFile(fileName);
-					Element document_root = document.getDocumentElement();
-					parseDbSchema(document_root, model);
-				}
-
-			}
-			catch (Exception e)
-			{
-				throw new MolgenisModelException("include failed: " + e.getMessage());
-			}
-		}
+		return document;
 	}
 
 	public static void parseModule(Model model, Element element) throws MolgenisModelException

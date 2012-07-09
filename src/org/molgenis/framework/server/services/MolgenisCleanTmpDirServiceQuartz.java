@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.server.MolgenisContext;
@@ -14,7 +15,6 @@ import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.server.MolgenisService;
 import org.molgenis.services.SchedulingService;
-import org.molgenis.util.TarGz;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -148,7 +148,7 @@ class CleanTmpDirTask
 				if (age > twelveHours)
 				{
 					System.out.println(f.getAbsolutePath() + " is older than 12 hrs, deleting...");
-					TarGz.delete(f, false);
+					FileUtils.deleteQuietly(f);
 				}
 				else
 				{
