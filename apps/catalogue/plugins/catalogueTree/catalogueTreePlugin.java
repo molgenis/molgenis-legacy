@@ -169,53 +169,44 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		System.out.println("-------------In reload---------------------" + this.getApplicationUrl());
 
 
+		try{
+			//			if (this.request!=null && this.request.getString("measurementId") != null) {
+			//			System.out.println("-request.getString(measurementId-----------" +  request.getString("measurementId"));
+			//		}
+			// default set selected investigation to first
+			if (this.getSelectedInvestigation() == null) {
 
-		//		if (this.request!=null && this.request.getString("measurementId") != null) {
-		//			System.out.println("-request.getString(measurementId-----------" +  request.getString("measurementId"));
-		//		}
-		// default set selected investigation to first
-		if (this.getSelectedInvestigation() == null) {
-			try {
-				List<Investigation> inv = db.query(Investigation.class)
-						.limit(1).find();
-				if (inv.size() > 0)
-					this.setSelectedInvestigation(inv.get(0).getName());
-			} catch (DatabaseException e1) {
-				e1.printStackTrace();
+				List<Investigation> listOfInvestigation = db.query(Investigation.class).find();
+				if (listOfInvestigation.size() > 0){
+					
+					for(Investigation inv : listOfInvestigation){
+						if(db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, inv.getName())).size() > 0){
+							this.setSelectedInvestigation(inv.getName());
+							break;
+						}
+					}
+				}
 			}
-		}
 
-		arraySearchFields.clear();
-		// this.searchingInvestigation = null;
-		// this.selectedInvestigation = null;
+			arraySearchFields.clear();
+			// this.searchingInvestigation = null;
+			// this.selectedInvestigation = null;
 
-		arraySearchFields.add("All fields");
-		arraySearchFields.add("Protocols");
-		arraySearchFields.add("Measurements");
-		arraySearchFields.add("Details");
-
-		// Query<ShoppingCart> q = db.query(ShoppingCart.class);
-		// q.addRules(new QueryRule(ShoppingCart.USERID, Operator.EQUALS, this
-		// .getLogin().getUserName()));
-		// q.addRules(new QueryRule(ShoppingCart.CHECKEDOUT, Operator.EQUALS,
-		// false));
-		try {
-			// List<ShoppingCart> result = q.find();
-			// shoppingCart.clear();
-			// for (ShoppingCart cart : result) {
-			// shoppingCart.addAll(cart.getMeasurements(db));
-			// }
+			arraySearchFields.add("All fields");
+			arraySearchFields.add("Protocols");
+			arraySearchFields.add("Measurements");
+			arraySearchFields.add("Details");
 
 			this.arrayInvestigations.clear();
 
 			for (Investigation i : db.find(Investigation.class)) {
 				this.arrayInvestigations.add(i);
 			}
-		} catch (DatabaseException e) {
+			RetrieveProtocols(db);
+
+		}catch(Exception e){
 			e.printStackTrace();
 		}
-		RetrieveProtocols(db); // mode 1: gets all protocols without filters!
-
 	}
 
 	/**
@@ -243,10 +234,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		protocolsAndMeasurementsinTree = new HashMap<String, JQueryTreeViewElement>();
 		multipleInheritance.clear();
 		listOfMeasurements.clear();
-		
-
-		// measurementsInTree = new HashMap<String, JQueryTreeViewElement>();
-		// protocolsInTree = new HashMap<String, JQueryTreeViewElement>();
 
 		nameToProtocol = new HashMap<String, Protocol>();
 
@@ -327,9 +314,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsTree, db, foundInputToken, mode);
 		}
 
-//		if(mode == 1){
-			directChildrenOfTop = protocolsTree.getChildren();
-//		}
+		directChildrenOfTop = protocolsTree.getChildren();
 
 		System.out.println(protocolsTree.getName());
 		System.out.println(">>>Protocols tree: "+ protocolsTree + "tree elements: "+ protocolsTree.getTreeElements().containsKey("Questionnaire"));
@@ -388,7 +373,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		// Loop through all the nodes on this level.
 		for (String protocolName : nextNodes) {
-		
+
 			Protocol protocol = nameToProtocol.get(protocolName);
 
 			JQueryTreeViewElement childTree = null;
@@ -401,7 +386,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				 *  we try to create the same element twice
 				 *  Therefore we need to give a unique identifier to the tree element but assign the same value to the display name.
 				 */
-				
+
 				if (protocolsAndMeasurementsinTree.containsKey(protocolName)) {
 					if (!multipleInheritance.containsKey(protocolName)) {
 						multipleInheritance.put(protocolName, 1);
@@ -421,20 +406,20 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					childTree.setCollapsed(true);
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
-				
+
 				if(protocolName.equals("GenericDCM")){
 					childTree.setCheckBox(true);
 				}
-//				else{
-//					childTree.setCheckBox(false);
-//				}
-				
+				//				else{
+				//					childTree.setCheckBox(false);
+				//				}
+
 				if(childTree.getParent().getCheckBox()){
 					childTree.setCheckBox(true);
 				}
-				
+
 				if(!protocolName.equals(parentClassName)){
-					
+
 					boolean subProtocolRepeatProtocol = false;
 
 					// find all the sub-protocols and recursively call itself
@@ -466,7 +451,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 								false, mode); // .. so normally it goes always
 						// this way
 					}
-					
+
 				}else if(protocolName.equals(parentClassName)){
 
 					if (protocol.getFeatures_Name() != null
@@ -504,7 +489,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		// indicate with the input token has been found in detail information in
 		// the measurement.
-//		boolean findTokenInDetailInformation = false;
+		//		boolean findTokenInDetailInformation = false;
 
 		// This variables store the measurements that conform to the
 		// requirements by the mode that has been selected.
@@ -556,7 +541,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			for (Measurement measurement : measurementList) {
 
 				// reset the the variable to false
-//				findTokenInDetailInformation = false;
+				//				findTokenInDetailInformation = false;
 
 				JQueryTreeViewElement childTree = null;
 
@@ -582,7 +567,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				//				displayName = displayName.replaceAll("[%#]", "");
 
 				String uniqueName = "";
-				
+
 				if (protocolsAndMeasurementsinTree.containsKey(displayName)) {
 
 					if (!multipleInheritance.containsKey(displayName)) {
@@ -597,21 +582,21 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 							displayName, parentNode);
 
 					uniqueName = displayName + "_" + multipleInheritance.get(displayName);
-					
+
 					listOfMeasurements.add(displayName
 							+ multipleInheritance.get(displayName));
 
 				} else {
-		
+
 					childTree = new JQueryTreeViewElement(displayName, parentNode);
 
 					uniqueName = displayName;
-					
+
 					listOfMeasurements.add(displayName);
 
 					protocolsAndMeasurementsinTree.put(displayName, childTree);
 				}
-				
+
 				// Query the all the detail information about this measurement,
 				// in molgenis terminology, the detail information
 				// are all the observedValue and some of the fields from the
@@ -619,22 +604,22 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				String htmlValue = null;
 
 				htmlValue = htmlTableForTreeInformation(db, measurement, uniqueName);
-				
+
 				JSONObject json = new JSONObject();
-				
+
 				try {
-					
+
 					json.put(uniqueName.replaceAll(" ", "_"), htmlValue);
 					inheritance.put(uniqueName.replaceAll(" ", "_"), htmlValue);
-//					json.put("tableID", measurement.getName().replaceAll(" ", "_") + "_table");
-//					json.put("table", htmlValue);
+					//					json.put("tableID", measurement.getName().replaceAll(" ", "_") + "_table");
+					//					json.put("table", htmlValue);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				listOfJSONs.add(json.toString());
-				
+
 				//				// Searching for the details. Since htmlValue has all the
 				//				// information about this measurement,
 				//				// therefore we search for the input tokenin this variable
@@ -710,13 +695,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		String measurementDescription = measurement.getDescription();
 
 		String measurementDataType = measurement.getDataType();
-		
+
 		String displayName = measurement.getName();
-		
+
 		if(measurement.getLabel() != null && !measurement.getLabel().equals("")){
 			displayName = measurement.getLabel();
 		}
-		
+
 		// String htmlValue = "<table id = 'detailInformation'  border = 2>" +
 		String htmlValue = "<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = '"
 				+ nodeName + "_table'>";
@@ -724,15 +709,15 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				+ displayName + "</td></tr>";
 
 		if (categoryNames.size() > 0) {
-			
+
 			List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categoryNames));
-			
+
 			htmlValue += "<tr><td  class='box-body-label'>Category:</td><td><table>";
-			
+
 			String missingCategory = "<tr><td  class='box-body-label'>Missing category:</td><td><table>";
-			
+
 			for (Category c : listOfCategory) {
-				
+
 				if(!c.getIsMissing()){
 					htmlValue += "<tr><td>";
 					htmlValue += c.getCode_String() + " = " + c.getDescription();
@@ -743,9 +728,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					missingCategory += "</td></tr>";
 				}
 			}
-			
+
 			htmlValue += "</table></td></tr>";
-			
+
 			htmlValue += missingCategory + "</table>";
 		}
 
@@ -801,29 +786,29 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		String htmlTreeView = treeView.toHtml(selected);
 
 		// This piece of javascript need to be here because some java calls are needed.  
-//		String measurementClickEvent = "<script>";
-//
-//		List<String> uniqueMeasurementName = new ArrayList<String>();
-//
-//		System.out.println("listOfMeasurements>>>"+listOfMeasurements);
-//
-//		for(String eachMeasurement : listOfMeasurements){
-//
-//			if(!uniqueMeasurementName.contains(eachMeasurement)){
-//
-//				uniqueMeasurementName.add(eachMeasurement);
-//
-//				if(eachMeasurement.equals("Year partner son daughter 3")){
-//					System.out.println();
-//				}
-//				measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
-//						+ "getHashMapContent(\"" + eachMeasurement + "\");});"
-//						+ "";
-//			}
-//		}
-//		measurementClickEvent += "</script>";
-//
-//		htmlTreeView += measurementClickEvent;
+		//		String measurementClickEvent = "<script>";
+		//
+		//		List<String> uniqueMeasurementName = new ArrayList<String>();
+		//
+		//		System.out.println("listOfMeasurements>>>"+listOfMeasurements);
+		//
+		//		for(String eachMeasurement : listOfMeasurements){
+		//
+		//			if(!uniqueMeasurementName.contains(eachMeasurement)){
+		//
+		//				uniqueMeasurementName.add(eachMeasurement);
+		//
+		//				if(eachMeasurement.equals("Year partner son daughter 3")){
+		//					System.out.println();
+		//				}
+		//				measurementClickEvent += "$('#" + eachMeasurement.replaceAll(" ", "_") + "').click(function() {"
+		//						+ "getHashMapContent(\"" + eachMeasurement + "\");});"
+		//						+ "";
+		//			}
+		//		}
+		//		measurementClickEvent += "</script>";
+		//
+		//		htmlTreeView += measurementClickEvent;
 
 		return htmlTreeView;
 	}
@@ -1033,7 +1018,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		System.out.println(inheritance.toString());
 		return inheritance.toString();
 	}
-	
+
 	//	@Override
 	//	public boolean isVisible()
 	//	{
@@ -1056,12 +1041,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	public List<String> getListOfJSONs() {
 		return listOfJSONs;
 	}
-	
+
 	public void setSelectionName(String selectionName)
 	{
 		SelectionName = selectionName;
 	}
-	
+
 	public String getSelectionName()
 	{
 		return SelectionName;

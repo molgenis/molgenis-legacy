@@ -12,6 +12,7 @@ $("li>span").hover(function(){
 });
 
 $(document).ready(function(){
+	
 	$("#splitter").splitter();
 	$("#browser").treeview({
 		control:"#masstoggler",
@@ -25,9 +26,12 @@ $(document).ready(function(){
 		.animate({"marginTop": ($(window).scrollTop() + 30) + "px"}, "slow" );			
 	});
 	
-	$(document).ready(function() {$('ul#browser li').show();});
+	$(document).ready(function(){$('ul#browser li').show();});
 
 	$('#expand').click(function(){$('#browser').find('ul').show();});
 	
+	$('#collapse').click(function(){$('#browser').find('ul').hide();});
+	
 	$('#expand').trigger('click');
+	
 });
