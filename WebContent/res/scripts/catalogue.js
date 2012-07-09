@@ -31,12 +31,3 @@ $(document).ready(function(){
 	
 	$('#expand').trigger('click');
 });
-
-$(document).unload(function() {
-//	alert('Handler for .unload() called.');"
-});
-
-
-
-
-
