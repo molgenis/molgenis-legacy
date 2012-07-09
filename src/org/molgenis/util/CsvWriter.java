@@ -322,7 +322,7 @@ public class CsvWriter implements TupleWriter
 		this.writer.println();
 	}
 
-	public void setHeaders(String[] fields)
+	public void setHeaders(String ... fields)
 	{
 		this.setHeaders(Arrays.asList(fields));
 		
