@@ -36,35 +36,47 @@ public class JoinQueryTable extends QueryTable {
      */
     public static class Join {
 
-        private final String leftColumnExpr;
-        private final String rightColumnExpr;
+        private final String leftColumnName;
+        private final String leftTableName;
+        private final String rightColumnName;
+        private final String rightTableName;
 
-        public Join(String leftColumnExpr, String rightColumnExpr) {
-            this.leftColumnExpr = leftColumnExpr;
-            this.rightColumnExpr = rightColumnExpr;
+        public Join(String leftTableName, String leftColumnName, String rightTableName, String rightColumnName) {
+            this.leftColumnName = leftColumnName;
+            this.leftTableName = leftTableName;
+            this.rightColumnName = rightColumnName;
+            this.rightTableName = rightTableName;
         }
     }
 
     public JoinQueryTable(final SQLQuery query, final List<String> tableNames, List<String> columnNames, final List<Join> joins, final Database db) {
-        super((SQLQueryImpl) query, createSelectAndJoin(query, tableNames, columnNames, joins, db), getFields(db, tableNames, columnNames));
+        super((SQLQueryImpl) query, createSelectAndJoin(query, tableNames, columnNames, joins, db), getFields(db, tableNames, columnNames, joins));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static LinkedHashMap<String, SimpleExpression<? extends Object>> createSelectAndJoin(final SQLQuery query, final List<String> tableNames, final List<String> columnNames, final List<Join> joins, final Database db) {
         final LinkedHashMap<String, SimpleExpression<? extends Object>> select = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
-        final Map<String, List<Field>> tableColumns = loadColumnData(db, tableNames, columnNames);
+        final Map<String, List<Field>> tableColumns = loadColumnData(db, tableNames, columnNames, joins);
+        
+        SQLQuery from = null;
         for (final String tableName : tableNames) {
             final PathBuilder table = new PathBuilder<RelationalPath>(RelationalPath.class, tableName);
-            query.from(table);
+            if(from == null) {
+                from = query.from(table);    
+            } else {
+                //from.leftJoin()
+            }
             for (final Field f : tableColumns.get(tableName.toLowerCase())) {
                 final SimpleExpression<?> path = createPath(f, table);
                 select.put(f.getSqlName(), path);
             }
         }
-
+        
+        
+        
         for (final Join join : joins) {
-            final SimpleExpression<? extends Object> leftExpr = select.get(join.leftColumnExpr);
-            final SimpleExpression<? extends Object> rightExpr = select.get(join.rightColumnExpr);
+            final SimpleExpression<? extends Object> leftExpr = select.get(join.leftColumnName);
+            final SimpleExpression<? extends Object> rightExpr = select.get(join.rightColumnName);
             if (leftExpr != null && rightExpr != null) {
                 query.where(leftExpr.eq((Expression) rightExpr));
             }
@@ -96,9 +108,9 @@ public class JoinQueryTable extends QueryTable {
         }
     }
 
-    private static List<Field> getFields(Database db, List<String> tableNames, List<String> columnNames) {
+    private static List<Field> getFields(Database db, List<String> tableNames, List<String> columnNames, List<Join> joins) {
         final List<Field> columns = new ArrayList<Field>();
-        final Map<String, List<Field>> columnsByTable = loadColumnData(db, tableNames, columnNames);
+        final Map<String, List<Field>> columnsByTable = loadColumnData(db, tableNames, columnNames, joins);
         for (String table : columnsByTable.keySet()) {
             for (Field field : columnsByTable.get(table)) {
                 columns.add(field);
@@ -107,21 +119,32 @@ public class JoinQueryTable extends QueryTable {
         return columns;
     }
 
-    private static Map<String, List<Field>> loadColumnData(final Database db, List<String> tableNames, List<String> columnNames) {
+    private static Map<String, List<Field>> loadColumnData(final Database db, List<String> tableNames, List<String> columnNames, List<Join> joins) {
         final Map<String, List<Field>> tableColumns = new LinkedHashMap<String, List<Field>>();
-        for (String tableName : tableNames) {
+        for (final String tableName : tableNames) {
             tableColumns.put(tableName.toLowerCase(), new ArrayList<Field>());
         }
 
+//        for (final Join join : joins) {
+//            if(!tableNames.contains(join.leftTableName)) {
+//                tableNames.add(join.leftTableName);
+//            }
+//        }
+        
+        
+        
         try {
-            final String columns = CollectionUtils.isNotEmpty(columnNames) ? StringUtils.join(columnNames, ",") : "*";
+            final String sql = "SELECT %s FROM %s LIMIT 1";
+            final String projection = CollectionUtils.isNotEmpty(columnNames)
+                    ? StringUtils.join(columnNames, ",")
+                    : "*";
             final String tables = StringUtils.join(tableNames, ",");
 
             final Connection conn = db.getConnection();
             final Statement statement = conn.createStatement();
-            final String sql = "SELECT %s FROM %s LIMIT 1";
-            final ResultSet rs = statement.executeQuery(String.format(sql, columns, tables));
+            final ResultSet rs = statement.executeQuery(String.format(sql, projection, tables));
             final ResultSetMetaData metaData = rs.getMetaData();
+
             for (int i = 1, n = metaData.getColumnCount(); i <= n; ++i) {
                 final String columnName = metaData.getColumnName(i);
                 final String tableName = metaData.getTableName(i);
@@ -129,8 +152,8 @@ public class JoinQueryTable extends QueryTable {
                 field.setType(MolgenisFieldTypes.getTypeBySqlTypesCode(metaData.getColumnType(i)));
                 field.setTableName(tableName);
                 tableColumns.get(tableName.toLowerCase()).add(field);
-
             }
+
             rs.close();
             statement.close();
         } catch (Exception ex) {

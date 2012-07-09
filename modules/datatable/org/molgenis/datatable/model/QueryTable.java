@@ -1,5 +1,7 @@
 package org.molgenis.datatable.model;
 
+import com.google.gson.Gson;
+import com.google.gson.internal.StringMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,19 +15,27 @@ import org.molgenis.util.Tuple;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.types.Expression;
+import com.mysema.query.types.expr.BooleanExpression;
+import com.mysema.query.types.expr.NumberExpression;
 import com.mysema.query.types.expr.SimpleExpression;
+import com.mysema.query.types.expr.StringExpression;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.dbutils.ResultSetIterator;
-import org.molgenis.util.TupleIterator;
+import org.apache.commons.lang.StringUtils;
+import org.molgenis.MolgenisFieldTypes;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 
 /**
  * A class to wrap a specific {@link SQLQuery} in a TupleTable.
  */
-public class QueryTable implements TupleTable {
+public class QueryTable extends AbstractFilterableTupleTable {
 
     private final SQLQueryImpl query;
     private final LinkedHashMap<String, SimpleExpression<? extends Object>> select;
@@ -55,18 +65,13 @@ public class QueryTable implements TupleTable {
 
     @Override
     public List<Tuple> getRows() throws TableException {
-        final List<Tuple> tuples = new ArrayList<Tuple>();
-        final Expression<?>[] selectArray = getSelectAsArray();
-        final List<Object[]> rows = query.list(selectArray);
-        final ArrayList<Field> cols = new ArrayList<Field>(columns);
-        for (final Object[] obj : rows) {
-            final SimpleTuple row = new SimpleTuple();
-            for (int i = 0; i < selectArray.length; ++i) {
-                row.set(cols.get(i).getSqlName(), obj[i]);
-            }
-            tuples.add(row);
+        final List<Tuple> result = new ArrayList<Tuple>();
+        final Iterator<Tuple> iterator = iterator();
+        for (final Iterator<Tuple> it = result.iterator(); it.hasNext();) {
+            final Tuple tuple = it.next();
+            result.add(tuple);
         }
-        return tuples;
+        return result;
     }
 
     /**
@@ -80,21 +85,27 @@ public class QueryTable implements TupleTable {
         int valSize = values.size();
         final Expression<?>[] selectArray = new Expression<?>[valSize];
         int idx = 0;
-        for (Iterator<SimpleExpression<? extends Object>> iterator = values.iterator(); iterator.hasNext();) {
+        for (final Iterator<SimpleExpression<? extends Object>> iterator = values.iterator(); iterator.hasNext();) {
             selectArray[idx] = iterator.next();
             ++idx;
         }
         return selectArray;
     }
 
+    private ResultSet rs = null;
+    
     @Override
     public Iterator<Tuple> iterator() {
         try {
             final Expression<?>[] selectArray = getSelectAsArray();
-            final ResultSet rs = query.getResults(selectArray);
+            final BooleanExpression where = convertQueryRulesToQueryExpression();
+            if(where != null) {
+                query.where(where);
+            }
+            rs = query.getResults(selectArray);
             final ResultSetIterator resultSetIterator = new ResultSetIterator(rs);
-
             return IteratorUtils.transformedIterator(resultSetIterator, new Transformer() {
+
                 @Override
                 public Object transform(Object o) {
                     final Tuple tuple = new SimpleTuple();
@@ -126,6 +137,13 @@ public class QueryTable implements TupleTable {
 
     @Override
     public void close() throws TableException {
+        if(rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException ex) {
+                throw new TableException(ex);
+            }
+        }
     }
 
     public SQLQuery getQuery() {
@@ -136,30 +154,119 @@ public class QueryTable implements TupleTable {
         return select;
     }
 
-    @Override
-    public void setLimitOffset(int limit, int offset) {
-        // TODO Auto-generated method stub
+    private static BooleanExpression getExpression(QueryRule rule,
+            final SimpleExpression<? extends Object> selectExpr, final Field column) throws ParseException {
+        final Operator op = rule.getOperator();
+        final MolgenisFieldTypes.FieldTypeEnum type = column.getType().getEnumType();
+        final String value = rule.getValue().toString();
+        BooleanExpression expr = null;
+        switch (type) {
+            case DECIMAL: {
+                final Double val = (Double) column.getType().getTypedValue(value);
+
+                switch (op) {
+                    case EQUALS:
+                        expr = ((NumberExpression<Double>) selectExpr).eq(val);
+                        break;
+                    case LESS:
+                        expr = ((NumberExpression<Double>) selectExpr).lt(val);
+                        break;
+                    case LESS_EQUAL:
+                        expr = ((NumberExpression<Double>) selectExpr).loe(val);
+                        break;
+                    case GREATER:
+                        expr = ((NumberExpression<Double>) selectExpr).gt(val);
+                        break;
+                    case GREATER_EQUAL:
+                        expr = ((NumberExpression<Double>) selectExpr).goe(val);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException(
+                                String.format("Operation: %s not implemented yet for type %s!",
+                                op, type));
+                }
+                break;
+            }
+            case INT: {
+                final Integer val = (Integer) column.getType().getTypedValue(value);
+
+                switch (op) {
+                    case EQUALS:
+                        expr = ((NumberExpression<Integer>) selectExpr).eq(val);
+                        break;
+                    case LESS:
+                        expr = ((NumberExpression<Integer>) selectExpr).lt(val);
+                        break;
+                    case LESS_EQUAL:
+                        expr = ((NumberExpression<Integer>) selectExpr).loe(val);
+                        break;
+                    case GREATER:
+                        expr = ((NumberExpression<Integer>) selectExpr).gt(val);
+                        break;
+                    case GREATER_EQUAL:
+                        expr = ((NumberExpression<Integer>) selectExpr).goe(val);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException(
+                                String.format("Operation: %s not implemented yet for type %s!",
+                                op, type));
+                }
+            }
+            break;
+
+            case STRING: {
+                final String val = (String) column.getType().getTypedValue(value);
+                switch (op) {
+                    case EQUALS:
+                        expr = ((StringExpression) selectExpr).eq(val);
+                        break;
+                    case LIKE:
+                        expr = ((StringExpression) selectExpr).like(val + "%");
+                    default:
+                        throw new UnsupportedOperationException(
+                                String.format("Operation: %s not implemented yet for type %s!",
+                                op, type));
+                }
+            }
+            break;
+            default:
+                throw new UnsupportedOperationException(
+                        String.format("Operation: %s not implemented yet for type %s!",
+                        op, type));
+        }
+        return expr;
     }
 
-    @Override
-    public int getLimit() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
+    private BooleanExpression convertQueryRulesToQueryExpression() throws TableException {
+        try {
+            final List<QueryRule> filters = super.getFilters();
+            BooleanExpression expr = null;
+            for (final QueryRule rule : filters) {
 
-    @Override
-    public void setLimit(int limit) {
-        // TODO Auto-generated method stub
-    }
+                final String fieldName = rule.getField();
+                final Operator op = rule.getOperator();
+                final String value = rule.getValue().toString();
 
-    @Override
-    public int getOffset() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public void setOffset(int offset) {
-        // TODO Auto-generated method stub
+                final SimpleExpression<? extends Object> selectExpr = select.get(fieldName);
+                final Field column = getColumnByName(fieldName);
+                final MolgenisFieldTypes.FieldTypeEnum type = column.getType().getEnumType();
+                BooleanExpression rhs = getExpression(rule, selectExpr, column);
+                if (expr != null) {
+                    expr = expr.and(rhs);
+//                if (groupOp.equals("AND")) {
+//                    expr = expr.and(rhs);
+//                } else if (groupOp.equals("OR")) {
+//                    expr = expr.or(rhs);
+//                } else {
+//                    throw new IllegalArgumentException(String.format("Unkown groupOp: %s", groupOp));
+//                }
+                } else {
+                    expr = rhs;
+                }
+            }
+            return expr;
+        } catch (Exception ex) {
+            throw new TableException(ex);
+        }
     }
 }
