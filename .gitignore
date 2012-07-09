@@ -38,3 +38,4 @@ logger.out*
 /dist
 /generated/java
 !/.settings/template*
+/.settings/org.eclipse.wst.common.component
