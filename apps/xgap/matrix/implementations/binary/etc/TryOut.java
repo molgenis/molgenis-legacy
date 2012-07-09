@@ -28,7 +28,17 @@ public class TryOut
 //		System.out.println("new, row = " + printObjArr(nieuw.getRow(5)));
 		
 //		System.out.println("old, col = " + printObjArr(old.getCol(35)));
-		System.out.println(nieuw.getSubMatrix(new int[]{ 1 }, new int[]{ 1 }).toString());
+		
+		System.out.println(nieuw.getSubMatrix(new int[]{ 0,44380 }, new int[]{ 0,1454 }).toString());
+		
+//		long now = System.currentTimeMillis();
+//		nieuw.getSubMatrixByOffset(10000, 1000, 300, 1000);
+//		System.out.println("NEW TOOK: " + (System.currentTimeMillis()-now));
+//		
+//		now = System.currentTimeMillis();
+//		old.getSubMatrixByOffset(10000, 1000, 300, 1000);
+//		System.out.println("OLD TOOK: " + (System.currentTimeMillis()-now));
+		
 	}
 	
 	private String printObjArr(Object[] arr)
