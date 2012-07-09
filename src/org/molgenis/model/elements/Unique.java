@@ -100,6 +100,7 @@ public class Unique implements Serializable
 		for(String fieldName: fields)
 		{
 			Field f = entity.getAllField(fieldName);
+			if(f == null) throw new MolgenisModelException("Unknown unique field: "+this.getEntity().getName() + "."+fieldName);
 			result.add(f);
 		}
 		return result;
