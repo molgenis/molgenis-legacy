@@ -8,14 +8,13 @@
 package org.molgenis.omicsconnect.plugins.experiment;
 
 
-import org.molgenis.contribution.Study;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.observ.target.Panel;
+import org.molgenis.organization.Study;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
 
