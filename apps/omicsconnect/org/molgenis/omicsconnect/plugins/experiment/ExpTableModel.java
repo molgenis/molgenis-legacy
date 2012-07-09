@@ -2,8 +2,8 @@ package org.molgenis.omicsconnect.plugins.experiment;
 
 import java.util.List;
 
-import org.molgenis.contribution.Study;
 import org.molgenis.observ.target.Panel;
+import org.molgenis.organization.Study;
 
 //mac shift o 
 
