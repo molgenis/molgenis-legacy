@@ -57,22 +57,14 @@ public class JoinQueryTable extends QueryTable {
     private static LinkedHashMap<String, SimpleExpression<? extends Object>> createSelectAndJoin(final SQLQuery query, final List<String> tableNames, final List<String> columnNames, final List<Join> joins, final Database db) {
         final LinkedHashMap<String, SimpleExpression<? extends Object>> select = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
         final Map<String, List<Field>> tableColumns = loadColumnData(db, tableNames, columnNames, joins);
-        
-        SQLQuery from = null;
         for (final String tableName : tableNames) {
             final PathBuilder table = new PathBuilder<RelationalPath>(RelationalPath.class, tableName);
-            if(from == null) {
-                from = query.from(table);    
-            } else {
-                //from.leftJoin()
-            }
+            query.from(table);
             for (final Field f : tableColumns.get(tableName.toLowerCase())) {
                 final SimpleExpression<?> path = createPath(f, table);
                 select.put(f.getSqlName(), path);
             }
         }
-        
-        
         
         for (final Join join : joins) {
             final SimpleExpression<? extends Object> leftExpr = select.get(join.leftColumnName);
