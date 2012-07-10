@@ -13,7 +13,9 @@ import java.util.zip.CRC32;
 /**
  * Command line program to copy a file to another directory.
  * @author Marco Schmidt
+ * use FileUtils of common.io instead!
  */
+@Deprecated
 public class CopyFile {
 	// constant values for the override option
 	public static final int OVERWRITE_ALWAYS = 1;
@@ -27,6 +29,10 @@ public class CopyFile {
 	private static boolean verify = true;
 	private static int override = OVERWRITE_ASK;
 
+	/**
+	 * use FileUtils of common.io instead!
+	 */
+	@Deprecated
 	public static Long copyFile(File srcFile, File destFile, boolean skipWhenDestExists)
 		throws IOException {
 		
