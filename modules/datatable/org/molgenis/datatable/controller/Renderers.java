@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.plugin.JQGridPlugin;
-import org.molgenis.datatable.plugin.JQGridPlugin.JQGridResult;
 import org.molgenis.datatable.view.AbstractExporter;
 import org.molgenis.datatable.view.ExcelExporter;
 import org.molgenis.framework.ui.html.HtmlWidget;
@@ -21,8 +20,7 @@ import java.io.*;
 import java.util.Arrays;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import org.molgenis.datatable.view.CsvExporter;
-import org.molgenis.datatable.view.SPSSExporter;
+import org.molgenis.datatable.view.*;
 import org.molgenis.util.ZipUtils;
 import org.molgenis.util.ZipUtils.DirectoryStructure;
 
@@ -45,13 +43,13 @@ public class Renderers {
 	 * except {@link SPSSRenderer}.
 	 */
 	public interface Renderer {
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String parameter, JQGridPlugin aThis, TupleTable tupleTable, int totalPages, int page) throws TableException, IOException;
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String datasetName, TupleTable tupleTable, int totalPages, int page) throws TableException, IOException;
 	}
 
 	public static class JQGridRenderer implements Renderer {
 		@Override
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, JQGridPlugin jqGridPlugin, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
-			final JQGridResult result = JQGridPlugin.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage, tupleTable);
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+			final JQGridView.JQGridResult result = JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage, tupleTable);
 			final PrintWriter pout = new PrintWriter(response.getOutputStream());
 			pout.print(new Gson().toJson(result));
 			pout.close();
@@ -60,7 +58,7 @@ public class Renderers {
 	
 	public static class ExcelRenderer implements Renderer {
 		@Override
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, JQGridPlugin jqGridPlugin, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
 			HeaderHelper.setHeader(response, "application/ms-excel", fileName + ".xlsx");
 			final ExcelExporter excelExport = new ExcelExporter(tupleTable);
 			excelExport.export(response.getOutputStream());		
@@ -69,7 +67,7 @@ public class Renderers {
 	
 	public static class CSVRenderer implements Renderer {
 		@Override
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, JQGridPlugin jqGridPlugin, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
 			HeaderHelper.setHeader(response, "application/ms-excel", fileName + ".csv");
 			final CsvExporter csvExporter = new CsvExporter(tupleTable);
 			csvExporter.export(response.getOutputStream());	
@@ -88,7 +86,7 @@ public class Renderers {
 	 */
 	public static class SPSSRenderer implements Renderer {
 		@Override
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, JQGridPlugin jqGridPlugin, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
                     try {
                         final File tempDir = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
                         final File spssFile = File.createTempFile("spssExport", ".sps", tempDir);
