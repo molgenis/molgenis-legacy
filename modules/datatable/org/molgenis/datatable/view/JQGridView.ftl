@@ -17,41 +17,16 @@
 <script type="text/javascript">
 //TODO: place in JS file after dev!
 var JQGridView = {
-	tableSelector : null,
-	pagerSelector : null,
-    colModel : null,
-    colNames : null, 
-    sortColumn : 'id',
-    caption : "dataTable",
-    jqGrid : null,
-    backendUrl : null,
-    viewFactory : null,
+    tableSelector : null,
+    pagerSelector : null,
+    config : null,
     
     init: function(config) {
-    	//required parameters
-    	this.backendUrl = config.backendUrl;
-        this.tableSelector = config.tableSelector;
-        this.colModel = config.colModel;
-        this.colNames = this.getColumnNames(this.colModel);
-        this.viewFactoryClassName = config.viewFactoryClassName;
-        
-        //optional parameters
-        if(config.pagerSelector) {
-        	this.pagerSelector = config.pagerSelector;
-        } else {
-        	this.pagerSelector = this.tableSelector + 'Pager';
-    	}
-    	
-    	if(config.sortColumn) {
-    		this.sortColumn = config.sortColumn;
-    	}
-    	
-    	if(config.caption) {
-    		this.caption = config.caption;
-    	}
+        this.tableSelector = "#" + config.id;
+        this.config = config;
         
         this.grid = this.createJQGrid();
-        this.createDialog();
+        //this.createDialog();
         
         return JQGridView;
     },
@@ -69,30 +44,7 @@ var JQGridView = {
     },
     
     createJQGrid : function() {
-    	var grid = jQuery(this.tableSelector).jqGrid({
-            url: this.backendUrl,
-            datatype: "json",
-            jsonReader: { repeatitems: false },
-            postData : 
-            	{
-            	__show: 'jqGrid',
-            	__target: 'jqGridView',
-            	viewType : 'JQ_GRID',
-            	colNames : $.toJSON(this.colNames), 
-        		colModel: $.toJSON(this.colModel), 
-        		viewFactoryClassName : this.viewFactoryClassName,
-        		caption: this.caption
-        		},
-            colNames: this.colNames,   	
-            colModel: this.colModel,
-            rowNum: 10,
-            rowList: [10,20,30],
-            pager: this.pagerSelector,
-            sortname: this.sortColumn,
-            viewrecords: true,
-            sortorder: "desc",
-            caption: this.caption
-        });
+    	var grid = jQuery(this.tableSelector).jqGrid(this.config);
         grid.jqGrid('navGrid', this.pagerSelector,
             {search:true, edit:false,add:false,del:false},
             {}, // edit options
@@ -154,81 +106,11 @@ var JQGridView = {
 
 
 $(document).ready(function() {
-    colModel = 
-        [
-            <#list columns as col>	
-            {title:'${col.sqlName}', key:'${col.sqlName}', name:'${col.sqlName}',index:'${col.sqlName}', width:150, searchrules:{required:${(!col.nillable)?string}}, table:'Country'}<#if col_has_next>,</#if>
-            </#list>
-        ];
-	treeModel = ${treeModel};	
-	sortColumn = '${sortName}';
-	
-    grid = JQGridView.init(
-    	{	
-    		backendUrl : "${backendUrl}",     
-    		viewFactoryClassName: "${viewFactoryClassName}",
-    		tableSelector : "#${tableId}", 
-    		colModel: colModel, sortColumn: sortColumn
-		});
-    $("#exportButton").click(function() {
-        $( "#dialog-form" ).dialog( "open" );    	
+    configUrl = "${url}";
+    $.ajax(configUrl + "&Operation=loadConfig").done(function(data) {
+        config = data;
+        grid = JQGridView.init(config);
     });
-    
-    $("#testChangeColumns").click(function() {
-    	colModel.pop();
-    	grid.changeColumns($self.myColModel);	
-	});
-	
-	$("#tree3").dynatree({
-      checkbox: true,
-      selectMode: 3,
-      children: treeModel,
-      onSelect: function(select, node) {
-        // Get a list of all selected nodes, and convert to a key array:
-        
-        var selectedColModel = new Array();        
-        var selectedColumns = node.tree.getSelectedNodes();
-        for(i = 0; i < selectedColumns.length; ++i) {
-        	
-        	var x = selectedColumns[i].data;
-        	if(!x.isFolder) {
-        		var cols = colModel.filter(function(obj) { return obj.title == x.path; } );        	
-        		selectedColModel.push(cols[0]);
-        	}
-        	
-        }
-        grid.changeColumns(selectedColModel);        
-        
-        var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
-          return node.data;
-        });
-        $("#echoSelection3").text(selKeys.join(", "));
-
-        // Get a list of all selected TOP nodes
-        var selRootNodes = node.tree.getSelectedNodes(true);
-        // ... and convert to a key array:
-        var selRootKeys = $.map(selRootNodes, function(node){
-          return node.data.key;
-        });
-        $("#echoSelectionRootKeys3").text(selRootKeys.join(", "));
-        $("#echoSelectionRoots3").text(selRootNodes.join(", "));
-      },
-      onDblClick: function(node, event) {
-        node.toggleSelect();
-      },
-      onKeydown: function(node, event) {
-        if( event.which == 32 ) {
-          node.toggleSelect();
-          return false;
-        }
-      },
-      // The following options are only required, if we have more than one tree on one page:
-//        initId: "treeData",
-      cookieId: "dynatree-Cb3",
-      idPrefix: "dynatree-Cb3-"
-    });
-	
-	
 });
 
 </script>
