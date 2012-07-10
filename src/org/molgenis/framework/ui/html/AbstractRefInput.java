@@ -265,7 +265,10 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		}
 		
 //		String preloadScript = "$("+getId()+").click(function() {if($(this).find('a.chzn-single-with-drop,.chzn-drop').length > 1 ) " +
-//				"{var inputbox = $(this).find('input[type=text]:first');if(inputbox.length == 1) {if(inputbox.val() == '') {inputbox.keyup();}}}});";
+//				"{$(this).find('input[type=text]:first').keyup();}});";
+		
+		//simulate keyup to load data; then blur by removing class=chzn-single-with-drop
+		String preloadScript = "$('#"+getId()+"_chzn').find('input[type=text]:first').focus(function(){$(this).keyup()});";
 
 		// #arg1 = id
 		// #arg2 = title
@@ -292,8 +295,8 @@ public abstract class AbstractRefInput<E> extends HtmlInput<E>
 		Gson gson = new Gson();
 		
 		String handleScript = "function (data) {var terms = {}; $.each(data, function (i, val) {terms[i] = val;});return terms;}";
-		final String ajaxChosenScript = "<script>$(" + getId() + ").ajaxChosen(" + gson.toJson(config) + ", "+handleScript+");"
-				+"</script>";
+		final String ajaxChosenScript = "<script>$('#" + getId() + "').ajaxChosen(" + gson.toJson(config) + ", "+handleScript+");"
+				+preloadScript+"</script>";
 
 		final String includeButton = includeAddButton && !this.isReadonly() ? this.createAddButton().toString() : "";
 		return select + ajaxChosenScript + includeButton;
