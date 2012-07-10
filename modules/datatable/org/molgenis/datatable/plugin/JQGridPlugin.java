@@ -21,8 +21,6 @@ import java.util.logging.Logger;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.datatable.model.*;
-import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
-import org.molgenis.datatable.view.JQGridTableView;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.StringField;
