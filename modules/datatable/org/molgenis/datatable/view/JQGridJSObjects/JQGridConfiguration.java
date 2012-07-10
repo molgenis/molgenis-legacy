@@ -1,6 +1,7 @@
 package org.molgenis.datatable.view.JQGridJSObjects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -10,7 +11,10 @@ public class JQGridConfiguration {
 
     private final String id;
     public final String url;
-    public String datatype = "json";
+    public final String pager;
+    
+    public final String datatype = "json";
+    
     public List<String> colNames = new ArrayList<String>();
     public List<JQGridField> colModel = new ArrayList<JQGridField>();
     public int rowNum = 10;
@@ -20,12 +24,17 @@ public class JQGridConfiguration {
     public String caption = "jqGrid View";
     public boolean autowidth = true;
     public boolean sortable = false;
+    public HashMap<String, Object> jsonReader = new HashMap<String, Object>();;
     //public String postData = "viewType : JQ_GRID";
 
-    public JQGridConfiguration(String id, String url, String caption, TupleTable tupleTable) throws TableException {
+    public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable) throws TableException {
         this.id = id;
+        this.pager = "#" +id + "Pager";
         this.url = url;
         this.caption = caption;
+        //"{repeatitems: false, id: \"Code\"}"
+        jsonReader.put("repeatitems", false);
+        jsonReader.put("id", idField);
         
         for(final Field f : tupleTable.getColumns()) {
             colModel.add(new JQGridField(f.getName(), f.getName()));
@@ -35,6 +44,7 @@ public class JQGridConfiguration {
 
     public JQGridConfiguration(String id, String url, String caption) {
         this.id = id;
+        this.pager = "#" +id + "Pager";
         this.url = url;
         this.caption = caption;
     }

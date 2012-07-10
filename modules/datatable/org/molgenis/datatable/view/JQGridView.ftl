@@ -1,5 +1,5 @@
 <script src="jqGrid/grid.locale-en.js" type="text/javascript"></script>
-<script src="jqGrid/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="jqGrid/jquery.jqGrid.src.js" type="text/javascript"></script>
 <script src="jqGrid/jquery.json-2.3.min.js" type="text/javascript"></script>
 
 <script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
@@ -45,15 +45,15 @@ var JQGridView = {
     },
     
     createJQGrid : function() {
-    	var grid = jQuery(this.tableSelector).jqGrid(this.config);
-        grid.jqGrid('navGrid', this.pagerSelector,
-            {search:true, edit:false,add:false,del:false},
-            {}, // edit options
-            {}, // add options
-            {}, //del options
-            {multipleSearch:true} // search options
-        );
-        return grid;
+    	var grid = jQuery(this.tableSelector).jqGrid(this.config)
+            .jqGrid('navGrid', this.pagerSelector,
+                {search:true, edit:false,add:false,del:false},
+                {}, // edit options
+                {}, // add options
+                {}, //del options
+                {multipleSearch:true} // search options
+            );
+            return grid;
 	},
     
     getColumnNames : function(colModel) {

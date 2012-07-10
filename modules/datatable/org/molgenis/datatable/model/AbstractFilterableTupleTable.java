@@ -10,6 +10,8 @@ import org.molgenis.model.elements.Field;
 
 public abstract class AbstractFilterableTupleTable implements FilterableTupleTable {
 
+    private int offset;
+    private int limit;
     private List<QueryRule> filters = new ArrayList<QueryRule>();
 
     protected AbstractFilterableTupleTable() {
