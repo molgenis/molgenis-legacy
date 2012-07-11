@@ -48,20 +48,6 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 		setXrefEntity(xrefEntity);
 	}
 
-	/**
-	 * Alternative minimal constructor using entity name
-	 * 
-	 * @throws ClassNotFoundException
-	 * @throws ClassNotFoundException
-	 * @throws ClassNotFoundException
-	 */
-//	@Deprecated
-//	public XrefInput(String name, String entityClassname) throws HtmlInputException, ClassNotFoundException
-//	{
-//		super(name, null);
-//		super.setXrefEntity(getXref)
-//	}
-
 	/** Complete constructor */
 	public XrefInput(String name, String label, E value, Boolean nillable,
 			Boolean readonly, String description,
@@ -70,15 +56,6 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 		super(name, xrefEntityClass, label, value, nillable, readonly, description);
 		setXrefEntity(xrefEntityClass);
 	}
-
-//	/** Alternative complete constructor using String name of entityClass */
-//	@Deprecated
-//	public XrefInput(String name, String label, Entity value, Boolean nillable,
-//			Boolean readonly, String description, String xrefEntityClass)
-//			throws HtmlInputException
-//	{
-//		super(name, label, value, nillable, readonly, description, xrefEntityClass);
-//	}
 
 	/**
 	 * Constructor taking parameters from tuple
@@ -89,12 +66,6 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 	{
 		super(t);
 	}
-
-//	protected XrefInput()
-//	{
-//	}
-
-	
 
 	@Override
 	/**
@@ -133,7 +104,7 @@ public class XrefInput<E extends Entity> extends AbstractRefInput<E>
 	protected String renderOptions()
 	{
 		final StringBuilder options = new StringBuilder();
-		options.append(String.format("\t<option selected value=\"%s\">%s</option>\n", getObject().getIdValue(), this.getValue()));
+		if(this.getObject() != null) options.append(String.format("\t<option selected value=\"%s\">%s</option>\n", getObject().getIdValue(), this.getValue()));
 		return options.toString();
 	}
 
