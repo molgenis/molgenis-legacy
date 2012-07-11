@@ -1,6 +1,5 @@
 <#macro plugins_catalogueTree_catalogueTreePlugin screen>
 
-
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -13,7 +12,7 @@
 	<script type="text/javascript">
 		
 		function searchInTree(){
-		
+			
 			var inputToken = $('#InputToken').val();
 			
 			$('#details').empty();
@@ -33,12 +32,12 @@
 						inputToken = inputToken.replace(/_/g,' ');
 						
 						if(name.search(new RegExp(inputToken, "gi")) != -1){
+							
 							$(this).show();
 							$('#leftSideTree li#' + id).parents().show();
 						}
 					}
 				});
-				
 			}
 			if($('#selectedField').val() == "Protocols" || $('#selectedField').val() == "All fields"){
 				
@@ -84,7 +83,24 @@
 					}
 				});
 			}
+			removeVerticalLine($('#browser').children('li').attr('id'));
 		}		
+		
+		function removeVerticalLine(id){
+			
+			if($('#' + id).css('display') != 'none' && $('#' + id).children('ul').children('li').length > 0){
+						
+				if($('#' + id).nextAll().length > 0 && !$('#' + id).nextAll().is(':visible')){
+					$('#' + id).css('background-image','none');
+				}
+				
+				$('#' + id).children('ul').children('li').each(function(){
+						
+					removeVerticalLine($(this).attr('id'));
+					
+				});
+			}
+		}
 		
 		function checkSearchingStatus(){
 			
@@ -92,6 +108,7 @@
 				$('#leftSideTree li').show();
 			}
 		}
+		
 	</script>
 	
 	<div class="formscreen">
@@ -135,8 +152,6 @@
 											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
 											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/-->	
 										</label>
-										
-										
 										
 										<div id="masstoggler"> 		
 						 					<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
@@ -209,8 +224,7 @@
 						</tr>
 						<tr>
 							<td class="box-body">
-
-
+							
 							</td>
 							<td class="box-body">
 							<label>Fill in selection name</label>

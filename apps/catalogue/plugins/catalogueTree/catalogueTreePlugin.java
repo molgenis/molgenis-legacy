@@ -296,7 +296,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		// Create a starting point of the tree! The root of the tree!
 		JQueryTreeViewElement protocolsTree = new JQueryTreeViewElement(
-				"Study: " + this.getSelectedInvestigation(), null);
+				"Study_" + this.getSelectedInvestigation().replaceAll(" ", "_"), null);
+		protocolsTree.setLabel("Study: " + this.getSelectedInvestigation());
 
 		// Variable indicating whether the input token has been found.
 		boolean foundInputToken = false;
@@ -396,7 +397,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					}
 
 					childTree = new JQueryTreeViewElement(protocolName
-							+ "_" + multipleInheritance.get(protocolName),
+							+ "_identifier_" + multipleInheritance.get(protocolName),
 							protocolName, parentNode);
 
 				} else {
@@ -568,6 +569,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 				String uniqueName = "";
 
+				if(displayName.equalsIgnoreCase("VALCOMM_1")){
+					System.out.println();
+				}
+				
 				if (protocolsAndMeasurementsinTree.containsKey(displayName)) {
 
 					if (!multipleInheritance.containsKey(displayName)) {
@@ -578,13 +583,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					}
 
 					childTree = new JQueryTreeViewElement(displayName
-							+ "_" + multipleInheritance.get(displayName),
+							+ "_identifier_" + multipleInheritance.get(displayName),
 							displayName, parentNode);
 
-					uniqueName = displayName + "_" + multipleInheritance.get(displayName);
+					uniqueName = displayName + "_identifier_" + multipleInheritance.get(displayName);
 
-					listOfMeasurements.add(displayName
-							+ multipleInheritance.get(displayName));
+					listOfMeasurements.add(uniqueName);
 
 				} else {
 
