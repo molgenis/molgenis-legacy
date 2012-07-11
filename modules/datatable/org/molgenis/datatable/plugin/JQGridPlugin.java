@@ -2,6 +2,8 @@ package org.molgenis.datatable.plugin;
 
 import com.google.gson.Gson;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.molgenis.datatable.model.*;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
@@ -34,7 +37,14 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
         @Override
         public TupleTable create(Database db, Tuple request) throws TableException {
-            return new JdbcTable(db, "SELECT * FROM Country");
+			final List<String> tableNames = new ArrayList<String>();
+			final List<String> columnNames = new ArrayList<String>();
+			getTableAndColumnNames(request, tableNames, columnNames, true);
+			if(CollectionUtils.isEmpty(columnNames)) {
+				return new JdbcTable(db, "SELECT * FROM Country");
+			} else {
+				return new JdbcTable(db, String.format("SELECT %s FROM Country",StringUtils.join(columnNames, ",")));
+			}
 //            try {
 //                final Connection connection = db.getConnection();
 //                final SQLTemplates dialect = new MySQLTemplates();
@@ -93,14 +103,13 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
         private void getTableAndColumnNames(Tuple request, List<String> inTableNames, List<String> inColumnNames, boolean completeColumnNames) {
             if (request != null) {
-                @SuppressWarnings("unchecked")
-                final List<String> columns = (List<String>) new Gson().fromJson((String) request.getObject("colNames"), Object.class);
-                
-                if(CollectionUtils.isEmpty(columns)) {
-                    return;
-                }
-                
-                for (final String column : columns) {
+				final String[] colNamesParamaters = ((MolgenisRequest)request).getRequest().getParameterValues("colNames[]");
+				if(colNamesParamaters == null || colNamesParamaters.length == 0) {
+					return;
+				}
+
+				final List<String> columNames = Arrays.asList(colNamesParamaters);
+                for (final String column : columNames) {
                     if (StringUtils.contains(column, ".")) {
                         final String tableName = StringUtils.substringBefore(column, ".");
                         final String columnName = StringUtils.substringAfter(column, ".");

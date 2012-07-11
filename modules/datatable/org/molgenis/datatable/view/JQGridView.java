@@ -19,6 +19,7 @@ import org.molgenis.datatable.controller.Renderers;
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.datatable.util.JQueryUtil;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
@@ -30,9 +31,11 @@ import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
 public class JQGridView extends HtmlWidget {
-
-    public static final String LOAD_CONFIG = "loadConfig";
-    public static final String OPERATION = "Operation";
+	public static final String OPERATION = "Operation";
+    //make enum
+	public static final String LOAD_CONFIG = "loadConfig";
+	public static final String LOAD_TREE = "loadTree";
+    
 
     public interface TupleTableBuilder {
         public TupleTable create(Database db, Tuple request) throws TableException;
@@ -55,9 +58,10 @@ public class JQGridView extends HtmlWidget {
      */
     public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
         try {
-            if (StringUtils.equals(request.getString(OPERATION), "loadTree")) {
-                //JQueryUtil.getDynaTreeNodes(tupleTableBuilder.getColumns());
-            } else if (StringUtils.equals(request.getString(OPERATION), "loadConfig")) {
+            if (StringUtils.equals(request.getString(OPERATION), LOAD_TREE)) {
+                final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+				JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
+            } else if (StringUtils.equals(request.getString(OPERATION), LOAD_CONFIG)) {
                 loadTupleTableConfig(db, (MolgenisRequest)request);
             } else {
                 final TupleTable tupleTable = tupleTableBuilder.create(db, request);

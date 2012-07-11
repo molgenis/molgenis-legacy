@@ -38,10 +38,17 @@ var JQGridView = {
     
     changeColumns: function(columnModel) {
     	var self = JQGridView;
-    	this.colModel = columnModel;
-    	self.colNames = this.getColumnNames(columnModel);
+		this.config.colModel = columnModel;
+		var names = new Array();
+		$.each(columnModel, function(index, value) {
+			names.push(value.name);
+		});
+		this.config.colNames = names;
+		//var xxx = new Object();
+		//xxx.colNames = names;
+		this.config.postData = {colNames:names};
     	$(this.tableSelector).jqGrid('GridUnload');
-    	this.createJQGrid();
+    	this.grid = this.createJQGrid();
     },
     
     createJQGrid : function() {
@@ -71,19 +78,8 @@ var JQGridView = {
 		            	var viewType = $("input[name='viewType']:checked").val();
 		            	var exportSelection = $("input[name='exportSelection']:checked").val();
 		
-		              	var myUrl = $(self.tableSelector).jqGrid('getGridParam', 'url') + "?";
-                                var postData = $(self.tableSelector).jqGrid('getGridParam', 'postData');		              	
-		
-						var first = true;
-						$.each(postData, function(key, value) {
-							if(key != "viewType") {
-								if(!first) {
-									myUrl += "&";
-								}
-								myUrl += key+"="+encodeURIComponent(value);
-								first = false;
-							}
-						});
+		              	var myUrl = $(self.tableSelector).jqGrid('getGridParam', 'url');
+						myUrl += "&" +$.param($(self.tableSelector).jqGrid('getGridParam', 'postData'));		              	
 
 		                //e.preventDefault();  //stop the browser from following
 		                window.location.href = myUrl + "&viewType=" + viewType + "&exportSelection=" + exportSelection;
@@ -103,7 +99,57 @@ $(document).ready(function() {
     $.ajax(configUrl + "&Operation=loadConfig").done(function(data) {
         config = data;
         grid = JQGridView.init("table#${tableId}", "#${tableId}Pager", config);
+
+		$("#tree3").dynatree({
+			checkbox: true,
+			selectMode: 3,
+			children: config.colModel,
+			onSelect: function(select, node) {
+				// Get a list of all selected nodes, and convert to a key array:
+
+				var selectedColModel = new Array();        
+				var selectedColumns = node.tree.getSelectedNodes();
+				for(i = 0; i < selectedColumns.length; ++i) {
+
+					var x = selectedColumns[i].data;
+					if(!x.isFolder) {
+						selectedColModel.push(x);
+					}
+				}
+				grid.changeColumns(selectedColModel);        
+
+				var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
+				return node.data;
+				});
+				$("#echoSelection3").text(selKeys.join(", "));
+
+				// Get a list of all selected TOP nodes
+				var selRootNodes = node.tree.getSelectedNodes(true);
+				// ... and convert to a key array:
+				var selRootKeys = $.map(selRootNodes, function(node){
+				return node.data.key;
+				});
+				$("#echoSelectionRootKeys3").text(selRootKeys.join(", "));
+				$("#echoSelectionRoots3").text(selRootNodes.join(", "));
+			},
+			onDblClick: function(node, event) {
+				node.toggleSelect();
+			},
+			onKeydown: function(node, event) {
+				if( event.which == 32 ) {
+				node.toggleSelect();
+				return false;
+				}
+			},
+			// The following options are only required, if we have more than one tree on one page:
+		//        initId: "treeData",
+			cookieId: "dynatree-Cb3",
+			idPrefix: "dynatree-Cb3-"
+			});
     });
+
+
+	
 
 	$('#exportButton').click(function() {
 		$( "#dialog-form" ).dialog('open');
