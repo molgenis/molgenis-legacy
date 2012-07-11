@@ -1,5 +1,5 @@
 <script src="jqGrid/grid.locale-en.js" type="text/javascript"></script>
-<script src="jqGrid/jquery.jqGrid.src.js" type="text/javascript"></script>
+<script src="jqGrid/jquery.jqGrid.min.js" type="text/javascript"></script>
 <script src="jqGrid/jquery.json-2.3.min.js" type="text/javascript"></script>
 
 <script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
@@ -27,7 +27,7 @@ var JQGridView = {
         this.config = config;
         
         this.grid = this.createJQGrid();
-        //this.createDialog();
+        this.createDialog();
         
         return JQGridView;
     },
@@ -45,15 +45,10 @@ var JQGridView = {
     },
     
     createJQGrid : function() {
-    	var grid = jQuery(this.tableSelector).jqGrid(this.config)
+    	return jQuery(this.tableSelector).jqGrid(this.config)
             .jqGrid('navGrid', this.pagerSelector,
-                {search:true, edit:false,add:false,del:false},
-                {}, // edit options
-                {}, // add options
-                {}, //del options
-                {multipleSearch:true} // search options
+                {del:false,add:false,edit:false},{},{},{},{multipleSearch:true} // search options
             );
-            return grid;
 	},
     
     getColumnNames : function(colModel) {
@@ -103,15 +98,17 @@ var JQGridView = {
 	}
 }
 
-
-
-
 $(document).ready(function() {
     configUrl = "${url}";
     $.ajax(configUrl + "&Operation=loadConfig").done(function(data) {
         config = data;
-        grid = JQGridView.init("table#${tableId}", "div#${tableId}Pager", config);
+        grid = JQGridView.init("table#${tableId}", "#${tableId}Pager", config);
     });
+
+	$('#exportButton').click(function() {
+		$( "#dialog-form" ).dialog('open');
+	});
+
 });
 
 </script>

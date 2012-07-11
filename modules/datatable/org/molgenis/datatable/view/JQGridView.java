@@ -1,22 +1,14 @@
 package org.molgenis.datatable.view;
 
-import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.molgenis.datatable.model.TupleTable;
-
-import org.molgenis.framework.ui.html.HtmlWidget;
-
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -26,11 +18,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.molgenis.datatable.controller.Renderers;
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
+import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -279,7 +274,7 @@ public class JQGridView extends HtmlWidget {
 
     public void loadTupleTableConfig(Database db, MolgenisRequest request) throws TableException, IOException {
         final TupleTable tupleTable = tupleTableBuilder.create(db, request);
-        final JQGridConfiguration config = new JQGridConfiguration(getId(), "", tupleTableBuilder.getUrl(), "test", tupleTable);
+        final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
         final String jqJsonConfig = new Gson().toJson(config);
         request.getResponse().getOutputStream().println(jqJsonConfig);
         //writer.append(jqJsonConfig);

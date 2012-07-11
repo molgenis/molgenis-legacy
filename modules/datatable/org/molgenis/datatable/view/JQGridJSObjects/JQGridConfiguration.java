@@ -23,7 +23,7 @@ public class JQGridConfiguration {
     public String sortorder = "desc";
     public String caption = "jqGrid View";
     public boolean autowidth = true;
-    public boolean sortable = false;
+    public boolean sortable = true;
     public HashMap<String, Object> jsonReader = new HashMap<String, Object>();;
     //public String postData = "viewType : JQ_GRID";
 
