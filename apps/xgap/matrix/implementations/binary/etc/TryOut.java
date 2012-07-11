@@ -10,8 +10,8 @@ public class TryOut
 
 	public TryOut() throws Exception
 	{
-		// rnai_FC_phe
-		// CBxN2_USA_RILs
+		// rnai_fc_phe
+		// cbxn2_wur_nils
 		// rock_qtl
 		// age_lsp_phe
 		File loc = new File("/data/xqtl_panacea/binarydatamatrix/rock_qtl.bin");
@@ -29,7 +29,7 @@ public class TryOut
 		
 //		System.out.println("old, col = " + printObjArr(old.getCol(35)));
 		
-		System.out.println(nieuw.getSubMatrix(new int[]{ 0,44380 }, new int[]{ 0,1454 }).toString());
+		System.out.println(nieuw.getSubMatrix(new int[]{ 0,1,2,3 }, new int[]{ 0,1,2,3 }).toString());
 		
 //		long now = System.currentTimeMillis();
 //		nieuw.getSubMatrixByOffset(10000, 1000, 300, 1000);
