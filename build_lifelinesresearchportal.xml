@@ -7,18 +7,7 @@
 	<!-- this holds all the settings for the generator -->
 	<property name="app_properties" value="apps/lifelinesresearchportal/org/molgenis/lifelinesresearchportal/lifelinesresearchportal.properties"/>
 
-	<!-- this determines what handwritten modules should be loaded 
-	
-	<pathelement location="apps/catalogue" />
-	<pathelement location="modules/decorators/data" />
-	<pathelement location="apps/xgap" />
-			<pathelement location="modules/pheno" />
-		<pathelement location="modules/search" />
-		<pathelement location="publicdata" />
-		<pathelement location="modules/import" />
-		<pathelement location="modules/settings" />
-		<pathelement location="modules/decorators/pheno" />
-	-->
+	<!-- this determines what handwritten modules should be loaded 	-->
 	<path id="app.class.path">
 		<pathelement location="apps/lifelinesresearchportal" />
 		<pathelement location="apps/lifelinesresearchportalimporter" />
@@ -31,7 +20,11 @@
 		<pathelement location="modules/datatable" />
 		
 
+<<<<<<< HEAD
 	<!--	<pathelement location="modules/matrix" /> -->
+=======
+		<pathelement location="modules/datatable" />
+>>>>>>> fbf4fa30a1c3bae4f2b26ea7029764e87c1f5027
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 
@@ -52,21 +45,8 @@
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml" />
 </project>
-	
-<!--project name="build_lifelinesresearchportal" default="run" basedir=".">
-	
-	<description>
-		
-        ANT file for xQTL development. Complete compilation and run script.
-		Work in progress, may need fixes and will be updated with more doc to
-		explain things. Includes developer functions and basic tests.
-		
-		The application can be installed and started using:
-		
-		svn co http://www.molgenis.org/svn/molgenis/trunk/ molgenis
-		svn co http://www.molgenis.org/svn/molgenis_apps/trunk/ molgenis_apps
-		ant -f molgenis_apps/xqtl_dev.xml make_run
 
+<<<<<<< HEAD
     </description>
 	
 	<-
@@ -501,3 +481,5 @@
 	</target>
 	
 </project -->
+=======
+>>>>>>> fbf4fa30a1c3bae4f2b26ea7029764e87c1f5027

@@ -38,9 +38,13 @@ public class Compute3JobGenerator implements JobGenerator
     private FoldingMaker foldingMaker = new FoldingMaker();
     private FoldingParser foldingParser = new FoldingParser();
 
+    //to reuse few methods
+    ModelLoader loader = new ModelLoader();
+
     //grid specific imputation handler
     private GridHandler gridHandler = null;
     private boolean workflowHasDependencies = false;
+
 
     //template sources
     private String templateGridHeader;
@@ -51,6 +55,7 @@ public class Compute3JobGenerator implements JobGenerator
     private String templateGridAfterExecution;
     private String templateGridUploadLog;
     private String templateGridDAGNode;
+    private String templateMacro;
 
 
     private String templateClusterSubmission;
@@ -70,6 +75,7 @@ public class Compute3JobGenerator implements JobGenerator
     private String fileTemplateClusterHeader = "templ-pbs-header.ftl";
     private String fileTemplateClusterFooter = "templ-pbs-footer.ftl";
     private String fileTemplateClusterSubmission = "templ-submit.ftl";
+    private String fileTemplateMacro = "templ-macro.ftl";
 
     //used for grid generation
     private Hashtable<String, GridTransferContainer> pairJobTransfers = null;
@@ -113,7 +119,7 @@ public class Compute3JobGenerator implements JobGenerator
         //result jobs
         Vector<ComputeJob> computeJobs = new Vector<ComputeJob>();
 
-        if (backend.equalsIgnoreCase(JobGenerator.GRID))
+        //if (backend.equalsIgnoreCase(JobGenerator.GRID))
             pairJobTransfers = new Hashtable<String, GridTransferContainer>();
 
         pairWEtoCJ = new Hashtable<WorkflowElement, ComputeJob>();
@@ -244,7 +250,7 @@ public class Compute3JobGenerator implements JobGenerator
                 int weavingCount = 0;
                 logger.log(Level.DEBUG, "loop " + weavingCount + " -> " + unweavedValues.size());
                 //in a loop weave complex parameters with values
-                while (unweavedValues.size() > 0 && weavingCount < 10)
+                while (unweavedValues.size() > 0 && weavingCount < 100)
                 {
                     Enumeration unkeys = unweavedValues.keys();
                     while (unkeys.hasMoreElements())
@@ -297,7 +303,7 @@ public class Compute3JobGenerator implements JobGenerator
 
                 //fill containers for grid jobs to ensure correct data transfer
                 // and for cluster to generate submit script
-                if (backend.equalsIgnoreCase(JobGenerator.GRID))
+                //if (backend.equalsIgnoreCase(JobGenerator.GRID))
                 {
                     GridTransferContainer container = fillContainer(protocol, values);
                     pairJobTransfers.put(job.getName(), container);
@@ -467,6 +473,276 @@ public class Compute3JobGenerator implements JobGenerator
         return null;
     }
 
+    public boolean generateActualJobsWithMacros(Vector<ComputeJob> computeJobs, String backend, Hashtable<String, String> config)
+    {
+        //read templates
+        String templatesDir = config.get(JobGenerator.TEMPLATE_DIR);
+        readTemplates(templatesDir);
+
+
+        for (ComputeJob computeJob : computeJobs)
+        {
+
+            GridTransferContainer container = pairJobTransfers.get(computeJob.getName());
+
+            String strMacrosInput = makeMacros(container, computeJob.getComputeScript(), "input", backend);
+            String strMacrosOutput = makeMacros(container, computeJob.getComputeScript(), "output", backend);
+
+
+            System.out.println(">>> generation job: " + computeJob.getName());
+            if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+            {
+                generateActualJobCluster(computeJob, config, strMacrosInput, strMacrosOutput);
+            }
+            else if (backend.equalsIgnoreCase(JobGenerator.GRID))
+            {
+                generateActualJobGridMacro(computeJob, config, strMacrosInput, strMacrosOutput);
+            }
+        }
+
+        //write cluster submit script
+        if (backend.equalsIgnoreCase(JobGenerator.CLUSTER))
+            writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + "submit_" + config.get(JobGenerator.GENERATION_ID) + ".sh",
+                    submitScript);
+
+        return true;
+    }
+
+    //here we create macros listing
+    private String makeMacros(GridTransferContainer container, String script, String type, String backend)
+    {
+        String text = "";
+        if (type.equalsIgnoreCase("input"))
+        {
+            text += JobGenerator.SOURCE_SCRIPT + "\n";
+
+            Vector<String> nameInputs = loader.findFlagValues(script, ModelLoader.FLAG_INPUTS);
+            Hashtable<String, String> inputs = container.getInputs();
+
+            for (String s : nameInputs)
+            {
+                String macroline = makeMacroLine(s, inputs, type, backend);
+                text += macroline;
+
+            }
+
+            Vector<String> nameExes = loader.findFlagValues(script, ModelLoader.FLAG_EXES);
+            Hashtable<String, String> exes = container.getExes();
+
+            for (String s : nameExes)
+            {
+                String macroline = makeMacroLine(s, exes, JobGenerator.EXE, backend);
+                text += macroline;
+            }
+
+        }
+        else if (type.equalsIgnoreCase("output"))
+        {
+            text += "\n";
+
+            Vector<String> nameOutputs = loader.findFlagValues(script, ModelLoader.FLAG_OUTPUTS);
+            Hashtable<String, String> outputs = container.getOutputs();
+            for (String s : nameOutputs)
+            {
+                String macroline = makeMacroLine(s, outputs, type, backend);
+                text += macroline;
+            }
+        }
+        return text;
+    }
+
+    private String makeMacroLine(String s, Hashtable<String, String> inputs, String type, String backend)
+    {
+        String macro = null;
+        if (s.contains(".*"))
+        {
+            String prefix = s.substring(0, s.lastIndexOf("."));
+            Enumeration keys = inputs.keys();
+            boolean isPathSet = false;
+            Hashtable<String, String> weaveValues = new Hashtable<String, String>();
+            String extensions = "";
+            while (keys.hasMoreElements())
+            {
+                String name = (String) keys.nextElement();
+
+                if (name.contains(prefix))
+                {
+                    int prefixIndex = name.indexOf(prefix);
+                    if (prefixIndex == 0)
+                    {
+                        String value = inputs.get(name);
+                        //here we chack is it the path or this variable here by mistake of naming conventions
+                        if (value.lastIndexOf("/") > -1)
+                        {
+                            //to set path and other variables only once
+                            if (!isPathSet)
+                            {
+                                weaveValues.put(JobGenerator.MACRO_BACKEND, backend);
+                                weaveValues.put(JobGenerator.MACRO_TYPE, type);
+
+                                int lastSlash = value.lastIndexOf("/");
+                                String path = value.substring(0, lastSlash + 1);
+                                weaveValues.put(JobGenerator.MACRO_PATH, path);
+
+                                String actualName = value.substring(lastSlash + 1, value.length());
+
+                                int firstDot = actualName.indexOf(".");
+                                String vvv = actualName.substring(0, firstDot);
+                                weaveValues.put(JobGenerator.MACRO_NAME, vvv);
+
+                                String extension = actualName.substring(firstDot, actualName.length());
+                                extensions += " " + "\"" + extension + "\"";
+
+                                isPathSet = true;
+                            }
+                            else
+                            {
+                                int lastSlash = value.lastIndexOf("/");
+                                String actualName = value.substring(lastSlash + 1, value.length());
+                                int firstDot = actualName.indexOf(".");
+
+                                String extension = actualName.substring(firstDot, actualName.length());
+
+                                extensions += " " + "\"" + extension + "\"";
+
+
+                            }
+                        }
+                    }
+                }
+            }
+            weaveValues.put(JobGenerator.MACRO_EXTENSIONS, extensions);
+            macro = weaveFreemarker(templateMacro, weaveValues);
+            int z = 0;
+        }
+        else
+        {
+
+            Enumeration keys = inputs.keys();
+            while (keys.hasMoreElements())
+            {
+                String name = (String) keys.nextElement();
+                if (s.equalsIgnoreCase(name))
+                {
+                    String value = inputs.get(name);
+
+                    Hashtable<String, String> weaveValues = new Hashtable<String, String>();
+                    weaveValues.put(JobGenerator.MACRO_BACKEND, backend);
+                    weaveValues.put(JobGenerator.MACRO_TYPE, type);
+
+                    int lastSlash = value.lastIndexOf("/");
+                    String path = value.substring(0, lastSlash + 1);
+                    weaveValues.put(JobGenerator.MACRO_PATH, path);
+
+                    String actualName = value.substring(lastSlash + 1, value.length());
+
+                    int firstDot = actualName.indexOf(".");
+                    if (firstDot < 0)
+                    {
+                        String vvv = actualName.substring(0, actualName.length());
+                        weaveValues.put(JobGenerator.MACRO_NAME, vvv);
+                        weaveValues.put(JobGenerator.MACRO_EXTENSIONS, "");
+                    }
+                    else
+                    {
+                        String vvv = actualName.substring(0, firstDot);
+                        weaveValues.put(JobGenerator.MACRO_NAME, vvv);
+                        String extension = actualName.substring(firstDot, actualName.length());
+                        extension = "\"" + extension + "\"";
+                        weaveValues.put(JobGenerator.MACRO_EXTENSIONS, extension);
+                    }
+                    macro = weaveFreemarker(templateMacro, weaveValues);
+                }
+
+            }
+
+        }
+        return macro;  //To change body of created methods use File | Settings | File Templates.
+    }
+
+    private void generateActualJobGridMacro(ComputeJob computeJob, Hashtable<String, String> config, String strMacrosInput, String strMacrosOutput)
+    {
+        Hashtable<String, String> values = new Hashtable<String, String>();
+
+        values.put("script_name", computeJob.getName());
+        values.put("error_log", "err_" + computeJob.getName() + ".log");
+        values.put("output_log", "out_" + computeJob.getName() + ".log");
+        values.put("script_location", config.get(JobGenerator.BACK_END_DIR));
+        values.put("node_name", computeJob.getName());
+        //create jdl
+        String jdlListing = weaveFreemarker(templateGridJDL, values);
+
+        //write jdl
+        (new File(config.get(JobGenerator.OUTPUT_DIR))).mkdirs();
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".jdl",
+                jdlListing);
+
+        //create shell
+        String shellListing = templateGridHeader;
+        String initialScript = computeJob.getComputeScript();
+        GridTransferContainer container = pairJobTransfers.get(computeJob.getName());
+
+        //generate downloading section (transfer inputs and executable)
+        //and change job listing to execute in the grid
+        Hashtable<String, String> inputs = container.getInputs();
+        Enumeration actuals = inputs.elements();
+        while (actuals.hasMoreElements())
+        {
+            String actualName = (String) actuals.nextElement();
+            String justName = giveJustName(actualName);
+
+            //escapes are required to avoid $ sign processing in String replaceAll method
+            justName = "\\" + justName;
+
+            //commented out - but I keep it if I need to sho somebody the problem of replacement with wild cards
+//            System.out.println("actual " + actualName);
+//            System.out.println("just " + justName);
+//
+//            System.out.println("------------- before");
+//            System.out.println(initialScript);
+
+            initialScript = initialScript.replaceAll(actualName, justName);
+
+//            System.out.println("------------- after");
+//            System.out.println(initialScript);
+
+        }
+
+        Hashtable<String, String> exes = container.getExes();
+        actuals = exes.elements();
+        while (actuals.hasMoreElements())
+        {
+            String actualName = (String) actuals.nextElement();
+            String justName = giveJustName(actualName);
+
+            justName = "\\" + justName;
+            initialScript = initialScript.replaceAll(actualName, justName);
+        }
+        shellListing += strMacrosInput;
+        shellListing += initialScript;
+        String outputsString = "";
+
+        Hashtable<String, String> outputs = container.getOutputs();
+        actuals = outputs.elements();
+        while (actuals.hasMoreElements())
+        {
+            String actualName = (String) actuals.nextElement();
+            String justName = giveJustName(actualName);
+
+            justName = "\\" + justName;
+            shellListing = shellListing.replaceAll(actualName, justName);
+
+        }
+
+        shellListing += strMacrosOutput;
+
+        //write shell
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".sh",
+                shellListing);
+
+    }
+
+
     public boolean generateActualJobs(Vector<ComputeJob> computeJobs, String backend, Hashtable<String, String> config)
     {
         int generationCount = -1;
@@ -522,7 +798,7 @@ public class Compute3JobGenerator implements JobGenerator
             writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") +
                     "dag_" + config.get(JobGenerator.GENERATION_ID) + ".jdl",
                     dagScript);
-       }
+        }
 
         return true;
     }
@@ -547,6 +823,54 @@ public class Compute3JobGenerator implements JobGenerator
         String main = computeJob.getComputeScript();
         String footer = weaveFreemarker(templateClusterFooter, values);
         String actualJob = header + main + footer;
+
+        //write script
+        (new File(config.get(JobGenerator.OUTPUT_DIR))).mkdirs();
+        writeToFile(config.get(JobGenerator.OUTPUT_DIR) + System.getProperty("file.separator") + computeJob.getName() + ".sh",
+                actualJob);
+
+        //create job submission part
+        WorkflowElement el = pairCJtoWE.get(computeJob);
+
+        if (el.getPreviousSteps().size() > 0)
+        {
+            String dependency = JobGenerator.DEPENDENCY_HEAD;
+            for (WorkflowElement wEl : el.getPreviousSteps())
+            {
+                ComputeJob cJ = pairWEtoCJ.get(wEl);
+                dependency += ":" + cJ.getName();
+                values.put(JobGenerator.JOB_DEPENDENCIES, dependency);
+            }
+        }
+        else
+            values.put(JobGenerator.JOB_DEPENDENCIES, "");
+
+        String strSubmit = weaveFreemarker(templateClusterSubmission, values);
+
+        submitScript += strSubmit;
+
+    }
+
+    private void generateActualJobCluster(ComputeJob computeJob, Hashtable<String, String> config, String macrosInput, String macrosOutput)
+    {
+
+        //create values hashtable to fill templates
+        Hashtable<String, String> values = new Hashtable<String, String>();
+
+        ComputeProtocol protocol = (ComputeProtocol) computeJob.getProtocol();
+
+        values.put(JobGenerator.JOB_ID, computeJob.getName());
+        values.put(ModelLoader.FLAG_CLUSTER_QUEUE, protocol.getClusterQueue());
+        values.put(ModelLoader.FLAG_CORES, protocol.getCores().toString());
+        values.put(ModelLoader.FLAG_NODES, protocol.getNodes().toString());
+        values.put(ModelLoader.FLAG_MEMORY, protocol.getMem());
+        values.put(ModelLoader.FLAG_WALLTIME, protocol.getWalltime());
+
+        //create actual cluster job
+        String header = weaveFreemarker(templateClusterHeader, values);
+        String main = computeJob.getComputeScript();
+        String footer = weaveFreemarker(templateClusterFooter, values);
+        String actualJob = header + macrosInput + main + macrosOutput + footer;
 
         //write script
         (new File(config.get(JobGenerator.OUTPUT_DIR))).mkdirs();
@@ -727,9 +1051,9 @@ public class Compute3JobGenerator implements JobGenerator
             String strDependency = "";
 
             //more than one previous element
-            if(dependencyNames.size() > 1)
+            if (dependencyNames.size() > 1)
             {
-                for(String str : dependencyNames)
+                for (String str : dependencyNames)
                 {
                     strDependency += str + ", ";
                 }
@@ -740,7 +1064,7 @@ public class Compute3JobGenerator implements JobGenerator
             //only one dependency element
             else
             {
-                strDependency = dependencyNames.elementAt(0) ;
+                strDependency = dependencyNames.elementAt(0);
             }
 
             // format string and add to DAg
@@ -783,6 +1107,29 @@ public class Compute3JobGenerator implements JobGenerator
             templateGridJDL = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridJDL);
             templateGridAfterExecution = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridAfterExecution);
             templateGridDAGNode = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDAGNode);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void readTemplates(String templatesDir)
+    {
+        try
+        {
+            templateClusterHeader = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterHeader);
+            templateClusterFooter = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterFooter);
+            templateClusterSubmission = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateClusterSubmission);
+            templateGridHeader = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridHeader);
+            templateGridDownload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownload);
+            templateGridDownloadExe = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridDownloadExe);
+            templateGridUpload = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridUpload);
+            templateGridUploadLog = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridUploadLog);
+            templateGridJDL = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridJDL);
+            templateGridAfterExecution = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateGridAfterExecution);
+            templateMacro = getFileAsString(templatesDir + System.getProperty("file.separator") + fileTemplateMacro);
+
         }
         catch (IOException e)
         {

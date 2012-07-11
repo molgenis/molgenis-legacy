@@ -1,5 +1,10 @@
 Discussion items:
 
+# data model thoughts
+We need:
+* flexible 'name,value,type' to attach at runtime additional columns
+* explain how sublclass of Target/Feature can map to Protocol/ProtocolApplication
+
 # Addressbook
 We need:
 * a place to store researcher information such as Person and Institute and Project
@@ -76,38 +81,60 @@ We need:
 
 Proposed solution: can we use the new biomart to do the federated search?
 
-##########
+# Study Samplepanels: 
+We need to:
+* link sample panels submitted in one study
+* many-to-many relation
+* so I can see in what study this panel was used, or vice versa
+* want to keep sample panel table because additional properties, countFemale, countMale, geography
+* In study I want to see the panels and have 'link existing' or 'add new' next to it.
 
-Study Samplepanels: 
-Do I need this?
-Can we add in better lookups?
+Proposed solution: model SamplePanel extends Panel with the additional properties.
 
-Study Citations
-Do I need this?
-Can we add in better lookups?
+# PhenotypeValue table
+We need:
+* table with as rows the 'Method' and as columns 'Average, SD, etc'.
+* translated to Observ-OM this means 'Methods' == Target and 'Average' == Feature
+* One of the Feature is link to the Panel this applies to (and optionally the data set)
+* Also one can make subclasses of ProtocolApplication to hardcode these columns, such as in PhenotypeValue table
 
-Assayedpanels
-Rkh: remove duplicate number of individuals
-Selected from:
-Remove duplicate field. Do we need identifier
+Proposed solution: create PhenotypeValue as subclass of protocolApplication (targetType=Method) to test this solution.
 
-Protocols:
-
+# Protocols:
 Where can I add details about the method Ð variable measured, units etc? Ð phenotype value?
+* You can find all details in Measurement.
 
-Removed these fields to get to build
+# Protocols cannot be changed after they are used!
+Otherwise data sets will break.
 
-<!-- <field name="TargetType" type="string"
-				description="Filter string to find suitable targets for this protocol. Should be an xref?" />
-			<field name="Parameters" type="mref" xref_entity="ObservableFeature"
-				description="parameters (in/out) that are used or produced by this protocol." /> -->
+# DataSet
+We need:
+* DataSet links to Protocol
+* DataSet is a uniform system for one row and multi row datasets
+* Therefore the protocolApplication is dropped and the protocol reference is pulled up to DataSet
+* Remainder of ProtocolApplication is renamed to 'row'.
+* In the user interface we hide this.
+* Actually: should become a component like 'EntityTuple', mixture of Entity (hardcode columns) and Tuple (which is dynamic columns)
+* We need 'DataRow' to store each row.
+* DataTable implemements 'previousSteps"
+* Experiment = bundle of links to Protocols used, the DataSets used and the Panels and Phenotypes
 
+Significances, subclass of DataSet
+Effectsize, subclass of DataSet
+Frequencies??, subclass of DataSet
 
+# unique rows in data set?
+We need:
+* non unique rows in DataSet
+* should be flagged as this influences R
 
-Markers:
+# Markers:
 Need work Ð datasource Ð dbsnp Ð should be a hotlink?
 Should I record genome build here?
 Should we be recording alleles here?
+
+We will NOT allow coordinates against multiple builds. 
+We want a lift over tool to allow people to work with multiple
 
 Coordinates
 xref to genome and chromosome?
@@ -118,26 +145,14 @@ Allele
 Genotype
 Problem with this table
 
-Experiment
-Dataset
-Significances
-Effectsize
-Frequencies??
-
-
-
-
 Marker: Add validation for flanking sequence
 Remove Ontology and or feature type
 Validation code should be mref Ð validation codes can be defined in the ontologyTerms?
 Remove Label?
 
-
-Allele : should we remove Genome build
-
+Allele : should we remove Genome build YES
 
 Genome Build: needed to specify coordinate of feature on chr
-
 
 Questions:
 How can I get molgenis to auto assign ids?
@@ -145,16 +160,17 @@ How do I use commands?
 Questions about freemarker: how to I add to the model to generate on the fly data in the template
 Ontology adding Ð bioportal widget? Or Ontocat?
 Pubmed lookup / Autolook ups - how
-We need to look at links Ð so called hotlinks in GWAS Central
+We need to look at links Ð so called hotlinks in GWAS Central (url prefix, suffix)
+Citation is subclass of hotlink
 Would like to see how sequencing will fit into model Ð Just Variants and links to sequencing files? Is this a good example
-Do we want to store Gene features in a feature database for reference (during analysis)
+Do we want to store Gene features in a feature database for reference (during analysis), e.g. like a GFF, DAS consume
+We don't want to add each study by hand
 
 Browser Ð Jbrowse, webappollo  - curation Ð where would these curaions be stored.
 
 SNV of 10 genomes Ð use as an example sequencing experiment
 http://www.sequenceontology.org/resources/10Gen.html
 Sequencing of healthy individuals
-
 
 If the data you are looking for does not need to include effected individuals, Complete Genomics has sequenced a 3 generation 17 member family (CEPH). Files here:
 ftp://ftp2.completegenomics.com/Pedigree_1463/ASM_Build37_2.0.0
@@ -168,6 +184,7 @@ http://blog.personalgenomes.org/2012/05/03/pgp18-a-23andme-exome/
 
 Should we try a model a VCF file?
 
+We want an overiew of all plugins.
 
 Future:
 Analysis tools Ð what types of analysis would you perform on Individual level data? (Data Sheild?) Galaxy style tools for both individual and summary-level tools
@@ -203,22 +220,6 @@ Types of data
 ¥	Enzyme activity, measure of amount of substance
 ¥	Parallel Measures
 ¥	Microarray measurements, etc...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # Identifiers
