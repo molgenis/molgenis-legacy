@@ -28,7 +28,6 @@ tmp*
 log*
 .classpath
 /.externalToolBuilders
-/.settings
 *.svn
 *.orig
 *.java~
