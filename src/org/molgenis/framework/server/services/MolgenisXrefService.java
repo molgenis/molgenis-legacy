@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -140,7 +141,7 @@ public class MolgenisXrefService implements MolgenisService
 
 		if (nillable)
 		{
-			values.put("&nbsp;", "&nbsp;");
+			values.put("", "&nbsp;");
 		}
 
 		for (int i = 0; i < records.size(); i++)
@@ -160,7 +161,7 @@ public class MolgenisXrefService implements MolgenisService
 		final List<String> keyValuePairs = new ArrayList<String>();
 		for (final Entry<String, String> entry : values.entrySet())
 		{
-			keyValuePairs.add(String.format(JSON_KEY_VALUE, entry.getKey(), entry.getValue()));
+			keyValuePairs.add(String.format(JSON_KEY_VALUE, StringEscapeUtils.escapeJavaScript(entry.getKey()), StringEscapeUtils.escapeJavaScript(entry.getValue())));
 		}
 		final String json = String.format("[%s]", StringUtils.join(keyValuePairs, ","));
 		return json;
