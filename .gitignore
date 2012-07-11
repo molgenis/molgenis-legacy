@@ -36,10 +36,6 @@ log*
 /test-output
 /generated
 /target
-<<<<<<< HEAD
-logger.out*
-=======
 logger.out*
 /dist
 /.settings/org.eclipse.wst.common.component
->>>>>>> fbf4fa30a1c3bae4f2b26ea7029764e87c1f5027

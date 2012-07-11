@@ -6,44 +6,27 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
-<<<<<<< HEAD
 			<name>org.eclipse.wst.common.project.facet.core.builder</name>
-=======
-			<name>org.eclipse.wst.jsdt.core.javascriptValidator</name>
->>>>>>> fbf4fa30a1c3bae4f2b26ea7029764e87c1f5027
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-<<<<<<< HEAD
 			<name>org.eclipse.jdt.core.javabuilder</name>
-=======
-			<name>org.eclipse.wst.common.project.facet.core.builder</name>
->>>>>>> fbf4fa30a1c3bae4f2b26ea7029764e87c1f5027
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-<<<<<<< HEAD
 			<name>org.eclipse.wst.validation.validationbuilder</name>
-=======
-			<name>org.eclipse.jdt.core.javabuilder</name>
->>>>>>> fbf4fa30a1c3bae4f2b26ea7029764e87c1f5027
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-<<<<<<< HEAD
 			<name>edu.umd.cs.findbugs.plugin.eclipse.findbugsBuilder</name>
-=======
-			<name>org.eclipse.wst.validation.validationbuilder</name>
->>>>>>> fbf4fa30a1c3bae4f2b26ea7029764e87c1f5027
 			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>
-<<<<<<< HEAD
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
@@ -61,12 +44,4 @@
 			</matcher>
 		</filter>
 	</filteredResources>
-=======
-		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
-		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
-		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
-		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
-	</natures>
->>>>>>> fbf4fa30a1c3bae4f2b26ea7029764e87c1f5027
 </projectDescription>
