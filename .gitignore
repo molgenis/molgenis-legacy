@@ -28,12 +28,12 @@ tmp*
 log*
 .classpath
 /.externalToolBuilders
-/.settings
 *.svn
 *.orig
 *.java~
 /bin
 /test-output
-/generated
 /target
 logger.out*
+/dist
+/.settings/org.eclipse.wst.common.component

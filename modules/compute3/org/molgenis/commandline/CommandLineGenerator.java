@@ -1,11 +1,10 @@
 package org.molgenis.commandline;
 
 import org.molgenis.compute.ComputeJob;
-import org.molgenis.commandline.options.Options;
+import org.molgenis.compute.commandline.options.Options;
 import org.molgenis.generator.Compute3JobGenerator;
 import org.molgenis.generator.JobGenerator;
 import org.molgenis.generator.ModelLoader;
-import org.molgenis.model.ComputeDag;
 import org.molgenis.protocol.Workflow;
 import org.molgenis.util.Tuple;
 
@@ -26,6 +25,8 @@ public class CommandLineGenerator
     //here command-line parameters flags-synonyms
     private static final String PARAMETER_1 = "parametersfile";
     private static final String PARAMETER_2 = "p";
+    private static final String ENVIRONMENT_1 = "environmentfile";
+    private static final String ENVIRONMENT_2 = "e";
     private static final String WORKFLOW_1 = "workflowfile";
     private static final String WORKFLOW_2 = "w";
     private static final String WORKSHEET_1 = "worksheet";
@@ -43,6 +44,7 @@ public class CommandLineGenerator
 
     private static final String ERROR_MESSAGE = "command line parameters format: " +
             "-parametersfile|p=<file with parameters> \n" +
+            "-environmentfile|e=<file with environment variables> \n" +
             "-workflowfile|w=<file with workflow description> \n" +
             "-worksheet|s=<input worksheet> \n" +
             "-protocoldir|d=<directory with protocol of the workflow> \n" +
@@ -51,7 +53,7 @@ public class CommandLineGenerator
             "-outputscriptsdir|o=<output directory to write scripts> \n" +
             "<ID of the generation run>";
 
-    private File fileWorksheet = null, fileParameters = null, fileWorkflow = null, dirProtocol = null;
+    private File fileWorksheet = null, fileParameters = null, fileEnvironment = null, fileWorkflow = null, dirProtocol = null;
     private Hashtable<String, String> config = new Hashtable<String, String>();
 
     private String backend = null;
@@ -61,7 +63,7 @@ public class CommandLineGenerator
     {
         //load compute workflow
         ModelLoader loader = new ModelLoader();
-        Workflow workflow = loader.loadWorkflowFromFiles(fileWorkflow, dirProtocol, fileParameters);
+        Workflow workflow = loader.loadWorkflowFromFiles(fileWorkflow, dirProtocol, fileParameters, fileEnvironment);
 
         //read worksheet
         List<Tuple> worksheet = loader.loadWorksheetFromFile(fileWorksheet);
@@ -75,10 +77,11 @@ public class CommandLineGenerator
         //here, ComputeJobs can be generated also from DB given list of Targets
         Vector<ComputeJob> computeJobs = jobGenerator.generateComputeJobsFoldedWorksheet(workflow, worksheet, backend);
 
-        Vector<ComputeDag> dags = ComputeDag.createDags(computeJobs);
+        //Vector<ComputeDag> dags = ComputeDag.createDags(computeJobs);
 
         //generate actual analysis files
-        boolean status = jobGenerator.generateActualJobs(computeJobs, backend, config);
+        //boolean status = jobGenerator.generateActualJobs(computeJobs, backend, config);
+        boolean status = jobGenerator.generateActualJobsWithMacros(computeJobs, backend, config);
     }
 
     public static void main(String[] args)
@@ -96,6 +99,8 @@ public class CommandLineGenerator
         Options opt = new Options(args, Options.Prefix.DASH, Options.Multiplicity.ZERO_OR_ONE, 1);
         opt.getSet().addOption(PARAMETER_1, false, Options.Separator.EQUALS);
         opt.getSet().addOption(PARAMETER_2, false, Options.Separator.EQUALS);
+        opt.getSet().addOption(ENVIRONMENT_1, false, Options.Separator.EQUALS);
+        opt.getSet().addOption(ENVIRONMENT_2, false, Options.Separator.EQUALS);
         opt.getSet().addOption(WORKFLOW_1, false, Options.Separator.EQUALS);
         opt.getSet().addOption(WORKFLOW_2, false, Options.Separator.EQUALS);
         opt.getSet().addOption(WORKSHEET_1, false, Options.Separator.EQUALS);
@@ -127,6 +132,7 @@ public class CommandLineGenerator
         CommandLineGenerator generator = new CommandLineGenerator();
 
         checkSynonymParameters(generator, opt, "parameters file", PARAMETER_1, PARAMETER_2);
+        checkSynonymParameters(generator, opt, "environment file", ENVIRONMENT_1, ENVIRONMENT_2);
         checkSynonymParameters(generator, opt, "workflow file", WORKFLOW_1, WORKFLOW_2);
         checkSynonymParameters(generator, opt, "worksheet", WORKSHEET_1, WORKSHEET_2);
         checkSynonymParameters(generator, opt, "protocol directory", PROTOCOL_1, PROTOCOL_2);
@@ -220,6 +226,11 @@ public class CommandLineGenerator
             System.out.println("parameters file: " + result);
             generation.setParametersFile(result);
         }
+        else if (parameter.equalsIgnoreCase("environment file"))
+        {
+            System.out.println("environment file: " + result);
+            generation.setEnvironmentFile(result);
+        }
         else if (parameter.equalsIgnoreCase("workflow file"))
         {
             System.out.println("workflow file: " + result);
@@ -248,6 +259,11 @@ public class CommandLineGenerator
             generation.setTemplatesDir(result);
         }
 
+    }
+
+    private void setEnvironmentFile(String result)
+    {
+        fileEnvironment = new File(result);
     }
 
     private void setProtocolDir(String result)
