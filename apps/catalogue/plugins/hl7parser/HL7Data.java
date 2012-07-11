@@ -6,9 +6,13 @@
 package plugins.hl7parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import plugins.hl7parser.GenericDCM.HL7GenericDCM;
 import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
+import plugins.hl7parser.StageLRA.HL7StageLRA;
+import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
 
 /**
  *
@@ -19,4 +23,8 @@ interface HL7Data {
     //
     ArrayList<HL7OrganizerLRA> getHL7OrganizerLRA();
     ArrayList<HL7OrganizerDCM> getHL7OrganizerDCM();
+    HashMap<String, HL7ValueSetLRA> getHashValueSetLRA();
+    HL7GenericDCM getHl7GenericDCM();
+    HL7StageLRA getHl7StageLRA();
+    
 }

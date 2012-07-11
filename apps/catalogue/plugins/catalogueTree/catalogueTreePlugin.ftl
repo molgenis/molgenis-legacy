@@ -9,11 +9,91 @@
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
-	<input type="hidden" name="DemoName" id="DemoName" value="%= demoName %">
 	
-<!-- this shows a title and border -->
-
-
+	<script type="text/javascript">
+		
+		function searchInTree(){
+		
+			var inputToken = $('#InputToken').val();
+			
+			$('#details').empty();
+			
+			$('#leftSideTree li').hide();
+					
+			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All fields"){
+				
+				$('#leftSideTree li').each(function(){
+					
+					if($(this).find('li').length == 0){
+						
+						var name = $(this).text().replace(/_/g,' ');
+						
+						var id = $(this).attr('id');
+						
+						inputToken = inputToken.replace(/_/g,' ');
+						
+						if(name.search(new RegExp(inputToken, "gi")) != -1){
+							$(this).show();
+							$('#leftSideTree li#' + id).parents().show();
+						}
+					}
+				});
+				
+			}
+			if($('#selectedField').val() == "Protocols" || $('#selectedField').val() == "All fields"){
+				
+				$('#leftSideTree li').each(function(){
+					
+					if($(this).find('li').length > 0){
+						
+						var name = $(this).children('span').text().replace(/_/g,' ');
+						
+						var id = $(this).attr('id');
+						
+						inputToken = inputToken.replace(/_/g,' ');
+						
+						if(name.search(new RegExp(inputToken, "gi")) != -1){
+							$(this).show();
+							$('#leftSideTree li#' + id).parents().show();
+							$('#leftSideTree li#' + id).find('li').show();
+						}
+					}
+				});
+				
+			}
+			if($('#selectedField').val() == "Details" || $('#selectedField').val() == "All fields"){
+				
+				var json = eval(${screen.getInheritance()});
+				
+				$('#leftSideTree li').each(function(){
+					
+					if($(this).find('li').length == 0){
+						
+						var id = $(this).attr('id');
+						
+						var table = json[id];
+						
+						table = table.replace(/_/g,' ');
+						
+						inputToken = inputToken.replace(/_/g,' ');
+						
+						if(table.search(new RegExp(inputToken, "gi")) != -1){
+							$(this).show();
+							$('#leftSideTree li#' + id).parents().show();
+						}
+					}
+				});
+			}
+		}		
+		
+		function checkSearchingStatus(){
+			
+			if($('#InputToken').val() === ""){
+				$('#leftSideTree li').show();
+			}
+		}
+	</script>
+	
 	<div class="formscreen">
 		
 		<div class="form_header" id="${screen.getName()}">
@@ -31,10 +111,9 @@
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-				
-						   <#if screen.isSelectedInv() == true>
-								<table class="box" width="100%" cellpadding="0" cellspacing="0">
-								    <tr><td class="box-header" colspan="2">  
+				<#if screen.isSelectedInv() == true>
+					<table class="box" width="100%" cellpadding="0" cellspacing="0">
+						<tr><td class="box-header" colspan="2">  
 								        <label>Choose a cohort:
 										<!--select name="investigation" id="investigation"--> 
 											<#list screen.arrayInvestigations as inv>
@@ -56,11 +135,13 @@
 											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
 											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/-->	
 										</label>
-										<div id="masstoggler"> 	
-										<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
-						 				
-						 				<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
-						 				<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
+										
+										
+										
+										<div id="masstoggler"> 		
+						 					<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+						 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
+						 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
 			 							</div>
 					    			</td></tr>
 					    			<tr><td class="box-body" style="width:50%;">
@@ -75,11 +156,11 @@
 					 <!--option value="All fields">All fields</option-->
 				</select>
 				
-				<input title="fill in search term" type="text" name="InputToken" 
-					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';searchingInvestigation.style.display='inline'; searchingInvestigation.style.display='inline'; " 
-					onkeydown="if (event.keyCode==13)__action.value='SearchCatalogueTree';return true;">	
+				<input title="fill in search term" type="textfield" name="InputToken" id="InputToken"
+					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
+					onkeyup="checkSearchingStatus();">
 				
-				<input type="submit" name="SearchCatalogueTree" value="search" onclick="__action.value='SearchCatalogueTree';"/>
+				<input type="button" name="SearchCatalogueTree" value="search" onclick="searchInTree()"/>
 					    <!--
 					    <#list screen.getFilters() as filters>
 							<div class="filterslabel">
@@ -103,15 +184,27 @@
 					    </td><td class="box-body" style="width: 50%;">Details:</td></tr>
 					    <tr><td class="box-body">
 								<div id="leftSideTree">  
-									${screen.getTreeView()}
-								</div><br/>
+									${screen.getTreeView()}<br/>
+								</div>
+								<div>
+								</div>
 						    </td>
-						    
-						    <td class="box-body">
-						    	<!--div id="scrollingDiv"--> 
-      								<div id="details"></div><br/><br/>
-      							<!--/div-->
-
+						    <td class="box-body"> 
+      							<div id="details">
+      								<script>
+										<#if screen.getListOfJSONs()??>
+											<#list screen.getListOfJSONs() as eachJSON>
+										   		var json = eval(${eachJSON});
+										   		$.each(json, function(measurementID, htmlTable){
+										   			$('#' + measurementID).click(function(){
+										   				$('#details').empty();
+										   				$('#details').append(htmlTable);
+										   			});
+										   		});
+										    </#list>
+										</#if>		
+									</script>		
+      							</div>
 						   </td>
 						</tr>
 						<tr>
@@ -132,9 +225,25 @@
 							</td>
 						</tr>
 					</table>
-			   </#if>	
-			    				<label> 	<#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>	
-			   
+			   	</#if>	
+			    <label><#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>
+ 				<script>
+ 					$('div#leftSideTree input:checkbox').each(function(index){
+ 						$(this).click(function() {
+							 if($(this).attr('checked')){
+								 $(this).parent()
+								.siblings('ul')
+								.find('input:checkbox')
+						     	.attr('checked',true);
+							 }else{
+							 	 $(this).parent()
+								.siblings('ul')
+								.find('input:checkbox')
+						     	.attr('checked',false);
+							 }
+						});
+ 					});
+ 				</script>
 			</div>
 		</div>
 	</div>

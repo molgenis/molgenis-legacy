@@ -1,6 +1,7 @@
-<molgenis name="ngs" label="Sandbox for testing small things :-)">
+<molgenis name="sandbox" label="Sandbox for testing small things :-)">
 	<!-- plugin name="molgenis_header" type="plugins.header.MolgenisHeader" 
 		/ -->		
+	<plugin name="BootstrapTest" type="org.molgenis.sandbox.ui.BootstrapTest"/>
 	<menu name="sandboxmain" position="left">
 		<form name="ExampleInvestigationData" entity="Investigation">
 			<menu name="ExampleData">

@@ -6,14 +6,15 @@
 package plugins.hl7parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-
-import javax.xml.xpath.XPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -22,6 +23,7 @@ import plugins.hl7parser.GenericDCM.HL7GenericDCM;
 import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
 import plugins.hl7parser.StageLRA.HL7StageLRA;
+import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
 
 /**
  *
@@ -30,14 +32,18 @@ import plugins.hl7parser.StageLRA.HL7StageLRA;
  */
 public class HL7LLData implements HL7Data{
 
+	
+	private static final String ORGANIZER = "/urn:hl7-org:v3:catalog/urn:hl7-org:v3:component/urn:hl7-org:v3:organizer/urn:hl7-org:v3:code";
+	private static final String VALUESET = "/urn:hl7-org:v3:valueSets/urn:hl7-org:v3:valueSet";
+	private HashMap<String, HL7ValueSetLRA> hashValueSetLRA = new HashMap<String, HL7ValueSetLRA>();
+	
+	XPath xpath;
+    public HL7GenericDCM hl7GenericDCM = null;
     
-    private static final String ORGANIZER = "/urn:hl7-org:v3:genericCatalog/urn:hl7-org:v3:component/urn:hl7-org:v3:organizer/urn:hl7-org:v3:code";
-    private static final String VALUESET = "/urn:hl7-org:v3:ValueSets";
-    XPath xpath;
-    public HL7GenericDCM hl7GenericDCM;
-    public HL7StageLRA hl7StageLRA;
+	public HL7StageLRA hl7StageLRA = null;
     
-    private NodeList readFile(String file, XPath xpath,String xpathExpres) throws Exception{
+
+	private NodeList readFile(String file, XPath xpath,String xpathExpres) throws Exception{
         
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true);
@@ -49,24 +55,24 @@ public class HL7LLData implements HL7Data{
     }
     
     public HL7LLData(String file1,String file2,String file3) throws Exception{
-        
-        ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
+    	ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
         XPathFactory factory = XPathFactory.newInstance();
         this.xpath = factory.newXPath();
-        
        
+      
         NodeList nodesFile1 = readFile(file1,xpath, ORGANIZER);
-        
+       
         NodeList nodesFile2 = readFile(file2,xpath, VALUESET);
-        
+       
         //Normal xml file
         for (int i = 0; i < nodesFile1.getLength(); i++) {
-            if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("GenericDCM")){
+            
+        	if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("GenericDCM")){
                 System.out.println(nodesFile1.item(i).getParentNode());
                 hl7GenericDCM = new HL7GenericDCM (nodesFile1.item(i).getParentNode(),xpath);
 
             }
-            else if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("StageLRA")){
+            else if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("Stage LLCDR")){
                 hl7StageLRA = new HL7StageLRA (nodesFile1.item(i).getParentNode(),xpath);
             }
             else{
@@ -74,17 +80,25 @@ public class HL7LLData implements HL7Data{
             }
             allOrganizerNodes.add(nodesFile1.item(i));
         }
-        
+       
         //Valuesets xml file
         for (int i = 0; i < nodesFile2.getLength(); i++) {
-            
-            System.out.println(nodesFile2.item(i).getAttributes().getNamedItem("name"));
-            
+        	
+        	HL7ValueSetLRA valueSetLRA = new HL7ValueSetLRA(nodesFile2.item(i), xpath);
+        	hashValueSetLRA.put(valueSetLRA.getValueSetsName(), valueSetLRA);
+//        	System.out.println("i "+i+": " +valueSetLRA.getValueSetsName() + "-----------" + valueSetLRA);
+//            System.out.println(valueSetLRA.getListOFAnswers().get(0).getName());
         }
+        
+        System.out.println("Damn it!------------->" + hashValueSetLRA.size());
     }
 
 
-    public ArrayList<HL7OrganizerLRA> getHL7OrganizerLRA(){
+    public HashMap<String, HL7ValueSetLRA> getHashValueSetLRA() {
+		return hashValueSetLRA;
+	}
+    
+	public ArrayList<HL7OrganizerLRA> getHL7OrganizerLRA(){
         
         return hl7StageLRA.getHL7OrganizerLRA();
     }
@@ -92,5 +106,12 @@ public class HL7LLData implements HL7Data{
         
         return hl7GenericDCM.getHL7OrganizerDCM();
     }
+    
+    public HL7GenericDCM getHl7GenericDCM() {
+		return hl7GenericDCM;
+	}
+    public HL7StageLRA getHl7StageLRA() {
+		return hl7StageLRA;
+	}
 
 }

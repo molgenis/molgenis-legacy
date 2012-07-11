@@ -15,11 +15,11 @@
 
 </style>
 
-
 <script type="text/javascript">
 function addingTable(tableId){
 	
-	if(map.get(tableId) != "null"){
+	if(map.get(tableId) != "null" && map.get(tableId) != null){
+		
 		document.getElementById('details').innerHTML += map.get(tableId);
 		document.getElementById(tableId + " table").style.display = "none";		
 	}
@@ -37,28 +37,20 @@ function insertTable(tableId){
 	
 }
 
-function refreshByHits(){
-	
-	var hits = document.getElementById('changeHits').value;
-	var divForTable = document.getElementById('details');
-	var tables = divForTable.getElementsByTagName('table');	
-	
-	for(var i = 0; i < tables.length; i++){
+function refreshByHits () {
+  
+	$('#details >table').each(function(i) {
 		
-		var eachTable = tables[i];
-		
-		var rowElements = eachTable.getElementsByTagName('tr');
-		
-		for(var j = 0; j < rowElements.length; j++){
-			
-			if(j <= hits){
-				rowElements[j].style.display = "table-row";
+		$('>tbody >tr',this).each(function(j){
+			if(j <= $('#changeHits').val()){
+				$(this).show();
 			}else{
-				rowElements[j].style.display = "none";
-			}
-		}
-	}
+				$(this).hide();
+			}	
+		});
+	});
 }
+
 
 function setValidationStudy(validationStudyName){
 	
@@ -85,6 +77,11 @@ function checkFileExisting(){
     }
 }
 
+function getClickedTableById(key){
+	$('#details > table').hide();
+	$('#' + key + '_table').show();
+}
+
 </script>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
@@ -94,7 +91,7 @@ function checkFileExisting(){
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
-	<input type="hidden" name="DemoName" id="DemoName" value="%= demoName %">
+	<input type="hidden" name="validationStudyName" id="validationStudyName" value="${screen.getValidationStudyName()}">
 	
 <!-- this shows a title and border -->
 
@@ -115,11 +112,8 @@ function checkFileExisting(){
 		
 		<div class="screenbody">
 			<div class="screenpadding">
-				
-				<#if screen.getDevelopingAlgorithm() == true>
-					
+				<#if screen.getDevelopingAlgorithm() == true>	
 					Please choose an ontology file and algorithm will be automatically generated </br></br>
-					
 					<table width="100%">
 						<tr>
 							<td class="box-body" style="width:50%;">
@@ -145,20 +139,75 @@ function checkFileExisting(){
 								<p align="justify" style="font-family:arial;margin-left:20px;font-size:12px;">${screen.getMessageForAlgorithm()}</p>
 							</td>
 						</tr>
+					</table>	
+				<#elseif screen.getManualMatch() == true>
+					<table border=1 width="100%" height="600px">
+						<tr height="50px">
+							<td width="50%">
+								<font size="3">Selected prediction model: <b>${screen.getSelectedPredictionModel()}</b></br>
+								<font size="3">Selected validation study: <b>${screen.getValidationStudyName()}</b></font>
+							</td>
+						</tr>
+						<tr height="550px">
+							<td><font size="3">
+								</br>Choose a parameter from <b>${screen.getSelectedPredictionModel()}</b>
+								and search this term in <b>${screen.getValidationStudyName()}</b> study</br>
+								<select name="selectParameter" id="selectParameter"> 
+									<#list screen.getListOfParameters() as parameter>
+										<option value="${parameter}" <#if screen.getSelectedManualParameter()??><#if screen.getSelectedManualParameter() == parameter> selected="selected"</#if></#if>>${parameter}</option>			
+									</#list>
+									
+									<#list screen.arrayInvestigations as inv>
+										<#assign invName = inv.name>
+											<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+									</#list>
+								</select>
+								<script>$('#selectParameter').chosen();</script>
+								</br></br>1.You can either search for the term itself and it will become the searching tokens
+								</br></br>2.You can also give the definition for the term and this definition will become your searching tokens 
+								</br></br>Example: For term "Age", you can directly search Age or search "How old are you?"
+								</br></br>Define your term here: <input type="text" name="userDefinedQuery" size="25" value="<#if screen.getUserDefinedQuery()??>${screen.getUserDefinedQuery()}</#if>">
+								</br></br>You can set your cut off value (%) here:  <input type="text" name="cutOffValue" size="5"> e.g. 50
+								</br></br><input type="submit" style="font-size: larger" name="customizedSearch" value="customized search" onclick="__action.value='customizedSearch';"/></br></br>
+								<table>
+									<tr>
+										<td>
+											</br><input type="submit" style="font-size: small" name="addToExistingMapping" value="add to existing mapping" onclick="__action.value='addToExistingMapping';"/>
+										</td>
+										<td>
+											</br><input type="button" style="font-size: small" name="saveManualMapping" value="save manual mapping" onclick="refreshByHits();"/>
+										</td>
+									</tr>
+								</table>
+							</font></td>
+							<td><font size="3"><i>
+								</br>The matchings will be done using Levenshtein string matching algorithms.
+								</br></br>The mapping result will be shown here!
+								</br><div id="tableDisplay">
+									<script>
+										<#if screen.getManualMappingResultTable()??>
+											<#list screen.getManualMappingResultTable() as eachMapping>
+												var json = eval(${eachMapping});
+												$('#tableDisplay').append(json.result);
+												$('#tableDisplay').append(json.script);
+											</#list>
+										</#if>
+									</script>
+								</div>
+							</i></font></td>
+						</tr>
 					</table>
 					
-					
-					
-				<#else>
+					</br><input type="submit" value="back to mapping" id="backToMapping" name="backToMapping" onclick="__action.value='backToMapping';" />
 				
+				<#else>
 					<#if screen.isSelectedInv() == true>
 						<table class="box" width="100%" cellpadding="0" cellspacing="0">
 							<tr><td class="box-header" colspan="1">  
 									<label>Choose a prediction model:
 									<select name="investigation" id="investigation"> 
-										<#list screen.arrayInvestigations as inv>
-											<#assign invName = inv.name>
-												<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+										<#list screen.getPredictionModel() as inv>
+											<option value="${inv}">${inv}</option>			
 										</#list>
 									</select>
 									<script>$('#investigation').chosen();</script>
@@ -169,7 +218,7 @@ function checkFileExisting(){
 										DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
 									</label>
 									<div id="masstoggler"> 	
-										<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+										<label>Browse protocols and their variables '${screen.getSelectedPredictionModel()}':click to expand, collapse or show details</label>
 								 			<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 								 			<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
 					 				</div>
@@ -203,15 +252,35 @@ function checkFileExisting(){
 						    <tr>
 						    	<td class="box-body">
 									<div id="leftSideTree">  
+										
 										${screen.getTreeView()}
+										
 									</div><br/>
 							    </td>
 							    
 							    <td class="box-body">
 							    	<!--div id="scrollingDiv"--> 
 	      								<div id="details">
-	      									
 	      									${screen.getHitSizeOption()}
+	      									<script>
+												<#if screen.getListOfJSON()??>
+													<#list screen.getListOfJSON() as eachMapping>
+														var json = eval(${eachMapping});
+														$('#details').append(json.result);
+														$('#details').append(json.script);
+													</#list>
+												</#if>
+												$('#details > table').hide();
+											</script>
+											<script>
+												$('#details > table').each(function(index) {
+													var length = $(this).attr('id').length;												   
+												    var measurementId = $(this).attr('id').substring(0, length - 6);
+												    $('#' + measurementId).click(function(){
+												    	getClickedTableById(measurementId);
+												    });
+												});
+											</script>
 	      									
 	      								</div><br/><br/>
 	      							<!--/div-->
@@ -231,7 +300,13 @@ function checkFileExisting(){
 										style="color: #000; background: #8EC7DE;
 											   border: 2px outset #d7b9c9;
 											   font-size:15px;
-											   font-weight:bold;"/>	
+											   font-weight:bold;"/>
+									<input type="submit" value="Manual mapping" id="manaulMatching" name="manaulMatching" 
+										onclick="__action.value='manaulMatching';" 
+										style="color: #000; background: #8EC7DE;
+											   border: 2px outset #d7b9c9;
+											   font-size:15px;
+											   font-weight:bold;"/>		
 								</td>
 								<td class="box-body">
 								<input class="saveMapping" type="submit" id="saveMapping" name="saveMapping" value="save Mapping" 
@@ -243,7 +318,6 @@ function checkFileExisting(){
 								
 							</tr>
 						</table>
-						
 						<#list screen.getListOfParameters() as parameter>
 							<script>
 								addingTable('${parameter}');
@@ -253,8 +327,8 @@ function checkFileExisting(){
 							refreshByHits();
 						</script>
 						<#list screen.getExecutiveScript() as executiveScript>
-								${executiveScript}
-							</#list>
+							${executiveScript}
+						</#list>
 				   </#if>
 			   </#if>	
 			</div>
