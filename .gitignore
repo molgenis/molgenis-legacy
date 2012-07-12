@@ -38,3 +38,5 @@ log*
 logger.out*
 /dist
 /.settings/org.eclipse.wst.common.component
+/.settings/jsdtscope
+
