@@ -17,7 +17,7 @@ import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 
-import plugins.hl7parser.GenericDCM.HL7MeasurementDCM;
+import plugins.hl7parser.GenericDCM.HL7ObservationDCM;
 import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
 import plugins.hl7parser.StageLRA.HL7ObservationLRA;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
@@ -33,25 +33,56 @@ public class HL7Main {
 	public static void main(String [] args) throws Exception{ 
 
 
-		String file1 = "/Users/pc_iverson/Desktop/input/Catalog-EX03.xml";
-		//		String file1 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/GenericCatalog-EX02.xml";
-		String file2 = "/Users/pc_iverson/Desktop/input/Catalog-EX03-valuesets.xml";
-		//		String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/org.hl7.BodyWeight-v0.108-Template.xml-valuesets.xml";
-		String file3 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/org.hl7.BodyWeight-v0.108-Template+context.xml";
-
-		//1 = genericDCM
-		//2 = stageLRA
-		//3 = both genericDCM as stageLRA have been created
-		int i = 3;
+//		String file1 = "/Users/pc_iverson/Desktop/input/Catalog-EX03.xml";
+	String file1 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/Catalog-EX04.xml";
+//		String file2 = "/Users/pc_iverson/Desktop/input/Catalog-EX03-valuesets.xml";
+	String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/Catalog-EX04-valuesets.xml";
 
 		//Read file, fill arraylists
 
-		HL7Data ll = new HL7LLData(file1,file2,file3);
-
-
-		System.out.println("--------");
+		HL7Data ll = new HL7LLData(file1,file2);
 
 		Database db = DatabaseFactory.create();
+		
+//		//###############STAGE LRA #######START###	
+//		System.out.println("###########");
+//		System.out.println("Stage LRA");
+//		System.out.println("###########");
+//		for(HL7OrganizerLRA organizer : ll.getHL7OrganizerLRA()){
+//			System.out.println(organizer.getHL7OrganizerNameLRA());
+//			
+//			for(HL7ObservationLRA m : organizer.measurements){
+//				
+//				System.out.println(m.getMeasurementName()+"\t"+ m.getMeasurementLabel()+"\t"+m.getMeasurementDataType());
+//			}
+//		}
+//		//###############STAGE LRA #######END###	
+//		
+//		
+//		
+//		
+//		//###############GENERIC DCM ######START####	
+//		System.out.println("");
+//		System.out.println("###########");
+//		System.out.println("GENERIC DCM");
+//		System.out.println("###########");
+//		for(HL7OrganizerDCM organizer : ll.getHL7OrganizerDCM()){
+//			
+//			System.out.println("Subprotocol: " + organizer.getId()+ "\t"+organizer.getHL7OrganizerNameDCM()+ "\t"+organizer.getOriginalText());
+//			for(HL7OntologyTerm m: organizer.getHl7OntologyTerms()){
+//				System.out.println("Ontology: "+m.getDisplayName());
+//			}
+//			for(HL7ObservationDCM d: organizer.measurements){
+//				System.out.println("Measurement: "  + d.getDisplayName() + "\t"+ d.getRepeatNumberLow() + "\t"+ d.getValue());
+//				for(HL7OntologyTerm t : d.getHl7OntologyTerms()){
+//					System.out.println("The mapped ontology term is " + t.getDisplayName() + "\t"+ t.getCode());
+//				}
+//			}
+//			System.out.println("---------");
+//			System.out.println("---------");
+//		}
+	//############GENERIC DCM###########END##	
+		
 
 		try{
 
@@ -72,9 +103,7 @@ public class HL7Main {
 			}else{
 				inv = db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName)).get(0);
 			}
-			//////
 			
-
 			Protocol stageCatalogue;
 
 			if(db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "stageCatalogue")).size()==0){
@@ -117,7 +146,7 @@ public class HL7Main {
 					Measurement m = new Measurement();
 					m.setName(meas.getMeasurementName());
 					//					m.setDescription(meas.getMeasurementDescription().replaceAll("\\\n", ""));
-					m.setDescription(meas.getMeasurementDisplayName());
+					m.setDescription(meas.getMeasurementLabel());
 					m.setInvestigation(inv);	
 					
 					protocolFeature.add(m.getName());
@@ -282,15 +311,15 @@ public class HL7Main {
 //					List<String> listOfMeasurementNames = new ArrayList<String>();
 //					List<Measurement> listOfMeasurements = new ArrayList<Measurement>();
 
-					for(HL7MeasurementDCM meas :organizer.measurements){
+					for(HL7ObservationDCM meas :organizer.measurements){
 
-						System.out.println(" - " + meas.getMeasurementName() +"\t"+meas.getMeasurementDataType() );
+						System.out.println(" - " + meas.getDisplayName() +"\t"+meas.getOriginalText() );
 						Measurement m = new Measurement();
-						m.setName(meas.getMeasurementName());
+						m.setName(meas.getDisplayName());
 						//m.setDescription(meas.getMeasurementDescription());
 						m.setInvestigation(inv);
 
-						String dataType = meas.getMeasurementDataType();
+						String dataType = meas.getOriginalText();
 
 						if(dataType.equals("INT")){
 							m.setDataType("int");
@@ -302,7 +331,7 @@ public class HL7Main {
 							m.setDataType("string");
 						}
 
-						listOfMeasurementNames.add(meas.getMeasurementName());	
+						listOfMeasurementNames.add(meas.getDisplayName());	
 
 						uniqueListOfMeasurements.add(m);
 					}

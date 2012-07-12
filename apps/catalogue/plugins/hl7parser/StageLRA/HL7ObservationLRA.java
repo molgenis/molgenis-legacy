@@ -18,7 +18,7 @@ public class HL7ObservationLRA {
 
 	private Node measurement;
 	private XPath xpath;
-	private String measurementDisplayName;
+	private String measurementLabel;
 	private String measurementName;
 	private String measurementDescription;
 	private String measurementDataType;
@@ -51,7 +51,7 @@ public class HL7ObservationLRA {
 	private void readMeasurementLabel() throws Exception{
 
 		Node nameNode = (Node) xpath.evaluate(OBSERVATION_LABEL, measurement, XPathConstants.NODE);
-		this.measurementDisplayName = nameNode.getNodeValue().trim();
+		this.measurementLabel = nameNode.getNodeValue().trim();
 	}
 
 	private void readMeasurementDescription()throws Exception{
@@ -87,8 +87,8 @@ public class HL7ObservationLRA {
 		return measurementDataType;
 	}
 
-	public String getMeasurementDisplayName(){
-		return measurementDisplayName;
+	public String getMeasurementLabel(){
+		return measurementLabel;
 	}
 
 }

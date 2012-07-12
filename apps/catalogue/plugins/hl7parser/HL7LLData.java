@@ -23,6 +23,7 @@ import plugins.hl7parser.GenericDCM.HL7GenericDCM;
 import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
 import plugins.hl7parser.StageLRA.HL7StageLRA;
+import plugins.hl7parser.StageLRA.HL7ValueSetAnswerLRA;
 import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
 
 /**
@@ -50,29 +51,25 @@ public class HL7LLData implements HL7Data{
         DocumentBuilder builder = domFactory.newDocumentBuilder();
         Document doc = builder.parse(file);
         NodeList nodesFile = (NodeList)xpath.compile(xpathExpres).evaluate(doc, XPathConstants.NODESET);
-        System.out.println("Hallo! " + nodesFile.getLength());
         return nodesFile;
     }
     
-    public HL7LLData(String file1,String file2,String file3) throws Exception{
+    public HL7LLData(String file1,String file2) throws Exception{
     	ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
         XPathFactory factory = XPathFactory.newInstance();
         this.xpath = factory.newXPath();
        
-      
-        NodeList nodesFile1 = readFile(file1,xpath, ORGANIZER);
-       
-        NodeList nodesFile2 = readFile(file2,xpath, VALUESET);
-       
         //Normal xml file
+        NodeList nodesFile1 = readFile(file1,xpath, ORGANIZER);
+
+       
         for (int i = 0; i < nodesFile1.getLength(); i++) {
             
-        	if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("GenericDCM")){
-                System.out.println(nodesFile1.item(i).getParentNode());
-                hl7GenericDCM = new HL7GenericDCM (nodesFile1.item(i).getParentNode(),xpath);
+        	if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("Generic")){
+               hl7GenericDCM = new HL7GenericDCM (nodesFile1.item(i).getParentNode(),xpath);
 
             }
-            else if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("Stage LLCDR")){
+            else if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("LRA")){
                 hl7StageLRA = new HL7StageLRA (nodesFile1.item(i).getParentNode(),xpath);
             }
             else{
@@ -81,13 +78,20 @@ public class HL7LLData implements HL7Data{
             allOrganizerNodes.add(nodesFile1.item(i));
         }
        
+        
         //Valuesets xml file
+        NodeList nodesFile2 = readFile(file2,xpath, VALUESET);
+        
+     
         for (int i = 0; i < nodesFile2.getLength(); i++) {
         	
         	HL7ValueSetLRA valueSetLRA = new HL7ValueSetLRA(nodesFile2.item(i), xpath);
         	hashValueSetLRA.put(valueSetLRA.getValueSetsName(), valueSetLRA);
-//        	System.out.println("i "+i+": " +valueSetLRA.getValueSetsName() + "-----------" + valueSetLRA);
-//            System.out.println(valueSetLRA.getListOFAnswers().get(0).getName());
+        	System.out.println("protocol "+i+": " +valueSetLRA.getValueSetsName());
+        	for(HL7ValueSetAnswerLRA r : valueSetLRA.getListOFAnswers()){
+        		System.out.println("ValuesetAnswer: " + r.getName()+"\t"+r.getCodeValue());
+        	}
+//            
         }
         
         System.out.println("Damn it!------------->" + hashValueSetLRA.size());
