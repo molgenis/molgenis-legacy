@@ -95,7 +95,7 @@ public class HL7PhenoImporter {
 
 			List<Integer> listOfProtocolIds = new ArrayList<Integer>();
 
-			List<String> listOfMeasurementNames = new ArrayList<String>();
+			List<String> uniqueListOfMeasurementNames = new ArrayList<String>();
 			List<Measurement> uniqueListOfMeasurements = new ArrayList<Measurement>();
 			List<Category> uniqueListOfCategory = new ArrayList<Category>();
 			List<String> uniqueCategoryName = new ArrayList<String>();
@@ -170,8 +170,8 @@ public class HL7PhenoImporter {
 						m.setDataType("bool");
 					}
 
-					if(!listOfMeasurementNames.contains(m.getName())){
-						listOfMeasurementNames.add(m.getName());
+					if(!uniqueListOfMeasurementNames.contains(m.getName())){
+						uniqueListOfMeasurementNames.add(m.getName());
 						uniqueListOfMeasurements.add(m);
 					}
 				}
@@ -292,7 +292,7 @@ public class HL7PhenoImporter {
 			}
 
 
-			listOfMeasurementNames.clear();
+			uniqueListOfMeasurementNames.clear();
 			uniqueListOfMeasurements.clear();
 			uniqueListOfCategory.clear();
 			uniqueCategoryName = new ArrayList<String>();
@@ -343,8 +343,8 @@ public class HL7PhenoImporter {
 
 						m.setOntologyReference_Id(listOfOntologyTermIDs);
 
-						if(!listOfMeasurementNames.contains(m.getName())){
-							listOfMeasurementNames.add(m.getName());
+						if(!uniqueListOfMeasurementNames.contains(m.getName())){
+							uniqueListOfMeasurementNames.add(m.getName());
 							uniqueListOfMeasurements.add(m);
 						}
 						
