@@ -1,15 +1,15 @@
 #
 # =====================================================
-# $Id$
-# $URL$
-# $LastChangedDate$
-# $LastChangedRevision$
-# $LastChangedBy$
+# $Id: CopyToResultsDir.ftl 12202 2012-06-15 09:10:27Z freerkvandijk $
+# $URL: http://www.molgenis.org/svn/molgenis_apps/trunk/modules/compute/protocols/CopyToResultsDir.ftl $
+# $LastChangedDate: 2012-06-15 11:10:27 +0200 (Fri, 15 Jun 2012) $
+# $LastChangedRevision: 12202 $
+# $LastChangedBy: freerkvandijk $
 # =====================================================
 #
 
 #MOLGENIS walltime=23:59:00
-#FOREACH project,seqType
+#FOREACH project
 
 
 alloutputsexist "${projectResultsDir}/${project}.zip"
@@ -48,11 +48,11 @@ cp ${intermediatedir}/*_fastqc.zip ${projectResultsDir}/qc
 
 
 # Copy dedup metrics to results directory
-cp ${dedupmetrics} ${projectResultsDir}/qc/statistics
+cp ${intermediatedir}/*.dedup.metrics ${projectResultsDir}/qc/statistics
 
 # Copy merged BAM plus index to results directory
-cp ${mergedbam} ${projectResultsDir}/alignment
-cp ${mergedbamindex} ${projectResultsDir}/alignment
+cp ${intermediatedir}/*.merged.bam ${projectResultsDir}/alignment
+cp ${intermediatedir}/*.merged.bam.bai ${projectResultsDir}/alignment
 
 
 # Copy alignment stats (lane and sample) to results directory
@@ -74,17 +74,18 @@ cp ${intermediatedir}/*.coverage* ${projectResultsDir}/coverage
 
 # Copy final vcf and vcf.table to results directory
 
-cp ${snpsfinalvcf} ${projectResultsDir}/snps
-cp ${snpsfinalvcftable} ${projectResultsDir}/snps
+cp ${intermediatedir}/*.snps.final.vcf ${projectResultsDir}/snps
+cp ${intermediatedir}/*.snps.final.vcf.table ${projectResultsDir}/snps
 
 
 # Copy genotype array vcf to results directory
 
-if [ -f "${sample}.genotypeArray.updated.header.vcf" ]
-then
-	cp ${sample}.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
-fi
-cp ${sampleconcordancefile} ${projectResultsDir}/qc
+#if [ -f "${sample}.genotypeArray.updated.header.vcf" ]
+#then
+	cp ${intermediatedir}/*.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
+#fi
+
+cp ${intermediatedir}/*.concordance.ngsVSarray.txt ${projectResultsDir}/qc
 
 # Copy QC report to results directory
 
