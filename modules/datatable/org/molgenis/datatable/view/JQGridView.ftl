@@ -163,7 +163,7 @@ $(document).ready(function() {
 	            <input type="radio" name="viewType" value="CSV">Csv<br> 
 	            <label>Export option</label><br>
 	            <input type="radio" name="exportSelection" value="ALL" checked>All rows<br>
-	            <input type="radio" name="exportSelection" value="GRID">Visable rows<br> 
+	            <input type="radio" name="exportSelection" value="GRID">Visible rows rows<br> 
 		</fieldset>
 		</form>
 	</div>

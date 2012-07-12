@@ -2,6 +2,8 @@ package org.molgenis.datatable.view;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
+
 import org.apache.poi.hssf.usermodel.HSSFHeader;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -64,10 +66,11 @@ public class ExcelExporter extends AbstractExporter {
     }
 
     private void writeRow(Tuple row, int rowIdx) throws TableException {
-        Row excelRow = sh.createRow(rowIdx);
+        final Row excelRow = sh.createRow(rowIdx);
         int colIdx = 0;
-        for (Field column : table.getColumns()) {
-            Cell c = excelRow.createCell(colIdx++);
+        final List<Field> columns = table.getColumns();
+		for (final Field column : columns) {
+            final Cell c = excelRow.createCell(colIdx++);
             writeTypedCell(c, column, row);
         }
     }
