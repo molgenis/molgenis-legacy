@@ -124,8 +124,8 @@ public class JQGridTableView extends HtmlWidget
 	{
 		try
 		{
-			// this sucks, that we need to renew the table every time...
-			// table.setDb(db);
+			// this sucks, that we need to renew the table every time... is multithreading related
+			table.setDb(db);
 
 			// Get the requested page. By default grid sets this to 1.
 			Integer page = request.getInt("page");
@@ -386,6 +386,7 @@ public class JQGridTableView extends HtmlWidget
 		public String caption = getLabel();
 		public boolean autowidth = true;
 		public boolean sortable = false;
+		public String height = "100%";
 		//public boolean search = false;
 	}
 
@@ -395,7 +396,8 @@ public class JQGridTableView extends HtmlWidget
 	{
 		public String name;
 		public String index;
-		public int width = 100;
+		public int width = 200;
+		public boolean fixed = true;
 		public boolean sortable = false;
 	}
 
