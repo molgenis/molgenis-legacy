@@ -757,7 +757,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 			String tableId = eachOriginalQuery + " table";
 			
-			String matchingResult = "<table id='" + tableId.replaceAll(" ", "_") + "' border='1'>";
+			String matchingResult = "<table class='dataResult' id='" + tableId.replaceAll(" ", "_") + "' border='1'>";
 
 			Map<String, Map<String, Double>> uniqueMapping = new HashMap<String, Map<String, Double>>();
 
@@ -781,7 +781,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 					uniqueMapping.put(identifier, queryAndSimilarity);
 
-					matchingResult += "<tr border='1' id='" + identifier.replaceAll(" ", "_") + "'>" 
+					matchingResult += "<tr class='clickRow' border='1' id='" + identifier.replaceAll(" ", "_") + "' style='cursor:pointer'>" 
 							+ "<td>"+ measurementName +"</td>"
 							+ "<td><div id='" + identifier.replaceAll(" ", "_") + "_div'>" 
 							+ matchedItem + "</div></td><td><input type='checkbox' name='" 
@@ -802,7 +802,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 			matchingResult += "</table>";
 
-			String executiveScript  = "<script>";
+			String executiveScript  = "";
 			
 			if(maxQuerySize < uniqueMapping.keySet().size()){
 				maxQuerySize = uniqueMapping.keySet().size();
@@ -811,7 +811,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			for(String identifier : uniqueMapping.keySet()){
 
 				if(uniqueMapping.get(identifier).size() > 0){
-					String table = "<table class='insertTable' id='" + identifier.replaceAll(" ", "_") +"_table' style='display: none'>" 
+					String table = "<table class='insertTable' id='" + identifier.replaceAll(" ", "_") +"_table' style='display:none;position:absolute;'>" 
 							+ "<tr><td>expanded query</td><td>similarity</td></tr>";
 
 					for(Entry<String, Double> entry : uniqueMapping.get(identifier).entrySet()){
@@ -824,22 +824,15 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 					table += "</table>";
 
-					executiveScript += " document.getElementById(\"" + identifier.replaceAll(" ", "_")
-							+ "_div\").innerHTML += \"</br>" + table + "\";\n";
-					executiveScript += "var divTable = document.getElementById(\"" + identifier.replaceAll(" ", "_")
-							+ "_div\");" 
-							+ "divTable.style.cursor = \"pointer\";"
-							+ "divTable.onclick = function() {insertTable(\"" + identifier.replaceAll(" ", "_") +"_table\")};";
+					executiveScript += table;
 				}
 			}
-
-			executiveScript += "</script>\n\n\n";
 			
 			JSONObject json = new JSONObject();
 			
 			json.put("term", eachOriginalQuery);
 			json.put("result", matchingResult);
-			json.put("script", executiveScript);	
+			json.put("script", executiveScript);
 			
 			
 //			if(!listOfParameters.contains(executiveScript))

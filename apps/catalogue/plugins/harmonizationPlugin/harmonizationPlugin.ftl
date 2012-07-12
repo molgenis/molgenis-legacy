@@ -1,7 +1,39 @@
 <#macro plugins_harmonizationPlugin_harmonizationPlugin screen>
 <style type="text/css">
+div#popup{
+	position: fixed;
+   	top: 0;
+   	right: 0;
+   	bottom: 0;
+   	left: 0;
+   	height: 100%;
+   	width: 100%;
+   	margin: 0;
+   	padding: 0;
+   	background: #000000;
+   	opacity: .15;
+   	filter: alpha(opacity=15);
+   	-moz-opacity: .15;
+   	z-index: 101;
+   	display: none;
+
+}
+.clickRow:hover{
+	color: #d0e4fe;
+}
+
 .insertTable{
-	background-color:#d0e4fe;
+	display: none;
+   	top: 50%;
+   	left: 50%;
+   	margin-left: -190px;
+   	margin-top: -100px;
+   	background-color: #ffffff;
+   	border: 2px solid #336699;
+   	padding: 0px;
+   	z-index: 102;
+   	font-family: Verdana;
+   	font-size: 10pt;
 }
 
 .HighLightTR.highlight {
@@ -12,31 +44,9 @@
 	background-color: transparent;
 	padding-left: 3px;
 }
-
 </style>
 
 <script type="text/javascript">
-function addingTable(tableId){
-	
-	if(map.get(tableId) != "null" && map.get(tableId) != null){
-		
-		document.getElementById('details').innerHTML += map.get(tableId);
-		document.getElementById(tableId + " table").style.display = "none";		
-	}
-}
-
-function insertTable(tableId){
-	
-	var table = document.getElementById(tableId);
-	
-	if(table.style.display == "none") {
-    		table.style.display = "inline";
-  	} else {
-		table.style.display = "none";
-	}
-	
-}
-
 function refreshByHits () {
   
 	$('#details >table').each(function(i) {
@@ -269,7 +279,7 @@ function getClickedTableById(key){
 												$('#details > table').hide();
 											</script>
 											<script>
-												$('#details > table').each(function(index) {
+												$('#details > table.dataResult').each(function(index) {
 													var length = $(this).attr('id').length;												   
 												    var measurementId = $(this).attr('id').substring(0, length - 6);
 												    $('#' + measurementId).click(function(){
@@ -277,10 +287,46 @@ function getClickedTableById(key){
 												    });
 												});
 											</script>
-	      									
+											<script>
+												$('#details > table tr.clickRow').click(function() {
+													var id = $(this).attr('id');
+													var position = $(this).offset();
+													var top = position.top + 140;
+													var left = position.left + 10;
+													$("#popup").show();
+													$('#' + id + '_table').css('top', top + 'px');
+													$('#' + id + '_table').css('left', left + 'px');
+													$('#' + id + '_table').fadeIn(300);
+													$("#popup").click(function(){
+														$("#popup").hide();
+														$('#' + id + '_table').fadeOut(300);
+													});
+													$('#' + id + '_table').click(function(){
+														$("#popup").hide();
+														$('#' + id + '_table').fadeOut(300);
+													});
+												});
+	      									</script>
+	      									<script>
+	      										$('#browser li').each(function(){
+	      											if($(this).find('li').length == 0){
+	      												$(this).click(function(){
+	      													$('#browser li').css('color','black');
+	      													$('#browser li').css('font-size', 13);
+	      													$('#browser li').css('font-style','normal');
+	      													$('#browser li').css('font-weight', 400);
+	      													$(this).css('color','#778899');
+	      													$(this).css('font-size', 15);
+	      													$(this).css('font-style','italic');
+	      													$(this).css('font-weight', 'bold');
+	      												});
+	      											}
+	      										});
+	      									</script>
 	      								</div><br/><br/>
 	      							<!--/div-->
-	
+										<div id="popup">
+										</div>
 							   </td>
 							</tr>
 							<tr>
@@ -314,17 +360,9 @@ function getClickedTableById(key){
 								
 							</tr>
 						</table>
-						<#list screen.getListOfParameters() as parameter>
-							<script>
-								addingTable('${parameter}');
-							</script>
-						</#list>
 						<script>
 							refreshByHits();
 						</script>
-						<#list screen.getExecutiveScript() as executiveScript>
-							${executiveScript}
-						</#list>
 				   </#if>
 			   </#if>	
 			</div>
