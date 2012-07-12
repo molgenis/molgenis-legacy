@@ -1,4 +1,4 @@
-<#macro plugins_harmonizationPlugin_harmonizationPlugin screen>
+<#macro plugins_findingProxy_findingProxy screen>
 <style type="text/css">
 .insertTable{
 	background-color:#d0e4fe;

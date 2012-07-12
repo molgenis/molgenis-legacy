@@ -34,16 +34,8 @@
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
 			
 			<plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
-			<form name="mappingMeasurement" entity="MappingMeasurement"
-				label="Measurement Mappings" groups="admin" />
-			<form name="computeProtocol" entity="ComputeProtocol" label="Analysis Protocols" />
-			<form name="observationTarget" entity="ObservationTarget" label="Observation Target">
-				<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
-			</form>
-			<menu name="selectionModel" label="Select prediction model">
-				<plugin name="PredictionModelSelection"
-					type="plugins.predictionSelection.predictionSelectionPlugin" label="Validate Prediction Model" />
-			</menu>
+			<plugin name="DevelopingAlgorithm" type="plugins.developingAlgorithm.developingAlgorithm" label="Developing algorithm"/>
+			<plugin name="FindingProxy" type="plugins.findingProxy.findingProxy" label="Finding proxies"/>
 		</menu>
 
 		<menu name="Admin">

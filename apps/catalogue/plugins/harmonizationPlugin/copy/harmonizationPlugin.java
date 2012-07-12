@@ -1,4 +1,4 @@
-package plugins.harmonizationPlugin;
+package plugins.harmonizationPlugin.copy;
 
 import gcc.catalogue.MappingMeasurement;
 
@@ -28,13 +28,7 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
-
-import plugins.HarmonizationComponent.LevenshteinDistanceModel;
-import plugins.HarmonizationComponent.LinkedInformation;
-import plugins.HarmonizationComponent.LinkedMap;
-import plugins.HarmonizationComponent.OWLFunction;
-import plugins.developingAlgorithm.RScriptGenerator;
-import plugins.developingAlgorithm.testModel;
+import org.mortbay.util.ajax.JSON;
 
 public class harmonizationPlugin extends PluginModel<Entity> {
 
