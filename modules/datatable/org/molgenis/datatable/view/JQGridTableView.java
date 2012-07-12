@@ -77,7 +77,7 @@ public class JQGridTableView extends HtmlWidget {
 
         try {
             for (Field f : table.getColumns()) {
-                config.colName.add(f.getLabel());
+                config.colNames.add(f.getLabel());
                 final JQGridField m = new JQGridField(f.getName(), f.getName());
                 if (table instanceof FilterableTupleTable) {
                     m.sortable = true;

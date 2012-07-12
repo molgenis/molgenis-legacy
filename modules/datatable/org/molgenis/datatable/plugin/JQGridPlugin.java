@@ -11,10 +11,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.molgenis.datatable.model.JoinQueryTable;
-import org.molgenis.datatable.model.QueryTable;
-import org.molgenis.datatable.model.TableException;
-import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.datatable.model.*;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.StringField;

@@ -21,8 +21,9 @@ var JQGridView = {
     pagerSelector : null,
     config : null,
     
-    init: function(config) {
-        this.tableSelector = "#" + config.id;
+    init: function(tableSelector, pagerSelector, config) {
+        this.tableSelector = tableSelector;
+        this.pagerSelector = pagerSelector;
         this.config = config;
         
         this.grid = this.createJQGrid();
@@ -109,7 +110,7 @@ $(document).ready(function() {
     configUrl = "${url}";
     $.ajax(configUrl + "&Operation=loadConfig").done(function(data) {
         config = data;
-        grid = JQGridView.init(config);
+        grid = JQGridView.init("table#${tableId}", "div#${tableId}Pager", config);
     });
 });
 

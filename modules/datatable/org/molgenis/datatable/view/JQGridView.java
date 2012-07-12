@@ -84,6 +84,11 @@ public class JQGridView extends HtmlWidget {
                 int page = Math.min(request.getInt("page"), totalPages);
                 int offset = Math.max(limit * page - limit, 0);
 
+                int rowLimit = request.getInt("rows");
+                
+                
+                tupleTable.setLimit(rowLimit);
+                
                 renderData(((MolgenisRequest) request).getRequest(), ((MolgenisRequest) request).getResponse(), page,
                         totalPages, tupleTable);
 
@@ -118,8 +123,9 @@ public class JQGridView extends HtmlWidget {
             strViewType = "JQ_GRID";
         }
         try {
-            final String viewFactoryClassName = request.getParameter("viewFactoryClassName");
-            final ViewFactory viewFactory = (ViewFactory) Class.forName(viewFactoryClassName).newInstance();
+            //final String viewFactoryClassName = request.getParameter("viewFactoryClassName");
+            //(ViewFactory) Class.forName(viewFactoryClassName).newInstance();
+            final ViewFactory viewFactory = new ViewFactoryImpl(); 
             final Renderers.Renderer view = viewFactory.createView(strViewType);
             view.export(servletContext, request, response, request.getParameter("caption"), tupleTable, totalPages, page);
         } catch (Exception e) {

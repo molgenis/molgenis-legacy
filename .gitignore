@@ -4,6 +4,7 @@ build/
 tmp/
 hsqldb/
 handwritten/
+WebContent/
 
 ## Always ignore these
 *~
