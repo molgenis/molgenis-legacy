@@ -1,24 +1,14 @@
 package org.molgenis.datatable.view;
 
-import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.datatable.util.JQueryUtil;
-
-import org.molgenis.framework.ui.html.HtmlWidget;
-
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -28,17 +18,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.molgenis.datatable.controller.Renderers;
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.datatable.util.JQueryUtil;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
+import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
 public class JQGridView extends HtmlWidget {
-
-    public static final String LOAD_CONFIG = "loadConfig";
-    public static final String OPERATION = "Operation";
+	public static final String OPERATION = "Operation";
+    //make enum
+	public static final String LOAD_CONFIG = "loadConfig";
+	public static final String LOAD_TREE = "loadTree";
+    
 
     public interface TupleTableBuilder {
         public TupleTable create(Database db, Tuple request) throws TableException;
@@ -61,9 +58,10 @@ public class JQGridView extends HtmlWidget {
      */
     public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
         try {
-            if (StringUtils.equals(request.getString(OPERATION), "loadTree")) {
-                //JQueryUtil.getDynaTreeNodes(tupleTableBuilder.getColumns());
-            } else if (StringUtils.equals(request.getString(OPERATION), "loadConfig")) {
+            if (StringUtils.equals(request.getString(OPERATION), LOAD_TREE)) {
+                final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+				JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
+            } else if (StringUtils.equals(request.getString(OPERATION), LOAD_CONFIG)) {
                 loadTupleTableConfig(db, (MolgenisRequest)request);
             } else {
                 final TupleTable tupleTable = tupleTableBuilder.create(db, request);
@@ -73,12 +71,12 @@ public class JQGridView extends HtmlWidget {
                 if (CollectionUtils.isNotEmpty(filterRules)) {  //is this a good idea (instanceof)?
                     if (tupleTable instanceof FilterableTupleTable) {
                         rules.addAll(filterRules);
+                        ((FilterableTupleTable)tupleTable).setFilters(rules);
                     }
                 }
 
                 final int limit = request.getInt("rows");
-                int rowCount = -1;
-                rowCount = tupleTable.getCount();
+                int rowCount = tupleTable.getCount();
                 tupleTable.close(); // Not nice! We should fix this!
                 int totalPages = (int) Math.ceil(rowCount / limit);
                 int page = Math.min(request.getInt("page"), totalPages);
@@ -88,6 +86,20 @@ public class JQGridView extends HtmlWidget {
                 
                 
                 tupleTable.setLimit(rowLimit);
+                tupleTable.setOffset(offset);
+                final String sortOrder = request.getString("sord");
+                final String sortField = request.getString("sidx");
+                
+                
+                
+                if(StringUtils.isNotEmpty(sortField) && tupleTable instanceof FilterableTupleTable) {
+                    final Operator sortOperator = StringUtils.equals(sortOrder, "asc") ? QueryRule.Operator.SORTASC : QueryRule.Operator.SORTDESC;
+                    rules.add(new QueryRule(sortOperator, sortField));
+                }
+                
+                if(tupleTable instanceof FilterableTupleTable) {
+                   ((FilterableTupleTable)tupleTable).setFilters(rules);
+                }
                 
                 renderData(((MolgenisRequest) request).getRequest(), ((MolgenisRequest) request).getResponse(), page,
                         totalPages, tupleTable);
@@ -119,12 +131,10 @@ public class JQGridView extends HtmlWidget {
         final ServletContext servletContext = request.getSession().getServletContext();
 
         String strViewType = (String) request.getParameter("viewType");
-        if (org.apache.commons.lang.StringUtils.isEmpty(strViewType)) { // strange that the grid doesn't submit it in first load!
+        if (StringUtils.isEmpty(strViewType)) { 
             strViewType = "JQ_GRID";
         }
         try {
-            //final String viewFactoryClassName = request.getParameter("viewFactoryClassName");
-            //(ViewFactory) Class.forName(viewFactoryClassName).newInstance();
             final ViewFactory viewFactory = new ViewFactoryImpl(); 
             final Renderers.Renderer view = viewFactory.createView(strViewType);
             view.export(servletContext, request, response, request.getParameter("caption"), tupleTable, totalPages, page);
@@ -268,7 +278,7 @@ public class JQGridView extends HtmlWidget {
 
     public void loadTupleTableConfig(Database db, MolgenisRequest request) throws TableException, IOException {
         final TupleTable tupleTable = tupleTableBuilder.create(db, request);
-        final JQGridConfiguration config = new JQGridConfiguration(getId(), tupleTableBuilder.getUrl(), "test", tupleTable);
+        final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
         final String jqJsonConfig = new Gson().toJson(config);
         request.getResponse().getOutputStream().println(jqJsonConfig);
         //writer.append(jqJsonConfig);
