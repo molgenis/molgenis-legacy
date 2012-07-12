@@ -39,13 +39,13 @@ var JQGridView = {
     changeColumns: function(columnModel) {
     	var self = JQGridView;
 		this.config.colModel = columnModel;
+
 		var names = new Array();
 		$.each(columnModel, function(index, value) {
 			names.push(value.name);
 		});
 		this.config.colNames = names;
-		//var xxx = new Object();
-		//xxx.colNames = names;
+
 		this.config.postData = {colNames:names};
     	$(this.tableSelector).jqGrid('GridUnload');
     	this.grid = this.createJQGrid();
@@ -94,69 +94,56 @@ var JQGridView = {
 	}
 }
 
+
+function createTree() {
+	$("#tree3").dynatree({
+		checkbox: true,
+		selectMode: 3,
+		children: config.colModel,
+		onSelect: function(select, node) {
+			// Get a list of all selected nodes, and convert to a key array:
+			var selectedColModel = new Array();        
+			var selectedColumns = node.tree.getSelectedNodes();
+			for(i = 0; i < selectedColumns.length; ++i) {
+				var x = selectedColumns[i].data;
+				if(!x.isFolder) {
+					selectedColModel.push(x);
+				}
+			}
+			grid.changeColumns(selectedColModel);        
+		},
+		onDblClick: function(node, event) {
+			node.toggleSelect();
+		},
+		onKeydown: function(node, event) {
+			if( event.which == 32 ) {
+			node.toggleSelect();
+			return false;
+			}
+		},
+		// The following options are only required, if we have more than one tree on one page:
+	//        initId: "treeData",
+		cookieId: "dynatree-Cb3",
+		idPrefix: "dynatree-Cb3-"
+	});
+}
+
+
 $(document).ready(function() {
     configUrl = "${url}";
     $.ajax(configUrl + "&Operation=loadConfig").done(function(data) {
         config = data;
         grid = JQGridView.init("table#${tableId}", "#${tableId}Pager", config);
 
-		$("#tree3").dynatree({
-			checkbox: true,
-			selectMode: 3,
-			children: config.colModel,
-			onSelect: function(select, node) {
-				// Get a list of all selected nodes, and convert to a key array:
+		createTree();
 
-				var selectedColModel = new Array();        
-				var selectedColumns = node.tree.getSelectedNodes();
-				for(i = 0; i < selectedColumns.length; ++i) {
-
-					var x = selectedColumns[i].data;
-					if(!x.isFolder) {
-						selectedColModel.push(x);
-					}
-				}
-				grid.changeColumns(selectedColModel);        
-
-				var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
-				return node.data;
-				});
-				$("#echoSelection3").text(selKeys.join(", "));
-
-				// Get a list of all selected TOP nodes
-				var selRootNodes = node.tree.getSelectedNodes(true);
-				// ... and convert to a key array:
-				var selRootKeys = $.map(selRootNodes, function(node){
-				return node.data.key;
-				});
-				$("#echoSelectionRootKeys3").text(selRootKeys.join(", "));
-				$("#echoSelectionRoots3").text(selRootNodes.join(", "));
-			},
-			onDblClick: function(node, event) {
-				node.toggleSelect();
-			},
-			onKeydown: function(node, event) {
-				if( event.which == 32 ) {
-				node.toggleSelect();
-				return false;
-				}
-			},
-			// The following options are only required, if we have more than one tree on one page:
-		//        initId: "treeData",
-			cookieId: "dynatree-Cb3",
-			idPrefix: "dynatree-Cb3-"
-			});
+		
     });
-
-
-	
 
 	$('#exportButton').click(function() {
 		$( "#dialog-form" ).dialog('open');
 	});
-
 });
-
 </script>
 
 <div id="treeBox">
@@ -175,14 +162,9 @@ $(document).ready(function() {
 	            <input type="radio" name="viewType" value="SPSS">Spss<br> 
 	            <input type="radio" name="viewType" value="CSV">Csv<br> 
 	            <label>Export option</label><br>
-	            <input type="radio" name="exportSelection" value="ALL" checked>All<br>
-	            <input type="radio" name="exportSelection" value="GRID">Grid<br> 
+	            <input type="radio" name="exportSelection" value="ALL" checked>All rows<br>
+	            <input type="radio" name="exportSelection" value="GRID">Visable rows<br> 
 		</fieldset>
 		</form>
 	</div>
 </div>
-<!--
-  <div>Selected keys: <span id="echoSelection3">-</span></div>
-  <div>Selected root keys: <span id="echoSelectionRootKeys3">-</span></div>
-  <div>Selected root nodes: <span id="echoSelectionRoots3">-</span></div>
--->

@@ -31,7 +31,7 @@ public class JdbcTable extends AbstractFilterableTupleTable {
 		this.query = query;
 		this.setFilters(rules);
 
-		String fromExpression = StringUtils.substringBetween(query, "SELECT", "FROM");
+		final String fromExpression = StringUtils.substringBetween(query, "SELECT", "FROM");
 		this.countQuery = StringUtils.replace(query, fromExpression, " COUNT(*) ");
 	}
 
