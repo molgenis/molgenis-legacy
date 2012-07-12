@@ -23,10 +23,11 @@ public class HL7GenericDCM {
 
     ArrayList<HL7OrganizerDCM> hl7organizer;
 
-    private static final String ORGANIZER = "urn:hl7-org:v3:component/urn:hl7-org:v3:organizer/urn:hl7-org:v3:component";
+
+//    private static final String ORGANIZER = "urn:hl7-org:v3:component/urn:hl7-org:v3:organizer/urn:hl7-org:v3:component";
+    private static final String ORGANIZER = "urn:hl7-org:v3:component/urn:hl7-org:v3:organizer";
 
     public HL7GenericDCM(Node parentNode, XPath xpath) throws Exception {
-    	System.out.println("parentNode:" + parentNode.getNodeName());
         ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
         NodeList nodes = (NodeList)xpath.compile(ORGANIZER).evaluate(parentNode, XPathConstants.NODESET);
        
@@ -44,6 +45,7 @@ public class HL7GenericDCM {
 
     }
 
+    
     public ArrayList<HL7OrganizerDCM> getHL7OrganizerDCM(){
           return hl7organizer;
     }

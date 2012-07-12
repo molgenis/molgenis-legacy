@@ -16,9 +16,12 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.hemodb.HemoSample;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import org.molgenis.hemodb.HemoSampleGroup;
 >>>>>>> fbf4fa30a1c3bae4f2b26ea7029764e87c1f5027
+=======
+>>>>>>> f7d13db58e2954743c2d5eac55ef47e4701b4d2a
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.ObservedValue;
@@ -38,14 +41,16 @@ import org.molgenis.util.Tuple;
  * this.getView()/setView(..).
  */
 
+
 public class Questions extends EasyPluginController<QuestionsModel>{
 	public Questions(String name, ScreenController<?> parent){
+
 		super(name, parent);
 		this.setModel(new QuestionsModel(this)); // the default model
 	}
 
-	public ScreenView getView(){
 
+	public ScreenView getView(){
 		return new FreemarkerView("QuestionsView.ftl", getModel());
 	}
 

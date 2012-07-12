@@ -28,10 +28,8 @@ public class HL7StageLRA {
     
 	public HL7StageLRA(Node parentNode, XPath xpath) throws Exception
 	{
-		
 		ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
         NodeList nodes = (NodeList)xpath.compile(ORGANIZER).evaluate(parentNode, XPathConstants.NODESET);
-        System.out.println(nodes.getLength());
         for (int i = 0; i < nodes.getLength(); i++) {
             allOrganizerNodes.add(nodes.item(i));           
         }
