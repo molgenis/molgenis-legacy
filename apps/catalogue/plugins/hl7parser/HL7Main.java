@@ -104,6 +104,7 @@ public class HL7Main {
 				inv = db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName)).get(0);
 			}
 			
+			//STAGECATALOGUE
 			Protocol stageCatalogue;
 
 			if(db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "stageCatalogue")).size()==0){
@@ -119,7 +120,6 @@ public class HL7Main {
 
 			HashMap<String,HL7ValueSetLRA> hashValueSetLRA = ll.getHashValueSetLRA();
 
-			
 			List<Integer> listOfProtocolIds = new ArrayList<Integer>();
 			
 			List<String> listOfMeasurementNames = new ArrayList<String>();
@@ -277,20 +277,20 @@ public class HL7Main {
 
 			db.update(stageCatalogue);
 
-			/////
+			//##################################################################
 			//GENERICDCM
 
 			Protocol genericDCM;
 
-			if(db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "genericDCM")).size()==0){
+			if(db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "generic")).size()==0){
 				genericDCM = new Protocol();
-				genericDCM.setName("genericDCM");
+				genericDCM.setName("generic");
 
 				genericDCM.setInvestigation_Name(investigationName);
 
 				db.add(genericDCM);
 			}else{
-				genericDCM = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "genericDCM")).get(0);
+				genericDCM = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "generic")).get(0);
 			}
 
 
