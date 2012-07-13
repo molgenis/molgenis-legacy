@@ -28,6 +28,8 @@ import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
 import plugins.hl7parser.StageLRA.HL7ValueSetAnswerLRA;
 import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
 import app.DatabaseFactory;
+import plugins.hl7parser.PropertiesPath;
+
 
 /**
  *
@@ -35,11 +37,11 @@ import app.DatabaseFactory;
  */
 public class HL7Main {
 	public static void main(String [] args) throws Exception{ 
-
-		String file1 = "/Users/pc_iverson/Desktop/Input/HL7Files/Catalog-EX04.xml";
-//		String file1 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/Catalog-EX04.xml";
+		PropertiesPath path = new PropertiesPath();
+		//String file1 = "/Users/pc_iverson/Desktop/Input/HL7Files/Catalog-EX04.xml";
+		String file1 = path.getPath()+"Catalog-EX04.xml";
 		//		String file2 = "/Users/pc_iverson/Desktop/input/Catalog-EX03-valuesets.xml";
-		String file2 = "/Users/pc_iverson/Desktop/Input/HL7Files/Catalog-EX04-valuesets.xml";
+		String file2 = path.getPath()+"Catalog-EX04-valuesets.xml";
 //		String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/Catalog-EX04-valuesets.xml";
 		
 		//Read file, fill arraylists

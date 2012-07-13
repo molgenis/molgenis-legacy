@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import plugins.hl7parser.GenericDCM.HL7GenericDCM;
 import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
+import plugins.hl7parser.GenericDCM.HL7ValueSetDCM;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
 import plugins.hl7parser.StageLRA.HL7StageLRA;
 import plugins.hl7parser.StageLRA.HL7ValueSetLRA;

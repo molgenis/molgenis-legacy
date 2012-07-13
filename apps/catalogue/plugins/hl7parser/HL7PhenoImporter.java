@@ -348,7 +348,7 @@ public class HL7PhenoImporter {
 							uniqueListOfMeasurements.add(m);
 						}
 						
-						ll.getHl7GenericDCM()
+						ll.getHl7GenericDCM();
 						
 						protocolFeature.add(m.getName());
 					}
