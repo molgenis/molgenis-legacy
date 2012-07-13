@@ -84,8 +84,8 @@ public class JQGridField {
 	public final String path;
 
 	public JQGridField(Field f) {
-		this.name = f.getName();
-		this.index = f.getName();
+		this.name = f.getSqlName();
+		this.index = f.getSqlName();
 		this.title = name;
 		this.path = title;
 		this.searchoptions = SearchOptions.create(f.getType().getEnumType());

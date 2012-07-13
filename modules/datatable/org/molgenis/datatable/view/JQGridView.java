@@ -34,9 +34,9 @@ public class JQGridView extends HtmlWidget {
 	public static final String OPERATION = "Operation";
     
 	private enum Operation {
-		LOAD_TREE,
 		LOAD_CONFIG,
-		RENDER_DATA
+		RENDER_DATA, 
+		LOAD_TREE
 	}
 
     public interface TupleTableBuilder {
@@ -60,17 +60,19 @@ public class JQGridView extends HtmlWidget {
      */
     public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
 		try {
+			final HttpServletResponse response = ((MolgenisRequest) request).getResponse();
+			
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
 			final String opRequest =  request.getString(OPERATION);
 			
 			final Operation operation = StringUtils.isNotEmpty(opRequest) ? 
 					Operation.valueOf(opRequest) :
 					Operation.RENDER_DATA;
-			
-            if (operation == Operation.LOAD_TREE) {
-				JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
-            } else if (operation == Operation.LOAD_CONFIG) {
+			if (operation == Operation.LOAD_CONFIG) {
                 loadTupleTableConfig(db, (MolgenisRequest)request, tupleTable);
+			} else if (operation == Operation.LOAD_TREE) {
+                final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
+                response.getOutputStream().print(treeNodes);
             } else {
                 final List<QueryRule> rules = new ArrayList<QueryRule>();
                 final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(request);
@@ -105,8 +107,7 @@ public class JQGridView extends HtmlWidget {
                    ((FilterableTupleTable)tupleTable).setFilters(rules);
                 }
                 
-                renderData(((MolgenisRequest) request).getRequest(), ((MolgenisRequest) request).getResponse(), page,
-                        totalPages, tupleTable);
+                renderData(((MolgenisRequest) request).getRequest(), response, page, totalPages, tupleTable);
             }
 			tupleTable.close();
         } catch (Exception e) {
@@ -295,7 +296,6 @@ public class JQGridView extends HtmlWidget {
         private final int total;
         @SuppressWarnings("unused")
         private final int records;
-        @SuppressWarnings("unused")
         private ArrayList<LinkedHashMap<String, String>> rows = new ArrayList<LinkedHashMap<String, String>>();
 
         public JQGridResult(int page, int total, int records) {

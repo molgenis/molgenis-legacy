@@ -39,16 +39,16 @@ public class JQueryUtil {
             final StringBuilder tableNode = new StringBuilder();
             final ImmutableList<Field> fieldByTable = fieldsByTable.get(tableName);
             tableNode.append("{");
-            tableNode.append(String.format("title : \"%s\", ", tableName));
+            tableNode.append(String.format("\"title\" : \"%s\", ", tableName));
             if (CollectionUtils.isNotEmpty(fieldByTable)) {
-                tableNode.append("isFolder: true,");
-                tableNode.append(String.format("children: [%s]",
+                tableNode.append("\"isFolder\": \"true\",");
+                tableNode.append(String.format("\"children\" : [%s]",
                         StringUtils.join(CollectionUtils.collect(fieldByTable, new Transformer() {
 
                     @Override
                     public Object transform(Object arg0) {
                         final Field f = (Field) arg0;
-                        return String.format("{title : \"%s\", path : \"%s\"}", f.getName(), f.getSqlName());
+                        return String.format("{\"title\" : \"%s\", \"path\" : \"%s\"}", f.getName(), f.getSqlName());
                     }
                 }), ",")));
             }
