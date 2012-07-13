@@ -14,6 +14,23 @@
 		});
 		$("input#stepTwo").show();
 	});
+
+
+	function insertTable(tableId){
+
+		var table = document.getElementById(tableId);
+
+		if(table.style.display == "none") {
+     		table.style.display = "inline";
+   		} else {
+			table.style.display = "none";
+		}
+	}
+
+	function getClickedTableById(key){
+		$('#details > table').hide();
+		$('#' + key + '_table').show();
+	}
 </script>
 
 <!-- normally you make one big form for the whole plugin-->
@@ -88,10 +105,14 @@
 								</br></br>1.You can either search for the term itself and it will become the searching tokens
 								</br></br>2.You can also give the definition for the term and this definition will become your searching tokens 
 								</br></br>Example: For term "Age", you can directly search Age or search "How old are you?"
-								</br></br>Define your term here: <input type="text" id="userDefinedQuery" name="userDefinedQuery" size="25" value="">
+								</br></br>Define your term here: <input type="text" id="userDefinedQuery" name="userDefinedQuery" size="25" value="${screen.getUserDefinedQuery()}">
 								</br></br>You can set your cut off value (%) here:  <input type="text" name="cutOffValue" size="5"> e.g. 50
 								</br></br><input type="submit" style="font-size: larger" name="customizedSearch" value="customized search" onclick="__action.value='customizedSearch';"/></br></br>
-								<script>$('#userDefinedQuery').attr('value', $('#selectParameter').val());</script>
+								<script>
+									if($('#userDefinedQuery').attr('value') === ""){
+										$('#userDefinedQuery').attr('value', $('#selectParameter').val());
+									}
+								</script>
 								<table>
 									<tr>
 										<td>
@@ -120,8 +141,8 @@
 							</i></font></td>
 						</tr>
 					</table>
-					</br><input type="submit" value="back to mapping" id="backToMapping" name="backToMapping" onclick="__action.value='backToMapping';" />
-						
+					</br><input type="submit" value="back to mapping" 
+						id="backToSelection" name="backToSelection" onclick="__action.value='backToSelection';" />
 				</#if>
 			</div>
 		</div>

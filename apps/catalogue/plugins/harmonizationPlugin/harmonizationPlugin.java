@@ -252,11 +252,9 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						//OWLRDFVocabulary.RDFS_COMMENT.getIRI().toString(), 
 						owlFunction.labelMapURI(listOfParameters, "alternative_term");
 						expandedQueries = owlFunction.getExpandedQueries();
-						expandedQueries.remove("Prediction Model");
-						expandedQueries.remove("Composite");
 						separator = owlFunction.getSeparator();
 					}
-
+					
 					this.stringMatching(listOfParameters, separator, request, false);
 					
 //					listOfScripts.clear();
@@ -622,7 +620,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				expandedQuery.add(eachParameter.toLowerCase());
 			}
 			
-			if(eachParameter.equals("Body Mass Index")){
+			if(expandedQuery.contains("Prediction Model")){
 				System.out.println();
 			}
 			

@@ -277,6 +277,10 @@ public class OWLFunction {
 			temp.add(labelOfClass);
 
 			temp = removeDuplication(temp);
+			
+			temp.remove("Prediction Model");
+			
+			temp.remove("Composite");
 
 			expandedQueries.put(labelOfClass, temp);
 		}

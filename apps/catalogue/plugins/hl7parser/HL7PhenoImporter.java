@@ -18,6 +18,7 @@ import org.molgenis.protocol.Protocol;
 
 import plugins.hl7parser.GenericDCM.HL7ObservationDCM;
 import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
+import plugins.hl7parser.GenericDCM.HL7ValueSetDCM;
 import plugins.hl7parser.StageLRA.HL7ObservationLRA;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
 import plugins.hl7parser.StageLRA.HL7ValueSetAnswerLRA;
@@ -25,10 +26,6 @@ import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
 import app.DatabaseFactory;
 
 public class HL7PhenoImporter {
-
-	String file1 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/Catalog-EX04.xml";
-	//		String file2 = "/Users/pc_iverson/Desktop/input/Catalog-EX03-valuesets.xml";
-	String file2 = "/Users/roankanninga/Work/IBDParelsnoer/HL7/Catalog-EX04-valuesets.xml";
 
 	//Read file, fill arraylists
 	
@@ -302,13 +299,16 @@ public class HL7PhenoImporter {
 			uniqueListOfProtocolName = new ArrayList<String>();
 
 			listOfProtocolIds = new ArrayList<Integer>();
-
+			
+			HashMap<String,HL7ValueSetDCM> hashValueSetDCM = ll.getHashValueSetDCM();
+			
 			if(ll.getHl7GenericDCM() != null){
 
 				
 				for(HL7OrganizerDCM organizer : ll.getHL7OrganizerDCM()){
 
 					System.out.println(organizer.getHL7OrganizerNameDCM());
+					
 					Protocol protocol = new Protocol();
 					protocol.setName(organizer.getHL7OrganizerNameDCM().trim());
 					protocol.setInvestigation(inv);
@@ -338,7 +338,7 @@ public class HL7PhenoImporter {
 						}else{
 							m.setDataType("string");
 						}
-
+						
 						List<Integer> listOfOntologyTermIDs = addingOntologyTerm(meas.getHl7OntologyTerms(), db);
 
 						m.setOntologyReference_Id(listOfOntologyTermIDs);
@@ -347,6 +347,8 @@ public class HL7PhenoImporter {
 							uniqueListOfMeasurementNames.add(m.getName());
 							uniqueListOfMeasurements.add(m);
 						}
+						
+						ll.getHl7GenericDCM()
 						
 						protocolFeature.add(m.getName());
 					}
