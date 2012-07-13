@@ -57,14 +57,14 @@ public class JQGridView extends HtmlWidget {
      * {@link TupleTable}.</li> <li>Select and render the data.</li> </ul>
      */
     public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
-        try {
+		try {
+			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+			
             if (StringUtils.equals(request.getString(OPERATION), LOAD_TREE)) {
-                final TupleTable tupleTable = tupleTableBuilder.create(db, request);
 				JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
             } else if (StringUtils.equals(request.getString(OPERATION), LOAD_CONFIG)) {
-                loadTupleTableConfig(db, (MolgenisRequest)request);
+                loadTupleTableConfig(db, (MolgenisRequest)request, tupleTable);
             } else {
-                final TupleTable tupleTable = tupleTableBuilder.create(db, request);
                 final List<QueryRule> rules = new ArrayList<QueryRule>();
                 final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(request);
 
@@ -103,11 +103,8 @@ public class JQGridView extends HtmlWidget {
                 
                 renderData(((MolgenisRequest) request).getRequest(), ((MolgenisRequest) request).getResponse(), page,
                         totalPages, tupleTable);
-
-                tupleTable.close();
             }
-
-
+			tupleTable.close();
         } catch (Exception e) {
             throw new HandleRequestDelegationException(e);
         }
@@ -276,8 +273,7 @@ public class JQGridView extends HtmlWidget {
         }
     }
 
-    public void loadTupleTableConfig(Database db, MolgenisRequest request) throws TableException, IOException {
-        final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+    public void loadTupleTableConfig(Database db, MolgenisRequest request, TupleTable tupleTable) throws TableException, IOException {
         final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
         final String jqJsonConfig = new Gson().toJson(config);
         request.getResponse().getOutputStream().println(jqJsonConfig);
