@@ -408,7 +408,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
 
-				if(protocolName.equals("GenericDCM")){
+				if(protocolName.equalsIgnoreCase("GenericDCM")){
 					childTree.setCheckBox(true);
 				}
 				//				else{

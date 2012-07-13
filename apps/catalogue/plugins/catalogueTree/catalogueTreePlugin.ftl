@@ -257,6 +257,11 @@
 							 }
 						});
  					});
+ 					$('#GenericDCM').find('li').each(function(){
+ 						if($(this).find('li').length == 0){
+ 							$(this).find(':checkbox').attr('disabled','true');
+ 						}
+ 					});
  				</script>
 			</div>
 		</div>
