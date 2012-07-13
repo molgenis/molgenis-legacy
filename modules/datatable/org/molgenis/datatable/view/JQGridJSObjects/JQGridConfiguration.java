@@ -37,7 +37,7 @@ public class JQGridConfiguration {
         jsonReader.put("id", idField);
         
         for(final Field f : tupleTable.getColumns()) {
-            colModel.add(new JQGridField(f.getName(), f.getName()));
+            colModel.add(new JQGridField(f));
             colNames.add(f.getName());
         }
     }

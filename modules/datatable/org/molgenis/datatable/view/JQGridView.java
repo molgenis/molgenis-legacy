@@ -32,10 +32,12 @@ import org.molgenis.util.Tuple;
 
 public class JQGridView extends HtmlWidget {
 	public static final String OPERATION = "Operation";
-    //make enum
-	public static final String LOAD_CONFIG = "loadConfig";
-	public static final String LOAD_TREE = "loadTree";
     
+	private enum Operation {
+		LOAD_TREE,
+		LOAD_CONFIG,
+		RENDER_DATA
+	}
 
     public interface TupleTableBuilder {
         public TupleTable create(Database db, Tuple request) throws TableException;
@@ -59,10 +61,15 @@ public class JQGridView extends HtmlWidget {
     public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
 		try {
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+			final String opRequest =  request.getString(OPERATION);
 			
-            if (StringUtils.equals(request.getString(OPERATION), LOAD_TREE)) {
+			final Operation operation = StringUtils.isNotEmpty(opRequest) ? 
+					Operation.valueOf(opRequest) :
+					Operation.RENDER_DATA;
+			
+            if (operation == Operation.LOAD_TREE) {
 				JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
-            } else if (StringUtils.equals(request.getString(OPERATION), LOAD_CONFIG)) {
+            } else if (operation == Operation.LOAD_CONFIG) {
                 loadTupleTableConfig(db, (MolgenisRequest)request, tupleTable);
             } else {
                 final List<QueryRule> rules = new ArrayList<QueryRule>();
@@ -76,16 +83,13 @@ public class JQGridView extends HtmlWidget {
                 }
 
                 final int limit = request.getInt("rows");
-                int rowCount = tupleTable.getCount();
+                final int rowCount = tupleTable.getCount();
                 tupleTable.close(); // Not nice! We should fix this!
-                int totalPages = (int) Math.ceil(rowCount / limit);
-                int page = Math.min(request.getInt("page"), totalPages);
-                int offset = Math.max(limit * page - limit, 0);
-
-                int rowLimit = request.getInt("rows");
+                final int totalPages = (int) Math.ceil(rowCount / limit);
+                final int page = Math.min(request.getInt("page"), totalPages);
+                final int offset = Math.max(limit * page - limit, 0);
                 
-                
-                tupleTable.setLimit(rowLimit);
+                tupleTable.setLimit(limit);
                 tupleTable.setOffset(offset);
                 final String sortOrder = request.getString("sord");
                 final String sortField = request.getString("sidx");
@@ -277,8 +281,6 @@ public class JQGridView extends HtmlWidget {
         final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
         final String jqJsonConfig = new Gson().toJson(config);
         request.getResponse().getOutputStream().println(jqJsonConfig);
-        //writer.append(jqJsonConfig);
-        //writer.close();
     }
 
     /**

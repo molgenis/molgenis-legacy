@@ -131,7 +131,7 @@ function createTree() {
 
 $(document).ready(function() {
     configUrl = "${url}";
-    $.ajax(configUrl + "&Operation=loadConfig").done(function(data) {
+    $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
         grid = JQGridView.init("table#${tableId}", "#${tableId}Pager", config);
 
@@ -144,6 +144,7 @@ $(document).ready(function() {
 		$( "#dialog-form" ).dialog('open');
 	});
 });
+
 </script>
 
 <div id="treeBox">
@@ -163,7 +164,7 @@ $(document).ready(function() {
 	            <input type="radio" name="viewType" value="CSV">Csv<br> 
 	            <label>Export option</label><br>
 	            <input type="radio" name="exportSelection" value="ALL" checked>All rows<br>
-	            <input type="radio" name="exportSelection" value="GRID">Visible rows rows<br> 
+	            <input type="radio" name="exportSelection" value="GRID">Visible rows<br> 
 		</fieldset>
 		</form>
 	</div>
