@@ -18,6 +18,7 @@ import org.molgenis.protocol.Protocol;
 
 import plugins.hl7parser.GenericDCM.HL7ObservationDCM;
 import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
+import plugins.hl7parser.GenericDCM.HL7ValueSetAnswerDCM;
 import plugins.hl7parser.GenericDCM.HL7ValueSetDCM;
 import plugins.hl7parser.StageLRA.HL7ObservationLRA;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
@@ -348,7 +349,14 @@ public class HL7PhenoImporter {
 							uniqueListOfMeasurements.add(m);
 						}
 						
-						ll.getHl7GenericDCM();
+						HL7ValueSetDCM valueSet = hashValueSetDCM.get(meas.getDisplayName());
+						//
+						for(HL7ValueSetAnswerDCM eachAnswer : valueSet.getListOFAnswers()){
+							
+							String categoryName = eachAnswer.getName();
+
+						
+						}
 						
 						protocolFeature.add(m.getName());
 					}

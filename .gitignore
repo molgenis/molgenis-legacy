@@ -38,4 +38,4 @@ log*
 logger.out*
 /dist
 /.settings/org.eclipse.wst.common.component
-PropertiesPath.java
+/apps/catalogue/plugins/hl7parser/PropertiesPath.java
