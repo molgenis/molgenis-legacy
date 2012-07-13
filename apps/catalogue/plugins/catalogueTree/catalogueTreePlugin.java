@@ -721,14 +721,19 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			String missingCategory = "<tr><td  class='box-body-label'>Missing category:</td><td><table>";
 
 			for (Category c : listOfCategory) {
-
+				
+				String codeString = c.getCode_String();
+				
+				if(!codeString.equals("")){
+					codeString += " = ";
+				}
 				if(!c.getIsMissing()){
 					htmlValue += "<tr><td>";
-					htmlValue += c.getCode_String() + " = " + c.getDescription();
+					htmlValue += codeString + c.getDescription();
 					htmlValue += "</td></tr>";
 				}else{
 					missingCategory += "<tr><td>";
-					missingCategory += c.getCode_String() + " = " + c.getDescription();
+					missingCategory += codeString + c.getDescription();
 					missingCategory += "</td></tr>";
 				}
 			}
