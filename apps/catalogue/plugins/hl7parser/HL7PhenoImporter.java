@@ -309,6 +309,7 @@ public class HL7PhenoImporter {
 				for(HL7OrganizerDCM organizer : ll.getHL7OrganizerDCM()){
 
 					System.out.println(organizer.getHL7OrganizerNameDCM());
+					
 					Protocol protocol = new Protocol();
 					protocol.setName(organizer.getHL7OrganizerNameDCM().trim());
 					protocol.setInvestigation(inv);
