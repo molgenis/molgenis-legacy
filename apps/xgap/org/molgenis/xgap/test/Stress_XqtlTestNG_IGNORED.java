@@ -77,7 +77,7 @@ public class Stress_XqtlTestNG_IGNORED
 		
 		//start webserver
 		webserverport = Helper.getAvailablePort(11040, 10);
-		new RunStandalone(webserverport, true);
+		new RunStandalone(webserverport);
 	}
 	
 	@AfterClass(alwaysRun = true)
