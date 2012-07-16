@@ -17,6 +17,7 @@ import org.apache.commons.dbutils.ResultSetIterator;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.db.Database;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
@@ -269,4 +270,65 @@ public class QueryTable extends AbstractFilterableTupleTable {
             throw new TableException(ex);
         }
     }
+
+	@Override
+	public void setOffset(int offset)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getColCount() throws TableException
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getColLimit()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setColLimit(int limit)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getColOffset()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setColOffset(int offset)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setDb(Database db)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setVisibleColumns(List<String> fieldNames) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Field> getVisibleColumns() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

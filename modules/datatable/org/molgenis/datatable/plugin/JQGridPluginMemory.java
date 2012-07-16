@@ -32,7 +32,7 @@ public class JQGridPluginMemory extends EasyPluginController<JQGridPluginMemory>
 		try
 		{
 			//only this line changed ...
-			TupleTable table = MemoryTableFactory.create(51);
+			TupleTable table = MemoryTableFactory.create(51,25);
 			tableView = new JQGridTableView("test", this, table);
 			tableView.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
 		}

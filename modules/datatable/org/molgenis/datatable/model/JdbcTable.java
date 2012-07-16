@@ -24,7 +24,8 @@ public class JdbcTable extends AbstractFilterableTupleTable {
 	private final String countQuery;
 	private boolean loaded = false;
 
-	public JdbcTable(Database db, String query, List<QueryRule> rules) {
+	public JdbcTable(Database db, String query, List<QueryRule> rules) throws TableException
+	{
 		super();
 		this.db = db;
 		this.query = query;
@@ -143,5 +144,12 @@ public class JdbcTable extends AbstractFilterableTupleTable {
 	public List<Field> getVisibleColumns() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public void setDb(Database db)
+	{
+		this.db = db;
 	}
 }
