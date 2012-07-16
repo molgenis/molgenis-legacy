@@ -93,7 +93,7 @@ else
 	#Check build of arraydata by taking rs10001565 and checking the position on chr1
 	position=`awk '$3 == "rs10001565" {print $2}' ${sample}.genotypeArray.vcf`
 	
-	if [ $position == 15331671 ]
+	if [ ! -z $position ] && [ $position == 15331671 ]
 	then # File is on build36
 	
 		##Align vcf to reference AND DO NOT FLIP STRANDS!!! (genotype data is already in forward-forward format) If flipping is needed use "-f" command before sample.genotype_array.vcf
