@@ -76,18 +76,18 @@ cp ${intermediatedir}/*.coverage* ${projectResultsDir}/coverage
 
 <#list sample as s>
 
-	cp ${intermediatedir}/${s}.snps.final.vcf ${projectResultsDir}/snps
-	cp ${intermediatedir}/${s}.snps.final.vcf.table ${projectResultsDir}/snps
+	cp ${s}.snps.final.vcf ${projectResultsDir}/snps
+	cp ${s}.snps.final.vcf.table ${projectResultsDir}/snps
 
 
 	# Copy genotype array vcf to results directory
 
 	if [ -f "${s}.genotypeArray.updated.header.vcf" ]
 	then
-		cp ${intermediatedir}/${s}.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
+		cp ${s}.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
 	fi
 
-	cp ${intermediatedir}/${s}.concordance.ngsVSarray.txt ${projectResultsDir}/qc
+	cp ${s}.concordance.ngsVSarray.txt ${projectResultsDir}/qc
 
 </#list>
 
