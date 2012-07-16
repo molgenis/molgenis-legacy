@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.dbutils.ResultSetIterator;
-import org.apache.commons.lang.StringUtils;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -67,7 +66,6 @@ public class QueryTable extends AbstractFilterableTupleTable {
     @Override
     public List<Tuple> getRows() throws TableException {
         final List<Tuple> result = new ArrayList<Tuple>();
-        final Iterator<Tuple> iterator = iterator();
         for (final Iterator<Tuple> it = result.iterator(); it.hasNext();) {
             final Tuple tuple = it.next();
             result.add(tuple);
@@ -95,7 +93,8 @@ public class QueryTable extends AbstractFilterableTupleTable {
 
     private ResultSet rs = null;
     
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public Iterator<Tuple> iterator() {
         try {
             final Expression<?>[] selectArray = getSelectAsArray();
@@ -155,7 +154,8 @@ public class QueryTable extends AbstractFilterableTupleTable {
         return select;
     }
 
-    private static BooleanExpression getExpression(QueryRule rule,
+    @SuppressWarnings("unchecked")
+	private static BooleanExpression getExpression(QueryRule rule,
             final SimpleExpression<? extends Object> selectExpr, final Field column) throws ParseException {
         final Operator op = rule.getOperator();
         final MolgenisFieldTypes.FieldTypeEnum type = column.getType().getEnumType();
@@ -238,7 +238,8 @@ public class QueryTable extends AbstractFilterableTupleTable {
         return expr;
     }
 
-    private BooleanExpression convertQueryRulesToQueryExpression() throws TableException {
+    @SuppressWarnings("rawtypes")
+	private BooleanExpression convertQueryRulesToQueryExpression() throws TableException {
         try {
             final List<QueryRule> filters = super.getFilters();
             BooleanExpression expr = null;
@@ -261,23 +262,13 @@ public class QueryTable extends AbstractFilterableTupleTable {
                 } else {
                 	 final SimpleExpression<? extends Object> selectExpr = select.get(fieldName);
                      final Field column = getColumnByName(fieldName);
-                     final MolgenisFieldTypes.FieldTypeEnum type = column.getType().getEnumType();
                      final BooleanExpression rhs = getExpression(rule, selectExpr, column);
                      if (expr != null) {
                          expr = expr.and(rhs);
-//                     if (groupOp.equals("AND")) {
-//                         expr = expr.and(rhs);
-//                     } else if (groupOp.equals("OR")) {
-//                         expr = expr.or(rhs);
-//                     } else {
-//                         throw new IllegalArgumentException(String.format("Unkown groupOp: %s", groupOp));
-//                     }
                      } else {
                          expr = rhs;
                      }
                 }
-                
-               
             }
             return expr;
         } catch (Exception ex) {
