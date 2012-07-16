@@ -55,7 +55,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 //			JDBCTABLE, JOINTABLE, QUERYTABLE
 //		}
 
-		private final String backEnd = "JOINTABLE";
+		private final String backEnd = "QUERYTABLE";
 
 		@Override
 		public TupleTable create(Database db, Tuple request)
@@ -70,84 +70,14 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 					return createQueryTable(db, tableNames, columnNames);
 				} else if (backEnd.equals("JDBCTABLE")) {
 					return createJDBTable(db, tableNames, columnNames);
+				} else if (backEnd.equals("LIFELINES_VM_TEST")) {
+					return createLifelinesTestVMJoinTable(db, tableNames, columnNames);
 				} else {
 					return null;
 				}
 			} catch (Exception ex) {
 				throw new TableException(ex);
 			}
-
-			// if(CollectionUtils.isEmpty(columnNames)) {
-			// return new JdbcTable(db, "SELECT * FROM Country");
-			// } else {
-			// return new JdbcTable(db,
-			// String.format("SELECT %s FROM Country",StringUtils.join(columnNames,
-			// ",")));
-			// }
-			// try {
-			// final Connection connection = db.getConnection();
-			// final SQLTemplates dialect = new MySQLTemplates();
-			// final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
-			//
-			// boolean joinTable = true;
-			// if (joinTable) {
-			// if (CollectionUtils.isEmpty(tableNames)) {
-			// tableNames = Arrays.asList("Country", "City");
-			// }
-			//
-			// final List<JoinQueryTable.Join> joins = Arrays
-			// .asList(new JoinQueryTable.Join("Country",
-			// "Country.Code", "City", "City.CountryCode"));
-			// return new JoinQueryTable(query, tableNames, columnNames,
-			// joins, db);
-			// }
-			//
-			// PathBuilder<RelationalPath> country = new
-			// PathBuilder<RelationalPath>(
-			// RelationalPath.class, "Country");
-			// PathBuilder<RelationalPath> city = new
-			// PathBuilder<RelationalPath>(
-			// RelationalPath.class, "City");
-			// query.from(country, city).where(
-			// country.get("code").eq(city.get("countrycode")));
-			//
-			// final NumberPath<Integer> countryPopulation = country
-			// .get(new NumberPath<Integer>(Integer.class,
-			// "Population"));
-			// final NumberPath<Integer> cityPopulation = city
-			// .get(new NumberPath<Integer>(Integer.class,
-			// "Population"));
-			//
-			// final NumberExpression<Double> cityPopulationRatio =
-			// cityPopulation
-			// .divide(countryPopulation);
-			// query.where(country.get("code").eq(city.get("countrycode")));
-			// query.limit(10);
-			// query.orderBy(cityPopulationRatio.desc());
-			//
-			// // create select
-			// Field countryName = new Field("Country.Name");
-			// countryName.setType(new StringField());
-			// Field cityName = new Field("City.Name");
-			// cityName.setType(new StringField());
-			// Field ratio = new Field("ratio");
-			// ratio.setType(new DecimalField());
-			//
-			// LinkedHashMap<String, SimpleExpression<? extends Object>>
-			// selectMap = new LinkedHashMap<String, SimpleExpression<? extends
-			// Object>>();
-			// selectMap.put("Country.Name",
-			// country.get(new StringPath("name")));
-			// selectMap.put("City.Name", city.get(new StringPath("name")));
-			// selectMap.put("ratio", cityPopulationRatio);
-			// List<Field> columns = Arrays.asList(countryName, cityName,
-			// ratio);
-			// final QueryTable queryTable = new QueryTable(query, selectMap,
-			// columns);
-			// return queryTable;
-			// } catch (Exception ex) {
-			// throw new TableException(ex);
-			// }
 		}
 
 		private TupleTable createJDBTable(Database db, List<String> tableNames,
@@ -163,6 +93,22 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			} catch (Exception ex) {
 				throw new DatabaseException(ex);
 			}
+		}
+		
+		private TupleTable createLifelinesTestVMJoinTable(Database db,
+				List<String> tableNames, final List<String> columnNames) throws DatabaseException{
+			final Connection connection = db.getConnection();
+			final SQLTemplates dialect = new MySQLTemplates();
+			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
+
+			if (CollectionUtils.isEmpty(tableNames)) {
+				tableNames = Arrays.asList("BEZOEK", "BEZOEK1");
+			}
+
+			final List<JoinQueryTable.Join> joins = Arrays
+					.asList(new JoinQueryTable.Join("BEZOEK", "BEZOEK.BZ_ID",
+							"BEZOEK1", "BEZOEK1.BZ_ID"));
+			return new JoinQueryTable(query, tableNames, columnNames, joins, db);			
 		}
 
 		private TupleTable createJoinTable(Database db,
@@ -205,7 +151,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 					.divide(countryPopulation);
 			query.where(country.get("code").eq(city.get("countrycode")));
 			query.limit(10);
-			query.orderBy(cityPopulationRatio.desc());
+			//query.orderBy(cityPopulationRatio.desc());
 
 			// create select
 			Field countryName = new Field("Country.Name");

@@ -16,6 +16,7 @@ import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.expr.BooleanExpression;
+import com.mysema.query.types.expr.ComparableExpressionBase;
 import com.mysema.query.types.expr.NumberExpression;
 import com.mysema.query.types.expr.SimpleExpression;
 import com.mysema.query.types.expr.StringExpression;
@@ -241,28 +242,42 @@ public class QueryTable extends AbstractFilterableTupleTable {
         try {
             final List<QueryRule> filters = super.getFilters();
             BooleanExpression expr = null;
-            for (final QueryRule rule : filters) {
-
-                final String fieldName = rule.getField();
+            for (final QueryRule rule : filters) {                
                 final Operator op = rule.getOperator();
                 final String value = rule.getValue().toString();
-
-                final SimpleExpression<? extends Object> selectExpr = select.get(fieldName);
-                final Field column = getColumnByName(fieldName);
-                final MolgenisFieldTypes.FieldTypeEnum type = column.getType().getEnumType();
-                BooleanExpression rhs = getExpression(rule, selectExpr, column);
-                if (expr != null) {
-                    expr = expr.and(rhs);
-//                if (groupOp.equals("AND")) {
-//                    expr = expr.and(rhs);
-//                } else if (groupOp.equals("OR")) {
-//                    expr = expr.or(rhs);
-//                } else {
-//                    throw new IllegalArgumentException(String.format("Unkown groupOp: %s", groupOp));
-//                }
+                final String fieldName = rule.getField() == null ? value : rule.getField();
+                
+                if(op == Operator.LIMIT) {
+                	query.limit(Long.parseLong(value));
+                } else if(op == Operator.OFFSET) {
+                	query.offset(Long.parseLong(value));
+                } else if(op == Operator.SORTASC || op == Operator.SORTDESC) {
+                	final SimpleExpression<? extends Object> sortField = select.get(fieldName);
+                	if(op == Operator.SORTASC) {
+                		query.orderBy(((ComparableExpressionBase)sortField).asc());
+                	} else {
+                		query.orderBy(((ComparableExpressionBase)sortField).desc());	
+                	}
                 } else {
-                    expr = rhs;
+                	 final SimpleExpression<? extends Object> selectExpr = select.get(fieldName);
+                     final Field column = getColumnByName(fieldName);
+                     final MolgenisFieldTypes.FieldTypeEnum type = column.getType().getEnumType();
+                     final BooleanExpression rhs = getExpression(rule, selectExpr, column);
+                     if (expr != null) {
+                         expr = expr.and(rhs);
+//                     if (groupOp.equals("AND")) {
+//                         expr = expr.and(rhs);
+//                     } else if (groupOp.equals("OR")) {
+//                         expr = expr.or(rhs);
+//                     } else {
+//                         throw new IllegalArgumentException(String.format("Unkown groupOp: %s", groupOp));
+//                     }
+                     } else {
+                         expr = rhs;
+                     }
                 }
+                
+               
             }
             return expr;
         } catch (Exception ex) {
