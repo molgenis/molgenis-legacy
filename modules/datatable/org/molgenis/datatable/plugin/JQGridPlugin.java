@@ -1,16 +1,5 @@
 package org.molgenis.datatable.plugin;
 
-import com.google.gson.Gson;
-import com.mysema.query.sql.MySQLTemplates;
-import com.mysema.query.sql.RelationalPath;
-import com.mysema.query.sql.SQLQueryImpl;
-import com.mysema.query.sql.SQLTemplates;
-import com.mysema.query.types.expr.NumberExpression;
-import com.mysema.query.types.expr.SimpleExpression;
-import com.mysema.query.types.path.NumberPath;
-import com.mysema.query.types.path.PathBuilder;
-import com.mysema.query.types.path.StringPath;
-
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -42,6 +31,16 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
+import com.mysema.query.sql.MySQLTemplates;
+import com.mysema.query.sql.RelationalPath;
+import com.mysema.query.sql.SQLQueryImpl;
+import com.mysema.query.sql.SQLTemplates;
+import com.mysema.query.types.expr.NumberExpression;
+import com.mysema.query.types.expr.SimpleExpression;
+import com.mysema.query.types.path.NumberPath;
+import com.mysema.query.types.path.PathBuilder;
+import com.mysema.query.types.path.StringPath;
+
 /**
  * View data in a matrix.
  */
@@ -57,8 +56,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 		private final String backEnd = "JOINTABLE";
 
 		@Override
-		public TupleTable create(Database db, Tuple request)
-				throws TableException {
+		public TupleTable create(Database db, Tuple request) throws TableException {
 			List<String> tableNames = new ArrayList<String>();
 			final List<String> columnNames = new ArrayList<String>();
 			getTableAndColumnNames(request, tableNames, columnNames, true);
@@ -94,7 +92,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 		private TupleTable createJoinTable(Database db,
 				List<String> tableNames, final List<String> columnNames)
-				throws DatabaseException {
+						throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
@@ -111,7 +109,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 		private TupleTable createQueryTable(Database db,
 				List<String> tableNames, final List<String> columnNames)
-				throws DatabaseException {
+						throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
@@ -195,11 +193,11 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 	@Override
 	public void reload(Database db) {
-		// all request completly recreate grid
+		// all requests completely recreate grid
 	}
 
 	// handling of the ajax; should be auto-wired via the JQGridTableView
-	// contructor (TODO)
+	// Constructor (TODO)
 	public void download_json(Database db, Tuple request, OutputStream out) {
 		final JQGridView jqGridView = new JQGridView(super.getName(),
 				tupleTableBuilder);
