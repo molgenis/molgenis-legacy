@@ -20,14 +20,25 @@ var JQGridView = {
     tableSelector : null,
     pagerSelector : null,
     config : null,
+    tree : null,
+    colModel : null, 
     
     init: function(tableSelector, pagerSelector, config) {
+    	var self = JQGridView;
+    
         this.tableSelector = tableSelector;
         this.pagerSelector = pagerSelector;
         this.config = config;
+        this.colModel = this.config.colModel;
         
         this.grid = this.createJQGrid();
         this.createDialog();
+
+		//load & create Tree
+	    $.getJSON(configUrl + "&Operation=LOAD_TREE")   
+	    .done(function(data) { 
+	    	 self.tree = self.createTree(data);   
+	    });
         
         return JQGridView;
     },
@@ -91,59 +102,64 @@ var JQGridView = {
 		    close: function() {
 		    }
 		});
+	},
+	
+	createTree : function(nodes) {
+		var self = JQGridView;
+		return $("#tree3").dynatree({
+			checkbox: true,
+			selectMode: 3,
+			children: nodes,
+			onSelect: function(select, node) {
+				// Get a list of all selected nodes, and convert to a key array:
+				var selectedColModel = new Array();        
+				var selectedColumns = node.tree.getSelectedNodes();
+				for(i = 0; i < selectedColumns.length; ++i) {
+					var treeNode = selectedColumns[i].data;
+
+					if(!treeNode.isFolder) {
+						colModelNode = $.grep(self.colModel, function(item){
+      							return item.path == treeNode.path;
+							});
+						selectedColModel.push(colModelNode[0]);
+					}
+				}
+				grid.changeColumns(selectedColModel);        
+			},
+			onDblClick: function(node, event) {
+				node.toggleSelect();
+			},
+			onKeydown: function(node, event) {
+				if( event.which == 32 ) {
+				node.toggleSelect();
+				return false;
+				}
+			},
+			// The following options are only required, if we have more than one tree on one page:
+		//        initId: "treeData",
+			cookieId: "dynatree-Cb3",
+			idPrefix: "dynatree-Cb3-"
+		});
 	}
 }
 
 
-function createTree() {
-	$("#tree3").dynatree({
-		checkbox: true,
-		selectMode: 3,
-		children: config.colModel,
-		onSelect: function(select, node) {
-			// Get a list of all selected nodes, and convert to a key array:
-			var selectedColModel = new Array();        
-			var selectedColumns = node.tree.getSelectedNodes();
-			for(i = 0; i < selectedColumns.length; ++i) {
-				var x = selectedColumns[i].data;
-				if(!x.isFolder) {
-					selectedColModel.push(x);
-				}
-			}
-			grid.changeColumns(selectedColModel);        
-		},
-		onDblClick: function(node, event) {
-			node.toggleSelect();
-		},
-		onKeydown: function(node, event) {
-			if( event.which == 32 ) {
-			node.toggleSelect();
-			return false;
-			}
-		},
-		// The following options are only required, if we have more than one tree on one page:
-	//        initId: "treeData",
-		cookieId: "dynatree-Cb3",
-		idPrefix: "dynatree-Cb3-"
-	});
-}
+
 
 
 $(document).ready(function() {
     configUrl = "${url}";
-    $.ajax(configUrl + "&Operation=loadConfig").done(function(data) {
+    
+    //load JQGrid configuration and creates grid
+    $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
         grid = JQGridView.init("table#${tableId}", "#${tableId}Pager", config);
-
-		createTree();
-
-		
     });
-
 	$('#exportButton').click(function() {
 		$( "#dialog-form" ).dialog('open');
 	});
 });
+
 </script>
 
 <div id="treeBox">
@@ -163,7 +179,7 @@ $(document).ready(function() {
 	            <input type="radio" name="viewType" value="CSV">Csv<br> 
 	            <label>Export option</label><br>
 	            <input type="radio" name="exportSelection" value="ALL" checked>All rows<br>
-	            <input type="radio" name="exportSelection" value="GRID">Visible rows rows<br> 
+	            <input type="radio" name="exportSelection" value="GRID">Visible rows<br> 
 		</fieldset>
 		</form>
 	</div>

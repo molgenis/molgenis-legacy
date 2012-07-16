@@ -434,5 +434,4 @@ public class JQGridTableView extends HtmlWidget
 		public int id;
 		public List<String> cell = new ArrayList<String>();
 	}
->>>>>>> 4f7603d262ec899d83aca1b1a1caf2acac24a291
 }

@@ -32,10 +32,12 @@ import org.molgenis.util.Tuple;
 
 public class JQGridView extends HtmlWidget {
 	public static final String OPERATION = "Operation";
-    //make enum
-	public static final String LOAD_CONFIG = "loadConfig";
-	public static final String LOAD_TREE = "loadTree";
     
+	private enum Operation {
+		LOAD_CONFIG,
+		RENDER_DATA, 
+		LOAD_TREE
+	}
 
     public interface TupleTableBuilder {
         public TupleTable create(Database db, Tuple request) throws TableException;
@@ -57,14 +59,21 @@ public class JQGridView extends HtmlWidget {
      * {@link TupleTable}.</li> <li>Select and render the data.</li> </ul>
      */
     public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
-        try {
-            if (StringUtils.equals(request.getString(OPERATION), LOAD_TREE)) {
-                final TupleTable tupleTable = tupleTableBuilder.create(db, request);
-				JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
-            } else if (StringUtils.equals(request.getString(OPERATION), LOAD_CONFIG)) {
-                loadTupleTableConfig(db, (MolgenisRequest)request);
+		try {
+			final HttpServletResponse response = ((MolgenisRequest) request).getResponse();
+			
+			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+			final String opRequest =  request.getString(OPERATION);
+			
+			final Operation operation = StringUtils.isNotEmpty(opRequest) ? 
+					Operation.valueOf(opRequest) :
+					Operation.RENDER_DATA;
+			if (operation == Operation.LOAD_CONFIG) {
+                loadTupleTableConfig(db, (MolgenisRequest)request, tupleTable);
+			} else if (operation == Operation.LOAD_TREE) {
+                final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
+                response.getOutputStream().print(treeNodes);
             } else {
-                final TupleTable tupleTable = tupleTableBuilder.create(db, request);
                 final List<QueryRule> rules = new ArrayList<QueryRule>();
                 final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(request);
 
@@ -76,16 +85,13 @@ public class JQGridView extends HtmlWidget {
                 }
 
                 final int limit = request.getInt("rows");
-                int rowCount = tupleTable.getCount();
+                final int rowCount = tupleTable.getCount();
                 tupleTable.close(); // Not nice! We should fix this!
-                int totalPages = (int) Math.ceil(rowCount / limit);
-                int page = Math.min(request.getInt("page"), totalPages);
-                int offset = Math.max(limit * page - limit, 0);
-
-                int rowLimit = request.getInt("rows");
+                final int totalPages = (int) Math.ceil(rowCount / limit);
+                final int page = Math.min(request.getInt("page"), totalPages);
+                final int offset = Math.max(limit * page - limit, 0);
                 
-                
-                tupleTable.setLimit(rowLimit);
+                tupleTable.setLimit(limit);
                 tupleTable.setOffset(offset);
                 final String sortOrder = request.getString("sord");
                 final String sortField = request.getString("sidx");
@@ -101,13 +107,9 @@ public class JQGridView extends HtmlWidget {
                    ((FilterableTupleTable)tupleTable).setFilters(rules);
                 }
                 
-                renderData(((MolgenisRequest) request).getRequest(), ((MolgenisRequest) request).getResponse(), page,
-                        totalPages, tupleTable);
-
-                tupleTable.close();
+                renderData(((MolgenisRequest) request).getRequest(), response, page, totalPages, tupleTable);
             }
-
-
+			tupleTable.close();
         } catch (Exception e) {
             throw new HandleRequestDelegationException(e);
         }
@@ -276,13 +278,10 @@ public class JQGridView extends HtmlWidget {
         }
     }
 
-    public void loadTupleTableConfig(Database db, MolgenisRequest request) throws TableException, IOException {
-        final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+    public void loadTupleTableConfig(Database db, MolgenisRequest request, TupleTable tupleTable) throws TableException, IOException {
         final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
         final String jqJsonConfig = new Gson().toJson(config);
         request.getResponse().getOutputStream().println(jqJsonConfig);
-        //writer.append(jqJsonConfig);
-        //writer.close();
     }
 
     /**
@@ -297,7 +296,6 @@ public class JQGridView extends HtmlWidget {
         private final int total;
         @SuppressWarnings("unused")
         private final int records;
-        @SuppressWarnings("unused")
         private ArrayList<LinkedHashMap<String, String>> rows = new ArrayList<LinkedHashMap<String, String>>();
 
         public JQGridResult(int page, int total, int records) {
