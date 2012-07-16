@@ -39,8 +39,8 @@ import org.testng.annotations.Test;
 
 import regressiontest.cluster.DataLoader;
 import app.DatabaseFactory;
+import boot.Helper;
 import boot.RunStandalone;
-import core.Helper;
 import filehandling.storage.StorageHandler;
 
 /**
