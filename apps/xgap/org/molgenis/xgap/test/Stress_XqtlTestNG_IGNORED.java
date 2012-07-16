@@ -39,8 +39,8 @@ import org.testng.annotations.Test;
 
 import regressiontest.cluster.DataLoader;
 import app.DatabaseFactory;
+import boot.Helper;
 import boot.RunStandalone;
-import core.Helper;
 import filehandling.storage.StorageHandler;
 
 /**
@@ -77,7 +77,7 @@ public class Stress_XqtlTestNG_IGNORED
 		
 		//start webserver
 		webserverport = Helper.getAvailablePort(11040, 10);
-		new RunStandalone(webserverport, true);
+		new RunStandalone(webserverport);
 	}
 	
 	@AfterClass(alwaysRun = true)
