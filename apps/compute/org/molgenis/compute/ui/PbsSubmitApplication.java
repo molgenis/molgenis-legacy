@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeResource;
+import org.molgenis.compute.host.AbstractComputeHost;
+import org.molgenis.compute.host.Job;
+import org.molgenis.compute.host.Pbs;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FormModel;
@@ -16,8 +19,6 @@ import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
 import org.molgenis.framework.ui.html.StringInput;
 import org.molgenis.framework.ui.html.XrefInput;
-import org.molgenis.util.Pbs;
-import org.molgenis.util.PbsJob;
 import org.molgenis.util.Tuple;
 
 /**
@@ -30,8 +31,8 @@ public class PbsSubmitApplication extends
 	ComputeResource resource;
 	String username;
 	String password;
-	PbsJob currentjob;
-	Pbs pbs = null;
+	Job currentjob;
+	AbstractComputeHost pbs = null;
 
 	public PbsSubmitApplication(String name, ScreenController<?> parent)
 	{
@@ -71,7 +72,6 @@ public class PbsSubmitApplication extends
 	{
 		try
 		{
-
 			// on submit want to submit the script to the Pbs cluster
 			// cache host, username, password
 			this.resource = db.findById(ComputeResource.class, request
@@ -85,7 +85,7 @@ public class PbsSubmitApplication extends
 			ComputeJob app = parentForm.getCurrent();
 
 			// create the Job
-			currentjob = new PbsJob(app.getComputeScript());
+			currentjob = new Job(app.getComputeScript());
 			currentjob.setQueue(app.getQueue());
 			currentjob.setName("app" + System.currentTimeMillis());
 
@@ -150,13 +150,13 @@ public class PbsSubmitApplication extends
 				.getParent().getModel();
 		ComputeJob app = parentForm.getCurrent();
 
-		if (currentjob != null && currentjob.getState() != Pbs.State.COMPLETED)
+		if (currentjob != null && currentjob.getState() != AbstractComputeHost.JobState.COMPLETED)
 		{
 			if (pbs == null) pbs = new Pbs(this.resource.getName(), this.username,
 					this.password);
-			currentjob.refresh(pbs);
+			pbs.refresh(currentjob);
 
-			if (currentjob.getState().equals(Pbs.State.COMPLETED))
+			if (currentjob.getState().equals(AbstractComputeHost.JobState.COMPLETED))
 			{
 				app.setErrorFile(currentjob.getError_log());
 				app.setOutputFile(currentjob.getOutput_log());
