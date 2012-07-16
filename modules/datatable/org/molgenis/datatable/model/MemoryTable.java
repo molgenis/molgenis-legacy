@@ -13,7 +13,7 @@ import org.molgenis.util.Tuple;
  */
 public class MemoryTable extends AbstractTupleTable {
 
-	private List<Field> columns = new ArrayList<Field>();
+	private final List<Field> columns = new ArrayList<Field>();
 	private List<Tuple> rows = new ArrayList<Tuple>();
 
 	/**
@@ -25,8 +25,8 @@ public class MemoryTable extends AbstractTupleTable {
 
 		// use first row
 		if (rows.size() > 0) {
-			for (String field : rows.get(0).getFieldNames()) {
-				Field f = new Field(field);
+			for (final String field : rows.get(0).getFieldNames()) {
+				final Field f = new Field(field);
 				f.setType(new StringField());
 				columns.add(f);
 			}
@@ -35,17 +35,17 @@ public class MemoryTable extends AbstractTupleTable {
 
 	@Override
 	public List<Field> getColumns() {
-		return this.columns;
+		return columns;
 	}
 
 	@Override
 	public List<Tuple> getRows() {
 		if (getLimit() > 0 || getOffset() > 0) {
-			List<Tuple> result = new ArrayList<Tuple>();
+			final List<Tuple> result = new ArrayList<Tuple>();
 
 			int count = 0;
 			int index = 1;
-			for (Tuple row : this.rows) {
+			for (final Tuple row : rows) {
 				if (index > getOffset()) {
 					result.add(row);
 					count++;
@@ -53,11 +53,11 @@ public class MemoryTable extends AbstractTupleTable {
 						break;
 					}
 				}
-				index++;
+				++index;
 			}
 			return result;
 		} else {
-			return this.rows;
+			return rows;
 		}
 	}
 

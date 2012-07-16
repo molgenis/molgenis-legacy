@@ -13,20 +13,14 @@
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>    
     </properties>
 
-                
-                
-
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.molgenis</groupId>
     <artifactId>${name}</artifactId>
     <version>${version}</version>
     <packaging>war</packaging>
     <name>${name}</name>
 
-
     <dependencies>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -184,6 +178,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.6.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0</version>
         </dependency>
     </dependencies>
 

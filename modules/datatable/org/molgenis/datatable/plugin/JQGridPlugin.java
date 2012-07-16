@@ -2,9 +2,11 @@ package org.molgenis.datatable.plugin;
 
 import com.google.gson.Gson;
 import com.mysema.query.sql.MySQLTemplates;
+import com.mysema.query.sql.OracleTemplates;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
+import com.mysema.query.sql.oracle.OracleQuery;
 import com.mysema.query.types.expr.NumberExpression;
 import com.mysema.query.types.expr.SimpleExpression;
 import com.mysema.query.types.path.NumberPath;
@@ -55,7 +57,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 //			JDBCTABLE, JOINTABLE, QUERYTABLE
 //		}
 
-		private final String backEnd = "QUERYTABLE";
+		private final String backEnd = "LIFELINES_VM_TEST";
 
 		@Override
 		public TupleTable create(Database db, Tuple request)
@@ -115,7 +117,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 				List<String> tableNames, final List<String> columnNames)
 				throws DatabaseException {
 			final Connection connection = db.getConnection();
-			final SQLTemplates dialect = new MySQLTemplates();
+			final SQLTemplates dialect = new OracleTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
 			if (CollectionUtils.isEmpty(tableNames)) {
