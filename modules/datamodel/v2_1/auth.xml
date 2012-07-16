@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="org.molgenis">
 	<module name="auth">
-		<entity name="MolgenisRole" system="true" implements="Identifiable"
+		<entity name="MolgenisRole" system="true" implements="Autoid"
 			xref_label="name">
 			<field name="name" unique="true" />
 		</entity>
@@ -29,7 +29,7 @@
 			<field name="role_" type="xref" xref_field="MolgenisRole.id"
 				xref_label="name" />
 		</entity>
-		<entity name="MolgenisPermission" system="true" implements="Identifiable">
+		<entity name="MolgenisPermission" system="true" implements="Autoid">
 			<field name="role_" type="xref" xref_field="MolgenisRole.id"
 				xref_label="name" />
 			<field name="entity" type="xref" xref_field="MolgenisEntity.id" />

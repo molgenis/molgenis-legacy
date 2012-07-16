@@ -27,7 +27,7 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	
 
 
-	public JdbcTable(Database db, String query, List<QueryRule> rules)
+	public JdbcTable(Database db, String query, List<QueryRule> rules) throws TableException
 	{
 		super();
 		this.db = db;
@@ -180,5 +180,12 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public void setDb(Database db)
+	{
+		this.db = db;
 	}
 }
