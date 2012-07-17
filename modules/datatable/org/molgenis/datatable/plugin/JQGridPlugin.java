@@ -66,7 +66,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 
 	private static final long serialVersionUID = 8804579908239186037L;
 	private Container container = new Container();
-	private JQGridView gridView;
+	JQGridView gridView;
 
 	private final TupleTableBuilder tupleTableBuilder;
 
@@ -206,7 +206,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	 * </ul>
 	 */
 
-	private enum ExportRange
+	enum ExportRange
 	{
 		GRID, ALL, UNKOWN
 	}
@@ -300,7 +300,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		return null;
 	}
 
-	private void addSortOrderLimitOffset(Tuple request, QueryTable queryTable, int offset)
+	void addSortOrderLimitOffset(Tuple request, QueryTable queryTable, int offset)
 	{
 		final int limit = request.getInt("rows");
 		final String sidx = request.getString("sidx");
@@ -337,7 +337,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	 * @param tupleTable
 	 *            The table from which to render the data.
 	 */
-	private void renderData(HttpServletRequest request, HttpServletResponse response, int page, int totalPages,
+	void renderData(HttpServletRequest request, HttpServletResponse response, int page, int totalPages,
 			final TupleTable tupleTable) throws TableException
 	{
 
@@ -435,7 +435,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void addFilters(final Tuple request, final QueryTable queryTable) throws TableException
+	static void addFilters(final Tuple request, final QueryTable queryTable) throws TableException
 	{
 		try {
 			final SQLQuery query = queryTable.getQuery();
