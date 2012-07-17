@@ -2,7 +2,6 @@ package org.molgenis.datatable.model;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,28 +64,10 @@ public class QueryTable extends AbstractFilterableTupleTable {
 	@Override
 	public List<Tuple> getRows() throws TableException {
 		final List<Tuple> result = new ArrayList<Tuple>();
-		for (final Tuple tuple : result) {
+		for (final Tuple tuple : this) {
 			result.add(tuple);
 		}
 		return result;
-	}
-
-	/**
-	 * Convert the {@link Collection} of values in the select field to an array
-	 * of {@link Expression}s, for use in the {@link SQLQuery.list()} function.
-	 * 
-	 * @return The array of expressions.
-	 */
-	private Expression<?>[] getSelectAsArray() {
-		final Collection<SimpleExpression<?>> values = select.values();
-		final int valSize = values.size();
-		final Expression<?>[] selectArray = new Expression<?>[valSize];
-		int idx = 0;
-		for (final SimpleExpression<? extends Object> simpleExpression : values) {
-			selectArray[idx] = simpleExpression;
-			++idx;
-		}
-		return selectArray;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -110,7 +91,6 @@ public class QueryTable extends AbstractFilterableTupleTable {
 			if (where != null) {
 				query.where(where);
 			}
-			// query.limit(10);
 
 			rs = query.iterate(selectArray);
 			return IteratorUtils.transformedIterator(rs, new Transformer() {

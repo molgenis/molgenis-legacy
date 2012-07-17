@@ -9,7 +9,7 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
 import org.testng.annotations.BeforeClass;
 
-public class testFilterableTupleTable
+public class TestFilterableTupleTable
 {
 
 	class MockFilterableTupleTable extends AbstractFilterableTupleTable {
