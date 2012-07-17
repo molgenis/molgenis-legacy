@@ -1,0 +1,40 @@
+## Build folders
+bin/
+build/
+tmp/
+hsqldb/
+handwritten/
+
+## Always ignore these
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+*.passwd
+
+## Netbeans private
+nbproject/private/
+
+## General java
+*.class
+
+## Other ignored files
+*.so
+*.si
+*.dll
+*.o
+*.tmp
+tmp*
+log*
+.classpath
+/.externalToolBuilders
+*.svn
+*.orig
+*.java~
+/bin
+/test-output
+/target
+logger.out*
+/dist
+/.settings/org.eclipse.wst.common.component
