@@ -29,7 +29,6 @@ public class QuestionsModel extends EasyPluginModel
 	String state = "";
 	
 	
-	
 	public QuestionsModel(Questions controller)
 	{
 		//each Model can access the controller to notify it when needed.

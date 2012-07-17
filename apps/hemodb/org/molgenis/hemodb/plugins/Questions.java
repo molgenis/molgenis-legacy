@@ -1,13 +1,14 @@
 package org.molgenis.hemodb.plugins;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.ListIterator;
+//import java.util.Map.Entry;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
+//import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -16,10 +17,10 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.hemodb.HemoSample;
 import org.molgenis.hemodb.HemoSampleGroup;
-import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.Individual;
-import org.molgenis.pheno.ObservedValue;
-import org.molgenis.protocol.Protocol;
+//import org.molgenis.organization.Investigation;
+//import org.molgenis.pheno.Individual;
+//import org.molgenis.pheno.ObservedValue;
+//import org.molgenis.protocol.Protocol;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -53,6 +54,7 @@ public class Questions extends EasyPluginController<QuestionsModel>{
 	@Override
 	public void reload(Database db) throws Exception{
 		if(getModel().state.equals("")){
+			System.out.println("bladieblabla");
 			selectSampleGroupsForDropdown(db);
 			System.out.println("NOT filled");
 			getModel().setState("filled");
@@ -100,16 +102,11 @@ public class Questions extends EasyPluginController<QuestionsModel>{
 			}
 			
 //			SAMPLE SELECTION BASED ON SAMPLE GROUP NAMES -> Gets the selected groups from the website and retrieves the associated samples
-			// TODO check which are checked
 			// TODO select these groups in data matrix
 			List<String> groups = request.getStringList("sampleGroups");
 			System.out.println(groups);
-			int numberGroups = groups.size();
-			System.out.println("number of groups: " + numberGroups);
-			
-//					String beestje = "sample1";
-//					List<HemoSample> x = db.find(HemoSample.class, new QueryRule(HemoSample.SAMPLEGROUP, Operator.EQUALS,
-//							beestje));
+			selectSamplesFromSampleGroups(db, groups);
+
 					// (db.find(Investigation.class, new QueryRule(Investigation.NAME,
 					// Operator.EQUALS, investigationName)).size() == 0);
 //					for (HemoSample h : x){
@@ -127,7 +124,7 @@ public class Questions extends EasyPluginController<QuestionsModel>{
 			}
 			else{
 				System.out.println("Something went wrong, try again.");
-			}
+			}// jvkWu7V5 
 		}
 
 		// TODO show selected data
@@ -140,11 +137,7 @@ public class Questions extends EasyPluginController<QuestionsModel>{
 	
 	public void selectSampleGroupsForDropdown(Database db) throws DatabaseException{
 //		SELECTION OF ALL THE SAMPLE GROUPS IN THE DATABASE
-		// get all the HemoSampleGroups from database -> List <HemoSampleGroup> sampleGroups
-		// make a list of all the groups -> ArrayList <String> names
-		// make a dropdown/multiple selection field -> see QuestionsModel & QuestionsView
 		List <HemoSampleGroup> sampleGroups = db.find(HemoSampleGroup.class);
-
 		if(sampleGroups != null){
 			for (HemoSampleGroup hsg : sampleGroups){
 				String name = hsg.getName();
@@ -152,7 +145,24 @@ public class Questions extends EasyPluginController<QuestionsModel>{
 			}
 		}
 		else{
-			System.out.println("OOPS! SOMETHING WENT WRONG");
+			System.out.println("OOPS! SOMETHING WENT WRONG"); //hier klopt iets niet, nu ook nog niet
 		}
 	}
+	
+	public void selectSamplesFromSampleGroups(Database db, List<String> sampleGroups) throws DatabaseException{
+		int numberGroups = sampleGroups.size();
+		System.out.println("number of groups: " + numberGroups);
+		for (String hsg : sampleGroups){
+			List <HemoSample> samplesPerGroup = db.find(HemoSample.class, new QueryRule(HemoSample.SAMPLEGROUP_NAME, Operator.EQUALS, hsg));
+			System.out.println("sampleGroup is: " + hsg + "\n");
+			System.out.println("samples in this group are: " + "\n");
+			ListIterator<HemoSample> blaat = samplesPerGroup.listIterator(); // TODO RENAME!!!!
+			while(blaat.hasNext()){
+				System.out.println(blaat.next().getName());
+			}
+		}	
+	}
+	//					String beestje = "sample1";
+//	List<HemoSample> x = db.find(HemoSample.class, new QueryRule(HemoSample.SAMPLEGROUP, Operator.EQUALS,
+//	beestje));
 }
