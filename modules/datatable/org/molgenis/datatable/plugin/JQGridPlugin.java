@@ -60,7 +60,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 		//			JDBCTABLE, JOINTABLE, QUERYTABLE
 		//		}
 
-		private final String backEnd = "LIFELINES_VM_TEST";
+		private final String backEnd = "JOINTABLE";
 
 		@Override
 		public TupleTable create(Database db, Tuple request)
@@ -122,16 +122,19 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 				List<String> tableNames, final List<String> columnNames)
 						throws DatabaseException {
 			final Connection connection = db.getConnection();
-			final SQLTemplates dialect = new OracleTemplates();
+			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
 			if (CollectionUtils.isEmpty(tableNames)) {
 				tableNames = Arrays.asList("Country", "City");
 			}
 
-			final List<JoinQueryTable.Join> joins = Arrays
-					.asList(new JoinQueryTable.Join("Country", "Country.Code",
-							"City", "City.CountryCode"));
+			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
+			if(tableNames.size() == 2) {
+				joins = Arrays
+						.asList(new JoinQueryTable.Join("Country", "Code",
+								"City", "CountryCode"));
+			}
 			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
 		}
 
