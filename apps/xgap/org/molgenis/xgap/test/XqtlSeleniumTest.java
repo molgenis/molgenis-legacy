@@ -17,13 +17,13 @@ import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
 import app.servlet.UsedMolgenisOptions;
+import boot.Helper;
 import boot.RunStandalone;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.HttpCommandProcessor;
 import com.thoughtworks.selenium.Selenium;
 
-import core.Helper;
 import filehandling.storage.StorageHandler;
 
 /**
