@@ -62,6 +62,11 @@ public class QueryTable extends AbstractFilterableTupleTable {
 	}
 
 	@Override
+	public void setFilters(List<QueryRule> rules) {
+		throw new UnsupportedOperationException("Unable to directly set filters on QueryTable; create a new one instead");
+	}
+
+	@Override
 	public List<Tuple> getRows() throws TableException {
 		final List<Tuple> result = new ArrayList<Tuple>();
 		for (final Tuple tuple : this) {
