@@ -1,0 +1,5 @@
+Name,defaultValue,description,dataType,hasOne_name
+clusterQueue,umcg,,,
+root,/target/gpfs2/gcc,the root to your tools and data,string,
+JAVA_HOME,/cm/shared/apps/sunjdk/jdk1.6.0_21/,,,
+tempdir,/target/gpfs2/gcc/tmp/processing,,,
