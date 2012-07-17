@@ -50,9 +50,10 @@ cp ${intermediatedir}/*_fastqc.zip ${projectResultsDir}/qc
 # Copy dedup metrics to results directory
 cp ${intermediatedir}/*.dedup.metrics ${projectResultsDir}/qc/statistics
 
-# Copy merged BAM plus index to results directory
-cp ${intermediatedir}/*.merged.bam ${projectResultsDir}/alignment
-cp ${intermediatedir}/*.merged.bam.bai ${projectResultsDir}/alignment
+# Copy merged BAM plus index to results directory and create md5 sum
+md5sum ${mergedbam} > ${mergedbam}.md5
+md5sum ${mergedbamindex} > ${mergedbamindex}.md5
+cp ${mergedbam}* ${projectResultsDir}/alignment
 
 
 # Copy alignment stats (lane and sample) to results directory
