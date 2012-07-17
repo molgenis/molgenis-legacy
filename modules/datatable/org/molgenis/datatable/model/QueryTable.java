@@ -1,7 +1,5 @@
 package org.molgenis.datatable.model;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,13 +9,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.collections.Transformer;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.ResultSetTuple;
+import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
+import org.springframework.util.StringUtils;
 
+import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.types.Expression;
@@ -36,8 +38,10 @@ public class QueryTable extends AbstractFilterableTupleTable {
 	private final LinkedHashMap<String, SimpleExpression<? extends Object>> select;
 	private final LinkedHashMap<String, Field> columnsByName;
 	private final List<Field> columns;
+	private CloseableIterator<Object[]> rs;
 
-	public QueryTable(SQLQueryImpl query, LinkedHashMap<String, SimpleExpression<? extends Object>> select,
+	public QueryTable(SQLQueryImpl query,
+			LinkedHashMap<String, SimpleExpression<? extends Object>> select,
 			List<Field> columns) {
 		this.query = query;
 		this.select = select;
@@ -70,7 +74,7 @@ public class QueryTable extends AbstractFilterableTupleTable {
 	/**
 	 * Convert the {@link Collection} of values in the select field to an array
 	 * of {@link Expression}s, for use in the {@link SQLQuery.list()} function.
-	 *
+	 * 
 	 * @return The array of expressions.
 	 */
 	private Expression<?>[] getSelectAsArray() {
@@ -85,46 +89,54 @@ public class QueryTable extends AbstractFilterableTupleTable {
 		return selectArray;
 	}
 
-	private ResultSet rs = null;
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public Iterator<Tuple> iterator() {
 		try {
-			final Expression<?>[] selectArray = getSelectAsArray();
+			// final Expression<?>[] selectArray = getSelectAsArray();
+
+			final Expression<?>[] selectArray = select.values().toArray(
+					new Expression<?>[0]);
+			final ArrayList<String> names = new ArrayList<String>(
+					select.keySet());
+			for (int i = 0; i < selectArray.length; ++i) {
+				final Expression<?> expr = selectArray[i];
+				final String alias = StringUtils
+						.replace(names.get(i), ".", "_");
+				selectArray[i] = ((SimpleExpression<?>) expr).as(alias);
+			}
+
 			final BooleanExpression where = convertQueryRulesToQueryExpression();
-			if(where != null) {
+			if (where != null) {
 				query.where(where);
 			}
-			rs = query.getResults(selectArray);
+			// query.limit(10);
 
-			return new RSIterator(new ResultSetTuple(rs));
-			//			final ResultSetIterator resultSetIterator = new ResultSetIterator(rs);
-			//			//return
-			//
-			//
-			//			return IteratorUtils.transformedIterator(resultSetIterator, new Transformer() {
-			//
-			//				@Override
-			//				public Object transform(Object o) {
-			//					final Tuple tuple = new SimpleTuple();
-			//					final Object[] record = (Object[]) o;
-			//					try {
-			//						int idx = 0;
-			//						for (final Field f : getColumns()) {
-			//							tuple.set(f.getSqlName(), record[idx]);
-			//							idx++;
-			//						}
-			//					} catch (final TableException ex) {
-			//						Logger.getLogger(QueryTable.class.getName()).log(Level.SEVERE, null, ex);
-			//						return null;
-			//					}
-			//
-			//					return tuple;
-			//				}
-			//			});
+			rs = query.iterate(selectArray);
+			return IteratorUtils.transformedIterator(rs, new Transformer() {
+
+				@Override
+				public Object transform(Object o) {
+					final Tuple tuple = new SimpleTuple();
+					final Object[] record = (Object[]) o;
+					try {
+						int idx = 0;
+						for (final Field f : getColumns()) {
+							tuple.set(f.getSqlName(), record[idx]);
+							idx++;
+						}
+					} catch (final TableException ex) {
+						Logger.getLogger(QueryTable.class.getName()).log(
+								Level.SEVERE, null, ex);
+						return null;
+					}
+
+					return tuple;
+				}
+			});
 		} catch (final Exception ex) {
-			Logger.getLogger(QueryTable.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(QueryTable.class.getName()).log(Level.SEVERE,
+					null, ex);
 			return null;
 		}
 	}
@@ -136,12 +148,8 @@ public class QueryTable extends AbstractFilterableTupleTable {
 
 	@Override
 	public void close() throws TableException {
-		if(rs != null) {
-			try {
-				rs.close();
-			} catch (final SQLException ex) {
-				throw new TableException(ex);
-			}
+		if (rs != null) {
+			rs.close();
 		}
 	}
 
@@ -155,9 +163,11 @@ public class QueryTable extends AbstractFilterableTupleTable {
 
 	@SuppressWarnings("unchecked")
 	private static BooleanExpression getExpression(QueryRule rule,
-			final SimpleExpression<? extends Object> selectExpr, final Field column) throws ParseException {
+			final SimpleExpression<? extends Object> selectExpr,
+			final Field column) throws ParseException {
 		final Operator op = rule.getOperator();
-		final MolgenisFieldTypes.FieldTypeEnum type = column.getType().getEnumType();
+		final MolgenisFieldTypes.FieldTypeEnum type = column.getType()
+				.getEnumType();
 		final String value = rule.getValue().toString();
 		BooleanExpression expr = null;
 		switch (type) {
@@ -181,9 +191,9 @@ public class QueryTable extends AbstractFilterableTupleTable {
 				expr = ((NumberExpression<Double>) selectExpr).goe(val);
 				break;
 			default:
-				throw new UnsupportedOperationException(
-						String.format("Operation: %s not implemented yet for type %s!",
-								op, type));
+				throw new UnsupportedOperationException(String.format(
+						"Operation: %s not implemented yet for type %s!", op,
+						type));
 			}
 			break;
 		}
@@ -207,9 +217,9 @@ public class QueryTable extends AbstractFilterableTupleTable {
 				expr = ((NumberExpression<Integer>) selectExpr).goe(val);
 				break;
 			default:
-				throw new UnsupportedOperationException(
-						String.format("Operation: %s not implemented yet for type %s!",
-								op, type));
+				throw new UnsupportedOperationException(String.format(
+						"Operation: %s not implemented yet for type %s!", op,
+						type));
 			}
 		}
 		break;
@@ -223,45 +233,51 @@ public class QueryTable extends AbstractFilterableTupleTable {
 			case LIKE:
 				expr = ((StringExpression) selectExpr).like(val + "%");
 			default:
-				throw new UnsupportedOperationException(
-						String.format("Operation: %s not implemented yet for type %s!",
-								op, type));
+				throw new UnsupportedOperationException(String.format(
+						"Operation: %s not implemented yet for type %s!", op,
+						type));
 			}
 		}
 		break;
 		default:
-			throw new UnsupportedOperationException(
-					String.format("Operation: %s not implemented yet for type %s!",
-							op, type));
+			throw new UnsupportedOperationException(String.format(
+					"Operation: %s not implemented yet for type %s!", op, type));
 		}
 		return expr;
 	}
 
 	@SuppressWarnings("rawtypes")
-	private BooleanExpression convertQueryRulesToQueryExpression() throws TableException {
+	private BooleanExpression convertQueryRulesToQueryExpression()
+			throws TableException {
 		try {
 			final List<QueryRule> filters = super.getFilters();
 			BooleanExpression expr = null;
 			for (final QueryRule rule : filters) {
 				final Operator op = rule.getOperator();
 				final String value = rule.getValue().toString();
-				final String fieldName = rule.getField() == null ? value : rule.getField();
+				final String fieldName = rule.getField() == null ? value : rule
+						.getField();
 
-				if(op == Operator.LIMIT) {
+				if (op == Operator.LIMIT) {
 					query.limit(Long.parseLong(value));
-				} else if(op == Operator.OFFSET) {
+				} else if (op == Operator.OFFSET) {
 					query.offset(Long.parseLong(value));
-				} else if(op == Operator.SORTASC || op == Operator.SORTDESC) {
-					final SimpleExpression<? extends Object> sortField = select.get(fieldName);
-					if(op == Operator.SORTASC) {
-						query.orderBy(((ComparableExpressionBase)sortField).asc());
+				} else if (op == Operator.SORTASC || op == Operator.SORTDESC) {
+					final SimpleExpression<? extends Object> sortField = select
+							.get(fieldName);
+					if (op == Operator.SORTASC) {
+						query.orderBy(((ComparableExpressionBase) sortField)
+								.asc());
 					} else {
-						query.orderBy(((ComparableExpressionBase)sortField).desc());
+						query.orderBy(((ComparableExpressionBase) sortField)
+								.desc());
 					}
 				} else {
-					final SimpleExpression<? extends Object> selectExpr = select.get(fieldName);
+					final SimpleExpression<? extends Object> selectExpr = select
+							.get(fieldName);
 					final Field column = getColumnByName(fieldName);
-					final BooleanExpression rhs = getExpression(rule, selectExpr, column);
+					final BooleanExpression rhs = getExpression(rule,
+							selectExpr, column);
 					if (expr != null) {
 						expr = expr.and(rhs);
 					} else {

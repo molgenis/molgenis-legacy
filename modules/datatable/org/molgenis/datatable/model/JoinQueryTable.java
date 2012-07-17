@@ -17,7 +17,6 @@ import org.molgenis.model.elements.Field;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
-import com.mysema.query.types.Expression;
 import com.mysema.query.types.expr.SimpleExpression;
 import com.mysema.query.types.path.BooleanPath;
 import com.mysema.query.types.path.DatePath;
@@ -62,6 +61,7 @@ public class JoinQueryTable extends QueryTable {
 		final LinkedHashMap<String, SimpleExpression<? extends Object>> select = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
 		final Map<String, List<Field>> tableColumns = loadColumnData(db,
 				tableNames, columnNames, joins);
+
 		for (final String tableName : tableNames) {
 			final PathBuilder table = new PathBuilder<RelationalPath>(
 					RelationalPath.class, tableName);
@@ -73,13 +73,12 @@ public class JoinQueryTable extends QueryTable {
 		}
 
 		for (final Join join : joins) {
-			final SimpleExpression<? extends Object> leftExpr = select
-					.get(join.leftColumnName);
-			final SimpleExpression<? extends Object> rightExpr = select
-					.get(join.rightColumnName);
-			if (leftExpr != null && rightExpr != null) {
-				query.where(leftExpr.eq((Expression) rightExpr));
-			}
+			final PathBuilder<RelationalPath> leftTable = new PathBuilder<RelationalPath>(
+					RelationalPath.class, join.leftTableName);
+			final PathBuilder<RelationalPath> rightTable = new PathBuilder<RelationalPath>(
+					RelationalPath.class, join.rightTableName);
+
+			query.where(leftTable.get(join.leftColumnName).eq(rightTable.get(join.rightColumnName)));
 		}
 
 		return select;
@@ -135,8 +134,9 @@ public class JoinQueryTable extends QueryTable {
 					final String columnName = columns.getString("COLUMN_NAME");
 					final int sqlType = columns.getInt("DATA_TYPE");
 
+					final String sqlColumnName = String.format("%s.%s", tableName, columnName);
 					if (CollectionUtils.isNotEmpty(columnNames)) {
-						if (!columnNames.contains(columnName)) {
+						if (!columnNames.contains(sqlColumnName)) {
 							continue;
 						}
 					}
@@ -151,42 +151,6 @@ public class JoinQueryTable extends QueryTable {
 		} catch (final Exception ex) {
 			throw new IllegalStateException(ex);
 		}
-
-		// try {
-		// final String sql = "SELECT %s FROM %s";
-		// final String projection = CollectionUtils.isNotEmpty(columnNames)
-		// ? StringUtils.join(columnNames, ",")
-		// : "*";
-		// final String tables = StringUtils.join(tableNames, ",");
-		//
-		// final Connection conn = db.getConnection();
-		// final Statement statement = conn.createStatement();
-		// statement.setFetchSize(1);
-		// final ResultSet rs = statement.executeQuery(String.format(sql,
-		// projection, tables));
-		// final ResultSetMetaData metaData = rs.getMetaData();
-		//
-		// for (int i = 1, n = metaData.getColumnCount(); i <= n; ++i) {
-		// final String columnName = metaData.getColumnName(i);
-		// final String tableName = metaData.getTableName(i);
-		//
-		//
-		// //oracle has empty database string
-		// if(StringUtils.isEmpty(tableName)) {
-		//
-		// }
-		//
-		// final Field field = new Field(columnName);
-		// field.setType(MolgenisFieldTypes.getTypeBySqlTypesCode(metaData.getColumnType(i)));
-		// field.setTableName(tableName);
-		// tableColumns.get(tableName.toLowerCase()).add(field);
-		// }
-		//
-		// rs.close();
-		// statement.close();
-		// } catch (Exception ex) {
-		// System.out.println(ex);
-		// }
 		return tableColumns;
 	}
 }

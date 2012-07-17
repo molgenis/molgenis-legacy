@@ -1,18 +1,5 @@
 package org.molgenis.datatable.plugin;
 
-import com.google.gson.Gson;
-import com.mysema.query.sql.MySQLTemplates;
-import com.mysema.query.sql.OracleTemplates;
-import com.mysema.query.sql.RelationalPath;
-import com.mysema.query.sql.SQLQueryImpl;
-import com.mysema.query.sql.SQLTemplates;
-import com.mysema.query.sql.oracle.OracleQuery;
-import com.mysema.query.types.expr.NumberExpression;
-import com.mysema.query.types.expr.SimpleExpression;
-import com.mysema.query.types.path.NumberPath;
-import com.mysema.query.types.path.PathBuilder;
-import com.mysema.query.types.path.StringPath;
-
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -21,9 +8,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.molgenis.datatable.model.*;
+import org.molgenis.datatable.model.JdbcTable;
+import org.molgenis.datatable.model.JoinQueryTable;
+import org.molgenis.datatable.model.QueryTable;
+import org.molgenis.datatable.model.TableException;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.StringField;
@@ -39,6 +31,17 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
+import com.mysema.query.sql.MySQLTemplates;
+import com.mysema.query.sql.OracleTemplates;
+import com.mysema.query.sql.RelationalPath;
+import com.mysema.query.sql.SQLQueryImpl;
+import com.mysema.query.sql.SQLTemplates;
+import com.mysema.query.types.expr.NumberExpression;
+import com.mysema.query.types.expr.SimpleExpression;
+import com.mysema.query.types.path.NumberPath;
+import com.mysema.query.types.path.PathBuilder;
+import com.mysema.query.types.path.StringPath;
+
 /**
  * View data in a matrix.
  */
@@ -53,16 +56,16 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 	}
 
 	JQGridView.TupleTableBuilder tupleTableBuilder = new JQGridView.TupleTableBuilder() {
-//		enum BackEnd {
-//			JDBCTABLE, JOINTABLE, QUERYTABLE
-//		}
+		//		enum BackEnd {
+		//			JDBCTABLE, JOINTABLE, QUERYTABLE
+		//		}
 
 		private final String backEnd = "LIFELINES_VM_TEST";
 
 		@Override
 		public TupleTable create(Database db, Tuple request)
 				throws TableException {
-			List<String> tableNames = new ArrayList<String>();
+			final List<String> tableNames = new ArrayList<String>();
 			final List<String> columnNames = new ArrayList<String>();
 			getTableAndColumnNames(request, tableNames, columnNames, true);
 			try {
@@ -77,7 +80,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 				} else {
 					return null;
 				}
-			} catch (Exception ex) {
+			} catch (final Exception ex) {
 				throw new TableException(ex);
 			}
 		}
@@ -92,30 +95,32 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 							"SELECT %s FROM Country",
 							StringUtils.join(columnNames, ",")));
 				}
-			} catch (Exception ex) {
+			} catch (final Exception ex) {
 				throw new DatabaseException(ex);
 			}
 		}
-		
+
 		private TupleTable createLifelinesTestVMJoinTable(Database db,
 				List<String> tableNames, final List<String> columnNames) throws DatabaseException{
 			final Connection connection = db.getConnection();
-			final SQLTemplates dialect = new MySQLTemplates();
+			final SQLTemplates dialect = new OracleTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
 			if (CollectionUtils.isEmpty(tableNames)) {
 				tableNames = Arrays.asList("BEZOEK", "BEZOEK1");
 			}
-
-			final List<JoinQueryTable.Join> joins = Arrays
-					.asList(new JoinQueryTable.Join("BEZOEK", "BEZOEK.BZ_ID",
-							"BEZOEK1", "BEZOEK1.BZ_ID"));
-			return new JoinQueryTable(query, tableNames, columnNames, joins, db);			
+			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
+			if(tableNames.size() == 2) {
+				joins = Arrays
+						.asList(new JoinQueryTable.Join("BEZOEK", "BZ_ID",
+								"BEZOEK1", "BZ_ID"));
+			}
+			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
 		}
 
 		private TupleTable createJoinTable(Database db,
 				List<String> tableNames, final List<String> columnNames)
-				throws DatabaseException {
+						throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new OracleTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
@@ -132,14 +137,14 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 		private TupleTable createQueryTable(Database db,
 				List<String> tableNames, final List<String> columnNames)
-				throws DatabaseException {
+						throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-			PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(
+			final PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(
 					RelationalPath.class, "Country");
-			PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(
+			final PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(
 					RelationalPath.class, "City");
 			query.from(country, city).where(
 					country.get("code").eq(city.get("countrycode")));
@@ -156,18 +161,18 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			//query.orderBy(cityPopulationRatio.desc());
 
 			// create select
-			Field countryName = new Field("Country.Name");
+			final Field countryName = new Field("Country.Name");
 			countryName.setType(new StringField());
-			Field cityName = new Field("City.Name");
+			final Field cityName = new Field("City.Name");
 			cityName.setType(new StringField());
-			Field ratio = new Field("ratio");
+			final Field ratio = new Field("ratio");
 			ratio.setType(new DecimalField());
 
-			LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
+			final LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
 			selectMap.put("Country.Name", country.get(new StringPath("name")));
 			selectMap.put("City.Name", city.get(new StringPath("name")));
 			selectMap.put("ratio", cityPopulationRatio);
-			List<Field> columns = Arrays.asList(countryName, cityName, ratio);
+			final List<Field> columns = Arrays.asList(countryName, cityName, ratio);
 			final QueryTable queryTable = new QueryTable(query, selectMap,
 					columns);
 			return queryTable;
@@ -226,7 +231,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 				tupleTableBuilder);
 		try {
 			jqGridView.handleRequest(db, request, out);
-		} catch (HandleRequestDelegationException ex) {
+		} catch (final HandleRequestDelegationException ex) {
 			Logger.getLogger(JQGridPlugin.class.getName()).log(Level.SEVERE,
 					null, ex);
 		}
@@ -235,7 +240,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 	// what is shown to the user
 	@Override
 	public ScreenView getView() {
-		MolgenisForm view = new MolgenisForm(this);
+		final MolgenisForm view = new MolgenisForm(this);
 		view.add(new JQGridView(super.getName(), tupleTableBuilder));
 		return view;
 	}
