@@ -253,11 +253,9 @@ public class QueryTable extends AbstractFilterableTupleTable {
 								.desc());
 					}
 				} else {
-					final SimpleExpression<? extends Object> selectExpr = select
-							.get(fieldName);
+					final SimpleExpression<? extends Object> selectExpr = select.get(fieldName);
 					final Field column = getColumnByName(fieldName);
-					final BooleanExpression rhs = getExpression(rule,
-							selectExpr, column);
+					final BooleanExpression rhs = getExpression(rule, selectExpr, column);
 					if (expr != null) {
 						expr = expr.and(rhs);
 					} else {
