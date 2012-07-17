@@ -9,7 +9,7 @@
  */
 
 package org.molgenis.framework.db;
- 
+
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -52,14 +52,14 @@ public class QueryRule implements Cloneable {
 	}
 
 	public QueryRule(QueryRule copy) {
-		this.operator = copy.operator;
-		this.field = copy.field;
-		this.value = copy.value;
-		this.or = copy.or;
+		operator = copy.operator;
+		field = copy.field;
+		value = copy.value;
+		or = copy.or;
 		if (copy.nestedRules != null) {
-			this.nestedRules = new QueryRule[copy.nestedRules.length];
+			nestedRules = new QueryRule[copy.nestedRules.length];
 			for (int i = 0; i < copy.nestedRules.length; i++) {
-				this.nestedRules[i] = new QueryRule(copy.nestedRules[i]);
+				nestedRules[i] = new QueryRule(copy.nestedRules[i]);
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public class QueryRule implements Cloneable {
 		/** 'field in (value)' with value being a subquery */
 		IN_SUBQUERY("IN_SUB"),
 		/** 'content of subQuery 8 */
-		SUBQUERY("SUBQUERY"),		
+		SUBQUERY("SUBQUERY"),
 		/** 'field' less-than 'value' */
 		LESS("<"),
 		/** 'field' equal-or-less-than 'value' */
@@ -145,7 +145,7 @@ public class QueryRule implements Cloneable {
 		 */
 		@Override
 		public String toString() {
-			return this.label;
+			return label;
 		}
 	}
 
@@ -184,8 +184,8 @@ public class QueryRule implements Cloneable {
 	 *            to be nested.
 	 */
 	public QueryRule(QueryRule... rules) {
-		this.operator = Operator.NESTED;
-		this.nestedRules = rules;
+		operator = Operator.NESTED;
+		nestedRules = rules;
 	}
 
 	/**
@@ -206,7 +206,7 @@ public class QueryRule implements Cloneable {
 					+ operator + " cannot be used with one argument");
 		}
 	}
-	
+
 	public QueryRule(Operator operator, QueryRule nestedRules) {
 		if (operator == Operator.NOT || operator == Operator.IN_SUBQUERY) {
 			this.operator = operator;
@@ -215,7 +215,7 @@ public class QueryRule implements Cloneable {
 			throw new IllegalArgumentException("QueryRule(): Operator."
 					+ operator + " cannot be used with one argument");
 		}
-	}	
+	}
 
 	/**
 	 * Specific constructor for rules that don't have a value or field such as
@@ -247,15 +247,15 @@ public class QueryRule implements Cloneable {
 	public String getField() {
 		return field;
 	}
-	
+
 	/**
 	 * Returns the field-name as a JPA Attribute
 	 */
 	public String getJpaAttribute() {
-	    if(!StringUtils.isEmpty(field)) {
-	        return field.substring(0,1).toLowerCase() + field.substring(1);
-	    }
-	    return field;
+		if(!StringUtils.isEmpty(field)) {
+			return field.substring(0,1).toLowerCase() + field.substring(1);
+		}
+		return field;
 	}
 
 	/**
@@ -318,21 +318,21 @@ public class QueryRule implements Cloneable {
 	@Override
 	public boolean equals(Object o) {
 		if (o != null && o instanceof QueryRule) {
-			QueryRule r = (QueryRule) o;
+			final QueryRule r = (QueryRule) o;
 
 			if ((
-			// field
+					// field
 					r.getField() != null
-							&& r.getField().equals(this.getField()) || r.getField() == this.getField())
+					&& r.getField().equals(this.getField()) || r.getField() == this.getField())
 					// operator
 					&& (r.getOperator() != null
-							&& r.getOperator().equals(this.getOperator()) || r.getOperator() == this.getOperator())
+					&& r.getOperator().equals(this.getOperator()) || r.getOperator() == this.getOperator())
 					// value
 					&& (r.getValue() != null
-							&& r.getValue().equals(this.getValue()) || r.getValue() == this.getValue())
+					&& r.getValue().equals(this.getValue()) || r.getValue() == this.getValue())
 					// nested rules
 					&& (r.getNestedRules() != null
-							&& r.getNestedRules().equals(this.getNestedRules()) || r.getNestedRules() == this.getNestedRules())) {
+					&& r.getNestedRules().equals(this.getNestedRules()) || r.getNestedRules() == this.getNestedRules())) {
 				return true;
 			}
 		}
@@ -348,13 +348,13 @@ public class QueryRule implements Cloneable {
 		if (this.getOperator().equals(Operator.NESTED)) {
 			result += "(";
 
-			for (QueryRule rule : this.getNestedRules()) {
+			for (final QueryRule rule : this.getNestedRules()) {
 				result += rule.toString();
 			}
 			result += ")";
 		} else {
 			result = (this.getField() == null ? "" : (this.getField() + " "))
-					+ this.getOperator() + (this.value == null ? "" : " '" + this.value + "'");
+					+ this.getOperator() + (value == null ? "" : " '" + value + "'");
 		}
 		return result;
 	}
