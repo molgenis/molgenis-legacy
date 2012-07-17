@@ -9,6 +9,11 @@ public class TableException extends Exception
 		super(e);
 	}
 
+	public TableException(String string)
+	{
+		super(string);
+	}
+
 	/**
 	 * 
 	 */
