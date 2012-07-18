@@ -33,11 +33,11 @@ public class TestProtocolTable
 		Database db = DatabaseFactory.create();
 		
 		//clean protocols, protocolApplications, measurements, values
-		db.remove(db.find(ObservedValue.class));
-		db.remove(db.find(Measurement.class));
-		db.remove(db.find(ProtocolApplication.class));
-		db.remove(db.find(Protocol.class));
-		db.remove(db.find(Individual.class));
+//		db.remove(db.find(ObservedValue.class));
+//		db.remove(db.find(Measurement.class));
+//		db.remove(db.find(ProtocolApplication.class));
+//		db.remove(db.find(Protocol.class));
+//		db.remove(db.find(Individual.class));
 		
 		//generate good protocol
 		Protocol p = new Protocol();
