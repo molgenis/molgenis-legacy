@@ -16,6 +16,7 @@ import org.molgenis.datatable.model.JoinQueryTable;
 import org.molgenis.datatable.model.QueryTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.datatable.test.MemoryTableFactory;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.StringField;
@@ -56,11 +57,12 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 	}
 
 	JQGridView.TupleTableBuilder tupleTableBuilder = new JQGridView.TupleTableBuilder() {
-		//		enum BackEnd {
-		//			JDBCTABLE, JOINTABLE, QUERYTABLE
-		//		}
+		// enum BackEnd {
+		// JDBCTABLE, JOINTABLE, QUERYTABLE
+		// }
 
-		private final String backEnd = "JOINTABLE";
+		private final String backEnd = "LIFELINES_VM_TEST";
+
 
 		@Override
 		public TupleTable create(Database db, Tuple request)
@@ -76,13 +78,23 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 				} else if (backEnd.equals("JDBCTABLE")) {
 					return createJDBTable(db, tableNames, columnNames);
 				} else if (backEnd.equals("LIFELINES_VM_TEST")) {
-					return createLifelinesTestVMJoinTable(db, tableNames, columnNames);
+					return createLifelinesTestVMJoinTable(db, tableNames,
+							columnNames);
+				} else if (backEnd.equals("MEMORY_TABLE")) {
+					return createMemory(db, tableNames,
+							columnNames);
 				} else {
 					return null;
 				}
 			} catch (final Exception ex) {
 				throw new TableException(ex);
 			}
+		}
+
+		private TupleTable createMemory(Database db, List<String> tableNames,
+				List<String> columnNames) {
+			final TupleTable table = MemoryTableFactory.create(51);
+			return table;
 		}
 
 		private TupleTable createJDBTable(Database db, List<String> tableNames,
@@ -101,7 +113,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 		}
 
 		private TupleTable createLifelinesTestVMJoinTable(Database db,
-				List<String> tableNames, final List<String> columnNames) throws DatabaseException{
+				List<String> tableNames, final List<String> columnNames)
+						throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new OracleTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
@@ -110,10 +123,9 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 				tableNames = Arrays.asList("BEZOEK", "BEZOEK1");
 			}
 			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
-			if(tableNames.size() == 2) {
-				joins = Arrays
-						.asList(new JoinQueryTable.Join("BEZOEK", "BZ_ID",
-								"BEZOEK1", "BZ_ID"));
+			if (tableNames.size() == 2) {
+				joins = Arrays.asList(new JoinQueryTable.Join("BEZOEK",
+						"BZ_ID", "BEZOEK1", "BZ_ID"));
 			}
 			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
 		}
@@ -130,10 +142,9 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			}
 
 			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
-			if(tableNames.size() == 2) {
-				joins = Arrays
-						.asList(new JoinQueryTable.Join("Country", "Code",
-								"City", "CountryCode"));
+			if (tableNames.size() == 2) {
+				joins = Arrays.asList(new JoinQueryTable.Join("Country",
+						"Code", "City", "CountryCode"));
 			}
 			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
 		}
@@ -161,7 +172,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 					.divide(countryPopulation);
 			query.where(country.get("code").eq(city.get("countrycode")));
 			query.limit(10);
-			//query.orderBy(cityPopulationRatio.desc());
+			// query.orderBy(cityPopulationRatio.desc());
 
 			// create select
 			final Field countryName = new Field("Country.Name");
@@ -175,7 +186,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			selectMap.put("Country.Name", country.get(new StringPath("name")));
 			selectMap.put("City.Name", city.get(new StringPath("name")));
 			selectMap.put("ratio", cityPopulationRatio);
-			final List<Field> columns = Arrays.asList(countryName, cityName, ratio);
+			final List<Field> columns = Arrays.asList(countryName, cityName,
+					ratio);
 			final QueryTable queryTable = new QueryTable(query, selectMap,
 					columns);
 			return queryTable;

@@ -21,13 +21,16 @@ import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
+import org.molgenis.datatable.test.MemoryTableFactory;
 import org.molgenis.datatable.util.JQueryUtil;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.server.MolgenisResponse;
+import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
@@ -59,6 +62,22 @@ public class JQGridView extends HtmlWidget {
 		this.tupleTableBuilder = tupleTableBuilder;
 	}
 
+	public JQGridView(final String name, final ScreenController hostController, final TupleTable table) {
+		this(name, new TupleTableBuilder() {
+
+			@Override
+			public String getUrl() {
+				return "molgenis.do?__target=" + hostController.getName()
+						+ "&__action=download_json_"+name;
+			}
+
+			@Override
+			public TupleTable create(Database db, Tuple request) throws TableException {
+				return MemoryTableFactory.create(51);
+			}
+		});
+	}
+
 	/**
 	 * Handle a particular {@link MolgenisRequest}, and encode any resulting
 	 * renderings/exports into a {@link MolgenisResponse}. Particulars handled:
@@ -80,7 +99,7 @@ public class JQGridView extends HtmlWidget {
 			} else if (operation == Operation.LOAD_TREE) {
 				final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
 				response.getOutputStream().print(treeNodes);
-			} else {
+			} else { //operation == Operation.RENDER_DATA
 				final List<QueryRule> rules = new ArrayList<QueryRule>();
 				final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(request);
 
@@ -98,8 +117,11 @@ public class JQGridView extends HtmlWidget {
 				final int page = Math.min(request.getInt("page"), totalPages);
 				final int offset = Math.max(limit * page - limit, 0);
 
-				rules.add(new QueryRule(Operator.LIMIT, limit));
-				rules.add(new QueryRule(Operator.OFFSET, offset));
+				//TESTING
+				tupleTable.setLimit(limit);
+				tupleTable.setOffset(offset);
+				//rules.add(new QueryRule(Operator.LIMIT, limit));
+				//rules.add(new QueryRule(Operator.OFFSET, offset));
 
 				final String sortOrder = request.getString("sord");
 				final String sortField = request.getString("sidx");
@@ -163,7 +185,7 @@ public class JQGridView extends HtmlWidget {
 	private static List<QueryRule> createQueryRulesFromJQGridRequest(Tuple request) {
 		final String filtersParameter = request.getString("filters");
 		final List<QueryRule> rules = new ArrayList<QueryRule>();
-		if (org.apache.commons.lang.StringUtils.isNotEmpty(filtersParameter)) {
+		if (StringUtils.isNotEmpty(filtersParameter)) {
 			final StringMap filters = (StringMap) new Gson().fromJson(filtersParameter, Object.class);
 			final String groupOp = (String) filters.get("groupOp");
 			@SuppressWarnings("unchecked")
@@ -288,27 +310,6 @@ public class JQGridView extends HtmlWidget {
 		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
 		final String jqJsonConfig = new Gson().toJson(config);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
-	}
-
-	/**
-	 * Class wrapping the results of a jqGrid query. To be serialized by Gson,
-	 * hence no accessors necessary for private datamembers.
-	 */
-	public static class JQGridResult {
-
-		@SuppressWarnings("unused")
-		private final int page;
-		@SuppressWarnings("unused")
-		private final int total;
-		@SuppressWarnings("unused")
-		private final int records;
-		private final ArrayList<LinkedHashMap<String, String>> rows = new ArrayList<LinkedHashMap<String, String>>();
-
-		public JQGridResult(int page, int total, int records) {
-			this.page = page;
-			this.total = total;
-			this.records = records;
-		}
 	}
 
 	/**

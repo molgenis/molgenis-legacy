@@ -13,6 +13,7 @@ import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.plugin.JQGridPlugin;
 import org.molgenis.datatable.view.AbstractExporter;
 import org.molgenis.datatable.view.ExcelExporter;
+import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.ui.html.HtmlWidget;
 
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import org.molgenis.datatable.view.*;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.util.ZipUtils;
 import org.molgenis.util.ZipUtils.DirectoryStructure;
 
@@ -49,7 +51,7 @@ public class Renderers {
 	public static class JQGridRenderer implements Renderer {
 		@Override
 		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
-			final JQGridView.JQGridResult result = JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage, tupleTable);
+			final JQGridResult result = JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage, tupleTable);
 			final PrintWriter pout = new PrintWriter(response.getOutputStream());
 			pout.print(new Gson().toJson(result));
 			pout.close();
