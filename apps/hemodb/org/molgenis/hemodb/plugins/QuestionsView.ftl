@@ -38,8 +38,10 @@
 				<div id="groupSelection">
 					<br/>Hold down the Ctrl (windows) / Command (Mac) button to select multiple groups.<br />
 					<select multiple="multiple" name="sampleGroups" id="sGroups" style="margin-right:10px">
+											<option value="none" selected="selected">no selection made</option>
 					<#list model.names as samplenames>
-						<option value="${samplenames}">${samplenames}</option>			
+
+						<option value="${samplenames}">${samplenames}</option>
 					</#list>
 					</select>
 				</div>

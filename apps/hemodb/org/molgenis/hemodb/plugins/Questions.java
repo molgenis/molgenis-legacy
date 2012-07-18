@@ -1,11 +1,12 @@
 package org.molgenis.hemodb.plugins;
 
 import java.io.OutputStream;
-//import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
+//import java.util.ListIterator;
 //import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 //import org.molgenis.framework.db.Query;
@@ -15,6 +16,8 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
+import org.molgenis.hemodb.HemoGene;
+import org.molgenis.hemodb.HemoProbe;
 import org.molgenis.hemodb.HemoSample;
 import org.molgenis.hemodb.HemoSampleGroup;
 //import org.molgenis.organization.Investigation;
@@ -47,14 +50,12 @@ public class Questions extends EasyPluginController<QuestionsModel>{
 
 	/**
 	 * At each page view: reload data from database into model and/or change.
-	 * 
 	 * Exceptions will be caught, logged and shown to the user automatically via
 	 * setMessages(). All db actions are within one transaction.
 	 */
 	@Override
 	public void reload(Database db) throws Exception{
 		if(getModel().state.equals("")){
-			System.out.println("bladieblabla");
 			selectSampleGroupsForDropdown(db);
 			System.out.println("NOT filled");
 			getModel().setState("filled");
@@ -66,7 +67,6 @@ public class Questions extends EasyPluginController<QuestionsModel>{
 
 	/**
 	 * When action="updateDate": update model and/or view accordingly.
-	 * 
 	 * Exceptions will be logged and shown to the user automatically. All db
 	 * actions are within one transaction.
 	 */
@@ -77,54 +77,49 @@ public class Questions extends EasyPluginController<QuestionsModel>{
 		try{
 //			GENE EXPRESSION DATA MATRIX SELECTION -> shows which type of gene expression will be used
 			String geneExp = request.getString("geneExp");
-			// TODO: select the right data matrix
 			if (geneExp.equals("quanLog")){				// Chosen the quantile data matrix 
-				System.out.println("QUANTILE");
+//				TODO: DO SOMETHING WITH THE QUANTILE MATRIX
 			}
 			else{				// Chosen raw expression
-				System.out.println("RAW");
+//				TODO: DO SOMETHING WITH THE RAW MATRIX
 			}
 
 //			LIST OF GENES SELECTION -> Gets all the listed genes from the website
-			String genes = request.getString("geneText"); 
-			// TODO: select these genes in data matrix
+//			List <String> genes = request.getStringList("geneText");
+			String genesFromSite = request.getString("geneText");
+			String[] genes = genesFromSite.split("\n");
+//			System.out.println("GENES!: " + genes + " miep");	
+//			
+//			for(String e: genes){
+//				System.out.println("bla " + e);
+//			}
 			if (genes != null){
-				//TODO do something with the genes
-				if (genes.isEmpty()){
-					System.out.println("blabla");
+				if (genes.length == 0){
+					System.out.println("There are no genes in the inputfield. Try again.");
 				}
 				else{
-					System.out.println(genes);
+					selectProbesWithGenes(db,genes);
 				}
 			}
 			else{
 				System.out.println("There are no genes specified. Please try again");
 			}
 			
-//			SAMPLE SELECTION BASED ON SAMPLE GROUP NAMES -> Gets the selected groups from the website and retrieves the associated samples
+//			SAMPLE SELECTION BASED ON SAMPLE GROUP NAMES -> Gets the selected groups from the website 
+//			and retrieves the associated samples
 			// TODO select these groups in data matrix
 			List<String> groups = request.getStringList("sampleGroups");
-			System.out.println(groups);
+//			System.out.println(groups);
 			selectSamplesFromSampleGroups(db, groups);
-
-					// (db.find(Investigation.class, new QueryRule(Investigation.NAME,
-					// Operator.EQUALS, investigationName)).size() == 0);
-//					for (HemoSample h : x){
-//						h.getSample();
-//					}
-					// List<HemoSampleGroup> hsg = db.findById(HemoSampleGroup.class,id);
-					// List<HemoSampleGroup> hsg = db.query(HemoSampleGroup);
-					// Query<HemoSampleGroup> hsg = db.query(HemoSampleGroup.class);
-					// hsg.addRules(new QueryRule(HemoSampleGroup.ID, Operator.values()));
-			
+		
 			
 		// SUBMIT BUTTON
 			if (getModel().getAction().equals("verstuurJetty2")){
-				System.out.println("We hebben Jetty");
+				System.out.println("we handled the information on the site submitted via the submit button");
 			}
 			else{
 				System.out.println("Something went wrong, try again.");
-			}// jvkWu7V5 
+			}
 		}
 
 		// TODO show selected data
@@ -136,33 +131,61 @@ public class Questions extends EasyPluginController<QuestionsModel>{
 	}
 	
 	public void selectSampleGroupsForDropdown(Database db) throws DatabaseException{
-//		SELECTION OF ALL THE SAMPLE GROUPS IN THE DATABASE
+//		SELECTION OF ALL THE SAMPLE GROUPS IN THE DATABASE TO DISPLAY ON THE SITE (MULTIPLE SELECT)
 		List <HemoSampleGroup> sampleGroups = db.find(HemoSampleGroup.class);
 		if(sampleGroups != null){
 			for (HemoSampleGroup hsg : sampleGroups){
 				String name = hsg.getName();
 				getModel().getNames().add(name);
+//				add names to arraylist
+//				return arraylist to handleRequest
 			}
 		}
 		else{
-			System.out.println("OOPS! SOMETHING WENT WRONG"); //hier klopt iets niet, nu ook nog niet
+			System.out.println("OOPS! SOMETHING WENT WRONG");
 		}
 	}
 	
 	public void selectSamplesFromSampleGroups(Database db, List<String> sampleGroups) throws DatabaseException{
-		int numberGroups = sampleGroups.size();
-		System.out.println("number of groups: " + numberGroups);
-		for (String hsg : sampleGroups){
-			List <HemoSample> samplesPerGroup = db.find(HemoSample.class, new QueryRule(HemoSample.SAMPLEGROUP_NAME, Operator.EQUALS, hsg));
-			System.out.println("sampleGroup is: " + hsg + "\n");
-			System.out.println("samples in this group are: " + "\n");
-			ListIterator<HemoSample> blaat = samplesPerGroup.listIterator(); // TODO RENAME!!!!
-			while(blaat.hasNext()){
-				System.out.println(blaat.next().getName());
+//		SELECTION OF THE SAMPLE NAMES WITHIN EACH GROUP THAT IS SPECIFIED
+//		TODO: RETURN SAMPLE NAMES TO HANDLEREQUEST
+		List<String> sampleNames = new ArrayList<String>();
+		int numberGroups = sampleGroups.size(); 
+		if(numberGroups == 0){
+			System.out.println("there is no selection made");
+		}
+		else{
+			System.out.println("\n" + "number of groups: " + numberGroups);
+			for (String hsg : sampleGroups){
+				System.out.println("\n" + "sampleGroup is: " + hsg);
+				List <HemoSample> samplesPerGroup = db.find(HemoSample.class, new QueryRule(HemoSample.SAMPLEGROUP_NAME, Operator.EQUALS, hsg));
+				for (HemoSample name : samplesPerGroup){
+					sampleNames.add(name.getName());
+				}
 			}
-		}	
+			System.out.println("sampleNames OUTSIDE for: " + sampleNames + "\n");
+	//		return list with sample names ;
+		}
 	}
-	//					String beestje = "sample1";
-//	List<HemoSample> x = db.find(HemoSample.class, new QueryRule(HemoSample.SAMPLEGROUP, Operator.EQUALS,
-//	beestje));
+	
+	public void selectProbesWithGenes(Database db, String[] genes) throws DatabaseException{
+//		GETS A STRING WITH GENE NAMES, CONVERTS THEM TO PROBES AND RETURNS THEM TO THE HANDLEREQUEST
+		List<String> probes = new ArrayList<String>();
+		for (String gene : genes){
+			gene = gene.toUpperCase();
+			gene = StringUtils.chomp(gene);
+			System.out.println("gene is: " + gene);
+			List <HemoProbe> probesPerGene = db.find(HemoProbe.class, new QueryRule(HemoProbe.REPORTSFOR_NAME, Operator.EQUALS, gene));	
+			for (HemoProbe probe : probesPerGene){
+				System.out.println("name of gene: " + probe);
+				System.out.println("name of probe: " + probe.getName());
+				probes.add(probe.getName());
+			}
+		}
+		if(probes != null){
+			System.out.println("probes found with this gene(s): " + probes);
+		} 
+	}
 }
+
+//gene = gene.replace(System.getProperty("line.separator"), "");
