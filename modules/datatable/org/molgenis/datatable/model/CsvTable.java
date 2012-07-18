@@ -133,9 +133,9 @@ public class CsvTable extends AbstractTupleTable
 			e.printStackTrace();
 		}
 		
-		if (getLimit() > 0 || getOffset() > 0)
+		if (getLimit() > 0 || getOffset() > 0 || getColOffset() > 0 || getColLimit() > 0)
 		{
-			return new TupleIterator(csv, getLimit(), getOffset());
+			return new TupleIterator(csv, getLimit(), getOffset(), getColLimit(), getColOffset());
 		}
 		return csv.iterator();
 	}

@@ -12,7 +12,6 @@
 #FOREACH flowcell, lane, seqType, filenamePrefix
 
 export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
-export R_HOME=${R_HOME}
 
 #
 # Check if we need to run this step or wether demultiplexing was already executed successfully in a previous run.

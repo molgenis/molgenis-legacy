@@ -63,6 +63,7 @@
 		<unjar src="${mlibs}wsdl4j-1.6.2.jar" dest="${jarme}" overwrite="false"/><!-- RUNTIME AbstractServlet only??: WSDL Locator -->
 		<unjar src="${mlibs}quartz-1.6.0.jar" dest="${jarme}" overwrite="false"/><!-- Scheduling -->
 		<unjar src="${mlibs}gson-2.2.1.jar" dest="${jarme}" overwrite="false"/><!-- GSON for XrefService-->
+		<unjar src="${mlibs}tjws-1.98.jar" dest="${jarme}" overwrite="false"/><!-- Webserver -->
 		<!-- Application jars -->
 		<unjar src="${alibs}jaxrpc.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
 		<unjar src="${alibs}axis.jar" dest="${jarme}" overwrite="false" /> <!-- xQTL: KEGG tools -->

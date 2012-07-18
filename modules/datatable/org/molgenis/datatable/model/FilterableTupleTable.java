@@ -17,8 +17,9 @@ public interface FilterableTupleTable extends TupleTable
 {
 	/**
 	 * Set the row filters
+	 * @throws TableException 
 	 */
-	public void setFilters(List<QueryRule> rules);
+	public void setFilters(List<QueryRule> rules) throws TableException;
 
 	/**
 	 * Get the column filters
