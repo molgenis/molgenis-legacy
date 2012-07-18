@@ -15,15 +15,19 @@
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />
-		
+		<pathelement location="apps/xgap" />
 		<pathelement location="modules/webserver" />
-		
-
 		<pathelement location="modules/datatable" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
-
-		
+		<pathelement location="modules/decorators/data" />
+		<pathelement location="modules/import" />
+		<pathelement location="modules/settings" />
+		<pathelement location="modules/pheno" />
+		<pathelement location="modules/search" />
+		<pathelement location="modules/matrix" />
+		<pathelement location="modules/feedback" />
+		<pathelement location="publicdata" />
 		
 	</path>
 	

@@ -11,22 +11,24 @@ import org.molgenis.util.Tuple;
 /**
  * Wrap a List<Tuple> into a TupleTable
  */
-public class MemoryTable extends AbstractTupleTable {
-
-	private final List<Field> columns = new ArrayList<Field>();
+public class MemoryTable extends AbstractTupleTable
+{
+	private List<Field> columns = new ArrayList<Field>();
 	private List<Tuple> rows = new ArrayList<Tuple>();
-
 	/**
 	 * Construct from list of tuples. Field will be derived based on column
 	 * names and value type of first tuple. Otherwise field type will be String.
 	 */
-	public MemoryTable(List<Tuple> rows) {
+	public MemoryTable(List<Tuple> rows)
+	{
 		this.rows = rows;
 
 		// use first row
-		if (rows.size() > 0) {
-			for (final String field : rows.get(0).getFieldNames()) {
-				final Field f = new Field(field);
+		if (rows.size() > 0)
+		{
+			for (String field : rows.get(0).getFieldNames())
+			{
+				Field f = new Field(field);
 				f.setType(new StringField());
 				columns.add(f);
 			}
@@ -34,45 +36,53 @@ public class MemoryTable extends AbstractTupleTable {
 	}
 
 	@Override
-	public List<Field> getColumns() {
-		return columns;
+	public List<Field> getColumns()
+	{
+		return this.columns;
 	}
 
 	@Override
-	public List<Tuple> getRows() {
-		if (getLimit() > 0 || getOffset() > 0) {
-			final List<Tuple> result = new ArrayList<Tuple>();
-
+	public List<Tuple> getRows()
+	{
+		if (getLimit() > 0 || getOffset() > 0)
+		{
+			List<Tuple> result = new ArrayList<Tuple>();
+			
 			int count = 0;
 			int index = 1;
-			for (final Tuple row : rows) {
-				if (index > getOffset()) {
+			for(Tuple row: this.rows)
+			{
+				if(index > getOffset())
+				{
 					result.add(row);
 					count++;
-					if (count >= getLimit()) {
-						break;
-					}
+					if(count >= getLimit()) break;
 				}
-				++index;
+				index++;
 			}
 			return result;
-		} else {
-			return rows;
+		}
+		else
+		{
+			return this.rows;
 		}
 	}
 
 	@Override
-	public Iterator<Tuple> iterator() {
+	public Iterator<Tuple> iterator()
+	{
 		return this.getRows().iterator();
 	}
 
 	@Override
-	public void close() {
+	public void close()
+	{
 		// nothing todo
 	}
 
 	@Override
-	public int getCount() throws TableException {
+	public int getCount() throws TableException
+	{
 		return rows.size();
 	}
 }

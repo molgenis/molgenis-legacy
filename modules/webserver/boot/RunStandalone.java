@@ -1,82 +1,99 @@
 package boot;
 
-import java.awt.HeadlessException;
 import java.io.IOException;
 
 import org.apache.log4j.BasicConfigurator;
 
-import core.Helper;
-import core.Webserver;
+import app.servlet.UsedMolgenisOptions;
 
-
+/**
+ * TJWS wrapper for Molgenis. See http://tjws.sourceforge.net/ -> Embedded usage
+ * 
+ * @author joerivandervelde
+ * 
+ */
 public class RunStandalone
 {
-
-	public RunStandalone(Integer port)
+	public RunStandalone(int port) throws IOException
 	{
-		new RunStandalone(port, false);
-	}
-	
-	public RunStandalone(Integer port, boolean headless)
-	{
-		try
+		class MyServ extends Acme.Serve.Serve
 		{
-			try
+			private static final long serialVersionUID = -4687683036134257812L;
+
+			public void setMappingTable(PathTreeDictionary mappingtable)
 			{
-				if(headless)
-				{
-					throw new HeadlessException("NOTE: Headless mode was forced by user");
-				}
-				new WebserverGui(port);
-			}
-			catch (HeadlessException e)
-			{
-				System.out.println(e.getMessage() + "\nNo GUI available - going into headless mode");
-				new WebserverCmdLine(port);
+				super.setMappingTable(mappingtable);
 			}
 		}
-		catch (IOException e)
-		{
-			System.out.println("IO exception bubbled up to main\nSomething went wrong: " + e.getMessage());
-		}
-	}
+		;
 
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException
-	{
 		// enable log
 		BasicConfigurator.configure();
+
+		// server
+		final MyServ srv = new MyServ();
+
+		// set WebContent alias
+		Acme.Serve.Serve.PathTreeDictionary aliases = new Acme.Serve.Serve.PathTreeDictionary();
+		aliases.put("/*", new java.io.File("WebContent"));
+		srv.setMappingTable(aliases);
+
+		// set port
+		java.util.Properties properties = new java.util.Properties();
+		properties.put("port", port);
+		properties.setProperty(Acme.Serve.Serve.ARG_NOHUP, "nohup");
+		srv.arguments = properties;
+
+		// add FrontController as the only servlet
+		String variant = new UsedMolgenisOptions().appName;
+		srv.addServlet(variant + "/*", "app.servlet.FrontController");
+
+		// add shutdown hooks
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
+		{
+			public void run()
+			{
+				srv.notifyStop();
+				srv.destroyAllServlets();
+			}
+		}));
+
+		// run server in new thread
+		(new Thread()
+		{
+			public void run()
+			{
+				srv.serve();
+			}
+		}).start();
 		
+		// display app location
+		System.out.println("*********************************************************");
+		System.out.println("APPLICATION IS RUNNING AT: http://localhost:" + port + "/" + variant + "/");
+		System.out.println("*********************************************************");
+
+	}
+
+	public static void main(String[] args) throws IOException
+	{
+		int port;
 		if (args.length == 0)
 		{
-
-			// get the default port
-			int port = Webserver.DEF_PORT;
-
-			// check if the port is free, if not, try the next 100
-			int freePort = Helper.getAvailablePort(port, 100);
-
-			// run the app on a free port
-			new RunStandalone(freePort);
-
+			// check if the default 8080 port is free, if not, try the next 100
+			port = Helper.getAvailablePort(8080, 100);
+			new RunStandalone(port);
 		}
 		else if (args.length == 1)
 		{
-
 			// run the app the selected port, and on this port only
-			int port = Integer.valueOf(args[0]);
-			
-			if (Helper.isAvailable(port))
-			{
-				new RunStandalone(port);
-			}
-			else
+			port = Integer.valueOf(args[0]);
+
+			// if not available, throw error
+			if (!Helper.isAvailable(port))
 			{
 				throw new IOException("Port " + port + " already in use!");
 			}
+			new RunStandalone(port);
 		}
 		else
 		{

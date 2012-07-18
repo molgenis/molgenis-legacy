@@ -61,8 +61,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 		// JDBCTABLE, JOINTABLE, QUERYTABLE
 		// }
 
-		private final String backEnd = "LIFELINES_VM_TEST";
-
+		private final String backEnd = "JOINTABLE";
 
 		@Override
 		public TupleTable create(Database db, Tuple request)
@@ -81,8 +80,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 					return createLifelinesTestVMJoinTable(db, tableNames,
 							columnNames);
 				} else if (backEnd.equals("MEMORY_TABLE")) {
-					return createMemory(db, tableNames,
-							columnNames);
+					return createMemory(db, tableNames, columnNames);
 				} else {
 					return null;
 				}
@@ -93,7 +91,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 		private TupleTable createMemory(Database db, List<String> tableNames,
 				List<String> columnNames) {
-			final TupleTable table = MemoryTableFactory.create(51);
+			final TupleTable table = MemoryTableFactory.create(51, 10);
 			return table;
 		}
 
@@ -114,7 +112,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 		private TupleTable createLifelinesTestVMJoinTable(Database db,
 				List<String> tableNames, final List<String> columnNames)
-						throws DatabaseException {
+				throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new OracleTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
@@ -132,7 +130,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 		private TupleTable createJoinTable(Database db,
 				List<String> tableNames, final List<String> columnNames)
-						throws DatabaseException {
+				throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
@@ -151,7 +149,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 		private TupleTable createQueryTable(Database db,
 				List<String> tableNames, final List<String> columnNames)
-						throws DatabaseException {
+				throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);

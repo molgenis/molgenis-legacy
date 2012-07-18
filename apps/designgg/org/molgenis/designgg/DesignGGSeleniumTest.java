@@ -8,13 +8,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import app.servlet.MolgenisServlet;
+import app.servlet.UsedMolgenisOptions;
+import boot.Helper;
 import boot.RunStandalone;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.HttpCommandProcessor;
 import com.thoughtworks.selenium.Selenium;
-
-import core.Helper;
 
 /**
  * 
@@ -42,7 +42,7 @@ public class DesignGGSeleniumTest
 	@BeforeClass
 	public void start() throws Exception
 	{
-		appName = MolgenisServlet.getMolgenisVariantID();
+		appName = new UsedMolgenisOptions().appName;
 		int webserverPort = 8080;
 		if (!tomcat) webserverPort = Helper.getAvailablePort(11020, 10);
 

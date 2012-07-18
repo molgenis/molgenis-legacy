@@ -1,6 +1,7 @@
 ## Build folders
 bin/
 build/
+classes/
 tmp/
 hsqldb/
 handwritten/
@@ -12,6 +13,7 @@ WebContent/WEB-INF/
 *.DS_Store
 *.swp
 *.out
+*.passwd
 
 ## Netbeans private
 nbproject/private/
@@ -37,7 +39,4 @@ log*
 /target
 logger.out*
 /dist
-/generated/java
-/.settings
-!/.settings/template*
-.project
+/.settings/org.eclipse.wst.common.component
