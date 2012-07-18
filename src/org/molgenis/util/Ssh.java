@@ -33,24 +33,21 @@ public class Ssh
 		this(host, user, password, 22);
 	}
 
-	public Ssh(String host, String user, String password, int port)
-			throws IOException
+	public Ssh(String host, String user, String password, int port) throws IOException
 	{
 		this.hostname = host;
 		this.username = user;
 		this.password = password;
 		this.port = port;
-		
+
 		this.connect();
 	}
 
-	public Ssh(String host, String user, String password, int port,
-			String forwardHost, String forwardUser, String forwardPassword,
-			int forwardPort) throws IOException
+	public Ssh(String host, String user, String password, int port, String forwardHost, String forwardUser,
+			String forwardPassword, int forwardPort) throws IOException
 	{
 		// first create a tunnel, then connect to second host
-		Ssh forwardSsh = new Ssh(forwardHost, forwardUser, forwardPassword,
-				forwardPort);
+		Ssh forwardSsh = new Ssh(forwardHost, forwardUser, forwardPassword, forwardPort);
 
 		// setup the tunnel via the forwardHost to the port
 		forwardSsh.forward(9999, host, port);
@@ -60,17 +57,14 @@ public class Ssh
 		this.username = user;
 		this.password = password;
 		this.port = 9999;
-		
+
 		this.connect();
 	}
 
-	public void forward(int local_port, String host_to_connect,
-			int port_to_connect) throws IOException
+	public void forward(int local_port, String host_to_connect, int port_to_connect) throws IOException
 	{
-		logger.debug("creating a tunnel from L:" + local_port + "->"
-				+ host_to_connect + ":" + port_to_connect);
-		lpf = conn.createLocalPortForwarder(local_port, host_to_connect,
-				port_to_connect);
+		logger.debug("creating a tunnel from L:" + local_port + "->" + host_to_connect + ":" + port_to_connect);
+		lpf = conn.createLocalPortForwarder(local_port, host_to_connect, port_to_connect);
 
 		// conn.requestRemotePortForwarding("127.0.0.1", local_port,
 		// host_to_connect, port_to_connect);
@@ -83,8 +77,7 @@ public class Ssh
 	 */
 	private void connect() throws IOException
 	{
-		logger.debug("trying to connect to " + this.username + "@"
-				+ this.hostname + ":" + this.port);
+		logger.debug("trying to connect to " + this.username + "@" + this.hostname + ":" + this.port);
 		/* Create a connection instance */
 		conn = new Connection(this.hostname, this.port);
 
@@ -94,10 +87,8 @@ public class Ssh
 		/* Authenticate */
 		try
 		{
+			boolean isAuthenticated = conn.authenticateWithPassword(username, password);
 
-			boolean isAuthenticated = conn.authenticateWithPassword(username,
-					password);
-			
 			if (isAuthenticated == false)
 			{
 				throw new IOException("Authentication failed.");
@@ -107,26 +98,22 @@ public class Ssh
 		catch (Exception e)
 		{ // authenticated method not supported
 			// try to use keyboard interactive
-			conn.authenticateWithKeyboardInteractive(username,
-					new InteractiveCallback()
+			conn.authenticateWithKeyboardInteractive(username, new InteractiveCallback()
+			{
+				public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
+						boolean[] echo) throws Exception
+				{
+					String[] responses = new String[numPrompts];
+					for (int x = 0; x < numPrompts; x++)
 					{
-						public String[] replyToChallenge(String name,
-								String instruction, int numPrompts,
-								String[] prompt, boolean[] echo)
-								throws Exception
-						{
-							String[] responses = new String[numPrompts];
-							for (int x = 0; x < numPrompts; x++)
-							{
-								responses[x] = password;
-							}
-							return responses;
-						}
-					});
+						responses[x] = password;
+					}
+					return responses;
+				}
+			});
 		}
 
-		logger.debug("connected to " + this.username + "@" + this.hostname
-				+ ":" + this.port);
+		logger.debug("connected to " + this.username + "@" + this.hostname + ":" + this.port);
 	}
 
 	public SshResult executeCommand(String command) throws IOException
@@ -135,8 +122,7 @@ public class Ssh
 	}
 
 	/** Execute one command and wait for the result to return */
-	public SshResult executeCommand(String command, int timeout)
-			throws IOException
+	public SshResult executeCommand(String command, int timeout) throws IOException
 	{
 		logger.debug("executing command: " + command);
 
@@ -152,6 +138,7 @@ public class Ssh
 			InputStream stdout = sess.getStdout();
 			InputStream stderr = sess.getStderr();
 
+			//sess.startShell()
 			sess.execCommand(command);
 
 			byte[] buffer = new byte[8192];
@@ -168,18 +155,15 @@ public class Ssh
 					 * may be set together.
 					 */
 
-					int conditions = sess.waitForCondition(
-							ChannelCondition.STDOUT_DATA
-									| ChannelCondition.STDERR_DATA
-									| ChannelCondition.EOF, timeout);
+					int conditions = sess.waitForCondition(ChannelCondition.STDOUT_DATA | ChannelCondition.STDERR_DATA
+							| ChannelCondition.EOF, timeout);
 
 					/* Wait no longer than 2 seconds (= 2000 milliseconds) */
 
 					if ((conditions & ChannelCondition.TIMEOUT) != 0)
 					{
 						/* A timeout occured. */
-						throw new IOException(
-								"Timeout while waiting for data from peer.");
+						throw new IOException("Timeout while waiting for data from peer.");
 					}
 
 					/*
@@ -236,8 +220,7 @@ public class Ssh
 				}
 			}
 
-			return new SshResult(stdOutBuffer.toString(), stdErrBuffer
-					.toString());
+			return new SshResult(stdOutBuffer.toString(), stdErrBuffer.toString());
 		}
 		catch (IOException e)
 		{
@@ -269,17 +252,25 @@ public class Ssh
 	/**
 	 * Download remote file to local file via scp
 	 */
-	public void uploadFile(File localFile, String remoteFile)
-			throws IOException
+	public void uploadFile(File localFile, String remoteFile) throws IOException
 	{
-		logger.debug("upload local file '" + localFile + "' to remote file '"
-				+ remoteFile + "'");
+		logger.debug("upload local file '" + localFile + "' to remote file '" + remoteFile + "'");
 
 		SCPClient scp = conn.createSCPClient();
 
 		OutputStream out = new FileOutputStream(localFile);
 
-		scp.put(localFile.getAbsolutePath(), remoteFile, "", "0600");
+		// split remote file in directory
+		if (remoteFile.contains("/"))
+		{
+			String dir = remoteFile.substring(0, remoteFile.lastIndexOf("/"));
+			String file = remoteFile.substring(remoteFile.lastIndexOf("/")+1);
+			scp.put(localFile.getAbsolutePath(), file, dir, "0600");
+		}
+		else
+		{
+			scp.put(localFile.getAbsolutePath(), remoteFile, "", "0600");
+		}
 
 		out.flush();
 		out.close();
@@ -287,28 +278,53 @@ public class Ssh
 		logger.debug("upload file complete");
 	}
 
-	public void uploadStringToFile(String string, String remoteFile, String remoteDir)
-			throws IOException
+	/** Upload string to remote file. 
+	 * 
+	 * @param string to upload
+	 * @param remoteFile full path including directories
+	 * @throws IOException
+	 */
+	public void uploadStringToFile(String string, String remoteFile) throws IOException
 	{
 		logger.debug("upload string to remote file '" + remoteFile + "'");
 
 		SCPClient scp = conn.createSCPClient();
-		scp.put(string.getBytes(), remoteFile, remoteDir, "0600");
+		
+		if (remoteFile.contains("/"))
+		{
+			String dir = remoteFile.substring(0, remoteFile.lastIndexOf("/"));
+			String file = remoteFile.substring(remoteFile.lastIndexOf("/")+1);
+			scp.put(string.getBytes(), file, dir, "0600");
+		}
+		else
+		{
+			scp.put(string.getBytes(), remoteFile, "", "0600");
+		}
 		logger.debug("upload file complete");
 
 	}
 
-    public void uploadStringToFile(String string, String remoteFile)
-			throws IOException
+
+	/** Upload a string using scp, with seperate directory and file parameters.
+	 * 
+	 * @param string to upload
+	 * @param remoteFile only the file name
+	 * @param remoteDir path to the directory
+	 * @throws IOException
+	 */
+	public void uploadStringToFile(String string, String remoteFile, String remoteDir) throws IOException
 	{
-		logger.debug("upload string to remote file '" + remoteFile + "'");
-
-		SCPClient scp = conn.createSCPClient();
-		scp.put(string.getBytes(), remoteFile, "", "0600");
-		logger.debug("upload file complete");
-
+		if(!"".equals(remoteDir))
+		{
+			this.uploadStringToFile(string, remoteDir + "/" + remoteFile);
+		}
+		else
+		{
+			this.uploadStringToFile(string, remoteFile);
+		}
+		
 	}
-
+	
 	/**
 	 * Download remote file to local file via scp
 	 * 
@@ -316,11 +332,9 @@ public class Ssh
 	 * @param localFile
 	 * @throws IOException
 	 */
-	public void downloadFile(String remoteFile, File localFile)
-			throws IOException
+	public void downloadFile(String remoteFile, File localFile) throws IOException
 	{
-		logger.debug("download remote file '" + remoteFile + "' to local file "
-				+ localFile);
+		logger.debug("download remote file '" + remoteFile + "' to local file " + localFile);
 		SCPClient scp = conn.createSCPClient();
 
 		OutputStream out = new FileOutputStream(localFile);
@@ -333,8 +347,7 @@ public class Ssh
 		logger.debug("download file complete");
 	}
 
-    public String downloadFileIntoString(String remoteFile)
-			throws IOException
+	public String downloadFileIntoString(String remoteFile) throws IOException
 	{
 		logger.debug("download remote file '" + remoteFile);
 		SCPClient scp = conn.createSCPClient();
@@ -343,9 +356,8 @@ public class Ssh
 
 		scp.get(remoteFile, out);
 
-        return out.toString();
+		return out.toString();
 	}
-
 
 	@Override
 	public void finalize()
@@ -409,5 +421,6 @@ public class Ssh
 
 		return out.toString();
 	}
+
 
 }
