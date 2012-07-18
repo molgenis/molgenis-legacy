@@ -6,11 +6,11 @@ import java.util.Vector;
 
 import org.molgenis.util.SimpleTree;
 
+import com.google.gson.Gson;
+
 public class JQueryTreeView<E> extends HtmlWidget
 {
 	private SimpleTree<JQueryTreeViewElement> treeData;
-	
-	private List<String> listOfMeasurements = new ArrayList<String>();
 			
 	public JQueryTreeView(String name, SimpleTree<JQueryTreeViewElement> treeData)
 	{
@@ -62,7 +62,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") 
 							+  "\" class=\"closed"
 							+  "\" style=\"display:none;\"><span class=\"folder\"><input type=\"checkbox\" id=\"" 
-							+  node.getLabel() + "\" name=\"" + node.getLabel() + "\"" 
+							+  node.getEntityID() + "\" name=\"" + node.getEntityID() + "\"" 
 							+  (selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
 							+  " />" + node.getLabel() + "</span>\n"
 							+  "<ul>\n";
@@ -81,12 +81,9 @@ public class JQueryTreeView<E> extends HtmlWidget
 			returnString += "</ul>\n</li>\n";
 		} else {
 			returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\" style=\"display:none;\"><span class=\"point\"><input type=\"checkbox\" id=\"" 
-						  +	node.getLabel() + "\" name=\"" + node.getLabel() + "\"" 
+						  +	node.getEntityID() + "\" name=\"" + node.getEntityID() + "\"" 
 						  +	(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
-						  +	" />" + node.getLabel() + "</span></li>\n"; 
-//						  +	"<script>createHashMap(\"" + node.getName() + "\",\"" + node.getHtmlValue() + "\")</script>\n";
-				
-			listOfMeasurements.add(node.getName());
+						  +	" />" + node.getLabel() + "</span></li>\n"; 				
 		}
 		
 		return returnString;
