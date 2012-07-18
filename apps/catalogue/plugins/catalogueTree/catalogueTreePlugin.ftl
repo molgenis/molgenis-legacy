@@ -8,7 +8,12 @@
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
-	
+	<style type="text/css">
+	div#selection{
+	   	z-index: 9000;
+	   	display: none;
+	}
+	</style>
 	<script type="text/javascript">
 		
 		function searchInTree(){
@@ -83,7 +88,7 @@
 					}
 				});
 			}
-			removeVerticalLine($('#browser').children('li').attr('id'));
+			
 		}		
 		
 		function removeVerticalLine(id){
@@ -110,7 +115,7 @@
 		}
 		
 	</script>
-	
+
 	<div class="formscreen">
 		
 		<div class="form_header" id="${screen.getName()}">
@@ -158,6 +163,15 @@
 						 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 						 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
 			 							</div>
+			 							<div style="float:left">
+				 							<input type="submit" id="downloadButton" name="downloadButton" value="Download as Excel" 
+											onclick="__action.value='downloadButton';" "/>
+			 							</div>
+			 							<div style="float:left">
+				 							<input type="submit" id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
+											onclick="__action.value='downloadButtonEMeasure';" "/>
+			 							</div>
+			 							
 					    			</td></tr>
 					    			<tr><td class="box-body" style="width:50%;">
 					    
@@ -205,6 +219,11 @@
 								</div>
 						    </td>
 						    <td class="box-body"> 
+      							<div id="selection">
+					    			<textarea rows="2" cols="20">
+					    				Here is your selection: 
+									</textarea>
+					    		</div>
       							<div id="details">
       								<script>
 										<#if screen.getListOfJSONs()??>

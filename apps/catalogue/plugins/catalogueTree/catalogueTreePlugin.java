@@ -2,6 +2,7 @@ package plugins.catalogueTree;
 
 import gcc.catalogue.ShoppingCart;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -9,10 +10,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 import org.json.JSONException;
@@ -35,6 +42,10 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
+
+import com.ibm.icu.util.Calendar;
+
+import plugins.emeasure.EMeasure;
 
 
 //import org.molgenis.util.XlsWriter;
@@ -113,6 +124,76 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			System.out.println("The selected investigation is : "+ selectedInvestigation);
 			arrayInvestigations.clear();
 
+			
+			
+		}else if(request.getAction().equals("downloadButtonEMeasure")){
+			//Make E-Measure XML file
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm");
+			Date date = new Date();
+			List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
+			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
+			for (Measurement m : allMeasList) {
+				
+				if(request.getBool(m.getId().toString()) != null){
+					selectedMeasList.add(m);
+				}
+			}
+			
+			EMeasure em = new EMeasure(db, "EMeasure_"+dateFormat.format(date));
+			
+			em.convert(selectedMeasList);
+			
+			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+			HttpServletResponse httpResponse = rt.getResponse();
+			
+			String redirectURL = "tmpfile/EMeasure_"+dateFormat.format(date) + ".xml";
+
+			httpResponse.sendRedirect(redirectURL);
+		}
+		else if(request.getAction().equals("downloadButton")){
+			
+			WorkbookSettings ws = new WorkbookSettings();
+
+			ws.setLocale(new Locale("en", "EN"));
+
+			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+			File mappingResult = new File(tmpDir + File.separator + "selectedVariables.xls");
+
+			WritableWorkbook workbook = Workbook.createWorkbook(mappingResult, ws);
+
+			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
+
+			int startingRow = 1;
+			
+			
+			
+			List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
+			
+			outputExcel.addCell(new Label(0, 0, "selected variables"));
+			
+			for (Measurement m : allMeasList) {
+				
+				if(request.getBool(m.getId().toString()) != null){
+					outputExcel.addCell(new Label(0, startingRow,  m.getName()));
+					startingRow++;
+				}
+			}
+			//setMessages(new ScreenMessage("Your request has been downloaded", true));
+			
+			workbook.write();
+			workbook.close();
+			
+			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+			HttpServletRequest httpRequest   = rt.getRequest();
+			HttpServletResponse httpResponse = rt.getResponse();
+			//System.out.println(">>> " + this.getParent().getName()+ "or >>>  "+ this.getSelected().getLabel());
+			//String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsDownloadForm";
+			
+			String redirectURL = "tmpfile/selectedVariables.xls";
+
+			httpResponse.sendRedirect(redirectURL);
+			
 		}else if ("SaveSelectionSubmit".equals(request.getAction())) {
 
 			if (!this.getLogin().isAuthenticated()) {
@@ -296,7 +377,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		// Create a starting point of the tree! The root of the tree!
 		JQueryTreeViewElement protocolsTree = new JQueryTreeViewElement(
-				"Study_" + this.getSelectedInvestigation().replaceAll(" ", "_"), null);
+				"Study_" + this.getSelectedInvestigation().replaceAll(" ", "_"), "", null);
 		protocolsTree.setLabel("Study: " + this.getSelectedInvestigation());
 
 		// Variable indicating whether the input token has been found.
@@ -398,12 +479,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					childTree = new JQueryTreeViewElement(protocolName
 							+ "_identifier_" + multipleInheritance.get(protocolName),
-							protocolName, parentNode);
+							protocolName, protocol.getId().toString(),parentNode);
 
 				} else {
 
 					// The tree first time is being created.
-					childTree = new JQueryTreeViewElement(protocolName, parentNode);
+					childTree = new JQueryTreeViewElement(protocolName, protocol.getId().toString(), parentNode);
 					childTree.setCollapsed(true);
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
@@ -584,7 +665,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					childTree = new JQueryTreeViewElement(displayName
 							+ "_identifier_" + multipleInheritance.get(displayName),
-							displayName, parentNode);
+							displayName, measurement.getId().toString(), parentNode);
 
 					uniqueName = displayName + "_identifier_" + multipleInheritance.get(displayName);
 
@@ -592,7 +673,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 				} else {
 
-					childTree = new JQueryTreeViewElement(displayName, parentNode);
+					childTree = new JQueryTreeViewElement(displayName, measurement.getId().toString(), parentNode);
 
 					uniqueName = displayName;
 
@@ -624,54 +705,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 				listOfJSONs.add(json.toString());
 
-				//				// Searching for the details. Since htmlValue has all the
-				//				// information about this measurement,
-				//				// therefore we search for the input tokenin this variable
-				//				if (mode == SEARCHINGDETAIL) {
-				//
-				//					if (htmlValue.toLowerCase().matches(
-				//							".*" + InputToken.toLowerCase() + ".*")) {
-				//						findTokenInDetailInformation = true;
-				//					} else {
-				//						findTokenInDetailInformation = false;
-				//						childTree.remove();
-				//					}
-				//
-				//					if (findTokenInDetailInformation == true) {
-				//						findTokenInMeasurements = true;
-				//					}
-				//				}
-				//
-				//				// Searching for the details and measurement name. If either
-				//				// name of measurement or detail information
-				//				// of measurement contains the input token, this is a matching!
-				//				if (mode == SEARCHINGALL) {
-				//
-				//					if (htmlValue.toLowerCase().matches(
-				//							".*" + InputToken.toLowerCase() + ".*")) {
-				//						findTokenInDetailInformation = true;
-				//					} else {
-				//
-				//						if (measurement
-				//								.getName()
-				//								.toLowerCase()
-				//								.matches(".*" + InputToken.toLowerCase() + ".*")) {
-				//							findTokenInDetailInformation = true;
-				//						} else {
-				//
-				//							if (foundInParent != true) {
-				//								findTokenInDetailInformation = false;
-				//								childTree.remove();
-				//							} else {
-				//								findTokenInDetailInformation = true;
-				//							}
-				//						}
-				//					}
-				//
-				//					if (findTokenInDetailInformation == true) {
-				//						findTokenInMeasurements = true;
-				//					}
-				//				}
 			}
 
 		} catch (DatabaseException e) {
@@ -843,7 +876,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		List<Measurement> allMeasList = db.find(Measurement.class);
 		for (Measurement m : allMeasList) {
-			if (request.getBool(m.getName()) != null) {
+			if (request.getBool(m.getId().toString()) != null) {
 				this.shoppingCart.add(m);
 			}
 		}
