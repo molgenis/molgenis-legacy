@@ -23,13 +23,11 @@ import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
 
-public class TestProtocolTable
-{
+public class TestProtocolTable {
 	TupleTable table;
 
 	@BeforeClass
-	public void setup() throws DatabaseException
-	{
+	public void setup() throws DatabaseException {
 		BasicConfigurator.configure();
 
 		Logger.getLogger("org.hibernate").setLevel(Level.INFO);
@@ -37,13 +35,13 @@ public class TestProtocolTable
 
 		final Database db = DatabaseFactory.create();
 
-		int numRows = 10000;
+		final int numRows = 10000;
 
 		// clean protocols, protocolApplications, measurements, values
 		db.remove(db.find(ObservedValue.class));
-		db.remove(db.find(Measurement.class));
 		db.remove(db.find(ProtocolApplication.class));
 		db.remove(db.find(Protocol.class));
+		db.remove(db.find(Measurement.class));
 		db.remove(db.find(Individual.class));
 
 		// generate good protocol
@@ -51,8 +49,7 @@ public class TestProtocolTable
 		p.setName("TestProtocol");
 
 		final List<Measurement> mList = new ArrayList<Measurement>();
-		for (int i = 1; i <= 10; i++)
-		{
+		for (int i = 1; i <= 10; i++) {
 			final Measurement m = new Measurement();
 			m.setName("meas" + i);
 
@@ -67,18 +64,16 @@ public class TestProtocolTable
 
 		// generate some protocol applications
 
-		List<Individual> iList = new ArrayList<Individual>();
-		for (int row = 1; row <= numRows; row++)
-		{
+		final List<Individual> iList = new ArrayList<Individual>();
+		for (int row = 1; row <= numRows; row++) {
 			final Individual ind = new Individual();
 			ind.setName("patient" + row);
 			iList.add(ind);
 		}
 		db.add(iList);
 
-		List<ProtocolApplication> paList = new ArrayList<ProtocolApplication>();
-		for (int row = 0; row < iList.size(); row++)
-		{
+		final List<ProtocolApplication> paList = new ArrayList<ProtocolApplication>();
+		for (int row = 0; row < iList.size(); row++) {
 			final ProtocolApplication pa = new ProtocolApplication();
 			pa.setName("pa" + row);
 			pa.setProtocol(p.getId());
@@ -88,11 +83,9 @@ public class TestProtocolTable
 		db.add(paList);
 
 		List<ObservedValue> values = new ArrayList<ObservedValue>();
-		for (int row = 0; row < iList.size(); row++)
-		{
+		for (int row = 0; row < iList.size(); row++) {
 
-			for (final Measurement m : mList)
-			{
+			for (final Measurement m : mList) {
 				final ObservedValue v = new ObservedValue();
 				v.setTarget_Id(iList.get(row).getId());
 				v.setProtocolApplication(paList.get(row).getId());
@@ -103,11 +96,12 @@ public class TestProtocolTable
 			}
 
 			// empty cache
-			if (values.size() > 10000)
-			{
+			if (values.size() > 1000) {
 				db.add(values);
 				values = new ArrayList<ObservedValue>();
+				db.getEntityManager().clear();
 			}
+
 		}
 
 		db.add(values);
@@ -116,8 +110,7 @@ public class TestProtocolTable
 	}
 
 	@Test
-	public void test1() throws TableException
-	{
+	public void test1() throws TableException {
 		// check columns
 		Assert.assertEquals(table.getColumns().get(0).getName(), "target");
 		Assert.assertEquals(table.getColumns().get(1).getName(), "meas1");
@@ -125,8 +118,7 @@ public class TestProtocolTable
 		// check rows
 		table.getRows().size();
 
-		for (final Tuple row : table)
-		{
+		for (final Tuple row : table) {
 			// Assert.assertEquals(2, row.getFieldNames().size());
 			//
 			// Assert.assertEquals(true,
@@ -142,15 +134,15 @@ public class TestProtocolTable
 	}
 
 	@Test
-	public void testLimitOffset() throws TableException
-	{
+	public void testLimitOffset() throws TableException {
 		table.setLimitOffset(2, 3);
 
 		// limit == 2
 		Assert.assertEquals(table.getRows().size(), 2);
 
 		// offset = 3, so we skip first1-first3 and expect first4
-		Assert.assertEquals(table.getRows().get(0).getString("meas1"), "meas1:val3");
+		Assert.assertEquals(table.getRows().get(0).getString("meas1"),
+				"meas1:val3");
 
 		// remove filters again
 		table.setLimitOffset(0, 0);
