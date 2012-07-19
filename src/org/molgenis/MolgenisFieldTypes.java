@@ -5,7 +5,6 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.BoolField;
-import org.molgenis.fieldtypes.CharField;
 import org.molgenis.fieldtypes.DateField;
 import org.molgenis.fieldtypes.DatetimeField;
 import org.molgenis.fieldtypes.DecimalField;
@@ -42,7 +41,7 @@ public class MolgenisFieldTypes
 	private static Map<String, FieldType> types = new TreeMap<String, FieldType>();
 	private static Logger logger = Logger.getLogger(MolgenisFieldTypes.class);
 	private static boolean init = false;
-	
+
 	public enum FieldTypeEnum {
 		BOOL,
 		CHAR,
@@ -67,9 +66,9 @@ public class MolgenisFieldTypes
 		TEXT,
 		XREF,
 		CATEGORICAL,
-		UNKNOWN, 
+		UNKNOWN,
 	}
-	
+
 	/** Initialize default field types */
 	private static void init()
 	{
@@ -104,7 +103,7 @@ public class MolgenisFieldTypes
 	{
 		types.put(ft.getClass().getSimpleName().toLowerCase(), ft);
 	}
-	
+
 	public static HtmlInput<?> createInput(String type, String name, String xrefEntityClassName) throws HtmlInputException
 	{
 		return getType(type).createInput(name, xrefEntityClassName);
@@ -117,7 +116,7 @@ public class MolgenisFieldTypes
 		{
 			return types.get(name + "field").getClass().newInstance();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			logger.warn("couldn't get type for name '" + name + "'");
 			return new UnknownField();
@@ -129,38 +128,40 @@ public class MolgenisFieldTypes
 		init();
 		try
 		{
-			FieldType ft = f.getType().getClass().newInstance();
+			final FieldType ft = f.getType().getClass().newInstance();
 			ft.setField(f);
 			return ft;
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 			throw new MolgenisModelException(e.getMessage());
 		}
 	}
-	
+
 	public static FieldType getTypeBySqlTypesCode(int sqlCode) {
 		switch(sqlCode) {
-			case java.sql.Types.BIGINT: return new LongField(); 
+			case java.sql.Types.BIGINT: return new LongField();
 			case java.sql.Types.INTEGER:
 			case java.sql.Types.SMALLINT:
 			case java.sql.Types.TINYINT: return new IntField();
-			
+
 			case java.sql.Types.BOOLEAN: return new BoolField();
 			case java.sql.Types.DATE: return new DateField();
-			case java.sql.Types.DECIMAL: 
-			case java.sql.Types.DOUBLE: 
+			case java.sql.Types.DECIMAL:
+			case java.sql.Types.DOUBLE:
 			case java.sql.Types.NUMERIC:
 			case java.sql.Types.FLOAT:
 			case java.sql.Types.REAL: return new DecimalField();
-			
+
 			case java.sql.Types.CHAR:
 			case java.sql.Types.VARCHAR:
 			case java.sql.Types.NVARCHAR: return new StringField();
-			
-			case java.sql.Types.TIME: return new DatetimeField();
-			
+
+			case java.sql.Types.TIME:
+			case java.sql.Types.TIMESTAMP:
+				return new DatetimeField();
+
 			default: throw new IllegalArgumentException(String.format("unkown sql code: %d", sqlCode));
 		}
 	}
