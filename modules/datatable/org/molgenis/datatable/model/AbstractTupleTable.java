@@ -13,6 +13,8 @@ public abstract class AbstractTupleTable implements TupleTable
 	private int offset = 0;
 	private int colOffset = 0;
 	private int colLimit = 0;
+	
+	private Database db;
 
 	@Override
 	public void setLimitOffset(int limit, int offset)
@@ -96,7 +98,11 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setDb(Database db)
 	{
-		//only override if necessary
+		this.db = db;
 	}
 
+	public Database getDb()
+	{
+		return this.db;
+	}
 }

@@ -82,8 +82,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			}
 		}
 
-		private TupleTable createMemory(Database db, List<String> tableNames,
-				List<String> columnNames) {
+		private TupleTable createMemory(Database db, List<String> tableNames, List<String> columnNames) {
 			final TupleTable table = MemoryTableFactory.create(51, 10);
 			return table;
 		}

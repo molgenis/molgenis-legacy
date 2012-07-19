@@ -75,6 +75,7 @@ public class JQGridView extends HtmlWidget {
 			@Override
 			public TupleTable create(Database db, Tuple request)
 					throws TableException {
+				table.setDb(db);
 				return table;
 			}
 		});
@@ -100,56 +101,50 @@ public class JQGridView extends HtmlWidget {
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
 			final String opRequest = request.getString(OPERATION);
 
-			final Operation operation = StringUtils.isNotEmpty(opRequest) ? Operation
-					.valueOf(opRequest) : Operation.RENDER_DATA;
-					if (operation == Operation.LOAD_CONFIG) {
-						loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
-					} else if (operation == Operation.LOAD_TREE) {
-						final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable
-								.getColumns());
-						response.getOutputStream().print(treeNodes);
-					} else { // operation == Operation.RENDER_DATA
-						final List<QueryRule> rules = new ArrayList<QueryRule>();
-						final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(request);
+			final Operation operation = StringUtils.isNotEmpty(opRequest) ? Operation.valueOf(opRequest) : Operation.RENDER_DATA;
+			if (operation == Operation.LOAD_CONFIG) {
+				loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+			} else if (operation == Operation.LOAD_TREE) {
+				final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
+				response.getOutputStream().print(treeNodes);
+			} else { // operation == Operation.RENDER_DATA
+				final List<QueryRule> rules = new ArrayList<QueryRule>();
+				final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(request);
 
-						if (CollectionUtils.isNotEmpty(filterRules)) { // is this a good
-							// idea
-							// (instanceof)?
-							if (tupleTable instanceof FilterableTupleTable) {
-								rules.addAll(filterRules);
-								((FilterableTupleTable) tupleTable).setFilters(rules);
-							}
-						}
-
-						final int limit = request.getInt("rows");
-						final int rowCount = tupleTable.getCount();
-						tupleTable.close(); // Not nice! We should fix this!
-						final int totalPages = (int) Math.ceil(rowCount / limit);
-						final int page = Math.min(request.getInt("page"), totalPages);
-						final int offset = Math.max(limit * page - limit, 0);
-
-						tupleTable.setLimit(limit);
-						tupleTable.setOffset(offset);
-
-						final String sortOrder = request.getString("sord");
-						final String sortField = request.getString("sidx");
-
-						if (StringUtils.isNotEmpty(sortField)
-								&& tupleTable instanceof FilterableTupleTable) {
-							final Operator sortOperator = StringUtils.equals(sortOrder,
-									"asc") ? QueryRule.Operator.SORTASC
-											: QueryRule.Operator.SORTDESC;
-							rules.add(new QueryRule(sortOperator, sortField));
-						}
-
-						if (tupleTable instanceof FilterableTupleTable) {
-							((FilterableTupleTable) tupleTable).setFilters(rules);
-						}
-
-						renderData(((MolgenisRequest) request).getRequest(), response,
-								page, totalPages, tupleTable);
+				if (CollectionUtils.isNotEmpty(filterRules)) {
+					if (tupleTable instanceof FilterableTupleTable) {
+						rules.addAll(filterRules);
+						((FilterableTupleTable) tupleTable).setFilters(rules);
 					}
-					tupleTable.close();
+				}
+
+				final int limit = request.getInt("rows");
+				final int rowCount = tupleTable.getCount();
+				final int totalPages = (int) Math.ceil(rowCount / limit);
+				final int page = Math.min(request.getInt("page"), totalPages);
+				final int offset = Math.max(limit * page - limit, 0);
+
+				tupleTable.setLimit(limit);
+				tupleTable.setOffset(offset);
+
+				final String sortOrder = request.getString("sord");
+				final String sortField = request.getString("sidx");
+
+				if (StringUtils.isNotEmpty(sortField)
+						&& tupleTable instanceof FilterableTupleTable) {
+					final Operator sortOperator = StringUtils.equals(sortOrder,
+							"asc") ? QueryRule.Operator.SORTASC
+									: QueryRule.Operator.SORTDESC;
+					rules.add(new QueryRule(sortOperator, sortField));
+				}
+
+				if (tupleTable instanceof FilterableTupleTable) {
+					((FilterableTupleTable) tupleTable).setFilters(rules);
+				}
+
+				renderData(((MolgenisRequest) request).getRequest(), response,
+						page, totalPages, tupleTable);
+			}
 		} catch (final Exception e) {
 			throw new HandleRequestDelegationException(e);
 		}
@@ -340,6 +335,7 @@ public class JQGridView extends HtmlWidget {
 			TupleTable tupleTable) throws TableException, IOException {
 		final JQGridConfiguration config =
 				new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
+		tupleTable.setDb(db);
 		final String jqJsonConfig = new Gson().toJson(config);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
 	}

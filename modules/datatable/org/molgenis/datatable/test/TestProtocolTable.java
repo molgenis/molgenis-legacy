@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -28,13 +30,18 @@ public class TestProtocolTable {
 	public void setup() throws DatabaseException {
 		BasicConfigurator.configure();
 
+		Logger.getLogger("org.hibernate").setLevel(Level.INFO);
+		Logger.getLogger("org.hibernate.type").setLevel(Level.INFO);
+
 		final Database db = DatabaseFactory.create();
+
+		final int numRows = 10000;
 
 		// clean protocols, protocolApplications, measurements, values
 		db.remove(db.find(ObservedValue.class));
-		db.remove(db.find(Measurement.class));
 		db.remove(db.find(ProtocolApplication.class));
 		db.remove(db.find(Protocol.class));
+		db.remove(db.find(Measurement.class));
 		db.remove(db.find(Individual.class));
 
 		// generate good protocol
@@ -47,6 +54,7 @@ public class TestProtocolTable {
 			m.setName("meas" + i);
 
 			db.add(m);
+
 			p.getFeatures_Id().add(m.getId());
 
 			mList.add(m);
@@ -55,27 +63,45 @@ public class TestProtocolTable {
 		db.add(p);
 
 		// generate some protocol applications
-		final List<ObservedValue> values = new ArrayList<ObservedValue>();
 
-		for (int row = 1; row <= 51; row++) {
+		final List<Individual> iList = new ArrayList<Individual>();
+		for (int row = 1; row <= numRows; row++) {
 			final Individual ind = new Individual();
 			ind.setName("patient" + row);
-			db.add(ind);
+			iList.add(ind);
+		}
+		db.add(iList);
 
+		final List<ProtocolApplication> paList = new ArrayList<ProtocolApplication>();
+		for (int row = 0; row < iList.size(); row++) {
 			final ProtocolApplication pa = new ProtocolApplication();
 			pa.setName("pa" + row);
 			pa.setProtocol(p.getId());
-			db.add(pa);
+			paList.add(pa);
+		}
+
+		db.add(paList);
+
+		List<ObservedValue> values = new ArrayList<ObservedValue>();
+		for (int row = 0; row < iList.size(); row++) {
 
 			for (final Measurement m : mList) {
 				final ObservedValue v = new ObservedValue();
-				v.setTarget_Id(ind.getId());
-				v.setProtocolApplication(pa);
+				v.setTarget_Id(iList.get(row).getId());
+				v.setProtocolApplication(paList.get(row).getId());
 				v.setFeature_Id(m.getId());
 				v.setValue(m.getName() + ":val" + row);
 
 				values.add(v);
 			}
+
+			// empty cache
+			if (values.size() > 1000) {
+				db.add(values);
+				values = new ArrayList<ObservedValue>();
+				db.getEntityManager().clear();
+			}
+
 		}
 
 		db.add(values);
