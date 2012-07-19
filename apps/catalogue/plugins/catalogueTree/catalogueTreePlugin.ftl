@@ -8,12 +8,7 @@
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
-	<style type="text/css">
-	div#selection{
-	   	z-index: 9000;
-	   	display: none;
-	}
-	</style>
+	
 	<script type="text/javascript">
 		
 		function searchInTree(){
@@ -134,7 +129,7 @@
 		<div class="screenbody">
 			<div class="screenpadding">
 				<#if screen.isSelectedInv() == true>
-					<table class="box" width="100%" cellpadding="0" cellspacing="0">
+					<table class="box" width="100%" cellpadding="0" cellspacing="0" style="border-right:1px solid lightgray">
 						<tr><td class="box-header" colspan="2">  
 								        <label>Choose a cohort:
 										<!--select name="investigation" id="investigation"--> 
@@ -190,6 +185,7 @@
 					onkeyup="checkSearchingStatus();">
 				
 				<input type="button" name="SearchCatalogueTree" value="search" onclick="searchInTree()"/>
+				<img src="res/img/catalogue/help.png" id="viewSelection" style="float:right;cursor:pointer;length:20px;width:20px">	    
 					    <!--
 					    <#list screen.getFilters() as filters>
 							<div class="filterslabel">
@@ -210,21 +206,19 @@
 						<#if filter_has_next> and </#if>
 						</#list>
 					    
-					    </td><td class="box-body" style="width: 50%;">Details:</td></tr>
+					    </td><td class="box-body" style="width: 50%">Details:</td></tr>
 					    <tr><td class="box-body">
-								<div id="leftSideTree">  
+								<div id="leftSideTree">
 									${screen.getTreeView()}<br/>
 								</div>
 								<div>
 								</div>
 						    </td>
-						    <td class="box-body"> 
-      							<div id="selection">
-					    			<textarea rows="2" cols="20">
-					    				Here is your selection: 
-									</textarea>
-					    		</div>
-      							<div id="details">
+						    <td class="box-body" id="showInformation"> 
+						    	
+						    	<table style="height:500px;width:100% ">
+						    	<tr><td style="height:250px; padding:0px" >
+						    	<div id="details" style="height:250px;overflow:auto">
       								<script>
 										<#if screen.getListOfJSONs()??>
 											<#list screen.getListOfJSONs() as eachJSON>
@@ -237,8 +231,19 @@
 										   		});
 										    </#list>
 										</#if>		
-									</script>		
+									</script>
+									
       							</div>
+      							</td></tr>
+      							<tr>
+						    	<td style="height:250px; border-top:1px solid lightgray;">
+      							<div id="selection">
+								Selected variables:
+									
+										
+								</div>
+								</td></tr>
+								</table>
 						   </td>
 						</tr>
 						<tr>
@@ -280,6 +285,26 @@
  						if($(this).find('li').length == 0){
  							$(this).find(':checkbox').attr('disabled','true');
  						}
+ 					});
+ 					$('#browser').find('input:checkbox').each(function(){
+ 						
+ 						$(this).attr('checked', false);
+ 						
+ 						$(this).click(function(){
+ 							
+ 							var label = $(this).parent().text();
+ 							var parentID = $(this).parent().parent().attr('id');
+ 							var protocolName = $(this).parents('li').eq(1).children('span').text();
+ 							parentID = parentID + '_checkbox';
+ 							
+ 							if($('#' + parentID).length > 0){
+ 								$('#' + parentID).remove();
+ 							}else{
+ 								var header = '<table id=\"'+parentID + '\"><tr><td style=\"width:30%\">Variables</td><td style=\"width:30%\">Description</td><td style=\"width:30%\">Sector/Protocol</td><td style=\"width:10%\">Delete</td></tr>'; 
+ 								var content = '<tr><td>' + label + '</td><td><!--Description variable--></td><td>' + protocolName + '</td></tr><td><!--delete button--></td></table>';
+ 								$('#selection').append(header + content);
+ 							}
+ 						});	
  					});
  				</script>
 			</div>

@@ -479,7 +479,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					childTree = new JQueryTreeViewElement(protocolName
 							+ "_identifier_" + multipleInheritance.get(protocolName),
-							protocolName, protocol.getId().toString(),parentNode);
+							protocolName, protocol.getId().toString() + "_identifier_" + multipleInheritance.get(protocolName),parentNode);
 
 				} else {
 
@@ -665,7 +665,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 					childTree = new JQueryTreeViewElement(displayName
 							+ "_identifier_" + multipleInheritance.get(displayName),
-							displayName, measurement.getId().toString(), parentNode);
+							displayName, measurement.getId().toString() + "_identifier_" + multipleInheritance.get(displayName), parentNode);
 
 					uniqueName = displayName + "_identifier_" + multipleInheritance.get(displayName);
 
