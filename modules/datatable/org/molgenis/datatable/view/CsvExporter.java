@@ -32,7 +32,7 @@ public class CsvExporter extends AbstractExporter
 		List<String> headers = new ArrayList<String>();
 		for (Field column : table.getColumns())
 		{
-			headers.add(column.getName());
+			headers.add(column.getSqlName());
 		}
 		csv.setHeaders(headers);
 		csv.writeHeader();
