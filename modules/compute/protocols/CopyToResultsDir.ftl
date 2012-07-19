@@ -50,9 +50,10 @@ cp ${intermediatedir}/*_fastqc.zip ${projectResultsDir}/qc
 # Copy dedup metrics to results directory
 cp ${intermediatedir}/*.dedup.metrics ${projectResultsDir}/qc/statistics
 
-# Copy merged BAM plus index to results directory
-cp ${intermediatedir}/*.merged.bam ${projectResultsDir}/alignment
-cp ${intermediatedir}/*.merged.bam.bai ${projectResultsDir}/alignment
+# Copy merged BAM plus index to results directory and create md5 sum
+md5sum ${mergedbam} > ${mergedbam}.md5
+md5sum ${mergedbamindex} > ${mergedbamindex}.md5
+cp ${mergedbam}* ${projectResultsDir}/alignment
 
 
 # Copy alignment stats (lane and sample) to results directory
@@ -74,18 +75,22 @@ cp ${intermediatedir}/*.coverage* ${projectResultsDir}/coverage
 
 # Copy final vcf and vcf.table to results directory
 
-cp ${intermediatedir}/*.snps.final.vcf ${projectResultsDir}/snps
-cp ${intermediatedir}/*.snps.final.vcf.table ${projectResultsDir}/snps
+<#list sample as s>
+
+	cp ${s}.snps.final.vcf ${projectResultsDir}/snps
+	cp ${s}.snps.final.vcf.table ${projectResultsDir}/snps
 
 
-# Copy genotype array vcf to results directory
+	# Copy genotype array vcf to results directory
 
-#if [ -f "${sample}.genotypeArray.updated.header.vcf" ]
-#then
-	cp ${intermediatedir}/*.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
-#fi
+	if [ -f "${s}.genotypeArray.updated.header.vcf" ]
+	then
+		cp ${s}.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
+	fi
 
-cp ${intermediatedir}/*.concordance.ngsVSarray.txt ${projectResultsDir}/qc
+	cp ${s}.concordance.ngsVSarray.txt ${projectResultsDir}/qc
+
+</#list>
 
 # Copy QC report to results directory
 

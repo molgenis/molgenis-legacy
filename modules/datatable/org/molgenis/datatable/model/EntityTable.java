@@ -77,13 +77,14 @@ public class EntityTable extends AbstractFilterableTupleTable
 
 			List<Tuple> result = new ArrayList<Tuple>();
 			for (Entity e : entities)
-
 			{
 				final Tuple t = new SimpleTuple();
+				
 				for (Field f : getColumns())
 				{
 					t.set(f.getName(), e.get(f.getName()));
 				}
+				
 				result.add(t);
 			}
 			return result;

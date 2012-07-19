@@ -17,7 +17,6 @@ alloutputsexist \
 "${cyclecovariateafter}"
 
 export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
-export R_HOME=${R_HOME}
 export R_LIBS=${R_LIBS} 
 
 java -jar -Xmx4g ${analyzecovariatesjar} -l INFO \

@@ -59,6 +59,26 @@ public class TestCsvTable
 		
 	}
 	
+	@Test
+	public void testColLmitOffsetString() throws Exception
+	{
+		//create csv
+		String csv = "firstName\tlastName";
+		csv += "\nlucky\tluke";
+		csv += "\ncalamity\tjane";
+		csv += "\njolly\tjumper";
+		
+		TupleTable table = new CsvTable(csv);
+		
+		table.setColLimit(1);
+		table.setColOffset(1);
+		
+		Assert.assertEquals(table.getRows().get(0).size(), 1);
+		Assert.assertEquals(table.getRows().get(0).getNrColumns(), 1);
+		Assert.assertEquals(table.getRows().get(0).getFieldNames().get(0), "lastName");
+		Assert.assertEquals(table.getRows().get(0).getString("lastName"), "luke");
+	}
+	
 	public void helper(TupleTable table) throws TableException
 	{
 		//verfiy

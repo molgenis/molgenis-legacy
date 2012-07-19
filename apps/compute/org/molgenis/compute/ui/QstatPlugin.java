@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.molgenis.compute.host.Job;
+import org.molgenis.compute.host.Pbs;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.MolgenisForm;
 import org.molgenis.framework.ui.html.Paragraph;
-import org.molgenis.util.Pbs;
-import org.molgenis.util.PbsJob;
 import org.molgenis.util.Tuple;
 
 /**
@@ -25,7 +25,7 @@ public class QstatPlugin extends EasyPluginController<QstatPluginModel>
 
 	String ownerfilter;
 
-	List<PbsJob> jobs = new ArrayList<PbsJob>();
+	List<Job> jobs = new ArrayList<Job>();
 
 	public QstatPlugin(String name, ScreenController<?> parent)
 	{

@@ -12,7 +12,6 @@
 #FOREACH flowcell, lane, seqType, filenamePrefix
 
 export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
-export R_HOME=${R_HOME}
 
 #
 # Check if we need to run this step or wether demultiplexing was already executed successfully in a previous run.
@@ -37,19 +36,20 @@ alloutputsexist "${runResultsDir}/demultiplex.${filenamePrefix}.read_count_check
 		#
 		# Check if the files required for demultiplexing are present.
 		#
-		inputs "${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenameSR}"
+		#inputs "${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenameSR}"
+		inputs "${runResultsDir}/${compressedFastqFilenameSR}"
 		
 		#
 		# Read count of the input file.
 		# Note: we actually count lines, which equals reads * 4 for FastQ files.
 		#
-		reads_in_1=$(gzip -cd ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenameSR} | wc -l)
+		reads_in_1=$(gzip -cd ${runResultsDir}/${compressedFastqFilenameSR} | wc -l)
 		
 		#
 		# Demultiplex the multiplexed, gzipped FastQ file.
 		#
 		Rscript ${demultiplexscript} --bcs '${csv(barcode)}' \
-		--mpr1 ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenameSR} \
+		--mpr1 ${runResultsDir}/${compressedFastqFilenameSR} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathSR)}' \
 		--ukr1 ${runResultsDir}/${compressedDemultiplexedDiscardedFastqFilenameSR} \
 		--tm MP \
@@ -119,15 +119,15 @@ alloutputsexist "${runResultsDir}/demultiplex.${filenamePrefix}.read_count_check
 		#
 		# Check if the files required for demultiplexing are present.
 		#
-		inputs "${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE1}"
-		inputs "${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE2}"
+		inputs "${runResultsDir}/${compressedFastqFilenamePE1}"
+		inputs "${runResultsDir}/${compressedFastqFilenamePE2}"
 	
 		#
 		# Read count of the input file.
 		# Note: we actually count lines, which equals reads * 4 for FastQ files.
 		#
-		reads_in_1=$(gzip -cd ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE1} | wc -l)
-		reads_in_2=$(gzip -cd ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE2} | wc -l)
+		reads_in_1=$(gzip -cd ${runResultsDir}/${compressedFastqFilenamePE1} | wc -l)
+		reads_in_2=$(gzip -cd ${runResultsDir}/${compressedFastqFilenamePE2} | wc -l)
 		
 		#
 		# Read count sanity check for the inputs.
@@ -143,8 +143,8 @@ alloutputsexist "${runResultsDir}/demultiplex.${filenamePrefix}.read_count_check
 		# Demultiplex the multiplexed, gzipped FastQ file.
 		#
 		Rscript ${demultiplexscript} --bcs '${csv(barcode)}' \
-		--mpr1 ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE1} \
-		--mpr2 ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE2} \
+		--mpr1 ${runResultsDir}/${compressedFastqFilenamePE1} \
+		--mpr2 ${runResultsDir}/${compressedFastqFilenamePE2} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathPE1)}' \
 		--dmr2 '${csv(compressedDemultiplexedSampleFastqFilepathPE2)}' \
 		--ukr1 ${runResultsDir}/${compressedDemultiplexedDiscardedFastqFilenamePE1} \
