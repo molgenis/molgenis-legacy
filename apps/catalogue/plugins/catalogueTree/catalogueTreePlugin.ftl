@@ -185,7 +185,7 @@
 					onkeyup="checkSearchingStatus();">
 				
 				<input type="button" name="SearchCatalogueTree" value="search" onclick="searchInTree()"/>
-				<img src="res/img/catalogue/help.png" id="viewSelection" style="float:right;cursor:pointer;length:20px;width:20px">	    
+				
 					    <!--
 					    <#list screen.getFilters() as filters>
 							<div class="filterslabel">
@@ -292,17 +292,55 @@
  						
  						$(this).click(function(){
  							
- 							var label = $(this).parent().text();
- 							var parentID = $(this).parent().parent().attr('id');
- 							var protocolName = $(this).parents('li').eq(1).children('span').text();
- 							parentID = parentID + '_checkbox';
- 							
- 							if($('#' + parentID).length > 0){
- 								$('#' + parentID).remove();
+ 							if($(this).attr('checked') != 'checked'){
+ 								
+ 								if($('#selectedVariableTable').find('tr').length > 2){
+ 									$('#selectedVariableTable').find('tr:last-child').remove();
+ 								}else{
+ 									$('#selectedVariableTable').remove();
+ 								}
  							}else{
- 								var header = '<table id=\"'+parentID + '\"><tr><td style=\"width:30%\">Variables</td><td style=\"width:30%\">Description</td><td style=\"width:30%\">Sector/Protocol</td><td style=\"width:10%\">Delete</td></tr>'; 
- 								var content = '<tr><td>' + label + '</td><td><!--Description variable--></td><td>' + protocolName + '</td></tr><td><!--delete button--></td></table>';
- 								$('#selection').append(header + content);
+ 								
+ 								var label = $(this).parent().text();
+ 								var checkBoxID = $(this).attr('id');
+		 						var uniqueID = $(this).parent().parent().attr('id');
+		 						var protocolName = $(this).parents('li').eq(1).children('span').text();
+		 						
+		 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
+	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td></td><td>' + protocolName + '</td><td style=\"text-align:center\">' + deleteButton + '</td></tr></table>';
+		 						
+	 							<!--We are going to check whether this selectedVariableTable already existed-->
+	 							if($('#selectedVariableTable').length == 0){
+	 							
+	 								var newTable = '<table style=\"width:100%\" id=\"selectedVariableTable\">'+
+	 								'<tr><td style=\"width:30%\">Variables</td><td style=\"width:30%\">Description</td>'+
+	 								'<td style=\"width:30%\">Sector/Protocol</td><td style=\"width:10%;text-align:center\">Delete</td></tr>';
+	 								
+	 								newTable += content;
+	 								newTable += '</table>';
+	 								$('#selection').append(newTable);
+	 								
+	 								$('#'+uniqueID+'_delete').click(function(){
+	 									if($('#selectedVariableTable').find('tr').length > 2){
+		 									$('#'+uniqueID+'_row').remove();
+		 								}else{
+		 									$('#selectedVariableTable').remove();
+		 								}
+		 								$('#' + checkBoxID).attr('checked',false);
+	 								});
+	 								
+	 							}else{
+
+	 								$('#selectedVariableTable').find('tr:last-child').after(content);
+	 								$('#'+uniqueID+'_delete').click(function(){
+	 									if($('#selectedVariableTable').find('tr').length > 2){
+		 									$('#'+uniqueID+'_row').remove();
+		 								}else{
+		 									$('#selectedVariableTable').remove();
+		 								}
+		 								$('#' + checkBoxID).attr('checked',false);
+	 								});
+	 							}
  							}
  						});	
  					});
