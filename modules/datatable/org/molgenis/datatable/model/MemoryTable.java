@@ -15,12 +15,15 @@ public class MemoryTable extends AbstractTupleTable
 {
 	private List<Field> columns = new ArrayList<Field>();
 	private List<Tuple> rows = new ArrayList<Tuple>();
+
 	/**
 	 * Construct from list of tuples. Field will be derived based on column
 	 * names and value type of first tuple. Otherwise field type will be String.
 	 */
 	public MemoryTable(List<Tuple> rows)
 	{
+		if (rows == null) throw new NullPointerException("Creation of MemoryTable failed: rows == null");
+
 		this.rows = rows;
 
 		// use first row
@@ -47,16 +50,16 @@ public class MemoryTable extends AbstractTupleTable
 		if (getLimit() > 0 || getOffset() > 0)
 		{
 			List<Tuple> result = new ArrayList<Tuple>();
-			
+
 			int count = 0;
 			int index = 1;
-			for(Tuple row: this.rows)
+			for (Tuple row : this.rows)
 			{
-				if(index > getOffset())
+				if (index > getOffset())
 				{
 					result.add(row);
 					count++;
-					if(count >= getLimit()) break;
+					if (count >= getLimit()) break;
 				}
 				index++;
 			}
