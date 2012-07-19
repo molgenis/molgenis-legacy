@@ -166,16 +166,21 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			int startingRow = 1;
 			
-			
-			
 			List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
 			
-			outputExcel.addCell(new Label(0, 0, "selected variables"));
+			outputExcel.addCell(new Label(0, 0, "Selected variables"));
+			
+			outputExcel.addCell(new Label(1, 0, "Descriptions"));
 			
 			for (Measurement m : allMeasList) {
 				
 				if(request.getBool(m.getId().toString()) != null){
 					outputExcel.addCell(new Label(0, startingRow,  m.getName()));
+					if(m.getDescription() != null){
+						outputExcel.addCell(new Label(1, startingRow,  m.getDescription()));
+					}else{
+						outputExcel.addCell(new Label(1, startingRow, ""));
+					}
 					startingRow++;
 				}
 			}

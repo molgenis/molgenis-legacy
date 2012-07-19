@@ -9,20 +9,6 @@
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
 	
-	<style>
-		.popUpDescription {
-		  position:absolute;
-		  left:200;
-		  top:200;
-		  width:100px;
-		  height:100px;
-		  display:none;
-		  z-index:9999;
-		  padding:20px;
-		}
-		
-	</style>
-	
 	<script type="text/javascript">
 		
 		function searchInTree(){
@@ -251,11 +237,11 @@
       							</td></tr>
       							<tr>
 						    	<td style="height:250px; border-top:1px solid lightgray;">
-      							<div id="selection">
-								Selected variables:
-									
-										
-								</div>
+	      							<div id="selection" style="height:250px;overflow:auto">
+										<div id="selectionState">Your selection:
+											<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
+										</div>
+									</div>
 								</td></tr>
 								</table>
 						   </td>
@@ -330,20 +316,19 @@
 		 						
 		 						var protocolName = $(this).parents('li').eq(1).children('span').text();
 		 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
-		 						var descriptionShows = variableDescription.substr(0, 15);
+		 						var descriptionShows = variableDescription.substr(0, 10);
 		 						var descriptionHides = variableDescription.substr(15, variableDescription.length);
 		 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
-	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td id=\"'+uniqueID +'_hover\">' + 
-	 										descriptionShows + '...<div id=\"'+uniqueID +'_hoverDescription\" class=\"popUpDescription\" style=\"display:none\">'+
-	 										variableDescription+'</div></td><td>' + 
+	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer\">' + 
+	 										descriptionShows + '...</td><td>' + 
 	 										protocolName + '</td><td style=\"text-align:center\">' + 
 	 										deleteButton + '</td></tr></table>';
 		 						
 	 							<!--We are going to check whether this selectedVariableTable already existed-->
 	 							if($('#selectedVariableTable').length == 0){
 	 							
-	 								var newTable = '<table style=\"width:100%\" id=\"selectedVariableTable\">'+
-	 								'<tr><td style=\"width:30%\">Variables</td><td style=\"width:30%\">Description</td>'+
+	 								var newTable = '<table style=\"width:100%;overflow:auto\" id=\"selectedVariableTable\" class=\"listtable\">'+
+	 								'<tr class=\"form_listrow1\"><td style=\"width:30%\">Variables</td><td style=\"width:30%\">Description</td>'+
 	 								'<td style=\"width:30%\">Sector/Protocol</td><td style=\"width:10%;text-align:center\">Delete</td></tr>';
 	 								
 	 								newTable += content;
@@ -360,8 +345,15 @@
 	 								});
 	 								
 	 							}else{
-
+	 								
 	 								$('#selectedVariableTable').find('tr:last-child').after(content);
+	 								
+	 								if($('#selectedVariableTable tr').length%2 == 1){
+	 									$('#'+uniqueID +'_row').addClass('form_listrow1');
+	 								}else{
+	 									$('#'+uniqueID +'_row').addClass('form_listrow0');
+	 								}
+	 								
 	 								$('#'+uniqueID+'_delete').click(function(){
 	 									if($('#selectedVariableTable').find('tr').length > 2){
 		 									$('#'+uniqueID+'_row').remove();
@@ -372,17 +364,19 @@
 	 								});
 	 							}
 	 							
+	 							$('#' + uniqueID +'_hover').click(function(){
+	 								$('#' + uniqueID).trigger('click');
+	 							});
 	 							$('#' + uniqueID +'_hover').mouseenter(function(){
-	 								var position = $('#' + uniqueID +'_hover').offset();
-		 							$('#' + uniqueID +'_hoverDescription').css('top', position.top);
-		 							$('#' + uniqueID +'_hoverDescription').css('left', position.left);
-		 							$('#' + uniqueID +'_hoverDescription').show();
-		 						});
-		 						$('#' + uniqueID +'_hover').mouseout(function(){
-		 							$('#' + uniqueID +'_hoverDescription').hide();
-		 						});
-		 						
+	 								$('#popUpDialogue').show();
+	 							});
+	 							$('#' + uniqueID +'_hover').mouseout(function(){
+	 								$('#popUpDialogue').hide();
+	 							});
  							}
+ 							$('#variableCount').empty();
+ 							var count = $('#selectedVariableTable tr').length - 1;
+ 							$('#variableCount').append(count);
  						});	
  					});
  				</script>
