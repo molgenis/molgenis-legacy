@@ -36,9 +36,6 @@ public class FilterableProtocolTable extends AbstractFilterableTupleTable
 	// protocol to query
 	private Protocol protocol;
 
-	// database holding the data
-	private Database db;
-
 	// mapping to Field (changes on paging)
 	private List<Field> columns;
 
@@ -47,7 +44,7 @@ public class FilterableProtocolTable extends AbstractFilterableTupleTable
 
 	public FilterableProtocolTable(Database db, Protocol protocol)
 	{
-		this.db = db;
+		this.setDb(db);
 		this.protocol = protocol;
 	}
 
@@ -62,7 +59,7 @@ public class FilterableProtocolTable extends AbstractFilterableTupleTable
 	{
 		try
 		{
-			Query<Measurement> q = db.query(Measurement.class).in(Measurement.ID, protocol.getFeatures_Id());
+			Query<Measurement> q = this.getDb().query(Measurement.class).in(Measurement.ID, protocol.getFeatures_Id());
 
 			if (this.getColLimit() > 0) q.limit(this.getColLimit());
 			if (this.getColOffset() > 0) q.offset(this.getColOffset());
@@ -103,11 +100,11 @@ public class FilterableProtocolTable extends AbstractFilterableTupleTable
 		{
 			// for each protocol application get all values (doesn't scale, but
 			// good for demo)
-			for (Integer protocolApplicationId : this.getRowIds())
+			for (Integer protocolApplicationId : this.getRowIds(false))
 			{
 				Tuple row = new SimpleTuple(colNames);
 
-				for (ObservedValue v : db.query(ObservedValue.class).eq(ObservedValue.PROTOCOLAPPLICATION, protocolApplicationId)
+				for (ObservedValue v : this.getDb().query(ObservedValue.class).eq(ObservedValue.PROTOCOLAPPLICATION, protocolApplicationId)
 						.find())
 				{
 					row.set("target", v.getTarget_Name());
@@ -144,7 +141,7 @@ public class FilterableProtocolTable extends AbstractFilterableTupleTable
 	{
 		try
 		{
-			db.close();
+			this.getDb().close();
 		}
 		catch (DatabaseException e)
 		{
@@ -157,7 +154,7 @@ public class FilterableProtocolTable extends AbstractFilterableTupleTable
 	{
 		try
 		{
-			return db.query(ProtocolApplication.class).eq(ProtocolApplication.PROTOCOL, protocol.getIdValue()).count();
+			return this.getRowIds(true).get(0);
 		}
 		catch (DatabaseException e)
 		{
@@ -181,7 +178,7 @@ public class FilterableProtocolTable extends AbstractFilterableTupleTable
 
 	// we only need to know what rows to show :-)
 	// can we implement this via a query abstraction tool??
-	private List<Integer> getRowIds() throws TableException, DatabaseException
+	private List<Integer> getRowIds(boolean count) throws TableException, DatabaseException
 	{
 		// load the measurements
 		getColumns();
@@ -205,8 +202,15 @@ public class FilterableProtocolTable extends AbstractFilterableTupleTable
 		// ObservedValue.protocolApplication, ObservedValue.Feature (column
 		// 'target' will be moved to ProtocolApplication)
 		
-		String sql = "SELECT * from ProtocolApplication";
-		// filtering
+		String sql = "SELECT id from ProtocolApplication ";
+		if(count) sql = "SELECT count(*) as id from ProtocolApplication";
+			
+		// filtering [todo: data model change!]
+//		if(columnsUsed.contains("target"))
+//		{
+//			sql += " NATURAL JOIN (SELECT id name as target from ObservationElement) as target";
+//		}
+		
 		for (Measurement m : measurementsUsed)
 		{
 			sql += " NATURAL JOIN (SELECT ObservedValue.protocolApplication as id, ObservedValue.value as "
@@ -217,11 +221,11 @@ public class FilterableProtocolTable extends AbstractFilterableTupleTable
 
 		// limit
 		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
-		if (getLimit() > 0) filters.add(new QueryRule(Operator.LIMIT, getLimit()));
-		if (getOffset() > 0) filters.add(new QueryRule(Operator.OFFSET, getFilters()));
+		if (!count && getLimit() > 0) filters.add(new QueryRule(Operator.LIMIT, getLimit()));
+		if (!count && getOffset() > 0) filters.add(new QueryRule(Operator.OFFSET, getOffset()));
 
 		List<Integer> result = new ArrayList<Integer>();
-		for(Tuple t: db.sql(sql, filters.toArray(new QueryRule[filters.size()]))) result.add(t.getInt("id"));
+		for(Tuple t: this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()]))) result.add(t.getInt("id"));
 		return result;
 	}
 }

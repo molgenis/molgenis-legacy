@@ -74,6 +74,7 @@ public class JQGridView extends HtmlWidget {
 			@Override
 			public TupleTable create(Database db, Tuple request)
 					throws TableException {
+				table.setDb(db);
 				return table;
 			}
 		});
@@ -122,7 +123,7 @@ public class JQGridView extends HtmlWidget {
 
 				final int limit = request.getInt("rows");
 				final int rowCount = tupleTable.getCount();
-				tupleTable.close(); // Not nice! We should fix this!
+				//tupleTable.close(); // Not nice! We should fix this!
 				final int totalPages = (int) Math.ceil(rowCount / limit);
 				final int page = Math.min(request.getInt("page"), totalPages);
 				final int offset = Math.max(limit * page - limit, 0);
@@ -148,7 +149,7 @@ public class JQGridView extends HtmlWidget {
 				renderData(((MolgenisRequest) request).getRequest(), response,
 						page, totalPages, tupleTable);
 			}
-			tupleTable.close();
+			//tupleTable.close();
 		} catch (final Exception e) {
 			throw new HandleRequestDelegationException(e);
 		}
@@ -339,6 +340,7 @@ public class JQGridView extends HtmlWidget {
 
 	public void loadTupleTableConfig(Database db, MolgenisRequest request,
 			TupleTable tupleTable) throws TableException, IOException {
+		tupleTable.setDb(db);
 		final JQGridConfiguration config = new JQGridConfiguration(getId(),
 				"Name", tupleTableBuilder.getUrl(), "test", tupleTable);
 		final String jqJsonConfig = new Gson().toJson(config);

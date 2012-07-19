@@ -66,7 +66,7 @@ var JQGridView = {
     	return jQuery(this.tableSelector).jqGrid(this.config)
             .jqGrid('navGrid', this.pagerSelector,
             	this.config.toolbar,{},{},{},{multipleSearch:true} // search options
-            );
+            ).jqGrid('gridResize');
 	},
     
     getColumnNames : function(colModel) {
