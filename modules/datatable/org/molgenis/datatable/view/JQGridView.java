@@ -337,6 +337,7 @@ public class JQGridView extends HtmlWidget {
 				new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
 		tupleTable.setDb(db);
 		final String jqJsonConfig = new Gson().toJson(config);
+		System.out.println(jqJsonConfig);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
 	}
 

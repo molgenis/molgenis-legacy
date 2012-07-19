@@ -242,15 +242,11 @@
 								<source>modules/file</source>
 								<source>modules/decorators/auth</source>
 								<source>modules/decorators/core</source>
-								<source>modules/decorators/data</source>
-								<source>modules/datamodel</source>
-								<source>apps/xgap</source>
-								<source>modules/webserver</source>
+								<source>modules/decorators/search</source>
 								<source>modules/import</source>
 								<source>modules/settings</source>
 								<source>modules/pheno</source>
 								<source>modules/search</source>
-								<source>modules/matrix</source>
 								<source>modules/feedback</source>
 								<source>publicdata</source>
 							</sources>
