@@ -1,5 +1,7 @@
 package org.molgenis.datatable.test;
 
+import static org.testng.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +13,6 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Tuple;
-import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -21,11 +22,11 @@ public class TestFilterableTupleTable
 	class MockFilterableTupleTable extends AbstractFilterableTupleTable {
 
 		final TupleTable d_nested;
-		
+
 		MockFilterableTupleTable(TupleTable table) {
 			d_nested = table;
 		}
-		
+
 		@Override
 		public List<Field> getColumns() throws TableException
 		{
@@ -60,7 +61,7 @@ public class TestFilterableTupleTable
 		public void setVisibleColumns(List<String> fieldNames)
 		{
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -69,15 +70,33 @@ public class TestFilterableTupleTable
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+		@Override
+		public void setFilters(List<QueryRule> rules) throws TableException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public List<QueryRule> getFilters() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public QueryRule getSortRule() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	private MockFilterableTupleTable table;
-	
+
 	@BeforeClass
 	public void setUp() {
 		table = new MockFilterableTupleTable(MemoryTableFactory.create());
 	}
-	
+
 	@Test
 	public void testInitialization() throws TableException {
 		assertEquals(table.getLimit(), -1);
@@ -85,7 +104,7 @@ public class TestFilterableTupleTable
 		assertEquals(table.getSortRule(), null);
 		assertEquals(table.getCount(), 5);
 	}
-	
+
 	@Test
 	public void testPaging() throws TableException {
 		table.setFilters(Arrays.asList(new QueryRule(Operator.LIMIT, 3)));

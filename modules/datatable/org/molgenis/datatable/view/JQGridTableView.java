@@ -1,6 +1,5 @@
 package org.molgenis.datatable.view;
 
-import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,15 +22,14 @@ import org.molgenis.util.Tuple;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
-import org.molgenis.datatable.view.JQGridJSObjects.JQGridField;
 
 /**
  * This is an ajax based table view for any TupleTable using JqGrid.
- *
+ * 
  * It first renders the html representation.
- *
+ * 
  * It also registers to the controller to handle the AJAX requests.
- *
+ * 
  */
 public class JQGridTableView extends HtmlWidget
 {
@@ -126,8 +124,8 @@ public class JQGridTableView extends HtmlWidget
 	{
 		try
 		{
-			// this sucks, that we need to renew the table every time... is multithreading related
-			table.setDb(db);
+			// this sucks, that we need to renew the table every time...
+			// table.setDb(db);
 
 			// Get the requested page. By default grid sets this to 1.
 			Integer page = request.getInt("page");
@@ -388,7 +386,6 @@ public class JQGridTableView extends HtmlWidget
 		public String caption = getLabel();
 		public boolean autowidth = true;
 		public boolean sortable = false;
-		public String height = "100%";
 		//public boolean search = false;
 	}
 
@@ -398,8 +395,7 @@ public class JQGridTableView extends HtmlWidget
 	{
 		public String name;
 		public String index;
-		public int width = 200;
-		public boolean fixed = true;
+		public int width = 100;
 		public boolean sortable = false;
 	}
 

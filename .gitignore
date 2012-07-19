@@ -1,6 +1,7 @@
 ## Build folders
 bin/
 build/
+classes/
 tmp/
 hsqldb/
 handwritten/

@@ -65,7 +65,7 @@ var JQGridView = {
     createJQGrid : function() {
     	return jQuery(this.tableSelector).jqGrid(this.config)
             .jqGrid('navGrid', this.pagerSelector,
-                {del:false,add:false,edit:false},{},{},{},{multipleSearch:true} // search options
+            	this.config.toolbar,{},{},{},{multipleSearch:true} // search options
             );
 	},
     

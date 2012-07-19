@@ -16,25 +16,19 @@ import org.molgenis.util.Tuple;
  * <li>Row data is available as Tuple (hashMap)
  * </ul>
  * 
- * Motivation: this can be used as facade pattern to make views that are
+ * Purpose: this can be used as facade pattern to make views that are
  * reusable across heterogeneous backends without extra work, such as database
  * tables, Excel files, EAV models, binary formats, etc.
- * 
- * Developer note: This class or its subclasses should
- * <ul>
- * <li>replace org.molgenis.util.TupleReader and its CsvReader, ExcelReader
- * subclasses
- * <li>be used as source for CsvWriter
- * <li>be used to replace org.molgenis.framework.db.AbstractPager (used for
- * database paging)
- * </ul>
  */
 public interface TupleTable extends Iterable<Tuple>
 {
-	/** Get meta data describing the columns */
+	/**
+	 * Get meta data describing the columns in current view (within
+	 * colLimit/colOffset)
+	 */
 	public List<Field> getColumns() throws TableException;
 
-	/** Get the data */
+	/** Get the data rows in current view (within limit/offset) */
 	public List<Tuple> getRows() throws TableException;
 
 	/** Get the data in a streaming fashion (good for large data sets) */
@@ -44,7 +38,7 @@ public interface TupleTable extends Iterable<Tuple>
 	/** Closes the resources from which table reads data */
 	public void close() throws TableException;
 
-	/** Change the visible rows */
+	/** Change the visible row window */
 	public void setLimitOffset(int limit, int offset);
 
 	/**
@@ -55,52 +49,59 @@ public interface TupleTable extends Iterable<Tuple>
 	public int getCount() throws TableException;
 
 	/**
-	 * Get count of all columns in the TupleTable (for working with large
-	 * tables)
+	 * Get count of all columns in the TupleTable
 	 * 
+	 * @throws TableException
 	 */
 	public int getColCount() throws TableException;
 
 	/**
-	 * This we can inherit from Query interface?
+	 * get row limit
 	 */
 	public int getLimit();
-	
+
 	/**
-	 * In case of large tables you can have a limit on the columns shown.
+	 * get column limit
 	 */
 	public int getColLimit();
-	
+
 	/**
-	 * This we can inherit from Query interface?
+	 * set row limit (i.e. limit the current viewport to the full underlying
+	 * table). Default: 0 (no limit).
 	 */
 	public void setLimit(int limit);
-	
+
 	/**
-	 * In case of many columns one may to limit
+	 * set column limit (i.e. limit the current viewport to the full underlying
+	 * table). Default: 0 (no limit)
 	 */
 	public void setColLimit(int limit);
-	
+
 	/**
-	 * This we can inherit from Query interface?
+	 * get row offset. Default: 0
 	 */
 	public int getOffset();
-	
+
 	/**
-	 * In case of many columns
+	 * get column offset. Default: 0
 	 */
 	public int getColOffset();
 
 	/**
-	 * This we can inherit from Query interface?
+	 * set row limit (i.e. limit the current viewport to the full underlying
+	 * table). Default: 0 (no offset)
 	 */
 	public void setOffset(int offset);
-	
+
 	/**
-	 * for column paging in larger tables.
+	 * set column limit (i.e. limit the current viewport to the full underlying
+	 * table). Default: 0 (no offset)
 	 */
 	public void setColOffset(int offset);
 
-	/** For database centric tables */
+	/**
+	 * For database centric tables you may need to refresh the database
+	 * connection
+	 */
 	public void setDb(Database db);
 }
