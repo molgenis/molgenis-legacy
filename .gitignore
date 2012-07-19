@@ -11,6 +11,7 @@ handwritten/
 *.DS_Store
 *.swp
 *.out
+*.passwd
 
 ## Netbeans private
 nbproject/private/
