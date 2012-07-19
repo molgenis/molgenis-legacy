@@ -53,7 +53,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 	JQGridView.TupleTableBuilder tupleTableBuilder = new JQGridView.TupleTableBuilder() {
 
-		private final String backEnd = "JOINTABLE";
+		private final String backEnd = "QUERYTABLE";
 
 		@Override
 		public TupleTable create(Database db, Tuple request) throws TableException {
@@ -67,6 +67,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 					return createQueryTable(db, tableNames, columnNames);
 				} else if (backEnd.equals("JDBCTABLE")) {
 					return createJDBTable(db, tableNames, columnNames);
+				} else if (backEnd.equals("LIFELINES_VM_TEST")) {
+					return createLifelinesTestVMJoinTable(db, tableNames, columnNames);
 				} else {
 					return null;
 				}
@@ -88,6 +90,22 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			} catch (Exception ex) {
 				throw new DatabaseException(ex);
 			}
+		}
+		
+		private TupleTable createLifelinesTestVMJoinTable(Database db,
+				List<String> tableNames, final List<String> columnNames) throws DatabaseException{
+			final Connection connection = db.getConnection();
+			final SQLTemplates dialect = new MySQLTemplates();
+			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
+
+			if (CollectionUtils.isEmpty(tableNames)) {
+				tableNames = Arrays.asList("BEZOEK", "BEZOEK1");
+			}
+
+			final List<JoinQueryTable.Join> joins = Arrays
+					.asList(new JoinQueryTable.Join("BEZOEK", "BEZOEK.BZ_ID",
+							"BEZOEK1", "BEZOEK1.BZ_ID"));
+			return new JoinQueryTable(query, tableNames, columnNames, joins, db);			
 		}
 
 		private TupleTable createJoinTable(Database db,
@@ -130,7 +148,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 					.divide(countryPopulation);
 			query.where(country.get("code").eq(city.get("countrycode")));
 			query.limit(10);
-			query.orderBy(cityPopulationRatio.desc());
+			//query.orderBy(cityPopulationRatio.desc());
 
 			// create select
 			Field countryName = new Field("Country.Name");

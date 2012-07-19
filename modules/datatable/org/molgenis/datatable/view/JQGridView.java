@@ -179,8 +179,9 @@ public class JQGridView extends HtmlWidget {
 				final QueryRule queryRule = convertOperator(field, op, value);
 				rules.add(queryRule);
 
-				final boolean notLast = jsonRules.size() - 1 != ruleIdx++;
-				if (groupOp.equals("OR") && notLast) {
+				final boolean isLastRule = rule == jsonRules.get(jsonRules.size() - 1);
+				// Note: AND is default in query rules; OR needs to be added explicitly.
+				if (groupOp.equals("OR") && !isLastRule) {
 					rules.add(new QueryRule(QueryRule.Operator.OR));
 				}
 			}

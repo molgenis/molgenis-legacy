@@ -26,9 +26,24 @@ import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.expr.BooleanExpression;
+import com.mysema.query.types.expr.ComparableExpressionBase;
 import com.mysema.query.types.expr.NumberExpression;
 import com.mysema.query.types.expr.SimpleExpression;
 import com.mysema.query.types.expr.StringExpression;
+<<<<<<< HEAD
+=======
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.dbutils.ResultSetIterator;
+import org.molgenis.MolgenisFieldTypes;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
+>>>>>>> 6ed4c48bd42e75b2ea5940c67f203e3fc3f23ab1
 
 /**
  * A class to wrap a specific {@link SQLQuery} in a TupleTable.
@@ -152,7 +167,8 @@ public class QueryTable extends AbstractFilterableTupleTable {
         return select;
     }
 
-    private static BooleanExpression getExpression(QueryRule rule,
+    @SuppressWarnings("unchecked")
+	private static BooleanExpression getExpression(QueryRule rule,
             final SimpleExpression<? extends Object> selectExpr, final Field column) throws ParseException {
         final Operator op = rule.getOperator();
         final MolgenisFieldTypes.FieldTypeEnum type = column.getType().getEnumType();
@@ -241,10 +257,12 @@ public class QueryTable extends AbstractFilterableTupleTable {
         return expr;
     }
 
-    private BooleanExpression convertQueryRulesToQueryExpression() throws TableException {
+    @SuppressWarnings("rawtypes")
+	private BooleanExpression convertQueryRulesToQueryExpression() throws TableException {
         try {
             final List<QueryRule> filters = super.getFilters();
             BooleanExpression expr = null;
+<<<<<<< HEAD
             for (final QueryRule rule : filters) {
 
                 final String fieldName = rule.getField();
@@ -261,8 +279,33 @@ public class QueryTable extends AbstractFilterableTupleTable {
 //                } else {
 //                    throw new IllegalArgumentException(String.format("Unkown groupOp: %s", groupOp));
 //                }
+=======
+            for (final QueryRule rule : filters) {                
+                final Operator op = rule.getOperator();
+                final String value = rule.getValue().toString();
+                final String fieldName = rule.getField() == null ? value : rule.getField();
+                
+                if(op == Operator.LIMIT) {
+                	query.limit(Long.parseLong(value));
+                } else if(op == Operator.OFFSET) {
+                	query.offset(Long.parseLong(value));
+                } else if(op == Operator.SORTASC || op == Operator.SORTDESC) {
+                	final SimpleExpression<? extends Object> sortField = select.get(fieldName);
+                	if(op == Operator.SORTASC) {
+                		query.orderBy(((ComparableExpressionBase)sortField).asc());
+                	} else {
+                		query.orderBy(((ComparableExpressionBase)sortField).desc());	
+                	}
+>>>>>>> 6ed4c48bd42e75b2ea5940c67f203e3fc3f23ab1
                 } else {
-                    expr = rhs;
+                	 final SimpleExpression<? extends Object> selectExpr = select.get(fieldName);
+                     final Field column = getColumnByName(fieldName);
+                     final BooleanExpression rhs = getExpression(rule, selectExpr, column);
+                     if (expr != null) {
+                         expr = expr.and(rhs);
+                     } else {
+                         expr = rhs;
+                     }
                 }
             }
             return expr;
