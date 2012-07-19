@@ -40,6 +40,9 @@ public class CsvTable extends AbstractTupleTable
 	 */
 	public CsvTable(File csvFile) throws Exception
 	{
+		if (csvFile == null) throw new NullPointerException("Creation of CsvTable failed: csvFile == null");
+		if (!csvFile.exists()) throw new IllegalArgumentException("Creation of CsvTable failed: csvFile does not exist");
+
 		this.csvFile = csvFile;
 		this.reset();
 		loadColumns();
@@ -53,6 +56,8 @@ public class CsvTable extends AbstractTupleTable
 	 */
 	public CsvTable(String csvString) throws Exception
 	{
+		if (csvString == null) throw new NullPointerException("Creation of CsvTable failed: csvString == null");
+
 		this.csvString = csvString;
 		this.reset();
 		loadColumns();
@@ -129,10 +134,10 @@ public class CsvTable extends AbstractTupleTable
 		}
 		catch (Exception e)
 		{
-			//should not happen as this is second load
+			// should not happen as this is second load
 			e.printStackTrace();
 		}
-		
+
 		if (getLimit() > 0 || getOffset() > 0 || getColOffset() > 0 || getColLimit() > 0)
 		{
 			return new TupleIterator(csv, getLimit(), getOffset(), getColLimit(), getColOffset());
