@@ -98,6 +98,7 @@ public class JQGridView extends HtmlWidget {
 					.getResponse();
 
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+
 			final String opRequest = request.getString(OPERATION);
 
 			final Operation operation = StringUtils.isNotEmpty(opRequest) ? Operation
@@ -123,7 +124,7 @@ public class JQGridView extends HtmlWidget {
 
 				final int limit = request.getInt("rows");
 				final int rowCount = tupleTable.getCount();
-				//tupleTable.close(); // Not nice! We should fix this!
+				// tupleTable.close(); // Not nice! We should fix this!
 				final int totalPages = (int) Math.ceil(rowCount / limit);
 				final int page = Math.min(request.getInt("page"), totalPages);
 				final int offset = Math.max(limit * page - limit, 0);
@@ -149,7 +150,7 @@ public class JQGridView extends HtmlWidget {
 				renderData(((MolgenisRequest) request).getRequest(), response,
 						page, totalPages, tupleTable);
 			}
-			//tupleTable.close();
+			// tupleTable.close();
 		} catch (final Exception e) {
 			throw new HandleRequestDelegationException(e);
 		}

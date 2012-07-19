@@ -23,6 +23,13 @@ var JQGridView = {
     tree : null,
     colModel : null, 
     
+    columnPage : 0,				//current column Page
+    columnPagerSize : 5,		//current columnPager size
+    columnPageEnabled : true,
+    
+    oldColNames : null,
+    oldColModel : null,
+    
     init: function(tableSelector, pagerSelector, config) {
     	var self = JQGridView;
     
@@ -30,6 +37,8 @@ var JQGridView = {
         this.pagerSelector = pagerSelector;
         this.config = config;
         this.colModel = this.config.colModel;
+        
+        this.sliceColumns();
         
         this.grid = this.createJQGrid();
         this.createDialog();
@@ -39,9 +48,28 @@ var JQGridView = {
 	    .done(function(data) { 
 	    	 self.tree = self.createTree(data);   
 	    });
-        
+        this.restoreSliceColumns();
         return JQGridView;
     },
+    
+    sliceColumns : function() {
+		if(this.columnPageEnabled) {
+			this.oldColNames = this.config.colNames;
+			this.oldColModel = this.config.colModel;
+		
+			begin = this.columnPage * this.columnPagerSize;
+			end = begin + this.columnPagerSize;
+			this.config.colNames = this.config.colNames.slice(begin, end);
+			this.config.colModel = this.config.colModel.slice(begin, end);
+		}    
+    },
+    
+    restoreSliceColumns : function() {
+		if(this.columnPageEnabled) {
+			this.config.colNames = this.oldColNames;
+			this.config.colModel = this.oldColModel;
+		}     
+    }, 
     
     getGrid: function() {
     	return $(this.tableSelector);
@@ -49,25 +77,65 @@ var JQGridView = {
     
     changeColumns: function(columnModel) {
     	var self = JQGridView;
-		this.config.colModel = columnModel;
+    	if(columnModel != null) {
+    		this.config.colModel = columnModel;	
+    	}
 
 		var names = new Array();
-		$.each(columnModel, function(index, value) {
+		$.each(this.config.colModel, function(index, value) {
 			names.push(value.name);
 		});
 		this.config.colNames = names;
 
-		this.config.postData = {colNames:names};
+		this.sliceColumns();
+
+		this.config.postData = {colNames: this.config.colNames};
     	$(this.tableSelector).jqGrid('GridUnload');
     	this.grid = this.createJQGrid();
+    	
+    	this.restoreSliceColumns();
     },
     
     createJQGrid : function() {
-    	return jQuery(this.tableSelector).jqGrid(this.config)
+    	var self = JQGridView;
+    	grid = jQuery(this.tableSelector).jqGrid(this.config)
             .jqGrid('navGrid', this.pagerSelector,
-            	this.config.toolbar,{},{},{},{multipleSearch:true} // search options
+            	this.config.settings,{},{},{},{multipleSearch:true} // search options
             ).jqGrid('gridResize');
+        //is not correct (will not work with two grids!)
+        if(this.columnPageEnabled) {
+        	prevButton = $("<input type='button' value='<< Columns' style='height:20px;font-size:-3'/>");
+        	nextButton = $("<input type='button' value='Column >>' style='height:20px;font-size:-3'/>");
+        
+        	$(prevButton).click(function() {
+				self.columnPagerLeft();
+        	});
+        
+        	$(nextButton).click(function() {
+        		self.columnPagerRight();
+        	});
+    	}
+        
+        $("#t_jqGridView").append(prevButton);
+        $("#t_jqGridView").append(nextButton);
+        return grid;
 	},
+	
+	columnPagerLeft : function () {
+		var self = JQGridView;
+		if(this.columnPage > 0) {
+			this.columnPage--;
+		}
+		this.changeColumns(null);
+	},	
+    
+    columnPagerRight : function () {
+		var self = JQGridView;
+		if(this.columnPage < this.config.colModel.length) {
+			this.columnPage++;
+		}
+		this.changeColumns(null);
+	},	
     
     getColumnNames : function(colModel) {
     	result = new Array();
@@ -154,10 +222,12 @@ $(document).ready(function() {
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
         grid = JQGridView.init("table#${tableId}", "#${tableId}Pager", config);
+        $("t_table#jqGridView").append("<input type='button' value='Click Me' style='height:20px;font-size:-3'/>");
     });
 	$('#exportButton').click(function() {
 		$( "#dialog-form" ).dialog('open');
 	});
+	
 });
 
 </script>

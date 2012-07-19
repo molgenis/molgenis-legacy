@@ -1,6 +1,7 @@
 package org.molgenis.datatable.view.JQGridJSObjects;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,9 +28,12 @@ public class JQGridConfiguration {
 	public boolean autowidth = true;
 	public boolean sortable = false;
 	public HashMap<String, Object> jsonReader = new HashMap<String, Object>();;
+
 	// public String postData = "viewType : JQ_GRID";
 
-	public JQGridToolbar toolbar = new JQGridToolbar();
+	public JQGridSettings settings = new JQGridSettings();
+	@SuppressWarnings("unchecked")
+	public Object[] toolbar = Arrays.asList(true, "top").toArray();
 
 	public JQGridConfiguration(String id, String idField, String url,
 			String caption, TupleTable tupleTable) throws TableException {
@@ -43,7 +47,7 @@ public class JQGridConfiguration {
 
 		if (tupleTable instanceof FilterableTupleTable) {
 			sortable = true;
-			toolbar.search = true;
+			settings.search = true;
 		}
 
 		for (final Field f : tupleTable.getColumns()) {
