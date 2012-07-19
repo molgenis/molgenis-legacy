@@ -2,8 +2,10 @@ package org.molgenis.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -90,7 +92,13 @@ public class MolgenisModelValidator
 				{
 					Field f = new Field(mref);
 					f.setEntity(entity);
-					f.setMrefName(entity.getName() + "_" + f.getName());
+				
+					String mrefName = entity.getName() + "_" + f.getName();
+					if(mrefName.length() > 30)
+					{
+						mrefName = mrefName.substring(0,25) + Integer.toString(mrefName.hashCode()).substring(0,5);
+					}
+					f.setMrefName(mrefName);
 					entity.addField(0, f);
 				}
 			}
@@ -121,7 +129,7 @@ public class MolgenisModelValidator
 		for (Entity e : model.getEntities())
 		{
 			// maximum num of chars in oracle table name of column is 30
-			if (e.getName().length() > 50)
+			if (e.getName().length() > 30)
 			{
 				throw new MolgenisModelException(String.format("table name %s is longer than %d", e.getName(), 30));
 			}
@@ -299,6 +307,9 @@ public class MolgenisModelValidator
 	 */
 	public static void createLinkTablesForMrefs(Model model) throws MolgenisModelException
 	{
+		//renamed mrefs
+		Map<String, String> renamedMrefs = new LinkedHashMap<String,String>();
+		
 		logger.debug("add linktable entities for mrefs...");
 		// find the multi-ref fields
 		for (Entity xref_entity_from : model.getEntities())
@@ -318,7 +329,13 @@ public class MolgenisModelValidator
 
 					// create the new entity for the link, if explicitly named
 					String mref_name = xref_field_from.getMrefName(); // explicit
-
+					
+					//if mref_name longer than 30 throw error
+					if(mref_name.length() > 30)
+					{
+						throw new MolgenisModelException("mref_name cannot be longer then 30 characters, found: "+mref_name);
+					}
+					
 					// check if the mref already exists
 					Entity mrefEntity = null;
 					try
@@ -1027,7 +1044,13 @@ public class MolgenisModelValidator
 						if (f.getMrefName() == null)
 						{
 							String mrefEntityName = f.getEntity().getName() + "_" + f.getName();
-
+							
+							//check if longer than 30 characters, then truncate
+							if(mrefEntityName.length()>30) 
+							{
+								mrefEntityName = mrefEntityName.substring(0, 25) + Integer.toString(mrefEntityName.hashCode()).substring(0, 5);
+							}
+							
 							// paranoia check on uniqueness
 							Entity mrefEntity = null;
 							try
@@ -1036,6 +1059,7 @@ public class MolgenisModelValidator
 							}
 							catch (Exception exc)
 							{
+								throw new MolgenisModelException("mref name for "+f.getEntity().getName() + "." + f.getName()+ " not unique. Please use explicit mref_name=name setting");
 							}
 
 							if (mrefEntity != null)
