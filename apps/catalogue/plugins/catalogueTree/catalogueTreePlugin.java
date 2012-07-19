@@ -749,7 +749,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			List<Category> listOfCategory = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, categoryNames));
 
-			htmlValue += "<tr><td  class='box-body-label'>Category:</td><td><table>";
+			htmlValue += "<tr id='" + nodeName + "_category'><td  class='box-body-label'>Category:</td><td><table>";
 
 			String missingCategory = "<tr><td  class='box-body-label'>Missing category:</td><td><table>";
 
@@ -776,10 +776,10 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			htmlValue += missingCategory + "</table>";
 		}
 
-		htmlValue += "<tr><td class='box-body-label'>Description:</td><td>"
+		htmlValue += "<tr id='" + nodeName + "_description'><td class='box-body-label'>Description:</td><td>"
 				+ (measurementDescription == null ? "not provided" : measurementDescription) + "</td></tr>";
 
-		htmlValue += "<tr><td class='box-body-label'>Data type:</th><td>"
+		htmlValue += "<tr id='" + nodeName + "_dataType'><td class='box-body-label'>Data type:</th><td>"
 				+ measurementDataType + "</td></tr>";
 
 		Query<ObservedValue> queryDetailInformation = db

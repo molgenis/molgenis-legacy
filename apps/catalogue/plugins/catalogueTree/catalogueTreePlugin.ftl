@@ -286,11 +286,14 @@
  							$(this).find(':checkbox').attr('disabled','true');
  						}
  					});
+ 					
  					$('#browser').find('input:checkbox').each(function(){
  						
  						$(this).attr('checked', false);
  						
  						$(this).click(function(){
+ 							
+ 							$(this).parent().parent().trigger('click');
  							
  							if($(this).attr('checked') != 'checked'){
  								
@@ -304,10 +307,15 @@
  								var label = $(this).parent().text();
  								var checkBoxID = $(this).attr('id');
 		 						var uniqueID = $(this).parent().parent().attr('id');
+		 						
 		 						var protocolName = $(this).parents('li').eq(1).children('span').text();
+		 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
 		 						
 		 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
-	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td></td><td>' + protocolName + '</td><td style=\"text-align:center\">' + deleteButton + '</td></tr></table>';
+	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td>' + 
+	 										variableDescription + '</td><td>' + 
+	 										protocolName + '</td><td style=\"text-align:center\">' + 
+	 										deleteButton + '</td></tr></table>';
 		 						
 	 							<!--We are going to check whether this selectedVariableTable already existed-->
 	 							if($('#selectedVariableTable').length == 0){
