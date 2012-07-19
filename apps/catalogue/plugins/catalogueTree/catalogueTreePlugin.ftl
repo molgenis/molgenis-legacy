@@ -9,6 +9,20 @@
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
 	
+	<style>
+		.popUpDescription {
+		  position:absolute;
+		  left:200;
+		  top:200;
+		  width:100px;
+		  height:100px;
+		  display:none;
+		  z-index:9999;
+		  padding:20px;
+		}
+		
+	</style>
+	
 	<script type="text/javascript">
 		
 		function searchInTree(){
@@ -265,6 +279,12 @@
 					</table>
 			   	</#if>	
 			    <label><#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>
+ 				<!-- The detailed table bound to the branch is store in a click event. Therefore this table is not available
+ 							until the branch has been clicked. As checkbox is part of this branch therefore when the checkbox is ticked
+ 							the table shows up on the right as well. Another event is fired when the checkbox is checked which is
+ 							adding a new variable in the selection table and it happens before the detailed table pops up. But we want to
+ 							use the information (description) from the datailed table. Therefore we have to trigger the click event on branch
+ 							here first and create the detailed table!-->
  				<script>
  					$('div#leftSideTree input:checkbox').each(function(index){
  						$(this).click(function() {
@@ -310,10 +330,12 @@
 		 						
 		 						var protocolName = $(this).parents('li').eq(1).children('span').text();
 		 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
-		 						
+		 						var descriptionShows = variableDescription.substr(0, 15);
+		 						var descriptionHides = variableDescription.substr(15, variableDescription.length);
 		 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
-	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td>' + 
-	 										variableDescription + '</td><td>' + 
+	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td id=\"'+uniqueID +'_hover\">' + 
+	 										descriptionShows + '...<div id=\"'+uniqueID +'_hoverDescription\" class=\"popUpDescription\" style=\"display:none\">'+
+	 										variableDescription+'</div></td><td>' + 
 	 										protocolName + '</td><td style=\"text-align:center\">' + 
 	 										deleteButton + '</td></tr></table>';
 		 						
@@ -349,6 +371,17 @@
 		 								$('#' + checkBoxID).attr('checked',false);
 	 								});
 	 							}
+	 							
+	 							$('#' + uniqueID +'_hover').mouseenter(function(){
+	 								var position = $('#' + uniqueID +'_hover').offset();
+		 							$('#' + uniqueID +'_hoverDescription').css('top', position.top);
+		 							$('#' + uniqueID +'_hoverDescription').css('left', position.left);
+		 							$('#' + uniqueID +'_hoverDescription').show();
+		 						});
+		 						$('#' + uniqueID +'_hover').mouseout(function(){
+		 							$('#' + uniqueID +'_hoverDescription').hide();
+		 						});
+		 						
  							}
  						});	
  					});

@@ -1044,10 +1044,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		return selectedField;
 	}
 
-	private String getComparison() {
-		return comparison;
-	}
-
 	public List<String> getFilters() {
 		//		if (!SearchFilters.isEmpty()) {
 		//			return this.SearchFilters;
@@ -1057,7 +1053,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	}
 
 	public String getInheritance(){
-		System.out.println(inheritance.toString());
 		return inheritance.toString();
 	}
 
