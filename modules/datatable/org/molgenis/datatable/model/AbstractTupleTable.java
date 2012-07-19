@@ -19,8 +19,8 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setLimitOffset(int limit, int offset)
 	{
-		this.limit = limit;
-		this.offset = offset;
+		this.setLimit(limit);
+		this.setOffset(offset);
 	}
 
 	@Override
@@ -32,6 +32,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setLimit(int limit)
 	{
+		if(limit < 0) throw new RuntimeException("limit cannot be < 0");
 		this.limit = limit;
 	}
 
@@ -44,6 +45,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setOffset(int offset)
 	{
+		if(offset < 0) throw new RuntimeException("offset cannot be < 0");
 		this.offset = offset;
 	}
 
@@ -74,6 +76,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setColLimit(int limit)
 	{
+		if(limit < 0) throw new RuntimeException("setColLimit() cannot be < 0");
 		this.colLimit = limit;
 	}
 	
@@ -92,12 +95,14 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setColOffset(int offset)
 	{
+		if(offset < 0) throw new RuntimeException("setColOffset() cannot be < 0");
 		this.colOffset = offset;
 	}
 
 	@Override
 	public void setDb(Database db)
 	{
+		if(db == null) throw new NullPointerException("database cannot be null in setDb(db)");
 		this.db = db;
 	}
 
