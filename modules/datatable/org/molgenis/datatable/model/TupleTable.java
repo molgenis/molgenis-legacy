@@ -11,14 +11,14 @@ import org.molgenis.util.Tuple;
  * TupleTable is a simple abstraction for tabular data (columns X rows).
  * <ul>
  * <li>Column names are unique
- * <li>Column meta data (name,type,label,description,..) are available in
- * getColumns()
+ * <li>Column meta data (name,type,label,description,..) for currently visible
+ * columns are available in getColumns()
  * <li>Row data is available as Tuple (hashMap)
  * </ul>
  * 
- * Purpose: this can be used as facade pattern to make views that are
- * reusable across heterogeneous backends without extra work, such as database
- * tables, Excel files, EAV models, binary formats, etc.
+ * Purpose: this can be used as facade pattern to make views that are reusable
+ * across heterogeneous backends without extra work, such as database tables,
+ * Excel files, EAV models, binary formats, etc.
  */
 public interface TupleTable extends Iterable<Tuple>
 {
@@ -28,14 +28,22 @@ public interface TupleTable extends Iterable<Tuple>
 	 */
 	public List<Field> getColumns() throws TableException;
 
+	/**
+	 * Get all columns, including currently not visible
+	 */
+	public List<Field> getAllColumns() throws TableException;
+
 	/** Get the data rows in current view (within limit/offset) */
 	public List<Tuple> getRows() throws TableException;
 
-	/** Get the data in a streaming fashion (good for large data sets) */
-        @Override
+	/**
+	 * Get the data rows in current view in a streaming fashion (good for large
+	 * data sets)
+	 */
+	@Override
 	public Iterator<Tuple> iterator();
 
-	/** Closes the resources from which table reads data */
+	/** Closes the resources from which table reads data (optional) */
 	public void close() throws TableException;
 
 	/** Change the visible row window */
@@ -104,4 +112,7 @@ public interface TupleTable extends Iterable<Tuple>
 	 * connection
 	 */
 	public void setDb(Database db);
+
+	/** Reset the table, i.e. remove limits and filters */
+	public void reset();
 }

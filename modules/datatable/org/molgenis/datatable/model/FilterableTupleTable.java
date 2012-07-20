@@ -12,7 +12,8 @@ public interface FilterableTupleTable extends TupleTable
 {
 	/**
 	 * Set the row filters, based on column names. Not allowed are LIMIT, OFFSET
-	 * and SORT filters (@see setLimit, setOffset).
+	 * and SORT filters (@see setLimit, setOffset), which will throw
+	 * TableException.
 	 * 
 	 * @throws TableException
 	 */
@@ -39,5 +40,4 @@ public interface FilterableTupleTable extends TupleTable
 	 * nb: multiple columns are not allowed for now.
 	 */
 	public QueryRule getSortRule();
-
 }

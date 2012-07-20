@@ -1,17 +1,20 @@
 package org.molgenis.datatable.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
@@ -26,35 +29,68 @@ import org.molgenis.util.Tuple;
  * added as first column. Optionally, the ProtocolApplication metadata can be
  * viewed (future todo).
  */
-public class ProtocolTable extends AbstractTupleTable
+public class ProtocolTable extends AbstractFilterableTupleTable
 {
 	// protocol to query
 	private Protocol protocol;
 
-	// database holding the data
-	private Database db;
-
-	// mapping to Field (so we only have to convert once)
+	// mapping to Field (changes on paging)
 	private List<Field> columns;
+
+	// measurements
+	List<Measurement> measurements;
 
 	public ProtocolTable(Database db, Protocol protocol)
 	{
-		this.db = db;
+		this.setDb(db);
 		this.protocol = protocol;
 	}
 
 	@Override
-	public List<Field> getColumns()
+	public int getColCount()
 	{
+		// +1 for the target column
+		return protocol.getFeatures_Id().size() + 1;
+	}
+
+	public List<Field> getAllColumns() throws TableException
+	{
+		return this.getColumns(false);
+	}
+
+	@Override
+	public List<Field> getColumns() throws TableException
+	{
+		return this.getColumns(true);
+	}
+
+	private List<Field> getColumns(boolean visibleColumnsOnly) throws TableException
+	{
+		// first column is 'target'
 		try
 		{
-			List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, protocol.getFeatures_Id())
-					.find();
-
 			columns = new ArrayList<Field>();
-			
-			//target
-			columns.add( new Field("target"));
+
+			// get meta data
+			Query<Measurement> q = this.getDb().query(Measurement.class).in(Measurement.ID, protocol.getFeatures_Id());
+			if (visibleColumnsOnly && this.getColLimit() > 0)
+			{
+				// first column is target
+				if (this.getColOffset() == 0)
+				{
+					q.limit(this.getColLimit() - 1);
+					columns.add(new Field("target"));
+				}
+				else
+				{
+					q.limit(this.getColLimit());
+				}
+			}
+
+			// always substract 1 for the 'target' column
+			if (visibleColumnsOnly && this.getColOffset() > 0) q.offset(this.getColOffset() - 1);
+
+			measurements = q.find();
 
 			for (Measurement m : measurements)
 			{
@@ -68,59 +104,83 @@ public class ProtocolTable extends AbstractTupleTable
 		}
 		catch (DatabaseException e)
 		{
-			// TODO need exception?
-			e.printStackTrace();
-
-			return null;
+			throw new TableException(e);
 		}
 	}
 
-	@Override
-	public List<Tuple> getRows()
+	/**
+	 * Iteratively retrieve the rows; we may want some caching mechanism to
+	 * retrieve multiple rows per call
+	 */
+	private static class ProtocolTupleIterator implements Iterator<Tuple>
 	{
-		List<Tuple> result = new ArrayList<Tuple>();
-		
-		List<String> colNames = new ArrayList<String>();
-		for(Field f: getColumns()) colNames.add(f.getName());
+		// wrapper state
+		ProtocolTable table;
 
-		try
+		// rowIterator
+		Iterator<Integer> rowIndexIterator;
+
+		List<String> colNames;
+
+		ProtocolTupleIterator(ProtocolTable table)
 		{
-			// get protocol applications
-			Query<ProtocolApplication> q = db.query(ProtocolApplication.class).eq(ProtocolApplication.PROTOCOL,
-					protocol.getId());
-			if (getLimit() > 0) q.limit(getLimit());
-			if (getOffset() > 0) q.offset(getOffset());
-			List<ProtocolApplication> apps = q.find();
-
-			// for each protocol application get all values
-			for (ProtocolApplication pa : apps)
+			try
 			{
+				this.table = table;
+				rowIndexIterator = table.getRowIds(false).iterator();
+				colNames = new ArrayList<String>();
+
+				for (Field f : table.getColumns())
+				{
+					colNames.add(f.getName());
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public boolean hasNext()
+		{
+			return rowIndexIterator.hasNext();
+		}
+
+		@Override
+		public Tuple next()
+		{
+			try
+			{
+				Integer rowId = rowIndexIterator.next();
 				Tuple row = new SimpleTuple(colNames);
-				
-				for(ObservedValue v: db.query(ObservedValue.class).eq(ObservedValue.PROTOCOLAPPLICATION, pa.getId()).find())
+
+				for (ObservedValue v : table.getDb().query(ObservedValue.class)
+						.eq(ObservedValue.PROTOCOLAPPLICATION, rowId).find())
 				{
 					row.set("target", v.getTarget_Name());
 					row.set(v.getFeature_Name(), v.getValue());
 				}
-				
-				result.add(row);
+				return row;
+			}
+			catch (DatabaseException e)
+			{
+				throw new RuntimeException(e);
 			}
 		}
-		catch (Exception e)
+
+		@Override
+		public void remove()
 		{
-			e.printStackTrace();
+			throw new UnsupportedOperationException();
 		}
-
-		return result;
-
 	}
 
 	@Override
 	public Iterator<Tuple> iterator()
 	{
-		// TODO: can we use the streaming interface of the database for this in
-		// some way?
-		return getRows().iterator();
+		return new ProtocolTupleIterator(this);
 	}
 
 	@Override
@@ -128,7 +188,7 @@ public class ProtocolTable extends AbstractTupleTable
 	{
 		try
 		{
-			db.close();
+			this.getDb().close();
 		}
 		catch (DatabaseException e)
 		{
@@ -141,11 +201,62 @@ public class ProtocolTable extends AbstractTupleTable
 	{
 		try
 		{
-			return db.query(ProtocolApplication.class).eq(ProtocolApplication.PROTOCOL, protocol.getIdValue()).count();
+			return this.getRowIds(true).get(0);
 		}
 		catch (DatabaseException e)
 		{
 			throw new TableException(e);
 		}
+	}
+
+	// we only need to know what rows to show :-)
+	private List<Integer> getRowIds(boolean count) throws TableException, DatabaseException
+	{
+		// load the measurements
+		getColumns();
+
+		// get columns that are used in filtering or sorting
+		Set<String> columnsUsed = new HashSet<String>();
+		for (QueryRule r : getFilters())
+		{
+			columnsUsed.add(r.getField());
+		}
+
+		// get measurements
+		List<Measurement> measurementsUsed = getDb().query(Measurement.class)
+				.in(Measurement.NAME, new ArrayList<String>(columnsUsed)).find();
+
+		// one column is defined by ObservedValue.Investigation,
+		// ObservedValue.protocolApplication, ObservedValue.Feature (column
+		// 'target' will be moved to ProtocolApplication)
+
+		String sql = "SELECT id from ProtocolApplication ";
+		if (count) sql = "SELECT count(*) as id from ProtocolApplication";
+
+		for (Measurement m : measurementsUsed)
+		{
+			sql += " NATURAL JOIN (SELECT ObservedValue.protocolApplication as id, ObservedValue.target as targetId, ObservedValue.value as "
+					+ m.getName()
+					+ " FROM ObservedValue WHERE ObservedValue.feature = "
+					+ m.getId()
+					+ ") as "
+					+ m.getName();
+		}
+		// filtering [todo: data model change!]
+		if (columnsUsed.contains("target"))
+		{
+			sql += " NATURAL JOIN (SELECT id as targetId, name as target from ObservationElement) as target";
+		}
+
+		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
+
+		// limit and offset
+		if (!count && getLimit() > 0) filters.add(new QueryRule(Operator.LIMIT, getLimit()));
+		if (!count && getOffset() > 0) filters.add(new QueryRule(Operator.OFFSET, getOffset()));
+
+		List<Integer> result = new ArrayList<Integer>();
+		for (Tuple t : this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()])))
+			result.add(t.getInt("id"));
+		return result;
 	}
 }

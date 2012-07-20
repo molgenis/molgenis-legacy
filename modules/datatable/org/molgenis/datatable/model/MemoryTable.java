@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.molgenis.fieldtypes.StringField;
 import org.molgenis.model.elements.Field;
+import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 /**
@@ -39,17 +40,21 @@ public class MemoryTable extends AbstractTupleTable
 	}
 
 	@Override
-	public List<Field> getColumns()
+	public List<Field> getAllColumns()
 	{
 		return this.columns;
 	}
 
 	@Override
-	public List<Tuple> getRows()
+	public List<Tuple> getRows() throws TableException
 	{
+		List<String> columns = new ArrayList<String>();
+		for (Field f : getColumns())
+			columns.add(f.getName());
+
+		List<Tuple> result = new ArrayList<Tuple>();
 		if (getLimit() > 0 || getOffset() > 0)
 		{
-			List<Tuple> result = new ArrayList<Tuple>();
 
 			int count = 0;
 			int index = 1;
@@ -57,30 +62,45 @@ public class MemoryTable extends AbstractTupleTable
 			{
 				if (index > getOffset())
 				{
-					result.add(row);
+					SimpleTuple copy = new SimpleTuple(columns);
+					for (String col : columns)
+					{
+						copy.set(col, row.getObject(col));
+					}
+					result.add(new SimpleTuple(copy));
+
 					count++;
 					if (count >= getLimit()) break;
 				}
 				index++;
 			}
-			return result;
 		}
 		else
 		{
-			return this.rows;
+			for (Tuple row : this.rows)
+			{
+				SimpleTuple copy = new SimpleTuple(columns);
+				for (String col : columns)
+				{
+					copy.set(col, row.getObject(col));
+				}
+				result.add(new SimpleTuple(copy));
+			}
 		}
+		return result;
 	}
 
 	@Override
 	public Iterator<Tuple> iterator()
 	{
-		return this.getRows().iterator();
-	}
-
-	@Override
-	public void close()
-	{
-		// nothing todo
+		try
+		{
+			return this.getRows().iterator();
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package org.molgenis.datatable.model;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,8 +14,17 @@ public abstract class AbstractTupleTable implements TupleTable
 	private int offset = 0;
 	private int colOffset = 0;
 	private int colLimit = 0;
-	
+
 	private Database db;
+
+	@Override
+	public void reset()
+	{
+		limit = 0;
+		offset = 0;
+		colOffset = 0;
+		colLimit = 0;
+	}
 
 	@Override
 	public void setLimitOffset(int limit, int offset)
@@ -32,7 +42,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setLimit(int limit)
 	{
-		if(limit < 0) throw new RuntimeException("limit cannot be < 0");
+		if (limit < 0) throw new RuntimeException("limit cannot be < 0");
 		this.limit = limit;
 	}
 
@@ -45,15 +55,51 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setOffset(int offset)
 	{
-		if(offset < 0) throw new RuntimeException("offset cannot be < 0");
+		if (offset < 0) throw new RuntimeException("offset cannot be < 0");
 		this.offset = offset;
 	}
 
 	@Override
-	public abstract List<Field> getColumns() throws TableException;
+	public abstract List<Field> getAllColumns() throws TableException;
 
 	@Override
-	public abstract List<Tuple> getRows() throws TableException;
+	public List<Field> getColumns() throws TableException
+	{
+		List<Field> columns = getAllColumns();
+		if (getColOffset() > 0)
+		{
+			if (getColLimit() > 0)
+			{
+				return columns.subList(getColOffset(), getColOffset() + getColLimit());
+			}
+			else
+			{
+				return columns.subList(getColOffset(), columns.size());
+			}
+		}
+		else
+		{
+			if (getColLimit() > 0)
+			{
+				return columns.subList(0, getColLimit());
+			}
+			else
+			{
+				return columns;
+			}
+		}
+	}
+
+	@Override
+	public List<Tuple> getRows() throws TableException
+	{
+		List<Tuple> result = new ArrayList<Tuple>();
+		for (Tuple t : this)
+		{
+			result.add(t);
+		}
+		return result;
+	}
 
 	@Override
 	public abstract Iterator<Tuple> iterator();
@@ -61,7 +107,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void close() throws TableException
 	{
-		//close resources if applicable
+		// close resources if applicable
 	}
 
 	@Override
@@ -76,10 +122,10 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setColLimit(int limit)
 	{
-		if(limit < 0) throw new RuntimeException("setColLimit() cannot be < 0");
+		if (limit < 0) throw new RuntimeException("colLimit cannot be < 0");
 		this.colLimit = limit;
 	}
-	
+
 	@Override
 	public int getColLimit()
 	{
@@ -95,14 +141,14 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setColOffset(int offset)
 	{
-		if(offset < 0) throw new RuntimeException("setColOffset() cannot be < 0");
+		if (offset < 0) throw new RuntimeException("colOffset cannot be < 0");
 		this.colOffset = offset;
 	}
 
 	@Override
 	public void setDb(Database db)
 	{
-		if(db == null) throw new NullPointerException("database cannot be null in setDb(db)");
+		if (db == null) throw new NullPointerException("database cannot be null in setDb(db)");
 		this.db = db;
 	}
 
