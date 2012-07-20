@@ -66,7 +66,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	private String selectedInvestigation = null;
 	//	private String InputToken = null;
-	private String comparison = null;
 	private String selectedField = null;
 	private String SelectionName = "empty";
 
@@ -116,6 +115,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
+		
 		//for now the cohorts are investigations 
 		if ("cohortSelect".equals(request.getAction())) {
 			System.out.println("----------------------"+request);
@@ -288,6 +288,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			for (Investigation i : db.find(Investigation.class)) {
 				this.arrayInvestigations.add(i);
 			}
+			
 			RetrieveProtocols(db);
 
 		}catch(Exception e){

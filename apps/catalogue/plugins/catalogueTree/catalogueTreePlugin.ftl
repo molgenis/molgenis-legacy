@@ -109,6 +109,36 @@
 			}
 		}
 		
+	$(document).ready(function(){	
+		
+		$('#cohortSelectSubmit').button();
+		$('#cohortSelectSubmit').css({
+			'font-size':'1.2em',
+			'color':'#123481'
+		});
+		$('#cohortSelectSubmit').show();
+		
+		$('#downloadButton').button();
+		$('#downloadButton').css({
+			'font-size':'0.8em'
+		});
+		$('#downloadButton').show(); 
+		$('#downloadButtonEMeasure').button();
+		$('#downloadButtonEMeasure').css({
+			'font-size':'0.8em'
+		});
+		$('#downloadButtonEMeasure').show();
+		
+		$('#SearchCatalogueTree').button();
+		$('#SearchCatalogueTree').css({
+			'font-size':'0.8em'
+		});
+		$('#SearchCatalogueTree').show();
+		
+		$('#browser').find('li >span').css('font-family','Comic Sans, Comic Sans MS, cursive');
+		$('#selection').css('font-family','Comic Sans, Comic Sans MS, cursive');
+		
+	});
 	</script>
 
 	<div class="formscreen">
@@ -131,40 +161,30 @@
 				<#if screen.isSelectedInv() == true>
 					<table class="box" width="100%" cellpadding="0" cellspacing="0" style="border-right:1px solid lightgray">
 						<tr><td class="box-header" colspan="2">  
-								        <label>Choose a cohort:
+								        <label style='font-size:14px'>Choose a cohort:
 										<!--select name="investigation" id="investigation"--> 
 											<#list screen.arrayInvestigations as inv>
 												<#assign invName = inv.name>
 												<!--option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option-->			
 													<input class="cohortSelect" type="submit" id="cohortSelectSubmit" name="cohortSelectSubmit" value= ${invName}
-														onclick="__action.value='cohortSelect';" 
-														style="color: #000; background: #8EC7DE;
-												   		border: 2px outset #d7b9c9;
-												   		font-size:12px;
-												   	"/>
+														style="display:none" onclick="__action.value='cohortSelect';"/>
 											
 											</#list>
-										<!--/select-->
-										<script>$('#investigation').chosen();</script>
-										<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
-										<!--input type="image" src="res/img/refresh.png" alt="Submit" 
-											name="chooseInvestigation" style="vertical-align: middle;" 
-											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/-->	
+										<script>$('#investigation').chosen();</script>	
 										</label>
 										
 										<div id="masstoggler"> 		
-						 					<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+						 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
 						 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 						 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
 			 							</div>
 			 							<div style="float:left">
 				 							<input type="submit" id="downloadButton" name="downloadButton" value="Download as Excel" 
-											onclick="__action.value='downloadButton';" "/>
+											style="display:none" onclick="__action.value='downloadButton';" "/>
 			 							</div>
 			 							<div style="float:left">
 				 							<input type="submit" id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
-											onclick="__action.value='downloadButtonEMeasure';" "/>
+											style="display:none" onclick="__action.value='downloadButtonEMeasure';" "/>
 			 							</div>
 			 							
 					    			</td></tr>
@@ -184,7 +204,8 @@
 					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
 					onkeyup="checkSearchingStatus();">
 				
-				<input type="button" name="SearchCatalogueTree" value="search" onclick="searchInTree()"/>
+				<input type="button" id="SearchCatalogueTree" name="SearchCatalogueTree" 
+					style="display:none" value="search" onclick="searchInTree()"/>
 				
 					    <!--
 					    <#list screen.getFilters() as filters>
@@ -206,7 +227,7 @@
 						<#if filter_has_next> and </#if>
 						</#list>
 					    
-					    </td><td class="box-body" style="width: 50%">Details:</td></tr>
+					    </td><td class="box-body" style="width: 50%"><div style="font-family:Comic Sans, Comic Sans MS, cursive">Details:</div></td></tr>
 					    <tr><td class="box-body">
 								<div id="leftSideTree">
 									${screen.getTreeView()}<br/>
@@ -227,6 +248,7 @@
 										   			$('#' + measurementID).click(function(){
 										   				$('#details').empty();
 										   				$('#details').append(htmlTable);
+										   				$('#details td').css('font-family','Comic Sans, Comic Sans MS, cursive');
 										   			});
 										   		});
 										    </#list>
@@ -251,15 +273,10 @@
 							
 							</td>
 							<td class="box-body">
-							<label>Fill in selection name</label>
+							<!--<label>Fill in selection name</label>
 							<input title="fill in selection name" type="text" name="SelectionName" >
 							<input class="saveSubmit" type="submit" id="SaveSelectionSubmit" name="SaveSelectionSubmit" value="Save selection" 
-									onclick="__action.value='SaveSelectionSubmit';" 
-									style="color: #000; background: #8EC7DE;
-										   border: 2px outset #d7b9c9;
-										   font-size:15px;
-										   font-weight:bold;
-										   "/>
+									onclick="__action.value='SaveSelectionSubmit';"/>-->
 							</td>
 						</tr>
 					</table>
@@ -377,6 +394,7 @@
  							$('#variableCount').empty();
  							var count = $('#selectedVariableTable tr').length - 1;
  							$('#variableCount').append(count);
+ 							$('#selectedVariableTable td').css('font-family','Comic Sans, Comic Sans MS, cursive');
  						});	
  					});
  				</script>
