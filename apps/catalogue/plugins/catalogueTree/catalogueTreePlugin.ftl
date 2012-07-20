@@ -256,11 +256,18 @@
 											<#list screen.getListOfJSONs() as eachJSON>
 										   		var json = eval(${eachJSON});
 										   		$.each(json, function(measurementID, htmlTable){
-										   			$('#' + measurementID).click(function(){
+										   			$('#' + measurementID + '>span').click(function(){
 										   				$('#details').empty();
 										   				$('#details').append(htmlTable);
 										   				$('#details td').css('font-family','Comic Sans, Comic Sans MS, cursive');
 										   			});
+										   			
+										   			$('#' + measurementID + '>span').mouseenter(function(){
+							 							$('#popUpDialogue').show();
+							 						});
+							 						$('#' + measurementID + '>span').mouseout(function(){
+							 							$('#popUpDialogue').hide();
+							 						});
 										   		});
 										    </#list>
 										</#if>		
