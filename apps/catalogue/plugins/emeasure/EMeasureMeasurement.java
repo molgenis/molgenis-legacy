@@ -11,7 +11,8 @@ import org.molgenis.pheno.Measurement;
 
 public class EMeasureMeasurement {
 
-	public void addXML(Measurement m, PrintWriter out, Database db) throws Exception {
+	public String addXML(Measurement m, Database db) throws Exception {
+		StringBuffer out = new StringBuffer();
 		
 		out.append("\t<subjectOf>\n" + 
 				"\t\t<measureAttribute>");
@@ -37,6 +38,8 @@ public class EMeasureMeasurement {
 				"\t</subjectOf>");
 
 		System.out.println(out.toString());
+		
+		return out.toString();
 	}
 
 	
