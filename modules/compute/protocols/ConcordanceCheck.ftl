@@ -90,10 +90,79 @@ else
 	-fo ${sample}.genotypeArray.fasta -tab
 	
 	###############################
-	#Check build of arraydata by taking rs10001565 and checking the position on chr1
-	position=`awk '$3 == "rs10001565" {print $2}' ${sample}.genotypeArray.vcf`
+	# load ten rs-ids and positions of ten probes, for build 36 and build 37
+	rs[0]=rs1000002
+	b36[0]=185118462
+	b37[0]=183635768
+	rs[1]=rs1000003
+	b36[1]=99825597
+	b37[1]=98342907
+	rs[2]=rs10000030
+	b36[2]=103593179
+	b37[2]=103374154
+	rs[3]=rs10000037
+	b36[3]=38600725
+	b37[3]=38924330
+	rs[4]=rs10000041
+	b36[4]=165841405
+	b37[4]=165621955
+	rs[5]=rs1000007
+	b36[5]=237416793
+	b37[5]=237752054
+	rs[6]=rs1000016
+	b36[6]=235355721
+	b37[6]=235690982
+	rs[7]=rs10000180
+	b36[7]=84118788
+	b37[7]=83899764
+	rs[8]=rs10000272
+	b36[8]=189927377
+	b37[8]=46361441
+	rs[9]=rs1000031
+	b36[9]=44615439
+	b37[9]=47511781
 	
-	if [ ! -z $position ] && [ $position == 15331671 ]
+	# Find out which build was used. This info is stored in $build (build36, build37, N/A, ERROR)
+	build="N/A"
+	i=0
+	unset ready
+	while [ -z $ready ]
+	do
+	    position=`awk '$3 == "'<#noparse>${rs[$i]}</#noparse>'" {print $2}' ${sample}.genotypeArray.vcf`
+	
+	    # does the probe exist in this file?
+	    if [ ! -z $position ]
+	    then
+	        ready="ready"
+	
+	        if [ $position == <#noparse>${b36[$i]}</#noparse> ]
+	        then
+	            # we are on build 36                                                                                                                                           
+	            build="build36"
+	        else
+		    if  [ $position == <#noparse>${b37[$i]}</#noparse> ]
+	            then
+	            	# we are on build 37
+					build="build37"
+	            else
+	            	# we are neither on build 36 nor on build 37, according to this test                                                                                           
+					build="ERROR"
+		    	fi
+			fi
+	    fi
+	    
+	    # stop if we have tested all probes
+	    if [ <#noparse>${#rs[@]}</#noparse> -le $(($i+1)) ]
+	    then
+	        ready="ready"
+	    fi
+	
+	    # increase counter
+	    i=$[$i+1]
+	done
+	
+	####################################
+	if [ $build == "build36" ]
 	then # File is on build36
 	
 		##Align vcf to reference AND DO NOT FLIP STRANDS!!! (genotype data is already in forward-forward format) If flipping is needed use "-f" command before sample.genotype_array.vcf
@@ -169,7 +238,8 @@ else
 		--comp comp_immuno \
 		--header >> ${sampleconcordancefile}
 	
-	else
+	else if [ $build == "build37" ]
+	then
 		###################################
 		#Arrayfile is on build 37 (position 15722573)
 		
@@ -234,8 +304,12 @@ else
 		--step q20_dp10_concordance \
 		--name ${externalSampleID} \
 		--comp comp_immuno \
-		--header >> ${sampleconcordancefile}	
-	
-	
+		--header >> ${sampleconcordancefile}		
+	else if [ $build == "N/A" ]
+	then
+ 		echo "ERROR: unsure which build was used. None of the probes we checked was found in the array file."
+ 	else if [ $build == "ERROR" ]
+ 	then
+ 		echo "ERROR: one of the probe in the array file has an unexpected position. Therefore, we are not able to tell which build was used." 
 	fi
 fi
