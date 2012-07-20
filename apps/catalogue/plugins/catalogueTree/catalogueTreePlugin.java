@@ -118,6 +118,11 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
 		
+		
+		List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
+		
+		
+		
 		//for now the cohorts are investigations 
 		if ("cohortSelect".equals(request.getAction())) {
 			System.out.println("----------------------"+request);
@@ -142,13 +147,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			
 			//Make E-Measure XML file
 			
-			List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
+
 			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
 			for (Measurement m : allMeasList) {
-				
 				if(request.getBool(m.getId().toString()) != null){
 					selectedMeasList.add(m);
 				}
+				
+				
 			}
 			
 			EMeasure em = new EMeasure(db, "EMeasure_"+dateFormat.format(date));
@@ -157,13 +163,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			
 			pw.print(result);
 			pw.close();
-			
-//			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-//			HttpServletResponse httpResponse = rt.getResponse();
-			
-			//String redirectURL = "tmpfile/EMeasure_"+dateFormat.format(date) + ".xml";
-
-			//httpResponse.sendRedirect(redirectURL);
 		}
 		else if(request.getAction().equals("downloadButton")){
 			
@@ -181,7 +180,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 			int startingRow = 1;
 			
-			List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
 			
 			outputExcel.addCell(new Label(0, 0, "Selected variables"));
 			
@@ -251,11 +249,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			String measurementName = request.getString("measurementName"); 
 			measurementName = request.getAction().substring( "DeleteMeasurement".length() + 2+ "measurementName".length(),	request.getAction().length());
 			this.deleteShoppingItem(measurementName);
-
 		}
-
 	}
-
 
 	@Override
 	public void reload(Database db) {
@@ -351,7 +346,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 				setSelectedInv(true);
 				List<String> subNames = p.getSubprotocols_Name();
-
+				
 				// keep a record of each protocol in a hashmap. Later on we
 				// could reference to the Protocol by name
 				if (!nameToProtocol.containsKey(p.getName())) {
@@ -641,7 +636,18 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(
 					Measurement.NAME, Operator.IN, childNode));
 
-			for (Measurement measurement : measurementList) {
+			List<Measurement> filteredMeasurementsList = new ArrayList<Measurement>();
+			
+			for (Measurement m : measurementList) {
+				if(m.getName().equals("PA_ID") || m.getName().equals("ID") || m.getName().equals("BEZOEKNR")){
+					
+				}else{
+					filteredMeasurementsList.add(m);	//FILTERED LIST WITHOUT PA_ID, ID and BEZOEKNR
+				}
+			}
+			
+			
+			for (Measurement measurement : filteredMeasurementsList) {
 
 				// reset the the variable to false
 				//				findTokenInDetailInformation = false;

@@ -82,22 +82,17 @@
 						}
 					}
 				});
-			}
-			
+			}			
 		}		
 		
 		function removeVerticalLine(id){
 			
-			if($('#' + id).css('display') != 'none' && $('#' + id).children('ul').children('li').length > 0){
-						
+			if($('#' + id).css('display') != 'none' && $('#' + id).children('ul').children('li').length > 0){						
 				if($('#' + id).nextAll().length > 0 && !$('#' + id).nextAll().is(':visible')){
 					$('#' + id).css('background-image','none');
-				}
-				
-				$('#' + id).children('ul').children('li').each(function(){
-						
-					removeVerticalLine($(this).attr('id'));
-					
+				}			
+				$('#' + id).children('ul').children('li').each(function(){					
+					removeVerticalLine($(this).attr('id'));					
 				});
 			}
 		}
