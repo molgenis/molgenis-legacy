@@ -40,12 +40,12 @@ import plugins.matrix.manager.MatrixManagerModel;
  * this.getView()/setView(..).
  */
 public class QuestionOne extends EasyPluginController<QuestionsModel> {
-		
+
 	public QuestionOne(String name, ScreenController<?> parent) {
 		super(name, parent);
-		this.setModel(new QuestionsModel(this)); // the default model
-		
-		//create sub plugin
+		this.setModel((QuestionsModel) parent.getModel()); // the default model
+
+		// create sub plugin
 		new MatrixManagerHemodb("QuestionsSub", this);
 	}
 
@@ -53,22 +53,17 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 		return new FreemarkerView("QuestionsView.ftl", getModel());
 	}
 
+
 	/**
 	 * At each page view: reload data from database into model and/or change.
 	 * Exceptions will be caught, logged and shown to the user automatically via
 	 * setMessages(). All db actions are within one transaction.
 	 */
 	@Override
-	public void reload(Database db) throws Exception {
-		if (getModel().getState().equals(QuestionState.EMPTYGROUPLIST)) {
-			selectSampleGroupsForDropdown(db);
-			System.out.println("NOT filled");
-		getModel().setState(QuestionState.QUESTION1);
-		} else {
-			System.out.println("already filled");
-		}
-		
-		//also reload sub plugin
+	public void reload(Database db) throws Exception {	
+		selectSampleGroupsForDropdown(db);
+
+		// also reload sub plugin
 		this.get("QuestionsSub").reload(db);
 	}
 
@@ -82,31 +77,19 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 			throws HandleRequestDelegationException {
 		getModel().setAction(request.getAction());
 
-		if("back".equals(request.getAction()))
-		{
+		if ("back".equals(request.getAction())) {
 			getModel().setState(QuestionState.BEGINNING);
 		}
-		
+
 		try {
 			// GENE EXPRESSION DATA MATRIX SELECTION -> shows which type of gene
 			// expression will be used
 			String geneExp = request.getString("geneExp");
-			if (geneExp.equals("quanLog")) { // Chosen the quantile data matrix
-			// TODO: DO SOMETHING WITH THE QUANTILE MATRIX
-			} else { // Chosen raw expression
-			// TODO: DO SOMETHING WITH THE RAW MATRIX
-			}
 
 			// LIST OF GENES SELECTION -> Gets all the listed genes from the
 			// website
-			// List <String> genes = request.getStringList("geneText");
 			String genesFromSite = request.getString("geneText");
 			String[] genes = genesFromSite.split("\n");
-			// System.out.println("GENES!: " + genes + " miep");
-			//
-			// for(String e: genes){
-			// System.out.println("bla " + e);
-			// }
 			List<String> probes = null;
 
 			if (genes != null) {
@@ -122,15 +105,12 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 			}
 
 			// SAMPLE SELECTION BASED ON SAMPLE GROUP NAMES -> Gets the selected
-			// groups from the website
-			// and retrieves the associated samples
-			// TODO select these groups in data matrix
+			// groups from the website and retrieves the associated samples
 			List<String> groups = request.getStringList("sampleGroups");
-			// System.out.println(groups);
 			List<String> sampleNames = selectSamplesFromSampleGroups(db, groups);
 
 			// SUBMIT BUTTON
-			if (getModel().getAction().equals("submitInformation")) {
+			if (getModel().getAction().equals("submitInfoQ1")) {
 				System.out
 						.println("we handled the information on the site submitted via the submit button");
 
@@ -151,8 +131,8 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 				MatrixManagerModel model = (MatrixManagerModel) matrixManager
 						.getMyModel();
 				model.setBrowser(br);
-				
-				//set nice label
+
+				// set nice label
 				matrixManager.setLabel("Results of your selection");
 
 				// refresh attributes, operators, filter
@@ -163,11 +143,11 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 				model.setFilter(null);
 
 				model.setUploadMode(false);
-				
+
 				model.setSelectedData(dataSet);
-				
+
 				matrixManager.createOverLibText(db);
-				
+
 				matrixManager.createHeaders();
 
 				if (model.getRowHeaderAttr() == null
@@ -184,7 +164,7 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 				}
 
 				getModel().setState(QuestionState.QUESTION1_RESULT);
-				
+
 			} else {
 				System.out.println("Something went wrong, try again.");
 			}
@@ -207,8 +187,6 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 			for (HemoSampleGroup hsg : sampleGroups) {
 				String name = hsg.getName();
 				getModel().getNames().add(name);
-				// add names to arraylist
-				// return arraylist to handleRequest
 			}
 		} else {
 			System.out.println("OOPS! SOMETHING WENT WRONG");
@@ -246,35 +224,35 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 		// GETS A STRING WITH GENE NAMES, CONVERTS THEM TO PROBES AND RETURNS
 		// THEM TO THE HANDLEREQUEST
 
-			try {
-				List<String> probes = new ArrayList<String>();
-				for (String gene : genes) {
-					gene = gene.toUpperCase();
-					gene = StringUtils.chomp(gene);
-					System.out.println("gene is: " + gene);
-					List<HemoProbe> probesPerGene = db.find(HemoProbe.class,
-							new QueryRule(HemoProbe.REPORTSFOR_NAME, Operator.EQUALS,
-									gene));
-					
-					for (HemoProbe probe : probesPerGene) {
-						// System.out.println("name of gene: " + probe);
-						System.out.println("name of probe: " + probe.getName());
-						probes.add(probe.getName());
-					}
+		try {
+			List<String> probes = new ArrayList<String>();
+			for (String gene : genes) {
+				gene = gene.toUpperCase();
+				gene = StringUtils.chomp(gene);
+				System.out.println("gene is: " + gene);
+				List<HemoProbe> probesPerGene = db.find(HemoProbe.class,
+						new QueryRule(HemoProbe.REPORTSFOR_NAME,
+								Operator.EQUALS, gene));
+
+				for (HemoProbe probe : probesPerGene) {
+					// System.out.println("name of gene: " + probe);
+					System.out.println("name of probe: " + probe.getName());
+					probes.add(probe.getName());
 				}
-				if(!probes.isEmpty()){
-					System.out.println("probes found with this gene(s): " + probes);
-					return probes;
-				}
-				else if(probes.isEmpty()){
-					System.out.println("This gene cannot be found in this database.");
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				System.out.println("This gene cannot be found in this database.");
-				e.printStackTrace();
 			}
-			return null;
+			if (!probes.isEmpty()) {
+				System.out.println("probes found with this gene(s): " + probes);
+				return probes;
+			} else if (probes.isEmpty()) {
+				System.out
+						.println("This gene cannot be found in this database.");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("This gene cannot be found in this database.");
+			e.printStackTrace();
+		}
+		return null;
 
 	}
 

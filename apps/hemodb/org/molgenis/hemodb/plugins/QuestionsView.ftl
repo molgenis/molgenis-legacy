@@ -62,14 +62,13 @@
 					<select multiple="multiple" name="sampleGroups" id="sGroups" style="margin-right:10px">
 											<option value="none" selected="selected">no selection made</option>
 					<#list model.names as samplenames>
-
 						<option value="${samplenames}">${samplenames}</option>
 					</#list>
 					</select>
 				</div>
 		
 				<div id="submit">
-					<input type='submit' id='submitInfo' value='Submit' onclick="__action.value='submitInformation'" />
+					<input type='submit' id='submitInfo' value='Submit' onclick="__action.value='submitInfoQ1'" />
 				</div>
 			<#--end of your plugin-->	
 			</div>
@@ -85,6 +84,13 @@
       		<#assign templateSource = "<@"+screen.getViewName() + " screen/>">
       		<#assign inlineTemplate = templateSource?interpret>
       		<@inlineTemplate screen />  
+      		
+      		
+<#elseif model.state == "QUESTION2">
+This question hasn't been implemented yet. Try again later
+
+
+
 	
 <#else>
 UNKNOWN STATE ${model.state}

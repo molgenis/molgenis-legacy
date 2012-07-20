@@ -18,14 +18,14 @@
 				</menu>
 			</form>
 			<menu name="BasicAnnotations" label="Annotations" header="Navigate annotations"> <!-- header does not work yet for menu -->
-				<form name="Samples" entity="HemoSample" group="biologist" />
+				<form name="Samples" entity="HemoSample" hide_fields="ontologyReference,AlternateId,label" group="biologist" />
 				<form name="Measurements" entity="Measurement"
-					hide_fields="targettypeAllowedForRelation,panelLabelAllowedForRelation"
+					hide_fields="targettypeAllowedForRelation,panelLabelAllowedForRelation,ontologyReference,AlternateId,label,unit,categories,temporal,dataType,Investigation"
 					group="biologist" />
-				<form name="Probes" entity="HemoProbe" group="biologist" />
+				<form name="Probes" entity="HemoProbe" hide_fields="ontologyReference,AlternateId,label,Symbol" group="biologist" />
 				<form name="ProbeCollection" entity="ProbeSet"
-					hide_fields="cm,bpstart,bpend,seq,symbol" group="biologist" />
-				<form name="Genes" entity="HemoGene" group="biologist">
+					hide_fields="cm,bpstart,bpend,seq,symbol,ontologyReference,Chromosome,label" group="biologist" />
+				<form name="Genes" entity="HemoGene" hide_fields="ontologyReference,AlternateId,label" group="biologist">
 					<form name="Transcripts" entity="Transcript" group="biologist" />
 				</form>
 				<form name="SampleGroup" entity="HemoSampleGroup" group="biologist" />

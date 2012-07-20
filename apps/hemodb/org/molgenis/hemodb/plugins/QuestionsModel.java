@@ -31,6 +31,8 @@ public class QuestionsModel extends EasyPluginModel
 		EMPTYGROUPLIST,
 		QUESTION1,
 		QUESTION1_RESULT,
+		QUESTION2,
+		QUESTION2_RESULT,
 		BEGINNING
 	}
 	

@@ -14,6 +14,6 @@
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/search.xml" />
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml" />
 		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml" />
-		<plugin label="Questions" name="Questions" type="org.molgenis.hemodb.plugins.Questions" />
+		<plugin label="Questions" name="Questions" type="org.molgenis.hemodb.plugins.QuestionsOverview" />
 	</menu>
 </molgenis>
