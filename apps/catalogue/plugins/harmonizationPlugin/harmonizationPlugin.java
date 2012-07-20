@@ -982,7 +982,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 		// Create a starting point of the tree! The root of the tree!
 		JQueryTreeViewElement protocolsTree = new JQueryTreeViewElement(
-				"Study: " + this.getSelectedPredictionModel(), null);
+				"Study: " + this.getSelectedPredictionModel(), "", null);
 
 		// Variable indicating whether the input token has been found.
 
@@ -1034,7 +1034,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				if (protocolsAndMeasurementsinTree.containsKey(protocolName)) {
 					childTree = protocolsAndMeasurementsinTree.get(protocolName);
 				} else {
-					childTree = new JQueryTreeViewElement(protocolName, parentTree);
+					childTree = new JQueryTreeViewElement(protocolName, protocol.getId().toString(), parentTree);
 					childTree.setCollapsed(true);
 					protocolsAndMeasurementsinTree.put(protocolName, childTree);
 				}
@@ -1109,7 +1109,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 							displayName, parentTree);
 				} else {
 
-					childTree = new JQueryTreeViewElement(displayName,
+					childTree = new JQueryTreeViewElement(displayName, measurement.getId().toString(),
 							parentTree);					
 
 					protocolsAndMeasurementsinTree.put(displayName, childTree);

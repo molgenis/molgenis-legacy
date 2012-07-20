@@ -24,7 +24,6 @@ import plugins.hl7parser.StageLRA.HL7ObservationLRA;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
 import plugins.hl7parser.StageLRA.HL7ValueSetAnswerLRA;
 import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
-import app.DatabaseFactory;
 
 public class HL7PhenoImporter {
 
@@ -301,7 +300,7 @@ public class HL7PhenoImporter {
 
 			listOfProtocolIds = new ArrayList<Integer>();
 			
-			HashMap<String,HL7ValueSetDCM> hashValueSetDCM = ll.getHashValueSetDCM();
+			HashMap<String, HL7ValueSetDCM>hashValueSetDCM = ll.getHashValueSetDCM();
 			
 			if(ll.getHl7GenericDCM() != null){
 
@@ -327,17 +326,27 @@ public class HL7PhenoImporter {
 						m.setName(meas.getDisplayName());
 						//m.setDescription(meas.getMeasurementDescription());
 						m.setInvestigation(inv);
-
-						String dataType = meas.getOriginalText();
+						
+						List<String> measurementCategory = new ArrayList<String>();
+						
+						String dataType = meas.getValue();
 
 						if(dataType.equals("INT")){
 							m.setDataType("int");
 						}else if(dataType.equals("ST")){
 							m.setDataType("string");
+						}else if(dataType.equals("CO")){
+							m.setDataType("categorical");
+						}else if(dataType.equals("CD")){
+							m.setDataType("code");
+						}else if(dataType.equals("PQ")){
+							m.setDataType("decimal");
 						}else if(dataType.equals("TS")){
 							m.setDataType("datetime");
-						}else{
-							m.setDataType("string");
+						}else if(dataType.equals("REAL")){
+							m.setDataType("decimal");
+						}else if(dataType.equals("BL")){
+							m.setDataType("bool");
 						}
 						
 						List<Integer> listOfOntologyTermIDs = addingOntologyTerm(meas.getHl7OntologyTerms(), db);
@@ -349,14 +358,32 @@ public class HL7PhenoImporter {
 							uniqueListOfMeasurements.add(m);
 						}
 						
-						HL7ValueSetDCM valueSet = hashValueSetDCM.get(meas.getDisplayName());
-						//
-						for(HL7ValueSetAnswerDCM eachAnswer : valueSet.getListOFAnswers()){
-							
-							String categoryName = eachAnswer.getName();
-
 						
+						if(hashValueSetDCM.containsKey(meas.getDisplayName())){
+							
+							HL7ValueSetDCM valueSet = hashValueSetDCM.get(meas.getDisplayName());
+							
+							for(HL7ValueSetAnswerDCM eachAnswer : valueSet.getListOFAnswers()){
+								
+								String categoryName = eachAnswer.getName();
+								HL7OntologyTerm ont = eachAnswer.getOnt();
+								if(!uniqueCategoryName.contains(categoryName)){
+									Category c = new Category();
+									c.setName(categoryName);
+									c.setCode_String("");
+									c.setDescription(categoryName);
+									c.setInvestigation(inv);
+									ArrayList<HL7OntologyTerm> list = new ArrayList<HL7OntologyTerm>();
+									list.add(ont);
+									List<Integer> ontologyTermIDsFoCategory = addingOntologyTerm(list, db);
+									c.setOntologyReference_Id(ontologyTermIDsFoCategory);
+									uniqueListOfCategory.add(c);
+								}
+								measurementCategory.add(categoryName);
+							}
 						}
+						
+						m.setCategories_Name(measurementCategory);
 						
 						protocolFeature.add(m.getName());
 					}
@@ -365,10 +392,23 @@ public class HL7PhenoImporter {
 					if(!uniqueListOfProtocolName.contains(protocol.getName())){
 						uniqueListOfProtocolName.add(protocol.getName());
 						uniqueProtocol.add(protocol);
-					}
-							
+					}			
 				}
 
+				db.update(uniqueListOfCategory, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
+				
+				for(Measurement m : uniqueListOfMeasurements){
+					
+					if(m.getCategories_Name().size() > 0){
+						List<Category> categories = db.find(Category.class, new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name()));
+						List<Integer> categoryIDs = new ArrayList<Integer>();
+						for(Category c : categories){
+							categoryIDs.add(c.getId());
+						}
+						m.setCategories_Id(categoryIDs);
+					}
+				}
+				
 				db.update(uniqueListOfMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME);
 				
 
@@ -415,12 +455,18 @@ public class HL7PhenoImporter {
 		List<Integer> listOfOntologyTermIDs = new ArrayList<Integer>();
 
 		for(HL7OntologyTerm t : listOfHL7OntologyTerms){
-
+			
+			String codeSystemName = t.getCodeSystemName();
+					
+			if(t.getCodeSystemName().toLowerCase().startsWith("snomed") || t.getCodeSystemName().equalsIgnoreCase("sct")){
+				codeSystemName = "SCT";
+			}
+			
 			Ontology ot = new Ontology();
 
 			if(db.find(Ontology.class, new QueryRule(Ontology.ONTOLOGYACCESSION, Operator.EQUALS, t.getCodeSystem())).size() == 0){
 
-				ot.setName(t.getCodeSystemName());
+				ot.setName(codeSystemName);
 				ot.setOntologyAccession(t.getCodeSystem());
 				db.add(ot);
 
@@ -430,7 +476,7 @@ public class HL7PhenoImporter {
 
 			Query<OntologyTerm> q = db.query(OntologyTerm.class);
 			q.addRules(new QueryRule(OntologyTerm.TERMACCESSION, Operator.EQUALS, t.getCode()));
-			q.addRules(new QueryRule(OntologyTerm.ONTOLOGY_NAME, Operator.EQUALS, t.getCodeSystemName()));
+			q.addRules(new QueryRule(OntologyTerm.ONTOLOGY_NAME, Operator.EQUALS, codeSystemName));
 
 			OntologyTerm ont = new OntologyTerm();	
 

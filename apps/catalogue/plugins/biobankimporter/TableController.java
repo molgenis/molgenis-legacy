@@ -590,7 +590,6 @@ public class TableController {
 
 											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
 
-
 											//TODO: import measurements then import individual data. The measurement has to be consistent.
 											if(checkExistingMeasurementsInDB.keySet().contains(headerName)){
 												headerName = checkExistingMeasurementsInDB.get(headerName);
@@ -614,6 +613,8 @@ public class TableController {
 														checkExistingMeasurementsInDB.put(targetName, targetName + "_" + investigationName);
 														observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
 													}
+												}else{
+													observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
 												}
 											}
 
@@ -935,6 +936,11 @@ public class TableController {
 
 			List<ObservedValue> subList = observedValueList.subList((iteration - 1)*5000, observedValueList.size()); 
 
+//			for(ObservedValue ov : subList){
+//				System.out.println(ov);
+//				db.add(ov);
+//			}
+			
 			db.update(subList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, 
 					ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
 
@@ -942,7 +948,7 @@ public class TableController {
 			//				System.out.println(ov);
 			//				db.add(ov);
 			//			}
-
+			
 			db.commitTx();
 
 			observationTargetList.clear();

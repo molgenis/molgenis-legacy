@@ -83,7 +83,7 @@
 					}
 				});
 			}
-			removeVerticalLine($('#browser').children('li').attr('id'));
+			
 		}		
 		
 		function removeVerticalLine(id){
@@ -109,8 +109,38 @@
 			}
 		}
 		
+	$(document).ready(function(){	
+		
+		$('#cohortSelectSubmit').button();
+		$('#cohortSelectSubmit').css({
+			'font-size':'1.2em',
+			'color':'#123481'
+		});
+		$('#cohortSelectSubmit').show();
+		
+		$('#downloadButton').button();
+		$('#downloadButton').css({
+			'font-size':'0.8em'
+		});
+		$('#downloadButton').show(); 
+		$('#downloadButtonEMeasure').button();
+		$('#downloadButtonEMeasure').css({
+			'font-size':'0.8em'
+		});
+		$('#downloadButtonEMeasure').show();
+		
+		$('#SearchCatalogueTree').button();
+		$('#SearchCatalogueTree').css({
+			'font-size':'0.8em'
+		});
+		$('#SearchCatalogueTree').show();
+		
+		$('#browser').find('li >span').css('font-family','Comic Sans, Comic Sans MS, cursive');
+		$('#selection').css('font-family','Comic Sans, Comic Sans MS, cursive');
+		
+	});
 	</script>
-	
+
 	<div class="formscreen">
 		
 		<div class="form_header" id="${screen.getName()}">
@@ -129,35 +159,34 @@
 		<div class="screenbody">
 			<div class="screenpadding">
 				<#if screen.isSelectedInv() == true>
-					<table class="box" width="100%" cellpadding="0" cellspacing="0">
+					<table class="box" width="100%" cellpadding="0" cellspacing="0" style="border-right:1px solid lightgray">
 						<tr><td class="box-header" colspan="2">  
-								        <label>Choose a cohort:
+								        <label style='font-size:14px'>Choose a cohort:
 										<!--select name="investigation" id="investigation"--> 
 											<#list screen.arrayInvestigations as inv>
 												<#assign invName = inv.name>
 												<!--option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option-->			
 													<input class="cohortSelect" type="submit" id="cohortSelectSubmit" name="cohortSelectSubmit" value= ${invName}
-														onclick="__action.value='cohortSelect';" 
-														style="color: #000; background: #8EC7DE;
-												   		border: 2px outset #d7b9c9;
-												   		font-size:12px;
-												   	"/>
+														style="display:none" onclick="__action.value='cohortSelect';"/>
 											
 											</#list>
-										<!--/select-->
-										<script>$('#investigation').chosen();</script>
-										<!--input type="submit" name="chooseInvestigation" value="refresh tree" onclick="__action.value='chooseInvestigation';"></input-->
-										<!--input type="image" src="res/img/refresh.png" alt="Submit" 
-											name="chooseInvestigation" style="vertical-align: middle;" 
-											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/-->	
+										<script>$('#investigation').chosen();</script>	
 										</label>
 										
 										<div id="masstoggler"> 		
-						 					<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+						 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
 						 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 						 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
 			 							</div>
+			 							<div style="float:left">
+				 							<input type="submit" id="downloadButton" name="downloadButton" value="Download as Excel" 
+											style="display:none" onclick="__action.value='downloadButton';" "/>
+			 							</div>
+			 							<div style="float:left">
+				 							<input type="submit" id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
+											style="display:none" onclick="__action.value='downloadButtonEMeasure';" "/>
+			 							</div>
+			 							
 					    			</td></tr>
 					    			<tr><td class="box-body" style="width:50%;">
 					    
@@ -175,7 +204,9 @@
 					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
 					onkeyup="checkSearchingStatus();">
 				
-				<input type="button" name="SearchCatalogueTree" value="search" onclick="searchInTree()"/>
+				<input type="button" id="SearchCatalogueTree" name="SearchCatalogueTree" 
+					style="display:none" value="search" onclick="searchInTree()"/>
+				
 					    <!--
 					    <#list screen.getFilters() as filters>
 							<div class="filterslabel">
@@ -196,16 +227,19 @@
 						<#if filter_has_next> and </#if>
 						</#list>
 					    
-					    </td><td class="box-body" style="width: 50%;">Details:</td></tr>
+					    </td><td class="box-body" style="width: 50%"><div style="font-family:Comic Sans, Comic Sans MS, cursive">Details:</div></td></tr>
 					    <tr><td class="box-body">
-								<div id="leftSideTree">  
+								<div id="leftSideTree">
 									${screen.getTreeView()}<br/>
 								</div>
 								<div>
 								</div>
 						    </td>
-						    <td class="box-body"> 
-      							<div id="details">
+						    <td class="box-body" id="showInformation"> 
+						    	
+						    	<table style="height:500px;width:100% ">
+						    	<tr><td style="height:250px; padding:0px" >
+						    	<div id="details" style="height:250px;overflow:auto">
       								<script>
 										<#if screen.getListOfJSONs()??>
 											<#list screen.getListOfJSONs() as eachJSON>
@@ -214,12 +248,24 @@
 										   			$('#' + measurementID).click(function(){
 										   				$('#details').empty();
 										   				$('#details').append(htmlTable);
+										   				$('#details td').css('font-family','Comic Sans, Comic Sans MS, cursive');
 										   			});
 										   		});
 										    </#list>
 										</#if>		
-									</script>		
+									</script>
+									
       							</div>
+      							</td></tr>
+      							<tr>
+						    	<td style="height:250px; border-top:1px solid lightgray;">
+	      							<div id="selection" style="height:250px;overflow:auto">
+										<div id="selectionState">Your selection:
+											<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
+										</div>
+									</div>
+								</td></tr>
+								</table>
 						   </td>
 						</tr>
 						<tr>
@@ -227,20 +273,21 @@
 							
 							</td>
 							<td class="box-body">
-							<label>Fill in selection name</label>
+							<!--<label>Fill in selection name</label>
 							<input title="fill in selection name" type="text" name="SelectionName" >
 							<input class="saveSubmit" type="submit" id="SaveSelectionSubmit" name="SaveSelectionSubmit" value="Save selection" 
-									onclick="__action.value='SaveSelectionSubmit';" 
-									style="color: #000; background: #8EC7DE;
-										   border: 2px outset #d7b9c9;
-										   font-size:15px;
-										   font-weight:bold;
-										   "/>
+									onclick="__action.value='SaveSelectionSubmit';"/>-->
 							</td>
 						</tr>
 					</table>
 			   	</#if>	
 			    <label><#if screen.getStatus()?exists>${screen.getStatus()} </#if>  </label>
+ 				<!-- The detailed table bound to the branch is store in a click event. Therefore this table is not available
+ 							until the branch has been clicked. As checkbox is part of this branch therefore when the checkbox is ticked
+ 							the table shows up on the right as well. Another event is fired when the checkbox is checked which is
+ 							adding a new variable in the selection table and it happens before the detailed table pops up. But we want to
+ 							use the information (description) from the datailed table. Therefore we have to trigger the click event on branch
+ 							here first and create the detailed table!-->
  				<script>
  					$('div#leftSideTree input:checkbox').each(function(index){
  						$(this).click(function() {
@@ -256,6 +303,99 @@
 						     	.attr('checked',false);
 							 }
 						});
+ 					});
+ 					$('#GenericDCM').find('li').each(function(){
+ 						if($(this).find('li').length == 0){
+ 							$(this).find(':checkbox').attr('disabled','true');
+ 						}
+ 					});
+ 					
+ 					$('#browser').find('input:checkbox').each(function(){
+ 						
+ 						$(this).attr('checked', false);
+ 						
+ 						$(this).click(function(){
+ 							
+ 							$(this).parent().parent().trigger('click');
+ 							
+ 							if($(this).attr('checked') != 'checked'){
+ 								
+ 								if($('#selectedVariableTable').find('tr').length > 2){
+ 									$('#selectedVariableTable').find('tr:last-child').remove();
+ 								}else{
+ 									$('#selectedVariableTable').remove();
+ 								}
+ 							}else{
+ 								
+ 								var label = $(this).parent().text();
+ 								var checkBoxID = $(this).attr('id');
+		 						var uniqueID = $(this).parent().parent().attr('id');
+		 						
+		 						var protocolName = $(this).parents('li').eq(1).children('span').text();
+		 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
+		 						var descriptionShows = variableDescription.substr(0, 10);
+		 						var descriptionHides = variableDescription.substr(15, variableDescription.length);
+		 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
+	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer\">' + 
+	 										descriptionShows + '...</td><td>' + 
+	 										protocolName + '</td><td style=\"text-align:center\">' + 
+	 										deleteButton + '</td></tr></table>';
+		 						
+	 							<!--We are going to check whether this selectedVariableTable already existed-->
+	 							if($('#selectedVariableTable').length == 0){
+	 							
+	 								var newTable = '<table style=\"width:100%;overflow:auto\" id=\"selectedVariableTable\" class=\"listtable\">'+
+	 								'<tr class=\"form_listrow1\"><td style=\"width:30%\">Variables</td><td style=\"width:30%\">Description</td>'+
+	 								'<td style=\"width:30%\">Sector/Protocol</td><td style=\"width:10%;text-align:center\">Delete</td></tr>';
+	 								
+	 								newTable += content;
+	 								newTable += '</table>';
+	 								$('#selection').append(newTable);
+	 								
+	 								$('#'+uniqueID+'_delete').click(function(){
+	 									if($('#selectedVariableTable').find('tr').length > 2){
+		 									$('#'+uniqueID+'_row').remove();
+		 								}else{
+		 									$('#selectedVariableTable').remove();
+		 								}
+		 								$('#' + checkBoxID).attr('checked',false);
+	 								});
+	 								
+	 							}else{
+	 								
+	 								$('#selectedVariableTable').find('tr:last-child').after(content);
+	 								
+	 								if($('#selectedVariableTable tr').length%2 == 1){
+	 									$('#'+uniqueID +'_row').addClass('form_listrow1');
+	 								}else{
+	 									$('#'+uniqueID +'_row').addClass('form_listrow0');
+	 								}
+	 								
+	 								$('#'+uniqueID+'_delete').click(function(){
+	 									if($('#selectedVariableTable').find('tr').length > 2){
+		 									$('#'+uniqueID+'_row').remove();
+		 								}else{
+		 									$('#selectedVariableTable').remove();
+		 								}
+		 								$('#' + checkBoxID).attr('checked',false);
+	 								});
+	 							}
+	 							
+	 							$('#' + uniqueID +'_hover').click(function(){
+	 								$('#' + uniqueID).trigger('click');
+	 							});
+	 							$('#' + uniqueID +'_hover').mouseenter(function(){
+	 								$('#popUpDialogue').show();
+	 							});
+	 							$('#' + uniqueID +'_hover').mouseout(function(){
+	 								$('#popUpDialogue').hide();
+	 							});
+ 							}
+ 							$('#variableCount').empty();
+ 							var count = $('#selectedVariableTable tr').length - 1;
+ 							$('#variableCount').append(count);
+ 							$('#selectedVariableTable td').css('font-family','Comic Sans, Comic Sans MS, cursive');
+ 						});	
  					});
  				</script>
 			</div>
