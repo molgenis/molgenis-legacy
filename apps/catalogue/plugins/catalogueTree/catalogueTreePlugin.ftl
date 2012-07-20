@@ -158,125 +158,107 @@
 			<div class="screenpadding">
 				<#if screen.isSelectedInv() == true>
 					<table class="box" width="100%" cellpadding="0" cellspacing="0" style="border-right:1px solid lightgray">
-						<tr><td class="box-header" colspan="2">  
-								        <label style='font-size:14px'>Choose a cohort:
-										<!--select name="investigation" id="investigation"--> 
-											<#list screen.arrayInvestigations as inv>
-												<#assign invName = inv.name>
-												<!--option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option-->			
-													<input class="cohortSelect" type="submit" id="cohortSelectSubmit" name="cohortSelectSubmit" value= ${invName}
-														style="display:none" onclick="__action.value='cohortSelect';"/>
-											
-											</#list>
-										<script>$('#investigation').chosen();</script>	
-										</label>
-										
-									<!--	<div id="masstoggler"> 		
-						 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
-						 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
-						 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
-			 							</div>-->
-			 							
-			 							
-					    			</td></tr>
-					    			<tr><td class="box-body" style="width:50%;">
-					    
-			
-				<select id="selectedField" name="selectedField" title="choose field" name="chooseField" style="display:none"> 
-					<#list screen.arraySearchFields as field>
-								<!--#assign FieldName = field.name-->
-						<option value="${field}" <#if screen.selectedField??>
-							<#if screen.selectedField == field>selected="selected"</#if></#if> >Search ${field}</option>			
-					</#list>
-					 <!--option value="All fields">All fields</option-->
-				</select>
-				
-				<input title="fill in search term" type="textfield" name="InputToken" id="InputToken"
-					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
-					onkeyup="checkSearchingStatus();">
-					
-				
-				<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
-					 value="search" onclick="searchInTree()"/>
-				
-					    <!--
-					    <#list screen.getFilters() as filters>
-							<div class="filterslabel">
-								<b>Search results for ${filters}</b>
-								<img id="remove_filter" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="__action.value='removeFilters';" title="remove filter"
-							</div>
-						</#list>
-						-->
-						
-						<#list screen.getFilters() as filter>			
-							<!--<b>${filter}</b> <img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','removeFilters','iframe'); document.forms.${screen.name}_form.filter_id.value='${filter_index}'; document.forms.${screen.name}_form.submit();" title="remove filter"/>-->
-							<!--<b>${filter}</b> <img id="remove_filter_${filter_index}" height="16" class="navigation_button" src="generated-res/img/cancel.png" alt="Cancel" onclick="setInput('${screen.name}_form','_self','','${screen.name}','removeFilters','iframe');  document.forms.${screen.name}_form.submit();" title="remove filter"/>-->
-							<b>${filter}</b>
-							<input type="image" src="generated-res/img/cancel.png" alt="Remove filter" 
-											name="chooseInvestigation" style="vertical-align: middle;" 
-											value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-											DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
-						<#if filter_has_next> and </#if>
-						</#list>
-					    
-					    </td><td class="box-body" style="width: 50%"><div style="font-family:Comic Sans, Comic Sans MS, cursive">Details:</div></td></tr>
-					    <tr><td class="box-body">
+						<tr>
+							<td class="box-header" colspan="2">  
+						        <label style='font-size:14px'>Choose a cohort:
+									<#list screen.arrayInvestigations as inv>
+										<#assign invName = inv.name>
+											<input class="cohortSelect" type="submit" id="cohortSelectSubmit" name="cohortSelectSubmit" value= ${invName}
+												style="display:none" onclick="__action.value='cohortSelect';"/>
+									
+									</#list>
+								<script>$('#investigation').chosen();</script>	
+								</label>
+								
+							<!--	<div id="masstoggler"> 		
+				 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+				 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
+				 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
+	 							</div>-->
+	 							
+	 							
+			    			</td>
+			    		</tr>
+			    		<tr>
+			    			<td class="box-body" style="width:50%;">
+								<select id="selectedField" name="selectedField" title="choose field" name="chooseField" style="display:none"> 
+									<#list screen.arraySearchFields as field>
+												<!--#assign FieldName = field.name-->
+										<option value="${field}" <#if screen.selectedField??>
+											<#if screen.selectedField == field>selected="selected"</#if></#if> >Search ${field}</option>			
+									</#list>
+								</select>
+								<input title="fill in search term" type="textfield" name="InputToken" id="InputToken"
+									onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
+									onkeyup="checkSearchingStatus();">
+									
+								
+								<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
+								value="search" onclick="searchInTree()"/>						
+								<#list screen.getFilters() as filter>			
+									<b>${filter}</b>
+									<input type="image" src="generated-res/img/cancel.png" alt="Remove filter" 
+													name="chooseInvestigation" style="vertical-align: middle;" 
+													value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
+													DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
+								<#if filter_has_next> and </#if>
+								</#list>				    
+					    	</td>
+					    <td class="box-body" style="width: 50%"><div style="font-family:Comic Sans, Comic Sans MS, cursive">Details:</div></td></tr>
+					    <tr>
+					    	<td class="box-body">
 								<div id="leftSideTree">
 									<div 
 									${screen.getTreeView()}<br/>
 								</div>
-								<div>
-								</div>
-						    </td>
+							</td>
 						    <td class="box-body" id="showInformation"> 
-						    	
 						    	<table  style="height:500px;width:100% ">
-						    	<tr><td style="height:250px; padding:0px" >
-						    	<div id="details" style="height:250px;overflow:auto">
-      								<script>
-										<#if screen.getListOfJSONs()??>
-											<#list screen.getListOfJSONs() as eachJSON>
-										   		var json = eval(${eachJSON});
-										   		$.each(json, function(measurementID, htmlTable){
-										   			$('#' + measurementID).click(function(){
-										   				$('#details').empty();
-										   				$('#details').append(htmlTable);
-										   				
-										   			});
-										   		});
-										    </#list>
-										</#if>		
-									</script>
-									
-      							</div>
-      							</td></tr>
-      							<tr>
-						    	<td style="height:20px; border-top:1px solid lightgray;">
-										<div id="selectionState">Your selection:
-											<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
-									</div>
-								</td></tr>
-								<tr>
-      							<tr>
-						    	<td style="height:205px">
-	      							<div id="selection" style="height:205px;overflow:auto">
-										
-									</div>
-								</td></tr>
-								<tr>
-								<td style="height:25px; border-top:1px solid lightgray; margin:0px;padding:0px">
-	      							<div id="selection" style="height:25px; margin:0px;padding:0px">
-										<div style="float:right">
-				 							<input class='addbutton ui-button ui-widget ui-state-default ui-corner-all' type="submit" id="downloadButton" name="downloadButton" value="Download as Excel" 
-											 onclick="__action.value='downloadButton';" "/>
-		 								</div>
-		 								<div style="float:right">
-				 							<input type="submit" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
-											 onclick="__action.value='downloadButtonEMeasure';" "/>
-		 								</div>
-									</div>
-								</td></tr>
-								
+							    	<tr>
+								    	<td style="height:250px; padding:0px" >
+									    	<div id="details" style="height:250px;overflow:auto">
+			      								<script>
+													<#if screen.getListOfJSONs()??>
+														<#list screen.getListOfJSONs() as eachJSON>
+													   		var json = eval(${eachJSON});
+													   		$.each(json, function(measurementID, htmlTable){
+													   			$('#' + measurementID).click(function(){
+													   				$('#details').empty();
+													   				$('#details').append(htmlTable);								   				
+													   			});
+													   		});
+													    </#list>
+													</#if>		
+												</script>
+			      							</div>
+      									</td>
+  									</tr>
+									<tr>
+								    	<td style="height:20px; border-top:1px solid lightgray;">
+											<div id="selectionState">Your selection:
+												<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+							    		<td style="height:205px">
+			  								<div id="selection" style="height:205px;overflow:auto"></div>
+										</td>
+									</tr>
+									<tr>
+										<td style="height:25px; border-top:1px solid lightgray; margin:0px;padding:0px">
+				  							<div id="selection" style="height:25px; margin:0px;padding:0px">
+												<div style="float:right">
+						 							<input class='addbutton ui-button ui-widget ui-state-default ui-corner-all' type="submit" id="downloadButton" name="downloadButton" value="Download as Excel" 
+													 onclick="__action.value='downloadButton';" "/>
+				 								</div>
+				 								<div style="float:right">
+						 							<input type="submit" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
+													 onclick="__action.value='downloadButtonEMeasure';" "/>
+				 								</div>
+											</div>
+										</td>
+									</tr>
 								</table>
 						   </td>
 						</tr>
