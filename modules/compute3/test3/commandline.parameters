@@ -1,0 +1,9 @@
+-parametersfile=/temp/MolgenisDeliverables15June2012/MolgenisWorkflowGenerator/input-ngs/ngs_parameters_new.txt
+-e=/temp/MolgenisDeliverables15June2012/MolgenisWorkflowGenerator/input-ngs/in-house_environment_parameters.csv
+-workflowfile=/temp/MolgenisDeliverables15June2012/MolgenisWorkflowGenerator/input-ngs/ngs_workflow_test_new.csv
+-worksheet=/temp/MolgenisDeliverables15June2012/MolgenisWorkflowGenerator/input-ngs/ngs_test_worksheet_new.csv
+-protocoldir=/temp/MolgenisDeliverables15June2012/MolgenisWorkflowGenerator/input-ngs/new_protocols/
+-templatesdir=/temp/MolgenisDeliverables15June2012/MolgenisWorkflowGenerator/libs/templates-nolog/
+-g=/home/byelas/jobs
+-o=/temp/new_output
+test1

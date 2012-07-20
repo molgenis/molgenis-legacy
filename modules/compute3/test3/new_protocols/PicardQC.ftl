@@ -1,10 +1,10 @@
 #
 # =====================================================
-# $Id$
-# $URL$
-# $LastChangedDate$
-# $LastChangedRevision$
-# $LastChangedBy$
+# $Id: PicardQC.ftl 11222 2012-03-13 15:04:44Z mdijkstra $
+# $URL: http://www.molgenis.org/svn/molgenis_apps/trunk/modules/compute/protocols/PicardQC.ftl $
+# $LastChangedDate: 2012-03-13 16:04:44 +0100 (Tue, 13 Mar 2012) $
+# $LastChangedRevision: 11222 $
+# $LastChangedBy: mdijkstra $
 # =====================================================
 #
 
@@ -15,23 +15,10 @@ inputs "${indexfile}"
 <#if capturingKit != "None">
 inputs ${baitintervals}
 inputs ${targetintervals}
-#INPUTS sortedbam,indexfile,baitintervals,targetintervals
+#INPUTS sortedbam.*,indexfile,baitintervals,targetintervals,picardjar
 <#else>
 #INPUTS sortedbam,indexfile
 </#if>
-
-alloutputsexist \
- "${alignmentmetrics}" \
- "${gcbiasmetrics}" \
- "${gcbiasmetricspdf}" \
- "${insertsizemetrics}" \
- "${insertsizemetricspdf}" \
- "${meanqualitybycycle}" \
- "${meanqualitybycyclepdf}" \
- "${qualityscoredistribution}" \
- "${qualityscoredistributionpdf}" \
- "${hsmetrics}" \
- "${bamindexstats}"
 
 #OUTPUTS alignmentmetrics,gcbiasmetrics,gcbiasmetricspdf,insertsizemetrics,insertsizemetricspdf,meanqualitybycycle,meanqualitybycyclepdf,qualityscoredistribution,qualityscoredistributionpdf,hsmetrics,bamindexstats
 #LOGS log
@@ -59,11 +46,6 @@ O=${insertsizemetrics} \
 H=${insertsizemetricspdf} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
-
-# Overwrite the PDFs that were just created by nicer onces:
-${recreateinsertsizepdfR} \
---insertSizeMetrics ${insertsizemetrics} \
---pdf ${insertsizemetricspdf}
 
 java -jar ${meanqualitybycyclejar} \
 I=${sortedbam} \
