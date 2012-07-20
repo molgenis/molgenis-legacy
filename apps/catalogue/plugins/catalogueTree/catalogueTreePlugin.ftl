@@ -145,9 +145,6 @@
 		});
 		$('#clearSearchingResult').show();
 		
-		$('#browser').find('li >span').css('font-family','Comic Sans, Comic Sans MS, cursive');
-		$('#selection').css('font-family','Comic Sans, Comic Sans MS, cursive');
-		
 	});
 	</script>
 
@@ -182,13 +179,13 @@
 											</#list>
 										<script>$('#investigation').chosen();</script>	
 										</label>
-										
-									<!--	<div id="masstoggler"> 		
+										<!--
+										<div id="masstoggler"> 		
 						 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
 						 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 						 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
-			 							</div>-->
-			 							
+			 							</div>
+			 							-->
 			 							
 					    			</td></tr>
 					    			<tr><td class="box-body" style="width:50%;">
@@ -206,11 +203,10 @@
 				<input title="fill in search term" type="textfield" name="InputToken" id="InputToken"
 					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
 					onkeyup="checkSearchingStatus();">
-					
-				<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
-					 value="search" onclick="searchInTree()"/>
 				
-				<input type="button" id="clearSearchingResult" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="clearSearchingResult" 
+				<input type="button" id="SearchCatalogueTree" name="SearchCatalogueTree" 
+					style="display:none" value="search" onclick="searchInTree()"/>
+				<input type="button" id="clearSearchingResult" name="clearSearchingResult" 
 					style="display:none" value="clear"/>
 					    <!--
 					    <#list screen.getFilters() as filters>
@@ -232,10 +228,9 @@
 						<#if filter_has_next> and </#if>
 						</#list>
 					    
-					    </td><td class="box-body" style="width: 50%"><div style="font-family:Comic Sans, Comic Sans MS, cursive">Details:</div></td></tr>
+					    </td><td class="box-body" style="width: 50%"><div>Details:</div></td></tr>
 					    <tr><td class="box-body">
 								<div id="leftSideTree">
-									<div 
 									${screen.getTreeView()}<br/>
 								</div>
 								<div>
@@ -254,7 +249,6 @@
 										   			$('#' + measurementID + '>span').click(function(){
 										   				$('#details').empty();
 										   				$('#details').append(htmlTable);
-										   				
 										   			});
 										   			
 										   			$('#' + measurementID + '>span').mouseenter(function(){
@@ -267,7 +261,7 @@
 										    </#list>
 										</#if>		
 									</script>
-									
+
       							</div>
       							</td></tr>
       							<tr>
@@ -280,7 +274,7 @@
       							<tr>
 						    	<td style="height:205px">
 	      							<div id="selection" style="height:205px;overflow:auto">
-										
+
 									</div>
 								</td></tr>
 								<tr>
@@ -296,7 +290,7 @@
 		 								</div>
 									</div>
 								</td></tr>
-								
+
 								</table>
 						   </td>
 						</tr>
@@ -348,7 +342,7 @@
  						
  						$(this).click(function(){
  							
- 							$(this).parent().parent().trigger('click');
+ 							$(this).parent().parent().find('span').trigger('click');
  							
  							if($(this).attr('checked') != 'checked'){
  								
@@ -366,7 +360,6 @@
 		 						var protocolName = $(this).parents('li').eq(1).children('span').text();
 		 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
 		 						var descriptionShows = variableDescription.substr(0, 10);
-		 						var descriptionHides = variableDescription.substr(15, variableDescription.length);
 		 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
 	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer\">' + 
 	 										descriptionShows + '...</td><td>' + 
@@ -377,9 +370,9 @@
 	 							if($('#selectedVariableTable').length == 0){
 	 							
 	 								var newTable = '<table style=\"width:100%;overflow:auto\" id=\"selectedVariableTable\" class=\"listtable\">'+
-	 								'<tr class=\"form_listrow1\"><th style=\" width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
-	 								'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;\">Delete</th></tr>';
-
+	 								'<tr class=\"form_listrow1\"><td style=\"width:30%\">Variables</td><td style=\"width:30%\">Description</td>'+
+	 								'<td style=\"width:30%\">Sector/Protocol</td><td style=\"width:10%;text-align:center\">Delete</td></tr>';
+	 								
 	 								newTable += content;
 	 								newTable += '</table>';
 	 								$('#selection').append(newTable);
@@ -414,7 +407,7 @@
 	 							}
 	 							
 	 							$('#' + uniqueID +'_hover').click(function(){
-	 								$('#' + uniqueID).trigger('click');
+	 								$('#' + uniqueID + ' span').trigger('click');
 	 							});
 	 							$('#' + uniqueID +'_hover').mouseenter(function(){
 	 								$('#popUpDialogue').show();
@@ -426,7 +419,6 @@
  							$('#variableCount').empty();
  							var count = $('#selectedVariableTable tr').length - 1;
  							$('#variableCount').append(count);
- 							
  						});	
  					});
  				</script>
