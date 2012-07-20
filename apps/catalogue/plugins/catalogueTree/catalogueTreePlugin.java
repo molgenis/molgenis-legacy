@@ -4,6 +4,7 @@ import gcc.catalogue.ShoppingCart;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,9 +30,11 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
+import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.organization.Investigation;
@@ -42,8 +45,6 @@ import org.molgenis.protocol.Protocol;
 import org.molgenis.util.Entity;
 import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
-
-import com.ibm.icu.util.Calendar;
 
 import plugins.emeasure.EMeasure;
 
@@ -111,7 +112,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	public String getViewTemplate() {
 		return "plugins/catalogueTree/catalogueTreePlugin.ftl";
 	}
-
+	
+	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
@@ -127,9 +129,19 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			
 			
 		}else if(request.getAction().equals("downloadButtonEMeasure")){
-			//Make E-Measure XML file
-			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm");
+			//do output stream ourselves
+			MolgenisRequest req = (MolgenisRequest)request;
+			HttpServletResponse response = req.getResponse();
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm");
 			Date date = new Date();
+			response.setContentType("application/x-download");
+			response.setHeader("Content-Disposition",
+					"attachment; filename="+"EMeasure_"+dateFormat.format(date)+".xml");
+			
+			PrintWriter pw = response.getWriter();
+			
+			//Make E-Measure XML file
+			
 			List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
 			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
 			for (Measurement m : allMeasList) {
@@ -141,14 +153,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			
 			EMeasure em = new EMeasure(db, "EMeasure_"+dateFormat.format(date));
 			
-			em.convert(selectedMeasList);
+			String result = em.convert(selectedMeasList);
 			
-			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
-			HttpServletResponse httpResponse = rt.getResponse();
+			pw.print(result);
+			pw.close();
 			
-			String redirectURL = "tmpfile/EMeasure_"+dateFormat.format(date) + ".xml";
+//			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
+//			HttpServletResponse httpResponse = rt.getResponse();
+			
+			//String redirectURL = "tmpfile/EMeasure_"+dateFormat.format(date) + ".xml";
 
-			httpResponse.sendRedirect(redirectURL);
+			//httpResponse.sendRedirect(redirectURL);
 		}
 		else if(request.getAction().equals("downloadButton")){
 			

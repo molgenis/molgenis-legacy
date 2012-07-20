@@ -134,9 +134,7 @@
 			'font-size':'0.8em'
 		});
 		$('#SearchCatalogueTree').show();
-		
-		$('#browser').find('li >span').css('font-family','Comic Sans, Comic Sans MS, cursive');
-		$('#selection').css('font-family','Comic Sans, Comic Sans MS, cursive');
+
 		
 	});
 	</script>
@@ -173,19 +171,12 @@
 										<script>$('#investigation').chosen();</script>	
 										</label>
 										
-										<div id="masstoggler"> 		
+									<!--	<div id="masstoggler"> 		
 						 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
 						 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 						 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
-			 							</div>
-			 							<div style="float:left">
-				 							<input type="submit" id="downloadButton" name="downloadButton" value="Download as Excel" 
-											style="display:none" onclick="__action.value='downloadButton';" "/>
-			 							</div>
-			 							<div style="float:left">
-				 							<input type="submit" id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
-											style="display:none" onclick="__action.value='downloadButtonEMeasure';" "/>
-			 							</div>
+			 							</div>-->
+			 							
 			 							
 					    			</td></tr>
 					    			<tr><td class="box-body" style="width:50%;">
@@ -203,9 +194,10 @@
 				<input title="fill in search term" type="textfield" name="InputToken" id="InputToken"
 					onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
 					onkeyup="checkSearchingStatus();">
+					
 				
-				<input type="button" id="SearchCatalogueTree" name="SearchCatalogueTree" 
-					style="display:none" value="search" onclick="searchInTree()"/>
+				<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
+					 value="search" onclick="searchInTree()"/>
 				
 					    <!--
 					    <#list screen.getFilters() as filters>
@@ -230,6 +222,7 @@
 					    </td><td class="box-body" style="width: 50%"><div style="font-family:Comic Sans, Comic Sans MS, cursive">Details:</div></td></tr>
 					    <tr><td class="box-body">
 								<div id="leftSideTree">
+									<div 
 									${screen.getTreeView()}<br/>
 								</div>
 								<div>
@@ -237,7 +230,7 @@
 						    </td>
 						    <td class="box-body" id="showInformation"> 
 						    	
-						    	<table style="height:500px;width:100% ">
+						    	<table  style="height:500px;width:100% ">
 						    	<tr><td style="height:250px; padding:0px" >
 						    	<div id="details" style="height:250px;overflow:auto">
       								<script>
@@ -248,7 +241,7 @@
 										   			$('#' + measurementID).click(function(){
 										   				$('#details').empty();
 										   				$('#details').append(htmlTable);
-										   				$('#details td').css('font-family','Comic Sans, Comic Sans MS, cursive');
+										   				
 										   			});
 										   		});
 										    </#list>
@@ -258,13 +251,32 @@
       							</div>
       							</td></tr>
       							<tr>
-						    	<td style="height:250px; border-top:1px solid lightgray;">
-	      							<div id="selection" style="height:250px;overflow:auto">
+						    	<td style="height:20px; border-top:1px solid lightgray;">
 										<div id="selectionState">Your selection:
 											<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
-										</div>
 									</div>
 								</td></tr>
+								<tr>
+      							<tr>
+						    	<td style="height:205px">
+	      							<div id="selection" style="height:205px;overflow:auto">
+										
+									</div>
+								</td></tr>
+								<tr>
+								<td style="height:25px; border-top:1px solid lightgray; margin:0px;padding:0px">
+	      							<div id="selection" style="height:25px; margin:0px;padding:0px">
+										<div style="float:right">
+				 							<input class='addbutton ui-button ui-widget ui-state-default ui-corner-all' type="submit" id="downloadButton" name="downloadButton" value="Download as Excel" 
+											 onclick="__action.value='downloadButton';" "/>
+		 								</div>
+		 								<div style="float:right">
+				 							<input type="submit" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
+											 onclick="__action.value='downloadButtonEMeasure';" "/>
+		 								</div>
+									</div>
+								</td></tr>
+								
 								</table>
 						   </td>
 						</tr>
@@ -345,9 +357,9 @@
 	 							if($('#selectedVariableTable').length == 0){
 	 							
 	 								var newTable = '<table style=\"width:100%;overflow:auto\" id=\"selectedVariableTable\" class=\"listtable\">'+
-	 								'<tr class=\"form_listrow1\"><td style=\"width:30%\">Variables</td><td style=\"width:30%\">Description</td>'+
-	 								'<td style=\"width:30%\">Sector/Protocol</td><td style=\"width:10%;text-align:center\">Delete</td></tr>';
-	 								
+	 								'<tr class=\"form_listrow1\"><th style=\" width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
+	 								'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;\">Delete</th></tr>';
+
 	 								newTable += content;
 	 								newTable += '</table>';
 	 								$('#selection').append(newTable);
@@ -394,7 +406,7 @@
  							$('#variableCount').empty();
  							var count = $('#selectedVariableTable tr').length - 1;
  							$('#variableCount').append(count);
- 							$('#selectedVariableTable td').css('font-family','Comic Sans, Comic Sans MS, cursive');
+ 							
  						});	
  					});
  				</script>
