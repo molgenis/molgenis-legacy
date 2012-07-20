@@ -135,6 +135,16 @@
 		});
 		$('#SearchCatalogueTree').show();
 		
+		$('#clearSearchingResult').button();
+		$('#clearSearchingResult').css({
+			'font-size':'0.8em'
+		});
+		$('#clearSearchingResult').click(function(){
+			$('#InputToken').val('');
+			checkSearchingStatus();
+		});
+		$('#clearSearchingResult').show();
+		
 		$('#browser').find('li >span').css('font-family','Comic Sans, Comic Sans MS, cursive');
 		$('#selection').css('font-family','Comic Sans, Comic Sans MS, cursive');
 		
@@ -206,7 +216,8 @@
 				
 				<input type="button" id="SearchCatalogueTree" name="SearchCatalogueTree" 
 					style="display:none" value="search" onclick="searchInTree()"/>
-				
+				<input type="button" id="clearSearchingResult" name="clearSearchingResult" 
+					style="display:none" value="clear"/>
 					    <!--
 					    <#list screen.getFilters() as filters>
 							<div class="filterslabel">
