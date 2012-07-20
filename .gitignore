@@ -16,6 +16,12 @@ handwritten/
 ## Netbeans private
 nbproject/private/
 
+## IntelliJ private
+.idea/
+molgenis_apps.eml
+molgenis_apps.iml
+
+
 ## General java
 *.class
 
