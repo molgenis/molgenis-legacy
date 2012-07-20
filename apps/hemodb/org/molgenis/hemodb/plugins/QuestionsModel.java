@@ -26,15 +26,28 @@ public class QuestionsModel extends EasyPluginModel
 
 	String action = null;
 	ArrayList <String> names = new ArrayList <String>();
-	String state = "";
+
+	public enum QuestionState {
+		EMPTYGROUPLIST,
+		QUESTION1,
+		QUESTION1_RESULT,
+		BEGINNING
+	}
+	
+	private QuestionState state = QuestionState.EMPTYGROUPLIST;
 	
 	
-	public QuestionsModel(Questions controller)
+	public QuestionsModel(QuestionOne controller)
 	{
 		//each Model can access the controller to notify it when needed.
 		super(controller);
 	}
 	
+	public QuestionsModel(QuestionsOverview controller) {
+		// TODO Auto-generated constructor stub
+		super(controller);
+	}
+
 	public String getAction()
 	{
 		return action;
@@ -56,12 +69,12 @@ public class QuestionsModel extends EasyPluginModel
 		this.names = names;
 	}
 
-	public String getState()
+	public QuestionState getState()
 	{
 		return state;
 	}
 
-	public void setState(String state)
+	public void setState(QuestionState state)
 	{
 		this.state = state;
 	}

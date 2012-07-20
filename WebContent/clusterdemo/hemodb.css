@@ -1,3 +1,11 @@
+.matrixviewer 
+{
+	width: 500px;
+	height: 500px;
+	position: relative;
+
+}
+
 /**overall background*/
 .overallBackground,body,#header,#navigation,#information,#footer,.formscreen,.menuscreen,#container
 	{
@@ -12,11 +20,11 @@
 }
 
 /**.formscreen**/
-.formscreen {
-	border-style: none;
-	/* 	margin:10px; */
-	padding: -25px;
-}
+/* .formscreen { */
+/* 	border-style: none; */
+/* 	/* 	margin:10px; */ */
+/* 	padding: -25px; */
+/* } */
 
 /**.menuscreen**/
 .menuscreen {

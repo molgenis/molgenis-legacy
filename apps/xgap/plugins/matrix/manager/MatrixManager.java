@@ -28,11 +28,11 @@ import org.molgenis.util.Tuple;
 public class MatrixManager extends PluginModel
 {
 
-	private DataMatrixHandler dmh = null;
+	protected DataMatrixHandler dmh = null;
 	
 	public static String SESSION_MATRIX_DATA = "session_inmemory_matrix_data";
 	
-	private MatrixManagerModel model = new MatrixManagerModel();
+	protected MatrixManagerModel model = new MatrixManagerModel();
 
 	public MatrixManagerModel getMyModel()
 	{
@@ -87,7 +87,7 @@ public class MatrixManager extends PluginModel
 		}
 	}
 
-	private void setHeaderAttr(Database db) throws DatabaseException, MolgenisModelException, InstantiationException, IllegalAccessException
+	public void setHeaderAttr(Database db) throws DatabaseException, MolgenisModelException, InstantiationException, IllegalAccessException
 	{
 		
 		ObservationElement target = (ObservationElement) db.getClassForName(this.model.getSelectedData().getTargetType()).newInstance();
@@ -96,7 +96,7 @@ public class MatrixManager extends PluginModel
 		this.model.setColHeaderAttr(feature.getFields());
 	}
 
-	private void createOverLibText(Database db) throws Exception
+	public void createOverLibText(Database db) throws Exception
 	{
 		List<String> rowNames = this.model.getBrowser().getModel().getSubMatrix().getRowNames();
 		List<String> colNames = this.model.getBrowser().getModel().getSubMatrix().getColNames();
@@ -104,7 +104,7 @@ public class MatrixManager extends PluginModel
 		this.model.setColObsElem((OverlibText.getObservationElements(db, colNames,  this.model.getSelectedData().getFeatureType())));
 	}
 
-	private void createHeaders()
+	public void createHeaders()
 	{
 		this.model.setColHeader(this.model.getSelectedData().getFeatureType() + " "
 				+ (this.model.getBrowser().getModel().getColStart() + 1) + "-"
@@ -116,7 +116,7 @@ public class MatrixManager extends PluginModel
 				+ this.model.getBrowser().getModel().getRowMax());
 	}
 	
-	private void setAllOperators()
+	public void setAllOperators()
 	{
 		HashMap<String, String> ops = new HashMap<String, String>();
 		ops.put("GREATER", "greater than");
@@ -130,7 +130,7 @@ public class MatrixManager extends PluginModel
 		this.model.setAllOperators(ops);
 	}
 	
-	private void setValueOperators()
+	public void setValueOperators()
 	{
 		HashMap<String, String> ops = new HashMap<String, String>();
 		//if(this.model.getSelectedData().getValueType().equals("Decimal"))
