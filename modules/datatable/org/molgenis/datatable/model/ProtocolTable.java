@@ -212,9 +212,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 	// we only need to know what rows to show :-)
 	private List<Integer> getRowIds(boolean count) throws TableException, DatabaseException
 	{
-		// load the measurements
-		getColumns();
-
 		// get columns that are used in filtering or sorting
 		Set<String> columnsUsed = new HashSet<String>();
 		for (QueryRule r : getFilters())
