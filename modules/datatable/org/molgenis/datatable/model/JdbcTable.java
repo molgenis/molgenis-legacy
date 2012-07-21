@@ -148,19 +148,6 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	}
 
 	@Override
-	public void setVisibleColumns(List<String> fieldNames)
-	{
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public List<Field> getVisibleColumns()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void setDb(Database db)
 	{
 		this.db = db;

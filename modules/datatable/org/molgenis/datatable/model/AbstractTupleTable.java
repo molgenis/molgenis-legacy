@@ -27,13 +27,6 @@ public abstract class AbstractTupleTable implements TupleTable
 	}
 
 	@Override
-	public void setLimitOffset(int limit, int offset)
-	{
-		this.setLimit(limit);
-		this.setOffset(offset);
-	}
-
-	@Override
 	public int getLimit()
 	{
 		return limit;

@@ -119,19 +119,4 @@ public class EntityTable extends AbstractFilterableTupleTable
 			throw new TableException(e);
 		}
 	}
-
-	@Override
-	public void setVisibleColumns(List<String> fieldNames)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public List<Field> getVisibleColumns()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

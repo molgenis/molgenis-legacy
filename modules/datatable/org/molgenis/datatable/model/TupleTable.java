@@ -46,9 +46,6 @@ public interface TupleTable extends Iterable<Tuple>
 	/** Closes the resources from which table reads data (optional) */
 	public void close() throws TableException;
 
-	/** Change the visible row window */
-	public void setLimitOffset(int limit, int offset);
-
 	/**
 	 * Get count of all records in the TupleTable
 	 * 

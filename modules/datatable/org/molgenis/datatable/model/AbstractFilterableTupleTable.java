@@ -7,7 +7,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.model.elements.Field;
 
 public abstract class AbstractFilterableTupleTable extends AbstractTupleTable implements FilterableTupleTable
 {
@@ -95,17 +94,5 @@ public abstract class AbstractFilterableTupleTable extends AbstractTupleTable im
 			}
 		});
 		return rule;
-	}
-
-	@Override
-	public void setVisibleColumns(List<String> fieldNames)
-	{
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public List<Field> getVisibleColumns()
-	{
-		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }
