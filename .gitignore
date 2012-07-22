@@ -34,7 +34,6 @@ nbproject/private/
 *.tmp
 tmp*
 log*
-.classpath
 /.externalToolBuilders
 /.settings
 /test-output
