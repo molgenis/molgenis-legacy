@@ -146,7 +146,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			PrintWriter pw = response.getWriter();
 			
 			//Make E-Measure XML file
-			
 
 			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
 			for (Measurement m : allMeasList) {
@@ -185,10 +184,13 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			
 			outputExcel.addCell(new Label(1, 0, "Descriptions"));
 			
+			outputExcel.addCell(new Label(1, 0, "Sector/Protocol"));
+			
+						
 			for (Measurement m : allMeasList) {
 				
 				if(request.getBool(m.getId().toString()) != null){
-					outputExcel.addCell(new Label(0, startingRow,  m.getName()));
+					outputExcel.addCell(new Label(0, startingRow, m.getName()));
 					if(m.getDescription() != null){
 						outputExcel.addCell(new Label(1, startingRow,  m.getDescription()));
 					}else{

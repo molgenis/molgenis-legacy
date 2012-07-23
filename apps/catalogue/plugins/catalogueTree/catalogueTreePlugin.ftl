@@ -241,8 +241,13 @@
 										</td>
 									</tr>
 									<tr>
-							    		<td style="height:205px">
-			  								<div id="selection" style="height:205px;overflow:auto"></div>
+							    		<td style="height:20px">
+			  								<div id="selectionHeader" style="height:20px; "></div>
+										</td>
+									</tr>
+									<tr>
+							    		<td style="height:185px">
+			  								<div id="selection" style="height:185px; overflow:auto"></div>
 										</td>
 									</tr>
 									<tr>
@@ -329,21 +334,23 @@
 		 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
 		 						var descriptionShows = variableDescription.substr(0, 10);
 		 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
-	 							var content = '<tr id=\"'+uniqueID +'_row\"><td>' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer\">' + 
-	 										descriptionShows + '...</td><td>' + 
-	 										protocolName + '</td><td style=\"text-align:center\">' + 
-	 										deleteButton + '</td></tr></table>';
+	 							var content = '<tr id=\"'+uniqueID +'_row\" ><td style=\"width:30%; text-align:left\">' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer;width:30%; text-align:left\">' + 
+	 										descriptionShows + '...</td><td style=\"width:30%; text-align:left\">' + 
+	 										protocolName + '</td><td style=\"text-align:center; width:10%; text-align:left\">' + 
+	 										deleteButton + '</td></tr></tr></table>';
 		 						
 	 							<!--We are going to check whether this selectedVariableTable already existed-->
 	 							if($('#selectedVariableTable').length == 0){
 	 							
-	 								var newTable = '<table style=\"width:100%;overflow:auto\" id=\"selectedVariableTable\" class=\"listtable\">'+
-	 								'<tr class=\"form_listrow1\"><td style=\"width:30%\">Variables</td><td style=\"width:30%\">Description</td>'+
-	 								'<td style=\"width:30%\">Sector/Protocol</td><td style=\"width:10%;text-align:center\">Delete</td></tr>';
-	 								
+	 								var newTableHeader = '<table style=\"width:100%\" id=\"selectedVariableTable\" class=\"listtable\">'+
+	 								'<th style=\"width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
+	 								'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></tr></table>';
+	 								var newTable = '<table style=\"width=100%; overflow:auto\"><tr>';
 	 								newTable += content;
-	 								newTable += '</table>';
 	 								$('#selection').append(newTable);
+	 								$('#selectionHeader').append(newTableHeader);
+	 								
+	 								
 	 								
 	 								$('#'+uniqueID+'_delete').click(function(){
 	 									if($('#selectedVariableTable').find('tr').length > 2){
