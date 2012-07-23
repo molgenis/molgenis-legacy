@@ -320,10 +320,11 @@
  							
  							if($(this).attr('checked') != 'checked'){
  								
- 								if($('#selectedVariableTable').find('tr').length > 2){
+ 								if($('#selectedVariableTable').find('tr').length > 1){
  									$('#selectedVariableTable').find('tr:last-child').remove();
  								}else{
  									$('#selectedVariableTable').remove();
+ 									$('#selectedVariableHeader').remove()
  								}
  							}else{
  								
@@ -345,8 +346,8 @@
 	 							
 	 								var newTableHeader = '<table id=\"selectedVariableHeader\" style=\"width:100%\" class=\"listtable\">'+
 	 								'<th style=\"width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
-	 								'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></tr></table>';
-	 								var newTable = '<table id=\"selectedVariableTable\"  class=\"listtable\" style=\"width:100%; overflow:auto\"><tr>';
+	 								'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></table>';
+	 								var newTable = '<table id=\"selectedVariableTable\"  class=\"listtable\" style=\"width:100%; overflow:auto\">';
 	 								newTable += content;
 	 								$('#selection').append(newTable);
 	 								$('#selectionHeader').append(newTableHeader);
@@ -357,8 +358,9 @@
 	 									if($('#selectedVariableTable').find('tr').length > 1){
 		 									$('#'+uniqueID+'_row').remove();
 		 								}else{
-		 									$('#selectedVariableTable').remove();
 		 									$('#selectedVariableHeader').remove();
+		 									$('#selectedVariableTable').remove();
+		 									
 		 								}
 		 								$('#' + checkBoxID).attr('checked',false);
 	 								});
@@ -368,9 +370,9 @@
 	 								$('#selectedVariableTable').find('tr:last-child').after(content);
 	 								
 	 								if($('#selectedVariableTable tr').length%2 == 1){
-	 									$('#'+uniqueID +'_row').addClass('form_listrow1');
-	 								}else{
 	 									$('#'+uniqueID +'_row').addClass('form_listrow0');
+	 								}else{
+	 									$('#'+uniqueID +'_row').addClass('form_listrow1');
 	 								}
 	 								
 	 								$('#'+uniqueID+'_delete').click(function(){
@@ -378,6 +380,7 @@
 		 									$('#'+uniqueID+'_row').remove();
 		 								}else{
 		 									$('#selectedVariableTable').remove();
+		 									$('#selectedVariableHeader').remove();
 		 								}
 		 								$('#' + checkBoxID).attr('checked',false);
 	 								});
