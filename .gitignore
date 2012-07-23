@@ -4,6 +4,7 @@ build/
 tmp/
 hsqldb/
 handwritten/
+generated/
 
 ## Always ignore these
 *~
@@ -36,7 +37,7 @@ log*
 /target
 logger.out*
 /dist
-/.settings
+/.settings/*
 !/.settings/template*
 .project
 /WebContent/WEB-INF/lib
