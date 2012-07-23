@@ -19,48 +19,48 @@ import org.molgenis.datatable.view.CsvExporter;
 import org.molgenis.datatable.view.ExcelExporter;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.datatable.view.SPSSExporter;
-import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.ZipUtils;
 import org.molgenis.util.ZipUtils.DirectoryStructure;
 
-import com.google.gson.Gson;
-
 /**
- * Class containing a series of simple renderers to do the administrative busywork required to render from a particular
- * {@link TupleTable} to a particular view (current options are an {@link AbstractExporter} or a {@link HtmlWidget}. See the
- * org.molgenis.modules.datatable.view package.
+ * Class containing a series of simple renderers to do the administrative
+ * busywork required to render from a particular {@link TupleTable} to a
+ * particular view (current options are an {@link AbstractExporter} or a
+ * {@link HtmlWidget}. See the org.molgenis.modules.datatable.view package.
  */
 public class Renderers {
 
 	public static class HeaderHelper {
 		public static void setHeader(HttpServletResponse response, String contentType, String fileName) {
 			response.setContentType(contentType);
-			response.addHeader("Content-Disposition", "attachment; filename="+ fileName);
+			response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 		}
 	}
 
 	/**
-	 * Interface to render from a Table/request combination to a particular view. Current implementations are trivial
-	 * except {@link SPSSRenderer}.
+	 * Interface to render from a Table/request combination to a particular
+	 * view. Current implementations are trivial except {@link SPSSRenderer}.
 	 */
 	public interface Renderer {
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String datasetName, TupleTable tupleTable, int totalPages, int page) throws TableException, IOException;
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String datasetName,
+				TupleTable tupleTable, int totalPages, int page) throws TableException, IOException;
 	}
 
 	public static class JQGridRenderer implements Renderer {
 		@Override
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
-			final JQGridResult result = JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage, tupleTable);
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName,
+				TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+			JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage, tupleTable);
 			final PrintWriter pout = new PrintWriter(response.getOutputStream());
-			pout.print(new Gson().toJson(result));
 			pout.close();
 		}
 	}
 
 	public static class ExcelRenderer implements Renderer {
 		@Override
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName,
+				TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
 			HeaderHelper.setHeader(response, "application/ms-excel", fileName + ".xlsx");
 			final ExcelExporter excelExport = new ExcelExporter(tupleTable);
 			excelExport.export(response.getOutputStream());
@@ -69,7 +69,8 @@ public class Renderers {
 
 	public static class CSVRenderer implements Renderer {
 		@Override
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName,
+				TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
 			HeaderHelper.setHeader(response, "application/ms-excel", fileName + ".csv");
 			final CsvExporter csvExporter = new CsvExporter(tupleTable);
 			csvExporter.export(response.getOutputStream());
@@ -79,16 +80,20 @@ public class Renderers {
 	/**
 	 * Several things need to happen to export to SPSS:
 	 * <ul>
-	 *  <li>Several files need to be created in the temp dir:
-	 *  <li>One textfile encoding the actual data, for example as tab-separated values.</li>
-	 *  <li>One .sps syntax script that will set the variables and labels in SPSS and load the data.</li>
-	 *  <li>One textfile with instructions on how to use the script in SPSS.</li>
-	 *  <li>These files should be compressed together into a .zip file for download.</li>
+	 * <li>Several files need to be created in the temp dir:
+	 * <li>One textfile encoding the actual data, for example as tab-separated
+	 * values.</li>
+	 * <li>One .sps syntax script that will set the variables and labels in SPSS
+	 * and load the data.</li>
+	 * <li>One textfile with instructions on how to use the script in SPSS.</li>
+	 * <li>These files should be compressed together into a .zip file for
+	 * download.</li>
 	 * </ul>
 	 */
 	public static class SPSSRenderer implements Renderer {
 		@Override
-		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName, TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
+		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName,
+				TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
 			try {
 				final File tempDir = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
 				final File spssFile = File.createTempFile("spssExport", ".sps", tempDir);
@@ -106,19 +111,18 @@ public class Renderers {
 				ZipUtils.compress(Arrays.asList(spssFile, spssCsvFile), zipExport, DirectoryStructure.EXCLUDE_DIR);
 				HeaderHelper.setHeader(response, "application/octet-stream", fileName + ".zip");
 				exportFile(zipExport, response);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				throw new TableException(e);
 			}
 		}
 
 		private void exportFile(File file, HttpServletResponse response) throws IOException {
-			FileInputStream fileIn = new FileInputStream(file);
-			ServletOutputStream out = response.getOutputStream();
+			final FileInputStream fileIn = new FileInputStream(file);
+			final ServletOutputStream out = response.getOutputStream();
 
-			byte[] outputByte = new byte[4096];
-			//copy binary content to output stream
-			while(fileIn.read(outputByte, 0, 4096) != -1)
-			{
+			final byte[] outputByte = new byte[4096];
+			// copy binary content to output stream
+			while (fileIn.read(outputByte, 0, 4096) != -1) {
 				out.write(outputByte, 0, 4096);
 			}
 			fileIn.close();
