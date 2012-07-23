@@ -46,17 +46,20 @@ import com.mysema.query.types.path.StringPath;
 /**
  * View data in a matrix.
  */
-public class JQGridPlugin extends EasyPluginController<ScreenModel> {
+public class JQGridPlugin extends EasyPluginController<ScreenModel>
+{
 
 	// For test different backends
 
 	// JQGridTableView tableView;
 
-	public JQGridPlugin(String name, ScreenController<?> parent) {
+	public JQGridPlugin(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
-	JQGridView.TupleTableBuilder tupleTableBuilder = new JQGridView.TupleTableBuilder() {
+	JQGridView.TupleTableBuilder tupleTableBuilder = new JQGridView.TupleTableBuilder()
+	{
 		// enum BackEnd {
 		// JDBCTABLE, JOINTABLE, QUERYTABLE
 		// }
@@ -64,110 +67,136 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 		private final String backEnd = "JOINTABLE";
 
 		@Override
-		public TupleTable create(Database db, Tuple request)
-				throws TableException {
+		public TupleTable create(Database db, Tuple request) throws TableException
+		{
 			final List<String> tableNames = new ArrayList<String>();
 			final List<String> columnNames = new ArrayList<String>();
 			getTableAndColumnNames(request, tableNames, columnNames, true);
-			try {
-				if (backEnd.equals("JOINTABLE")) {
+			try
+			{
+				if (backEnd.equals("JOINTABLE"))
+				{
 					return createJoinTable(db, tableNames, columnNames);
-				} else if (backEnd.equals("QUERYTABLE")) {
+				}
+				else if (backEnd.equals("QUERYTABLE"))
+				{
 					return createQueryTable(db, tableNames, columnNames);
-				} else if (backEnd.equals("JDBCTABLE")) {
+				}
+				else if (backEnd.equals("JDBCTABLE"))
+				{
 					return createJDBTable(db, tableNames, columnNames);
-				} else if (backEnd.equals("LIFELINES_VM_TEST")) {
-					return createLifelinesTestVMJoinTable(db, tableNames,
-							columnNames);
-				} else if (backEnd.equals("MEMORY_TABLE")) {
+				}
+				else if (backEnd.equals("LIFELINES_VM_TEST"))
+				{
+					return createLifelinesTestVMJoinTable(db, tableNames, columnNames);
+				}
+				else if (backEnd.equals("MEMORY_TABLE"))
+				{
 					return createMemory(db, tableNames, columnNames);
-				} else {
+				}
+				else
+				{
 					return null;
 				}
-			} catch (final Exception ex) {
+			}
+			catch (final Exception ex)
+			{
 				throw new TableException(ex);
 			}
 		}
 
-		private TupleTable createMemory(Database db, List<String> tableNames,
-				List<String> columnNames) {
+		private TupleTable createMemory(Database db, List<String> tableNames, List<String> columnNames)
+		{
 			final TupleTable table = MemoryTableFactory.create(51, 10);
 			return table;
 		}
 
-		private TupleTable createJDBTable(Database db, List<String> tableNames,
-				final List<String> columnNames) throws DatabaseException {
-			try {
-				if (CollectionUtils.isEmpty(columnNames)) {
+		private TupleTable createJDBTable(Database db, List<String> tableNames, final List<String> columnNames)
+				throws DatabaseException
+		{
+			try
+			{
+				if (CollectionUtils.isEmpty(columnNames))
+				{
 					return new JdbcTable(db, "SELECT * FROM Country");
-				} else {
-					return new JdbcTable(db, String.format(
-							"SELECT %s FROM Country",
-							StringUtils.join(columnNames, ",")));
 				}
-			} catch (final Exception ex) {
+				else
+				{
+					return new JdbcTable(db,
+							String.format("SELECT %s FROM Country", StringUtils.join(columnNames, ",")));
+				}
+			}
+			catch (final Exception ex)
+			{
 				throw new DatabaseException(ex);
 			}
 		}
 
-		private TupleTable createLifelinesTestVMJoinTable(Database db,
-				List<String> tableNames, final List<String> columnNames)
-				throws DatabaseException {
+		private TupleTable createLifelinesTestVMJoinTable(Database db, List<String> tableNames,
+				final List<String> columnNames) throws DatabaseException
+		{
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new OracleTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-			if (CollectionUtils.isEmpty(tableNames)) {
+			if (CollectionUtils.isEmpty(tableNames))
+			{
 				tableNames = Arrays.asList("BEZOEK", "BEZOEK1");
 			}
 			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
-			if (tableNames.size() == 2) {
-				joins = Arrays.asList(new JoinQueryTable.Join("BEZOEK",
-						"BZ_ID", "BEZOEK1", "BZ_ID"));
+			if (tableNames.size() == 2)
+			{
+				joins = Arrays.asList(new JoinQueryTable.Join("BEZOEK", "BZ_ID", "BEZOEK1", "BZ_ID"));
 			}
 			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
 		}
 
-		private TupleTable createJoinTable(Database db,
-				List<String> tableNames, final List<String> columnNames)
-				throws DatabaseException {
+		private TupleTable createJoinTable(Database db, List<String> tableNames, final List<String> columnNames)
+				throws DatabaseException
+		{
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
-
-			if (CollectionUtils.isEmpty(tableNames)) {
-				tableNames = Arrays.asList("Country", "City");
-			}
 
 			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
-			if (tableNames.size() == 2) {
-				joins = Arrays.asList(new JoinQueryTable.Join("Country",
-						"Code", "City", "CountryCode"));
+
+			if (CollectionUtils.isEmpty(tableNames))
+			{
+				tableNames = Arrays.asList("Country", "City", "CountryLanguage");
 			}
+
+			if (tableNames.contains("Country") && tableNames.contains("City"))
+			{
+				final JoinQueryTable.Join countryCity = new JoinQueryTable.Join("Country", "Code", "City",
+						"CountryCode");
+				joins.add(countryCity);
+			}
+			if (tableNames.contains("Country") && tableNames.contains("CountryLanguage"))
+			{
+				final JoinQueryTable.Join countryLanguage = new JoinQueryTable.Join("Country", "Code",
+						"CountryLanguage", "CountryCode");
+				joins.add(countryLanguage);
+			}
+
 			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
 		}
 
-		private TupleTable createQueryTable(Database db,
-				List<String> tableNames, final List<String> columnNames)
-				throws DatabaseException {
+		private TupleTable createQueryTable(Database db, List<String> tableNames, final List<String> columnNames)
+				throws DatabaseException
+		{
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-			final PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(
-					RelationalPath.class, "Country");
-			final PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(
-					RelationalPath.class, "City");
-			query.from(country, city).where(
-					country.get("code").eq(city.get("countrycode")));
+			final PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class, "Country");
+			final PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
+			query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
 
-			final NumberPath<Integer> countryPopulation = country
-					.get(new NumberPath<Integer>(Integer.class, "Population"));
-			final NumberPath<Integer> cityPopulation = city
-					.get(new NumberPath<Integer>(Integer.class, "Population"));
+			final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(Integer.class,
+					"Population"));
+			final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(Integer.class, "Population"));
 
-			final NumberExpression<Double> cityPopulationRatio = cityPopulation
-					.divide(countryPopulation);
+			final NumberExpression<Double> cityPopulationRatio = cityPopulation.divide(countryPopulation);
 			query.where(country.get("code").eq(city.get("countrycode")));
 			query.limit(10);
 			// query.orderBy(cityPopulationRatio.desc());
@@ -184,41 +213,45 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			selectMap.put("Country.Name", country.get(new StringPath("name")));
 			selectMap.put("City.Name", city.get(new StringPath("name")));
 			selectMap.put("ratio", cityPopulationRatio);
-			final List<Field> columns = Arrays.asList(countryName, cityName,
-					ratio);
-			final QueryTable queryTable = new QueryTable(query, selectMap,
-					columns);
+			final List<Field> columns = Arrays.asList(countryName, cityName, ratio);
+			final QueryTable queryTable = new QueryTable(query, selectMap, columns);
 			return queryTable;
 		}
 
-		private void getTableAndColumnNames(Tuple request,
-				List<String> inTableNames, List<String> inColumnNames,
-				boolean completeColumnNames) {
-			if (request != null) {
-				final String[] colNamesParamaters = ((MolgenisRequest) request)
-						.getRequest().getParameterValues("colNames[]");
-				if (colNamesParamaters == null
-						|| colNamesParamaters.length == 0) {
+		private void getTableAndColumnNames(Tuple request, List<String> inTableNames, List<String> inColumnNames,
+				boolean completeColumnNames)
+		{
+			if (request != null)
+			{
+				final String[] colNamesParamaters = ((MolgenisRequest) request).getRequest().getParameterValues(
+						"colNames[]");
+				if (colNamesParamaters == null || colNamesParamaters.length == 0)
+				{
 					return;
 				}
 
-				final List<String> columNames = Arrays
-						.asList(colNamesParamaters);
-				for (final String column : columNames) {
-					if (StringUtils.contains(column, ".")) {
-						final String tableName = StringUtils.substringBefore(
-								column, ".");
-						final String columnName = StringUtils.substringAfter(
-								column, ".");
-						if (!inTableNames.contains(tableName)) {
+				final List<String> columNames = Arrays.asList(colNamesParamaters);
+				for (final String column : columNames)
+				{
+					if (StringUtils.contains(column, "."))
+					{
+						final String tableName = StringUtils.substringBefore(column, ".");
+						final String columnName = StringUtils.substringAfter(column, ".");
+						if (!inTableNames.contains(tableName))
+						{
 							inTableNames.add(tableName);
 						}
-						if (completeColumnNames) {
+						if (completeColumnNames)
+						{
 							inColumnNames.add(column);
-						} else {
+						}
+						else
+						{
 							inColumnNames.add(columnName);
 						}
-					} else {
+					}
+					else
+					{
 						inColumnNames.add(column);
 					}
 				}
@@ -226,33 +259,37 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 		}
 
 		@Override
-		public String getUrl() {
-			return "molgenis.do?__target=" + getName()
-					+ "&__action=download_json";
+		public String getUrl()
+		{
+			return "molgenis.do?__target=" + getName() + "&__action=download_json";
 		}
 	};
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 		// all request completly recreate grid
 	}
 
 	// handling of the ajax; should be auto-wired via the JQGridTableView
 	// contructor (TODO)
-	public void download_json(Database db, Tuple request, OutputStream out) {
-		final JQGridView jqGridView = new JQGridView(super.getName(),
-				tupleTableBuilder);
-		try {
+	public void download_json(Database db, Tuple request, OutputStream out)
+	{
+		final JQGridView jqGridView = new JQGridView(super.getName(), tupleTableBuilder);
+		try
+		{
 			jqGridView.handleRequest(db, request, out);
-		} catch (final HandleRequestDelegationException ex) {
-			Logger.getLogger(JQGridPlugin.class.getName()).log(Level.SEVERE,
-					null, ex);
+		}
+		catch (final HandleRequestDelegationException ex)
+		{
+			Logger.getLogger(JQGridPlugin.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
 	// what is shown to the user
 	@Override
-	public ScreenView getView() {
+	public ScreenView getView()
+	{
 		final MolgenisForm view = new MolgenisForm(this);
 		view.add(new JQGridView(super.getName(), tupleTableBuilder));
 		return view;

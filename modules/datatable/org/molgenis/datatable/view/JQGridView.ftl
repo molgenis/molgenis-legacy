@@ -89,7 +89,7 @@ var JQGridView = {
 
 		this.sliceColumns();
 
-		this.config.postData = {colNames: this.config.colNames};
+		this.config.postData.colNames = this.config.colNames;
     	$(this.tableSelector).jqGrid('GridUnload');
     	this.grid = this.createJQGrid();
     	
@@ -98,9 +98,15 @@ var JQGridView = {
     
     createJQGrid : function() {
     	var self = JQGridView;
+    	
+    	//oldPostData = this.config.postData.filters.groupOp = "AND";
+		oldFilters = config.postData.filters.rules;
+    	
+    	console.log(oldFilters);
+    	
     	grid = jQuery(this.tableSelector).jqGrid(this.config)
             .jqGrid('navGrid', this.pagerSelector,
-            	this.config.settings,{},{},{},{multipleSearch:true} // search options
+            	this.config.settings,{},{},{},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
             ).jqGrid('gridResize');
         //is not correct (will not work with two grids!)
         if(this.columnPageEnabled) {
@@ -191,7 +197,7 @@ var JQGridView = {
 						selectedColModel.push(colModelNode[0]);
 					}
 				}
-				grid.changeColumns(selectedColModel);        
+				self.changeColumns(selectedColModel);        
 			},
 			onDblClick: function(node, event) {
 				node.toggleSelect();
@@ -253,3 +259,4 @@ $(document).ready(function() {
 		</form>
 	</div>
 </div>
+<button onclick="alert(jQuery('#${tableId}').jqGrid('jqGridExport', {exptype:'jsonstring'}));">click</button>
