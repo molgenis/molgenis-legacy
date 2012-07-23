@@ -63,8 +63,8 @@ public class JQGridView extends HtmlWidget {
 		this.tupleTableBuilder = tupleTableBuilder;
 	}
 
-	public JQGridView(final String name, final ScreenController<?> hostController,
-			final TupleTable table) {
+	public JQGridView(final String name,
+			final ScreenController<?> hostController, final TupleTable table) {
 		this(name, new TupleTableBuilder() {
 			@Override
 			public String getUrl() {
@@ -99,13 +99,16 @@ public class JQGridView extends HtmlWidget {
 					.getResponse();
 
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
+
 			final String opRequest = request.getString(OPERATION);
 
-			final Operation operation = StringUtils.isNotEmpty(opRequest) ? Operation.valueOf(opRequest) : Operation.RENDER_DATA;
+			final Operation operation = StringUtils.isNotEmpty(opRequest) ? Operation
+					.valueOf(opRequest) : Operation.RENDER_DATA;
 			if (operation == Operation.LOAD_CONFIG) {
 				loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
 			} else if (operation == Operation.LOAD_TREE) {
-				final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
+				final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable
+						.getColumns());
 				response.getOutputStream().print(treeNodes);
 			} else { // operation == Operation.RENDER_DATA
 				final List<QueryRule> rules = new ArrayList<QueryRule>();
@@ -120,6 +123,7 @@ public class JQGridView extends HtmlWidget {
 
 				final int limit = request.getInt("rows");
 				final int rowCount = tupleTable.getCount();
+
 				final int totalPages = (int) Math.ceil(rowCount / limit);
 				final int page = Math.min(request.getInt("page"), totalPages);
 				final int offset = Math.max(limit * page - limit, 0);
@@ -134,7 +138,7 @@ public class JQGridView extends HtmlWidget {
 						&& tupleTable instanceof FilterableTupleTable) {
 					final Operator sortOperator = StringUtils.equals(sortOrder,
 							"asc") ? QueryRule.Operator.SORTASC
-									: QueryRule.Operator.SORTDESC;
+							: QueryRule.Operator.SORTDESC;
 					rules.add(new QueryRule(sortOperator, sortField));
 				}
 
@@ -171,7 +175,8 @@ public class JQGridView extends HtmlWidget {
 	private void renderData(HttpServletRequest request,
 			HttpServletResponse response, int page, int totalPages,
 			final TupleTable tupleTable) throws TableException {
-		final ServletContext servletContext = request.getSession().getServletContext();
+		final ServletContext servletContext = request.getSession()
+				.getServletContext();
 
 		String strViewType = request.getParameter("viewType");
 		if (StringUtils.isEmpty(strViewType)) {
@@ -208,7 +213,7 @@ public class JQGridView extends HtmlWidget {
 			final String groupOp = (String) filters.get("groupOp");
 			@SuppressWarnings("unchecked")
 			final ArrayList<StringMap<String>> jsonRules = (ArrayList<StringMap<String>>) filters
-			.get("rules");
+					.get("rules");
 			for (final StringMap<String> rule : jsonRules) {
 				final String field = rule.get("field");
 				final String op = rule.get("op");
@@ -217,8 +222,10 @@ public class JQGridView extends HtmlWidget {
 				final QueryRule queryRule = convertOperator(field, op, value);
 				rules.add(queryRule);
 
-				final boolean isLastRule = rule == jsonRules.get(jsonRules.size() - 1);
-				// Note: AND is default in query rules; OR needs to be added explicitly.
+				final boolean isLastRule = rule == jsonRules.get(jsonRules
+						.size() - 1);
+				// Note: AND is default in query rules; OR needs to be added
+				// explicitly.
 				if (groupOp.equals("OR") && !isLastRule) {
 					rules.add(new QueryRule(QueryRule.Operator.OR));
 				}
@@ -291,7 +298,8 @@ public class JQGridView extends HtmlWidget {
 			rule.setOperator(QueryRule.Operator.LIKE);
 			rule = toNotRule(rule);
 		} else {
-			throw new IllegalArgumentException(String.format("Unkown Operator: %s", op));
+			throw new IllegalArgumentException(String.format(
+					"Unkown Operator: %s", op));
 		}
 		return rule;
 	}
@@ -320,7 +328,8 @@ public class JQGridView extends HtmlWidget {
 			final Configuration cfg = new Configuration();
 			cfg.setObjectWrapper(new DefaultObjectWrapper());
 			cfg.setClassForTemplateLoading(JQGridView.class, "");
-			final Template template = cfg.getTemplate(JQGridView.class.getSimpleName() + ".ftl");
+			final Template template = cfg.getTemplate(JQGridView.class
+					.getSimpleName() + ".ftl");
 			final Writer out = new StringWriter();
 			template.process(args, out);
 			out.flush();
@@ -330,11 +339,10 @@ public class JQGridView extends HtmlWidget {
 		}
 	}
 
-
 	public void loadTupleTableConfig(Database db, MolgenisRequest request,
 			TupleTable tupleTable) throws TableException, IOException {
-		final JQGridConfiguration config =
-				new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
+		final JQGridConfiguration config = new JQGridConfiguration(getId(),
+				"Name", tupleTableBuilder.getUrl(), "test", tupleTable);
 		tupleTable.setDb(db);
 		final String jqJsonConfig = new Gson().toJson(config);
 		System.out.println(jqJsonConfig);
@@ -359,14 +367,15 @@ public class JQGridView extends HtmlWidget {
 	 */
 	public static JQGridResult buildJQGridResults(final int rowCount,
 			final int totalPages, final int page, final TupleTable table)
-					throws TableException {
+			throws TableException {
 		final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
 		for (final Tuple row : table) {
 			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
 
 			final List<String> fieldNames = row.getFieldNames();
 			for (final String fieldName : fieldNames) {
-				final String rowValue = !row.isNull(fieldName) ? row.getString(fieldName) : "null";
+				final String rowValue = !row.isNull(fieldName) ? row
+						.getString(fieldName) : "null";
 				rowMap.put(fieldName, rowValue); // TODO encode to HTML
 			}
 			result.rows.add(rowMap);
