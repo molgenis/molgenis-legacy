@@ -32,9 +32,10 @@
 						inputToken = inputToken.replace(/_/g,' ');
 						
 						if(name.search(new RegExp(inputToken, "gi")) != -1){
-							
 							$(this).show();
 							$('#leftSideTree li#' + id).parents().show();
+							$('#leftSideTree li#' + id).parents().children('div').removeClass('expandable-hitarea');
+							$('#leftSideTree li#' + id).parents().children('div').addClass('collapsable-hitarea');
 						}
 					}
 				});
@@ -53,8 +54,15 @@
 						
 						if(name.search(new RegExp(inputToken, "gi")) != -1){
 							$(this).show();
+							$(this).children('div').removeClass('expandable-hitarea');
+							$(this).children('div').addClass('collapsable-hitarea');
 							$('#leftSideTree li#' + id).parents().show();
+							$('#leftSideTree li#' + id).parents().children('div').removeClass('expandable-hitarea');
+							$('#leftSideTree li#' + id).parents().children('div').addClass('collapsable-hitarea');
+							$('#leftSideTree li#' + id).find('ul').show();
 							$('#leftSideTree li#' + id).find('li').show();
+							$('#leftSideTree li#' + id).find('div').removeClass('expandable-hitarea');
+							$('#leftSideTree li#' + id).find('div').addClass('collapsable-hitarea');
 						}
 					}
 				});
@@ -79,6 +87,8 @@
 						if(table.search(new RegExp(inputToken, "gi")) != -1){
 							$(this).show();
 							$('#leftSideTree li#' + id).parents().show();
+							$('#leftSideTree li#' + id).parents().children('div').removeClass('expandable-hitarea');
+							$('#leftSideTree li#' + id).parents().children('div').addClass('collapsable-hitarea');
 						}
 					}
 				});
@@ -99,37 +109,46 @@
 		
 		function checkSearchingStatus(){
 			
-			if($('#InputToken').val() == ""){
+			if($('#InputToken').val() === ""){
 				$('#leftSideTree li').show();
 			}
 		}
 		
+		function whetherReload(e){
+			
+			if(e.keyCode === 13){
+				if($('#InputToken').val() != ""){
+					searchInTree();
+				}
+				return false;
+			}
+		}
 		
-	$(document).ready(function(){	
-		
-		$('#cohortSelectSubmit').button();
-		$('#cohortSelectSubmit').css({
-			'font-size':'1.2em',
-			'color':'#123481'
+		$(document).ready(function(){	
+			
+			$('#cohortSelectSubmit').button();
+			$('#cohortSelectSubmit').css({
+				'font-size':'1.2em',
+				'color':'#123481'
+			});
+			$('#cohortSelectSubmit').show();
+			
+			$('#downloadButton').button();
+			$('#downloadButton').css({
+				'font-size':'0.8em'
+			});
+			$('#downloadButton').show(); 
+			$('#downloadButtonEMeasure').button();
+			$('#downloadButtonEMeasure').css({
+				'font-size':'0.8em'
+			});
+			$('#downloadButtonEMeasure').show();
+			
+			$('#clearSearchingResult').click(function(){
+				$('#InputToken').val('');
+				checkSearchingStatus();
+			});
 		});
-		$('#cohortSelectSubmit').show();
-		
-		$('#downloadButton').button();
-		$('#downloadButton').css({
-			'font-size':'0.8em'
-		});
-		$('#downloadButton').show(); 
-		$('#downloadButtonEMeasure').button();
-		$('#downloadButtonEMeasure').css({
-			'font-size':'0.8em'
-		});
-		$('#downloadButtonEMeasure').show();
-		
-		$('#clearSearchingResult').click(function(){
-			$('#InputToken').val('');
-			checkSearchingStatus();
-		});		
-	});
 	</script>
 
 	<div class="formscreen">
@@ -168,9 +187,7 @@
 				 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 				 					<a id="expand" title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a>
 	 							</div>-->
-	 							
-	 							
-			    			</td>
+	 						</td>
 			    		</tr>
 			    		<tr>
 			    			<td class="box-body" style="width:50%;">
@@ -181,15 +198,15 @@
 											<#if screen.selectedField == field>selected="selected"</#if></#if> >Search ${field}</option>			
 									</#list>
 								</select>
-								<input title="fill in search term" type="textfield" name="InputToken" id="InputToken"
+								<input title="fill in search term" type="text" name="InputToken" id="InputToken"
 									onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
-									onkeydown="checkSearchingStatus();">
+									onkeyup="checkSearchingStatus();" onkeypress="return whetherReload(event);">
 									
 								
 								<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
-								value="search" style="font-size:0.9em" onclick="searchInTree()"/>
+								value="search" style="font-size:0.8em" onclick="searchInTree()"/>
 								<input type="button" id="clearSearchingResult" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="clearSearchingResult" 
-								value="clear" style="font-size:0.9em"/>					
+								value="clear" style="font-size:0.8em"/>					
 								<#list screen.getFilters() as filter>			
 									<b>${filter}</b>
 									<input type="image" src="generated-res/img/cancel.png" alt="Remove filter" 
@@ -256,11 +273,11 @@
 				  							<div id="selection" style="height:25px; margin:0px;padding:0px">
 												<div style="float:right">
 						 							<input class='addbutton ui-button ui-widget ui-state-default ui-corner-all' type="submit" id="downloadButton" name="downloadButton" value="Download as Excel" 
-													 onclick="__action.value='downloadButton';" "/>
+													 onclick="__action.value='downloadButton';"/>
 				 								</div>
 				 								<div style="float:right">
 						 							<input type="submit" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' id="downloadButtonEMeasure" name="downloadButton" value="Download as E-Measure" 
-													 onclick="__action.value='downloadButtonEMeasure';" "/>
+													 onclick="__action.value='downloadButtonEMeasure';"/>
 				 								</div>
 											</div>
 										</td>
