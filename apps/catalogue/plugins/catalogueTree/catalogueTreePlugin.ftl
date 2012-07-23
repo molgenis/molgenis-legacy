@@ -99,10 +99,11 @@
 		
 		function checkSearchingStatus(){
 			
-			if($('#InputToken').val() === ""){
+			if($('#InputToken').val() == ""){
 				$('#leftSideTree li').show();
 			}
 		}
+		
 		
 	$(document).ready(function(){	
 		
@@ -182,7 +183,7 @@
 								</select>
 								<input title="fill in search term" type="textfield" name="InputToken" id="InputToken"
 									onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
-									onkeyup="checkSearchingStatus();">
+									onkeydown="checkSearchingStatus();">
 									
 								
 								<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
@@ -198,7 +199,7 @@
 								<#if filter_has_next> and </#if>
 								</#list>				    
 					    	</td>
-					    <td class="box-body" style="width: 50%"><div style="font-family:Comic Sans, Comic Sans MS, cursive">Details:</div></td></tr>
+					    <td class="box-body" style="width: 50%"><div >Details:</div></td></tr>
 					    <tr>
 					    	<td class="box-body">
 								<div id="leftSideTree">
@@ -235,19 +236,19 @@
   									</tr>
 									<tr>
 								    	<td style="height:20px; border-top:1px solid lightgray;">
-											<div id="selectionState">Your selection:
+											<div id="selectionState" >Your selection:
 												<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
 											</div>
 										</td>
 									</tr>
 									<tr>
-							    		<td style="height:20px">
-			  								<div id="selectionHeader" style="height:20px; "></div>
+							    		<td>
+			  								<div id="selectionHeader" style="margin:0px"></div>
 										</td>
 									</tr>
 									<tr>
-							    		<td style="height:185px">
-			  								<div id="selection" style="height:185px; overflow:auto"></div>
+							    		<td style="height:185px" >
+			  								<div id="selection" style="height:185px; overflow:auto; width:100%"></div>
 										</td>
 									</tr>
 									<tr>
@@ -337,15 +338,15 @@
 	 							var content = '<tr id=\"'+uniqueID +'_row\" ><td style=\"width:30%; text-align:left\">' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer;width:30%; text-align:left\">' + 
 	 										descriptionShows + '...</td><td style=\"width:30%; text-align:left\">' + 
 	 										protocolName + '</td><td style=\"text-align:center; width:10%; text-align:left\">' + 
-	 										deleteButton + '</td></tr></tr></table>';
+	 										deleteButton + '</td></tr></table>';
 		 						
 	 							<!--We are going to check whether this selectedVariableTable already existed-->
 	 							if($('#selectedVariableTable').length == 0){
 	 							
-	 								var newTableHeader = '<table style=\"width:100%\" id=\"selectedVariableTable\" class=\"listtable\">'+
+	 								var newTableHeader = '<table id=\"selectedVariableHeader\" style=\"width:100%\" class=\"listtable\">'+
 	 								'<th style=\"width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
 	 								'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></tr></table>';
-	 								var newTable = '<table style=\"width=100%; overflow:auto\"><tr>';
+	 								var newTable = '<table id=\"selectedVariableTable\"  class=\"listtable\" style=\"width:100%; overflow:auto\"><tr>';
 	 								newTable += content;
 	 								$('#selection').append(newTable);
 	 								$('#selectionHeader').append(newTableHeader);
@@ -353,10 +354,11 @@
 	 								
 	 								
 	 								$('#'+uniqueID+'_delete').click(function(){
-	 									if($('#selectedVariableTable').find('tr').length > 2){
+	 									if($('#selectedVariableTable').find('tr').length > 1){
 		 									$('#'+uniqueID+'_row').remove();
 		 								}else{
 		 									$('#selectedVariableTable').remove();
+		 									$('#selectedVariableHeader').remove();
 		 								}
 		 								$('#' + checkBoxID).attr('checked',false);
 	 								});
@@ -372,7 +374,7 @@
 	 								}
 	 								
 	 								$('#'+uniqueID+'_delete').click(function(){
-	 									if($('#selectedVariableTable').find('tr').length > 2){
+	 									if($('#selectedVariableTable').find('tr').length > 1){
 		 									$('#'+uniqueID+'_row').remove();
 		 								}else{
 		 									$('#selectedVariableTable').remove();
