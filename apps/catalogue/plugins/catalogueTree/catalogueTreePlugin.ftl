@@ -386,7 +386,7 @@
  							if($(this).attr('checked') != 'checked'){
  								
  								if($('#selectedVariableTable').find('tr').length > 1){
- 									$('#selectedVariableTable').find('tr:last-child').remove();
+ 									$('#' + $(this).parent().parent().attr('id') + '_row').remove();
  								}else{
  									$('#selectedVariableTable').remove();
  									$('#selectedVariableHeader').remove()
@@ -401,7 +401,7 @@
 		 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
 		 						var descriptionShows = variableDescription.substr(0, 10);
 		 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
-	 							var content = '<tr id=\"'+uniqueID +'_row\" ><td style=\"width:30%; text-align:left\">' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer;width:30%; text-align:left\">' + 
+	 							var content = '<tr id=\"'+uniqueID +'_row\" ><td style=\"width:30%; text-align:left; cursor:pointer\">' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer;width:30%; text-align:left\">' + 
 	 										descriptionShows + '...</td><td style=\"width:30%; text-align:left\">' + 
 	 										protocolName + '</td><td style=\"text-align:center; width:10%; text-align:left\">' + 
 	 										deleteButton + '</td></tr></table>';
@@ -460,6 +460,12 @@
 	 							$('#' + uniqueID +'_hover').mouseout(function(){
 	 								$('#popUpDialogue').hide();
 	 							});
+	 							$('#' + uniqueID + '_row >td').eq(0).click(function(){
+	 								alert('clicked!');
+	 								var top = $('#' + uniqueID).position().top;
+	 								$('#leftSideTree').scrollTop(top);
+	 							});
+	 							
  							}
  							$('#variableCount').empty();
  							var count = $('#selectedVariableTable tr').length - 1;
