@@ -73,22 +73,35 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 
 			// get meta data
 			Query<Measurement> q = this.getDb().query(Measurement.class).in(Measurement.ID, protocol.getFeatures_Id());
-			if (visibleColumnsOnly && this.getColLimit() > 0)
+			if (visibleColumnsOnly)
 			{
-				// first column is target
-				if (this.getColOffset() == 0)
+				if (this.getColLimit() > 0)
 				{
-					q.limit(this.getColLimit() - 1);
-					columns.add(new Field("target"));
+					// first column is target
+					if (this.getColOffset() == 0)
+					{
+						q.limit(this.getColLimit() - 1);
+						columns.add(new Field("target"));
+					}
+					else
+					{
+						if (!visibleColumnsOnly)
+						{
+							q.limit(this.getColLimit());
+
+						}
+					}
 				}
-				else
+				if (this.getColOffset() > 0)
 				{
-					q.limit(this.getColLimit());
+					// always substract 1 for the 'target' column
+					q.offset(this.getColOffset() - 1);
 				}
 			}
-
-			// always substract 1 for the 'target' column
-			if (visibleColumnsOnly && this.getColOffset() > 0) q.offset(this.getColOffset() - 1);
+			else
+			{
+				columns.add(new Field("target"));
+			}
 
 			measurements = q.find();
 
@@ -108,92 +121,124 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		}
 	}
 
-	/**
-	 * Iteratively retrieve the rows; we may want some caching mechanism to
-	 * retrieve multiple rows per call
-	 */
-	private static class ProtocolTupleIterator implements Iterator<Tuple>
+	// Iterator gives strange connection errors
+
+	// /**
+	// * Iteratively retrieve the rows; we may want some caching mechanism to
+	// * retrieve multiple rows per call
+	// */
+	// private static class ProtocolTupleIterator implements Iterator<Tuple>
+	// {
+	// // wrapper state
+	// ProtocolTable table;
+	//
+	// // rowIterator
+	// Iterator<Integer> rowIndexIterator;
+	//
+	// List<String> colNames;
+	//
+	// ProtocolTupleIterator(ProtocolTable table)
+	// {
+	// try
+	// {
+	// this.table = table;
+	// rowIndexIterator = table.getRowIds(false).iterator();
+	// colNames = new ArrayList<String>();
+	//
+	// for (Field f : table.getColumns())
+	// {
+	// colNames.add(f.getName());
+	// }
+	// }
+	// catch (Exception e)
+	// {
+	// e.printStackTrace();
+	// throw new RuntimeException(e);
+	// }
+	// }
+	//
+	// @Override
+	// public boolean hasNext()
+	// {
+	// return rowIndexIterator.hasNext();
+	// }
+	//
+	// @Override
+	// public Tuple next()
+	// {
+	// try
+	// {
+	// Integer rowId = rowIndexIterator.next();
+	// Tuple row = new SimpleTuple(colNames);
+	//
+	// for (ObservedValue v : table.getDb().query(ObservedValue.class)
+	// .eq(ObservedValue.PROTOCOLAPPLICATION, rowId).find())
+	// {
+	// row.set("target", v.getTarget_Name());
+	// row.set(v.getFeature_Name(), v.getValue());
+	// }
+	// return row;
+	// }
+	// catch (DatabaseException e)
+	// {
+	// throw new RuntimeException(e);
+	// }
+	// }
+	//
+	// @Override
+	// public void remove()
+	// {
+	// throw new UnsupportedOperationException();
+	// }
+	// }
+
+	public List<Tuple> getRows() throws TableException
 	{
-		// wrapper state
-		ProtocolTable table;
-
-		// rowIterator
-		Iterator<Integer> rowIndexIterator;
-
-		List<String> colNames;
-
-		ProtocolTupleIterator(ProtocolTable table)
+		try
 		{
-			try
+			List<String> colNames = new ArrayList<String>();
+			for (Field f : getColumns())
 			{
-				this.table = table;
-				rowIndexIterator = table.getRowIds(false).iterator();
-				colNames = new ArrayList<String>();
-
-				for (Field f : table.getColumns())
-				{
-					colNames.add(f.getName());
-				}
+				colNames.add(f.getName());
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			}
-		}
 
-		@Override
-		public boolean hasNext()
-		{
-			return rowIndexIterator.hasNext();
-		}
-
-		@Override
-		public Tuple next()
-		{
-			try
+			List<Tuple> result = new ArrayList<Tuple>();
+			for (Integer rowId : getRowIds(false))
 			{
-				Integer rowId = rowIndexIterator.next();
 				Tuple row = new SimpleTuple(colNames);
 
-				for (ObservedValue v : table.getDb().query(ObservedValue.class)
-						.eq(ObservedValue.PROTOCOLAPPLICATION, rowId).find())
+				for (ObservedValue v : getDb().query(ObservedValue.class).eq(ObservedValue.PROTOCOLAPPLICATION, rowId)
+						.find())
 				{
 					row.set("target", v.getTarget_Name());
 					row.set(v.getFeature_Name(), v.getValue());
 				}
-				return row;
+				result.add(row);
 			}
-			catch (DatabaseException e)
-			{
-				throw new RuntimeException(e);
-			}
+			return result;
 		}
-
-		@Override
-		public void remove()
+		catch (Exception e)
 		{
-			throw new UnsupportedOperationException();
+			throw new TableException(e);
 		}
 	}
 
 	@Override
 	public Iterator<Tuple> iterator()
 	{
-		return new ProtocolTupleIterator(this);
+		try
+		{
+			return getRows().iterator();
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	public void close()
 	{
-		try
-		{
-			this.getDb().close();
-		}
-		catch (DatabaseException e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 	@Override

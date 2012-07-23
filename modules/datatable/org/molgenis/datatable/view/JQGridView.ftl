@@ -100,7 +100,7 @@ var JQGridView = {
     	var self = JQGridView;
     	grid = jQuery(this.tableSelector).jqGrid(this.config)
             .jqGrid('navGrid', this.pagerSelector,
-            	this.config.settings,{},{},{},{multipleSearch:true} // search options
+            	this.config.settings,{},{},{},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
             ).jqGrid('gridResize');
         //is not correct (will not work with two grids!)
         if(this.columnPageEnabled) {
@@ -254,3 +254,4 @@ $(document).ready(function() {
 		</form>
 	</div>
 </div>
+<button onclick="alert(jQuery('#${tableId}').jqGrid('jqGridExport', {exptype:'jsonstring'}));">click</button>

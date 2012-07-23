@@ -10,53 +10,96 @@ import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.model.elements.Field;
 
-public class JQGridConfiguration {
+public class JQGridConfiguration
+{
+	public String id;
 
-	private final String id;
+	/** ajax url */
 	public final String url;
-	public final String pager;
 
+	/** formatting of the ajax service data */
 	public final String datatype = "json";
 
+	/** id of pager diff (== toolbar at bottom) */
+	public final String pager;
+
+	/** labels of the columns */
 	public List<String> colNames = new ArrayList<String>();
-	public List<JQGridField> colModel = new ArrayList<JQGridField>();
+
+	/** definitions of the columns */
+	public List<JQGridColModel> colModel = new ArrayList<JQGridColModel>();
+
+	/** current limit = number of rows to show */
 	public int rowNum = 10;
-	public Integer[] rowList = new Integer[] { 10, 20, 30 };
+
+	/** choices of alternative rowNum values */
+	public Integer[] rowList = new Integer[]
+	{ 10, 20, 30 };
+
+	/** indicates whether we want to show total records from query in page bar */
 	public boolean viewrecords = true;
-	public String sortorder = "desc";
+
+	/** the caption of this table */
 	public String caption = "jqGrid View";
+
 	public boolean autowidth = true;
-	public boolean sortable = false;
-	public HashMap<String, Object> jsonReader = new HashMap<String, Object>();;
+
+	/** whether tis grid is sortable */
+	public String sortname = "";
+
+	/** default sorting order */
+	public String sortorder = "desc";
+
+	/** default height */
+	public String height = "auto";
+
+	/** preload filter settings */
+	// note: this is a string value
+	// public String postData =
+	// "{filters : '{\"groupOp\":\"AND\",\"rules\":[{\"field\":\"Country.Code\",\"op\":\"eq\",\"data\":\"AGO\"}]}'}";
+	public JQGridPostData postData = new JQGridPostData();
+
+	/** ???? */
+	public HashMap<String, Object> jsonReader = new HashMap<String, Object>();
 
 	// public String postData = "viewType : JQ_GRID";
 
 	public JQGridSettings settings = new JQGridSettings();
-	@SuppressWarnings("unchecked")
+
 	public Object[] toolbar = Arrays.asList(true, "top").toArray();
 
-	public JQGridConfiguration(String id, String idField, String url,
-			String caption, TupleTable tupleTable) throws TableException {
+	public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable)
+			throws TableException
+	{
 		this.id = id;
-		pager = "#" + id + "Pager";
+		this.pager = "#" + id + "Pager";
 		this.url = url;
 		this.caption = caption;
+
 		// "{repeatitems: false, id: \"Code\"}"
 		jsonReader.put("repeatitems", false);
 		jsonReader.put("id", idField);
 
-		if (tupleTable instanceof FilterableTupleTable) {
-			sortable = true;
+		if (tupleTable instanceof FilterableTupleTable)
+		{
+			// sortable = true;
 			settings.search = true;
 		}
 
-		for (final Field f : tupleTable.getColumns()) {
-			colModel.add(new JQGridField(f));
+		for (final Field f : tupleTable.getColumns())
+		{
+			JQGridColModel model = new JQGridColModel(f);
+			if (tupleTable instanceof FilterableTupleTable)
+			{
+				model.sortable = true;
+			}
+			colModel.add(model);
 			colNames.add(f.getName());
 		}
 	}
 
-	public JQGridConfiguration(String id, String url, String caption) {
+	public JQGridConfiguration(String id, String url, String caption)
+	{
 		this.id = id;
 		pager = "#" + id + "Pager";
 		this.url = url;

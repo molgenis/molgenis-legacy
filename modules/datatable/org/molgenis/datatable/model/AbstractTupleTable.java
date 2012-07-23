@@ -145,6 +145,13 @@ public abstract class AbstractTupleTable implements TupleTable
 		this.db = db;
 	}
 
+	@Override
+	public void setLimitOffset(int limit, int offset)
+	{
+		this.setColLimit(limit);
+		this.setOffset(offset);
+	}
+
 	public Database getDb()
 	{
 		return this.db;

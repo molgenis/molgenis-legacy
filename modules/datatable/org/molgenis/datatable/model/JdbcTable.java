@@ -1,23 +1,19 @@
 package org.molgenis.datatable.model;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.Tuple;
 
 public class JdbcTable extends AbstractFilterableTupleTable
 {
 
-	private ResultSetTuple rs;
+	private List<Tuple> rs;
 	private List<Field> columns;
 	private final String query;
 	private Database db;
@@ -47,7 +43,7 @@ public class JdbcTable extends AbstractFilterableTupleTable
 			loaded = true;
 			try
 			{
-				rs = new ResultSetTuple(db.executeQuery(query, getFilters().toArray(new QueryRule[0])));
+				rs = db.sql(query, getFilters().toArray(new QueryRule[0]));
 				columns = loadColumns();
 			}
 			catch (Exception e)
@@ -67,24 +63,11 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	private List<Field> loadColumns() throws TableException
 	{
 		load();
-		final List<Field> columns = new ArrayList<Field>();
-		final List<String> fields = rs.getFieldNames();
-		int colIdx = 1;
-		for (String fieldName : fields)
+		if (rs.size() > 0)
 		{
-			final Field field = new Field(fieldName);
-			try
-			{
-				field.setType(MolgenisFieldTypes.getTypeBySqlTypesCode(rs.getSqlType(colIdx)));
-			}
-			catch (SQLException e)
-			{
-				throw new TableException(e);
-			}
-			columns.add(field);
-			++colIdx;
+			return rs.get(0).getFieldTypes();
 		}
-		return columns;
+		return new ArrayList<Field>();
 	}
 
 	/**
@@ -96,7 +79,7 @@ public class JdbcTable extends AbstractFilterableTupleTable
 		try
 		{
 			load();
-			return new RSIterator(rs);
+			return rs.iterator();
 		}
 		catch (Exception e)
 		{
@@ -107,18 +90,6 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	@Override
 	public void close() throws TableException
 	{
-		try
-		{
-			if (rs != null)
-			{
-				rs.close();
-			}
-			loaded = false;
-		}
-		catch (SQLException e)
-		{
-			throw new TableException(e);
-		}
 	}
 
 	@Override
@@ -126,14 +97,13 @@ public class JdbcTable extends AbstractFilterableTupleTable
 	{
 		try
 		{
-			final ResultSet countSet = db.executeQuery(countQuery, getFilters().toArray(new QueryRule[0]));
+			final List<Tuple> countSet = db.sql(countQuery, getFilters().toArray(new QueryRule[0]));
 			int rowCount = 0;
-			if (countSet.next())
+			if (countSet.size() > 0)
 			{
-				final Number count = (Number) countSet.getObject(1);
+				final Number count = (Number) countSet.get(0).getInt(1);
 				rowCount = count.intValue();
 			}
-			countSet.close();
 			return rowCount;
 		}
 		catch (Exception ex)

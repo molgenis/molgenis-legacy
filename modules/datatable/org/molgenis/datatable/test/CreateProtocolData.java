@@ -7,7 +7,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.molgenis.datatable.model.ProtocolTable;
-import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -16,10 +15,7 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.molgenis.util.Tuple;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
 
@@ -116,46 +112,5 @@ public class CreateProtocolData
 		db.add(values);
 
 		table = new ProtocolTable(db, protocol);
-	}
-
-	@Test
-	public void test1() throws TableException
-	{
-		// check columns
-		Assert.assertEquals(table.getColumns().get(0).getName(), "target");
-		Assert.assertEquals(table.getColumns().get(1).getName(), "meas1");
-
-		// check rows
-		table.getRows().size();
-
-		for (final Tuple row : table)
-		{
-			// Assert.assertEquals(2, row.getFieldNames().size());
-			//
-			// Assert.assertEquals(true,
-			// row.getFieldNames().contains("firstName"));
-			// Assert.assertEquals(true,
-			// row.getFieldNames().contains("lastName"));
-			//
-			// Assert.assertEquals(row.getObject("firstName"),"first"+i);
-			// Assert.assertEquals(row.getObject("lastName"),"last"+i);
-			//
-			// i=i+1;
-		}
-	}
-
-	@Test
-	public void testLimitOffset() throws TableException
-	{
-		table.setLimitOffset(2, 3);
-
-		// limit == 2
-		Assert.assertEquals(table.getRows().size(), 2);
-
-		// offset = 3, so we skip first1-first3 and expect first4
-		Assert.assertEquals(table.getRows().get(0).getString("meas1"), "meas1:val3");
-
-		// remove filters again
-		table.setLimitOffset(0, 0);
 	}
 }

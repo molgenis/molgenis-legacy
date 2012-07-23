@@ -11,7 +11,7 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-public class BinaryTupleTable extends AbstractTupleTable
+public class BinaryTupleTable extends AbstractFilterableTupleTable
 {
 	private BinaryDataMatrixInstance matrix;
 	private List<Field> columns = null;

@@ -112,4 +112,12 @@ public interface TupleTable extends Iterable<Tuple>
 
 	/** Reset the table, i.e. remove limits and filters */
 	public void reset();
+
+	/**
+	 * shorthand for setLimit(),setOffset()
+	 * 
+	 * @param limit
+	 * @param offset
+	 */
+	public void setLimitOffset(int limit, int offset);
 }
