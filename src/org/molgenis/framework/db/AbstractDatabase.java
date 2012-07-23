@@ -55,7 +55,7 @@ public abstract class AbstractDatabase implements Database
 	/** Default constructor */
 	public AbstractDatabase()
 	{
-		this.login = new SimpleLogin();
+		login = new SimpleLogin();
 	}
 
 	@Override
@@ -67,35 +67,35 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int count(Class<E> klazz, QueryRule... rules)
 			throws DatabaseException
-	{
+			{
 		return getMapperFor(klazz).count(rules);
-	}
+			}
 
 	@Override
 	public <E extends Entity> List<E> find(Class<E> klazz, QueryRule... rules)
 			throws DatabaseException
-	{
+			{
 		return getMapperFor(klazz).find(rules);
-	}
+			}
 
 	@Override
 	public <E extends Entity> void find(Class<E> entityClass,
 			TupleWriter writer, QueryRule... rules) throws DatabaseException
-	{
+			{
 		this.getMapperFor(entityClass).find(writer, rules);
-	}
+			}
 
 	@Override
 	public <E extends Entity> void find(Class<E> entityClass,
 			TupleWriter writer, List<String> fieldsToExport, QueryRule... rules)
-			throws DatabaseException
-	{
+					throws DatabaseException
+					{
 		try
 		{
 			writer.setHeaders(fieldsToExport);
 			writer.writeHeader();
 			int count = 0;
-			for (Entity e : find(entityClass, rules))
+			for (final Entity e : find(entityClass, rules))
 			{
 				writer.writeRow(e);
 
@@ -105,22 +105,22 @@ public abstract class AbstractDatabase implements Database
 					entityClass.getSimpleName(), count));
 			writer.close();
 		}
-		catch (Exception ex)
+		catch (final Exception ex)
 		{
 			throw new DatabaseException(ex);
 		}
-	}
+					}
 
-//	@Override
-//	public abstract <E extends Entity> List<E> findByExample(E example)
-//			throws DatabaseException;
+	//	@Override
+	//	public abstract <E extends Entity> List<E> findByExample(E example)
+	//			throws DatabaseException;
 
 	@Override
 	public <E extends Entity> E findById(Class<E> entityClass, Object id)
 			throws DatabaseException
-	{
+			{
 		return getMapperFor(entityClass).findById(id);
-	}
+			}
 
 	@Override
 	public <E extends Entity> Query<E> query(Class<E> entityClass)
@@ -148,16 +148,16 @@ public abstract class AbstractDatabase implements Database
 	{
 		logger.info("stmt.execute(" + sql + ")");
 		boolean success = false;
-		Connection conn = getConnection();
+		final Connection conn = getConnection();
 		try
 		{
 
-			Statement stmt = conn.createStatement();
+			final Statement stmt = conn.createStatement();
 			stmt.execute(sql);
 			success = true;
 			stmt.close();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			throw new DatabaseException(e);
 		}
@@ -167,7 +167,7 @@ public abstract class AbstractDatabase implements Database
 			{
 				conn.close();
 			}
-			catch (SQLException sqlEx)
+			catch (final SQLException sqlEx)
 			{
 				throw new DatabaseException(sqlEx);
 			}
@@ -178,10 +178,10 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> List<E> findByExample(E example)
 			throws DatabaseException
-	{
-		Query<E> q = this.query(getClassForEntity(example));
+			{
+		final Query<E> q = this.query(getClassForEntity(example));
 
-		for (String field : example.getFields())
+		for (final String field : example.getFields())
 		{
 			if (example.get(field) != null)
 			{
@@ -190,8 +190,8 @@ public abstract class AbstractDatabase implements Database
 		}
 
 		return q.find();
-	}
-	
+			}
+
 	/**
 	 * Executes a JDBC query and returns the resultset.
 	 * 
@@ -205,41 +205,45 @@ public abstract class AbstractDatabase implements Database
 	 * @throws SQLException
 	 * @throws DatabaseException
 	 */
+	@Override
 	@Deprecated
 	// see comments
 	public ResultSet executeQuery(String sql, QueryRule... rules)
 			throws DatabaseException
-	{
-		Connection con = getConnection();
+			{
+		final Connection con = getConnection();
 		Statement stmt = null;
 		try
 		{
 			stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY,
 					ResultSet.CONCUR_READ_ONLY);
-			DatabaseMetaData dbmd = con.getMetaData();
+			final DatabaseMetaData dbmd = con.getMetaData();
 			if (dbmd.getDatabaseProductName().toLowerCase().contains("mysql"))
 			{
 				stmt.setFetchSize(Integer.MIN_VALUE); // trigger streaming of
 			}
 			String allSql = sql;
-			if (rules != null && rules.length > 0) allSql += JDBCQueryGernatorUtil
-					.createWhereSql(null, false, true, rules);
-			ResultSet rs = stmt.executeQuery(allSql);
+			if (rules != null && rules.length > 0)
+			{
+				allSql += JDBCQueryGernatorUtil
+						.createWhereSql(null, false, true, rules);
+			}
+			final ResultSet rs = stmt.executeQuery(allSql);
 			logger.debug("executeQuery: " + allSql);
 			return rs;
 		}
-		catch (NullPointerException npe)
+		catch (final NullPointerException npe)
 		{
 			logger.error("executeQuery() failed with " + npe + " on sql: "
 					+ sql + "\ncause: " + npe.getCause());
 			throw new DatabaseException(npe);
 		}
-		catch (SQLException sqle)
+		catch (final SQLException sqle)
 		{
 			logger.error("executeQuery(" + sql + ")" + sqle);
 			throw new DatabaseException(sqle);
 		}
-	}
+			}
 
 	/**
 	 * Only use when really needed!
@@ -250,14 +254,14 @@ public abstract class AbstractDatabase implements Database
 	 */
 	public void executeUpdate(String sql) throws DatabaseException
 	{
-		Connection con = getConnection();
+		final Connection con = getConnection();
 		try
 		{
-			Statement stmt = con.createStatement();
+			final Statement stmt = con.createStatement();
 			stmt.executeUpdate(sql);
 			stmt.close();
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			throw new DatabaseException(e);
 		}
@@ -267,7 +271,7 @@ public abstract class AbstractDatabase implements Database
 			{
 				con.close();
 			}
-			catch (SQLException e)
+			catch (final SQLException e)
 			{
 				throw new DatabaseException(e);
 			}
@@ -280,42 +284,48 @@ public abstract class AbstractDatabase implements Database
 	 */
 	public <E extends Entity> int update(List<E> entities,
 			DatabaseAction dbAction, String... keyNames)
-			throws DatabaseException
-	{
-		if (keyNames.length == 0) throw new DatabaseException(
-				"At least one key must be provided, e.g. 'name'");
+					throws DatabaseException
+					{
+		if (keyNames.length == 0)
+		{
+			throw new DatabaseException(
+					"At least one key must be provided, e.g. 'name'");
+		}
 
 		// nothing todo?
-		if (entities.size() == 0) return 0;
+		if (entities.size() == 0)
+		{
+			return 0;
+		}
 
 		// retrieve entity class and name
-		Class<E> entityClass = getClassForEntity(entities.get(0));
-		String entityName = entityClass.getSimpleName();
+		final Class<E> entityClass = getClassForEntity(entities.get(0));
+		final String entityName = entityClass.getSimpleName();
 
 		// create maps to store key values and entities
 		// key is a concat of all key values for an entity
-		Map<String, E> entityIndex = new LinkedHashMap<String, E>();
+		final Map<String, E> entityIndex = new LinkedHashMap<String, E>();
 		// list of all keys, each list item a map of a (composite) key for one
 		// entity e.g. investigation_name + name
-		List<Map<String, Object>> keyIndex = new ArrayList<Map<String, Object>>();
+		final List<Map<String, Object>> keyIndex = new ArrayList<Map<String, Object>>();
 
 		// select existing for update, only works if one (composit key allows
 		// for nulls) the key values are set
 		// otherwise skipped
 		boolean keysMissing = false;
-		for (E entity : entities)
+		for (final E entity : entities)
 		{
 			// get all the value of all keys (composite key)
 			// use an index to hash the entities
 			String combinedKey = "";
 
 			// extract its key values and put in map
-			Map<String, Object> keyValues = new LinkedHashMap<String, Object>();
+			final Map<String, Object> keyValues = new LinkedHashMap<String, Object>();
 			boolean incompleteKey = true;
 
 			// note: we can expect null values in composite keys but need at
 			// least one key value.
-			for (String key : keyNames)
+			for (final String key : keyNames)
 			{
 				// create a hash that concats all key values into one string
 				combinedKey += ";"
@@ -338,7 +348,10 @@ public abstract class AbstractDatabase implements Database
 				}
 			}
 			// check if we have missing key
-			if (incompleteKey) keysMissing = true;
+			if (incompleteKey)
+			{
+				keysMissing = true;
+			}
 
 			// add the keys to the index, if exists
 			if (!keysMissing)
@@ -351,7 +364,7 @@ public abstract class AbstractDatabase implements Database
 			{
 				if ((dbAction.equals(DatabaseAction.ADD)
 						|| dbAction.equals(DatabaseAction.ADD_IGNORE_EXISTING) || dbAction
-							.equals(DatabaseAction.ADD_UPDATE_EXISTING))
+						.equals(DatabaseAction.ADD_UPDATE_EXISTING))
 						&& keyNames.length == 1
 						&& keyNames[0].equals(entity.getIdField()))
 				{
@@ -368,17 +381,17 @@ public abstract class AbstractDatabase implements Database
 
 		// split lists in new and existing entities, but only if keys are set
 		List<E> newEntities = entities;
-		List<E> existingEntities = new ArrayList<E>();
+		final List<E> existingEntities = new ArrayList<E>();
 		if (!keysMissing && keyIndex.size() > 0)
 		{
 			newEntities = new ArrayList<E>();
-			Query<E> q = this.query(getClassForEntity(entities.get(0)));
+			final Query<E> q = this.query(getClassForEntity(entities.get(0)));
 
 			// in case of one field key, simply query
 			if (keyNames.length == 1)
 			{
-				List<Object> values = new ArrayList<Object>();
-				for (Map<String, Object> keyValues : keyIndex)
+				final List<Object> values = new ArrayList<Object>();
+				for (final Map<String, Object> keyValues : keyIndex)
 				{
 					values.add(keyValues.get(keyNames[0]));
 				}
@@ -389,23 +402,26 @@ public abstract class AbstractDatabase implements Database
 			else
 			{
 				// very expensive!
-				for (Map<String, Object> keyValues : keyIndex)
+				for (final Map<String, Object> keyValues : keyIndex)
 				{
 					for (int i = 0; i < keyNames.length; i++)
 					{
-						if (i > 0) q.or();
+						if (i > 0)
+						{
+							q.or();
+						}
 						q.equals(keyNames[i], keyValues.get(keyNames[i]));
 					}
 				}
 			}
-			List<E> selectForUpdate = q.find();
+			final List<E> selectForUpdate = q.find();
 
 			// separate existing from new entities
-			for (E p : selectForUpdate)
+			for (final E p : selectForUpdate)
 			{
 				// reconstruct composite key so we can use the entityIndex
 				String combinedKey = "";
-				for (String key : keyNames)
+				for (final String key : keyNames)
 				{
 					combinedKey += ";" + p.get(key);
 				}
@@ -422,7 +438,7 @@ public abstract class AbstractDatabase implements Database
 		// database as is the case at this point
 		if (existingEntities.size() > 0
 				&& (dbAction == DatabaseAction.ADD_UPDATE_EXISTING
-						|| dbAction == DatabaseAction.UPDATE || dbAction == DatabaseAction.UPDATE_IGNORE_MISSING))
+				|| dbAction == DatabaseAction.UPDATE || dbAction == DatabaseAction.UPDATE_IGNORE_MISSING))
 		{
 			logger.info("existingEntities[0] before: "
 					+ existingEntities.get(0).toString());
@@ -434,8 +450,8 @@ public abstract class AbstractDatabase implements Database
 		switch (dbAction)
 		{
 
-		// will test for existing entities before add
-		// (so only add if existingEntities.size == 0).
+			// will test for existing entities before add
+			// (so only add if existingEntities.size == 0).
 			case ADD:
 				if (existingEntities.size() == 0)
 				{
@@ -450,9 +466,9 @@ public abstract class AbstractDatabase implements Database
 							+ "="
 							+ existingEntities.subList(0,
 									Math.min(5, existingEntities.size()))
-							+ (existingEntities.size() > 5 ? " and "
-									+ (existingEntities.size() - 5) + "more"
-									: "" + existingEntities));
+									+ (existingEntities.size() > 5 ? " and "
+											+ (existingEntities.size() - 5) + "more"
+											: "" + existingEntities));
 				}
 
 				// will not test for existing entities before add
@@ -532,16 +548,16 @@ public abstract class AbstractDatabase implements Database
 						"updateByName failed because of unknown dbAction "
 								+ dbAction);
 		}
-	}
+					}
 
 	public <E extends Entity> void matchByNameAndUpdateFields(
 			List<E> existingEntities, List<E> entities)
-			throws DatabaseException
-	{
+					throws DatabaseException
+					{
 		// List<E> updatedDbEntities = new ArrayList<E>();
-		for (E entityInDb : existingEntities)
+		for (final E entityInDb : existingEntities)
 		{
-			for (E newEntity : entities)
+			for (final E newEntity : entities)
 			{
 				// FIXME very wrong! this assumes every data model has 'name' as
 				// secondary key.
@@ -552,7 +568,7 @@ public abstract class AbstractDatabase implements Database
 				{
 					match = true;
 				}
-				for (String labelField : entityInDb.getLabelFields())
+				for (final String labelField : entityInDb.getLabelFields())
 				{
 					if (!entityInDb.get(labelField).equals(
 							newEntity.get(labelField)))
@@ -563,8 +579,8 @@ public abstract class AbstractDatabase implements Database
 				}
 				if (match)
 				{
-					Tuple newValues = new SimpleTuple();
-					for (String field : newEntity.getFields())
+					final Tuple newValues = new SimpleTuple();
+					for (final String field : newEntity.getFields())
 					{
 						// as they are new entities, should include 'id'
 						if (!(newEntity.get(field) == null))
@@ -580,7 +596,7 @@ public abstract class AbstractDatabase implements Database
 					{
 						entityInDb.set(newValues, false);
 					}
-					catch (Exception ex)
+					catch (final Exception ex)
 					{
 						throw new DatabaseException(ex);
 					}
@@ -588,12 +604,12 @@ public abstract class AbstractDatabase implements Database
 			}
 		}
 		// return entities;
-	}
+					}
 
 	@Override
 	public <E extends Entity> int add(E entity) throws DatabaseException
 	{
-		List<E> entities = getMapperFor(getEntityClass(entity))
+		final List<E> entities = getMapperFor(getEntityClass(entity))
 				.createList(1);
 		entities.add(entity);
 		return add(entities);
@@ -602,15 +618,15 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int add(List<E> entities)
 			throws DatabaseException
-	{
+			{
 		if (entities.size() > 0)
 		{
-			Class<E> klass = getEntityClass(entities);
+			final Class<E> klass = getEntityClass(entities);
 			return getMapperFor(klass).add(entities);
 		}
 		return 0;
-	}
-	
+			}
+
 	@Override
 	public <E extends Entity> int add(Class<E> klazz, TupleReader reader) throws DatabaseException
 	{
@@ -620,14 +636,14 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int add(Class<E> klazz, TupleReader reader,
 			TupleWriter writer) throws DatabaseException
-	{
+			{
 		return getMapperFor(klazz).add(reader, writer);
-	}
+			}
 
 	@Override
 	public <E extends Entity> int update(E entity) throws DatabaseException
 	{
-		List<E> entities = getMapperFor(getEntityClass(entity))
+		final List<E> entities = getMapperFor(getEntityClass(entity))
 				.createList(1);
 		entities.add(entity);
 		return update(entities);
@@ -636,26 +652,26 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int update(List<E> entities)
 			throws DatabaseException
-	{
+			{
 		if (entities.size() > 0)
 		{
-			Class<E> klass = getEntityClass(entities);
+			final Class<E> klass = getEntityClass(entities);
 			return getMapperFor(klass).update(entities);
 		}
 		return 0;
-	}
+			}
 
 	@Override
 	public <E extends Entity> int update(Class<E> klazz, TupleReader reader)
 			throws DatabaseException
-	{
+			{
 		return getMapperFor(klazz).update(reader);
-	}
+			}
 
 	@Override
 	public <E extends Entity> int remove(E entity) throws DatabaseException
 	{
-		List<E> entities = getMapperFor(getEntityClass(entity))
+		final List<E> entities = getMapperFor(getEntityClass(entity))
 				.createList(1);
 		entities.add(entity);
 		return remove(entities);
@@ -664,21 +680,21 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> int remove(List<E> entities)
 			throws DatabaseException
-	{
+			{
 		if (entities.size() > 0)
 		{
-			Class<E> klass = getEntityClass(entities);
+			final Class<E> klass = getEntityClass(entities);
 			return getMapperFor(klass).remove(entities);
 		}
 		return 0;
-	}
+			}
 
 	@Override
 	public <E extends Entity> int remove(Class<E> klazz, TupleReader reader)
 			throws DatabaseException
-	{
+			{
 		return getMapperFor(klazz).remove(reader);
-	}
+			}
 
 	/**
 	 * Assign a mapper for a certain class.
@@ -699,18 +715,24 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> Mapper<E> getMapperFor(Class<E> klazz)
 			throws DatabaseException
-	{
+			{
 		// transform to generic exception
 		@SuppressWarnings("unchecked")
 		Mapper<E> mapper = (Mapper<E>) mappers.get(klazz.getName());
 		if (mapper == null)
 		{
+			mapper = (Mapper<E>) mappers.get(klazz.getSuperclass().getName());
+			if(mapper != null)
+			{
+				return mapper;
+			}
+
 			throw new DatabaseException(
 					"getMapperFor failed because no mapper available for "
 							+ klazz.getName());
 		}
 		return mapper;
-	}
+			}
 
 	/**
 	 * Find the mapper from this.mappers
@@ -723,9 +745,10 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> Mapper<E> getMapper(String name)
 			throws DatabaseException
-	{
+			{
 		// transform to generic exception
 		@SuppressWarnings("unchecked")
+		final
 		Mapper<E> mapper = (Mapper<E>) mappers.get(name);
 		if (mapper == null)
 		{
@@ -734,12 +757,12 @@ public abstract class AbstractDatabase implements Database
 							+ name);
 		}
 		return mapper;
-	}
+			}
 
 	@Override
 	public List<String> getEntityNames()
 	{
-		List<String> entities = new ArrayList<String>();
+		final List<String> entities = new ArrayList<String>();
 		entities.addAll(mappers.keySet());
 		return entities;
 	}
@@ -747,9 +770,9 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> List<E> toList(Class<E> klazz,
 			TupleReader reader, int limit) throws DatabaseException
-	{
+			{
 		return getMapperFor(klazz).toList(reader, limit);
-	}
+			}
 
 	@SuppressWarnings("unchecked")
 	protected <E extends Entity> Class<E> getClassForEntity(E entity)
@@ -760,9 +783,9 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public <E extends Entity> String createFindSql(Class<E> entityClass,
 			QueryRule... rules) throws DatabaseException
-	{
+			{
 		return getMapperFor(entityClass).createFindSqlInclRules(rules);
-	}
+			}
 
 	@Override
 	public File getFilesource()
@@ -770,11 +793,13 @@ public abstract class AbstractDatabase implements Database
 		return fileSource;
 	}
 
+	@Override
 	public Login getLogin()
 	{
 		return login;
 	}
 
+	@Override
 	public void setLogin(Login login)
 	{
 		this.login = login;
@@ -784,15 +809,15 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public List<Class<? extends Entity>> getEntityClasses()
 	{
-		List<Class<? extends Entity>> classes = new ArrayList<Class<? extends Entity>>();
+		final List<Class<? extends Entity>> classes = new ArrayList<Class<? extends Entity>>();
 		try
 		{
-			for (String klazz : this.getEntityNames())
+			for (final String klazz : this.getEntityNames())
 			{
 				classes.add((Class<? extends Entity>) Class.forName(klazz));
 			}
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -802,7 +827,7 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public Class<? extends Entity> getClassForName(String simpleName)
 	{
-		for (Class<? extends Entity> c : getEntityClasses())
+		for (final Class<? extends Entity> c : getEntityClasses())
 		{
 			if (c.getSimpleName().equalsIgnoreCase(simpleName))
 			{
@@ -820,16 +845,16 @@ public abstract class AbstractDatabase implements Database
 	@Override
 	public List<Tuple> sql(String sql, QueryRule... rules)
 			throws DatabaseException
-	{
+			{
 		ResultSet rs;
 		try
 		{
-			String allSql = sql
+			final String allSql = sql
 					+ (rules.length > 0 ? JDBCQueryGernatorUtil.createWhereSql(
 							null, false, true, rules) : "");
 			rs = executeQuery(allSql);
 			// transform result set in entity list
-			List<Tuple> tuples = new ArrayList<Tuple>();
+			final List<Tuple> tuples = new ArrayList<Tuple>();
 			if (rs != null)
 			{
 				while (rs.next())
@@ -843,23 +868,24 @@ public abstract class AbstractDatabase implements Database
 					+ " objects found");
 			return tuples;
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			throw new DatabaseException(e);
 		}
-	}
+			}
 
 	@Override
 	public <E extends Entity> List<E> search(Class<E> entityClass,
 			String searchString) throws DatabaseException
-	{
+			{
 		return find(entityClass, new QueryRule(Operator.SEARCH, searchString));
-	}
-	
+			}
+
+	@Override
 	public <E extends Entity> List<? extends Entity> load(Class<E> superClass, List<E> entities) throws DatabaseException
 	{
-		List<E> result = new ArrayList<E>();
-		for(E e : entities)
+		final List<E> result = new ArrayList<E>();
+		for(final E e : entities)
 		{
 			if(e.get(Field.TYPE_FIELD).equals(superClass.getSimpleName()))
 			{
@@ -870,8 +896,9 @@ public abstract class AbstractDatabase implements Database
 			{
 				//Entity is of subclass type, requery and add to results
 				@SuppressWarnings("unchecked")
+				final
 				Class<E> klazz = (Class<E>) this.getClassForName(e.get(Field.TYPE_FIELD).toString());
-				E r = this.findById(klazz, e.get(e.getIdField()));
+				final E r = this.findById(klazz, e.get(e.getIdField()));
 				result.add(r);
 			}
 			else
@@ -882,22 +909,30 @@ public abstract class AbstractDatabase implements Database
 		}
 		return result;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E extends Entity> Class<E> getEntityClass(E entity)
 	{
-		if(entity != null) return (Class<E>) entity.getClass();
+
+
+		if(entity != null)
+		{
+			return (Class<E>) entity.getClass();
+		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E extends Entity> Class<E> getEntityClass(List<E> entities)
 	{
-		for(E e: entities)
+		for(final E e: entities)
 		{
-			if(e != null) return (Class<E>) e.getClass();
+			if(e != null)
+			{
+				return (Class<E>) e.getClass();
+			}
 		}
 		return null;
 	}
