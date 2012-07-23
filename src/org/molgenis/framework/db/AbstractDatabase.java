@@ -2,7 +2,6 @@ package org.molgenis.framework.db;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.db.jdbc.JDBCQueryGernatorUtil;
@@ -22,7 +22,6 @@ import org.molgenis.framework.security.SimpleLogin;
 import org.molgenis.model.elements.Field;
 import org.molgenis.model.elements.Model;
 import org.molgenis.util.Entity;
-import org.molgenis.util.ResultSetTuple;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleReader;
@@ -186,52 +185,6 @@ public abstract class AbstractDatabase implements Database
 	}
 
 	/**
-	 * Executes a JDBC query and returns the resultset.
-	 * 
-	 * comments: This function doesn't work correctly, the connection and
-	 * ResultSet are not closed! This is responsibility of user but the user is
-	 * not able to obtain the Resultset or Connection (is connection reused with
-	 * open statement?)!
-	 * 
-	 * @param sql
-	 * @param rules
-	 * @throws SQLException
-	 * @throws DatabaseException
-	 */
-	@Deprecated
-	// see comments
-	public ResultSet executeQuery(String sql, QueryRule... rules) throws DatabaseException
-	{
-		Connection con = getConnection();
-		Statement stmt = null;
-		try
-		{
-			stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-			DatabaseMetaData dbmd = con.getMetaData();
-			if (dbmd.getDatabaseProductName().toLowerCase().contains("mysql"))
-			{
-				stmt.setFetchSize(Integer.MIN_VALUE); // trigger streaming of
-			}
-			String allSql = sql;
-			if (rules != null && rules.length > 0) allSql += JDBCQueryGernatorUtil.createWhereSql(null, false, true,
-					rules);
-			ResultSet rs = stmt.executeQuery(allSql);
-			logger.debug("executeQuery: " + allSql);
-			return rs;
-		}
-		catch (NullPointerException npe)
-		{
-			logger.error("executeQuery() failed with " + npe + " on sql: " + sql + "\ncause: " + npe.getCause());
-			throw new DatabaseException(npe);
-		}
-		catch (SQLException sqle)
-		{
-			logger.error("executeQuery(" + sql + ")" + sqle);
-			throw new DatabaseException(sqle);
-		}
-	}
-
-	/**
 	 * Only use when really needed!
 	 * 
 	 * @throws DatabaseException
@@ -241,9 +194,10 @@ public abstract class AbstractDatabase implements Database
 	public void executeUpdate(String sql) throws DatabaseException
 	{
 		Connection con = getConnection();
+		Statement stmt = null;
 		try
 		{
-			Statement stmt = con.createStatement();
+			stmt = con.createStatement();
 			stmt.executeUpdate(sql);
 			stmt.close();
 		}
@@ -255,7 +209,7 @@ public abstract class AbstractDatabase implements Database
 		{
 			try
 			{
-				con.close();
+				if (stmt != null) stmt.close();
 			}
 			catch (SQLException e)
 			{
@@ -768,24 +722,64 @@ public abstract class AbstractDatabase implements Database
 	 * @throws DatabaseException
 	 */
 	@Override
-	public List<Tuple> sql(String sql, QueryRule... rules) throws DatabaseException
+	public synchronized List<Tuple> sql(String sql, QueryRule... rules) throws DatabaseException
 	{
 		ResultSet rs = null;
+		Statement stmt = null;
 		try
 		{
 			String allSql = sql
 					+ (rules.length > 0 ? JDBCQueryGernatorUtil.createWhereSql(null, false, true, rules) : "");
-			rs = executeQuery(allSql);
+
+			logger.info("executeQuery: " + allSql);
+			Connection con = getConnection();
+			stmt = con.createStatement();
+			// DatabaseMetaData dbmd = con.getMetaData();
+			// // if
+			// (dbmd.getDatabaseProductName().toLowerCase().contains("mysql"))
+			// // {
+			// // // stmt.setFetchSize(Integer.MIN_VALUE); // trigger streaming
+			// of
+			// // }
+
+			if (stmt == null) throw new Exception("statement is null???");
+			if (allSql == null) throw new Exception("allSql is null???");
+			rs = stmt.executeQuery(allSql);
+
+			// get field types
+			java.sql.ResultSetMetaData metadata = rs.getMetaData();
+			int colcount = metadata.getColumnCount();
+
+			List<Field> fieldTypes = new ArrayList<Field>();
+			for (int i = 1; i <= colcount; i++)
+			{
+				if (metadata.getColumnName(i) == null)
+				{
+					System.out.println("column name for column " + i + " unknown,sql=" + sql);
+				}
+				Field f = new Field(metadata.getColumnLabel(i));
+				f.setType(MolgenisFieldTypes.getTypeBySqlTypesCode(metadata.getColumnType(i)));
+				fieldTypes.add(f);
+			}
+
 			// transform result set in entity list
 			List<Tuple> tuples = new ArrayList<Tuple>();
 			if (rs != null)
 			{
 				while (rs.next())
 				{
-					tuples.add(new SimpleTuple(new ResultSetTuple(rs)));
+					SimpleTuple t = new SimpleTuple();
+					for (int i = 1; i <= colcount; i++)
+					{
+						t.set(rs.getMetaData().getColumnLabel(i), rs.getObject(i));
+					}
+					tuples.add(t);
 				}
 			}
 			rs.close();
+			rs = null;
+			stmt.close();
+			stmt = null;
 
 			logger.info("sql(" + allSql + ")" + tuples.size() + " objects found");
 			return tuples;
@@ -802,9 +796,18 @@ public abstract class AbstractDatabase implements Database
 			}
 			catch (SQLException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			if (stmt != null) try
+			{
+				stmt.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+			rs = null;
+			stmt = null;
 		}
 	}
 

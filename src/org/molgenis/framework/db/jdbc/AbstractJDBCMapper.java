@@ -23,7 +23,7 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.Entity;
-import org.molgenis.util.ResultSetTuple;
+import org.molgenis.util.Tuple;
 import org.molgenis.util.TupleWriter;
 
 /**
@@ -48,7 +48,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 		try
 		{
 			// streaming result!!!!
-			ResultSetTuple rs = new ResultSetTuple(executeSelect(rules));
+			List<Tuple> rsList = executeSelect(rules);
 
 			/*
 			 * logger.debug("executeSelect(rules)"); for(QueryRule q : rules){
@@ -63,7 +63,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 			writer.writeHeader();
 			int i = 0;
 			List<E> entityBatch = new ArrayList<E>();
-			while (rs.next())
+			for (Tuple rs : rsList)
 			{
 				entity = create();
 				entity.set(rs);
@@ -81,7 +81,6 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 				writer.writeRow(e);
 			}
 			entityBatch.clear();
-			rs.close();
 			writer.close();
 
 			logger.debug("find(" + create().getClass().getSimpleName() + ", TupleWriter, " + Arrays.asList(rules)
@@ -90,10 +89,6 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 		catch (Exception e)
 		{
 			throw new DatabaseException(e);
-		}
-		finally
-		{
-			((JDBCDatabase) getDatabase()).closeConnection();
 		}
 	}
 
@@ -203,42 +198,30 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 		{
 			String sql = createCountSql(rules) + createWhereSql(false, true, this.rewriteRules(getDatabase(), rules));
 			// + createWhereSql(getMapperFor(klazz), false, true, rules);
-			ResultSet rs = getDatabase().executeQuery(sql);
-			rs.next();
-			int result = rs.getInt("num_rows");
+			List<Tuple> rsList = getDatabase().sql(sql);
+			int result = rsList.get(0).getInt("num_rows");
 			logger.debug("counted " + result + " " + this.create().getClass().getSimpleName() + " objects");
-			rs.close();
 			return result;
 		}
-		catch (SQLException sqle)
+		catch (Exception e)
 		{
-			logger.error("count of " + this.create().getClass().getSimpleName() + "failed: " + sqle.getMessage());
-			throw new DatabaseException(sqle);
-		}
-		finally
-		{
-			((JDBCDatabase) getDatabase()).closeConnection();
+			throw new DatabaseException(e);
 		}
 	}
 
 	public List<E> find(QueryRule... rules) throws DatabaseException
 	{
-		ResultSet rs = null;
 		try
 		{
-			rs = executeSelect(rules);
+			List<Tuple> rsList = executeSelect(rules);
 			// transform result set in entity list
 			List<E> entities = createList(10);
-			if (rs != null)
+			for (Tuple rs : rsList)
 			{
-				while (rs.next())
-				{
-					E entity = create();
-					entity.set(new ResultSetTuple(rs));
-					entities.add(entity);
-				}
+				E entity = create();
+				entity.set(rs);
+				entities.add(entity);
 			}
-			rs.close();
 
 			// load mrefs
 			mapMrefs(entities);
@@ -250,18 +233,6 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 		{
 			e.printStackTrace();
 			throw new DatabaseException(e);
-		}
-		finally
-		{
-			if (rs != null) try
-			{
-				rs.close();
-			}
-			catch (SQLException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -275,7 +246,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 	 * @throws DatabaseException
 	 * @throws SQLException
 	 */
-	public ResultSet executeSelect(QueryRule... rules) throws DatabaseException, SQLException
+	private List<Tuple> executeSelect(QueryRule... rules) throws DatabaseException, SQLException
 	{
 		String sql = createFindSqlInclRules(rules);
 		if (rules != null)
@@ -293,7 +264,7 @@ public abstract class AbstractJDBCMapper<E extends Entity> extends AbstractMappe
 		}
 		// execute the query
 		// logger.info("TEST\n"+sql);
-		return getDatabase().executeQuery(sql);
+		return getDatabase().sql(sql);
 	}
 
 	/**
