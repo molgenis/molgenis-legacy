@@ -1,10 +1,10 @@
 #
 # =====================================================
-# $Id$
-# $URL$
-# $LastChangedDate$
-# $LastChangedRevision$
-# $LastChangedBy$
+# $Id: ConcordanceCheck.ftl 12159 2012-06-13 10:56:41Z freerkvandijk $
+# $URL: http://www.molgenis.org/svn/molgenis_apps/trunk/modules/compute/protocols/ConcordanceCheck.ftl $
+# $LastChangedDate: 2012-06-13 12:56:41 +0200 (Wed, 13 Jun 2012) $
+# $LastChangedRevision: 12159 $
+# $LastChangedBy: freerkvandijk $
 # =====================================================
 #
 
@@ -41,7 +41,6 @@ then
 	echo "[1] NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA" >> ${sampleconcordancefile} 
 else
 	##Set R library path
-	export R_HOME=${R_HOME}
 	export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
 	export R_LIBS=${R_LIBS}
 	
@@ -74,6 +73,10 @@ else
 	##Rename plink.vcf to sample.vcf
 	mv ${sample}.concordance.vcf ${sample}.genotypeArray.vcf
 	
+	##Replace chr23 and 24 with X and Y
+    perl -pi -e 's/^23/X/' ${sample}.genotypeArray.vcf
+    perl -pi -e 's/^24/Y/' ${sample}.genotypeArray.vcf
+	
 	##Remove family ID from sample in header genotype VCF
 	perl -pi -e 's/1_${externalSampleID}/${externalSampleID}/' ${sample}.genotypeArray.vcf
 	
@@ -90,7 +93,7 @@ else
 	#Check build of arraydata by taking rs10001565 and checking the position on chr1
 	position=`awk '$3 == "rs10001565" {print $2}' ${sample}.genotypeArray.vcf`
 	
-	if [ $position -eq "15331671" ]
+	if [ ! -z $position ] && [ $position == 15331671 ]
 	then # File is on build36
 	
 		##Align vcf to reference AND DO NOT FLIP STRANDS!!! (genotype data is already in forward-forward format) If flipping is needed use "-f" command before sample.genotype_array.vcf

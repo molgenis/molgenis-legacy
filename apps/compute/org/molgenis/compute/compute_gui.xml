@@ -4,22 +4,6 @@
 <molgenis name="compute" label="Compute Testing">
 	<plugin name="MolgenisHeader" type="org.molgenis.compute.ui.ComputeHeader" />
 	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
-		<!-- <menu name="Targets"> <form name="Individuals" entity="Individual" /> compact_view="Name" <form name="Panels" entity="Panel" /> <form name="Samples" entity="Sample" /> <form name="Lanes" entity="Lane" 
-			/> </menu> -->
-		<!-- menu name="NGS">
-			<form name="Investigations" label="Projects, Samples" entity="Investigation">
-				<menu name="InvestigationsMenu">
-					<form name="Samples" entity="NgsSample" />
-					<form name="Trios" entity="Trio" />
-				</menu>
-			</form>
-			<form name="Flowcells" entity="Flowcell" label="Flowcell, Lanes" hide_fields="Investigation,ontologyReference">
-				<form name="Lanes" entity="LibraryLane" hide_fields="Investigation,ontologyReference" />
-			</form>
-			<form name="Worksheet" label="Analysis Worksheet" entity="Worksheet" commands="org.molgenis.compute.ui.WorksheetBatchCommand">
-				<plugin name="Button" type="org.molgenis.compute.ui.StartNgs" />
-			</form>
-		</menu-->
 		<menu name="Compute">
 			<form name="ComputeParameters" hide_fields="id,Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation,temporal" entity="ComputeParameter" viewtype="list" />
 			<form name="ComputeProtocols" entity="ComputeProtocol" hide_fields="Investigation,ontologyReference,ProtocolType,Features,TargetFilter" viewtype="record">
@@ -43,29 +27,12 @@
 			<plugin name="console" label="Monitor Runs" type="org.molgenis.compute.ui.ConsolePlugin" />
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Upload pipelines" />
 		</menu>
-		<menu name="Admin">
-			label="View value matrix" />
-			<!-- 
-			<form name="LibraryBarcodes" entity="LibraryBarcode" />
-			<form name="LibraryCapturings" entity="LibraryCapturing" />
-			<form name="AllElement" entity="WorkflowElement" viewtype="list" />
-			<form name="AllMeasurements" entity="Measurement" viewtype="list" />
-			<form name="AllObservedValues" entity="ObservedValue" viewtype="list" />
-			<form name="Persons" entity="Person" />
-			<form name="Institutes" entity="Institute" />
-			<form name="OntologyTerms" entity="OntologyTerm" />
-			<plugin label="Upgrade person to user" name="UserToPersonPlugin" type="org.molgenis.auth.service.persontouser.PersonToUser" />
-			<form name="Machines" entity="Machine"/>
-			 -->
+		<menu name="JobManager">
+			<plugin name="JobHostTester" type="org.molgenis.compute.ui.JobHostTester" description="lists jobs; can create new or cancel/delete existing."/>
+		
 		</menu>
 		<menu name="Pbs">
 			<plugin name="QSTAT" type="org.molgenis.compute.ui.QstatPlugin" />
-		</menu>
-		<menu name="TestingR">
-			<plugin name="TestR" type="org.molgenis.compute.ui.TestR" />
-		</menu>
-		<menu name="RunOnGrid">
-			<plugin name="HelloGridWorld" type="org.molgenis.compute.ui.HelloGridWorld" />
 		</menu>
 	</menu>
 </molgenis>

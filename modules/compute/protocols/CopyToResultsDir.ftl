@@ -1,15 +1,15 @@
 #
 # =====================================================
-# $Id$
-# $URL$
-# $LastChangedDate$
-# $LastChangedRevision$
-# $LastChangedBy$
+# $Id: CopyToResultsDir.ftl 12202 2012-06-15 09:10:27Z freerkvandijk $
+# $URL: http://www.molgenis.org/svn/molgenis_apps/trunk/modules/compute/protocols/CopyToResultsDir.ftl $
+# $LastChangedDate: 2012-06-15 11:10:27 +0200 (Fri, 15 Jun 2012) $
+# $LastChangedRevision: 12202 $
+# $LastChangedBy: freerkvandijk $
 # =====================================================
 #
 
 #MOLGENIS walltime=23:59:00
-#FOREACH project,seqType
+#FOREACH project
 
 
 alloutputsexist "${projectResultsDir}/${project}.zip"
@@ -48,11 +48,12 @@ cp ${intermediatedir}/*_fastqc.zip ${projectResultsDir}/qc
 
 
 # Copy dedup metrics to results directory
-cp ${dedupmetrics} ${projectResultsDir}/qc/statistics
+cp ${intermediatedir}/*.dedup.metrics ${projectResultsDir}/qc/statistics
 
-# Copy merged BAM plus index to results directory
-cp ${mergedbam} ${projectResultsDir}/alignment
-cp ${mergedbamindex} ${projectResultsDir}/alignment
+# Copy merged BAM plus index to results directory and create md5 sum
+md5sum ${mergedbam} > ${mergedbam}.md5
+md5sum ${mergedbamindex} > ${mergedbamindex}.md5
+cp ${mergedbam}* ${projectResultsDir}/alignment
 
 
 # Copy alignment stats (lane and sample) to results directory
@@ -74,17 +75,22 @@ cp ${intermediatedir}/*.coverage* ${projectResultsDir}/coverage
 
 # Copy final vcf and vcf.table to results directory
 
-cp ${snpsfinalvcf} ${projectResultsDir}/snps
-cp ${snpsfinalvcftable} ${projectResultsDir}/snps
+<#list sample as s>
+
+	cp ${s}.snps.final.vcf ${projectResultsDir}/snps
+	cp ${s}.snps.final.vcf.table ${projectResultsDir}/snps
 
 
-# Copy genotype array vcf to results directory
+	# Copy genotype array vcf to results directory
 
-if [ -f "${sample}.genotypeArray.updated.header.vcf" ]
-then
-	cp ${sample}.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
-fi
-cp ${sampleconcordancefile} ${projectResultsDir}/qc
+	if [ -f "${s}.genotypeArray.updated.header.vcf" ]
+	then
+		cp ${s}.genotypeArray.updated.header.vcf ${projectResultsDir}/qc
+	fi
+
+	cp ${s}.concordance.ngsVSarray.txt ${projectResultsDir}/qc
+
+</#list>
 
 # Copy QC report to results directory
 

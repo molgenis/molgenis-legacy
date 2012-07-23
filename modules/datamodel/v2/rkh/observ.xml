@@ -1,0 +1,430 @@
+<molgenis name="org.molgenis">
+	<module name="observ">
+		<description>
+			Observ-OM is a model to uniformly describe any phenotypic, genotypic
+			or
+			molecular observation. The five core concepts are:
+			<ul>
+				<li>
+					<b>ObservationTarget:</b>
+					the object we are observing.
+					<br />
+					For example: an Individual,
+					a Panel/Strain, a Sample, a Gene, a
+					Marker.
+				</li>
+				<li>
+					<b>ObservableFeature:</b>
+					the question asked or characteristic being
+					oberveded.
+					<br />
+					For example: 'What is height of [Target]?', 'What is genotype of
+					[Target] at
+					[Marker]?', 'Has [Target] ever used medicine [X]', 'What
+					is QTL p-value
+					association of [Marker] with [Gene Expression]?
+				</li>
+				<li>
+					<b>Protocol:</b>
+					the procedure of observation
+					<br />
+					For example: Food Frequency Questionnaire (FFQ), R/QTL mapping
+					method,
+					Genotype array, GWAS protocol.
+				</li>
+				<li>
+					<b>ProtocolApplication:</b>
+					the actual act of observation. For example:
+					'FFQ asked to
+					[Individual:individual1], 'R/QTL applied to
+					[Marker:pvv4]',
+					'Genotype array applied to [Panel:Mouse RIL BxD 1]
+				</li>
+				<li>
+					<b>ObservedValue:</b>
+					the values for each feature observed, grouped per
+					ProtocolApplication(and thereby target)
+				</li>
+			</ul>
+		</description>
+
+
+		<entity name="ObservableFeature" implements="Identifiable">
+			<description>
+				ObservableFeature defines anything that can be observed
+				in a
+				phenotypic Investigation.
+				<p />
+				In other words, ObservableFeature are the
+				questions asked, e.g. 'What
+				is Height?', 'What is Systolic blood
+				pressure?', or 'Has blue eyes?'.
+				<p />
+				Some questions may
+				be repeated for multiple characteristics. For
+				example 'What is [MarkerAllele]
+				observed?' can be applied to all
+				elements of a Marker set, and 'What
+				is [medicin codes] uses' can be
+				applied to a set of Medicine codes. This can be specified using the
+				measuredCharacteristic field. (Discussion: how exactly?)
+				<p />
+				The identifier of ObservableFeature is
+				unique
+				. It is recommended that
+				each
+				ObservableFeature is named
+				according to a well-defined ontology
+				term
+				which can be specified via
+				ontologyReference. The
+				ObservableFeature
+				class maps to XGAP:Trait,
+				METABASE:Question,
+				FuGE:DimensionElement,
+				and PaGE:ObservableFeature.
+				Multi-value
+				features can be grouped by
+				Protocol. For instance: high
+				blood pressure
+				can be inferred from
+				observations for features
+				systolic and diastolic
+				blood pressure.
+				There may be many alternative
+				protocols to measure a
+				feature. See
+				Protocol section.
+			</description>
+			<field name="unit" type="xref" xref_entity="OntologyTerm"
+				nillable="true"
+				description="(Optional) Reference to the well-defined measurement unit used to observe this feature 
+					(if feature is that concrete). E.g. mmHg" />
+			<field name="dataType" type="enum" default="string"
+				enum_options="[xref,string,nominal,ordinal,date,datetime,int,code,image,decimal,bool,file,log,data,exe]"
+				description="(Optional) Reference to the technical data type. E.g. 'int'" />
+			<!-- field name="observedCharacteristic" nillable="true" type="xref" xref_entity="Characteristic"
+				description="This can be used to parameterize what property is being observed. analyte/feature &amp; property being tested. E.g. 'Has' Alzheimes 
+				disease state, 'What is' NaCl concentration, 'What is allele at' Marker (a Marker is a characteristic)" /-->
+			<!-- nb: we don't want to create new ObservableFeature for 1000s of Markers. 
+				Instead we just want to say: Observes [Marker] with Marker being variable. -->
+			<field name="temporal" type="boolean" default="false"
+				description="Whether this feature is time dependent and can have different values when measured 
+					on different times (e.g. weight, temporal=true) or generally only measured once (e.g. birth date, 
+					temporal=false) " />
+			<field name="description" type="text" nillable="true"
+				description="(Optional) Rudimentary meta data about the observable feature. Use of ontology 
+					terms references to establish unambigious descriptions is recommended" />
+			<unique fields="identifier" description="" />
+			<!-- todo alternative accessions -->
+
+			<!-- todo: link ontology annotations -->
+		</entity>
+
+		<entity name="PermittedValue" implements="Autoid">
+			<description>PermittedValue is partOf ObservableFeature to define
+				permitted values for an
+				ObservableFeature, such as the categorical
+				answer codes that are
+				often used in Questionaires. For example the
+				Measurement 'sex' has
+				{code_string = 1, label=male} and {code_string
+				= 2, label=female}.
+				PermittedValue can be linked to well-defined
+				ontology terms via the
+				ontologyReference. Category
+				extends
+				ObservationElement such that it
+				can be referenced by
+				ObservedValue.value.
+				The Category class maps to
+				METABASE::Category
+			</description>
+			<field name="valueForFeature" type="xref" xref_entity="ObservableFeature"
+				description="The ObservableFeature these permitted values are part of." />
+			<field name="valueCode" type="string"
+				description="The value used to store this category in ObservedValue. For example '1', '2'." />
+			<field name="valueLabel"
+				description="User 
+			friendly textual representation of this value. For example : 'male', 'female'" />
+			<field name="valueDescription" type="text"
+				description="Description of the code. 
+			Use of ontology terms references to establish unambigious descriptions is 
+			recommended" />
+			<field name="isMissing" type="bool" default="false"
+				description="whether this value should be treated as missing value." />
+			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
+				nillable="true"
+				description="(Optional) Reference to the formal ontology 
+			definition for this code." />
+			<!-- discussion: do we need multiple ontologyReferences here? -->
+		</entity>
+		<entity name="Characteristic" implements="Identifiable">
+			<description> Characteristics are yes-no
+				statements about properties
+				of an object. These can be used as part of an observation, as
+				parameter of ObservableFeature ('measuredCharacteristic'). For
+				example: 'What is allele of [Marker]', here the [Marker] is a
+				characteristic. Also, Characteristics can be used as target of
+				observation. Typical examples are 'Individual' or 'Panel'. But also
+				'Marker' can be an Target when asked the question 'QTL p-value for
+				[phenotype]': here both target and feature are characteristic, for
+				example 'leave count' (phenotype characteristic) and 'PVV4' (marker
+				characteristic).
+			</description>
+			<unique fields="identifier"
+				description="identifier is unique across all Characteristic (and its subclasses)" />
+		</entity>
+
+		<entity name="ObservationTarget" extends="Characteristic">
+			<!-- target has: identifier, description -->
+			<description> ObservationTarget defines the subjects of
+				observation.
+				For instance: 'target 1' IS A 'Individual'. The
+				ObservationTarget
+				class maps to XGAP:Subject, METABASE:Patient and
+				maps to
+				Page:Abstract_Observation_Target. The identifier of
+				observationTargets is unique.
+			</description>
+		</entity>
+
+		<entity name="Protocol" implements="Identifiable">
+			<!-- has name, identifier, description, accession, accessionVersion. Should 
+				be part of a submission -->
+			<description>
+				The Protocol class defines parameterizable descriptions of
+				(analysis)methods;
+				each protocol has a unique identifier. The usage
+				of a protocol is called 'ProtocolApplication', which is the
+				application of a protocol to one target (this typically translates
+				to a data row in a table).Examples of
+				protocols are: SOP for blood
+				pressure measurement used
+				by UK biobank,
+				or 'R/qtl' as protocol for
+				statistical analysis.
+				Protocol is a high
+				level object that represents
+				the details of
+				protocols used during the
+				investigation. Protocol has
+				an association to
+				OntologyTerm to
+				represent the type of protocol.
+				<br />
+				The FUGE equivalent to Protocol is FuGE::Protocol.
+				<br />
+				The Protocol class maps to FuGE/XGAP/MageTab Protocol, but in
+				contrast to FuGE it is not required to extend protocol before use.
+				The Protocol class also maps to METABASE:Form (note that components
+				are solved during METABASE:Visit which can be nested). Has no
+				equivalent in PaGE.
+			</description>
+			<field name="ProtocolType" nillable="true" type="xref"
+				xref_entity="OntologyTerm" description="classification of protocol" />
+			<field name="Description" type="richtext" nillable="true"
+				description="Description, or reference to a description, of the protocol" />
+			<!-- <field name="TargetType" type="string"
+				description="Filter string to find suitable targets for this protocol. Should be an xref?" />
+			<field name="Parameters" type="mref" xref_entity="ObservableFeature"
+				description="parameters (in/out) that are used or produced by this protocol." /> -->
+			<field name="Contact" type="xref" nillable="true" xref_entity="Person"
+				description="Contact person for this protocol. TODO: Check if there can be multiple contacts." />
+			<unique fields="identifier" />
+		</entity>
+
+		<entity name="ProtocolApplication" implements="Autoid">
+			<description>
+				A ProtocolApplication class defines the actual action of observation
+				using a protocol. For example: the
+				action of blood pressure
+				measurement on 1000
+				individuals, using a
+				particular protocol,
+				resulting in 1000
+				associated observed values. Optionally,
+				protocolApplication can be grouped into a DataSet (which can in turn
+				be part of an Experiment).
+				<br />
+				The ProtocolApplication class maps to FuGE/XGAP ProtocolApplication,
+				but in FuGE ProtocolApplications can take Material or Data (or both)
+				as input and produce Material or Data (or both) as output. Similar
+				to PaGE.ObservationMethod. Maps to METABASE:Visit (also note that
+				METABASE:PlannedVisit allows for planning of protocol applications;
+				this is outside scope for this model?).
+			</description>
+			<field name="Target" type="xref" xref_entity="ObservationTarget"
+				description="References the ObservationTarget that was observed using this protocol. For example 'individual1'. In a correlation matrix this could be also a characteristic such as 'probe123'." />
+			<field name="protocolUsed" type="xref" xref_entity="Protocol"
+				nillable="true" description="Reference to the protocol that is being used." />
+			<field auto="true" name="startTime" type="datetime"
+				description="time when the protocol started." />
+			<field auto="true" name="endTime" type="datetime" nillable="true"
+				description="(Optional) time when the protocol ended." />
+			<field name="partOfDataSet" type="xref" xref_entity="DataSet"
+				nillable="true" description="(Optional) DataSet this data is part of." />
+			<field name="Performers" type="mref" xref_entity="Person"
+				nillable="true" description="(Optional)Persons involved in this protocol" />
+			<!-- do we need also to keep track of their roles??? -->
+		</entity>
+		<entity name="Observation" abstract="true">
+			<description>
+				Generic model for observations, that is, the observed value on a
+				feature-target pair given a protocol. See the 'data' package for all
+				kinds of observations. Typically, this data is visualized in a
+				spreadsheet format having rows (targets) and columns (features). Use
+				cases that need support are:
+				<ul>
+					<li>Simple text/int values, e.g. 'length in cm (row;
+						observableFeature) of individual1 (col; observationTarget) = 179
+						(value). These can be stored in subclass 'ObservedValue'
+					</li>
+					<li>Relationship values, e.g. 'individual 1(row:observationtarget)
+						and individual2 (col:observationtarget) = brothers
+						(value:observabvlefeature). These can be stored in subclass
+						'ObservedValue'
+					</li>
+					<li>Categoryd values, e.g. 'invidual 1 (row) and feature 'sex'
+						(col) = 'male' (value; reference to code or ontology. These can be
+						stored in subclass 'ObservedValue'
+					</li>
+					<li>Data file values, e.g., 'aligned.bam' or 'plink imputed'
+						(feature). These can be stored in subclass DataFile
+					</li>
+					<li>Data matrices, e.g. 'qtlProfile' (feature) for 'bxd panel'
+						(target). These can be stored in subclass ObservedData
+					</li>
+					<li>Measurements are typically grouped by the protocol used,
+						therefore a link to protocol application is added.
+					</li>
+				</ul>
+				Implementation wise, the data may or may not be stored in the
+				database directly. This is an optimization strategy independent of
+				this generic structure. This structure is born out of the merger of
+				Pheno-OM, XGAP and MAGE-TAB.<!-- The original documentation: <br /> Generic 
+					data structure for aiming the values of a data set as described in Data. 
+					Each DataElement describes a cell in a data matrix of rows (from) and columns 
+					(to), e.g., in "dataset X" it was measured that geneX (col) relates to geneZ 
+					(row). <br /> MAGE-TAB 1.1. has the column ArrayDataMatrix and DerivedArrayDataMatrix. 
+					The formats of both types are tab-delimited and the distinction is that an 
+					ArrayDataMatrix is raw data and the DerivedArrayDataMatrix is processed data. 
+					The DerivedArrayDataMatrix associates a file of a specific format - see the 
+					MAGE-TAB specification for details. In order to index the Rows and Columns 
+					of DataMatrix we have generated a DimensionElement that allows us to index 
+					DimensionRow and DimensionColumn. -->
+			</description>
+			<field name="id" type="autoid" hidden="true" />
+			<field name="protocolApplication" type="xref" xref_entity="ProtocolApplication"
+				jpaCascade="CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH"
+				description="Reference to the protocol application that was used to produce this observation. For example a particular patient visit or the application of a microarray or the calculation of a QTL model" />
+			<field name="Feature" type="xref" xref_entity="ObservableFeature"
+				description="References the ObservableFeature that this observation was made on. For example 'probe123'." />
+			<field nillable="true" name="characteristic" type="xref"
+				xref_entity="Characteristic"
+				description="(Optional: If protocol.observedCharacteristic != null). For example 
+				to a 'Is brother of [charaacteristic]'" />
+			<!-- note: target has been moved to ProtocolApplication as they are the 
+				same for all -->
+
+		</entity>
+		<entity name="ObservedValue" implements="Observation">
+			<description>
+				Generic storage of values. Values can be atomatic observations,
+				e.g., length (feature) of individual 1 (protocolApplication.target)
+				= 179cm (value).
+				Values can also be qualified by some characteristic,
+				e.g., QTL p-value (feature)
+				between phenotype 'leaf count'
+				(characteristic) and marker 'PVV4'
+				(protocolApplication.target) =
+				0.1^10+3 (value).
+				<br />
+				Discussion: how to model sample pooling in this model?
+				<br />
+				More Discussion: do we want to have type specific subclasses? No,
+				because you can solve this by casting during querying?
+			</description>
+			<field nillable="true" name="value" description="The value observed" />
+			>
+		</entity>
+
+		<entity name="FeatureAnnotation">
+			<description>Enable the adding of annotations to a feature and
+				indicate if the annotation
+				is perfect description
+			</description>
+			<field name="id" type="autoid" />
+			<field name="Feature" type="xref" xref_entity="ObservableFeature" />
+			<field name="OntologyTerm" type="xref" xref_entity="OntologyTerm" />
+			<field name="ExactMatch" type="bool" />
+		</entity>
+	</module>
+	<module name="observ.target">
+		<entity name="Species" extends="OntologyTerm">
+			<description>Ontology terms for species. E.g. Arabidopsis thaliana.
+				DISCUSSION: should we avoid subclasses of OntologyTerm and instead
+				make a 'tag' filter on terms so we can make pulldowns context
+				dependent (e.g. to only show particular subqueries of ontologies).
+			</description>
+		</entity>
+		<entity name="Individual" extends="ObservationTarget">
+			<description> The Individuals class defines the subjects that are
+				used
+				as observation target. The Individual class maps to
+				XGAP:Individual
+				and PaGE:Individual. Groups of individuals can be
+				defined via
+				Panel.
+			</description>
+			<field name="Mother" type="xref" nillable="true" xref_entity="Individual"
+				description="Refers to the mother of the individual." />
+			<field name="Father" type="xref" nillable="true" xref_entity="Individual"
+				description="Refers to the father of the individual." />
+		</entity>
+		<entity name="Panel" extends="ObservationTarget">
+			<!-- panel has: identifier, description, accessions -->
+			<description>The Panel class defines groups of individuals based on
+				cohort design, case/controls, families, etc. For instance:
+				'LifeLines
+				cohort', 'middle aged man', 'recombinant mouse inbred Line
+				dba x b6'
+				or 'Smith family'. A Panel can act as a single
+				ObservationTarget.
+				For example: average height (Measurement) in the
+				LifeLines cohort
+				(Panel) is 174cm (ObservedValue). The Panel class
+				maps to XGAP:Strain and PaGE:Panel
+				classes. In METABASE this is
+				assumed there is one panel per study.
+			</description>
+			<field name="PanelType" type="xref" xref_entity="OntologyTerm"
+				nillable="true"
+				description="Indicate the type of Panel (example: Sample panel, AssayedPanel, Natural=wild type, Parental=parents of a cross, F1=First generation of cross, RCC=Recombinant congenic, CSS=chromosome substitution)" />
+			<field name="NumberOfIndividuals" type="int" />
+			<field name="Species" type="xref" nillable="true" xref_entity="Species"
+				description="The species this panel is an instance of/part of/extracted from." />
+			<field name="Individuals" type="mref" xref_entity="Individual"
+				nillable="true" description="The list of individuals in this panel" />
+		</entity>
+		<entity name="PanelSource" implements="Autoid">
+			<!-- todo: this should probably be a subclass of protocolApplication? -->
+
+			<description>PanelSources is partOf Panel to define how panels are
+				related panels, founder panels,
+				such as overlap,
+				selection criteria,
+				getting assayed panel from a
+				sample panel, etc.
+			</description>
+			<field name="CurrentPanel" type="xref" xref_entity="Panel"
+				description="Panel for which these sources are defined." />
+			<field name="SourcePanel" type="xref" xref_entity="Panel"
+				description="Source that contributed individuals to current panel" />
+			<field name="NumberOfIndividuals" type="int" nillable="true"
+				description="Number of individuals lifted over from this source" />
+			<field name="SelectionCriteria" type="text"
+				description="Inclusion/exclusion criteria used to select these individuals from source into current panel" />
+		</entity>
+	</module>
+</molgenis>

@@ -12,6 +12,7 @@ generated/
 *.DS_Store
 *.swp
 *.out
+*.passwd
 
 ## Netbeans private
 nbproject/private/
@@ -37,9 +38,13 @@ log*
 /target
 logger.out*
 /dist
+<<<<<<< HEAD
 /.settings/*
 !/.settings/template*
 .project
 /WebContent/WEB-INF/lib
 /WebContent/WEB-INF/classes
 /WebContent/doc/
+=======
+/.settings/org.eclipse.wst.common.component
+>>>>>>> 0dd1e34cf8dec5282b1906b6c5fade0f7dabd6b2
