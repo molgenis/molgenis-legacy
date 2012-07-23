@@ -28,3 +28,4 @@ log*
 /.externalToolBuilders
 /.settings
 /test-output
+/target/
