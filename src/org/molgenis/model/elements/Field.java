@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.CharField;
 import org.molgenis.fieldtypes.EnumField;
@@ -140,6 +140,7 @@ public class Field implements Serializable {
     public Field(String name)
     {
     	this.name = name;
+    	this.type = new StringField();
     }
 
     
