@@ -25,7 +25,7 @@ var JQGridView = {
     
     columnPage : 0,				//current column Page
     columnPagerSize : 5,		//current columnPager size
-    columnPageEnabled : true,
+    columnPageEnabled : false,
     
     oldColNames : null,
     oldColModel : null,
@@ -114,10 +114,9 @@ var JQGridView = {
         	$(nextButton).click(function() {
         		self.columnPagerRight();
         	});
+        	$("#t_jqGridView").append(prevButton);
+        	$("#t_jqGridView").append(nextButton);
     	}
-        
-        $("#t_jqGridView").append(prevButton);
-        $("#t_jqGridView").append(nextButton);
         return grid;
 	},
 	
