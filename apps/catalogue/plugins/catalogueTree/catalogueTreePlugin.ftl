@@ -10,7 +10,6 @@
 	<input type="hidden" name="measurementId" id="measureId" value="">
 	
 	<script type="text/javascript">
-		
 		function searchInTree(){
 			
 			var inputToken = $('#InputToken').val();
@@ -34,12 +33,15 @@
 						if(name.search(new RegExp(inputToken, "gi")) != -1){
 							$(this).show();
 							$('#leftSideTree li#' + id).parents().show();
-							$('#leftSideTree li#' + id).parents().children('div').removeClass('expandable-hitarea');
-							$('#leftSideTree li#' + id).parents().children('div').addClass('collapsable-hitarea');
+							$('#leftSideTree li#' + id).parents('li').children('div').
+								removeClass('lastExpandable-hitarea expandable-hitarea').
+									addClass('collapsable-hitarea');
+							$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
 						}
 					}
 				});
 			}
+			
 			if($('#selectedField').val() == "Protocols" || $('#selectedField').val() == "All fields"){
 				
 				$('#leftSideTree li').each(function(){
@@ -53,16 +55,27 @@
 						inputToken = inputToken.replace(/_/g,' ');
 						
 						if(name.search(new RegExp(inputToken, "gi")) != -1){
+						
+							//remove the expandable Class for the element which was found by searching.
 							$(this).show();
-							$(this).children('div').removeClass('expandable-hitarea');
-							$(this).children('div').addClass('collapsable-hitarea');
+							$(this).removeClass('lastExpandable');
+							$(this).children('div').removeClass('expandable-hitarea lastExpandable-hitarea').addClass('collapsable-hitarea');
+							
+							//Remove the last expanedable class from all its parents
 							$('#leftSideTree li#' + id).parents().show();
-							$('#leftSideTree li#' + id).parents().children('div').removeClass('expandable-hitarea');
-							$('#leftSideTree li#' + id).parents().children('div').addClass('collapsable-hitarea');
+							$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+							$('#leftSideTree li#' + id).parents('li').children('div').
+								removeClass('expandable-hitarea lastExpandable-hitarea').
+									addClass('collapsable-hitarea');
+							
+							
+							//Remove the last expanedable class from all its children
 							$('#leftSideTree li#' + id).find('ul').show();
 							$('#leftSideTree li#' + id).find('li').show();
-							$('#leftSideTree li#' + id).find('div').removeClass('expandable-hitarea');
-							$('#leftSideTree li#' + id).find('div').addClass('collapsable-hitarea');
+							$('#leftSideTree li#' + id).find('li').removeClass('lastExpandable');
+							$('#leftSideTree li#' + id).find('div').removeClass('expandable-hitarea lastExpandable-hitarea').addClass('collapsable-hitarea');
+							
+							
 						}
 					}
 				});
@@ -87,30 +100,65 @@
 						if(table.search(new RegExp(inputToken, "gi")) != -1){
 							$(this).show();
 							$('#leftSideTree li#' + id).parents().show();
-							$('#leftSideTree li#' + id).parents().children('div').removeClass('expandable-hitarea');
-							$('#leftSideTree li#' + id).parents().children('div').addClass('collapsable-hitarea');
+							$('#leftSideTree li#' + id).parents('li').children('div').
+								removeClass('expandable-hitarea lastExpandable-hitarea').
+									addClass('collapsable-hitarea');
+							$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
 						}
 					}
 				});
 			}			
+			removeVerticalLine($('#browser >li').attr('id'));
 		}		
 		
 		function removeVerticalLine(id){
 			
-			if($('#' + id).css('display') != 'none' && $('#' + id).children('ul').children('li').length > 0){						
-				if($('#' + id).nextAll().length > 0 && !$('#' + id).nextAll().is(':visible')){
-					$('#' + id).css('background-image','none');
-				}			
-				$('#' + id).children('ul').children('li').each(function(){					
-					removeVerticalLine($(this).attr('id'));					
-				});
+			if($('#' + id).css('display') != 'none'){						
+				
+				//Nodes in the middle
+				if($('#' + id).children('ul').children('li').length > 0){
+					if($('#' + id).nextAll().length > 0 && !$('#' + id).nextAll().is(':visible')){
+						$('#' + id).addClass('lastCollapsable');
+						$('#' + id).children('div').addClass('lastCollapsable-hitarea');
+					}	
+					$('#' + id).children('ul').children('li').each(function(){					
+						removeVerticalLine($(this).attr('id'));					
+					});
+				}else{//Last node
+					if($('#' + id).nextAll().length > 0 && !$('#' + id).nextAll().is(':visible')){
+						$('#' + id).addClass('last');
+					}
+				}
 			}
+		}
+		
+		function addVeritcalLine(id){
+			
+			if($('#' + id).children('ul').children('li').length > 0){
+					 
+					if($('#' + id).nextAll().length > 0){
+						$('#' + id).removeClass('lastCollapsable');
+						$('#' + id).children('div').removeClass('lastCollapsable-hitarea');
+					}
+					$('#' + id).children('ul').children('li').each(function(){					
+						addVeritcalLine($(this).attr('id'));	
+					});
+					
+			}else{
+				if($('#' + id).nextAll().length > 0){
+					$('#' + id).removeClass('last');
+				}
+			}
+			
 		}
 		
 		function checkSearchingStatus(){
 			
 			if($('#InputToken').val() === ""){
+				
+				addVeritcalLine($('#browser >li').attr('id'));
 				$('#leftSideTree li').show();
+				
 			}
 		}
 		
