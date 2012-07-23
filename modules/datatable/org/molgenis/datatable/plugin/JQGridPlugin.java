@@ -65,7 +65,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		// JDBCTABLE, JOINTABLE, QUERYTABLE
 		// }
 
-		private final String backEnd = "JOINTABLE";
+		private final String backEnd = "QUERYTABLE";
 
 		@Override
 		public TupleTable create(Database db, Tuple request) throws TableException
@@ -189,38 +189,57 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		private TupleTable createQueryTable(Database db, List<String> tableNames, final List<String> columnNames)
 				throws DatabaseException
 		{
-			final Connection connection = db.getConnection();
-			final SQLTemplates dialect = new MySQLTemplates();
-			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-			final PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class, "Country");
-			final PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
-			query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
+			class QueryCountryRatioPopulation implements QueryTable.QueryCreator
+			{
+				final LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
 
-			final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(Integer.class,
-					"Population"));
-			final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(Integer.class, "Population"));
+				@Override
+				public SQLQueryImpl createQuery(final Connection connection, final SQLTemplates dialect)
+				{
+					final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-			final NumberExpression<Double> cityPopulationRatio = cityPopulation.divide(countryPopulation);
-			query.where(country.get("code").eq(city.get("countrycode")));
-			query.limit(10);
-			// query.orderBy(cityPopulationRatio.desc());
+					final PathBuilder<RelationalPath> country = new PathBuilder<RelationalPath>(RelationalPath.class,
+							"Country");
+					final PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(RelationalPath.class,
+							"City");
+					query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
 
-			// create select
-			final Field countryName = new Field("Country.Name");
-			countryName.setType(new StringField());
-			final Field cityName = new Field("City.Name");
-			cityName.setType(new StringField());
-			final Field ratio = new Field("ratio");
-			ratio.setType(new DecimalField());
+					final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(Integer.class,
+							"Population"));
+					final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(Integer.class,
+							"Population"));
 
-			final LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
-			selectMap.put("Country.Name", country.get(new StringPath("name")));
-			selectMap.put("City.Name", city.get(new StringPath("name")));
-			selectMap.put("ratio", cityPopulationRatio);
-			final List<Field> columns = Arrays.asList(countryName, cityName, ratio);
-			final QueryTable queryTable = new QueryTable(query, selectMap, columns);
-			return queryTable;
+					final NumberExpression<Double> cityPopulationRatio = cityPopulation.divide(countryPopulation);
+					query.where(country.get("code").eq(city.get("countrycode")));
+					query.limit(10);
+
+					selectMap.put("Country.Name", country.get(new StringPath("name")));
+					selectMap.put("City.Name", city.get(new StringPath("name")));
+					selectMap.put("ratio", cityPopulationRatio);
+
+					return query;
+				}
+
+				public LinkedHashMap<String, SimpleExpression<? extends Object>> getSelectMap()
+				{
+					return selectMap;
+				}
+
+				@Override
+				public List<Field> getField()
+				{
+					final Field countryName = new Field("Country.Name");
+					countryName.setType(new StringField());
+					final Field cityName = new Field("City.Name");
+					cityName.setType(new StringField());
+					final Field ratio = new Field("ratio");
+					ratio.setType(new DecimalField());
+					return Arrays.asList(countryName, cityName, ratio);
+				}
+
+			}
+			return new QueryTable(new QueryCountryRatioPopulation(), db.getConnection(), new MySQLTemplates());
 		}
 
 		private void getTableAndColumnNames(Tuple request, List<String> inTableNames, List<String> inColumnNames,
