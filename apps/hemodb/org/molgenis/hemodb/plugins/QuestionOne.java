@@ -61,8 +61,9 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 	 */
 	@Override
 	public void reload(Database db) throws Exception {	
-		selectSampleGroupsForDropdown(db);
-
+		if(getModel().getNames().isEmpty()){ // If the list with groupnames is already filled it doesn't have to be filled again
+			selectSampleGroupsForDropdown(db);
+		}
 		// also reload sub plugin
 		this.get("QuestionsSub").reload(db);
 	}
@@ -113,6 +114,7 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 			if (getModel().getAction().equals("submitInfoQ1")) {
 				System.out
 						.println("we handled the information on the site submitted via the submit button");
+				getModel().setState(QuestionState.QUESTION1_RESULT);
 
 				// get the data set
 				Data dataSet = db.query(Data.class).eq(Data.NAME, geneExp)
@@ -162,8 +164,6 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 				if (model.getValueOperators() == null) {
 					matrixManager.setValueOperators();
 				}
-
-				getModel().setState(QuestionState.QUESTION1_RESULT);
 
 			} else {
 				System.out.println("Something went wrong, try again.");
@@ -262,7 +262,7 @@ public class QuestionOne extends EasyPluginController<QuestionsModel> {
 		BinaryDataMatrixInstance m = (BinaryDataMatrixInstance) dmh
 				.createInstance(dataSet, db);
 
-		// filter in sampleNames and on probeNames
+		// filter on sampleNames and on probeNames
 		return m.getSubMatrix(probeNames, sampleNames);
 	}
 }

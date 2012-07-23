@@ -36,7 +36,8 @@
 				<div id="askingQuestions">
 					Which question do you want to ask?<br />
 					<input type="radio" id="Q1" name="questions" value="questionOne" /> Search for expression of gene(s) in subsets of samples<br />
-					<input type="radio" id="Q2" name="questions" value="questionTwo" checked /> Make comparisons: is gene X differentially expressed in group A versus B <br />
+					<input type="radio" id="Q2" name="questions" value="questionTwo" checked /> Make comparisons: what are significantly differentially expressed genes between group A and group B <br />
+					<input type="radio" id="Q3" name="questions" value="questionThree" checked /> Make comparisons: is gene X differentially expressed in group A versus B <br />
 				</div>
 				<div id="submit">
 					<input type='submit' id='submitInfo' value='Submit' onclick="__action.value='submitInformation'" />
@@ -89,7 +90,8 @@
 <#elseif model.state == "QUESTION2">
 This question hasn't been implemented yet. Try again later
 
-
+<#elseif model.state == "QUESTION3">
+This question hasn't been implemented yet. Try again later
 
 	
 <#else>

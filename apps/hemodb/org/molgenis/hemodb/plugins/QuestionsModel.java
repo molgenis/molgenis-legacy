@@ -33,7 +33,14 @@ public class QuestionsModel extends EasyPluginModel
 		QUESTION1_RESULT,
 		QUESTION2,
 		QUESTION2_RESULT,
+		QUESTION3,
+		QUESTION3_RESULT,
 		BEGINNING
+	}
+	
+	public enum DropBoxFilling{
+		EMPTY,
+		FILLED
 	}
 	
 	private QuestionState state = QuestionState.EMPTYGROUPLIST;

@@ -23,6 +23,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		
 		//initialiseer all paginas 1x
 		new QuestionOne("questionOne", this);
+		new QuestionTwo("questionTwo", this);
 	}
 
 	public ScreenView getView() {
@@ -64,6 +65,9 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 				
 			} else if ("questionTwo".equals(question)) {
 				getModel().setState(QuestionState.QUESTION2);
+				//TODO: QuestionTwo q2 = (QuestionTwo) this.get("questionTwo");
+			} else if ("questionThree".equals(question)) {
+				getModel().setState(QuestionState.QUESTION3);
 			} else {
 				System.out.println("something bad happened");
 				
