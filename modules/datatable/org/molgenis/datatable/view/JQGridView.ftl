@@ -40,7 +40,7 @@ var JQGridView = {
         
         this.sliceColumns();
         
-        this.grid = this.createJQGrid();
+        this.grid = this.createJQGrid(null);
         this.createDialog();
 
 		//load & create Tree
@@ -90,19 +90,22 @@ var JQGridView = {
 		this.sliceColumns();
 
 		this.config.postData.colNames = this.config.colNames;
+		
+		filters = this.grid.getGridParam("postData").filters;
+		
     	$(this.tableSelector).jqGrid('GridUnload');
-    	this.grid = this.createJQGrid();
+
+    	this.grid = this.createJQGrid(filters);
     	
     	this.restoreSliceColumns();
     },
     
-    createJQGrid : function() {
+    createJQGrid : function(filters) {
     	var self = JQGridView;
     	
-    	//oldPostData = this.config.postData.filters.groupOp = "AND";
-		oldFilters = config.postData.filters.rules;
-    	
-    	console.log(oldFilters);
+		if(filters != null) {
+			this.config.postData.filters = filters; 
+		}
     	
     	grid = jQuery(this.tableSelector).jqGrid(this.config)
             .jqGrid('navGrid', this.pagerSelector,

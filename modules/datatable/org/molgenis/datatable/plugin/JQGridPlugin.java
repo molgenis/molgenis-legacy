@@ -65,7 +65,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		// JDBCTABLE, JOINTABLE, QUERYTABLE
 		// }
 
-		private final String backEnd = "LIFELINES_VM_TEST";
+		private final String backEnd = "JOINTABLE";
 
 		@Override
 		public TupleTable create(Database db, Tuple request) throws TableException
