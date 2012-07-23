@@ -13,6 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.datatable.model.JdbcTable;
 import org.molgenis.datatable.model.JoinQueryTable;
+import org.molgenis.datatable.model.JoinQueryTable.Join;
 import org.molgenis.datatable.model.QueryTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -64,7 +65,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		// JDBCTABLE, JOINTABLE, QUERYTABLE
 		// }
 
-		private final String backEnd = "JOINTABLE";
+		private final String backEnd = "LIFELINES_VM_TEST";
 
 		@Override
 		public TupleTable create(Database db, Tuple request) throws TableException
@@ -139,15 +140,19 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			final SQLTemplates dialect = new OracleTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
+			// SELECT *
+			// FROM vw_bezoek_pivot visit, vw_bloeddrukavg bp
+			// WHERE visit.pa_id = bp.pa_id
 			if (CollectionUtils.isEmpty(tableNames))
 			{
-				tableNames = Arrays.asList("BEZOEK", "BEZOEK1");
+				tableNames = Arrays.asList("VW_BEZOEK", "VW_BLOEDDRUKAVG");
 			}
-			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
-			if (tableNames.size() == 2)
+			final List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
+			if (tableNames.contains("VW_BEZOEK") && tableNames.contains("VW_BLOEDDRUKAVG"))
 			{
-				joins = Arrays.asList(new JoinQueryTable.Join("BEZOEK", "BZ_ID", "BEZOEK1", "BZ_ID"));
+				joins.add(new Join("VW_BEZOEK", "BZ_ID", "VW_BLOEDDRUKAVG", "BZ_ID"));
 			}
+
 			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
 		}
 
