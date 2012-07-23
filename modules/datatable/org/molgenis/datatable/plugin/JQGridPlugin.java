@@ -12,8 +12,7 @@ import java.util.logging.Logger;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.datatable.model.JdbcTable;
-import org.molgenis.datatable.model.JoinQueryTable;
-import org.molgenis.datatable.model.JoinQueryTable.Join;
+import org.molgenis.datatable.model.JoinTableCreator;
 import org.molgenis.datatable.model.QueryTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -34,7 +33,6 @@ import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
 import com.mysema.query.sql.MySQLTemplates;
-import com.mysema.query.sql.OracleTemplates;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
@@ -65,7 +63,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		// JDBCTABLE, JOINTABLE, QUERYTABLE
 		// }
 
-		private final String backEnd = "QUERYTABLE";
+		private final String backEnd = "JOINTABLE";
 
 		@Override
 		public TupleTable create(Database db, Tuple request) throws TableException
@@ -136,34 +134,37 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		private TupleTable createLifelinesTestVMJoinTable(Database db, List<String> tableNames,
 				final List<String> columnNames) throws DatabaseException
 		{
-			final Connection connection = db.getConnection();
-			final SQLTemplates dialect = new OracleTemplates();
-			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
-
-			// SELECT *
-			// FROM vw_bezoek_pivot visit, vw_bloeddrukavg bp
-			// WHERE visit.pa_id = bp.pa_id
-			if (CollectionUtils.isEmpty(tableNames))
-			{
-				tableNames = Arrays.asList("VW_BEZOEK", "VW_BLOEDDRUKAVG");
-			}
-			final List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
-			if (tableNames.contains("VW_BEZOEK") && tableNames.contains("VW_BLOEDDRUKAVG"))
-			{
-				joins.add(new Join("VW_BEZOEK", "BZ_ID", "VW_BLOEDDRUKAVG", "BZ_ID"));
-			}
-
-			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
+			// final Connection connection = db.getConnection();
+			// final SQLTemplates dialect = new OracleTemplates();
+			// final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
+			//
+			// // SELECT *
+			// // FROM vw_bezoek_pivot visit, vw_bloeddrukavg bp
+			// // WHERE visit.pa_id = bp.pa_id
+			// if (CollectionUtils.isEmpty(tableNames))
+			// {
+			// tableNames = Arrays.asList("VW_BEZOEK", "VW_BLOEDDRUKAVG");
+			// }
+			// final List<JoinQueryTable.Join> joins = new
+			// ArrayList<JoinQueryTable.Join>();
+			// if (tableNames.contains("VW_BEZOEK") &&
+			// tableNames.contains("VW_BLOEDDRUKAVG"))
+			// {
+			// joins.add(new Join("VW_BEZOEK", "BZ_ID", "VW_BLOEDDRUKAVG",
+			// "BZ_ID"));
+			// }
+			//
+			// return new JoinQueryTable(query, tableNames, columnNames, joins,
+			// db);
+			return null;
 		}
 
 		private TupleTable createJoinTable(Database db, List<String> tableNames, final List<String> columnNames)
 				throws DatabaseException
 		{
-			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
-			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 
-			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
+			List<JoinTableCreator.Join> joins = new ArrayList<JoinTableCreator.Join>();
 
 			if (CollectionUtils.isEmpty(tableNames))
 			{
@@ -172,18 +173,19 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 
 			if (tableNames.contains("Country") && tableNames.contains("City"))
 			{
-				final JoinQueryTable.Join countryCity = new JoinQueryTable.Join("Country", "Code", "City",
+				final JoinTableCreator.Join countryCity = new JoinTableCreator.Join("Country", "Code", "City",
 						"CountryCode");
 				joins.add(countryCity);
 			}
 			if (tableNames.contains("Country") && tableNames.contains("CountryLanguage"))
 			{
-				final JoinQueryTable.Join countryLanguage = new JoinQueryTable.Join("Country", "Code",
+				final JoinTableCreator.Join countryLanguage = new JoinTableCreator.Join("Country", "Code",
 						"CountryLanguage", "CountryCode");
 				joins.add(countryLanguage);
 			}
 
-			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
+			JoinTableCreator tableCreator = new JoinTableCreator(db, tableNames, columnNames, joins);
+			return new QueryTable(tableCreator, db.getConnection(), dialect);
 		}
 
 		private TupleTable createQueryTable(Database db, List<String> tableNames, final List<String> columnNames)
