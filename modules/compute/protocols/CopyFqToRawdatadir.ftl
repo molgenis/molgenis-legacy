@@ -17,6 +17,6 @@
 umask 0007
 
 ${gafscripts}/copy_fq_to_rawdatadir.pl \
--rawdatadir ${runIntermediateDir} \
+-rawdatadir ${runResultsDir} \
 -run ${run} \
 -samplecsv ${McWorksheet}
