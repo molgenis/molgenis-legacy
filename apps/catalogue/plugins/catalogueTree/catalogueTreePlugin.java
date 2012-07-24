@@ -112,17 +112,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	public String getViewTemplate() {
 		return "plugins/catalogueTree/catalogueTreePlugin.ftl";
 	}
-	
+
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
-		
-		
+
+
 		List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
-		
-		
-		
+
+
+
 		//for now the cohorts are investigations 
 		if ("cohortSelect".equals(request.getAction())) {
 			System.out.println("----------------------"+request);
@@ -131,8 +131,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			System.out.println("The selected investigation is : "+ selectedInvestigation);
 			arrayInvestigations.clear();
 
-			
-			
+
+
 		}else if(request.getAction().equals("downloadButtonEMeasure")){
 			//do output stream ourselves
 			MolgenisRequest req = (MolgenisRequest)request;
@@ -142,9 +142,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			response.setContentType("application/x-download");
 			response.setHeader("Content-Disposition",
 					"attachment; filename="+"EMeasure_"+dateFormat.format(date)+".xml");
-			
+
 			PrintWriter pw = response.getWriter();
-			
+
 			//Make E-Measure XML file
 
 			List<Measurement> selectedMeasList = new ArrayList<Measurement>();
@@ -152,19 +152,19 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				if(request.getBool(m.getId().toString()) != null){
 					selectedMeasList.add(m);
 				}
-				
-				
+
+
 			}
-			
+
 			EMeasure em = new EMeasure(db, "EMeasure_"+dateFormat.format(date));
-			
+
 			String result = em.convert(selectedMeasList);
-			
+
 			pw.print(result);
 			pw.close();
 		}
 		else if(request.getAction().equals("downloadButton")){
-			
+
 			WorkbookSettings ws = new WorkbookSettings();
 
 			ws.setLocale(new Locale("en", "EN"));
@@ -178,17 +178,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
 
 			int startingRow = 1;
-			
-			
+
+
 			outputExcel.addCell(new Label(0, 0, "Selected variables"));
-			
+
 			outputExcel.addCell(new Label(1, 0, "Descriptions"));
-			
+
 			outputExcel.addCell(new Label(1, 0, "Sector/Protocol"));
-			
-						
+
+
 			for (Measurement m : allMeasList) {
-				
+
 				if(request.getBool(m.getId().toString()) != null){
 					outputExcel.addCell(new Label(0, startingRow, m.getName()));
 					if(m.getDescription() != null){
@@ -200,20 +200,20 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				}
 			}
 			//setMessages(new ScreenMessage("Your request has been downloaded", true));
-			
+
 			workbook.write();
 			workbook.close();
-			
+
 			HttpServletRequestTuple rt       = (HttpServletRequestTuple) request;
 			HttpServletRequest httpRequest   = rt.getRequest();
 			HttpServletResponse httpResponse = rt.getResponse();
 			//System.out.println(">>> " + this.getParent().getName()+ "or >>>  "+ this.getSelected().getLabel());
 			//String redirectURL = httpRequest.getRequestURL() + "?__target=" + this.getParent().getName() + "&select=MeasurementsDownloadForm";
-			
+
 			String redirectURL = "tmpfile/selectedVariables.xls";
 
 			httpResponse.sendRedirect(redirectURL);
-			
+
 		}else if ("SaveSelectionSubmit".equals(request.getAction())) {
 
 			if (!this.getLogin().isAuthenticated()) {
@@ -276,7 +276,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 				List<Investigation> listOfInvestigation = db.query(Investigation.class).find();
 				if (listOfInvestigation.size() > 0){
-					
+
 					for(Investigation inv : listOfInvestigation){
 						if(db.find(Protocol.class, new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, inv.getName())).size() > 0){
 							this.setSelectedInvestigation(inv.getName());
@@ -300,7 +300,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			for (Investigation i : db.find(Investigation.class)) {
 				this.arrayInvestigations.add(i);
 			}
-			
+
 			RetrieveProtocols(db);
 
 		}catch(Exception e){
@@ -346,45 +346,47 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			// Iterate through all the found protocols
 			for (Protocol p : q.find()) {
 
-				setSelectedInv(true);
-				List<String> subNames = p.getSubprotocols_Name();
-				
-				// keep a record of each protocol in a hashmap. Later on we
-				// could reference to the Protocol by name
-				if (!nameToProtocol.containsKey(p.getName())) {
-					nameToProtocol.put(p.getName(), p);
-				}
+				if(!p.getName().equalsIgnoreCase("generic")){
 
-				/**
-				 *  Algorithm to find the topmost protocols. There are three kind
-				 *   of protocols needed.
-				 *   1. The protocols that are parents of other protocols
-				 *   2. The protocols that are children of some other protocols
-				 *   and at the same time are parents of some other protocols
-				 *   3. The protocols that are only children of other protocols
-				 *   Therefore we could do protocol2 =
-				 *   protocol2.removeAll(protocol3) ----> parent protocols but not topmost
-				 *   we then do protocol1 = protocol1.removeAll(protocol2) 
-				 *   topmost parent protocols
-				 */
-				if (!subNames.isEmpty()) {
+					setSelectedInv(true);
+					List<String> subNames = p.getSubprotocols_Name();
 
-					if (!topProtocols.contains(p.getName())) {
-						topProtocols.add(p.getName());
+					// keep a record of each protocol in a hashmap. Later on we
+					// could reference to the Protocol by name
+					if (!nameToProtocol.containsKey(p.getName())) {
+						nameToProtocol.put(p.getName(), p);
 					}
-					for (String subProtocol : subNames) {
-						if (!middleProtocols.contains(subProtocol)) {
-							middleProtocols.add(subProtocol);
+
+					/**
+					 *  Algorithm to find the topmost protocols. There are three kind
+					 *   of protocols needed.
+					 *   1. The protocols that are parents of other protocols
+					 *   2. The protocols that are children of some other protocols
+					 *   and at the same time are parents of some other protocols
+					 *   3. The protocols that are only children of other protocols
+					 *   Therefore we could do protocol2 =
+					 *   protocol2.removeAll(protocol3) ----> parent protocols but not topmost
+					 *   we then do protocol1 = protocol1.removeAll(protocol2) 
+					 *   topmost parent protocols
+					 */
+					if (!subNames.isEmpty()) {
+
+						if (!topProtocols.contains(p.getName())) {
+							topProtocols.add(p.getName());
+						}
+						for (String subProtocol : subNames) {
+							if (!middleProtocols.contains(subProtocol)) {
+								middleProtocols.add(subProtocol);
+							}
+						}
+
+					} else {
+
+						if (!bottomProtocols.contains(p.getName())) {
+							bottomProtocols.add(p.getName());
 						}
 					}
-
-				} else {
-
-					if (!bottomProtocols.contains(p.getName())) {
-						bottomProtocols.add(p.getName());
-					}
 				}
-
 				middleProtocols.removeAll(bottomProtocols);
 				topProtocols.removeAll(middleProtocols);
 			}
@@ -508,6 +510,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				}
 
 				if(protocolName.equalsIgnoreCase("GenericDCM")){
+					childTree.setCheckBox(true);
+				}
+				if(protocolName.equalsIgnoreCase("stageCatalogue")){
 					childTree.setCheckBox(true);
 				}
 				//				else{
@@ -639,16 +644,16 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 					Measurement.NAME, Operator.IN, childNode));
 
 			List<Measurement> filteredMeasurementsList = new ArrayList<Measurement>();
-			
+
 			for (Measurement m : measurementList) {
 				if(m.getName().equals("PA_ID") || m.getName().equals("ID") || m.getName().equals("BEZOEKNR")){
-					
+
 				}else{
 					filteredMeasurementsList.add(m);	//FILTERED LIST WITHOUT PA_ID, ID and BEZOEKNR
 				}
 			}
-			
-			
+
+
 			for (Measurement measurement : filteredMeasurementsList) {
 
 				// reset the the variable to false
@@ -682,7 +687,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				if(displayName.equalsIgnoreCase("VALCOMM_1")){
 					System.out.println();
 				}
-				
+
 				if (protocolsAndMeasurementsinTree.containsKey(displayName)) {
 
 					if (!multipleInheritance.containsKey(displayName)) {
@@ -771,7 +776,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		// String htmlValue = "<table id = 'detailInformation'  border = 2>" +
 		String htmlValue = "<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = '"
 				+ nodeName + "_table'>";
-		htmlValue += "<tr><td class='box-body-label'>Item name:</th><td>"
+		htmlValue += "<tr><td class='box-body-label'>Current selection:</th><td id=\"" + nodeName + "\"_itemName style=\"cursor:pointer\">"
 				+ displayName + "</td></tr>";
 
 		if (categoryNames.size() > 0) {
@@ -783,9 +788,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			String missingCategory = "<tr><td  class='box-body-label'>Missing category:</td><td><table>";
 
 			for (Category c : listOfCategory) {
-				
+
 				String codeString = c.getCode_String();
-				
+
 				if(!codeString.equals("")){
 					codeString += " = ";
 				}

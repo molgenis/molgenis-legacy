@@ -11,7 +11,7 @@
 		<!-- plugin name="Search" type="plugins.Search.Search" label="Search" /> -->
 
 
-		<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
+		<!-- <form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
 			<menu name="InvestigationMenu">
 				<form name="measurement" entity="Measurement" label="Measurements" hide_fields="AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
 				<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter">
@@ -59,7 +59,7 @@
 			<plugin label="Data Exporter" name="SimpleArchiver" type="plugins.archiver.Archiver" />
 			<form name="OntologyTerms" entity="OntologyTerm" />
 
-		</menu>
+		</menu> -->
 		<plugin name="UserLogin" type="org.molgenis.auth.ui.UserLogin"
 			label="Register/Login" />
 

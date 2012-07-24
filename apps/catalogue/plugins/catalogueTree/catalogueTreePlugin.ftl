@@ -14,8 +14,6 @@
 			
 			var inputToken = $('#InputToken').val();
 			
-			$('#details').empty();
-			
 			$('#leftSideTree li').hide();
 					
 			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All fields"){
@@ -74,8 +72,6 @@
 							$('#leftSideTree li#' + id).find('li').show();
 							$('#leftSideTree li#' + id).find('li').removeClass('lastExpandable');
 							$('#leftSideTree li#' + id).find('div').removeClass('expandable-hitarea lastExpandable-hitarea').addClass('collapsable-hitarea');
-							
-							
 						}
 					}
 				});
@@ -108,6 +104,8 @@
 					}
 				});
 			}			
+			
+			addVeritcalLine($('#browser >li').attr('id'));
 			removeVerticalLine($('#browser >li').attr('id'));
 		}		
 		
@@ -155,21 +153,19 @@
 		function checkSearchingStatus(){
 			
 			if($('#InputToken').val() === ""){
-				
 				addVeritcalLine($('#browser >li').attr('id'));
-				$('#leftSideTree li').show();
-				
+				$('#leftSideTree li').show();				
 			}
 		}
 		
-		function whetherReload(e){
-			
-			if(e.keyCode === 13){
-				if($('#InputToken').val() != ""){
-					searchInTree();
-				}
-				return false;
+		function whetherReload(){
+
+			var value = $('#InputToken').val();
+			if(value.search(new RegExp("\\w", "gi")) != -1){
+				searchInTree();
 			}
+			return false;
+			
 		}
 		
 		$(document).ready(function(){	
@@ -248,11 +244,11 @@
 								</select>
 								<input title="fill in search term" type="text" name="InputToken" id="InputToken"
 									onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
-									onkeyup="checkSearchingStatus();" onkeypress="return whetherReload(event);">
+									onkeyup="checkSearchingStatus();" onkeypress="if(event.keyCode === 13){return whetherReload();}">
 									
 								
 								<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
-								value="search" style="font-size:0.8em" onclick="searchInTree()"/>
+								value="search" style="font-size:0.8em" onclick="whetherReload()"/>
 								<input type="button" id="clearSearchingResult" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="clearSearchingResult" 
 								value="clear" style="font-size:0.8em"/>					
 								<#list screen.getFilters() as filter>			
@@ -363,6 +359,7 @@
 								$('#clickedVariable').val(measurementID);
 								$('#details').empty();
 								$('#details').append(json[measurementID]);
+								
 							});
 							$('#' + measurementID + '>span').mouseenter(function(){
 								$('#popUpDialogue').show();
@@ -399,111 +396,121 @@
  						
  						$(this).click(function(){
  							
- 							$(this).parent().parent().find('span').trigger('click');
- 							
- 							if($(this).attr('checked') != 'checked'){
+ 							if($(this).parent().parent().find('input:checkbox').length > 1){
  								
- 								if($('#selectedVariableTable').find('tr').length > 1){
- 									$('#' + $(this).parent().parent().attr('id') + '_row').remove();
- 								}else{
- 									$('#selectedVariableTable').remove();
- 									$('#selectedVariableHeader').remove()
- 								}
+ 								
+ 									
  							}else{
  								
- 								var label = $(this).parent().text();
- 								var checkBoxID = $(this).attr('id');
-		 						var uniqueID = $(this).parent().parent().attr('id');
-		 						
-		 						var protocolName = $(this).parents('li').eq(1).children('span').text();
-		 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
-		 						var descriptionShows = variableDescription.substr(0, 10);
-		 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
-	 							var content = '<tr id=\"'+uniqueID +'_row\" ><td style=\"width:30%; text-align:left; cursor:pointer\">' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer;width:30%; text-align:left\">' + 
-	 										descriptionShows + '...</td><td style=\"width:30%; text-align:left\">' + 
-	 										protocolName + '</td><td style=\"text-align:center; width:10%; text-align:left\">' + 
-	 										deleteButton + '</td></tr></table>';
-		 						
-	 							<!--We are going to check whether this selectedVariableTable already existed-->
-	 							if($('#selectedVariableTable').length == 0){
-	 							
-	 								var newTableHeader = '<table id=\"selectedVariableHeader\" style=\"width:100%\" class=\"listtable\">'+
-	 								'<th style=\"width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
-	 								'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></table>';
-	 								var newTable = '<table id=\"selectedVariableTable\"  class=\"listtable\" style=\"width:100%; overflow:auto\">';
-	 								newTable += content;
-	 								$('#selection').append(newTable);
-	 								$('#selectionHeader').append(newTableHeader);
+ 								$(this).parent().parent().find('span').trigger('click');
+ 							
+	 							if($(this).attr('checked') != 'checked'){
 	 								
-	 								$('#'+uniqueID+'_delete').click(function(){
-	 									if($('#selectedVariableTable').find('tr').length > 1){
-		 									$('#'+uniqueID+'_row').remove();
-		 								}else{
-		 									$('#selectedVariableHeader').remove();
-		 									$('#selectedVariableTable').remove();
-		 									
-		 								}
-		 								$('#' + checkBoxID).attr('checked',false);
-	 								});
-	 								
+	 								if($('#selectedVariableTable').find('tr').length > 1){
+	 									$('#' + $(this).parent().parent().attr('id') + '_row').remove();
+	 								}else{
+	 									$('#selectedVariableTable').remove();
+	 									$('#selectedVariableHeader').remove()
+	 								}
 	 							}else{
 	 								
-	 								$('#selectedVariableTable').find('tr:last-child').after(content);
-	 								
-	 								if($('#selectedVariableTable tr').length%2 == 1){
-	 									$('#'+uniqueID +'_row').addClass('form_listrow0');
-	 								}else{
-	 									$('#'+uniqueID +'_row').addClass('form_listrow1');
-	 								}
-	 								
-	 								$('#'+uniqueID+'_delete').click(function(){
-	 									if($('#selectedVariableTable').find('tr').length > 1){
-		 									$('#'+uniqueID+'_row').remove();
+	 								var label = $(this).parent().text();
+	 								var checkBoxID = $(this).attr('id');
+			 						var uniqueID = $(this).parent().parent().attr('id');
+			 						
+			 						var protocolName = $(this).parents('li').eq(1).children('span').text();
+			 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
+			 						var descriptionShows = variableDescription.substr(0, 10);
+			 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
+		 							var content = '<tr id=\"'+uniqueID +'_row\" ><td style=\"width:30%; text-align:left; cursor:pointer\">' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer;width:30%; text-align:left\">' + 
+		 										descriptionShows + '...</td><td style=\"width:30%; text-align:left\">' + 
+		 										protocolName + '</td><td style=\"text-align:center; width:10%; text-align:left\">' + 
+		 										deleteButton + '</td></tr></table>';
+			 						
+		 							<!--We are going to check whether this selectedVariableTable already existed-->
+		 							if($('#selectedVariableTable').length == 0){
+		 							
+		 								var newTableHeader = '<table id=\"selectedVariableHeader\" style=\"width:100%\" class=\"listtable\">'+
+		 								'<th style=\"width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
+		 								'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></table>';
+		 								var newTable = '<table id=\"selectedVariableTable\"  class=\"listtable\" style=\"width:100%; overflow:auto\">';
+		 								newTable += content;
+		 								$('#selection').append(newTable);
+		 								$('#selectionHeader').append(newTableHeader);
+		 								
+		 								$('#'+uniqueID+'_delete').click(function(){
+		 									if($('#selectedVariableTable').find('tr').length > 1){
+			 									$('#'+uniqueID+'_row').remove();
+			 								}else{
+			 									$('#selectedVariableHeader').remove();
+			 									$('#selectedVariableTable').remove();
+			 									
+			 								}
+			 								$('#' + checkBoxID).attr('checked',false);
+		 								});
+		 								
+		 							}else{
+		 								
+		 								$('#selectedVariableTable').find('tr:last-child').after(content);
+		 								
+		 								if($('#selectedVariableTable tr').length%2 == 1){
+		 									$('#'+uniqueID +'_row').addClass('form_listrow0');
 		 								}else{
-		 									$('#selectedVariableTable').remove();
-		 									$('#selectedVariableHeader').remove();
+		 									$('#'+uniqueID +'_row').addClass('form_listrow1');
 		 								}
-		 								$('#' + checkBoxID).attr('checked',false);
-	 								});
+		 								
+		 								$('#'+uniqueID+'_delete').click(function(){
+		 									if($('#selectedVariableTable').find('tr').length > 1){
+			 									$('#'+uniqueID+'_row').remove();
+			 								}else{
+			 									$('#selectedVariableTable').remove();
+			 									$('#selectedVariableHeader').remove();
+			 								}
+			 								$('#' + checkBoxID).attr('checked',false);
+		 								});
+		 							}
+		 							
+		 							$('#' + uniqueID +'_hover').click(function(){
+		 								$('#' + uniqueID + ' span').trigger('click');
+		 							});
+		 							$('#' + uniqueID +'_hover').mouseenter(function(){
+		 								$('#popUpDialogue').show();
+		 							});
+		 							$('#' + uniqueID +'_hover').mouseout(function(){
+		 								$('#popUpDialogue').hide();
+		 							});
+		 							$('#' + uniqueID +'_row >td').eq(0).mouseenter(function(){
+		 								$('#traceBack').show();
+		 							});
+		 							$('#' + uniqueID +'_row >td').eq(0).mouseout(function(){
+		 								$('#traceBack').hide();
+		 							});
+		 							
+		 							$('#' + uniqueID + '_row >td').eq(0).click(function(){
+		 								
+		 								$('#' + uniqueID + '>span').trigger('click');
+		 								$('#' + uniqueID).show();
+		 								var id = $('#' + uniqueID).attr('id');
+										$('#leftSideTree li#' + id).parents().show();
+										$('#leftSideTree li#' + id).parents('li').children('div').
+											removeClass('lastExpandable-hitarea expandable-hitarea').
+											addClass('collapsable-hitarea');
+										$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+										
+		 								var elementTop = $('#' + uniqueID).position().top;
+		 								var treeDivTop = $('#leftSideTree').position().top;
+		 								var divHeight = $('#leftSideTree').height();
+		 								var lastTop = $('#leftSideTree').scrollTop();
+		 								$('#leftSideTree').scrollTop(lastTop + elementTop - divHeight/3 - treeDivTop);
+		 								addVeritcalLine($('#' + uniqueID).parents('li').eq(0).attr('id'));
+										removeVerticalLine($('#' + uniqueID).parents('li').eq(0).attr('id'));
+		 							});
+		 							
 	 							}
-	 							
-	 							$('#' + uniqueID +'_hover').click(function(){
-	 								$('#' + uniqueID + ' span').trigger('click');
-	 							});
-	 							$('#' + uniqueID +'_hover').mouseenter(function(){
-	 								$('#popUpDialogue').show();
-	 							});
-	 							$('#' + uniqueID +'_hover').mouseout(function(){
-	 								$('#popUpDialogue').hide();
-	 							});
-	 							$('#' + uniqueID +'_row >td').eq(0).mouseenter(function(){
-	 								$('#traceBack').show();
-	 							});
-	 							$('#' + uniqueID +'_row >td').eq(0).mouseout(function(){
-	 								$('#traceBack').hide();
-	 							});
-	 							
-	 							$('#' + uniqueID + '_row >td').eq(0).click(function(){
-	 								$('#' + uniqueID + '>span').trigger('click');
-	 								$('#' + uniqueID).show();
-	 								var id = $('#' + uniqueID).attr('id');
-									$('#leftSideTree li#' + id).parents().show();
-									$('#leftSideTree li#' + id).parents('li').children('div').
-										removeClass('lastExpandable-hitarea expandable-hitarea').
-										addClass('collapsable-hitarea');
-									$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
-									
-	 								var elementTop = $('#' + uniqueID).position().top;
-	 								var treeDivTop = $('#leftSideTree').position().top;
-	 								var divHeight = $('#leftSideTree').height();
-	 								var lastTop = $('#leftSideTree').scrollTop();
-	 								$('#leftSideTree').scrollTop(lastTop + elementTop - divHeight/3 - treeDivTop);
-	 							});
-	 							
+	 							$('#variableCount').empty();
+	 							var count = $('#selectedVariableTable tr').length - 1;
+	 							$('#variableCount').append(count);
  							}
- 							$('#variableCount').empty();
- 							var count = $('#selectedVariableTable tr').length - 1;
- 							$('#variableCount').append(count);
  						});	
  					});
  				</script>
