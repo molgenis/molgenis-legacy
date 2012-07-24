@@ -7,7 +7,7 @@
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
-	<input type="hidden" name="measurementId" id="measureId" value="">
+	<input type="hidden" name="clickedVariable" id="clickedVariable">
 	
 	<script type="text/javascript">
 		function searchInTree(){
@@ -276,26 +276,6 @@
 							    	<tr>
 								    	<td style="height:250px; padding:0px" >
 									    	<div id="details" style="height:250px;overflow:auto">
-			      								<script>
-													<#if screen.getListOfJSONs()??>
-														<#list screen.getListOfJSONs() as eachJSON>
-													   		var json = eval(${eachJSON});
-													   		$.each(json, function(measurementID, htmlTable){
-													   			$('#' + measurementID + '>span').click(function(){
-													   				$('#details').empty();
-													   				$('#details').append(htmlTable);
-													   			});
-													   			
-													   			$('#' + measurementID + '>span').mouseenter(function(){
-										 							$('#popUpDialogue').show();
-										 						});
-										 						$('#' + measurementID + '>span').mouseout(function(){
-										 							$('#popUpDialogue').hide();
-										 						});
-													   		});
-													    </#list>
-													</#if>		
-												</script>
 			      							</div>
       									</td>
   									</tr>
@@ -303,6 +283,7 @@
 								    	<td style="height:20px; border-top:1px solid lightgray;">
 											<div id="selectionState" >Your selection:
 												<div id="popUpDialogue" style="float:right;display:none">Click to see details</div>
+												<div id="traceBack" style="float:right;display:none">Locate the variable in the tree</div>
 											</div>
 										</td>
 									</tr>
@@ -354,6 +335,43 @@
  							use the information (description) from the datailed table. Therefore we have to trigger the click event on branch
  							here first and create the detailed table!-->
  				<script>
+					var json = eval(${screen.getInheritance()});
+			      	
+			      	$('#browser').find('li').each(function(){
+			      		
+			      		if($(this).find('li').length == 0){
+			      			
+			      			var measurementID = $(this).attr('id');
+	      					
+	      					$(this).children('span').click(function(){
+			      				$(this).css({
+			      					'color':'#778899',
+			      					'font-size':15,
+			      					'font-style':'italic',
+			      					'font-weight':'bold'
+			      				});
+								
+								if($('#clickedVariable').val() != "" && $('#clickedVariable').val() != measurementID){
+									var clickedVariableID = $('#clickedVariable').val();
+									$('#' + clickedVariableID + '>span').css({
+										'color':'black',
+										'font-size':13,
+										'font-style':'normal',
+										'font-weight':400
+									});
+								}			   				
+								$('#clickedVariable').val(measurementID);
+								$('#details').empty();
+								$('#details').append(json[measurementID]);
+							});
+							$('#' + measurementID + '>span').mouseenter(function(){
+								$('#popUpDialogue').show();
+							});
+							$('#' + measurementID + '>span').mouseout(function(){
+								$('#popUpDialogue').hide();
+							});												
+						}
+					});	
  					$('div#leftSideTree input:checkbox').each(function(index){
  						$(this).click(function() {
 							 if($(this).attr('checked')){
@@ -417,8 +435,6 @@
 	 								$('#selection').append(newTable);
 	 								$('#selectionHeader').append(newTableHeader);
 	 								
-	 								
-	 								
 	 								$('#'+uniqueID+'_delete').click(function(){
 	 									if($('#selectedVariableTable').find('tr').length > 1){
 		 									$('#'+uniqueID+'_row').remove();
@@ -460,10 +476,28 @@
 	 							$('#' + uniqueID +'_hover').mouseout(function(){
 	 								$('#popUpDialogue').hide();
 	 							});
+	 							$('#' + uniqueID +'_row >td').eq(0).mouseenter(function(){
+	 								$('#traceBack').show();
+	 							});
+	 							$('#' + uniqueID +'_row >td').eq(0).mouseout(function(){
+	 								$('#traceBack').hide();
+	 							});
+	 							
 	 							$('#' + uniqueID + '_row >td').eq(0).click(function(){
-	 								alert('clicked!');
-	 								var top = $('#' + uniqueID).position().top;
-	 								$('#leftSideTree').scrollTop(top);
+	 								$('#' + uniqueID + '>span').trigger('click');
+	 								$('#' + uniqueID).show();
+	 								var id = $('#' + uniqueID).attr('id');
+									$('#leftSideTree li#' + id).parents().show();
+									$('#leftSideTree li#' + id).parents('li').children('div').
+										removeClass('lastExpandable-hitarea expandable-hitarea').
+										addClass('collapsable-hitarea');
+									$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+									
+	 								var elementTop = $('#' + uniqueID).position().top;
+	 								var treeDivTop = $('#leftSideTree').position().top;
+	 								var divHeight = $('#leftSideTree').height();
+	 								var lastTop = $('#leftSideTree').scrollTop();
+	 								$('#leftSideTree').scrollTop(lastTop + elementTop - divHeight/3 - treeDivTop);
 	 							});
 	 							
  							}
