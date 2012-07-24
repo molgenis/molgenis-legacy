@@ -7,6 +7,7 @@ import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.ScreenModel.Show;
+import org.molgenis.hemodb.plugins.QuestionsModel.QuestionState;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -31,7 +32,18 @@ public class QuestionTwo extends EasyPluginController<QuestionsModel>{
 	
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException {
-				return null;
+		getModel().setAction(request.getAction());
+			
+		if ("back".equals(request.getAction())) {
+			getModel().setState(QuestionState.BEGINNING);
+		}
+		
+		String geneExp = request.getString("geneExp");
+		
+		
+		
+		
+		return null;
 	
 	}
 }

@@ -46,11 +46,11 @@ public class QuestionsModel extends EasyPluginModel
 	private QuestionState state = QuestionState.EMPTYGROUPLIST;
 	
 	
-	public QuestionsModel(QuestionOne controller)
-	{
-		//each Model can access the controller to notify it when needed.
-		super(controller);
-	}
+//	public QuestionsModel(QuestionOne controller)
+//	{
+//		//each Model can access the controller to notify it when needed.
+//		super(controller);
+//	}
 	
 	public QuestionsModel(QuestionsOverview controller) {
 		// TODO Auto-generated constructor stub

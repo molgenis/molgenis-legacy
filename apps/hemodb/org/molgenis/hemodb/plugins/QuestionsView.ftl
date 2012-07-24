@@ -46,7 +46,7 @@
 			<#elseif model.state == "QUESTION1">
 	
 			<#--begin your plugin-->	
-	
+			<br/>Search for expression of gene(s) in subsets of samples.<br/><br/>
 				<div id="geneExpression">
 					Choose the type of gene expression:<br />
 					<input type="radio" id="geneExpRaw" name="geneExp" value="expDataRaw" /> Raw expression<br />
@@ -59,7 +59,7 @@
 				</div>
 		
 				<div id="groupSelection">
-					<br/>Hold down the Ctrl (windows) / Command (Mac) button to select multiple groups.<br />
+					<br/>Make a selection of the groups you are interested in. Hold down the Ctrl (windows) / Command (Mac) button to select multiple groups.<br />
 					<select multiple="multiple" name="sampleGroups" id="sGroups" style="margin-right:10px">
 											<option value="none" selected="selected">no selection made</option>
 					<#list model.names as samplenames>
@@ -88,7 +88,46 @@
       		
       		
 <#elseif model.state == "QUESTION2">
-This question hasn't been implemented yet. Try again later
+	<br/>Make comparisons: what are significantly differentially expressed genes between group A and group B. <br/><br/>
+	<div id="geneExpression">
+		Choose the type of gene expression:<br />
+		<input type="radio" id="geneExpRaw" name="geneExp" value="expDataRaw" /> Raw expression<br />
+		<input type="radio" id="geneExpLog" name="geneExp" value="expDataLog2Quan" checked /> Quantile normalized & log2 transformed expression<br />
+	</div>
+
+	<div id="sampleCombiningMethod">
+		<br/> Choose the method which you want to use to combine the samples within each group:<br/>
+		<!--input type="radio" id="sampleCombineNone" name="sampleCombine" value="sampleCombineNo" /> Do not combine the samples<br /-->
+		<input type="radio" id="sampleCombineMean" name="sampleCombine" value="sampleCombineMean" /> Mean<br />
+		<input type="radio" id="sampleCombineMedian" name="sampleCombine" value="sampleCombineMed" /> Median<br />
+		<!--input type="radio" id="sampleCombineHighest" name="sampleCombine" value="sampleCombineHigh" /> Highest<br />
+		<input type="radio" id="sampleCombineLowest" name="sampleCombine" value="sampleCombineLow" /> Lowest<br /-->
+	</div>
+
+	<!--div id="probeCombiningMethod">
+		<br/> Choose the method which you want to use to combine the probes (if more than one probe is annotating a gene):<br/>
+		<input type="radio" id="probeCombineNone" name="probeCombine" value="probeCombineNo" /> Do not combine the probes<br />
+		<input type="radio" id="probeCombinemean" name="probeCombine" value="probeCombineMean" /> Mean<br />
+		<input type="radio" id="probeCombineMedian" name="probeCombine" value="probeCombineMed" /> Median<br />
+		<input type="radio" id="probeCombineHighest" name="probeCombine" value="probeCombineHigh" /> Highest<br />
+		<input type="radio" id="probeCombineLowest" name="probeCombine" value="probeCombineLow" /> Lowest<br />
+	</div-->
+
+	<div id="groupSelection">
+		<br/>Make a selection of the groups you are interested in. Hold down the Ctrl (windows) / Command (Mac) button to select multiple groups.<br />
+		<select multiple="multiple" name="sampleGroups" id="sGroups" style="margin-right:10px">
+			<option value="none" selected="selected">no selection made</option>
+			<#list model.names as samplenames>
+				<option value="${samplenames}">${samplenames}</option>
+			</#list>
+		</select>
+	</div>
+	
+	<div>
+	<br/>What is the significance cutoff you want to use? (Gene Y must be minimal x times higher or lower than gene Z to be signifficant (Non log2 values))<br/>
+	<textarea rows="2" cols="5" name="signifCutoff" value="cutoff"></textarea>
+	</div>
+
 
 <#elseif model.state == "QUESTION3">
 This question hasn't been implemented yet. Try again later
