@@ -47,18 +47,18 @@ import com.mysema.query.types.path.StringPath;
  * View data in a matrix.
  */
 public class JQGridPlugin extends EasyPluginController<ScreenModel> {
-	private static final long serialVersionUID = 1095633658510456459L;
+	private static final long	serialVersionUID	= 1095633658510456459L;
 
 	public JQGridPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 
-	JQGridView.TupleTableBuilder tupleTableBuilder = new JQGridView.TupleTableBuilder() {
-		private final String backEnd = "JOINTABLE";
+	JQGridView.TupleTableBuilder	tupleTableBuilder	= 
+	new JQGridView.TupleTableBuilder() {
+		private final String	backEnd	= "JOINTABLE";
 
 		@Override
-		public TupleTable create(Database db, Tuple request)
-				throws TableException {
+		public TupleTable create(Database db, Tuple request) throws TableException {
 			final List<String> tableNames = new ArrayList<String>();
 			final List<String> columnNames = new ArrayList<String>();
 			getTableAndColumnNames(request, tableNames, columnNames, true);
@@ -70,8 +70,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 				} else if (backEnd.equals("JDBCTABLE")) {
 					return createJDBTable(db, tableNames, columnNames);
 				} else if (backEnd.equals("LIFELINES_VM_TEST")) {
-					return createLifelinesTestVMJoinTable(db, tableNames,
-							columnNames);
+					return createLifelinesTestVMJoinTable(db, tableNames, columnNames);
 				} else if (backEnd.equals("MEMORY_TABLE")) {
 					return createMemory(db, tableNames, columnNames);
 				} else {
@@ -82,29 +81,26 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			}
 		}
 
-		private TupleTable createMemory(Database db, List<String> tableNames, List<String> columnNames) {
+		private TupleTable createMemory(Database db, List<String> tableNames,
+				List<String> columnNames) {
 			final TupleTable table = MemoryTableFactory.create(51, 10);
 			return table;
 		}
 
-		private TupleTable createJDBTable(Database db, List<String> tableNames,
-				final List<String> columnNames) throws DatabaseException {
+		private TupleTable createJDBTable(Database db, List<String> tableNames, final List<String> columnNames) throws DatabaseException {
 			try {
 				if (CollectionUtils.isEmpty(columnNames)) {
 					return new JdbcTable(db, "SELECT * FROM Country");
 				} else {
-					return new JdbcTable(db, String.format(
-							"SELECT %s FROM Country",
-							StringUtils.join(columnNames, ",")));
+					return new JdbcTable(db, String.format("SELECT %s FROM Country", StringUtils
+							.join(columnNames, ",")));
 				}
 			} catch (final Exception ex) {
 				throw new DatabaseException(ex);
 			}
 		}
 
-		private TupleTable createLifelinesTestVMJoinTable(Database db,
-				List<String> tableNames, final List<String> columnNames)
-						throws DatabaseException {
+		private TupleTable createLifelinesTestVMJoinTable(Database db, List<String> tableNames, final List<String> columnNames) throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new OracleTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
@@ -114,15 +110,13 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			}
 			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
 			if (tableNames.size() == 2) {
-				joins = Arrays.asList(new JoinQueryTable.Join("BEZOEK",
-						"BZ_ID", "BEZOEK1", "BZ_ID"));
+				joins = Arrays.asList(new JoinQueryTable.Join("BEZOEK", "BZ_ID", "BEZOEK1",
+						"BZ_ID"));
 			}
 			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
 		}
 
-		private TupleTable createJoinTable(Database db,
-				List<String> tableNames, final List<String> columnNames)
-						throws DatabaseException {
+		private TupleTable createJoinTable(Database db, List<String> tableNames, final List<String> columnNames) throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
@@ -133,16 +127,14 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 			List<JoinQueryTable.Join> joins = new ArrayList<JoinQueryTable.Join>();
 			if (tableNames.size() == 2) {
-				joins = Arrays.asList(new JoinQueryTable.Join("Country",
-						"Code", "City", "CountryCode"));
+				joins = Arrays.asList(new JoinQueryTable.Join("Country", "Code", "City",
+						"CountryCode"));
 			}
 			return new JoinQueryTable(query, tableNames, columnNames, joins, db);
 		}
 
 		@SuppressWarnings("rawtypes")
-		private TupleTable createQueryTable(Database db,
-				List<String> tableNames, final List<String> columnNames)
-						throws DatabaseException {
+		private TupleTable createQueryTable(Database db, List<String> tableNames, final List<String> columnNames) throws DatabaseException {
 			final Connection connection = db.getConnection();
 			final SQLTemplates dialect = new MySQLTemplates();
 			final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
@@ -151,13 +143,12 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 					RelationalPath.class, "Country");
 			final PathBuilder<RelationalPath> city = new PathBuilder<RelationalPath>(
 					RelationalPath.class, "City");
-			query.from(country, city).where(
-					country.get("code").eq(city.get("countrycode")));
+			query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
 
-			final NumberPath<Integer> countryPopulation = country
-					.get(new NumberPath<Integer>(Integer.class, "Population"));
-			final NumberPath<Integer> cityPopulation = city
-					.get(new NumberPath<Integer>(Integer.class, "Population"));
+			final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(
+					Integer.class, "Population"));
+			final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(
+					Integer.class, "Population"));
 
 			final NumberExpression<Double> cityPopulationRatio = cityPopulation
 					.divide(countryPopulation);
@@ -177,32 +168,24 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 			selectMap.put("Country.Name", country.get(new StringPath("name")));
 			selectMap.put("City.Name", city.get(new StringPath("name")));
 			selectMap.put("ratio", cityPopulationRatio);
-			final List<Field> columns = Arrays.asList(countryName, cityName,
-					ratio);
-			final QueryTable queryTable = new QueryTable(query, selectMap,
-					columns);
+			final List<Field> columns = Arrays.asList(countryName, cityName, ratio);
+			final QueryTable queryTable = new QueryTable(query, selectMap, columns);
 			return queryTable;
 		}
 
-		private void getTableAndColumnNames(Tuple request,
-				List<String> inTableNames, List<String> inColumnNames,
-				boolean completeColumnNames) {
+		private void getTableAndColumnNames(Tuple request, List<String> inTableNames, List<String> inColumnNames, boolean completeColumnNames) {
 			if (request != null) {
-				final String[] colNamesParamaters = ((MolgenisRequest) request)
-						.getRequest().getParameterValues("colNames[]");
-				if (colNamesParamaters == null
-						|| colNamesParamaters.length == 0) {
+				final String[] colNamesParamaters = ((MolgenisRequest) request).getRequest()
+						.getParameterValues("colNames[]");
+				if (colNamesParamaters == null || colNamesParamaters.length == 0) {
 					return;
 				}
 
-				final List<String> columNames = Arrays
-						.asList(colNamesParamaters);
+				final List<String> columNames = Arrays.asList(colNamesParamaters);
 				for (final String column : columNames) {
 					if (StringUtils.contains(column, ".")) {
-						final String tableName = StringUtils.substringBefore(
-								column, ".");
-						final String columnName = StringUtils.substringAfter(
-								column, ".");
+						final String tableName = StringUtils.substringBefore(column, ".");
+						final String columnName = StringUtils.substringAfter(column, ".");
 						if (!inTableNames.contains(tableName)) {
 							inTableNames.add(tableName);
 						}
@@ -220,8 +203,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 
 		@Override
 		public String getUrl() {
-			return "molgenis.do?__target=" + getName()
-					+ "&__action=download_json";
+			return "molgenis.do?__target=" + getName() + "&__action=download_json";
 		}
 	};
 
@@ -233,13 +215,11 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel> {
 	// handling of the ajax; should be auto-wired via the JQGridTableView
 	// Constructor (TODO)
 	public void download_json(Database db, Tuple request, OutputStream out) {
-		final JQGridView jqGridView = new JQGridView(super.getName(),
-				tupleTableBuilder);
+		final JQGridView jqGridView = new JQGridView(super.getName(), tupleTableBuilder);
 		try {
 			jqGridView.handleRequest(db, request, out);
 		} catch (final HandleRequestDelegationException ex) {
-			Logger.getLogger(JQGridPlugin.class.getName()).log(Level.SEVERE,
-					null, ex);
+			Logger.getLogger(JQGridPlugin.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 

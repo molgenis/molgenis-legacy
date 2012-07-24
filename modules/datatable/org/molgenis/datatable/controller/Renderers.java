@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 
 import javax.servlet.ServletContext;
@@ -19,9 +18,12 @@ import org.molgenis.datatable.view.CsvExporter;
 import org.molgenis.datatable.view.ExcelExporter;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.datatable.view.SPSSExporter;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.ZipUtils;
 import org.molgenis.util.ZipUtils.DirectoryStructure;
+
+import com.google.gson.Gson;
 
 /**
  * Class containing a series of simple renderers to do the administrative
@@ -51,9 +53,8 @@ public class Renderers {
 		@Override
 		public void export(ServletContext servletContext, HttpServletRequest request, HttpServletResponse response, String fileName,
 				TupleTable tupleTable, int totalPages, int currentPage) throws TableException, IOException {
-			JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage, tupleTable);
-			final PrintWriter pout = new PrintWriter(response.getOutputStream());
-			pout.close();
+			JQGridResult result = JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage, tupleTable);
+			response.getOutputStream().print(new Gson().toJson(result));
 		}
 	}
 
