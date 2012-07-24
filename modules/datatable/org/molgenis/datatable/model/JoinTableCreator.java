@@ -52,26 +52,29 @@ public class JoinTableCreator implements QueryCreator
 	private final Database db;
 	private final List<String> tableNames;
 	private final List<String> columnNames;
+	private final List<String> hiddenFieldNames;
 	private final List<Join> joins;
 
-	private LinkedHashMap<String, SimpleExpression<? extends Object>> select;
+	private LinkedHashMap<String, SimpleExpression<? extends Object>> attributeExpressions;
+	private final Map<String, List<Field>> tableColumns;
 
 	public JoinTableCreator(final Database db, final List<String> tableNames, final List<String> columnNames,
-			final List<Join> joins)
+			final List<String> hiddenFieldNames, final List<Join> joins)
 	{
 		this.db = db;
 		this.tableNames = tableNames;
 		this.columnNames = columnNames;
+		this.hiddenFieldNames = hiddenFieldNames;
 		this.joins = joins;
+
+		tableColumns = loadColumnData();
 	}
 
 	@Override
 	public SQLQueryImpl createQuery(Connection connection, SQLTemplates dialect)
 	{
 		final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
-
-		select = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
-		final Map<String, List<Field>> tableColumns = loadColumnData(db, tableNames, columnNames, joins);
+		attributeExpressions = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
 
 		for (final String tableName : tableNames)
 		{
@@ -80,7 +83,7 @@ public class JoinTableCreator implements QueryCreator
 			for (final Field f : tableColumns.get(tableName.toLowerCase()))
 			{
 				final SimpleExpression<?> path = createPath(f, table);
-				select.put(f.getSqlName(), path);
+				attributeExpressions.put(f.getSqlName(), path);
 			}
 		}
 
@@ -98,17 +101,22 @@ public class JoinTableCreator implements QueryCreator
 	}
 
 	@Override
-	public LinkedHashMap<String, SimpleExpression<? extends Object>> getSelectMap()
+	public List<String> getHiddenFieldNames()
 	{
-
-		return select;
+		return hiddenFieldNames;
 	}
 
 	@Override
-	public List<Field> getField()
+	public LinkedHashMap<String, SimpleExpression<? extends Object>> getAttributeExpressions()
+	{
+		return attributeExpressions;
+	}
+
+	@Override
+	public List<Field> getFields()
 	{
 		final List<Field> columns = new ArrayList<Field>();
-		final Map<String, List<Field>> columnsByTable = loadColumnData(db, tableNames, columnNames, joins);
+		final Map<String, List<Field>> columnsByTable = loadColumnData();
 		for (final String table : columnsByTable.keySet())
 		{
 			for (final Field field : columnsByTable.get(table))
@@ -119,8 +127,7 @@ public class JoinTableCreator implements QueryCreator
 		return columns;
 	}
 
-	private static Map<String, List<Field>> loadColumnData(final Database db, List<String> tableNames,
-			List<String> columnNames, List<Join> joins)
+	private Map<String, List<Field>> loadColumnData()
 	{
 		final Map<String, List<Field>> tableColumns = new LinkedHashMap<String, List<Field>>();
 		try
@@ -136,9 +143,9 @@ public class JoinTableCreator implements QueryCreator
 					final int sqlType = columns.getInt("DATA_TYPE");
 
 					final String sqlColumnName = String.format("%s.%s", tableName, columnName);
-					if (CollectionUtils.isNotEmpty(columnNames))
+					if (CollectionUtils.isNotEmpty(columnNames) || CollectionUtils.isNotEmpty(hiddenFieldNames))
 					{
-						if (!columnNames.contains(sqlColumnName))
+						if (!columnNames.contains(sqlColumnName) && !hiddenFieldNames.contains(sqlColumnName))
 						{
 							continue;
 						}
@@ -181,5 +188,4 @@ public class JoinTableCreator implements QueryCreator
 				throw new UnsupportedOperationException("create path not implemented for " + type.toString());
 		}
 	}
-
 }

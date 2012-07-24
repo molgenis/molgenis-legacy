@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.Database;
@@ -40,9 +43,11 @@ public class QueryTable extends AbstractFilterableTupleTable
 	{
 		public SQLQueryImpl createQuery(final Connection connection, final SQLTemplates dialect);
 
-		public LinkedHashMap<String, SimpleExpression<? extends Object>> getSelectMap();
+		public LinkedHashMap<String, SimpleExpression<? extends Object>> getAttributeExpressions();
 
-		public List<Field> getField();
+		public List<Field> getFields();
+
+		public List<String> getHiddenFieldNames();
 	}
 
 	private final QueryCreator queryCreator;
@@ -50,6 +55,7 @@ public class QueryTable extends AbstractFilterableTupleTable
 	private final SQLTemplates dialect;
 
 	private final LinkedHashMap<String, Field> columnsByName;
+	private final List<String> hiddenColumns;
 	private CloseableIterator<Object[]> rs;
 
 	public QueryTable(final QueryCreator queryCreator, final Connection conn, final SQLTemplates dialect)
@@ -59,16 +65,17 @@ public class QueryTable extends AbstractFilterableTupleTable
 		this.dialect = dialect;
 
 		columnsByName = new LinkedHashMap<String, Field>();
-		for (final Field col : queryCreator.getField())
+		for (final Field col : queryCreator.getFields())
 		{
 			columnsByName.put(col.getSqlName(), col);
 		}
+		hiddenColumns = queryCreator.getHiddenFieldNames();
 	}
 
 	@Override
 	public List<Field> getAllColumns() throws TableException
 	{
-		return queryCreator.getField();
+		return queryCreator.getFields();
 	}
 
 	public Field getColumnByName(String name)
@@ -99,7 +106,18 @@ public class QueryTable extends AbstractFilterableTupleTable
 	{
 		try
 		{
-			final LinkedHashMap<String, SimpleExpression<? extends Object>> select = queryCreator.getSelectMap();
+			final LinkedHashMap<String, SimpleExpression<? extends Object>> select = queryCreator
+					.getAttributeExpressions();
+			CollectionUtils.select(select.entrySet(), new Predicate()
+			{
+				@Override
+				public boolean evaluate(Object arg0)
+				{
+					final Entry<String, SimpleExpression<? extends Object>> entry = (Entry<String, SimpleExpression<? extends Object>>) arg0;
+					return hiddenColumns.contains(entry.getKey());
+				}
+			});
+
 			final Expression<?>[] selectArray = select.values().toArray(new Expression<?>[0]);
 			final ArrayList<String> names = new ArrayList<String>(select.keySet());
 			for (int i = 0; i < selectArray.length; ++i)
@@ -112,8 +130,9 @@ public class QueryTable extends AbstractFilterableTupleTable
 			final SQLQueryImpl query = createQuery();
 			query.limit(getLimit());
 			query.offset(getOffset());
-			System.err.println(query.toString()); // TODO: replace by log4j if
-													// configured correctly
+			// TODO: replace by log4j if configured correctly
+			System.err.println(query.toString());
+
 			rs = query.iterate(selectArray);
 			return IteratorUtils.transformedIterator(rs, new Transformer()
 			{
@@ -162,17 +181,6 @@ public class QueryTable extends AbstractFilterableTupleTable
 			rs.close();
 		}
 	}
-
-	// public SQLQuery getQuery()
-	// {
-	// return query;
-	// }
-	//
-	// public LinkedHashMap<String, SimpleExpression<? extends Object>>
-	// getSelect()
-	// {
-	// return select;
-	// }
 
 	@SuppressWarnings("unchecked")
 	private static BooleanExpression getExpression(QueryRule rule, final SimpleExpression<? extends Object> selectExpr,
@@ -267,7 +275,8 @@ public class QueryTable extends AbstractFilterableTupleTable
 	{
 		try
 		{
-			final LinkedHashMap<String, SimpleExpression<? extends Object>> select = queryCreator.getSelectMap();
+			final LinkedHashMap<String, SimpleExpression<? extends Object>> select = queryCreator
+					.getAttributeExpressions();
 
 			final List<QueryRule> filters = super.getFilters();
 			BooleanExpression expr = null;
@@ -292,7 +301,7 @@ public class QueryTable extends AbstractFilterableTupleTable
 				else
 				{
 					final SimpleExpression<? extends Object> selectExpr = select.get(fieldName);
-					final Field column = getColumnByName(fieldName);
+					Field column = getColumnByName(fieldName);
 					final BooleanExpression rhs = getExpression(rule, selectExpr, column);
 					if (expr != null)
 					{

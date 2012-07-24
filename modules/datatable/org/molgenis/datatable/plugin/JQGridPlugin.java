@@ -18,6 +18,8 @@ import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.test.MemoryTableFactory;
 import org.molgenis.datatable.view.JQGridView;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridFilter;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
 import org.molgenis.fieldtypes.DecimalField;
 import org.molgenis.fieldtypes.StringField;
 import org.molgenis.framework.db.Database;
@@ -32,6 +34,7 @@ import org.molgenis.model.elements.Field;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
+import com.google.gson.Gson;
 import com.mysema.query.sql.MySQLTemplates;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQueryImpl;
@@ -70,12 +73,14 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		{
 			final List<String> tableNames = new ArrayList<String>();
 			final List<String> columnNames = new ArrayList<String>();
-			getTableAndColumnNames(request, tableNames, columnNames, true);
+			final List<String> hiddenFilterColumns = new ArrayList<String>();
+			// columns that have a filter but are not displayed to the user
+			getTableAndColumnNames(request, tableNames, columnNames, hiddenFilterColumns, true);
 			try
 			{
 				if (backEnd.equals("JOINTABLE"))
 				{
-					return createJoinTable(db, tableNames, columnNames);
+					return createJoinTable(db, tableNames, columnNames, hiddenFilterColumns);
 				}
 				else if (backEnd.equals("QUERYTABLE"))
 				{
@@ -159,8 +164,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 			return null;
 		}
 
-		private TupleTable createJoinTable(Database db, List<String> tableNames, final List<String> columnNames)
-				throws DatabaseException
+		private TupleTable createJoinTable(Database db, List<String> tableNames, final List<String> columnNames,
+				final List<String> hiddenFilterColumns) throws DatabaseException
 		{
 			final SQLTemplates dialect = new MySQLTemplates();
 
@@ -184,7 +189,8 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 				joins.add(countryLanguage);
 			}
 
-			JoinTableCreator tableCreator = new JoinTableCreator(db, tableNames, columnNames, joins);
+			final JoinTableCreator tableCreator = new JoinTableCreator(db, tableNames, columnNames,
+					hiddenFilterColumns, joins);
 			return new QueryTable(tableCreator, db.getConnection(), dialect);
 		}
 
@@ -229,7 +235,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 				}
 
 				@Override
-				public List<Field> getField()
+				public List<Field> getFields()
 				{
 					final Field countryName = new Field("Country.Name");
 					countryName.setType(new StringField());
@@ -245,7 +251,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		}
 
 		private void getTableAndColumnNames(Tuple request, List<String> inTableNames, List<String> inColumnNames,
-				boolean completeColumnNames)
+				final List<String> hiddenColumnsNames, boolean completeColumnNames)
 		{
 			if (request != null)
 			{
@@ -256,8 +262,21 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					return;
 				}
 
-				final List<String> columNames = Arrays.asList(colNamesParamaters);
-				for (final String column : columNames)
+				final String filtersParam = request.getString("filters");
+				final List<String> invisibleColumns = new ArrayList<String>();
+				if (StringUtils.isNotEmpty(filtersParam))
+				{
+					final JQGridFilter filters = new Gson().fromJson(filtersParam, JQGridFilter.class);
+					for (JQGridRule rule : filters.rules)
+					{
+						hiddenColumnsNames.add(rule.field);
+					}
+				}
+
+				final List<String> columnNames = new ArrayList<String>();
+				columnNames.addAll(Arrays.asList(colNamesParamaters));
+				columnNames.addAll(hiddenColumnsNames);
+				for (final String column : columnNames)
 				{
 					if (StringUtils.contains(column, "."))
 					{
@@ -281,6 +300,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 						inColumnNames.add(column);
 					}
 				}
+
 			}
 		}
 

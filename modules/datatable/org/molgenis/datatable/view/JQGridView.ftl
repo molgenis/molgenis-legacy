@@ -13,7 +13,6 @@
 <link href="dynatree-1.2.0/src/skin/ui.dynatree.css" rel="stylesheet" type="text/css" id="skinSheet">
 <script src="dynatree-1.2.0/src/jquery.dynatree.js" type="text/javascript"></script>
 
-
 <script type="text/javascript">
 //TODO: place in JS file after dev!
 var JQGridView = {
