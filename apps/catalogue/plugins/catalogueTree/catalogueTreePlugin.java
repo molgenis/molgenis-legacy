@@ -776,7 +776,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		// String htmlValue = "<table id = 'detailInformation'  border = 2>" +
 		String htmlValue = "<table style='border-spacing: 2px; width: 100%;' class='MeasurementDetails' id = '"
 				+ nodeName + "_table'>";
-		htmlValue += "<tr><td class='box-body-label'>Current selection:</th><td id=\"" + nodeName + "\"_itemName style=\"cursor:pointer\">"
+		htmlValue += "<tr><td class='box-body-label'>Current selection:</th><td id=\"" + nodeName + "_itemName\"style=\"cursor:pointer\">"
 				+ displayName + "</td></tr>";
 
 		if (categoryNames.size() > 0) {

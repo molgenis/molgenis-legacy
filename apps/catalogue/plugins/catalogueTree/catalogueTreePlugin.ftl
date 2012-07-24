@@ -131,25 +131,21 @@
 		}
 		
 		function addVeritcalLine(id){
-			
 			if($('#' + id).children('ul').children('li').length > 0){
-					 
 					if($('#' + id).nextAll().length > 0){
 						$('#' + id).removeClass('lastCollapsable');
 						$('#' + id).children('div').removeClass('lastCollapsable-hitarea');
 					}
 					$('#' + id).children('ul').children('li').each(function(){					
 						addVeritcalLine($(this).attr('id'));	
-					});
-					
+					});					
 			}else{
 				if($('#' + id).nextAll().length > 0){
 					$('#' + id).removeClass('last');
 				}
 			}
-			
 		}
-		
+
 		function checkSearchingStatus(){
 			
 			if($('#InputToken').val() === ""){
@@ -159,13 +155,124 @@
 		}
 		
 		function whetherReload(){
-
 			var value = $('#InputToken').val();
 			if(value.search(new RegExp("\\w", "gi")) != -1){
 				searchInTree();
 			}
 			return false;
+		}
+		
+		function onClickRemoveTableRow() {
+			if($('#selectedVariableTable').find('tr').length > 1){
+				$(this).parent().parent().remove();
+			}else{
+				$('#selectedVariableHeader').remove();
+				$('#selectedVariableTable').remove();
+			}
+			var myCheckBoxId = $(this).attr('id').replace("_delete", "");
+			$('#' + myCheckBoxId).find('input:checkbox').attr('checked',false);
+			var currentNode = $('#' + myCheckBoxId);
+			var uncheckProtocol = true;
+			$(currentNode).siblings().each(function(){
+				if($(this).find('input:checkbox').attr('checked') == "checked"){
+					uncheckProtocol = false;
+				}
+			});
+			if(uncheckProtocol == true){
+				$(currentNode).parents('li:first').find('input:checkbox').attr('checked', false);
+			}
+		}
+		
+		function traceBackSelection(tracedElementID){
 			
+			$('#' + tracedElementID + '>span').trigger('click');
+			$('#' + tracedElementID).show();
+			var id = $('#' + tracedElementID).attr('id');
+			$('#leftSideTree li#' + id).parents().show();
+			$('#leftSideTree li#' + id).parents('li').children('div').
+				removeClass('lastExpandable-hitarea expandable-hitarea').
+				addClass('collapsable-hitarea');
+			$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+			
+			var elementTop = $('#' + tracedElementID).position().top;
+			var treeDivTop = $('#leftSideTree').position().top;
+			var divHeight = $('#leftSideTree').height();
+			var lastTop = $('#leftSideTree').scrollTop();
+			$('#leftSideTree').scrollTop(lastTop + elementTop - divHeight/3 - treeDivTop);
+			addVeritcalLine($('#' + tracedElementID).parents('li').eq(0).attr('id'));
+			removeVerticalLine($('#' + tracedElementID).parents('li').eq(0).attr('id'));
+		}
+		function addSelection(listOfVariables){
+			
+			for(var i = 0; i < listOfVariables.length; i++){
+				
+				var variableID = listOfVariables[i];
+			
+				var uniqueID = $('#' + variableID).parents('li').eq(0).attr('id');
+				
+				$('#' + uniqueID + '>span').trigger('click');
+				
+				if($('#' + uniqueID + '_row').length == 0){
+					
+					var label = $('#' + variableID).parent().text();
+					var checkBoxID = $('#' + variableID).attr('id');
+					var protocolName = $('#' + variableID).parents('li').eq(1).children('span').text();
+					var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
+					var descriptionShows = variableDescription.substr(0, 10);
+					var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
+					var content = '<tr id=\"'+uniqueID +'_row\" ><td style=\"width:30%; text-align:left; cursor:pointer\">' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer;width:30%; text-align:left\">' + 
+								descriptionShows + '...</td><td style=\"width:30%; text-align:left\">' + 
+								protocolName + '</td><td style=\"text-align:center; width:10%; text-align:left\">' + 
+								deleteButton + '</td></tr>';
+					
+					<!--We are going to check whether this selectedVariableTable already existed-->
+					if($('#selectedVariableTable').length == 0){
+					
+						var newTableHeader = '<table id=\"selectedVariableHeader\" style=\"width:100%\" class=\"listtable\">'+
+						'<th style=\"width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
+						'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></table>';
+						var newTable = '<table id=\"selectedVariableTable\"  class=\"listtable\" style=\"width:100%; overflow:auto\">';
+						newTable += content;
+						newTable += "</table>";
+						$('#selection').append(newTable);
+						$('#selectionHeader').append(newTableHeader);
+						$('#'+uniqueID+'_delete').click(onClickRemoveTableRow);
+						
+					}else{
+						
+						$('#selectedVariableTable').find('tr:last-child').after(content);
+						
+						if($('#selectedVariableTable tr').length%2 == 1){
+							$('#'+uniqueID +'_row').addClass('form_listrow0');
+						}else{
+							$('#'+uniqueID +'_row').addClass('form_listrow1');
+						}
+						$('#'+uniqueID+'_delete').click(onClickRemoveTableRow);
+					}
+					
+					$('#' + uniqueID +'_hover').click(function(){
+						var clickedVariable = $(this).attr('id').replace("_hover", "");
+						$('#' + clickedVariable + ' span').trigger('click');
+					});
+					$('#' + uniqueID +'_hover').mouseenter(function(){
+						$('#popUpDialogue').show();
+					});
+					$('#' + uniqueID +'_hover').mouseout(function(){
+						$('#popUpDialogue').hide();
+					});
+					$('#' + uniqueID +'_row >td').eq(0).mouseenter(function(){
+						$('#traceBack').show();
+					});
+					$('#' + uniqueID +'_row >td').eq(0).mouseout(function(){
+						$('#traceBack').hide();
+					});
+					
+					$('#' + uniqueID + '_row >td').eq(0).click(function(){
+						var tracedElementID = $(this).parent().attr('id').replace("_row", "");
+						traceBackSelection(tracedElementID);
+					});
+				}
+			}
 		}
 		
 		$(document).ready(function(){	
@@ -359,7 +466,10 @@
 								$('#clickedVariable').val(measurementID);
 								$('#details').empty();
 								$('#details').append(json[measurementID]);
-								
+								$('#' + measurementID + '_itemName').click(function(){
+									var uniqueID = $(this).attr('id').replace("_itemName","");
+									traceBackSelection(uniqueID);
+								});
 							});
 							$('#' + measurementID + '>span').mouseenter(function(){
 								$('#popUpDialogue').show();
@@ -369,6 +479,7 @@
 							});												
 						}
 					});	
+ 					
  					$('div#leftSideTree input:checkbox').each(function(index){
  						$(this).click(function() {
 							 if($(this).attr('checked')){
@@ -398,11 +509,40 @@
  							
  							if($(this).parent().parent().find('input:checkbox').length > 1){
  								
- 								
+ 								if($(this).attr('checked') != 'checked'){
  									
- 							}else{
+ 									var variableID = $(this).attr('id');
+ 										
+ 									$(this).parents('li:first').find('input:checkbox').each(function(){
+ 										if(variableID != $(this).attr('id')){
+ 											$('#' + $(this).parents('li:first').attr('id') + '_row').remove();
+ 										}
+ 									});
+	 								if($('#selectedVariableTable').find('tr').length == 0){
+	 									$('#selectedVariableTable').remove();
+	 									$('#selectedVariableHeader').remove();
+	 								}
+ 									
+ 								}else{
  								
- 								$(this).parent().parent().find('span').trigger('click');
+	 								//Get all the checkbox id's of the children
+	 								var index = 0;
+	 								var array = new Array();
+	 								var variableID = $(this).attr('id');
+	 								
+	 								$(this).parent().parent().find('input:checkbox').each(function(){
+	 									if($(this).attr('id') != variableID){
+		 									array[index] = $(this).attr('id');
+		 									index++;
+	 									}
+	 								});
+	 								
+	 								addSelection(array);
+	 							}
+ 							}else{
+ 							
+ 								//Add only one measurement to the selection 
+ 								$(this).parents('span:first').trigger('click');
  							
 	 							if($(this).attr('checked') != 'checked'){
 	 								
@@ -412,107 +552,25 @@
 	 									$('#selectedVariableTable').remove();
 	 									$('#selectedVariableHeader').remove()
 	 								}
+	 								var uncheckProtocol = true;
+	 								var currentNode = $(this).parents('li:first');
+									$(currentNode).siblings().each(function(){
+										if($(this).find('input:checkbox').attr('checked') == "checked"){
+											uncheckProtocol = false;
+										}
+									});
+									if(uncheckProtocol == true){
+										$(currentNode).parents('li:first').find('input:checkbox').attr('checked', false);
+									}
 	 							}else{
-	 								
-	 								var label = $(this).parent().text();
-	 								var checkBoxID = $(this).attr('id');
-			 						var uniqueID = $(this).parent().parent().attr('id');
-			 						
-			 						var protocolName = $(this).parents('li').eq(1).children('span').text();
-			 						var variableDescription = $('#' + uniqueID + '_description').find('td').eq(1).text();
-			 						var descriptionShows = variableDescription.substr(0, 10);
-			 						var deleteButton = '<img src=\"generated-res/img/cancel.png\" id=\"'+uniqueID+'_delete\" style=\"cursor:pointer;length:16px;width:16px\">';
-		 							var content = '<tr id=\"'+uniqueID +'_row\" ><td style=\"width:30%; text-align:left; cursor:pointer\">' + label + '</td><td id=\"'+uniqueID +'_hover\" style=\"cursor:pointer;width:30%; text-align:left\">' + 
-		 										descriptionShows + '...</td><td style=\"width:30%; text-align:left\">' + 
-		 										protocolName + '</td><td style=\"text-align:center; width:10%; text-align:left\">' + 
-		 										deleteButton + '</td></tr></table>';
-			 						
-		 							<!--We are going to check whether this selectedVariableTable already existed-->
-		 							if($('#selectedVariableTable').length == 0){
-		 							
-		 								var newTableHeader = '<table id=\"selectedVariableHeader\" style=\"width:100%\" class=\"listtable\">'+
-		 								'<th style=\"width:30%; text-align:left\">Variables</th><th style=\"width:30%; text-align:left\">Description</th>'+
-		 								'<th style=\"width:30%; text-align:left\">Sector/Protocol</th><th style=\"width:10%;text-align:center\">Delete</th></table>';
-		 								var newTable = '<table id=\"selectedVariableTable\"  class=\"listtable\" style=\"width:100%; overflow:auto\">';
-		 								newTable += content;
-		 								$('#selection').append(newTable);
-		 								$('#selectionHeader').append(newTableHeader);
-		 								
-		 								$('#'+uniqueID+'_delete').click(function(){
-		 									if($('#selectedVariableTable').find('tr').length > 1){
-			 									$('#'+uniqueID+'_row').remove();
-			 								}else{
-			 									$('#selectedVariableHeader').remove();
-			 									$('#selectedVariableTable').remove();
-			 									
-			 								}
-			 								$('#' + checkBoxID).attr('checked',false);
-		 								});
-		 								
-		 							}else{
-		 								
-		 								$('#selectedVariableTable').find('tr:last-child').after(content);
-		 								
-		 								if($('#selectedVariableTable tr').length%2 == 1){
-		 									$('#'+uniqueID +'_row').addClass('form_listrow0');
-		 								}else{
-		 									$('#'+uniqueID +'_row').addClass('form_listrow1');
-		 								}
-		 								
-		 								$('#'+uniqueID+'_delete').click(function(){
-		 									if($('#selectedVariableTable').find('tr').length > 1){
-			 									$('#'+uniqueID+'_row').remove();
-			 								}else{
-			 									$('#selectedVariableTable').remove();
-			 									$('#selectedVariableHeader').remove();
-			 								}
-			 								$('#' + checkBoxID).attr('checked',false);
-		 								});
-		 							}
-		 							
-		 							$('#' + uniqueID +'_hover').click(function(){
-		 								$('#' + uniqueID + ' span').trigger('click');
-		 							});
-		 							$('#' + uniqueID +'_hover').mouseenter(function(){
-		 								$('#popUpDialogue').show();
-		 							});
-		 							$('#' + uniqueID +'_hover').mouseout(function(){
-		 								$('#popUpDialogue').hide();
-		 							});
-		 							$('#' + uniqueID +'_row >td').eq(0).mouseenter(function(){
-		 								$('#traceBack').show();
-		 							});
-		 							$('#' + uniqueID +'_row >td').eq(0).mouseout(function(){
-		 								$('#traceBack').hide();
-		 							});
-		 							
-		 							$('#' + uniqueID + '_row >td').eq(0).click(function(){
-		 								
-		 								$('#' + uniqueID + '>span').trigger('click');
-		 								$('#' + uniqueID).show();
-		 								var id = $('#' + uniqueID).attr('id');
-										$('#leftSideTree li#' + id).parents().show();
-										$('#leftSideTree li#' + id).parents('li').children('div').
-											removeClass('lastExpandable-hitarea expandable-hitarea').
-											addClass('collapsable-hitarea');
-										$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
-										
-		 								var elementTop = $('#' + uniqueID).position().top;
-		 								var treeDivTop = $('#leftSideTree').position().top;
-		 								var divHeight = $('#leftSideTree').height();
-		 								var lastTop = $('#leftSideTree').scrollTop();
-		 								$('#leftSideTree').scrollTop(lastTop + elementTop - divHeight/3 - treeDivTop);
-		 								addVeritcalLine($('#' + uniqueID).parents('li').eq(0).attr('id'));
-										removeVerticalLine($('#' + uniqueID).parents('li').eq(0).attr('id'));
-		 							});
-		 							
+	 								var array = new Array();
+	 								array[0] = $(this).attr('id');
+	 								addSelection(array);
 	 							}
-	 							$('#variableCount').empty();
-	 							var count = $('#selectedVariableTable tr').length - 1;
-	 							$('#variableCount').append(count);
  							}
  						});	
  					});
+ 					
  				</script>
 			</div>
 		</div>
