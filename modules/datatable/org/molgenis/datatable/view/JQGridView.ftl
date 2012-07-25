@@ -76,10 +76,12 @@ var JQGridView = {
     
     changeColumns: function(columnModel) {
     	var self = JQGridView;
+/*
     	if(columnModel != null) {
     		this.config.colModel = columnModel;	
     	}
-
+*/
+		//add all columnNames
 		var names = new Array();
 		$.each(this.config.colModel, function(index, value) {
 			names.push(value.name);
@@ -92,17 +94,21 @@ var JQGridView = {
 	    	for(i = 0; i < gridColModel.length; ++i) {
 	    		colName = gridColModel[i].name;
 	    		hidden = true;
-	    		for(j = 0; j < this.colModel.length; ++j) {
-	    			if(colName == this.colModel[j].name) {
+	    		for(j = 0; j < columnModel.length; ++j) {
+	    			if(colName == columnModel[j].name) {
+	    				columnNames.push(colName);
 	    				hidden = false;
 	    				break;
 	    			}
 	    		}
-	   			gridColModel[i].hidden = hidden;
+	    		
+	    		gridColModel[i].hidden = hidden;
+	    		
+	   			
 	    	}
-	    	//this.config.colModel = gridColModel; 
+	    	this.config.colModel = gridColModel; 
 	    	//this.config.postData.columnNames = columnNames;
-	    	//this.config.postData.colNames = columnNames;
+	    	this.config.postData.colNames = columnNames;
 		}
 
 		this.sliceColumns();
