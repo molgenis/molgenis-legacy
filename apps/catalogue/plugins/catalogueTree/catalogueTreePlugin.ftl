@@ -115,10 +115,12 @@
 				
 				//Nodes in the middle
 				if($('#' + id).children('ul').children('li').length > 0){
-					if($('#' + id).nextAll().length > 0 && !$('#' + id).nextAll().is(':visible')){
+					if($('#' + id).nextAll().length == 0 || $('#' + id).nextAll().length > 0 && 
+						!$('#' + id).nextAll().is(':visible'))
+					{
 						$('#' + id).addClass('lastCollapsable');
 						$('#' + id).children('div').addClass('lastCollapsable-hitarea');
-					}	
+					}		
 					$('#' + id).children('ul').children('li').each(function(){					
 						removeVerticalLine($(this).attr('id'));					
 					});

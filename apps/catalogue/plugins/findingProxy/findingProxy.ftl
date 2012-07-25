@@ -127,7 +127,7 @@
 							<td><font size="3"><i>
 								</br>The matchings will be done using Levenshtein string matching algorithms.
 								</br></br>The mapping result will be shown here!
-								</br><div id="tableDisplay">
+								</br><div id="tableDisplay" style="overflow:auto;height:500px">
 									<script>
 										<#if screen.getManualMappingResultTable()??>
 											<#list screen.getManualMappingResultTable() as eachMapping>

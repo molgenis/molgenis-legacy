@@ -21,7 +21,7 @@ import org.molgenis.util.Tuple;
 
 import plugins.HarmonizationComponent.LevenshteinDistanceModel;
 import plugins.HarmonizationComponent.LinkedInformation;
-import plugins.HarmonizationComponent.LinkedMap;
+import plugins.HarmonizationComponent.MappingList;
 
 
 public class findingProxy extends PluginModel<Entity> {
@@ -40,7 +40,7 @@ public class findingProxy extends PluginModel<Entity> {
 	private double cutOffValue = 40;
 	private String userDefinedQuery = "";
 	private List<Measurement> measurementsInStudy = new ArrayList<Measurement>();
-	private HashMap<String, LinkedMap> mappingResultAndSimiarity = new HashMap<String, LinkedMap>();
+	private HashMap<String, MappingList> mappingResultAndSimiarity = new HashMap<String, MappingList>();
 	private HashMap<String, List<String>> parameterToExpandedQuery = new HashMap<String, List<String>>();
 	private HashMap<String, List<String>> expandedQueries = new HashMap<String, List<String>>();
 
@@ -278,12 +278,12 @@ public class findingProxy extends PluginModel<Entity> {
 						
 						if(cutOff == true && similarity >= cutOffValue ){
 							
-							LinkedMap temp = null;
+							MappingList temp = null;
 
 							if(mappingResultAndSimiarity.containsKey(eachParameter)){
 								temp = mappingResultAndSimiarity.get(eachParameter);
 							}else{
-								temp = new LinkedMap();
+								temp = new MappingList();
 							}
 							
 							if(m.getDescription() != null){
@@ -301,12 +301,12 @@ public class findingProxy extends PluginModel<Entity> {
 				
 				if(cutOff == false){
 					
-					LinkedMap temp = null;
+					MappingList temp = null;
 
 					if(mappingResultAndSimiarity.containsKey(eachParameter)){
 						temp = mappingResultAndSimiarity.get(eachParameter);
 					}else{
-						temp = new LinkedMap();
+						temp = new MappingList();
 					}
 
 					temp.add(eachQuery, matchedDataItem, maxSimilarity, measurementName);
@@ -317,13 +317,13 @@ public class findingProxy extends PluginModel<Entity> {
 		}
 	}
 
-public HashMap<String, JSONObject> makeHtmlTable (HashMap<String, LinkedMap>mappingResultAndSimiarity) throws Exception {
+public HashMap<String, JSONObject> makeHtmlTable (HashMap<String, MappingList>mappingResultAndSimiarity) throws Exception {
 		
 		HashMap<String, JSONObject> parameterWithHtmlTable = new HashMap<String, JSONObject>();
 		
 		for(String eachOriginalQuery : mappingResultAndSimiarity.keySet()){
 
-			LinkedMap map = mappingResultAndSimiarity.get(eachOriginalQuery);
+			MappingList map = mappingResultAndSimiarity.get(eachOriginalQuery);
 
 			List<LinkedInformation> links = map.getSortedInformation();
 

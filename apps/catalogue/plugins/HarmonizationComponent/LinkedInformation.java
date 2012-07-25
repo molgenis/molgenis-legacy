@@ -1,7 +1,5 @@
 package plugins.HarmonizationComponent;
 
-import org.molgenis.pheno.Measurement;
-
 public class LinkedInformation implements Comparable<LinkedInformation>{
 	
 	public String measurementName = "";

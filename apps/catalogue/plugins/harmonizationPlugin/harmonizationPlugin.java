@@ -31,7 +31,7 @@ import org.molgenis.util.Tuple;
 
 import plugins.HarmonizationComponent.LevenshteinDistanceModel;
 import plugins.HarmonizationComponent.LinkedInformation;
-import plugins.HarmonizationComponent.LinkedMap;
+import plugins.HarmonizationComponent.MappingList;
 import plugins.HarmonizationComponent.OWLFunction;
 import plugins.developingAlgorithm.RScriptGenerator;
 import plugins.developingAlgorithm.testModel;
@@ -72,7 +72,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 	private String validationStudyName = "";
 	private int maxQuerySize = 0;
 	private String hitSizeOption = "";
-	private HashMap<String, LinkedMap> mappingResultAndSimiarity = new HashMap<String, LinkedMap>();
+	private HashMap<String, MappingList> mappingResultAndSimiarity = new HashMap<String, MappingList>();
 	private List<String> listOfScripts = new ArrayList<String>();
 	private HashMap<String, String> variableFormula = new HashMap<String, String>();
 	private OWLFunction owlFunction = null;
@@ -312,7 +312,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						db.add(validationStudyProtocol);
 					}
 
-					for(Entry<String, LinkedMap> entry : mappingResultAndSimiarity.entrySet()){
+					for(Entry<String, MappingList> entry : mappingResultAndSimiarity.entrySet()){
 						
 						String originalQuery = entry.getKey();
 						
@@ -702,12 +702,12 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 						
 						if(cutOff == true && similarity >= cutOffValue ){
 							
-							LinkedMap temp = null;
+							MappingList temp = null;
 
 							if(mappingResultAndSimiarity.containsKey(eachParameter)){
 								temp = mappingResultAndSimiarity.get(eachParameter);
 							}else{
-								temp = new LinkedMap();
+								temp = new MappingList();
 							}
 							
 							if(m.getDescription() != null){
@@ -725,12 +725,12 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				
 				if(cutOff == false){
 					
-					LinkedMap temp = null;
+					MappingList temp = null;
 
 					if(mappingResultAndSimiarity.containsKey(eachParameter)){
 						temp = mappingResultAndSimiarity.get(eachParameter);
 					}else{
-						temp = new LinkedMap();
+						temp = new MappingList();
 					}
 
 					temp.add(eachQuery, matchedDataItem, maxSimilarity, measurementName);
@@ -741,13 +741,13 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 		}
 	}
 
-	public HashMap<String, JSONObject> makeHtmlTable (HashMap<String, LinkedMap>mappingResultAndSimiarity) throws Exception {
+	public HashMap<String, JSONObject> makeHtmlTable (HashMap<String, MappingList>mappingResultAndSimiarity) throws Exception {
 		
 		HashMap<String, JSONObject> parameterWithHtmlTable = new HashMap<String, JSONObject>();
 		
 		for(String eachOriginalQuery : mappingResultAndSimiarity.keySet()){
 
-			LinkedMap map = mappingResultAndSimiarity.get(eachOriginalQuery);
+			MappingList map = mappingResultAndSimiarity.get(eachOriginalQuery);
 
 			List<LinkedInformation> links = map.getSortedInformation();
 
