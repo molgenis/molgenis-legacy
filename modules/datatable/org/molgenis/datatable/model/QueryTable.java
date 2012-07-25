@@ -128,8 +128,18 @@ public class QueryTable extends AbstractFilterableTupleTable
 			}
 
 			final SQLQueryImpl query = createQuery();
-			query.limit(getLimit());
-			query.offset(getOffset());
+
+			int limit = getLimit();
+			if (limit > 0)
+			{
+				query.limit(limit);
+			}
+
+			int offset = getOffset();
+			if (offset > 0)
+			{
+				query.offset(offset);
+			}
 			// TODO: replace by log4j if configured correctly
 			System.err.println(query.toString());
 

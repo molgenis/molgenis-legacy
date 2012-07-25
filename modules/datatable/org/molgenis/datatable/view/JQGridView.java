@@ -133,11 +133,14 @@ public class JQGridView extends HtmlWidget
 					postData.page = Math.min(postData.page, totalPages);
 					final int offset = Math.max((postData.page - 1) * postData.rows, 0);
 
-					// data.rows == limit
-					tupleTable.setLimit(postData.rows);
-
-					// data.rows * data.page
-					tupleTable.setOffset(offset);
+					final String exportSelection = request.getString("exportSelection");
+					if (!StringUtils.equalsIgnoreCase(exportSelection, "ALL"))
+					{
+						// data.rows == limit
+						tupleTable.setLimit(postData.rows);
+						// data.rows * data.page
+						tupleTable.setOffset(offset);
+					}
 
 					if (StringUtils.isNotEmpty(postData.sidx) && tupleTable instanceof FilterableTupleTable)
 					{
