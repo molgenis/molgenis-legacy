@@ -9,6 +9,7 @@ public class JQGridColModel
 	public static class SearchOptions
 	{
 		public boolean required = true;
+		public boolean searchhidden = true;
 		public String stype = "text";
 		public String[] sopt = new String[]
 		{ "eq", "ne", "bw", "bn", "ew", "en", "cn", "nc" };

@@ -86,9 +86,28 @@ var JQGridView = {
 		});
 		this.config.colNames = names;
 
+		if(this.grid != undefined) {
+			var columnNames = new Array();
+			gridColModel = this.grid.getGridParam("colModel");
+	    	for(i = 0; i < gridColModel.length; ++i) {
+	    		colName = gridColModel[i].name;
+	    		hidden = true;
+	    		for(j = 0; j < this.colModel.length; ++j) {
+	    			if(colName == this.colModel[j].name) {
+	    				hidden = false;
+	    				break;
+	    			}
+	    		}
+	   			gridColModel[i].hidden = hidden;
+	    	}
+	    	//this.config.colModel = gridColModel; 
+	    	//this.config.postData.columnNames = columnNames;
+	    	//this.config.postData.colNames = columnNames;
+		}
+
 		this.sliceColumns();
 
-		this.config.postData.colNames = this.config.colNames;
+		
 		
 		filters = this.grid.getGridParam("postData").filters;
 		
@@ -105,6 +124,7 @@ var JQGridView = {
 		if(filters != null) {
 			this.config.postData.filters = filters; 
 		}
+		
     	
     	grid = jQuery(this.tableSelector).jqGrid(this.config)
             .jqGrid('navGrid', this.pagerSelector,
