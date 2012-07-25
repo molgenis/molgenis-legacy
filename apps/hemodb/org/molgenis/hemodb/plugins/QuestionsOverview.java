@@ -2,13 +2,17 @@ package org.molgenis.hemodb.plugins;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.lang.Math.*;
 
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
 
 import org.apache.commons.lang.StringUtils;
+import org.molgenis.cluster.DataValue;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -25,6 +29,7 @@ import org.molgenis.hemodb.HemoSampleGroup;
 import org.molgenis.hemodb.plugins.QuestionsModel.QuestionState;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
+import org.openqa.selenium.logging.LogEntries;
 
 import plugins.matrix.manager.Browser;
 import plugins.matrix.manager.MatrixManagerModel;
@@ -35,13 +40,13 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		super(name, parent);
 		this.setModel(new QuestionsModel(this)); // the default model
 		getModel().setState(QuestionState.BEGINNING);
-		
+
 		// create sub plugin
 		new MatrixManagerHemodb("QuestionsSub", this);
-		
-		//initialiseer alle paginas 1x
-//		new QuestionOne("questionOne", this);
-//		new QuestionTwo("questionTwo", this);
+
+		// initialiseer alle paginas 1x
+		// new QuestionOne("questionOne", this);
+		// new QuestionTwo("questionTwo", this);
 	}
 
 	public ScreenView getView() {
@@ -51,23 +56,27 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 	@Override
 	public void reload(Database db) throws Exception {
 		// TODO Auto-generated method stub
-		
-		for(ScreenController child: this.getChildren()) child.reload(db);
+
+		for (ScreenController child : this.getChildren())
+			child.reload(db);
 
 	}
 
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
-			throws HandleRequestDelegationException {	
-		
+			throws HandleRequestDelegationException {
+
 		try {
-			
-			if(QuestionState.QUESTION1.equals(getModel().getState()))
-			{
-				//delegate to the module of question 1
-				//this.get("questionOne").handleRequest(db, request, out);
+			if (QuestionState.QUESTION1.equals(getModel().getState())) {
+				// delegate to the module of question 1
+				// this.get("questionOne").handleRequest(db, request, out);
 				questionOne(db, request);
 			}
-				
+			if (QuestionState.QUESTION2.equals(getModel().getState())) {
+				// delegate to the module of question 1
+				// this.get("questionOne").handleRequest(db, request, out);
+				questionTwo(db, request);
+			}
+
 			getModel().setAction(request.getAction());
 
 			if ("back".equals(request.getAction())) {
@@ -78,27 +87,28 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 			String question = request.getString("questions");
 			if ("questionOne".equals(question)) {
 				getModel().setState(QuestionState.QUESTION1);
-				
-				if(getModel().getNames().isEmpty()){ // If the list with groupnames is already filled it doesn't have to be filled again
+				if (getModel().getNames().isEmpty()) {
+					// If the list with groupnames is already filled it doesn't have to be filled again
 					selectSampleGroupsForDropdown(db);
 				}
-			
-				//get the q1
-				//QuestionOne q1 = (QuestionOne) this.get("questionOne");
-				
+
+				// get the q1
+				// QuestionOne q1 = (QuestionOne) this.get("questionOne");
+
 			} else if ("questionTwo".equals(question)) {
 				getModel().setState(QuestionState.QUESTION2);
-				
-				if(getModel().getNames().isEmpty()){ // If the list with groupnames is already filled it doesn't have to be filled again
+
+				if (getModel().getNames().isEmpty()) {
+					// If the list with groupnames is already filled it doesn't have to be filled again									// groupnames is already
 					selectSampleGroupsForDropdown(db);
 				}
-				
-				//TODO: QuestionTwo q2 = (QuestionTwo) this.get("questionTwo");
+
+				// TODO: QuestionTwo q2 = (QuestionTwo) this.get("questionTwo");
 			} else if ("questionThree".equals(question)) {
 				getModel().setState(QuestionState.QUESTION3);
 			} else {
 				System.out.println("something bad happened");
-				//TODO implement other questions
+				// TODO implement other questions
 			}
 
 			// Submit button
@@ -113,8 +123,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		return Show.SHOW_MAIN;
 
 	}
-	
-		
+
 	public void selectSampleGroupsForDropdown(Database db)
 			throws DatabaseException {
 		// SELECTION OF ALL THE SAMPLE GROUPS IN THE DATABASE TO DISPLAY ON THE
@@ -129,7 +138,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 			System.out.println("OOPS! SOMETHING WENT WRONG");
 		}
 	}
-	
+
 	public List<String> selectSamplesFromSampleGroups(Database db,
 			List<String> sampleGroups) throws DatabaseException {
 		// SELECTION OF THE SAMPLE NAMES WITHIN EACH GROUP THAT IS SPECIFIED
@@ -155,7 +164,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		}
 		return sampleNames;
 	}
-	
+
 	public List<String> selectProbesWithGenes(Database db, String[] genes)
 			throws DatabaseException {
 		// GETS A STRING WITH GENE NAMES, CONVERTS THEM TO PROBES AND RETURNS
@@ -202,8 +211,8 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		// filter on sampleNames and on probeNames
 		return m.getSubMatrix(probeNames, sampleNames);
 	}
-	
-	public void questionOne(Database db, Tuple request){
+
+	public void questionOne(Database db, Tuple request) {
 		try {
 			// GENE EXPRESSION DATA MATRIX SELECTION -> shows which type of gene
 			// expression will be used
@@ -233,14 +242,13 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 			List<String> sampleNames = selectSamplesFromSampleGroups(db, groups);
 
 			// SUBMIT BUTTON
-			if (getModel().getAction().equals("submitInfoQ1")) {
+			if (request.getAction().equals("submitInfoQ1")) {
 				System.out
-						.println("we handled the information on the site submitted via the submit button");
+						.println("Q1!!! We handled the information on the site submitted via the submit button");
 				getModel().setState(QuestionState.QUESTION1_RESULT);
-
 			}
-			if(getModel().getState().equals("QUESTION1_RESULT")){
-				
+			if (QuestionState.QUESTION1_RESULT.equals(getModel().getState())) {
+
 				// get the data set
 				Data dataSet = db.query(Data.class).eq(Data.NAME, geneExp)
 						.find().get(0);
@@ -300,6 +308,77 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//return Show.SHOW_MAIN;
+		// return Show.SHOW_MAIN;
 	}
+
+	public void questionTwo(Database db, Tuple request)
+			throws Exception {
+		// GENE EXPRESSION DATA MATRIX SELECTION (raw/normalized data)
+		String geneExp = request.getString("geneExp");
+
+		// Sample combining method selection (Mean/Median)
+		String sampleCombine = request.getString("sampleCombine");
+
+		// SAMPLE SELECTION BASED ON SAMPLE GROUP NAMES
+		List<String> groups = request.getStringList("sampleGroups");
+		List<String> sampleNames = selectSamplesFromSampleGroups(db, groups);
+
+		// Select significance cutoff to be used
+		double signifCutoff = request.getDouble("signifCutoff");
+
+		// SUBMIT BUTTON Question 2
+//		if (request.getAction().equals("submitInfoQ2")) {
+//			System.out.println("Q2!!! We handled the information on the site submitted via the submit button");
+//			getModel().setState(QuestionState.QUESTION2_RESULT);
+//		}
+
+		List<String> probeNames = new ArrayList<String>();
+		List<HemoProbe> probes = db.find(HemoProbe.class);
+		
+//		System.out.println("All the probes are: " + probeNames);
+		
+		//TODO: 
+		//Choose binary file based on geneExp
+		//make submatrix with sampleNames
+		//see pseudocode on paper for (row: rows)
+		
+		if(geneExp.equals("expDataRaw")){
+			//TODO: how to get the file? Cannot do hard coded because different user which might not know where the binary file is stored on the system
+		}
+		else if (geneExp.equals("expDataLog2Quan")){
+			//TODO: how to get the file? Cannot do hard coded because different user which might not know where the binary file is stored on the system
+			double log2SignifCutoff = Math.log(signifCutoff)/Math.log(2);
+			
+			
+		}
+		
+		
+//		// get the data set
+//		Data dataSet = db.query(Data.class).eq(Data.NAME, geneExp).find().get(0);
+//
+//		for(HemoProbe probe : probes){
+//			String probeName = probe.getName();
+//			probeNames.add(probeName);
+//		}		
+//		
+//		// the matrix we want to show
+//		DataMatrixInstance m = this.getMatrixInstance(db, dataSet,sampleNames, probeNames);
+//		
+//
+//		
+//		DataMatrixInstance subMatrix = m.getSubMatrix(probeNames, sampleNames);
+//		System.out.println("dataSet is: " + "\n" + subMatrix);
+//		
+//		//HashMap<String, Object[]> probeValues = new HashMap<String, Object[]>();
+////		for (HemoProbe probe : probes){
+////			String probeName = probe.getName();
+////			System.out.println("probeName is: " + probeName);
+////			System.out.println("values of this probe: " + m.getRow(probeName));
+////			//probeValues.put(probeName, m.getRow(probeName));
+////		}
+//		//System.out.println(probeValues);
+//		
+		
+	}
+
 }

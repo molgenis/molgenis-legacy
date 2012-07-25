@@ -35,9 +35,9 @@
 			<#if model.state == "BEGINNING">
 				<div id="askingQuestions">
 					Which question do you want to ask?<br />
-					<input type="radio" id="Q1" name="questions" value="questionOne" /> Search for expression of gene(s) in subsets of samples<br />
+					<input type="radio" id="Q1" name="questions" value="questionOne"  /> Search for expression of gene(s) in subsets of samples<br />
 					<input type="radio" id="Q2" name="questions" value="questionTwo" checked /> Make comparisons: what are significantly differentially expressed genes between group A and group B <br />
-					<input type="radio" id="Q3" name="questions" value="questionThree" checked /> Make comparisons: is gene X differentially expressed in group A versus B <br />
+					<input type="radio" id="Q3" name="questions" value="questionThree" /> Make comparisons: is gene X differentially expressed in group A versus B <br />
 				</div>
 				<div id="submit">
 					<input type='submit' id='submitInfo' value='Submit' onclick="__action.value='submitInformation'" />
@@ -98,7 +98,7 @@
 	<div id="sampleCombiningMethod">
 		<br/> Choose the method which you want to use to combine the samples within each group:<br/>
 		<!--input type="radio" id="sampleCombineNone" name="sampleCombine" value="sampleCombineNo" /> Do not combine the samples<br /-->
-		<input type="radio" id="sampleCombineMean" name="sampleCombine" value="sampleCombineMean" /> Mean<br />
+		<input type="radio" id="sampleCombineMean" name="sampleCombine" value="sampleCombineMean" checked/> Mean<br />
 		<input type="radio" id="sampleCombineMedian" name="sampleCombine" value="sampleCombineMed" /> Median<br />
 		<!--input type="radio" id="sampleCombineHighest" name="sampleCombine" value="sampleCombineHigh" /> Highest<br />
 		<input type="radio" id="sampleCombineLowest" name="sampleCombine" value="sampleCombineLow" /> Lowest<br /-->
@@ -125,9 +125,12 @@
 	
 	<div>
 	<br/>What is the significance cutoff you want to use? (Gene Y must be minimal x times higher or lower than gene Z to be signifficant (Non log2 values))<br/>
-	<textarea rows="2" cols="5" name="signifCutoff" value="cutoff"></textarea>
+	<textarea rows="2" cols="5" name="signifCutoff" value="cutoff">1.5</textarea>
 	</div>
 
+	<div id="submit">
+		<input type='submit' id='submitInfo' value='Submit' onclick="__action.value='submitInfoQ2'" />
+	</div>
 
 <#elseif model.state == "QUESTION3">
 This question hasn't been implemented yet. Try again later
