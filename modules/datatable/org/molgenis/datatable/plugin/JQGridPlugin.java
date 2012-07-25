@@ -255,6 +255,12 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		{
 			if (request != null)
 			{
+				final String[] tableNames = ((MolgenisRequest) request).getRequest().getParameterValues("tableNames[]");
+				if (tableNames != null && tableNames.length > 0)
+				{
+					inTableNames.addAll(new ArrayList<String>(Arrays.asList(tableNames)));
+				}
+
 				final String[] colNamesParamaters = ((MolgenisRequest) request).getRequest().getParameterValues(
 						"colNames[]");
 				if (colNamesParamaters == null || colNamesParamaters.length == 0)
@@ -263,7 +269,6 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 				}
 
 				final String filtersParam = request.getString("filters");
-				final List<String> invisibleColumns = new ArrayList<String>();
 				if (StringUtils.isNotEmpty(filtersParam))
 				{
 					final JQGridFilter filters = new Gson().fromJson(filtersParam, JQGridFilter.class);
