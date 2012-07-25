@@ -94,7 +94,7 @@ public class JQGridConfiguration
 				model.sortable = true;
 			}
 			colModel.add(model);
-			colNames.add(f.getName());
+			colNames.add(f.getSqlName());
 		}
 	}
 
