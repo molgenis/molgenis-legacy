@@ -36,10 +36,10 @@ log*
 *.java~
 /bin
 /test-output
+/generated
 /target
 logger.out*
 /dist
 /generated/java
 !/.settings/template*
-/.settings/org.eclipse.wst.common.component
-/.settings/org.eclipse.core.resources.prefs
+/apps/catalogue/plugins/hl7parser/PropertiesPath.java
