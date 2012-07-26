@@ -12,7 +12,8 @@ import java.util.logging.Logger;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.molgenis.datatable.model.JdbcTable;
-import org.molgenis.datatable.model.JoinTableCreator;
+import org.molgenis.datatable.model.JoinQueryCreator;
+import org.molgenis.datatable.model.QueryCreator;
 import org.molgenis.datatable.model.QueryTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -59,10 +60,6 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 
 	JQGridView.TupleTableBuilder tupleTableBuilder = new JQGridView.TupleTableBuilder()
 	{
-		// enum BackEnd {
-		// JDBCTABLE, JOINTABLE, QUERYTABLE
-		// }
-
 		private final String backEnd = "JOINTABLE";
 
 		@Override
@@ -166,7 +163,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		{
 			final SQLTemplates dialect = new MySQLTemplates();
 
-			List<JoinTableCreator.Join> joins = new ArrayList<JoinTableCreator.Join>();
+			List<JoinQueryCreator.Join> joins = new ArrayList<JoinQueryCreator.Join>();
 
 			if (CollectionUtils.isEmpty(tableNames))
 			{
@@ -175,18 +172,18 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 
 			if (tableNames.contains("Country") && tableNames.contains("City"))
 			{
-				final JoinTableCreator.Join countryCity = new JoinTableCreator.Join("Country", "Code", "City",
+				final JoinQueryCreator.Join countryCity = new JoinQueryCreator.Join("Country", "Code", "City",
 						"CountryCode");
 				joins.add(countryCity);
 			}
 			if (tableNames.contains("Country") && tableNames.contains("CountryLanguage"))
 			{
-				final JoinTableCreator.Join countryLanguage = new JoinTableCreator.Join("Country", "Code",
+				final JoinQueryCreator.Join countryLanguage = new JoinQueryCreator.Join("Country", "Code",
 						"CountryLanguage", "CountryCode");
 				joins.add(countryLanguage);
 			}
 
-			final JoinTableCreator tableCreator = new JoinTableCreator(db, tableNames, columnNames,
+			final JoinQueryCreator tableCreator = new JoinQueryCreator(db, tableNames, columnNames,
 					hiddenFilterColumns, joins);
 			return new QueryTable(tableCreator, db.getConnection(), dialect);
 		}
@@ -195,7 +192,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 				throws DatabaseException
 		{
 
-			class QueryCountryRatioPopulation implements QueryTable.QueryCreator
+			class QueryCountryRatioPopulation implements QueryCreator
 			{
 				final LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
 

@@ -106,8 +106,10 @@ public interface TupleTable extends Iterable<Tuple>
 
 	/**
 	 * For database centric tables you may need to refresh the database
-	 * connection
+	 * connection Deprecated: DB-level stuff does not belong in top-level
+	 * interface.
 	 */
+	@Deprecated
 	public void setDb(Database db);
 
 	/** Reset the table, i.e. remove limits and filters */

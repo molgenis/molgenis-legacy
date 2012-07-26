@@ -19,13 +19,13 @@ import org.molgenis.datatable.view.JQGridJSObjects.JQGridFilter;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridPostData;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
-import org.molgenis.datatable.view.Renderers.JQGridRenderer;
-import org.molgenis.datatable.view.Renderers.Renderer;
+import org.molgenis.datatable.view.renderers.Renderers;
+import org.molgenis.datatable.view.renderers.Renderers.JQGridRenderer;
+import org.molgenis.datatable.view.renderers.Renderers.Renderer;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
-import org.molgenis.framework.server.MolgenisResponse;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.HtmlWidget;
@@ -34,15 +34,27 @@ import org.molgenis.util.Tuple;
 
 import com.google.gson.Gson;
 
+/**
+ * View class which provides a JQGrid view on a {@link TupleTable}
+ */
 public class JQGridView extends HtmlWidget
 {
 	public static final String OPERATION = "Operation";
 
+	/**
+	 * Operations that the GridView can handle. LOAD_CONFIG, RENDER_DATA,
+	 * LOAD_TREE
+	 */
 	private enum Operation
 	{
 		LOAD_CONFIG, RENDER_DATA, LOAD_TREE
 	}
 
+	/**
+	 * Interface for builder classes that allow easy reconstruction of the
+	 * view's inner {@link TupleTable} in the {@link JQGridView#handleRequest}
+	 * function
+	 */
 	public interface TupleTableBuilder
 	{
 		public TupleTable create(Database db, Tuple request) throws TableException;
@@ -58,6 +70,10 @@ public class JQGridView extends HtmlWidget
 		this.tupleTableBuilder = tupleTableBuilder;
 	}
 
+	/**
+	 * Default construction with an anonymous inner
+	 * {@link JQGridView.TupleTableBuilder}
+	 */
 	public JQGridView(final String name, final ScreenController<?> hostController, final TupleTable table)
 	{
 		this(name, new TupleTableBuilder()
@@ -78,15 +94,24 @@ public class JQGridView extends HtmlWidget
 	}
 
 	/**
-	 * Handle a particular {@link MolgenisRequest}, and encode any resulting
-	 * renderings/exports into a {@link MolgenisResponse}. Particulars handled:
+	 * Handle a particular {@link MolgenisRequest}, and render into an
+	 * {@link OutputStream}. Particulars handled:
 	 * <ul>
-	 * <li>Select the appropriate view towards which to export/render.</li>
-	 * <li>Apply proper sorting and filter rules.</li>
 	 * <li>Wrap the desired data source in the appropriate instantiation of
 	 * {@link TupleTable}.</li>
+	 * <li>Determine which {@link Operation} the request is asking to handle.
+	 * <li>Apply proper sorting and filter rules.</li>
+	 * <li>Select the appropriate view towards which to export/render.</li>
 	 * <li>Select and render the data.</li>
 	 * </ul>
+	 * 
+	 * @param db
+	 *            The database to connect to
+	 * @param request
+	 *            The {@link MolgenisRequest} tuple that encodes the request to
+	 *            handle
+	 * @param out
+	 *            The {@link OutputStream} to render to.
 	 */
 	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
 	{
@@ -110,10 +135,10 @@ public class JQGridView extends HtmlWidget
 				case RENDER_DATA:
 					final List<QueryRule> rules = new ArrayList<QueryRule>();
 
-					// parse the request
-					JQGridPostData postData = new JQGridPostData(request);
+					// parse the request into post data
+					final JQGridPostData postData = new JQGridPostData(request);
 
-					// convert to query rules
+					// convert any filters to query rules
 					final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(postData.filters);
 
 					if (CollectionUtils.isNotEmpty(filterRules))
@@ -169,8 +194,6 @@ public class JQGridView extends HtmlWidget
 	 * @param request
 	 *            The request encoding the particulars of the rendering to be
 	 *            done.
-	 * @param response
-	 *            The response into which the view is rendered.
 	 * @param postData
 	 *            The selected page (only relevant for {@link JQGridRenderer}
 	 *            rendering)
@@ -328,6 +351,10 @@ public class JQGridView extends HtmlWidget
 		return new QueryRule(QueryRule.Operator.NOT, rule);
 	}
 
+	/**
+	 * Create the HTML that is sent to the browser. Based on a Freemarker
+	 * template file.
+	 */
 	@Override
 	public String toHtml()
 	{
@@ -339,6 +366,9 @@ public class JQGridView extends HtmlWidget
 		return new FreemarkerView(JQGridView.class, args).render();
 	}
 
+	/**
+	 * Create a properly-configured grid with default settings, on first load.
+	 */
 	public void loadTupleTableConfig(Database db, MolgenisRequest request, TupleTable tupleTable)
 			throws TableException, IOException
 	{
@@ -347,7 +377,6 @@ public class JQGridView extends HtmlWidget
 				tupleTable);
 
 		final String jqJsonConfig = new Gson().toJson(config);
-		System.out.println(jqJsonConfig);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
 	}
 

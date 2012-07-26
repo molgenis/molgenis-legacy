@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.molgenis.datatable.model.QueryCreator;
 import org.molgenis.datatable.model.QueryTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.fieldtypes.DecimalField;
@@ -41,7 +42,7 @@ public class TestQueryTable
 	private Database db;
 	private SQLTemplates dialect = new MySQLTemplates();
 
-	class MyQuery implements QueryTable.QueryCreator
+	class MyQuery implements QueryCreator
 	{
 		private NumberExpression<Double> cityPopulationRatio;
 		private PathBuilder<RelationalPath> city;

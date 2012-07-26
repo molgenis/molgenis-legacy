@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.molgenis.datatable.model.JoinTableCreator;
-import org.molgenis.datatable.model.JoinTableCreator.Join;
+import org.molgenis.datatable.model.JoinQueryCreator;
+import org.molgenis.datatable.model.JoinQueryCreator.Join;
 import org.molgenis.datatable.model.QueryTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.framework.db.Database;
@@ -27,7 +27,6 @@ import com.mysema.query.sql.SQLTemplates;
 
 public class TestJoinQueryTable
 {
-
 	private QueryTable table;
 	private Database db;
 
@@ -45,7 +44,7 @@ public class TestJoinQueryTable
 		// should work with no columns selected
 		final List<String> columnNames = null;
 		final List<String> hiddenFilterColumns = null;
-		final JoinTableCreator tableCreator = new JoinTableCreator(db, tableNames, columnNames, hiddenFilterColumns,
+		final JoinQueryCreator tableCreator = new JoinQueryCreator(db, tableNames, columnNames, hiddenFilterColumns,
 				joins);
 		table = new QueryTable(tableCreator, db.getConnection(), dialect);
 	}
@@ -96,7 +95,7 @@ public class TestJoinQueryTable
 						"City.Population"));
 
 		final List<String> hiddenFilterColumns = null;
-		final JoinTableCreator tableCreator = new JoinTableCreator(db, tableNames, columnNames, hiddenFilterColumns,
+		final JoinQueryCreator tableCreator = new JoinQueryCreator(db, tableNames, columnNames, hiddenFilterColumns,
 				joins);
 		table = new QueryTable(tableCreator, db.getConnection(), dialect);
 		table.setFilters(rules);

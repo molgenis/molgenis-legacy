@@ -36,21 +36,10 @@ import com.mysema.query.types.expr.SimpleExpression;
 import com.mysema.query.types.expr.StringExpression;
 
 /**
- * A class to wrap a specific {@link SQLQuery} in a TupleTable.
+ * A class to allow the use of {@link SQLQuery}s on a TupleTable.
  */
 public class QueryTable extends AbstractFilterableTupleTable
 {
-	public interface QueryCreator
-	{
-		public SQLQueryImpl createQuery(final Connection connection, final SQLTemplates dialect);
-
-		public LinkedHashMap<String, SimpleExpression<? extends Object>> getAttributeExpressions();
-
-		public List<Field> getFields();
-
-		public List<String> getHiddenFieldNames();
-	}
-
 	private final QueryCreator queryCreator;
 	private final Connection conn;
 	private final SQLTemplates dialect;
