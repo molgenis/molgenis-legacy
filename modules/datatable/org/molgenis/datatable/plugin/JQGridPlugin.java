@@ -229,7 +229,7 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					return query;
 				}
 
-				public LinkedHashMap<String, SimpleExpression<? extends Object>> getSelectMap()
+				public LinkedHashMap<String, SimpleExpression<? extends Object>> getAttributeExpressions()
 				{
 					return selectMap;
 				}
@@ -244,6 +244,13 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 					final Field ratio = new Field("ratio");
 					ratio.setType(new DecimalField());
 					return Arrays.asList(countryName, cityName, ratio);
+				}
+
+				@Override
+				public List<String> getHiddenFieldNames()
+				{
+					// TODO Auto-generated method stub
+					return null;
 				}
 
 			}

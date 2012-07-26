@@ -175,7 +175,12 @@ var JQGridView = {
         	colPager = $("<div id='columnPager'/>");
         	pageInput = $("<input id='colPageNr' type='text' size='3'>");
         	
-        	$(pageInput).attr('value', this.columnPage + 1);  
+        	$(pageInput).attr('value', this.columnPage);  
+        	$(pageInput).change(function() {
+        		value = $(this).val();
+        		$(this).attr('value', value);
+        		self.setColumnPageIndex(value);
+        	});
 
         	maxPage = Math.floor(this.numOfSelectedNodes / this.columnPagerSize);
         	if(this.columnPage + 1 >= maxPage) {
