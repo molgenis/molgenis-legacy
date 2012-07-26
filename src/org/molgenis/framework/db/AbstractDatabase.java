@@ -734,16 +734,11 @@ public abstract class AbstractDatabase implements Database
 			logger.info("executeQuery: " + allSql);
 			Connection con = getConnection();
 			stmt = con.createStatement();
-			// DatabaseMetaData dbmd = con.getMetaData();
-			// // if
-			// (dbmd.getDatabaseProductName().toLowerCase().contains("mysql"))
-			// // {
-			// // // stmt.setFetchSize(Integer.MIN_VALUE); // trigger streaming
-			// of
-			// // }
 
-			if (stmt == null) throw new Exception("statement is null???");
-			if (allSql == null) throw new Exception("allSql is null???");
+			if (stmt == null)
+			{
+				throw new Exception("statement is null???");
+			}
 			rs = stmt.executeQuery(allSql);
 
 			// get field types
@@ -773,6 +768,7 @@ public abstract class AbstractDatabase implements Database
 					{
 						t.set(rs.getMetaData().getColumnLabel(i), rs.getObject(i));
 					}
+					t.setFieldTypes(fieldTypes);
 					tuples.add(t);
 				}
 			}
