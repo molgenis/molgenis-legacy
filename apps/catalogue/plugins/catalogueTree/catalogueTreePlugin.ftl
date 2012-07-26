@@ -353,7 +353,7 @@
 								</select>
 								<input title="fill in search term" type="text" name="InputToken" id="InputToken"
 									onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
-									onkeyup="checkSearchingStatus();" onkeypress="if(event.keyCode === 13){var jsonString = eval(${screen.getInheritance()});return whetherReload(jsonString);}">
+									onkeyup="checkSearchingStatus();" onkeypress="if(event.keyCode === 13){;return whetherReload();}">
 									
 								
 								<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
