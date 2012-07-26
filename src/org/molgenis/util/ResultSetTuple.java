@@ -178,10 +178,12 @@ public class ResultSetTuple extends SimpleTuple
 	{
 		try
 		{
-			if (resultset.getObject(columnName) == null)
-			// watchout, null != false!
-			return null;
-			return resultset.getInt(columnName);
+			if (resultset.getObject(columnName) == null) {
+				// watchout, null != false!
+				return null;
+			} else {
+				return resultset.getInt(columnName);
+			}
 		}
 		catch (SQLException e)
 		{
