@@ -12,6 +12,7 @@
 	background-color: transparent;
 	padding-left: 3px;
 }
+
 </style>
 
 <script>
@@ -82,9 +83,8 @@
 								$('#validationStudy').chosen();
 							</script>
 							2. Please upload your ontology (compulsory)</br></br>
-							<input type="file" id = "ontologyFileForAlgorithm" name = "ontologyFileForAlgorithm"
+							<input type="file" id ="ontologyFileForAlgorithm" name = "ontologyFileForAlgorithm"
 								style="height:23px;" /></br></br>
-							
 							<input type="submit" value="generate algorithm" id="continue" name="continue" 
 								style="display:none;font-size:0.9em" onclick="__action.value='generateAlgorithm';return checkFileExisting();" />
 							

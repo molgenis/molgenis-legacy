@@ -780,9 +780,9 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 					uniqueMapping.put(identifier, queryAndSimilarity);
 
-					matchingResult += "<tr class='clickRow' border='1' id='" + identifier.replaceAll(" ", "_") + "' style='cursor:pointer'>" 
-							+ "<td>"+ measurementName +"</td>"
-							+ "<td><div id='" + identifier.replaceAll(" ", "_") + "_div'>" 
+					matchingResult += "<tr border='1' id='" + identifier.replaceAll(" ", "_") + "' style='cursor:pointer'>" 
+							+ "<td class='clickRow'>"+ measurementName +"</td>"
+							+ "<td class='clickRow'><div id='" + identifier.replaceAll(" ", "_") + "_div'>" 
 							+ matchedItem + "</div></td><td><input type='checkbox' name='" 
 							+ identifier.replaceAll(" ", "_") + "'></td></tr>";
 				}else{
