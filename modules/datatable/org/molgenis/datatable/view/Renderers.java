@@ -1,4 +1,4 @@
-package org.molgenis.datatable.controller;
+package org.molgenis.datatable.view;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,11 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.datatable.view.AbstractExporter;
-import org.molgenis.datatable.view.CsvExporter;
-import org.molgenis.datatable.view.ExcelExporter;
-import org.molgenis.datatable.view.JQGridView;
-import org.molgenis.datatable.view.SPSSExporter;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.html.HtmlWidget;

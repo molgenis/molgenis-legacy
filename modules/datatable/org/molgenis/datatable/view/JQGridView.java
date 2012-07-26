@@ -10,9 +10,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.molgenis.datatable.controller.Renderers;
-import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
-import org.molgenis.datatable.controller.Renderers.Renderer;
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -22,6 +19,8 @@ import org.molgenis.datatable.view.JQGridJSObjects.JQGridFilter;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridPostData;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
+import org.molgenis.datatable.view.Renderers.JQGridRenderer;
+import org.molgenis.datatable.view.Renderers.Renderer;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
