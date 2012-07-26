@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -64,7 +65,7 @@ public class JoinTableCreator implements QueryCreator
 		this.db = db;
 		this.tableNames = tableNames;
 		this.columnNames = columnNames;
-		this.hiddenFieldNames = hiddenFieldNames;
+		this.hiddenFieldNames = hiddenFieldNames == null ? Collections.<String> emptyList() : hiddenFieldNames;
 		this.joins = joins;
 
 		tableColumns = loadColumnData();

@@ -3,6 +3,7 @@ package org.molgenis.datatable.model;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -69,7 +70,8 @@ public class QueryTable extends AbstractFilterableTupleTable
 		{
 			columnsByName.put(col.getSqlName(), col);
 		}
-		hiddenColumns = queryCreator.getHiddenFieldNames();
+		List<String> tmpHiddenFieldNames = queryCreator.getHiddenFieldNames();
+		hiddenColumns = tmpHiddenFieldNames == null ? Collections.<String> emptyList() : tmpHiddenFieldNames;
 	}
 
 	@Override
@@ -100,6 +102,7 @@ public class QueryTable extends AbstractFilterableTupleTable
 	{
 		try
 		{
+			final SQLQueryImpl query = createQuery();
 			final LinkedHashMap<String, SimpleExpression<? extends Object>> select = queryCreator
 					.getAttributeExpressions();
 			CollectionUtils.select(select.entrySet(), new Predicate()
@@ -120,8 +123,6 @@ public class QueryTable extends AbstractFilterableTupleTable
 				final String alias = StringUtils.replace(names.get(i), ".", "_");
 				selectArray[i] = ((SimpleExpression<?>) expr).as(alias);
 			}
-
-			final SQLQueryImpl query = createQuery();
 
 			int limit = getLimit();
 			if (limit > 0)

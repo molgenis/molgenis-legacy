@@ -23,7 +23,6 @@ import org.testng.annotations.Test;
 import app.DatabaseFactory;
 
 import com.mysema.query.sql.MySQLTemplates;
-import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 
 public class TestJoinQueryTable
@@ -86,7 +85,6 @@ public class TestJoinQueryTable
 		// City.Population > 100000
 		// ORDER BY City.population DESC LIMIT 10;
 		final SQLTemplates dialect = new MySQLTemplates();
-		final SQLQueryImpl query = new SQLQueryImpl(db.getConnection(), dialect);
 
 		final List<String> tableNames = Arrays.asList("Country", "City");
 		final List<String> columnNames = Arrays.asList("Country.Name", "City.Name", "Country.Code", "City.Population");
@@ -114,11 +112,11 @@ public class TestJoinQueryTable
 		rules.set(rules.size() - 1, new QueryRule(Operator.SORTASC, "City.Population"));
 		table.setFilters(rules);
 		final List<Tuple> rows2 = table.getRows();
-		assertEquals("Eindhoven", rows2.get(0).getString("City.Name"));
-		assertEquals("Utrecht", rows2.get(1).getString("City.Name"));
-		assertEquals("Haag", rows2.get(2).getString("City.Name"));
-		assertEquals("Rotterdam", rows2.get(3).getString("City.Name"));
-		assertEquals("Amsterdam", rows2.get(4).getString("City.Name"));
+		assertEquals("Alkmaar", rows2.get(0).getString("City.Name"));
+		assertEquals("Heerlen", rows2.get(1).getString("City.Name"));
+		assertEquals("Delft", rows2.get(2).getString("City.Name"));
+		assertEquals("Ede", rows2.get(3).getString("City.Name"));
+		assertEquals("Zwolle", rows2.get(4).getString("City.Name"));
 	}
 
 	// /// UTIL ////

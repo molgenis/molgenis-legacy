@@ -21,6 +21,8 @@ import org.molgenis.util.Tuple;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import app.DatabaseFactory;
+
 import com.mysema.query.sql.MySQLTemplates;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQueryImpl;
@@ -39,72 +41,71 @@ public class TestQueryTable
 	private Database db;
 	private SQLTemplates dialect = new MySQLTemplates();
 
+	class MyQuery implements QueryTable.QueryCreator
+	{
+		private NumberExpression<Double> cityPopulationRatio;
+		private PathBuilder<RelationalPath> city;
+		private PathBuilder<RelationalPath> country;
+
+		@Override
+		public SQLQueryImpl createQuery(Connection connection, SQLTemplates dialect)
+		{
+			SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
+
+			// create select
+			// SELECT Country.Name, City.Name, City.Population /
+			// Country.Population AS ratio
+			// FROM Country, City where Country.code = City.countrycode
+			// ORDER BY ratio DESC LIMIT 10;
+			country = new PathBuilder<RelationalPath>(RelationalPath.class, "Country");
+			city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
+			query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
+
+			final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(Integer.class,
+					"Population"));
+			final NumberPath<Integer> cityPopulation = city.get(new NumberPath<Integer>(Integer.class, "Population"));
+			cityPopulationRatio = cityPopulation.divide(countryPopulation);
+			query.limit(10);
+			query.orderBy(cityPopulationRatio.desc());
+			return query;
+		}
+
+		@Override
+		public LinkedHashMap<String, SimpleExpression<? extends Object>> getAttributeExpressions()
+		{
+			LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
+			selectMap.put("Country.Name", country.get(new StringPath("name")));
+			selectMap.put("City.Name", city.get(new StringPath("name")));
+			selectMap.put("ratio", cityPopulationRatio);
+			return selectMap;
+		}
+
+		@Override
+		public List<Field> getFields()
+		{
+			final Field countryName = new Field("Country.Name");
+			countryName.setType(new StringField());
+			final Field cityName = new Field("City.Name");
+			cityName.setType(new StringField());
+			final Field ratio = new Field("ratio");
+			ratio.setType(new DecimalField());
+
+			return Arrays.asList(countryName, cityName, ratio);
+		}
+
+		@Override
+		public List<String> getHiddenFieldNames()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+	}
+
 	@SuppressWarnings("rawtypes")
 	@BeforeMethod
 	public void setUp() throws DatabaseException
 	{
-		class MyQuery implements QueryTable.QueryCreator
-		{
-			private NumberExpression<Double> cityPopulationRatio;
-			private PathBuilder<RelationalPath> city;
-			private PathBuilder<RelationalPath> country;
-
-			@Override
-			public SQLQueryImpl createQuery(Connection connection, SQLTemplates dialect)
-			{
-				SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
-
-				// create select
-				// SELECT Country.Name, City.Name, City.Population /
-				// Country.Population AS ratio
-				// FROM Country, City where Country.code = City.countrycode
-				// ORDER BY ratio DESC LIMIT 10;
-				country = new PathBuilder<RelationalPath>(RelationalPath.class, "Country");
-				city = new PathBuilder<RelationalPath>(RelationalPath.class, "City");
-				query.from(country, city).where(country.get("code").eq(city.get("countrycode")));
-
-				final NumberPath<Integer> countryPopulation = country.get(new NumberPath<Integer>(Integer.class,
-						"Population"));
-				final NumberPath<Integer> cityPopulation = city
-						.get(new NumberPath<Integer>(Integer.class, "Population"));
-				cityPopulationRatio = cityPopulation.divide(countryPopulation);
-				query.limit(10);
-				query.orderBy(cityPopulationRatio.desc());
-				return query;
-			}
-
-			@Override
-			public LinkedHashMap<String, SimpleExpression<? extends Object>> getAttributeExpressions()
-			{
-				LinkedHashMap<String, SimpleExpression<? extends Object>> selectMap = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
-				selectMap.put("Country.Name", country.get(new StringPath("name")));
-				selectMap.put("City.Name", city.get(new StringPath("name")));
-				selectMap.put("ratio", cityPopulationRatio);
-				return selectMap;
-			}
-
-			@Override
-			public List<Field> getFields()
-			{
-				final Field countryName = new Field("Country.Name");
-				countryName.setType(new StringField());
-				final Field cityName = new Field("City.Name");
-				cityName.setType(new StringField());
-				final Field ratio = new Field("ratio");
-				ratio.setType(new DecimalField());
-
-				return Arrays.asList(countryName, cityName, ratio);
-			}
-
-			@Override
-			public List<String> getHiddenFieldNames()
-			{
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-		}
-
+		db = DatabaseFactory.create();
 		table = new QueryTable(new MyQuery(), db.getConnection(), dialect);
 	}
 
