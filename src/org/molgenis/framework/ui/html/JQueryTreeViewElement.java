@@ -15,19 +15,24 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 
 	private String category;
 
-	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent)
+	private boolean checked = false;
+
+	private String entityID;
+
+	public JQueryTreeViewElement(String name, String entityID, JQueryTreeViewElement parent)
 	{
 		super(name, parent);
 		this.setLabel(name);
+		this.setEntityID(entityID);
 	}
 	
-	public JQueryTreeViewElement(String name, String label, JQueryTreeViewElement parent)
+	public JQueryTreeViewElement(String name, String label, String entityID ,JQueryTreeViewElement parent)
 	{
 		super(name, parent);
 		this.setLabel(label);
+		this.setEntityID(entityID);
 		
 	}
-	
 	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent, String htmlValue)
 	{
 		super(name, parent);
@@ -41,15 +46,14 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 		this.htmlValue = htmlValue;
 	}
 	
-	public JQueryTreeViewElement(String name, JQueryTreeViewElement parent, String url, String category)
-	{
-		super(name, parent);
-		this.setLabel("<a href=\"" + url + "\" >"+ name +"</a>");
-		this.nodeName = name;
-		this.setCategory(category);
-
+	public void setCheckBox(boolean checked){
+		this.checked = checked;
 	}
-
+	
+	public boolean getCheckBox(){
+		return checked;
+	}
+	
 	public String getNodeName(){
 		return nodeName;
 	}
@@ -89,7 +93,12 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 	{
 		return label;
 	}
-
+	
+	private void setEntityID(String entityID)
+	{
+		this.entityID  = entityID;
+		
+	}
 	public void setCategory(String category)
 	{
 		this.category = category;
@@ -109,5 +118,8 @@ public class JQueryTreeViewElement extends SimpleTree<JQueryTreeViewElement>
 	{
 		return htmlValue;
 	}
-	
+	public String getEntityID()
+	{
+		return entityID;
+	}
 }

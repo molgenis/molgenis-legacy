@@ -533,6 +533,10 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/cxf-bundle-minimal-2.5.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/selenium-server-standalone-2.19.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/tjws-1.98.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tjws-1.98.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
