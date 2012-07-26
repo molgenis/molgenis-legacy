@@ -8,7 +8,7 @@
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="clickedVariable" id="clickedVariable">
-	
+	<script src="res/scripts/cataloguetree.js" language="javascript"></script>
 	<script type="text/javascript">
 		function searchInTree(){
 			
@@ -78,8 +78,8 @@
 				
 			}
 			if($('#selectedField').val() == "Details" || $('#selectedField').val() == "All fields"){
-				
-				var json = eval(${screen.getInheritance()});
+				var jsonString = eval(${screen.getInheritance()});
+				//var json = eval(jsonString);
 				
 				$('#leftSideTree li').each(function(){
 					
@@ -353,7 +353,7 @@
 								</select>
 								<input title="fill in search term" type="text" name="InputToken" id="InputToken"
 									onfocus="selectedField.style.display='inline'; selectedField.style.display='inline';" 
-									onkeyup="checkSearchingStatus();" onkeypress="if(event.keyCode === 13){return whetherReload();}">
+									onkeyup="checkSearchingStatus();" onkeypress="if(event.keyCode === 13){;return whetherReload();}">
 									
 								
 								<input type="button" id="SearchCatalogueTree" class='addbutton ui-button ui-widget ui-state-default ui-corner-all' name="SearchCatalogueTree" 
@@ -447,23 +447,46 @@
 			      		if($(this).find('li').length == 0){
 			      			
 			      			var measurementID = $(this).attr('id');
-	      					
+	      					var clicked = $('#clickedVariable').val();
+
 	      					$(this).children('span').click(function(){
+			      				//Itself
 			      				$(this).css({
 			      					'color':'#778899',
 			      					'font-size':15,
 			      					'font-style':'italic',
 			      					'font-weight':'bold'
 			      				});
+			      				
+		      				var parent = $(this).parent().parent().siblings('span');
+			      				//Parent
+			      				$(parent).css({
+									'color':'#778899',
+			      					'font-size':15,
+			      					'font-style':'italic',
+			      					'font-weight':'bold'
+									
+								});
+			      				
+								var clickedVar = $('#clickedVariable').val();
 								
-								if($('#clickedVariable').val() != "" && $('#clickedVariable').val() != measurementID){
-									var clickedVariableID = $('#clickedVariable').val();
-									$('#' + clickedVariableID + '>span').css({
+								if(clickedVar != "" && clickedVar != measurementID){
+								//Old variable
+									$('#' + clickedVar + '>span').css({
 										'color':'black',
 										'font-size':13,
 										'font-style':'normal',
 										'font-weight':400
 									});
+								var parentOld = $('#' + clickedVar).parent().siblings('span');
+							
+			      					$(parentOld).css({
+									'color':'black',
+										'font-size':13,
+										'font-style':'normal',
+										'font-weight':400									
+									});
+		      						
 								}			   				
 								$('#clickedVariable').val(measurementID);
 								$('#details').empty();
