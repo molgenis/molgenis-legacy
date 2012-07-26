@@ -30,6 +30,7 @@ var JQGridView = {
     oldColModel : null,
     
     treeColModel : new Array(),
+    prevColModel : null,
     numOfSelectedNodes : 0,
     
     init: function(tableSelector, pagerSelector, config) {
@@ -106,7 +107,9 @@ var JQGridView = {
     	var self = JQGridView;
 		
 		if(columnModel == null) {
-			columnModel = this.treeColModel;
+			columnModel = this.prevColModel;
+		} else {
+			this.prevColModel = columnModel;
 		}
 		
 		if(columnModel != null) {
@@ -133,13 +136,9 @@ var JQGridView = {
 	    				break;
 	    			}
 	    		}
-	    		
 	    		gridColModel[i].hidden = hidden;
-	    		
-	   			
 	    	}
 	    	this.config.colModel = gridColModel; 
-	    	//this.config.postData.columnNames = columnNames;
 	    	this.config.postData.colNames = columnNames;
 		}
 
@@ -167,6 +166,14 @@ var JQGridView = {
             ).jqGrid('gridResize');
         //is not correct (will not work with two grids!)
         if(this.columnPageEnabled) {
+        	maxPage = Math.ceil(this.numOfSelectedNodes / this.columnPagerSize);
+        	if(this.columnPage >= maxPage) {
+        		this.columnPage = maxPage - 1;
+        	}
+        	
+        	
+        	
+        	
         	firstButton = $("<input id='firstColButton' type='button' value='|< Columns' style='height:20px;font-size:-3'/>")
         	prevButton = $("<input id='prevColButton' type='button' value='< Columns' style='height:20px;font-size:-3'/>");
         	nextButton = $("<input id='nextColButton' type='button' value='Column >' style='height:20px;font-size:-3'/>");
@@ -175,14 +182,17 @@ var JQGridView = {
         	colPager = $("<div id='columnPager'/>");
         	pageInput = $("<input id='colPageNr' type='text' size='3'>");
         	
-        	$(pageInput).attr('value', this.columnPage);  
+        	
+        	$(pageInput).attr('value', this.columnPage + 1);
+        	
+        	  
         	$(pageInput).change(function() {
         		value = $(this).val();
         		$(this).attr('value', value);
         		self.setColumnPageIndex(value);
         	});
 
-        	maxPage = Math.floor(this.numOfSelectedNodes / this.columnPagerSize);
+        	
         	if(this.columnPage + 1 >= maxPage) {
         		nextButton.attr("disabled","disabled");
         		lastButton.attr("disabled","disabled");
@@ -237,7 +247,10 @@ var JQGridView = {
     columnPagerRight : function () {
 		var self = JQGridView;
 		this.columnPage++;
+		
+		
 		this.changeColumns(null);
+		
 	},	
     
     getColumnNames : function(colModel) {

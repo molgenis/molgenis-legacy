@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 import javax.servlet.ServletOutputStream;
@@ -60,9 +61,11 @@ public class Renderers
 		{
 			final JQGridResult result = JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage,
 					tupleTable);
+			final PrintWriter pout = new PrintWriter(request.getResponse().getOutputStream());
 			String json = new Gson().toJson(result);
 			System.out.println(json);
-			request.getResponse().getOutputStream().print(json);
+			pout.print(json);
+			pout.close();
 		}
 	}
 
