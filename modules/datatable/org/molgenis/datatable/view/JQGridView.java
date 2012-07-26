@@ -8,8 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.molgenis.datatable.controller.Renderers;
@@ -95,8 +93,6 @@ public class JQGridView extends HtmlWidget
 	{
 		try
 		{
-			final HttpServletResponse response = ((MolgenisRequest) request).getResponse();
-
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
 			final Operation operation = StringUtils.isNotEmpty(request.getString(OPERATION)) ? Operation
 					.valueOf(request.getString(OPERATION)) : Operation.RENDER_DATA;
@@ -217,7 +213,6 @@ public class JQGridView extends HtmlWidget
 	 * @return A list of QueryRules that represent the filter rules from the
 	 *         request.
 	 */
-	@SuppressWarnings("rawtypes")
 	private static List<QueryRule> createQueryRulesFromJQGridRequest(JQGridFilter filters)
 	{
 		final List<QueryRule> rules = new ArrayList<QueryRule>();

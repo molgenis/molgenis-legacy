@@ -246,7 +246,6 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 				@Override
 				public List<String> getHiddenFieldNames()
 				{
-					// TODO Auto-generated method stub
 					return null;
 				}
 

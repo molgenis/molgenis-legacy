@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.molgenis.datatable.model.TableException;
@@ -20,7 +17,6 @@ import org.molgenis.datatable.view.ExcelExporter;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.datatable.view.SPSSExporter;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
-
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.ZipUtils;
@@ -64,10 +60,9 @@ public class Renderers
 		{
 			final JQGridResult result = JQGridView.buildJQGridResults(tupleTable.getCount(), totalPages, currentPage,
 					tupleTable);
-			final PrintWriter pout = new PrintWriter(request.getResponse().getOutputStream());
 			String json = new Gson().toJson(result);
-			pout.print(json);
-			pout.close();
+			System.out.println(json);
+			request.getResponse().getOutputStream().print(json);
 		}
 	}
 
