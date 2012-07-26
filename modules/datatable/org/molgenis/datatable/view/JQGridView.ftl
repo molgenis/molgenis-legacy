@@ -185,12 +185,24 @@ var JQGridView = {
         	
         	
         	$(pageInput).attr('value', this.columnPage + 1);
-        	
         	  
         	$(pageInput).change(function() {
-        		value = $(this).val();
-        		$(this).attr('value', value);
-        		self.setColumnPageIndex(value);
+        		value = parseInt($(this).val(),10);
+        		
+        		
+        		if(value - 1 > 0 && value - 1 < maxPage) {
+        			$(this).attr('value', value);
+        			self.setColumnPageIndex(value - 1);
+        		} else {
+        			if(value - 1 >= maxPage) {
+        				$(this).attr('value', value);
+        				self.setColumnPageIndex(maxPage - 1);
+        			}
+        			if(value - 1 <= 0) {
+        				$(this).attr('value', value);
+        				self.setColumnPageIndex(0);        			
+        			}
+        		}
         	});
 
         	
