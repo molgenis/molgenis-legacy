@@ -55,7 +55,6 @@ public class MemoryTable extends AbstractTupleTable
 		List<Tuple> result = new ArrayList<Tuple>();
 		if (getLimit() > 0 || getOffset() > 0)
 		{
-
 			int count = 0;
 			int index = 1;
 			for (Tuple row : this.rows)

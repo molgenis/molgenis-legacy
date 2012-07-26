@@ -248,9 +248,8 @@ public class QueryTable extends AbstractFilterableTupleTable
 						throw new UnsupportedOperationException(String.format(
 								"Operation: %s not implemented yet for type %s!", op, type));
 				}
-			}
 				break;
-
+			}
 			case STRING:
 			{
 				final String val = (String) column.getType().getTypedValue(value);
@@ -261,12 +260,13 @@ public class QueryTable extends AbstractFilterableTupleTable
 						break;
 					case LIKE:
 						expr = ((StringExpression) selectExpr).like(val + "%");
+						break;
 					default:
 						throw new UnsupportedOperationException(String.format(
 								"Operation: %s not implemented yet for type %s!", op, type));
 				}
-			}
 				break;
+			}
 			default:
 				throw new UnsupportedOperationException(String.format("Operation: %s not implemented yet for type %s!",
 						op, type));

@@ -44,7 +44,7 @@ public class JQGridConfiguration
 
 	public boolean autowidth = true;
 
-	/** whether tis grid is sortable */
+	/** whether this grid is sortable */
 	public String sortname = "";
 
 	/** default sorting order */
@@ -66,6 +66,7 @@ public class JQGridConfiguration
 
 	public JQGridSettings settings = new JQGridSettings();
 
+	@SuppressWarnings("unchecked")
 	public Object[] toolbar = Arrays.asList(true, "top").toArray();
 
 	public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable)

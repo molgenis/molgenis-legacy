@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.molgenis.datatable.controller.Renderers;
@@ -93,6 +95,8 @@ public class JQGridView extends HtmlWidget
 	{
 		try
 		{
+			final HttpServletResponse response = ((MolgenisRequest) request).getResponse();
+
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
 			final Operation operation = StringUtils.isNotEmpty(request.getString(OPERATION)) ? Operation
 					.valueOf(request.getString(OPERATION)) : Operation.RENDER_DATA;
@@ -252,6 +256,7 @@ public class JQGridView extends HtmlWidget
 	 *            expression.
 	 * @return A new QueryRule that represents the supplied jquery expression.
 	 */
+
 	private static QueryRule convertOperator(JQGridRule jqGridRule)
 	{
 		// ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
@@ -347,13 +352,8 @@ public class JQGridView extends HtmlWidget
 		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test",
 				tupleTable);
 
-		// test
-		// {"groupOp":"AND","rules":[{"field":"Country.Code","op":"eq","data":"AGO"}]}
-		// config.postData.filters.groupOp = "AND";
-		// config.postData.filters.rules.add(new JQGridRule("Country.Code",
-		// JQGridOp.eq, "AGO"));
-
 		final String jqJsonConfig = new Gson().toJson(config);
+		System.out.println(jqJsonConfig);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
 	}
 
@@ -373,6 +373,7 @@ public class JQGridView extends HtmlWidget
 	 *            The Tupletable from which to read the data.
 	 * @return
 	 */
+
 	public static JQGridResult buildJQGridResults(final int rowCount, final int totalPages, final int page,
 			final TupleTable table) throws TableException
 	{

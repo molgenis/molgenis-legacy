@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.molgenis.datatable.model.TableException;
@@ -18,6 +20,7 @@ import org.molgenis.datatable.view.ExcelExporter;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.datatable.view.SPSSExporter;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
+
 import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.ZipUtils;
@@ -114,7 +117,6 @@ public class Renderers
 			try
 			{
 				final File tempDir = new File(System.getProperty("java.io.tmpdir"));
-
 				final File spssFile = File.createTempFile("spssExport", ".sps", tempDir);
 				final File spssCsvFile = File.createTempFile("csvSpssExport", ".csv", tempDir);
 				// TODO: instruction .txt file.

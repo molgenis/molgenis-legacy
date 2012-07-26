@@ -50,10 +50,7 @@ import com.mysema.query.types.path.StringPath;
  */
 public class JQGridPlugin extends EasyPluginController<ScreenModel>
 {
-
-	// For test different backends
-
-	// JQGridTableView tableView;
+	private static final long serialVersionUID = 1095633658510456459L;
 
 	public JQGridPlugin(String name, ScreenController<?> parent)
 	{

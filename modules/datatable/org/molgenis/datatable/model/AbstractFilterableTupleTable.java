@@ -10,7 +10,6 @@ import org.molgenis.framework.db.QueryRule.Operator;
 
 public abstract class AbstractFilterableTupleTable extends AbstractTupleTable implements FilterableTupleTable
 {
-
 	private List<QueryRule> filters = new ArrayList<QueryRule>();
 
 	protected AbstractFilterableTupleTable()

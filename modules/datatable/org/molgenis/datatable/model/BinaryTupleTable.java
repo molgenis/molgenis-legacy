@@ -4,9 +4,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
-import matrix.DataMatrixInstance;
-import matrix.implementations.binary.BinaryDataMatrixInstance;
-
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;

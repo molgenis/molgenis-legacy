@@ -39,4 +39,7 @@ log*
 /target
 logger.out*
 /dist
+/generated/java
+!/.settings/template*
 /.settings/org.eclipse.wst.common.component
+/.settings/org.eclipse.core.resources.prefs
