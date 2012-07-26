@@ -22,7 +22,6 @@ import org.molgenis.datatable.view.JQGridJSObjects.JQGridFilter;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridPostData;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
-import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule.JQGridOp;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
@@ -134,11 +133,14 @@ public class JQGridView extends HtmlWidget
 					postData.page = Math.min(postData.page, totalPages);
 					final int offset = Math.max((postData.page - 1) * postData.rows, 0);
 
-					// data.rows == limit
-					tupleTable.setLimit(postData.rows);
-
-					// data.rows * data.page
-					tupleTable.setOffset(offset);
+					final String exportSelection = request.getString("exportSelection");
+					if (!StringUtils.equalsIgnoreCase(exportSelection, "ALL"))
+					{
+						// data.rows == limit
+						tupleTable.setLimit(postData.rows);
+						// data.rows * data.page
+						tupleTable.setOffset(offset);
+					}
 
 					if (StringUtils.isNotEmpty(postData.sidx) && tupleTable instanceof FilterableTupleTable)
 					{
@@ -347,8 +349,9 @@ public class JQGridView extends HtmlWidget
 
 		// test
 		// {"groupOp":"AND","rules":[{"field":"Country.Code","op":"eq","data":"AGO"}]}
-		config.postData.filters.groupOp = "AND";
-		config.postData.filters.rules.add(new JQGridRule("Country.Code", JQGridOp.eq, "AGO"));
+		// config.postData.filters.groupOp = "AND";
+		// config.postData.filters.rules.add(new JQGridRule("Country.Code",
+		// JQGridOp.eq, "AGO"));
 
 		final String jqJsonConfig = new Gson().toJson(config);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
