@@ -25,7 +25,17 @@
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/commons-math-2.2.jar"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ontocat-0.9.7.6.jar"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/simplecaptcha-1.2.1.jar"></classpathentry>
+<<<<<<< HEAD
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/simplecaptcha-1.1.1-GA-Patch01.jar"></classpathentry>
+=======
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/opencsv-1.8.jar"/>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lambdaj-2.3.3-with-dependencies.jar"/>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ojdbc6.jar"/>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/querydsl-core-2.6.0.jar"/>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/querydsl-sql-2.6.0.jar"/>
+>>>>>>> 9ca45da8ed04808e96ce38366f61f77f9b125be1
   <classpathentry kind="output" path="build/classes"></classpathentry>
+  <!-- WEB-INF/lib -->
+  <classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>  
 </classpath>
 

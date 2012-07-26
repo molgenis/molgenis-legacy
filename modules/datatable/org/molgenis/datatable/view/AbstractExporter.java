@@ -1,7 +1,6 @@
 package org.molgenis.datatable.view;
 
 import java.io.OutputStream;
-
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 
