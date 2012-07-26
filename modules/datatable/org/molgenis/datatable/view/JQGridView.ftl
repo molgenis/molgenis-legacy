@@ -168,7 +168,8 @@ var JQGridView = {
         if(this.columnPageEnabled) {
         	maxPage = Math.ceil(this.numOfSelectedNodes / this.columnPagerSize);
         	if(this.columnPage >= maxPage) {
-        		this.columnPage = maxPage - 1;
+        		this.columnPagerLeft();
+        		return; //prevent double work
         	}
         	
         	
