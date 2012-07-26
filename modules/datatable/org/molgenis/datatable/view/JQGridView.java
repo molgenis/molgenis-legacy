@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.molgenis.datatable.controller.Renderers;
@@ -44,15 +46,17 @@ public class JQGridView extends HtmlWidget
 		LOAD_CONFIG, RENDER_DATA, LOAD_TREE
 	}
 
-	public interface TupleTableBuilder {
+	public interface TupleTableBuilder
+	{
 		public TupleTable create(Database db, Tuple request) throws TableException;
 
 		public String getUrl();
 	}
 
-	private final TupleTableBuilder	tupleTableBuilder;
+	private final TupleTableBuilder tupleTableBuilder;
 
-	public JQGridView(String name, TupleTableBuilder tupleTableBuilder) {
+	public JQGridView(String name, TupleTableBuilder tupleTableBuilder)
+	{
 		super(name);
 		this.tupleTableBuilder = tupleTableBuilder;
 	}
@@ -68,7 +72,8 @@ public class JQGridView extends HtmlWidget
 			}
 
 			@Override
-			public TupleTable create(Database db, Tuple request) throws TableException {
+			public TupleTable create(Database db, Tuple request) throws TableException
+			{
 				table.setDb(db);
 				return table;
 			}
@@ -86,8 +91,10 @@ public class JQGridView extends HtmlWidget
 	 * <li>Select and render the data.</li>
 	 * </ul>
 	 */
-	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException {
-		try {
+	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
+	{
+		try
+		{
 			final HttpServletResponse response = ((MolgenisRequest) request).getResponse();
 
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
@@ -123,24 +130,6 @@ public class JQGridView extends HtmlWidget
 						}
 					}
 
-<<<<<<< HEAD
-			final String opRequest = request.getString(OPERATION);
-
-			final Operation operation = StringUtils.isNotEmpty(opRequest) ? Operation.valueOf(opRequest) : Operation.RENDER_DATA;
-			if (operation == Operation.LOAD_CONFIG) {
-				loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
-			} else if (operation == Operation.LOAD_TREE) {
-				final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
-				response.getOutputStream().print(treeNodes);
-			} else { // operation == Operation.RENDER_DATA
-				final List<QueryRule> rules = new ArrayList<QueryRule>();
-				final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(request);
-
-				if (CollectionUtils.isNotEmpty(filterRules)) {
-					if (tupleTable instanceof FilterableTupleTable) {
-						rules.addAll(filterRules);
-						((FilterableTupleTable) tupleTable).setFilters(rules);
-=======
 					final int rowCount = tupleTable.getCount();
 					final int totalPages = (int) Math.ceil(rowCount / postData.rows);
 
@@ -155,52 +144,25 @@ public class JQGridView extends HtmlWidget
 						tupleTable.setLimit(postData.rows);
 						// data.rows * data.page
 						tupleTable.setOffset(offset);
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 					}
 
-<<<<<<< HEAD
-				final int limit = request.getInt("rows");
-				final int rowCount = tupleTable.getCount();
-
-				final int totalPages = (int) Math.ceil(rowCount / limit);
-				final int page = Math.min(request.getInt("page"), totalPages);
-				final int offset = Math.max(limit * page - limit, 0);
-
-				tupleTable.setLimit(limit);
-				tupleTable.setOffset(offset);
-
-				final String sortOrder = request.getString("sord");
-				final String sortField = request.getString("sidx");
-
-				if (StringUtils.isNotEmpty(sortField) && tupleTable instanceof FilterableTupleTable) {
-					final Operator sortOperator = StringUtils.equals(sortOrder, "asc") ? QueryRule.Operator.SORTASC : QueryRule.Operator.SORTDESC;
-					rules.add(new QueryRule(sortOperator, sortField));
-				}
-=======
 					if (StringUtils.isNotEmpty(postData.sidx) && tupleTable instanceof FilterableTupleTable)
 					{
 						final Operator sortOperator = StringUtils.equals(postData.sord, "asc") ? QueryRule.Operator.SORTASC
 								: QueryRule.Operator.SORTDESC;
 						rules.add(new QueryRule(sortOperator, postData.sidx));
 					}
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 
 					if (tupleTable instanceof FilterableTupleTable)
 					{
 						((FilterableTupleTable) tupleTable).setFilters(rules);
 					}
 
-<<<<<<< HEAD
-				renderData(((MolgenisRequest) request).getRequest(), response, page, totalPages, tupleTable);
-			}
-		} catch (final Exception e) {
-=======
 					renderData(((MolgenisRequest) request), postData, totalPages, tupleTable);
 			}
 		}
 		catch (final Exception e)
 		{
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 			throw new HandleRequestDelegationException(e);
 		}
 	}
@@ -223,14 +185,6 @@ public class JQGridView extends HtmlWidget
 	 * @param tupleTable
 	 *            The table from which to render the data.
 	 */
-<<<<<<< HEAD
-	private void renderData(HttpServletRequest request, HttpServletResponse response, int page, int totalPages, final TupleTable tupleTable)
-			throws TableException {
-		final ServletContext servletContext = request.getSession().getServletContext();
-
-		String strViewType = request.getParameter("viewType");
-		if (StringUtils.isEmpty(strViewType)) {
-=======
 	private void renderData(MolgenisRequest request, JQGridPostData postData, int totalPages,
 			final TupleTable tupleTable) throws TableException
 	{
@@ -239,7 +193,6 @@ public class JQGridView extends HtmlWidget
 		String strViewType = request.getString("viewType");
 		if (StringUtils.isEmpty(strViewType))
 		{
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 			strViewType = "JQ_GRID";
 		}
 
@@ -247,15 +200,10 @@ public class JQGridView extends HtmlWidget
 		{
 			final ViewFactory viewFactory = new ViewFactoryImpl();
 			final Renderers.Renderer view = viewFactory.createView(strViewType);
-<<<<<<< HEAD
-			view.export(servletContext, request, response, request.getParameter("caption"), tupleTable, totalPages, page);
-		} catch (final Exception e) {
-=======
 			view.export(request, request.getString("caption"), tupleTable, totalPages, postData.page);
 		}
 		catch (final Exception e)
 		{
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 			throw new TableException(e);
 		}
 	}
@@ -270,27 +218,12 @@ public class JQGridView extends HtmlWidget
 	 *         request.
 	 */
 	@SuppressWarnings("rawtypes")
-<<<<<<< HEAD
-	private static List<QueryRule> createQueryRulesFromJQGridRequest(Tuple request) {
-		final String filtersParameter = request.getString("filters");
-		final List<QueryRule> rules = new ArrayList<QueryRule>();
-		if (StringUtils.isNotEmpty(filtersParameter)) {
-			final StringMap filters = (StringMap) new Gson().fromJson(filtersParameter, Object.class);
-			final String groupOp = (String) filters.get("groupOp");
-			@SuppressWarnings("unchecked")
-			final ArrayList<StringMap<String>> jsonRules = (ArrayList<StringMap<String>>) filters.get("rules");
-			for (final StringMap<String> rule : jsonRules) {
-				final String field = rule.get("field");
-				final String op = rule.get("op");
-				final String value = rule.get("data");
-=======
 	private static List<QueryRule> createQueryRulesFromJQGridRequest(JQGridFilter filters)
 	{
 		final List<QueryRule> rules = new ArrayList<QueryRule>();
 		if (filters != null)
 		{
 			final String groupOp = filters.groupOp;
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 
 			int ruleIdx = 0;
 			for (final JQGridRule rule : filters.rules)
@@ -298,16 +231,9 @@ public class JQGridView extends HtmlWidget
 				final QueryRule queryRule = convertOperator(rule);
 				rules.add(queryRule);
 
-<<<<<<< HEAD
-				final boolean isLastRule = rule == jsonRules.get(jsonRules.size() - 1);
-				// Note: AND is default in query rules; OR needs to be added
-				// explicitly.
-				if (groupOp.equals("OR") && !isLastRule) {
-=======
 				final boolean notLast = filters.rules.size() - 1 != ruleIdx++;
 				if (groupOp.equals("OR") && notLast)
 				{
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 					rules.add(new QueryRule(QueryRule.Operator.OR));
 				}
 			}
@@ -330,57 +256,7 @@ public class JQGridView extends HtmlWidget
 	 *            expression.
 	 * @return A new QueryRule that represents the supplied jquery expression.
 	 */
-<<<<<<< HEAD
-	private static QueryRule convertOperator(final String field, final String op, final String value) {
-		// ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
-		QueryRule rule = new QueryRule(field, QueryRule.Operator.EQUALS, value);
-		if (op.equals("eq")) {
-			rule.setOperator(QueryRule.Operator.EQUALS);
-		} else if (op.equals("ne")) {
-			// NOT
-			rule.setOperator(QueryRule.Operator.EQUALS);
-			rule = toNotRule(rule);
-		} else if (op.equals("lt")) {
-			rule.setOperator(QueryRule.Operator.LESS);
-		} else if (op.equals("le")) {
-			rule.setOperator(QueryRule.Operator.LESS_EQUAL);
-		} else if (op.equals("gt")) {
-			rule.setOperator(QueryRule.Operator.GREATER);
-		} else if (op.equals("ge")) {
-			rule.setOperator(QueryRule.Operator.GREATER_EQUAL);
-		} else if (op.equals("bw")) {
-			rule.setValue(value + "%");
-			rule.setOperator(QueryRule.Operator.LIKE);
-		} else if (op.equals("bn")) {
-			// NOT
-			rule.setValue(value + "%");
-			rule.setOperator(QueryRule.Operator.LIKE);
-			rule = toNotRule(rule);
-		} else if (op.equals("in")) {
-			rule.setOperator(QueryRule.Operator.IN);
-		} else if (op.equals("ni")) {
-			// NOT
-			rule.setOperator(QueryRule.Operator.IN);
-			rule = toNotRule(rule);
-		} else if (op.equals("ew")) {
-			rule.setValue("%" + value);
-			rule.setOperator(QueryRule.Operator.LIKE);
-		} else if (op.equals("en")) {
-			// NOT
-			rule.setValue("%" + value);
-			rule.setOperator(QueryRule.Operator.LIKE);
-			rule = toNotRule(rule);
-		} else if (op.equals("cn")) {
-			rule.setValue("%" + value + "%");
-			rule.setOperator(QueryRule.Operator.LIKE);
-		} else if (op.equals("nc")) {
-			// NOT
-			rule.setValue("%" + value + "%");
-			rule.setOperator(QueryRule.Operator.LIKE);
-			rule = toNotRule(rule);
-		} else {
-			throw new IllegalArgumentException(String.format("Unkown Operator: %s", op));
-=======
+
 	private static QueryRule convertOperator(JQGridRule jqGridRule)
 	{
 		// ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
@@ -442,7 +318,6 @@ public class JQGridView extends HtmlWidget
 				return toNotRule(rule);
 			default:
 				throw new IllegalArgumentException(String.format("Unkown Operator: %s", jqGridRule.op));
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 		}
 	}
 
@@ -460,32 +335,6 @@ public class JQGridView extends HtmlWidget
 	}
 
 	@Override
-<<<<<<< HEAD
-	public String toHtml() {
-
-		try {
-			final Map<String, Object> args = new HashMap<String, Object>();
-
-			args.put("tableId", super.getId());
-			args.put("url", tupleTableBuilder.getUrl());
-
-			final Configuration cfg = new Configuration();
-			cfg.setObjectWrapper(new DefaultObjectWrapper());
-			cfg.setClassForTemplateLoading(JQGridView.class, "");
-			final Template template = cfg.getTemplate(JQGridView.class.getSimpleName() + ".ftl");
-			final Writer out = new StringWriter();
-			template.process(args, out);
-			out.flush();
-			return out.toString();
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void loadTupleTableConfig(Database db, MolgenisRequest request, TupleTable tupleTable) throws TableException, IOException {
-		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
-		tupleTable.setDb(db);
-=======
 	public String toHtml()
 	{
 		final Map<String, Object> args = new HashMap<String, Object>();
@@ -503,13 +352,6 @@ public class JQGridView extends HtmlWidget
 		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test",
 				tupleTable);
 
-		// test
-		// {"groupOp":"AND","rules":[{"field":"Country.Code","op":"eq","data":"AGO"}]}
-		// config.postData.filters.groupOp = "AND";
-		// config.postData.filters.rules.add(new JQGridRule("Country.Code",
-		// JQGridOp.eq, "AGO"));
-
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 		final String jqJsonConfig = new Gson().toJson(config);
 		System.out.println(jqJsonConfig);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
@@ -531,26 +373,18 @@ public class JQGridView extends HtmlWidget
 	 *            The Tupletable from which to read the data.
 	 * @return
 	 */
-<<<<<<< HEAD
-	public static JQGridResult buildJQGridResults(final int rowCount, final int totalPages, final int page, final TupleTable table)
-			throws TableException {
-=======
+
 	public static JQGridResult buildJQGridResults(final int rowCount, final int totalPages, final int page,
 			final TupleTable table) throws TableException
 	{
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 		final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
 		for (final Tuple row : table.getRows())
 		{
 			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
 
 			final List<String> fieldNames = row.getFieldNames();
-<<<<<<< HEAD
-			for (final String fieldName : fieldNames) {
-=======
 			for (final String fieldName : fieldNames)
 			{
->>>>>>> 78767be7619bd28afe9fb259aea2fa9b5c4d4777
 				final String rowValue = !row.isNull(fieldName) ? row.getString(fieldName) : "null";
 				rowMap.put(fieldName, rowValue); // TODO encode to HTML
 			}
