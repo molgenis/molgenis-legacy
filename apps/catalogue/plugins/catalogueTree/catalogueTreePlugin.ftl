@@ -16,14 +16,16 @@
 			
 			$('#leftSideTree li').hide();
 			
-			$('#browser ul:visible').addClass('visibleBeforeSearch');
-			
-			$('#leftSideTree ul').each(function(){
-				if($(this).css('display') != "none"){
-					$(this).addClass('visibleBeforeSearch');
-				}
-			});		
-			
+			if($('#browser ul.visibleBeforeSearch').length == 0){
+				
+				$('#browser ul:visible').addClass('visibleBeforeSearch');
+				
+				$('#leftSideTree ul').each(function(){
+					if($(this).css('display') != "none"){
+						$(this).addClass('visibleBeforeSearch');
+					}
+				});		
+			}
 			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All fields"){
 				
 				$('#leftSideTree li').each(function(){
