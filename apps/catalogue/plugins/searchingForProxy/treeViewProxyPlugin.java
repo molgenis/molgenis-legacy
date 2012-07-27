@@ -23,6 +23,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
+import org.apache.poi.poifs.crypt.Decryptor;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.molgenis.framework.db.Database;
@@ -677,7 +678,9 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 				} else {
 					displayName = measurement.getName();
 				}
-
+				String description = "";
+				if(measurement.getDescription() != null)
+					description = measurement.getDescription();
 				// Check if the tree has already had the treeElement with the
 				// same name cos the name can not be duplicated in
 				// jquery tree here. Therefore if the element already existed, a

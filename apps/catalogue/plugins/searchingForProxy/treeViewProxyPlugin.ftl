@@ -25,7 +25,7 @@
 			
 			$('#leftSideTree li').hide();
 					
-			var jsonString = eval(${screen.getInheritance()});		
+			var json = eval(${screen.getInheritance()});
 			
 			$('#leftSideTree li').each(function(){
 				
@@ -229,6 +229,80 @@
 				checkSearchingStatus();
 			});
 		});
+		
+		function calculateScore(inputString, variableName){
+			
+			var tokensForInput = createNGrams(inputString);
+			
+			var tokensForvariable = createNGrams(variableName);
+			
+			var matchedTokens = 0;
+			
+			var similarity = 0;
+			
+			for(var i = 0; i < tokensForInput.length; i++){
+				
+				var eachToken = tokensForInput[i];
+				
+				for(var j = 0; j < tokensForvariable.length; j++){
+					if(tokensForvariable[j] == eachToken){
+						matchedTokens++;
+						break;
+					}
+				}
+			}
+			
+			var totalToken = tokensForvariable.length;
+			
+			if(tokensForInput.length > tokensForvariable.length){
+				totalToken = tokensForInput.length;
+			}
+			
+			var similarity = matchedTokens/totalToken*100;
+			
+			return similarity;
+		}
+		
+		function createNGrams(stringName){
+			
+			var wordsInString = stringName.replace(/\W/g, " ").split(" ");
+			var tokens = new Array();
+			var tokenSize = 0;
+			
+			for(var i = 0; i < wordsInString.length; i++){
+				var singleWord = wordsInString[i];
+				singleWord = singleWord.toLowerCase();
+				singleWord = "^" + singleWord;
+				singleWord = singleWord + "$";
+				
+				for(var index = 0; index < singleWord.length; index++){
+					tokens[tokenSize] = singleWord.substring(index, index + 2);
+					tokenSize++;
+				}
+			} 
+			
+			return tokens;
+		}
+		
+		function createTableForMapping(listOfMatching){
+			
+			var htmlTable = "<table id=\"mappingResult\"><tr><td>variable name</td><td>similarity score</td></tr>";
+			
+			for(var i = 0; i < listOfMatching.length; i++){
+				
+				var json = listOfMatching[i];
+				var variableName = json.variableName;
+				var similarity = json.similarity.toFixed(2);
+				var newRow = "<tr><td>" + variableName + "</td><td>" + similarity + "</td></tr>";
+				htmlTable += newRow;
+			}
+			
+			htmlTable += "</table>";
+			
+			$('#showMappingResult').empty();
+			$('#showMappingResult').append(htmlTable);
+		}
+		
 	</script>
 
 	<div class="formscreen">
@@ -309,19 +383,65 @@
 						    	
 						    	<div id="tabs" style="display:none;width:100%">
 									<ul>
-										<li><a href="#viewVariable">Variable information</a></li>
 										<li><a href="#advancedSearch">Advanced searching</a></li>
+										<li><a href="#viewVariable">Variable information</a></li>
 									</ul>
 									<div id="advancedSearch" style="height:500px;width:100%">
-										<p>test</p>
+										<h3>Levenshtein string matching algorithm</h3>
+										<div id="showInputQuery">Please type in your query</div></br>
+										<input type="text" id="inputQuery" 
+											style="Border-radius:7px 7px 7px 7px;border-color:#DDDDDD;border-style:groove;border-width:5px;width:200px">
+										<input type="button" id="runLevenshtein" value="match" style="display:none"></br>
+										<div id="showMappingResult" style="overflow:auto;height:300px;width:90%"></div>	
 									</div>
 									<div id="viewVariable" style="height:500px;width:100%">
 										<div id="details" style="height:250px;overflow:auto"></div>
 									</div>
 								</div>
 						    	<script>
-						    		$( "#tabs" ).tabs();
-						    		$( "#tabs" ).show();
+						    		$("#tabs").tabs();
+						    		
+						    		$("#tabs").show();
+						    		
+						    		$('#inputQuery').val("");
+						    		
+						    		$('#inputQuery').keyup(function(){
+						    			
+						    			if($('#inputQuery').val() === ""){
+						    				$('#showInputQuery').text("Please type in your query");
+						    			}else{
+						    				$('#showInputQuery').text("Your query: ");
+						    				$('#showInputQuery').append("<b><i>" + $('#inputQuery').val() + "<i/></b>");
+						    			}
+						    		});
+						    		
+						    		$('#runLevenshtein').button();
+						    		$('#runLevenshtein').show();
+						    		
+						    		$('#runLevenshtein').click(function(){
+						    			
+						    			var inputString = $('#inputQuery').val();
+						    			
+						    			var listOfMatching = new Array();
+						    			
+						    			var listIndex = 0;
+						    			
+						    			$('#browser li').each(function(){
+						    				
+						    				if($(this).find('li').length == 0){
+							    				var variableName = $(this).children('span').text();
+							    				var similarity = calculateScore(inputString, variableName);
+							    				if(similarity >= 50){
+							    					var newJson = {"variableName":variableName,
+							    									"similarity":similarity};
+							    					listOfMatching[listIndex] = newJson;
+							    					listIndex++;
+							    				}
+						    				}
+						    			});
+						    			
+						    			createTableForMapping(listOfMatching);
+						    		});
 						    	</script>
 						   </td>
 						</tr>
