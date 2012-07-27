@@ -10,100 +10,78 @@
 	<input type="hidden" name="clickedVariable" id="clickedVariable">
 	
 	<script type="text/javascript">
+		
 		function searchInTree(){
 			
 			var inputToken = $('#InputToken').val();
 			
+			$('#browser ul:visible').addClass('visibleBeforeSearch');
+			
+			$('#leftSideTree ul').each(function(){
+				if($(this).css('display') != "none"){
+					$(this).addClass('visibleBeforeSearch');
+				}
+			});
+			
 			$('#leftSideTree li').hide();
 					
-			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All fields"){
+			$('#leftSideTree li').each(function(){
 				
-				$('#leftSideTree li').each(function(){
+				if($(this).find('li').length == 0){
 					
-					if($(this).find('li').length == 0){
-						
-						var name = $(this).text().replace(/_/g,' ');
-						
-						var id = $(this).attr('id');
-						
-						inputToken = inputToken.replace(/_/g,' ');
-						
-						if(name.search(new RegExp(inputToken, "gi")) != -1){
-							$(this).show();
-							$('#leftSideTree li#' + id).parents().show();
-							$('#leftSideTree li#' + id).parents('li').children('div').
-								removeClass('lastExpandable-hitarea expandable-hitarea').
-									addClass('collapsable-hitarea');
-							$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
-						}
-					}
-				});
-			}
-			
-			if($('#selectedField').val() == "Protocols" || $('#selectedField').val() == "All fields"){
-				
-				$('#leftSideTree li').each(function(){
+					var name = $(this).text().replace(/_/g,' ');
 					
-					if($(this).find('li').length > 0){
-						
-						var name = $(this).children('span').text().replace(/_/g,' ');
-						
-						var id = $(this).attr('id');
-						
-						inputToken = inputToken.replace(/_/g,' ');
-						
-						if(name.search(new RegExp(inputToken, "gi")) != -1){
-						
-							//remove the expandable Class for the element which was found by searching.
-							$(this).show();
-							$(this).removeClass('lastExpandable');
-							$(this).children('div').removeClass('expandable-hitarea lastExpandable-hitarea').addClass('collapsable-hitarea');
-							
-							//Remove the last expanedable class from all its parents
-							$('#leftSideTree li#' + id).parents().show();
-							$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
-							$('#leftSideTree li#' + id).parents('li').children('div').
-								removeClass('expandable-hitarea lastExpandable-hitarea').
-									addClass('collapsable-hitarea');
-							
-							
-							//Remove the last expanedable class from all its children
-							$('#leftSideTree li#' + id).find('ul').show();
-							$('#leftSideTree li#' + id).find('li').show();
-							$('#leftSideTree li#' + id).find('li').removeClass('lastExpandable');
-							$('#leftSideTree li#' + id).find('div').removeClass('expandable-hitarea lastExpandable-hitarea').addClass('collapsable-hitarea');
-						}
-					}
-				});
-				
-			}
-			if($('#selectedField').val() == "Details" || $('#selectedField').val() == "All fields"){
-				
-				var json = eval(${screen.getInheritance()});
-				
-				$('#leftSideTree li').each(function(){
+					var id = $(this).attr('id');
 					
-					if($(this).find('li').length == 0){
+					inputToken = inputToken.replace(/_/g,' ');
+					
+					if(name.search(new RegExp(inputToken, "gi")) != -1){
 						
-						var id = $(this).attr('id');
-						
-						var table = json[id];
-						
-						table = table.replace(/_/g,' ');
-						
-						inputToken = inputToken.replace(/_/g,' ');
-						
-						if(table.search(new RegExp(inputToken, "gi")) != -1){
-							$(this).show();
-							$('#leftSideTree li#' + id).parents().show();
-							$('#leftSideTree li#' + id).parents('li').children('div').
-								removeClass('expandable-hitarea lastExpandable-hitarea').
-									addClass('collapsable-hitarea');
-							$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
-						}
+						$(this).show();
+						$('#leftSideTree li#' + id).parents().show();
+						$('#leftSideTree li#' + id).parents('li').children('div').
+							removeClass('lastExpandable-hitarea expandable-hitarea').
+								addClass('collapsable-hitarea');
+						$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+						$(this).addClass('matchedDisplayNode');
+						$('#leftSideTree li#' + id).parents('li').addClass('matchedDisplayNode');
 					}
-				});
-			}			
+					
+				}else if($(this).find('li').length > 0){
+					
+					var name = $(this).children('span').text().replace(/_/g,' ');
+					
+					var id = $(this).attr('id');
+					
+					inputToken = inputToken.replace(/_/g,' ');
+					
+					if(name.search(new RegExp(inputToken, "gi")) != -1){
+						
+						//remove the expandable Class for the element which was found by searching.
+						$(this).show();
+						$(this).removeClass('lastExpandable');
+						$(this).children('div').removeClass('expandable-hitarea lastExpandable-hitarea').addClass('collapsable-hitarea');
+						
+						//Remove the last expanedable class from all its parents
+						$('#leftSideTree li#' + id).parents().show();
+						$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+						$('#leftSideTree li#' + id).parents('li').children('div').
+							removeClass('expandable-hitarea lastExpandable-hitarea').
+								addClass('collapsable-hitarea');
+						
+						
+						//Remove the last expanedable class from all its children
+						$('#leftSideTree li#' + id).find('ul').show();
+						$('#leftSideTree li#' + id).find('li').show();
+						$('#leftSideTree li#' + id).find('li').removeClass('lastExpandable');
+						$('#leftSideTree li#' + id).find('div').removeClass('expandable-hitarea lastExpandable-hitarea').addClass('collapsable-hitarea');
+						
+						$(this).addClass('matchedDisplayNode');
+						$('#leftSideTree li#' + id).parents('li').addClass('matchedDisplayNode');
+						$('#leftSideTree li#' + id).find('li').addClass('matchedDisplayNode');
+					}
+				}
+			});			
 			
 			addVeritcalLine($('#browser >li').attr('id'));
 			removeVerticalLine($('#browser >li').attr('id'));
@@ -133,6 +111,7 @@
 		}
 		
 		function addVeritcalLine(id){
+			
 			if($('#' + id).children('ul').children('li').length > 0){
 					if($('#' + id).nextAll().length > 0){
 						$('#' + id).removeClass('lastCollapsable');
@@ -151,12 +130,39 @@
 		function checkSearchingStatus(){
 			
 			if($('#InputToken').val() === ""){
+				
 				addVeritcalLine($('#browser >li').attr('id'));
-				$('#leftSideTree li').show();				
+				
+				$('#leftSideTree li').show();
+				
+				revertBackToLastState("matchedDisplayNode");
 			}
 		}
 		
+		function revertBackToLastState(selector){
+			
+			$('#browser li.' + selector).each(function(){
+					
+				if($(this).parent('ul').hasClass('visibleBeforeSearch')){
+					//That means it was visible before searching, do nothing just show the element
+					$(this).parent('ul').show();
+				}else{
+					//That means it was hidden before searching, hide the element and revert the hitarea
+					$(this).parent('ul').hide();
+					$(this).parent('ul').siblings('div').removeClass('collapsable-hitarea').addClass('expandable-hitarea');
+					if($(this).parents('li:first').nextAll().length == 0){
+						$(this).parents('li:first').removeClass('lastCollapsable').addClass('lastExpandable');
+						$(this).parent('ul').siblings('div').removeClass('lastCollapsable-hitarea').addClass('lastExpandable-hitarea');
+					}
+				}
+			});
+			
+			$('#browser li.' + selector).removeClass(selector);
+			$('#browser ul.visibleBeforeSearch').removeClass('visibleBeforeSearch');
+		}
+		
 		function whetherReload(){
+			
 			var value = $('#InputToken').val();
 			if(value.search(new RegExp("\\w", "gi")) != -1){
 				searchInTree();
@@ -238,8 +244,8 @@
 								<script>$('#cohortSelectSubmit').chosen();</script>
 								<input type="image" src="res/img/refresh.png" alt="Submit" 
 										name="chooseInvestigation" style="vertical-align: middle;" 
-										value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-										DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>
+										value="refresh tree" onclick="__action.value='chooseInvestigation';" 
+										title="load another study"	/>
 							<!--	<div id="masstoggler"> 		
 				 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
 				 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
@@ -268,8 +274,7 @@
 									<b>${filter}</b>
 									<input type="image" src="generated-res/img/cancel.png" alt="Remove filter" 
 													name="chooseInvestigation" style="vertical-align: middle;" 
-													value="refresh tree" onclick="__action.value='chooseInvestigation';DownloadMeasurementsSubmit.style.display='inline'; 
-													DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
+													value="refresh tree" onclick="__action.value='chooseInvestigation'; title="load another study"	/>	
 								<#if filter_has_next> and </#if>
 								</#list>				    
 					    	</td>
