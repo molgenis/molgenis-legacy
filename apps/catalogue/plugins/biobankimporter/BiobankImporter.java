@@ -21,13 +21,13 @@ import jxl.write.WritableWorkbook;
 import org.molgenis.auth.Institute;
 import org.molgenis.auth.Person;
 import org.molgenis.compute.ComputeProtocol;
+import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
-import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
@@ -39,7 +39,6 @@ import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 import plugins.emptydb.emptyDatabase;
-import uk.ac.ebi.ontocat.OntologyTerm;
 import app.FillMetadata;
 
 
@@ -168,17 +167,22 @@ public class BiobankImporter extends PluginModel<Entity>
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.CODE_STRING);
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.LABEL);
 		chooseFieldName.add(Category.class.getSimpleName() + ":" + Category.DESCRIPTION);
-		chooseFieldName.add(Individual.class.getSimpleName() + ":" + Individual.FATHER_NAME);
-		chooseFieldName.add(Individual.class.getSimpleName() + ":" + Individual.MOTHER_NAME);
+		chooseFieldName.add(Person.class.getSimpleName() + ":" + Person.NAME);
+		chooseFieldName.add(Person.class.getSimpleName() + ":" + Person.LASTNAME);
+		chooseFieldName.add(Person.class.getSimpleName() + ":" + Person.FIRSTNAME);
+		chooseFieldName.add(Institute.class.getSimpleName() + ":" + Institute.NAME);
 		chooseFieldName.add(ObservedValue.class.getSimpleName());
 		chooseFieldName.add(ObservationTarget.class.getSimpleName() + ":" + ObservationTarget.NAME);
 		chooseFieldName.add(Panel.class.getSimpleName() + ":" + Panel.NAME);
 		chooseFieldName.add(Panel.class.getSimpleName() + ":" + Panel.INDIVIDUALS_NAME);
+		chooseFieldName.add(OntologyTerm.class.getSimpleName() + ":" + OntologyTerm.NAME);
 		chooseFieldName.add("NULL");
 		chooseClassType.add(ObservedValue.class.getSimpleName());
 		chooseClassType.add(ObservationTarget.class.getSimpleName());
-		chooseClassType.add(Individual.class.getSimpleName());
+		chooseClassType.add(Person.class.getSimpleName());
+		chooseClassType.add(Institute.class.getSimpleName());
 		chooseClassType.add(Panel.class.getSimpleName());
+		chooseClassType.add(OntologyTerm.class.getSimpleName());
 		chooseClassType.add("NULL");
 
 		dataTypeOptions.add("string");
@@ -436,11 +440,10 @@ public class BiobankImporter extends PluginModel<Entity>
 								System.out.println(columnIndex + "-------------------------->" + eachMember.toString());
 								columnIndexToRelation.put(columnIndex, Integer.parseInt(eachMember.toString()));
 								index++;
+							}else if(index == 3){
+								columnIndexToMultipleValue.put(columnIndex, "true");
+								
 							}
-//							else if(index == 3){
-//								columnIndexToMultipleValue.put(columnIndex, "true");
-//								
-//							}
 						}
 					}
 					

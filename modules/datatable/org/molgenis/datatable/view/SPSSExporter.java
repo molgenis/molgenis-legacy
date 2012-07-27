@@ -28,9 +28,9 @@ public class SPSSExporter extends CsvExporter
 	public SPSSExporter(TupleTable matrix)
 	{
 		super(matrix);
-//		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+		//		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	}
-		
+
 	public void export(OutputStream csvOs, OutputStream spssOs, String csvFileName) throws TableException
 	{
 		super.export(csvOs);
@@ -40,12 +40,12 @@ public class SPSSExporter extends CsvExporter
 	private void writeSPSFile(OutputStream spssOs, String csvFileName) throws TableException
 	{
 		BufferedWriter spsWriter = new BufferedWriter(new OutputStreamWriter(spssOs));
-		
+
 		List<Field> columns = table.getColumns();
 		StringWriter valLabels = new StringWriter();
 		StringWriter colNames = new StringWriter();
 		List<Field> categoricalFields = new ArrayList<Field>();
-		
+
 		// write variable definitions
 		for (Field field : columns) {
 			FieldType fieldType = field.getType();
@@ -54,7 +54,7 @@ public class SPSSExporter extends CsvExporter
 			}
 			colNames.write(String.format("%s %s ", field.getName(), colTypeToSPSSType(fieldType.getEnumType())));
 		}
-		
+
 		// add category labels to variables if appropriate
 		for (Field field : categoricalFields) {
 			Map<String, String> categoryMapping = ((CategoricalType)field.getType()).getCategoryMapping();
@@ -64,18 +64,18 @@ public class SPSSExporter extends CsvExporter
 			}
 			valLabels.write("\n");
 		}
-		
+
 		try
 		{
 			String spsFormatStr = String.format("GET DATA\n" +
-			"/type = txt\n" + 
-			"/file = \'%s\'\n " +
-			"/qualifier = \'\"\'\n" +
-			"/delimiters = \'\\t\'\n" +
-			"/firstcase = 2\n" +
-			"/variables = %s.\n" +
-			"/execute.",  csvFileName, colNames.toString() + valLabels.toString());
-		
+					"/type = txt\n" +
+					"/file = \'%s\'\n " +
+					"/qualifier = \'\"\'\n" +
+					"/delimiters = \'\\t\'\n" +
+					"/firstcase = 2\n" +
+					"/variables = %s.\n" +
+					"/execute.",  csvFileName, colNames.toString() + valLabels.toString());
+
 			spsWriter.write(spsFormatStr);
 			spsWriter.flush();
 			spsWriter.close();
@@ -89,19 +89,20 @@ public class SPSSExporter extends CsvExporter
 	private static String colTypeToSPSSType(FieldTypeEnum columnType)
 	{
 		switch(columnType) {
-			case CATEGORICAL:
-				return "F";
-			case DATE:
-				return "ADATE";
-			case DATE_TIME:
-				return "ADATE";
-			case DECIMAL:
-				return "F";
-			case INT:
-				return "F";
-			case STRING:
-				return "A";
+		case CATEGORICAL:
+			return "F";
+		case DATE:
+			return "ADATE";
+		case DATE_TIME:
+			return "ADATE";
+		case DECIMAL:
+			return "F";
+		case INT:
+			return "F";
+		case STRING:
+			return "A";
+		default:
+			throw new IllegalArgumentException("Unknown field type: " + columnType);
 		}
-		throw new IllegalArgumentException("Unknown field type: " + columnType);
 	}
 }

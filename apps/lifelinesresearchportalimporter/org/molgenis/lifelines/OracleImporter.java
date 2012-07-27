@@ -68,8 +68,8 @@ public class OracleImporter
 	{
 		Locale.setDefault(Locale.US);
 		PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
-
-		final String inputPath = "/Users/jorislops/Desktop/LL Data/exadata/";
+		
+		final String inputPath = "/Users/jorislops/Desktop/LLTEST1/";
 
 		final Properties props = new Properties();
 		final FileInputStream in = new FileInputStream(
@@ -91,7 +91,7 @@ public class OracleImporter
 	}
 
 	private static final boolean SHARED_MEASUREMENTS = true;
-	private static final String DICT = "VW_DICT_ENG";
+	private static final String DICT = "VW_DICT";
 	private static final String CATE = "VW_DICT_VALUESETS";
 	private static final eDatabase DATABASE_TYPE = LoaderUtils.eDatabase.ORACLE;
 

@@ -31,7 +31,7 @@
 			<field name="Investigation" type="xref" xref_label="name"
 				xref_entity="Investigation" nillable="true"
 				description="Reference to the Study that this data element is part of" />
-			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
+			<field name="ontologyReference" type="mref" xref_entity="OntologyTerm"
 				nillable="true"
 				description="(Optional) Reference to the formal ontology definition for this element, e.g. 'Animal' or 'GWAS protocol'" />
 			<unique fields="name,Investigation" description="Name is unique within an Investigation" />
