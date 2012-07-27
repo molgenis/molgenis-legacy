@@ -25,6 +25,8 @@
 			
 			$('#leftSideTree li').hide();
 					
+			var jsonString = eval(${screen.getInheritance()});		
+			
 			$('#leftSideTree li').each(function(){
 				
 				if($(this).find('li').length == 0){
@@ -43,6 +45,24 @@
 							removeClass('lastExpandable-hitarea expandable-hitarea').
 								addClass('collapsable-hitarea');
 						$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+						$(this).addClass('matchedDisplayNode');
+						$('#leftSideTree li#' + id).parents('li').addClass('matchedDisplayNode');
+					}else{
+						
+						var table = json[id];
+						
+						table = table.replace(/_/g,' ');
+						
+						inputToken = inputToken.replace(/_/g,' ');
+						
+						if(table.search(new RegExp(inputToken, "gi")) != -1){
+							$(this).show();
+							$('#leftSideTree li#' + id).parents().show();
+							$('#leftSideTree li#' + id).parents('li').children('div').
+								removeClass('expandable-hitarea lastExpandable-hitarea').
+									addClass('collapsable-hitarea');
+							$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+						}
 						$(this).addClass('matchedDisplayNode');
 						$('#leftSideTree li#' + id).parents('li').addClass('matchedDisplayNode');
 					}
