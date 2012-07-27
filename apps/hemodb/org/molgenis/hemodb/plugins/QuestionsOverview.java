@@ -1,5 +1,8 @@
 package org.molgenis.hemodb.plugins;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,7 +79,11 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 				// this.get("questionOne").handleRequest(db, request, out);
 				questionTwo(db, request);
 			}
-
+			if (QuestionState.QUESTION4.equals(getModel().getState())) {
+				// delegate to the module of question 1
+				// this.get("questionOne").handleRequest(db, request, out);
+				questionFour(db, request);
+			}
 			getModel().setAction(request.getAction());
 
 			if ("back".equals(request.getAction())) {
@@ -106,6 +113,10 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 				// TODO: QuestionTwo q2 = (QuestionTwo) this.get("questionTwo");
 			} else if ("questionThree".equals(question)) {
 				getModel().setState(QuestionState.QUESTION3);
+			} else if ("questionFour".equals(question)) {
+				getModel().setState(QuestionState.QUESTION4);
+				
+				
 			} else {
 				System.out.println("something bad happened");
 				// TODO implement other questions
@@ -123,6 +134,8 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		return Show.SHOW_MAIN;
 
 	}
+	
+
 
 	public void selectSampleGroupsForDropdown(Database db)
 			throws DatabaseException {
@@ -313,6 +326,11 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 
 	public void questionTwo(Database db, Tuple request)
 			throws Exception {
+		
+		if ("back".equals(request.getAction())) {
+			getModel().setState(QuestionState.BEGINNING);
+		}
+		
 		// GENE EXPRESSION DATA MATRIX SELECTION (raw/normalized data)
 		String geneExp = request.getString("geneExp");
 
@@ -342,32 +360,29 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		//make submatrix with sampleNames
 		//see pseudocode on paper for (row: rows)
 		
-		if(geneExp.equals("expDataRaw")){
-			//TODO: how to get the file? Cannot do hard coded because different user which might not know where the binary file is stored on the system
-		}
-		else if (geneExp.equals("expDataLog2Quan")){
-			//TODO: how to get the file? Cannot do hard coded because different user which might not know where the binary file is stored on the system
-			double log2SignifCutoff = Math.log(signifCutoff)/Math.log(2);
-			
-			
-		}
+//		if(geneExp.equals("expDataRaw")){
+//			//TODO: how to get the file? Cannot do hard coded because different user which might not know where the binary file is stored on the system
+//		}
+//		else if (geneExp.equals("expDataLog2Quan")){
+//			//TODO: how to get the file? Cannot do hard coded because different user which might not know where the binary file is stored on the system
+//			double log2SignifCutoff = Math.log(signifCutoff)/Math.log(2);
+//			
+//		}
 		
 		
 //		// get the data set
-//		Data dataSet = db.query(Data.class).eq(Data.NAME, geneExp).find().get(0);
-//
-//		for(HemoProbe probe : probes){
-//			String probeName = probe.getName();
-//			probeNames.add(probeName);
-//		}		
-//		
-//		// the matrix we want to show
-//		DataMatrixInstance m = this.getMatrixInstance(db, dataSet,sampleNames, probeNames);
-//		
-//
-//		
-//		DataMatrixInstance subMatrix = m.getSubMatrix(probeNames, sampleNames);
-//		System.out.println("dataSet is: " + "\n" + subMatrix);
+		Data dataSet = db.query(Data.class).eq(Data.NAME, geneExp).find().get(0);
+
+		for(HemoProbe probe : probes){
+			String probeName = probe.getName();
+			probeNames.add(probeName);
+		}		
+		
+		// the matrix we want to show
+		DataMatrixInstance m = this.getMatrixInstance(db, dataSet,sampleNames, probeNames);
+				
+		DataMatrixInstance subMatrix = m.getSubMatrix(probeNames, sampleNames);
+		System.out.println("dataSet is: " + "\n" + subMatrix);
 //		
 //		//HashMap<String, Object[]> probeValues = new HashMap<String, Object[]>();
 ////		for (HemoProbe probe : probes){
@@ -379,6 +394,14 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 //		//System.out.println(probeValues);
 //		
 		
+	}
+	
+	public void questionFour(Database db, Tuple request){
+		//TODO: get radio button
+		// get list of genes || probes
+		// convert them
+		// make result section
+		// write to output
 	}
 
 }

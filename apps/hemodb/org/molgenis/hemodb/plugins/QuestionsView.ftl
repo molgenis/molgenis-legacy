@@ -36,8 +36,9 @@
 				<div id="askingQuestions">
 					Which question do you want to ask?<br />
 					<input type="radio" id="Q1" name="questions" value="questionOne"  /> Search for expression of gene(s) in subsets of samples<br />
-					<input type="radio" id="Q2" name="questions" value="questionTwo" checked /> Make comparisons: what are significantly differentially expressed genes between group A and group B <br />
+					<input type="radio" id="Q2" name="questions" value="questionTwo"  /> Make comparisons: what are significantly differentially expressed genes between group A and group B <br />
 					<input type="radio" id="Q3" name="questions" value="questionThree" /> Make comparisons: is gene X differentially expressed in group A versus B <br />
+					<input type="radio" id="Q4" name="questions" value="questionFour" checked/> Convert between probes and genes <br />
 				</div>
 				<div id="submit">
 					<input type='submit' id='submitInfo' value='Submit' onclick="__action.value='submitInformation'" />
@@ -135,6 +136,19 @@
 <#elseif model.state == "QUESTION3">
 This question hasn't been implemented yet. Try again later
 
+<#elseif model.state == "QUESTION4">
+	You can convert between probes and genes here.
+	<div id="convertGenesProbes">
+		Choose the input:
+		<input type="radio" id="convertGenesToProbes" name="convertGP" value="convertGenes" /> Genes<br />
+		<input type="radio" id="convertProbesToGenes" name="convertGP" value="convertProbes" /> Probes<br />
+	</div>
+	
+	<div id="geneList">
+		<br />Supply the probes/genes you want to convert (one per line):<br />
+		<textarea rows="10" cols="51" name="gpText" value="convertThese"></textarea>
+	</div>
+	
 	
 <#else>
 UNKNOWN STATE ${model.state}
