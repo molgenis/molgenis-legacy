@@ -5,11 +5,8 @@ classes/
 tmp/
 hsqldb/
 handwritten/
-<<<<<<< HEAD
 generated/
-=======
 WebContent/WEB-INF/
->>>>>>> 9ca45da8ed04808e96ce38366f61f77f9b125be1
 
 ## Always ignore these
 *~
@@ -40,23 +37,20 @@ log*
 *.java~
 /bin
 /test-output
+/generated
 /target
 logger.out*
 /dist
-<<<<<<< HEAD
-<<<<<<< HEAD
 /.settings/*
 !/.settings/template*
 .project
 /WebContent/WEB-INF/lib
 /WebContent/WEB-INF/classes
 /WebContent/doc/
-=======
 /.settings/org.eclipse.wst.common.component
->>>>>>> 0dd1e34cf8dec5282b1906b6c5fade0f7dabd6b2
-=======
 /generated/java
 !/.settings/template*
 /.settings/org.eclipse.wst.common.component
 /.settings/org.eclipse.core.resources.prefs
->>>>>>> 9ca45da8ed04808e96ce38366f61f77f9b125be1
+/apps/catalogue/plugins/hl7parser/PropertiesPath.java
+

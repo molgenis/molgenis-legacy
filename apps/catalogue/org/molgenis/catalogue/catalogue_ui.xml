@@ -13,11 +13,12 @@
 
 		<form name="investigation" entity="Investigation" label="Study details" compact_view="name,description" hide_fields="accession">
 			<menu name="InvestigationMenu">
-				<form name="measurement" entity="Measurement" label="Measurements" hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
-				<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="ontologyReference,Investigation,TargetFilter">
+				<form name="measurement" entity="Measurement" label="Measurements" hide_fields="AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
+				<form name="protocol" entity="Protocol" label="Protocols"	compact_view="Name,Features" hide_fields="Investigation,TargetFilter">
 					<form name="ProtocolDocuments" entity="ProtocolDocument" />
 				</form>
 				<form name="PermittedValues" entity="Category" />
+				<form name="ontologyterm" entity="OntologyTerm" label="Ontology Term"/>
 			</menu>
 		</form>
 		
@@ -33,16 +34,11 @@
 		<menu name="Mappings" label="Harmonization platform (ALPHA)">
 			
 			<plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
-			<form name="mappingMeasurement" entity="MappingMeasurement"
-				label="Measurement Mappings" groups="admin" />
-			<form name="computeProtocol" entity="ComputeProtocol" label="Analysis Protocols" />
-			<form name="observationTarget" entity="ObservationTarget" label="Observation Target">
-				<form name="ObservedValues" entity="ObservedValue" label="ObservedValue" />
-			</form>
-			<menu name="selectionModel" label="Select prediction model">
-				<plugin name="PredictionModelSelection"
-					type="plugins.predictionSelection.predictionSelectionPlugin" label="Validate Prediction Model" />
-			</menu>
+			<plugin name="DevelopingAlgorithm" type="plugins.developingAlgorithm.developingAlgorithm" label="Developing algorithm"/>
+			<plugin name="FindingProxyDemo" type="plugins.searchingForProxy.catalogueTreePlugin" label="Finding proxy demo"/>
+			<plugin name="FindingProxy" type="plugins.findingProxy.findingProxy" label="Finding proxies"/>
+			
+			<form name="mappingmeasurement" entity="MappingMeasurement" label="mapping result" hide_fields="protocolApplication,dataType,id"/>
 		</menu>
 
 		<menu name="Admin">

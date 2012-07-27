@@ -323,7 +323,7 @@ public class XqtlSeleniumTest
 			// switch to edit view and check some values there too
 			clickAndWait("id=Individuals_editview");
 			Assert.assertEquals(selenium.getValue("id=Individual_name"), "X1");
-			Assert.assertEquals(selenium.getText("css=#Individual_ontologyReference_chzn > a.chzn-single > span"),
+			Assert.assertEquals(selenium.getText("css=#Individual_ontologyReference_chzn_c_0 > span"),
 					"xgap_rqtl_straintype_riself");
 			Assert.assertEquals(
 					selenium.getText("//img[@onclick=\"if ($('#Individuals_form').valid() && validateForm(document.forms.Individuals_form,new Array())) {setInput('Individuals_form','_self','','Individuals','update','iframe'); document.forms.Individuals_form.submit();}\"]"),
