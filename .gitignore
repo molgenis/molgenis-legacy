@@ -42,4 +42,5 @@ logger.out*
 /dist
 /generated/java
 !/.settings/template*
+/.settings/org.eclipse.wst.common.component
 /apps/catalogue/plugins/hl7parser/PropertiesPath.java

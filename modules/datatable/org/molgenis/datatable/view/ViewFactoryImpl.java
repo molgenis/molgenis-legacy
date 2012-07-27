@@ -1,10 +1,10 @@
 package org.molgenis.datatable.view;
 
-import org.molgenis.datatable.controller.Renderers.CSVRenderer;
-import org.molgenis.datatable.controller.Renderers.ExcelRenderer;
-import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
-import org.molgenis.datatable.controller.Renderers.Renderer;
-import org.molgenis.datatable.controller.Renderers.SPSSRenderer;
+import org.molgenis.datatable.view.Renderers.CSVRenderer;
+import org.molgenis.datatable.view.Renderers.ExcelRenderer;
+import org.molgenis.datatable.view.Renderers.JQGridRenderer;
+import org.molgenis.datatable.view.Renderers.Renderer;
+import org.molgenis.datatable.view.Renderers.SPSSRenderer;
 
 public class ViewFactoryImpl implements ViewFactory {
 	public Renderer createView(String viewName) {
