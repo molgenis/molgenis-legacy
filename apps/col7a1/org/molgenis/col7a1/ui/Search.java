@@ -9,10 +9,7 @@ package org.molgenis.col7a1.ui;
 
 import org.apache.commons.lang.text.StrBuilder;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
-import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.mutation.ui.search.SearchModel;
 import org.molgenis.mutation.ui.search.SearchPlugin;
 
 public class Search extends SearchPlugin
@@ -22,17 +19,12 @@ public class Search extends SearchPlugin
 	public Search(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.setModel(new SearchModel(this));
 		this.getModel().setPatientPager("generated-res/col7a1/patientPager.jsp");
 		this.getModel().setMutationPager("generated-res/col7a1/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/col7a1/ui/patient.ftl");
+		this.getModel().setMutationViewer("/org/molgenis/col7a1/ui/mutation.ftl");
 	}
 
-	public ScreenView getView()
-	{
-		return new FreemarkerView("init.ftl", this.getModel());
-	}
-	
 	@Override
 	public void reload(Database db)
 	{
@@ -49,10 +41,10 @@ public class Search extends SearchPlugin
 			text.appendln("<p>");
 			text.appendln("The International Dystrophic Epidermolysis Bullosa Patient Registry contains anonymised data on both published and unpublished DEB patients, as well as their associated COL7A1 mutations and genotypes, and clinical and molecular phenotypes.");
 			text.appendln("</p>");
-			text.appendln("<p>");
-			text.appendln("The database currently contains " + this.getModel().getNumPatients() + " DEB patients, of which " + this.getModel().getNumUnpublished() + " unpublished, and " + this.getModel().getNumMutations() + " COL7A1 mutations. Search or browse below.");
-			text.appendln("</p>");
-			text.appendln("<br/>");
+//			text.appendln("<p>");
+//			text.appendln("The database currently contains " + this.getModel().getNumPatients() + " DEB patients, of which " + this.getModel().getNumUnpublished() + " unpublished, and " + this.getModel().getNumMutations() + " COL7A1 mutations. Search or browse below.");
+//			text.appendln("</p>");
+//			text.appendln("<br/>");
 			
 			this.getModel().setTextWelcome(text.toString());
 	
@@ -117,7 +109,7 @@ public class Search extends SearchPlugin
 		}
 		catch (Exception e)
 		{
-			//TODO: What to do here?
+			e.printStackTrace();
 		}
 	}
 }

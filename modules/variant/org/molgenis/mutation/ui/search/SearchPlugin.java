@@ -55,6 +55,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.getModel().setPatientPager("/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
+		this.getModel().setMutationViewer("/org/molgenis/mutation/ui/search/mutation.ftl");
 		this.getModel().setMbrowse(new MBrowse());
 		this.getModel().getMbrowse().setTarget(this.getName());
 		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
@@ -413,7 +414,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		((HttpServletRequestTuple) request).getRequest().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getPatientPager()));
 		this.getModel().setHeader(this.getModel().getPatientSummaryVOs().size() + " results for \"Display all patients\".");
-		
+
 		this.setView(new FreemarkerView("included.ftl", this.getModel()));
 	}
 
