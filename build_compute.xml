@@ -9,7 +9,7 @@
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
 		<pathelement location="modules/auth" />
-		<pathelement location="modules/compute" />
+		<pathelement location="modules/compute4" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/import" />
 		<pathelement location="modules/settings" />
