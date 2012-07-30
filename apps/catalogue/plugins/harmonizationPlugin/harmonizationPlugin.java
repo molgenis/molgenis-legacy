@@ -4,6 +4,7 @@ import gcc.catalogue.MappingMeasurement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -327,7 +328,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 						for(LinkedInformation eachMatching : listOfMatchedResult){
 
-							String identifier = entry.getKey() + " " + eachMatching.matchedItem;
+							String identifier =  eachMatching.measurementName + "_" + entry.getKey();
 
 							if(request.getBool(identifier.replaceAll(" ", "_")) != null){
 
@@ -620,8 +621,8 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 				expandedQuery.add(eachParameter.toLowerCase());
 			}
 			
-			if(expandedQuery.contains("Prediction Model")){
-				System.out.println();
+			if(expandedQuery.contains("prediction model")){
+				expandedQuery.remove("prediction model");
 			}
 			
 			for(String eachQuery : expandedQuery){
@@ -757,7 +758,7 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 			
 			String matchingResult = "<table class='dataResult' id='" + tableId.replaceAll(" ", "_") + "' border='1'>";
 
-			Map<String, Map<String, Double>> uniqueMapping = new HashMap<String, Map<String, Double>>();
+			Map<String, LinkedHashMap<String, Double>> uniqueMapping = new HashMap<String, LinkedHashMap<String, Double>>();
 
 			matchingResult += "<tr style='background: blue; color: white;'>" 
 					+"<td>Data Item</td><td>Description</td><td>Select mapping</td></tr>";
@@ -773,20 +774,20 @@ public class harmonizationPlugin extends PluginModel<Entity> {
 
 				if(!uniqueMapping.containsKey(identifier)){
 
-					Map<String, Double> queryAndSimilarity = new HashMap<String, Double>();
+					LinkedHashMap<String, Double> queryAndSimilarity = new LinkedHashMap<String, Double>();
 
 					queryAndSimilarity.put(expandedQuery, similarity);
 
 					uniqueMapping.put(identifier, queryAndSimilarity);
 
-					matchingResult += "<tr class='clickRow' border='1' id='" + identifier.replaceAll(" ", "_") + "' style='cursor:pointer'>" 
-							+ "<td>"+ measurementName +"</td>"
-							+ "<td><div id='" + identifier.replaceAll(" ", "_") + "_div'>" 
+					matchingResult += "<tr border='1' id='" + identifier.replaceAll(" ", "_") + "' style='cursor:pointer'>" 
+							+ "<td class='clickRow'>"+ measurementName +"</td>"
+							+ "<td class='clickRow'><div id='" + identifier.replaceAll(" ", "_") + "_div'>" 
 							+ matchedItem + "</div></td><td><input type='checkbox' name='" 
 							+ identifier.replaceAll(" ", "_") + "'></td></tr>";
 				}else{
 
-					Map<String, Double> queryAndSimilarity = uniqueMapping.get(identifier);
+					LinkedHashMap<String, Double> queryAndSimilarity = uniqueMapping.get(identifier);
 
 					queryAndSimilarity.put(expandedQuery, similarity);
 

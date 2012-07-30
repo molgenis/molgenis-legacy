@@ -222,8 +222,8 @@ $(document).ready(function(){
 												});
 											</script>
 											<script>
-												$('#details > table tr.clickRow').click(function() {
-													var id = $(this).attr('id');
+												$('#details > table td.clickRow').click(function() {
+													var id = $(this).parent().attr('id');
 													var position = $(this).offset();
 													var top = position.top + 140;
 													var left = position.left + 10;

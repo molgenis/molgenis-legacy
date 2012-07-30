@@ -41,7 +41,5 @@ log*
 logger.out*
 /dist
 /generated/java
-/.settings/template*
-/.settings/org.eclipse.wst.common.component
+!/.settings/template*
 /apps/catalogue/plugins/hl7parser/PropertiesPath.java
-/.settings/org.eclipse.core.resources.prefs

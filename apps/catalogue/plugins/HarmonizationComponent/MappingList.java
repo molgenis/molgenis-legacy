@@ -60,7 +60,6 @@ public class MappingList {
     			i++;
     		}
     		Arrays.sort(columns);
-    		links.clear();
     		links = Arrays.asList(columns);
     		
     		for(LinkedInformation inf : links){

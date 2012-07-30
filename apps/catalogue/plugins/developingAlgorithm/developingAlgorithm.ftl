@@ -15,6 +15,28 @@
 
 </style>
 
+<script>
+	function setValidationStudy(validationStudyName){
+		
+		var dropBox = document.getElementById("validationStudy");
+		
+		var options = dropBox.getElementsByTagName("option");
+		
+		for(var i = 0; i < options.length; i++){
+			
+			if(options[i].value == validationStudyName){
+				
+				dropBox.selectedIndex = i;
+			}
+		}
+	}
+	$(document).ready(function(){
+	
+		$('#continue').button();
+		$('#continue').show();
+		$('#backToMapping').button();
+		$('#backToMapping').show();
+	});
 </script>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
@@ -46,30 +68,34 @@
 		<div class="screenbody">
 			<div class="screenpadding">	
 			Please choose an ontology file and algorithm will be automatically generated </br></br>
-					<table width="100%">
-						<tr>
+				<table width="100%">
+					<tr>
+						<td class="box-body" style="width:50%;">
+							1. Choose a validation study
+							<select name="validationStudy" id="validationStudy">
+								<#list screen.getArrayInvestigations() as inv>
+									<#assign invName = inv.name>
+									<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>
+								</#list>
+							</select></br></br>
+							<script>
+								setValidationStudy('${screen.getValidationStudyName()}');
+								$('#validationStudy').chosen();
+							</script>
+							2. Please upload your ontology (compulsory)</br></br>
+							<input type="file" id ="ontologyFileForAlgorithm" name = "ontologyFileForAlgorithm"
+								style="height:23px;" /></br></br>
+							<input type="submit" value="generate algorithm" id="continue" name="continue" 
+								style="display:none;font-size:0.9em" onclick="__action.value='generateAlgorithm';return checkFileExisting();" />
+							
+							<input type="submit" value="back to mapping" id="backToMapping" name="backToMapping" 
+								style="display:none;font-size:0.9em" onclick="__action.value='backToMapping';" />
+						</td>
 							<td class="box-body" style="width:50%;">
-								1. Choose a validation study
-								<select name="validationStudy" id="validationStudy"> 
-									
-								</select></br></br>
-								<script>
-								
-								</script>
-								2. Please upload your ontology (compulsory)</br></br>
-								<input type="file" id = "ontologyFileForAlgorithm" name = "ontologyFileForAlgorithm"/></br></br>
-								
-								<input type="submit" value="generate algorithm" id="continue" name="continue" onclick="__action.value='generateAlgorithm';return checkFileExisting();" />
-								
-								<input type="submit" value="back to mapping" id="backToMapping" name="backToMapping" onclick="__action.value='backToMapping';" />
-							</td>
-							<td class="box-body" style="width:50%;">
-								<p align="justify" style="font-family:arial;margin-left:20px;font-size:12px;">
-								
-								</p>
-							</td>
-						</tr>
-					</table>	
+							<p align="justify" style="font-family:arial;margin-left:20px;font-size:12px;">${screen.getMessageForAlgorithm()}</p>
+						</td>
+					</tr>
+				</table> 	
 			</div>
 		</div>
 	</div>
