@@ -47,10 +47,123 @@ else
 	##Push sample belonging to family "1" into list.txt
 	echo '1 ${externalSampleID}' > ${familylist}
 	
+	#########################################################################
+	#########################################################################
+	#########################################################################
+	# Use 'probe positions' to check whether the array file / final report is in build 36 or build 37.
+	# In some cases the the position is erroneously one too small. In those cases, we add one to all positions in the array file / final report.
+	
+	# Load ten rs-ids and positions of ten probes that should be present on build 36 and also on build 37.
+	# The difference in positions between none of the probes on b36 and b37 is 1.
+	# Therefore, we can safely test whether a position matches on position n or n+1...
+	
+	rs[0]=rs4830576
+	b36[0]=8245875
+	b37[0]=8285875
+	rs[1]=rs922257
+	b36[1]=20391000
+	b37[1]=20481079
+	rs[2]=rs2168861
+	b36[2]=31773234
+	b37[2]=31863313
+	rs[3]=rs5918076
+	b36[3]=40718890
+	b37[3]=40833946
+	rs[4]=rs5936538
+	b36[4]=69241401
+	b37[4]=69324676
+	rs[5]=rs4826938
+	b36[5]=105496014
+	b37[5]=105609358
+	rs[6]=rs2208263
+	b36[6]=115330016
+	b37[6]=115415988
+	rs[7]=rs1279816
+	b36[7]=123183295
+	b37[7]=123355614
+	rs[8]=rs370713
+	b36[8]=138470059
+	b37[8]=138642393
+	rs[9]=rs2266828
+	b36[9]=149374751
+	b37[9]=149624093
+	
+	# Find out which build was used. This info is stored in $build (build36, build37, N/A, ERROR)
+	build="N/A"
+	
+	# Find out whether we have to increase all positions in the array file with 1.
+	# Store this in the variable $increase1 ("true", "false")
+	increase1="false"
+	
+	i=0
+	unset ready
+	while [ -z $ready ]
+	do
+	    position=`awk '$1 == "'<#noparse>${rs[$i]}</#noparse>'" {print $7}' ${finalreport}`
+
+		echo "<#noparse>${rs[$i]}</#noparse> has position <#noparse>${position}</#noparse>"
+
+	    # does the probe exist in this file?
+	    if [ ! -z $position ]
+	    then
+	        ready="ready"
+	
+	        if [ <#noparse>${position//$'\r'} == ${b36[$i]}</#noparse> ]
+	        then
+	            # we are on build 36                                                                                                                                           
+	            build="build36"
+	        elif  [ <#noparse>${position//$'\r'} == ${b37[$i]}</#noparse> ]
+	        then
+	          	# we are on build 37
+				build="build37"
+	        elif [ <#noparse>$((${position//$'\r'} + 1)) == ${b36[$i]}</#noparse> ]
+			then
+	            # we are on build 36 (after increasing position with 1)                                                                                                                                         
+	            build="build36"
+	            increase1="true"
+	        elif  [ <#noparse>$((${position//$'\r'} + 1)) == ${b37[$i]}</#noparse> ]
+	        then
+	          	# we are on build 37 (after increasing position with 1)
+				build="build37"
+				increase1="true"
+			else
+            	# we are neither on build 36 nor on build 37, according to this test                                                                                           
+				build="ERROR"
+			fi
+	    fi
+	    
+	    # stop if we have tested all probes
+	    if [ <#noparse>${#rs[@]}</#noparse> -le $(($i+1)) ]
+	    then
+	        ready="ready"
+	    fi
+	
+	    # increase counter
+	    i=$[$i+1]
+	done
+	
+	# Now copy the array file / final report to the tmp dir
+	# Or, if increase1 == "true" then use awk to add one to the positions and redirect standard out to tmp dir
+	
+	if [ $increase1 == "false" ]
+	then
+		cp ${finalreport} ${finalreporttmpdir}
+	elif [ $increase1 == "true" ]
+	then
+		awk '{$7=$7+1; print $1,$2,$3,$4,$5,$6,$7}' OFS="\t" ${finalreport} > ${finalreporttmpdir} 
+	else
+		echo "ERROR, variable increase1 should be either false or true"
+	fi
+	
+	
+	#########################################################################
+	#########################################################################
+	#########################################################################
+	
 	##Create .fam, .lgen and .map file from sample_report.txt
-	sed -e '1,10d' ${finalreport} | awk '{print "1",$2,"0","0","0","1"}' | uniq > ${sample}.concordance.fam
-	sed -e '1,10d' ${finalreport} | awk '{print "1",$2,$1,$3,$4}' | awk -f ${tooldir}/scripts/RecodeFRToZero.awk > ${sample}.concordance.lgen
-	sed -e '1,10d' ${finalreport} | awk '{print $6,$1,"0",$7}' OFS="\t" | sort -k1n -k4n | uniq > ${arraytmpmap}
+	sed -e '1,10d' ${finalreporttmpdir} | awk '{print "1",$2,"0","0","0","1"}' | uniq > ${sample}.concordance.fam
+	sed -e '1,10d' ${finalreporttmpdir} | awk '{print "1",$2,$1,$3,$4}' | awk -f ${tooldir}/scripts/RecodeFRToZero.awk > ${sample}.concordance.lgen
+	sed -e '1,10d' ${finalreporttmpdir} | awk '{print $6,$1,"0",$7}' OFS="\t" | sort -k1n -k4n | uniq > ${arraytmpmap}
 	grep -P '^[123456789]' ${arraytmpmap} | sort -k1n -k4n > ${arraymapfile}
 	grep -P '^[X]\s' ${arraytmpmap} | sort -k4n >> ${arraymapfile}
 	grep -P '^[Y]\s' ${arraytmpmap} | sort -k4n >> ${arraymapfile}
@@ -89,77 +202,6 @@ else
 	-bed ${sample}.genotypeArray.bed \
 	-fo ${sample}.genotypeArray.fasta -tab
 	
-	###############################
-	# load ten rs-ids and positions of ten probes, for build 36 and build 37
-	rs[0]=rs1000002
-	b36[0]=185118462
-	b37[0]=183635768
-	rs[1]=rs1000003
-	b36[1]=99825597
-	b37[1]=98342907
-	rs[2]=rs10000030
-	b36[2]=103593179
-	b37[2]=103374154
-	rs[3]=rs10000037
-	b36[3]=38600725
-	b37[3]=38924330
-	rs[4]=rs10000041
-	b36[4]=165841405
-	b37[4]=165621955
-	rs[5]=rs1000007
-	b36[5]=237416793
-	b37[5]=237752054
-	rs[6]=rs1000016
-	b36[6]=235355721
-	b37[6]=235690982
-	rs[7]=rs10000180
-	b36[7]=84118788
-	b37[7]=83899764
-	rs[8]=rs10000272
-	b36[8]=189927377
-	b37[8]=46361441
-	rs[9]=rs1000031
-	b36[9]=44615439
-	b37[9]=47511781
-	
-	# Find out which build was used. This info is stored in $build (build36, build37, N/A, ERROR)
-	build="N/A"
-	i=0
-	unset ready
-	while [ -z $ready ]
-	do
-	    position=`awk '$3 == "'<#noparse>${rs[$i]}</#noparse>'" {print $2}' ${sample}.genotypeArray.vcf`
-	
-	    # does the probe exist in this file?
-	    if [ ! -z $position ]
-	    then
-	        ready="ready"
-	
-	        if [ $position == <#noparse>${b36[$i]}</#noparse> ]
-	        then
-	            # we are on build 36                                                                                                                                           
-	            build="build36"
-	        else
-		    if  [ $position == <#noparse>${b37[$i]}</#noparse> ]
-	            then
-	            	# we are on build 37
-					build="build37"
-	            else
-	            	# we are neither on build 36 nor on build 37, according to this test                                                                                           
-					build="ERROR"
-		    	fi
-			fi
-	    fi
-	    
-	    # stop if we have tested all probes
-	    if [ <#noparse>${#rs[@]}</#noparse> -le $(($i+1)) ]
-	    then
-	        ready="ready"
-	    fi
-	
-	    # increase counter
-	    i=$[$i+1]
-	done
 	
 	####################################
 	if [ $build == "build36" ]
@@ -237,11 +279,11 @@ else
 		--name ${externalSampleID} \
 		--comp comp_immuno \
 		--header >> ${sampleconcordancefile}
-	
-	else if [ $build == "build37" ]
+	fi
+	if [ $build == "build37" ]
 	then
 		###################################
-		#Arrayfile is on build 37 (position 15722573)
+		#Arrayfile is on build 37
 		
 		##Align vcf to reference AND DO NOT FLIP STRANDS!!! (genotype data is already in forward-forward format) If flipping is needed use "-f" command before sample.genotype_array.vcf
 		perl ${tooldir}/scripts/align-vcf-to-ref.pl \
@@ -305,10 +347,12 @@ else
 		--name ${externalSampleID} \
 		--comp comp_immuno \
 		--header >> ${sampleconcordancefile}		
-	else if [ $build == "N/A" ]
+	fi
+	if [ $build == "N/A" ]
 	then
  		echo "ERROR: unsure which build was used. None of the probes we checked was found in the array file."
- 	else if [ $build == "ERROR" ]
+ 	fi
+ 	if [ $build == "ERROR" ]
  	then
  		echo "ERROR: one of the probe in the array file has an unexpected position. Therefore, we are not able to tell which build was used." 
 	fi
