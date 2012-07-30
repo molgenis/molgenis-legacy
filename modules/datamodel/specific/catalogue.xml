@@ -3,23 +3,23 @@
 
 	<module name="catalogue" label="Catalogue">
 		<entity name="MappingMeasurement" implements="Identifiable">
-			<field name="Investigation" type="xref" xref_entity="Investigation"
+			<field name="Investigation" label="Validation study" type="xref" xref_entity="Investigation"
 				nillable="true" />
 			<field name="protocolApplication" type="xref" xref_entity="ProtocolApplication"
 				nillable="true"
 				jpaCascade="javax.persistence.CascadeType.MERGE, javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.REFRESH"
 				description="Reference to the protocol application that was used to produce this observation. For example a particular patient visit or the application of a microarray or the calculation of a QTL model" />
 			<description>FIXME: change to ObservableFeature?</description>
-			<field name="Feature" type="mref" xref_entity="ObservationElement"
+			<field name="Feature" label="Mapped variables" type="mref" xref_entity="ObservationElement"
 				nillable="false" xref_field="id" xref_label="name"
 				description="References the ObservableFeature that this observation was made on. For example 'probe123'. Can be ommited for 1D data (i.e., a data list)." />
 			<description>FIXME: change to ObservationTarget?</description>
-			<field name="Target" type="xref" xref_entity="ObservationElement"
+			<field name="Target" label="Derived parameters" type="xref" xref_entity="ObservationElement"
 				xref_field="id" xref_label="name" nillable="false"
 				description="References the ObservationTarget that this feature was made on. For example 'individual1'. In a correlation matrix this could be also 'probe123'." />
-			<field name="value" type="freemarker" nillable="true"
+			<field name="value" label="R scripts" type="freemarker" nillable="true"
 				description="Please input your R-script" />
-			<field name="mapping" type="xref" xref_entity="Measurement" />
+			<field name="mapping" label="Parameters" type="xref" xref_entity="Measurement" />
 			<field name="dataType" type="enum" default="pairingrule"
 				enum_options="[pairingrule, algorithm]" description="Choose if the entity is pairingrule or algorithm" />
 		</entity>
