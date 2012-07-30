@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 
-<display:table name="mutationSummaryVOList" pagesize="10" export="true" sort="list" class="listtable2" id="current">
+<display:table name="mutationSummaryDTOList" pagesize="10" export="true" sort="list" class="listtable2" id="current">
 <display:setProperty name="paging.banner.full"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0} <a href="{3}">Next</a> <a href="{4}">Last</a></span></display:setProperty>  
 <display:setProperty name="paging.banner.first"><span class="pagelinks">{0} <a href="{3}">Next</a> <a href="{4}">Last</a> </span></display:setProperty>
 <display:setProperty name="paging.banner.last"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0}</span></display:setProperty>
@@ -21,12 +21,12 @@
 	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${current.identifier}#results"/>
 	<a href="<c:out value="${url}"/>"><c:out value="${current.identifier}"/></a>
 </div>
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}">
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
 	+ 
-	<c:if test="${fn:length(patientVO.variantSummaryVOList) > 0}">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${patientVO.variantSummaryVOList[0].identifier}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${patientVO.variantSummaryVOList[0].identifier}"/></a>
+	<c:if test="${fn:length(patientDTO.variantDTOList) > 0}">
+	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showMutation&mid=${patientDTO.variantDTOList[0].identifier}#results"/>
+	<a href="<c:out value="${url}"/>"><c:out value="${patientDTO.variantDTOList[0].identifier}"/></a>
 	</c:if>
 </div>
 	</c:forEach>
@@ -35,14 +35,14 @@
 <div class="unwrapped">
 	<c:out value="${current.cdnaNotation}"/>
 </div>
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}">
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
 	<c:choose>
-	<c:when test="${fn:length(patientVO.variantSummaryVOList) > 0}">
-	<c:out value="${patientVO.variantSummaryVOList[0].cdnaNotation}"/>
+	<c:when test="${fn:length(patientDTO.variantDTOList) > 0}">
+	<c:out value="${patientDTO.variantDTOList[0].cdnaNotation}"/>
 	</c:when>
 	<c:otherwise>
-	<c:out value="${patientVO.variantComment}"/>
+	<c:out value="${patientDTO.variantComment}"/>
 	</c:otherwise>
 	</c:choose>
 </div>
@@ -53,10 +53,10 @@
 	<c:out value="${current.aaNotation}"/>
 	<br/>
 </div>
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}">
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
-	<c:if test="${fn:length(patientVO.variantSummaryVOList) > 0}">
-	<c:out value="${patientVO.variantSummaryVOList[0].aaNotation}"/>
+	<c:if test="${fn:length(patientDTO.variantDTOList) > 0}">
+	<c:out value="${patientDTO.variantDTOList[0].aaNotation}"/>
 	</c:if>
 	<br/>
 </div>
@@ -68,11 +68,11 @@
 	<a href="<c:out value="${url}"/>"><c:out value="${current.exonName}"/></a>
 	<br/>
 </div>
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}">
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
-	<c:if test="${fn:length(patientVO.variantSummaryVOList) > 0}">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${patientVO.variantSummaryVOList[0].exonId}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${patientVO.variantSummaryVOList[0].exonName}"/></a>
+	<c:if test="${fn:length(patientDTO.variantDTOList) > 0}">
+	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showExon&exon_id=${patientDTO.variantDTOList[0].exonId}#results"/>
+	<a href="<c:out value="${url}"/>"><c:out value="${patientDTO.variantDTOList[0].exonName}"/></a>
 	</c:if>
 	<br/>
 </div>
@@ -80,13 +80,13 @@
 </display:column>
 <display:column media="html" title="Consequence">
 <div class="unwrapped">
-	<c:out value="${current.consequence}"/>
+	<c:out value="${current.observedValue}"/>
 	<br/>
 </div>
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}">
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
-	<c:if test="${fn:length(patientVO.variantSummaryVOList) > 0}">
-	<c:out value="${patientVO.variantSummaryVOList[0].consequence}"/>
+	<c:if test="${fn:length(patientDTO.variantDTOList) > 0}">
+	<c:out value="${patientDTO.variantDTOList[0].observedValue}"/>
 	</c:if>
 	<br/>
 </div>
@@ -94,13 +94,13 @@
 </display:column>
 <display:column media="html" title="Inheritance">
 <div class="unwrapped">
-	<c:out value="${current.inheritance}"/>
+	<c:out value="${current.observedValue}"/>
 	<br/>
 </div>
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}">
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
-	<c:if test="${fn:length(patientVO.variantSummaryVOList) > 0}">
-	<c:out value="${patientVO.variantSummaryVOList[0].inheritance}"/>
+	<c:if test="${fn:length(patientDTO.variantDTOList) > 0}">
+	<c:out value="${patientDTO.variantDTOList[0].observedValue}"/>
 	</c:if>
 	<br/>
 </div>
@@ -110,10 +110,10 @@
 <div class="unwrapped">
 	<br/>
 </div>
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}">
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
-	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=${patientVO.patientIdentifier}#results"/>
-	<a href="<c:out value="${url}"/>"><c:out value="${patientVO.patientIdentifier}"/></a>
+	<c:url var="url" value="molgenis.do?__target=SearchPlugin&__action=showPatient&pid=${patientDTO.patientIdentifier}#results"/>
+	<a href="<c:out value="${url}"/>"><c:out value="${patientDTO.patientIdentifier}"/></a>
 </div>
 	</c:forEach>
 </display:column>
@@ -121,9 +121,9 @@
 <div class="unwrapped">
 	<br/>
 </div>
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}">
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
-	<c:out value="${patientVO.phenotypeMajor}"/><c:if test="${fn:length(patientVO.phenotypeSub) > 1}">, <c:out value="${patientVO.phenotypeSub}"/></c:if>
+	<c:out value="${patientDTO.phenotypeMajor}"/><c:if test="${fn:length(patientDTO.phenotypeSub) > 1}">, <c:out value="${patientDTO.phenotypeSub}"/></c:if>
 </div>
 	</c:forEach>
 </display:column>
@@ -131,14 +131,14 @@
 <div class="unwrapped">
 	<br/>
 </div>
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}">
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
 	<c:choose>
-	<c:when test="${fn:length(patientVO.publicationVOList) > 0}">
-	<a href="${patientVO.publicationVOList[0].pubmedUrl}" target="_new"><c:out value="${patientVO.publicationVOList[0].name}"/></a>
+	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
+	<a href="${patientDTO.publicationDTOList[0].pubmedUrl}" target="_new"><c:out value="${patientDTO.publicationDTOList[0].name}"/></a>
 	</c:when>
 	<c:otherwise>
-	<c:out value="Unpublished"/>, <c:out value="${patientVO.submitterDepartment}, ${patientVO.submitterInstitute}, ${patientVO.submitterCity}, ${patientVO.submitterCountry}"/>
+	<c:out value="Unpublished"/>, <c:out value="${patientDTO.submitterDepartment}, ${patientDTO.submitterInstitute}, ${patientDTO.submitterCity}, ${patientDTO.submitterCountry}"/>
 	</c:otherwise>
 	</c:choose>
 </div>
@@ -146,13 +146,13 @@
 </display:column>
 
 <display:column media="csv excel pdf" title="Patient ID">
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}"><c:out value="${patientVO.patientIdentifier}"/> </c:forEach>
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}"><c:out value="${patientDTO.patientIdentifier}"/> </c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="Reference">
 	<c:choose>
-	<c:when test="${fn:length(current.publicationVOList) > 0}">
-	<c:forEach var="publicationVO" items="${current.publicationVOList}">
-	<c:out value="${publicationVO.name}"/>
+	<c:when test="${fn:length(current.publicationDTOList) > 0}">
+	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<c:out value="${publicationDTO.name}"/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
