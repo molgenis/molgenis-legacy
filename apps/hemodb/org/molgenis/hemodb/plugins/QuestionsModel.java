@@ -35,8 +35,6 @@ public class QuestionsModel extends EasyPluginModel
 		QUESTION2_RESULT,
 		QUESTION3,
 		QUESTION3_RESULT,
-		QUESTION4,
-		QUESTION4_RESULT,
 		BEGINNING
 	}
 	
