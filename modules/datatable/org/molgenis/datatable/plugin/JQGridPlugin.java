@@ -255,14 +255,34 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 		{
 			if (request != null)
 			{
-				final String[] tableNames = ((MolgenisRequest) request).getRequest().getParameterValues("tableNames[]");
+				String[] tableNames = ((MolgenisRequest) request).getRequest().getParameterValues("tableNames[]");
+
+				String[] colNamesParamaters = null;
+
+				final String exportColumns = ((MolgenisRequest) request).getString("exportColumnSelection");
+				if (StringUtils.isNotEmpty(exportColumns))
+				{
+					if (exportColumns.equals("SELECTED_COLUMNS"))
+					{
+						colNamesParamaters = ((MolgenisRequest) request).getRequest().getParameterValues(
+								"treeSelectColNames[]");
+					}
+
+					else if (exportColumns.equals("ALL_COLUMNS"))
+					{
+						return;
+					}
+				}
+
 				if (tableNames != null && tableNames.length > 0)
 				{
 					inTableNames.addAll(new ArrayList<String>(Arrays.asList(tableNames)));
 				}
 
-				final String[] colNamesParamaters = ((MolgenisRequest) request).getRequest().getParameterValues(
-						"colNames[]");
+				if (colNamesParamaters == null)
+				{
+					colNamesParamaters = ((MolgenisRequest) request).getRequest().getParameterValues("colNames[]");
+				}
 				if (colNamesParamaters == null || colNamesParamaters.length == 0)
 				{
 					return;
@@ -305,7 +325,6 @@ public class JQGridPlugin extends EasyPluginController<ScreenModel>
 						inColumnNames.add(column);
 					}
 				}
-
 			}
 		}
 

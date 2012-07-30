@@ -101,6 +101,12 @@ var JQGridView = {
 			names.push(value.name);
 		});
 		this.config.colNames = names;
+		
+		var selectedTreeNodeNames = new Array();
+		$.each(columnModel, function(index, value) {
+			selectedTreeNodeNames.push(value.name);
+		});
+		this.config.postData.treeSelectColNames = selectedTreeNodeNames;
 
 		// Extract column names from grid and POST them
 		if(this.grid != undefined) {
@@ -266,11 +272,15 @@ var JQGridView = {
 		            	var viewType = $("input[name='viewType']:checked").val();
 		            	var exportSelection = $("input[name='exportSelection']:checked").val();
 		
+						var exportColumnSelection = $("input[name='exportColumnSelection']:checked").val();
+		
+					
+		
 		              	var myUrl = $(self.tableSelector).jqGrid('getGridParam', 'url');
 						myUrl += "&" +$.param($(self.tableSelector).jqGrid('getGridParam', 'postData'));		              	
 
 		                //e.preventDefault();  //stop the browser from following
-		                window.location.href = myUrl + "&viewType=" + viewType + "&exportSelection=" + exportSelection;
+		                window.location.href = myUrl + "&viewType=" + viewType + "&exportSelection=" + exportSelection + "&exportColumnSelection=" + exportColumnSelection;
 		            },
 		            Cancel: function() {
 		                $( this ).dialog( "close" );
@@ -344,7 +354,7 @@ $(document).ready(function() {
 	$('#exportButton').click(function() {
 		$("#dialog-form" ).dialog('open');
 	});
-	
+	$('#exportButton').removeAttr('disabled');	
 });
 
 </script>
@@ -364,9 +374,17 @@ $(document).ready(function() {
 	            <input type="radio" name="viewType" value="EXCEL" checked>Excel<br>
 	            <input type="radio" name="viewType" value="SPSS">Spss<br> 
 	            <input type="radio" name="viewType" value="CSV">Csv<br> 
-	            <label>Export option</label><br>
-	            <input type="radio" name="exportSelection" value="ALL" checked>All rows<br>
-	            <input type="radio" name="exportSelection" value="GRID">Visible rows<br> 
+	    </fieldset>
+	    <fieldset>
+	            <label>Rows</label><br>
+	            <input type="radio" name="exportSelection" value="ALL">All rows<br>
+	            <input type="radio" name="exportSelection" value="GRID" checked>Visible rows<br> 
+		</fieldset>
+	    <fieldset>
+	            <label>Columns</label><br>
+	            <input type="radio" name="exportColumnSelection" value="ALL_COLUMNS">All Columns<br>
+	            <input type="radio" name="exportColumnSelection" value="SELECTED_COLUMNS" checked>Selected<br>
+	            <input type="radio" name="exportColumnSelection" value="GRID_COLUMNS">Visible Columns<br>
 		</fieldset>
 		</form>
 	</div>
