@@ -100,11 +100,11 @@
 		</copy>
 		
 		<!-- Create molgenis.jar -->
-		<jar jarfile="${lib_dir}/molgenis-r${git.molgenis.version}.jar" basedir="${build.molgenis.dir}" update="false"/>
+		<jar jarfile="${lib_dir}/molgenis-${git.molgenis.version}.jar" basedir="${build.molgenis.dir}" update="false"/>
 
 						
 		<!-- Create molgenis_app.jar in folder dist/${app} -->
-		<jar jarfile="${lib_dir}/molgenis_${app_name}-r${git.apps.version}.jar" basedir="${build.molgenis_apps.dir}" update="false"/>
+		<jar jarfile="${lib_dir}/molgenis-${app_name}-${git.apps.version}.jar" basedir="${build.molgenis_apps.dir}" update="false"/>
 		
 		<!-- Make shell script to start molgenis app from the commandline -->
 		<echo file="${app-r_distro_dir}/molgenis_${app_name}.sh">#!/bin/bash
@@ -117,7 +117,7 @@ MCDIR=$( cd -P "$( dirname "$0" )" &amp;&amp; pwd )
 			
 java -cp \
 $(dirname -- "$0")/lib/molgenis-${git.molgenis.version}.jar:\
-$(dirname -- "$0")/lib/molgenis_compute-r${git.apps.version}.jar:\
+$(dirname -- "$0")/lib/molgenis-compute-${git.apps.version}.jar:\
 $(dirname -- "$0")/lib/commons-io-2.4.jar:\
 $(dirname -- "$0")/lib/freemarker.jar:\
 $(dirname -- "$0")/lib/log4j-1.2.15.jar \
