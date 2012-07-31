@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.molgenis.compute.ComputeParameter;
-import org.molgenis.compute.ComputeProtocol;
-import org.molgenis.protocol.WorkflowElement;
-import org.molgenis.protocol.WorkflowElementParameter;
+import org.molgenis.compute.design.ComputeParameter;
+import org.molgenis.compute.design.ComputeProtocol;
+import org.molgenis.compute.design.WorkflowElement;
 import org.molgenis.util.CsvFileReader;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
@@ -273,7 +272,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 						p.setWalltime(params.getString("walltime"));
 						p.setNodes(params.getInt("nodes"));
 						p.setCores(params.getInt("cores"));
-						p.setClusterQueue(params.getString("clusterQueue"));
+						//p.setClusterQueue(params.getString("clusterQueue"));
 					}
 					else if (line.trim().startsWith("#FOREACH"))
 					{
@@ -303,7 +302,7 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 								"#INTERPRETER".length()).trim();
 						if (0 < thisline.length())
 						{
-							p.setInterpreter(thisline.trim());
+							p.setScriptInterpreter(thisline.trim());
 						}
 					}
 					else if (line.trim().startsWith("#PBS"))
@@ -381,12 +380,6 @@ public class ComputeBundleFromDirectory extends ComputeBundle
 	{
 		this.setWorkflowElements(readEntitiesFromFile(file,
 				WorkflowElement.class));
-	}
-
-	public void setWorkflowElementParameters(File file) throws Exception
-	{
-		this.setWorkflowElementParameters(readEntitiesFromFile(file,
-				WorkflowElementParameter.class));
 	}
 
 	private <E extends Entity> List<E> readEntitiesFromFile(File file,
