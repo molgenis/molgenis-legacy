@@ -16,8 +16,10 @@ public class ProteinDomainPanel extends HtmlInput implements Serializable
 {
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = -3632595043556432831L;
-	
-	private final double SCALE_FACTOR          = 0.003; //0.1;
+
+	//TODO: make SCALE_FACTOR customizable
+//	private final double SCALE_FACTOR          = 0.003;
+	private final double SCALE_FACTOR          = 0.1;
 	private ProteinDomainDTO proteinDomainDTO;
 	private String baseUrl = "";
 
