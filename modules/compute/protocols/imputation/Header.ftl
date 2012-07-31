@@ -1,3 +1,4 @@
+<#if scheduler == "PBS">
 #!/bin/bash
 #PBS -N ${jobname}
 #PBS -q ${clusterQueue}
@@ -6,6 +7,20 @@
 #PBS -l mem=${mem}
 #PBS -e ${jobname}.err
 #PBS -o ${jobname}.out
+
+<#elseif scheduler == "SGE">
+#!/bin/bash
+#$ -N ${jobname}
+#$ -q ${clusterQueue}
+#$ -p ${cores}
+#$ -l h_rt=${walltime}
+#$ -l h_vmem=${mem}
+#$ -e ${jobname}.err
+#$ -o ${jobname}.out
+
+</#if>
+
+
 
 # Configures the GCC bash environment
 . ${root}/gcc.bashrc

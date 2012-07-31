@@ -5,7 +5,7 @@
 #INPUTS beaglefile,beaglefilephased,markers
 #OUTPUTS imputedoutputbeagle.*
 #EXES beagle
-#TARGETS project,chromosome
+#TARGETS project,chr
 
 inputs "${beaglefile}"
 inputs "${beaglefilephased}"
