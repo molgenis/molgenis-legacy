@@ -23,6 +23,13 @@ public interface ComputeHost
 	 */
 	void submit(Job job) throws IOException;
 
+    /** Submit pilot maverick job
+    	 *
+    	 * @param job
+    	 * @throws IOException
+    	 */
+    void submitPilot(Job job) throws IOException;
+
 	/**
 	 * Remove a job. If it is still running it will be stopped.
 	 * 
