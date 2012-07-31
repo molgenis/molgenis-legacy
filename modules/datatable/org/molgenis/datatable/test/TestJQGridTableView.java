@@ -2,7 +2,7 @@ package org.molgenis.datatable.test;
 
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
-import org.molgenis.datatable.view.JQGridTableView;
+import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.ui.ApplicationController;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -15,7 +15,7 @@ public class TestJQGridTableView
 	{
 		TupleTable table = MemoryTableFactory.create();
 		
-		JQGridTableView view = new JQGridTableView("test", null, table);
+		JQGridView view = new JQGridView("test", null, table);
 
 		String html = view.render();
 		

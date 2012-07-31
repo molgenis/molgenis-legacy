@@ -1,9 +1,11 @@
 ## Build folders
 bin/
 build/
+classes/
 tmp/
 hsqldb/
 handwritten/
+WebContent/WEB-INF/
 
 ## Always ignore these
 *~
@@ -34,7 +36,10 @@ log*
 *.java~
 /bin
 /test-output
+/generated
 /target
 logger.out*
 /dist
-/.settings/org.eclipse.wst.common.component
+/generated/java
+!/.settings/template*
+/apps/catalogue/plugins/hl7parser/PropertiesPath.java

@@ -6,22 +6,28 @@
 package plugins.hl7parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-
-import javax.xml.xpath.XPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import plugins.hl7parser.GenericDCM.HL7GenericDCM;
+import plugins.hl7parser.GenericDCM.HL7ObservationDCM;
 import plugins.hl7parser.GenericDCM.HL7OrganizerDCM;
+import plugins.hl7parser.GenericDCM.HL7ValueSetAnswerDCM;
+import plugins.hl7parser.GenericDCM.HL7ValueSetDCM;
 import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
 import plugins.hl7parser.StageLRA.HL7StageLRA;
+import plugins.hl7parser.StageLRA.HL7ValueSetAnswerLRA;
+import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
 
 /**
  *
@@ -30,53 +36,111 @@ import plugins.hl7parser.StageLRA.HL7StageLRA;
  */
 public class HL7LLData implements HL7Data{
 
-	
-	private static final String ORGANIZER = "/urn:hl7-org:v3:genericCatalog/urn:hl7-org:v3:component/urn:hl7-org:v3:organizer/urn:hl7-org:v3:code";
-    XPath xpath;
-    public HL7GenericDCM hl7GenericDCM;
-    public HL7StageLRA hl7StageLRA;
-    
-    public HL7LLData(String file1,String file2,String file3, int j) throws Exception{
-    	String xpathExpres = ORGANIZER;
-        ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
-        XPathFactory factory = XPathFactory.newInstance();
-        this.xpath = factory.newXPath();
 
-        DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-        domFactory.setNamespaceAware(true);
+	private static final String ORGANIZER = "/urn:hl7-org:v3:catalog/urn:hl7-org:v3:component/urn:hl7-org:v3:organizer/urn:hl7-org:v3:code";
+	private static final String VALUESET = "/urn:hl7-org:v3:valueSets/urn:hl7-org:v3:valueSet";
+	private HashMap<String, HL7ValueSetLRA> hashValueSetLRA = new HashMap<String, HL7ValueSetLRA>();
+	private HashMap<String, HL7ValueSetDCM> hashValueSetDCM = new HashMap<String, HL7ValueSetDCM>();
 
-        DocumentBuilder builder = domFactory.newDocumentBuilder();
-        Document doc = builder.parse(file1);
-        NodeList nodes = (NodeList)xpath.compile(xpathExpres).evaluate(doc, XPathConstants.NODESET);
+	XPath xpath;
+	public HL7GenericDCM hl7GenericDCM = null;
 
-//        NodeList nodesCode = (NodeList)xpath.compile(xpathExpres+"").evaluate(doc, XPathConstants.NODESET);
-
-        //genericDCM 1 en 3
-        //stageLRA 2 en 3
-        for (int i = 0; i < nodes.getLength(); i++) {
-            if(nodes.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("GenericDCM") && j!=2){
-                hl7GenericDCM = new HL7GenericDCM (nodes.item(i).getParentNode(),xpath);
-                
-            }
-            else if(nodes.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("StageLRA")&& j!=1){
-            	
-            	hl7StageLRA = new HL7StageLRA (nodes.item(i).getParentNode(),xpath);
-            }
-            else{
-                System.out.println("Error");
-            }
-            allOrganizerNodes.add(nodes.item(i));
-        }
-    }
+	public HL7StageLRA hl7StageLRA = null;
 
 
-    public ArrayList<HL7OrganizerLRA> getHL7OrganizerLRA(){
-        
-        return hl7StageLRA.getHL7OrganizerLRA();
-    }
-    public ArrayList<HL7OrganizerDCM> getHL7OrganizerDCM(){
-        
-        return hl7GenericDCM.getHL7OrganizerDCM();
-    }
+	private NodeList readFile(String file, XPath xpath,String xpathExpres) throws Exception{
+
+		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+		domFactory.setNamespaceAware(true);
+		DocumentBuilder builder = domFactory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		NodeList nodesFile = (NodeList)xpath.compile(xpathExpres).evaluate(doc, XPathConstants.NODESET);
+		return nodesFile;
+	}
+
+	public HL7LLData(String file1,String file2) throws Exception{
+		ArrayList<Node> allOrganizerNodes = new ArrayList<Node>();
+		XPathFactory factory = XPathFactory.newInstance();
+		this.xpath = factory.newXPath();
+
+		//Normal xml file
+		NodeList nodesFile1 = readFile(file1,xpath, ORGANIZER);
+
+
+		for (int i = 0; i < nodesFile1.getLength(); i++) {
+
+			if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("Generic")){
+				hl7GenericDCM = new HL7GenericDCM (nodesFile1.item(i).getParentNode(),xpath);
+
+			}
+			else if(nodesFile1.item(i).getAttributes().getNamedItem("code").getNodeValue().equals("LRA")){
+				hl7StageLRA = new HL7StageLRA (nodesFile1.item(i).getParentNode(),xpath);
+			}
+			else{
+				System.out.println("Error");
+			}
+			allOrganizerNodes.add(nodesFile1.item(i));
+		}
+		
+		ArrayList<String> listOfDCMObservation = new ArrayList<String>();
+		
+		for(HL7OrganizerDCM dcm : hl7GenericDCM.getHL7OrganizerDCM()){
+			for(HL7ObservationDCM l : dcm.measurements){
+				listOfDCMObservation.add(l.getDisplayName());
+			}
+		}
+
+		//Valuesets xml file
+		NodeList nodesFile2 = readFile(file2,xpath, VALUESET);
+
+
+
+		for (int i = 0; i < nodesFile2.getLength(); i++) {
+
+			if(listOfDCMObservation.contains(nodesFile2.item(i).getAttributes().getNamedItem("name").getNodeValue())) {
+				HL7ValueSetDCM valueSetDCM = new HL7ValueSetDCM(nodesFile2.item(i), xpath);
+				hashValueSetDCM.put(valueSetDCM.getValueSetsName(), valueSetDCM);
+				System.out.println("protocol "+i+": " +valueSetDCM.getValueSetsName());
+				for(HL7ValueSetAnswerDCM r : valueSetDCM.getListOFAnswers()){
+					System.out.println("ValuesetAnswerDCM: " + r.getName());
+				}
+			}
+			else{
+			
+				HL7ValueSetLRA valueSetLRA = new HL7ValueSetLRA(nodesFile2.item(i), xpath);
+				hashValueSetLRA.put(valueSetLRA.getValueSetsName(), valueSetLRA);
+				System.out.println("protocol "+i+": " +valueSetLRA.getValueSetsName());
+				for(HL7ValueSetAnswerLRA r : valueSetLRA.getListOFAnswers()){
+//					System.out.println("ValuesetAnswerLRA: " + r.getName()+"\t"+r.getCodeValue());
+				}
+			          
+			}
+		}
+
+		System.out.println("Damn it!------------->" + hashValueSetLRA.size());
+	}
+
+
+	public HashMap<String, HL7ValueSetLRA> getHashValueSetLRA() {
+		return hashValueSetLRA;
+	}
+	public HashMap<String, HL7ValueSetDCM> getHashValueSetDCM() {
+		return hashValueSetDCM;
+	}
+	public ArrayList<HL7OrganizerLRA> getHL7OrganizerLRA(){
+
+		return hl7StageLRA.getHL7OrganizerLRA();
+	}
+	public ArrayList<HL7OrganizerDCM> getHL7OrganizerDCM(){
+
+		return hl7GenericDCM.getHL7OrganizerDCM();
+	}
+
+	public HL7GenericDCM getHl7GenericDCM() {
+		return hl7GenericDCM;
+	}
+	public HL7StageLRA getHl7StageLRA() {
+		return hl7StageLRA;
+	}
 
 }

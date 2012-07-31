@@ -18,13 +18,11 @@
 					<form name="WorkflowElements" entity="WorkflowElement" viewtype="record">
 						<form name="WorkflowElementParameters" hide_fields="id" entity="WorkflowElementParameter" viewtype="list" />
 					</form>
-					<plugin name="WorkflowRun" label="Run" type="org.molgenis.compute.ui.RunWorkflow" />
 					<form name="WorkflowHistory" label="History" entity="ComputeJob" />
 				</menu>
 			</form>
 			<form name="AllComputeJobs" label="ComputeJobs" entity="ComputeJob" />
 			<!-- not yet used form name="ComputeResources" entity="ComputeResource" / -->
-			<plugin name="console" label="Monitor Runs" type="org.molgenis.compute.ui.ConsolePlugin" />
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Upload pipelines" />
 		</menu>
 		<menu name="JobManager">
