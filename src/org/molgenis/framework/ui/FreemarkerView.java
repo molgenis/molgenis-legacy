@@ -49,6 +49,17 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 		// this.usePublicFields = usePublicFields;
 	}
 
+	/**
+	 * Assumes template to be klazzpath + ".ftl"
+	 * 
+	 * @param klazz
+	 * @param templateArgs
+	 */
+	public FreemarkerView(Class<?> klazz, Map<String, Object> templateArgs)
+	{
+		this(klazz.getCanonicalName().replace(".", "/") + ".ftl", templateArgs);
+	}
+
 	public FreemarkerView(String templatePath, Map<String, Object> templateArgs)
 	{
 		super(null);
@@ -91,8 +102,8 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 					if ("model".equals(key) && templateArgs.get(key) != null)
 					{
 						loaders.add(new ClassTemplateLoader(templateArgs.get(key).getClass()));
-						
-						//also add superclass because of generated code
+
+						// also add superclass because of generated code
 						loaders.add(new ClassTemplateLoader(templateArgs.get(key).getClass().getSuperclass()));
 					}
 				}
