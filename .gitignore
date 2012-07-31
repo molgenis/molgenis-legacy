@@ -49,3 +49,4 @@ logger.out*
 /generated/java
 !/.settings/template*
 /apps/catalogue/plugins/hl7parser/PropertiesPath.java
+.settings/org.eclipse.wst.common.component
