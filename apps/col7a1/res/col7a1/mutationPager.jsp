@@ -135,7 +135,10 @@
 <div class="unwrapped">
 	<c:choose>
 	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
-	<a href="${patientDTO.publicationDTOList[0].pubmedUrl}" target="_new"><c:out value="${patientDTO.publicationDTOList[0].name}"/></a>
+	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="PM:${publicationDTO.pubmedId}"/></a><br/>
+	</c:forEach>
+<!-- 	<a href="${patientDTO.publicationDTOList[0].pubmedUrl}" target="_new"><c:out value="${patientDTO.publicationDTOList[0].name}"/></a>-->
 	</c:when>
 	<c:otherwise>
 	<c:out value="Unpublished"/>, <c:out value="${patientDTO.submitterDepartment}, ${patientDTO.submitterInstitute}, ${patientDTO.submitterCity}, ${patientDTO.submitterCountry}"/>

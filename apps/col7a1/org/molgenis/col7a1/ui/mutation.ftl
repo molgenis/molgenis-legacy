@@ -1,4 +1,4 @@
-<#include "header.ftl">
+<#include "/org/molgenis/mutation/ui/search/header.ftl">
 
 <#assign mutationSummaryDTO = model.mutationSummaryVO>
 <table cellpadding="2" cellspacing="2">
