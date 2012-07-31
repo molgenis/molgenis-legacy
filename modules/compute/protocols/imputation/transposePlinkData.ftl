@@ -5,7 +5,7 @@
 #INPUTS plinkdata
 #OUTPUTS plinkdatatransposed
 #EXES plink
-#TARGETS
+#TARGETS project,chr
 
 inputs "${plinkdata}.bed"
 inputs "${plinkdata}.bim"

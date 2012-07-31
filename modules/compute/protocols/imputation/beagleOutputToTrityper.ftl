@@ -4,8 +4,8 @@
 
 #INPUTS imputedoutputbeagle #<-- Add gprobsinput later
 #OUTPUTS bgltotrityperoutput
-#EXES plink,gawk
-#TARGETS
+#EXES plink
+#TARGETS project,chr
 
 inputs "${imputedoutputbeagle}"
 alloutputsexist "${bgltotrityperoutput}" #<-- Check all beagle outputs, where does the inserted chrnum come from??

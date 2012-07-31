@@ -4,8 +4,8 @@
 
 #INPUTS plinkdatatransposed
 #OUTPUTS beaglefile
-#EXES gawk
-#TARGETS
+#EXES
+#TARGETS project,chr
 
 inputs "${plinkdatatransposed}.tped"
 alloutputsexist "${beaglefile}"
