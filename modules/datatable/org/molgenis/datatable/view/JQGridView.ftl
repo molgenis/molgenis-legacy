@@ -16,8 +16,8 @@
 <script type="text/javascript">
 //TODO: place in JS file after dev!
 var JQGridView = {
-    tableSelector : null,
-    pagerSelector : null,
+    tableId : null,
+    pagerId : null,
     config : null,
     tree : null,
     colModel : null, 
@@ -32,11 +32,11 @@ var JQGridView = {
     treeColModel : new Array(),
     numOfSelectedNodes : 0,
     
-    init: function(tableSelector, pagerSelector, config) {
-    	var self = JQGridView;
+    init: function(tableId, pagerId, config) {
+    	var self = this;
     
-        this.tableSelector = tableSelector;
-        this.pagerSelector = pagerSelector;
+        this.tableId = tableId;
+        this.pagerId = pagerId;
         this.config = config;
         this.colModel = this.config.colModel;
         
@@ -67,7 +67,11 @@ var JQGridView = {
 		if(this.columnPageEnabled) {
 			this.oldColNames = this.config.colNames;
 			this.oldColModel = this.config.colModel;
-		
+			
+			//reset columnPage to within selection
+			this.columnPage = Math.min(this.columnPage, Math.floor(this.numOfSelectedNodes / this.columnPagerSize));
+			this.maxPage = Math.floor(this.numOfSelectedNodes / this.columnPagerSize) + 1;
+			
 			begin = this.columnPage * this.columnPagerSize;
 			end = begin + this.columnPagerSize;
 			
@@ -99,17 +103,17 @@ var JQGridView = {
     }, 
     
     getGrid: function() {
-    	return $(this.tableSelector);
+    	return $("table#"+this.tableId);
     },
     
     changeColumns: function(columnModel) {
-    	var self = JQGridView;
+    	var self = this;
 		
-		if(columnModel == null) {
+		if(columnModel == null || columnModel.length == 0) {
 			columnModel = this.treeColModel;
+			this.numOfSelectedNodes = this.treeColModel.length;
 		}
-		
-		if(columnModel != null) {
+		else {
 			this.numOfSelectedNodes = columnModel.length;
 		}
 
@@ -120,34 +124,39 @@ var JQGridView = {
 		});
 		this.config.colNames = names;
 
-		if(this.grid != undefined) {
-			var columnNames = new Array();
-			gridColModel = this.grid.getGridParam("colModel");
-	    	for(i = 0; i < gridColModel.length; ++i) {
-	    		colName = gridColModel[i].name;
-	    		hidden = true;
+		var columnNames = new Array();
+		gridColModel = this.grid.getGridParam("colModel");
+		
+    	for(i = 0; i < gridColModel.length; ++i) {
+    		colName = gridColModel[i].name;
+    		
+    		if(columnModel != null && columnModel.length > 0) 
+    		{
+    			hidden = true;
 	    		for(j = 0; j < columnModel.length; ++j) {
 	    			if(colName == columnModel[j].name) {
 	    				columnNames.push(colName);
 	    				hidden = false;
 	    				break;
 	    			}
-	    		}
-	    		
-	    		gridColModel[i].hidden = hidden;
-	    		
-	   			
-	    	}
-	    	this.config.colModel = gridColModel; 
-	    	//this.config.postData.columnNames = columnNames;
-	    	this.config.postData.colNames = columnNames;
-		}
+    			}
+    		}
+    		else {
+    			columnNames.push(colName);
+    			hidden = false;
+    		}
+    		
+    		gridColModel[i].hidden = hidden;
+    	}
+
+    	this.config.colModel = gridColModel; 
+    	this.config.postData.colNames = columnNames;
 
 		this.sliceColumns();		
 		
 		filters = this.grid.getGridParam("postData").filters;
 		
-    	$(this.tableSelector).jqGrid('GridUnload');
+    	$("table#"+this.tableId).jqGrid('GridUnload');
 
     	this.grid = this.createJQGrid(filters);
     	
@@ -155,14 +164,14 @@ var JQGridView = {
     },
     
     createJQGrid : function(filters) {
-    	var self = JQGridView;
+    	var self = this;
     	
 		if(filters != null) {
 			this.config.postData.filters = filters; 
 		}
     	
-    	grid = jQuery(this.tableSelector).jqGrid(this.config)
-            .jqGrid('navGrid', this.pagerSelector,
+    	grid = jQuery("table#"+this.tableId).jqGrid(this.config)
+            .jqGrid('navGrid', "#"+this.pagerId,
             	this.config.settings,{},{},{},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
             ).jqGrid('gridResize');
         //is not correct (will not work with two grids!)
@@ -177,7 +186,7 @@ var JQGridView = {
         	
         	$(pageInput).attr('value', this.columnPage + 1);  
 
-        	maxPage = Math.floor(this.numOfSelectedNodes / this.columnPagerSize);
+        	maxPage = Math.floor(this.numOfSelectedNodes / this.columnPagerSize) + 1;
         	if(this.columnPage + 1 >= maxPage) {
         		nextButton.attr("disabled","disabled");
         		lastButton.attr("disabled","disabled");
@@ -211,7 +220,7 @@ var JQGridView = {
         	colPager.append(nextButton);
         	colPager.append(lastButton);
         	
-        	toolbar = $("#t_jqGridView"); 
+        	toolbar = $("#t_"+this.tableId); 
         	toolbar.append(colPager);
 
     	}
@@ -224,13 +233,13 @@ var JQGridView = {
 	},
 	
 	columnPagerLeft : function () {
-		var self = JQGridView;
+		var self = this;
 		this.columnPage--;
 		this.changeColumns(null);
 	},	
     
     columnPagerRight : function () {
-		var self = JQGridView;
+		var self = this;
 		this.columnPage++;
 		this.changeColumns(null);
 	},	
@@ -244,8 +253,8 @@ var JQGridView = {
     },
     
     createDialog : function() {
-    	var self = JQGridView;
-    	$( "#dialog-form" ).dialog({
+    	var self = this;
+    	$("#"+this.tableId+"_dialog-form" ).dialog({
 		    autoOpen: false,
 		    height: 300,
 		    width: 350,
@@ -255,8 +264,9 @@ var JQGridView = {
 		            	var viewType = $("input[name='viewType']:checked").val();
 		            	var exportSelection = $("input[name='exportSelection']:checked").val();
 		
-		              	var myUrl = $(self.tableSelector).jqGrid('getGridParam', 'url');
-						myUrl += "&" +$.param($(self.tableSelector).jqGrid('getGridParam', 'postData'));		              	
+		              	var myUrl = $("table#"+self.tableId).jqGrid('getGridParam', 'url');
+						myUrl += "&" +$.param($("table#"+self.tableId).jqGrid('getGridParam', 'postData'));		
+						              	
 
 		                //e.preventDefault();  //stop the browser from following
 		                window.location.href = myUrl + "&viewType=" + viewType + "&exportSelection=" + exportSelection;
@@ -271,8 +281,8 @@ var JQGridView = {
 	},
 	
 	createTree : function(nodes) {
-		var self = JQGridView;
-		return $("#tree3").dynatree({
+		var self = this;
+		return $("#"+this.tableId+"_tree").dynatree({
 			checkbox: true,
 			selectMode: 3,
 			children: nodes,
@@ -313,8 +323,8 @@ var JQGridView = {
 			},
 			// The following options are only required, if we have more than one tree on one page:
 		//        initId: "treeData",
-			cookieId: "dynatree-Cb3",
-			idPrefix: "dynatree-Cb3-"
+			cookieId: "dynatree-"+this.tableId+"",
+			idPrefix: "dynatree-"+this.tableId+"-"
 		});
 	}
 }
@@ -329,26 +339,25 @@ $(document).ready(function() {
     //load JQGrid configuration and creates grid
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
-        grid = JQGridView.init("table#${tableId}", "#${tableId}Pager", config);
-        $("t_table#jqGridView").append("<input type='button' value='Click Me' style='height:20px;font-size:-3'/>");
+        grid = JQGridView.init("${tableId}", "${tableId}_pager", config);
     });
-	$('#exportButton').click(function() {
-		$( "#dialog-form" ).dialog('open');
+	$('#${tableId}_exportButton').click(function() {
+		$( "#${tableId}_dialog-form" ).dialog('open');
 	});
 	
 });
 
 </script>
 
-<div id="treeBox">
-  <div id="tree3"></div>
+<div id="${tableId}_treeBox">
+  <div id="${tableId}_tree"></div>
 </div>
 
-<div id="gridBox">
+<div id="${tableId}_gridBox">
 	<table id="${tableId}"></table>
-	<div id="${tableId}Pager"></div>
-	<input id="exportButton" type="button" value="export data"/>
-	<div id="dialog-form" title="Export data">
+	<div id="${tableId}_pager"></div>
+	<input id="${tableId}_exportButton" type="button" value="export data"/>
+	<div id="${tableId}_dialog-form" title="Export data">
 		<form>
 		<fieldset>
 	            <label >File type</label><br>
@@ -362,4 +371,3 @@ $(document).ready(function() {
 		</form>
 	</div>
 </div>
-<button onclick="alert(jQuery('#${tableId}').jqGrid('jqGridExport', {exptype:'jsonstring'}));">click</button>
