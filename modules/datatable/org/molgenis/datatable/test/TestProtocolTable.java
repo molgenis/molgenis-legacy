@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
-import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.FilterableTupleTable;
+import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -75,12 +75,21 @@ public class TestProtocolTable
 
 		cols = table.getColumns();
 		Assert.assertEquals(cols.size(), 5);
-		Assert.assertEquals(table.getAllColumns().size(), 10);
+
+		// we expect 1 row header + 10 columns
+		Assert.assertEquals(table.getAllColumns().size(), 11);
 		Assert.assertEquals(cols.get(0).getName(), "meas6");
 
 		rows = table.getRows();
 		Assert.assertEquals(rows.get(0).getString("meas6"), "meas6:val0");
 
 		table.reset();
+	}
+
+	@Test
+	public void testAllColumns() throws TableException
+	{
+		List<Field> fields = table.getAllColumns();
+		Assert.assertEquals(fields.get(0).getName(), "target");
 	}
 }
