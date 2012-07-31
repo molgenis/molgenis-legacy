@@ -20,6 +20,7 @@ import org.molgenis.compute.ComputeJob;
 import org.molgenis.compute.ComputeParameter;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.commandline.options.Options;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.protocol.WorkflowElement;
 import org.molgenis.util.Tuple;
 
@@ -566,8 +567,18 @@ public class ComputeCommandLine
 	private void generateScripts()
 	{
 		new File(outputdir).mkdirs();
+		
+		//extra: custom
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("jobs", jobs);
+		params.put("workflowfilename", this.getworkflowfilename());
+		String result = new FreemarkerView("modules/compute/protocols/CustomSubmit.sh.ftl",params).render();
+//		System.out.println(result);
+		
 		try
 		{
+			FileUtils.write(new File(outputdir + File.separator + "submitCustom.sh"), result);
+			
 			// and produce submit.sh
 			PrintWriter submitWriter = new PrintWriter(new File(outputdir + File.separator + "submit.sh"));
 
@@ -632,9 +643,13 @@ public class ComputeCommandLine
 
 			submitWriter.close();
 			submitWriterLocal.close();
+			
 		}
 		catch (FileNotFoundException e)
 		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
