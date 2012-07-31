@@ -13,61 +13,275 @@
 <link href="dynatree-1.2.0/src/skin/ui.dynatree.css" rel="stylesheet" type="text/css" id="skinSheet">
 <script src="dynatree-1.2.0/src/jquery.dynatree.js" type="text/javascript"></script>
 
-
 <script type="text/javascript">
 //TODO: place in JS file after dev!
+
+// Main object, wraps JQgrid and stores/manipulates many state variables
 var JQGridView = {
-    tableSelector : null,
-    pagerSelector : null,
+    tableId : null,
+    pagerId : null,
     config : null,
     tree : null,
     colModel : null, 
     
-    init: function(tableSelector, pagerSelector, config) {
-    	var self = JQGridView;
+    columnPage : 1,				//current column Page
+    columnPagerSize : 5,		//current columnPager size
+    columnPageEnabled : true,
+        
+    prevColModel : null,		// Cache to speed up column paging: don't create new colmodel if not necessary
+    numOfSelectedNodes : 0,		// # nodes selected in tree
     
-        this.tableSelector = tableSelector;
-        this.pagerSelector = pagerSelector;
+    oldColNames : null,
+    oldColModel : null,
+    
+    treeColModel : new Array(),
+    selectedColModel: new Array(),
+    numOfSelectedNodes : 0,
+    
+    init: function(tableId, pagerId, config) {
+    	var self = this;
+    
+        this.tableId = tableId;
+        this.pagerId = pagerId;
         this.config = config;
         this.colModel = this.config.colModel;
         
-        this.grid = this.createJQGrid();
+        this.numOfSelectedNodes = this.config.colModel.length;
+        
+        // Deep copy
+        
+        $.each(this.config.colModel, function(index, value) {
+        	self.treeColModel.push($.extend(true, {}, value));
+        });
+        
+        
+        this.showVisibleColumns();
+        
+        this.grid = this.createJQGrid(null);
         this.createDialog();
 
 		//load & create Tree
-	    $.getJSON(configUrl + "&Operation=LOAD_TREE")   
-	    .done(function(data) { 
+	    $.getJSON(configUrl + "&Operation=LOAD_TREE").done(function(data) { 
 	    	 self.tree = self.createTree(data);   
 	    });
-        
+
         return JQGridView;
     },
     
-    getGrid: function() {
-    	return $(this.tableSelector);
+    // Show one page of columns and hide all other data.
+    showVisibleColumns : function() {
+		if(this.columnPageEnabled) {
+		
+			this.oldColNames = this.config.colNames;
+			this.oldColModel = this.config.colModel;
+			
+			//reset columnPage to within selection
+			this.maxPage = Math.floor( this.numOfSelectedNodes / this.columnPagerSize);
+			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) this.maxPage = this.maxPage + 1;
+			
+			this.columnPage = Math.min(this.columnPage, this.maxPage);
+			
+			//offset
+			begin = (this.columnPage - 1) * this.columnPagerSize;
+			end = begin + this.columnPagerSize;
+			
+			columnNames = new Array();
+			colCount = 0;
+			// Build a column model of which columns to display, excluding hidden columns.
+			for(i = 0; i < this.config.colModel.length; ++i) {
+				if(!this.config.colModel[i].hidden) {
+					if(colCount >= begin && colCount < end) {
+						columnNames.push(this.config.colModel[i].name);				
+					} else {
+						this.config.colModel[i].hidden = true;
+					}
+					++colCount;					
+				}
+			}	
+			this.config.postData.colNames = columnNames;
+		}    
     },
     
+    getGrid: function() {
+    	return $("table#"+this.tableId);
+    },
+    
+    
     changeColumns: function(columnModel) {
-    	var self = JQGridView;
-		this.config.colModel = columnModel;
+    	var self = this;
+		
+		//null == no change in columnModel
+		if(columnModel == null) {
+			columnModel = self.selectedColModel;
+		}
+		else {
+			//some selection
+			if(columnModel.length > 0) {
+				self.selectedColModel = columnModel;
+			}
+			//empty selection; reset to view all columns
+			else {
+				self.selectedColModel = this.colModel;
+			}
+			this.numOfSelectedNodes = self.selectedColModel.length;
+		}
 
+		//add all columnNames
 		var names = new Array();
-		$.each(columnModel, function(index, value) {
+		$.each(this.config.colModel, function(index, value) {
 			names.push(value.name);
 		});
 		this.config.colNames = names;
+		
+		var selectedTreeNodeNames = new Array();
+		$.each(columnModel, function(index, value) {
+			selectedTreeNodeNames.push(value.name);
+		});
+		this.config.postData.treeSelectColNames = selectedTreeNodeNames;
 
-		this.config.postData = {colNames:names};
-    	$(this.tableSelector).jqGrid('GridUnload');
-    	this.grid = this.createJQGrid();
+		var columnNames = new Array();
+		gridColModel = this.grid.getGridParam("colModel");
+		
+		//reset all hidden (outside column paging)
+    	for(i = 0; i < gridColModel.length; ++i) {
+    		colName = gridColModel[i].name;
+    		
+    		if(columnModel != null && columnModel.length > 0) 
+    		{
+    			hidden = true;
+	    		for(j = 0; j < columnModel.length; ++j) {
+	    			if(colName == columnModel[j].name) {
+	    				columnNames.push(colName);
+	    				hidden = false;
+	    				break;
+	    			}
+    			}
+    		}
+    		else {
+    			columnNames.push(colName);
+    			hidden = false;
+    		}
+    		
+    		gridColModel[i].hidden = hidden;
+    	}
+
+    	this.config.colModel = gridColModel; 
+    	this.config.postData.colNames = columnNames;
+
+		this.showVisibleColumns();		
+		
+		filters = this.grid.getGridParam("postData").filters;
+		
+    	$("table#"+this.tableId).jqGrid('GridUnload');
+
+    	this.grid = this.createJQGrid(filters);
+    	
     },
     
-    createJQGrid : function() {
-    	return jQuery(this.tableSelector).jqGrid(this.config)
-            .jqGrid('navGrid', this.pagerSelector,
-            	this.config.toolbar,{},{},{},{multipleSearch:true} // search options
+    createJQGrid : function(filters) {
+    	var self = this;
+    	
+		if(filters != null) { // If condition may be redundant?
+			this.config.postData.filters = filters; 
+		}
+    	
+    	grid = jQuery("table#"+this.tableId).jqGrid(this.config)
+            .jqGrid('navGrid', "#"+this.pagerId,
+            	this.config.settings,{},{},{},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
             ).jqGrid('gridResize');
+        if(this.columnPageEnabled) {
+
+        	firstButton = $("<input id='firstColButton' type='button' value='|< Columns' style='height:20px;font-size:-3'/>")
+        	prevButton = $("<input id='prevColButton' type='button' value='< Columns' style='height:20px;font-size:-3'/>");
+        	nextButton = $("<input id='nextColButton' type='button' value='Column >' style='height:20px;font-size:-3'/>");
+        	lastButton = $("<input id='lastColButton' type='button' value='Columns >|' style='height:20px;font-size:-3'/>")        	
+        	
+        	colPager = $("<div id='columnPager'/>");
+        	pageInput = $("<input id='colPageNr' type='text' size='3'>");
+        	
+        	$(pageInput).attr('value', this.columnPage);  
+
+			maxPage = Math.floor( this.numOfSelectedNodes / this.columnPagerSize);
+			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) maxPage = maxPage + 1;
+
+			// handle input of specific column page number
+        	$(pageInput).change(function() {
+        		value = parseInt($(this).val(), 10);
+        		
+        		
+        		if(value - 1 > 0 && value - 1 < maxPage) {
+        			$(this).attr('value', value);
+        			self.setColumnPageIndex(value - 1);
+        		} else {
+        			if(value - 1 >= maxPage) {
+        				$(this).attr('value', value);
+        				self.setColumnPageIndex(maxPage - 1);
+        			}
+        			if(value - 1 <= 0) {
+        				$(this).attr('value', value);
+        				self.setColumnPageIndex(0);        			
+        			}
+        		}
+        	});
+
+        	// Enable/disable forwards and backwards buttons appropriately
+        	if(this.columnPage >= maxPage) {
+        		nextButton.attr("disabled","disabled");
+        		lastButton.attr("disabled","disabled");
+        	}        	
+        	if(this.columnPage <= 1) {
+        		prevButton.attr("disabled","disabled");
+        		firstButton.attr("disabled","disabled");
+        	}        	
+        	
+        	$(firstButton).click(function() {
+        		self.setColumnPageIndex(1);
+        	});
+        	
+        	$(prevButton).click(function() {
+				self.columnPagerLeft();
+        	});
+        
+        	$(nextButton).click(function() {
+        		self.columnPagerRight();
+        	});
+        	
+        	$(lastButton).click(function() {
+        		self.setColumnPageIndex(maxPage);
+        	});
+        	
+        	// construct GUI
+			colPager.append(firstButton);
+        	colPager.append(prevButton);
+        	colPager.append("Page ");
+        	colPager.append(pageInput);
+        	colPager.append(" Of " + maxPage);
+        	colPager.append(nextButton);
+        	colPager.append(lastButton);
+        	
+        	toolbar = $("#t_"+this.tableId); 
+        	toolbar.append(colPager);
+
+    	}
+        return grid;
 	},
+
+	setColumnPageIndex : function(columnPagerIndex) {
+		this.columnPage = columnPagerIndex;
+		this.changeColumns(null);
+	},
+	
+	columnPagerLeft : function () {
+		var self = this;
+		this.columnPage--;
+		this.changeColumns(null);
+	},	
+    
+    columnPagerRight : function () {
+		var self = this;
+		this.columnPage++;
+		this.changeColumns(null);
+	},	
     
     getColumnNames : function(colModel) {
     	result = new Array();
@@ -78,8 +292,9 @@ var JQGridView = {
     },
     
     createDialog : function() {
-    	var self = JQGridView;
-    	$( "#dialog-form" ).dialog({
+    	var self = this;
+    	$("#"+this.tableId+"_dialog-form" ).dialog({
+
 		    autoOpen: false,
 		    height: 300,
 		    width: 350,
@@ -89,11 +304,13 @@ var JQGridView = {
 		            	var viewType = $("input[name='viewType']:checked").val();
 		            	var exportSelection = $("input[name='exportSelection']:checked").val();
 		
-		              	var myUrl = $(self.tableSelector).jqGrid('getGridParam', 'url');
-						myUrl += "&" +$.param($(self.tableSelector).jqGrid('getGridParam', 'postData'));		              	
+		              	var myUrl = $("table#"+self.tableId).jqGrid('getGridParam', 'url');
+						myUrl += "&" +$.param($("table#"+self.tableId).jqGrid('getGridParam', 'postData'));		
+
+						var exportColumnSelection = $("input[name='exportColumnSelection']:checked").val();
 
 		                //e.preventDefault();  //stop the browser from following
-		                window.location.href = myUrl + "&viewType=" + viewType + "&exportSelection=" + exportSelection;
+		                window.location.href = myUrl + "&viewType=" + viewType + "&exportSelection=" + exportSelection + "&exportColumnSelection=" + exportColumnSelection;
 		            },
 		            Cancel: function() {
 		                $( this ).dialog( "close" );
@@ -104,41 +321,55 @@ var JQGridView = {
 		});
 	},
 	
+	// Build the column selection tree
 	createTree : function(nodes) {
-		var self = JQGridView;
-		return $("#tree3").dynatree({
+		var self = this;
+		return $("#"+this.tableId+"_tree").dynatree({
 			checkbox: true,
 			selectMode: 3,
 			children: nodes,
 			onSelect: function(select, node) {
+			
 				// Get a list of all selected nodes, and convert to a key array:
-				var selectedColModel = new Array();        
+				self.selectedColModel = new Array();        
+
 				var selectedColumns = node.tree.getSelectedNodes();
+				var tableNodes = new Array();
 				for(i = 0; i < selectedColumns.length; ++i) {
 					var treeNode = selectedColumns[i].data;
+					
+					//handle branch-nodes
+					if(treeNode.isFolder) {
+						tableNodes.push(treeNode.title);
+					}					
 
+					//handle leaf-nodes
 					if(!treeNode.isFolder) {
 						colModelNode = $.grep(self.colModel, function(item){
       							return item.path == treeNode.path;
 							});
-						selectedColModel.push(colModelNode[0]);
+						self.selectedColModel.push(colModelNode[0]);
 					}
 				}
-				grid.changeColumns(selectedColModel);        
+				
+				self.config.postData.tableNames = tableNodes;
+				
+				self.changeColumns(self.selectedColModel);        
 			},
 			onDblClick: function(node, event) {
 				node.toggleSelect();
 			},
+			// escape (?)
 			onKeydown: function(node, event) {
 				if( event.which == 32 ) {
-				node.toggleSelect();
-				return false;
+					node.toggleSelect();
+					return false;
 				}
 			},
-			// The following options are only required, if we have more than one tree on one page:
+		// The following options are only required if we have more than one tree on one page:
 		//        initId: "treeData",
-			cookieId: "dynatree-Cb3",
-			idPrefix: "dynatree-Cb3-"
+			cookieId: "dynatree-"+this.tableId+"",
+			idPrefix: "dynatree-"+this.tableId+"-"
 		});
 	}
 }
@@ -146,40 +377,49 @@ var JQGridView = {
 
 
 
-
+// On first load do:
 $(document).ready(function() {
     configUrl = "${url}";
     
     //load JQGrid configuration and creates grid
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
-        grid = JQGridView.init("table#${tableId}", "#${tableId}Pager", config);
+        grid = JQGridView.init("${tableId}", "${tableId}_pager", config);
     });
-	$('#exportButton').click(function() {
-		$( "#dialog-form" ).dialog('open');
+	$('#${tableId}_exportButton').click(function() {
+		$( "#${tableId}_dialog-form" ).dialog('open');
 	});
+	
 });
 
 </script>
 
-<div id="treeBox">
-  <div id="tree3"></div>
+<div id="${tableId}_treeBox">
+  <div id="${tableId}_tree"></div>
 </div>
 
-<div id="gridBox">
+<div id="${tableId}_gridBox">
 	<table id="${tableId}"></table>
-	<div id="${tableId}Pager"></div>
-	<input id="exportButton" type="button" value="export data"/>
-	<div id="dialog-form" title="Export data">
+	<div id="${tableId}_pager"></div>
+	<input id="${tableId}_exportButton" type="button" value="export data"/>
+	<div id="${tableId}_dialog-form" title="Export data">
 		<form>
 		<fieldset>
 	            <label >File type</label><br>
 	            <input type="radio" name="viewType" value="EXCEL" checked>Excel<br>
 	            <input type="radio" name="viewType" value="SPSS">Spss<br> 
 	            <input type="radio" name="viewType" value="CSV">Csv<br> 
-	            <label>Export option</label><br>
-	            <input type="radio" name="exportSelection" value="ALL" checked>All rows<br>
-	            <input type="radio" name="exportSelection" value="GRID">Visible rows<br> 
+	    </fieldset>
+	    <fieldset>
+	            <label>Rows</label><br>
+	            <input type="radio" name="exportSelection" value="ALL">All rows<br>
+	            <input type="radio" name="exportSelection" value="GRID" checked>Visible rows<br> 
+		</fieldset>
+	    <fieldset>
+	            <label>Columns</label><br>
+	            <input type="radio" name="exportColumnSelection" value="ALL_COLUMNS">All Columns<br>
+	            <input type="radio" name="exportColumnSelection" value="SELECTED_COLUMNS" checked>Selected<br>
+	            <input type="radio" name="exportColumnSelection" value="GRID_COLUMNS">Visible Columns<br>
 		</fieldset>
 		</form>
 	</div>

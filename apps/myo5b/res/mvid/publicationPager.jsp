@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 
-<display:table name="publicationDTOList" pagesize="20" export="true" sort="list" class="listtable" id="current">
+<display:table name="publicationDTOList" pagesize="20" defaultsort="4" defaultorder="descending" export="true" sort="list" class="listtable" id="current">
 <display:setProperty name="paging.banner.full"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0} <a href="{3}">Next</a> <a href="{4}">Last</a></span></display:setProperty>  
 <display:setProperty name="paging.banner.first"><span class="pagelinks">{0} <a href="{3}">Next</a> <a href="{4}">Last</a> </span></display:setProperty>
 <display:setProperty name="paging.banner.last"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0}</span></display:setProperty>
@@ -16,7 +16,6 @@
 <display:setProperty name="export.excel.filename" value="publications.xls"/>
 <display:setProperty name="export.pdf.filename" value="publications.pdf"/>
 
-<display:column title="No."><c:out value="${current_rowNum}"/></display:column>
 <display:column title="Title" property="title" sortable="true"/>
 <display:column title="Authors" property="authors" sortable="true" maxWords="6"/>
 <display:column title="Journal" property="journal" sortable="true"/>
