@@ -53,6 +53,9 @@ public class JQGridConfiguration
 	/** default height */
 	public String height = "auto";
 
+	/** virtual scrolling */
+	// public int scroll = 1;
+
 	/** preload filter settings */
 	// note: this is a string value
 	// public String postData =
@@ -73,7 +76,7 @@ public class JQGridConfiguration
 			throws TableException
 	{
 		this.id = id;
-		this.pager = "#" + id + "Pager";
+		this.pager = "#" + id + "_pager";
 		this.url = url;
 		this.caption = caption;
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Build folders
 bin/
 build/
@@ -17,6 +18,12 @@ WebContent/WEB-INF/
 
 ## Netbeans private
 nbproject/private/
+
+## IntelliJ private
+.idea/
+molgenis_apps.eml
+molgenis_apps.iml
+
 
 ## General java
 *.class
@@ -39,8 +46,14 @@ log*
 /generated
 /target
 logger.out*
+/bin
 /dist
 /generated/java
 !/.settings/template*
 /.settings/org.eclipse.wst.common.component
 /apps/catalogue/plugins/hl7parser/PropertiesPath.java
+.settings/org.eclipse.wst.common.component
+/endorsed
+/target
+/test-output
+.classpath

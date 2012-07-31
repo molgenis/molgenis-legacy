@@ -13,7 +13,6 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.MolgenisFieldTypes.FieldTypeEnum;
-import org.molgenis.datatable.model.QueryTable.QueryCreator;
 import org.molgenis.framework.db.Database;
 import org.molgenis.model.elements.Field;
 
@@ -27,11 +26,13 @@ import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.query.types.path.StringPath;
 
-public class JoinTableCreator implements QueryCreator
+/**
+ * Implementation of the QueryCreator interface that allows simple joins.
+ */
+public class JoinQueryCreator implements QueryCreator
 {
 	/**
-	 * Will this not limit join possibilities?
-	 * 
+	 * Utility class to encapsulate which two tables are joined on which columns
 	 */
 	public static class Join
 	{
@@ -59,7 +60,23 @@ public class JoinTableCreator implements QueryCreator
 	private LinkedHashMap<String, SimpleExpression<? extends Object>> attributeExpressions;
 	private final Map<String, List<Field>> tableColumns;
 
-	public JoinTableCreator(final Database db, final List<String> tableNames, final List<String> columnNames,
+	/**
+	 * Create a {@link JoinQueryCreator}, specifying whence to get the data and
+	 * which columns to display.
+	 * 
+	 * @param db
+	 *            The database
+	 * @param tableNames
+	 *            The names of the tables
+	 * @param columnNames
+	 *            The names of the columns (excluding hidden ones)
+	 * @param hiddenFieldNames
+	 *            The names of the columns that should not be displayed. Used
+	 *            for the WHERE condition.
+	 * @param joins
+	 *            The parametrisations of the joins between the tables.
+	 */
+	public JoinQueryCreator(final Database db, final List<String> tableNames, final List<String> columnNames,
 			final List<String> hiddenFieldNames, final List<Join> joins)
 	{
 		this.db = db;
@@ -71,15 +88,17 @@ public class JoinTableCreator implements QueryCreator
 		tableColumns = loadColumnData();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public SQLQueryImpl createQuery(Connection connection, SQLTemplates dialect)
 	{
 		final SQLQueryImpl query = new SQLQueryImpl(connection, dialect);
 		attributeExpressions = new LinkedHashMap<String, SimpleExpression<? extends Object>>();
 
+		// Fill attribute map with table and column expressions
 		for (final String tableName : tableNames)
 		{
-			final PathBuilder table = new PathBuilder<RelationalPath>(RelationalPath.class, tableName);
+			final PathBuilder<RelationalPath> table = new PathBuilder<RelationalPath>(RelationalPath.class, tableName);
 			query.from(table);
 			for (final Field f : tableColumns.get(tableName.toLowerCase()))
 			{
@@ -88,6 +107,7 @@ public class JoinTableCreator implements QueryCreator
 			}
 		}
 
+		// Add joins
 		for (final Join join : joins)
 		{
 			final PathBuilder<RelationalPath> leftTable = new PathBuilder<RelationalPath>(RelationalPath.class,
@@ -128,6 +148,12 @@ public class JoinTableCreator implements QueryCreator
 		return columns;
 	}
 
+	/**
+	 * Retrieve column information from the database
+	 * 
+	 * @return A map with table names as keys and a lists of the fields in that
+	 *         table as values.
+	 */
 	private Map<String, List<Field>> loadColumnData()
 	{
 		final Map<String, List<Field>> tableColumns = new LinkedHashMap<String, List<Field>>();
@@ -166,6 +192,10 @@ public class JoinTableCreator implements QueryCreator
 		return tableColumns;
 	}
 
+	/**
+	 * Create a {@link SimpleExpression} of the path of a field (i.e. column) in
+	 * a table.
+	 */
 	private static SimpleExpression<?> createPath(Field f, PathBuilder<RelationalPath> table)
 	{
 		final FieldTypeEnum type = f.getType().getEnumType();

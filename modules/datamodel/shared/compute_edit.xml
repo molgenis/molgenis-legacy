@@ -12,7 +12,7 @@
 			<field name="nodes" default="1" type="int" description="# required nodes" />
 			<unique fields="name" />
 		</entity>
-		<entity name="ComputeProtocol" implements="Identifiable,Nameable,Describable">
+		<entity name="ComputeProtocol" implements="Identifiable,Nameable,Describable" xref_label="name">
 			<description>
 				Executable definitions of computational 'protocols' of
 				analysis. For
@@ -26,13 +26,19 @@
 				description="the interpreter used to run this script. For example 'bash'" />
 			<field name="parametersUsed" type="mref" xref_entity="ComputeParameter"
 				nillable="true" />
-			<field name="iterateOver" type="xref" xref_entity="ComputeParameter"
+			<field name="iterateOver" type="mref" xref_entity="ComputeParameter"
 				nillable="true" />
 			<field name="requirements" type="xref" nillable="true"
 				xref_entity="ComputeRequirement" description="requirements of the compation." />
+			<field name="walltime" type="string" default="20:00:00"
+				description="# the expected maximum runtime of this job. Notation: 'dd:hh:mm'" />
+			<field name="mem" type="string" default="4gb"
+				description="# PBS memory argument (e.g. 512mb, 4gb)" />
+			<field name="cores" type="int" default="1" description="# required cores" />
+			<field name="nodes" default="1" type="int" description="# required nodes" />
 			<unique fields="name" />
 		</entity>
-		<entity name="ComputeParameter" implements="Identifiable,Nameable">
+		<entity name="ComputeParameter" implements="Identifiable,Nameable" xref_label="name">
 			<description>Parameter are the inputs or outputs into an
 				ComputeProtocol.
 			</description>
@@ -43,7 +49,7 @@
 				description="relationship between parameters, enables parameter 'flattening'" />
 			<unique fields="name" />
 		</entity>
-		<entity name="Workflow" implements="Identifiable,Nameable,Describable">
+		<entity name="Workflow" implements="Identifiable,Nameable,Describable" xref_label="name">
 			<description>A workflow is a plan to execute a series of subprotocols
 				in a particular order. Each workflow elements is another protocol as
 				refered to via WorkflowElement. Because Workflow extends Protocol,
@@ -68,7 +74,7 @@
 		</entity>
 	</module>
 	<module name="compute.runtime">
-		<entity name="ComputeTask" implements="Identifiable,Nameable">
+		<entity name="ComputeTask" implements="Identifiable,Nameable" xref_label="name">
 			<description>A protocolApplication that reports the application of
 				running a ComputeProtocol.
 			</description>
@@ -110,7 +116,7 @@
 				description="field to show the content of the error file (only applicable on fail/done of a task)" />
 			<unique fields="ComputeTask,StatusCode,StatusTime" />
 		</entity>
-		<entity name="ComputeWorker" implements="Identifiable,Nameable">
+		<entity name="ComputeWorker" implements="Identifiable,Nameable" xref_label="name">
 			<description>Worker on the remote system. This can be pilot job or
 				traditional job. A worker executes the tasks (one or more). Each
 				worker gets a unique name.

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,11 +17,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.molgenis.compute.ComputeJob;
-import org.molgenis.compute.ComputeParameter;
-import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.compute.commandline.options.Options;
-import org.molgenis.protocol.WorkflowElement;
+import org.molgenis.compute.design.ComputeParameter;
+import org.molgenis.compute.design.ComputeProtocol;
+import org.molgenis.compute.design.WorkflowElement;
+import org.molgenis.compute.runtime.ComputeTask;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.util.Tuple;
 
 import freemarker.template.Configuration;
@@ -39,7 +41,7 @@ public class ComputeCommandLine
 	protected File parametersfile, workflowfile, worksheetfile, protocoldir, workingdir;
 	protected String outputdir, templatedir, backend;
 	protected Hashtable<String, Object> userValues = new Hashtable<String, Object>();
-	private List<ComputeJob> jobs = new ArrayList<ComputeJob>();
+	private List<ComputeTask> tasks = new ArrayList<ComputeTask>();
 	private Worksheet worksheet;
 
 	private void generateJobs() throws Exception
@@ -103,7 +105,7 @@ public class ComputeCommandLine
 			ComputeProtocol protocol = findProtocol(wfe.getProtocol_Name(), protocollist);
 
 			// get template + insert header and footer
-			String scripttemplate = addHeaderFooter(protocol.getScriptTemplate(), protocol.getInterpreter());
+			String scripttemplate = addHeaderFooter(protocol.getScriptTemplate(), protocol.getScriptInterpreter());
 
 			// fold and reduce worksheet
 			// String[] targets = parseHeaderElement(FOREACH, scripttemplate);
@@ -141,9 +143,9 @@ public class ComputeCommandLine
 			for (Tuple work : folded)
 			{
 				// fill template with work and put in script
-				ComputeJob job = new ComputeJob();
+				ComputeTask job = new ComputeTask();
 				job.setName(this.generateJobName(wfe, work));
-				job.setInterpreter(protocol.getInterpreter());
+				job.setInterpreter(protocol.getScriptInterpreter());
 
 				// if walltime, cores, mem not specified in protocol, then use
 				// value from worksheet
@@ -153,8 +155,8 @@ public class ComputeCommandLine
 				// job.setWalltime(walltime);
 				work.set("walltime", walltime);
 
-				String queue = (protocol.getClusterQueue() == null ? worksheet.getdefaultvalue("clusterQueue")
-						: protocol.getClusterQueue());
+//				String queue = (protocol.getClusterQueue() == null ? worksheet.getdefaultvalue("clusterQueue")
+//						: protocol.getClusterQueue());
 				// FIXME: Here I make queue dependent on walltime and memory per
 				// node..., which is specifically for Millipede..
 				// This you can find out on the cluster
@@ -178,13 +180,13 @@ public class ComputeCommandLine
 				// throw new Exception("Walltime too large: " + walltime +
 				// ". Maximum is 240h.");
 
-				work.set("clusterQueue", queue);
+				//work.set("clusterQueue", queue);
 				work.set("cores", cores);
 				work.set("mem", mem + "gb");
 				// done with FIXME
 
-				job.setInterpreter(protocol.getInterpreter() == null ? worksheet.getdefaultvalue("interpreter")
-						: protocol.getInterpreter());
+				job.setInterpreter(protocol.getScriptInterpreter() == null ? worksheet.getdefaultvalue("interpreter")
+						: protocol.getScriptInterpreter());
 
 				// set jobname. If a job starts/completes, we put this in a
 				// logfile
@@ -240,7 +242,7 @@ public class ComputeCommandLine
 				// add the script
 				job.setComputeScript(filledtemplate(scripttemplate, work, job.getName()));
 
-				this.jobs.add(job);
+				this.tasks.add(job);
 
 				print("Generated " + job.getName() + ", depending on " + job.getPrevSteps_Name());
 			}
@@ -249,7 +251,7 @@ public class ComputeCommandLine
 		// UNCOMMENT THE FOLLOWING CODE IF YOU WANT: as a last step add a job
 		// that writes a "pipeline.finished" file
 		/*
-		 * ComputeJob job = new ComputeJob();
+		 * ComputeTask job = new ComputeTask();
 		 * job.setName(getworkflowfilename()); job.setInterpreter("bash");
 		 * 
 		 * // if walltime, cores, mem not specified in protocol, then use value
@@ -257,7 +259,7 @@ public class ComputeCommandLine
 		 * job.setMem(1);
 		 * 
 		 * // final job is dependent on all other jobs Set<String> dependencies
-		 * = new HashSet<String>(); for (ComputeJob cj : this.jobs) {
+		 * = new HashSet<String>(); for (ComputeTask cj : this.jobs) {
 		 * dependencies.add(cj.getName()); }
 		 * job.getPrevSteps_Name().addAll(dependencies);
 		 * 
@@ -545,7 +547,7 @@ public class ComputeCommandLine
 	 * private void generateRite() throws RiteException { MongoRecipeStore msr =
 	 * new MongoRecipeStore("localhost", 27017, "testsh", "recipes");
 	 * 
-	 * for (ComputeJob job : this.jobs) { Recipe r = new Recipe(job.getName());
+	 * for (ComputeTask job : this.jobs) { Recipe r = new Recipe(job.getName());
 	 * Step s = new Step(""); BashOperation bsho = new BashOperation();
 	 * bsho.setScript(job.getComputeScript()); s.add(bsho); r.add(s);
 	 * 
@@ -566,8 +568,18 @@ public class ComputeCommandLine
 	private void generateScripts()
 	{
 		new File(outputdir).mkdirs();
+		
+		//extra: custom
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("jobs", tasks);
+		params.put("workflowfilename", this.getworkflowfilename());
+		
+		String result = new FreemarkerView(this.protocoldir + File.separator + "CustomSubmit.sh.ftl",params).render();
+		
 		try
 		{
+			FileUtils.write(new File(outputdir + File.separator + "submitCustom.sh"), result);
+			
 			// and produce submit.sh
 			PrintWriter submitWriter = new PrintWriter(new File(outputdir + File.separator + "submit.sh"));
 
@@ -594,7 +606,7 @@ public class ComputeCommandLine
 			cmd = "export PBS_O_WORKDIR=${DIR}";
 			submitWriterLocal.println(cmd);
 
-			for (ComputeJob job : this.jobs)
+			for (ComputeTask job : this.tasks)
 			{
 				// create submit in submit.sh
 				String dependency = "";
@@ -632,9 +644,13 @@ public class ComputeCommandLine
 
 			submitWriter.close();
 			submitWriterLocal.close();
+			
 		}
 		catch (FileNotFoundException e)
 		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

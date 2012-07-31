@@ -1,14 +1,21 @@
 package org.molgenis.compute.commandline;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import org.molgenis.compute.ComputeParameter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.*;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 public class Worksheet
 {

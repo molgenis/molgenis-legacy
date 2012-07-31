@@ -34,7 +34,6 @@ import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
-import org.molgenis.framework.ui.html.FileInput;
 import org.molgenis.framework.ui.html.JQueryTreeView;
 import org.molgenis.framework.ui.html.JQueryTreeViewElement;
 import org.molgenis.organization.Investigation;
@@ -53,7 +52,7 @@ import plugins.emeasure.EMeasure;
 
 
 
-public class catalogueTreePlugin extends PluginModel<Entity> {
+public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 	private static final long serialVersionUID = -6143910771849972946L;
 	private JQueryTreeView<JQueryTreeViewElement> treeView = null;
@@ -66,25 +65,17 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private JSONObject inheritance = new JSONObject();
 
 	private String selectedInvestigation = null;
+	private String selectedPredictionModel = null;
 	//	private String InputToken = null;
 	private String selectedField = null;
 	private String SelectionName = "empty";
 
 	private boolean isSelectedInv = false;
 	private List<String> arraySearchFields = new ArrayList<String>();
+	private List<String> listOfPredictionModels = new ArrayList<String>();
+
 	private List<String> SearchFilters = new ArrayList<String>();
 	private String Status = "";
-
-
-	//	private static int SEARCHINGPROTOCOL = 2;
-	//
-	//	private static int SEARCHINGMEASUREMENT = 3;
-	//
-	//	private static int SEARCHINGALL = 4;
-	//
-	//	private static int SEARCHINGDETAIL = 5;
-
-	Integer mode;
 
 	/** Multiple inheritance: some measurements might have multiple parents therefore it
 	 *  will complain about the branch already exists when constructing the tree, cheating by
@@ -95,7 +86,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	private List<JQueryTreeViewElement> directChildrenOfTop = new ArrayList<JQueryTreeViewElement>();
 	private List<String> listOfMeasurements = new ArrayList<String>();
 
-	public catalogueTreePlugin(String name, ScreenController<?> parent) {
+	public treeViewProxyPlugin(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 
@@ -105,12 +96,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	@Override
 	public String getViewName() {
-		return "plugins_searchingForProxy_catalogueTreePlugin";
+		return "plugins_searchingForProxy_treeViewProxyPlugin";
 	}
 
 	@Override
 	public String getViewTemplate() {
-		return "plugins/searchingForProxy/catalogueTreePlugin.ftl";
+		return "plugins/searchingForProxy/treeViewProxyPlugin.ftl";
 	}
 
 	@Override
@@ -132,8 +123,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			arrayInvestigations.clear();
 
 		}else if (request.getAction().equals("chooseInvestigation")) {
-			
-			selectedInvestigation = request.getString("cohortSelectSubmit");
+
+			selectedInvestigation = request.getString("selectedStudy");
+			selectedPredictionModel = request.getString("selectedModel");
 			this.setSelectedInvestigation(selectedInvestigation);
 			arrayInvestigations.clear();
 
@@ -290,6 +282,21 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				}
 			}
 
+			if(selectedPredictionModel == null){
+				
+				List<Protocol> predictionModelInv = db.find(Protocol.class, 
+						new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, "Prediction Model"));
+				
+				listOfPredictionModels.clear();
+				
+				for(Protocol p : predictionModelInv){
+					listOfPredictionModels.add(p.getName());
+				}
+				if(listOfPredictionModels.size() > 0){
+					selectedPredictionModel = listOfPredictionModels.get(0);
+				}
+				
+			}
 			arraySearchFields.clear();
 			// this.searchingInvestigation = null;
 			// this.selectedInvestigation = null;
@@ -311,6 +318,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			e.printStackTrace();
 		}
 	}
+
 
 	/**
 	 * This method is used to retrieve all the protocols from the database.
@@ -412,12 +420,12 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 			// find the measurements of protocols
 			recursiveAddingNodesToTree(bottomProtocols,
 					protocolsTree.getName(), protocolsTree, db,
-					foundInputToken, mode);
+					foundInputToken);
 
 		} else { // The protocols that have sub-protocols, then we recursively
 			// find sub-protocols
 			recursiveAddingNodesToTree(topProtocols, protocolsTree.getName(),
-					protocolsTree, db, foundInputToken, mode);
+					protocolsTree, db, foundInputToken);
 		}
 
 		directChildrenOfTop = protocolsTree.getChildren();
@@ -465,7 +473,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 	public void recursiveAddingNodesToTree(List<String> nextNodes,
 			String parentClassName, JQueryTreeViewElement parentNode,
-			Database db, boolean foundTokenInParentProtocol, Integer mode) {
+			Database db, boolean foundTokenInParentProtocol) {
 
 		// Create a findInputInNextAllToken variable to keep track of whether
 		// the sub-nodes contain any input token. If neither of the children
@@ -546,7 +554,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 						recursiveAddingNodesToTree(
 								subProtocolNames,
 								protocol.getName(), childTree, db,
-								foundTokenInParentProtocol, mode);
+								foundTokenInParentProtocol);
 					}
 
 					// On the last branch of the tree, we`ll find measurements and
@@ -557,7 +565,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 						addingMeasurementsToTree(
 								protocol.getFeatures_Name(), childTree, db,
-								false, mode); // .. so normally it goes always
+								false); // .. so normally it goes always
 						// this way
 					}
 
@@ -569,7 +577,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 						addingMeasurementsToTree(
 								protocol.getFeatures_Name(), childTree, db,
-								false, mode); // .. so normally it goes always
+								false); // .. so normally it goes always
 						// this way
 					}
 				}
@@ -588,7 +596,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	 */
 	public boolean addingMeasurementsToTree(List<String> childNode,
 			JQueryTreeViewElement parentNode, Database db,
-			boolean foundInParent, Integer mode) {
+			boolean foundInParent) {
 
 		// Create a variable to store the boolean value with which we could know
 		// whether we need to skip these measurements of the protocol.
@@ -607,42 +615,6 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 		//		List<String> filteredNode = new ArrayList<String>();
 
 		try {
-
-			//			// If the input token is available, we need to check which mode it is
-			//			// and decide what we do with it here
-			//			if (InputToken != null) {
-			//
-			//				// In mode of searching for measurements, we check if the name of
-			//				// measurements contain the input token
-			//				// If the token is not in the name, the measurement is removed from
-			//				// list.
-			//				if (mode == SEARCHINGMEASUREMENT) {
-			//
-			//					for(Measurement m : db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.IN, childNode))){
-			//
-			//						if (m.getName().toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")) {
-			//							filteredNode.add(m.getName());
-			//							findTokenInMeasurements = true;
-			//						} else if (m.getLabel() != null && m.getLabel().toLowerCase().matches(".*" + InputToken.toLowerCase() + ".*")) {
-			//							filteredNode.add(m.getName());
-			//							findTokenInMeasurements = true;
-			//						}
-			//						
-			//					}
-			//
-			//				} else {
-			//					// In mode of searching for all fields, details, we need to loop
-			//					// through all the measurements, therefore
-			//					// we do not care whether the measurement name contains the
-			//					// input token or not.
-			//					filteredNode = childNode;
-			//				}
-			//
-			//			} else {
-			//				// Normal mode when the input token is not available
-			//				filteredNode = childNode;
-			//			}
-			//
 
 			List<Measurement> measurementList = db.find(Measurement.class, new QueryRule(
 					Measurement.NAME, Operator.IN, childNode));
@@ -677,7 +649,9 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 				} else {
 					displayName = measurement.getName();
 				}
-
+				String description = "";
+				if(measurement.getDescription() != null)
+					description = measurement.getDescription();
 				// Check if the tree has already had the treeElement with the
 				// same name cos the name can not be duplicated in
 				// jquery tree here. Therefore if the element already existed, a
@@ -1126,7 +1100,14 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	{
 		return SelectionName;
 	}
+	public List<String> getListOfPredictionModels() {
+		return listOfPredictionModels;
+	}
 
+	public String getSelectedPredictionModel() {
+		return selectedPredictionModel;
+	}
+	
 	public void setStatus(String status)
 	{
 		Status = status;

@@ -31,6 +31,7 @@ public class SearchModel extends EasyPluginModel
 	private String patientPager;
 	private String mutationPager;
 	private String patientViewer;
+	private String mutationViewer;
 	private String action = "init";
 	private String result = "mutations"; // Initially search/display mutations
 	private String searchTerm = ""; // Initially search term is empty
@@ -99,6 +100,14 @@ public class SearchModel extends EasyPluginModel
 
 	public void setPatientViewer(String patientViewer) {
 		this.patientViewer = patientViewer;
+	}
+
+	public String getMutationViewer() {
+		return mutationViewer;
+	}
+
+	public void setMutationViewer(String mutationViewer) {
+		this.mutationViewer = mutationViewer;
 	}
 
 	public String getAction()

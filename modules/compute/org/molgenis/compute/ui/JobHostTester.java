@@ -1,11 +1,5 @@
 package org.molgenis.compute.ui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.molgenis.compute.host.ComputeHost;
 import org.molgenis.compute.host.Glite;
 import org.molgenis.compute.host.Job;
@@ -14,14 +8,14 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
-import org.molgenis.framework.ui.html.ActionInput;
-import org.molgenis.framework.ui.html.MolgenisForm;
-import org.molgenis.framework.ui.html.Paragraph;
-import org.molgenis.framework.ui.html.SelectInput;
-import org.molgenis.framework.ui.html.StringInput;
-import org.molgenis.framework.ui.html.TextInput;
-import org.molgenis.framework.ui.html.VerticalLayout;
+import org.molgenis.framework.ui.html.*;
 import org.molgenis.util.Tuple;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This view enables:
@@ -81,10 +75,10 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 		for (String name : backends.keySet())
 			hostSel.addOption(name, name);
 		view.add(hostSel);
+		
+		view.add(new ActionInput("submitJob","Submit Job"));
+		view.add(new ActionInput("submitPilot", "Submit Pilot"));
 
-		view.add(new ActionInput("submitJob", "Submit job"));
-
-		// ///
 		view.add(new Paragraph("<h1>Currently running jobs</h1>"));
 
 		for (Job j : jobs)
@@ -140,6 +134,21 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 		j.setHost(host);
 		jobs.add(j);
 	}
+
+    public void submitPilot(Database db, Tuple request) throws IOException
+    	{
+    		Job j = new Job();
+    		j.setScript(request.getString("script"));
+
+    		//get suitable backend
+    		String host = request.getString("backend");
+    		backends.get(host).submitPilot(j);
+
+    		//remember ...
+    		j.setHost(host);
+    		jobs.add(j);
+    	}
+
 
 	@Override
 	public void reload(Database db) throws Exception

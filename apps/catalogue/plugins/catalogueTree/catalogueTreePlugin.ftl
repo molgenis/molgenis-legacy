@@ -15,7 +15,17 @@
 			var inputToken = $('#InputToken').val();
 			
 			$('#leftSideTree li').hide();
-					
+			
+			if($('#browser ul.visibleBeforeSearch').length == 0){
+				
+				$('#browser ul:visible').addClass('visibleBeforeSearch');
+				
+				$('#leftSideTree ul').each(function(){
+					if($(this).css('display') != "none"){
+						$(this).addClass('visibleBeforeSearch');
+					}
+				});		
+			}
 			if($('#selectedField').val() == "Measurements" || $('#selectedField').val() == "All fields"){
 				
 				$('#leftSideTree li').each(function(){
@@ -35,6 +45,8 @@
 								removeClass('lastExpandable-hitarea expandable-hitarea').
 									addClass('collapsable-hitarea');
 							$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+							$(this).addClass('matchedDisplayNode');
+							$('#leftSideTree li#' + id).parents('li').addClass('matchedDisplayNode');
 						}
 					}
 				});
@@ -72,6 +84,10 @@
 							$('#leftSideTree li#' + id).find('li').show();
 							$('#leftSideTree li#' + id).find('li').removeClass('lastExpandable');
 							$('#leftSideTree li#' + id).find('div').removeClass('expandable-hitarea lastExpandable-hitarea').addClass('collapsable-hitarea');
+							
+							$(this).addClass('matchedDisplayNode');
+							$('#leftSideTree li#' + id).parents('li').addClass('matchedDisplayNode');
+							$('#leftSideTree li#' + id).find('li').addClass('matchedDisplayNode');
 						}
 					}
 				});
@@ -100,6 +116,8 @@
 								removeClass('expandable-hitarea lastExpandable-hitarea').
 									addClass('collapsable-hitarea');
 							$('#leftSideTree li#' + id).parents('li').removeClass('lastExpandable');
+							$(this).addClass('matchedDisplayNode');
+							$('#leftSideTree li#' + id).parents('li').addClass('matchedDisplayNode');
 						}
 					}
 				});
@@ -152,8 +170,31 @@
 			
 			if($('#InputToken').val() === ""){
 				addVeritcalLine($('#browser >li').attr('id'));
-				$('#leftSideTree li').show();				
+				$('#leftSideTree li').show();	
+				revertBackToLastState("matchedDisplayNode");			
 			}
+		}
+		
+		function revertBackToLastState(selector){
+			
+			$('#browser li.' + selector).each(function(){
+					
+				if($(this).parent('ul').hasClass('visibleBeforeSearch')){
+					//That means it was visible before searching, do nothing just show the element
+					$(this).parent('ul').show();
+				}else{
+					//That means it was hidden before searching, hide the element and revert the hitarea
+					$(this).parent('ul').hide();
+					$(this).parent('ul').siblings('div').removeClass('collapsable-hitarea').addClass('expandable-hitarea');
+					if($(this).parents('li:first').nextAll().length == 0){
+						$(this).parents('li:first').removeClass('lastCollapsable').addClass('lastExpandable');
+						$(this).parent('ul').siblings('div').removeClass('lastCollapsable-hitarea').addClass('lastExpandable-hitarea');
+					}
+				}
+			});
+			
+			$('#browser li.' + selector).removeClass(selector);
+			$('#browser ul.visibleBeforeSearch').removeClass('visibleBeforeSearch');
 		}
 		
 		function whetherReload(){
