@@ -22,7 +22,7 @@ var JQGridView = {
     tree : null,
     colModel : null, 
     
-    columnPage : 0,				//current column Page
+    columnPage : 1,				//current column Page
     columnPagerSize : 5,		//current columnPager size
     columnPageEnabled : true,
     
@@ -30,6 +30,7 @@ var JQGridView = {
     oldColModel : null,
     
     treeColModel : new Array(),
+    selectedColModel: new Array(),
     numOfSelectedNodes : 0,
     
     init: function(tableId, pagerId, config) {
@@ -46,6 +47,7 @@ var JQGridView = {
         
         $.each(this.config.colModel, function(index, value) {
         	self.treeColModel.push($.extend(true, {}, value));
+        	self.selectedColModel.push($.extend(true, {}, value));
         });
         
         
@@ -60,6 +62,7 @@ var JQGridView = {
 	    	 self.tree = self.createTree(data);   
 	    });
         this.restoreSliceColumns();
+        		
         return JQGridView;
     },
     
@@ -69,10 +72,13 @@ var JQGridView = {
 			this.oldColModel = this.config.colModel;
 			
 			//reset columnPage to within selection
-			this.columnPage = Math.min(this.columnPage, Math.floor(this.numOfSelectedNodes / this.columnPagerSize));
-			this.maxPage = Math.floor(this.numOfSelectedNodes / this.columnPagerSize) + 1;
+			this.maxPage = Math.floor( this.numOfSelectedNodes / this.columnPagerSize);
+			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) this.maxPage = this.maxPage + 1;
 			
-			begin = this.columnPage * this.columnPagerSize;
+			this.columnPage = Math.min(this.columnPage, this.maxPage);
+			
+			//offset
+			begin = (this.columnPage - 1) * this.columnPagerSize;
 			end = begin + this.columnPagerSize;
 			
 			columnNames = new Array();
@@ -109,12 +115,20 @@ var JQGridView = {
     changeColumns: function(columnModel) {
     	var self = this;
 		
-		if(columnModel == null || columnModel.length == 0) {
-			columnModel = this.treeColModel;
-			this.numOfSelectedNodes = this.treeColModel.length;
+		//null == no change in columnModel
+		if(columnModel == null) {
+			columnModel = self.selectedColModel;
 		}
 		else {
-			this.numOfSelectedNodes = columnModel.length;
+			//some selection
+			if(columnModel.length > 0) {
+				self.selectedColModel = columnModel;
+			}
+			//empty selection; reset to view all columns
+			else {
+				self.selectedColModel = this.colModel;
+			}
+			this.numOfSelectedNodes = self.selectedColModel.length;
 		}
 
 		//add all columnNames
@@ -127,6 +141,7 @@ var JQGridView = {
 		var columnNames = new Array();
 		gridColModel = this.grid.getGridParam("colModel");
 		
+		//reset all hidden (outside column paging)
     	for(i = 0; i < gridColModel.length; ++i) {
     		colName = gridColModel[i].name;
     		
@@ -184,20 +199,22 @@ var JQGridView = {
         	colPager = $("<div id='columnPager'/>");
         	pageInput = $("<input id='colPageNr' type='text' size='3'>");
         	
-        	$(pageInput).attr('value', this.columnPage + 1);  
+        	$(pageInput).attr('value', this.columnPage);  
 
-        	maxPage = Math.floor(this.numOfSelectedNodes / this.columnPagerSize) + 1;
-        	if(this.columnPage + 1 >= maxPage) {
+			maxPage = Math.floor( this.numOfSelectedNodes / this.columnPagerSize);
+			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) maxPage = maxPage + 1;
+        	
+        	if(this.columnPage >= maxPage) {
         		nextButton.attr("disabled","disabled");
         		lastButton.attr("disabled","disabled");
         	}        	
-        	if(this.columnPage - 1 < 0) {
+        	if(this.columnPage <= 1) {
         		prevButton.attr("disabled","disabled");
         		firstButton.attr("disabled","disabled");
         	}        	
         	
         	$(firstButton).click(function() {
-        		self.setColumnPageIndex(0);
+        		self.setColumnPageIndex(1);
         	});
         	
         	$(prevButton).click(function() {
@@ -209,7 +226,7 @@ var JQGridView = {
         	});
         	
         	$(lastButton).click(function() {
-        		self.setColumnPageIndex(maxPage-1);
+        		self.setColumnPageIndex(maxPage);
         	});
         	
 			colPager.append(firstButton);
@@ -288,7 +305,7 @@ var JQGridView = {
 			children: nodes,
 			onSelect: function(select, node) {
 				// Get a list of all selected nodes, and convert to a key array:
-				var selectedColModel = new Array();        
+				self.selectedColModel = new Array();        
 				var selectedColumns = node.tree.getSelectedNodes();
 				var tableNodes = new Array();
 				for(i = 0; i < selectedColumns.length; ++i) {
@@ -304,13 +321,13 @@ var JQGridView = {
 						colModelNode = $.grep(self.colModel, function(item){
       							return item.path == treeNode.path;
 							});
-						selectedColModel.push(colModelNode[0]);
+						self.selectedColModel.push(colModelNode[0]);
 					}
 				}
 				
 				self.config.postData.tableNames = tableNodes;
 				
-				self.changeColumns(selectedColModel);        
+				self.changeColumns(self.selectedColModel);        
 			},
 			onDblClick: function(node, event) {
 				node.toggleSelect();
