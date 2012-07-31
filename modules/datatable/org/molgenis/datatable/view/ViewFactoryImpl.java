@@ -1,20 +1,29 @@
 package org.molgenis.datatable.view;
 
-import org.molgenis.datatable.controller.Renderers.CSVRenderer;
-import org.molgenis.datatable.controller.Renderers.ExcelRenderer;
-import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
-import org.molgenis.datatable.controller.Renderers.Renderer;
-import org.molgenis.datatable.controller.Renderers.SPSSRenderer;
+import org.molgenis.datatable.view.renderers.Renderers.CSVRenderer;
+import org.molgenis.datatable.view.renderers.Renderers.ExcelRenderer;
+import org.molgenis.datatable.view.renderers.Renderers.JQGridRenderer;
+import org.molgenis.datatable.view.renderers.Renderers.Renderer;
+import org.molgenis.datatable.view.renderers.Renderers.SPSSRenderer;
 
-public class ViewFactoryImpl implements ViewFactory {
-	public Renderer createView(String viewName) {
-		if(viewName.equals("JQ_GRID")) {
+public class ViewFactoryImpl implements ViewFactory
+{
+	public Renderer createView(String viewName)
+	{
+		if (viewName.equals("JQ_GRID"))
+		{
 			return new JQGridRenderer();
-		} else if(viewName.equals("EXCEL")) {
+		}
+		else if (viewName.equals("EXCEL"))
+		{
 			return new ExcelRenderer();
-		} else if(viewName.equals("CSV")) {
+		}
+		else if (viewName.equals("CSV"))
+		{
 			return new CSVRenderer();
-		} else if(viewName.equals("SPSS")) {
+		}
+		else if (viewName.equals("SPSS"))
+		{
 			return new SPSSRenderer();
 		}
 		throw new IllegalArgumentException(String.format("view: %s not found", viewName));

@@ -242,7 +242,6 @@
 								<source>modules/file</source>
 								<source>modules/decorators/auth</source>
 								<source>modules/decorators/core</source>
-								<source>modules/decorators/search</source>
 								<source>modules/import</source>
 								<source>modules/settings</source>
 								<source>modules/pheno</source>

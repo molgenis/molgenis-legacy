@@ -1,4 +1,4 @@
-package org.molgenis.datatable.view;
+package org.molgenis.datatable.view.renderers;
 
 import java.io.IOException;
 import java.io.OutputStream;

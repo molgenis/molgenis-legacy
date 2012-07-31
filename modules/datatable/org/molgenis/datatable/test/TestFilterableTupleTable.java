@@ -19,11 +19,13 @@ import org.testng.annotations.Test;
 public class TestFilterableTupleTable
 {
 
-	class MockFilterableTupleTable extends AbstractFilterableTupleTable {
+	class MockFilterableTupleTable extends AbstractFilterableTupleTable
+	{
 
 		final TupleTable d_nested;
 
-		MockFilterableTupleTable(TupleTable table) {
+		MockFilterableTupleTable(TupleTable table)
+		{
 			d_nested = table;
 		}
 
@@ -58,33 +60,29 @@ public class TestFilterableTupleTable
 		}
 
 		@Override
-		public void setVisibleColumns(List<String> fieldNames)
+		public void setFilters(List<QueryRule> rules) throws TableException
 		{
 			// TODO Auto-generated method stub
 
 		}
 
 		@Override
-		public List<Field> getVisibleColumns()
+		public List<QueryRule> getFilters()
 		{
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public void setFilters(List<QueryRule> rules) throws TableException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public List<QueryRule> getFilters() {
+		public QueryRule getSortRule()
+		{
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public QueryRule getSortRule() {
+		public List<Field> getAllColumns() throws TableException
+		{
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -93,12 +91,14 @@ public class TestFilterableTupleTable
 	private MockFilterableTupleTable table;
 
 	@BeforeClass
-	public void setUp() {
+	public void setUp()
+	{
 		table = new MockFilterableTupleTable(MemoryTableFactory.create());
 	}
 
 	@Test
-	public void testInitialization() throws TableException {
+	public void testInitialization() throws TableException
+	{
 		assertEquals(table.getLimit(), -1);
 		assertEquals(table.getOffset(), -1);
 		assertEquals(table.getSortRule(), null);
@@ -106,7 +106,8 @@ public class TestFilterableTupleTable
 	}
 
 	@Test
-	public void testPaging() throws TableException {
+	public void testPaging() throws TableException
+	{
 		table.setFilters(Arrays.asList(new QueryRule(Operator.LIMIT, 3)));
 		assertEquals(table.getLimit(), 3);
 		assertEquals(table.getRows().size(), 3);
