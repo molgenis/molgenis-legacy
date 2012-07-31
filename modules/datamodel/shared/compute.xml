@@ -18,6 +18,10 @@
 				<li></li>
 			</ul>
 		</description>
+        <entity name="PilotJob" implements="Identifiable">
+            <field name="PilotID" type="string"/>
+            <field name="status" type="enum" default="idle" enum_options="[idle,started,finished,expired]"/>
+        </entity>
 		<entity name="ComputeDetails" abstract="true">
 			<description>Interface to store common compute properties
 			</description>
