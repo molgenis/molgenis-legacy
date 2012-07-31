@@ -14,6 +14,8 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
+import org.molgenis.model.elements.Field;
+
 /**
  * Un-typed data objects that do not enforce data structure.
  * <p>
@@ -68,12 +70,15 @@ public interface Tuple
 
 	/**
 	 * Get the names used as aliases for the field indexes
+	 * 
 	 * @return column names.
 	 */
 	public List<String> getFieldNames();
+
 	/**
-	 * Get the names used as aliases for the field indexes
-	 * TODO: Bad function name; use getFieldNames instead.
+	 * Get the names used as aliases for the field indexes TODO: Bad function
+	 * name; use getFieldNames instead.
+	 * 
 	 * @return column names.
 	 */
 	@Deprecated
@@ -301,50 +306,50 @@ public interface Tuple
 	 * @param columnIndex
 	 *            the first column is 1, second is 2, etc, last is
 	 *            getNrColumns()
-	 * @return List<?> object for the column value. If the value is NULL
-	 *         then the value is null.
+	 * @return List<?> object for the column value. If the value is NULL then
+	 *         the value is null.
 	 */
 	public List<?> getList(int columnIndex);
-	
+
 	/**
-	 * Retrieves the value of the designated column as List<?> by parsing
-	 * the underlyingFIXME: make generic?
+	 * Retrieves the value of the designated column as List<?> by parsing the
+	 * underlyingFIXME: make generic?
 	 * 
 	 * @param columnIndex
 	 *            the first column is 1, second is 2, etc, last is
 	 *            getNrColumns()
 	 * @param sep
 	 *            separator that needs to be used
-	 * @return List<?> for the column value. If the value is NULL then the
-	 *         value is null.
+	 * @return List<?> for the column value. If the value is NULL then the value
+	 *         is null.
 	 */
 	public List<?> getList(int columnIndex, String sep);
 
 	/**
-	 * Retrieves the value of the designated column as List<?>. If the the
-	 * value is instanceof String then | is used as separator. Alternatively use @see getList(String columnName, char sep). FIXME: make
-	 * generic?
+	 * Retrieves the value of the designated column as List<?>. If the the value
+	 * is instanceof String then | is used as separator. Alternatively use @see
+	 * getList(String columnName, char sep). FIXME: make generic?
 	 * 
 	 * @param columnName
 	 *            name of the column.
-	 * @return List<?> for the column value. If the value is NULL then the
-	 *         value is null.
+	 * @return List<?> for the column value. If the value is NULL then the value
+	 *         is null.
 	 */
 	public List<?> getList(String columnName);
 
 	/**
-	 * Retrieves the value of the designated column as List<?> by parsing
-	 * the underlyingFIXME: make generic?
+	 * Retrieves the value of the designated column as List<?> by parsing the
+	 * underlyingFIXME: make generic?
 	 * 
 	 * @param columnName
 	 *            name of the column.
 	 * @param sep
 	 *            separator that needs to be used
-	 * @return List<?> for the column value. If the value is NULL then the
-	 *         value is null.
+	 * @return List<?> for the column value. If the value is NULL then the value
+	 *         is null.
 	 */
 	public List<?> getList(String columnName, String sep);
-	
+
 	/**
 	 * Retrieves the value of the designated column as Set<Object>
 	 * 
@@ -352,9 +357,10 @@ public interface Tuple
 	 * @return
 	 */
 	public Set<Object> getSet(String columnName);
-	
+
 	/**
-	 * Retrieves the value of the designated column as Set<Object> by parsing an underlying string value
+	 * Retrieves the value of the designated column as Set<Object> by parsing an
+	 * underlying string value
 	 * 
 	 * @param string
 	 * @return
@@ -413,19 +419,23 @@ public interface Tuple
 	public <E extends Object> void set(List<E> values);
 
 	public boolean isNull(String string);
-	
+
 	public boolean isNull(int column);
 
 	public List<String> getStringList(String string);
 
 	List<String> getStringList(int column);
-	
-	/** Automatically get the entity using the tuple to set it. 
+
+	/**
+	 * Automatically get the entity using the tuple to set it.
 	 * 
-	 * This is a shorthand for:
-	 * EntityClass e = entityClass.newInstance(); 
+	 * This is a shorthand for: EntityClass e = entityClass.newInstance();
 	 * e.set(tuple);
-	 * @throws Exception anything can go wrong
+	 * 
+	 * @throws Exception
+	 *             anything can go wrong
 	 */
-	public <E extends Entity> E  getEntity(Class<E> entityClass) throws Exception;
+	public <E extends Entity> E getEntity(Class<E> entityClass) throws Exception;
+
+	List<Field> getFieldTypes();
 }
