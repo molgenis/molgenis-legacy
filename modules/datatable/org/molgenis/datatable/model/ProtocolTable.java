@@ -85,18 +85,15 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 					}
 					else
 					{
-						if (!visibleColumnsOnly)
-						{
-							q.limit(this.getColLimit());
-
-						}
+						q.limit(this.getColLimit());
+					}
+					if (this.getColOffset() > 0)
+					{
+						// always substract 1 for the 'target' column
+						q.offset(this.getColOffset() - 1);
 					}
 				}
-				if (this.getColOffset() > 0)
-				{
-					// always substract 1 for the 'target' column
-					q.offset(this.getColOffset() - 1);
-				}
+
 			}
 			else
 			{
