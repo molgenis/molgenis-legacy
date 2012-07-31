@@ -40,8 +40,11 @@ public class CsvTable extends AbstractTupleTable
 	 */
 	public CsvTable(File csvFile) throws Exception
 	{
+		if (csvFile == null) throw new NullPointerException("Creation of CsvTable failed: csvFile == null");
+		if (!csvFile.exists()) throw new IllegalArgumentException("Creation of CsvTable failed: csvFile does not exist");
+
 		this.csvFile = csvFile;
-		this.reset();
+		this.resetStreams();
 		loadColumns();
 	}
 
@@ -51,11 +54,20 @@ public class CsvTable extends AbstractTupleTable
 	 * @param csvString
 	 * @throws Exception
 	 */
-	public CsvTable(String csvString) throws Exception
+	public CsvTable(String csvString) throws TableException
 	{
+		if (csvString == null) throw new NullPointerException("Creation of CsvTable failed: csvString == null");
+
 		this.csvString = csvString;
-		this.reset();
-		loadColumns();
+		try
+		{
+			resetStreams();
+			loadColumns();
+		}
+		catch (Exception e)
+		{
+			throw new TableException(e);
+		}
 	}
 
 	int rowCount = -1;
@@ -103,7 +115,7 @@ public class CsvTable extends AbstractTupleTable
 	}
 
 	@Override
-	public List<Field> getColumns()
+	public List<Field> getAllColumns()
 	{
 		return columns;
 	}
@@ -125,14 +137,14 @@ public class CsvTable extends AbstractTupleTable
 	{
 		try
 		{
-			this.reset();
+			this.resetStreams();
 		}
 		catch (Exception e)
 		{
-			//should not happen as this is second load
+			// should not happen as this is second load
 			e.printStackTrace();
 		}
-		
+
 		if (getLimit() > 0 || getOffset() > 0 || getColOffset() > 0 || getColLimit() > 0)
 		{
 			return new TupleIterator(csv, getLimit(), getOffset(), getColLimit(), getColOffset());
@@ -154,7 +166,7 @@ public class CsvTable extends AbstractTupleTable
 		}
 	}
 
-	private void reset() throws FileNotFoundException, IOException, DataFormatException
+	private void resetStreams() throws FileNotFoundException, IOException, DataFormatException
 	{
 		if (csvFile != null)
 		{
