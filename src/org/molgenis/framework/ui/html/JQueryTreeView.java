@@ -1,12 +1,10 @@
 package org.molgenis.framework.ui.html;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import org.molgenis.util.SimpleTree;
 
-import com.google.gson.Gson;
 
 public class JQueryTreeView<E> extends HtmlWidget
 {
@@ -62,7 +60,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 				returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") 
 							+  "\" class=\"closed"
 							+  "\" style=\"display:none;\"><span class=\"folder\"><input type=\"checkbox\" id=\"" 
-							+  node.getEntityID() + "\" name=\"" + node.getEntityID() + "\"" 
+							+  node.getEntityID() + "\" name=\"" + node.getEntityID().split("_identifier_")[0] + "\"" 
 							+  (selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
 							+  " />" + node.getLabel() + "</span>\n"
 							+  "<ul>\n";
@@ -81,7 +79,7 @@ public class JQueryTreeView<E> extends HtmlWidget
 			returnString += "</ul>\n</li>\n";
 		} else {
 			returnString = "<li id = \"" + node.getName().replaceAll(" ", "_") + "\" style=\"display:none;\"><span class=\"point\"><input type=\"checkbox\" id=\"" 
-						  +	node.getEntityID() + "\" name=\"" + node.getEntityID() + "\"" 
+						  +	node.getEntityID() + "\" name=\"" + node.getEntityID().split("_identifier_")[0] + "\"" 
 						  +	(selectedLabels.contains(node.getLabel()) ? " checked=\"yes\"" : "") 
 						  +	" />" + node.getLabel() + "</span></li>\n"; 				
 		}
@@ -90,12 +88,14 @@ public class JQueryTreeView<E> extends HtmlWidget
 	}
 	
 	public String toHtml(List<String> selected){
-		String html ="<script src=\"res/jquery-plugins/datatables/js/jquery.js\"></script>\n" 
+		String html ="" 
 			+ "<script src=\"res/jquery-plugins/Treeview/jquery.treeview.js\" language=\"javascript\"></script>\n"
 			+ "<script src=\"res/scripts/catalogue.js\" language=\"javascript\"></script>\n"
 			+ "<link rel=\"stylesheet\" href=\"res/jquery-plugins/Treeview/jquery.treeview.css\" type=\"text/css\" media=\"screen\" />\n" 
 			+ "<link rel=\"stylesheet\" href=\"res/css/catalogue.css\" type=\"text/css\" media=\"screen\" />\n" 
 			+ "<script src=\"res/jquery-plugins/splitter/splitter.js\" language=\"javascript\"></script>\n"
+			+ "<link type=\"text/css\" href=\"jquery/css/smoothness/jquery-ui-1.8.7.custom.css\" rel=\"Stylesheet\"/>"
+			+ "<script src=\"jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js\" language=\"javascript\"></script>\n"
 			+ "<ul id=\"browser\" class=\"pointtree\">\n"
 			+ renderTree(treeData.getRoot(), selected)
 			+ "</ul>\n";	
