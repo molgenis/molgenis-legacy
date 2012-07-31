@@ -42,29 +42,33 @@ import org.molgenis.util.TupleWriter;
  */
 public interface Database
 {
-	 /**
+	/**
 	 * Create tables.
+	 * 
 	 * @throws DatabaseException
 	 */
-	 public void createTables() throws DatabaseException;
+	public void createTables() throws DatabaseException;
 
-	 /**
-	  * Update tables.
-	  * @throws DatabaseException
-	  */
-	 public void updateTables() throws DatabaseException;
-	 
-	 /**
+	/**
+	 * Update tables.
+	 * 
+	 * @throws DatabaseException
+	 */
+	public void updateTables() throws DatabaseException;
+
+	/**
 	 * Drop tables.
+	 * 
 	 * @throws DatabaseException
 	 */
-	 public void dropTables() throws DatabaseException;
+	public void dropTables() throws DatabaseException;
 
-	 /**
-	  * Load example data into database.
-	  * @throws DatabaseException
-	  */
-	 public void loadExampleData(ExampleData exampleData) throws DatabaseException;
+	/**
+	 * Load example data into database.
+	 * 
+	 * @throws DatabaseException
+	 */
+	public void loadExampleData(ExampleData exampleData) throws DatabaseException;
 
 	/**
 	 * Retrieve meta data describing data structure in this Database.
@@ -264,8 +268,7 @@ public interface Database
 	 * @throws Exception
 	 */
 	public <E extends Entity> int add(Class<E> klazz, TupleReader reader, TupleWriter writer) throws DatabaseException;
-	
-	
+
 	/**
 	 * Add a list of entity objects to the database by parsing them from a csv
 	 * file. Optionally the inserted records can be written back to another csv
@@ -493,16 +496,7 @@ public interface Database
 	 * 
 	 * @return List<Tuple>
 	 */
-	@Deprecated
 	public List<Tuple> sql(String query, QueryRule... queryRules) throws DatabaseException;
-
-	/**
-	 * Executes a query and get back a List of (Molgenis)Tuples, rules are added
-	 * to where
-	 * 
-	 * @return ResultSetTuple
-	 */
-	public ResultSet executeQuery(String query, QueryRule... queryRules) throws DatabaseException;
 
 	/**
 	 * Generate the find SQL (use with caution!)
@@ -547,8 +541,8 @@ public interface Database
 	 */
 	public <E extends Entity> List<? extends Entity> load(Class<E> superClass, List<E> entities)
 			throws DatabaseException;
-	
+
 	public <E extends Entity> Class<E> getEntityClass(E entity);
-	
+
 	public <E extends Entity> Class<E> getEntityClass(List<E> entities);
 }
