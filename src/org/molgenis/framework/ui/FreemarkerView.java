@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -95,8 +96,8 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 						loaders.add(new ClassTemplateLoader(templateArgs.get(key).getClass().getSuperclass()));
 					}
 				}
-				
 				loaders.add(new FileTemplateLoader());
+				loaders.add(new FileTemplateLoader(new File("/")));
 
 				// ClassTemplateLoader loader1 = new ClassTemplateLoader(
 				// Object.class, "");
