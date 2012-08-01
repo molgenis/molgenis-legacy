@@ -18,18 +18,17 @@
 					<form name="WorkflowElements" entity="WorkflowElement" viewtype="record">
 						<form name="WorkflowElementParameters" hide_fields="id" entity="WorkflowElementParameter" viewtype="list" />
 					</form>
-					<plugin name="WorkflowRun" label="Run" type="org.molgenis.compute.ui.RunWorkflow" />
 					<form name="WorkflowHistory" label="History" entity="ComputeJob" />
 				</menu>
 			</form>
 			<form name="AllComputeJobs" label="ComputeJobs" entity="ComputeJob" />
 			<!-- not yet used form name="ComputeResources" entity="ComputeResource" / -->
-			<plugin name="console" label="Monitor Runs" type="org.molgenis.compute.ui.ConsolePlugin" />
 			<plugin name="GenericWizard" type="plugins.genericwizard.GenericWizard" label="Upload pipelines" />
 		</menu>
 		<menu name="JobManager">
 			<plugin name="JobHostTester" type="org.molgenis.compute.ui.JobHostTester" description="lists jobs; can create new or cancel/delete existing."/>
-		
+            <!-- <plugin name="JobPilotTest" type="org.molgenis.compute.ui.JobPilotTest"/> -->
+            <form name="PilotJobs" entity="PilotJob" viewtype="list" />
 		</menu>
 		<menu name="Pbs">
 			<plugin name="QSTAT" type="org.molgenis.compute.ui.QstatPlugin" />

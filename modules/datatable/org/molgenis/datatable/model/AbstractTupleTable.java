@@ -148,7 +148,7 @@ public abstract class AbstractTupleTable implements TupleTable
 	@Override
 	public void setLimitOffset(int limit, int offset)
 	{
-		this.setColLimit(limit);
+		this.setLimit(limit);
 		this.setOffset(offset);
 	}
 

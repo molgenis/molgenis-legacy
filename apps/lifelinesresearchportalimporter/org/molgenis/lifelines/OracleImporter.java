@@ -68,13 +68,8 @@ public class OracleImporter
 	{
 		Locale.setDefault(Locale.US);
 		PropertyConfigurator.configure("apps/lifelinesresearchportalimporter/org/molgenis/lifelines/log4j.properties");
-<<<<<<< HEAD
-
-		final String inputPath = "/Users/jorislops/Desktop/LL Data/exadata/";
-=======
 		
 		final String inputPath = "/Users/jorislops/Desktop/LLTEST1/";
->>>>>>> 340c404f427e241b9dbf5b0347177e3ebacccee0
 
 		final Properties props = new Properties();
 		final FileInputStream in = new FileInputStream(

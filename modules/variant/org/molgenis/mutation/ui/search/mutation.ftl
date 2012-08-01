@@ -23,11 +23,30 @@
 <tr class="form_listrow1"><th width="50%">Protein change</th><td>${mutationSummaryDTO.aaNotation}</td></tr>
 <tr class="form_listrow0"><th width="50%">Exon/intron</th><td><a href="molgenis.do?__target=${screen.name}&__action=showExon&exon_id=${mutationSummaryDTO.exonId}#results">${mutationSummaryDTO.exonName}</a></td></tr>
 <tr class="form_listrow1"><th width="50%">Protein domain</th><td><#list mutationSummaryDTO.proteinDomainNameList as domainName>${domainName}</#list></td></tr>
+
+<#-- Observable features -->
+<#list mutationSummaryDTO.protocolDTOList as protocolDTO>
+<#assign even = 1>
+<#assign observedValueDTOList = mutationSummaryDTO.observedValueDTOHash["Protocol" + protocolDTO.protocolId]>
+<#list observedValueDTOList as observedValueDTO>
+<#if even == 1>
+  <#assign class = "form_listrow0">
+  <#assign even = 0>
+<#else>
+  <#assign class = "form_listrow1">
+  <#assign even = 1>
+</#if>
+<tr class="${class}"><th width="50%">${observedValueDTO.featureDTO.featureName}</th><td>${observedValueDTO.value}</td></tr>
+</#list>
+</#list>
+
+<#--
 <tr class="form_listrow0"><th width="50%">Consequence</th><td>${mutationSummaryDTO.consequence}</td></tr>
 <tr class="form_listrow1"><th width="50%">Type of mutation</th><td>${mutationSummaryDTO.type}</td></tr>
 <tr class="form_listrow0"><th width="50%">Inheritance</th><td>${mutationSummaryDTO.inheritance}</td></tr>
 <tr class="form_listrow1"><th width="50%">Reported as SNP?</th><td>${mutationSummaryDTO.reportedSNP?string("yes", "no")}</td></tr>
 <tr class="form_listrow0"><th width="50%">Pathogenicity</th><td>${mutationSummaryDTO.pathogenicity}</td></tr>
+-->
 <tr class="form_listrow1"><th width="50%">Found in number of patients</th><td><a href="molgenis.do?__target=${screen.name}&__action=findPatients&mid=${mutationSummaryDTO.identifier}#results">${mutationSummaryDTO.patientSummaryDTOList?size}</a></td></tr>
 <tr class="form_listrow0"><th width="50%">Phenotypes associated with mutation</th><td><#list mutationSummaryDTO.phenotypeNameList as phenotypeName>${phenotypeName}<br/></#list></td></tr>
 <tr class="form_listrow1"><th width="50%">References</th><td><#list mutationSummaryDTO.publicationDTOList as publicationDTO><a href="${mutationSummaryDTO.pubmedURL}${publicationDTO.pubmedId}" target="_new">${publicationDTO.title}</a><#--<a href="${publication.pdf}" target="_new"><img src="res/img/pdf.gif"></a>--><br/></#list></td></tr>
@@ -41,24 +60,6 @@
 </#if>
 </table>
 
-<#-- Observable features -->
-<#list mutationSummaryDTO.protocolDTOList as protocolDTO>
-<h4>${protocolDTO.protocolName}</h4>
-<table class="listtable" cellpadding="4">
-<#assign even = 1>
-<#assign observedValueDTOList = mutationSummaryDTO.observedValueDTOHash["Protocol" + protocolDTO.protocolId]>
-<#list observedValueDTOList as observedValueDTO>
-<#if even == 1>
-  <#assign class = "form_listrow0">
-  <#assign even = 0>
-<#else>
-  <#assign class = "form_listrow1">
-  <#assign even = 1>
-</#if>
-<tr class="${class}"><th width="50%">${observedValueDTO.featureDTO.featureName}</th><td>${observedValueDTO.value}</td></tr>
-</#list>
-</table>
-</#list>
 
 <p>
 [<a href="javascript:history.back();" onclick="javascript:history.back();">Back to results</a>]

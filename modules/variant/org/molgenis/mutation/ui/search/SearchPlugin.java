@@ -55,6 +55,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		this.getModel().setPatientPager("/mutation/patientPager.jsp");
 		this.getModel().setMutationPager("/mutation/mutationPager.jsp");
 		this.getModel().setPatientViewer("/org/molgenis/mutation/ui/search/patient.ftl");
+		this.getModel().setMutationViewer("/org/molgenis/mutation/ui/search/mutation.ftl");
 		this.getModel().setMbrowse(new MBrowse());
 		this.getModel().getMbrowse().setTarget(this.getName());
 		this.getModel().setExpertSearchFormWrapper(new HtmlFormWrapper(new ExpertSearchForm()));
@@ -75,8 +76,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	@Override
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 	{
-		ServiceLocator.instance().getContext().getAutowireCapableBeanFactory().initializeBean(db, "org.molgenis.framework.db.Database");
-
 		try
 		{
 			if (StringUtils.isEmpty(request.getAction()))
@@ -415,7 +414,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 		((HttpServletRequestTuple) request).getRequest().setAttribute("patientSummaryVOs", this.getModel().getPatientSummaryVOs());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getPatientPager()));
 		this.getModel().setHeader(this.getModel().getPatientSummaryVOs().size() + " results for \"Display all patients\".");
-		
+
 		this.setView(new FreemarkerView("included.ftl", this.getModel()));
 	}
 
@@ -450,7 +449,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 
 		this.getModel().setProteinDomainDTO(searchService.findProteinDomain(request.getInt("domain_id"), false));
 		this.getModel().setMutationSummaryDTOList(searchService.findMutationsByDomainId(request.getInt("domain_id")));
-		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryVOList", this.getModel().getMutationSummaryDTOList());
+		((HttpServletRequestTuple) request).getRequest().setAttribute("mutationSummaryDTOList", this.getModel().getMutationSummaryDTOList());
 		this.getModel().setRawOutput(this.include(request, this.getModel().getMutationPager()));
 
 		this.getModel().setHeader((this.getModel().getProteinDomainDTO() == null) ? "Unknown id." : "");
@@ -522,7 +521,6 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	@Override
 	public void reload(Database db)
 	{
-		ServiceLocator.instance().getContext().getAutowireCapableBeanFactory().initializeBean(db, "org.molgenis.framework.db.Database");
 		try
 		{
 			SearchService searchService = ServiceLocator.instance().getSearchService();

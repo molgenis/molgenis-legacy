@@ -60,6 +60,11 @@ H=${insertsizemetricspdf} \
 VALIDATION_STRINGENCY=LENIENT \
 TMP_DIR=${tempdir}
 
+# Overwrite the PDFs that were just created by nicer onces:
+${recreateinsertsizepdfR} \
+--insertSizeMetrics ${insertsizemetrics} \
+--pdf ${insertsizemetricspdf}
+
 java -jar ${meanqualitybycyclejar} \
 I=${sortedbam} \
 O=${meanqualitybycycle} \

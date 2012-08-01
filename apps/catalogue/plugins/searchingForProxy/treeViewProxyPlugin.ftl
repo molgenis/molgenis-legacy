@@ -326,20 +326,55 @@
 					<table id="layoutTable" class="box" width="100%" cellpadding="0" cellspacing="0" style="border-right:1px solid lightgray">
 						<tr>
 							<td class="box-header" colspan="2">  
-						        <label style='font-size:14px'>Choose a cohort:
+								<input type="hidden" name="selectedStudy" id="selectedStudy">
+								<input type="hidden" name="selectedModel" id="selectedModel">
+								<div id="dialog" title="Select prediction model and validation study">
+									Choose a validation study: 
+									<select name="cohortSelectSubmit" id="cohortSelectSubmit"> 
+										<#list screen.arrayInvestigations as inv>
+											<#assign invName = inv.name>
+											<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+										</#list>
+									</select></br>
+									<script>$('#cohortSelectSubmit').chosen();</script>
+									Choose a prediction model: 
+									<select name="predictionModel" id="predictionModel"> 
+										<#list screen.getListOfPredictionModels() as predictionModel>
+											<option value="${predictionModel}" <#if screen.getSelectedPredictionModel()??><#if screen.getSelectedPredictionModel() == predictionModel>selected="selected"</#if></#if> >${predictionModel}</option>			
+										</#list>
+									</select>
+									<input type="image" src="res/img/refresh.png" alt="Submit" 
+										id="chooseInvestigation" style="vertical-align: middle;" 
+										value="refresh tree" title="load another study"/>
+								</div>
+								<div id="selectedPredictionModel">Selected prediciton model: <#if screen.getSelectedPredictionModel()??><i>${screen.getSelectedPredictionModel()}</i></#if></div>
+								<div id="selectedValidationStudy" style="float:left">Selected validation study: <#if screen.selectedInvestigation??><i>${screen.selectedInvestigation}</i></#if></div>
+								<div id="updateButtonDiv" style="float:right"><input type="button" id="changeModelAndStudy" value="update"/></div>
+								
+								<input type="submit" id="reloadButton" style="display:none" onclick="__action.value='chooseInvestigation';" value="update"/>
+								<script>
+									$('#predictionModel').chosen();
+									$('#dialog').dialog({ 
+										autoOpen: false,
+										 height: 230,
+										 width: 460
+									});
+									$('#changeModelAndStudy').button();
+									$('#changeModelAndStudy').css('font-size','0.7em');
+									$('#changeModelAndStudy').click(function(){
+										$('#dialog').dialog('open');
+									});
 									
-								<select name="cohortSelectSubmit" id="cohortSelectSubmit"> 
-									<#list screen.arrayInvestigations as inv>
-										<#assign invName = inv.name>
-										<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
-									</#list>
-								</select>
-							
-								<script>$('#cohortSelectSubmit').chosen();</script>
-								<input type="image" src="res/img/refresh.png" alt="Submit" 
-										name="chooseInvestigation" style="vertical-align: middle;" 
-										value="refresh tree" onclick="__action.value='chooseInvestigation';" 
-										title="load another study"	/>
+									$('#chooseInvestigation').click(function(){
+										selectedModel = $('#predictionModel').val();
+										$('#selectedModel').val(selectedModel);
+										selectedStudy = $('#cohortSelectSubmit').val();
+										$('#selectedStudy').val(selectedStudy);
+										$('#dialog').dialog('close');
+										$('#reloadButton').trigger('click');
+									});
+									
+								</script>
 							<!--	<div id="masstoggler"> 		
 				 					<label style='font-size:14px'>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
 				 					<a id="collapse" title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
@@ -475,6 +510,9 @@
 			      			var measurementID = $(this).attr('id');
 	      					
 	      					$(this).children('span').click(function(){
+			      				
+			      				$('#tabs >ul >li a').eq(1).trigger('click');
+			      				
 			      				$(this).css({
 			      					'color':'#778899',
 			      					'font-size':15,

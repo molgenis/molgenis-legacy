@@ -15,7 +15,7 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import app.DatabaseFactory;
 
@@ -25,7 +25,7 @@ public class CreateProtocolData
 	Protocol protocol;
 	Database db;
 
-	@BeforeClass
+	@Test
 	public void setup() throws DatabaseException
 	{
 		BasicConfigurator.configure();
