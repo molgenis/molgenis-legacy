@@ -459,6 +459,7 @@ public class SimpleTuple implements Tuple
 	{
 		if (this.getObject(column) == null || this.getString(column) == "") return null;
 		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
+		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
 				((java.util.Date) this.getObject(column)).getTime());
 
@@ -495,6 +496,7 @@ public class SimpleTuple implements Tuple
 	{
 		if (this.getObject(column) == null || this.getString(column) == "") return null;
 		if (this.getObject(column) instanceof java.sql.Date) return (java.sql.Date) this.getObject(column);
+		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Date) this.getObject(column);
 		if (this.getObject(column) instanceof java.util.Date) return new java.sql.Date(
 				((java.util.Date) this.getObject(column)).getTime());
 
@@ -577,6 +579,7 @@ public class SimpleTuple implements Tuple
 	public Timestamp getTimestamp(String column) throws ParseException
 	{
 		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Timestamp) this.getObject(column);
 		try
 		{
 			DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT, Locale.US);
@@ -620,6 +623,7 @@ public class SimpleTuple implements Tuple
 	public Timestamp getTimestamp(int column) throws ParseException
 	{
 		if (this.getObject(column) == null || this.getString(column) == "") return null;
+		if (this.getObject(column) instanceof java.sql.Timestamp) return (java.sql.Timestamp) this.getObject(column);
 		try
 		{
 			DateFormat formatter = new SimpleDateFormat(DATETIMEFORMAT, Locale.US);

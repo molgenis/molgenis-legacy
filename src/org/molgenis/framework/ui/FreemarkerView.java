@@ -1,5 +1,6 @@
 package org.molgenis.framework.ui;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -12,7 +13,9 @@ import org.molgenis.framework.ui.html.WidgetFactory;
 import org.molgenis.model.elements.Field;
 
 import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 
@@ -85,7 +88,7 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 				conf = new freemarker.template.Configuration();
 				conf.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 
-				List<ClassTemplateLoader> loaders = new ArrayList<ClassTemplateLoader>();
+				List<TemplateLoader> loaders = new ArrayList<TemplateLoader>();
 
 				// create template loader
 				// load templates from MOLGENIS
@@ -104,12 +107,14 @@ public class FreemarkerView extends SimpleScreenView<ScreenModel>
 						loaders.add(new ClassTemplateLoader(templateArgs.get(key).getClass().getSuperclass()));
 					}
 				}
+				loaders.add(new FileTemplateLoader());
+				loaders.add(new FileTemplateLoader(new File("/")));
 
 				// ClassTemplateLoader loader1 = new ClassTemplateLoader(
 				// Object.class, "");
 				// ClassTemplateLoader loader2 = new ClassTemplateLoader(
 				// getClass().getSuperclass(), "");
-				MultiTemplateLoader mLoader = new MultiTemplateLoader(loaders.toArray(new ClassTemplateLoader[loaders
+				MultiTemplateLoader mLoader = new MultiTemplateLoader(loaders.toArray(new TemplateLoader[loaders
 						.size()]));
 				conf.setTemplateLoader(mLoader);
 				logger.debug("created freemarker config");
