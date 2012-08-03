@@ -11,36 +11,35 @@ import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.util.Tuple;
 import org.testng.annotations.Test;
 
-public class TestCsvTable
-{
+public class TestCsvTable {
 	/**
 	 * Test CsvTable using a csv file
 	 */
 	@Test
-	public void testFileCsvTable() throws Exception
-	{
+	public void testFileCsvTable() throws Exception {
 		// create CsvTable
-		helper(new CsvTable(new File(TestCsvTable.class.getResource("test.csv").getFile())));
+		helper(new CsvTable(new File(TestCsvTable.class.getResource("test.csv")
+				.getFile())));
 	}
 
 	/**
 	 * Test CsvTable using a csv string
 	 */
 	@Test
-	public void testStringCsvTable() throws Exception
-	{
+	public void testStringCsvTable() throws Exception {
 		// create csv
 		String csv = "firstName\tlastName";
 		csv += "\nlucky\tluke";
 		csv += "\ncalamity\tjane";
 
 		// create CsvTable
-		helper(new CsvTable(csv));
+		TupleTable table = new CsvTable(csv);
+
+		helper(table);
 	}
 
 	@Test
-	public void testLimitOffsetString() throws Exception
-	{
+	public void testLimitOffsetString() throws Exception {
 		// create csv
 		String csv = "firstName\tlastName";
 		csv += "\nlucky\tluke";
@@ -55,13 +54,13 @@ public class TestCsvTable
 
 		Assert.assertEquals(table.getRows().size(), 1);
 
-		Assert.assertEquals(table.getRows().get(0).getString("firstName"), "calamity");
+		Assert.assertEquals(table.getRows().get(0).getString("firstName"),
+				"calamity");
 
 	}
 
 	@Test
-	public void testColLimit() throws Exception
-	{
+	public void testColLimit() throws Exception {
 		// create csv
 		String csv = "firstName\tlastName\tcity";
 		csv += "\nlucky\tluke\tdaisy town";
@@ -88,12 +87,12 @@ public class TestCsvTable
 
 		Assert.assertEquals(table.getColumns().get(0).getName(), "lastName");
 
-		Assert.assertEquals(table.getRows().get(0).getString("lastName"), "luke");
+		Assert.assertEquals(table.getRows().get(0).getString("lastName"),
+				"luke");
 
 	}
 
-	public void helper(TupleTable table) throws TableException
-	{
+	public void helper(TupleTable table) throws TableException {
 		// verfiy
 		Assert.assertEquals(2, table.getColumns().size());
 		Assert.assertEquals("firstName", table.getColumns().get(0).getName());

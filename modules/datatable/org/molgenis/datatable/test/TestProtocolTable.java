@@ -27,12 +27,14 @@ public class TestProtocolTable
 	Database db;
 
 	@BeforeClass
-	public void setup() throws DatabaseException
+	public void setup() throws DatabaseException, TableException
 	{
 		BasicConfigurator.configure();
 
 		db = DatabaseFactory.create();
+
 		Protocol protocol = db.query(Protocol.class).eq(Protocol.NAME, "TestProtocol").find().get(0);
+
 		table = new ProtocolTable(db, protocol);
 	}
 
@@ -57,14 +59,15 @@ public class TestProtocolTable
 	@Test
 	public void testColLimitOffset() throws TableException
 	{
+		Assert.assertEquals(table.getAllColumns().size(), table.getColumns().size());
+
 		table.setLimit(5);
+		table.setColLimit(6);
 
-		table.setColLimit(5);
-
-		List<Field> cols = table.getColumns();
-		Assert.assertEquals(cols.size(), 5);
-		Assert.assertEquals(cols.get(0).getName(), "target");
-		Assert.assertEquals(cols.get(1).getName(), "meas1");
+		List<Field> visibleColumns = table.getColumns();
+		Assert.assertEquals(visibleColumns.size(), 6);
+		Assert.assertEquals(visibleColumns.get(0).getName(), "target");
+		Assert.assertEquals(visibleColumns.get(1).getName(), "meas1");
 
 		List<Tuple> rows = table.getRows();
 		Assert.assertEquals(rows.size(), 5);
@@ -72,13 +75,18 @@ public class TestProtocolTable
 		Assert.assertEquals(rows.get(0).getString("meas4"), "meas4:val0");
 
 		table.setColOffset(6);
-
-		cols = table.getColumns();
-		Assert.assertEquals(cols.size(), 5);
+		// total columns is 11, so 11-6 = 5
+		// target,meas1,meas2,meas3,...
+		visibleColumns = table.getColumns();
+		Assert.assertEquals(visibleColumns.size(), 5);
+		Assert.assertEquals(visibleColumns.get(0).getName(), "meas6");
 
 		// we expect 1 row header + 10 columns
-		Assert.assertEquals(table.getAllColumns().size(), 11);
-		Assert.assertEquals(cols.get(0).getName(), "meas6");
+		List<Field> allColumns = table.getAllColumns();
+		Assert.assertEquals(allColumns.size(), 11);
+
+		// we expect allColumns to start with target
+		Assert.assertEquals(allColumns.get(0).getName(), "target");
 
 		rows = table.getRows();
 		Assert.assertEquals(rows.get(0).getString("meas6"), "meas6:val0");
@@ -90,6 +98,7 @@ public class TestProtocolTable
 	public void testAllColumns() throws TableException
 	{
 		List<Field> fields = table.getAllColumns();
+
 		Assert.assertEquals(fields.get(0).getName(), "target");
 	}
 }
