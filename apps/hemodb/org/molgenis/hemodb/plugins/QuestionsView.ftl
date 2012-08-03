@@ -6,8 +6,6 @@
 	<input type='submit' id='back' value='Return' onclick="__action.value='back'" />
 </form>
 
-
-
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" name="${model.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
@@ -35,9 +33,9 @@
 			<#if model.state == "BEGINNING">
 				<div id="askingQuestions">
 					Which question do you want to ask?<br />
-					<input type="radio" id="Q1" name="questions" value="questionOne"  /> Search for expression of gene(s) in subsets of samples<br />
+					<input type="radio" id="Q1" name="questions" value="questionOne" checked /> Search for expression of gene(s) in subsets of samples<br />
 					<input type="radio" id="Q2" name="questions" value="questionTwo"  /> Make comparisons: what are significantly differentially expressed genes between group A and group B <br />
-					<input type="radio" id="Q3" name="questions" value="questionThree" checked/> Convert between probes and genes <br />
+					<input type="radio" id="Q3" name="questions" value="questionThree" /> Convert between probes and genes <br />
 				</div>
 				<div id="submit">
 					<input type='submit' id='submitInfo' value='Submit' onclick="__action.value='submitInformation'" />
@@ -55,7 +53,7 @@
 	
 				<div id="geneList">
 					<br />Supply the gene(s) you want to select (one per line):<br />
-					<textarea rows="10" cols="51" name="geneText"value="genes"></textarea>
+					<textarea rows="10" cols="51" name="geneText"value="genes">aadat</textarea>
 				</div>
 		
 				<div id="groupSelection">
@@ -78,7 +76,7 @@
 </form>
 
 <#elseif model.state == "QUESTION1_RESULT">
-
+</form>
 			<#--matrix sub-->
 			<#assign screen = model.getController().get("QuestionsSub")/>
 			<#include screen.getViewTemplate()>
@@ -97,21 +95,9 @@
 
 	<div id="sampleCombiningMethod">
 		<br/> Choose the method which you want to use to combine the samples within each group:<br/>
-		<!--input type="radio" id="sampleCombineNone" name="sampleCombine" value="sampleCombineNo" /> Do not combine the samples<br /-->
 		<input type="radio" id="sampleCombineMean" name="sampleCombine" value="sampleCombineMean" checked/> Mean<br />
 		<input type="radio" id="sampleCombineMedian" name="sampleCombine" value="sampleCombineMed" /> Median<br />
-		<!--input type="radio" id="sampleCombineHighest" name="sampleCombine" value="sampleCombineHigh" /> Highest<br />
-		<input type="radio" id="sampleCombineLowest" name="sampleCombine" value="sampleCombineLow" /> Lowest<br /-->
 	</div>
-
-	<!--div id="probeCombiningMethod">
-		<br/> Choose the method which you want to use to combine the probes (if more than one probe is annotating a gene):<br/>
-		<input type="radio" id="probeCombineNone" name="probeCombine" value="probeCombineNo" /> Do not combine the probes<br />
-		<input type="radio" id="probeCombinemean" name="probeCombine" value="probeCombineMean" /> Mean<br />
-		<input type="radio" id="probeCombineMedian" name="probeCombine" value="probeCombineMed" /> Median<br />
-		<input type="radio" id="probeCombineHighest" name="probeCombine" value="probeCombineHigh" /> Highest<br />
-		<input type="radio" id="probeCombineLowest" name="probeCombine" value="probeCombineLow" /> Lowest<br />
-	</div-->
 
 	<div id="groupSelection">
 		<br/>Make a selection of the groups you are interested in. Hold down the Ctrl (windows) / Command (Mac) button to select multiple groups.<br />
@@ -137,7 +123,7 @@
 	<div id="convertGenesProbes">
 		Choose the input:<br/>
 		<input type="radio" id="convertGenesToProbes" name="convertGP" value="convertGenes" /> Genes<br />
-		<input type="radio" id="convertProbesToGenes" name="convertGP" value="convertProbes" /> Probes<br />
+		<input type="radio" id="convertProbesToGenes" name="convertGP" value="convertProbes" checked /> Probes<br />
 	</div>
 	
 	<div id="geneList">
@@ -148,6 +134,14 @@
 	<div id="submit">
 		<input type='submit' id='submitInfo' value='Submit' onclick="__action.value='submitInfoQ3'" />
 	</div>
+	
+	<#elseif model.state == "QUESTION3_RESULT">
+	<p>
+		<#list model.results as convertingResults>
+			${convertingResults}<br />
+		</#list>
+	</p>
+	
 <#else>
 UNKNOWN STATE ${model.state}
 </#if>

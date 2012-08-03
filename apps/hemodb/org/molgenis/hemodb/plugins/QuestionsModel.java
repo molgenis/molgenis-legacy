@@ -8,13 +8,10 @@
 package org.molgenis.hemodb.plugins;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.molgenis.framework.ui.EasyPluginModel;
-import org.molgenis.organization.Investigation;
-import org.molgenis.pheno.Individual;
+
 
 /**
  * EditIndividualModel takes care of all state and it can have helper methods to query the database.
@@ -26,6 +23,7 @@ public class QuestionsModel extends EasyPluginModel
 
 	String action = null;
 	ArrayList <String> names = new ArrayList <String>();
+	List<String> results = new ArrayList<String>();
 
 	public enum QuestionState {
 		EMPTYGROUPLIST,
@@ -86,5 +84,13 @@ public class QuestionsModel extends EasyPluginModel
 	public void setState(QuestionState state)
 	{
 		this.state = state;
+	}
+
+	public List<String> getResults() {
+		return results;
+	}
+
+	public void setResults(List<String> results) {
+		this.results = results;
 	}
 }
