@@ -29,9 +29,9 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 		// need to (re) load the table
 		try
 		{
-			//only this line changed ...
+			// only this line changed ...
 			Protocol p = Protocol.findByNameInvestigation(db, "TestProtocol", null);
-			tableView = new JQGridView("test", this, new ProtocolTable(db,p));
+			tableView = new JQGridView("test", this, new ProtocolTable(db, p));
 			tableView.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
 		}
 		catch (Exception e)
@@ -40,11 +40,13 @@ public class JQGridPluginProtocol extends EasyPluginController<JQGridPluginProto
 			this.setError(e.getMessage());
 		}
 	}
-	
-	//handling of the ajax; should be auto-wired via the JQGridTableView contructor (TODO)
-	public void download_json_test(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
+
+	// handling of the ajax; should be auto-wired via the JQGridTableView
+	// contructor (TODO)
+	public void download_json_test(Database db, Tuple request, OutputStream out)
+			throws HandleRequestDelegationException
 	{
-		//handle requests for the table named 'test'
+		// handle requests for the table named 'test'
 		tableView.handleRequest(db, request, out);
 	}
 
