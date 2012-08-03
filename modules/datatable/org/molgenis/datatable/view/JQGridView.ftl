@@ -390,6 +390,7 @@ $(document).ready(function() {
 		$( "#${tableId}_dialog-form" ).dialog('open');
 	});
 	
+	
 });
 
 </script>

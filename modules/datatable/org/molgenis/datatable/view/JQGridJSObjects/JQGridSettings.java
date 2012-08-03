@@ -1,15 +1,15 @@
 package org.molgenis.datatable.view.JQGridJSObjects;
 
 public class JQGridSettings {
-	public boolean del;
-	public boolean add;
-	public boolean edit;
-	public boolean search;
+	public boolean del = false;
+	public boolean add = false;
+	public boolean edit = false;
+	public boolean search = false;
 
-	public JQGridSettings() {}
+	public JQGridSettings() {
+	}
 
-	public JQGridSettings(boolean del, boolean add, boolean edit,
-			boolean search) {
+	public JQGridSettings(boolean del, boolean add, boolean edit, boolean search) {
 		this.del = del;
 		this.add = add;
 		this.edit = edit;
