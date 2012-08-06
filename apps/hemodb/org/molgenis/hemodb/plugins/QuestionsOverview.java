@@ -149,9 +149,9 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		if (numberGroups == 0) {
 			System.out.println("there is no selection made");
 		} else {
-//			System.out.println("\n" + "number of groups: " + numberGroups);
+			// System.out.println("\n" + "number of groups: " + numberGroups);
 			for (String hsg : sampleGroups) {
-//				System.out.println("\n" + "sampleGroup is: " + hsg);
+				// System.out.println("\n" + "sampleGroup is: " + hsg);
 				List<HemoSample> samplesPerGroup = db.find(HemoSample.class,
 						new QueryRule(HemoSample.SAMPLEGROUP_NAME,
 								Operator.EQUALS, hsg));
@@ -159,15 +159,16 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 					sampleNames.add(name.getName());
 				}
 			}
-//			System.out.println("sampleNames for this group: " + sampleNames
-//					+ "\n");
+			// System.out.println("sampleNames for this group: " + sampleNames
+			// + "\n");
 		}
 		return sampleNames;
 	}
 
 	public List<String> selectProbesWithGenes(Database db, String[] genes)
 			throws DatabaseException {
-		// GETS A STRING WITH GENE NAMES, CONVERTS THEM TO PROBES AND RETURNS THEM
+		// GETS A STRING WITH GENE NAMES, CONVERTS THEM TO PROBES AND RETURNS
+		// THEM
 
 		try {
 			List<String> probes = new ArrayList<String>();
@@ -230,6 +231,13 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		return null;
 	}
 
+	public List<String> selectAllProbeNames(Database db) {
+		List<String> allProbes = new ArrayList<String>();
+		List<HemoProbe> probes = db.find(HemoProbe.class, Operator.EQUALS, "*");
+		return null;
+
+	}
+
 	public DataMatrixInstance getMatrixInstance(Database db, Data dataSet,
 			List<String> sampleNames, List<String> probeNames) throws Exception {
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
@@ -270,8 +278,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 			List<String> sampleNames = selectSamplesFromSampleGroups(db, groups);
 			System.out.println("Groups are: " + groups);
 			System.out.println("Samples selected are: " + sampleNames);
-					
-			
+
 			// SUBMIT BUTTON
 			if (request.getAction().equals("submitInfoQ1")) {
 				System.out
@@ -343,13 +350,12 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		}
 	}
 
-	public void questionTwo(Database db, Tuple request)
-			throws Exception {
-		
+	public void questionTwo(Database db, Tuple request) throws Exception {
+
 		if ("back".equals(request.getAction())) {
 			getModel().setState(QuestionState.BEGINNING);
 		}
-		
+
 		// GENE EXPRESSION DATA MATRIX SELECTION (raw/normalized data)
 		String geneExp = request.getString("geneExp");
 
@@ -361,18 +367,18 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		int numberGroups = groups.size();
 		List<String> sampleNamesGroup1 = new ArrayList<String>();
 		List<String> sampleNamesGroup2 = new ArrayList<String>();
-		
-		if(numberGroups == 2){
+
+		if (numberGroups == 2) {
 			List<String> sampleGroup1 = new ArrayList<String>();
 			sampleGroup1.add(groups.get(0));
 			List<String> sampleGroup2 = new ArrayList<String>();
 			sampleGroup2.add(groups.get(1));
-						
+
 			sampleNamesGroup1 = selectSamplesFromSampleGroups(db, sampleGroup1);
 			sampleNamesGroup2 = selectSamplesFromSampleGroups(db, sampleGroup2);
-		}
-		else{
-			System.out.println("There can only be a selection of 2 groups. Try again.");
+		} else {
+			System.out
+					.println("There can only be a selection of 2 groups. Try again.");
 		}
 
 		// Select significance cutoff to be used
@@ -383,25 +389,31 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		System.out.println("Samples in group One are: " + sampleNamesGroup1);
 		System.out.println("Samples in group Two are: " + sampleNamesGroup2);
 		System.out.println("Significancy cutoff is: " + signifCutoff);
-		
+
 		// SUBMIT BUTTON Question 2
 		if (request.getAction().equals("submitInfoQ2")) {
-			System.out.println("Q2!!! We handled the information on the site submitted via the submit button");
+			System.out
+					.println("Q2!!! We handled the information on the site submitted via the submit button");
 			getModel().setState(QuestionState.QUESTION2_RESULT);
 		}
-		
-		//TODO: 
-		//Choose binary file based on geneExp
-		//make submatrix with sampleNames
-		//see pseudocode on paper for (row: rows)
-		
-		if(sampleCombine.equals("sampleCombineMean")){
-			//roep mean script aan met alle data
+
+		// TODO:
+		// Choose binary file based on geneExp
+		// make submatrix with sampleNames
+		// see pseudocode on paper for (row: rows)
+
+		if (sampleCombine.equals("sampleCombineMean")) {
+			// roep mean script aan met alle data
+			List<String> significantGenes = CalculateMeanR
+					.calculateMean(db, geneExp, sampleNamesGroup1,
+							sampleNamesGroup2, signifCutoff);
+		} else {
+			// roep median script aan met alle data
+			List<String> significantGenes = CalculateMedianR.calculateMedian(
+					db, geneExp, sampleNamesGroup1, sampleNamesGroup2,
+					signifCutoff);
 		}
-		else{
-			//roep medain script aan met alle data
-		}
-		
+
 	}
 
 	public void conversingBetweenProbesAndGenes(Database db, Tuple request)
