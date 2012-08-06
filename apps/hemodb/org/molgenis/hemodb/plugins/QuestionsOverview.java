@@ -231,11 +231,14 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		return null;
 	}
 
-	public List<String> selectAllProbeNames(Database db) {
+	public List<String> selectAllProbeNames(Database db)
+			throws DatabaseException {
 		List<String> allProbes = new ArrayList<String>();
-		List<HemoProbe> probes = db.find(HemoProbe.class, Operator.EQUALS, "*");
-		return null;
-
+		List<HemoProbe> probes = db.find(HemoProbe.class);
+		for (HemoProbe probe : probes) {
+			allProbes.add(probe.getName());
+		}
+		return allProbes;
 	}
 
 	public DataMatrixInstance getMatrixInstance(Database db, Data dataSet,
@@ -384,6 +387,9 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		// Select significance cutoff to be used
 		double signifCutoff = request.getDouble("signifCutoff");
 
+		// Get all the probe names from the database
+		List<String> allProbes = selectAllProbeNames(db);
+
 		System.out.println("Gene expression dataset is: " + geneExp);
 		System.out.println("Method of combination is: " + sampleCombine);
 		System.out.println("Samples in group One are: " + sampleNamesGroup1);
@@ -402,16 +408,21 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		// make submatrix with sampleNames
 		// see pseudocode on paper for (row: rows)
 
+		if (geneExp.equals("expDataLog2Quan")) {
+			signifCutoff = Math.log(signifCutoff) / Math.log(2);
+			System.out.println("signifficance cutoff log2: " + signifCutoff);
+		}
+
 		if (sampleCombine.equals("sampleCombineMean")) {
 			// roep mean script aan met alle data
-			List<String> significantGenes = CalculateMeanR
-					.calculateMean(db, geneExp, sampleNamesGroup1,
-							sampleNamesGroup2, signifCutoff);
+			List<String> significantGenes = CalculateMeanR.calculateMean(db,
+					geneExp, sampleNamesGroup1, sampleNamesGroup2,
+					signifCutoff, allProbes);
 		} else {
 			// roep median script aan met alle data
 			List<String> significantGenes = CalculateMedianR.calculateMedian(
 					db, geneExp, sampleNamesGroup1, sampleNamesGroup2,
-					signifCutoff);
+					signifCutoff, allProbes);
 		}
 
 	}

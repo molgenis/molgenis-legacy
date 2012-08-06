@@ -1,6 +1,6 @@
 package org.molgenis.hemodb.plugins;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import matrix.DataMatrixInstance;
@@ -17,9 +17,14 @@ public class CalculateMedianR {
 
 	public static List<String> calculateMedian(Database db, String geneExp,
 			List<String> sampleNamesGroup1, List<String> sampleNamesGroup2,
-			double signifCutoff) {
+			double signifCutoff, List<String> allProbes) {
 
 		try {
+			// Put all the samples from the 2 groups together
+			List<String> allSampleNames = new ArrayList<String>();
+			allSampleNames.addAll(sampleNamesGroup1);
+			allSampleNames.addAll(sampleNamesGroup2);
+
 			// get data set
 			Data dataSet = db.query(Data.class).eq(Data.NAME, geneExp).find()
 					.get(0);
@@ -29,14 +34,9 @@ public class CalculateMedianR {
 			DataMatrixInstance instance = (BinaryDataMatrixInstance) dmh
 					.createInstance(dataSet, db);
 
-			// start with list of probes
-			List<String> probes = Arrays.asList("p_2570615", "p_6370619",
-					"p_2650615", "p_5340672", "p_2370438");
-			List<String> samples = Arrays.asList("X5304185005_D");
-
 			// slice part out of dataset
-			DataMatrixInstance selection = instance.getSubMatrix(probes,
-					samples);
+			DataMatrixInstance selection = instance.getSubMatrix(allProbes,
+					allSampleNames);
 
 			// create RScript
 			RScript script = new RScript();

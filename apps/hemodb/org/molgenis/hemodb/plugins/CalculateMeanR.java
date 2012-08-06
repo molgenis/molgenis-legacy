@@ -17,7 +17,7 @@ public class CalculateMeanR {
 
 	public static List<String> calculateMean(Database db, String geneExp,
 			List<String> sampleNamesGroup1, List<String> sampleNamesGroup2,
-			double signifCutoff) {
+			double signifCutoff, List<String> allProbes) {
 
 		try {
 
@@ -35,16 +35,42 @@ public class CalculateMeanR {
 					.createInstance(dataSet, db);
 
 			// slice part out of dataset
-			DataMatrixInstance selection = instance.getSubMatrix(probes,
-					samples);
+			DataMatrixInstance group1Selection = instance.getSubMatrix(
+					allProbes, sampleNamesGroup1);
+			DataMatrixInstance group2Selection = instance.getSubMatrix(
+					allProbes, sampleNamesGroup2);
 
 			// create RScript
 			RScript script = new RScript();
 
 			// execute
-			script.append("1+2");
-			script.append("data<-" + selection.getAsRobject(true));
-			script.append("rowMeans(data)");
+			script.append("compareExpression <- function(data, col1, col2){compare <- data[,col1]-data[,col2]");
+			script.append("return(compare)}");
+			script.append("geneExpressionDataSetGroupOne <-"
+					+ group1Selection.getAsRobject(true));
+			script.append("geneExpressionDataSetGroupTwo <-"
+					+ group2Selection.getAsRobject(true));
+
+			script.append("rowMeansGroupOne <- as.matrix(rowMeans(geneExpressionDataSetGroupOne))");
+			script.append("rowMeansGroupTwo <- as.matrix(rowMeans(geneExpressionDataSetGroupTwo))");
+
+			script.append("meanDataSet <- cbind(rowMeansGroupOne,rowMeansGroupTwo)");
+			script.append("rownames(meanDataSet) <- row.names(geneExpressionDataSetGroupOne)");
+
+			script.append("geneExpressionTest <- as.matrix(compareExpression(meanDataSet,1,2))");
+			script.append("rownames(geneExpressionTest <- row.names(geneExpressionDataSetGroupOne)");
+
+			script.append("significance <- geneExpressionTest >="
+					+ signifCutoff + " | geneExpressionTest <= -"
+					+ signifCutoff);
+			script.append("significantProbes <- as.matrix(geneExpressionTest[significance])");
+
+			script.append("index <- which(significance[,1]==TRUE)");
+			script.append("result <- significance[index,]");
+
+			script.append("probeNames <- names(result)");
+			script.append("return(probeNames)");
+
 			script.execute();
 
 			// do something with result
