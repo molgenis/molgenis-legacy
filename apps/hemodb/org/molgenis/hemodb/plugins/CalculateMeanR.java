@@ -15,7 +15,7 @@ import org.molgenis.util.RScriptException;
 
 public class CalculateMeanR {
 
-	public static List<String> calculateMean(Database db, String geneExp,
+	public static String[] calculateMean(Database db, String geneExp,
 			List<String> sampleNamesGroup1, List<String> sampleNamesGroup2,
 			double signifCutoff, List<String> allProbes) {
 
@@ -58,7 +58,7 @@ public class CalculateMeanR {
 			script.append("rownames(meanDataSet) <- row.names(geneExpressionDataSetGroupOne)");
 
 			script.append("geneExpressionTest <- as.matrix(compareExpression(meanDataSet,1,2))");
-			script.append("rownames(geneExpressionTest <- row.names(geneExpressionDataSetGroupOne)");
+			script.append("rownames(geneExpressionTest) <- row.names(geneExpressionDataSetGroupOne)");
 
 			script.append("significance <- geneExpressionTest >="
 					+ signifCutoff + " | geneExpressionTest <= -"
@@ -70,6 +70,7 @@ public class CalculateMeanR {
 
 			script.append("probeNames <- names(result)");
 			script.append("return(probeNames)");
+			script.append("print(probeNames)");
 
 			script.execute();
 

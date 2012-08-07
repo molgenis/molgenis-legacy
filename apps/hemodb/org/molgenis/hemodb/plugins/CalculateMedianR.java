@@ -15,12 +15,11 @@ import org.molgenis.util.RScriptException;
 
 public class CalculateMedianR {
 
-	public static List<String> calculateMedian(Database db, String geneExp,
+	public static String[] calculateMedian(Database db, String geneExp,
 			List<String> sampleNamesGroup1, List<String> sampleNamesGroup2,
 			double signifCutoff, List<String> allProbes) {
 
 		try {
-			// Put all the samples from the 2 groups together
 			List<String> allSampleNames = new ArrayList<String>();
 			allSampleNames.addAll(sampleNamesGroup1);
 			allSampleNames.addAll(sampleNamesGroup2);
@@ -35,16 +34,42 @@ public class CalculateMedianR {
 					.createInstance(dataSet, db);
 
 			// slice part out of dataset
-			DataMatrixInstance selection = instance.getSubMatrix(allProbes,
-					allSampleNames);
+			DataMatrixInstance group1Selection = instance.getSubMatrix(
+					allProbes, sampleNamesGroup1);
+			DataMatrixInstance group2Selection = instance.getSubMatrix(
+					allProbes, sampleNamesGroup2);
 
 			// create RScript
 			RScript script = new RScript();
 
 			// execute
-			script.append("1+2");
-			script.append("data<-" + selection.getAsRobject(true));
-			script.append("rowMeans(data)");
+			script.append("compareExpression <- function(data, col1, col2){compare <- data[,col1]-data[,col2]");
+			script.append("return(compare)}");
+			script.append("geneExpressionDataSetGroupOne <-"
+					+ group1Selection.getAsRobject(true));
+			script.append("geneExpressionDataSetGroupTwo <-"
+					+ group2Selection.getAsRobject(true));
+
+			script.append("rowMediansGroupOne <- as.matrix(apply(geneExpressionDataSetGroupOne,1,median))");
+			script.append("rowMediansGroupTwo <- as.matrix(apply(geneExpressionDataSetGroupTwo,1,median))");
+
+			script.append("medianDataSet <- cbind(rowMediansGroupOne,rowMediansGroupTwo)");
+			script.append("rownames(medianDataSet) <- row.names(geneExpressionDataSetGroupOne)");
+
+			script.append("geneExpressionTest <- as.matrix(compareExpression(medianDataSet,1,2))");
+			script.append("rownames(geneExpressionTest) <- row.names(geneExpressionDataSetGroupOne)");
+
+			script.append("significance <- geneExpressionTest >="
+					+ signifCutoff + " | geneExpressionTest <= -"
+					+ signifCutoff);
+			script.append("significantProbes <- as.matrix(geneExpressionTest[significance])");
+
+			script.append("index <- which(significance[,1]==TRUE)");
+			script.append("result <- significance[index,]");
+
+			script.append("probeNames <- names(result)");
+			script.append("return(probeNames)");
+			script.append("print(probeNames)");
 			script.execute();
 
 			// do something with result

@@ -12,77 +12,55 @@ import java.util.List;
 
 import org.molgenis.framework.ui.EasyPluginModel;
 
-
 /**
- * EditIndividualModel takes care of all state and it can have helper methods to query the database.
- * It should not contain layout or application logic which are solved in View and Controller.
+ * EditIndividualModel takes care of all state and it can have helper methods to
+ * query the database. It should not contain layout or application logic which
+ * are solved in View and Controller.
+ * 
  * @See org.molgenis.framework.ui.ScreenController for available services.
  */
-public class QuestionsModel extends EasyPluginModel
-{
+
+/**
+ * TODO: insert documentation
+ */
+public class QuestionsModel extends EasyPluginModel {
 
 	String action = null;
-	ArrayList <String> names = new ArrayList <String>();
+	ArrayList<String> names = new ArrayList<String>();
 	List<String> results = new ArrayList<String>();
 
 	public enum QuestionState {
-		EMPTYGROUPLIST,
-		QUESTION1,
-		QUESTION1_RESULT,
-		QUESTION2,
-		QUESTION2_RESULT,
-		QUESTION3,
-		QUESTION3_RESULT,
-		BEGINNING
+		EMPTYGROUPLIST, QUESTION1, QUESTION1_RESULT, QUESTION2, QUESTION2_RESULT, QUESTION3, QUESTION3_RESULT, BEGINNING
 	}
-	
-	public enum DropBoxFilling{
-		EMPTY,
-		FILLED
-	}
-	
+
 	private QuestionState state = QuestionState.EMPTYGROUPLIST;
-	
-	
-//	public QuestionsModel(QuestionOne controller)
-//	{
-//		//each Model can access the controller to notify it when needed.
-//		super(controller);
-//	}
-	
+
 	public QuestionsModel(QuestionsOverview controller) {
 		// TODO Auto-generated constructor stub
 		super(controller);
 	}
 
-	public String getAction()
-	{
+	public String getAction() {
 		return action;
 	}
 
-
-	public void setAction(String action)
-	{
+	public void setAction(String action) {
 		this.action = action;
 	}
 
-	public ArrayList<String> getNames()
-	{
+	public ArrayList<String> getNames() {
 		return names;
 	}
 
-	public void setNames(ArrayList<String> names)
-	{
+	public void setNames(ArrayList<String> names) {
 		this.names = names;
 	}
 
-	public QuestionState getState()
-	{
+	public QuestionState getState() {
 		return state;
 	}
 
-	public void setState(QuestionState state)
-	{
+	public void setState(QuestionState state) {
 		this.state = state;
 	}
 
@@ -93,4 +71,5 @@ public class QuestionsModel extends EasyPluginModel
 	public void setResults(List<String> results) {
 		this.results = results;
 	}
+
 }

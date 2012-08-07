@@ -1,3 +1,5 @@
+<!-- INSERT DOCUMENTATION!!!-->
+
 <form method="post" enctype="multipart/form-data" name="${model.name}" action="">
 	<!--needed in every form: to redirect the request to the right screen-->
 	<input type="hidden" name="__target" value="${model.name}">
@@ -117,6 +119,14 @@
 	<div id="submit">
 		<input type='submit' id='submitInfo' value='Submit' onclick="__action.value='submitInfoQ2'" />
 	</div>
+
+	<#elseif model.state== "QUESTION2_RESULT">
+	<p>
+		<#list model.results as convertingResults>
+			${convertingResults}<br />
+		</#list>
+	</p>
+
 
 <#elseif model.state == "QUESTION3">
 	You can convert between probes and genes here.

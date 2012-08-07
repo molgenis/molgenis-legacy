@@ -39,9 +39,6 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		// create sub plugin
 		new MatrixManagerHemodb("QuestionsSub", this);
 
-		// initialiseer alle paginas 1x
-		// new QuestionOne("questionOne", this);
-		// new QuestionTwo("questionTwo", this);
 	}
 
 	public ScreenView getView() {
@@ -50,30 +47,20 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 
 	@Override
 	public void reload(Database db) throws Exception {
-		// TODO Auto-generated method stub
-
 		for (ScreenController child : this.getChildren())
 			child.reload(db);
-
 	}
 
 	public Show handleRequest(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException {
-
 		try {
 			if (QuestionState.QUESTION1.equals(getModel().getState())) {
-				// delegate to the module of question 1
-				// this.get("questionOne").handleRequest(db, request, out);
-				questionOne(db, request);
+				geneExpressionSearch(db, request);
 			}
 			if (QuestionState.QUESTION2.equals(getModel().getState())) {
-				// delegate to the module of question 2
-				// this.get("questionOne").handleRequest(db, request, out);
-				questionTwo(db, request);
+				significantGenesBetweenTwoGroups(db, request);
 			}
 			if (QuestionState.QUESTION3.equals(getModel().getState())) {
-				// delegate to the module of question 3
-				// this.get("questionOne").handleRequest(db, request, out);
 				conversingBetweenProbesAndGenes(db, request);
 			}
 			getModel().setAction(request.getAction());
@@ -87,29 +74,22 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 			if ("questionOne".equals(question)) {
 				getModel().setState(QuestionState.QUESTION1);
 				if (getModel().getNames().isEmpty()) {
-					// If the list with group names is already filled it doesn't
-					// have to be filled again
 					selectSampleGroupsForDropdown(db);
 				}
-
-				// get the q1
-				// QuestionOne q1 = (QuestionOne) this.get("questionOne");
-
 			} else if ("questionTwo".equals(question)) {
 				getModel().setState(QuestionState.QUESTION2);
 
 				if (getModel().getNames().isEmpty()) {
-					// If the list with group names is already filled it doesn't
-					// have to be filled again // groupnames is already
+					/**
+					 * If the list with group names is already filled it doesn't
+					 * need to be filled again
+					 */
 					selectSampleGroupsForDropdown(db);
 				}
-
-				// TODO: QuestionTwo q2 = (QuestionTwo) this.get("questionTwo");
 			} else if ("questionThree".equals(question)) {
 				getModel().setState(QuestionState.QUESTION3);
 			} else {
 				System.out.println("something bad happened");
-				// TODO implement other questions
 			}
 
 			// Submit button
@@ -118,7 +98,6 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 						.println("we handled the information on the site submitted via the submit button");
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return Show.SHOW_MAIN;
@@ -127,8 +106,10 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 
 	public void selectSampleGroupsForDropdown(Database db)
 			throws DatabaseException {
-		// SELECTION OF ALL THE SAMPLE GROUPS IN THE DATABASE TO DISPLAY ON THE
-		// SITE (MULTIPLE SELECT)
+		/**
+		 * Selection of all the (Hemo)Sample groups in the database. This will
+		 * be used to fill the multiple select box on the site
+		 */
 		List<HemoSampleGroup> sampleGroups = db.find(HemoSampleGroup.class);
 		if (sampleGroups != null) {
 			for (HemoSampleGroup hsg : sampleGroups) {
@@ -142,16 +123,16 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 
 	public List<String> selectSamplesFromSampleGroups(Database db,
 			List<String> sampleGroups) throws DatabaseException {
-		// SELECTION OF THE SAMPLE NAMES WITHIN EACH GROUP THAT IS SPECIFIED
-		// TODO: RETURN SAMPLE NAMES TO HANDLEREQUEST
+		/**
+		 * Selection of the (Hemo) sample names within each group that is
+		 * specified
+		 */
 		List<String> sampleNames = new ArrayList<String>();
 		int numberGroups = sampleGroups.size();
 		if (numberGroups == 0) {
 			System.out.println("there is no selection made");
 		} else {
-			// System.out.println("\n" + "number of groups: " + numberGroups);
 			for (String hsg : sampleGroups) {
-				// System.out.println("\n" + "sampleGroup is: " + hsg);
 				List<HemoSample> samplesPerGroup = db.find(HemoSample.class,
 						new QueryRule(HemoSample.SAMPLEGROUP_NAME,
 								Operator.EQUALS, hsg));
@@ -159,17 +140,16 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 					sampleNames.add(name.getName());
 				}
 			}
-			// System.out.println("sampleNames for this group: " + sampleNames
-			// + "\n");
 		}
 		return sampleNames;
 	}
 
 	public List<String> selectProbesWithGenes(Database db, String[] genes)
 			throws DatabaseException {
-		// GETS A STRING WITH GENE NAMES, CONVERTS THEM TO PROBES AND RETURNS
-		// THEM
-
+		/**
+		 * selectProbesWithGenes gets a string with (Hemo) gene names, converts
+		 * them to probes (by querying the database) and returns those probes
+		 */
 		try {
 			List<String> probes = new ArrayList<String>();
 			for (String gene : genes) {
@@ -193,7 +173,6 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 						.println("This gene cannot be found in this database.");
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			System.out.println("This gene cannot be found in this database.");
 			e.printStackTrace();
 		}
@@ -202,9 +181,10 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 
 	public List<String> selectGenesWithProbes(Database db, String[] probes)
 			throws DatabaseException {
-		// GETS A STRING WITH PROBE NAMES, CONVERTS THEM TO GENES AND RETURNS
-		// THEM
-		// stringsToConvert = list met probe names
+		/**
+		 * selectGenesWithProbes gets a String with (Hemo)probe names, converts
+		 * those to (Hemo)genes (by querying the database) and returns the genes
+		 */
 		try {
 			List<String> genes = new ArrayList<String>();
 			for (String probe : probes) {
@@ -224,7 +204,6 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 						.println("This probe cannot be found in this database.");
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			System.out.println("This gene cannot be found in this database.");
 			e.printStackTrace();
 		}
@@ -233,6 +212,9 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 
 	public List<String> selectAllProbeNames(Database db)
 			throws DatabaseException {
+		/**
+		 * TODO: insert documentation
+		 */
 		List<String> allProbes = new ArrayList<String>();
 		List<HemoProbe> probes = db.find(HemoProbe.class);
 		for (HemoProbe probe : probes) {
@@ -243,6 +225,9 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 
 	public DataMatrixInstance getMatrixInstance(Database db, Data dataSet,
 			List<String> sampleNames, List<String> probeNames) throws Exception {
+		/**
+		 * TODO: insert documentation
+		 */
 		DataMatrixHandler dmh = new DataMatrixHandler(db);
 		BinaryDataMatrixInstance m = (BinaryDataMatrixInstance) dmh
 				.createInstance(dataSet, db);
@@ -251,7 +236,11 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 		return m.getSubMatrix(probeNames, sampleNames);
 	}
 
-	public void questionOne(Database db, Tuple request) {
+	public void geneExpressionSearch(Database db, Tuple request) {
+		/**
+		 * TODO: insert documentation
+		 */
+
 		try {
 			// GENE EXPRESSION DATA MATRIX SELECTION -> shows which type of gene
 			// expression will be used
@@ -346,17 +335,19 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 			}
 		}
 
-		// TODO show selected data
 		catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
 
-	public void questionTwo(Database db, Tuple request) throws Exception {
-
+	public void significantGenesBetweenTwoGroups(Database db, Tuple request)
+			throws Exception {
+		/**
+		 * TODO: insert documentation
+		 */
 		if ("back".equals(request.getAction())) {
 			getModel().setState(QuestionState.BEGINNING);
+			getModel().setResults(null);
 		}
 
 		// GENE EXPRESSION DATA MATRIX SELECTION (raw/normalized data)
@@ -403,11 +394,6 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 			getModel().setState(QuestionState.QUESTION2_RESULT);
 		}
 
-		// TODO:
-		// Choose binary file based on geneExp
-		// make submatrix with sampleNames
-		// see pseudocode on paper for (row: rows)
-
 		if (geneExp.equals("expDataLog2Quan")) {
 			signifCutoff = Math.log(signifCutoff) / Math.log(2);
 			System.out.println("signifficance cutoff log2: " + signifCutoff);
@@ -415,28 +401,39 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel> {
 
 		if (sampleCombine.equals("sampleCombineMean")) {
 			// roep mean script aan met alle data
-			List<String> significantGenes = CalculateMeanR.calculateMean(db,
+			String[] significantGenes = CalculateMeanR.calculateMean(db,
 					geneExp, sampleNamesGroup1, sampleNamesGroup2,
 					signifCutoff, allProbes);
+			List<String> genes = selectGenesWithProbes(db, significantGenes);
+			System.out.println("selected genes are: " + genes);
+
 		} else {
 			// roep median script aan met alle data
-			List<String> significantGenes = CalculateMedianR.calculateMedian(
-					db, geneExp, sampleNamesGroup1, sampleNamesGroup2,
+			String[] significantGenes = CalculateMedianR.calculateMedian(db,
+					geneExp, sampleNamesGroup1, sampleNamesGroup2,
 					signifCutoff, allProbes);
+
+			List<String> genes = selectGenesWithProbes(db, significantGenes);
+			System.out.println("selected genes are: " + genes);
 		}
 
 	}
 
 	public void conversingBetweenProbesAndGenes(Database db, Tuple request)
 			throws DatabaseException {
-		// TODO: make result section
-		// write to output
+		/**
+		 * This is a method to convert between (hemo)probes and (hemo)genes.
+		 * This is done by querying the database. The results are handled by the
+		 * QuestionsView.ftl.
+		 */
 		if ("back".equals(request.getAction())) {
 			getModel().setState(QuestionState.BEGINNING);
 			getModel().setResults(null);
 		}
 
-		// SUBMIT BUTTON Question 3
+		/**
+		 * Submit button
+		 */
 		if (request.getAction().equals("submitInfoQ3")) {
 			System.out
 					.println("Q3!!! We handled the information on the site submitted via the submit button");
