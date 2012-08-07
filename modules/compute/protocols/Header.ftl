@@ -6,6 +6,7 @@
 #PBS -l mem=${mem}
 #PBS -e ${jobname}.err
 #PBS -o ${jobname}.out
+#PBS -W umask=0007
 
 # Configures the GCC bash environment
 . ${root}/gcc.bashrc
