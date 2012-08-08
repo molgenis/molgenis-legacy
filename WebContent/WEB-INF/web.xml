@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
 	<!-- FrontController mapping for Tomcat -->
 	<servlet>
@@ -8,11 +10,16 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>FrontController</servlet-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>*.do</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FrontController</servlet-name>
+		<url-pattern>/xref</url-pattern>
+	</servlet-mapping>        
+        
 	
 	<!-- Quartz scheduling -->
-	<servlet> 
+<!--	<servlet> 
 		<servlet-name>QuartzInitializer</servlet-name> 
 		<servlet-class>org.quartz.ee.servlet.QuartzInitializerServlet</servlet-class> 
 		<init-param>
@@ -28,17 +35,7 @@
 			<param-value>true</param-value>
 		</init-param>
 		<load-on-startup>2</load-on-startup>
-	</servlet>
-
-	<servlet>
-		<servlet-name>jqGrid</servlet-name>
-		<servlet-class>org.molgenis.lifelinesresearchportal.controllers.MatrixController</servlet-class>
-	</servlet>	
-	<servlet-mapping>
-		<servlet-name>jqGrid</servlet-name>
-		<url-pattern>/jqGridBackend</url-pattern>
-	</servlet-mapping>	
-
+	</servlet>-->
 
 	<!-- ############### -->
 	<!-- DEPRECATED / UNKNOWN -->

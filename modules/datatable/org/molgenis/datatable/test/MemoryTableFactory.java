@@ -12,21 +12,23 @@ public class MemoryTableFactory
 {
 	public static TupleTable create()
 	{
-		return create(5);
+		return create(5,5);
 	}
-	
-	public static TupleTable create(int size)
+
+	public static TupleTable create(int nrows, int ncols)
 	{
 		List<Tuple> rows = new ArrayList<Tuple>();
-		
-		for(int i = 1; i <= size; i++)
+
+		for (int i = 1; i <= nrows; i++)
 		{
 			Tuple t = new SimpleTuple();
-			t.set("firstName", "first"+i);
-			t.set("lastName", "last"+i);
+			for (int j = 1; j <= ncols; j++)
+			{
+				t.set("col" + j, "val" + j + "," + i);
+			}
 			rows.add(t);
 		}
-		
+
 		return new MemoryTable(rows);
 	}
 }

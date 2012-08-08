@@ -17,12 +17,11 @@ import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
 import org.molgenis.util.Entity;
-import org.molgenis.util.ResultSetTuple;
+import org.molgenis.util.Tuple;
 
 import decorators.NameConvention;
 
-public class DatabaseDataMatrixInstance extends
-		AbstractDataMatrixInstance<Object>
+public class DatabaseDataMatrixInstance extends AbstractDataMatrixInstance<Object>
 {
 	private String dataElement = "DataElement";
 	private String dimensionElement = "DimensionElement";
@@ -38,7 +37,7 @@ public class DatabaseDataMatrixInstance extends
 	private Database db;
 	private String type;
 	private int matrixId;
-	
+
 	public void setDatabase(Database db)
 	{
 		this.db = db;
@@ -54,23 +53,16 @@ public class DatabaseDataMatrixInstance extends
 
 		// queryrules to get the right elements: match on data.id, row/col index
 		// = 0, and sort by row/col
-		QueryRule whereData = new QueryRule(dataString, Operator.EQUALS,
-				data.getId());
-		QueryRule whereRowIndex = new QueryRule(rowIndexString,
-				Operator.EQUALS, "0");
-		QueryRule orderByColIndex = new QueryRule(Operator.SORTASC,
-				colIndexString);
-		QueryRule whereColIndex = new QueryRule(colIndexString,
-				Operator.EQUALS, "0");
-		QueryRule orderByRowIndex = new QueryRule(Operator.SORTASC,
-				rowIndexString);
+		QueryRule whereData = new QueryRule(dataString, Operator.EQUALS, data.getId());
+		QueryRule whereRowIndex = new QueryRule(rowIndexString, Operator.EQUALS, "0");
+		QueryRule orderByColIndex = new QueryRule(Operator.SORTASC, colIndexString);
+		QueryRule whereColIndex = new QueryRule(colIndexString, Operator.EQUALS, "0");
+		QueryRule orderByRowIndex = new QueryRule(Operator.SORTASC, rowIndexString);
 
 		// dynamic query on type, eg. Text/Decimal
-		List<? extends Entity> colDataElements = db.find(
-				db.getClassForName(type + "DataElement"), whereData,
+		List<? extends Entity> colDataElements = db.find(db.getClassForName(type + "DataElement"), whereData,
 				whereRowIndex, orderByColIndex);
-		List<? extends Entity> rowDataElements = db.find(
-				db.getClassForName(type + "DataElement"), whereData,
+		List<? extends Entity> rowDataElements = db.find(db.getClassForName(type + "DataElement"), whereData,
 				whereColIndex, orderByRowIndex);
 
 		// grab the colnames and add to list
@@ -103,11 +95,8 @@ public class DatabaseDataMatrixInstance extends
 		Object[] result = new Object[this.getRowNames().size()];
 		if (type.equals(decimalTypeString))
 		{
-			List<DecimalDataElement> dbResult = db
-					.query(DecimalDataElement.class)
-					.equals(dataString, matrixId)
-					.equals(colIndexString, colIndex).sortASC(rowIndexString)
-					.find();
+			List<DecimalDataElement> dbResult = db.query(DecimalDataElement.class).equals(dataString, matrixId)
+					.equals(colIndexString, colIndex).sortASC(rowIndexString).find();
 			for (int j = 0; j < dbResult.size(); j++)
 			{
 				result[j] = (Object) dbResult.get(j).getValue();
@@ -115,10 +104,8 @@ public class DatabaseDataMatrixInstance extends
 		}
 		else
 		{
-			List<TextDataElement> dbResult = db.query(TextDataElement.class)
-					.equals(dataString, matrixId)
-					.equals(colIndexString, colIndex).sortASC(rowIndexString)
-					.find();
+			List<TextDataElement> dbResult = db.query(TextDataElement.class).equals(dataString, matrixId)
+					.equals(colIndexString, colIndex).sortASC(rowIndexString).find();
 			for (int j = 0; j < dbResult.size(); j++)
 			{
 				result[j] = (Object) dbResult.get(j).getValue();
@@ -133,18 +120,14 @@ public class DatabaseDataMatrixInstance extends
 		Object result;
 		if (type.equals(decimalTypeString))
 		{
-			DecimalDataElement dbResult = db.query(DecimalDataElement.class)
-					.equals(dataString, matrixId)
-					.equals(colIndexString, colIndex)
-					.equals(rowIndexString, rowIndex).find().get(0);
+			DecimalDataElement dbResult = db.query(DecimalDataElement.class).equals(dataString, matrixId)
+					.equals(colIndexString, colIndex).equals(rowIndexString, rowIndex).find().get(0);
 			result = (Object) dbResult.getValue();
 		}
 		else
 		{
-			TextDataElement dbResult = db.query(TextDataElement.class)
-					.equals(dataString, matrixId)
-					.equals(colIndexString, colIndex)
-					.equals(rowIndexString, rowIndex).find().get(0);
+			TextDataElement dbResult = db.query(TextDataElement.class).equals(dataString, matrixId)
+					.equals(colIndexString, colIndex).equals(rowIndexString, rowIndex).find().get(0);
 			result = (Object) dbResult.getValue();
 		}
 		return result;
@@ -155,49 +138,43 @@ public class DatabaseDataMatrixInstance extends
 	{
 		try
 		{
-			String maxRowSql = String.format("SELECT MAX(" + rowIndexString + ") AS maxrow FROM " + type
-					+ dataElement + " WHERE " + dataString + "=%s", matrixId);
-			ResultSetTuple rsMaxRow = new ResultSetTuple(db.executeQuery(maxRowSql));
+			String maxRowSql = String.format("SELECT MAX(" + rowIndexString + ") AS maxrow FROM " + type + dataElement
+					+ " WHERE " + dataString + "=%s", matrixId);
+			List<Tuple> rsList = db.sql(maxRowSql);
 			int maxRow = -1;
-			while (rsMaxRow.next())
+			for (Tuple rs : rsList)
 			{
-				maxRow = rsMaxRow.getInt("maxrow") + 1;
+				maxRow = rs.getInt("maxrow") + 1;
 			}
-			rsMaxRow.close();
-			
-			String maxColSql = String.format("SELECT MAX(" + colIndexString + ") AS maxcol FROM " + type
-					+ dataElement + " WHERE " + dataString + "=%s", matrixId);
-			ResultSetTuple rsMaxCol = new ResultSetTuple(db.executeQuery(maxColSql));
+
+			String maxColSql = String.format("SELECT MAX(" + colIndexString + ") AS maxcol FROM " + type + dataElement
+					+ " WHERE " + dataString + "=%s", matrixId);
+			rsList = db.sql(maxColSql);
 			int maxCol = -1;
-			while (rsMaxCol.next())
+			for (Tuple rs : rsList)
 			{
-				maxCol = rsMaxCol.getInt("maxcol") + 1;
+				maxCol = rs.getInt("maxcol") + 1;
 			}
-			rsMaxCol.close();
-			
-			String sql = String.format("SELECT " + rowIndexString + ","
-					+ colIndexString + "," + valueString + " FROM " + type
-					+ dataElement + " WHERE " + dataString + "=%s", matrixId);
-			ResultSetTuple rs = new ResultSetTuple(db.executeQuery(sql));
+
+			String sql = String.format("SELECT " + rowIndexString + "," + colIndexString + "," + valueString + " FROM "
+					+ type + dataElement + " WHERE " + dataString + "=%s", matrixId);
+			rsList = db.sql(sql);
 
 			Object[][] data = new Object[maxRow][maxCol];
 			if (type.equals("Decimal"))
 			{
-				while (rs.next())
+				for (Tuple rs : rsList)
 				{
-					data[rs.getInt(rowIndexString)][rs.getInt(colIndexString)] = rs
-							.getDouble(valueString);
+					data[rs.getInt(rowIndexString)][rs.getInt(colIndexString)] = rs.getDouble(valueString);
 				}
 			}
 			else
 			{
-				while (rs.next())
+				for (Tuple rs : rsList)
 				{
-					data[rs.getInt(rowIndexString)][rs.getInt(colIndexString)] = rs
-							.getString(valueString);
+					data[rs.getInt(rowIndexString)][rs.getInt(colIndexString)] = rs.getString(valueString);
 				}
 			}
-			rs.close();
 
 			return data;
 		}
@@ -213,11 +190,8 @@ public class DatabaseDataMatrixInstance extends
 		Object[] result = new Object[this.getColNames().size()];
 		if (type.equals(decimalTypeString))
 		{
-			List<DecimalDataElement> dbResult = db
-					.query(DecimalDataElement.class)
-					.equals(dataString, matrixId)
-					.equals(rowIndexString, rowIndex).sortASC(colIndexString)
-					.find();
+			List<DecimalDataElement> dbResult = db.query(DecimalDataElement.class).equals(dataString, matrixId)
+					.equals(rowIndexString, rowIndex).sortASC(colIndexString).find();
 			for (int j = 0; j < dbResult.size(); j++)
 			{
 				result[j] = (Object) dbResult.get(j).getValue();
@@ -225,10 +199,8 @@ public class DatabaseDataMatrixInstance extends
 		}
 		else
 		{
-			List<TextDataElement> dbResult = db.query(TextDataElement.class)
-					.equals(dataString, matrixId)
-					.equals(rowIndexString, rowIndex).sortASC(colIndexString)
-					.find();
+			List<TextDataElement> dbResult = db.query(TextDataElement.class).equals(dataString, matrixId)
+					.equals(rowIndexString, rowIndex).sortASC(colIndexString).find();
 			for (int j = 0; j < dbResult.size(); j++)
 			{
 				result[j] = (Object) dbResult.get(j).getValue();
@@ -238,8 +210,7 @@ public class DatabaseDataMatrixInstance extends
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices,
-			int[] colIndices) throws MatrixException
+	public AbstractDataMatrixInstance<Object> getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException
 	{
 		try
 		{
@@ -268,8 +239,7 @@ public class DatabaseDataMatrixInstance extends
 			}
 			if (offsetAble)
 			{
-				return getSubMatrixByOffset(rowIndices[0], rowIndices.length,
-						colIndices[0], colIndices.length);
+				return getSubMatrixByOffset(rowIndices[0], rowIndices.length, colIndices[0], colIndices.length);
 			}
 
 			// regular way of retrieval, not too bad for database matrix (single
@@ -291,35 +261,30 @@ public class DatabaseDataMatrixInstance extends
 				colIndicesCastable[i] = colIndices[i];
 			}
 
-			String sql = "SELECT " + rowIndexString + ", " + colIndexString
-					+ ", " + valueString + " FROM " + type + dataElement + "";
-			ResultSetTuple rs = new ResultSetTuple(db.executeQuery(sql,
-					new QueryRule(rowIndexString, Operator.IN,
-							rowIndicesCastable), new QueryRule(colIndexString,
-							Operator.IN, colIndicesCastable), new QueryRule(
-							dataString, Operator.EQUALS, matrixId)));
+			String sql = "SELECT " + rowIndexString + ", " + colIndexString + ", " + valueString + " FROM " + type
+					+ dataElement + "";
+			List<Tuple> rsList = db.sql(sql, new QueryRule(rowIndexString, Operator.IN, rowIndicesCastable),
+					new QueryRule(colIndexString, Operator.IN, colIndicesCastable), new QueryRule(dataString,
+							Operator.EQUALS, matrixId));
 
 			Object[][] data = new Object[rowIndices.length][colIndices.length];
 
 			if (type.equals(decimalTypeString))
 			{
-				while (rs.next())
+				for (Tuple rs : rsList)
 				{
-					data[rowIndexPositions.get(rs.getInt(rowIndexString))][colIndexPositions
-							.get(rs.getInt(colIndexString))] = rs
-							.getDouble(valueString);
+					data[rowIndexPositions.get(rs.getInt(rowIndexString))][colIndexPositions.get(rs
+							.getInt(colIndexString))] = rs.getDouble(valueString);
 				}
 			}
 			else
 			{
-				while (rs.next())
+				for (Tuple rs : rsList)
 				{
-					data[rowIndexPositions.get(rs.getInt(rowIndexString))][colIndexPositions
-							.get(rs.getInt(colIndexString))] = rs
-							.getString(valueString);
+					data[rowIndexPositions.get(rs.getInt(rowIndexString))][colIndexPositions.get(rs
+							.getInt(colIndexString))] = rs.getString(valueString);
 				}
 			}
-			rs.close();
 
 			List<String> rowNames = new ArrayList<String>();
 			List<String> colNames = new ArrayList<String>();
@@ -334,8 +299,7 @@ public class DatabaseDataMatrixInstance extends
 				colNames.add(this.getColNames().get(colIndex).toString());
 			}
 
-			return new MemoryDataMatrixInstance<Object>(rowNames, colNames,
-					data, this.getData());
+			return new MemoryDataMatrixInstance<Object>(rowNames, colNames, data, this.getData());
 		}
 		catch (Exception e)
 		{
@@ -344,68 +308,56 @@ public class DatabaseDataMatrixInstance extends
 	}
 
 	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row,
-			int rows, int col, int cols) throws Exception
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int rows, int col, int cols)
+			throws Exception
 	{
 
-		String sql = String.format("SELECT " + rowIndexString + ","
-				+ colIndexString + "," + valueString + " FROM " + type
-				+ dataElement + " WHERE " + rowIndexString + ">=%s AND "
-				+ rowIndexString + "<%s AND " + colIndexString + ">=%s AND "
-				+ colIndexString + "<%s AND " + dataString + "=%s", row, row
-				+ rows, col, col + cols, matrixId);
-		ResultSetTuple rs = new ResultSetTuple(db.executeQuery(sql));
+		String sql = String.format("SELECT " + rowIndexString + "," + colIndexString + "," + valueString + " FROM "
+				+ type + dataElement + " WHERE " + rowIndexString + ">=%s AND " + rowIndexString + "<%s AND "
+				+ colIndexString + ">=%s AND " + colIndexString + "<%s AND " + dataString + "=%s", row, row + rows,
+				col, col + cols, matrixId);
+		List<Tuple> rsList = db.sql(sql);
 
 		Object[][] data = new Object[rows][cols];
 		if (type.equals(decimalTypeString))
 		{
-			while (rs.next())
+			for (Tuple rs : rsList)
 			{
-				data[rs.getInt(rowIndexString) - row][rs.getInt(colIndexString)
-						- col] = rs.getDouble(valueString);
+				data[rs.getInt(rowIndexString) - row][rs.getInt(colIndexString) - col] = rs.getDouble(valueString);
 			}
 		}
 		else
 		{
-			while (rs.next())
+			for (Tuple rs : rsList)
 			{
-				data[rs.getInt(rowIndexString) - row][rs.getInt(colIndexString)
-						- col] = rs.getString(valueString);
+				data[rs.getInt(rowIndexString) - row][rs.getInt(colIndexString) - col] = rs.getString(valueString);
 			}
 		}
 
-		rs.close();
-
-		return new MemoryDataMatrixInstance<Object>(this.getRowNames().subList(
-				row, row + rows), this.getColNames().subList(col, col + cols),
-				data, this.getData());
+		return new MemoryDataMatrixInstance<Object>(this.getRowNames().subList(row, row + rows), this.getColNames()
+				.subList(col, col + cols), data, this.getData());
 	}
 
 	@Override
 	public File getAsFile() throws Exception
 	{
-		File tmp = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator
-				+ NameConvention.escapeFileName(this.getData()
-						.getInvestigation_Name()) + "_"
-				+ NameConvention.escapeFileName(this.getData().getName())
-				+ ".txt");
+		File tmp = new File(System.getProperty("java.io.tmpdir") + File.separator
+				+ NameConvention.escapeFileName(this.getData().getInvestigation_Name()) + "_"
+				+ NameConvention.escapeFileName(this.getData().getName()) + ".txt");
 
 		if (tmp.exists())
 		{
 			boolean deleteSuccess = tmp.delete();
 			if (!deleteSuccess)
 			{
-				throw new Exception("Deletion of tmp file "
-						+ tmp.getAbsolutePath() + " failed.");
+				throw new Exception("Deletion of tmp file " + tmp.getAbsolutePath() + " failed.");
 			}
 		}
 
 		boolean createTmp = tmp.createNewFile();
 		if (!createTmp)
 		{
-			throw new Exception("Creation of tmp file " + tmp.getAbsolutePath()
-					+ " failed.");
+			throw new Exception("Creation of tmp file " + tmp.getAbsolutePath() + " failed.");
 		}
 		PrintWriter out = new PrintWriter(tmp);
 		this.writeToCsvWriter(out);

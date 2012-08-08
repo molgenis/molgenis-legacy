@@ -1,9 +1,12 @@
+<<<<<<< HEAD
 ## Build folders
 bin/
 build/
+classes/
 tmp/
 hsqldb/
 handwritten/
+WebContent/WEB-INF/
 
 ## Always ignore these
 *~
@@ -11,9 +14,16 @@ handwritten/
 *.DS_Store
 *.swp
 *.out
+*.passwd
 
 ## Netbeans private
 nbproject/private/
+
+## IntelliJ private
+.idea/
+molgenis_apps.eml
+molgenis_apps.iml
+
 
 ## General java
 *.class
@@ -33,7 +43,17 @@ log*
 *.java~
 /bin
 /test-output
+/generated
 /target
 logger.out*
+/bin
 /dist
+/generated/java
+!/.settings/template*
 /.settings/org.eclipse.wst.common.component
+/apps/catalogue/plugins/hl7parser/PropertiesPath.java
+.settings/org.eclipse.wst.common.component
+/endorsed
+/target
+/test-output
+.classpath
