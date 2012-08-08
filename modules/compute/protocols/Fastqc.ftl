@@ -46,6 +46,7 @@ mkdir -p "${intermediatedir}"
 
 # pair1
 ${fastqcjar} ${leftbarcodefqgz} \
+-Djava.io.tmpdir=${tempdir} \
 -Dfastqc.output_dir=${intermediatedir} \
 -Dfastqc.unzip=false
 
