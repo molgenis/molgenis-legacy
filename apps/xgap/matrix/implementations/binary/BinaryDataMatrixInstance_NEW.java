@@ -6,30 +6,23 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import matrix.AbstractDataMatrixInstance;
-import matrix.DataMatrixInstance;
 import matrix.implementations.memory.MemoryDataMatrixInstance;
 
-import org.apache.log4j.Logger;
 import org.molgenis.matrix.MatrixException;
 
 public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 {
-	Logger logger = Logger.getLogger(getClass().getSimpleName());
+	boolean verbose = false;
 	RandomAccessFile raf;
 	long[] textDataElementLenghtsCumulative;
 
-	/***********/
-	/** CONSTRUCTOR */
-	/***********/
 	public BinaryDataMatrixInstance_NEW(File bin) throws Exception
 	{
 		super(bin);
 		this.raf = new RandomAccessFile(this.getBin(), "r");
-		
 		if(this.getTextDataElementLengths() != null){
 			this.textDataElementLenghtsCumulative = new long[this.getTextDataElementLengths().length+1];
 			textDataElementLenghtsCumulative[0] = 0; //convenient when adding to pointer position
@@ -51,14 +44,15 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 	 */
 	private Object parseFromByteArr(byte[] arr, int indexInArr, int indexInMatrix)
 	{
-		
+		//if(verbose){ System.out.println("arr size = " + arr.length + ", requested " + indexInArr); }
 		if(this.getData().getValueType().equals("Decimal"))
 		{
 			long longBits = 0;
+			int index = indexInArr * 8;
 			for (int j = 0; j < 8; j++)
 			{
 				longBits <<= 8;
-				longBits |= (long) arr[indexInArr + j] & 255;
+				longBits |= (long) arr[index + j] & 255;
 			}
 			double d = Double.longBitsToDouble(longBits);
 			if (d == Double.MAX_VALUE)
@@ -121,7 +115,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 	 * @return
 	 * @throws IOException
 	 */
-	private byte[] readChunkNoParsing(int startElement, int elementAmount) throws IOException
+	private byte[] readChunk(int startElement, int elementAmount) throws IOException
 	{
 		long startPointer;
 		int totalBytes;
@@ -153,172 +147,30 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		return bytes;
 	}
 
-	/**
-	 * General purpose function to read a chunk of data from a RandomAccessFile.
-	 * @param startElement The element to start reading from
-	 * @param elementAmount The amount of elements to read, sequentially, row-based
-	 * @param replaceNulls If true, replace the nullChar with empty in Text data.
-	 * @return Object[] The resulting list of elements
-	 * @throws IOException
-	 */
-	private Object[] readChunk(int startElement, int elementAmount, boolean replaceNulls) throws IOException
-	{
-		Object[] result = new Object[elementAmount];
-		
-		if(this.getData().getValueType().equals("Decimal"))
-		{
-			int startPointer = this.getStartOfElementsPointer() + (startElement * 8);
-		
-			if(startPointer != raf.getFilePointer())
-			{
-				raf.seek(startPointer);
-				System.out.println("ADJUSTED RAF POINTER TO " + startPointer);
-			}
-			
-			byte[] arr = new byte[elementAmount * 8];
-			raf.read(arr);
-			return byteArrayToDoubles(arr);
-		}
-		else
-		{
-			if(this.getTextElementLength() != 0)
-			{
-				int startPointer = this.getStartOfElementsPointer() + (startElement * this.getTextElementLength());
-				
-				if(startPointer != raf.getFilePointer())
-				{
-					raf.seek(startPointer);
-					System.out.println("ADJUSTED RAF POINTER TO " + startPointer);
-				}
-				
-				//allocate array of the exact size
-				int totalBytes = elementAmount * this.getTextElementLength();
-				byte[] bytes = new byte[totalBytes];
-
-				//single read action from raf
-				raf.read(bytes);
-
-				//cut up the result 
-				for (int i = 0; i < elementAmount; i++)
-				{
-					int start = i * this.getTextElementLength();
-					int stop = start + this.getTextElementLength();
-					char[] subArr = new char[this.getTextElementLength()];
-					int count = 0;
-					for (int j = start; j < stop; j++)
-					{
-						subArr[count] = (char) bytes[j];
-						count++;
-					}
-					String fromChars = new String(subArr);
-					result[i] = fromChars;
-					if(replaceNulls && result[i].equals(this.getNullChar()))
-					{
-						result[i] = "";
-					}
-				}
-				return result;
-			}
-			else
-			{
-				
-				long startPointer = this.getStartOfElementsPointer() + this.textDataElementLenghtsCumulative[startElement];
-				
-				if(startPointer != raf.getFilePointer())
-				{
-					raf.seek(startPointer);
-					System.out.println("ADJUSTED RAF POINTER TO " + startPointer);
-				}
-				
-				//find out how many bytes we're going to read
-				//allocate array of the exact size
-				int totalBytes = (int) (this.textDataElementLenghtsCumulative[startElement+elementAmount] - this.textDataElementLenghtsCumulative[startElement]);
-				byte[] bytes = new byte[totalBytes];
-	
-				
-				//single read action from raf
-				raf.read(bytes);
-				
-				//cut up the result 
-				int stop = 0;
-				for (int i = 0; i < elementAmount; i++)
-				{
-					int start = stop;
-					stop = start + this.getTextDataElementLengths()[startElement+i];
-					char[] subArr = new char[stop-start];
-					int count = 0;
-					for (int j = start; j < stop; j++)
-					{
-						subArr[count] = (char) bytes[j];
-						count++;
-					}
-					String fromChars = new String(subArr);
-					result[i] = fromChars;
-					if(replaceNulls && result[i].equals(this.getNullChar()))
-					{
-						result[i] = "";
-					}
-				}
-				return result;
-			}
-		}
-	}
-	
-	/**
-	 * Convert bytes to doubles
-	 * @param arr
-	 * @return
-	 */
-	private Double[] byteArrayToDoubles(byte[] arr)
-	{
-		int nr = arr.length / 8;
-		Double[] res = new Double[nr];
-		for (int i = 0; i < arr.length; i += 8)
-		{
-			long longBits = 0;
-			for (int j = 0; j < 8; j++)
-			{
-				longBits <<= 8;
-				longBits |= (long) arr[i + j] & 255;
-			}
-			double d = Double.longBitsToDouble(longBits);
-			if (d == Double.MAX_VALUE)
-			{
-				res[i / 8] = null;
-			}
-			else
-			{
-				res[i / 8] = d;
-			}
-		}
-		return res;
-	}
-
-	/***********/
-	/** MATRIX IMPLEMENTATION */
-	/***********/
-	@Override
-	/**
-	 * Get one element. Still fast if the elements are sequentially retrieved. (index increment of 1, by row)
-	 */
-	public Object getElement(int rowindex, int colindex) throws Exception
-	{
-		return readChunk((rowindex * this.getNumberOfCols()) + colindex, 1, true)[0];
-	}
-
 	@Override
 	/**
 	 * Get one row. Still fast if the rows are sequentially retrieved. (index increment of 1)
 	 */
 	public Object[] getRow(int rowIndex) throws Exception
 	{
-		return readChunk((rowIndex * this.getNumberOfCols()), this.getNumberOfCols(), true);
+		int[] cols = new int[this.getNumberOfCols()];
+		int[] rows = new int[]{ rowIndex };
+		for(int c = 0; c < this.getNumberOfCols(); c++)
+		{
+			cols[c] = c;
+		}
+
+		// submatrix should have only 1 column: get this
+		// (from in memory implementation) and return
+		return getSubMatrix(rows, cols).getRow(0);
+		//return readChunk((rowIndex * this.getNumberOfCols()), this.getNumberOfCols(), true);
 	}
 
 	@Override
 	/**
 	 * Get one column.
 	 * Special case of getSubMatrix(int[] rowIndices, int[] colIndices) where we want all rows and only 1 column.
+	 * TODO: we know the getSubMatrix result has only one column, but getCol still copies it out.. relatively expensive
 	 */
 	public Object[] getCol(int colIndex) throws Exception
 	{
@@ -333,7 +185,63 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		// (from in memory implementation) and return
 		return getSubMatrix(rows, cols).getCol(0);
 	}
+	
+	@Override
+	/**
+	 * Get one element. Still fast if the elements are sequentially retrieved. (index increment of 1, by row)
+	 */
+	public Object getElement(int rowIndex, int colIndex) throws Exception
+	{
+		int[] cols = new int[]{ colIndex };
+		int[] rows = new int[]{ rowIndex };
+		return getSubMatrix(rows, cols).getElement(0, 0);
+	}
+	
+	@Override
+	public Object[][] getElements() throws MatrixException
+	{
+		int[] rows = new int[this.getNumberOfRows()];
+		int[] cols = new int[this.getNumberOfCols()];
+		
+		for(int r = 0; r < this.getNumberOfRows(); r++)
+		{
+			rows[r] = r;
+		}
+		for(int c = 0; c < this.getNumberOfCols() ; c++)
+		{
+			cols[c] = c;
+		}
+		
+		//should be a memorymatrix, meaning the getElements just returns current memory location
+		return this.getSubMatrix(rows, cols).getElements();
+	}
 
+	/**
+	 * Get a submatrix by starts plus offsets.
+	 * Special case of getSubMatrix(int[] rowIndices, int[] colIndices) where all indices are sequential.
+	 */
+	@Override
+	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nRows, int col, int nCols) throws Exception
+	{
+		int[] rows = new int[nRows];
+		int[] cols = new int[nCols];
+		
+		int counter = 0;
+		for(int r = row; r < row + nRows; r++)
+		{
+			rows[counter] = r;
+			counter++;
+		}
+		counter = 0;
+		for(int c = col; c < col + nCols; c++)
+		{
+			cols[counter] = c;
+			counter++;
+		}
+		
+		return this.getSubMatrix(rows, cols);
+	}
+	
 	/**
 	 * Get a submatrix by 
 	 */
@@ -369,31 +277,31 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		
 		int totalElements = lastElement - firstElement;
 		
-		System.out.println("row indices + return position:");
+		if(verbose){ System.out.println("row indices + return position:"); }
 		for(Integer key : rowIndexPositions.keySet())
 		{
-			System.out.print(key + "->" + rowIndexPositions.get(key) + " ");
+			if(verbose){ System.out.print(key + "->" + rowIndexPositions.get(key) + " "); }
 		}
-		System.out.println();
-		System.out.println("col indices + return position:");
+		if(verbose){ System.out.println(); }
+		if(verbose){ System.out.println("col indices + return position:"); }
 		for(Integer key : colIndexPositions.keySet())
 		{
-			System.out.print(key + "->" + colIndexPositions.get(key) + " ");
+			if(verbose){ System.out.print(key + "->" + colIndexPositions.get(key) + " "); }
 		}
-		System.out.println();
-		System.out.println("lowestRowIndex: " + lowestRowIndex);
-		System.out.println("highestRowIndex: " + highestRowIndex);
-		System.out.println("lowestColIndex: " + lowestColIndex);
-		System.out.println("highestColIndex: " + highestColIndex);
-		System.out.println("nr of rows: " + this.getNumberOfRows());
-		System.out.println("nr of columns: " + this.getNumberOfCols());
-		System.out.println("in 2D: firstElement (incluse): " + firstElement);
-		System.out.println("in 2D: lastElement (exclusive): " + lastElement);
-		System.out.println("total elements we're going to read over (==last-first, but we might skip 'empty' chunks in the middle): " + totalElements);
+		if(verbose){ System.out.println(); }
+		if(verbose){ System.out.println("lowestRowIndex: " + lowestRowIndex); }
+		if(verbose){ System.out.println("highestRowIndex: " + highestRowIndex); }
+		if(verbose){ System.out.println("lowestColIndex: " + lowestColIndex); }
+		if(verbose){ System.out.println("highestColIndex: " + highestColIndex); }
+		if(verbose){ System.out.println("nr of rows: " + this.getNumberOfRows()); }
+		if(verbose){ System.out.println("nr of columns: " + this.getNumberOfCols()); }
+		if(verbose){ System.out.println("in 2D: firstElement (incluse): " + firstElement); }
+		if(verbose){ System.out.println("in 2D: lastElement (exclusive): " + lastElement); }
+		if(verbose){ System.out.println("total elements we're going to read over (==last-first, but we might skip 'empty' chunks in the middle): " + totalElements); }
 		
 		long memAlloc = (Runtime.getRuntime().freeMemory()/4); //25% of available memory for reading
 		
-		System.out.println("bytes of memory reserved for reading chunks: " + memAlloc);
+		if(verbose){ System.out.println("bytes of memory reserved for reading chunks: " + memAlloc); }
 		
 		
 		int elementLength;
@@ -416,11 +324,11 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		
 		int maxElementsToRead = (int)(memAlloc / elementLength);
 		
-		System.out.println("we can hold " + maxElementsToRead + " elements in memory");
+		if(verbose){ System.out.println("we can hold " + maxElementsToRead + " elements in memory"); }
 				
 		if(maxElementsToRead > totalElements)
 		{
-			System.out.println("OPTIMIZATION: maxElementsToRead ("+maxElementsToRead+") > totalElements ("+totalElements+"), adjusting maxElementsToRead to " + totalElements);
+			if(verbose){ System.out.println("OPTIMIZATION: maxElementsToRead ("+maxElementsToRead+") > totalElements ("+totalElements+"), adjusting maxElementsToRead to " + totalElements); }
 			maxElementsToRead = totalElements;
 		}
 	
@@ -430,7 +338,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		
 		while(!done)
 		{
-			System.out.println("iteration nr " + iterationCounter + ", currentStartElement: " + currentStartElement);
+			if(verbose){ System.out.println("iteration nr " + iterationCounter + ", currentStartElement: " + currentStartElement); }
 			iterationCounter++;
 			
 			//find out if we're going to get elements we want in the next read action
@@ -439,26 +347,26 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 			
 			if(elementLength == -1)
 			{
-				System.out.println("VARTEXT: finding out maxElementsToRead range!");
+				if(verbose){ System.out.println("VARTEXT: finding out maxElementsToRead range!"); }
 				int cumuLength = 0;
 				int iter = 0;
 				for(int i = currentStartElement; i < this.getTextDataElementLengths().length; i ++)
 				{
 					if(cumuLength > memAlloc)
 					{
-						System.out.println("VARTEXT: cumuLength > memAlloc at cumuLength = " + cumuLength + ", iter/maxElementsToRead = " + iter + " ; BREAKING");
+						if(verbose){ System.out.println("VARTEXT: cumuLength > memAlloc at cumuLength = " + cumuLength + ", iter/maxElementsToRead = " + iter + " ; BREAKING"); }
 						break;
 					}
 					else if(iter > totalElements)
 					{
-						System.out.println("VARTEXT: iter > totalElements at cumuLength = " + cumuLength + ", iter/maxElementsToRead = " + iter + " ; BREAKING");
+						if(verbose){ System.out.println("VARTEXT: iter > totalElements at cumuLength = " + cumuLength + ", iter/maxElementsToRead = " + iter + " ; BREAKING"); }
 						break;
 					}
 					cumuLength += this.getTextDataElementLengths()[i];
 					iter++;
 				}
 				maxElementsToRead = iter;
-				System.out.println("VARTEXT: maxElementsToRead = " + maxElementsToRead);
+				if(verbose){ System.out.println("VARTEXT: maxElementsToRead = " + maxElementsToRead); }
 			}
 			
 			for(int elementIndex = currentStartElement; elementIndex < currentStartElement+maxElementsToRead; elementIndex++)
@@ -470,7 +378,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 				//if there is at least one, we'll get the chunk
 				if(colIndexPositions.containsKey(checkCol) && rowIndexPositions.containsKey(checkRow))
 				{
-					System.out.println("the coming chunk has data we want (col " + checkCol +", row "+checkRow+")");
+					if(verbose){ System.out.println("the coming chunk has data we want (col " + checkCol +", row "+checkRow+")"); }
 					skipChunkAndSeek = false;
 					break;
 				}
@@ -480,7 +388,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 			{
 				if(skipChunkAndSeek)
 				{
-					System.out.println("NO DATA IN NEXT CHUNK - SKIPPING AND SEEKING");
+					if(verbose){ System.out.println("NO DATA IN NEXT CHUNK - SKIPPING AND SEEKING"); }
 					
 					int currentColPos = currentStartElement % this.getNumberOfCols();
 					int currentRowPos = (currentStartElement - currentColPos) / this.getNumberOfCols();
@@ -508,35 +416,31 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 					if(elementLength == -1)
 					{
 						newPointer = (int) (this.getStartOfElementsPointer() + this.textDataElementLenghtsCumulative[currentStartElement]);
-						System.out.println("VARTEXT skip pointer to " + newPointer);
+						if(verbose){ System.out.println("VARTEXT skip pointer to " + newPointer); }
 					}
 					
-					System.out.println("new currentStartElement = " + currentStartElement + " (at row " + newRowPos +", col " + newColPos+") seeking to " + newPointer);
+					if(verbose){ System.out.println("new currentStartElement = " + currentStartElement + " (at row " + newRowPos +", col " + newColPos+") seeking to " + newPointer); }
 					
 					raf.seek(newPointer);
 
 				}
 				else
 				{						
-					//read the chunk
-					System.out.println("reading from " + currentStartElement + " to " + (currentStartElement+maxElementsToRead));
 					
-					//Object[] elements = readChunk(currentStartElement, maxElementsToRead, false);
-					byte[] elements = readChunkNoParsing(currentStartElement, maxElementsToRead);
+					if(verbose){ System.out.println("reading from " + currentStartElement + " to " + (currentStartElement+maxElementsToRead)); }
+					
+					//read the chunk
+					byte[] rawElements = readChunk(currentStartElement, maxElementsToRead);
 
-					for(int i = 0; i < elements.length; i ++)
+					for(int i = 0; i < maxElementsToRead; i ++)
 					{
-
 						int inChunkColPos = (currentStartElement + i) % this.getNumberOfCols();
 						int inChunkRowPos = (currentStartElement + i - inChunkColPos) / this.getNumberOfCols();
 						
 						if(colIndexPositions.containsKey(inChunkColPos) && rowIndexPositions.containsKey(inChunkRowPos))
 						{
-							
-							System.out.println("match on colPos " + inChunkColPos + ", rowPos " + inChunkRowPos + " - assigning " + parseFromByteArr(elements, i, currentStartElement + i) + " to " + rowIndexPositions.get(inChunkRowPos) + "," + colIndexPositions.get(inChunkColPos) + " in result matrix");
-							
 							//map to the correct position in the output (usually the same, but could be different!)
-							result[rowIndexPositions.get(inChunkRowPos)][colIndexPositions.get(inChunkColPos)] = parseFromByteArr(elements, i, currentStartElement + i);
+							result[rowIndexPositions.get(inChunkRowPos)][colIndexPositions.get(inChunkColPos)] = parseFromByteArr(rawElements, i, currentStartElement + i);
 						}
 					}
 					
@@ -551,12 +455,12 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 			
 			if(currentStartElement >= lastElement)
 			{
-				System.out.println("quitting: " + currentStartElement + " >= " + lastElement);
+				if(verbose){ System.out.println("quitting: " + currentStartElement + " >= " + lastElement); }
 				done = true;
 			}
 			else
 			{
-				System.out.println("not quitting: " + currentStartElement + " < " + lastElement);
+				if(verbose){ System.out.println("not quitting: " + currentStartElement + " < " + lastElement); }
 			}
 		}
 		
@@ -579,60 +483,7 @@ public class BinaryDataMatrixInstance_NEW<E> extends BinaryDataMatrixInstance
 		return dm;
 	}
 
-	/**
-	 * Get a submatrix by starts plus offsets.
-	 * Special case of getSubMatrix(int[] rowIndices, int[] colIndices) where all indices are sequential.
-	 */
-	@Override
-	public AbstractDataMatrixInstance<Object> getSubMatrixByOffset(int row, int nRows, int col, int nCols) throws Exception
-	{
-		int[] rows = new int[nRows];
-		int[] cols = new int[nCols];
-		
-		int counter = 0;
-		for(int r = row; r < row + nRows; r++)
-		{
-			rows[counter] = r;
-			counter++;
-		}
-		counter = 0;
-		for(int c = col; c < col + nCols; c++)
-		{
-			cols[counter] = c;
-			counter++;
-		}
-		
-		return this.getSubMatrix(rows, cols);
-	}
 
-	@Override
-	public Object[][] getElements() throws MatrixException
-	{
-		int[] rows = new int[this.getNumberOfRows()];
-		int[] cols = new int[this.getNumberOfCols()];
-		
-		for(int r = 0; r < this.getNumberOfRows(); r++)
-		{
-			rows[r] = r;
-		}
-		for(int c = 0; c < this.getNumberOfCols() ; c++)
-		{
-			cols[c] = c;
-		}
-		
-		//should be a memorymatrix, meaning the getElements just returns current memory location
-		return this.getSubMatrix(rows, cols).getElements();
-	}
-	
-	private String printObjArr(Object[] arr)
-	{
-		String printMe = "";
-		for(Object o : arr)
-		{
-			printMe += "'" + o.toString() + "', ";
-		}
-		return printMe;
-	}
 
 }
 
