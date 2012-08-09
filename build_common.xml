@@ -329,8 +329,8 @@ It should be used via 'import' plus passing of properties
 	</target>
 	
 	<target name="webtest" description="Start the Selenium test">
-		<testng classpathref="${molgenis.classpath}" haltOnFailure="true">
-			<classfileset dir="${app_build_dir}" includes="**/${selenium_test_class}.class"/>
+		<testng classpathref="molgenis.classpath" haltOnFailure="true">
+			<classfileset dir="${build.molgenis_apps.dir}" includes="**/${selenium_test_class}.class"/>
 		</testng>
 	</target>
 
