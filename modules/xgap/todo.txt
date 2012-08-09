@@ -1,0 +1,25 @@
+dev branch was merged in, check the following files for breaking changes:
+
+$ git merge dev
+Updating c430531..7ab7d33
+Fast-forward
+ .settings/org.eclipse.wst.common.project.facet.core.xml                                      |   2 +-
+ apps/animaldb/org/molgenis/animaldb/animaldb_ui.xml                                          |  18 +-
+ .../org/molgenis/lifelinesresearchportal/lifelinesresearchportal.properties                  |   2 +-
+ apps/xgap/matrix/implementations/binary/BinaryDataMatrixInstance.java                        | 111 +++---
+ apps/xgap/matrix/implementations/binary/BinaryDataMatrixInstance_NEW.java                    | 820 ++++++++++++++++++++++-----------------------
+ apps/xgap/matrix/implementations/binary/etc/TryOut.java                                      |  64 ++++
+ apps/xgap/matrix/test/implementations/binary/TestBinMatrix.java                              |   1 +
+ apps/xgap/matrix/test/implementations/binary/TestBinMatrix2.java                             |  86 +++++
+ apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml                                     |   4 +-
+ apps/xgap/org/molgenis/xgap/test/Matrix_XqtlTestNG.java                                      |  25 +-
+ apps/xgap/services/XqtlRApiService.java                                                      |  13 +-
+ modules/datatable/org/molgenis/datatable/model/BinaryTupleTable.java                         |   1 +
+ modules/datatable/org/molgenis/datatable/plugin/JQGridPlugin.java                            |   2 +-
+ modules/datatable/org/molgenis/datatable/plugin/JQGridPlugin_xQTL.java                       |  52 +++
+ modules/file/filehandling/generic/CopyFile.java                                              |   6 +
+ xqtl_dev.xml                                                                                 |   3 +
+ 16 files changed, 717 insertions(+), 493 deletions(-)
+ create mode 100644 apps/xgap/matrix/implementations/binary/etc/TryOut.java
+ create mode 100644 apps/xgap/matrix/test/implementations/binary/TestBinMatrix2.java
+ create mode 100644 modules/datatable/org/molgenis/datatable/plugin/JQGridPlugin_xQTL.java
