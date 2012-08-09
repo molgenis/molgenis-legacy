@@ -24,7 +24,7 @@
 	Application class path. Describes the location of the app and the modules it consists of.
 	-->
 	<path id="app.class.path">
-		<pathelement location="apps/xgap" />
+		<pathelement location="apps/xqtl" />
 		<pathelement location="generated/java" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
@@ -36,6 +36,7 @@
 		<pathelement location="modules/search" />
 		<pathelement location="modules/matrix" />
 		<pathelement location="modules/feedback" />
+		<pathelement location="modules/xgap" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
