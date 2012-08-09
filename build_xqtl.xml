@@ -1,9 +1,9 @@
 <project>
 	<!-- this name is used to name the war file -->
-	<property name="app_name" value="xgap" />
+	<property name="app_name" value="xqtl" />
 
 	<!-- this holds all the settings for the generator -->
-	<property name="app_properties" value="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties"/>
+	<property name="app_properties" value="apps/xqtl/org/molgenis/xqtl/xqtl.properties"/>
 	
 	<!-- this holds the class name of the Selenium test -->
 	<property name="selenium_test_class" value="XqtlSeleniumTest" />
@@ -21,6 +21,7 @@
 		<pathelement location="modules/search" />
 		<pathelement location="modules/matrix" />
 		<pathelement location="modules/feedback" />
+		<pathelement location="modules/xgap" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
