@@ -31,12 +31,12 @@ import org.molgenis.framework.server.MolgenisServiceAuthenticationHelper;
 import decorators.MolgenisFileHandler;
 
 /**Use seperate servlet because of the custom R script that needs to be added*/
-public class XqtlRApiService implements MolgenisService
+public class XqtlRApiService_NEW implements MolgenisService
 {
 	
 	private MolgenisContext mc;
 	
-	public XqtlRApiService(MolgenisContext mc)
+	public XqtlRApiService_NEW(MolgenisContext mc)
 	{
 		this.mc = mc;
 	}
