@@ -81,7 +81,7 @@ It should be used via 'import' plus passing of properties
 		</copy>
 
 		<!-- call the generator -->
-		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+		<java maxmemory="512m" classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
 			<classpath refid="molgenis.classpath" />
 			<classpath refid="app.class.path" />
 			<arg value="${app_properties}" />
