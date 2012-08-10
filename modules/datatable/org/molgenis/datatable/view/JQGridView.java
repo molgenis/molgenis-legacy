@@ -185,17 +185,28 @@ public class JQGridView extends HtmlWidget {
 				removeColumns.add("id");
 				removeColumns.add("__action");
 				removeColumns.add("__target");
+				removeColumns.add("Operation");
 
 				String targetString = "Pa_Id";
 
 				String targetID = request.getString(targetString);
-				System.out.println(targetID);
-				for (String eachField : request.getFieldNames()) {
-					System.out.println(eachField);
-					if (!removeColumns.contains(eachField)) {
 
+				if (targetID != null) {
+					System.out.println("HOI2");
+					// List<ObservedValue> listObservedValues = new
+					// ArrayList<ObservedValue>();
+					for (String eachField : request.getFieldNames()) {
+						System.out.println(eachField);
+						if (!removeColumns.contains(eachField)) {
+							MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
+							mu.UpdateDatabase(db, targetID,
+									request.getString(eachField), eachField);
+						}
 					}
+				} else {
+					break;
 				}
+
 				request.getString("Pa_Id");
 				break;
 			default:
