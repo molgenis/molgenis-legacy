@@ -45,7 +45,7 @@ public class JQGridView extends HtmlWidget {
 	 * LOAD_TREE
 	 */
 	private enum Operation {
-		LOAD_CONFIG, RENDER_DATA, LOAD_TREE
+		LOAD_CONFIG, RENDER_DATA, LOAD_TREE, EDIT_TABLE
 	}
 
 	/**
@@ -73,6 +73,7 @@ public class JQGridView extends HtmlWidget {
 	 */
 	public JQGridView(final String name,
 			final ScreenController<?> hostController, final TupleTable table) {
+
 		this(name, new TupleTableBuilder() {
 			@Override
 			public String getUrl() {
@@ -177,6 +178,28 @@ public class JQGridView extends HtmlWidget {
 
 				renderData(((MolgenisRequest) request), postData, totalPages,
 						tupleTable);
+			case EDIT_TABLE:
+
+				List<String> removeColumns = new ArrayList<String>();
+				removeColumns.add("Pa_Id");
+				removeColumns.add("id");
+				removeColumns.add("__action");
+				removeColumns.add("__target");
+
+				String targetString = "Pa_Id";
+
+				String targetID = request.getString(targetString);
+				System.out.println(targetID);
+				for (String eachField : request.getFieldNames()) {
+					System.out.println(eachField);
+					if (!removeColumns.contains(eachField)) {
+
+					}
+				}
+				request.getString("Pa_Id");
+				break;
+			default:
+				break;
 			}
 		} catch (final Exception e) {
 			throw new HandleRequestDelegationException(e);

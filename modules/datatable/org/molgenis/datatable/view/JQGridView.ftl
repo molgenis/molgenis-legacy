@@ -1,6 +1,11 @@
 <script src="jqGrid/grid.locale-en.js" type="text/javascript"></script>
 <script src="jqGrid/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="jqGrid/jquery.jqGrid.src.js" type="text/javascript"></script>
 <script src="jqGrid/jquery.json-2.3.min.js" type="text/javascript"></script>
+<script src="jqGrid/grid.common.js" type="text/javascript"></script>
+<script src="jqGrid/grid.formedit.js" type="text/javascript"></script>
+<script src="jqGrid/jqDnR.js" type="text/javascript"></script>
+<script src="jqGrid/jqModal.js" type="text/javascript"></script>
 
 <script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
 <script src="jquery/development-bundle/ui/jquery.ui.dialog.js" type="text/javascript"></script>
@@ -9,6 +14,7 @@
 <link rel="stylesheet" type="text/css" media="screen" href="jquery/development-bundle/themes/smoothness/jquery-ui-1.8.7.custom.css">
 <link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.jqgrid.css">
 <link rel="stylesheet" type="text/css" media="screen" href="jqGrid/ui.multiselect.css">
+<link rel="stylesheet" type="text/css" media="screen" href="res/css/editableJQGrid.css">
 
 <link href="dynatree-1.2.0/src/skin/ui.dynatree.css" rel="stylesheet" type="text/css" id="skinSheet">
 <script src="dynatree-1.2.0/src/jquery.dynatree.js" type="text/javascript"></script>
@@ -22,6 +28,7 @@ var JQGridView = {
     pagerId : null,
     config : null,
     tree : null,
+    editurl : null,
     colModel : null, 
     
     columnPage : 1,				//current column Page
@@ -45,7 +52,7 @@ var JQGridView = {
         this.pagerId = pagerId;
         this.config = config;
         this.colModel = this.config.colModel;
-        
+        editurl = config.url;
         this.numOfSelectedNodes = this.config.colModel.length;
         
         // Deep copy
@@ -59,7 +66,7 @@ var JQGridView = {
         
         this.grid = this.createJQGrid(null);
         this.createDialog();
-
+      
 		//load & create Tree
 	    $.getJSON(configUrl + "&Operation=LOAD_TREE").done(function(data) { 
 	    	 self.tree = self.createTree(data);   
@@ -294,7 +301,7 @@ var JQGridView = {
     createDialog : function() {
     	var self = this;
     	$("#"+this.tableId+"_dialog-form" ).dialog({
-
+			
 		    autoOpen: false,
 		    height: 300,
 		    width: 350,
@@ -305,8 +312,9 @@ var JQGridView = {
 		            	var exportSelection = $("input[name='exportSelection']:checked").val();
 		
 		              	var myUrl = $("table#"+self.tableId).jqGrid('getGridParam', 'url');
+						
 						myUrl += "&" +$.param($("table#"+self.tableId).jqGrid('getGridParam', 'postData'));		
-
+	
 						var exportColumnSelection = $("input[name='exportColumnSelection']:checked").val();
 
 		                //e.preventDefault();  //stop the browser from following
@@ -319,6 +327,7 @@ var JQGridView = {
 		    close: function() {
 		    }
 		});
+		
 	},
 	
 	// Build the column selection tree
@@ -374,13 +383,10 @@ var JQGridView = {
 	}
 }
 
-
-
-
 // On first load do:
 $(document).ready(function() {
     configUrl = "${url}";
-    
+    alert(configUrl);
     //load JQGrid configuration and creates grid
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
@@ -390,19 +396,26 @@ $(document).ready(function() {
 		$( "#${tableId}_dialog-form" ).dialog('open');
 	});
 	
-	
 });
 
 </script>
+
 
 <div id="${tableId}_treeBox">
   <div id="${tableId}_tree"></div>
 </div>
 
+<style type="text/css">
+	#${tableId} input:hover{
+		background-color:#65A5D1;
+	}
+</style>
+
 <div id="${tableId}_gridBox">
 	<table id="${tableId}"></table>
 	<div id="${tableId}_pager"></div>
 	<input id="${tableId}_exportButton" type="button" value="export data"/>
+	
 	<div id="${tableId}_dialog-form" title="Export data">
 		<form>
 		<fieldset>

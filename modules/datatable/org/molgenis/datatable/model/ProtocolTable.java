@@ -70,6 +70,10 @@ public class ProtocolTable extends AbstractFilterableTupleTable {
 				// get all features of protocol AND subprotocols
 				measurements = getMeasurementsRecursive(protocol);
 
+				Field target = new Field(targetString);
+
+				columns.add(target);
+
 				// convert into field
 				for (Measurement m : measurements.keySet()) {
 					Field col = new Field(m.getName());
