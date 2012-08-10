@@ -4,7 +4,10 @@ import java.io.File;
 
 import matrix.test.implementations.binary.TestBinMatrix;
 import matrix.test.implementations.binary.TestBinMatrix2;
+import matrix.test.implementations.csv.TestFileMatrix;
+import matrix.test.implementations.database.TestDatabaseMatrix;
 import matrix.test.implementations.general.Params;
+import matrix.test.implementations.memory.TestMemoryMatrix;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.DetectOS;
@@ -39,8 +42,8 @@ public class Matrix_XqtlTestNG
 				{ new Params(1,	 1,  1,		true,	false,	false) },
 				{ new Params(20, 1, 10,		true,	true,	false) },
 				{ new Params(1, 20, 10,		false,	false,	false) },
-				{ new Params(50, 10, 127,	false,	true,	true) },
-				{ new Params(10, 50, 127,	true,	false,	true) },
+				{ new Params(50, 10, 127,	false,	true,	false) },
+				{ new Params(10, 50, 127,	true,	false,	false) },
 				};
 		return data;
 	}
@@ -98,5 +101,22 @@ public class Matrix_XqtlTestNG
 		new TestBinMatrix2(db, params);
 	}
 
-	
+	@Test(dataProvider = "params")
+	public void database(Params params) throws Exception
+	{
+		new TestDatabaseMatrix(db, params);
+	}
+
+	@Test(dataProvider = "params")
+	public void file(Params params) throws Exception
+	{
+		new TestFileMatrix(db, params);
+	}
+
+	@Test(dataProvider = "params")
+	public void memory(Params params) throws Exception
+	{
+		new TestMemoryMatrix(db, params);
+	}
+
 }
