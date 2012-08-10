@@ -32,4 +32,24 @@
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml" />
 
+	<!--
+	Dev help: Remove HSQL database
+	-->
+	<target name="deletedb" description="Delete generated and build content">
+		<mkdir dir="hsqldb" />
+		<delete includeemptydirs="true">
+			<fileset dir="hsqldb" includes="**/*" />
+		</delete>
+	</target>
+	
+	<!--
+	Dev help: Run xQTL tests on a compiled application.
+	-->
+	<target name="test" description="Run all tests">
+		<testng classpathref="molgenis.classpath" haltOnFailure="true">
+			<classfileset dir="${build.molgenis_apps.dir}" includes="**/*_XqtlTestNG.class" />
+		</testng>
+	</target>
+	
+
 </project>
