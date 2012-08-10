@@ -23,13 +23,13 @@
 				label="Timeline viewer" />
 			<!-- ViewFamily; Goal: view litter and genotype info for one animal; Flavor: Freemarker -->
 			<plugin name="ViewFamily" type="org.molgenis.animaldb.plugins.viewers.ViewFamily"
-				label="Family viewer" group="breeders" />
+				label="Family viewer" />
 			<!-- AddAnimalPlugin; Goal: bring in animals other than through breeding; Flavor: Java-only -->
 			<plugin name="AddAnimal" type="org.molgenis.animaldb.plugins.animal.AddAnimalPlugin"
 				label="Bring in animals" />
 			<!-- Breeding; Goal: create and browse parentgroups + create, wean, genotype and browse litters, print cage labels; Flavor: Freemarker -->
 			<plugin name="Breeding" type="org.molgenis.animaldb.plugins.breeding.Breedingnew"
-				label="Breeding" group="breeders" />
+				label="Breeding" />
 			
 			<!-- RemAnimalPluginMatrix; Goal: remove animals; Flavor: Java-only -->
 			<plugin name="RemAnimal" type="org.molgenis.animaldb.plugins.animal.RemAnimalPluginMatrix"
@@ -70,26 +70,26 @@
 		<menu name="Settings" position="left" label="Settings">
 			<!-- ManageLines; Goal: create, edit and browse breeding lines; Flavor: Freemarker -->
 			<plugin name="ManageLines" type="org.molgenis.animaldb.plugins.breeding.ManageLines"
-				label="Breeding lines" group="facilitymanagement" />
+				label="Breeding lines" />
 			<!-- LocationInfoPlugin; Goal: create, import and browse locations; Flavor: Freemarker -->
 			<plugin name="Locations" type="org.molgenis.animaldb.plugins.settings.LocationInfoPlugin"
-				label="Locations" group="facilitymanagement" />
+				label="Locations" />
 			<!-- SpeciesPlugin; Goal: create and browse species; Flavor: Freemarker -->
 			<plugin name="Species" type="org.molgenis.animaldb.plugins.settings.SpeciesPlugin"
-				label="Species" group="facilitymanagement" />
+				label="Species" />
 			<!-- GenePlugin; Goal: create and browse gene modifications; Flavor: Freemarker -->
 			<plugin name="Genes" type="org.molgenis.animaldb.plugins.settings.GenePlugin"
-				label="Gene modifications" group="facilitymanagement" />
+				label="Gene modifications" />
 			<!-- BackgroundPlugin; Goal: create and browse genetic backgrounds; Flavor: Freemarker -->
 			<plugin name="Backgrounds" type="org.molgenis.animaldb.plugins.settings.BackgroundPlugin"
-				label="Backgrounds" group="facilitymanagement" />
+				label="Backgrounds" />
 			<menu name="errorcorrectmenu" position="left" label="Correct errors">
 				<!-- ErrorCorrectionIndividualPlugin; Goal: (un)delete animals; Flavor: Freemarker -->
 				<plugin name="ErrorCorrectionIndividual" type="org.molgenis.animaldb.plugins.system.ErrorCorrectionIndividualPlugin"
-					label="Animals" group="facilitymanagement" />
+					label="Animals" />
 				<!-- ErrorCorrectionPlugin; Goal: (un)delete values; Flavor: Freemarker -->
 				<plugin name="ErrorCorrectionValue" type="org.molgenis.animaldb.plugins.system.ErrorCorrectionPlugin"
-					label="Values" group="facilitymanagement" />
+					label="Values" />
 			</menu>
 		</menu>
 		
