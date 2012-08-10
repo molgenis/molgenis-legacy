@@ -79,7 +79,7 @@ public class JQGridConfiguration {
 		this.id = id;
 		this.pager = "#" + id + "_pager";
 		this.url = url;
-		this.editurl = url + "&Operation=EDIT_TABLE";
+		this.editurl = url;
 		this.caption = caption;
 
 		// "{repeatitems: false, id: \"Code\"}"
