@@ -6,14 +6,14 @@
 		<plugin label="Login" name="UserLogin"
 			type="plugins.autohidelogin.AutoHideLogin" />
 		<include file="apps/hemodb/org/molgenis/hemodb/browsedata.xml" />
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/importdata.xml" />
 		<plugin label="Run QTL mapping" name="Cluster"
 			type="plugins.cluster.ClusterPlugin" group="biologist" />
 		<include
-			file="apps/xgap/org/molgenis/xgap/guicomponents/configureanalysis.xml" />
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/search.xml" />
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml" />
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml" />
+			file="apps/xqtl/org/molgenis/xqtl/gui/configureanalysis.xml" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/search.xml" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/utilities.xml" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/admin.xml" />
 		<plugin label="Questions" name="Questions" type="org.molgenis.hemodb.plugins.Questions" />
 	</menu>
 </molgenis>
