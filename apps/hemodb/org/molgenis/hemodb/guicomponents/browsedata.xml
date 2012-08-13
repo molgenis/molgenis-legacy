@@ -25,7 +25,7 @@
 				<form name="Probes" entity="HemoProbe" hide_fields="ontologyReference,AlternateId,label,Symbol" group="biologist" />
 				<form name="ProbeCollection" entity="ProbeSet"
 					hide_fields="cm,bpstart,bpend,seq,symbol,ontologyReference,Chromosome,label" group="biologist" />
-				<form name="Genes" entity="HemoGene" hide_fields="ontologyReference,AlternateId,label" group="biologist">
+				<form name="Genes" entity="HemoGene" hide_fields="ontologyReference,AlternateId,label" group="biologist" view="list">
 					<form name="Transcripts" entity="Transcript" group="biologist" />
 				</form>
 				<form name="SampleGroup" entity="HemoSampleGroup" group="biologist" />

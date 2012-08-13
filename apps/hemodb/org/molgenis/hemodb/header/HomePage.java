@@ -11,7 +11,6 @@ import java.io.File;
 
 import matrix.general.DataMatrixHandler;
 
-import org.molgenis.auth.MolgenisPermission;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenController;
@@ -19,7 +18,6 @@ import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Tuple;
 
 import plugins.system.database.Settings;
-import app.CsvImport;
 import app.ExcelImport;
 
 public class HomePage extends plugins.cluster.demo.ClusterDemo
@@ -60,40 +58,40 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 		try
 		{
 
-			
 			DataMatrixHandler dmh = new DataMatrixHandler(db);
-			
-			if(dmh.hasValidFileStorage(db))
+
+			if (dmh.hasValidFileStorage(db))
 			{
 				String path = dmh.getFileStorage(true, db).getAbsolutePath();
-				
-				//import WormQTL annotations from 'imports' location
+
+				// import WormQTL annotations from 'imports' location
 				String importDir = path + File.separator + "imports";
-				
-				//excel with everything minus USA probes
+
+				// excel with everything minus USA probes
 				File hemoAnnotations = new File(importDir + File.separator + "hemodbAnnotations.xls");
-				if(!hemoAnnotations.exists())
+				if (!hemoAnnotations.exists())
 				{
-					throw new Exception("Annotation Excel file" + hemoAnnotations.getAbsolutePath() +  " is missing!");
+					throw new Exception("Annotation Excel file" + hemoAnnotations.getAbsolutePath() + " is missing!");
 				}
-				
+
 				ExcelImport.importAll(hemoAnnotations, db, null);
-				
-				//relink datasets
+
+				// relink datasets
 				relinkDatasets(db, dmh);
-				
-				//remove clusterdemo example investigation
+
+				// remove clusterdemo example investigation
 				Settings.deleteExampleInvestigation("ClusterDemo", db);
-				
-				//all done
+
+				// all done
 				this.setMessages(new ScreenMessage("HemoDb specific annotation import and data relink succeeded", true));
 			}
 			else
 			{
-				this.setMessages(new ScreenMessage("HemoDb permissions loaded, but could not import annotations because storagedir setup failed", false));
+				this.setMessages(new ScreenMessage(
+						"HemoDb permissions loaded, but could not import annotations because storagedir setup failed",
+						false));
 			}
-			
-			
+
 		}
 		catch (Exception e)
 		{
@@ -103,37 +101,41 @@ public class HomePage extends plugins.cluster.demo.ClusterDemo
 	}
 
 	/**
-	 * Relink datasets if needed: but expected is that ALL are relinked when the function ends, or else error
+	 * Relink datasets if needed: but expected is that ALL are relinked when the
+	 * function ends, or else error
+	 * 
 	 * @param db
 	 * @param dmh
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private void relinkDatasets(Database db, DataMatrixHandler dmh) throws Exception
 	{
-		for(Data data : db.find(Data.class))
+		for (Data data : db.find(Data.class))
 		{
-			//find out if the 'Data' has a proper backend
+			// find out if the 'Data' has a proper backend
 			boolean hasLinkedStorage = dmh.isDataStoredIn(data, data.getStorage(), db);
-			
-			//if not, it doesn't mean the source file is not there! e.g. after updating your database
-			if(!hasLinkedStorage)
+
+			// if not, it doesn't mean the source file is not there! e.g. after
+			// updating your database
+			if (!hasLinkedStorage)
 			{
-				//attempt to relink
+				// attempt to relink
 				boolean relinked = dmh.attemptStorageRelink(data, data.getStorage(), db);
-				
-				if(!relinked)
+
+				if (!relinked)
 				{
 					throw new Exception("Could not relink data matrix '" + data.getName() + "'");
 				}
-				
-				if(!dmh.isDataStoredIn(data, data.getStorage(), db))
+
+				if (!dmh.isDataStoredIn(data, data.getStorage(), db))
 				{
-					throw new Exception("SEVERE: Data matrix '" + data.getName() + "' is supposed to be relinked, but the isDataStoredIn check failed!");
+					throw new Exception("SEVERE: Data matrix '" + data.getName()
+							+ "' is supposed to be relinked, but the isDataStoredIn check failed!");
 				}
-			
+
 			}
 		}
-		
-	}	
-	
+
+	}
+
 }

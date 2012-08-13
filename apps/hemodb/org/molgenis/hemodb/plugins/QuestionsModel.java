@@ -1,8 +1,6 @@
-/* Date:        February 27, 2012
+/* 
  * Template:	EasyPluginModelGen.java.ftl
  * generator:   org.molgenis.generators.ui.EasyPluginModelGen 4.0.0-testing
- * 
- * THIS FILE IS A TEMPLATE. PLEASE EDIT :-)
  */
 
 package org.molgenis.hemodb.plugins;
@@ -21,54 +19,67 @@ import org.molgenis.framework.ui.EasyPluginModel;
  */
 
 /**
- * TODO: insert documentation
+ * @author JvD
+ * 
  */
-public class QuestionsModel extends EasyPluginModel {
+@SuppressWarnings("serial")
+public class QuestionsModel extends EasyPluginModel
+{
 
 	String action = null;
 	ArrayList<String> names = new ArrayList<String>();
 	List<String> results = new ArrayList<String>();
 
-	public enum QuestionState {
+	public enum QuestionState
+	{
 		EMPTYGROUPLIST, QUESTION1, QUESTION1_RESULT, QUESTION2, QUESTION2_RESULT, QUESTION3, QUESTION3_RESULT, BEGINNING
 	}
 
 	private QuestionState state = QuestionState.EMPTYGROUPLIST;
 
-	public QuestionsModel(QuestionsOverview controller) {
+	public QuestionsModel(QuestionsOverview controller)
+	{
 		// TODO Auto-generated constructor stub
 		super(controller);
 	}
 
-	public String getAction() {
+	public String getAction()
+	{
 		return action;
 	}
 
-	public void setAction(String action) {
+	public void setAction(String action)
+	{
 		this.action = action;
 	}
 
-	public ArrayList<String> getNames() {
+	public ArrayList<String> getNames()
+	{
 		return names;
 	}
 
-	public void setNames(ArrayList<String> names) {
+	public void setNames(ArrayList<String> names)
+	{
 		this.names = names;
 	}
 
-	public QuestionState getState() {
+	public QuestionState getState()
+	{
 		return state;
 	}
 
-	public void setState(QuestionState state) {
+	public void setState(QuestionState state)
+	{
 		this.state = state;
 	}
 
-	public List<String> getResults() {
+	public List<String> getResults()
+	{
 		return results;
 	}
 
-	public void setResults(List<String> results) {
+	public void setResults(List<String> results)
+	{
 		this.results = results;
 	}
 
