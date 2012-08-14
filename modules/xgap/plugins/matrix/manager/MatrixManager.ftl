@@ -72,7 +72,7 @@ targ2	val4	val5	val6</textarea>
 
 
 
-<div style="overflow: auto; width: inherit; max-height: 500px;">				
+<div class="matrixviewer" style="overflow: auto; max-height: 500px;">				
 	<table>
 		<tr>
 			<td class="shadeHeader">
