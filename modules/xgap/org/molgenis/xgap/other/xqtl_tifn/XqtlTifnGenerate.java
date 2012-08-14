@@ -16,7 +16,7 @@ public class XqtlTifnGenerate
 		try
 		{
 			FileUtils.deleteDirectory(new File("hsqldb"));
-			new Molgenis("apps/xgap/org/molgenis/xgap/other/xqtl_tifn/xqtl_tifn.properties").generate();
+			new Molgenis("modules/xgap/org/molgenis/xgap/other/xqtl_tifn/xqtl_tifn.properties").generate();
 			
 		} catch(Exception e)
 		{

@@ -11,7 +11,7 @@
 	
 	<pathelement location="apps/catalogue" />
 	<pathelement location="modules/decorators/data" />
-	<pathelement location="apps/xgap" />
+	<pathelement location="modules/xgap" />
 			<pathelement location="modules/pheno" />
 		<pathelement location="modules/search" />
 		<pathelement location="publicdata" />
@@ -78,7 +78,7 @@
 	-
 	<path id="app.class.path">
 		<pathelement location="apps/lifelinesresearchportal" />
-		<pathelement location="apps/xgap" />
+		<pathelement location="modules/xgap" />
 		<pathelement location="apps/lifelines" />
 		<pathelement location="generated/java" />
 		<pathelement location="modules/datamodel" />
@@ -261,8 +261,8 @@
 		<- Grab the elements of app.class.path and convert to make a fileset pattern
 		usable by fileset. We concatenate the elements with '/**/*,' to grab all files.
 		The regexp cuts off everything until the original specified path location. Eg:
-		"/Users/joerivandervelde/Workspaces/workspace-23-03-2010/molgenis_apps/apps/xgap"
-		becomes "apps/xgap/**/*".
+		"/Users/joerivandervelde/Workspaces/workspace-23-03-2010/molgenis_apps/modules/xgap"
+		becomes "modules/xgap/**/*".
 		-
 		<pathconvert pathsep="/**/*," refid="app.class.path" property="app_fileset_pattern">
 			<regexpmapper from=".*/(.*/.*)" to="\1" />
@@ -274,7 +274,7 @@
 		</fileset>
 
 		<- Copy to build dir. Use a regexp to remove the leading locations
-		such as 'apps/xgap' or 'modules/pheno' -
+		such as 'modules/xgap' or 'modules/pheno' -
 		<copy todir="${app_build_dir}" verbose="true">
 			<fileset refid="app_fileset" />
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />

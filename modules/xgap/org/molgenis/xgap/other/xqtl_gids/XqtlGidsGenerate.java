@@ -16,7 +16,7 @@ public class XqtlGidsGenerate
 		try
 		{
 			FileUtils.deleteDirectory(new File("hsqldb"));
-			new Molgenis("apps/xgap/org/molgenis/xgap/other/xqtl_gids/xqtl_gids.properties").generate();
+			new Molgenis("modules/xgap/org/molgenis/xgap/other/xqtl_gids/xqtl_gids.properties").generate();
 			
 		} catch(Exception e)
 		{

@@ -16,7 +16,7 @@ public class XqtlIccGenerate
 		try
 		{
 			FileUtils.deleteDirectory(new File("hsqldb"));
-			new Molgenis("apps/xgap/org/molgenis/xgap/other/xqtl_icc/xqtl_icc.properties").generate();
+			new Molgenis("modules/xgap/org/molgenis/xgap/other/xqtl_icc/xqtl_icc.properties").generate();
 			
 		} catch(Exception e)
 		{

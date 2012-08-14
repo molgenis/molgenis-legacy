@@ -133,7 +133,7 @@ public class AddExampleData
 		
 		System.out.println("added to database: " + data.toString());
 		
-		// code from /molgenis_apps/apps/xgap/matrix/implementations/binary/BinaryDataMatrixWriter.java
+		// code from /molgenis_apps/modules/xgap/matrix/implementations/binary/BinaryDataMatrixWriter.java
 		// upload as a MolgenisFile, type 'BinaryDataMatrix'
         HashMap<String, String> extraFields = new HashMap<String, String>();
         extraFields.put("data_" + Data.ID, data.getId().toString());

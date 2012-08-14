@@ -20,7 +20,7 @@ import plugins.autohidelogin.AutoHideLogin;
 
 /**
  * Hide/unhide the login tab via a boolean and this service to flip it.
- * See: /molgenis_apps/apps/xgap/plugins/autohidelogin/AutoHideLogin.java
+ * See: /molgenis_apps/modules/xgap/plugins/autohidelogin/AutoHideLogin.java
  * @author joerivandervelde
  */
 public class AutoHideLoginService  implements MolgenisService
