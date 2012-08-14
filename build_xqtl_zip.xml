@@ -51,7 +51,7 @@
 	  	<unjar src="${mlibs}tar.jar" dest="${zipme}" overwrite="false"/> <!-- TarGz utils -->
 		<unjar src="${mlibs}testng-5.14.10.jar" dest="${zipme}" overwrite="false"/> <!-- TestNG -->
 	  	<unjar src="${mlibs}jsr311-api-1.1.1.jar" dest="${zipme}" overwrite="false"/>  <!-- Rest API JSON -->
-		<unjar src="${mlibs}selenium-server-standalone-2.19.0.jar" dest="${zipme}" overwrite="false" /> <!-- Selenium webtests -->
+		<unjar src="${mlibs}selenium-server-standalone-2.25.0.jar" dest="${zipme}" overwrite="false" /> <!-- Selenium webtests -->
 		<unjar src="${mlibs}hsqldb.jar" dest="${zipme}" overwrite="false"/> <!-- RUNTIME ??: HyperSQL database-->
 		<unjar src="${mlibs}commons-pool-1.5.2.jar" dest="${zipme}" overwrite="false"/> <!-- RUNTIME FrontController only??: GenericObjectPool -->
 		<unjar src="${mlibs}wsdl4j-1.6.2.jar" dest="${zipme}" overwrite="false"/><!-- RUNTIME AbstractServlet only??: WSDL Locator -->
@@ -67,8 +67,6 @@
 		<unjar src="${alibs}simplecaptcha-1.2.1.jar" dest="${zipme}" overwrite="false" /> <!-- Auth captcha service -->
 		<unjar src="${alibs}jopenid-1.07.jar" dest="${zipme}" overwrite="false" /> <!-- Auth OpenID login -->
 		<unjar src="${alibs}spssw-1.66.jar" dest="${zipme}" overwrite="false" /> <!-- SPSS writer -->
-		<unjar src="${alibs}pircbot.jar" dest="${zipme}" overwrite="false" /> <!-- IRC client -->
-		<unjar src="${alibs}lambdaj-2.3.3-with-dependencies.jar" dest="${zipme}" overwrite="false" />  <!-- Used in: matrix/component/sqlbackend/EAVBackend.java -->
 	</target>
 	
 	<!-- Compile Molgenis on the unjarred content in zipme -->
@@ -121,16 +119,13 @@
 		<pathconvert pathsep="/**/*," refid="app.class.path" property="app_fileset_pattern">
 			<regexpmapper from=".*/(.*/.*)" to="\1" />
 		</pathconvert>
-
 		<fileset dir="." id="app_fileset" includes="${app_fileset_pattern}/**/*">
 			<exclude name="**/*.java" />
 		</fileset>
-
 		<copy todir="${zipme}" verbose="true">
 			<fileset refid="app_fileset" />
 			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
 		</copy>
-
 		<copy todir="${zipme}" verbose="true">				
 			<fileset dir="generated/sql" includes="**/*.sql" />
 		</copy>
@@ -181,9 +176,7 @@
 	
 	<!-- Unzip and run webtest -->
 	<target name="webtest" description="Start the Selenium test on unzipped app">
-		
 		<unzip src="${dist}/xqtl_workbench.zip" dest="${dist}/xqtl_unzipped" />
-		
 		<testng haltOnFailure="true">
 			<classfileset dir="${dist}/xqtl_unzipped" includes="**/XqtlSeleniumTest.class"/>
 			<classpath path="${dist}/xqtl_unzipped" />

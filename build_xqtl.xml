@@ -33,7 +33,7 @@
 	<import file="build_common.xml" />
 
 	<!-- Delete HSQL database -->
-	<target name="deletedb" description="Delete generated and build content">
+	<target name="deletedb" description="Delete HSQLDB content">
 		<mkdir dir="hsqldb" />
 		<delete includeemptydirs="true">
 			<fileset dir="hsqldb" includes="**/*" />
@@ -43,7 +43,7 @@
 	<!--
 	Run xQTL tests on a compiled application
 	-->
-	<target name="test" description="Run all tests">
+	<target name="test" description="Run xQTL tests">
 		<testng classpathref="molgenis.classpath" haltOnFailure="true">
 			<classfileset dir="${build.molgenis_apps.dir}" includes="**/*_XqtlTestNG.class" />
 		</testng>
