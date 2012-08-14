@@ -229,19 +229,20 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel>
 		try
 		{
 			List<String> probes = new ArrayList<String>();
+			List<String> genesUpper = new ArrayList<String>();
 			for (String gene : genes)
 			{
 				gene = gene.toUpperCase();
-				gene = StringUtils.chomp(gene);
-				// System.out.println("gene is: " + gene);
-				List<HemoProbe> probesPerGene = db.find(HemoProbe.class, new QueryRule(HemoProbe.REPORTSFOR_NAME,
-						Operator.EQUALS, gene));
-				for (HemoProbe probe : probesPerGene)
-				{
-					// System.out.println("name of probe: " + probe.getName());
-					probes.add(probe.getName());
-					getModel().getResults().add(probe.getName());
-				}
+				genesUpper.add(gene.trim());
+			}
+			System.out.println("genesUpper: " + genesUpper);
+			List<HemoProbe> probesPerGene = db.find(HemoProbe.class, new QueryRule(HemoProbe.REPORTSFOR_NAME,
+					Operator.IN, genesUpper));
+			for (HemoProbe probe : probesPerGene)
+			{
+				// System.out.println("name of probe: " + probe.getName());
+				probes.add(probe.getName());
+				getModel().getResults().add(probe.getName());
 			}
 			if (!probes.isEmpty())
 			{
@@ -253,6 +254,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel>
 			{
 				System.out.println("This gene cannot be found in this database.");
 			}
+
 		}
 		catch (Exception e)
 		{
@@ -279,8 +281,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel>
 			List<String> chompedProbes = new ArrayList<String>();
 			for (String probe : probes)
 			{
-				probe = StringUtils.chomp(probe);
-				chompedProbes.add(probe);
+				chompedProbes.add(probe.trim());
 			}
 
 			List<HemoProbe> genesForProbe = db.find(HemoProbe.class, new QueryRule(HemoProbe.NAME, Operator.IN,
@@ -370,7 +371,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel>
 			 * Gets the list of genes from the website (request)
 			 */
 			String genesFromSite = request.getString("geneText");
-			String[] genes = genesFromSite.split("\n");
+			String[] genes = genesFromSite.split(",");
 			List<String> probes = null;
 
 			if (genes != null)
@@ -611,7 +612,7 @@ public class QuestionsOverview extends EasyPluginController<QuestionsModel>
 
 		String converting = request.getString("convertGP");
 		String listFromSite = request.getString("gpText");
-		String[] stringsToConvert = listFromSite.split("\n");
+		String[] stringsToConvert = listFromSite.split(",");
 
 		if (converting.equals("convertGenes"))
 		{

@@ -16,7 +16,6 @@ import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 import matrix.implementations.binary.BinaryDataMatrixInstance;
 
-import org.apache.commons.lang.StringUtils;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -205,8 +204,7 @@ public class CalculateMedianR implements Runnable
 			List<String> chompedProbes = new ArrayList<String>();
 			for (String probe : probes)
 			{
-				probe = StringUtils.chomp(probe);
-				chompedProbes.add(probe);
+				chompedProbes.add(probe.trim());
 			}
 
 			List<HemoProbe> genesForProbe = db.find(HemoProbe.class, new QueryRule(HemoProbe.NAME, Operator.IN,

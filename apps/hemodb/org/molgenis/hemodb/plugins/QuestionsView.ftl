@@ -46,7 +46,8 @@
 				</div>
 	
 				<div id="geneList">
-					<br />Supply the gene(s) you want to select (one per line):<br />
+					<br />Supply the gene(s) you want to select (comma seperated):<br />
+					<p style="font-size=8px">Please be aware that if you supply a large list of genes it will take a while to calculate</p>
 					<textarea rows="10" cols="51" name="geneText"value="genes"></textarea>
 				</div>
 		
@@ -126,7 +127,7 @@
 	</div>
 	
 	<div id="geneList">
-		<br />Supply the probes/genes you want to convert (one per line):<br />
+		<br />Supply the probes/genes you want to convert (comma seperated):<br />
 		<textarea rows="10" cols="51" name="gpText" value="convertThese"></textarea>
 	</div>
 	
