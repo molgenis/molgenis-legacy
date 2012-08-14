@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -44,27 +43,27 @@ public class CreateProtocolData
 		db.remove(db.find(Measurement.class));
 		db.remove(db.find(Individual.class));
 
-		// generate good protocol
-		protocol = new Protocol();
-		protocol.setName("TestProtocol");
-
+		// create Measurements
 		final List<Measurement> mList = new ArrayList<Measurement>();
 		for (int i = 1; i <= 10; i++)
 		{
 			final Measurement m = new Measurement();
 			m.setName("meas" + i);
-
-			db.add(m);
-
-			protocol.getFeatures_Id().add(m.getId());
-
 			mList.add(m);
 		}
+		db.add(mList);
 
+		// create protocol and link its features (measurements)
+		protocol = new Protocol();
+		protocol.setName("TestProtocol");
+		for (Measurement m : mList)
+		{
+			// add the features to the protocol
+			protocol.getFeatures_Id().add(m.getId());
+		}
 		db.add(protocol);
 
 		// generate some protocol applications
-
 		final List<Individual> iList = new ArrayList<Individual>();
 		for (int row = 1; row <= numRows; row++)
 		{
@@ -111,6 +110,6 @@ public class CreateProtocolData
 
 		db.add(values);
 
-		table = new ProtocolTable(db, protocol);
+		// table = new ProtocolTable(db, protocol);
 	}
 }

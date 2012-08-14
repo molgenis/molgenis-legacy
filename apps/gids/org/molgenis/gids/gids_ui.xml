@@ -20,9 +20,9 @@
 		
 	    <form entity="Investigation" name="investigation">
 		    <menu name="ProjectMenuGIDS" label="ProjectMenu">
-	           	<form name="individuals" entity="Individual" view="list" label="Observation targets" />
-				<form name="measurement" entity="Measurement" view="list" label="Measurements" />
-				<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
+		           	<form name="individuals" entity="Individual" view="list" label="Observation targets" />
+					<form name="measurement" entity="Measurement" view="list" label="Measurements" />
+					<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
 				<form name="sample" entity="GidsSample" view="list" label="Samples" />
 				
 	        </menu>
