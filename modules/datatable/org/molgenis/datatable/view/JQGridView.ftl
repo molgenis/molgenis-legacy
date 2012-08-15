@@ -386,10 +386,11 @@ var JQGridView = {
 // On first load do:
 $(document).ready(function() {
     configUrl = "${url}";
-    alert(configUrl);
+    
     //load JQGrid configuration and creates grid
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
+        
         grid = JQGridView.init("${tableId}", "${tableId}_pager", config);
     });
 	$('#${tableId}_exportButton').click(function() {
