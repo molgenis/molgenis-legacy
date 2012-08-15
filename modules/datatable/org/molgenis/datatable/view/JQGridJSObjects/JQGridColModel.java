@@ -95,6 +95,7 @@ public class JQGridColModel
 		public String value;
 		public String disabled;
 		public String style;
+		public String name;
 
 		public static EditOptions createEditOptions(String actualValue)
 		{
@@ -108,8 +109,6 @@ public class JQGridColModel
 		public static EditOptions createEditOptions()
 		{
 			final EditOptions editOptions = new EditOptions();
-			editOptions.disabled = "disabled";
-			editOptions.style = "background:lightgrey";
 
 			return editOptions;
 		}
@@ -120,6 +119,7 @@ public class JQGridColModel
 	public int width = 100;
 	public boolean sortable = false;
 	public boolean search = true;
+	public boolean fixed = false;
 	public SearchOptions searchoptions;
 	public SearchRule searchrules;
 	public EditOptions editoptions;
@@ -174,12 +174,18 @@ public class JQGridColModel
 				else if ("bool".equals(dataType))
 				{
 					edittype = "select";
+
+				}
+				else if ("datetime".equals(dataType))
+				{
 				}
 			}
 			else
 			{
 				editoptions = EditOptions.createEditOptions();
 				editoptions.disabled = "disabled";
+				editoptions.style = "width:100px;background:lightgrey";
+				fixed = true;
 			}
 
 		}
