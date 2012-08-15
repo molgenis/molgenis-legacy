@@ -1,3 +1,11 @@
+.matrixviewer 
+{
+	width: 1000px;
+	height: 1000px;
+	position: relative;
+
+}
+
 /**overall background*/
 .overallBackground,body,#header,#navigation,#information,#footer,.formscreen,.menuscreen,#container
 	{
@@ -6,24 +14,35 @@
 	border-width: 2px;
 	border-radius: 25px;
 	position: relative;
-	margin: 25px;
 	padding: 25px;
 	font-family:Verdana,Geneva,'DejaVu Sans',sans-serif;
 }
 
-/**.formscreen**/
-.formscreen {
+/**#main*/
+#main{
 	border-style: none;
-	/* 	margin:10px; */
-	padding: -25px;
+	background: #009DFF;
+	overflow: hidden;
+	text-align: center;
+	margin: 5px;
+	font-size: 15pt;
+	height: 20px;
 }
+
 
 /**.menuscreen**/
 .menuscreen {
-	border-style: dashed;
-	background: #008EE6;
+	border-style: none;
+	background: white;
 	overflow: hidden;
 	text-align: center;
+	font-size:12px;
+	height: 15px;
+	padding:20px;
+}
+
+.formscreen{
+	border-style: none;
 }
 
 /**Divs in menu**/
@@ -33,25 +52,29 @@
 	border-radius:5px;
 	border-margin:2px;
 	background: #FFFFFF;
-	color: #008EE6;
+	color: #009DFF;
 	float: left;
+	padding: 10px;
 	margin: 5px;
-
+	font-size:inherit;
 }
 
 .navigationNotSelected {
 	float: left;
-	margin: 5px;
 	border-style:solid;
 	border-width:2px;
 	border-radius:5px;
 	border-margin:2px;
 	background: #FFFFFF;
 	color: #000000;
+	padding: 10px;
+	margin: 5px;
+	font-size:inherit;
 }
 
 #container {
 	align: justify;
+	clear: both;
 }
 
 .form_header{
@@ -59,13 +82,24 @@
 	border-width:2px;
 	border-radius:25px;
 	border-margin:2px;
-	background: #008EE6;
+	background: #009DFF;
 	color: #FFFFFF;
 	float: left;
 	margin: 5px;
 
 }
+body.claro{
+	border-style:none;
+}
 
 #footer{
 	text-align:center;
+	clear: both;
+	width:auto;
+	margin:5px;
+	border-style: none;
+}
+
+#buttonDiv{
+	height: 10px;
 }
