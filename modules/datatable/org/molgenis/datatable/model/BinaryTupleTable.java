@@ -26,6 +26,7 @@ public class BinaryTupleTable extends AbstractFilterableTupleTable
 	{
 		if (columns == null)
 		{
+			columns = new ArrayList<Field>();
 			for (String name : matrix.getColNames())
 			{
 				columns.add(new Field(name));
