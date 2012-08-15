@@ -22,6 +22,7 @@ import app.DatabaseFactory;
 public class OpalExporter {
 
 	public Database db = null;
+
 	public String investigationName = null;
 
 	public static void main(String args[]) throws Exception {
@@ -33,7 +34,7 @@ public class OpalExporter {
 
 		db = DatabaseFactory.create();
 
-		investigationName = "HL7LL";
+		investigationName = "LifeLines";
 
 		WorkbookSettings ws = new WorkbookSettings();
 
