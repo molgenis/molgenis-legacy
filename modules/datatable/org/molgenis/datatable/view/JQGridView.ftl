@@ -32,7 +32,7 @@ var JQGridView = {
     colModel : null, 
     
     columnPage : 1,				//current column Page
-    columnPagerSize : 5,		//current columnPager size
+    columnPagerSize : 6,		//current columnPager size
     columnPageEnabled : true,
         
     prevColModel : null,		// Cache to speed up column paging: don't create new colmodel if not necessary
@@ -89,22 +89,26 @@ var JQGridView = {
 			this.columnPage = Math.min(this.columnPage, this.maxPage);
 			
 			//offset
-			begin = (this.columnPage - 1) * this.columnPagerSize;
+			begin = (this.columnPage - 1) * this.columnPagerSize + 1;
 			end = begin + this.columnPagerSize;
 			
 			columnNames = new Array();
 			colCount = 0;
 			// Build a column model of which columns to display, excluding hidden columns.
+			this.config.colModel[0].hidden = false;
+			columnNames.push(this.config.colModel[0].name);
+			
 			for(i = 0; i < this.config.colModel.length; ++i) {
 				if(!this.config.colModel[i].hidden) {
 					if(colCount >= begin && colCount < end) {
-						columnNames.push(this.config.colModel[i].name);				
-					} else {
+						columnNames.push(this.config.colModel[i].name);	
+					} else if(i != 0){
 						this.config.colModel[i].hidden = true;
 					}
 					++colCount;					
 				}
-			}	
+			}
+			
 			this.config.postData.colNames = columnNames;
 		}    
     },
@@ -386,10 +390,11 @@ var JQGridView = {
 // On first load do:
 $(document).ready(function() {
     configUrl = "${url}";
-    alert(configUrl);
+    
     //load JQGrid configuration and creates grid
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
+        
         grid = JQGridView.init("${tableId}", "${tableId}_pager", config);
     });
 	$('#${tableId}_exportButton').click(function() {

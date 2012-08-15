@@ -196,7 +196,8 @@ public class JQGridView extends HtmlWidget {
 					// List<ObservedValue> listObservedValues = new
 					// ArrayList<ObservedValue>();
 					for (String eachField : request.getFieldNames()) {
-						System.out.println(eachField);
+						System.out.println("-------------------------->"
+								+ eachField);
 						if (!removeColumns.contains(eachField)) {
 							MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
 							mu.UpdateDatabase(db, targetID,

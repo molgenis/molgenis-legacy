@@ -1,4 +1,4 @@
-package plugins.hl7parser;
+package org.molgenis.lifelinesresearchportal.plugins.hl7parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,15 +10,18 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.GenericDCM.HL7ObservationDCM;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.GenericDCM.HL7OrganizerDCM;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.GenericDCM.HL7ValueSetAnswerDCM;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.GenericDCM.HL7ValueSetDCM;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.StageLRA.HL7ObservationLRA;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.StageLRA.HL7OrganizerLRA;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.StageLRA.HL7ValueSetAnswerLRA;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.StageLRA.HL7ValueSetLRA;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
-
-import plugins.hl7parser.StageLRA.HL7ObservationLRA;
-import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
-import plugins.hl7parser.StageLRA.HL7ValueSetAnswerLRA;
-import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
 
 public class HL7PhenoImporter {
 
@@ -51,6 +54,7 @@ public class HL7PhenoImporter {
 								investigationName)).get(0);
 			}
 
+			// STAGECATALOGUE
 			Protocol stageCatalogue;
 
 			if (db.find(
@@ -93,21 +97,23 @@ public class HL7PhenoImporter {
 				List<String> protocolFeature = new ArrayList<String>();
 
 				for (HL7ObservationLRA meas : organizer.measurements) {
-
+					// System.out.println(" - " + meas.getMeasurementName() +
+					// "\t" + meas.getMeasurementDescription()
+					// +"\t"+meas.getMeasurementDataType() );
 					List<String> measurementCategory = new ArrayList<String>();
 
-					if (db.find(
-							Measurement.class,
+					List<Measurement> listOfMeas = db.find(Measurement.class,
 							new QueryRule(Measurement.NAME, Operator.EQUALS,
-									meas.getMeasurementName())).size() > 0) {
-						Measurement m = db.find(
-								Measurement.class,
-								new QueryRule(Measurement.NAME,
-										Operator.EQUALS, meas
-												.getMeasurementName())).get(0);
+									meas.getMeasurementName()));
+					if (listOfMeas.size() > 0) {
 
+						Measurement m = listOfMeas.get(0);
+
+						// m.setName(meas.getMeasurementName());
+						// m.setDescription(meas.getMeasurementDescription().replaceAll("\\\n",
+						// ""));
 						m.setDescription(meas.getMeasurementLabel());
-						m.setInvestigation(inv);
+						// m.setInvestigation(inv);
 
 						protocolFeature.add(m.getName());
 
@@ -122,8 +128,7 @@ public class HL7PhenoImporter {
 									.getListOFAnswers()) {
 
 								String codeValue = eachAnswer.getCodeValue();
-								String categoryName = eachAnswer.getName()
-										.trim().toLowerCase();
+								String categoryName = eachAnswer.getName();
 
 								if (!uniqueCategoryName.contains(categoryName)) {
 									uniqueCategoryName.add(categoryName);
@@ -171,8 +176,8 @@ public class HL7PhenoImporter {
 							uniqueListOfMeasurements.add(m);
 						}
 					}
-					protocol.setFeatures_Name(protocolFeature);
-					if (protocol.getFeatures_Name().size() > 0) {
+					if (protocolFeature.size() > 0) {
+						protocol.setFeatures_Name(protocolFeature);
 						uniqueProtocol.add(protocol);
 						uniqueListOfProtocolName.add(protocolName);
 					}
@@ -203,6 +208,7 @@ public class HL7PhenoImporter {
 					m.setCategories_Id(listOfCategoryID);
 				}
 			}
+
 			db.update(uniqueListOfMeasurements);
 
 			for (Protocol p : uniqueProtocol) {
@@ -232,220 +238,223 @@ public class HL7PhenoImporter {
 				listOfProtocolIds.add(p.getId());
 			}
 
-			Protocol otherProtocol = new Protocol();
-			otherProtocol.setName("NotClassified");
-			otherProtocol.setInvestigation_Name(investigationName);
-			List<Integer> listOfFeaturesID = new ArrayList<Integer>();
-			for (Measurement m : db.find(Measurement.class, new QueryRule(
-					Measurement.INVESTIGATION_NAME, Operator.EQUALS,
-					investigationName))) {
-
-				if (!uniqueListOfMeasurementNames.contains(m.getName())) {
-					listOfFeaturesID.add(m.getId());
-				}
-
-			}
-			if (listOfFeaturesID.size() > 0) {
-				otherProtocol.setFeatures_Id(listOfFeaturesID);
-
-				db.add(otherProtocol);
-				listOfProtocolIds.add(otherProtocol.getId());
-			}
-
 			stageCatalogue.setSubprotocols_Id(listOfProtocolIds);
 
 			db.update(stageCatalogue);
 
 			// ##################################################################
 			// GENERICDCM
+			// ###############GENERIC DCM ######START####
+			// System.out.println("");
+			// System.out.println("###########");
+			// System.out.println("GENERIC DCM");
+			// System.out.println("###########");
+			// for(HL7OrganizerDCM organizer : ll.getHL7OrganizerDCM()){
+			//
+			// System.out.println("Subprotocol: " + organizer.getId()+
+			// "\t"+organizer.getHL7OrganizerNameDCM()+
+			// "\t"+organizer.getOriginalText());
+			// for(HL7OntologyTerm m: organizer.getHl7OntologyTerms()){
+			// System.out.println("Ontology: "+m.getDisplayName());
+			// }
+			// for(HL7ObservationDCM d: organizer.measurements){
+			// System.out.println("Measurement: " + d.getDisplayName() + "\t"+
+			// d.getRepeatNumberLow() + "\t"+ d.getValue());
+			// for(HL7OntologyTerm t : d.getHl7OntologyTerms()){
+			// System.out.println("The mapped ontology term is " +
+			// t.getDisplayName() + "\t"+ t.getCode());
+			// }
+			// }
+			// System.out.println("---------");
+			// System.out.println("---------");
+			// }
+			// ############GENERIC DCM###########END##
 
-			// Protocol genericDCM;
-			//
-			// if (db.find(Protocol.class,
-			// new QueryRule(Protocol.NAME, Operator.EQUALS, "generic"))
-			// .size() == 0) {
-			// genericDCM = new Protocol();
-			// genericDCM.setName("generic");
-			//
-			// genericDCM.setInvestigation_Name(investigationName);
-			//
-			// db.add(genericDCM);
-			// } else {
-			// genericDCM = db
-			// .find(Protocol.class,
-			// new QueryRule(Protocol.NAME, Operator.EQUALS,
-			// "generic")).get(0);
-			// }
-			//
-			// uniqueListOfMeasurementNames.clear();
-			// uniqueListOfMeasurements.clear();
-			// uniqueListOfCategory.clear();
-			// uniqueCategoryName = new ArrayList<String>();
-			//
-			// uniqueProtocol = new ArrayList<Protocol>();
-			//
-			// uniqueListOfProtocolName = new ArrayList<String>();
-			//
-			// listOfProtocolIds = new ArrayList<Integer>();
-			//
-			// HashMap<String, HL7ValueSetDCM> hashValueSetDCM = ll
-			// .getHashValueSetDCM();
-			//
-			// if (ll.getHl7GenericDCM() != null) {
-			//
-			// for (HL7OrganizerDCM organizer : ll.getHL7OrganizerDCM()) {
-			//
-			// System.out.println(organizer.getHL7OrganizerNameDCM());
-			//
-			// Protocol protocol = new Protocol();
-			// protocol.setName(organizer.getHL7OrganizerNameDCM().trim());
-			// protocol.setInvestigation(inv);
-			//
-			// List<String> protocolFeature = new ArrayList<String>();
-			//
-			// List<Integer> listOfOntologyTermForProtocolIDs =
-			// addingOntologyTerm(
-			// organizer.getHl7OntologyTerms(), db);
-			//
-			// protocol.setOntologyReference_Id(listOfOntologyTermForProtocolIDs);
-			//
-			// for (HL7ObservationDCM meas : organizer.measurements) {
-			//
-			// System.out.println(" - " + meas.getDisplayName() + "\t"
-			// + meas.getOriginalText());
-			// Measurement m = new Measurement();
-			// m.setName(meas.getDisplayName());
-			// // m.setDescription(meas.getMeasurementDescription());
-			// m.setInvestigation(inv);
-			//
-			// List<String> measurementCategory = new ArrayList<String>();
-			//
-			// String dataType = meas.getValue();
-			//
-			// if (dataType.equals("INT")) {
-			// m.setDataType("int");
-			// } else if (dataType.equals("ST")) {
-			// m.setDataType("string");
-			// } else if (dataType.equals("CO")) {
-			// m.setDataType("categorical");
-			// } else if (dataType.equals("CD")) {
-			// m.setDataType("code");
-			// } else if (dataType.equals("PQ")) {
-			// m.setDataType("decimal");
-			// } else if (dataType.equals("TS")) {
-			// m.setDataType("datetime");
-			// } else if (dataType.equals("REAL")) {
-			// m.setDataType("decimal");
-			// } else if (dataType.equals("BL")) {
-			// m.setDataType("bool");
-			// }
-			//
-			// List<Integer> listOfOntologyTermIDs = addingOntologyTerm(
-			// meas.getHl7OntologyTerms(), db);
-			//
-			// m.setOntologyReference_Id(listOfOntologyTermIDs);
-			//
-			// if (!uniqueListOfMeasurementNames.contains(m.getName())) {
-			// uniqueListOfMeasurementNames.add(m.getName());
-			// uniqueListOfMeasurements.add(m);
-			// }
-			//
-			// if (hashValueSetDCM.containsKey(meas.getDisplayName())) {
-			//
-			// HL7ValueSetDCM valueSet = hashValueSetDCM.get(meas
-			// .getDisplayName());
-			//
-			// for (HL7ValueSetAnswerDCM eachAnswer : valueSet
-			// .getListOFAnswers()) {
-			//
-			// String categoryName = eachAnswer.getName();
-			// HL7OntologyTerm ont = eachAnswer.getOnt();
-			// if (!uniqueCategoryName.contains(categoryName)) {
-			// Category c = new Category();
-			// c.setName(categoryName);
-			// c.setCode_String("");
-			// c.setDescription(categoryName);
-			// c.setInvestigation(inv);
-			// ArrayList<HL7OntologyTerm> list = new
-			// ArrayList<HL7OntologyTerm>();
-			// list.add(ont);
-			// List<Integer> ontologyTermIDsFoCategory = addingOntologyTerm(
-			// list, db);
-			// c.setOntologyReference_Id(ontologyTermIDsFoCategory);
-			// uniqueListOfCategory.add(c);
-			// }
-			// measurementCategory.add(categoryName);
-			// }
-			// }
-			//
-			// m.setCategories_Name(measurementCategory);
-			//
-			// protocolFeature.add(m.getName());
-			// }
-			// protocol.setFeatures_Name(protocolFeature);
-			//
-			// if (!uniqueListOfProtocolName.contains(protocol.getName())) {
-			// uniqueListOfProtocolName.add(protocol.getName());
-			// uniqueProtocol.add(protocol);
-			// }
-			// }
-			//
-			// db.update(uniqueListOfCategory,
-			// Database.DatabaseAction.ADD_IGNORE_EXISTING,
-			// Category.NAME);
-			//
-			// for (Measurement m : uniqueListOfMeasurements) {
-			//
-			// if (m.getCategories_Name().size() > 0) {
-			// List<Category> categories = db.find(
-			// Category.class,
-			// new QueryRule(Category.NAME, Operator.IN, m
-			// .getCategories_Name()));
-			// List<Integer> categoryIDs = new ArrayList<Integer>();
-			// for (Category c : categories) {
-			// categoryIDs.add(c.getId());
-			// }
-			// m.setCategories_Id(categoryIDs);
-			// }
-			// }
-			//
-			// db.update(uniqueListOfMeasurements,
-			// Database.DatabaseAction.ADD_IGNORE_EXISTING,
-			// Measurement.NAME);
-			//
-			// for (Protocol p : uniqueProtocol) {
-			//
-			// List<String> listOfFeatures = p.getFeatures_Name();
-			//
-			// List<Measurement> listOfMeasurements = db.find(
-			// Measurement.class, new QueryRule(Measurement.NAME,
-			// Operator.IN, listOfFeatures));
-			//
-			// List<Integer> listOfFeaturesID = new ArrayList<Integer>();
-			//
-			// for (Measurement m : listOfMeasurements) {
-			// listOfFeaturesID.add(m.getId());
-			// }
-			//
-			// p.setFeatures_Id(listOfFeaturesID);
-			// }
-			//
-			// db.update(uniqueProtocol,
-			// Database.DatabaseAction.ADD_IGNORE_EXISTING,
-			// Protocol.NAME);
-			//
-			// uniqueProtocol = db.find(Protocol.class, new QueryRule(
-			// Protocol.NAME, Operator.IN, uniqueListOfProtocolName));
-			//
-			// for (Protocol p : uniqueProtocol) {
-			// listOfProtocolIds.add(p.getId());
-			// }
-			//
-			// genericDCM.setSubprotocols_Id(listOfProtocolIds);
-			//
-			// db.update(genericDCM);
-			//
-			// }
+			Protocol genericDCM;
+
+			if (db.find(Protocol.class,
+					new QueryRule(Protocol.NAME, Operator.EQUALS, "generic"))
+					.size() == 0) {
+				genericDCM = new Protocol();
+				genericDCM.setName("generic");
+
+				genericDCM.setInvestigation_Name(investigationName);
+
+				db.add(genericDCM);
+			} else {
+				genericDCM = db
+						.find(Protocol.class,
+								new QueryRule(Protocol.NAME, Operator.EQUALS,
+										"generic")).get(0);
+			}
+
+			uniqueListOfMeasurementNames.clear();
+			uniqueListOfMeasurements.clear();
+			uniqueListOfCategory.clear();
+			uniqueCategoryName = new ArrayList<String>();
+
+			uniqueProtocol = new ArrayList<Protocol>();
+
+			uniqueListOfProtocolName = new ArrayList<String>();
+
+			listOfProtocolIds = new ArrayList<Integer>();
+
+			HashMap<String, HL7ValueSetDCM> hashValueSetDCM = ll
+					.getHashValueSetDCM();
+
+			if (ll.getHl7GenericDCM() != null) {
+
+				for (HL7OrganizerDCM organizer : ll.getHL7OrganizerDCM()) {
+
+					System.out.println(organizer.getHL7OrganizerNameDCM());
+
+					Protocol protocol = new Protocol();
+					protocol.setName(organizer.getHL7OrganizerNameDCM().trim());
+					protocol.setInvestigation(inv);
+
+					List<String> protocolFeature = new ArrayList<String>();
+
+					List<Integer> listOfOntologyTermForProtocolIDs = addingOntologyTerm(
+							organizer.getHl7OntologyTerms(), db);
+
+					protocol.setOntologyReference_Id(listOfOntologyTermForProtocolIDs);
+
+					for (HL7ObservationDCM meas : organizer.measurements) {
+
+						System.out.println(" - " + meas.getDisplayName() + "\t"
+								+ meas.getOriginalText());
+						Measurement m = new Measurement();
+						m.setName(meas.getDisplayName());
+						// m.setDescription(meas.getMeasurementDescription());
+						m.setInvestigation(inv);
+
+						List<String> measurementCategory = new ArrayList<String>();
+
+						String dataType = meas.getValue();
+
+						if (dataType.equals("INT")) {
+							m.setDataType("int");
+						} else if (dataType.equals("ST")) {
+							m.setDataType("string");
+						} else if (dataType.equals("CO")) {
+							m.setDataType("categorical");
+						} else if (dataType.equals("CD")) {
+							m.setDataType("code");
+						} else if (dataType.equals("PQ")) {
+							m.setDataType("decimal");
+						} else if (dataType.equals("TS")) {
+							m.setDataType("datetime");
+						} else if (dataType.equals("REAL")) {
+							m.setDataType("decimal");
+						} else if (dataType.equals("BL")) {
+							m.setDataType("bool");
+						}
+
+						List<Integer> listOfOntologyTermIDs = addingOntologyTerm(
+								meas.getHl7OntologyTerms(), db);
+
+						m.setOntologyReference_Id(listOfOntologyTermIDs);
+
+						if (!uniqueListOfMeasurementNames.contains(m.getName())) {
+							uniqueListOfMeasurementNames.add(m.getName());
+							uniqueListOfMeasurements.add(m);
+						}
+
+						if (hashValueSetDCM.containsKey(meas.getDisplayName())) {
+
+							HL7ValueSetDCM valueSet = hashValueSetDCM.get(meas
+									.getDisplayName());
+
+							for (HL7ValueSetAnswerDCM eachAnswer : valueSet
+									.getListOFAnswers()) {
+
+								String categoryName = eachAnswer.getName();
+								HL7OntologyTerm ont = eachAnswer.getOnt();
+								if (!uniqueCategoryName.contains(categoryName)) {
+									Category c = new Category();
+									c.setName(categoryName);
+									c.setCode_String("");
+									c.setDescription(categoryName);
+									c.setInvestigation(inv);
+									ArrayList<HL7OntologyTerm> list = new ArrayList<HL7OntologyTerm>();
+									list.add(ont);
+									List<Integer> ontologyTermIDsFoCategory = addingOntologyTerm(
+											list, db);
+									c.setOntologyReference_Id(ontologyTermIDsFoCategory);
+									uniqueListOfCategory.add(c);
+								}
+								measurementCategory.add(categoryName);
+							}
+						}
+
+						m.setCategories_Name(measurementCategory);
+
+						protocolFeature.add(m.getName());
+					}
+					protocol.setFeatures_Name(protocolFeature);
+
+					if (!uniqueListOfProtocolName.contains(protocol.getName())) {
+						uniqueListOfProtocolName.add(protocol.getName());
+						uniqueProtocol.add(protocol);
+					}
+				}
+
+				db.update(uniqueListOfCategory,
+						Database.DatabaseAction.ADD_IGNORE_EXISTING,
+						Category.NAME);
+
+				for (Measurement m : uniqueListOfMeasurements) {
+
+					if (m.getCategories_Name().size() > 0) {
+						List<Category> categories = db.find(
+								Category.class,
+								new QueryRule(Category.NAME, Operator.IN, m
+										.getCategories_Name()));
+						List<Integer> categoryIDs = new ArrayList<Integer>();
+						for (Category c : categories) {
+							categoryIDs.add(c.getId());
+						}
+						m.setCategories_Id(categoryIDs);
+					}
+				}
+
+				db.update(uniqueListOfMeasurements,
+						Database.DatabaseAction.ADD_IGNORE_EXISTING,
+						Measurement.NAME);
+
+				for (Protocol p : uniqueProtocol) {
+
+					List<String> listOfFeatures = p.getFeatures_Name();
+
+					List<Measurement> listOfMeasurements = db.find(
+							Measurement.class, new QueryRule(Measurement.NAME,
+									Operator.IN, listOfFeatures));
+
+					List<Integer> listOfFeaturesID = new ArrayList<Integer>();
+
+					for (Measurement m : listOfMeasurements) {
+						listOfFeaturesID.add(m.getId());
+					}
+
+					p.setFeatures_Id(listOfFeaturesID);
+				}
+
+				db.update(uniqueProtocol,
+						Database.DatabaseAction.ADD_IGNORE_EXISTING,
+						Protocol.NAME);
+
+				uniqueProtocol = db.find(Protocol.class, new QueryRule(
+						Protocol.NAME, Operator.IN, uniqueListOfProtocolName));
+
+				for (Protocol p : uniqueProtocol) {
+					listOfProtocolIds.add(p.getId());
+				}
+
+				genericDCM.setSubprotocols_Id(listOfProtocolIds);
+
+				db.update(genericDCM);
+
+			}
 
 			db.commitTx();
 
