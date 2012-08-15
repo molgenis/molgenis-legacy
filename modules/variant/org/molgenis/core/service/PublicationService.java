@@ -92,6 +92,7 @@ public class PublicationService
 	public PublicationDTO publicationToPublicationDTO(final Publication publication)
 	{
 		PublicationDTO publicationDTO = new PublicationDTO();
+		publicationDTO.setId(publication.getId());
 		publicationDTO.setAuthors(publication.getAuthorList());
 		publicationDTO.setJournal(publication.getJournal());
 		publicationDTO.setName(publication.getName());

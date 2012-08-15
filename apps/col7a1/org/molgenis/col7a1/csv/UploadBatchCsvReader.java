@@ -15,9 +15,18 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import javax.persistence.EntityManager;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -25,22 +34,25 @@ import org.molgenis.framework.db.CsvToDatabase;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Database.DatabaseAction;
-import org.molgenis.framework.db.jdbc.JDBCDatabase;
-import org.molgenis.framework.db.jpa.JpaDatabase;
+import org.molgenis.framework.security.Login;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.variant.Gene;
+import org.molgenis.variant.Patient;
+import org.molgenis.variant.SequenceCharacteristic;
+import org.molgenis.variant.SequenceRelation;
+import org.molgenis.variant.Variant;
 
-//import org.molgenis.mutation.Mutation;
-//import org.molgenis.mutation.service.MutationService;
-//import org.molgenis.mutation.service.UploadService;
-//import org.molgenis.mutation.vo.MutationSearchCriteriaVO;
-//import org.molgenis.mutation.vo.MutationSummaryVO;
-//import org.molgenis.mutation.vo.MutationUploadVO;
-//import org.molgenis.mutation.vo.ObservedValueVO;
-//import org.molgenis.mutation.vo.PatientSummaryVO;
-//import org.molgenis.auth.MolgenisUser;
-//import org.molgenis.core.vo.PublicationVO;
+import org.molgenis.mutation.ServiceLocator;
+import org.molgenis.mutation.dto.MutationUploadDTO;
+import org.molgenis.mutation.service.UploadService;
+import org.molgenis.pheno.AlternateId;
+import org.molgenis.pheno.ObservableFeature;
+import org.molgenis.pheno.ObservationTarget;
+import org.molgenis.pheno.ObservedValue;
+import org.molgenis.core.Publication;
+import org.molgenis.core.service.PublicationService;
 import org.molgenis.submission.Submission;
 import org.springframework.stereotype.Component;
 
@@ -50,9 +62,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 {
-	public static final transient Logger logger = Logger.getLogger(UploadBatchCsvReader.class);
-	
-			
+	public final transient Logger logger    = Logger.getLogger(UploadBatchCsvReader.class);
+	private final String[] patientValueCols = { "Gender", "Age", "Ethnicity", "Deceased", "Cause of Death", "Blistering", "Location", "Hands", "Feet", "Arms", "Legs", "Proximal body flexures", "Trunk", "Mucosa", "Skin atrophy", "Milia", "Nail dystrophy", "Albopapuloid papules", "Pruritic papules", "Alopecia", "Squamous cell carcinoma(s)", "Revertant skin patch(es)", "Mechanism", "Flexion contractures", "Pseudosyndactyly (hands)", "Microstomia", "Ankyloglossia", "Swallowing difficulties/ dysphagia/ oesophagus strictures", "Growth retardation", "Anaemia", "Renal failure", "Dilated cardiomyopathy", "Other" };
+	private final String[] variantValueCols = { "par/mat", "homo-/heterozygous", "consequence", "MYO5B domain", "3D structure (only for motor domain)", "conserved (yes/no)", "function of affected residue", "mRNA expression", "protein expression", "protein IHC", "rab11-binding site affected (predicted)", "rab8-binding site affected (predicted)" };
+
 	/**
 	 * Imports UploadBatch from tab/comma delimited File
 	 * @param db database to import into
@@ -64,315 +77,728 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 	 */
 	public int importCsv(final Database db, CsvReader reader, final Tuple defaults, final DatabaseAction dbAction, final String missingValues) throws DatabaseException, IOException, Exception 
 	{
-		return 0;
+		//cache for entities of which xrefs couldn't be resolved (e.g. if there is a self-refence)
+		//these entities can be updated with their xrefs in a second round when all entities are in the database
+		//final List<UploadBatch> uploadBatchsMissingRefs = new ArrayList<UploadBatch>();
+
+//		db.beginTx();
+//
+//		for (String variantCol : variantValueCols)
+//		{
+//			Measurement measurement = new Measurement();
+//			measurement.setName(variantCol);
+//			measurement.setDataType("string");
+//			measurement.setTemporal(false);
+//			db.add(measurement);
+//		}
+//		for (String patientCol : patientValueCols)
+//		{
+//			Measurement measurement = new Measurement();
+//			measurement.setName(patientCol);
+//			measurement.setDataType("string");
+//			measurement.setTemporal(false);
+//			db.add(measurement);
+//		}
+//
+//		db.commitTx();
+
+		final EntityManager em                      = db.getEntityManager();
+		final UploadService uploadService           = ServiceLocator.instance().getUploadService();
+		final PublicationService publicationService = ServiceLocator.instance().getPublicationService();
+		final Login securityService                 = ServiceLocator.instance().getSecurityService();
+
+		final Submission submission       = new Submission();
+		DateFormat dateFormat             = new SimpleDateFormat("yyyy-MM-dd");
+		submission.setDate(dateFormat.format(new Date()));
+		submission.setReleasedate(dateFormat.format(new Date()));
+		submission.setIdentifier("S" + new Date());
+		List<Integer> submitters          = new ArrayList<Integer>();
+		submitters.add(securityService.getUserId());
+		submission.setSubmitters_Id(submitters);
+		db.add(submission);
+
+		//cache for objects to be imported from file (in batch)
+		final Map<String, AlternateId> alternateIdList    = new HashMap<String, AlternateId>();
+		final List<ObservedValue> observedValueList       = new ArrayList<ObservedValue>();
+		final Map<String, Patient> patientList            = new HashMap<String, Patient>();
+		final Set<String> pubmedStringList                = new HashSet<String>();
+		final Map<String, Variant> variantList            = new HashMap<String, Variant>();
+		final List<SequenceRelation> sequenceRelationList = new ArrayList<SequenceRelation>();
+
+		reader.setMissingValues(missingValues);
+		/*
+		 * Set column separator to \t
+		 * Override from CsvBufferedReaderMultiline:
+		 * public static char[] separators = { ',', '\t', ';', ' ' };
+		 */
+		reader.setSeparator('\t');
+
+		int mutationIdentifier = uploadService.findMaxMutationIdentifier();
+		int patientIdentifier  = uploadService.findMaxPatientIdentifier();
+
+		for (Tuple tuple : reader)
+		{
+			for (String name : tuple.getFieldNames())
+				System.out.println(">>> fieldName==" + name + ".");
+			//parse object, setting defaults and values from file
+
+			Patient patient = new Patient();
+
+			patient.setSubmission(submission);
+
+			// Add stable external identifier
+
+			patientIdentifier = patientIdentifier + 1;
+			patient.setName("P" + patientIdentifier);
+			
+			// Add the phenotype
+			if (StringUtils.isNotEmpty(tuple.getString("Phenotype major type")) && StringUtils.isNotEmpty(tuple.getString("Phenotype Subtype")))
+			{
+				patient.setPhenotype(tuple.getString("Phenotype major type") + ", " + tuple.getString("Phenotype Subtype").toLowerCase());
+			}
+
+			AlternateId patientId = new AlternateId();
+			patientId.setDefinition("molgenis_patient_id");
+			patientId.setName("P" + patientIdentifier);
+			alternateIdList.put(patientId.getName(), patientId);
+
+			patient.getAlternateId().add(patientId);
+			
+			// Add local id
+
+			String localIdString = tuple.getString("Local patient number");
+System.out.println(">>> localIdString==" + localIdString + ".");
+			AlternateId localId = new AlternateId();
+			localId.setDefinition("local_patient_no");
+			localId.setName(localIdString);
+			alternateIdList.put(localId.getName(), localId);
+			
+			patient.getAlternateId().add(localId);
+
+			// Add variants
+
+			if (StringUtils.isNotEmpty(tuple.getString("cDNA change_1")))
+			{
+				String[] cdnaNotations   = StringUtils.split(tuple.getString("cDNA change_1"), ", ");
+				String[] aaNotations     = StringUtils.split(tuple.getString("Protein change_1"), ", ");
+
+				for (int i = 0; i < cdnaNotations.length; i++)
+				{
+					String cdnaNotation  = "c." + cdnaNotations[i];
+					String aaNotation    = (ArrayUtils.getLength(aaNotations) == ArrayUtils.getLength(cdnaNotations) ? aaNotations[i] : "");
+
+					// Check whether already existing
+					List<Variant> results = db.query(Variant.class).equals(Variant.NAME, cdnaNotation).find();
+
+					if (results.size() < 1)
+					{
+						// Calculate some values from cdna position
+						MutationUploadDTO mutationUploadDTO = new MutationUploadDTO();
+						mutationUploadDTO.setCdnaNotation(cdnaNotation);
+						uploadService.assignValuesFromNotation(mutationUploadDTO);
+						if (StringUtils.isNotEmpty(aaNotation))
+							mutationUploadDTO.setAaNotation(aaNotation);
+
+						// Add cDNA variant notation
+						Variant cdnaVariant = new Variant();
+						cdnaVariant.setGene(db.query(Gene.class).equals(Gene.NAME, "COL7A1").find().get(0));
+						cdnaVariant.setFeatureType(uploadService.getOntologyTermCache().get("variant"));
+						cdnaVariant.setName(cdnaNotation);
+						cdnaVariant.setSeqlen(mutationUploadDTO.getLength());
+
+						variantList.put(cdnaVariant.getName(), cdnaVariant);
+
+						cdnaVariant.setNameCdna(cdnaNotation);
+						cdnaVariant.setStartCdna(mutationUploadDTO.getCdnaStart());
+						cdnaVariant.setEndCdna(mutationUploadDTO.getCdnaEnd());
+
+						cdnaVariant.setNameAa(aaNotation);
+						cdnaVariant.setStartAa(mutationUploadDTO.getAaStart());
+						cdnaVariant.setEndAa(mutationUploadDTO.getAaEnd());
+
+						cdnaVariant.setStartGdna(mutationUploadDTO.getGdnaStart());
+						cdnaVariant.setEndGdna(mutationUploadDTO.getGdnaEnd());
+
+						cdnaVariant.setType(mutationUploadDTO.getType());
+
+						// Add stable external identifier
+
+						mutationIdentifier = mutationIdentifier + 1;
+
+						AlternateId mutationId = new AlternateId();
+						mutationId.setDefinition("molgenis_variant_id");
+						mutationId.setName("M" + mutationIdentifier);
+
+						alternateIdList.put(mutationId.getName(), mutationId);
+
+						cdnaVariant.getAlternateId().add(mutationId);
+
+						// Add observed values
+
+						for (String variantValueCol : variantValueCols)
+						{
+							String value = ObjectUtils.toString(tuple.getString(variantValueCol), "unknown");
+
+							ObservedValue observedValue = new ObservedValue();
+							ObservableFeature feature   = new ObservableFeature();
+							feature.setName(variantValueCol);
+							observedValue.setFeature(feature);
+							observedValue.setTarget(cdnaVariant);
+							observedValue.setValue(value);
+								
+							observedValueList.add(observedValue);
+						}
+
+						// Add calculated values from variantUploadDTO
+						
+						ObservedValue codonChangeOV          = new ObservedValue();
+						ObservableFeature codonChangeFeature = new ObservableFeature();
+						codonChangeFeature.setName("Codon change");
+						codonChangeOV.setFeature(codonChangeFeature);
+						codonChangeOV.setTarget(cdnaVariant);
+						codonChangeOV.setValue(mutationUploadDTO.getCodonChange());
+						observedValueList.add(codonChangeOV);
+
+						ObservedValue consequenceOV          = new ObservedValue();
+						ObservableFeature consequenceFeature = new ObservableFeature();
+						consequenceFeature.setName("Consequence");
+						consequenceOV.setFeature(consequenceFeature);
+						consequenceOV.setTarget(cdnaVariant);
+						consequenceOV.setValue(mutationUploadDTO.getConsequence());
+						observedValueList.add(consequenceOV);
+
+						ObservedValue splicingOV          = new ObservedValue();
+						ObservableFeature splicingFeature = new ObservableFeature();
+						splicingFeature.setName("Effect on splicing");
+						splicingOV.setFeature(splicingFeature);
+						splicingOV.setTarget(cdnaVariant);
+						splicingOV.setValue(mutationUploadDTO.getEffectOnSplicing().toString());
+						observedValueList.add(splicingOV);
+
+						ObservedValue eventOV          = new ObservedValue();
+						ObservableFeature eventFeature = new ObservableFeature();
+						eventFeature.setName("Event");
+						eventOV.setFeature(eventFeature);
+						eventOV.setTarget(cdnaVariant);
+						eventOV.setValue(mutationUploadDTO.getEvent());
+						observedValueList.add(eventOV);
+
+						ObservedValue ntchangeOV          = new ObservedValue();
+						ObservableFeature ntchangeFeature = new ObservableFeature();
+						ntchangeFeature.setName("NT change");
+						ntchangeOV.setFeature(ntchangeFeature);
+						ntchangeOV.setTarget(cdnaVariant);
+						ntchangeOV.setValue(mutationUploadDTO.getNtChange());
+						observedValueList.add(ntchangeOV);
+
+						patient.getMutations().add(cdnaVariant);
+					}
+					else
+					{
+						patient.getMutations().add(results.get(0));
+					}
+				}
+			}
+
+			//FIXME: code duplication
+			if (StringUtils.isNotEmpty(tuple.getString("cDNA change_2")) && !StringUtils.equalsIgnoreCase(tuple.getString("cDNA change_2"), "na"))
+			{
+				String[] cdnaNotations   = StringUtils.split(tuple.getString("cDNA change_2"), ", ");
+				String[] aaNotations     = StringUtils.split(tuple.getString("Protein change_2"), ", ");
+
+				for (int i = 0; i < cdnaNotations.length; i++)
+				{
+					String cdnaNotation  = cdnaNotations[i];
+					String aaNotation    = (ArrayUtils.getLength(aaNotations) == ArrayUtils.getLength(cdnaNotations) ? aaNotations[i] : "");
+
+					// Check whether already existing
+					List<Variant> results = db.query(Variant.class).equals(Variant.NAME, cdnaNotation).find();
+
+					if (results.size() < 1)
+					{
+						// Calculate some values from cdna position
+						MutationUploadDTO mutationUploadDTO = new MutationUploadDTO();
+						mutationUploadDTO.setCdnaNotation(cdnaNotation);
+						uploadService.assignValuesFromNotation(mutationUploadDTO);
+						if (StringUtils.isNotEmpty(aaNotation))
+							mutationUploadDTO.setAaNotation(aaNotation);
+
+						// Add cDNA variant notation
+						Variant cdnaVariant = new Variant();
+						cdnaVariant.setGene(db.query(Gene.class).equals(Gene.NAME, "COL7A1").find().get(0));
+						cdnaVariant.setFeatureType(uploadService.getOntologyTermCache().get("variant"));
+						cdnaVariant.setName(cdnaNotation);
+						cdnaVariant.setSeqlen(mutationUploadDTO.getLength());
+
+						variantList.put(cdnaVariant.getName(), cdnaVariant);
+
+						cdnaVariant.setNameCdna(cdnaNotation);
+						cdnaVariant.setStartCdna(mutationUploadDTO.getCdnaStart());
+						cdnaVariant.setEndCdna(mutationUploadDTO.getCdnaEnd());
+
+						cdnaVariant.setNameAa(aaNotation);
+						cdnaVariant.setStartAa(mutationUploadDTO.getAaStart());
+						cdnaVariant.setEndAa(mutationUploadDTO.getAaEnd());
+
+						cdnaVariant.setStartGdna(mutationUploadDTO.getGdnaStart());
+						cdnaVariant.setEndGdna(mutationUploadDTO.getGdnaEnd());
+
+						cdnaVariant.setType(mutationUploadDTO.getType());
+
+						// Add stable external identifier
+
+						mutationIdentifier = mutationIdentifier + 1;
+
+						AlternateId mutationId = new AlternateId();
+						mutationId.setDefinition("molgenis_variant_id");
+						mutationId.setName("M" + mutationIdentifier);
+
+						alternateIdList.put(mutationId.getName(), mutationId);
+
+						cdnaVariant.getAlternateId().add(mutationId);
+
+						// Add observed values
+
+						for (String variantValueCol : variantValueCols)
+						{
+							String value = ObjectUtils.toString(tuple.getString(variantValueCol), "unknown");
+
+							ObservedValue observedValue = new ObservedValue();
+							ObservableFeature feature   = new ObservableFeature();
+							feature.setName(variantValueCol);
+							observedValue.setFeature(feature);
+							observedValue.setTarget(cdnaVariant);
+							observedValue.setValue(value);
+								
+							observedValueList.add(observedValue);
+						}
+
+						// Add calculated values from variantUploadDTO
+						
+						ObservedValue codonChangeOV          = new ObservedValue();
+						ObservableFeature codonChangeFeature = new ObservableFeature();
+						codonChangeFeature.setName("Codon change");
+						codonChangeOV.setFeature(codonChangeFeature);
+						codonChangeOV.setTarget(cdnaVariant);
+						codonChangeOV.setValue(mutationUploadDTO.getCodonChange());
+						observedValueList.add(codonChangeOV);
+
+						ObservedValue consequenceOV          = new ObservedValue();
+						ObservableFeature consequenceFeature = new ObservableFeature();
+						consequenceFeature.setName("Consequence");
+						consequenceOV.setFeature(consequenceFeature);
+						consequenceOV.setTarget(cdnaVariant);
+						consequenceOV.setValue(mutationUploadDTO.getConsequence());
+						observedValueList.add(consequenceOV);
+
+						ObservedValue splicingOV          = new ObservedValue();
+						ObservableFeature splicingFeature = new ObservableFeature();
+						splicingFeature.setName("Effect on splicing");
+						splicingOV.setFeature(splicingFeature);
+						splicingOV.setTarget(cdnaVariant);
+						splicingOV.setValue(mutationUploadDTO.getEffectOnSplicing().toString());
+						observedValueList.add(splicingOV);
+
+						ObservedValue eventOV          = new ObservedValue();
+						ObservableFeature eventFeature = new ObservableFeature();
+						eventFeature.setName("Event");
+						eventOV.setFeature(eventFeature);
+						eventOV.setTarget(cdnaVariant);
+						eventOV.setValue(mutationUploadDTO.getEvent());
+						observedValueList.add(eventOV);
+
+						ObservedValue ntchangeOV          = new ObservedValue();
+						ObservableFeature ntchangeFeature = new ObservableFeature();
+						ntchangeFeature.setName("NT change");
+						ntchangeOV.setFeature(ntchangeFeature);
+						ntchangeOV.setTarget(cdnaVariant);
+						ntchangeOV.setValue(mutationUploadDTO.getNtChange());
+						observedValueList.add(ntchangeOV);
+
+						patient.getMutations().add(cdnaVariant);
+					}
+					else
+					{
+						patient.getMutations().add(results.get(0));
+					}
+				}
+			}
+
+			// Add publications
+			if (StringUtils.isNotEmpty(tuple.getString("PubMed ID")))
+			{
+				for (String pubmedString : tuple.getString("PubMed ID").split("[,;]"))
+				{
+					pubmedString = StringUtils.deleteWhitespace(pubmedString);
+
+					List<Publication> results = db.query(Publication.class).equals(Publication.NAME, pubmedString).find();
+
+					if (results.size() < 1)
+					{
+						pubmedStringList.add(pubmedString);
+
+						Publication publication = new Publication();
+						publication.setName(pubmedString);
+
+						patient.getPatientreferences().add(publication);
+					}
+					else
+					{
+						patient.getPatientreferences().add(results.get(0));
+					}
+				}
+			}
+
+			// Add observed values for patients
+
+			for (String patientValueCol : patientValueCols)
+			{
+				String value = ObjectUtils.toString(tuple.getString(patientValueCol), "unknown");
+					
+				ObservedValue observedValue = new ObservedValue();
+				ObservableFeature feature   = new ObservableFeature();
+				feature.setName(patientValueCol);
+				observedValue.setFeature(feature);
+				observedValue.setTarget(patient);
+				observedValue.setValue(value);
+					
+				observedValueList.add(observedValue);
+			}
+			
+			patientList.put(patient.getName(), patient);
+		}
+
+		int counter = 0;
+
+		// Now finally import everything
+
+//		counter += db.add(Arrays.asList(alternateIdList.toArray(new AlternateId[alternateIdList.size()])));
+		counter += db.add(Arrays.asList(alternateIdList.values().toArray(new AlternateId[0])));
+		
+		// resolve foreign keys for sequenceCharacteristicList
+		
+		List<Variant> resolvedVariantList = new ArrayList<Variant>();
+		
+		for (Variant variant : variantList.values())
+		{
+			if (CollectionUtils.isNotEmpty(variant.getAlternateId()))
+			{
+				List<AlternateId> resolvedAlternateIdList = new ArrayList<AlternateId>();
+
+				for (AlternateId alternateId : variant.getAlternateId())
+				{
+					if (!em.contains(alternateId))
+					{
+						List<AlternateId> tmpList = db.query(AlternateId.class).equals(AlternateId.NAME, alternateId.getName()).find();
+						
+						if (tmpList.size() > 0)
+							alternateId = tmpList.get(0);
+					}
+					resolvedAlternateIdList.add(alternateId);
+				}
+				variant.setAlternateId(resolvedAlternateIdList);
+			}
+			resolvedVariantList.add(variant);
+		}
+
+		counter += db.add(resolvedVariantList);
+
+		// resolve foreign keys for sequenceRelationList
+
+		List<SequenceRelation> resolvedSequenceRelationList = new ArrayList<SequenceRelation>();
+		
+		for (SequenceRelation relation : sequenceRelationList)
+		{
+			if (relation.getSequenceFeature() != null)
+			{
+				List<SequenceCharacteristic> sequenceFeatureList = db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.NAME, relation.getSequenceFeature().getName()).find();
+				
+				if (sequenceFeatureList.size() == 1)
+				{
+					relation.setFeature(sequenceFeatureList.get(0));
+					relation.setSequenceFeature(sequenceFeatureList.get(0));
+				}
+			}
+			if (relation.getSequenceTarget()!= null)
+			{
+				List<SequenceCharacteristic> sequenceTargetList = db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.NAME, relation.getSequenceTarget().getName()).find();
+				
+				if (sequenceTargetList.size() == 1)
+				{
+					relation.setSequenceTarget(sequenceTargetList.get(0));
+					relation.setTarget(sequenceTargetList.get(0));
+				}
+			}
+			resolvedSequenceRelationList.add(relation);
+		}
+
+		counter += db.add(resolvedSequenceRelationList);
+
+		// resolve foreign keys for pubmedStringList
+		
+		if (pubmedStringList.size() > 0)
+		{
+			List<Publication> publicationList = publicationService.pubmedIdListToPublicationList(Arrays.asList(pubmedStringList.toArray(new String[pubmedStringList.size()])));
+		
+			counter += db.add(publicationList);
+		}
+
+		// resolve foreign keys for patientList
+
+		List<Patient> resolvedPatientList = new ArrayList<Patient>();
+
+		for (Patient patient : patientList.values())
+		{
+			System.out.println(">>> patient==" + patient.getName());
+			if (CollectionUtils.isNotEmpty(patient.getAlternateId()))
+			{
+				List<AlternateId> resolvedAlternateIdList = new ArrayList<AlternateId>();
+
+				for (AlternateId alternateId : patient.getAlternateId())
+				{
+					System.out.println(">>> alternateId==" + alternateId.getName());
+					if (!em.contains(alternateId))
+					{
+						List<AlternateId> tmpList = db.query(AlternateId.class).equals(AlternateId.NAME, alternateId.getName()).find();
+						
+						if (tmpList.size() > 0)
+						{
+							System.out.println(">>> found!");
+							alternateId = tmpList.get(0);
+						}
+					}
+					resolvedAlternateIdList.add(alternateId);
+				}
+				patient.setAlternateId(resolvedAlternateIdList);
+			}
+			if (CollectionUtils.isNotEmpty(patient.getMutations()))
+			{
+				List<Variant> resolvedMutationList = new ArrayList<Variant>();
+
+				for (Variant variant : patient.getMutations())
+				{
+					System.out.println(">>> variant==" + variant.getNameCdna());
+					if (!em.contains(variant))
+					{
+						List<Variant> tmpList = db.query(Variant.class).equals(Variant.NAME, variant.getName()).find();
+						
+						if (tmpList.size() == 1)
+						{
+							System.out.println(">>> found!");
+							variant = tmpList.get(0);
+						}
+					}
+					resolvedMutationList.add(variant);
+				}
+				patient.setMutations(resolvedMutationList);
+			}
+			if (CollectionUtils.isNotEmpty(patient.getPatientreferences()))
+			{
+				List<Publication> resolvedPublicationList = new ArrayList<Publication>();
+				
+				for (Publication publication : patient.getPatientreferences())
+				{
+					System.out.println(">>> publication==" + publication);
+					if (!em.contains(publication))
+					{
+						List<Publication> tmpList = db.query(Publication.class).equals(Publication.NAME, publication.getName()).find();
+
+						if (tmpList.size() == 1)
+						{
+							System.out.println(">>> found!");
+							publication = tmpList.get(0);
+						}
+					}
+					resolvedPublicationList.add(publication);
+				}
+				patient.setPatientreferences(resolvedPublicationList);
+			}
+			resolvedPatientList.add(patient);
+		}
+
+		counter += db.add(resolvedPatientList);
+
+		// resolve foreign keys for observedValueList
+		
+		List<ObservedValue> resolvedObservedValueList = new ArrayList<ObservedValue>();
+		
+		for (ObservedValue observedValue : observedValueList)
+		{
+			if (observedValue.getFeature() != null)
+			{
+				List<ObservableFeature> observableFeatureList = db.query(ObservableFeature.class).equals(ObservableFeature.NAME, observedValue.getFeature().getName()).find();
+				
+				if (observableFeatureList.size() == 1)
+					observedValue.setFeature(observableFeatureList.get(0));
+			}
+			if (observedValue.getTarget() != null)
+			{
+				List<ObservationTarget> observationTargetList = db.query(ObservationTarget.class).equals(ObservationTarget.NAME, observedValue.getTarget().getName()).find();
+				
+				if (observationTargetList.size() == 1)
+					observedValue.setTarget(observationTargetList.get(0));
+			}
+			resolvedObservedValueList.add(observedValue);
+		}
+		
+		counter += db.add(resolvedObservedValueList);
+
+		return counter;
+	}
+	
+	/**
+	 * Imports UploadBatch from tab/comma delimited File
+	 * @param db database to import into
+	 * @param reader csv reader to load data from
+	 * @param defaults to set default values for each row
+	 * @param dbAction indicating wether to add,update,remove etc
+	 * @param missingValues indicating what value in the csv is treated as 'null' (e.g. "" or "NA")
+	 * @return number of elements imported
+	 */
+//	public int importCsvOld(final Database db, CsvReader reader, final Tuple defaults, final DatabaseAction dbAction, final String missingValues) throws DatabaseException, IOException, Exception 
+//	{
 //		//cache for entities of which xrefs couldn't be resolved (e.g. if there is a self-refence)
 //		//these entities can be updated with their xrefs in a second round when all entities are in the database
 //		//final List<UploadBatch> uploadBatchsMissingRefs = new ArrayList<UploadBatch>();
-//	
-//		final MutationService mutationService   = new MutationService();
-//		mutationService.setDatabase(db);
-//		final UploadService uploadService       = new UploadService();
-//		uploadService.setDatabase(db);
 //
-//		final Submission submission             = new Submission();
-//		DateFormat dateFormat                   = new SimpleDateFormat("yyyy-MM-dd");
+//		db.beginTx();
+//
+//		final UploadService uploadService = ServiceLocator.instance().getUploadService();
+//
+//		final Submission submission       = new Submission();
+//		DateFormat dateFormat             = new SimpleDateFormat("yyyy-MM-dd");
 //		submission.setDate(dateFormat.format(new Date()));
 //		submission.setReleasedate(dateFormat.format(new Date()));
 //		submission.setIdentifier("S" + new Date());
-//		if (db instanceof JDBCDatabase)
-//		{
-//			List<Integer> submitters            = new ArrayList<Integer>();
-//			submitters.add(db.getLogin().getUserId());
-//			submission.setSubmitters_Id(submitters);
-//		}
-//		else if (db instanceof JpaDatabase)
-//		{
-//			List<MolgenisUser> submitters       = new ArrayList<MolgenisUser>();
-//			submitters.add(db.findById(MolgenisUser.class, db.getLogin().getUserId()));
-////			submission.setSubmitters(submitters);
-//		}
-//		db.add(submission);
+//		List<Integer> submitters          = new ArrayList<Integer>();
+//		submitters.add(db.getSecurity().getUserId());
+//		submission.setSubmitters_Id(submitters);
+//		db.getEntityManager().persist(submission);
 //
 //		//cache for objects to be imported from file (in batch)
-//		//TODO: Danny: Use or loose
-//		/*final List<PatientSummaryVO> patientList = */new ArrayList<PatientSummaryVO>(BATCH_SIZE);
-//		//wrapper to count
-//		final IntegerWrapper total = new IntegerWrapper(0);
-//		reader.setMissingValues(missingValues);
+//		final List<MutationUploadDTO> mutationUploadDTOList = new ArrayList<MutationUploadDTO>();
+//		final List<ObservedValueDTO> observedValueDTOList   = new ArrayList<ObservedValueDTO>();
+//		final List<PatientUploadDTO> patientUploadDTOList   = new ArrayList<PatientUploadDTO>();
+//		final List<String> pubmedList                       = new ArrayList<String>();
 //
+//		reader.setMissingValues(missingValues);
+//		reader.parse(new CsvReaderListener()
+//		{
 //			Integer mutationIdentifier = uploadService.getMaxMutationIdentifier();
 //			Integer patientIdentifier  = uploadService.getMaxPatientIdentifier();
 //
-//			for(Tuple tuple: reader)
+//			public void handleLine(int lineNo, Tuple tuple) throws Exception
 //			{
-//
 //				//parse object, setting defaults and values from file
-////				if (lineNo > 5) return;
-//				PatientSummaryVO patientSummaryVO = new PatientSummaryVO();
 //
-//				patientSummaryVO.setSubmissionDate(submission.getDate());
-//
-//				patientSummaryVO.setPatientNumber(tuple.getString("Local patient number"));
-//				patientSummaryVO.setPatientGender(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Gender")), "unknown"));
-//				patientSummaryVO.setPatientEthnicity(tuple.getString("Ethnicity"));
-//				patientSummaryVO.setPatientAge(ObjectUtils.toString(tuple.getString("Age"), "unknown"));
-//				patientSummaryVO.setPatientDeceased(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Deceased")), "unknown"));
-//				patientSummaryVO.setPatientConsent(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Signed consent")), "no"));
-//
-//				patientSummaryVO.setVariantSummaryVOList(new ArrayList<MutationSummaryVO>());
-//
-//				if (StringUtils.isNotEmpty(tuple.getString("cDNA change_1")))
-//				{
-//					MutationUploadVO mutationUploadVO = new MutationUploadVO();
-//					mutationUploadVO.setGeneSymbol("COL7A1");
-//					mutationUploadVO.setMutation(new Mutation());
-//					mutationUploadVO.getMutation().setCdna_Notation("c." + tuple.getString("cDNA change_1"));
-//					mutationService.assignValuesFromNotation(mutationUploadVO);
-//					if (StringUtils.isNotEmpty(tuple.getString("Protein change_1")))
-//						mutationUploadVO.getMutation().setAa_Notation("p." + tuple.getString("Protein change_1"));
-//					if (StringUtils.isNotEmpty(tuple.getString("Consequence_1")))
-//						mutationUploadVO.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_1"), ""));
-//					mutationUploadVO.getMutation().setInheritance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Inheritance_1")), ""));
-//	
-//					mutationIdentifier = mutationIdentifier + 1;
-//					mutationUploadVO.getMutation().setIdentifier("M" + mutationIdentifier);
-//					mutationUploadVO.getMutation().setName("M" + mutationIdentifier);
-//
-//					// Insert mutation if it does not exist already
-//
-//					MutationSearchCriteriaVO criteria   = new MutationSearchCriteriaVO();
-//					criteria.setVariation(mutationUploadVO.getMutation().getCdna_Notation());
-//					List<MutationSummaryVO> results     = mutationService.findMutations(criteria);
-//
-//					if (results.size() != 1)
-//					{
-//						uploadService.insert(mutationUploadVO);
-//						System.out.println(">>>Inserted mutation: " + mutationUploadVO.getMutation().toString());
-//					}
-//					MutationSummaryVO mutationSummaryVO = new MutationSummaryVO();
-//					mutationSummaryVO.setCdnaNotation(mutationUploadVO.getMutation().getCdna_Notation());
-//
-//					patientSummaryVO.getVariantSummaryVOList().add(mutationSummaryVO);
-//				}
-//
-//				// Second mutation can be 'NA' or 'unknown':
-//				// Leave xref == null and add remark in mutation2remark
-//				if (StringUtils.isNotEmpty(tuple.getString("cDNA change_2")))
-//				{
-//					if (tuple.getString("cDNA change_2").equalsIgnoreCase("na"))
-//						patientSummaryVO.setVariantComment(tuple.getString("cDNA change_2").toUpperCase());
-//					else if (tuple.getString("cDNA change_2").equalsIgnoreCase("unknown"))
-//						patientSummaryVO.setVariantComment(tuple.getString("cDNA change_2").toUpperCase());
-//					else
-//					{
-//						MutationUploadVO mutationUploadVO = new MutationUploadVO();
-//						mutationUploadVO.setGeneSymbol("COL7A1");
-//						mutationUploadVO.setMutation(new Mutation());
-//						mutationUploadVO.getMutation().setCdna_Notation("c." + tuple.getString("cDNA change_2"));
-//						mutationService.assignValuesFromNotation(mutationUploadVO);
-//						if (StringUtils.isNotEmpty(tuple.getString("Protein change_2")))
-//							mutationUploadVO.getMutation().setAa_Notation("p." + tuple.getString("Protein change_2"));
-//						if (StringUtils.isNotEmpty(tuple.getString("Consequence_2")))
-//							mutationUploadVO.getMutation().setConsequence(ObjectUtils.toString(tuple.getString("Consequence_2"), ""));
-//						mutationUploadVO.getMutation().setInheritance(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Inheritance_2")), ""));
-//		
-//						mutationIdentifier = mutationIdentifier + 1;
-//						mutationUploadVO.getMutation().setIdentifier("M" + mutationIdentifier);
-//						mutationUploadVO.getMutation().setName("M" + mutationIdentifier);
-//
-//						// Insert mutation if it does not exist already
-//
-//						MutationSearchCriteriaVO criteria   = new MutationSearchCriteriaVO();
-//						criteria.setVariation(mutationUploadVO.getMutation().getCdna_Notation());
-//						List<MutationSummaryVO> results     = mutationService.findMutations(criteria);
-//
-//						if (results.size() != 1)
-//						{
-//							uploadService.insert(mutationUploadVO);
-//							System.out.println(">>>Inserted mutation: " + mutationUploadVO.getMutation().toString());
-//						}
-//						MutationSummaryVO mutationSummaryVO = new MutationSummaryVO();
-//						mutationSummaryVO.setCdnaNotation(mutationUploadVO.getMutation().getCdna_Notation());
-//
-//						patientSummaryVO.getVariantSummaryVOList().add(mutationSummaryVO);
-//					}
-//				}
-//
-//				patientSummaryVO.setPhenotypeMajor(StringUtils.upperCase(tuple.getString("Phenotype major type")));
-//				patientSummaryVO.setPhenotypeSub(StringUtils.lowerCase(tuple.getString("Phenotype Subtype")));
-//
-////				PhenotypeDetailsVO phenotypeDetailsVO = new PhenotypeDetailsVO();
-//
-////				patientSummaryVO.getPhenotypeDetails().setLocation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Location")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setBlistering(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Blistering")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setHands(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Hands")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setFeet(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Feet")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setArms(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Arms")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setLegs(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Legs")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setProximal_Body_Flexures(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Proximal body flexures")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setTrunk(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Trunk")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setMucous_Membranes(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mucosa")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setSkin_Atrophy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Skin atrophy")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setMilia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Milia")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setNail_Dystrophy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Nail dystrophy")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setAlbopapuloid_Papules(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Albopapuloid papules")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setPruritic_Papules(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Pruritic papules")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setAlopecia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Alopecia")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setSquamous_Cell_Carcinomas(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Squamous cell carcinoma(s)")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setRevertant_Skin_Patch(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Revertant skin patch(es)")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setMechanism(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mechanism")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setFlexion_Contractures(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Flexion contractures")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setPseudosyndactyly_Hands(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Pseudosyndactyly (hands)")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setMicrostomia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Microstomia")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setAnkyloglossia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Ankyloglossia")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setDysphagia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Swallowing difficulties/ dysphagia/ oesophagus strictures")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Growth retardation")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setAnemia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Anaemia")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setRenal_Failure(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Renal failure")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setDilated_Cardiomyopathy(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Dilated cardiomyopathy")), "unknown"));
-////
-////				patientSummaryVO.getPhenotypeDetails().setColoboma(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Coloboma")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setCongenital_Heart_Defect(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Congenital heart defect")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setClp(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("C(L)P")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setChoanal_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Choanal anomaly")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setMental_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Mental retardation")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setGrowth_Retardation(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Growth retardation")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setGenital_Hypoplasia(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Genital hypoplasia")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setExternal_Ear_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("External ear anomaly")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setSemicircular_Canal_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Semicircular canal anomaly")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setHearing_Loss(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("Hearing loss")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setTe_Anomaly(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("TE anomaly")), "unknown"));
-////				patientSummaryVO.getPhenotypeDetails().setCn_Dysfunction(ObjectUtils.toString(StringUtils.lowerCase(tuple.getString("CN dysfunction")), "unknown"));
-//
-////				for (String field : patientSummaryVO.getPhenotypeDetails().getFields(true))
-////				{
-////					if ("".equals(patientSummaryVO.getPhenotypeDetails().get(field)))
-////						patientSummaryVO.getPhenotypeDetails().set(field, "unknown");
-////				}
-////				patientSummaryVO.getPhenotypeDetails().set(tuple.getString(""));
-//
-//				if (tuple.getString("PubMed ID") != null && tuple.getString("Reference") != null)
-//				{
-//					List<PublicationVO> publicationVOs = new ArrayList<PublicationVO>();
-//					String[] pubmeds                   = tuple.getString("PubMed ID").split(";");
-//					String[] titles                    = tuple.getString("Reference").split(";");
-//					for (int i = 0; i < pubmeds.length; i++)
-//					{
-//						PublicationVO publicationVO = new PublicationVO();
-//						publicationVO.setPubmedId(pubmeds[i]);
-//						publicationVO.setName(titles[i]);
-//						publicationVO.setTitle(titles[i]);
-//						publicationVOs.add(publicationVO);
-//					}
-//					patientSummaryVO.setPublicationVOList(publicationVOs);
-//					patientSummaryVO.setPatientConsent("publication");
-//				}
+//				PatientUploadDTO patientUploadDTO = new PatientUploadDTO();
 //
 //				patientIdentifier = patientIdentifier + 1;
-//				patientSummaryVO.setPatientIdentifier("P" + patientIdentifier);
-//				patientSummaryVO.setPatientName("P" + patientIdentifier);
+//				patientUploadDTO.setPatientName("P" + patientIdentifier);
+//				patientUploadDTO.setPatientLocalId(tuple.getString("ID CHARGE database"));
+//				patientUploadDTO.setSubmissionId(submission.getId());
 //
-//				patientSummaryVO.setObservedValueVOList(new ArrayList<ObservedValueVO>());
+//				// Add variants
+//				patientUploadDTO.setVariantCdnaNotationList(new ArrayList<String>());
 //
-//				ObservedValueVO observedValueVO;
-//				
-//				observedValueVO = new ObservedValueVO();
-//				observedValueVO.setFeatureName("LH7:2 Amount of type VII collagen");
-//				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
-//				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("IF LH7:2"), "unknown"));
-//				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
-//
-//				observedValueVO = new ObservedValueVO();
-//				observedValueVO.setFeatureName("IF Retention of type VII Collagen in basal cells");
-//				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
-//				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("IF Retention COLVII"), "unknown"));
-//				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
-//
-//				observedValueVO = new ObservedValueVO();
-//				observedValueVO.setFeatureName("Anchoring fibrils Number");
-//				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
-//				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("EM AF_no"), "unknown"));
-//				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
-//				
-//				observedValueVO = new ObservedValueVO();
-//				observedValueVO.setFeatureName("Anchoring fibrils Ultrastructure");
-//				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
-//				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("EM AF_structure"), "unknown"));
-//				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
-//				
-//				observedValueVO = new ObservedValueVO();
-//				observedValueVO.setFeatureName("EM Retention of type VII Collagen in basal cells");
-//				observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
-//				observedValueVO.setValue(ObjectUtils.toString(tuple.getString("EM_Retention COLVII"), "unknown"));
-//				patientSummaryVO.getObservedValueVOList().add(observedValueVO);
-//
-//				for (int i = 34; ; i++)
+//				if (StringUtils.isNotEmpty(tuple.getString("CHD7 c")))
 //				{
-//					System.out.println(">>>i==" + i);
+//					String[] cdnaNotations   = StringUtils.split(tuple.getString("CHD7 c"), ", ");
+//					String[] aaNotations     = StringUtils.split(tuple.getString("CHD7 p"), ", ");
+//					String[] pathogenicities = StringUtils.split(tuple.getString("Pathogenicity"), ", ");
+//					String[] mutationTypes   = StringUtils.split(tuple.getString("Mutation type"), ", ");
+//
+//					for (int i = 0; i < cdnaNotations.length; i++)
+//					{
+//						String cdnaNotation  = cdnaNotations[i];
+//						String aaNotation    = (ArrayUtils.getLength(aaNotations) == ArrayUtils.getLength(cdnaNotations) ? aaNotations[i] : "");
+//						String pathogenicity = (ArrayUtils.getLength(pathogenicities) == ArrayUtils.getLength(cdnaNotations) ? pathogenicities[i] : "");
+//						String mutationType  = (ArrayUtils.getLength(mutationTypes) == ArrayUtils.getLength(cdnaNotations) ? mutationTypes[i] : "");
+//
+//						MutationUploadDTO mutationUploadDTO = new MutationUploadDTO();
+//						mutationUploadDTO.setCdnaNotation("c." + cdnaNotation);
+//						uploadService.assignValuesFromNotation(mutationUploadDTO);
+//						if (StringUtils.isNotEmpty(aaNotation))
+//							mutationUploadDTO.setAaNotation("p." + aaNotation);
+//						mutationUploadDTO.setConsequence("Unknown");
+//						mutationUploadDTO.setInheritance(tuple.getString("Segregation"));
+//		
+//						mutationIdentifier = mutationIdentifier + 1;
+//						mutationUploadDTO.setIdentifier("M" + mutationIdentifier);
+//						mutationUploadDTO.setPathogenicity(StringUtils.lowerCase(pathogenicity));
+//						mutationUploadDTO.setType(mutationType);
+//
+//						patientUploadDTO.getVariantCdnaNotationList().add(mutationUploadDTO.getCdnaNotation());
+//
+//						// Add to mutationUploadDTOList if it does not exist already
+//	
+//						List<SequenceCharacteristic> results = db.query(SequenceCharacteristic.class).equals(SequenceCharacteristic.NAME, mutationUploadDTO.getCdnaNotation()).find();
+//
+//						if (results.size() == 0)
+//							mutationUploadDTOList.add(mutationUploadDTO);
+//					}
+//				}
+//
+//				// Add publications
+//				if (tuple.getString("Pubmed ID") != null)
+//				{
+//					String[] pubmedStringList = tuple.getString("PubMed ID").split("[,;]");
+//					
+//					for (String pubmedString : pubmedStringList)
+//					{
+//						pubmedString = StringUtils.deleteWhitespace(pubmedString);
+//
+//						patientUploadDTO.getPubmedStringList().add(pubmedString);
+//						
+//						// Add to publicationDTOList if it does not exists already
+//						List<Publication> publicationList = db.query(Publication.class).equals(Publication.NAME, pubmedString).find();
+//						
+//						if (publicationList.size() == 0)
+//							pubmedList.add(pubmedString);
+//					}
+//				}
+//
+//				// Add phenotypic values
+//				patientUploadDTO.setObservedValueDTOList(new ArrayList<ObservedValueDTO>());
+//
+//				for (int i = 18; ; i++)
+//				{
 //					String colName = tuple.getColName(i);
-//					System.out.println(">>>colName==" + colName);
 //					
 //					if (colName == null)
 //						break;
 //					
-//					observedValueVO = new ObservedValueVO();
-//					observedValueVO.setFeatureName(colName);
-//					observedValueVO.setTargetName(patientSummaryVO.getPatientIdentifier());
-//					observedValueVO.setValue(ObjectUtils.toString(tuple.getString(colName), "unknown"));
-//					patientSummaryVO.getObservedValueVOList().add(observedValueVO);
+//					ObservedValueDTO observedValueDTO = new ObservedValueDTO();
+//					FeatureDTO featureDTO             = new FeatureDTO();
+//					featureDTO.setFeatureName(colName);
+//					observedValueDTO.setFeatureDTO(featureDTO);
+//					observedValueDTO.setTargetName(patientUploadDTO.getPatientName());
+//					observedValueDTO.setValue(ObjectUtils.toString(tuple.getString(colName), "unknown"));
+//
+//					patientUploadDTO.getObservedValueDTOList().add(observedValueDTO);
+//					
+//					// Add to observedValueDTOList for insert
+//					
+//					observedValueDTOList.add(observedValueDTO);
 //				}
-//
-//				uploadService.insert(patientSummaryVO);
-//
-//				total.set(total.get() + 1);
-////				patientList.add(patientSummaryVO);		
-////				
-////				//add to db when batch size is reached
-////				if(patientList.size() == BATCH_SIZE)
-////				{
-////					//resolve foreign keys and copy those entities that could not be resolved to the missingRefs list
-////					uploadBatchsMissingRefs.addAll(resolveForeignKeys(db, uploadBatchList));
-////					
-////					//update objects in the database using xref_label defined secondary key(s) 'id' defined in xref_label
-////					db.update(uploadBatchList,dbAction, "id");
-////					
-////					//clear for next batch						
-////					uploadBatchList.clear();		
-////					
-////					//keep count
-////					total.set(total.get() + BATCH_SIZE);				
-////				}
+//				
+//				// Add to patientUploadDTOList
+//				patientUploadDTOList.add(patientUploadDTO);
 //			}
-//
-//		//add remaining elements to the database
-////		if(!uploadBatchList.isEmpty())
-////		{
-////			//resolve foreign keys, again keeping track of those entities that could not be solved
-////			uploadBatchsMissingRefs.addAll(resolveForeignKeys(db, uploadBatchList));
-////			//update objects in the database using xref_label defined secondary key(s) 'id' defined in xref_label
-////			db.update(uploadBatchList,dbAction, "id");
-////		}
-////		
-////		//second import round, try to resolve FK's for entities again as they might have referred to entities in the imported list
-////		List<UploadBatch> uploadBatchsStillMissingRefs = resolveForeignKeys(db, uploadBatchsMissingRefs);
-////		
-////		//if there are still missing references, throw error and rollback
-////		if(uploadBatchsStillMissingRefs.size() > 0){
-////			throw new Exception("Import of 'UploadBatch' objects failed: attempting to resolve in-list references, but there are still UploadBatchs referring to UploadBatchs that are neither in the database nor in the list of to-be imported UploadBatchs. (the first one being: "+uploadBatchsStillMissingRefs.get(0)+")");
-////		}
-////		//else update the entities in the database with the found references and return total
-////		else
-////		{				
-////			db.update(uploadBatchsMissingRefs,DatabaseAction.UPDATE, "id");
-////		
-////			//output count
-////			total.set(total.get() + uploadBatchList.size());
-////			logger.info("imported "+total.get()+" uploadBatch from CSV"); 
-////		
-////			return total.get();
-////		}
+//		});
 //		
-//		return total.get();
-	}
+//		PhenoService phenoService             = ServiceLocator.instance().getPhenoService();
+//		PublicationService publicationService = ServiceLocator.instance().getPublicationService();
+//
+//		int counter = 0;
+//		counter += uploadService.insert(mutationUploadDTOList.toArray(new MutationUploadDTO[0]));
+//		counter += publicationService.insert(publicationService.pubmedIdListToPublicationDTOList(pubmedList));
+//		counter += uploadService.insert(patientUploadDTOList.toArray(new PatientUploadDTO[0]));
+//		counter += phenoService.insert(observedValueDTOList);
+//
+//		db.rollbackTx();
+//
+//		return counter;
+//	}
 }
 

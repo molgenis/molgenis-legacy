@@ -136,7 +136,7 @@
 	<c:choose>
 	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
 	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="PM:${publicationDTO.pubmedId}"/></a><br/>
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.title}"/></a><br/>
 	</c:forEach>
 <!-- 	<a href="${patientDTO.publicationDTOList[0].pubmedUrl}" target="_new"><c:out value="${patientDTO.publicationDTOList[0].name}"/></a>-->
 	</c:when>
@@ -155,7 +155,7 @@
 	<c:choose>
 	<c:when test="${fn:length(current.publicationDTOList) > 0}">
 	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<c:out value="${publicationDTO.name}"/>
+	<c:out value="${publicationDTO.title}"/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>

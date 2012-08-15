@@ -93,8 +93,8 @@
 <display:column media="html" title="Reference">
 	<c:choose>
 	<c:when test="${fn:length(current.publicationDTOList) > 0}">
-	<c:forEach var="publicationVO" items="${current.publicationDTOList}">
-	<a href="${current.pubmedURL}${publicationVO.pubmedId}" title="${publicationVO.title}" target="_new"><c:out value="${publicationVO.name}"/></a><br/>
+	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.title}"/></a><br/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
@@ -137,13 +137,13 @@
 	</c:if>
 </display:column>
 <display:column media="csv excel pdf" title="Reference">
-<c:forEach var="publicationVO" items="${current.publicationDTOList}">
-	<c:out value="${publicationVO.name}" escapeXml="false"/>;
+<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<c:out value="${publicationDTO.title}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="PubMed ID">
-<c:forEach var="publicationVO" items="${current.publicationDTOList}">
-	<c:out value="PM:${publicationVO.pubmedId}" escapeXml="false"/>;
+<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<c:out value="PM:${publicationDTO.pubmedId}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 

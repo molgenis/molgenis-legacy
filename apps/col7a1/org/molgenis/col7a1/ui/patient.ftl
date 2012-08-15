@@ -5,7 +5,7 @@
 <tr class="form_listrow0"><th>Patient ID</th><td>${patientSummaryVO.patientIdentifier}</td></tr>
 <tr class="form_listrow1"><th>Genotype</th><td>
 <#list patientSummaryVO.variantDTOList as variantSummaryVO>
-${variantSummaryVO.cdnaNotation}<#if variantSummaryVO.aaNotation??> (${variantSummaryVO.aaNotation})</#if>
+${variantSummaryVO.cdnaNotation}<#if variantSummaryVO.aaNotation??> (${variantSummaryVO.aaNotation})</#if><br>
 </#list>
 </td></tr>
 <tr class="form_listrow0"><th>Phenotype</th><td>${patientSummaryVO.getPhenotypeMajor()}<#if patientSummaryVO.getPhenotypeSub() != "">, ${patientSummaryVO.getPhenotypeSub()}</#if><#if patientSummaryVO.patientConsent != "no"> [<a href="molgenis.do?__target=${screen.name}&__action=showPhenotypeDetails&pid=${patientSummaryVO.patientIdentifier}#phenotype">Details</a>]</#if></td></tr>

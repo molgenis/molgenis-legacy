@@ -472,6 +472,7 @@ public class UploadService extends MolgenisVariantService
 
 	public void assignValuesFromPosition(MutationUploadDTO mutationUploadDTO)
 	{
+		System.out.println(">>> assignValuesFromPosition: start");
 		if (StringUtils.isEmpty(mutationUploadDTO.getMutationPosition()) || "0".equals(mutationUploadDTO.getMutationPosition()))
 			return;
 
@@ -630,6 +631,7 @@ public class UploadService extends MolgenisVariantService
 	
 	private void assignConsequence(MutationUploadDTO mutationUploadDTO)
 	{
+		System.out.println(">>> assignConsequence: start");
 		// default: missense, no effect on splicing
 		mutationUploadDTO.setConsequence("Missense codon");
 		mutationUploadDTO.setEffectOnSplicing(false);
