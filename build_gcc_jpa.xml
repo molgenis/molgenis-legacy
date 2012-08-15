@@ -39,6 +39,7 @@
 		<pathelement location="apps/cvdb" />
 		<pathelement location="apps/gids" />
 		<pathelement location="apps/wormqtl" />
+		<pathelement location="apps/xqtl" />
 		<pathelement location="apps/lifelinesresearchportal" />
 		<pathelement location="modules/xgap" />
 		<pathelement location="apps/compute" />

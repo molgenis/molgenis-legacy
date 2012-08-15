@@ -38,6 +38,7 @@
 		<pathelement location="apps/bioshare" />
 		<pathelement location="apps/cvdb" />
 		<pathelement location="apps/gids" />
+		<pathelement location="apps/xqtl" />
 		<pathelement location="apps/wormqtl" />
 		<pathelement location="apps/lifelinesresearchportal" />
 		<pathelement location="modules/xgap" />
