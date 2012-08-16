@@ -130,6 +130,7 @@ public class JQGridColModel
 	public final boolean isFolder = false;
 	public final String path;
 	public String edittype;
+	public String add;
 
 	public JQGridColModel(Field f)
 	{
@@ -182,6 +183,7 @@ public class JQGridColModel
 			}
 			else
 			{
+
 				editoptions = EditOptions.createEditOptions();
 				editoptions.disabled = "disabled";
 				editoptions.style = "width:100px;background:lightgrey";
