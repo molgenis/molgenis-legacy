@@ -12,13 +12,16 @@ import org.molgenis.model.elements.Field;
 
 import com.google.gson.Gson;
 
-public class JQGridConfiguration {
+public class JQGridConfiguration
+{
 	public String id;
 
 	/** ajax url */
 	public final String url;
 
 	public final String editurl;
+
+	public final String add;
 
 	/** formatting of the ajax service data */
 	public final String datatype = "json";
@@ -36,7 +39,8 @@ public class JQGridConfiguration {
 	public int rowNum = 10;
 
 	/** choices of alternative rowNum values */
-	public Integer[] rowList = new Integer[] { 10, 20, 30 };
+	public Integer[] rowList = new Integer[]
+	{ 10, 20, 30 };
 
 	/** indicates whether we want to show total records from query in page bar */
 	public boolean viewrecords = true;
@@ -74,19 +78,22 @@ public class JQGridConfiguration {
 	@SuppressWarnings("unchecked")
 	public Object[] toolbar = Arrays.asList(true, "top").toArray();
 
-	public JQGridConfiguration(String id, String idField, String url,
-			String caption, TupleTable tupleTable) throws TableException {
+	public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable)
+			throws TableException
+	{
 		this.id = id;
 		this.pager = "#" + id + "_pager";
 		this.url = url;
 		this.editurl = url + "&Operation=EDIT_TABLE";
+		this.add = url + "&Operation=ADD_RECORD";
 		this.caption = caption;
 
 		// "{repeatitems: false, id: \"Code\"}"
 		jsonReader.put("repeatitems", false);
 		jsonReader.put("id", idField);
 
-		if (tupleTable instanceof FilterableTupleTable) {
+		if (tupleTable instanceof FilterableTupleTable)
+		{
 			// sortable = true;
 			settings.search = true;
 			settings.add = true;
@@ -94,9 +101,11 @@ public class JQGridConfiguration {
 			settings.del = true;
 		}
 
-		for (final Field f : tupleTable.getColumns()) {
+		for (final Field f : tupleTable.getColumns())
+		{
 			JQGridColModel model = new JQGridColModel(f);
-			if (tupleTable instanceof FilterableTupleTable) {
+			if (tupleTable instanceof FilterableTupleTable)
+			{
 				model.sortable = true;
 			}
 			colModel.add(model);
@@ -106,11 +115,13 @@ public class JQGridConfiguration {
 		System.out.println(new Gson().toJson(settings));
 	}
 
-	public JQGridConfiguration(String id, String url, String caption) {
+	public JQGridConfiguration(String id, String url, String caption)
+	{
 		this.id = id;
 		pager = "#" + id + "Pager";
 		this.url = url;
 		this.editurl = url + "&Operation=EDIT_TABLE";
+		this.add = url + "&Operation=ADD_RECORD";
 		this.caption = caption;
 	}
 }

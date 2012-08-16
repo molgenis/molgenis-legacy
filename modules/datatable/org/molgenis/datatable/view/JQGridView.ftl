@@ -61,7 +61,7 @@ var JQGridView = {
         	self.treeColModel.push($.extend(true, {}, value));
         });
         
-        
+       
         this.showVisibleColumns();
         
         this.grid = this.createJQGrid(null);
@@ -114,6 +114,7 @@ var JQGridView = {
     },
     
     getGrid: function() {
+    
     	return $("table#"+this.tableId);
     },
     
@@ -191,6 +192,7 @@ var JQGridView = {
     
     createJQGrid : function(filters) {
     	var self = this;
+    	
     	
 		if(filters != null) { // If condition may be redundant?
 			this.config.postData.filters = filters; 
@@ -274,6 +276,24 @@ var JQGridView = {
         	toolbar.append(colPager);
 
     	}
+    	    	$('#add_test').unbind('click');
+    			$('#add_test').click(function() {
+        
+				$( "#dialog" ).dialog('open');
+				$( "#dialog" ).empty();
+				var colNames = $('#test').jqGrid('getGridParam','colNames');
+				$('#dialog').append('<table id="addRecord">');
+ Ê Ê Ê Ê Ê $('#dialog').append('<table id="addRecord">');
+ Ê Ê Ê Ê Ê Ê$('#dialog').append('<tr id="' + colNames[0] + '"><td>' + colNames[0] + '</td><td><input type="text" width="20"></input></td></tr>');
+ Ê Ê Ê Ê Ê Ê$('#dialog').append('<tr id="' + colNames[1] + '"><td>' + colNames[1] + '</td><td><input type="text" width="20"></input></td></tr>');
+			$('#dialog').append('<tr id="' + colNames[2] + '"><td>' + colNames[2] + '</td><td><input type="text" width="20"></input></td></tr>');
+ 			$('#dialog').append('<tr id="' + colNames[3] + '"><td>' + colNames[3] + '</td><td><input type="text" width="20"></input></td></tr>');
+ 			$('#dialog').append('<tr id="' + colNames[4] + '"><td>' + colNames[4] + '</td><td><input type="text" width="20"></input></td></tr>');
+ 			<!-- NOT WORKING OFFCOURSE  $('#dialog').append('<tr><td>' + '</td><td><input type="submit" width="20" onlick="__action.value=\"addNewRecord\""></input></td></tr>');-->
+ Ê Ê Ê Ê Ê Ê$('#dialog').append('</table>')
+				
+    	});
+    	
         return grid;
 	},
 
@@ -337,6 +357,7 @@ var JQGridView = {
 	// Build the column selection tree
 	createTree : function(nodes) {
 		var self = this;
+		
 		return $("#"+this.tableId+"_tree").dynatree({
 			checkbox: true,
 			selectMode: 3,
@@ -390,20 +411,31 @@ var JQGridView = {
 // On first load do:
 $(document).ready(function() {
     configUrl = "${url}";
-    
+    $("#dialog").dialog({ autoOpen: false });
     //load JQGrid configuration and creates grid
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
         
         grid = JQGridView.init("${tableId}", "${tableId}_pager", config);
+       
+        
     });
 	$('#${tableId}_exportButton').click(function() {
 		$( "#${tableId}_dialog-form" ).dialog('open');
 	});
 	
+	
+	
 });
 
 </script>
+
+
+
+<div id="dialog" title="Basic dialog" style="width:200px; height:200px;font-size:12px">
+	
+
+</div><!-- End demo -->
 
 
 <div id="${tableId}_treeBox">
