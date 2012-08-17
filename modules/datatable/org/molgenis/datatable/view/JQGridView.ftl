@@ -276,22 +276,134 @@ var JQGridView = {
         	toolbar.append(colPager);
 
     	}
-    	    	$('#add_test').unbind('click');
-    			$('#add_test').click(function() {
-        
-				$( "#dialog" ).dialog('open');
-				$( "#dialog" ).empty();
-				var colNames = $('#test').jqGrid('getGridParam','colNames');
-				$('#dialog').append('<table id="addRecord">');
- Ê Ê Ê Ê Ê $('#dialog').append('<table id="addRecord">');
- Ê Ê Ê Ê Ê Ê$('#dialog').append('<tr id="' + colNames[0] + '"><td>' + colNames[0] + '</td><td><input type="text" width="20"></input></td></tr>');
- Ê Ê Ê Ê Ê Ê$('#dialog').append('<tr id="' + colNames[1] + '"><td>' + colNames[1] + '</td><td><input type="text" width="20"></input></td></tr>');
-			$('#dialog').append('<tr id="' + colNames[2] + '"><td>' + colNames[2] + '</td><td><input type="text" width="20"></input></td></tr>');
- 			$('#dialog').append('<tr id="' + colNames[3] + '"><td>' + colNames[3] + '</td><td><input type="text" width="20"></input></td></tr>');
- 			$('#dialog').append('<tr id="' + colNames[4] + '"><td>' + colNames[4] + '</td><td><input type="text" width="20"></input></td></tr>');
- 			<!-- NOT WORKING OFFCOURSE  $('#dialog').append('<tr><td>' + '</td><td><input type="submit" width="20" onlick="__action.value=\"addNewRecord\""></input></td></tr>');-->
- Ê Ê Ê Ê Ê Ê$('#dialog').append('</table>')
-				
+    	
+    	$('#add_test').unbind('click');
+		
+		$('#add_test').click(function() {
+	
+			columnPage = self.columnPage;
+			columnPagerSize = self.columnPagerSize;
+			numOfSelectedNodes = self.numOfSelectedNodes;
+
+			$( "#dialog" ).dialog('open');
+			$( "#dialog" ).empty();
+			var colNames = $('#test').jqGrid('getGridParam','colNames');
+			
+			maxPage = Math.floor( numOfSelectedNodes / columnPagerSize);
+			if( (numOfSelectedNodes % columnPagerSize) > 0) maxPage = maxPage + 1;
+			
+			this.columnPage = Math.min(this.columnPage, this.maxPage);
+			
+			addRecordTable = "<table id=\"addRecord\">";
+			
+			$('#dialog').append();
+			
+			for(var index = 0; index < colNames.length; index++){
+ 				addRecordTable += "<tr id=\"" + colNames[index] + "\" style=\"display:none\"><td>" + colNames[index] + 
+ 					"</td><td><input id=\""+ colNames[index] +"_input\" type=\"text\" width=\"20\"></input></td></tr>";
+ 			}
+ 			addRecordTable += "</table></br>";
+			$('#dialog').append(addRecordTable);
+			$('#addRecord tr:lt(7)').show();
+			navPage = "<div id=\"navPage\">";
+			navPage += "<input id=\"nextPage\" type=\"button\" style=\"font-size:0.7em\" value=\"next page >\"></input>";
+			navPage += "<input id=\"prevPage\" type=\"button\" style=\"font-size:0.7em\" value=\"< previous page\"></input>";
+			navPage += "</div>";
+			$('#dialog').append(navPage);
+			controlDiv = "</br><div id=\"controlDiv\">";
+			controlDiv += "<input id=\"submitAddRecord\" type=\"submit\" style=\"font-size:1.3em\" value=\"Submit\"></input>";
+			controlDiv += "<input id=\"quitAddRecord\" type=\"button\" style=\"font-size:1.3em\" value=\"Cancel\"></input>";
+			controlDiv += "</div>";
+			$('#dialog').append(controlDiv);
+			
+ 			$('#nextPage').button();
+ 			$('#prevPage').button();
+ 			$('#submitAddRecord').button();Ê Ê Ê Ê Ê Ê
+			$('#quitAddRecord').button();
+			
+ 			$('#nextPage').click(function(){
+ 				
+ 				if(columnPage + 1 <= maxPage){
+ 					
+ 					columnPage = columnPage + 1;
+		 			
+		 			beginningIndex = (columnPage - 1) *columnPagerSize + 1;
+		 			endingIndex = (columnPage - 1) *columnPagerSize + 6;
+		 			allRows = $('#addRecord tr');
+		 			$(allRows).hide();
+		 			$(allRows).eq(0).show();
+		 			for(var index = beginningIndex; index <= endingIndex; index++){
+		 				$(allRows).eq(index).show();
+		 			}
+	 			}
+ 			});
+ 			
+ 			$('#prevPage').click(function(){
+ 				
+ 				if(columnPage - 1 > 0){
+		 			columnPage = columnPage - 1;
+		 			beginningIndex = (columnPage - 1) *columnPagerSize + 1;
+		 			endingIndex = (columnPage - 1) *columnPagerSize + 6;
+		 			allRows = $('#addRecord tr');
+		 			$(allRows).hide();
+		 			$(allRows).eq(0).show();
+		 			for(var index = beginningIndex; index <= endingIndex; index++){
+		 				$(allRows).eq(index).show();
+		 			}
+	 			}
+ 			});
+ 			
+ 			grid = self.grid;
+ 			
+ 			$('#submitAddRecord').click(function(){
+ 				
+ 				template = {};
+ 				
+ 				for(var index = 0; index < colNames.length; index++){
+ 					
+ 					if($("#" + colNames[index] + "_input").val() != ""){
+ 						template[colNames[index]] = $("#" + colNames[index] + "_input").val();
+ 					}else{
+ 						template[colNames[index]] = "";
+ 					}
+ 				}
+ 				
+ 				var myUrl = $("table#"+self.tableId).jqGrid('getGridParam', 'url');
+ 				
+ 				patientID = template[colNames[0]];
+ 				
+ 				if(patientID === ""){
+ 					alert("The patientID needs to fill out!");
+ 				}else{
+ 					delete template[colNames[0]];
+					myUrl += "&patientID=" + patientID + "&data=" + JSON.stringify(template);
+	                $.ajax(myUrl + "&Operation=ADD_RECORD").done(function(status) {
+				       	if(status["success"] == true){
+				       		template[colNames[0]] = patientID;
+				        	grid.addRowData(grid.getGridParam('records') + 1, template, "first");	
+				        	$('#dialog').dialog('close');
+				        }
+				        alert(status["message"]);
+				    });
+ 				}            
+ 			});
+ 			
+ 			$('#quitAddRecord').click(function(){
+ 				confirmDialog = "<div id=\"confirmDialog\" title=\"Confirmation\">";
+ 				confirmDialog += "Are you sure you want to quit?</br>";
+ 				confirmDialog += "<input id=\"confirmButton\" type=\"button\" style=\"font-size:0.8em\" value=\"Confirm\"></input>";
+ 				confirmDialog += "<input id=\"cancelButton\" type=\"button\" style=\"font-size:0.8em\" value=\"Cancel\"></input>";
+ 				confirmDialog += "<div>";
+ 				$('#dialog').append(confirmDialog);
+ 				$('#confirmButton').button();Ê Ê Ê Ê Ê Ê
+				$('#cancelButton').button();
+ 				$('#confirmDialog').dialog();
+ 				$('#confirmButton').click(function(){
+ 					$('#dialog').dialog('close');
+ 					$('#confirmDialog').remove();
+ 				});
+ 				$('#cancelButton').click(function(){$('#confirmDialog').remove();});
+ 			});
     	});
     	
         return grid;
@@ -432,7 +544,7 @@ $(document).ready(function() {
 
 
 
-<div id="dialog" title="Basic dialog" style="width:200px; height:200px;font-size:12px">
+<div id="dialog" title="Add record" style="width:200px; height:200px;font-size:12px">
 	
 
 </div><!-- End demo -->
