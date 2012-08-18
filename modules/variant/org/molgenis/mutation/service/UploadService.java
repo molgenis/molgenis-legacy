@@ -296,6 +296,7 @@ public class UploadService extends MolgenisVariantService
 				this.em.getTransaction().rollback();
 
 			e.printStackTrace();
+			//TODO: Produce nicer error message
 			throw new UploadServiceException(e.getMessage());
 		}
 	}

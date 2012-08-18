@@ -63,6 +63,11 @@ public class PublicationService
 
 			return count;
 		}
+		catch (NumberFormatException e)
+		{
+			e.printStackTrace();
+			throw new PublicationServiceException("Not a valid number: " + e.getMessage());
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -204,7 +209,7 @@ public class PublicationService
 			throw new PublicationServiceException(e.getMessage());
 		}
 	}
-	
+
 	public List<Publication> pubmedIdListToPublicationList(final List<String> pubmedStringList)
 	{
 		try
@@ -234,7 +239,40 @@ public class PublicationService
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			throw new PublicationServiceException(e.getMessage());
+			throw new PublicationServiceException(e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+	}
+
+	public List<Publication> pubmedIdListToPublicationListLocal(final List<String> pubmedStringList)
+	{
+		try
+		{
+			List<Integer> pubmedIdList  = new ArrayList<Integer>();
+	
+			for (String pubmed : pubmedStringList)
+			{
+				if (StringUtils.isEmpty(pubmed))
+					continue;
+				pubmedIdList.add(Integer.parseInt(pubmed));
+			}
+
+			List<Publication> publicationList  = new ArrayList<Publication>();
+
+			for (Integer pubmedId : pubmedIdList)
+			{
+				Publication publication = new Publication();
+				publication.setName(pubmedId.toString());
+				publication.setTitle("The Pubmed article formerly known as " + pubmedId);
+				
+				publicationList.add(publication);
+			}
+
+			return publicationList;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new PublicationServiceException(e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 	}
 }
