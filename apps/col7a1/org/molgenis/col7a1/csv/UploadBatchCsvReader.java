@@ -47,6 +47,7 @@ import org.molgenis.variant.Variant;
 import org.molgenis.mutation.ServiceLocator;
 import org.molgenis.mutation.dto.MutationUploadDTO;
 import org.molgenis.mutation.service.UploadService;
+import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.AlternateId;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.pheno.ObservationTarget;
@@ -63,8 +64,8 @@ import org.springframework.stereotype.Component;
 public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 {
 	public final transient Logger logger    = Logger.getLogger(UploadBatchCsvReader.class);
-	private final String[] patientValueCols = { "Gender", "Age", "Ethnicity", "Deceased", "Cause of Death", "Blistering", "Location", "Hands", "Feet", "Arms", "Legs", "Proximal body flexures", "Trunk", "Mucosa", "Skin atrophy", "Milia", "Nail dystrophy", "Albopapuloid papules", "Pruritic papules", "Alopecia", "Squamous cell carcinoma(s)", "Revertant skin patch(es)", "Mechanism", "Flexion contractures", "Pseudosyndactyly (hands)", "Microstomia", "Ankyloglossia", "Swallowing difficulties/ dysphagia/ oesophagus strictures", "Growth retardation", "Anaemia", "Renal failure", "Dilated cardiomyopathy", "Other" };
-	private final String[] variantValueCols = { "par/mat", "homo-/heterozygous", "consequence", "MYO5B domain", "3D structure (only for motor domain)", "conserved (yes/no)", "function of affected residue", "mRNA expression", "protein expression", "protein IHC", "rab11-binding site affected (predicted)", "rab8-binding site affected (predicted)" };
+	private final String[] patientValueCols = { "LH7:2 Amount of type VII collagen", "IF Retention of type VII Collagen in basal cells", "Anchoring fibrils Number", "Anchoring fibrils Ultrastructure", "EM Retention of type VII Collagen in basal cells", "Gender", "Age", "Ethnicity", "Deceased", "Cause of Death", "Blistering", "Location", "Hands", "Feet", "Arms", "Legs", "Proximal body flexures", "Trunk", "Mucosa", "Skin atrophy", "Milia", "Nail dystrophy", "Albopapuloid papules", "Pruritic papules", "Alopecia", "Squamous cell carcinoma(s)", "Revertant skin patch(es)", "Mechanism", "Flexion contractures", "Pseudosyndactyly (hands)", "Microstomia", "Ankyloglossia", "Swallowing difficulties/ dysphagia/ oesophagus strictures", "Growth retardation", "Anaemia", "Renal failure", "Dilated cardiomyopathy", "Other" };
+	private final String[] variantValueCols = { };
 
 	/**
 	 * Imports UploadBatch from tab/comma delimited File
@@ -116,6 +117,9 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		submitters.add(securityService.getUserId());
 		submission.setSubmitters_Id(submitters);
 		db.add(submission);
+
+		//load default investigation
+		final Investigation investigation = db.findById(Investigation.class, 1);
 
 		//cache for objects to be imported from file (in batch)
 		final Map<String, AlternateId> alternateIdList    = new HashMap<String, AlternateId>();
@@ -216,6 +220,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						cdnaVariant.setStartAa(mutationUploadDTO.getAaStart());
 						cdnaVariant.setEndAa(mutationUploadDTO.getAaEnd());
 
+						cdnaVariant.setNameGdna(mutationUploadDTO.getGdnaNotation());
 						cdnaVariant.setStartGdna(mutationUploadDTO.getGdnaStart());
 						cdnaVariant.setEndGdna(mutationUploadDTO.getGdnaEnd());
 
@@ -243,11 +248,28 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 							ObservableFeature feature   = new ObservableFeature();
 							feature.setName(variantValueCol);
 							observedValue.setFeature(feature);
+							observedValue.setInvestigation(investigation);
 							observedValue.setTarget(cdnaVariant);
 							observedValue.setValue(value);
 								
 							observedValueList.add(observedValue);
 						}
+
+						ObservedValue inheritanceOV          = new ObservedValue();
+						ObservableFeature inheritanceFeature = new ObservableFeature();
+						inheritanceFeature.setName("Inheritance");
+						inheritanceOV.setFeature(inheritanceFeature);
+						inheritanceOV.setInvestigation(investigation);
+						inheritanceOV.setTarget(cdnaVariant);
+						inheritanceOV.setValue(ObjectUtils.toString(tuple.getString("Inheritance_1"), ""));						observedValueList.add(inheritanceOV);
+
+						ObservedValue deNovoOV          = new ObservedValue();
+						ObservableFeature deNovoFeature = new ObservableFeature();
+						deNovoFeature.setName("De novo");
+						deNovoOV.setFeature(deNovoFeature);
+						deNovoOV.setInvestigation(investigation);
+						deNovoOV.setTarget(cdnaVariant);
+						deNovoOV.setValue(ObjectUtils.toString(tuple.getString("De novo_1"), ""));						observedValueList.add(deNovoOV);
 
 						// Add calculated values from variantUploadDTO
 						
@@ -255,6 +277,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						ObservableFeature codonChangeFeature = new ObservableFeature();
 						codonChangeFeature.setName("Codon change");
 						codonChangeOV.setFeature(codonChangeFeature);
+						codonChangeOV.setInvestigation(investigation);
 						codonChangeOV.setTarget(cdnaVariant);
 						codonChangeOV.setValue(mutationUploadDTO.getCodonChange());
 						observedValueList.add(codonChangeOV);
@@ -263,6 +286,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						ObservableFeature consequenceFeature = new ObservableFeature();
 						consequenceFeature.setName("Consequence");
 						consequenceOV.setFeature(consequenceFeature);
+						consequenceOV.setInvestigation(investigation);
 						consequenceOV.setTarget(cdnaVariant);
 						consequenceOV.setValue(mutationUploadDTO.getConsequence());
 						observedValueList.add(consequenceOV);
@@ -271,6 +295,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						ObservableFeature splicingFeature = new ObservableFeature();
 						splicingFeature.setName("Effect on splicing");
 						splicingOV.setFeature(splicingFeature);
+						splicingOV.setInvestigation(investigation);
 						splicingOV.setTarget(cdnaVariant);
 						splicingOV.setValue(mutationUploadDTO.getEffectOnSplicing().toString());
 						observedValueList.add(splicingOV);
@@ -279,6 +304,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						ObservableFeature eventFeature = new ObservableFeature();
 						eventFeature.setName("Event");
 						eventOV.setFeature(eventFeature);
+						eventOV.setInvestigation(investigation);
 						eventOV.setTarget(cdnaVariant);
 						eventOV.setValue(mutationUploadDTO.getEvent());
 						observedValueList.add(eventOV);
@@ -287,6 +313,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						ObservableFeature ntchangeFeature = new ObservableFeature();
 						ntchangeFeature.setName("NT change");
 						ntchangeOV.setFeature(ntchangeFeature);
+						ntchangeOV.setInvestigation(investigation);
 						ntchangeOV.setTarget(cdnaVariant);
 						ntchangeOV.setValue(mutationUploadDTO.getNtChange());
 						observedValueList.add(ntchangeOV);
@@ -305,6 +332,8 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 			{
 				String[] cdnaNotations   = StringUtils.split(tuple.getString("cDNA change_2"), ", ");
 				String[] aaNotations     = StringUtils.split(tuple.getString("Protein change_2"), ", ");
+				String[] inheritances    = StringUtils.split(tuple.getString("Inheritance_2"), ", ");
+				String[] deNovos         = StringUtils.split(tuple.getString("De novo_2"), ", ");
 
 				for (int i = 0; i < cdnaNotations.length; i++)
 				{
@@ -367,18 +396,35 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 							ObservableFeature feature   = new ObservableFeature();
 							feature.setName(variantValueCol);
 							observedValue.setFeature(feature);
+							observedValue.setInvestigation(investigation);
 							observedValue.setTarget(cdnaVariant);
 							observedValue.setValue(value);
 								
 							observedValueList.add(observedValue);
 						}
 
+						ObservedValue inheritanceOV          = new ObservedValue();
+						ObservableFeature inheritanceFeature = new ObservableFeature();
+						inheritanceFeature.setName("Inheritance");
+						inheritanceOV.setFeature(inheritanceFeature);
+						inheritanceOV.setInvestigation(investigation);
+						inheritanceOV.setTarget(cdnaVariant);
+						inheritanceOV.setValue(ObjectUtils.toString(tuple.getString("Inheritance_2"), ""));						observedValueList.add(inheritanceOV);
+
+						ObservedValue deNovoOV          = new ObservedValue();
+						ObservableFeature deNovoFeature = new ObservableFeature();
+						deNovoFeature.setName("De novo");
+						deNovoOV.setFeature(deNovoFeature);
+						deNovoOV.setInvestigation(investigation);
+						deNovoOV.setTarget(cdnaVariant);
+						deNovoOV.setValue(ObjectUtils.toString(tuple.getString("De novo_2"), ""));
 						// Add calculated values from variantUploadDTO
 						
 						ObservedValue codonChangeOV          = new ObservedValue();
 						ObservableFeature codonChangeFeature = new ObservableFeature();
 						codonChangeFeature.setName("Codon change");
 						codonChangeOV.setFeature(codonChangeFeature);
+						codonChangeOV.setInvestigation(investigation);
 						codonChangeOV.setTarget(cdnaVariant);
 						codonChangeOV.setValue(mutationUploadDTO.getCodonChange());
 						observedValueList.add(codonChangeOV);
@@ -387,6 +433,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						ObservableFeature consequenceFeature = new ObservableFeature();
 						consequenceFeature.setName("Consequence");
 						consequenceOV.setFeature(consequenceFeature);
+						consequenceOV.setInvestigation(investigation);
 						consequenceOV.setTarget(cdnaVariant);
 						consequenceOV.setValue(mutationUploadDTO.getConsequence());
 						observedValueList.add(consequenceOV);
@@ -395,6 +442,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						ObservableFeature splicingFeature = new ObservableFeature();
 						splicingFeature.setName("Effect on splicing");
 						splicingOV.setFeature(splicingFeature);
+						splicingOV.setInvestigation(investigation);
 						splicingOV.setTarget(cdnaVariant);
 						splicingOV.setValue(mutationUploadDTO.getEffectOnSplicing().toString());
 						observedValueList.add(splicingOV);
@@ -403,6 +451,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						ObservableFeature eventFeature = new ObservableFeature();
 						eventFeature.setName("Event");
 						eventOV.setFeature(eventFeature);
+						eventOV.setInvestigation(investigation);
 						eventOV.setTarget(cdnaVariant);
 						eventOV.setValue(mutationUploadDTO.getEvent());
 						observedValueList.add(eventOV);
@@ -411,6 +460,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 						ObservableFeature ntchangeFeature = new ObservableFeature();
 						ntchangeFeature.setName("NT change");
 						ntchangeOV.setFeature(ntchangeFeature);
+						ntchangeOV.setInvestigation(investigation);
 						ntchangeOV.setTarget(cdnaVariant);
 						ntchangeOV.setValue(mutationUploadDTO.getNtChange());
 						observedValueList.add(ntchangeOV);
@@ -459,6 +509,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 				ObservableFeature feature   = new ObservableFeature();
 				feature.setName(patientValueCol);
 				observedValue.setFeature(feature);
+				observedValue.setInvestigation(investigation);
 				observedValue.setTarget(patient);
 				observedValue.setValue(value);
 					
@@ -472,6 +523,10 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 
 		// Now finally import everything
 
+		for (AlternateId a : alternateIdList.values())
+		{
+			System.out.println(">>> Adding: " + a);
+		}
 //		counter += db.add(Arrays.asList(alternateIdList.toArray(new AlternateId[alternateIdList.size()])));
 		counter += db.add(Arrays.asList(alternateIdList.values().toArray(new AlternateId[0])));
 		
@@ -538,9 +593,10 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 		
 		if (pubmedStringList.size() > 0)
 		{
-			List<Publication> publicationList = publicationService.pubmedIdListToPublicationList(Arrays.asList(pubmedStringList.toArray(new String[pubmedStringList.size()])));
-		
+			List<Publication> publicationList = publicationService.pubmedIdListToPublicationListLocal(Arrays.asList(pubmedStringList.toArray(new String[pubmedStringList.size()])));
+System.out.println(">>> Inserting publications: " + publicationList.toString());	
 			counter += db.add(publicationList);
+System.out.println(">>> Done inserting publications.");
 		}
 
 		// resolve foreign keys for patientList
