@@ -42,7 +42,14 @@
 	<c:out value="${patientDTO.variantDTOList[0].cdnaNotation}"/>
 	</c:when>
 	<c:otherwise>
-	<c:out value="${patientDTO.variantComment}"/>
+		<c:choose>
+		<c:when test="${fn:contains(current.inheritance, 'dominant')}">
+			NA
+		</c:when>
+		<c:otherwise>
+			Unknown
+		</c:otherwise>
+		</c:choose>
 	</c:otherwise>
 	</c:choose>
 </div>
@@ -80,13 +87,13 @@
 </display:column>
 <display:column media="html" title="Consequence">
 <div class="unwrapped">
-	<c:out value="${current.observedValue}"/>
+	<c:out value="${current.consequence}"/>
 	<br/>
 </div>
 	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
 	<c:if test="${fn:length(patientDTO.variantDTOList) > 0}">
-	<c:out value="${patientDTO.variantDTOList[0].observedValue}"/>
+	<c:out value="${patientDTO.variantDTOList[0].consequence}"/>
 	</c:if>
 	<br/>
 </div>
@@ -94,13 +101,13 @@
 </display:column>
 <display:column media="html" title="Inheritance">
 <div class="unwrapped">
-	<c:out value="${current.observedValue}"/>
+	<c:out value="${current.inheritance}"/>
 	<br/>
 </div>
 	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}">
 <div class="unwrapped">
 	<c:if test="${fn:length(patientDTO.variantDTOList) > 0}">
-	<c:out value="${patientDTO.variantDTOList[0].observedValue}"/>
+	<c:out value="${patientDTO.variantDTOList[0].inheritance}"/>
 	</c:if>
 	<br/>
 </div>
@@ -135,7 +142,7 @@
 <div class="unwrapped">
 	<c:choose>
 	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
-	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}">
 	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.title}"/></a><br/>
 	</c:forEach>
 <!-- 	<a href="${patientDTO.publicationDTOList[0].pubmedUrl}" target="_new"><c:out value="${patientDTO.publicationDTOList[0].name}"/></a>-->

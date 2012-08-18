@@ -38,7 +38,14 @@
 	<a href="<c:out value="${url}"/>"><c:out value="${current.variantDTOList[1].cdnaNotation}"/></a>
 	</c:when>
 	<c:otherwise>
-	<c:out value="${current.variantComment}"/>
+		<c:choose>
+		<c:when test="${fn:contains(current.variantDTOList[0].inheritance, 'dominant')}">
+			NA
+		</c:when>
+		<c:otherwise>
+			Unknown
+		</c:otherwise>
+		</c:choose>
 	</c:otherwise>
 	</c:choose>
 </div>
@@ -137,13 +144,13 @@
 	</c:if>
 </display:column>
 <display:column media="csv excel pdf" title="Reference">
-<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<c:out value="${publicationDTO.title}" escapeXml="false"/>;
+<c:forEach var="publicationVO" items="${current.publicationDTOList}">
+	<c:out value="${publicationVO.name}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="PubMed ID">
-<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<c:out value="PM:${publicationDTO.pubmedId}" escapeXml="false"/>;
+<c:forEach var="publicationVO" items="${current.publicationDTOList}">
+	<c:out value="PM:${publicationVO.pubmedId}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 
