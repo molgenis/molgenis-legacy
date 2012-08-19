@@ -277,50 +277,65 @@ var JQGridView = {
 
     	}
     	
+    	//Remove the default click function.
     	$('#add_test').unbind('click');
 		
+		//Add custom click event
 		$('#add_test').click(function() {
-	
+			
 			columnPage = self.columnPage;
 			columnPagerSize = self.columnPagerSize;
 			numOfSelectedNodes = self.numOfSelectedNodes;
-
-			$( "#dialog" ).dialog('open');
-			$( "#dialog" ).empty();
-			var colNames = $('#test').jqGrid('getGridParam','colNames');
 			
+			//Open the dialog after click
+			$( "#dialog" ).dialog('open');
+			
+			//Remove the content of the dialog left from last click event
+			$( "#dialog" ).empty();
+			
+			var colNames = $('#test').jqGrid('getGridParam','colNames');
 			maxPage = Math.floor( numOfSelectedNodes / columnPagerSize);
 			if( (numOfSelectedNodes % columnPagerSize) > 0) maxPage = maxPage + 1;
-			
 			this.columnPage = Math.min(this.columnPage, this.maxPage);
 			
+			//create the new table for adding values for different measurements
 			addRecordTable = "<table id=\"addRecord\">";
 			
-			$('#dialog').append();
-			
+			//Using for loop to add all the columns as new rows within the table.
 			for(var index = 0; index < colNames.length; index++){
  				addRecordTable += "<tr id=\"" + colNames[index] + "\" style=\"display:none\"><td>" + colNames[index] + 
  					"</td><td><input id=\""+ colNames[index] +"_input\" type=\"text\" width=\"20\"></input></td></tr>";
  			}
+ 			
+ 			//close the table and add it to the dialog div
  			addRecordTable += "</table></br>";
 			$('#dialog').append(addRecordTable);
+			
+			//Only the first 7 rows are shown in the table.
 			$('#addRecord tr:lt(7)').show();
+			
+			//Create a new div in which the next and previous buttons are added.
 			navPage = "<div id=\"navPage\">";
 			navPage += "<input id=\"nextPage\" type=\"button\" style=\"font-size:0.7em\" value=\"next page >\"></input>";
 			navPage += "<input id=\"prevPage\" type=\"button\" style=\"font-size:0.7em\" value=\"< previous page\"></input>";
 			navPage += "</div>";
 			$('#dialog').append(navPage);
+			//Using jQuery UI Button
+			$('#nextPage').button();
+ 			$('#prevPage').button();
+ 			
+			
+			//Add the submit and cancel buttons to the dialog
 			controlDiv = "</br><div id=\"controlDiv\">";
 			controlDiv += "<input id=\"submitAddRecord\" type=\"submit\" style=\"font-size:1.3em\" value=\"Submit\"></input>";
 			controlDiv += "<input id=\"quitAddRecord\" type=\"button\" style=\"font-size:1.3em\" value=\"Cancel\"></input>";
 			controlDiv += "</div>";
 			$('#dialog').append(controlDiv);
-			
- 			$('#nextPage').button();
- 			$('#prevPage').button();
- 			$('#submitAddRecord').button();Ê Ê Ê Ê Ê Ê
+			//Using jQuery UI Button
+			$('#submitAddRecord').button();Ê Ê Ê Ê Ê Ê
 			$('#quitAddRecord').button();
 			
+			//Set up the event for clicking next button. 
  			$('#nextPage').click(function(){
  				
  				if(columnPage + 1 <= maxPage){
@@ -338,6 +353,7 @@ var JQGridView = {
 	 			}
  			});
  			
+ 			//Set up the event for clicking previous button. 
  			$('#prevPage').click(function(){
  				
  				if(columnPage - 1 > 0){
@@ -355,10 +371,11 @@ var JQGridView = {
  			
  			grid = self.grid;
  			
+ 			//Add click event to submit button
  			$('#submitAddRecord').click(function(){
  				
  				template = {};
- 				
+ 				//get all the values that are typed in the dialog
  				for(var index = 0; index < colNames.length; index++){
  					
  					if($("#" + colNames[index] + "_input").val() != ""){
@@ -368,26 +385,36 @@ var JQGridView = {
  					}
  				}
  				
+ 				//Get URL
  				var myUrl = $("table#"+self.tableId).jqGrid('getGridParam', 'url');
  				
+ 				//The first column is always observationTarget.
  				patientID = template[colNames[0]];
  				
  				if(patientID === ""){
  					alert("The patientID needs to fill out!");
  				}else{
+ 					//Delete the observationTarget
  					delete template[colNames[0]];
+ 					//Put the values in the variables attached to URL
 					myUrl += "&patientID=" + patientID + "&data=" + JSON.stringify(template);
+	                //Calling ajax and pass this value back to the server
 	                $.ajax(myUrl + "&Operation=ADD_RECORD").done(function(status) {
+				       	//If the value addition is successful, this value is inserted in 
+				       	//the jqGrid table as well.
 				       	if(status["success"] == true){
 				       		template[colNames[0]] = patientID;
 				        	grid.addRowData(grid.getGridParam('records') + 1, template, "first");	
 				        	$('#dialog').dialog('close');
 				        }
+				        //Print out the message.
 				        alert(status["message"]);
 				    });
  				}            
  			});
  			
+ 			//Set up event for quit dialog button. If the quit button is clicked, another confirmation dialog
+ 			//pops up, therefore it prevents people from mis-clicking the quit button and losing input.
  			$('#quitAddRecord').click(function(){
  				confirmDialog = "<div id=\"confirmDialog\" title=\"Confirmation\">";
  				confirmDialog += "Are you sure you want to quit?</br>";

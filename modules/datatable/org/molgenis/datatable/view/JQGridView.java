@@ -217,6 +217,7 @@ public class JQGridView extends HtmlWidget {
 
 			case ADD_RECORD:
 
+				// respond to the ajax calling of adding new records/.
 				String patientID = request.getString("patientID");
 
 				Individual ot = null;
@@ -227,6 +228,9 @@ public class JQGridView extends HtmlWidget {
 
 				boolean success = false;
 
+				// Check if the individual already exists in the database, if
+				// so, it only gives back the message. If it doesn`t, the
+				// individual is added to the database
 				if (db.find(
 						Individual.class,
 						new QueryRule(Individual.NAME, Operator.EQUALS,
@@ -237,20 +241,32 @@ public class JQGridView extends HtmlWidget {
 					ot = new Individual();
 					ot.setName(patientID);
 				}
+				// If the individual is new, the following code will be
+				// executed.
 				if (ot != null) {
 
 					if (request.getString("data") != null) {
+						// Get the data and transform it to json object. And
+						// this json object contains all the new added values
 						JSONObject json = new JSONObject(
 								request.getString("data"));
 
+						// Create a new ProtocolApplication for the new patient.
 						ProtocolApplication pa = new ProtocolApplication();
 
+						// Set the protocol to it. At the moment, the reference
+						// protocol is hard-coded in the importing. All
+						// protocolApplications refer to the same protocol in
+						// the mainImporter.
 						pa.setProtocol_Name("TestProtocol");
 
+						// Set the name to protocolApplication. The pa name
+						// schema should be more flexible later on.
 						pa.setName("pa" + tupleTable.getRows().size() + 1);
 
 						List<ObservedValue> listOfNewValues = new ArrayList<ObservedValue>();
 
+						// create an iterator for the json object.
 						Iterator<?> iterator = json.keys();
 
 						int count = 0;
@@ -259,6 +275,9 @@ public class JQGridView extends HtmlWidget {
 
 							String feature = iterator.next().toString();
 
+							// We do not know which investigation it is in
+							// JQGridView.java class. Therefore we take the
+							// investigationName from measurement
 							if (count == 0) {
 								investigationName = db
 										.find(Measurement.class,
@@ -281,28 +300,30 @@ public class JQGridView extends HtmlWidget {
 						}
 
 						ot.setInvestigation_Name(investigationName);
+
 						pa.setInvestigation_Name(investigationName);
+
 						db.add(ot);
 
 						db.add(pa);
 
 						db.add(listOfNewValues);
 
+						// If everything goes well, the success message is set.
 						message = "the new records have been added to the database!";
 
 						success = true;
 					}
 				}
 
-				// JSONObject json = new JSONObject();
-				//
-				// json.put("message", message);
-				// json.put("success", true);
+				// create a json object to take the message and success
+				// variables.
 				JSONObject map = new JSONObject();
 
 				map.put("message", message);
 				map.put("success", success);
 
+				// Send this json string back the html.
 				((MolgenisRequest) request).getResponse().getOutputStream()
 						.println(map.toString());
 
