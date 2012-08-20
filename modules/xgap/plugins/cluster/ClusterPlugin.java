@@ -557,7 +557,23 @@ public class ClusterPlugin extends PluginModel<Entity>
 			commands.add(new Command("echo library('RCurl', lib.loc='"
 					+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "') >> runmij" + jobId + ".R", false, false,
 					true));
-			commands.add(new Command("echo source(\"" + appLocation + "/api/R/\") >> runmij" + jobId + ".R", false,
+
+			// FIXME: really bad..
+			String s = "";
+			s += ("msource <- function(murl = \"http://129.125.132.49:8080/xqtl/api/R/\", verbose = TRUE){\n");
+			s += ("  if(verbose) cat(\"Creating connection\",murl,\"\\n\")\n");
+			s += ("  data <- getURLContent(murl)\n");
+			s += ("  t <- tempfile()\n");
+			s += ("  if(verbose) cat(\"Creating tempfile \",t,\"\\n\")\n");
+			s += ("  writeLines(data, con=t)\n");
+			s += ("  sys.source(t,globalenv())\n");
+			s += ("  unlink(t)\n");
+			s += ("  if(verbose) cat(\"Cleanup tempfile \",t,\"\\n\")\n");
+			s += ("}\n");
+
+			commands.add(new Command("echo " + s + "\") >> runmij" + jobId + ".R", false, false, true));
+
+			commands.add(new Command("echo msource(\"" + appLocation + "/api/R/\") >> runmij" + jobId + ".R", false,
 					false, true));
 			commands.add(new Command("echo MOLGENIS.login(\"" + token + "\") >> runmij" + jobId + ".R", false, false,
 					true));
@@ -579,10 +595,21 @@ public class ClusterPlugin extends PluginModel<Entity>
 				commands.add(new Command("echo \"library('bitops', lib.loc='"
 						+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "')\" >> runmij" + jobId + ".R", false,
 						false, true));
-				commands.add(new Command("echo \"library('RCurl', lib.loc='"
-						+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "')\" >> runmij" + jobId + ".R", false,
-						false, true));
-				commands.add(new Command("echo \"source('" + appLocation + "/api/R/')\" >> runmij" + jobId + ".R",
+
+				// FIXME: really bad..
+				String s = "";
+				s += ("library(bitops, lib.loc='~/libs')\n");
+				s += ("library(RCurl, lib.loc='~/libs')\n");
+				s += ("msource <- function(murl = 'http://129.125.132.49:8080/xqtl/api/R/', verbose = TRUE){\n");
+				s += ("  data <- getURLContent(murl)\n");
+				s += ("  t <- tempfile()\n");
+				s += ("  writeLines(data, con=t)\n");
+				s += ("  sys.source(t,globalenv())\n");
+				s += ("  unlink(t)\n");
+				s += ("}\n");
+
+				commands.add(new Command("echo \"" + s + "\" >> runmij" + jobId + ".R", false, false, true));
+				commands.add(new Command("echo \"msource('" + appLocation + "/api/R/')\" >> runmij" + jobId + ".R",
 						false, false, true));
 				commands.add(new Command("echo \"MOLGENIS.login('" + token + "')\" >> runmij" + jobId + ".R", false,
 						false, true));
