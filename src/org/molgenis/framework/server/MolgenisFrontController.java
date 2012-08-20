@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.UUID;
@@ -32,6 +35,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 	// helper vars
 	private static final long serialVersionUID = -2141508157810793106L;
 	protected Logger logger;
+	private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss 'on' dd MMMM yyyy");
 
 	// map of all services for this app
 	protected Map<String, MolgenisService> services;
@@ -123,6 +127,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 			if (requestPath.startsWith(servicePath))
 			{
 				long startTime = System.currentTimeMillis();
+				Date date = new Date();
 
 				// if mapped to "/", we assume we are serving out a file, and do
 				// not manage security/connections
@@ -134,7 +139,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 				else
 				{
 					System.out.println("> new request \"" + requestPath + "\" from "
-							+ request.getRequest().getRemoteHost() + " handled by "
+							+ request.getRequest().getRemoteHost() + " at " + dateFormat.format(date) + " handled by "
 							+ services.get(servicePath).getClass().getSimpleName() + " mapped on path " + servicePath);
 					System.out.println("request fields: " + request.toString());
 
