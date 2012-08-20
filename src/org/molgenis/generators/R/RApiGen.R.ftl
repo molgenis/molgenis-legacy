@@ -22,12 +22,12 @@ if( !exists("molgenispath") ) molgenispath <- ""
 
 #entities
 <#list model.entities as entity><#if !entity.abstract && !entity.association && !entity.system>
-source(paste(molgenispath,"${entity.namespace?replace(".","/")}/R/${Name(entity)}.R", sep=""))
+msource(paste(molgenispath,"${entity.namespace?replace(".","/")}/R/${Name(entity)}.R", sep=""))
 </#if></#list>
 
 # matrices
 <#list model.matrices as matrix>
-source(paste(molgenispath,"${name(model)}/R/${Name(matrix)}.R", sep=""))
+msource(paste(molgenispath,"${name(model)}/R/${Name(matrix)}.R", sep=""))
 </#list>
 
 #keep track of the session by emulating a browser
