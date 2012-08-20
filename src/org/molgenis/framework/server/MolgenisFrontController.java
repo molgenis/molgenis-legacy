@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,7 +37,7 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 	protected Map<String, MolgenisService> services;
 
 	// list of all connections
-	protected Map<UUID, Connection> connections;
+	protected ConcurrentHashMap<UUID, Connection> connections;
 
 	// the used molgenisoptions, set by generated MolgenisServlet
 	protected MolgenisOptions usedOptions = null;

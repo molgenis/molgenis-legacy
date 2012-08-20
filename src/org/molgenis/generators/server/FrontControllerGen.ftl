@@ -15,8 +15,8 @@ package ${package}.servlet;
 import java.util.LinkedHashMap;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
@@ -63,7 +63,7 @@ public class FrontController extends MolgenisFrontController
 		context = new MolgenisContext(this.getServletConfig(), this.createDataSource(), new UsedMolgenisOptions(), "${model.name}");
 		
 		//keep a map of active connections
-		connections = new HashMap<UUID, Connection>();
+		connections = new ConcurrentHashMap<UUID, Connection>();
 		
 		//finally, we store all mapped services, and pass them the context used for databasing, serving, etc.
 		LinkedHashMap<String,MolgenisService> services = new LinkedHashMap<String,MolgenisService>();
