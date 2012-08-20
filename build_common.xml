@@ -272,6 +272,8 @@ It should be used via 'import' plus passing of properties
 	<target name="clean-generate-compile-run" depends="clean,generate,compile,run" />
 
 	<target name="clean-generate-compile-test" depends="clean,generate,compile,test" />
+	
+	<target name="clean-generate-compile-webtest" depends="clean,generate,compile,webtest" />
 
 	<target name="testcopy">
 		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*," dirsep="/">
