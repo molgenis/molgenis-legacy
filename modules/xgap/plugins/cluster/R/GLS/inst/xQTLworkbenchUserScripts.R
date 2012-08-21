@@ -44,7 +44,7 @@ covariates   <- getParameter("cov",jobparams)
 
 report(2,paste("Parameters loaded",path," ",trait.numbers)
 sleep(100)
-source("http://localhost:8080/xQTL/api/R/run_scan_GLS.R")
+msource("http://localhost:8080/xQTL/api/R/run_scan_GLS.R")
 urlofupload <- paste(dbpath,"/uploadfile",sep="")
 
 for(x in dir("results/")){
