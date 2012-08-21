@@ -6,9 +6,6 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
@@ -42,8 +39,6 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	private Login login;
 	/** The email service used */
 	private EmailService emailService;
-	/** The current base url that you may need in your apps */
-	private String baseUrl;
 	/** Galaxy url */
 	private String galaxyUrl;
 	/** Molgenis options from generted */
@@ -301,40 +296,6 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 		throw new UnsupportedOperationException("getDatabase must be implemented for use");
 	}
 
-	// /**
-	// * Add a MolgenisService. TODO: we would like to refactor this to also
-	// take
-	// * cxf annotated services
-	// * @throws Exception
-	// */
-	// public void addService(MolgenisService matrixView) throws
-	// NameNotUniqueException
-	// {
-	// if(this.services.containsKey(matrixView.getName())) throw new
-	// NameNotUniqueException("addService failed: path already exists");
-	// this.services.put(matrixView.getName(), matrixView);
-	// }
-
-	/**
-	 * The base url of this app. Generally the path up to %/molgenis.do
-	 * 
-	 * @return
-	 */
-	public String getApplicationUrl()
-	{
-		return baseUrl;
-	}
-
-	/**
-	 * This method is used only internally.
-	 * 
-	 * @param baseUrl
-	 */
-	public void setBaseUrl(String baseUrl)
-	{
-		this.baseUrl = baseUrl;
-	}
-
 	public String getGalaxyUrl()
 	{
 		return galaxyUrl;
@@ -381,16 +342,14 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 	{
 		return new FreemarkerView("ApplicationView.ftl", this.getModel());
 	}
-	
+
 	/**
-	  Store values in a map, much like session attributes.
-	  The reaason to do this is because session variables are not always
-	  reachable inside plugin functions, and if they are, it is complex
-	  and convoluted because this applicationcontroller itself is
-	  already stored as a session attribute! (see: MolgenisGuiService.java)
-	*/
+	 * Store values in a map, much like session attributes. The reaason to do
+	 * this is because session variables are not always reachable inside plugin
+	 * functions, and if they are, it is complex and convoluted because this
+	 * applicationcontroller itself is already stored as a session attribute!
+	 * (see: MolgenisGuiService.java)
+	 */
 	public Map<String, Object> sessionVariables = new HashMap<String, Object>();
 
-
-	
 }

@@ -5,12 +5,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -25,8 +23,6 @@ import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenModel;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.FileInput;
-import org.molgenis.util.HtmlTools;
-import org.molgenis.util.Tuple;
 
 public abstract class MolgenisGuiService
 {
@@ -87,34 +83,10 @@ public abstract class MolgenisGuiService
 				return;
 			}
 			appController = createUserInterface();
-
-			// determine the real application base URL (once)
-			if (StringUtils.startsWith(session.getServletContext().getServerInfo(), "Apache Tomcat"))
-			{
-				appController.setBaseUrl(request.getRequest().getRequestURL().toString());
-			}
-			else
-			{
-				try
-				{
-					new getExposedIP(appController, request);
-				}
-				catch (Exception e)
-				{
-					throw new IOException(e);
-				}
-			}
 		}
 
 		// Always pass login to GUI
 		appController.setLogin(userLogin);
-
-		// this should work unless complicated load balancing without proxy
-		// rewriting...
-		// molgenis.setBaseUrl(request.getRequest().getScheme() + "://"
-		// + request.getRequest().getServerName() +
-		// getPort(request.getRequest())
-		// + request.getRequest().getContextPath());
 
 		// handle request
 		try
@@ -310,41 +282,6 @@ public abstract class MolgenisGuiService
 		catch (Exception e)
 		{
 			throw new DatabaseException(e);
-		}
-	}
-}
-
-/**
- * Seperate thread to find out what the outside IP address of the application
- * is. Can take up to 60 secs if the server cannot be contacted but does not
- * block the rest of the application this way.
- * 
- */
-class getExposedIP implements Runnable
-{
-	private ApplicationController molgenis;
-	private Tuple request;
-
-	getExposedIP(ApplicationController molgenis, Tuple request)
-	{
-		this.molgenis = molgenis;
-		this.request = request;
-		Thread t = new Thread(this);
-		t.start();
-	}
-
-	public void run()
-	{
-		try
-		{
-			String host = HtmlTools.getExposedIPAddress();
-			URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, molgenis.getMolgenisContext()
-					.getVariant());
-			molgenis.setBaseUrl(reconstructedURL.toString());
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
 		}
 	}
 }
