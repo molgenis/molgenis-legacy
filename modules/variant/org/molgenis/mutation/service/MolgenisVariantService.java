@@ -137,7 +137,7 @@ public class MolgenisVariantService
 	{
 		try
 		{
-			List<Exon> exons = this.db.query(Exon.class).lessOrEqual(Exon.STARTCDNA, position).greaterOrEqual(Exon.ENDCDNA, position).find();
+			List<Exon> exons = this.db.query(Exon.class).equals(Exon.ISINTRON, false).lessOrEqual(Exon.STARTCDNA, position).greaterOrEqual(Exon.ENDCDNA, position).find();
 
 			if (exons.size() != 1)
 				throw new SearchServiceException("Not exactly one exon matching for cDNA position " + position);
