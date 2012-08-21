@@ -102,6 +102,7 @@ public class PublicationService
 		publicationDTO.setJournal(publication.getJournal());
 		publicationDTO.setName(publication.getName());
 		publicationDTO.setPubmedId(publication.getName());
+		publicationDTO.setPubmedUrl(PublicationService.PUBMED_URL + publicationDTO.getPubmedId());
 //		if (publication.getPubmedID_Id() != null)
 //		{
 //			try
