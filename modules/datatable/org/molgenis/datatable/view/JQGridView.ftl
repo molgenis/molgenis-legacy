@@ -198,6 +198,8 @@ var JQGridView = {
 			this.config.postData.filters = filters; 
 		}
     	
+    	this.config.OPERATION = "DELETE";
+    	
     	grid = jQuery("table#"+this.tableId).jqGrid(this.config)
             .jqGrid('navGrid', "#"+this.pagerId,
             	this.config.settings,{},{},{},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
@@ -215,7 +217,7 @@ var JQGridView = {
         	$(pageInput).attr('value', this.columnPage);  
 
 			maxPage = Math.floor( this.numOfSelectedNodes / this.columnPagerSize);
-			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) maxPage = maxPage + 1;
+			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) maxPage = maxPage + 2;
 
 			// handle input of specific column page number
         	$(pageInput).change(function() {
@@ -286,6 +288,7 @@ var JQGridView = {
 			columnPage = self.columnPage;
 			columnPagerSize = self.columnPagerSize;
 			numOfSelectedNodes = self.numOfSelectedNodes;
+			colModel = self.colModel;
 			
 			//Open the dialog after click
 			$( "#dialog" ).dialog('open');
@@ -301,10 +304,24 @@ var JQGridView = {
 			//create the new table for adding values for different measurements
 			addRecordTable = "<table id=\"addRecord\">";
 			
-			//Using for loop to add all the columns as new rows within the table.
-			for(var index = 0; index < colNames.length; index++){
- 				addRecordTable += "<tr id=\"" + colNames[index] + "\" style=\"display:none\"><td>" + colNames[index] + 
- 					"</td><td><input id=\""+ colNames[index] +"_input\" type=\"text\" width=\"20\"></input></td></tr>";
+
+ 			
+ 			for(var index = 0; index < colModel.length; index++){
+ 				
+ 				if(colModel[index].edittype == "select"){
+ 					var optionString = colModel[index].editoptions.value;
+ 					var optionsHTML = "<option></option>";	
+ 					var options = optionString.split(";");
+ 					for(var i = 0; i < options.length; i++){
+ 						var nameAndValue = options[i].split(":");
+ 						optionsHTML += "<option>" + nameAndValue[1] + "</option>";
+ 					}
+					addRecordTable += "<tr id=\"" + colModel[index].name + "\" style=\"display:none\"><td>" + colModel[index].name + 
+ 					"</td><td><select id=\""+ colModel[index].name +"_input\">"+ optionsHTML +"</select></td></tr>";
+ 				}else{
+ 					addRecordTable += "<tr id=\"" + colModel[index].name + "\" style=\"display:none\"><td>" + colModel[index].name + 
+ 					"</td><td><input id=\""+ colModel[index].name +"_input\" type=\"text\" width=\"20\"></input></td></tr>";
+ 				}
  			}
  			
  			//close the table and add it to the dialog div
@@ -316,8 +333,8 @@ var JQGridView = {
 			
 			//Create a new div in which the next and previous buttons are added.
 			navPage = "<div id=\"navPage\">";
-			navPage += "<input id=\"nextPage\" type=\"button\" style=\"font-size:0.7em\" value=\"next page >\"></input>";
 			navPage += "<input id=\"prevPage\" type=\"button\" style=\"font-size:0.7em\" value=\"< previous page\"></input>";
+			navPage += "<input id=\"nextPage\" type=\"button\" style=\"font-size:0.7em\" value=\"next page >\"></input>";
 			navPage += "</div>";
 			$('#dialog').append(navPage);
 			//Using jQuery UI Button
@@ -334,6 +351,24 @@ var JQGridView = {
 			//Using jQuery UI Button
 			$('#submitAddRecord').button();Ê Ê Ê Ê Ê Ê
 			$('#quitAddRecord').button();
+			
+			
+			//Set up the event for clicking previous button. 
+ 			$('#prevPage').click(function(){
+ 				
+ 				if(columnPage - 1 > 0){
+		 			columnPage = columnPage - 1;
+		 			beginningIndex = (columnPage - 1) *columnPagerSize + 1;
+		 			endingIndex = (columnPage - 1) *columnPagerSize + 6;
+		 			allRows = $('#addRecord tr');
+		 			$(allRows).hide();
+		 			$(allRows).eq(0).show();
+		 			for(var index = beginningIndex; index <= endingIndex; index++){
+		 				$(allRows).eq(index).show();
+		 			}
+	 			}
+ 			});
+			
 			
 			//Set up the event for clicking next button. 
  			$('#nextPage').click(function(){
@@ -353,21 +388,7 @@ var JQGridView = {
 	 			}
  			});
  			
- 			//Set up the event for clicking previous button. 
- 			$('#prevPage').click(function(){
- 				
- 				if(columnPage - 1 > 0){
-		 			columnPage = columnPage - 1;
-		 			beginningIndex = (columnPage - 1) *columnPagerSize + 1;
-		 			endingIndex = (columnPage - 1) *columnPagerSize + 6;
-		 			allRows = $('#addRecord tr');
-		 			$(allRows).hide();
-		 			$(allRows).eq(0).show();
-		 			for(var index = beginningIndex; index <= endingIndex; index++){
-		 				$(allRows).eq(index).show();
-		 			}
-	 			}
- 			});
+ 			
  			
  			grid = self.grid;
  			
@@ -375,13 +396,13 @@ var JQGridView = {
  			$('#submitAddRecord').click(function(){
  				
  				template = {};
+ 				numberOfColumns = 0;
  				//get all the values that are typed in the dialog
  				for(var index = 0; index < colNames.length; index++){
  					
  					if($("#" + colNames[index] + "_input").val() != ""){
  						template[colNames[index]] = $("#" + colNames[index] + "_input").val();
- 					}else{
- 						template[colNames[index]] = "";
+ 						numberOfColumns++;
  					}
  				}
  				
@@ -391,8 +412,10 @@ var JQGridView = {
  				//The first column is always observationTarget.
  				patientID = template[colNames[0]];
  				
- 				if(patientID === ""){
+ 				if(patientID === "" || !patientID){
  					alert("The patientID needs to fill out!");
+ 				}else if(numberOfColumns == 1){
+ 					alert("Please fill out one column at least!");
  				}else{
  					//Delete the observationTarget
  					delete template[colNames[0]];

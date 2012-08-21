@@ -149,7 +149,9 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 				boolean target = false;
 				Tuple row = new SimpleTuple();
 
-				for (ObservedValue v : getDb().query(ObservedValue.class).eq(ObservedValue.PROTOCOLAPPLICATION, rowId)
+				Database db = getDb();
+
+				for (ObservedValue v : db.query(ObservedValue.class).eq(ObservedValue.PROTOCOLAPPLICATION, rowId)
 						.find())
 				{
 					if (!target)
@@ -165,6 +167,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 					{
 						if (m.getName().equals(v.getFeature_Name()))
 						{
+
 							p = measurements.get(m);
 							currentMeasurement = m;
 							break;
@@ -174,8 +177,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 					if ("categorical".equals(currentMeasurement.getDataType()))
 					{
 
-						for (Category c : getDb().find(Category.class,
-								new QueryRule(Category.NAME, Operator.IN, currentMeasurement.getCategories_Name())))
+						for (Category c : db.find(Category.class, new QueryRule(Category.NAME, Operator.IN,
+								currentMeasurement.getCategories_Name())))
 						{
 							if (v.getValue().equals(c.getCode_String()))
 							{
@@ -187,7 +190,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 					}
 					else
 					{
-						row.set(v.getFeature_Name(), v.getValue());
+						if (!v.getValue().isEmpty()) row.set(v.getFeature_Name(), v.getValue());
 					}
 					// if (p == null) {
 
