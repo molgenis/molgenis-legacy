@@ -35,7 +35,6 @@
 			
 			<plugin name="HarmonizationPlugin" type="plugins.harmonizationPlugin.harmonizationPlugin" label="Matching parameters"/>
 			<plugin name="DevelopingAlgorithm" type="plugins.developingAlgorithm.developingAlgorithm" label="Developing algorithm"/>
-			<plugin name="FindingProxyDemo" type="plugins.searchingForProxy.catalogueTreePlugin" label="Finding proxy demo"/>
 			<plugin name="FindingProxy" type="plugins.findingProxy.findingProxy" label="Finding proxies"/>
 			
 			<form name="mappingmeasurement" entity="MappingMeasurement" label="mapping result" hide_fields="protocolApplication,dataType,id"/>

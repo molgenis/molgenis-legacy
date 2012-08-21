@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
@@ -29,6 +31,10 @@ import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.HtmlWidget;
+import org.molgenis.pheno.Individual;
+import org.molgenis.pheno.Measurement;
+import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
@@ -116,120 +122,226 @@ public class JQGridView extends HtmlWidget
 	 */
 	public void handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
 	{
-		String action = request.getString("__action");
 		try
 		{
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
 			final Operation operation = StringUtils.isNotEmpty(request.getString(OPERATION)) ? Operation
 					.valueOf(request.getString(OPERATION)) : Operation.RENDER_DATA;
 
-			if ("addNewRecord".equals(action))
+			switch (operation)
 			{
-				System.out.println("the action event is working");
-			}
+				case LOAD_CONFIG:
+					loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
+					break;
+				case LOAD_TREE:
+					// risky: we give it all columns which would fail if
+					// there
+					// are many
+					final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getAllColumns());
+					((MolgenisRequest) request).getResponse().getOutputStream().print(treeNodes);
+					break;
+				case RENDER_DATA:
+					final List<QueryRule> rules = new ArrayList<QueryRule>();
 
-			else
-			{
-				switch (operation)
-				{
-					case LOAD_CONFIG:
-						loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
-						break;
-					case LOAD_TREE:
-						// risky: we give it all columns which would fail if
-						// there
-						// are many
-						final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getAllColumns());
-						((MolgenisRequest) request).getResponse().getOutputStream().print(treeNodes);
-						break;
-					case RENDER_DATA:
-						final List<QueryRule> rules = new ArrayList<QueryRule>();
+					// parse the request into post data
+					final JQGridPostData postData = new JQGridPostData(request);
 
-						// parse the request into post data
-						final JQGridPostData postData = new JQGridPostData(request);
+					// convert any filters to query rules
+					final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(postData.filters);
 
-						// convert any filters to query rules
-						final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(postData.filters);
-
-						if (CollectionUtils.isNotEmpty(filterRules))
-						{
-							if (tupleTable instanceof FilterableTupleTable)
-							{
-								rules.addAll(filterRules);
-								((FilterableTupleTable) tupleTable).setFilters(rules);
-							}
-						}
-
-						final int rowCount = tupleTable.getCount();
-						final int totalPages = (int) Math.ceil(rowCount / postData.rows);
-
-						// update page
-						postData.page = Math.min(postData.page, totalPages);
-						final int offset = Math.max((postData.page - 1) * postData.rows, 0);
-
-						final String exportSelection = request.getString("exportSelection");
-						if (!StringUtils.equalsIgnoreCase(exportSelection, "ALL"))
-						{
-							// data.rows == limit
-							tupleTable.setLimit(postData.rows);
-							// data.rows * data.page
-							tupleTable.setOffset(offset);
-						}
-
-						if (StringUtils.isNotEmpty(postData.sidx) && tupleTable instanceof FilterableTupleTable)
-						{
-							final Operator sortOperator = StringUtils.equals(postData.sord, "asc") ? QueryRule.Operator.SORTASC
-									: QueryRule.Operator.SORTDESC;
-							rules.add(new QueryRule(sortOperator, postData.sidx));
-						}
-
+					if (CollectionUtils.isNotEmpty(filterRules))
+					{
 						if (tupleTable instanceof FilterableTupleTable)
 						{
+							rules.addAll(filterRules);
 							((FilterableTupleTable) tupleTable).setFilters(rules);
 						}
+					}
 
-						renderData(((MolgenisRequest) request), postData, totalPages, tupleTable);
-					case EDIT_TABLE:
+					final int rowCount = tupleTable.getCount();
+					final int totalPages = (int) Math.ceil(rowCount / postData.rows);
 
-						List<String> removeColumns = new ArrayList<String>();
-						removeColumns.add("Pa_Id");
-						removeColumns.add("id");
-						removeColumns.add("__action");
-						removeColumns.add("__target");
-						removeColumns.add("Operation");
+					// update page
+					postData.page = Math.min(postData.page, totalPages);
+					final int offset = Math.max((postData.page - 1) * postData.rows, 0);
 
-						String targetString = "Pa_Id";
+					final String exportSelection = request.getString("exportSelection");
+					if (!StringUtils.equalsIgnoreCase(exportSelection, "ALL"))
+					{
+						// data.rows == limit
+						tupleTable.setLimit(postData.rows);
+						// data.rows * data.page
+						tupleTable.setOffset(offset);
+					}
 
-						String targetID = request.getString(targetString);
+					if (StringUtils.isNotEmpty(postData.sidx) && tupleTable instanceof FilterableTupleTable)
+					{
+						final Operator sortOperator = StringUtils.equals(postData.sord, "asc") ? QueryRule.Operator.SORTASC
+								: QueryRule.Operator.SORTDESC;
+						rules.add(new QueryRule(sortOperator, postData.sidx));
+					}
 
-						if (targetID != null)
+					if (tupleTable instanceof FilterableTupleTable)
+					{
+						((FilterableTupleTable) tupleTable).setFilters(rules);
+					}
+
+					renderData(((MolgenisRequest) request), postData, totalPages, tupleTable);
+				case EDIT_TABLE:
+
+					List<String> removeColumns = new ArrayList<String>();
+					removeColumns.add("Pa_Id");
+					removeColumns.add("id");
+					removeColumns.add("__action");
+					removeColumns.add("__target");
+					removeColumns.add("Operation");
+
+					String targetString = "Pa_Id";
+
+					String targetID = request.getString(targetString);
+
+					if (targetID != null)
+					{
+						// List<ObservedValue> listObservedValues = new
+						// ArrayList<ObservedValue>();
+						for (String eachField : request.getFieldNames())
 						{
-							// List<ObservedValue> listObservedValues = new
-							// ArrayList<ObservedValue>();
-							for (String eachField : request.getFieldNames())
+							System.out.println("-------------------------->" + eachField);
+							if (!removeColumns.contains(eachField))
 							{
-								System.out.println("-------------------------->" + eachField);
-								if (!removeColumns.contains(eachField))
-								{
-									MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
-									mu.UpdateDatabase(db, targetID, request.getString(eachField), eachField);
-								}
+								MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
+								mu.UpdateDatabase(db, targetID, request.getString(eachField), eachField);
 							}
 						}
-						else
+					}
+					else
+					{
+						break;
+					}
+					break;
+
+				case ADD_RECORD:
+
+					// respond to the ajax calling of adding new records/.
+					String patientID = request.getString("patientID");
+
+					Individual ot = null;
+
+					String investigationName = "";
+
+					String message = "";
+
+					boolean success = false;
+
+					// Check if the individual already exists in the database,
+					// if
+					// so, it only gives back the message. If it doesn`t, the
+					// individual is added to the database
+					if (db.find(Individual.class, new QueryRule(Individual.NAME, Operator.EQUALS, patientID)).size() > 0)
+					{
+						message = "The patient has already existed and adding failed. Please edit this patient";
+						success = false;
+					}
+					else
+					{
+						ot = new Individual();
+						ot.setName(patientID);
+					}
+					// If the individual is new, the following code will be
+					// executed.
+					if (ot != null)
+					{
+
+						if (request.getString("data") != null)
 						{
-							break;
+							// Get the data and transform it to json object. And
+							// this json object contains all the new added
+							// values
+							JSONObject json = new JSONObject(request.getString("data"));
+
+							// Create a new ProtocolApplication for the new
+							// patient.
+							ProtocolApplication pa = new ProtocolApplication();
+
+							// Set the protocol to it. At the moment, the
+							// reference
+							// protocol is hard-coded in the importing. All
+							// protocolApplications refer to the same protocol
+							// in
+							// the mainImporter.
+							pa.setProtocol_Name("TestProtocol");
+
+							// Set the name to protocolApplication. The pa name
+							// schema should be more flexible later on.
+							pa.setName("pa" + tupleTable.getRows().size() + 1);
+
+							List<ObservedValue> listOfNewValues = new ArrayList<ObservedValue>();
+
+							// create an iterator for the json object.
+							Iterator<?> iterator = json.keys();
+
+							int count = 0;
+
+							while (iterator.hasNext())
+							{
+
+								String feature = iterator.next().toString();
+
+								// We do not know which investigation it is in
+								// JQGridView.java class. Therefore we take the
+								// investigationName from measurement
+								if (count == 0)
+								{
+									investigationName = db
+											.find(Measurement.class,
+													new QueryRule(Measurement.NAME, Operator.EQUALS, feature)).get(0)
+											.getInvestigation_Name();
+									count++;
+								}
+
+								String value = json.get(feature).toString();
+								ObservedValue ov = new ObservedValue();
+								ov.setTarget_Name(patientID);
+								ov.setFeature_Name(feature);
+								ov.setValue(value);
+								ov.setProtocolApplication_Name(pa.getName());
+								ov.setInvestigation_Name(investigationName);
+								listOfNewValues.add(ov);
+
+							}
+
+							ot.setInvestigation_Name(investigationName);
+
+							pa.setInvestigation_Name(investigationName);
+
+							db.add(ot);
+
+							db.add(pa);
+
+							db.add(listOfNewValues);
+
+							// If everything goes well, the success message is
+							// set.
+							message = "the new records have been added to the database!";
+
+							success = true;
 						}
+					}
 
-						request.getString("Pa_Id");
-						break;
+					// create a json object to take the message and success
+					// variables.
+					JSONObject map = new JSONObject();
 
-					case ADD_RECORD:
+					map.put("message", message);
+					map.put("success", success);
 
-					default:
-						break;
-				}
+					// Send this json string back the html.
+					((MolgenisRequest) request).getResponse().getOutputStream().println(map.toString());
+
+				default:
+					break;
 			}
+
 		}
 		catch (final Exception e)
 		{

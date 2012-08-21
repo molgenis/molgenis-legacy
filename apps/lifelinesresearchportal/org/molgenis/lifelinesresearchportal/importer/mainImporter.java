@@ -40,8 +40,9 @@ public class mainImporter {
 
 			db.beginTx();
 
-			BufferedReader read = new BufferedReader(new FileReader(
-					"/Users/Roan/Work/LifeLines/voorbeeld1_dataset.csv"));
+			BufferedReader read = new BufferedReader(
+					new FileReader(
+							"/Users/pc_iverson/Desktop/Input/HL7Files/voorbeeld1_dataset.csv"));
 
 			List<Measurement> listOfMeas = new ArrayList<Measurement>();
 			List<Individual> listOfIndv = new ArrayList<Individual>();
@@ -55,8 +56,9 @@ public class mainImporter {
 			p.setName("TestProtocol");
 			db.add(p);
 
-			CsvReader reader = new CsvFileReader(new File(
-					"/Users/Roan/Work/LifeLines/voorbeeld1_dataset.csv"));
+			CsvReader reader = new CsvFileReader(
+					new File(
+							"/Users/pc_iverson/Desktop/Input/HL7Files/voorbeeld1_dataset.csv"));
 
 			// add measurements
 			for (String name : reader.colnames()) {
