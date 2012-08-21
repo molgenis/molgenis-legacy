@@ -372,7 +372,7 @@ public class UploadService extends MolgenisVariantService
 		}
 	}
 
-	public void assignValuesFromNotation(MutationUploadDTO mutationUploadDTO)
+	public void assignValuesFromNotation(MutationUploadDTO mutationUploadDTO) throws UploadServiceException
 	{
 //		logger.debug(">>> assignValuesFromNotation: cdnaNotation==" + mutationUploadVO.getMutation().getCdna_notation());
 		if (mutationUploadDTO.getCdnaNotation() != null)
@@ -466,6 +466,10 @@ public class UploadService extends MolgenisVariantService
 				mutationUploadDTO.setLength(mSubstitution.group(2).length());
 				mutationUploadDTO.setNtChange(mSubstitution.group(3));
 			}
+			else
+			{
+				throw new UploadServiceException("No valid mutation notation: '" + cdnaNotation + "'");
+			}
 //			logger.debug(">>> assignValuesFromNotation: cdnaNotation==" + cdnaNotation + ", event==" + mutationUploadVO.getMutation().getEvent() + ", pos==" + mutationUploadVO.getMutation().getPosition() + ", len==" + mutationUploadVO.getMutation().getLength() + ", ntchange==" + mutationUploadVO.getMutation().getNtchange());
 		}
 		this.assignValuesFromPosition(mutationUploadDTO);
@@ -473,7 +477,6 @@ public class UploadService extends MolgenisVariantService
 
 	public void assignValuesFromPosition(MutationUploadDTO mutationUploadDTO)
 	{
-		System.out.println(">>> assignValuesFromPosition: start");
 		if (StringUtils.isEmpty(mutationUploadDTO.getMutationPosition()) || "0".equals(mutationUploadDTO.getMutationPosition()))
 			return;
 
@@ -632,7 +635,6 @@ public class UploadService extends MolgenisVariantService
 	
 	private void assignConsequence(MutationUploadDTO mutationUploadDTO)
 	{
-		System.out.println(">>> assignConsequence: start");
 		// default: missense, no effect on splicing
 		mutationUploadDTO.setConsequence("Missense codon");
 		mutationUploadDTO.setEffectOnSplicing(false);
