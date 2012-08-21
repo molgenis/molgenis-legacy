@@ -560,7 +560,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 
 			// FIXME: really bad..
 			String s = "";
-			s += ("msource <- function(murl = \"http://129.125.132.49:8080/xqtl/api/R/\", verbose = TRUE){\n");
+			s += ("msource <- function(murl = \"http://127.0.0.1:8080/xqtl/api/R/\", verbose = TRUE){\n");
 			s += ("  if(verbose) cat(\"Creating connection\",murl,\"\\n\")\n");
 			s += ("  data <- getURLContent(murl)\n");
 			s += ("  t <- tempfile()\n");
@@ -600,7 +600,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 				String s = "";
 				s += ("library(bitops, lib.loc='~/libs')\n");
 				s += ("library(RCurl, lib.loc='~/libs')\n");
-				s += ("msource <- function(murl = 'http://129.125.132.49:8080/xqtl/api/R/', verbose = TRUE){\n");
+				s += ("msource <- function(murl = 'http://127.0.0.1:8080/xqtl/api/R/', verbose = TRUE){\n");
 				s += ("  data <- getURLContent(murl)\n");
 				s += ("  t <- tempfile()\n");
 				s += ("  writeLines(data, con=t)\n");

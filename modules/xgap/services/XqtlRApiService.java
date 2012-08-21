@@ -146,7 +146,7 @@ public class XqtlRApiService implements MolgenisService
 			s += ("library(bitops, lib.loc=\"~/libs\")\n");
 			s += ("library(RCurl, lib.loc=\"~/libs\")\n");
 			s += ("\n");
-			s += ("msource <- function(murl = \"http://129.125.132.49:8080/xqtl/api/R/\", verbose = TRUE){\n");
+			s += ("msource <- function(murl = \"http://127.0.0.1:8080/xqtl/api/R/\", verbose = TRUE){\n");
 			s += ("  if(verbose) cat(\"Creating connection\",murl,\"\\n\")\n");
 			s += ("  data <- getURLContent(murl)\n");
 			s += ("  t <- tempfile()\n");

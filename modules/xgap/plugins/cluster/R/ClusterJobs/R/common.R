@@ -58,7 +58,7 @@ DownloadnSave <- function(investigationname, token, DBmarkerID = "", DBtraitID =
 	cat("library(qtl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile)
 	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-	cat("msource <- function(murl = 'http://129.125.132.49:8080/xqtl/api/R/', verbose = TRUE){","\n",sep="",file=qtlfile,append=T)
+	cat("msource <- function(murl = 'http://127.0.0.1:8080/xqtl/api/R/', verbose = TRUE){","\n",sep="",file=qtlfile,append=T)
 		cat("data <- getURLContent(murl)","\n",sep="",file=qtlfile,append=T)
 		cat("t <- tempfile()","\n",sep="",file=qtlfile,append=T)
 		cat("writeLines(data, con=t)","\n",sep="",file=qtlfile,append=T)
@@ -146,7 +146,7 @@ startcode <- function(token, dbpath,jobid,item,libraryloc=NULL,name="subjob"){
 	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 #	no longer needed: cat("library(ClusterJobs,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-	cat("msource <- function(murl = 'http://129.125.132.49:8080/xqtl/api/R/', verbose = TRUE){","\n",sep="",file=qtlfile,append=T)
+	cat("msource <- function(murl = 'http://127.0.0.1:8080/xqtl/api/R/', verbose = TRUE){","\n",sep="",file=qtlfile,append=T)
 		cat("data <- getURLContent(murl)","\n",sep="",file=qtlfile,append=T)
 		cat("t <- tempfile()","\n",sep="",file=qtlfile,append=T)
 		cat("writeLines(data, con=t)","\n",sep="",file=qtlfile,append=T)
@@ -202,7 +202,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 #	--Generate a QTLfile
 #	--Generate runfile for cluster
 #	--Sends the runfile as a job to the cluster
-  dbpath <- as.character(.MOLGENIS$servletURL) #now that we now the DNS name, use this! so replace eg "http://129.125.132.49:8080/xqtl" by "http://fwn-biol-132-49.biol.rug.nl:8080/xqtl"
+  dbpath <- as.character(.MOLGENIS$servletURL) #now that we now the DNS name, use this! so replace eg "http://127.0.0.1:8080/xqtl" by "http://fwn-biol-132-49.biol.rug.nl:8080/xqtl"
   report(dbpath,jobid,0,2,"TETSING1")
 	genotypes <- getparameter("genotypes",jobparams)
 	phenotypes <- getparameter("phenotypes",jobparams)
