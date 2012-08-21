@@ -157,9 +157,13 @@ public class JQGridView extends HtmlWidget
 							((FilterableTupleTable) tupleTable).setFilters(rules);
 						}
 					}
-
+					int residue = 0;
 					final int rowCount = tupleTable.getCount();
-					final int totalPages = (int) Math.ceil(rowCount / postData.rows);
+					if (rowCount % postData.rows != 0)
+					{
+						residue = 1;
+					}
+					final int totalPages = (int) Math.ceil(rowCount / postData.rows) + residue;
 
 					// update page
 					postData.page = Math.min(postData.page, totalPages);
@@ -273,7 +277,7 @@ public class JQGridView extends HtmlWidget
 
 							// Set the name to protocolApplication. The pa name
 							// schema should be more flexible later on.
-							pa.setName("pa" + tupleTable.getRows().size() + 1);
+							pa.setName("pa" + tupleTable.getCount() + 1);
 
 							List<ObservedValue> listOfNewValues = new ArrayList<ObservedValue>();
 
@@ -300,14 +304,16 @@ public class JQGridView extends HtmlWidget
 								}
 
 								String value = json.get(feature).toString();
-								ObservedValue ov = new ObservedValue();
-								ov.setTarget_Name(patientID);
-								ov.setFeature_Name(feature);
-								ov.setValue(value);
-								ov.setProtocolApplication_Name(pa.getName());
-								ov.setInvestigation_Name(investigationName);
-								listOfNewValues.add(ov);
-
+								if (!value.equals(""))
+								{
+									ObservedValue ov = new ObservedValue();
+									ov.setTarget_Name(patientID);
+									ov.setFeature_Name(feature);
+									ov.setValue(value);
+									ov.setProtocolApplication_Name(pa.getName());
+									ov.setInvestigation_Name(investigationName);
+									listOfNewValues.add(ov);
+								}
 							}
 
 							ot.setInvestigation_Name(investigationName);

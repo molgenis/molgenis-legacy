@@ -23,8 +23,10 @@ import org.molgenis.util.Tuple;
 
 import app.DatabaseFactory;
 
-public class mainImporter {
-	public static void main(String[] args) throws SQLException, Exception {
+public class mainImporter
+{
+	public static void main(String[] args) throws SQLException, Exception
+	{
 
 		// BasicConfigurator.configure();
 
@@ -36,13 +38,13 @@ public class mainImporter {
 		Logger.getRootLogger().setLevel(Level.ERROR);
 
 		Database db = DatabaseFactory.create();
-		try {
+		try
+		{
 
 			db.beginTx();
 
 			BufferedReader read = new BufferedReader(
-					new FileReader(
-							"/Users/pc_iverson/Desktop/Input/HL7Files/voorbeeld1_dataset.csv"));
+					new FileReader("/Users/Roan/Work/LifeLines/voorbeeld1_dataset.csv"));
 
 			List<Measurement> listOfMeas = new ArrayList<Measurement>();
 			List<Individual> listOfIndv = new ArrayList<Individual>();
@@ -56,13 +58,13 @@ public class mainImporter {
 			p.setName("TestProtocol");
 			db.add(p);
 
-			CsvReader reader = new CsvFileReader(
-					new File(
-							"/Users/pc_iverson/Desktop/Input/HL7Files/voorbeeld1_dataset.csv"));
+			CsvReader reader = new CsvFileReader(new File("/Users/Roan/Work/LifeLines/voorbeeld1_dataset.csv"));
 
 			// add measurements
-			for (String name : reader.colnames()) {
-				if (!"Pa_Id".equals(name)) {
+			for (String name : reader.colnames())
+			{
+				if (!"Pa_Id".equals(name))
+				{
 					Measurement m = new Measurement();
 					m.setInvestigation(i);
 					m.setName(name);
@@ -75,7 +77,8 @@ public class mainImporter {
 
 			// read the rows into protocolApp and values
 			int count = 1;
-			for (Tuple row : reader) {
+			for (Tuple row : reader)
+			{
 				Individual indi = new Individual();
 				indi.setName(row.getString("Pa_Id"));
 				indi.setInvestigation(i);
@@ -86,8 +89,10 @@ public class mainImporter {
 				pa.setProtocol(p);
 				paList.add(pa);
 
-				for (String column : reader.colnames()) {
-					if (!"Pa_Id".equals(column)) {
+				for (String column : reader.colnames())
+				{
+					if (!"Pa_Id".equals(column))
+					{
 						ObservedValue ob = new ObservedValue();
 						ob.setFeature_Name(column);
 						ob.setTarget_Name(indi.getName());
@@ -100,7 +105,8 @@ public class mainImporter {
 				}
 
 				// write if list too long
-				if (listOfValues.size() > 100000) {
+				if (listOfValues.size() > 100000)
+				{
 					System.out.println("Done");
 					db.add(listOfIndv);
 					db.add(paList);
@@ -124,7 +130,9 @@ public class mainImporter {
 			db.commitTx();
 
 			// Set measurementnames to protocol
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			db.rollbackTx();
 			e.printStackTrace();
 		}

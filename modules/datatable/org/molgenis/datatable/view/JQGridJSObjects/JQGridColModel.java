@@ -153,7 +153,7 @@ public class JQGridColModel
 
 				String dataType = m.getDataType();
 
-				String temporary = "";
+				String temporary = ":;";
 
 				if ("categorical".equals(dataType))
 				{

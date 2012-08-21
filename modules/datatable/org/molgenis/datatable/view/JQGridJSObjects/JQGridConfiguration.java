@@ -21,8 +21,6 @@ public class JQGridConfiguration
 
 	public final String editurl;
 
-	public final String add;
-
 	/** formatting of the ajax service data */
 	public final String datatype = "json";
 
@@ -85,7 +83,6 @@ public class JQGridConfiguration
 		this.pager = "#" + id + "_pager";
 		this.url = url;
 		this.editurl = url + "&Operation=EDIT_TABLE";
-		this.add = url + "&Operation=ADD_RECORD";
 		this.caption = caption;
 
 		// "{repeatitems: false, id: \"Code\"}"
@@ -121,7 +118,6 @@ public class JQGridConfiguration
 		pager = "#" + id + "Pager";
 		this.url = url;
 		this.editurl = url + "&Operation=EDIT_TABLE";
-		this.add = url + "&Operation=ADD_RECORD";
 		this.caption = caption;
 	}
 }
