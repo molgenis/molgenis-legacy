@@ -125,7 +125,7 @@ public class JQGridView extends HtmlWidget
 
 			if ("addNewRecord".equals(action))
 			{
-				System.out.println("hoipiepeloi");
+				System.out.println("the action event is working");
 			}
 
 			else
