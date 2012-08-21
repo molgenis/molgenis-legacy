@@ -1,0 +1,35 @@
+<molgenis>
+	<menu label="Admin" name="Admin">
+		<menu name="Auth" label="Users and permissions">
+			<menu label="Basic management" name="Management">
+				<form name="MolgenisUser" entity="MolgenisUser" />
+				<form name="MolgenisGroup" entity="MolgenisGroup" />
+				<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" />
+				<form name="MolgenisEntity" entity="MolgenisEntity" view="list"
+					label="Entities" />
+				<form name="MolgenisPermission" entity="MolgenisPermission" />
+			</menu>
+			<plugin label="My permissions" name="PermissionManagementPlugin"
+				type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
+			<plugin label="Upgrade person to user" name="UserToPersonPlugin"
+				type="org.molgenis.auth.service.persontouser.PersonToUser" />
+			<plugin label="Security tokens" name="TokenManagerPlugin"
+				type="org.molgenis.auth.service.tokenmanager.TokenManager" />
+		</menu>
+		<plugin label="Database status" name="DatabaseSettings"
+			type="plugins.system.database.Settings" />
+		<plugin label="Customize app" name="AppCustomizer"
+			type="plugins.system.appcustomizer.AppCustomizer" />
+		<plugin label="File storage" name="FileStorage"
+			type="plugins.system.settings.Settings" />
+		<plugin label="Install R packages" name="DependencyManager"
+			type="plugins.cluster.demo.dependencymanager.DependencyManager" />
+		<menu name="OtherAdmin" label="Admin utilities">
+			<form label="Job table" name="Jobs" entity="Job">
+				<form name="Subjobs" entity="Subjob" />
+			</form>
+			<plugin label="ROnline" name="ROnline"
+				type="plugins.ronline.ROnline" />
+		</menu>
+	</menu>
+</molgenis>

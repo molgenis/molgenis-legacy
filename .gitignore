@@ -5,6 +5,7 @@ classes/
 tmp/
 hsqldb/
 handwritten/
+generated/
 WebContent/WEB-INF/
 
 ## Always ignore these
@@ -17,6 +18,12 @@ WebContent/WEB-INF/
 
 ## Netbeans private
 nbproject/private/
+
+## IntelliJ private
+.idea/
+molgenis_apps.eml
+molgenis_apps.iml
+
 
 ## General java
 *.class
@@ -39,7 +46,17 @@ log*
 /generated
 /target
 logger.out*
+/bin
 /dist
+/.settings/*
+!/.settings/template*
+.project
+/WebContent/WEB-INF/lib
+/WebContent/WEB-INF/classes
+/WebContent/doc/
+/.settings/org.eclipse.wst.common.component
 /generated/java
 !/.settings/template*
+/.settings/org.eclipse.wst.common.component
+/.settings/org.eclipse.core.resources.prefs
 /apps/catalogue/plugins/hl7parser/PropertiesPath.java

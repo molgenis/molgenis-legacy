@@ -8,43 +8,66 @@ import org.molgenis.util.SshResult;
 
 /** Facade to use Glite over ssh */
 public class Glite extends AbstractComputeHost implements ComputeHost
-{	
+{
 	public Glite(String host, String user, String password) throws IOException
 	{
 		super(host, user, password, 22);
+		this.close();
 	}
 
 	@Override
 	public void submit(Job job) throws IOException
-	{		
+	{
+		this.connect();
+
 		// if no name set, create one
 		if (job.getName() == null) job.setName(UUID.randomUUID().toString().replace("-", ""));
-		
+
 		// create prefix path
 		String path = getWorkingDir() + ("".equals(this.getWorkingDir()) ? "" : "/") + job.getName();
-		
+
 		// create standard jdl
-		String jdl = String.format("Type=\"Job\";" + "\nJobType=\"Normal\";" + "\n" + "\nExecutable = \"/bin/sh\";"
-				+ "\nArguments = \"%1$s.sh\";" + "\n" + "\nStdError = \"%1$s.err\";" + "StdOutput = \"%1$s.out\";"
-				+ "\n" + "InputSandbox = {\"$HOME/%2$s.sh\"};" + "OutputSandbox = {\"%1$s.err\", \"%1$s.out\"};",
-				job.getName(), path);
+//		String jdl = String.format("Type=\"Job\";" + "\nJobType=\"Normal\";" + "\n" + "\nExecutable = \"/bin/sh\";"
+//                + "\nVirtualOrganisation = \"lsgrid\";"
+//				+ "\nArguments = \"%1$s.sh\";" + "\n" + "\nStdError = \"%1$s.err\";" + "StdOutput = \"%1$s.out\";"
+//				+ "\n" + "InputSandbox = {\"$HOME/%2$s.sh\"};" + "\nOutputSandbox = {\"%1$s.err\", \"%1$s.out\"};"
+//                + "\nMyProxyServer = \"px.grid.sara.nl\";",
+//				job.getName(), path);
+
+        String jdl = String.format("# General\n" +
+                "Type = \"Job\";\n" +
+                "VirtualOrganisation = \"bbmri.nl\";\n" +
+                "DefaultNodeShallowRetryCount = 5;\n" +
+                "\n" +
+                "# Executables, input and output\n" +
+                "Executable = \"/bin/sh\";\n" +
+                "Arguments = \"%1$s.sh\";\n" +
+                "StdOutput = \"%1$s.out\";\n" +
+                "StdError = \"%1$s.err\";\n" +
+                "InputSandbox = {\"$HOME/%2$s.sh\"};\n" +
+                "OutputSandbox = {\"%1$s.err\",\"%1$s.out\"};\n" +
+                "MyProxyServer = \"px.grid.sara.nl\";\n" +
+                "RetryCount = 0;",
+                job.getName(), path);
+
 
 		// copy .sh and .jdl
-		String filename =  job.getName() + ".sh";
+		String filename = job.getName() + ".sh";
 		logger.debug("uploading script as file: " + filename);
-		this.uploadStringToFile(job.getScript(), filename, this.getWorkingDir());
+        String script = job.getScript();
+        script = script.replaceAll("\r","");
+		this.uploadStringToFile(script, filename, this.getWorkingDir());
 
 		filename = job.getName() + ".jdl";
 		logger.debug("uploading jdl as file: " + filename);
 		this.uploadStringToFile(jdl, filename, this.getWorkingDir());
 
 		// start the scrip
-		String command = String.format(
-				"glite-wms-job-submit  -d $USER -o %1$s $HOME/%2$s.jdl", job.getName(), path);
-		
-		//cd to working directory (otherwise stuff is in wrong dir)
-		if(!"".equals(getWorkingDir())) command = "cd "+getWorkingDir()+" && "+command;
-		
+		String command = String.format("glite-wms-job-submit  -d $USER -o %1$s $HOME/%2$s.jdl", job.getName(), path);
+
+		// cd to working directory (otherwise stuff is in wrong dir)
+		if (!"".equals(getWorkingDir())) command = "cd " + getWorkingDir() + " && " + command;
+
 		SshResult result = this.executeCommand(command);
 
 		if (!"".equals(result.getStdErr()))
@@ -57,18 +80,57 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 		{
 			if (line.startsWith("https")) job.setId(line);
 		}
-		
-		//set the paths, incl working dir
-		job.setError_path( path +".err");
-		job.setOutput_path( path + ".out");
+
+		// set the paths, incl working dir
+		job.setError_path(path + ".err");
+		job.setOutput_path(path + ".out");
 
 		logger.debug("job sumitted: " + job);
 
 		// remember job
 		this.jobs.put(job.getId(), job);
+
+		this.close();
 	}
 
-	@Override
+    public void submitPilot(Job job) throws IOException
+    {
+		// if no name set, create one
+		if (job.getName() == null) job.setName(UUID.randomUUID().toString().replace("-", ""));
+
+		// create prefix path
+		String path = getWorkingDir() + ("".equals(this.getWorkingDir()) ? "" : "/") + job.getName();
+
+		// start the scrip
+		String command = String.format(
+				"glite-wms-job-submit  -d $USER -o %1$s $HOME/maverick/maverick.jdl", job.getName(), path);
+
+		//cd to working directory (otherwise stuff is in wrong dir)
+		if(!"".equals(getWorkingDir())) command = "cd "+getWorkingDir()+" && "+command;
+
+		SshResult result = this.executeCommand(command);
+
+		if (!"".equals(result.getStdErr()))
+		{
+			throw new IOException(result.getStdErr());
+		}
+
+		// get the id
+		for (String line : result.getStdOut().split("\n"))
+		{
+			if (line.startsWith("https")) job.setId(line);
+		}
+
+		//set the paths, incl working dir
+//		job.setError_path( path +".err");
+//		job.setOutput_path( path + ".out");
+		logger.debug("job sumitted: " + job);
+
+		// remember job
+		this.jobs.put(job.getId(), job);
+    }
+
+    @Override
 	public void remove(Job job) throws IOException
 	{
 		// TODO Auto-generated method stub
@@ -78,32 +140,37 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 	@Override
 	public void refresh(Job job) throws IOException
 	{
-		if(job.getState() == JobState.COMPLETED) return;
+		if (job.getState() == JobState.COMPLETED) return;
 		try
 		{
-			//cd to working directory 
+			this.connect();
+
+			// cd to working directory
 			String command = "glite-wms-job-status " + job.getId();
-			if(!"".equals(getWorkingDir())) command = "cd "+getWorkingDir()+" && "+command;
-			
+			if (!"".equals(getWorkingDir())) command = "cd " + getWorkingDir() + " && " + command;
+
 			// retrieve the state
 			SshResult gliteOutput = executeCommand(command);
 
 			this.parse(job, gliteOutput.getStdOut());
-			
-			//if complete, retrieve logs
-			if(job.getState() == JobState.COMPLETED)
+
+			// if complete, retrieve logs
+			if (job.getState() == JobState.COMPLETED)
 			{
-				command = "glite-wms-job-output --dir $HOME/"+getWorkingDir()+" --nosubdir --noint "+job.getId();
-				if(!"".equals(getWorkingDir())) command = "cd "+getWorkingDir()+" && "+command;
+				command = "glite-wms-job-output --dir $HOME/" + getWorkingDir() + " --nosubdir --noint " + job.getId();
+				if (!"".equals(getWorkingDir())) command = "cd " + getWorkingDir() + " && " + command;
 				SshResult result = executeCommand(command);
-				
+
 				logger.debug(result.getStdOut() + "\n" + result.getStdOut());
-				
-				//if(!"".equals(result.getStdErr())) throw new Exception(result.getStdErr());
-				
+
+				// if(!"".equals(result.getStdErr())) throw new
+				// Exception(result.getStdErr());
+
 				job.setError_log(this.downloadFile(job.getError_path()));
 				job.setOutput_log(this.downloadFile(job.getOutput_path()));
 			}
+
+			this.close();
 		}
 		catch (Exception e)
 		{
@@ -118,16 +185,16 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 		SimpleTuple parse = new SimpleTuple();
 		if (log == null || "".equals(log)) return;
 
-		logger.debug("parsing log: " + log);
+		logger.info("parsing log: " + log);
 		String[] keyValuePairs = log.split("\n");
 
 		for (String keyValue : keyValuePairs)
 		{
 			keyValue = keyValue.trim();
 			String[] split = null;
-			if (keyValue.contains("=")) split = keyValue.split("=");
+			if (keyValue.contains(":")) split = keyValue.split(":");
 			else
-				split = keyValue.split(":");
+				split = keyValue.split("=");
 			String key = null, value = null;
 			if (split.length > 1)
 			{
@@ -140,12 +207,15 @@ public class Glite extends AbstractComputeHost implements ComputeHost
 		// translate status
 		job.setExec_host(parse.getString("Destination"));
 		String status = parse.getString("Current Status");
-		if (status.startsWith("Submitted")) job.setState(JobState.SUBMITTED);
-		else if (status.startsWith("Running")) job.setState(JobState.RUNNING);
-		else if (status.startsWith("Scheduled")) job.setState(JobState.QUEUED);
-		else if (status.startsWith("Done")) job.setState(JobState.COMPLETED);
-		else if (status.startsWith("Aborted")) job.setState(JobState.ERROR);
-		else if (status.startsWith("Cancelled")) job.setState(JobState.CANCELLED);
+		if (status != null)
+		{
+			if (status.startsWith("Submitted")) job.setState(JobState.SUBMITTED);
+			else if (status.startsWith("Running")) job.setState(JobState.RUNNING);
+			else if (status.startsWith("Scheduled")) job.setState(JobState.QUEUED);
+			else if (status.startsWith("Done")) job.setState(JobState.COMPLETED);
+			else if (status.startsWith("Aborted")) job.setState(JobState.ERROR);
+			else if (status.startsWith("Cancelled")) job.setState(JobState.CANCELLED);
+		}
 		// else we ignore.
 
 		// Status:

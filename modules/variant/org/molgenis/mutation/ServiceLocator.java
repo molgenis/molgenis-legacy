@@ -107,7 +107,7 @@ public class ServiceLocator
      * Gets an instance of {@link SecurityService}.
      * @return SecurityService from getContext().getBean("securityService")
      */
-    public final Login getLoginService()
+    public final Login getSecurityService()
     {
         return (Login)
             getContext().getBean("securityService");

@@ -48,6 +48,7 @@ public class Browser
 		model.setColStart(0);
 		model.setRowStart(0);
 		model.setColStop(model.getColMax() < model.getWidth() ? model.getColMax() : model.getWidth());
+	
 		model.setRowStop(model.getRowMax() < model.getHeight() ? model.getRowMax() : model.getHeight());
 
 		// set first submatrix using the defaults

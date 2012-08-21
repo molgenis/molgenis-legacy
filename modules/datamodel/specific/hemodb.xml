@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <molgenis name="org.molgenis">
 	<module name="hemodb">
-		<entity name="HemoSample" extends="ObservationTarget">
+		<entity name="HemoSample" extends="ObservationTarget" xref_label="name">
 			<description></description>
 			<field name="name" type="string" nillable="false"
 				description="Illumina internal ID" />

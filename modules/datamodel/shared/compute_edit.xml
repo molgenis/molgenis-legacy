@@ -50,6 +50,8 @@
 			<field name="hasOne" type="mref" xref_entity="ComputeParameter"
 				description="relationship between parameters, enables parameter 'flattening'" />
 			<unique fields="name" />
+			<field name="Workflow" type="xref" xref_entity="Workflow"
+				xref_label="name" description="Workflow this element is part of" />
 		</entity>
 		<entity name="Workflow" implements="Identifiable,Nameable,Describable"
 			xref_label="name">
@@ -120,7 +122,8 @@
 				description="field to show the content of the error file (only applicable on fail/done of a task)" />
 			<unique fields="ComputeTask,StatusCode,StatusTime" />
 		</entity>
-		<entity name="ComputeWorker" implements="Identifiable,Nameable">
+		<entity name="ComputeWorker" implements="Identifiable,Nameable"
+			xref_label="name">
 			<description>Worker on the remote system. This can be pilot job or
 				traditional job. A worker executes the tasks (one or more). Each
 				worker gets a unique name.

@@ -84,7 +84,12 @@ public class Pbs extends AbstractComputeHost implements ComputeHost
 		this.jobs.put(id, job);
 	}
 
-	/**
+    public void submitPilot(Job job) throws IOException
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
 	 * Remove the job remotely and remove from local list of jobs.
 	 * 
 	 * @param job

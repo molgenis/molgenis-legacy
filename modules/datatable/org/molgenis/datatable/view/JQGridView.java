@@ -2,53 +2,57 @@ package org.molgenis.datatable.view;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.molgenis.datatable.controller.Renderers;
-import org.molgenis.datatable.controller.Renderers.JQGridRenderer;
-import org.molgenis.datatable.controller.Renderers.Renderer;
 import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.util.JQueryUtil;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridConfiguration;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridFilter;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridPostData;
 import org.molgenis.datatable.view.JQGridJSObjects.JQGridResult;
+import org.molgenis.datatable.view.JQGridJSObjects.JQGridRule;
+import org.molgenis.datatable.view.renderers.Renderers;
+import org.molgenis.datatable.view.renderers.Renderers.JQGridRenderer;
+import org.molgenis.datatable.view.renderers.Renderers.Renderer;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.server.MolgenisRequest;
-import org.molgenis.framework.server.MolgenisResponse;
+import org.molgenis.framework.ui.FreemarkerView;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.html.HtmlWidget;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.StringMap;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-
+/**
+ * View class which provides a JQGrid view on a {@link TupleTable}
+ */
 public class JQGridView extends HtmlWidget {
 	public static final String OPERATION = "Operation";
 
+	/**
+	 * Operations that the GridView can handle. LOAD_CONFIG, RENDER_DATA,
+	 * LOAD_TREE
+	 */
 	private enum Operation {
 		LOAD_CONFIG, RENDER_DATA, LOAD_TREE
 	}
 
+	/**
+	 * Interface for builder classes that allow easy reconstruction of the
+	 * view's inner {@link TupleTable} in the {@link JQGridView#handleRequest}
+	 * function
+	 */
 	public interface TupleTableBuilder {
 		public TupleTable create(Database db, Tuple request)
 				throws TableException;
@@ -63,8 +67,12 @@ public class JQGridView extends HtmlWidget {
 		this.tupleTableBuilder = tupleTableBuilder;
 	}
 
-	public JQGridView(final String name, final ScreenController<?> hostController,
-			final TupleTable table) {
+	/**
+	 * Default construction with an anonymous inner
+	 * {@link JQGridView.TupleTableBuilder}
+	 */
+	public JQGridView(final String name,
+			final ScreenController<?> hostController, final TupleTable table) {
 		this(name, new TupleTableBuilder() {
 			@Override
 			public String getUrl() {
@@ -82,34 +90,53 @@ public class JQGridView extends HtmlWidget {
 	}
 
 	/**
-	 * Handle a particular {@link MolgenisRequest}, and encode any resulting
-	 * renderings/exports into a {@link MolgenisResponse}. Particulars handled:
+	 * Handle a particular {@link MolgenisRequest}, and render into an
+	 * {@link OutputStream}. Particulars handled:
 	 * <ul>
-	 * <li>Select the appropriate view towards which to export/render.</li>
-	 * <li>Apply proper sorting and filter rules.</li>
 	 * <li>Wrap the desired data source in the appropriate instantiation of
 	 * {@link TupleTable}.</li>
+	 * <li>Determine which {@link Operation} the request is asking to handle.
+	 * <li>Apply proper sorting and filter rules.</li>
+	 * <li>Select the appropriate view towards which to export/render.</li>
 	 * <li>Select and render the data.</li>
 	 * </ul>
+	 * 
+	 * @param db
+	 *            The database to connect to
+	 * @param request
+	 *            The {@link MolgenisRequest} tuple that encodes the request to
+	 *            handle
+	 * @param out
+	 *            The {@link OutputStream} to render to.
 	 */
 	public void handleRequest(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException {
 		try {
-			final HttpServletResponse response = ((MolgenisRequest) request)
-					.getResponse();
-
 			final TupleTable tupleTable = tupleTableBuilder.create(db, request);
-			final String opRequest = request.getString(OPERATION);
+			final Operation operation = StringUtils.isNotEmpty(request
+					.getString(OPERATION)) ? Operation.valueOf(request
+					.getString(OPERATION)) : Operation.RENDER_DATA;
 
-			final Operation operation = StringUtils.isNotEmpty(opRequest) ? Operation.valueOf(opRequest) : Operation.RENDER_DATA;
-			if (operation == Operation.LOAD_CONFIG) {
+			switch (operation) {
+			case LOAD_CONFIG:
 				loadTupleTableConfig(db, (MolgenisRequest) request, tupleTable);
-			} else if (operation == Operation.LOAD_TREE) {
-				final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable.getColumns());
-				response.getOutputStream().print(treeNodes);
-			} else { // operation == Operation.RENDER_DATA
+				break;
+			case LOAD_TREE:
+				// risky: we give it all columns which would fail if there
+				// are many
+				final String treeNodes = JQueryUtil.getDynaTreeNodes(tupleTable
+						.getAllColumns());
+				((MolgenisRequest) request).getResponse().getOutputStream()
+						.print(treeNodes);
+				break;
+			case RENDER_DATA:
 				final List<QueryRule> rules = new ArrayList<QueryRule>();
-				final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(request);
+
+				// parse the request into post data
+				final JQGridPostData postData = new JQGridPostData(request);
+
+				// convert any filters to query rules
+				final List<QueryRule> filterRules = createQueryRulesFromJQGridRequest(postData.filters);
 
 				if (CollectionUtils.isNotEmpty(filterRules)) {
 					if (tupleTable instanceof FilterableTupleTable) {
@@ -118,32 +145,38 @@ public class JQGridView extends HtmlWidget {
 					}
 				}
 
-				final int limit = request.getInt("rows");
 				final int rowCount = tupleTable.getCount();
-				final int totalPages = (int) Math.ceil(rowCount / limit);
-				final int page = Math.min(request.getInt("page"), totalPages);
-				final int offset = Math.max(limit * page - limit, 0);
+				final int totalPages = (int) Math
+						.ceil(rowCount / postData.rows);
 
-				tupleTable.setLimit(limit);
-				tupleTable.setOffset(offset);
+				// update page
+				postData.page = Math.min(postData.page, totalPages);
+				final int offset = Math.max(
+						(postData.page - 1) * postData.rows, 0);
 
-				final String sortOrder = request.getString("sord");
-				final String sortField = request.getString("sidx");
+				final String exportSelection = request
+						.getString("exportSelection");
+				if (!StringUtils.equalsIgnoreCase(exportSelection, "ALL")) {
+					// data.rows == limit
+					tupleTable.setLimit(postData.rows);
+					// data.rows * data.page
+					tupleTable.setOffset(offset);
+				}
 
-				if (StringUtils.isNotEmpty(sortField)
+				if (StringUtils.isNotEmpty(postData.sidx)
 						&& tupleTable instanceof FilterableTupleTable) {
-					final Operator sortOperator = StringUtils.equals(sortOrder,
-							"asc") ? QueryRule.Operator.SORTASC
-									: QueryRule.Operator.SORTDESC;
-					rules.add(new QueryRule(sortOperator, sortField));
+					final Operator sortOperator = StringUtils.equals(
+							postData.sord, "asc") ? QueryRule.Operator.SORTASC
+							: QueryRule.Operator.SORTDESC;
+					rules.add(new QueryRule(sortOperator, postData.sidx));
 				}
 
 				if (tupleTable instanceof FilterableTupleTable) {
 					((FilterableTupleTable) tupleTable).setFilters(rules);
 				}
 
-				renderData(((MolgenisRequest) request).getRequest(), response,
-						page, totalPages, tupleTable);
+				renderData(((MolgenisRequest) request), postData, totalPages,
+						tupleTable);
 			}
 		} catch (final Exception e) {
 			throw new HandleRequestDelegationException(e);
@@ -157,9 +190,7 @@ public class JQGridView extends HtmlWidget {
 	 * @param request
 	 *            The request encoding the particulars of the rendering to be
 	 *            done.
-	 * @param response
-	 *            The response into which the view is rendered.
-	 * @param page
+	 * @param postData
 	 *            The selected page (only relevant for {@link JQGridRenderer}
 	 *            rendering)
 	 * @param totalPages
@@ -168,21 +199,20 @@ public class JQGridView extends HtmlWidget {
 	 * @param tupleTable
 	 *            The table from which to render the data.
 	 */
-	private void renderData(HttpServletRequest request,
-			HttpServletResponse response, int page, int totalPages,
-			final TupleTable tupleTable) throws TableException {
-		final ServletContext servletContext = request.getSession().getServletContext();
+	private void renderData(MolgenisRequest request, JQGridPostData postData,
+			int totalPages, final TupleTable tupleTable) throws TableException {
+		tupleTable.setDb(request.getDatabase());
 
-		String strViewType = request.getParameter("viewType");
+		String strViewType = request.getString("viewType");
 		if (StringUtils.isEmpty(strViewType)) {
 			strViewType = "JQ_GRID";
 		}
+
 		try {
 			final ViewFactory viewFactory = new ViewFactoryImpl();
 			final Renderers.Renderer view = viewFactory.createView(strViewType);
-			view.export(servletContext, request, response,
-					request.getParameter("caption"), tupleTable, totalPages,
-					page);
+			view.export(request, request.getString("caption"), tupleTable,
+					totalPages, postData.page);
 		} catch (final Exception e) {
 			throw new TableException(e);
 		}
@@ -192,34 +222,24 @@ public class JQGridView extends HtmlWidget {
 	 * Extract the filter rules from the sent jquery request, and convert them
 	 * into Molgenis Query rules.
 	 * 
-	 * @param request
+	 * @param filters
 	 *            A request containing filter rules
 	 * @return A list of QueryRules that represent the filter rules from the
 	 *         request.
 	 */
-	@SuppressWarnings("rawtypes")
 	private static List<QueryRule> createQueryRulesFromJQGridRequest(
-			Tuple request) {
-		final String filtersParameter = request.getString("filters");
+			JQGridFilter filters) {
 		final List<QueryRule> rules = new ArrayList<QueryRule>();
-		if (StringUtils.isNotEmpty(filtersParameter)) {
-			final StringMap filters = (StringMap) new Gson().fromJson(
-					filtersParameter, Object.class);
-			final String groupOp = (String) filters.get("groupOp");
-			@SuppressWarnings("unchecked")
-			final ArrayList<StringMap<String>> jsonRules = (ArrayList<StringMap<String>>) filters
-			.get("rules");
-			for (final StringMap<String> rule : jsonRules) {
-				final String field = rule.get("field");
-				final String op = rule.get("op");
-				final String value = rule.get("data");
+		if (filters != null) {
+			final String groupOp = filters.groupOp;
 
-				final QueryRule queryRule = convertOperator(field, op, value);
+			int ruleIdx = 0;
+			for (final JQGridRule rule : filters.rules) {
+				final QueryRule queryRule = convertOperator(rule);
 				rules.add(queryRule);
 
-				final boolean isLastRule = rule == jsonRules.get(jsonRules.size() - 1);
-				// Note: AND is default in query rules; OR needs to be added explicitly.
-				if (groupOp.equals("OR") && !isLastRule) {
+				final boolean notLast = filters.rules.size() - 1 != ruleIdx++;
+				if (groupOp.equals("OR") && notLast) {
 					rules.add(new QueryRule(QueryRule.Operator.OR));
 				}
 			}
@@ -242,58 +262,69 @@ public class JQGridView extends HtmlWidget {
 	 *            expression.
 	 * @return A new QueryRule that represents the supplied jquery expression.
 	 */
-	private static QueryRule convertOperator(final String field,
-			final String op, final String value) {
+
+	private static QueryRule convertOperator(JQGridRule jqGridRule) {
 		// ['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc']
-		QueryRule rule = new QueryRule(field, QueryRule.Operator.EQUALS, value);
-		if (op.equals("eq")) {
+		QueryRule rule = new QueryRule(jqGridRule.field,
+				QueryRule.Operator.EQUALS, jqGridRule.data);
+		switch (jqGridRule.op) {
+		case eq:
 			rule.setOperator(QueryRule.Operator.EQUALS);
-		} else if (op.equals("ne")) {
-			// NOT
+			return rule;
+		case ne:
 			rule.setOperator(QueryRule.Operator.EQUALS);
-			rule = toNotRule(rule);
-		} else if (op.equals("lt")) {
+			return toNotRule(rule);
+		case lt:
 			rule.setOperator(QueryRule.Operator.LESS);
-		} else if (op.equals("le")) {
+			return rule;
+		case le:
 			rule.setOperator(QueryRule.Operator.LESS_EQUAL);
-		} else if (op.equals("gt")) {
+			return rule;
+		case gt:
 			rule.setOperator(QueryRule.Operator.GREATER);
-		} else if (op.equals("ge")) {
+			return rule;
+		case ge:
 			rule.setOperator(QueryRule.Operator.GREATER_EQUAL);
-		} else if (op.equals("bw")) {
-			rule.setValue(value + "%");
+		case bw:
+			rule.setValue(jqGridRule.data + "%");
 			rule.setOperator(QueryRule.Operator.LIKE);
-		} else if (op.equals("bn")) {
+			return rule;
+		case bn:
 			// NOT
-			rule.setValue(value + "%");
+			rule.setValue(jqGridRule.data + "%");
 			rule.setOperator(QueryRule.Operator.LIKE);
 			rule = toNotRule(rule);
-		} else if (op.equals("in")) {
+			return rule;
+		case in:
 			rule.setOperator(QueryRule.Operator.IN);
-		} else if (op.equals("ni")) {
+			return rule;
+		case ni:
 			// NOT
 			rule.setOperator(QueryRule.Operator.IN);
 			rule = toNotRule(rule);
-		} else if (op.equals("ew")) {
-			rule.setValue("%" + value);
+			return rule;
+		case ew:
+			rule.setValue("%" + jqGridRule.data);
 			rule.setOperator(QueryRule.Operator.LIKE);
-		} else if (op.equals("en")) {
+			return rule;
+		case en:
 			// NOT
-			rule.setValue("%" + value);
+			rule.setValue("%" + jqGridRule.data);
 			rule.setOperator(QueryRule.Operator.LIKE);
-			rule = toNotRule(rule);
-		} else if (op.equals("cn")) {
-			rule.setValue("%" + value + "%");
+			return toNotRule(rule);
+		case cn:
+			rule.setValue("%" + jqGridRule.data + "%");
 			rule.setOperator(QueryRule.Operator.LIKE);
-		} else if (op.equals("nc")) {
+			return rule;
+		case nc:
 			// NOT
-			rule.setValue("%" + value + "%");
+			rule.setValue("%" + jqGridRule.data + "%");
 			rule.setOperator(QueryRule.Operator.LIKE);
-			rule = toNotRule(rule);
-		} else {
-			throw new IllegalArgumentException(String.format("Unkown Operator: %s", op));
+			return toNotRule(rule);
+		default:
+			throw new IllegalArgumentException(String.format(
+					"Unkown Operator: %s", jqGridRule.op));
 		}
-		return rule;
 	}
 
 	/**
@@ -308,36 +339,30 @@ public class JQGridView extends HtmlWidget {
 		return new QueryRule(QueryRule.Operator.NOT, rule);
 	}
 
+	/**
+	 * Create the HTML that is sent to the browser. Based on a Freemarker
+	 * template file.
+	 */
 	@Override
 	public String toHtml() {
+		final Map<String, Object> args = new HashMap<String, Object>();
 
-		try {
-			final Map<String, Object> args = new HashMap<String, Object>();
+		args.put("tableId", super.getId());
+		args.put("url", tupleTableBuilder.getUrl());
 
-			args.put("tableId", super.getId());
-			args.put("url", tupleTableBuilder.getUrl());
-
-			final Configuration cfg = new Configuration();
-			cfg.setObjectWrapper(new DefaultObjectWrapper());
-			cfg.setClassForTemplateLoading(JQGridView.class, "");
-			final Template template = cfg.getTemplate(JQGridView.class.getSimpleName() + ".ftl");
-			final Writer out = new StringWriter();
-			template.process(args, out);
-			out.flush();
-			return out.toString();
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
+		return new FreemarkerView(JQGridView.class, args).render();
 	}
 
-
+	/**
+	 * Create a properly-configured grid with default settings, on first load.
+	 */
 	public void loadTupleTableConfig(Database db, MolgenisRequest request,
 			TupleTable tupleTable) throws TableException, IOException {
-		final JQGridConfiguration config =
-				new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test", tupleTable);
 		tupleTable.setDb(db);
+		final JQGridConfiguration config = new JQGridConfiguration(getId(),
+				"Name", tupleTableBuilder.getUrl(), "test", tupleTable);
+
 		final String jqJsonConfig = new Gson().toJson(config);
-		System.out.println(jqJsonConfig);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
 	}
 
@@ -357,16 +382,19 @@ public class JQGridView extends HtmlWidget {
 	 *            The Tupletable from which to read the data.
 	 * @return
 	 */
+
 	public static JQGridResult buildJQGridResults(final int rowCount,
 			final int totalPages, final int page, final TupleTable table)
-					throws TableException {
+			throws TableException {
 		final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
-		for (final Tuple row : table) {
+		for (final Tuple row : table.getRows()) {
+			System.out.println("check: " + row);
 			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
 
 			final List<String> fieldNames = row.getFieldNames();
 			for (final String fieldName : fieldNames) {
-				final String rowValue = !row.isNull(fieldName) ? row.getString(fieldName) : "null";
+				final String rowValue = !row.isNull(fieldName) ? row
+						.getString(fieldName) : "null";
 				rowMap.put(fieldName, rowValue); // TODO encode to HTML
 			}
 			result.rows.add(rowMap);
