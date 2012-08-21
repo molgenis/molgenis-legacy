@@ -17,70 +17,28 @@
 # THIS FILE HAS BEEN GENERATED, PLEASE DO NOT EDIT!
 #
 
-if( !exists("molgenispath") ) molgenispath <- ""
-#allows source the script while passing another path, e.g. to the web server
-
 #entities
 <#list model.entities as entity><#if !entity.abstract && !entity.association && !entity.system>
-msource(paste(molgenispath,"${entity.namespace?replace(".","/")}/R/${Name(entity)}.R", sep=""))
+msource(paste(r_api_location,"${entity.namespace?replace(".","/")}/R/${Name(entity)}.R", sep=""))
 </#if></#list>
 
+<#--
 # matrices
 <#list model.matrices as matrix>
 msource(paste(molgenispath,"${name(model)}/R/${Name(matrix)}.R", sep=""))
 </#list>
+-->
 
-#keep track of the session by emulating a browser
-ch <- getCurlHandle()
-ch <- curlSetOpt(
-	curl = ch,
-	ssl.verifypeer = FALSE,
-	useragent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13",
-	timeout = 60,
-	followlocation = TRUE,
-	cookiejar = "./cookies",
-	cookiefile = "./cookies"
-)
+#relative location of the Find and Add APIs which are required
+findAPIlocation <- "${findAPIlocation}"
+addAPIlocation <- "${addAPIlocation}"
 
-MOLGENIS.login = function(username, password)
-{
-	if(missing(password)) password <- username
-	servlet <- paste( .MOLGENIS$servletURL, "/api/R", sep="" )
-	curlParams = list(usr = username, pwd = password)
-	response <- postForm( servlet, .params = curlParams, curl = ch )
-	handle <- textConnection(response)
-	status <- readLines(handle, 1)
-	cat(status, "\n")
-	close( handle )
-}
+#allows to pass different locations when sourcing the script in a custom way
+if( !exists("r_api_location") ) r_api_location <- ""
+if( !exists("app_location") ) app_location <- ""
 
-MOLGENIS.logout = function()
-{
-	servlet <- paste( .MOLGENIS$servletURL, "/api/R", sep="" )
-	curlParams = list(logout = "logout")
-	response <- postForm( servlet, .params = curlParams, curl = ch )
-	handle <- textConnection(response)
-	status <- readLines(handle, 1)
-	cat(status, "\n")
-	close( handle )
-}
-
-downloadFileViaCurl <- function(url = "www.dannyarends.nl/apps/genotypes.txt", filename = "out.txt"){
-  mydata <- getURLContent(url, binary=T, curl = ch)
-  fin <- file(filename,"wb")
-  writeBin(mydata[1:length(mydata)],con=fin)
-  close(fin)
-  invisible(mydata)
-}
-
-#upload wrapper to pass the curl handle with the session
-#untested
-MOLGENIS.upload <- function(url, Investigation_name, name, type, filename, style = 'HTTPPOST'){
-  postForm(url, Investigation_name=Investigation_name, name=name, type = type, file = fileUpload(filename=filename), style=style, curl = ch)
-}
-
-# static helper functions 
-MOLGENIS.connect <- function( servletURL, dbUser=NULL )
+#connect to the R API, setting up a session
+MOLGENIS.connect <- function()
 {
 	# Loading RCurl under Unix this way will ONLY work when the package is installed as root.
 	# User installations are in different directories.
@@ -89,22 +47,65 @@ MOLGENIS.connect <- function( servletURL, dbUser=NULL )
 	if(!any(loadedNamespaces()=="RCurl")){
     	library( RCurl )
     }
-    #used to send messages to server
-
-    # We check and prepare the argument variables
-    if( missing( servletURL ) ) {
-        stop( "arg1: You should provide an servletURL (e.g. \"http://localhost:8080/molgenis4gg\")\n" )
-    }
-    if( is.null( dbUser ) ) {
-        dbUser <- ""
-    }
-  
-    .MOLGENIS <<- data.frame( servletURL= servletURL, dbUser=dbUser )
-    .MOLGENIS.curlHandle <<-  getCurlHandle();
+    
+	#keep track of the session by emulating a browser
+	#save curlHandle out-of-scope
+	.MOLGENIS.curlHandle <- getCurlHandle()
+	.MOLGENIS.curlHandle <<- curlSetOpt(
+		curl = .MOLGENIS.curlHandle,
+		ssl.verifypeer = FALSE,
+		useragent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13",
+		timeout = 60,
+		followlocation = TRUE,
+		cookiejar = "./cookies",
+		cookiefile = "./cookies"
+	)
+	
+	#legacy?
+	.MOLGENIS <<- data.frame()
     
     cat("MOLGENIS is connected\n")
 }
 
+#send a login request to the R API
+MOLGENIS.login = function(username, password)
+{
+	if(missing(password)) password <- username
+	curlParams = list(usr = username, pwd = password)
+	response <- postForm( r_api_location, .params = curlParams, curl = .MOLGENIS.curlHandle )
+	handle <- textConnection(response)
+	status <- readLines(handle, 1)
+	cat(status, "\n")
+	close( handle )
+}
+
+#send a logout request to the R API
+MOLGENIS.logout = function()
+{
+	curlParams = list(logout = "logout")
+	response <- postForm( r_api_location, .params = curlParams, curl = .MOLGENIS.curlHandle )
+	handle <- textConnection(response)
+	status <- readLines(handle, 1)
+	cat(status, "\n")
+	close( handle )
+}
+
+#download a file via RCurl
+downloadFileViaCurl <- function(url = "www.dannyarends.nl/apps/genotypes.txt", filename = "out.txt"){
+  mydata <- getURLContent(url, binary=T, curl = .MOLGENIS.curlHandle)
+  fin <- file(filename,"wb")
+  writeBin(mydata[1:length(mydata)],con=fin)
+  close(fin)
+  invisible(mydata)
+}
+
+#file upload wrapper to pass the RCurl handle with the session
+#untested
+MOLGENIS.upload <- function(url, Investigation_name, name, type, filename, style = 'HTTPPOST'){
+  postForm(url, Investigation_name=Investigation_name, name=name, type = type, file = fileUpload(filename=filename), style=style, curl = .MOLGENIS.curlHandle)
+}
+
+#helper function to print debug
 MOLGENIS.debug<-function(...)
 {
     if(!is.null(.MOLGENIS$debug) && .MOLGENIS$debug == T)
@@ -139,9 +140,9 @@ MOLGENIS.find<-function( entityName, conditions, .verbose=T )
     filter<-MOLGENIS.createCriteria(conditions) 
 
     # Check wether we are connected
-    if(!exists(".MOLGENIS"))
+    if(!exists(".MOLGENIS.curlHandle"))
     {
-        stop("You first must connect to a MOLGENIS. Use function 'MOLGENIS.connect(url)'")
+        stop("You first must connect to a MOLGENIS. Use function 'MOLGENIS.connect()'")
     }
  
     # We check and prepare the argument variables
@@ -149,17 +150,20 @@ MOLGENIS.find<-function( entityName, conditions, .verbose=T )
         stop( "arg1: You should provide an entityName (e.g. \"Experiment\")" )
     }
     #todo: use post instead of get
-    uri <- paste( .MOLGENIS$servletURL, "/api/find/", entityName, sep="" )
+    uri <- paste( app_location, findAPIlocation, entityName, sep="" )
  
     ##log
     # cat("retrieving using uri",uri,"\n")
     flush.console()
   
+	#if the params list is empty, RCurl will complain, so we add something here. 'default' is a keyword and can never match a real field.
+  	if(length(filter)==0)
+  	{
+  		filter <- c(default="default")
+  	}
+  	
     # We query the server
-
-    <#--suppressWarnings(-->
-    outputString <- postForm( uri, .params = filter, curl = ch )
-    <#--)-->
+    outputString <- postForm( uri, .params = filter, curl = .MOLGENIS.curlHandle )
 	MOLGENIS.debug("Send find to server and got to parse in", format(difftime(Sys.time(),starttime, units="sec"), digits=3),"sec.\n")    
 	
     # Check for errors
@@ -204,9 +208,6 @@ MOLGENIS.update <- function(entityName, dataMatrix, action, is_matrix=F, row_typ
     write.table(dataMatrix, file=temp, sep="\t", quote=F, row.names=is_matrix)
     MOLGENIS.debug("\ncreated tab-file",temp,"for upload in", format(difftime(Sys.time(),starttime, units="sec"), digits=3),"\n")
     
-    #execute the request
-    servlet <- paste( .MOLGENIS$servletURL, "/api/add", sep="" ) 
-    
     curl_params = list(
         data_type_input = entityName, 
         data_action = action,
@@ -228,7 +229,8 @@ MOLGENIS.update <- function(entityName, dataMatrix, action, is_matrix=F, row_typ
         close(handle)
     }
     
-    webResponse <- postForm( servlet, .params = curl_params, curl = ch ) 
+    uri <- paste( app_location, addAPIlocation, sep="" )
+    webResponse <- postForm( uri, .params = curl_params, curl = .MOLGENIS.curlHandle ) 
     MOLGENIS.debug("send data to server and got response in", format(difftime(Sys.time(),starttime, units="sec"), digits=3),"\n")
     #remove tempfile      
     unlink(temp)                                              
@@ -240,7 +242,7 @@ MOLGENIS.update <- function(entityName, dataMatrix, action, is_matrix=F, row_typ
         result = TRUE
         
         # let result hold updated data (if any lines available)
-        line <- readLines(handle, n=1, ok=TRUE, warn=<#--FALSE-->TRUE)
+        line <- readLines(handle, n=1, ok=TRUE, warn=TRUE)
         #cat("what is wrong with line '",line,"' of type ",typeof(line), sep="")
         if(line != "")
         {
