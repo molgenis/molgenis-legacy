@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build_xqtl_zip" default="create_zip" basedir=".">
+	<description>
+        Build a runnable ZIP (after extracting) with a standalone xQTL application.
+    </description>
+	
+	<!-- Import xQTL script for paths -->
+	<import file="build_xqtl.xml" />
+
+	<!-- Path of Molgenis libs -->
+	<property name="mlibs" value="${molgenis.dir}/lib/"/>
+	
+	<!-- Path of application libs -->
+	<property name="alibs" value="WebContent/WEB-INF/lib/"/>
+	
+	<!-- Path of all unjarred and build content, to be ZIPed at the end -->
+	<property name="zipme" value="${build.molgenis_apps.dir}/zipme"/>
+	
+	<!-- Path of dist folder where the resulting ZIP will be put -->
+	<property name="dist" value="dist"/>
+	
+	<!-- Delete content of zipme dir -->
+	<target name="clean" description="Delete stuff">
+		<!-- create dir if it doesn't exist -->
+		<mkdir dir="${zipme}"/>
+		<!-- remove content -->
+		<delete includeemptydirs="true">
+			<fileset dir="${zipme}" includes="**/*" />
+		</delete>
+	</target>
+	
+	<target name="unjar" description="Unjar all Molgenis and application jars">
+		<!-- Molgenis jars -->
+		<unjar src="${mlibs}hibernate/hibernate-jpa-2.0-api-1.0.0.Final.jar" dest="${zipme}" overwrite="false"/> <!-- JPA common -->
+		<unjar src="${mlibs}hibernate/hibernate3.jar" dest="${zipme}" overwrite="false"/> <!-- JPA common -->
+		<unjar src="${mlibs}hibernate/hibernate-search-3.4.1.Final.jar" dest="${zipme}" overwrite="false"/> <!-- JPA search-->
+		<unjar src="${mlibs}hibernate-validator-4.1.0.Final/validation-api-1.0.0.GA.jar" dest="${zipme}" overwrite="false"/> <!-- JPA validation-->
+		<unjar src="${mlibs}lucene-core-3.0.2.jar" dest="${zipme}" overwrite="false"/> <!-- JPA search -->
+		<unjar src="${mlibs}gridgain/spring-2.5.6.jar" dest="${zipme}" overwrite="false"/> <!-- Spring framework -->
+		<unjar src="${mlibs}ganymed-ssh2-build250.jar" dest="${zipme}" overwrite="false"/> <!-- SSH utils -->
+		<unjar src="${mlibs}ant-1.8.1.jar" dest="${zipme}" overwrite="false"/> <!-- ProjectHelper Molgenis.java -->
+		<unjar src="${mlibs}ant-apache-log4j.jar" dest="${zipme}" overwrite="false"/> <!-- Log4jListener Molgenis.java -->
+	  	<unjar src="${mlibs}commons-dbcp-1.2.1.jar" dest="${zipme}" overwrite="false"/> <!-- BasicDataSource -->
+	  	<unjar src="${mlibs}commons-fileupload-1.1.jar" dest="${zipme}" overwrite="false"/> <!-- HttpServletRequestTuple files -->
+		<unjar src="${mlibs}commons-io-2.4.jar" dest="${zipme}" overwrite="false"/> <!-- File I/O helpers -->
+	  	<unjar src="${mlibs}cxf-bundle-minimal-2.5.2.jar" dest="${zipme}" overwrite="false"/> <!-- CXFNonSpringJaxrsServlet -->
+	  	<unjar src="${mlibs}freemarker.jar" dest="${zipme}" overwrite="false"/> <!-- Template processing -->
+	  	<unjar src="${mlibs}jxl.jar" dest="${zipme}" overwrite="false"/> <!-- Excel import/export -->
+	  	<unjar src="${mlibs}log4j-1.2.15.jar" dest="${zipme}" overwrite="false"/> <!-- org.apache.log4j.Logger -->
+	  	<unjar src="${mlibs}mail.jar" dest="${zipme}" overwrite="false"/> <!-- Email utils -->
+	  	<unjar src="${mlibs}tar.jar" dest="${zipme}" overwrite="false"/> <!-- TarGz utils -->
+		<unjar src="${mlibs}testng-5.14.10.jar" dest="${zipme}" overwrite="false"/> <!-- TestNG -->
+	  	<unjar src="${mlibs}jsr311-api-1.1.1.jar" dest="${zipme}" overwrite="false"/>  <!-- Rest API JSON -->
+		<unjar src="${mlibs}selenium-server-standalone-2.25.0.jar" dest="${zipme}" overwrite="false" /> <!-- Selenium webtests -->
+		<unjar src="${mlibs}hsqldb.jar" dest="${zipme}" overwrite="false"/> <!-- RUNTIME ??: HyperSQL database-->
+		<unjar src="${mlibs}commons-pool-1.5.2.jar" dest="${zipme}" overwrite="false"/> <!-- RUNTIME FrontController only??: GenericObjectPool -->
+		<unjar src="${mlibs}wsdl4j-1.6.2.jar" dest="${zipme}" overwrite="false"/><!-- RUNTIME AbstractServlet only??: WSDL Locator -->
+		<unjar src="${mlibs}quartz-1.6.0.jar" dest="${zipme}" overwrite="false"/><!-- Scheduling -->
+		<unjar src="${mlibs}gson-2.2.1.jar" dest="${zipme}" overwrite="false"/><!-- GSON for XrefService-->
+		<unjar src="${mlibs}tjws-1.98.jar" dest="${zipme}" overwrite="false"/><!-- Webserver -->
+		<!-- Application jars -->
+		<unjar src="${alibs}jaxrpc.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
+		<unjar src="${alibs}axis.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
+		<unjar src="${alibs}keggapi.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
+		<unjar src="${alibs}mindterm.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: Mindterm SSH -->
+		<unjar src="${alibs}commons-math-2.2.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: Report builder statistics -->
+		<unjar src="${alibs}simplecaptcha-1.2.1.jar" dest="${zipme}" overwrite="false" /> <!-- Auth captcha service -->
+		<unjar src="${alibs}jopenid-1.07.jar" dest="${zipme}" overwrite="false" /> <!-- Auth OpenID login -->
+		<unjar src="${alibs}spssw-1.66.jar" dest="${zipme}" overwrite="false" /> <!-- SPSS writer -->
+	</target>
+	
+	<!-- Compile Molgenis on the unjarred content in zipme -->
+	<target name="compile_molgenis" description="Compile MOLGENIS on unjarred classes">
+		<!-- Run javac on molgenis, using the unjarred content as classpath -->
+		<javac srcdir="${molgenis.dir}/src" destdir="${zipme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
+			<classpath path="{zipme}" />
+		</javac>
+		<!-- Copy the res folder to the build dir so it can be found by MolgenisResourceCopyGen -->
+		<copy todir="${zipme}/org/molgenis/framework/ui/res" verbose="true">
+			<fileset dir="${molgenis.dir}/src/org/molgenis/framework/ui/res" includes="**/*.*" />
+		</copy>
+		<!-- Copy all Freemarker templates anywhere in MOLGENIS too -->
+		<copy todir="${zipme}" verbose="true">
+			<fileset dir="${molgenis.dir}/src" includes="**/*.ftl" />
+		</copy>
+	</target>
+	
+	<!-- Generate app on the unjarred content in zipme -->
+	<target name="generate_app" description="Generate the application">
+		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+			<arg value="${app_properties}" />
+			<classpath path="${zipme}" />
+		</java>
+	</target>
+	
+	<target name="compile_datatypes" description="Compile generated datatypes">
+		<javac srcdir="generated/java/org" excludes="**/*Decorator.java" destdir="${zipme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
+			<classpath path="${zipme}" />
+		</javac>
+	</target>
+	
+	<target name="compile_app" description="Compile application">
+		<pathconvert targetos="unix" property="app_src" refid="app.class.path" />
+		<javac srcdir="${app_src}:generated/java" destdir="${zipme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
+			<classpath path="${zipme}" />
+		</javac>
+	</target>
+	
+	<target name="compile_other" description="Compile other generated">
+		<javac srcdir="generated/java/app" destdir="${zipme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
+			<classpath path="${zipme}" />
+		</javac>
+		<javac srcdir="generated/java/test" destdir="${zipme}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
+			<classpath path="${zipme}" />
+		</javac>
+	</target>
+	
+	<target name="copy_resources">
+		<pathconvert pathsep="/**/*," refid="app.class.path" property="app_fileset_pattern">
+			<regexpmapper from=".*/(.*/.*)" to="\1" />
+		</pathconvert>
+		<fileset dir="." id="app_fileset" includes="${app_fileset_pattern}/**/*">
+			<exclude name="**/*.java" />
+		</fileset>
+		<copy todir="${zipme}" verbose="true">
+			<fileset refid="app_fileset" />
+			<mapper type="regexp" from="^[-_a-zA-Z0-9]*/[-_a-zA-Z0-9]*/(.*)" to="\1" />
+		</copy>
+		<copy todir="${zipme}" verbose="true">				
+			<fileset dir="generated/sql" includes="**/*.sql" />
+		</copy>
+	</target>
+	
+	<target name="build">
+		<antcall target="clean" />
+		<antcall target="unjar" />
+		<antcall target="compile_molgenis" />
+		<antcall target="generate_app" />
+		<antcall target="compile_datatypes" />
+		<antcall target="compile_app" />
+		<antcall target="compile_other" />
+		<antcall target="copy_resources" />
+	</target>
+	
+	<target name="package" description="Package the distribution into a ZIP">
+		<mkdir dir="${dist}" />
+		
+		<!-- copy resources to ZIP specific locations -->
+		<copy todir="${zipme}/WebContent">
+			<fileset dir="WebContent">
+				<exclude name="META-INF/**" />
+				<exclude name="WEB-INF/**" />
+				<exclude name="animaldb/**" />
+				<exclude name="designgg/**" />
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${zipme}/publicdata/xqtl">
+			<fileset dir="publicdata/xqtl">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		
+		<!-- Windows/Unix startup scripts-->
+		<echo file="${zipme}/run.sh">java -Xmx512m boot/RunStandalone</echo>
+		<echo file="${zipme}/run.bat">java -Xmx512m boot/RunStandalone</echo>
+		
+		<zip destfile="${dist}/xqtl_workbench.zip" basedir="${zipme}" update="false" />
+	</target>
+	
+	<target name="create_zip">
+		<antcall target="build" />
+		<antcall target="package" />
+	</target>
+	
+	<!-- Unzip and run webtest -->
+	<target name="webtest" description="Start the Selenium test on unzipped app">
+		<unzip src="${dist}/xqtl_workbench.zip" dest="${dist}/xqtl_unzipped" />
+		<testng haltOnFailure="true">
+			<classfileset dir="${dist}/xqtl_unzipped" includes="**/XqtlSeleniumTest.class"/>
+			<classpath path="${dist}/xqtl_unzipped" />
+		</testng>
+	</target>
+	
+	<!-- Wrapper to make the ZIP and run the webtest -->
+	<target name="create_zip_webtest">
+		<antcall target="create_zip" />
+		<antcall target="webtest" />
+	</target>
+	
+</project>

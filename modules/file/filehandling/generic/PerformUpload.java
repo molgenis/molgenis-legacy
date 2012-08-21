@@ -1,9 +1,11 @@
 package filehandling.generic;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.commons.io.FileUtils;
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
 import org.molgenis.util.ValueLabel;
@@ -22,10 +24,11 @@ public class PerformUpload
 	 * @param db
 	 * @param mf
 	 * @param content
-	 * @throws Exception 
+	 * @throws Exception
 	 * @throws XGAPStorageException
 	 */
-	public static void doUpload(Database db, MolgenisFile mf, File content, boolean skipWhenDestExists) throws Exception
+	public static void doUpload(Database db, MolgenisFile mf, File content, boolean skipWhenDestExists)
+			throws Exception
 	{
 		File storageForFileType = new MolgenisFileHandler(db).getStorageDirFor(mf.get__Type(), db);
 
@@ -33,7 +36,7 @@ public class PerformUpload
 		String storageFileName = NameConvention.escapeFileName(mf.getName());
 		File dest = new File(storageForFileType.getAbsolutePath() + File.separator + storageFileName + "."
 				+ mf.getExtension());
-		CopyFile.copyFile(content, dest, skipWhenDestExists);
+		copyHelper(content, dest, skipWhenDestExists);
 	}
 
 	/**
@@ -69,7 +72,7 @@ public class PerformUpload
 		{
 			throw new Exception("File holding content is a nullpointer!");
 		}
-		
+
 		if (!content.exists())
 		{
 			throw new Exception("File holding content does not exist: " + content.getAbsolutePath());
@@ -110,7 +113,9 @@ public class PerformUpload
 			mfAdd.set(extraField, extraFields.get(extraField));
 		}
 
-		// start db transaction if there is none yet, and useTx is selected, otherwise assume the user started a transaction elsewhere and wants to manage this him/herself!
+		// start db transaction if there is none yet, and useTx is selected,
+		// otherwise assume the user started a transaction elsewhere and wants
+		// to manage this him/herself!
 		boolean txStartedHere = false;
 		if (useTx && !db.inTx())
 		{
@@ -130,9 +135,10 @@ public class PerformUpload
 			String storageFileName = NameConvention.escapeFileName(mfAdd.getName());
 			File dest = new File(storageForFileType.getAbsolutePath() + File.separator + storageFileName + "."
 					+ mfAdd.getExtension());
-			CopyFile.copyFile(content, dest, skipWhenDestExists);
+			copyHelper(content, dest, skipWhenDestExists);
 
-			// commit if file is in the right place, and if the transaction is started in this function (see comment above for beginTx)
+			// commit if file is in the right place, and if the transaction is
+			// started in this function (see comment above for beginTx)
 			if (txStartedHere)
 			{
 				db.commitTx();
@@ -262,5 +268,27 @@ public class PerformUpload
 			}
 		}
 		return result;
+	}
+
+	public static void copyHelper(File content, File dest, boolean skipWhenDestExists) throws IOException
+	{
+		if (skipWhenDestExists)
+		{
+			if (!dest.exists())
+			{
+				FileUtils.copyFile(content, dest);
+			}
+		}
+		else
+		{
+			if (dest.exists())
+			{
+				throw new IOException("Destination file " + dest.getAbsolutePath() + " already exists");
+			}
+			else
+			{
+				FileUtils.copyFile(content, dest);
+			}
+		}
 	}
 }
