@@ -142,8 +142,6 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 
 		for (Tuple tuple : reader)
 		{
-			for (String name : tuple.getFieldNames())
-				System.out.println(">>> fieldName==" + name + ".");
 			//parse object, setting defaults and values from file
 
 			Patient patient = new Patient();
@@ -171,7 +169,6 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 			// Add local id
 
 			String localIdString = tuple.getString("Local patient number");
-System.out.println(">>> localIdString==" + localIdString + ".");
 			AlternateId localId = new AlternateId();
 			localId.setDefinition("local_patient_no");
 			localId.setName(localIdString);
@@ -188,7 +185,7 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 
 				for (int i = 0; i < cdnaNotations.length; i++)
 				{
-					String cdnaNotation  = "c." + cdnaNotations[i];
+					String cdnaNotation  = cdnaNotations[i];
 					String aaNotation    = (ArrayUtils.getLength(aaNotations) == ArrayUtils.getLength(cdnaNotations) ? aaNotations[i] : "");
 
 					// Check whether already existing
@@ -523,10 +520,6 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 
 		// Now finally import everything
 
-		for (AlternateId a : alternateIdList.values())
-		{
-			System.out.println(">>> Adding: " + a);
-		}
 //		counter += db.add(Arrays.asList(alternateIdList.toArray(new AlternateId[alternateIdList.size()])));
 		counter += db.add(Arrays.asList(alternateIdList.values().toArray(new AlternateId[0])));
 		
@@ -593,10 +586,8 @@ System.out.println(">>> localIdString==" + localIdString + ".");
 		
 		if (pubmedStringList.size() > 0)
 		{
-			List<Publication> publicationList = publicationService.pubmedIdListToPublicationListLocal(Arrays.asList(pubmedStringList.toArray(new String[pubmedStringList.size()])));
-System.out.println(">>> Inserting publications: " + publicationList.toString());	
+			List<Publication> publicationList = publicationService.pubmedIdListToPublicationList(Arrays.asList(pubmedStringList.toArray(new String[pubmedStringList.size()])));
 			counter += db.add(publicationList);
-System.out.println(">>> Done inserting publications.");
 		}
 
 		// resolve foreign keys for patientList
@@ -605,21 +596,18 @@ System.out.println(">>> Done inserting publications.");
 
 		for (Patient patient : patientList.values())
 		{
-			System.out.println(">>> patient==" + patient.getName());
 			if (CollectionUtils.isNotEmpty(patient.getAlternateId()))
 			{
 				List<AlternateId> resolvedAlternateIdList = new ArrayList<AlternateId>();
 
 				for (AlternateId alternateId : patient.getAlternateId())
 				{
-					System.out.println(">>> alternateId==" + alternateId.getName());
 					if (!em.contains(alternateId))
 					{
 						List<AlternateId> tmpList = db.query(AlternateId.class).equals(AlternateId.NAME, alternateId.getName()).find();
 						
 						if (tmpList.size() > 0)
 						{
-							System.out.println(">>> found!");
 							alternateId = tmpList.get(0);
 						}
 					}
@@ -633,14 +621,12 @@ System.out.println(">>> Done inserting publications.");
 
 				for (Variant variant : patient.getMutations())
 				{
-					System.out.println(">>> variant==" + variant.getNameCdna());
 					if (!em.contains(variant))
 					{
 						List<Variant> tmpList = db.query(Variant.class).equals(Variant.NAME, variant.getName()).find();
 						
 						if (tmpList.size() == 1)
 						{
-							System.out.println(">>> found!");
 							variant = tmpList.get(0);
 						}
 					}
@@ -654,14 +640,12 @@ System.out.println(">>> Done inserting publications.");
 				
 				for (Publication publication : patient.getPatientreferences())
 				{
-					System.out.println(">>> publication==" + publication);
 					if (!em.contains(publication))
 					{
 						List<Publication> tmpList = db.query(Publication.class).equals(Publication.NAME, publication.getName()).find();
 
 						if (tmpList.size() == 1)
 						{
-							System.out.println(">>> found!");
 							publication = tmpList.get(0);
 						}
 					}
