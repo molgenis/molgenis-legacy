@@ -15,6 +15,7 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
@@ -28,7 +29,8 @@ public class GenomeBrowser extends PluginModel<Entity>
 	private static final long serialVersionUID = 1L;
 
 	private GenomeBrowserModel model = new GenomeBrowserModel();
-	
+	private String appLoc;
+
 	public GenomeBrowserModel getMyModel()
 	{
 		return model;
@@ -50,23 +52,24 @@ public class GenomeBrowser extends PluginModel<Entity>
 	{
 		return "plugins/genomebrowser/GenomeBrowser.ftl";
 	}
-	
+
 	public void handleRequest(Database db, Tuple request)
 	{
+		appLoc = ((MolgenisRequest) request).getAppLocation();
 		if (request.getString("__action") != null)
 		{
 			String action = request.getString("__action");
 			try
 			{
-				if(action.equals("__setRelease"))
+				if (action.equals("__setRelease"))
 				{
 					String release = request.getString("__ucsc_release");
-					if(release == null || release.trim().isEmpty())
+					if (release == null || release.trim().isEmpty())
 					{
 						throw new Exception("Please fill in a release code");
 					}
 					this.model.setRelease(release.trim());
-					this.setMessages(new ScreenMessage("Release set to " + release.trim() , true));
+					this.setMessages(new ScreenMessage("Release set to " + release.trim(), true));
 				}
 			}
 			catch (Exception e)
@@ -76,41 +79,35 @@ public class GenomeBrowser extends PluginModel<Entity>
 			}
 		}
 	}
-	
-	
-	
+
 	@Override
 	public void reload(Database db)
 	{
 
 		try
 		{
-			
-			if(this.model.getAppUrl() == null)
+
+			if (this.model.getAppUrl() == null)
 			{
 				boolean appUrlSet = false;
-				while(!appUrlSet)
+				while (!appUrlSet)
 				{
-					if(this.getApplicationController().getApplicationUrl() == null)
-					{
-						System.out.println("GenomeBrowser waiting for application URL.. sleeping 1 sec");
-						Thread.sleep(1000);
-					}
-					else{
-						this.model.setAppUrl(this.getApplicationController().getApplicationUrl());
-						System.out.println("GenomeBrowser application URL set!");
-						appUrlSet = true;
-					}
+					this.model.setAppUrl(appLoc);
+					System.out.println("GenomeBrowser application URL set!");
+					appUrlSet = true;
 				}
 			}
-			
-			if(this.model.getFilesAreVisible() == null){
-				//find out if molgenisfiles are readable by anonymous
+
+			if (this.model.getFilesAreVisible() == null)
+			{
+				// find out if molgenisfiles are readable by anonymous
 				Query<MolgenisPermission> q = db.query(MolgenisPermission.class);
-				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.xgap.InvestigationFile"));
-//				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS, "org.molgenis.core.MolgenisFile"));
+				q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME, Operator.EQUALS,
+						"org.molgenis.xgap.InvestigationFile"));
+				// q.addRules(new QueryRule(MolgenisPermission.ENTITY_CLASSNAME,
+				// Operator.EQUALS, "org.molgenis.core.MolgenisFile"));
 				q.addRules((new QueryRule(MolgenisPermission.ROLE__NAME, Operator.EQUALS, "anonymous")));
-				if(q.find().size() > 0)
+				if (q.find().size() > 0)
 				{
 					this.model.setFilesAreVisible(true);
 				}
@@ -119,16 +116,15 @@ public class GenomeBrowser extends PluginModel<Entity>
 					this.model.setFilesAreVisible(false);
 				}
 			}
-			
-			
-			if(this.model.getFilesAreVisible())
+
+			if (this.model.getFilesAreVisible())
 			{
 				Query<InvestigationFile> q = db.query(InvestigationFile.class);
 				q.addRules(new QueryRule(MolgenisFile.EXTENSION, Operator.EQUALS, "gff"));
 				List<InvestigationFile> mf = q.find();
 				this.model.setGffFiles(mf);
 			}
-			
+
 		}
 		catch (Exception e)
 		{
