@@ -1,9 +1,9 @@
 <project>
 	<!-- this name is used to name the war file -->
-	<property name="app_name" value="xgap" />
+	<property name="app_name" value="xqtl" />
 
 	<!-- this holds all the settings for the generator -->
-	<property name="app_properties" value="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties"/>
+	<property name="app_properties" value="apps/xqtl/org/molgenis/xqtl/xqtl.properties"/>
 	
 	<!-- this holds the class name of the Selenium test -->
 	<property name="selenium_test_class" value="XqtlSeleniumTest" />
@@ -21,6 +21,7 @@
 		<pathelement location="modules/search" />
 		<pathelement location="modules/matrix" />
 		<pathelement location="modules/feedback" />
+		<pathelement location="modules/xgap" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/decorators/pheno" />
@@ -30,5 +31,23 @@
 
 	<!-- import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml" />
+
+	<!-- Delete HSQL database -->
+	<target name="deletedb" description="Delete HSQLDB content">
+		<mkdir dir="hsqldb" />
+		<delete includeemptydirs="true">
+			<fileset dir="hsqldb" includes="**/*" />
+		</delete>
+	</target>
+	
+	<!--
+	Run xQTL tests on a compiled application
+	-->
+	<target name="test" description="Run xQTL tests">
+		<testng classpathref="molgenis.classpath" haltOnFailure="true">
+			<classfileset dir="${build.molgenis_apps.dir}" includes="**/*_XqtlTestNG.class" />
+		</testng>
+	</target>
+	
 
 </project>

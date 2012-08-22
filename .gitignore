@@ -51,9 +51,7 @@ logger.out*
 /.settings/*
 !/.settings/template*
 .project
-/WebContent/WEB-INF/lib
 /WebContent/WEB-INF/classes
-/WebContent/doc/
 /.settings/org.eclipse.wst.common.component
 /generated/java
 !/.settings/template*
