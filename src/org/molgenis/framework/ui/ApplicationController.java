@@ -11,6 +11,7 @@ import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.security.Login;
 import org.molgenis.framework.server.MolgenisContext;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.FreemarkerInput;
 import org.molgenis.framework.ui.html.HtmlSettings;
@@ -229,7 +230,7 @@ public class ApplicationController extends SimpleScreenController<ApplicationMod
 				// by Galaxy to fetch the data)
 				//
 				this.setGalaxyUrl(request.getString("GALAXY_URL"));
-				logger.info("User was forwarded to Molgenis running @ " + this.getApplicationUrl());
+				logger.info("User was forwarded to Molgenis running @ " + ((MolgenisRequest) request).getAppLocation());
 				logger.info("User was forwarded to Molgenis by Galaxy running @ " + this.getGalaxyUrl());
 			}
 		}
