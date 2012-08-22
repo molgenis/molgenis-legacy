@@ -198,12 +198,26 @@ var JQGridView = {
 			this.config.postData.filters = filters; 
 		}
     	
-    	this.config.OPERATION = "DELETE";
-    	
     	grid = jQuery("table#"+this.tableId).jqGrid(this.config)
             .jqGrid('navGrid', "#"+this.pagerId,
-            	this.config.settings,{},{},{},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
+            	this.config.settings,
+            	{
+            		onclickSubmit : function(param) {
+						self.config.postData.Operation = "EDIT_RECORD";
+						return self.config.postData;
+					}
+            	},
+            	{},
+            	{
+            		onclickSubmit : function(param) {
+						self.config.postData.Operation = "DELETE_RECORD";
+						self.config.postData.SelectedRow = self.grid.jqGrid('getGridParam', 'selrow');
+						return self.config.postData;
+					}
+					 
+            	},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
             ).jqGrid('gridResize');
+        
         if(this.columnPageEnabled) {
 
         	firstButton = $("<input id='firstColButton' type='button' value='|< Columns' style='height:20px;font-size:-3'/>")
