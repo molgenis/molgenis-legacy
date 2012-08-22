@@ -74,6 +74,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	// private static int SEARCHINGDETAIL = 5;
 
 	Integer mode;
+	private String appLoc;
 
 	/**
 	 * Multiple inheritance: some measurements might have multiple parents
@@ -107,6 +108,8 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 	@Override
 	public void handleRequest(Database db, Tuple request) throws Exception {
 
+		appLoc = ((MolgenisRequest) request).getAppLocation();
+		
 		System.out
 				.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<"
 						+ request);
@@ -273,7 +276,7 @@ public class catalogueTreePlugin extends PluginModel<Entity> {
 
 		// db.getLogin().getClass().getGenericSuperclass().g
 		System.out.println("-------------In reload---------------------"
-				+ this.getApplicationUrl());
+				+ appLoc);
 
 		try {
 			// if (this.request!=null && this.request.getString("measurementId")

@@ -15,16 +15,15 @@ import java.util.List;
 
 import org.molgenis.core.MolgenisFile;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenMessage;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
 
-import app.servlet.MolgenisServlet;
 import decorators.MolgenisFileHandler;
 import filehandling.generic.PerformUpload;
 
@@ -39,6 +38,7 @@ public class MolgenisFileManager extends PluginModel<Entity>
 	}
 
 	private MolgenisFileManagerModel model = new MolgenisFileManagerModel();
+	private String appLoc;
 
 	public MolgenisFileManagerModel getMyModel()
 	{
@@ -62,6 +62,7 @@ public class MolgenisFileManager extends PluginModel<Entity>
 	@Override
 	public void handleRequest(Database db, Tuple request)
 	{
+		appLoc = ((MolgenisRequest) request).getAppLocation();
 		try
 		{
 			if (request.getString("__action") != null)
@@ -92,12 +93,12 @@ public class MolgenisFileManager extends PluginModel<Entity>
 				{
 					this.model.setShowApplet(false);
 				}
-				
+
 				if (file == null)
 				{
 					throw new FileNotFoundException("No file selected");
 				}
-				
+
 				PerformUpload.doUpload(db, this.model.getMolgenisFile(), file, false);
 				this.setMessages(new ScreenMessage("File uploaded", true));
 			}
@@ -117,18 +118,20 @@ public class MolgenisFileManager extends PluginModel<Entity>
 
 		try
 		{
-			
-			if(this.model.getShowApplet() == null){
+
+			if (this.model.getShowApplet() == null)
+			{
 				this.model.setShowApplet(false);
 			}
-			
+
 			ScreenController<?> parentController = (ScreenController<?>) this.getParent();
-			FormModel<MolgenisFile> parentForm = (FormModel<MolgenisFile>) ((FormController)parentController).getModel();
-	
+			FormModel<MolgenisFile> parentForm = (FormModel<MolgenisFile>) ((FormController) parentController)
+					.getModel();
+
 			List<MolgenisFile> molgenisFileList = parentForm.getRecords();
 			MolgenisFile molgenisFile = null;
-			
-			if(molgenisFileList.size() == 0)
+
+			if (molgenisFileList.size() == 0)
 			{
 				return;
 			}
@@ -146,7 +149,7 @@ public class MolgenisFileManager extends PluginModel<Entity>
 
 			boolean hasFile = false;
 			File theFile = null;
-			
+
 			try
 			{
 				theFile = mfh.getFile(molgenisFile, db);
@@ -160,18 +163,17 @@ public class MolgenisFileManager extends PluginModel<Entity>
 
 			this.model.setHasFile(hasFile);
 
-			//set app location
-			if(this.model.getDb_path() == null){
-				String db_path = this.getApplicationController().getApplicationUrl();
-				this.model.setDb_path(db_path);
+			// set app location
+			if (this.model.getDb_path() == null)
+			{
+				this.model.setDb_path(appLoc);
 			}
 
-			if(hasFile)
+			if (hasFile)
 			{
 				this.model.setFileSize(theFile.length());
 			}
 
-			
 		}
 		catch (Exception e)
 		{

@@ -112,7 +112,7 @@ add.datamatrix <- function(.data_matrix, name=NULL , investigation_id=NULL , row
 # New function to get a matrix. TODO: more arguments, use of session, unit test.
 downloadmatrixascsv<-function(id=NULL)
 {
-	data_url <- paste(serverpath,"/downloadmatrixascsv?id=",id,"&download=all&stream=false",sep="")
+	data_url <- paste(app_location,"/downloadmatrixascsv?id=",id,"&download=all&stream=false",sep="")
 	data <- read.table(data_url,sep="\t",header=T,row.names=1,colClasses=c("character"),check.names=FALSE)
 	data <- as.matrix(data)
 	colnames <- colnames(data)
@@ -130,8 +130,8 @@ downloadmatrixascsv<-function(id=NULL)
 downloadmatrixascsvCURL <- function(id=NULL, timeout = 1800000)
 {
 	myOpts = curlOptions(timeout.ms = timeout, verbose=TRUE)
-	data_url <- paste(serverpath,"/downloadmatrixascsv?id=",id,"&download=all&stream=true",sep="")
-	tetsing <- getURL(data_url, curl = ch,.opts=myOpts)
+	data_url <- paste(app_location,"/downloadmatrixascsv?id=",id,"&download=all&stream=true",sep="")
+	tetsing <- getURL(data_url, curl = .MOLGENIS.curlHandle,.opts=myOpts)
 	tmpfile <- tempfile()
 	cat(tetsing,file=tmpfile)
 	data <- read.table(tmpfile,sep="\t",header=T,row.names=1,colClasses=c("character"),check.names=FALSE)
