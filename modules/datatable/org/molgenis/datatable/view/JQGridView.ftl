@@ -207,7 +207,8 @@ var JQGridView = {
 						return self.config.postData;
 					}
             	},
-            	{},
+            	{//ADD_RECORD
+            	},
             	{
             		onclickSubmit : function(param) {
 						self.config.postData.Operation = "DELETE_RECORD";

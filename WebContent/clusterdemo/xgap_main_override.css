@@ -15,3 +15,8 @@
 	border-width: 0px;
 	width: 700px;
 }
+
+.matrixviewer 
+{
+	width: inherit;
+}

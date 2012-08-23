@@ -46,12 +46,14 @@ mkdir -p "${intermediatedir}"
 
 # pair1
 ${fastqcjar} ${leftbarcodefqgz} \
+-Djava.io.tmpdir=${tempdir} \
 -Dfastqc.output_dir=${intermediatedir} \
 -Dfastqc.unzip=false
 
 <#if seqType == "PE">
 # pair2
 ${fastqcjar} ${rightbarcodefqgz} \
+-Djava.io.tmpdir=${tempdir} \
 -Dfastqc.output_dir=${intermediatedir} \
 -Dfastqc.unzip=false
 </#if>
