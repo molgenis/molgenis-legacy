@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.ScreenModel.Show;
 import org.molgenis.framework.ui.html.HtmlInputException;
@@ -38,8 +35,7 @@ import org.molgenis.util.Tuple;
  * (see templates). It also eases understanding as Screen is reduced to a simple
  * Bean (that can be hold in a Session) and the Controllers that manipulate it.
  */
-public interface ScreenController<MODEL extends ScreenModel> extends
-		Serializable, Tree<ScreenController<?>>
+public interface ScreenController<MODEL extends ScreenModel> extends Serializable, Tree<ScreenController<?>>
 {
 	/**
 	 * Refresh/reload the model.
@@ -78,10 +74,11 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 	 * 
 	 * @param request
 	 *            a request
-	 * @throws HandleRequestDelegationException 
-	 * @throws Exception 
+	 * @throws HandleRequestDelegationException
+	 * @throws Exception
 	 */
-	//public void handleRequest(Database db, Tuple request) throws Exception, HandleRequestDelegationException;
+	// public void handleRequest(Database db, Tuple request) throws Exception,
+	// HandleRequestDelegationException;
 
 	/**
 	 * Handle a user request (typically implemented in the subclass).
@@ -91,11 +88,12 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 	 * @param out
 	 *            additional parameter that allows you to write downloadable
 	 *            output
-	 * @return 
-	 * @throws Exception 
-	 * @throws HandleRequestDelegationException 
+	 * @return
+	 * @throws Exception
+	 * @throws HandleRequestDelegationException
 	 */
-	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException, Exception;
+	public Show handleRequest(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException,
+			Exception;
 
 	/**
 	 * Get the view
@@ -157,9 +155,4 @@ public interface ScreenController<MODEL extends ScreenModel> extends
 
 	ScreenModel getSelected();
 
-	/**
-	 * Retrieve the base url for this MOLGENIS. You can use this to build new
-	 * urls to your app.
-	 */
-	String getApplicationUrl();
 }
