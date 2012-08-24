@@ -205,7 +205,10 @@ var JQGridView = {
             		onclickSubmit : function(param) {
 						self.config.postData.Operation = "EDIT_RECORD";
 						return self.config.postData;
-					}
+					},
+					afterComplete : function (response, postdata, formid) {
+						delete self.config.postData["Operation"];
+					} 
             	},
             	{//ADD RECORD
             	},
@@ -214,7 +217,11 @@ var JQGridView = {
 						self.config.postData.Operation = "DELETE_RECORD";
 						self.config.postData.SelectedRow = self.grid.jqGrid('getGridParam', 'selrow');
 						return self.config.postData;
-					}
+					},
+					afterComplete : function (response, postdata, formid) {
+						delete self.config.postData["Operation"];
+						delete self.config.postData["SelectedRow"];
+					} 
 					 
             	},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
             ).jqGrid('gridResize');
