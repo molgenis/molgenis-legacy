@@ -58,14 +58,21 @@ DownloadnSave <- function(investigationname, token, DBmarkerID = "", DBtraitID =
 	cat("library(qtl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile)
 	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-    cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+	cat("msource <- function(murl = 'http://127.0.0.1:8080/xqtl/api/R/', verbose = TRUE){","\n",sep="",file=qtlfile,append=T)
+		cat("data <- getURLContent(murl)","\n",sep="",file=qtlfile,append=T)
+		cat("t <- tempfile()","\n",sep="",file=qtlfile,append=T)
+		cat("writeLines(data, con=t)","\n",sep="",file=qtlfile,append=T)
+		cat("sys.source(t,globalenv())","\n",sep="",file=qtlfile,append=T)
+		cat("unlink(t)","\n",sep="",file=qtlfile,append=T)
+		cat("}","\n",sep="",file=qtlfile,append=T)
+    cat("msource(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
 	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 	#Print our report function
 	cat("\nreport <- function(status,text){\n",file=qtlfile,append=T)
 	cat("\ttask <- ",jobid,"\n",file=qtlfile,append=T)
 	cat("\ttext <- substr(URLencode(text),0,100)\n",file=qtlfile,append=T)
 	cat("\tlink <- paste(\"",dbpath,"/taskreporter?job=\",task,\"&subjob=0&statuscode=\",status,\"&statustext=\",text,sep=\"\")\n",sep="",file=qtlfile,append=T)
-	cat("\tgetURL(link, curl = ch)\n",file=qtlfile,append=T)
+	cat("\tgetURL(link, curl = .MOLGENIS.curlHandle)\n",file=qtlfile,append=T)
 	cat("\tif(status==-1){\n\t\tcat(\"!!!\",text,\"!!!\")\n\t\t\n\t\tq(\"no\")\n\t}\n",file=qtlfile,append=T)
 	cat("}\n\n",file=qtlfile,append=T)
 	#Downloading of Cross object (secured)
@@ -82,14 +89,14 @@ DownloadnSavePLINK <- function(investigationname, token, DBtraitID = "", inputna
 	#load needed libraries
 	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile)
 	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-    cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+    cat("msource(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
 	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 	#Print our report function
 	cat("\nreport <- function(status,t=\"\"){\n",file=qtlfile,append=T)
 	cat("\ttask <- ",jobid,"\n",file=qtlfile,append=T)
 	cat("\ttext <- URLencode(substring(t,1,100))\n",file=qtlfile,append=T)
 	cat("\tlink <- paste(\"",dbpath,"/taskreporter?job=\",task,\"&subjob=0&statuscode=\",status,\"&statustext=\",text,sep=\"\")\n",sep="",file=qtlfile,append=T)
-	cat("\tgetURL(link, curl = ch)\n",file=qtlfile,append=T)
+	cat("\tgetURL(link, curl = .MOLGENIS.curlHandle)\n",file=qtlfile,append=T)
 	cat("\tif(status==-1){\n\t\tcat(\"!!!\",text,\"!!!\")\n\t\t\n\t\tq(\"no\")\n\t}\n",file=qtlfile,append=T)
 	cat("}\n\n",file=qtlfile,append=T)
 	#Downloading of Cross object (secured)
@@ -139,7 +146,14 @@ startcode <- function(token, dbpath,jobid,item,libraryloc=NULL,name="subjob"){
 	cat("library(bitops,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 	cat("library(RCurl,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
 #	no longer needed: cat("library(ClusterJobs,lib.loc='",libraryloc,"')","\n",sep="",file=qtlfile,append=T)
-    cat("source(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
+	cat("msource <- function(murl = 'http://127.0.0.1:8080/xqtl/api/R/', verbose = TRUE){","\n",sep="",file=qtlfile,append=T)
+		cat("data <- getURLContent(murl)","\n",sep="",file=qtlfile,append=T)
+		cat("t <- tempfile()","\n",sep="",file=qtlfile,append=T)
+		cat("writeLines(data, con=t)","\n",sep="",file=qtlfile,append=T)
+		cat("sys.source(t,globalenv())","\n",sep="",file=qtlfile,append=T)
+		cat("unlink(t)","\n",sep="",file=qtlfile,append=T)
+		cat("}","\n",sep="",file=qtlfile,append=T)
+    cat("msource(\"",paste(dbpath,"/api/R",sep=""),"\")\n",sep="",file=qtlfile,append=T)
 	cat("MOLGENIS.login('",token,"')\n",sep="",file=qtlfile,append=T)
 #	Print our report function
 	cat("\nreport <- function(status,text){\n",file=qtlfile,append=T)
@@ -151,7 +165,7 @@ startcode <- function(token, dbpath,jobid,item,libraryloc=NULL,name="subjob"){
 		cat("\tjob <- ",item,"\n",file=qtlfile,append=T)
 	}
 	cat("\tlink <- paste(\"",dbpath,"/taskreporter?job=\",task,\"&subjob=\",job,\"&statuscode=\",status,\"&statustext=\",text,sep=\"\")\n",sep="",file=qtlfile,append=T)
-	cat("\tgetURL(link, curl = ch)\n",file=qtlfile,append=T)
+	cat("\tgetURL(link, curl = .MOLGENIS.curlHandle)\n",file=qtlfile,append=T)
 	cat("\tif(status==-1){\n\t\tcat(\"!!!\",text,\"!!!\")\n\t\tq(\"no\")\n\t}\n",file=qtlfile,append=T)
 	cat("}\n\n",file=qtlfile,append=T)
 	qtlfile
@@ -174,21 +188,20 @@ prepare_cluster <- function(jobid){
 report <- function(dbpath,task,job,status,t = ""){
 	progress <- 0
 	text <- URLencode(substr(t,1,100))
-	link <- paste(.MOLGENIS$servletURL,"/taskreporter?job=",task,"&subjob=",job,"&statuscode=",status,"&statustext=",text,"&statusprogress=",progress,sep="")
-	getURL(link,curl=ch)
+	link <- paste(dbpath,"/taskreporter?job=",task,"&subjob=",job,"&statuscode=",status,"&statustext=",text,"&statusprogress=",progress,sep="")
+	getURL(link,curl = .MOLGENIS.curlHandle)
 	if(status==-1){
 		q("no")
 	}
 }
 
-run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token = "", totalitems=24, njobs=2, dbpath="http://gbic.target.rug.nl:8080/clusterdemo", jobid=1, job="QTL", libraryloc="C:/Program Files/R/R-2.10.1/library", jobparams=list( c("genotypes", "genotypes"), c("phenotypes", "metaboliteexpression"),c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0"))){
+run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token = "", totalitems=24, njobs=2, dbpath=app_location, jobid=1, job="QTL", libraryloc="C:/Program Files/R/R-2.10.1/library", jobparams=list( c("genotypes", "genotypes"), c("phenotypes", "metaboliteexpression"),c("map","scanone"),c("method","hk"),c("model","normal"),c("stepsize","0"))){
 #	Initializes the cluster
 #	Downloads the cross datafile from molgenis and save it as a .RData
 #	Estimated time needed for each run (very crude) (totalitems in run + 25%)
 #	--Generate a QTLfile
 #	--Generate runfile for cluster
 #	--Sends the runfile as a job to the cluster
-  dbpath <- as.character(.MOLGENIS$servletURL) #now that we now the DNS name, use this! so replace eg "http://129.125.132.49:8080/xqtl" by "http://fwn-biol-132-49.biol.rug.nl:8080/xqtl"
   report(dbpath,jobid,0,2,"TETSING1")
 	genotypes <- getparameter("genotypes",jobparams)
 	phenotypes <- getparameter("phenotypes",jobparams)
@@ -204,7 +217,7 @@ run_cluster_new_new <- function(name="test", investigation="ClusterDemo", token 
 	cat("debug: RCurl loaded\n")
 	library(qtl,lib.loc=libraryloc)
 	cat("debug: qtl loaded\n")
-	#source(paste(dbpath,"/api/R",sep=""))
+	#msource(paste(dbpath,"/api/R",sep=""))
 	report(dbpath, jobid, 0, 2,"R%20libraries%20loaded")
 	est = NULL
 	runfile = NULL

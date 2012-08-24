@@ -8,7 +8,6 @@
 package plugins.cluster;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,13 +35,13 @@ import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.framework.server.MolgenisRequest;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.ObservableFeature;
 import org.molgenis.util.DetectOS;
 import org.molgenis.util.Entity;
-import org.molgenis.util.HtmlTools;
 import org.molgenis.util.Tuple;
 import org.molgenis.xgap.InvestigationFile;
 
@@ -55,7 +54,6 @@ import plugins.cluster.implementations.DatabaseJobManager;
 import plugins.cluster.implementations.LocalComputationResource;
 import plugins.cluster.interfaces.ComputationResource;
 import decorators.NameConvention;
-
 
 /**
  * ClusterPlugin can run Rqtl analysis in parallel on a PBS cluster or locally.
@@ -94,16 +92,22 @@ public class ClusterPlugin extends PluginModel<Entity>
 	public String getCustomHtmlHeaders()
 	{
 		String refresh = null;
-		if (this.getMyModel().getRefreshRate().equals("off")){
+		if (this.getMyModel().getRefreshRate().equals("off"))
+		{
 			refresh = "";
-		}else{
+		}
+		else
+		{
 			refresh = "\n<meta http-equiv=\"refresh\" content=\"" + this.getMyModel().getRefreshRate() + "\">";
 		}
-		// moved overlib to molgenis core //return "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>" + refresh;
+		// moved overlib to molgenis core //return
+		// "<script src=\"res/scripts/overlib.js\" language=\"javascript\"></script>"
+		// + refresh;
 		return refresh;
 	}
 
-	public ClusterPluginModel getMyModel(){
+	public ClusterPluginModel getMyModel()
+	{
 		return model;
 	}
 
@@ -202,14 +206,16 @@ public class ClusterPlugin extends PluginModel<Entity>
 			cr = new LocalComputationResource();
 			// commands.add(new Command("R CMD BATCH ./run" + sj.getJob_Id() +
 			// "/run"+sj.getNr()+".R", false, false));
-			command = new Command("R CMD BATCH ./run" + sj.getJob_Id() + "/subjob" + sj.getNr() + ".R", false, false, true);
+			command = new Command("R CMD BATCH ./run" + sj.getJob_Id() + "/subjob" + sj.getNr() + ".R", false, false,
+					true);
 		}
 		else if (parent.getComputeResource().equals("cluster"))
 		{
 			cr = new ClusterComputationResource(this.model.getLs());
 			// commands.add(new Command("nohup qsub ~/run" + sj.getJob_Id() +
 			// "/run" + sj.getNr() + ".sh &", false, false));
-			command = new Command("nohup qsub ~/run" + sj.getJob_Id() + "/run" + sj.getNr() + ".sh &", false, false, true);
+			command = new Command("nohup qsub ~/run" + sj.getJob_Id() + "/run" + sj.getNr() + ".sh &", false, false,
+					true);
 		}
 		else if (parent.getComputeResource().equals("cloud"))
 		{
@@ -287,7 +293,8 @@ public class ClusterPlugin extends PluginModel<Entity>
 			jobId = startedJob.getId();
 
 			// used later on...
-			analysis = db.find(Analysis.class, new QueryRule("id", Operator.EQUALS, startedJob.getAnalysis_Id())).get(0);
+			analysis = db.find(Analysis.class, new QueryRule("id", Operator.EQUALS, startedJob.getAnalysis_Id()))
+					.get(0);
 
 			// subjobs aanmaken
 			for (int i = 0; i <= model.getNrOfJobs(); i++)
@@ -332,170 +339,179 @@ public class ClusterPlugin extends PluginModel<Entity>
 		if (dbSucces)
 		{
 
-				// TODO! SelectedData are xrefs?? should be name probably? like
-				// SelectedParameters!
+			// TODO! SelectedData are xrefs?? should be name probably? like
+			// SelectedParameters!
 
-				List<SelectedParameter> sp = db.find(SelectedParameter.class, new QueryRule("job", Operator.EQUALS,
-						jobId));
-				List<SelectedData> sd = db.find(SelectedData.class, new QueryRule("job", Operator.EQUALS, jobId));
+			List<SelectedParameter> sp = db.find(SelectedParameter.class, new QueryRule("job", Operator.EQUALS, jobId));
+			List<SelectedData> sd = db.find(SelectedData.class, new QueryRule("job", Operator.EQUALS, jobId));
 
-				// special for QTL with 'phenotypes'
-				Integer phenoRef = null;
-				int totalitems = model.getNrOfJobs(); //default
-				
-				for (SelectedData s : sd)
+			// special for QTL with 'phenotypes'
+			Integer phenoRef = null;
+			int totalitems = model.getNrOfJobs(); // default
+
+			for (SelectedData s : sd)
+			{
+				if (s.getDataName().equals("phenotypes"))
 				{
-					if (s.getDataName().equals("phenotypes"))
+					phenoRef = Integer.parseInt(s.getDataValue());
+
+					Data phenoMatrix = db.find(Data.class, new QueryRule("id", Operator.EQUALS, phenoRef)).get(0);
+					DataMatrixInstance instance = dmh.createInstance(phenoMatrix, db);
+					Class<?> cols = db.getClassForName(phenoMatrix.getFeatureType());
+
+					if (cols.newInstance() instanceof ObservableFeature)
 					{
-						phenoRef = Integer.parseInt(s.getDataValue());
-
-						Data phenoMatrix = db.find(Data.class, new QueryRule("id", Operator.EQUALS, phenoRef)).get(0);
-						DataMatrixInstance instance = dmh.createInstance(phenoMatrix, db);
-						Class<?> cols = db.getClassForName(phenoMatrix.getFeatureType());
-					
-						if (cols.newInstance() instanceof ObservableFeature)
-						{
-							// FIXME
-							// froegah totalitems = phenoMatrix.getTotalCols();
-							totalitems = instance.getNumberOfCols();
-						}
-						else
-						{
-							// FIXME
-							// totalitems = phenoMatrix.getTotalRows();
-							totalitems = instance.getNumberOfRows();
-						}
-						break;
+						// FIXME
+						// froegah totalitems = phenoMatrix.getTotalCols();
+						totalitems = instance.getNumberOfCols();
 					}
+					else
+					{
+						// FIXME
+						// totalitems = phenoMatrix.getTotalRows();
+						totalitems = instance.getNumberOfRows();
+					}
+					break;
 				}
+			}
 
-				// make toServer string
-				String toServer = "";
-//				String host = null;
+			// make toServer string
+			String toServer = "";
+			// String host = null;
 
-//				if (startedJob.getComputeResource().equals("local") || startedJob.getComputeResource().equals("image"))
-//				{
-//					host = "localhost";
-//				}
-//				else if ((startedJob.getComputeResource().equals("cluster") || startedJob.getComputeResource().equals(
-//						"cloud")))
-//				{
-//					host = HtmlTools.getExposedIPAddress();
-//				}
-//
-//				URL reconstructedURL = HtmlTools.getExposedProjectURL(request, host, this.getApplicationController().getMolgenisContext().getVariant());
+			// if (startedJob.getComputeResource().equals("local") ||
+			// startedJob.getComputeResource().equals("image"))
+			// {
+			// host = "localhost";
+			// }
+			// else if ((startedJob.getComputeResource().equals("cluster") ||
+			// startedJob.getComputeResource().equals(
+			// "cloud")))
+			// {
+			// host = HtmlTools.getExposedIPAddress();
+			// }
+			//
+			// URL reconstructedURL = HtmlTools.getExposedProjectURL(request,
+			// host,
+			// this.getApplicationController().getMolgenisContext().getVariant());
 
-				String db_path = this.getApplicationController().getApplicationUrl();
+			String appLocation = ((MolgenisRequest) request).getAppLocation();
 
-				//get Inv ref from the first matrix in the input set
-				Investigation inv = null;
-				try{
+			// get Inv ref from the first matrix in the input set
+			Investigation inv = null;
+			try
+			{
 				Integer invRef = db.find(Data.class, new QueryRule("id", Operator.EQUALS, sd.get(0).getDataValue()))
 						.get(0).getInvestigation_Id();
-					inv = db.find(Investigation.class, new QueryRule("id", Operator.EQUALS, invRef)).get(0);
-				}catch(Exception e){
-					inv = db.find(Investigation.class).get(0); //BAD, but works for ClusterDemo...... FIXME
-				}
+				inv = db.find(Investigation.class, new QueryRule("id", Operator.EQUALS, invRef)).get(0);
+			}
+			catch (Exception e)
+			{
+				inv = db.find(Investigation.class).get(0); // BAD, but works for
+															// ClusterDemo......
+															// FIXME
+			}
 
-				// NOT VARIABLE
-				toServer += "name = '" + NameConvention.escapeEntityNameStrict(startedJob.getOutputDataName()) + "',";
-				// FIXME
-				toServer += "investigation = '" + inv.getName() + "',";
-				
-				String userName = db.getLogin().getUserName();
-				
-				Calendar cal = Calendar.getInstance();
-				cal.add(Calendar.DATE, 2);
-				Date validUntil = cal.getTime();
-				String token = this.getTokenFactory().makeNewToken(userName, validUntil);
-				toServer += "token = '" + token + "',";
-				toServer += "totalitems = '" + totalitems + "',";
-				toServer += "njobs = '" + model.getNrOfJobs() + "',";
-				toServer += "dbpath = '" + db_path + "',";
-				toServer += "jobid = '" + jobId + "',";
-				toServer += "job = '" + analysis.getTargetFunctionName() + "',";
+			// NOT VARIABLE
+			toServer += "name = '" + NameConvention.escapeEntityNameStrict(startedJob.getOutputDataName()) + "',";
+			// FIXME
+			toServer += "investigation = '" + inv.getName() + "',";
 
-				File usrHomeLibs = new File(System.getProperty("user.home") + File.separator + "libs");
-				String OS = DetectOS.getOS();
+			String userName = db.getLogin().getUserName();
 
-				if (startedJob.getComputeResource().equals("local"))
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, 2);
+			Date validUntil = cal.getTime();
+			String token = this.getTokenFactory().makeNewToken(userName, validUntil);
+			toServer += "token = '" + token + "',";
+			toServer += "totalitems = '" + totalitems + "',";
+			toServer += "njobs = '" + model.getNrOfJobs() + "',";
+			toServer += "dbpath = '" + appLocation + "',";
+			toServer += "jobid = '" + jobId + "',";
+			toServer += "job = '" + analysis.getTargetFunctionName() + "',";
+
+			File usrHomeLibs = new File(System.getProperty("user.home") + File.separator + "libs");
+			String OS = DetectOS.getOS();
+
+			if (startedJob.getComputeResource().equals("local"))
+			{
+				toServer += "libraryloc = '" + usrHomeLibs.getAbsolutePath().replace("\\", "/") + "',";
+			}
+			else
+			{
+				// Utils.console("blala lib loc = ~libs");
+				toServer += "libraryloc = '~/libs', ";
+			}
+
+			toServer += "jobparams = list(";
+			// VARIABLE
+			for (SelectedData s : sd)
+			{
+				String dataValueName = db.find(Data.class, new QueryRule("id", Operator.EQUALS, s.getDataValue()))
+						.get(0).getName();
+				toServer += "c('" + s.getDataName() + "' , '" + dataValueName + "'),";
+			}
+
+			for (SelectedParameter s : sp)
+			{
+				toServer += "c('" + s.getParameterName() + "' , '" + s.getParameterValue() + "'),";
+			}
+
+			toServer = toServer.substring(0, toServer.length() - 1);
+			toServer += ")";
+
+			List<Command> commands = generateNullJobCommandList(jobId, token, toServer,
+					startedJob.getComputeResource(), usrHomeLibs, OS, appLocation);
+
+			// submit R job that will distribute the subjobs
+			if (startedJob.getComputeResource().equals("local"))
+			{
+				cr = new LocalComputationResource();
+				commands.add(new Command("R CMD BATCH runmij" + jobId + ".R", false, false, true));
+			}
+			else if ((startedJob.getComputeResource().equals("cluster")))
+			{
+				if (this.getMyModel().getLs().getUser() == null)
 				{
-					toServer += "libraryloc = '" + usrHomeLibs.getAbsolutePath().replace("\\", "/") + "',";
+					// this.getMyModel().getLs().setUser(Millipede.z);
+					// this.getMyModel().getLs().setPassword(Millipede.k);
+					throw new Exception("No user specified");
 				}
-				else
-				{
-					//Utils.console("blala lib loc = ~libs");
-					toServer += "libraryloc = '~/libs', ";
-				}
+				cr = new ClusterComputationResource(this.getMyModel().getLs());
 
-				toServer += "jobparams = list(";
-				// VARIABLE
-				for (SelectedData s : sd)
-				{
-					String dataValueName = db.find(Data.class, new QueryRule("id", Operator.EQUALS, s.getDataValue()))
-							.get(0).getName();
-					toServer += "c('" + s.getDataName() + "' , '" + dataValueName + "'),";
-				}
+				commands.add(new Command("nohup qsub runmij" + jobId + ".sh &", false, false, true));
+			}
+			else if ((startedJob.getComputeResource().equals("bot")))
+			{
+				cr = new BotNetworkComputationResource();
+				commands.add(new Command("R CMD BATCH runmij" + jobId + ".R", false, false, true));
+			}
+			else if ((startedJob.getComputeResource().equals("cloud")))
+			{
+				throw new Exception("Cloud is unsupported!");
+			}
+			else if ((startedJob.getComputeResource().equals("image")))
+			{
+				throw new Exception("Image is unsupported!");
+			}
 
-				for (SelectedParameter s : sp)
-				{
-					toServer += "c('" + s.getParameterName() + "' , '" + s.getParameterValue() + "'),";
-				}
+			// File curWorkingDir = new
+			// File(System.getProperty("user.dir"));
+			// File tmpWorkingDir = new File(curWorkingDir + File.separator
+			// + "tmp");
+			// if(!tmpWorkingDir.exists()){
+			// boolean createSuccess = tmpWorkingDir.mkdir();
+			// if(!createSuccess){
+			// throw new Exception("Could not create tmp working dir at " +
+			// tmpWorkingDir.getAbsolutePath());
+			// }
+			// }
+			// System.setProperty("user.dir",
+			// tmpWorkingDir.getAbsolutePath());
 
-				toServer = toServer.substring(0, toServer.length() - 1);
-				toServer += ")";
+			cr.installDependencies();
 
-				List<Command> commands = generateNullJobCommandList(jobId, token, toServer, startedJob.getComputeResource(),
-						usrHomeLibs, OS, db_path);
-
-				// submit R job that will distribute the subjobs
-				if (startedJob.getComputeResource().equals("local"))
-				{
-					cr = new LocalComputationResource();
-					commands.add(new Command("R CMD BATCH runmij" + jobId + ".R", false, false, true));
-				}
-				else if ((startedJob.getComputeResource().equals("cluster")))
-				{
-					if (this.getMyModel().getLs().getUser() == null)
-					{
-//						this.getMyModel().getLs().setUser(Millipede.z);
-//						this.getMyModel().getLs().setPassword(Millipede.k);
-						throw new Exception("No user specified");
-					}
-					cr = new ClusterComputationResource(this.getMyModel().getLs());
-
-					commands.add(new Command("nohup qsub runmij" + jobId + ".sh &", false, false, true));
-				}else if ((startedJob.getComputeResource().equals("bot")))
-				{
-					cr = new BotNetworkComputationResource();
-					commands.add(new Command("R CMD BATCH runmij" + jobId + ".R", false, false, true));
-				}
-				else if ((startedJob.getComputeResource().equals("cloud")))
-				{
-					throw new Exception("Cloud is unsupported!");
-				}
-				else if ((startedJob.getComputeResource().equals("image")))
-				{
-					throw new Exception("Image is unsupported!");
-				}
-
-				// File curWorkingDir = new
-				// File(System.getProperty("user.dir"));
-				// File tmpWorkingDir = new File(curWorkingDir + File.separator
-				// + "tmp");
-				// if(!tmpWorkingDir.exists()){
-				// boolean createSuccess = tmpWorkingDir.mkdir();
-				// if(!createSuccess){
-				// throw new Exception("Could not create tmp working dir at " +
-				// tmpWorkingDir.getAbsolutePath());
-				// }
-				// }
-				// System.setProperty("user.dir",
-				// tmpWorkingDir.getAbsolutePath());
-
-				cr.installDependencies();
-
-				cr.executeCommands(commands);
+			cr.executeCommands(commands);
 		}
 	}
 
@@ -522,7 +538,7 @@ public class ClusterPlugin extends PluginModel<Entity>
 	}
 
 	public List<Command> generateNullJobCommandList(int jobId, String token, String toServer, String computeResource,
-			File usrHomeLibs, String OS, String db_path)
+			File usrHomeLibs, String OS, String appLocation)
 	{
 		List<Command> commands = new ArrayList<Command>();
 
@@ -541,14 +557,32 @@ public class ClusterPlugin extends PluginModel<Entity>
 			commands.add(new Command("echo library('RCurl', lib.loc='"
 					+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "') >> runmij" + jobId + ".R", false, false,
 					true));
-			commands.add(new Command("echo source(\"" + db_path + "/api/R/\") >> runmij" + jobId + ".R", false, false,
-					true));
+
+			// FIXME: really bad..
+			String s = "";
+			s += ("msource <- function(murl = \"http://127.0.0.1:8080/xqtl/api/R/\", verbose = TRUE){\n");
+			s += ("  if(verbose) cat(\"Creating connection\",murl,\"\\n\")\n");
+			s += ("  data <- getURLContent(murl)\n");
+			s += ("  t <- tempfile()\n");
+			s += ("  if(verbose) cat(\"Creating tempfile \",t,\"\\n\")\n");
+			s += ("  writeLines(data, con=t)\n");
+			s += ("  sys.source(t,globalenv())\n");
+			s += ("  unlink(t)\n");
+			s += ("  if(verbose) cat(\"Cleanup tempfile \",t,\"\\n\")\n");
+			s += ("}\n");
+
+			commands.add(new Command("echo " + s + "\") >> runmij" + jobId + ".R", false, false, true));
+
+			commands.add(new Command("echo msource(\"" + appLocation + "/api/R/\") >> runmij" + jobId + ".R", false,
+					false, true));
 			commands.add(new Command("echo MOLGENIS.login(\"" + token + "\") >> runmij" + jobId + ".R", false, false,
 					true));
 			commands.add(new Command("echo run_cluster_new_new(" + toServer + ") >> runmij" + jobId + ".R", false,
 					false, true));
 			commands.add(new Command("echo q('no') >> runmij" + jobId + ".R", false, false, true));
-		}else{
+		}
+		else
+		{
 			// runmijJOBID.R
 			commands.add(new Command("echo \"rm(list=ls())\" > runmij" + jobId + ".R", false, false, true));
 			if (computeResource.equals("local"))
@@ -561,13 +595,24 @@ public class ClusterPlugin extends PluginModel<Entity>
 				commands.add(new Command("echo \"library('bitops', lib.loc='"
 						+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "')\" >> runmij" + jobId + ".R", false,
 						false, true));
-				commands.add(new Command("echo \"library('RCurl', lib.loc='"
-						+ usrHomeLibs.getAbsolutePath().replace("\\", "/") + "')\" >> runmij" + jobId + ".R", false,
+
+				// FIXME: really bad..
+				String s = "";
+				s += ("library(bitops, lib.loc='~/libs')\n");
+				s += ("library(RCurl, lib.loc='~/libs')\n");
+				s += ("msource <- function(murl = 'http://127.0.0.1:8080/xqtl/api/R/', verbose = TRUE){\n");
+				s += ("  data <- getURLContent(murl)\n");
+				s += ("  t <- tempfile()\n");
+				s += ("  writeLines(data, con=t)\n");
+				s += ("  sys.source(t,globalenv())\n");
+				s += ("  unlink(t)\n");
+				s += ("}\n");
+
+				commands.add(new Command("echo \"" + s + "\" >> runmij" + jobId + ".R", false, false, true));
+				commands.add(new Command("echo \"msource('" + appLocation + "/api/R/')\" >> runmij" + jobId + ".R",
+						false, false, true));
+				commands.add(new Command("echo \"MOLGENIS.login('" + token + "')\" >> runmij" + jobId + ".R", false,
 						false, true));
-				commands.add(new Command("echo \"source('" + db_path + "/api/R/')\" >> runmij" + jobId + ".R", false,
-						false, true));
-				commands.add(new Command("echo \"MOLGENIS.login('" + token + "')\" >> runmij" + jobId + ".R", false, false,
-						true));
 				commands.add(new Command("echo \"run_cluster_new_new(" + toServer + ")\" >> runmij" + jobId + ".R",
 						false, false, true));
 				commands.add(new Command("echo \"q('no')\" >> runmij" + jobId + ".R", false, false, true));
@@ -581,10 +626,10 @@ public class ClusterPlugin extends PluginModel<Entity>
 						false, false, true));
 				commands.add(new Command("echo \"library('RCurl', lib.loc='~/libs')\" >> runmij" + jobId + ".R", false,
 						false, true));
-				commands.add(new Command("echo \"source('" + db_path + "/api/R/')\" >> runmij" + jobId + ".R", false,
+				commands.add(new Command("echo \"source('" + appLocation + "/api/R/')\" >> runmij" + jobId + ".R",
+						false, false, true));
+				commands.add(new Command("echo \"MOLGENIS.login('" + token + "')\" >> runmij" + jobId + ".R", false,
 						false, true));
-				commands.add(new Command("echo \"MOLGENIS.login('" + token + "')\" >> runmij" + jobId + ".R", false, false,
-						true));
 				commands.add(new Command("echo \"run_cluster_new_new(" + toServer + ")\" >> runmij" + jobId + ".R",
 						false, false, false));
 				commands.add(new Command("echo \"q('no')\" >> runmij" + jobId + ".R", false, false, false));
@@ -603,8 +648,9 @@ public class ClusterPlugin extends PluginModel<Entity>
 				commands.add(new Command("echo \"#PBS -l nodes=1\" >> runmij" + jobId + ".sh", false, false, false));
 				commands.add(new Command("echo \"#PBS -l walltime=01:30:00\" >> runmij" + jobId + ".sh", false, false,
 						false));
-				//TODO Figure out how to in the new way
-				//commands.add(new Command("echo \"cd $home\" >> runmij" + jobId + ".sh", false, false, false));
+				// TODO Figure out how to in the new way
+				// commands.add(new Command("echo \"cd $home\" >> runmij" +
+				// jobId + ".sh", false, false, false));
 				commands.add(new Command("echo \"R CMD BATCH runmij" + jobId + ".R\" >> runmij" + jobId + ".sh", false,
 						false, false));
 			}
@@ -617,17 +663,17 @@ public class ClusterPlugin extends PluginModel<Entity>
 	{
 		try
 		{
-	
+
 			if (djm == null)
 			{
 				djm = new DatabaseJobManager();
 			}
-			
+
 			if (dmh == null)
 			{
 				dmh = new DataMatrixHandler(db);
 			}
-	
+
 			if (model.getState() == null)
 			{
 				model.setState("main");
@@ -643,11 +689,11 @@ public class ClusterPlugin extends PluginModel<Entity>
 				Analysis analysis = db.find(Analysis.class,
 						new QueryRule("id", Operator.EQUALS, model.getCandidateJob().getAnalysis_Id())).get(0);
 				model.setSelectedAnalysis(analysis);
-				
+
 				ParameterSet paramset = db.find(ParameterSet.class,
 						new QueryRule("id", Operator.EQUALS, analysis.getParameterSet_Id())).get(0);
-				DataSet dataset = db.find(DataSet.class, new QueryRule("id", Operator.EQUALS, analysis.getDataSet_Id()))
-						.get(0);
+				DataSet dataset = db
+						.find(DataSet.class, new QueryRule("id", Operator.EQUALS, analysis.getDataSet_Id())).get(0);
 
 				List<ParameterName> parameternames = db.find(ParameterName.class, new QueryRule("parameterset",
 						Operator.EQUALS, paramset.getId()));
@@ -662,15 +708,15 @@ public class ClusterPlugin extends PluginModel<Entity>
 				}
 				model.setParametervalues(parametervalues);
 
-				List<DataName> datanames = db.find(DataName.class, new QueryRule("dataset", Operator.EQUALS, dataset
-						.getId()));
+				List<DataName> datanames = db.find(DataName.class,
+						new QueryRule("dataset", Operator.EQUALS, dataset.getId()));
 				model.setDatanames(datanames);
 
 				List<DataValue> datavalues = new ArrayList<DataValue>();
 				for (DataName dn : datanames)
 				{
-					List<DataValue> results = db.find(DataValue.class, new QueryRule("dataname", Operator.EQUALS, dn
-							.getId()));
+					List<DataValue> results = db.find(DataValue.class,
+							new QueryRule("dataname", Operator.EQUALS, dn.getId()));
 					datavalues.addAll(results);
 				}
 				model.setDatavalues(datavalues);
@@ -735,27 +781,28 @@ public class ClusterPlugin extends PluginModel<Entity>
 				model.setSubjobs(subjobList);
 				model.setJobs(jobList);
 				model.setMaxSubjobs(HelperFunctions.countMaxSubjobs(subjobList, jobList));
-				
-				//map job output to Data or File
+
+				// map job output to Data or File
 				HashMap<String, String> jobToOutputLink = new HashMap<String, String>();
 				List<Data> dataInDb = db.find(Data.class);
 				List<InvestigationFile> filesInDb = db.find(InvestigationFile.class);
 				for (Job j : jobList)
 				{
 					boolean dataFound = false;
-					for(Data d : dataInDb)
+					for (Data d : dataInDb)
 					{
-						if(j.getOutputDataName().equals(d.getName()))
+						if (j.getOutputDataName().equals(d.getName()))
 						{
 							jobToOutputLink.put(j.getId().toString(), "DATA");
 							dataFound = true;
 							break;
 						}
 					}
-					if(!dataFound){
-						for(InvestigationFile f : filesInDb)
+					if (!dataFound)
+					{
+						for (InvestigationFile f : filesInDb)
 						{
-							if(j.getOutputDataName().equals(f.getName()))
+							if (j.getOutputDataName().equals(f.getName()))
 							{
 								jobToOutputLink.put(j.getId().toString(), "FILE");
 								break;
@@ -765,10 +812,13 @@ public class ClusterPlugin extends PluginModel<Entity>
 				}
 				this.model.setJobToOutputLink(jobToOutputLink);
 			}
-			
-			if(model.getState().equals("main"))
+
+			if (model.getState().equals("main"))
 			{
-				this.getMyModel().setRefreshRate("off"); //FIXME: stops refreshing outside of Job manager??
+				this.getMyModel().setRefreshRate("off"); // FIXME: stops
+															// refreshing
+															// outside of Job
+															// manager??
 			}
 		}
 		catch (Exception e)

@@ -76,6 +76,8 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 	private List<String> SearchFilters = new ArrayList<String>();
 	private String Status = "";
+	
+	private String appLoc;
 
 	/** Multiple inheritance: some measurements might have multiple parents therefore it
 	 *  will complain about the branch already exists when constructing the tree, cheating by
@@ -109,6 +111,7 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>Handle request<<<<<<<<<<<<<<<<<<<<" + request);
 
+		appLoc = ((MolgenisRequest) request).getAppLocation();
 
 		List<Measurement> allMeasList = db.find(Measurement.class,new QueryRule(Measurement.INVESTIGATION_NAME, Operator.EQUALS, selectedInvestigation));
 
@@ -260,7 +263,7 @@ public class treeViewProxyPlugin extends PluginModel<Entity> {
 		//		Login login = (Login)request.getRequest().getSession().getAttribute("login");
 
 		//db.getLogin().getClass().getGenericSuperclass().g
-		System.out.println("-------------In reload---------------------" + this.getApplicationUrl());
+		System.out.println("-------------In reload---------------------" + appLoc);
 
 
 		try{

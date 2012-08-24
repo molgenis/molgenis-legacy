@@ -4,18 +4,14 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
 	<!-- FrontController mapping for Tomcat -->
-	<servlet>
-		<servlet-name>FrontController</servlet-name>
-		<servlet-class>app.servlet.FrontController</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>FrontController</servlet-name>
-		<url-pattern>*.do</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>FrontController</servlet-name>
-		<url-pattern>/xref</url-pattern>
-	</servlet-mapping>        
+	 <servlet>
+        <servlet-name>FrontController</servlet-name>
+        <servlet-class>app.servlet.FrontController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FrontController</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
         
 	
 	<!-- Quartz scheduling -->

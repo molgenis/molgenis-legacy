@@ -86,8 +86,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 				for (Measurement m : measurements.keySet())
 				{
 					Field col = new Field(m.getName());
-					// col.setLabel(m.getName());
-					// col.setTableName(measurements.get(m).getName());
+
 					col.setDescription(m.getDescription());
 					// todo: setType()
 					columns.add(col);
@@ -162,12 +161,12 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 
 					// get measurements (evil expensive)
 					Protocol p = null;
+
 					Measurement currentMeasurement = null;
 					for (Measurement m : measurements.keySet())
 					{
 						if (m.getName().equals(v.getFeature_Name()))
 						{
-
 							p = measurements.get(m);
 							currentMeasurement = m;
 							break;
@@ -186,18 +185,11 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 								break;
 							}
 						}
-
 					}
 					else
 					{
 						if (!v.getValue().isEmpty()) row.set(v.getFeature_Name(), v.getValue());
 					}
-					// if (p == null) {
-
-					// } else {
-					// row.set(p.getName() + "." + v.getFeature_Name(),
-					// v.getValue());
-					// }
 				}
 				result.add(row);
 			}
