@@ -49,7 +49,7 @@ public class JQGridView extends HtmlWidget
 {
 	public static final String OPERATION = "Operation";
 	private boolean initialize = true;
-	HashMap<String, String> hashMeasurements = new HashMap<String, String>();
+	HashMap<String, String> hashMeasurementsWithCategories = new HashMap<String, String>();
 
 	/**
 	 * Operations that the GridView can handle. LOAD_CONFIG, RENDER_DATA,
@@ -139,8 +139,10 @@ public class JQGridView extends HtmlWidget
 				{
 					if (m.getCategories_Name().size() > 0)
 					{
-						hashMeasurements.put(m.getName(), m.getDataType());
+						hashMeasurementsWithCategories.put(m.getName(), m.getDataType());
+
 					}
+
 				}
 				initialize = false;
 			}
@@ -232,12 +234,12 @@ public class JQGridView extends HtmlWidget
 
 						for (Field eachField : tupleTable.getAllColumns())
 						{
-							System.out.println("-------------------------->" + eachField.getName());
+
 							if (!eachField.getName().equals(targetString))
 							{
 								MolgenisUpdateDatabase mu = new MolgenisUpdateDatabase();
 								mu.UpdateDatabase(db, targetID, request.getString(eachField.getName()),
-										eachField.getName(), protAppID, hashMeasurements);
+										eachField.getName(), protAppID, hashMeasurementsWithCategories);
 							}
 						}
 
@@ -251,7 +253,7 @@ public class JQGridView extends HtmlWidget
 				case ADD_RECORD:
 
 					// respond to the ajax calling of adding new records/.
-					String patientID = request.getString("patientID");
+					String patientID = request.getString("targetID");
 
 					Individual ot = null;
 
@@ -333,7 +335,7 @@ public class JQGridView extends HtmlWidget
 									ObservedValue ov = new ObservedValue();
 									ov.setTarget_Name(patientID);
 									ov.setFeature_Name(feature);
-									if (hashMeasurements.containsKey(feature))
+									if (hashMeasurementsWithCategories.containsKey(feature))
 									{
 										String[] splitValue = value.split("\\.");
 										ov.setValue(splitValue[0]);
@@ -607,6 +609,11 @@ public class JQGridView extends HtmlWidget
 		args.put("url", tupleTableBuilder.getUrl());
 
 		return new FreemarkerView(JQGridView.class, args).render();
+	}
+
+	public HashMap<String, String> getHashMeasurements()
+	{
+		return hashMeasurementsWithCategories;
 	}
 
 	/**

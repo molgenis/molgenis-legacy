@@ -167,7 +167,6 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 					{
 						if (m.getName().equals(v.getFeature_Name()))
 						{
-
 							p = measurements.get(m);
 							currentMeasurement = m;
 							break;

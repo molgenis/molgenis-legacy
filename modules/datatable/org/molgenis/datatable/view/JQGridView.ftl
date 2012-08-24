@@ -207,7 +207,7 @@ var JQGridView = {
 						return self.config.postData;
 					}
             	},
-            	{//ADD_RECORD
+            	{//ADD RECORD
             	},
             	{
             		onclickSubmit : function(param) {
@@ -320,9 +320,10 @@ var JQGridView = {
 			addRecordTable = "<table id=\"addRecord\">";
 			
 
- 			
+ 			var array;
+ 			var length = 0;
  			for(var index = 0; index < colModel.length; index++){
- 				
+ 			
  				if(colModel[index].edittype == "select"){
  					var optionString = colModel[index].editoptions.value;
  					var optionsHTML = "<option></option>";	
@@ -333,15 +334,30 @@ var JQGridView = {
  					}
 					addRecordTable += "<tr id=\"" + colModel[index].name + "\" style=\"display:none\"><td>" + colModel[index].name + 
  					"</td><td><select id=\""+ colModel[index].name +"_input\">"+ optionsHTML +"</select></td></tr>";
- 				}else{
+ 				}else {
+				
  					addRecordTable += "<tr id=\"" + colModel[index].name + "\" style=\"display:none\"><td>" + colModel[index].name + 
- 					"</td><td><input id=\""+ colModel[index].name +"_input\" type=\"text\" width=\"20\"></input></td></tr>";
+ 					"</td><td><input id=\""+ colModel[index].name +"_input\" type=\"text\" ></input></td></tr>";
  				}
+ 				
+ 				
  			}
+ 			
+ 			
+ 			
  			
  			//close the table and add it to the dialog div
  			addRecordTable += "</table></br>";
 			$('#dialog').append(addRecordTable);
+			for(var index = 0; index < colModel.length; index++){
+				if(colModel[index].datetype == "datetype"){
+	
+					$( "#"+colModel[index].name +"_input" ).datepicker({
+
+					});
+				
+				}
+			}
 			
 			//Only the first 7 rows are shown in the table.
 			$('#addRecord tr:lt(7)').show();
@@ -425,23 +441,23 @@ var JQGridView = {
  				var myUrl = $("table#"+self.tableId).jqGrid('getGridParam', 'url');
  				
  				//The first column is always observationTarget.
- 				patientID = template[colNames[0]];
+ 				targetID = template[colNames[0]];
  				
- 				if(patientID === "" || !patientID){
- 					alert("The patientID needs to fill out!");
+ 				if(targetID === "" || !targetID){
+ 					alert("The targetID needs to fill out!");
  				}else if(numberOfColumns == 1){
  					alert("Please fill out one column at least!");
  				}else{
  					//Delete the observationTarget
  					delete template[colNames[0]];
  					//Put the values in the variables attached to URL
-					myUrl += "&patientID=" + patientID + "&data=" + JSON.stringify(template);
+					myUrl += "&targetID=" + targetID + "&data=" + JSON.stringify(template);
 	                //Calling ajax and pass this value back to the server
 	                $.ajax(myUrl + "&Operation=ADD_RECORD").done(function(status) {
 				       	//If the value addition is successful, this value is inserted in 
 				       	//the jqGrid table as well.
 				       	if(status["success"] == true){
-				       		template[colNames[0]] = patientID;
+				       		template[colNames[0]] = targetID;
 				        	grid.addRowData(grid.getGridParam('records') + 1, template, "first");	
 				        	$('#dialog').dialog('close');
 				        }
