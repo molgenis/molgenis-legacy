@@ -1,0 +1,2743 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="catissue">
+    <entity name="association">
+        <field unique="true" type="long" name="ASSOCIATION_ID"/>
+        <field type="int" name="ASSOCIATION_TYPE"/>
+    </entity>
+    <entity name="categorial_attribute">
+        <field unique="true" auto="true" type="long" name="ID"/>
+        <field xref_field="categorial_class.ID" nillable="true" type="xref" name="CATEGORIAL_CLASS_ID"/>
+        <field nillable="true" type="long" name="DE_CATEGORY_ATTRIBUTE_ID"/>
+        <field nillable="true" type="long" name="DE_SOURCE_CLASS_ATTRIBUTE_ID"/>
+    </entity>
+    <entity name="categorial_class">
+        <field unique="true" auto="true" type="long" name="ID"/>
+        <field nillable="true" type="long" name="DE_ENTITY_ID"/>
+        <field nillable="true" type="long" name="PATH_FROM_PARENT_ID"/>
+        <field xref_field="categorial_class.ID" nillable="true" type="xref" name="PARENT_CATEGORIAL_CLASS_ID"/>
+    </entity>
+    <entity name="category" extends="categorial_class">
+        <field unique="true" auto="true" type="long" name="ID"/>
+        <field nillable="true" type="long" name="DE_ENTITY_ID"/>
+        <field xref_field="category.ID" nillable="true" type="xref" name="PARENT_CATEGORY_ID"/>
+    </entity>
+    <entity name="catissue_abs_speci_coll_group">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="150" nillable="true" name="CLINICAL_DIAGNOSIS"/>
+        <field length="50" nillable="true" name="CLINICAL_STATUS"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SITE_ID"/>
+    </entity>
+    <entity name="catissue_abstract_application">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="REASON_DEVIATION"/>
+        <field auto="true" type="datetime" name="TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_DETAILS"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+    </entity>
+    <entity name="catissue_abstract_position">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="POSITION_DIMENSION_ONE"/>
+        <field nillable="true" type="int" name="POSITION_DIMENSION_TWO"/>
+    </entity>
+    <entity name="catissue_abstract_specimen">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="50" default="" name="SPECIMEN_CLASS"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+        <field length="50" nillable="true" name="LINEAGE"/>
+        <field length="50" nillable="true" name="PATHOLOGICAL_STATUS"/>
+        <field nillable="true" type="long" name="PARENT_SPECIMEN_ID"/>
+        <field xref_field="catissue_specimen_char.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_CHARACTERISTICS_ID"/>
+        <field nillable="true" type="decimal" name="INITIAL_QUANTITY"/>
+    </entity>
+    <entity name="catissue_action">
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field length="50" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="long" name="ACTION_ORDER"/>
+        <field xref_field="catissue_action_app_rcd_entry.IDENTIFIER" nillable="true" type="xref" name="ACTION_APP_RECORD_ENTRY_ID"/>
+        <field xref_field="catissue_spp.IDENTIFIER" nillable="true" type="xref" name="SPP_IDENTIFIER"/>
+        <field length="50" name="UNIQUE_ID"/>
+        <field default="b'0'" nillable="true" type="bool" name="IS_SKIPPED"/>
+        <unique fields="SPP_IDENTIFIER,UNIQUE_ID"/>
+    </entity>
+    <entity name="catissue_action_app_rcd_entry">
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_action_application.IDENTIFIER" nillable="true" type="xref" name="ACTION_APP_ID"/>
+    </entity>
+    <entity name="catissue_action_application" extends="catissue_abstract_application">
+        <field xref_field="catissue_spp_application.IDENTIFIER" nillable="true" type="xref" name="SPP_APP_IDENTIFIER"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SCG_ID"/>
+        <field xref_field="catissue_action.IDENTIFIER" nillable="true" type="xref" name="ACTION_IDENTIFIER"/>
+        <field xref_field="catissue_action_app_rcd_entry.IDENTIFIER" nillable="true" type="xref" name="ACTION_APP_RECORD_ENTRY_ID"/>
+    </entity>
+    <entity name="catissue_address">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="STREET"/>
+        <field length="50" nillable="true" name="CITY"/>
+        <field length="50" nillable="true" name="STATE"/>
+        <field length="50" nillable="true" name="COUNTRY"/>
+        <field length="30" nillable="true" name="ZIPCODE"/>
+        <field length="50" nillable="true" name="PHONE_NUMBER"/>
+        <field length="50" nillable="true" name="FAX_NUMBER"/>
+    </entity>
+    <entity name="catissue_audit_event">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="20" nillable="true" name="IP_ADDRESS"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="200" nillable="true" name="EVENT_TYPE"/>
+    </entity>
+    <entity name="catissue_audit_event_details">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="150" nillable="true" name="ELEMENT_NAME"/>
+        <field nillable="true" type="text" name="PREVIOUS_VALUE"/>
+        <field nillable="true" type="text" name="CURRENT_VALUE"/>
+        <field xref_field="catissue_audit_event_log.IDENTIFIER" nillable="true" type="xref" name="AUDIT_EVENT_LOG_ID"/>
+    </entity>
+    <entity name="catissue_audit_event_log">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_audit_event.IDENTIFIER" nillable="true" type="xref" name="AUDIT_EVENT_ID"/>
+    </entity>
+    <entity name="catissue_audit_event_query_log">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="QUERY_DETAILS"/>
+        <field xref_field="catissue_audit_event.IDENTIFIER" nillable="true" type="xref" name="AUDIT_EVENT_ID"/>
+        <field nillable="true" type="long" name="QUERY_ID"/>
+        <field length="150" nillable="true" name="TEMP_TABLE_NAME"/>
+        <field default="0" nillable="true" type="bool" name="IF_TEMP_TABLE_DELETED"/>
+        <field length="150" nillable="true" name="ROOT_ENTITY_NAME"/>
+        <field nillable="true" type="long" name="COUNT_OF_ROOT_RECORDS"/>
+    </entity>
+    <entity name="catissue_base_shipment">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="50" nillable="true" name="LABEL"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SENDER_SITE_ID"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="RECEIVER_SITE_ID"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="SENDER_USER_ID"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="RECEIVER_USER_ID"/>
+        <field nillable="true" name="SENDER_COMMENTS"/>
+        <field nillable="true" name="RECEIVER_COMMENTS"/>
+        <field nillable="true" type="date" name="CREATED_DATE"/>
+        <field nillable="true" type="datetime" name="SEND_DATE"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+    </entity>
+    <entity name="catissue_biohazard">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="50" nillable="true" name="TYPE"/>
+    </entity>
+    <entity name="catissue_bulk_operation">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" length="100" name="OPERATION"/>
+        <field type="text" name="CSV_TEMPLATE"/>
+        <field type="text" name="XML_TEMPALTE"/>
+        <field unique="true" length="100" name="DROPDOWN_NAME"/>
+    </entity>
+    <entity name="catissue_cancer_research_group">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+    </entity>
+    <entity name="catissue_capacity">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="ONE_DIMENSION_CAPACITY"/>
+        <field nillable="true" type="int" name="TWO_DIMENSION_CAPACITY"/>
+    </entity>
+    <entity name="catissue_ccts_application">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="32" name="NAME"/>
+    </entity>
+    <entity name="catissue_ccts_data_queue">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="text" name="PAYLOAD"/>
+        <field type="datetime" name="DATE_TIME"/>
+        <field nillable="true" type="long" name="NOTIFICATION_ID"/>
+        <field type="long" name="PROCESSING_STATUS_ID"/>
+        <field nillable="true" type="long" name="USER_ID"/>
+        <field nillable="true" type="long" name="PARTICIPANT_ID"/>
+        <field nillable="true" type="long" name="registration_id"/>
+        <field default="1" type="bool" name="incoming"/>
+    </entity>
+    <entity name="catissue_ccts_event_type">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="64" name="NAME"/>
+    </entity>
+    <entity name="catissue_ccts_notif">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="datetime" name="DATE_SENT"/>
+        <field type="datetime" name="DATE_RECEIVED"/>
+        <field type="long" name="EVENT_TYPE_ID"/>
+        <field nillable="true" type="long" name="APPLICATION_ID"/>
+        <field type="long" name="OBJECT_ID_TYPE"/>
+        <field length="128" name="OBJECT_ID_VALUE"/>
+        <field type="long" name="PROCESSING_STATUS_ID"/>
+    </entity>
+    <entity name="catissue_ccts_notif_log">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="NOTIFICATION_ID"/>
+        <field type="datetime" name="DATE_TIME"/>
+        <field nillable="true" type="text" name="PAYLOAD"/>
+        <field nillable="true" name="ERROR_CODE"/>
+        <field type="long" name="PROCESSING_RESULT_ID"/>
+        <field nillable="true" type="long" name="USER_ID"/>
+    </entity>
+    <entity name="catissue_ccts_obj_id_type">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="64" name="NAME"/>
+    </entity>
+    <entity name="catissue_ccts_proc_result">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="64" name="NAME"/>
+    </entity>
+    <entity name="catissue_ccts_proc_status">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field length="64" name="NAME"/>
+    </entity>
+    <entity name="catissue_cde">
+        <field unique="true" length="30" name="PUBLIC_ID"/>
+        <field length="200" nillable="true" name="LONG_NAME"/>
+        <field nillable="true" type="text" name="DEFINITION"/>
+        <field length="50" nillable="true" name="VERSION"/>
+        <field nillable="true" type="date" name="LAST_UPDATED"/>
+    </entity>
+    <entity name="catissue_cell_req_specimen" extends="catissue_cp_req_specimen"/>
+    <entity name="catissue_cell_spe_review_param" extends="catissue_event_param">
+        <field nillable="true" type="decimal" name="NEOPLASTIC_CELLULARITY_PER"/>
+        <field nillable="true" type="decimal" name="VIABLE_CELL_PERCENTAGE"/>
+    </entity>
+    <entity name="catissue_cell_specimen" extends="catissue_specimen"/>
+    <entity name="catissue_clinical_diagnosis">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="CLINICAL_DIAGNOSIS"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_coll_coordinators">
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field xref_field="catissue_user.IDENTIFIER" type="xref" name="USER_ID"/>
+        <unique fields="COLLECTION_PROTOCOL_ID,USER_ID"/>
+    </entity>
+    <entity name="catissue_coll_distribution_rel">
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field xref_field="catissue_distribution_protocol.IDENTIFIER" type="xref" name="DISTRIBUTION_PROTOCOL_ID"/>
+        <unique fields="COLLECTION_PROTOCOL_ID,DISTRIBUTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_coll_event_param" extends="catissue_specimen_event_param">
+        <field length="50" nillable="true" name="COLLECTION_PROCEDURE"/>
+        <field length="50" nillable="true" name="CONTAINER"/>
+    </entity>
+    <entity name="catissue_coll_prot_event" extends="catissue_abs_speci_coll_group">
+        <field length="50" nillable="true" name="CLINICAL_STATUS"/>
+        <field nillable="true" name="COLLECTION_POINT_LABEL"/>
+        <field nillable="true" type="decimal" name="STUDY_CALENDAR_EVENT_POINT"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field nillable="true" name="LABELFORMAT"/>
+        <unique fields="COLLECTION_PROTOCOL_ID,COLLECTION_POINT_LABEL"/>
+    </entity>
+    <entity name="catissue_coll_prot_reg">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="PROTOCOL_PARTICIPANT_ID"/>
+        <field nillable="true" type="date" name="REGISTRATION_DATE"/>
+        <field xref_field="catissue_participant.IDENTIFIER" type="xref" name="PARTICIPANT_ID"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="datetime" name="CONSENT_SIGN_DATE"/>
+        <field nillable="true" type="text" name="CONSENT_DOC_URL"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="CONSENT_WITNESS"/>
+        <field unique="true" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="int" name="DATE_OFFSET"/>
+        <field length="128" nillable="true" name="GRID_ID"/>
+    </entity>
+    <entity name="catissue_collection_protocol" extends="catissue_specimen_protocol">
+        <field nillable="true" type="bool" name="ALIQUOT_IN_SAME_CONTAINER"/>
+        <field nillable="true" type="text" name="UNSIGNED_CONSENT_DOC_URL"/>
+        <field nillable="true" type="bool" name="CONSENTS_WAIVED"/>
+        <field length="50" nillable="true" name="CP_TYPE"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="PARENT_CP_ID"/>
+        <field nillable="true" type="int" name="SEQUENCE_NUMBER"/>
+        <field nillable="true" type="decimal" name="STUDY_CALENDAR_EVENT_POINT"/>
+        <field nillable="true" type="int" name="DIRTY_EDIT_FLAG"/>
+        <field unique="true" nillable="true" type="long" name="REMOTE_IDENTIFIER"/>
+        <field nillable="true" type="int" name="REMOTE_MANAGED_FLAG"/>
+    </entity>
+    <entity name="catissue_concept">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="30" nillable="true" name="CONCEPT_UNIQUE_ID"/>
+        <field nillable="true" type="text" name="NAME"/>
+        <field xref_field="catissue_semantic_type.IDENTIFIER" nillable="true" type="xref" name="SEMANTIC_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_concept_classificatn">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="NAME"/>
+    </entity>
+    <entity name="catissue_concept_referent">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_concept.IDENTIFIER" nillable="true" type="xref" name="CONCEPT_ID"/>
+        <field xref_field="catissue_concept_classificatn.IDENTIFIER" nillable="true" type="xref" name="CONCEPT_CLASSIFICATION_ID"/>
+        <field xref_field="catissue_deidentified_report.IDENTIFIER" nillable="true" type="xref" name="DEIDENTIFIED_REPORT_ID"/>
+        <field nillable="true" type="long" name="END_OFFSET"/>
+        <field nillable="true" type="bool" name="IS_MODIFIER"/>
+        <field nillable="true" type="bool" name="IS_NEGATED"/>
+        <field nillable="true" type="long" name="START_OFFSET"/>
+    </entity>
+    <entity name="catissue_consent_tier">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="STATEMENT"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" nillable="true" type="xref" name="COLL_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_consent_tier_response">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="RESPONSE"/>
+        <field xref_field="catissue_consent_tier.IDENTIFIER" nillable="true" type="xref" name="CONSENT_TIER_ID"/>
+        <field xref_field="catissue_coll_prot_reg.IDENTIFIER" nillable="true" type="xref" name="COLL_PROT_REG_ID"/>
+    </entity>
+    <entity name="catissue_consent_tier_status">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_consent_tier.IDENTIFIER" nillable="true" type="xref" name="CONSENT_TIER_ID"/>
+        <field nillable="true" name="STATUS"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLL_GROUP_ID"/>
+    </entity>
+    <entity name="catissue_cont_holds_sparrtype">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" type="xref" name="SPECIMEN_ARRAY_TYPE_ID"/>
+        <unique fields="STORAGE_CONTAINER_ID,SPECIMEN_ARRAY_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_container">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field unique="true" nillable="true" name="BARCODE"/>
+        <field xref_field="catissue_capacity.IDENTIFIER" nillable="true" type="xref" name="CAPACITY_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field nillable="true" type="bool" name="CONT_FULL"/>
+        <field unique="true" name="NAME"/>
+    </entity>
+    <entity name="catissue_container_position" extends="catissue_abstract_position">
+        <field xref_field="catissue_container.IDENTIFIER" nillable="true" type="xref" name="PARENT_CONTAINER_ID"/>
+        <field xref_field="catissue_container.IDENTIFIER" nillable="true" type="xref" name="CONTAINER_ID"/>
+    </entity>
+    <entity name="catissue_container_type">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_capacity.IDENTIFIER" nillable="true" type="xref" name="CAPACITY_ID"/>
+        <field unique="true" nillable="true" name="NAME"/>
+        <field nillable="true" name="ONE_DIMENSION_LABEL"/>
+        <field nillable="true" name="TWO_DIMENSION_LABEL"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+    </entity>
+    <entity name="catissue_cp_grid_prvg">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="GROUP_NAME"/>
+        <field name="STEM_NAME"/>
+        <field nillable="true" name="PRIVILEGES_STRING"/>
+        <field nillable="true" name="STATUS"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <field nillable="true" name="ROLE_ID"/>
+    </entity>
+    <entity name="catissue_cp_req_specimen" extends="catissue_abstract_specimen">
+        <field default="" name="STORAGE_TYPE"/>
+        <field xref_field="catissue_coll_prot_event.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_EVENT_ID"/>
+        <field nillable="true" name="LABELFORMAT"/>
+        <field xref_field="catissue_spp.IDENTIFIER" nillable="true" type="xref" name="SPP_IDENTIFIER"/>
+        <field xref_field="catissue_action.IDENTIFIER" nillable="true" type="xref" name="ACTION_IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_cp_studyformcontext">
+        <field type="long" name="STUDY_FORM_CONTEXT_ID"/>
+        <field type="long" name="COLLECTION_PROTOCOL_ID"/>
+        <unique fields="STUDY_FORM_CONTEXT_ID,COLLECTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_cpe_spp">
+        <field xref_field="catissue_coll_prot_event.IDENTIFIER" nillable="true" type="xref" name="cpe_identifier"/>
+        <field xref_field="catissue_spp.IDENTIFIER" nillable="true" type="xref" name="spp_identifier"/>
+    </entity>
+    <entity name="catissue_data_audit_event_log" extends="catissue_audit_event_log">
+        <field nillable="true" type="long" name="OBJECT_IDENTIFIER"/>
+        <field length="50" nillable="true" name="OBJECT_NAME"/>
+        <field xref_field="catissue_data_audit_event_log.IDENTIFIER" nillable="true" type="xref" name="PARENT_LOG_ID"/>
+    </entity>
+    <entity name="catissue_default_action">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_deidentified_report" extends="catissue_pathology_report">
+        <field length="100" nillable="true" name="STATUS"/>
+    </entity>
+    <entity name="catissue_department">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+    </entity>
+    <entity name="catissue_derieved_sp_ord_item" extends="catissue_new_spec_ord_item">
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_disposal_event_param" extends="catissue_specimen_event_param">
+        <field nillable="true" name="REASON"/>
+    </entity>
+    <entity name="catissue_distributed_item">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="decimal" name="QUANTITY"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_distribution.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_ID"/>
+        <field xref_field="catissue_specimen_array.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_ID"/>
+    </entity>
+    <entity name="catissue_distribution">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="TO_SITE_ID"/>
+        <field xref_field="catissue_distribution_protocol.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_PROTOCOL_ID"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field xref_field="catissue_order.IDENTIFIER" nillable="true" type="xref" name="ORDER_ID"/>
+    </entity>
+    <entity name="catissue_distribution_protocol" extends="catissue_specimen_protocol"/>
+    <entity name="catissue_distribution_spec_req">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="SPECIMEN_CLASS"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+        <field length="150" nillable="true" name="TISSUE_SITE"/>
+        <field length="50" nillable="true" name="PATHOLOGY_STATUS"/>
+        <field nillable="true" type="decimal" name="QUANTITY"/>
+        <field xref_field="catissue_distribution_protocol.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_embedded_event_param" extends="catissue_specimen_event_param">
+        <field length="50" nillable="true" name="EMBEDDING_MEDIUM"/>
+    </entity>
+    <entity name="catissue_event_param" extends="catissue_specimen_event_param"/>
+    <entity name="catissue_exist_sp_ar_ord_item" extends="catissue_sp_array_order_item">
+        <field xref_field="catissue_specimen_array.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_ID"/>
+    </entity>
+    <entity name="catissue_existing_sp_ord_item" extends="catissue_specimen_order_item">
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_external_identifier">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="NAME"/>
+        <field nillable="true" name="VALUE"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_fixed_event_param" extends="catissue_specimen_event_param">
+        <field length="50" name="FIXATION_TYPE"/>
+        <field nillable="true" type="int" name="DURATION_IN_MINUTES"/>
+    </entity>
+    <entity name="catissue_fluid_req_specimen" extends="catissue_cp_req_specimen"/>
+    <entity name="catissue_fluid_spe_event_param" extends="catissue_event_param">
+        <field nillable="true" type="decimal" name="CELL_COUNT"/>
+    </entity>
+    <entity name="catissue_fluid_specimen" extends="catissue_specimen"/>
+    <entity name="catissue_frozen_event_param" extends="catissue_specimen_event_param">
+        <field length="50" nillable="true" name="METHOD"/>
+    </entity>
+    <entity name="catissue_grid_groups">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="GRID_GROUP_NAME"/>
+        <field name="CSM_GROUP_NAME"/>
+    </entity>
+    <entity name="catissue_grid_institution">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="GRID_INSTITUTION_NAME"/>
+        <field type="long" name="LOCAL_IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_grid_institution_groups">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="GRID_GROUP_ID"/>
+        <field type="long" name="GRID_INSTITUTION_ID"/>
+    </entity>
+    <entity name="catissue_grid_user_groups">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="USER_ID"/>
+        <field type="long" name="GROUP_ID"/>
+    </entity>
+    <entity name="catissue_identified_report" extends="catissue_pathology_report">
+        <field xref_field="catissue_deidentified_report.IDENTIFIER" nillable="true" type="xref" name="DEID_REPORT"/>
+    </entity>
+    <entity name="catissue_in_out_event_param" extends="catissue_specimen_event_param">
+        <field length="100" name="STORAGE_STATUS"/>
+    </entity>
+    <entity name="catissue_institution">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+        <field nillable="true" type="int" name="DIRTY_EDIT_FLAG"/>
+        <field unique="true" nillable="true" type="long" name="REMOTE_IDENTIFIER"/>
+        <field nillable="true" type="int" name="REMOTE_MANAGED_FLAG"/>
+    </entity>
+    <entity name="catissue_interface_column_data">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="TABLE_ID"/>
+        <field length="50" nillable="true" name="COLUMN_NAME"/>
+        <field length="30" nillable="true" name="ATTRIBUTE_TYPE"/>
+    </entity>
+    <entity name="catissue_login_audit_event_log">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="datetime" name="LOGIN_TIMESTAMP"/>
+        <field nillable="true" type="long" name="USER_LOGIN_ID"/>
+        <field nillable="true" type="long" name="LOGIN_SOURCE_ID"/>
+        <field length="20" nillable="true" name="LOGIN_IP_ADDRESS"/>
+        <field nillable="true" type="bool" name="IS_LOGIN_SUCCESSFUL"/>
+    </entity>
+    <entity name="catissue_mol_req_specimen" extends="catissue_cp_req_specimen">
+        <field nillable="true" type="decimal" name="CONCENTRATION"/>
+    </entity>
+    <entity name="catissue_mol_spe_review_param" extends="catissue_event_param">
+        <field nillable="true" name="GEL_IMAGE_URL"/>
+        <field length="50" nillable="true" name="QUALITY_INDEX"/>
+        <field length="50" nillable="true" name="LANE_NUMBER"/>
+        <field nillable="true" type="int" name="GEL_NUMBER"/>
+        <field nillable="true" type="decimal" name="ABSORBANCE_AT_260"/>
+        <field nillable="true" type="decimal" name="ABSORBANCE_AT_280"/>
+        <field nillable="true" type="decimal" name="RATIO_28S_TO_18S"/>
+    </entity>
+    <entity name="catissue_molecular_specimen" extends="catissue_specimen">
+        <field nillable="true" type="decimal" name="CONCENTRATION"/>
+    </entity>
+    <entity name="catissue_new_sp_ar_order_item" extends="catissue_sp_array_order_item">
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" nillable="true" type="xref" name="ARRAY_TYPE_ID"/>
+        <field nillable="true" name="NAME"/>
+        <field xref_field="catissue_specimen_array.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_ID"/>
+    </entity>
+    <entity name="catissue_new_spec_ord_item" extends="catissue_specimen_order_item">
+        <field nillable="true" name="SPECIMEN_CLASS"/>
+        <field nillable="true" name="SPECIMEN_TYPE"/>
+    </entity>
+    <entity name="catissue_order">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field xref_field="catissue_distribution_protocol.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_PROTOCOL_ID"/>
+        <field nillable="true" type="text" name="NAME"/>
+        <field nillable="true" type="datetime" name="REQUESTED_DATE"/>
+        <field length="50" nillable="true" name="STATUS"/>
+    </entity>
+    <entity name="catissue_order_item">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="DESCRIPTION"/>
+        <field xref_field="catissue_distributed_item.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTED_ITEM_ID"/>
+        <field length="50" nillable="true" name="STATUS"/>
+        <field nillable="true" type="decimal" name="REQUESTED_QUANTITY"/>
+        <field xref_field="catissue_order.IDENTIFIER" nillable="true" type="xref" name="ORDER_ID"/>
+    </entity>
+    <entity name="catissue_part_medical_id">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="MEDICAL_RECORD_NUMBER"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SITE_ID"/>
+        <field xref_field="catissue_participant.IDENTIFIER" nillable="true" type="xref" name="PARTICIPANT_ID"/>
+        <unique fields="MEDICAL_RECORD_NUMBER,SITE_ID"/>
+    </entity>
+    <entity name="catissue_participant">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="LAST_NAME"/>
+        <field nillable="true" name="FIRST_NAME"/>
+        <field nillable="true" name="MIDDLE_NAME"/>
+        <field nillable="true" type="date" name="BIRTH_DATE"/>
+        <field length="20" nillable="true" name="GENDER"/>
+        <field length="50" nillable="true" name="GENOTYPE"/>
+        <field length="50" nillable="true" name="ETHNICITY"/>
+        <field unique="true" length="50" nillable="true" name="SOCIAL_SECURITY_NUMBER"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="date" name="DEATH_DATE"/>
+        <field length="50" nillable="true" name="VITAL_STATUS"/>
+        <field length="50" nillable="true" name="LNAME_METAPHONE"/>
+        <field length="128" nillable="true" name="GRID_ID"/>
+    </entity>
+    <entity name="catissue_participant_rec_ntry">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="PARTICIPANT_ID"/>
+    </entity>
+    <entity name="catissue_password">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="PASSWORD"/>
+        <field nillable="true" type="date" name="UPDATE_DATE"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+    </entity>
+    <entity name="catissue_path_case_order_item" extends="catissue_new_spec_ord_item">
+        <field nillable="true" name="PATHOLOGICAL_STATUS"/>
+        <field nillable="true" name="TISSUE_SITE"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLL_GROUP_ID"/>
+    </entity>
+    <entity name="catissue_pathology_report">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="100" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="bool" name="REVIEW_FLAG"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SOURCE_ID"/>
+        <field length="100" nillable="true" name="REPORT_STATUS"/>
+        <field nillable="true" type="date" name="COLLECTION_DATE_TIME"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SCG_ID"/>
+    </entity>
+    <entity name="catissue_permissible_value">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="40" nillable="true" name="CONCEPT_CODE"/>
+        <field nillable="true" type="text" name="DEFINITION"/>
+        <field xref_field="catissue_permissible_value.IDENTIFIER" nillable="true" type="xref" name="PARENT_IDENTIFIER"/>
+        <field length="225" nillable="true" name="VALUE"/>
+        <field xref_field="catissue_cde.PUBLIC_ID" length="30" nillable="true" type="xref" name="PUBLIC_ID"/>
+    </entity>
+    <entity name="catissue_procedure_event_param" extends="catissue_specimen_event_param">
+        <field name="URL"/>
+        <field name="NAME"/>
+    </entity>
+    <entity name="catissue_quarantine_params">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_deidentified_report.IDENTIFIER" nillable="true" type="xref" name="DEID_REPORT_ID"/>
+        <field nillable="true" type="bool" name="IS_QUARANTINED"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="100" nillable="true" name="STATUS"/>
+    </entity>
+    <entity name="catissue_query_editlink_cols">
+        <field type="long" name="TABLE_ID"/>
+        <field type="long" name="COL_ID"/>
+    </entity>
+    <entity name="catissue_query_table_data">
+        <field unique="true" auto="true" type="long" name="TABLE_ID"/>
+        <field length="50" nillable="true" name="TABLE_NAME"/>
+        <field length="50" nillable="true" name="DISPLAY_NAME"/>
+        <field length="50" nillable="true" name="ALIAS_NAME"/>
+        <field nillable="true" type="int" name="PRIVILEGE_ID"/>
+        <field nillable="true" type="bool" name="FOR_SQI"/>
+    </entity>
+    <entity name="catissue_race">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_participant.IDENTIFIER" nillable="true" type="xref" name="PARTICIPANT_ID"/>
+        <field length="50" nillable="true" name="RACE_NAME"/>
+    </entity>
+    <entity name="catissue_received_event_param" extends="catissue_specimen_event_param">
+        <field nillable="true" name="RECEIVED_QUALITY"/>
+    </entity>
+    <entity name="catissue_related_tables_map">
+        <field nillable="true" type="long" name="FIRST_TABLE_ID"/>
+        <field nillable="true" type="long" name="SECOND_TABLE_ID"/>
+        <field length="50" nillable="true" name="FIRST_TABLE_JOIN_COLUMN"/>
+        <field length="50" nillable="true" name="SECOND_TABLE_JOIN_COLUMN"/>
+    </entity>
+    <entity name="catissue_report_bicontent" extends="catissue_report_content">
+        <field xref_field="catissue_pathology_report.IDENTIFIER" nillable="true" type="xref" name="REPORT_ID"/>
+    </entity>
+    <entity name="catissue_report_content">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="REPORT_DATA"/>
+    </entity>
+    <entity name="catissue_report_particip_rel">
+        <field nillable="true" type="long" name="PARTICIPANT_ID"/>
+        <field nillable="true" type="long" name="REPORT_ID"/>
+    </entity>
+    <entity name="catissue_report_queue">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="50" nillable="true" name="STATUS"/>
+        <field length="50" nillable="true" name="SURGICAL_PATHOLOGY_NUMBER"/>
+        <field nillable="true" name="PARTICIPANT_NAME"/>
+        <field nillable="true" name="SITE_NAME"/>
+        <field nillable="true" type="date" name="REPORT_LOADED_DATE"/>
+        <field nillable="true" type="text" name="REPORT_TEXT"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLL_GRP_ID"/>
+        <field nillable="true" type="date" name="REPORT_COLLECTION_DATE"/>
+    </entity>
+    <entity name="catissue_report_section">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="DOCUMENT_FRAGMENT"/>
+        <field nillable="true" type="int" name="END_OFFSET"/>
+        <field length="100" nillable="true" name="NAME"/>
+        <field nillable="true" type="int" name="START_OFFSET"/>
+        <field nillable="true" type="long" name="TEXT_CONTENT_ID"/>
+    </entity>
+    <entity name="catissue_report_textcontent" extends="catissue_report_content">
+        <field xref_field="catissue_pathology_report.IDENTIFIER" nillable="true" type="xref" name="REPORT_ID"/>
+    </entity>
+    <entity name="catissue_report_xmlcontent" extends="catissue_report_content">
+        <field xref_field="catissue_pathology_report.IDENTIFIER" nillable="true" type="xref" name="REPORT_ID"/>
+    </entity>
+    <entity name="catissue_reported_problem">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="AFFILIATION"/>
+        <field name="NAME_OF_REPORTER"/>
+        <field name="REPORTERS_EMAIL_ID"/>
+        <field length="500" type="text" name="MESSAGE_BODY"/>
+        <field nillable="true" name="SUBJECT"/>
+        <field nillable="true" type="date" name="REPORTED_DATE"/>
+        <field length="100" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+    </entity>
+    <entity name="catissue_review_params">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="100" nillable="true" name="REVIEWER_ROLE"/>
+        <field xref_field="catissue_pathology_report.IDENTIFIER" nillable="true" type="xref" name="REPORT_ID"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="100" nillable="true" name="STATUS"/>
+    </entity>
+    <entity name="catissue_scg_rec_ntry">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="SPECIMEN_COLLECTION_GROUP_ID"/>
+    </entity>
+    <entity name="catissue_search_display_data">
+        <field type="long" name="RELATIONSHIP_ID"/>
+        <field type="long" name="COL_ID"/>
+        <field length="50" nillable="true" name="DISPLAY_NAME"/>
+        <field default="b'0'" nillable="true" type="bool" name="DEFAULT_VIEW_ATTRIBUTE"/>
+        <field nillable="true" type="int" name="ATTRIBUTE_ORDER"/>
+    </entity>
+    <entity name="catissue_semantic_type">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="LABEL"/>
+    </entity>
+    <entity name="catissue_shipment" extends="catissue_base_shipment">
+        <field xref_field="catissue_shipment_request.IDENTIFIER" nillable="true" type="xref" name="SHIPMENT_REQUEST_ID"/>
+        <field nillable="true" name="BARCODE"/>
+    </entity>
+    <entity name="catissue_shipment_containr_rel">
+        <field xref_field="catissue_base_shipment.IDENTIFIER" type="xref" name="BASE_SHIPMENT_ID"/>
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="CONTAINER_ID"/>
+        <unique fields="BASE_SHIPMENT_ID,CONTAINER_ID"/>
+    </entity>
+    <entity name="catissue_shipment_request" extends="catissue_base_shipment"/>
+    <entity name="catissue_site">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" name="NAME"/>
+        <field length="50" nillable="true" name="TYPE"/>
+        <field nillable="true" name="EMAIL_ADDRESS"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_address.IDENTIFIER" nillable="true" type="xref" name="ADDRESS_ID"/>
+        <field unique="true" length="50" nillable="true" name="CTEP_ID"/>
+    </entity>
+    <entity name="catissue_site_cp">
+        <field xref_field="catissue_site.IDENTIFIER" default="0" type="xref" name="SITE_ID"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" default="0" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <unique fields="SITE_ID,COLLECTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_site_users">
+        <field xref_field="catissue_site.IDENTIFIER" default="0" type="xref" name="SITE_ID"/>
+        <field xref_field="catissue_user.IDENTIFIER" default="0" type="xref" name="USER_ID"/>
+        <unique fields="SITE_ID,USER_ID"/>
+    </entity>
+    <entity name="catissue_sp_array_order_item" extends="catissue_order_item"/>
+    <entity name="catissue_speci_array_content">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="decimal" name="CONC_IN_MICROGM_PER_MICROLTR"/>
+        <field nillable="true" type="decimal" name="INITIAL_QUANTITY"/>
+        <field nillable="true" type="int" name="POSITION_DIMENSION_ONE"/>
+        <field nillable="true" type="int" name="POSITION_DIMENSION_TWO"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_specimen_array.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_ID"/>
+    </entity>
+    <entity name="catissue_speci_shipmnt_req_rel">
+        <field xref_field="catissue_base_shipment.IDENTIFIER" type="xref" name="SHIPMENT_REQ_ID"/>
+        <field xref_field="catissue_specimen.IDENTIFIER" type="xref" name="SPECIMEN_ID"/>
+        <unique fields="SHIPMENT_REQ_ID,SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_specimen" extends="catissue_abstract_specimen">
+        <field unique="true" nillable="true" name="LABEL"/>
+        <field nillable="true" type="bool" name="AVAILABLE"/>
+        <field unique="true" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLLECTION_GROUP_ID"/>
+        <field xref_field="catissue_cp_req_specimen.IDENTIFIER" nillable="true" type="xref" name="REQ_SPECIMEN_ID"/>
+        <field nillable="true" type="decimal" name="AVAILABLE_QUANTITY"/>
+        <field nillable="true" type="datetime" name="CREATED_ON_DATE"/>
+        <field length="50" nillable="true" name="COLLECTION_STATUS"/>
+        <field xref_field="catissue_spp_application.IDENTIFIER" nillable="true" type="xref" name="SPP_APPLICATION_ID"/>
+        <field xref_field="catissue_action_application.IDENTIFIER" nillable="true" type="xref" name="ACTION_APPLICATION_ID"/>
+        <field length="50" nillable="true" name="GLOBAL_SPECIMEN_IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_specimen_array" extends="catissue_container">
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="CREATED_BY_ID"/>
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ARRAY_TYPE_ID"/>
+        <field xref_field="catissue_distribution.IDENTIFIER" nillable="true" type="xref" name="DISTRIBUTION_ID"/>
+        <field nillable="true" type="bool" name="AVAILABLE"/>
+    </entity>
+    <entity name="catissue_specimen_array_type" extends="catissue_container_type">
+        <field length="50" nillable="true" name="SPECIMEN_CLASS"/>
+    </entity>
+    <entity name="catissue_specimen_biohz_rel">
+        <field xref_field="catissue_specimen.IDENTIFIER" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_biohazard.IDENTIFIER" type="xref" name="BIOHAZARD_ID"/>
+        <unique fields="SPECIMEN_ID,BIOHAZARD_ID"/>
+    </entity>
+    <entity name="catissue_specimen_char">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="150" nillable="true" name="TISSUE_SITE"/>
+        <field length="50" nillable="true" name="TISSUE_SIDE"/>
+    </entity>
+    <entity name="catissue_specimen_coll_group" extends="catissue_abs_speci_coll_group">
+        <field unique="true" nillable="true" name="NAME"/>
+        <field unique="true" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field nillable="true" type="datetime" name="ENCOUNTER_TIMESTAMP"/>
+        <field xref_field="catissue_coll_prot_reg.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_REG_ID"/>
+        <field length="50" nillable="true" name="SURGICAL_PATHOLOGY_NUMBER"/>
+        <field xref_field="catissue_coll_prot_event.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_PROTOCOL_EVENT_ID"/>
+        <field length="50" nillable="true" name="COLLECTION_STATUS"/>
+        <field nillable="true" type="int" name="DATE_OFFSET"/>
+        <field xref_field="catissue_deidentified_report.IDENTIFIER" nillable="true" type="xref" name="DSPR_ID"/>
+        <field xref_field="catissue_identified_report.IDENTIFIER" nillable="true" type="xref" name="ISPR_ID"/>
+        <field nillable="true" type="int" name="AGE_AT_COLLECTION"/>
+    </entity>
+    <entity name="catissue_specimen_event_param">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_COLL_GRP_ID"/>
+        <field xref_field="catissue_abstract_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field nillable="true" type="datetime" name="EVENT_TIMESTAMP"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="USER_ID"/>
+        <field nillable="true" type="text" name="COMMENTS"/>
+        <field length="50" default="Active" nillable="true" name="ACTIVITY_STATUS"/>
+    </entity>
+    <entity name="catissue_specimen_label_count">
+        <field unique="true" type="long" name="LABEL_COUNT"/>
+    </entity>
+    <entity name="catissue_specimen_order_item" extends="catissue_order_item">
+        <field xref_field="catissue_new_sp_ar_order_item.IDENTIFIER" nillable="true" type="xref" name="ARRAY_ORDER_ITEM_ID"/>
+    </entity>
+    <entity name="catissue_specimen_position" extends="catissue_abstract_position">
+        <field xref_field="catissue_specimen.IDENTIFIER" nillable="true" type="xref" name="SPECIMEN_ID"/>
+        <field xref_field="catissue_storage_container.IDENTIFIER" nillable="true" type="xref" name="CONTAINER_ID"/>
+    </entity>
+    <entity name="catissue_specimen_protocol">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="catissue_user.IDENTIFIER" nillable="true" type="xref" name="PRINCIPAL_INVESTIGATOR_ID"/>
+        <field unique="true" name="TITLE"/>
+        <field nillable="true" name="SHORT_TITLE"/>
+        <field nillable="true" name="IRB_IDENTIFIER"/>
+        <field nillable="true" type="date" name="START_DATE"/>
+        <field nillable="true" type="date" name="END_DATE"/>
+        <field nillable="true" type="int" name="ENROLLMENT"/>
+        <field nillable="true" name="DESCRIPTION_URL"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" name="LABEL_FORMAT"/>
+        <field nillable="true" name="DERIV_LABEL_FORMAT"/>
+        <field nillable="true" name="ALIQUOT_LABEL_FORMAT"/>
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="irb_site_id"/>
+    </entity>
+    <entity name="catissue_specimen_rec_ntry">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="SPECIMEN_ID"/>
+    </entity>
+    <entity name="catissue_specimen_requirement">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="SPECIMEN_CLASS"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+        <field length="150" nillable="true" name="TISSUE_SITE"/>
+        <field length="50" nillable="true" name="PATHOLOGY_STATUS"/>
+        <field nillable="true" type="long" name="QUANTITY_ID"/>
+    </entity>
+    <entity name="catissue_specimen_type">
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" type="xref" name="SPECIMEN_ARRAY_TYPE_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+    </entity>
+    <entity name="catissue_spp">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field unique="true" length="150" nillable="true" name="NAME"/>
+        <field unique="true" length="50" nillable="true" name="BARCODE"/>
+        <field nillable="true" type="text" name="spp_template_xml"/>
+    </entity>
+    <entity name="catissue_spp_application" extends="catissue_abstract_application">
+        <field xref_field="catissue_spp.IDENTIFIER" nillable="true" type="xref" name="SPP_IDENTIFIER"/>
+        <field xref_field="catissue_specimen_coll_group.IDENTIFIER" nillable="true" type="xref" name="SCG_IDENTIFIER"/>
+    </entity>
+    <entity name="catissue_spun_event_parameters" extends="catissue_specimen_event_param">
+        <field nillable="true" type="decimal" name="GFORCE"/>
+        <field nillable="true" type="int" name="DURATION_IN_MINUTES"/>
+    </entity>
+    <entity name="catissue_st_cont_coll_prot_rel">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <unique fields="STORAGE_CONTAINER_ID,COLLECTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="catissue_st_cont_st_type_rel">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <unique fields="STORAGE_CONTAINER_ID,STORAGE_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_stor_cont_spec_class">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_CLASS"/>
+    </entity>
+    <entity name="catissue_stor_cont_spec_type">
+        <field xref_field="catissue_storage_container.IDENTIFIER" type="xref" name="STORAGE_CONTAINER_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+    </entity>
+    <entity name="catissue_stor_type_holds_type">
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="HOLDS_STORAGE_TYPE_ID"/>
+        <unique fields="STORAGE_TYPE_ID,HOLDS_STORAGE_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_stor_type_spec_class">
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_CLASS"/>
+    </entity>
+    <entity name="catissue_stor_type_spec_type">
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <field length="50" nillable="true" name="SPECIMEN_TYPE"/>
+    </entity>
+    <entity name="catissue_storage_container" extends="catissue_container">
+        <field xref_field="catissue_site.IDENTIFIER" nillable="true" type="xref" name="SITE_ID"/>
+        <field nillable="true" type="decimal" name="TEMPERATURE"/>
+        <field xref_field="catissue_storage_type.IDENTIFIER" nillable="true" type="xref" name="STORAGE_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_storage_type" extends="catissue_container_type">
+        <field nillable="true" type="decimal" name="DEFAULT_TEMPERATURE"/>
+    </entity>
+    <entity name="catissue_storty_holds_sparrty">
+        <field xref_field="catissue_storage_type.IDENTIFIER" type="xref" name="STORAGE_TYPE_ID"/>
+        <field xref_field="catissue_specimen_array_type.IDENTIFIER" type="xref" name="SPECIMEN_ARRAY_TYPE_ID"/>
+        <unique fields="STORAGE_TYPE_ID,SPECIMEN_ARRAY_TYPE_ID"/>
+    </entity>
+    <entity name="catissue_study_form_context">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="NO_OF_ENTRIES"/>
+    </entity>
+    <entity name="catissue_table_relation">
+        <field unique="true" auto="true" type="long" name="RELATIONSHIP_ID"/>
+        <field nillable="true" type="long" name="PARENT_TABLE_ID"/>
+        <field nillable="true" type="long" name="CHILD_TABLE_ID"/>
+        <field length="50" nillable="true" name="TABLES_IN_PATH"/>
+    </entity>
+    <entity name="catissue_thaw_event_parameters" extends="catissue_specimen_event_param"/>
+    <entity name="catissue_tis_spe_event_param" extends="catissue_event_param">
+        <field nillable="true" type="decimal" name="NEOPLASTIC_CELLULARITY_PER"/>
+        <field nillable="true" type="decimal" name="NECROSIS_PERCENTAGE"/>
+        <field nillable="true" type="decimal" name="LYMPHOCYTIC_PERCENTAGE"/>
+        <field nillable="true" type="decimal" name="TOTAL_CELLULARITY_PERCENTAGE"/>
+        <field length="50" nillable="true" name="HISTOLOGICAL_QUALITY"/>
+    </entity>
+    <entity name="catissue_tissue_req_specimen" extends="catissue_cp_req_specimen"/>
+    <entity name="catissue_tissue_specimen" extends="catissue_specimen"/>
+    <entity name="catissue_transfer_event_param" extends="catissue_specimen_event_param">
+        <field nillable="true" type="int" name="FROM_POSITION_DIMENSION_ONE"/>
+        <field nillable="true" type="int" name="FROM_POSITION_DIMENSION_TWO"/>
+        <field nillable="true" type="int" name="TO_POSITION_DIMENSION_ONE"/>
+        <field nillable="true" type="int" name="TO_POSITION_DIMENSION_TWO"/>
+        <field xref_field="catissue_storage_container.IDENTIFIER" nillable="true" type="xref" name="TO_STORAGE_CONTAINER_ID"/>
+        <field xref_field="catissue_storage_container.IDENTIFIER" nillable="true" type="xref" name="FROM_STORAGE_CONTAINER_ID"/>
+    </entity>
+    <entity name="catissue_user">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="EMAIL_ADDRESS"/>
+        <field nillable="true" name="FIRST_NAME"/>
+        <field nillable="true" name="LAST_NAME"/>
+        <field unique="true" name="LOGIN_NAME"/>
+        <field nillable="true" type="date" name="START_DATE"/>
+        <field length="50" nillable="true" name="ACTIVITY_STATUS"/>
+        <field xref_field="catissue_department.IDENTIFIER" nillable="true" type="xref" name="DEPARTMENT_ID"/>
+        <field xref_field="catissue_cancer_research_group.IDENTIFIER" nillable="true" type="xref" name="CANCER_RESEARCH_GROUP_ID"/>
+        <field xref_field="catissue_institution.IDENTIFIER" nillable="true" type="xref" name="INSTITUTION_ID"/>
+        <field xref_field="catissue_address.IDENTIFIER" nillable="true" type="xref" name="ADDRESS_ID"/>
+        <field nillable="true" type="long" name="CSM_USER_ID"/>
+        <field nillable="true" type="text" name="STATUS_COMMENT"/>
+        <field default="b'1'" nillable="true" type="bool" name="FIRST_TIME_LOGIN"/>
+        <field nillable="true" type="int" name="DIRTY_EDIT_FLAG"/>
+        <field unique="true" nillable="true" type="long" name="REMOTE_IDENTIFIER"/>
+        <field nillable="true" type="int" name="REMOTE_MANAGED_FLAG"/>
+    </entity>
+    <entity name="catissue_user_cp">
+        <field xref_field="catissue_user.IDENTIFIER" default="0" type="xref" name="USER_ID"/>
+        <field xref_field="catissue_collection_protocol.IDENTIFIER" default="0" type="xref" name="COLLECTION_PROTOCOL_ID"/>
+        <unique fields="USER_ID,COLLECTION_PROTOCOL_ID"/>
+    </entity>
+    <entity name="commons_graph">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="commons_graph_edge">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="SOURCE_VERTEX_CLASS"/>
+        <field nillable="true" type="long" name="SOURCE_VERTEX_ID"/>
+        <field nillable="true" name="TARGET_VERTEX_CLASS"/>
+        <field nillable="true" type="long" name="TARGET_VERTEX_ID"/>
+        <field nillable="true" name="EDGE_CLASS"/>
+        <field nillable="true" type="long" name="EDGE_ID"/>
+    </entity>
+    <entity name="commons_graph_to_edges" extends="commons_graph_edge">
+        <field xref_field="commons_graph.IDENTIFIER" type="xref" name="GRAPH_ID"/>
+        <unique fields="GRAPH_ID,EDGE_ID"/>
+    </entity>
+    <entity name="commons_graph_to_vertices">
+        <field xref_field="commons_graph.IDENTIFIER" type="xref" name="GRAPH_ID"/>
+        <field nillable="true" name="VERTEX_CLASS"/>
+        <field nillable="true" type="long" name="VERTEX_ID"/>
+    </entity>
+    <entity name="csm_application">
+        <field unique="true" auto="true" type="long" name="APPLICATION_ID"/>
+        <field unique="true" default="" name="APPLICATION_NAME"/>
+        <field length="200" default="" name="APPLICATION_DESCRIPTION"/>
+        <field nillable="true" type="bool" name="DECLARATIVE_FLAG"/>
+        <field default="0" type="bool" name="ACTIVE_FLAG"/>
+        <field default="0000-00-00" type="date" name="UPDATE_DATE"/>
+        <field length="100" nillable="true" name="DATABASE_URL"/>
+        <field length="100" nillable="true" name="DATABASE_USER_NAME"/>
+        <field length="100" nillable="true" name="DATABASE_PASSWORD"/>
+        <field length="100" nillable="true" name="DATABASE_DIALECT"/>
+        <field length="100" nillable="true" name="DATABASE_DRIVER"/>
+        <field length="20" nillable="true" name="CSM_VERSION"/>
+    </entity>
+    <entity name="csm_filter_clause">
+        <field unique="true" auto="true" type="long" name="FILTER_CLAUSE_ID"/>
+        <field length="100" name="CLASS_NAME"/>
+        <field length="2000" type="text" name="FILTER_CHAIN"/>
+        <field length="100" name="TARGET_CLASS_NAME"/>
+        <field length="100" name="TARGET_CLASS_ATTRIBUTE_NAME"/>
+        <field length="100" name="TARGET_CLASS_ATTRIBUTE_TYPE"/>
+        <field length="100" nillable="true" name="TARGET_CLASS_ALIAS"/>
+        <field length="100" nillable="true" name="TARGET_CLASS_ATTRIBUTE_ALIAS"/>
+        <field length="4000" type="text" name="GENERATED_SQL_USER"/>
+        <field type="long" name="APPLICATION_ID"/>
+        <field type="date" name="UPDATE_DATE"/>
+        <field length="4000" type="text" name="GENERATED_SQL_GROUP"/>
+    </entity>
+    <entity name="csm_group">
+        <field unique="true" auto="true" type="long" name="GROUP_ID"/>
+        <field default="" name="GROUP_NAME"/>
+        <field length="200" nillable="true" name="GROUP_DESC"/>
+        <field default="2005-01-01" type="date" name="UPDATE_DATE"/>
+        <field xref_field="csm_application.APPLICATION_ID" default="0" type="xref" name="APPLICATION_ID"/>
+        <unique fields="APPLICATION_ID,GROUP_NAME"/>
+    </entity>
+    <entity name="csm_mapping">
+        <field unique="true" auto="true" type="long" name="MAPPING_ID"/>
+        <field xref_field="csm_application.APPLICATION_ID" type="xref" name="APPLICATION_ID"/>
+        <field length="100" name="OBJECT_NAME"/>
+        <field length="100" name="ATTRIBUTE_NAME"/>
+        <field length="100" nillable="true" name="OBJECT_PACKAGE_NAME"/>
+        <field length="100" nillable="true" name="TABLE_NAME"/>
+        <field length="100" nillable="true" name="TABLE_NAME_GROUP"/>
+        <field length="100" nillable="true" name="TABLE_NAME_USER"/>
+        <field length="100" nillable="true" name="VIEW_NAME_GROUP"/>
+        <field length="100" nillable="true" name="VIEW_NAME_USER"/>
+        <field default="0" type="bool" name="ACTIVE_FLAG"/>
+        <field default="0" type="bool" name="MAINTAINED_FLAG"/>
+        <field default="0000-00-00" nillable="true" type="date" name="UPDATE_DATE"/>
+        <unique fields="OBJECT_NAME,ATTRIBUTE_NAME,APPLICATION_ID"/>
+    </entity>
+    <entity name="csm_migrate_user">
+        <field unique="true" length="100" name="LOGIN_NAME"/>
+        <field length="100" nillable="true" name="TARGET_IDP_NAME"/>
+        <field length="100" nillable="true" name="MIGRATED_LOGIN_NAME"/>
+        <field length="100" nillable="true" name="MIGRATION_STATUS"/>
+        <field length="100" nillable="true" name="IDENTITY"/>
+        <unique fields="TARGET_IDP_NAME,MIGRATED_LOGIN_NAME"/>
+    </entity>
+    <entity name="csm_pg_pe">
+        <field unique="true" auto="true" type="long" name="PG_PE_ID"/>
+        <field xref_field="csm_protection_group.PROTECTION_GROUP_ID" default="0" type="xref" name="PROTECTION_GROUP_ID"/>
+        <field xref_field="csm_protection_element.PROTECTION_ELEMENT_ID" default="0" type="xref" name="PROTECTION_ELEMENT_ID"/>
+        <field default="0000-00-00" nillable="true" type="date" name="UPDATE_DATE"/>
+        <unique fields="PROTECTION_ELEMENT_ID,PROTECTION_GROUP_ID"/>
+    </entity>
+    <entity name="csm_privilege">
+        <field unique="true" auto="true" type="long" name="PRIVILEGE_ID"/>
+        <field unique="true" length="100" default="" name="PRIVILEGE_NAME"/>
+        <field length="200" nillable="true" name="PRIVILEGE_DESCRIPTION"/>
+        <field default="0000-00-00" type="date" name="UPDATE_DATE"/>
+    </entity>
+    <entity name="csm_protection_element">
+        <field unique="true" auto="true" type="long" name="PROTECTION_ELEMENT_ID"/>
+        <field length="100" default="" name="PROTECTION_ELEMENT_NAME"/>
+        <field length="200" nillable="true" name="PROTECTION_ELEMENT_DESCRIPTION"/>
+        <field length="100" default="" name="OBJECT_ID"/>
+        <field length="100" nillable="true" name="ATTRIBUTE"/>
+        <field length="100" nillable="true" name="PROTECTION_ELEMENT_TYPE"/>
+        <field xref_field="csm_application.APPLICATION_ID" default="0" type="xref" name="APPLICATION_ID"/>
+        <field default="2005-01-01" type="date" name="UPDATE_DATE"/>
+        <field length="100" nillable="true" name="ATTRIBUTE_VALUE"/>
+        <unique fields="PROTECTION_ELEMENT_NAME,ATTRIBUTE,APPLICATION_ID"/>
+        <unique fields="OBJECT_ID,ATTRIBUTE,ATTRIBUTE_VALUE,APPLICATION_ID"/>
+    </entity>
+    <entity name="csm_protection_group">
+        <field unique="true" auto="true" type="long" name="PROTECTION_GROUP_ID"/>
+        <field length="100" default="" name="PROTECTION_GROUP_NAME"/>
+        <field length="200" nillable="true" name="PROTECTION_GROUP_DESCRIPTION"/>
+        <field xref_field="csm_application.APPLICATION_ID" default="0" type="xref" name="APPLICATION_ID"/>
+        <field default="0" type="bool" name="LARGE_ELEMENT_COUNT_FLAG"/>
+        <field default="2005-01-01" type="date" name="UPDATE_DATE"/>
+        <field xref_field="csm_protection_group.PROTECTION_GROUP_ID" nillable="true" type="xref" name="PARENT_PROTECTION_GROUP_ID"/>
+        <unique fields="APPLICATION_ID,PROTECTION_GROUP_NAME"/>
+    </entity>
+    <entity name="csm_role">
+        <field unique="true" auto="true" type="long" name="ROLE_ID"/>
+        <field length="100" default="" name="ROLE_NAME"/>
+        <field length="200" nillable="true" name="ROLE_DESCRIPTION"/>
+        <field xref_field="csm_application.APPLICATION_ID" default="0" type="xref" name="APPLICATION_ID"/>
+        <field default="0" type="bool" name="ACTIVE_FLAG"/>
+        <field default="2005-01-01" type="date" name="UPDATE_DATE"/>
+        <unique fields="APPLICATION_ID,ROLE_NAME"/>
+    </entity>
+    <entity name="csm_role_privilege">
+        <field unique="true" auto="true" type="long" name="ROLE_PRIVILEGE_ID"/>
+        <field xref_field="csm_role.ROLE_ID" default="0" type="xref" name="ROLE_ID"/>
+        <field xref_field="csm_privilege.PRIVILEGE_ID" default="0" type="xref" name="PRIVILEGE_ID"/>
+        <unique fields="PRIVILEGE_ID,ROLE_ID"/>
+    </entity>
+    <entity name="csm_user">
+        <field unique="true" auto="true" type="long" name="USER_ID"/>
+        <field unique="true" length="500" nillable="true" type="text" name="LOGIN_NAME"/>
+        <field length="100" default="" name="FIRST_NAME"/>
+        <field length="100" default="" name="LAST_NAME"/>
+        <field length="100" nillable="true" name="ORGANIZATION"/>
+        <field length="100" nillable="true" name="DEPARTMENT"/>
+        <field length="100" nillable="true" name="TITLE"/>
+        <field length="15" nillable="true" name="PHONE_NUMBER"/>
+        <field length="100" nillable="true" name="PASSWORD"/>
+        <field length="100" nillable="true" name="EMAIL_ID"/>
+        <field nillable="true" type="date" name="START_DATE"/>
+        <field nillable="true" type="date" name="END_DATE"/>
+        <field default="0000-00-00" type="date" name="UPDATE_DATE"/>
+        <field default="0" type="bool" name="MIGRATED_FLAG"/>
+        <field length="100" nillable="true" name="PREMGRT_LOGIN_NAME"/>
+    </entity>
+    <entity name="csm_user_group">
+        <field unique="true" auto="true" type="long" name="USER_GROUP_ID"/>
+        <field xref_field="csm_user.USER_ID" default="0" type="xref" name="USER_ID"/>
+        <field xref_field="csm_group.GROUP_ID" default="0" type="xref" name="GROUP_ID"/>
+    </entity>
+    <entity name="csm_user_group_role_pg">
+        <field unique="true" auto="true" type="long" name="USER_GROUP_ROLE_PG_ID"/>
+        <field xref_field="csm_user.USER_ID" nillable="true" type="xref" name="USER_ID"/>
+        <field xref_field="csm_group.GROUP_ID" nillable="true" type="xref" name="GROUP_ID"/>
+        <field xref_field="csm_role.ROLE_ID" default="0" type="xref" name="ROLE_ID"/>
+        <field xref_field="csm_protection_group.PROTECTION_GROUP_ID" default="0" type="xref" name="PROTECTION_GROUP_ID"/>
+        <field default="2005-01-01" type="date" name="UPDATE_DATE"/>
+    </entity>
+    <entity name="csm_user_pe">
+        <field unique="true" auto="true" type="long" name="USER_PROTECTION_ELEMENT_ID"/>
+        <field xref_field="csm_protection_element.PROTECTION_ELEMENT_ID" default="0" type="xref" name="PROTECTION_ELEMENT_ID"/>
+        <field xref_field="csm_user.USER_ID" default="0" type="xref" name="USER_ID"/>
+        <unique fields="USER_ID,PROTECTION_ELEMENT_ID"/>
+    </entity>
+    <entity name="curated_path">
+        <field unique="true" default="0" type="long" name="curated_path_Id"/>
+        <field length="1000" nillable="true" type="text" name="entity_ids"/>
+        <field nillable="true" type="bool" name="selected"/>
+    </entity>
+    <entity name="curated_path_to_path">
+        <field default="0" type="long" name="curated_path_Id"/>
+        <field default="0" type="long" name="path_id"/>
+        <unique fields="curated_path_Id,path_id"/>
+    </entity>
+    <entity name="databasechangelog">
+        <field length="63" name="ID"/>
+        <field length="63" name="AUTHOR"/>
+        <field length="200" name="FILENAME"/>
+        <field type="datetime" name="DATEEXECUTED"/>
+        <field length="32" nillable="true" name="MD5SUM"/>
+        <field nillable="true" name="DESCRIPTION"/>
+        <field nillable="true" name="COMMENTS"/>
+        <field nillable="true" name="TAG"/>
+        <field length="10" nillable="true" name="LIQUIBASE"/>
+        <unique fields="ID,AUTHOR,FILENAME"/>
+    </entity>
+    <entity name="databasechangeloglock">
+        <field unique="true" type="int" name="ID"/>
+        <field type="bool" name="LOCKED"/>
+        <field nillable="true" type="datetime" name="LOCKGRANTED"/>
+        <field nillable="true" name="LOCKEDBY"/>
+    </entity>
+    <entity name="de_coll_attr_record_values">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="RECORD_VALUE"/>
+        <field xref_field="dyextn_attribute_record.IDENTIFIER" nillable="true" type="xref" name="COLLECTION_ATTR_RECORD_ID"/>
+    </entity>
+    <entity name="de_e_1227">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1229"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1227"/>
+    </entity>
+    <entity name="de_e_1230">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1235"/>
+        <field nillable="true" type="text" name="DE_AT_1234"/>
+        <field nillable="true" type="decimal" name="DE_AT_1233"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1230"/>
+    </entity>
+    <entity name="de_e_1236">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="date" name="DE_AT_1240"/>
+        <field nillable="true" type="date" name="DE_AT_1239"/>
+        <field nillable="true" type="long" name="DE_AT_1238"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1230_1232_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1264_1266_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1241" extends="de_e_1230">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="long" name="DE_AT_1243"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1241"/>
+    </entity>
+    <entity name="de_e_1244">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1248"/>
+        <field nillable="true" type="text" name="DE_AT_1247"/>
+        <field nillable="true" type="int" name="DE_AT_1246"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1249">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1253"/>
+        <field nillable="true" type="text" name="DE_AT_1252"/>
+        <field nillable="true" type="date" name="DE_AT_1251"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1249"/>
+    </entity>
+    <entity name="de_e_1254" extends="de_e_1249">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1257"/>
+        <field nillable="true" type="text" name="DE_AT_1256"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1254"/>
+    </entity>
+    <entity name="de_e_1258">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_AT_1263"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1227_1260_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1264">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1270"/>
+        <field nillable="true" type="text" name="DE_AT_1269"/>
+        <field nillable="true" type="decimal" name="DE_AT_1268"/>
+        <field nillable="true" type="text" name="DE_AT_1267"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1264"/>
+    </entity>
+    <entity name="de_e_1271" extends="de_e_1264">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_E_1258_1262_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1271"/>
+    </entity>
+    <entity name="de_e_1274" extends="de_e_1264">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_E_1258_1261_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1274"/>
+    </entity>
+    <entity name="de_e_1277" extends="de_e_1254">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1277"/>
+    </entity>
+    <entity name="de_e_1279" extends="de_e_1254">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1282"/>
+        <field nillable="true" type="text" name="DE_AT_1281"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1279"/>
+    </entity>
+    <entity name="de_e_1283">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1289"/>
+        <field nillable="true" type="text" name="DE_AT_1288"/>
+        <field nillable="true" type="text" name="DE_AT_1287"/>
+        <field nillable="true" type="text" name="DE_AT_1286"/>
+        <field nillable="true" type="date" name="DE_AT_1285"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1283"/>
+    </entity>
+    <entity name="de_e_1290">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1294"/>
+        <field nillable="true" type="text" name="DE_AT_1293"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1290"/>
+    </entity>
+    <entity name="de_e_1295" extends="de_e_1249">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1295"/>
+    </entity>
+    <entity name="de_e_1297" extends="de_e_1230">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="long" name="DE_AT_1299"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1297"/>
+    </entity>
+    <entity name="de_e_1300" extends="de_e_1249">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_844_1300"/>
+    </entity>
+    <entity name="de_e_1318">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1321"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1322">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1324"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1318_1320_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1325">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1331"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_4_1325"/>
+    </entity>
+    <entity name="de_e_1332">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1335"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1325_1330_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1336">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1338"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1332_1334_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1339">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1343"/>
+        <field nillable="true" type="text" name="DE_AT_1342"/>
+        <field nillable="true" type="text" name="DE_AT_1341"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1325_1329_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1344">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1348"/>
+        <field nillable="true" type="text" name="DE_AT_1347"/>
+        <field nillable="true" type="text" name="DE_AT_1346"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1325_1328_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1349" extends="de_e_1325">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1356"/>
+        <field nillable="true" type="decimal" name="DE_AT_1355"/>
+        <field nillable="true" type="bool" name="DE_AT_1354"/>
+        <field nillable="true" type="text" name="DE_AT_1353"/>
+        <field nillable="true" type="text" name="DE_AT_1352"/>
+        <field nillable="true" type="text" name="DE_AT_1351"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_4_1349"/>
+    </entity>
+    <entity name="de_e_1357" extends="de_e_1325">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_4_1357"/>
+    </entity>
+    <entity name="de_e_1359" extends="de_e_1325">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1362"/>
+        <field nillable="true" type="text" name="DE_AT_1361"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_4_1359"/>
+    </entity>
+    <entity name="de_e_1363" extends="de_e_1325">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_4_1363"/>
+    </entity>
+    <entity name="de_e_1365" extends="de_e_1325">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="long" name="DE_AT_1368"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_4_1365"/>
+    </entity>
+    <entity name="de_e_1369">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_AT_1374"/>
+        <field nillable="true" type="int" name="DE_AT_1373"/>
+        <field nillable="true" type="int" name="DE_AT_1372"/>
+        <field nillable="true" type="int" name="DE_AT_1371"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1375" extends="de_e_1325">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_4_1375"/>
+    </entity>
+    <entity name="de_e_1377" extends="de_e_1325">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1380"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_4_1377"/>
+    </entity>
+    <entity name="de_e_1381">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_AT_1385"/>
+        <field nillable="true" type="int" name="DE_AT_1384"/>
+        <field nillable="true" type="int" name="DE_AT_1383"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1386" extends="de_e_1325">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_4_1386"/>
+    </entity>
+    <entity name="de_e_1400">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1403"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1325_1399_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1404">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1406"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1400_1402_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1408">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1412"/>
+        <field nillable="true" type="text" name="DE_AT_1411"/>
+        <field nillable="true" type="text" name="DE_AT_1410"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1377_1407_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1414">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1419"/>
+        <field nillable="true" type="text" name="DE_AT_1418"/>
+        <field nillable="true" type="text" name="DE_AT_1417"/>
+        <field nillable="true" type="long" name="DE_AT_1416"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1365_1413_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1421">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1425"/>
+        <field nillable="true" type="text" name="DE_AT_1424"/>
+        <field nillable="true" type="long" name="DE_AT_1423"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1290_1420_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1427">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="long" name="DE_AT_1431"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1227_1426_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1432" extends="de_e_1274">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_E_1427_1430_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1434" extends="de_e_1271">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_E_1427_1429_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1437">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1439"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1620_1622_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1440">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1446"/>
+        <field nillable="true" type="text" name="DE_AT_1445"/>
+        <field nillable="true" type="text" name="DE_AT_1444"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1440"/>
+    </entity>
+    <entity name="de_e_1447">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1450"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1440_1443_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1451">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1453"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1447_1449_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1454">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1457"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1440_1442_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1458">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1460"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1454_1456_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1461" extends="de_e_1440">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1461"/>
+    </entity>
+    <entity name="de_e_1468">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1472"/>
+        <field nillable="true" type="text" name="DE_AT_1471"/>
+        <field nillable="true" type="text" name="DE_AT_1470"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1461_1467_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1473">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="bool" name="DE_AT_1478"/>
+        <field nillable="true" type="decimal" name="DE_AT_1477"/>
+        <field nillable="true" type="decimal" name="DE_AT_1476"/>
+        <field nillable="true" type="decimal" name="DE_AT_1475"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1461_1466_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1479">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1483"/>
+        <field nillable="true" type="text" name="DE_AT_1482"/>
+        <field nillable="true" type="text" name="DE_AT_1481"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1461_1465_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1484">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1461_1464_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1489">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1496"/>
+        <field nillable="true" type="long" name="DE_AT_1495"/>
+        <field nillable="true" type="long" name="DE_AT_1494"/>
+        <field nillable="true" type="long" name="DE_AT_1493"/>
+        <field nillable="true" type="long" name="DE_AT_1492"/>
+        <field nillable="true" type="text" name="DE_AT_1491"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1484_1488_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1497">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1500"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1484_1487_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1501">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1504"/>
+        <field nillable="true" type="text" name="DE_AT_1503"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1497_1499_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1505">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1507"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1484_1486_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1508">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1512"/>
+        <field nillable="true" type="text" name="DE_AT_1511"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1461_1463_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1513">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1515"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1508_1510_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1516" extends="de_e_1461">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1516"/>
+    </entity>
+    <entity name="de_e_1518" extends="de_e_1516">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1523"/>
+        <field nillable="true" type="text" name="DE_AT_1522"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1518"/>
+    </entity>
+    <entity name="de_e_1524">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1526"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1518_1521_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1527">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1532"/>
+        <field nillable="true" type="text" name="DE_AT_1531"/>
+        <field nillable="true" type="text" name="DE_AT_1530"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1518_1520_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1533">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1535"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1527_1529_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1536" extends="de_e_1461">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1538"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1536"/>
+    </entity>
+    <entity name="de_e_1539" extends="de_e_1536">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1539"/>
+    </entity>
+    <entity name="de_e_1541">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1544"/>
+        <field nillable="true" type="long" name="DE_AT_1543"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1788_1790_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1545" extends="de_e_1461">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1550"/>
+        <field nillable="true" type="text" name="DE_AT_1549"/>
+        <field nillable="true" type="text" name="DE_AT_1548"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1545"/>
+    </entity>
+    <entity name="de_e_1551">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1555"/>
+        <field nillable="true" type="text" name="DE_AT_1554"/>
+        <field nillable="true" type="text" name="DE_AT_1553"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1545_1547_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1556">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1558"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1600_1602_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1749_1751_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1559" extends="de_e_1516">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1561"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1559"/>
+    </entity>
+    <entity name="de_e_1562">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1565"/>
+        <field nillable="true" type="text" name="DE_AT_1564"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1615_1617_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1566">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1569"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1797_1799_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1570">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1573"/>
+        <field nillable="true" type="text" name="DE_AT_1572"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1566_1568_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1574">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1576"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1797_1800_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1577" extends="de_e_1440">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1583"/>
+        <field nillable="true" type="text" name="DE_AT_1582"/>
+        <field nillable="true" type="text" name="DE_AT_1581"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1577"/>
+    </entity>
+    <entity name="de_e_1584">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1588"/>
+        <field nillable="true" type="text" name="DE_AT_1587"/>
+        <field nillable="true" type="text" name="DE_AT_1586"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1577_1580_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1589">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1592"/>
+        <field nillable="true" type="text" name="DE_AT_1591"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1577_1579_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1593" extends="de_e_1461">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1599"/>
+        <field nillable="true" type="text" name="DE_AT_1598"/>
+        <field nillable="true" type="text" name="DE_AT_1597"/>
+        <field nillable="true" type="text" name="DE_AT_1596"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1593"/>
+    </entity>
+    <entity name="de_e_1600">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1604"/>
+        <field nillable="true" type="text" name="DE_AT_1603"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1735_1747_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1605">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1607"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1735_1746_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1608">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1611"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1631_1633_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1612">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1614"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1608_1610_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1648_1650_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1615">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1619"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1705_1707_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1620">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1624"/>
+        <field nillable="true" type="text" name="DE_AT_1623"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1615_1618_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1625" extends="de_e_1545">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1630"/>
+        <field nillable="true" type="bool" name="DE_AT_1629"/>
+        <field nillable="true" type="long" name="DE_AT_1628"/>
+        <field nillable="true" type="long" name="DE_AT_1627"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1625"/>
+    </entity>
+    <entity name="de_e_1631" extends="de_e_1593">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1639"/>
+        <field nillable="true" type="text" name="DE_AT_1638"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1631"/>
+    </entity>
+    <entity name="de_e_1640">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="bool" name="DE_AT_1643"/>
+        <field nillable="true" type="long" name="DE_AT_1642"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1788_1792_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1644">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1647"/>
+        <field nillable="true" type="decimal" name="DE_AT_1646"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1631_1636_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1648">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1651"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1631_1634_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1652" extends="de_e_1545">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1658"/>
+        <field nillable="true" type="decimal" name="DE_AT_1657"/>
+        <field nillable="true" type="text" name="DE_AT_1656"/>
+        <field nillable="true" type="long" name="DE_AT_1655"/>
+        <field nillable="true" type="long" name="DE_AT_1654"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1652"/>
+    </entity>
+    <entity name="de_e_1659">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1662"/>
+        <field nillable="true" type="text" name="DE_AT_1661"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1667_1670_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1663">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1666"/>
+        <field nillable="true" type="text" name="DE_AT_1665"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1680_1682_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1667">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1672"/>
+        <field nillable="true" type="text" name="DE_AT_1671"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1754_1758_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1673">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1675"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1667_1669_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1676" extends="de_e_1545">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1676"/>
+    </entity>
+    <entity name="de_e_1680">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1684"/>
+        <field nillable="true" type="text" name="DE_AT_1683"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1676_1679_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1685">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1689"/>
+        <field nillable="true" type="bool" name="DE_AT_1688"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1676_1678_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1690">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1692"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1685_1687_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1693">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1696"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1715_1718_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1697">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1700"/>
+        <field nillable="true" type="text" name="DE_AT_1699"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1693_1695_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1723_1725_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1727_1729_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1731_1733_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1701">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1704"/>
+        <field nillable="true" type="text" name="DE_AT_1703"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1705_1708_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1705" extends="de_e_1461">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1705"/>
+    </entity>
+    <entity name="de_e_1709">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1714"/>
+        <field nillable="true" type="text" name="DE_AT_1713"/>
+        <field nillable="true" type="text" name="DE_AT_1712"/>
+        <field nillable="true" type="long" name="DE_AT_1711"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1754_1759_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1715" extends="de_e_1593">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1722"/>
+        <field nillable="true" type="text" name="DE_AT_1721"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1715"/>
+    </entity>
+    <entity name="de_e_1723">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1726"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1715_1720_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1727">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1730"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1715_1719_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1731">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1734"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1697_1733_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1715_1717_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1735" extends="de_e_1461">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1744"/>
+        <field nillable="true" type="text" name="DE_AT_1743"/>
+        <field nillable="true" type="text" name="DE_AT_1742"/>
+        <field nillable="true" type="text" name="DE_AT_1741"/>
+        <field nillable="true" type="bool" name="DE_AT_1740"/>
+        <field nillable="true" type="decimal" name="DE_AT_1739"/>
+        <field nillable="true" type="text" name="DE_AT_1738"/>
+        <field nillable="true" type="text" name="DE_AT_1737"/>
+        <field nillable="true" type="text" name="DE_AT_1736"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1735"/>
+    </entity>
+    <entity name="de_e_1749">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1753"/>
+        <field nillable="true" type="text" name="DE_AT_1752"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1735_1745_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1754" extends="de_e_1461">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1761"/>
+        <field nillable="true" type="int" name="DE_AT_1760"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1754"/>
+    </entity>
+    <entity name="de_e_1762">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1764"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1754_1756_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1765">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1769"/>
+        <field nillable="true" type="text" name="DE_AT_1768"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1788_1793_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1770">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1772"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1765_1767_IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1784_1786_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1773" extends="de_e_1461">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1773"/>
+    </entity>
+    <entity name="de_e_1777">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1780"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1773_1776_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1781">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1783"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1777_1779_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1784">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1787"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1788_1791_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1788" extends="de_e_1593">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1788"/>
+    </entity>
+    <entity name="de_e_1794" extends="de_e_1545">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1796"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1794"/>
+    </entity>
+    <entity name="de_e_1797" extends="de_e_1536">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_1802"/>
+        <field nillable="true" type="text" name="DE_AT_1801"/>
+        <field nillable="true" type="int" name="DYEXTN_AS_379_1797"/>
+    </entity>
+    <entity name="de_e_1828">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_1833"/>
+        <field nillable="true" type="decimal" name="DE_AT_1832"/>
+        <field nillable="true" type="decimal" name="DE_AT_1831"/>
+        <field nillable="true" type="bool" name="DE_AT_1830"/>
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="DE_E_1773_1827_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1836" extends="de_e_1473">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_E_1754_1835_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1838" extends="de_e_1473">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_E_1754_1834_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1841" extends="de_e_1473">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_E_1593_1840_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1845" extends="de_e_1640">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_E_1631_1844_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_1847" extends="de_e_1640">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="int" name="DE_E_1631_1843_IDENTIFIER"/>
+    </entity>
+    <entity name="de_e_2012">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_2014"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2001"/>
+    </entity>
+    <entity name="de_e_2017">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="long" name="DE_AT_2019"/>
+        <field nillable="true" type="decimal" name="DE_AT_2020"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2004"/>
+    </entity>
+    <entity name="de_e_2023">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_2025"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2008"/>
+    </entity>
+    <entity name="de_e_2028">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_2030"/>
+        <field nillable="true" type="decimal" name="DE_AT_2031"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2011"/>
+    </entity>
+    <entity name="de_e_2034">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="long" name="DE_AT_2036"/>
+        <field nillable="true" type="text" name="DE_AT_2037"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2015"/>
+    </entity>
+    <entity name="de_e_2040">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_2042"/>
+        <field nillable="true" type="text" name="DE_AT_2043"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2019"/>
+    </entity>
+    <entity name="de_e_2046">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2023"/>
+    </entity>
+    <entity name="de_e_2050">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_2052"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2025"/>
+    </entity>
+    <entity name="de_e_2055">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_2057"/>
+        <field nillable="true" type="text" name="DE_AT_2058"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2028"/>
+    </entity>
+    <entity name="de_e_2061">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_2063"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2032"/>
+    </entity>
+    <entity name="de_e_2066">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_2068"/>
+        <field nillable="true" type="decimal" name="DE_AT_2069"/>
+        <field nillable="true" type="decimal" name="DE_AT_2070"/>
+        <field nillable="true" type="decimal" name="DE_AT_2071"/>
+        <field nillable="true" type="decimal" name="DE_AT_2072"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2035"/>
+    </entity>
+    <entity name="de_e_2075">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="decimal" name="DE_AT_2077"/>
+        <field nillable="true" type="decimal" name="DE_AT_2078"/>
+        <field nillable="true" type="text" name="DE_AT_2079"/>
+        <field nillable="true" type="text" name="DE_AT_2080"/>
+        <field nillable="true" type="long" name="DE_AT_2081"/>
+        <field nillable="true" type="text" name="DE_AT_2082"/>
+        <field nillable="true" type="decimal" name="DE_AT_2083"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2042"/>
+    </entity>
+    <entity name="de_e_2086">
+        <field nillable="true" type="text" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="text" name="DE_AT_2088"/>
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="DYEXTN_AS_1968_2051"/>
+    </entity>
+    <entity name="de_file_attr_record_values">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="CONTENT_TYPE"/>
+        <field nillable="true" type="text" name="FILE_CONTENT"/>
+        <field nillable="true" name="FILE_NAME"/>
+        <field xref_field="dyextn_attribute_record.IDENTIFIER" nillable="true" type="xref" name="RECORD_ID"/>
+    </entity>
+    <entity name="de_object_attr_record_values">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="CLASS_NAME"/>
+        <field nillable="true" type="text" name="OBJECT_CONTENT"/>
+        <field xref_field="dyextn_attribute_record.IDENTIFIER" nillable="true" type="xref" name="RECORD_ID"/>
+    </entity>
+    <entity name="dyextn_abstr_category">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="dyextn_abstr_contain_ctr" extends="dyextn_control">
+        <field xref_field="dyextn_container.IDENTIFIER" nillable="true" type="xref" name="CONTAINER_ID"/>
+    </entity>
+    <entity name="dyextn_abstract_entity" extends="dyextn_abstract_metadata"/>
+    <entity name="dyextn_abstract_form_context">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="FORM_LABEL"/>
+        <field nillable="true" type="long" name="CONTAINER_ID"/>
+        <field default="b'0'" nillable="true" type="bool" name="HIDE_FORM"/>
+        <field length="10" nillable="true" name="ACTIVITY_STATUS"/>
+    </entity>
+    <entity name="dyextn_abstract_metadata">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="date" name="CREATED_DATE"/>
+        <field nillable="true" type="text" name="DESCRIPTION"/>
+        <field nillable="true" type="date" name="LAST_UPDATED"/>
+        <field nillable="true" type="text" name="NAME"/>
+        <field nillable="true" name="PUBLIC_ID"/>
+        <field length="10" default="ACTIVE" nillable="true" name="ACTIVITY_STATUS"/>
+    </entity>
+    <entity name="dyextn_abstract_record_entry">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="date" name="MODIFIED_DATE"/>
+        <field nillable="true" name="MODIFIED_BY"/>
+        <field length="10" nillable="true" name="ACTIVITY_STATUS"/>
+        <field nillable="true" type="long" name="ABSTRACT_FORM_CONTEXT_ID"/>
+    </entity>
+    <entity name="dyextn_action">
+        <field unique="true" auto="true" type="long" name="ACTION_ID"/>
+        <field nillable="true" type="long" name="CONTROL"/>
+        <field nillable="true" type="long" name="SKIP_LOGIC_DEFAULT_VALUE"/>
+    </entity>
+    <entity name="dyextn_asso_display_attr">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="int" name="SEQUENCE_NUMBER"/>
+        <field xref_field="dyextn_primitive_attribute.IDENTIFIER" nillable="true" type="xref" name="DISPLAY_ATTRIBUTE_ID"/>
+        <field xref_field="dyextn_select_control.IDENTIFIER" nillable="true" type="xref" name="SELECT_CONTROL_ID"/>
+    </entity>
+    <entity name="dyextn_association" extends="dyextn_attribute">
+        <field nillable="true" name="DIRECTION"/>
+        <field xref_field="dyextn_entity.IDENTIFIER" nillable="true" type="xref" name="TARGET_ENTITY_ID"/>
+        <field xref_field="dyextn_role.IDENTIFIER" nillable="true" type="xref" name="SOURCE_ROLE_ID"/>
+        <field xref_field="dyextn_role.IDENTIFIER" nillable="true" type="xref" name="TARGET_ROLE_ID"/>
+        <field nillable="true" type="bool" name="IS_SYSTEM_GENERATED"/>
+        <field default="0" nillable="true" type="bool" name="IS_COLLECTION"/>
+    </entity>
+    <entity name="dyextn_attribute" extends="dyextn_base_abstract_attribute">
+        <field xref_field="dyextn_entity.IDENTIFIER" nillable="true" type="xref" name="ENTIY_ID"/>
+    </entity>
+    <entity name="dyextn_attribute_record">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="dyextn_entity.IDENTIFIER" nillable="true" type="xref" name="ENTITY_ID"/>
+        <field xref_field="dyextn_primitive_attribute.IDENTIFIER" nillable="true" type="xref" name="ATTRIBUTE_ID"/>
+        <field nillable="true" type="long" name="RECORD_ID"/>
+    </entity>
+    <entity name="dyextn_attribute_type_info">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="dyextn_primitive_attribute.IDENTIFIER" nillable="true" type="xref" name="PRIMITIVE_ATTRIBUTE_ID"/>
+    </entity>
+    <entity name="dyextn_auto_loadxpath">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="4000" nillable="true" type="text" name="XPATH"/>
+        <field nillable="true" type="long" name="CATEGORY_ID"/>
+    </entity>
+    <entity name="dyextn_barr_concept_value" extends="dyextn_permissible_value"/>
+    <entity name="dyextn_base_abstract_attribute" extends="dyextn_abstract_metadata"/>
+    <entity name="dyextn_boolean_concept_value" extends="dyextn_permissible_value">
+        <field nillable="true" type="bool" name="VALUE"/>
+    </entity>
+    <entity name="dyextn_boolean_type_info" extends="dyextn_attribute_type_info"/>
+    <entity name="dyextn_byte_array_type_info" extends="dyextn_attribute_type_info">
+        <field nillable="true" name="CONTENT_TYPE"/>
+    </entity>
+    <entity name="dyextn_cadsr_value_domain_info">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="DATATYPE"/>
+        <field nillable="true" name="NAME"/>
+        <field nillable="true" name="TYPE"/>
+        <field xref_field="dyextn_primitive_attribute.IDENTIFIER" nillable="true" type="xref" name="PRIMITIVE_ATTRIBUTE_ID"/>
+    </entity>
+    <entity name="dyextn_cadsrde" extends="dyextn_data_element">
+        <field nillable="true" name="PUBLIC_ID"/>
+    </entity>
+    <entity name="dyextn_calculated_attribute">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="SOURCE_CAT_ATTR_ID"/>
+        <field nillable="true" type="long" name="TARGET_CAL_ATTR_ID"/>
+        <field nillable="true" type="long" name="CAL_CATEGORY_ATTR_ID"/>
+    </entity>
+    <entity name="dyextn_cat_asso_ctl" extends="dyextn_abstr_contain_ctr"/>
+    <entity name="dyextn_cat_xpath_conceptcode">
+        <field nillable="true" type="long" name="AUTO_LOAD_XPATH_ID"/>
+        <field length="4000" nillable="true" type="text" name="CONCEPT_CODE"/>
+    </entity>
+    <entity name="dyextn_category" extends="dyextn_abstract_metadata">
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="ROOT_CATEGORY_ELEMENT"/>
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ENTITY_ID"/>
+        <field default="b'0'" nillable="true" type="bool" name="POPULATE_FROM_XML"/>
+        <field nillable="true" type="long" name="USER_ID"/>
+        <field default="0" nillable="true" type="bool" name="IS_CACHEABLE"/>
+    </entity>
+    <entity name="dyextn_category_association" extends="dyextn_base_abstract_attribute">
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ENTIY_ID"/>
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ENTITY_ID"/>
+    </entity>
+    <entity name="dyextn_category_attribute" extends="dyextn_base_abstract_attribute">
+        <field xref_field="dyextn_attribute.IDENTIFIER" nillable="true" type="xref" name="ABSTRACT_ATTRIBUTE_ID"/>
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ENTIY_ID"/>
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ENTITY_ID"/>
+        <field nillable="true" type="long" name="IS_VISIBLE"/>
+        <field nillable="true" type="bool" name="IS_RELATTRIBUTE"/>
+        <field default="b'0'" nillable="true" type="bool" name="IS_CAL_ATTRIBUTE"/>
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="CAL_CATEGORY_ATTR_ID"/>
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="CAL_DEPENDENT_CATEGORY_ATTR_ID"/>
+        <field default="b'0'" nillable="true" type="bool" name="POPULATE_FROM_XML"/>
+        <field default="b'0'" nillable="true" type="bool" name="IS_SKIP_LOGIC"/>
+        <field default="b'0'" nillable="true" type="bool" name="IS_SRC_FOR_CAL_ATTR"/>
+    </entity>
+    <entity name="dyextn_category_entity" extends="dyextn_abstract_entity">
+        <field nillable="true" type="int" name="NUMBER_OF_ENTRIES"/>
+        <field xref_field="dyextn_entity.IDENTIFIER" nillable="true" type="xref" name="ENTITY_ID"/>
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="OWN_PARENT_CATEGORY_ENTITY_ID"/>
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="TREE_PARENT_CATEGORY_ENTITY_ID"/>
+        <field xref_field="dyextn_category_association.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ASSOCIATION_ID"/>
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="PARENT_CATEGORY_ENTITY_ID"/>
+        <field xref_field="dyextn_category.IDENTIFIER" nillable="true" type="xref" name="REL_ATTR_CAT_ENTITY_ID"/>
+        <field nillable="true" type="bool" name="IS_CREATETABLE"/>
+    </entity>
+    <entity name="dyextn_check_box" extends="dyextn_control"/>
+    <entity name="dyextn_column_properties" extends="dyextn_database_properties">
+        <field xref_field="dyextn_primitive_attribute.IDENTIFIER" nillable="true" type="xref" name="PRIMITIVE_ATTRIBUTE_ID"/>
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ATTRIBUTE_ID"/>
+        <field nillable="true" name="CONSTRAINT_NAME"/>
+        <field xref_field="dyextn_constraintkey_prop.IDENTIFIER" nillable="true" type="xref" name="CNSTR_KEY_PROP_ID"/>
+    </entity>
+    <entity name="dyextn_combobox" extends="dyextn_select_control">
+        <field nillable="true" type="int" name="NO_OF_COLUMNS"/>
+    </entity>
+    <entity name="dyextn_condition">
+        <field unique="true" auto="true" type="long" name="CONDITION_ID"/>
+        <field nillable="true" type="long" name="ACTION_ID"/>
+        <field nillable="true" type="long" name="COND_STMT_ID"/>
+    </entity>
+    <entity name="dyextn_condition_stmt">
+        <field unique="true" auto="true" type="long" name="CONDITION_STATEMENT_ID"/>
+        <field nillable="true" type="long" name="CONTROL_ID"/>
+        <field nillable="true" type="long" name="SKIP_LOGIC_ID"/>
+    </entity>
+    <entity name="dyextn_constraint_properties" extends="dyextn_database_properties">
+        <field nillable="true" name="SOURCE_ENTITY_KEY"/>
+        <field nillable="true" name="TARGET_ENTITY_KEY"/>
+        <field xref_field="dyextn_association.IDENTIFIER" nillable="true" type="xref" name="ASSOCIATION_ID"/>
+        <field nillable="true" name="SRC_CONSTRAINT_NAME"/>
+        <field nillable="true" name="TARGET_CONSTRAINT_NAME"/>
+        <field xref_field="dyextn_category_association.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ASSOCIATION_ID"/>
+        <field nillable="true" name="CONSTRAINT_NAME"/>
+        <field xref_field="dyextn_abstract_entity.id" nillable="true" type="xref" name="ABSTRACT_ENTITY_ID"/>
+    </entity>
+    <entity name="dyextn_constraintkey_prop">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="dyextn_primitive_attribute.IDENTIFIER" nillable="true" type="xref" name="PRIMARY_ATTRIBUTE_ID"/>
+        <field xref_field="dyextn_constraint_properties.IDENTIFIER" nillable="true" type="xref" name="SRC_CONSTRAINT_KEY_ID"/>
+        <field xref_field="dyextn_constraint_properties.IDENTIFIER" nillable="true" type="xref" name="TGT_CONSTRAINT_KEY_ID"/>
+    </entity>
+    <entity name="dyextn_container">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="BUTTON_CSS"/>
+        <field length="800" nillable="true" type="text" name="CAPTION"/>
+        <field xref_field="dyextn_abstract_entity.id" nillable="true" type="xref" name="ABSTRACT_ENTITY_ID"/>
+        <field nillable="true" name="MAIN_TABLE_CSS"/>
+        <field nillable="true" name="REQUIRED_FIELD_INDICATOR"/>
+        <field nillable="true" name="REQUIRED_FIELD_WARNING_MESSAGE"/>
+        <field nillable="true" name="TITLE_CSS"/>
+        <field xref_field="dyextn_container.IDENTIFIER" nillable="true" type="xref" name="BASE_CONTAINER_ID"/>
+        <field xref_field="dyextn_entity_group.IDENTIFIER" nillable="true" type="xref" name="ENTITY_GROUP_ID"/>
+        <field xref_field="dyextn_view.IDENTIFIER" nillable="true" type="xref" name="VIEW_ID"/>
+        <field nillable="true" type="bool" name="ADD_CAPTION"/>
+        <field nillable="true" type="long" name="PARENT_CONTAINER_ID"/>
+    </entity>
+    <entity name="dyextn_containment_control" extends="dyextn_abstr_contain_ctr"/>
+    <entity name="dyextn_control">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="800" nillable="true" type="text" name="CAPTION"/>
+        <field nillable="true" name="CSS_CLASS"/>
+        <field nillable="true" type="bool" name="HIDDEN"/>
+        <field length="400" nillable="true" type="text" name="NAME"/>
+        <field nillable="true" type="int" name="SEQUENCE_NUMBER"/>
+        <field nillable="true" name="TOOLTIP"/>
+        <field xref_field="dyextn_base_abstract_attribute.IDENTIFIER" nillable="true" type="xref" name="BASE_ABST_ATR_ID"/>
+        <field xref_field="dyextn_container.IDENTIFIER" nillable="true" type="xref" name="CONTAINER_ID"/>
+        <field nillable="true" type="bool" name="READ_ONLY"/>
+        <field nillable="true" type="bool" name="SHOW_LABEL"/>
+        <field nillable="true" type="long" name="yPosition"/>
+        <field default="b'0'" nillable="true" type="bool" name="IS_CALCULATED"/>
+        <field length="800" nillable="true" type="text" name="HEADING"/>
+        <field default="1" nillable="true" type="bool" name="IS_PASTE_BUTTON_EANBLED"/>
+        <field default="b'0'" nillable="true" type="bool" name="SKIP_LOGIC"/>
+        <field default="b'0'" nillable="true" type="bool" name="SKIP_LOGIC_TARGET_CONTROL"/>
+        <field default="b'0'" nillable="true" type="bool" name="SHOW_HIDE"/>
+        <field default="b'0'" nillable="true" type="bool" name="SELECTIVE_READ_ONLY"/>
+        <field xref_field="dyextn_control.IDENTIFIER" nillable="true" type="xref" name="SOURCE_CONTROL_ID"/>
+    </entity>
+    <entity name="dyextn_data_element">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="dyextn_attribute_type_info.IDENTIFIER" nillable="true" type="xref" name="ATTRIBUTE_TYPE_INFO_ID"/>
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ATTRIBUTE_ID"/>
+        <field xref_field="dyextn_skip_logic_attribute.IDENTIFIER" nillable="true" type="xref" name="SKIP_LOGIC_ATTRIBUTE_ID"/>
+    </entity>
+    <entity name="dyextn_data_grid" extends="dyextn_control"/>
+    <entity name="dyextn_database_properties">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="NAME"/>
+    </entity>
+    <entity name="dyextn_date_concept_value" extends="dyextn_permissible_value">
+        <field nillable="true" type="datetime" name="VALUE"/>
+    </entity>
+    <entity name="dyextn_date_type_info" extends="dyextn_attribute_type_info">
+        <field nillable="true" name="FORMAT"/>
+    </entity>
+    <entity name="dyextn_datepicker" extends="dyextn_control">
+        <field nillable="true" name="DATE_VALUE_TYPE"/>
+        <field default="b'1'" nillable="true" type="bool" name="SHOWCALENDAR"/>
+    </entity>
+    <entity name="dyextn_disable_action">
+        <field unique="true" default="0" type="long" name="ACTION_ID"/>
+    </entity>
+    <entity name="dyextn_double_concept_value" extends="dyextn_permissible_value">
+        <field nillable="true" type="decimal" name="VALUE"/>
+    </entity>
+    <entity name="dyextn_double_type_info" extends="dyextn_numeric_type_info"/>
+    <entity name="dyextn_enable_action">
+        <field unique="true" default="0" type="long" name="ACTION_ID"/>
+    </entity>
+    <entity name="dyextn_entity" extends="dyextn_abstract_entity">
+        <field nillable="true" type="int" name="DATA_TABLE_STATE"/>
+        <field nillable="true" type="bool" name="IS_ABSTRACT"/>
+        <field xref_field="dyextn_entity.IDENTIFIER" nillable="true" type="xref" name="PARENT_ENTITY_ID"/>
+        <field nillable="true" type="int" name="INHERITANCE_STRATEGY"/>
+        <field nillable="true" name="DISCRIMINATOR_COLUMN_NAME"/>
+        <field nillable="true" name="DISCRIMINATOR_VALUE"/>
+        <field xref_field="dyextn_entity_group.IDENTIFIER" nillable="true" type="xref" name="ENTITY_GROUP_ID"/>
+    </entity>
+    <entity name="dyextn_entity_group" extends="dyextn_abstract_metadata">
+        <field nillable="true" name="LONG_NAME"/>
+        <field nillable="true" name="SHORT_NAME"/>
+        <field nillable="true" name="VERSION"/>
+        <field nillable="true" type="bool" name="IS_SYSTEM_GENERATED"/>
+        <field default="b'0'" nillable="true" type="bool" name="IS_CACORE_GENERATED"/>
+    </entity>
+    <entity name="dyextn_entity_map">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="CONTAINER_ID"/>
+        <field length="10" nillable="true" name="STATUS"/>
+        <field nillable="true" type="long" name="STATIC_ENTITY_ID"/>
+        <field nillable="true" type="date" name="CREATED_DATE"/>
+        <field nillable="true" name="CREATED_BY"/>
+    </entity>
+    <entity name="dyextn_entity_map_condns">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="long" name="STATIC_RECORD_ID"/>
+        <field nillable="true" type="long" name="TYPE_ID"/>
+        <field xref_field="dyextn_form_context.IDENTIFIER" nillable="true" type="xref" name="FORM_CONTEXT_ID"/>
+    </entity>
+    <entity name="dyextn_entity_map_record">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="dyextn_form_context.IDENTIFIER" nillable="true" type="xref" name="FORM_CONTEXT_ID"/>
+        <field nillable="true" type="long" name="STATIC_ENTITY_RECORD_ID"/>
+        <field length="10" nillable="true" name="STATUS"/>
+        <field nillable="true" type="long" name="DYNAMIC_ENTITY_RECORD_ID"/>
+        <field nillable="true" type="date" name="MODIFIED_DATE"/>
+        <field nillable="true" type="date" name="CREATED_DATE"/>
+        <field nillable="true" name="CREATED_BY"/>
+    </entity>
+    <entity name="dyextn_entiy_composite_key_rel">
+        <field xref_field="dyextn_entity.IDENTIFIER" auto="true" type="xref" name="ENTITY_ID"/>
+        <field xref_field="dyextn_primitive_attribute.IDENTIFIER" type="xref" name="ATTRIBUTE_ID"/>
+        <field type="long" name="INSERTION_ORDER"/>
+        <unique fields="ENTITY_ID,INSERTION_ORDER"/>
+    </entity>
+    <entity name="dyextn_file">
+        <field unique="true" default="0" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="text" name="FILE_RECORD"/>
+    </entity>
+    <entity name="dyextn_file_extensions">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="FILE_EXTENSION"/>
+        <field xref_field="dyextn_file_type_info.IDENTIFIER" nillable="true" type="xref" name="ATTRIBUTE_ID"/>
+    </entity>
+    <entity name="dyextn_file_type_info" extends="dyextn_attribute_type_info">
+        <field nillable="true" type="decimal" name="MAX_FILE_SIZE"/>
+    </entity>
+    <entity name="dyextn_file_upload" extends="dyextn_control">
+        <field nillable="true" type="int" name="NO_OF_COLUMNS"/>
+    </entity>
+    <entity name="dyextn_float_concept_value" extends="dyextn_permissible_value">
+        <field nillable="true" type="decimal" name="VALUE"/>
+    </entity>
+    <entity name="dyextn_float_type_info" extends="dyextn_numeric_type_info"/>
+    <entity name="dyextn_form_context">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="bool" name="IS_INFINITE_ENTRY"/>
+        <field xref_field="dyextn_entity_map.IDENTIFIER" nillable="true" type="xref" name="ENTITY_MAP_ID"/>
+        <field nillable="true" name="STUDY_FORM_LABEL"/>
+        <field nillable="true" type="int" name="NO_OF_ENTRIES"/>
+    </entity>
+    <entity name="dyextn_form_ctrl_notes">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="NOTE"/>
+        <field nillable="true" type="long" name="FORM_CONTROL_ID"/>
+        <field nillable="true" type="int" name="INSERTION_ORDER"/>
+    </entity>
+    <entity name="dyextn_formula">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="4000" nillable="true" type="text" name="expression"/>
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ATTRIBUTE_ID"/>
+    </entity>
+    <entity name="dyextn_grid_view_columns">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="GRID_DISPLAY_COLUMN"/>
+        <field nillable="true" name="GRID_TABLE_COLUMN"/>
+        <field nillable="true" type="long" name="CATEGORY_ID"/>
+        <field length="1800" nillable="true" type="text" name="DataQuery"/>
+        <field default="0" nillable="true" type="int" name="sortOrder"/>
+    </entity>
+    <entity name="dyextn_group_condition">
+        <field unique="true" auto="true" type="long" name="CONDITION_ID"/>
+        <field length="20" nillable="true" name="LOGICAL_OPERATOR"/>
+        <field nillable="true" type="long" name="CHILD_CONDITION_ID"/>
+    </entity>
+    <entity name="dyextn_hide_action">
+        <field unique="true" default="0" type="long" name="ACTION_ID"/>
+    </entity>
+    <entity name="dyextn_id_generator">
+        <field unique="true" type="long" name="ID"/>
+        <field nillable="true" type="long" name="NEXT_AVAILABLE_ID"/>
+    </entity>
+    <entity name="dyextn_integer_concept_value" extends="dyextn_permissible_value">
+        <field nillable="true" type="int" name="VALUE"/>
+    </entity>
+    <entity name="dyextn_integer_type_info" extends="dyextn_numeric_type_info"/>
+    <entity name="dyextn_label">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="dyextn_list_box" extends="dyextn_select_control">
+        <field nillable="true" type="bool" name="MULTISELECT"/>
+        <field nillable="true" type="int" name="NO_OF_ROWS"/>
+        <field nillable="true" type="bool" name="USE_AUTOCOMPLETE"/>
+    </entity>
+    <entity name="dyextn_long_concept_value" extends="dyextn_permissible_value">
+        <field nillable="true" type="long" name="VALUE"/>
+    </entity>
+    <entity name="dyextn_long_type_info" extends="dyextn_numeric_type_info"/>
+    <entity name="dyextn_multiselect_check_box">
+        <field unique="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="bool" name="MULTISELECT"/>
+    </entity>
+    <entity name="dyextn_numeric_type_info" extends="dyextn_attribute_type_info">
+        <field nillable="true" name="MEASUREMENT_UNITS"/>
+        <field nillable="true" type="int" name="DECIMAL_PLACES"/>
+        <field nillable="true" type="int" name="NO_DIGITS"/>
+    </entity>
+    <entity name="dyextn_object_type_info" extends="dyextn_attribute_type_info"/>
+    <entity name="dyextn_path">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="dyextn_category_entity.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ENTITY_ID"/>
+    </entity>
+    <entity name="dyextn_path_asso_rel">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="dyextn_path.IDENTIFIER" nillable="true" type="xref" name="PATH_ID"/>
+        <field xref_field="dyextn_association.IDENTIFIER" nillable="true" type="xref" name="ASSOCIATION_ID"/>
+        <field nillable="true" type="int" name="PATH_SEQUENCE_NUMBER"/>
+        <field nillable="true" type="int" name="SRC_INSTANCE_ID"/>
+        <field nillable="true" type="int" name="TGT_INSTANCE_ID"/>
+    </entity>
+    <entity name="dyextn_permissible_value">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="DESCRIPTION"/>
+        <field xref_field="dyextn_attribute_type_info.IDENTIFIER" nillable="true" type="xref" name="ATTRIBUTE_TYPE_INFO_ID"/>
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="CATEGORY_ATTRIBUTE_ID"/>
+        <field nillable="true" type="int" name="NUMERIC_CODE"/>
+        <field xref_field="dyextn_skip_logic_attribute.IDENTIFIER" nillable="true" type="xref" name="SKIP_LOGIC_ATTRIBUTE_ID"/>
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="SKIP_LOGIC_CAT_ATTR_ID"/>
+    </entity>
+    <entity name="dyextn_permissiblevalue_action">
+        <field unique="true" auto="true" type="long" name="ACTION_ID"/>
+    </entity>
+    <entity name="dyextn_primitive_attribute" extends="dyextn_attribute">
+        <field nillable="true" type="bool" name="IS_IDENTIFIED"/>
+        <field nillable="true" type="bool" name="IS_PRIMARY_KEY"/>
+        <field nillable="true" type="bool" name="IS_NULLABLE"/>
+    </entity>
+    <entity name="dyextn_primitive_condition">
+        <field unique="true" auto="true" type="long" name="CONDITION_ID"/>
+        <field nillable="true" type="long" name="CATEGORY_ATTRIBUTE"/>
+        <field nillable="true" type="text" name="CONDITION_VALUE"/>
+        <field length="20" nillable="true" name="CONDITION_OPERATOR"/>
+    </entity>
+    <entity name="dyextn_pv_action_mapping">
+        <field nillable="true" type="long" name="ACTION_ID"/>
+        <field nillable="true" type="long" name="PERMISSIBLE_VALUE_ID"/>
+    </entity>
+    <entity name="dyextn_radiobutton" extends="dyextn_control"/>
+    <entity name="dyextn_role">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="ASSOCIATION_TYPE"/>
+        <field nillable="true" type="int" name="MAX_CARDINALITY"/>
+        <field nillable="true" type="int" name="MIN_CARDINALITY"/>
+        <field nillable="true" name="NAME"/>
+    </entity>
+    <entity name="dyextn_rule">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="NAME"/>
+        <field xref_field="dyextn_attribute.IDENTIFIER" nillable="true" type="xref" name="ATTRIBUTE_ID"/>
+        <field nillable="true" type="long" name="CATEGORY_ATTR_ID"/>
+        <field nillable="true" type="bool" name="IS_IMPLICIT"/>
+    </entity>
+    <entity name="dyextn_rule_parameter">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="NAME"/>
+        <field nillable="true" name="VALUE"/>
+        <field xref_field="dyextn_rule.IDENTIFIER" nillable="true" type="xref" name="RULE_ID"/>
+    </entity>
+    <entity name="dyextn_select_control" extends="dyextn_control">
+        <field nillable="true" name="SEPARATOR_STRING"/>
+    </entity>
+    <entity name="dyextn_semantic_property">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="CONCEPT_CODE"/>
+        <field nillable="true" name="TERM"/>
+        <field nillable="true" name="THESAURAS_NAME"/>
+        <field nillable="true" type="int" name="SEQUENCE_NUMBER"/>
+        <field length="4000" nillable="true" type="text" name="CONCEPT_DEFINITION"/>
+        <field xref_field="dyextn_abstract_metadata.IDENTIFIER" nillable="true" type="xref" name="ABSTRACT_METADATA_ID"/>
+        <field xref_field="dyextn_permissible_value.IDENTIFIER" nillable="true" type="xref" name="ABSTRACT_VALUE_ID"/>
+        <field nillable="true" type="int" name="CONCEPT_DEF_VALUE_ID"/>
+    </entity>
+    <entity name="dyextn_short_concept_value" extends="dyextn_permissible_value">
+        <field nillable="true" type="int" name="VALUE"/>
+    </entity>
+    <entity name="dyextn_short_type_info" extends="dyextn_numeric_type_info"/>
+    <entity name="dyextn_show_action">
+        <field unique="true" default="0" type="long" name="ACTION_ID"/>
+    </entity>
+    <entity name="dyextn_skip_logic">
+        <field unique="true" auto="true" type="long" name="SKIPLOGIC_ID"/>
+        <field nillable="true" type="long" name="CONTAINER_IDENTIFIER"/>
+    </entity>
+    <entity name="dyextn_skip_logic_attribute" extends="dyextn_base_abstract_attribute">
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="SOURCE_SKIP_LOGIC_ID"/>
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="TARGET_SKIP_LOGIC_ID"/>
+        <field xref_field="dyextn_category_attribute.IDENTIFIER" nillable="true" type="xref" name="CAT_ATTR_ID"/>
+        <field xref_field="dyextn_permissible_value.IDENTIFIER" nillable="true" type="xref" name="PERM_VALUE_ID"/>
+    </entity>
+    <entity name="dyextn_sql_audit">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" type="date" name="AUDIT_DATE"/>
+        <field length="4000" nillable="true" type="text" name="QUERY_EXECUTED"/>
+        <field nillable="true" type="long" name="USER_ID"/>
+    </entity>
+    <entity name="dyextn_static_category">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="800" nillable="true" type="text" name="FORM_URL"/>
+        <field length="1800" nillable="true" type="text" name="DataQuery"/>
+    </entity>
+    <entity name="dyextn_string_concept_value" extends="dyextn_permissible_value">
+        <field length="4000" nillable="true" type="text" name="VALUE"/>
+    </entity>
+    <entity name="dyextn_string_type_info" extends="dyextn_attribute_type_info">
+        <field nillable="true" type="int" name="MAX_SIZE"/>
+    </entity>
+    <entity name="dyextn_table_properties" extends="dyextn_database_properties">
+        <field xref_field="dyextn_abstract_entity.id" nillable="true" type="xref" name="ABSTRACT_ENTITY_ID"/>
+        <field nillable="true" name="CONSTRAINT_NAME"/>
+    </entity>
+    <entity name="dyextn_tagged_value">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="T_KEY"/>
+        <field nillable="true" name="T_VALUE"/>
+        <field xref_field="dyextn_abstract_metadata.IDENTIFIER" nillable="true" type="xref" name="ABSTRACT_METADATA_ID"/>
+    </entity>
+    <entity name="dyextn_textarea" extends="dyextn_control">
+        <field nillable="true" type="int" name="TEXTAREA_COLUMNS"/>
+        <field nillable="true" type="int" name="TEXTAREA_ROWS"/>
+    </entity>
+    <entity name="dyextn_textfield" extends="dyextn_control">
+        <field nillable="true" type="int" name="NO_OF_COLUMNS"/>
+        <field nillable="true" type="bool" name="IS_PASSWORD"/>
+        <field nillable="true" type="bool" name="IS_URL"/>
+    </entity>
+    <entity name="dyextn_userdef_de_value_rel">
+        <field xref_field="dyextn_userdefined_de.IDENTIFIER" type="xref" name="USER_DEF_DE_ID"/>
+        <field xref_field="dyextn_permissible_value.IDENTIFIER" type="xref" name="PERMISSIBLE_VALUE_ID"/>
+        <unique fields="USER_DEF_DE_ID,PERMISSIBLE_VALUE_ID"/>
+    </entity>
+    <entity name="dyextn_userdef_def_pv_rel">
+        <field auto="true" type="long" name="USER_DEF_DE_ID"/>
+        <field type="long" name="PERMISSIBLE_VALUE_ID"/>
+        <unique fields="USER_DEF_DE_ID,PERMISSIBLE_VALUE_ID"/>
+    </entity>
+    <entity name="dyextn_userdefined_de" extends="dyextn_data_element">
+        <field default="1" nillable="true" type="bool" name="IS_ORDERED"/>
+        <field nillable="true" type="date" name="ACTIVATION_DATE"/>
+        <field length="20" nillable="true" name="SORT"/>
+    </entity>
+    <entity name="dyextn_view">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="NAME"/>
+    </entity>
+    <entity name="id_table">
+        <field unique="true" type="long" name="NEXT_ASSOCIATION_ID"/>
+    </entity>
+    <entity name="inter_model_association">
+        <field unique="true" type="long" name="ASSOCIATION_ID"/>
+        <field type="long" name="LEFT_ENTITY_ID"/>
+        <field type="long" name="LEFT_ATTRIBUTE_ID"/>
+        <field type="long" name="RIGHT_ENTITY_ID"/>
+        <field type="long" name="RIGHT_ATTRIBUTE_ID"/>
+    </entity>
+    <entity name="intra_model_association">
+        <field unique="true" type="long" name="ASSOCIATION_ID"/>
+        <field type="long" name="DE_ASSOCIATION_ID"/>
+    </entity>
+    <entity name="job_details">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="JOB_NAME"/>
+        <field length="50" nillable="true" name="JOB_STATUS"/>
+        <field nillable="true" type="long" name="TOTAL_RECORDS_COUNT"/>
+        <field nillable="true" type="long" name="FAILED_RECORDS_COUNT"/>
+        <field nillable="true" type="long" name="TIME_TAKEN"/>
+        <field nillable="true" type="text" name="LOG_FILE"/>
+        <field nillable="true" type="long" name="JOB_STARTED_BY"/>
+        <field nillable="true" type="datetime" name="START_TIME"/>
+        <field nillable="true" type="long" name="CURRENT_RECORDS_PROCESSED"/>
+        <field length="1024" nillable="true" type="text" name="LOG_FILE_NAME"/>
+    </entity>
+    <entity name="key_seq_generator">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field length="50" name="KEY_VALUE"/>
+        <field length="50" name="KEY_SEQUENCE_ID"/>
+        <field name="KEY_TYPE"/>
+    </entity>
+    <entity name="path">
+        <field unique="true" type="long" name="PATH_ID"/>
+        <field nillable="true" type="long" name="FIRST_ENTITY_ID"/>
+        <field length="1000" nillable="true" type="text" name="INTERMEDIATE_PATH"/>
+        <field nillable="true" type="long" name="LAST_ENTITY_ID"/>
+    </entity>
+    <entity name="query" extends="query_constraints">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="query_arithmetic_operand" extends="query_operand">
+        <field nillable="true" name="LITERAL"/>
+        <field nillable="true" name="TERM_TYPE"/>
+        <field nillable="true" type="date" name="DATE_LITERAL"/>
+        <field nillable="true" name="TIME_INTERVAL"/>
+        <field nillable="true" type="long" name="DE_ATTRIBUTE_ID"/>
+        <field xref_field="query_base_expression.IDENTIFIER" nillable="true" type="xref" name="EXPRESSION_ID"/>
+    </entity>
+    <entity name="query_base_expr_opnd">
+        <field xref_field="query_base_expression.IDENTIFIER" type="xref" name="BASE_EXPRESSION_ID"/>
+        <field xref_field="query_operand.IDENTIFIER" type="xref" name="OPERAND_ID"/>
+        <field type="int" name="POSITION"/>
+        <unique fields="BASE_EXPRESSION_ID,POSITION"/>
+    </entity>
+    <entity name="query_base_expression">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="EXPR_TYPE"/>
+    </entity>
+    <entity name="query_baseexpr_to_connectors">
+        <field xref_field="query_base_expression.IDENTIFIER" type="xref" name="BASE_EXPRESSION_ID"/>
+        <field xref_field="query_connector.IDENTIFIER" type="xref" name="CONNECTOR_ID"/>
+        <field type="int" name="POSITION"/>
+        <unique fields="BASE_EXPRESSION_ID,POSITION"/>
+    </entity>
+    <entity name="query_condition">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="ATTRIBUTE_ID"/>
+        <field nillable="true" name="RELATIONAL_OPERATOR"/>
+    </entity>
+    <entity name="query_condition_values">
+        <field xref_field="query_condition.IDENTIFIER" type="xref" name="CONDITION_ID"/>
+        <field nillable="true" name="VALUE"/>
+        <field type="int" name="POSITION"/>
+        <unique fields="CONDITION_ID,POSITION"/>
+    </entity>
+    <entity name="query_connector">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="OPERATOR"/>
+        <field nillable="true" type="int" name="NESTING_NUMBER"/>
+    </entity>
+    <entity name="query_constraint_to_expr" extends="query_base_expression">
+        <field xref_field="query_constraints.IDENTIFIER" type="xref" name="CONSTRAINT_ID"/>
+        <unique fields="CONSTRAINT_ID,EXPRESSION_ID"/>
+    </entity>
+    <entity name="query_constraints" extends="query_join_graph">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="query_custom_formula" extends="query_operand">
+        <field nillable="true" name="OPERATOR"/>
+        <field xref_field="query_base_expression.IDENTIFIER" nillable="true" type="xref" name="LHS_TERM_ID"/>
+    </entity>
+    <entity name="query_expression" extends="query_base_expression">
+        <field nillable="true" type="bool" name="IS_IN_VIEW"/>
+        <field nillable="true" type="bool" name="IS_VISIBLE"/>
+        <field nillable="true" type="int" name="UI_EXPR_ID"/>
+        <field xref_field="query_query_entity.IDENTIFIER" nillable="true" type="xref" name="QUERY_ENTITY_ID"/>
+    </entity>
+    <entity name="query_formula_rhs">
+        <field xref_field="query_operand.IDENTIFIER" type="xref" name="CUSTOM_FORMULA_ID"/>
+        <field xref_field="query_base_expression.IDENTIFIER" type="xref" name="RHS_TERM_ID"/>
+        <field type="int" name="POSITION"/>
+        <unique fields="CUSTOM_FORMULA_ID,POSITION"/>
+    </entity>
+    <entity name="query_inter_model_association" extends="query_model_association">
+        <field type="text" name="SOURCE_SERVICE_URL"/>
+        <field type="text" name="TARGET_SERVICE_URL"/>
+        <field type="long" name="SOURCE_ATTRIBUTE_ID"/>
+        <field type="long" name="TARGET_ATTRIBUTE_ID"/>
+    </entity>
+    <entity name="query_intra_model_association" extends="query_model_association">
+        <field type="long" name="DE_ASSOCIATION_ID"/>
+    </entity>
+    <entity name="query_join_graph">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="commons_graph.IDENTIFIER" nillable="true" type="xref" name="COMMONS_GRAPH_ID"/>
+    </entity>
+    <entity name="query_model_association">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+    </entity>
+    <entity name="query_operand">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field name="OPND_TYPE"/>
+    </entity>
+    <entity name="query_output_attribute">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field xref_field="query_base_expression.IDENTIFIER" nillable="true" type="xref" name="EXPRESSION_ID"/>
+        <field type="long" name="ATTRIBUTE_ID"/>
+        <field xref_field="query_parameterized_query.IDENTIFIER" nillable="true" type="xref" name="PARAMETERIZED_QUERY_ID"/>
+        <field nillable="true" type="int" name="POSITION"/>
+    </entity>
+    <entity name="query_output_term">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="NAME"/>
+        <field nillable="true" name="TIME_INTERVAL"/>
+        <field xref_field="query_base_expression.IDENTIFIER" nillable="true" type="xref" name="TERM_ID"/>
+    </entity>
+    <entity name="query_parameter">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field nillable="true" name="NAME"/>
+        <field nillable="true" name="OBJECT_CLASS"/>
+        <field nillable="true" type="long" name="OBJECT_ID"/>
+    </entity>
+    <entity name="query_parameterized_query" extends="query">
+        <field unique="true" name="QUERY_NAME"/>
+        <field nillable="true" type="text" name="DESCRIPTION"/>
+        <field default="b'0'" nillable="true" type="bool" name="SHOW_TREE"/>
+    </entity>
+    <entity name="query_query_entity">
+        <field unique="true" auto="true" type="long" name="IDENTIFIER"/>
+        <field type="long" name="ENTITY_ID"/>
+    </entity>
+    <entity name="query_rule_cond">
+        <field xref_field="query_operand.IDENTIFIER" type="xref" name="RULE_ID"/>
+        <field xref_field="query_condition.IDENTIFIER" type="xref" name="CONDITION_ID"/>
+        <field type="int" name="POSITION"/>
+        <unique fields="RULE_ID,POSITION"/>
+    </entity>
+    <entity name="query_subexpr_operand" extends="query_operand">
+        <field xref_field="query_base_expression.IDENTIFIER" nillable="true" type="xref" name="EXPRESSION_ID"/>
+    </entity>
+    <entity name="query_to_output_terms" extends="query_output_term">
+        <field xref_field="query.IDENTIFIER" type="xref" name="QUERY_ID"/>
+        <field type="int" name="POSITION"/>
+        <unique fields="QUERY_ID,POSITION"/>
+    </entity>
+    <entity name="query_to_parameters" extends="query_parameter">
+        <field xref_field="query_parameterized_query.IDENTIFIER" type="xref" name="QUERY_ID"/>
+        <field type="int" name="POSITION"/>
+        <unique fields="QUERY_ID,POSITION"/>
+    </entity>
+</molgenis>

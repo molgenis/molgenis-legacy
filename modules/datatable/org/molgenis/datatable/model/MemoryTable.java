@@ -5,16 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.molgenis.fieldtypes.StringField;
-import org.molgenis.framework.db.Database;
 import org.molgenis.model.elements.Field;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
 /**
- * Wrap a List<Tuple> into a TupleTable.
+ * Wrap a List<Tuple> into a TupleTable
  */
-// Very naive; for performance this should be implemented using Object[][] or
-// even typed versions thereof.
 public class MemoryTable extends AbstractTupleTable
 {
 	private List<Field> columns = new ArrayList<Field>();
@@ -26,6 +23,8 @@ public class MemoryTable extends AbstractTupleTable
 	 */
 	public MemoryTable(List<Tuple> rows)
 	{
+		if (rows == null) throw new NullPointerException("Creation of MemoryTable failed: rows == null");
+
 		this.rows = rows;
 
 		// use first row
@@ -41,51 +40,51 @@ public class MemoryTable extends AbstractTupleTable
 	}
 
 	@Override
-	public List<Field> getColumns()
+	public List<Field> getAllColumns()
 	{
 		return this.columns;
 	}
 
 	@Override
-	public List<Tuple> getRows()
+	public List<Tuple> getRows() throws TableException
 	{
+		List<String> columns = new ArrayList<String>();
+		for (Field f : getColumns())
+			columns.add(f.getName());
+
 		List<Tuple> result = new ArrayList<Tuple>();
-
-		int count = 0;
-		int index = 1;
-		int colIndex = 1;
-		int colCount = 0;
-
-		for (Tuple row : this.rows)
+		if (getLimit() > 0 || getOffset() > 0)
 		{
-			if (getOffset() == 0 || index > getOffset())
+			int count = 0;
+			int index = 1;
+			for (Tuple row : this.rows)
 			{
-				if (this.getColLimit() > 0 || this.getColOffset() > 0)
+				if (index > getOffset())
 				{
-					Tuple limitedRow = new SimpleTuple();
-					colIndex = 1;
-					colCount = 0;
-
-					for (Field f : this.getColumns())
+					SimpleTuple copy = new SimpleTuple(columns);
+					for (String col : columns)
 					{
-						if (getColOffset() == 0 || colIndex > this.getColOffset())
-						{
-							limitedRow.set(f.getName(), row.getObject(f.getName()));
-							colCount++;
-							if (colCount >= this.getColLimit()) break;
-						}
-						colIndex++;
+						copy.set(col, row.getObject(col));
 					}
-					result.add(limitedRow);
+					result.add(new SimpleTuple(copy));
+
+					count++;
+					if (count >= getLimit()) break;
 				}
-				else
-				{
-					result.add(row);
-				}
-				count++;
-				if (getLimit() > 0 && count >= getLimit()) break;
+				index++;
 			}
-			index++;
+		}
+		else
+		{
+			for (Tuple row : this.rows)
+			{
+				SimpleTuple copy = new SimpleTuple(columns);
+				for (String col : columns)
+				{
+					copy.set(col, row.getObject(col));
+				}
+				result.add(new SimpleTuple(copy));
+			}
 		}
 		return result;
 	}
@@ -93,23 +92,19 @@ public class MemoryTable extends AbstractTupleTable
 	@Override
 	public Iterator<Tuple> iterator()
 	{
-		return this.getRows().iterator();
-	}
-
-	@Override
-	public void close()
-	{
-		// nothing todo
+		try
+		{
+			return this.getRows().iterator();
+		}
+		catch (TableException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	public int getCount() throws TableException
 	{
 		return rows.size();
-	}
-
-	@Override
-	public void setDb(Database db)
-	{
 	}
 }

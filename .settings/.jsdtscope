@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry excluding="WebContent/res/jquery-plugins/" including="WebContent/res/" kind="src" path=""/>
 	<classpathentry including="WebContent/res/" kind="src" path=""/>
+	<classpathentry excluding="WebContent/" including="WebContent/res/" kind="src" path=""/>
+9ca45da8ed04808e96ce38366f61f77f9b125be1
 	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

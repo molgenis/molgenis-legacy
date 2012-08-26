@@ -5,32 +5,27 @@
 	<menu name="main">
 		<plugin label="Home" name="LifeLinesHome"
 			type="org.molgenis.lifelinesresearchportal.plugins.homepage.LifeLines" />
-
-
-		<plugin name="jqGridPlugin" type="org.molgenis.datatable.plugin.JQGridPlugin" />
-
+	<!--	<plugin name="jqGridView" type="org.molgenis.datatable.plugin.JQGridPlugin" />
 		<plugin name="jqGridViewEntity" type="org.molgenis.datatable.plugin.JQGridPluginEntity" />
+		<plugin name="jqGridViewMemory" type="org.molgenis.datatable.plugin.JQGridPluginMemory" /> -->
+		<plugin name="jqGridViewProtocol" type="org.molgenis.datatable.plugin.JQGridPluginProtocol" label="Phenotype"/>
+		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Catalogue" />
+		<!--<plugin name="jqGridViewProtocolFilterable" type="org.molgenis.datatable.plugin.JQGridPluginProtocolFilterable" />
 
-
-		<plugin name="jqGridViewMemory" type="org.molgenis.datatable.plugin.JQGridPluginMemory" />
-
-		<plugin name="jqGridViewProtocol" type="org.molgenis.datatable.plugin.JQGridPluginMemory" />
-
-		<!-- <plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" 
+		 <plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" 
 			/> -->
-		<plugin label="PLINK" name="PlinkDownload"
-			type="org.molgenis.lifelinesresearchportal.plugins.plinkdownload.PlinkDownload" />
-		<form name="investigation" entity="Investigation" label="Study details"
-			compact_view="name,description" hide_fields="accession">
+		<!--<plugin label="PLINK" name="PlinkDownload"
+			type="org.molgenis.lifelinesresearchportal.plugins.plinkdownload.PlinkDownload" />-->
+		<form name="investigation" entity="Investigation" label="Data"
+			view="list" hide_fields="accession">
 			<menu name="InvestigationMenu">
-				<form name="measurement" entity="Measurement" label="Measurements"
-					hide_fields="ontologyReference,AlternateId,Investigation,targettypeAllowedForRelation,panelLabelAllowedForRelation" />
-				<form name="protocol" entity="Protocol" label="Protocols"
-					compact_view="Name,Features" hide_fields="ontologyReference,Investigation,TargetFilter">
-					<form name="ProtocolDocuments" entity="ProtocolDocument" />
-				</form>
-				<form name="PermittedValues" entity="Category" />
+				<form name="protocol" entity="Protocol" label="Protocols" view="list" />
+				<form name="PermittedValues" entity="Category" view="list" />
+				<form name="individuals" entity="Individual" view="list" label="Observation targets" />
+				<form name="measurement" entity="Measurement" view="list" label="Measurements" />
+				<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
 			</menu>
 		</form>
+	
 	</menu>
 </molgenis>

@@ -17,7 +17,9 @@ public class ExonIntronPanel extends HtmlInput implements Serializable
 	/* The serial version UID of this class. Needed for serialization. */
 	private static final long serialVersionUID = 929100596754279741L;
 
-	private final double SCALE_FACTOR          = 0.1;
+	//TODO: make SCALE_FACTOR customizable
+//	private final double SCALE_FACTOR          = 0.1;
+	private final double SCALE_FACTOR          = 1;
 	private List<ExonDTO> exonDTOList          = new ArrayList<ExonDTO>();
 	private boolean showNames                  = true;
 	private boolean showExons                  = true;
@@ -38,9 +40,9 @@ public class ExonIntronPanel extends HtmlInput implements Serializable
 		{
 			result.appendln("<tr>");
 
-			for (ExonDTO exonSummaryVO : exonDTOList)
+			for (ExonDTO exonDTO : exonDTOList)
 			{
-				result.appendln("<td id=\"exon" + exonSummaryVO.getId() + "\" width=\"" + exonSummaryVO.getLength() * SCALE_FACTOR + "px\" align=\"center\">" + exonSummaryVO.getName() + "</td>");
+				result.appendln("<td id=\"exon" + exonDTO.getId() + "\" width=\"" + exonDTO.getLength() * SCALE_FACTOR + "px\" align=\"center\">" + exonDTO.getName() + "</td>");
 			}
 	
 			result.appendln("</tr>");

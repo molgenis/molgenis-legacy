@@ -16,25 +16,49 @@ public abstract class AbstractFilterableTupleTable extends AbstractTupleTable im
 	{
 	}
 
-	protected AbstractFilterableTupleTable(List<QueryRule> rules) throws TableException
+	protected AbstractFilterableTupleTable(List<QueryRule> rules)
 	{
-		this.setFilters(rules);
+		if (rules != null)
+		{
+			filters = rules;
+		}
+	}
+
+	@Override
+	public void reset()
+	{
+		super.reset();
+
+		filters = new ArrayList<QueryRule>();
 	}
 
 	@Override
 	public void setFilters(List<QueryRule> rules) throws TableException
 	{
-		if (rules == null) throw new NullPointerException("rules cannot be null");
-
-		for (QueryRule r : rules)
+		if (rules == null)
 		{
-			if (Operator.LIMIT.equals(r.getOperator()) || Operator.LIMIT.equals(r.getOperator()))
-			{
-				throw new TableException(
-						"TupleTable doesn't support LIMIT or OFFSET QueryRules; use setLimit and setOffset instead");
-			}
+			throw new NullPointerException("rules cannot be null");
 		}
-		this.filters = rules;
+
+		for (final QueryRule r : rules)
+		{
+			verifyRulesRecursive(r);
+		}
+		filters = rules;
+	}
+
+	private void verifyRulesRecursive(QueryRule rule) throws TableException
+	{
+		if (Operator.LIMIT.equals(rule.getOperator()) || Operator.LIMIT.equals(rule.getOperator()))
+		{
+			throw new TableException(
+					"TupleTable doesn't support LIMIT or OFFSET QueryRules; use setLimit and setOffset instead");
+		}
+
+		if (rule.getNestedRules() != null) for (QueryRule r : rule.getNestedRules())
+		{
+			verifyRulesRecursive(r);
+		}
 	}
 
 	@Override
@@ -57,32 +81,11 @@ public abstract class AbstractFilterableTupleTable extends AbstractTupleTable im
 		}
 	}
 
-	@Override
-	public void setLimitOffset(int limit, int offset)
-	{
-		this.setLimit(limit);
-		this.setOffset(offset);
-	}
-
-	// UTIL
-
-	// private Object getRuleValue(final Operator operator)
-	// {
-	// if (CollectionUtils.isEmpty(filters))
-	// {
-	// return -1;
-	// }
-	// else
-	// {
-	// final QueryRule rule = getRule(operator);
-	// return rule == null ? -1 : rule.getValue();
-	// }
-	// }
-
 	private QueryRule getRule(final Operator operator)
 	{
 		final QueryRule rule = (QueryRule) CollectionUtils.find(filters, new Predicate()
 		{
+
 			@Override
 			public boolean evaluate(Object arg0)
 			{
