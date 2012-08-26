@@ -31,8 +31,8 @@ import org.molgenis.model.MolgenisModelException;
 import org.molgenis.model.elements.Field;
 
 /**
- * Singleton class that holds all known field types in MOLGENIS.
- * For each FieldType it can be defined how to behave in mysql, java, hsqldb, etc. <br>
+ * Singleton class that holds all known field types in MOLGENIS. For each
+ * FieldType it can be defined how to behave in mysql, java, hsqldb, etc. <br>
  * 
  * @see FieldType interface
  */
@@ -42,31 +42,9 @@ public class MolgenisFieldTypes
 	private static Logger logger = Logger.getLogger(MolgenisFieldTypes.class);
 	private static boolean init = false;
 
-	public enum FieldTypeEnum {
-		BOOL,
-		CHAR,
-		DATE,
-		DATE_TIME,
-		DECIMAL,
-		ENUM,
-		EMAIL,
-		FILE,
-		FREEMARKER,
-		HEXA,
-		HYPERLINK,
-		IMAGE,
-		INT,
-		LIST,
-		LONG,
-		MREF,
-		NSEQUENCE,
-		ON_OFF,
-		RICHTEXT,
-		STRING,
-		TEXT,
-		XREF,
-		CATEGORICAL,
-		UNKNOWN,
+	public enum FieldTypeEnum
+	{
+		BOOL, CHAR, DATE, DATE_TIME, DECIMAL, ENUM, EMAIL, FILE, FREEMARKER, HEXA, HYPERLINK, IMAGE, INT, LIST, LONG, MREF, NSEQUENCE, ON_OFF, RICHTEXT, STRING, TEXT, XREF, CATEGORICAL, UNKNOWN,
 	}
 
 	/** Initialize default field types */
@@ -104,7 +82,8 @@ public class MolgenisFieldTypes
 		types.put(ft.getClass().getSimpleName().toLowerCase(), ft);
 	}
 
-	public static HtmlInput<?> createInput(String type, String name, String xrefEntityClassName) throws HtmlInputException
+	public static HtmlInput<?> createInput(String type, String name, String xrefEntityClassName)
+			throws HtmlInputException
 	{
 		return getType(type).createInput(name, xrefEntityClassName);
 	}
@@ -139,30 +118,49 @@ public class MolgenisFieldTypes
 		}
 	}
 
-	public static FieldType getTypeBySqlTypesCode(int sqlCode) {
-		switch(sqlCode) {
-			case java.sql.Types.BIGINT: return new LongField();
+	public static FieldType getTypeBySqlTypesCode(int sqlCode)
+	{
+		switch (sqlCode)
+		{
+			case java.sql.Types.BIGINT:
+				return new LongField();
+
 			case java.sql.Types.INTEGER:
 			case java.sql.Types.SMALLINT:
-			case java.sql.Types.TINYINT: return new IntField();
+			case java.sql.Types.TINYINT:
+				return new IntField();
 
-			case java.sql.Types.BOOLEAN: return new BoolField();
-			case java.sql.Types.DATE: return new DateField();
+			case java.sql.Types.BOOLEAN:
+			case java.sql.Types.BIT:
+				return new BoolField();
+
+			case java.sql.Types.DATE:
+				return new DateField();
+
 			case java.sql.Types.DECIMAL:
 			case java.sql.Types.DOUBLE:
 			case java.sql.Types.NUMERIC:
 			case java.sql.Types.FLOAT:
-			case java.sql.Types.REAL: return new DecimalField();
+			case java.sql.Types.REAL:
+				return new DecimalField();
 
 			case java.sql.Types.CHAR:
 			case java.sql.Types.VARCHAR:
-			case java.sql.Types.NVARCHAR: return new StringField();
+			case java.sql.Types.NVARCHAR:
+			case java.sql.Types.BLOB:
+			case java.sql.Types.CLOB:
+			case java.sql.Types.LONGVARCHAR:
+			case java.sql.Types.VARBINARY:
+			case java.sql.Types.LONGNVARCHAR:
+				return new StringField();
 
 			case java.sql.Types.TIME:
 			case java.sql.Types.TIMESTAMP:
 				return new DatetimeField();
 
-			default: throw new IllegalArgumentException(String.format("unkown sql code: %d", sqlCode));
+			default:
+				logger.error("UNKNOWN sql code: " + sqlCode);
+				return new UnknownField();
 		}
 	}
 }
