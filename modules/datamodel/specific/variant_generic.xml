@@ -27,7 +27,7 @@
 			<field name="label" nillable="true"
 				description="The name of SequenceFeature is unique. Label allows for human-readable name that is potentially not unique." />
 			<field name="featureType" type="xref" xref_entity="OntologyTerm"
-				nillable="true" index="true"
+				nillable="true"
 				description="A required reference to a ontologyTerm giving the feature type. E.g. chromosome, contig, exon, snp, etc. This will typically be a Sequence Ontology identifier. This column is thus used to subclass the feature table. " />
 			<field name="species" type="xref" xref_entity="Species"
 				nillable="true"
