@@ -118,9 +118,6 @@
 				description="Description of the code.
 				Use of ontology terms references to establish unambigious descriptions is
 				recommended" />
-			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
-				nillable="true"
-				description="(Optional) Reference to the formal ontology definition for this code." />
 			<field name="isMissing" type="bool" default="false"
 				description="whether this code should be treated as missing value." />
 		</entity>
