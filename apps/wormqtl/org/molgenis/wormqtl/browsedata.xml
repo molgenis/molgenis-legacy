@@ -8,7 +8,7 @@
 			<plugin name="Overview" label="Investigation overview"
 				type="plugins.investigationoverview.InvestigationOverviewPlugin"
 				group="biologist" />
-			<form name="Datas" label="Data matrices" header="Navigate data matrices" entity="Data" compact_view="name"
+			<form name="Datas" label="Data matrices" view="list" header="Navigate data matrices" entity="Data" compact_view="name"
 				group="biologist">
 				<menu name="Select" group="biologist">
 					<plugin label="View" name="Manager" type="plugins.matrix.manager.MatrixManager"

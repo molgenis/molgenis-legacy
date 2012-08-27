@@ -1,0 +1,35 @@
+<molgenis>
+	<form label="Browse data" header="Navigate investigations (studies)"
+		name="Investigations" entity="Investigation" compact_view="name"
+		group="biologist">
+		<menu name="InvestigationMenu">
+			<plugin name="Overview" label="Investigation overview"
+				type="plugins.investigationoverview.InvestigationOverviewPlugin"
+				group="biologist" />
+			<form name="Datas" label="Data matrices" header="Navigate data matrices"
+				entity="Data" compact_view="name" group="biologist">
+				<menu name="Select" group="biologist">
+					<plugin label="View" name="Manager"
+						type="plugins.matrix.manager.MatrixManager" group="biologist" />
+					<plugin label="Inspect" name="Inspector"
+						type="plugins.matrix.inspector.MatrixInspector" group="biologist" />
+					<plugin name="MatrixAdmin" label="Delete"
+						type="plugins.matrix.admin.MatrixAdmin" group="biologist" />
+				</menu>
+			</form>
+			<menu name="BasicAnnotations" label="Annotations" header="Navigate annotations"> <!-- header does not work yet for menu -->
+				<form name="Samples" entity="HemoSample" hide_fields="ontologyReference,AlternateId,label" group="biologist" />
+				<form name="Measurements" entity="Measurement"
+					hide_fields="targettypeAllowedForRelation,panelLabelAllowedForRelation,ontologyReference,AlternateId,label,unit,categories,temporal,dataType,Investigation"
+					group="biologist" />
+				<form name="Probes" entity="HemoProbe" hide_fields="ontologyReference,AlternateId,label,Symbol" group="biologist" />
+				<form name="ProbeCollection" entity="ProbeSet"
+					hide_fields="cm,bpstart,bpend,seq,symbol,ontologyReference,Chromosome,label" group="biologist" />
+				<form name="Genes" entity="HemoGene" hide_fields="ontologyReference,AlternateId,label" group="biologist" view="list">
+					<form name="Transcripts" entity="Transcript" group="biologist" />
+				</form>
+				<form name="SampleGroup" entity="HemoSampleGroup" group="biologist" />
+			</menu>
+		</menu>
+	</form>
+</molgenis>

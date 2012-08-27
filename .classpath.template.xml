@@ -9,7 +9,6 @@
 # =====================================================
 -->
 <classpath>
-  <classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/charts4j-1.2.jar"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/jaxrpc.jar"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/keggapi.jar"></classpathentry>
@@ -20,50 +19,19 @@
   <classpathentry combineaccessrules="false" exported="true" kind="src" path="/molgenis"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/spssw-1.66.jar"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/iText-5.0.6.jar"></classpathentry>
-  <classpathentry exported="true" kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"></classpathentry>
-  <classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.module.container"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/pircbot.jar"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/axis.jar"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/commons-discovery-0.4.jar"></classpathentry>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/commons-math-2.2.jar"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ontocat-0.9.7.6.jar"></classpathentry>
   <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/simplecaptcha-1.2.1.jar"></classpathentry>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/opencsv-1.8.jar"/>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/lambdaj-2.3.3-with-dependencies.jar"/>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/ojdbc6.jar"/>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/querydsl-core-2.6.0.jar"/>
+  <classpathentry exported="true" kind="lib" path="WebContent/WEB-INF/lib/querydsl-sql-2.6.0.jar"/>
   <classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"></classpathentry>
   <classpathentry kind="output" path="build/classes"></classpathentry>
-  <classpathentry kind="src" path="apps/gcc"></classpathentry>
-  <classpathentry kind="src" path="modules/auth"></classpathentry>
-  <classpathentry kind="src" path="modules/datamodel"></classpathentry>
-  <classpathentry kind="src" path="modules/import"></classpathentry>
-  <classpathentry kind="src" path="modules/mutation"></classpathentry>
-  <classpathentry kind="src" path="modules/pheno"></classpathentry>
-  <classpathentry kind="src" path="modules/settings"></classpathentry>
-  <classpathentry kind="src" path="modules/batch"></classpathentry>
-  <classpathentry kind="src" path="modules/compute"></classpathentry>
-  <classpathentry kind="src" path="modules/file"></classpathentry>
-  <classpathentry kind="src" path="modules/matrix"></classpathentry>
-  <classpathentry kind="src" path="modules/news"></classpathentry>
-  <classpathentry kind="src" path="modules/search"></classpathentry>
-  <classpathentry kind="src" path="modules/webserver"></classpathentry>
-  <classpathentry kind="src" path="modules/decorators/core"></classpathentry>
-  <classpathentry kind="src" path="modules/decorators/auth"></classpathentry>
-  <classpathentry kind="src" path="modules/decorators/pheno"></classpathentry>
-  <classpathentry kind="src" path="modules/decorators/data"></classpathentry>
-  <classpathentry kind="src" path="apps/animaldb"></classpathentry>
-  <classpathentry kind="src" path="apps/chd7"></classpathentry>
-  <classpathentry kind="src" path="apps/designgg"></classpathentry>
-  <classpathentry kind="src" path="apps/gscf"></classpathentry>
-  <classpathentry kind="src" path="apps/lifelinespheno"></classpathentry>
-  <classpathentry kind="src" path="apps/ngs"></classpathentry>
-  <classpathentry kind="src" path="apps/bbmri"></classpathentry>
-  <classpathentry kind="src" path="apps/col7a1"></classpathentry>
-  <classpathentry kind="src" path="apps/gwascentral"></classpathentry>
-  <classpathentry kind="src" path="apps/magetab"></classpathentry>
-  <classpathentry kind="src" path="apps/sandbox"></classpathentry>
-  <classpathentry kind="src" path="apps/bioshare"></classpathentry>
-  <classpathentry kind="src" path="apps/cvdb"></classpathentry>
-  <classpathentry kind="src" path="apps/gids"></classpathentry>
-  <classpathentry kind="src" path="apps/maze"></classpathentry>
-  <classpathentry kind="src" path="apps/xgap"></classpathentry>
-  <classpathentry kind="src" path="publicdata"></classpathentry>
-  <classpathentry kind="src" path="generated/java"></classpathentry>
+  <!-- WEB-INF/lib -->
 </classpath>
 

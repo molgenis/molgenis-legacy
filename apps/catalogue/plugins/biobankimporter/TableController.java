@@ -11,10 +11,14 @@ import java.util.regex.Pattern;
 
 import jxl.Sheet;
 
+import org.hibernate.mapping.Array;
+import org.molgenis.auth.Institute;
+import org.molgenis.auth.Person;
 import org.molgenis.compute.ComputeProtocol;
 import org.molgenis.core.OntologyTerm;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
+import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.organization.Investigation;
@@ -163,6 +167,7 @@ public class TableController {
 		return configuration;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void convertIntoPheno(Sheet[] sheets, int startingRowIndex, boolean multipleSheets, boolean sheetImportProtocol) throws DatabaseException
 	{
 		List<Measurement> headerMeasurements = new ArrayList<Measurement>();
@@ -172,24 +177,41 @@ public class TableController {
 		List<InvestigationElement> observationTargetList = new ArrayList<InvestigationElement>();
 		List<InvestigationElement> panelList = new ArrayList<InvestigationElement>();
 		List<ObservedValue> observedValueList = new ArrayList<ObservedValue>();
-		List<OntologyTerm> ontologyTermList = new ArrayList<OntologyTerm>();
+
+		HashMap<String, OntologyTerm> ontologyTermOfList = new HashMap<String, OntologyTerm>();
+		HashMap<String, Institute> listOfInstitute = new HashMap<String, Institute>();
+		HashMap<String, Person> listOfPerson = new HashMap<String, Person>();
+
+		List<String> nonInvestigationElement = new ArrayList<String>();
+
+		nonInvestigationElement.add(Person.class.getSimpleName());
+		nonInvestigationElement.add(Institute.class.getSimpleName());
+		nonInvestigationElement.add(OntologyTerm.class.getSimpleName());
+
+		List<String> referenceFields = new ArrayList<String>();
+
+		referenceFields.add(Protocol.NAME);
+		referenceFields.add(Protocol.FEATURES_NAME);
+		referenceFields.add(Protocol.SUBPROTOCOLS_NAME);
+		referenceFields.add(Measurement.CATEGORIES_NAME);
+		referenceFields.add(Measurement.UNIT_NAME);
+
+		//listOfInstitue.get(0).getLabelValue();
 
 		int sheetSize = sheets.length;
 
 		if(multipleSheets == true){
 			sheetSize = 1;
 		}
-		
+
 		try{
 			for(int sheetIndex = 0; sheetIndex < sheetSize; sheetIndex++){
 
 				Sheet sheet = sheets[sheetIndex];
-				
+
 				int row = sheet.getRows();
 
 				int column = sheet.getColumns();
-
-				HashMap<String, OntologyTerm> ontologyTermOfList = new HashMap<String, OntologyTerm>();
 
 				if(excelDirection.equals("UploadFileByRow"))
 				{
@@ -211,16 +233,9 @@ public class TableController {
 						String cellValue;
 
 						if(excelDirection.equals("UploadFileByRow"))
-							cellValue = sheet.getCell(rowIndex, colIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
+							cellValue = sheet.getCell(rowIndex, colIndex).getContents();
 						else
-							cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
-						if(cellValue.equalsIgnoreCase("CHFYETIOL")){
-							System.out.println();
-						}
-						//					System.out.println("The cell value is " + cellValue);
-						//					System.out.println("The size is =========== " + configuration.size());
-
-
+							cellValue = sheet.getCell(colIndex, rowIndex + startingRowIndex).getContents();
 
 						TableField field = columnIndexToTableField.get(colIndex);
 
@@ -245,79 +260,129 @@ public class TableController {
 
 									colValues.get(colIndex).get(rowIndex - 1).addAll(existingValuesForClassType.get(field.getClassType() + field.getFieldName()).get(cellValue));
 
-								}
-								
-								else{
+								}else{
 									//we split on multivalue
 									String[] multiValue = cellValue.split(field.getValueSplitter());
 
-									for(int valueIndex = 0; valueIndex < multiValue.length; valueIndex++)
+									List<String> splitValue = new ArrayList<String>();
+									
+									if(field.getMultipleValues().equals("true")){
+										
+										for(int valueIndex = 0; valueIndex < multiValue.length; valueIndex++){
+											
+											splitValue.addAll(Arrays.asList(multiValue[valueIndex].split(",")));
+											
+										}
+									}else{
+										splitValue.addAll(Arrays.asList(multiValue));
+									}
+									
+									int index = 0;
+									
+									for(String eachValue : splitValue)
 									{
+										
+										String value = eachValue.replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+										
 										//If the fieldName is 'name', added as a new entity
 										if(field.getFieldName().equalsIgnoreCase("NAME")){
 
-											String value = multiValue[valueIndex];
+											if(nonInvestigationElement.contains(field.getClassType())){
+												
+												if(field.getClassType().equals(Person.class.getSimpleName())){
+													
+													Person person = new Person();
+													person.setName(value);
+													if(!listOfPerson.containsKey(value)){
+														listOfPerson.put(value, person);
+													}
 
-											InvestigationElement entity = null;
+												}else if(field.getClassType().equals(Institute.class.getSimpleName())){
+													
+													Institute ins = new Institute();
+													ins.setName(value);
+													if(!listOfInstitute.containsKey(value)){
+														listOfInstitute.put(value, ins);
+													}
+													
+												}else if(field.getClassType().equals(OntologyTerm.class.getSimpleName())){
+													
+													OntologyTerm ot = new OntologyTerm();
+													ot.setName(value);
+													if(!ontologyTermOfList.containsKey(value)){
+														ontologyTermOfList.put(value, ot);
+													}
+												}
+												
+											}else{
+												//For the name of eneities, only letters, digits, underscore, space are allowed
+												//The others are removed from the string
+												
 
-											//check colIndex: if there is already a list for colIndex
-											if(colValues.get(colIndex) == null)
-											{
-												colValues.put(colIndex, new ArrayList<List<InvestigationElement>>());
-											}
-											//check rowIndex: if there is already a list values
-											if(colValues.get(colIndex).size() != rowIndex)
-											{
-												//create a list for our values (to deal with multivalue)
-												colValues.get(colIndex).add(new ArrayList<InvestigationElement>());
+												InvestigationElement entity = null;
 
-											}
-
-											//check valueIndex: if there is already a value 
-											//TODO Chao`s comment: should be multiValue.length instead of rowIndex
-											if(colValues.get(colIndex).get(rowIndex - 1).size() != multiValue.length)
-											{
-												//create the entity
-												entity = (InvestigationElement) DatabaseFactory.create().getClassForName(field.getClassType()).newInstance();
-											}
-											
-											if(!value.equalsIgnoreCase(""))
-											{
-
-												if(field.getClassType().equals(Category.class.getSimpleName()))
+												//check colIndex: if there is already a list for colIndex
+												if(colValues.get(colIndex) == null)
 												{
+													colValues.put(colIndex, new ArrayList<List<InvestigationElement>>());
+												}
+												//check rowIndex: if there is already a list values
+												if(colValues.get(colIndex).size() != rowIndex)
+												{
+													//create a list for our values (to deal with multivalue)
+													colValues.get(colIndex).add(new ArrayList<InvestigationElement>());
 
-													//Category entity couldn`t have empty property in name, description, code_string, label
-													//therefore it`s separated from other entites.
-													String categoryName = value;
-
-//													if(value.split("=").length > 1)
-//													{
-//														categoryName = value.split("=")[1].trim();
-//													}
-													
-													categoryName = categoryName.substring(categoryName.indexOf("=") + 1).replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
-													
-													entity.set(Category.NAME, categoryName);
-													entity.set(Category.DESCRIPTION, value);
-													entity.set(Category.CODE_STRING, value);
-													entity.set(Category.LABEL, value);
-													if(field.getDefaults().getString(Category.ISMISSING) != null)
-														entity.set(Category.ISMISSING, field.getDefaults().getString(Category.ISMISSING));
-
-												}else{
-													//set the field as specified in getFieldName() = 'name' or 'missing' or 'dataType', etc
-													entity.set(field.getFieldName(), value);
 												}
 
-												if(investigationName != null)
-													entity.set("Investigation_name", investigationName);
+												//check valueIndex: if there is already a value 
+												//TODO Chao`s comment: should be multiValue.length instead of rowIndex
+												if(colValues.get(colIndex).get(rowIndex - 1).size() != multiValue.length)
+												{
+													//create the entity
+													entity = (InvestigationElement) DatabaseFactory.create().getClassForName(field.getClassType()).newInstance();
+												}
 
-												colValues.get(colIndex).get(rowIndex - 1).add(entity);
+												if(!value.equalsIgnoreCase(""))
+												{
 
-												//field.setEntity(entity);
+													if(field.getClassType().equals(Category.class.getSimpleName()))
+													{
+
+														//For the category, description and code_string could have other characters than
+														//the ones that are allowed in the name
+														String dsecription = eachValue;
+
+														entity.set(Category.NAME, value);
+
+														if(dsecription.split("=").length > 1){
+															entity.set(Category.CODE_STRING, dsecription.split("=")[0].trim());
+															entity.set(Category.DESCRIPTION, dsecription.split("=")[1].trim());
+														}else{
+															entity.set(Category.DESCRIPTION, dsecription.split("=")[0].trim());
+															entity.set(Category.CODE_STRING, index);
+														}
+
+														//													entity.set(Category.LABEL, value);
+
+														if(field.getDefaults().getString(Category.ISMISSING) != null)
+															entity.set(Category.ISMISSING, field.getDefaults().getString(Category.ISMISSING));
+
+													}else{
+														//set name for other entities other than category.
+														entity.set(field.getFieldName(), value);
+													}
+
+													if(investigationName != null)
+														entity.set("Investigation_name", investigationName);
+
+													colValues.get(colIndex).get(rowIndex - 1).add(entity);
+
+													field.addCellValue(value);
+												}
 											}
 										}
+										
+										index++;
 									}
 								}
 
@@ -326,10 +391,9 @@ public class TableController {
 
 									for(int index = 0; index < field.getDependentColumnIndex().length; index++)
 									{
-
 										int dependentColumn = field.getDependentColumnIndex()[index];
 
-										TableField dependendField = columnIndexToTableField.get(dependentColumn);
+										//										TableField dependendField = columnIndexToTableField.get(dependentColumn);
 
 										//InvestigationElement addingPropertyToEntity = dependendField.getEntity();
 
@@ -344,36 +408,17 @@ public class TableController {
 
 										addingPropertyToEntity = colValues.get(dependentColumn).get(existingRow - 1).get(0);
 
-										//									InvestigationElement addingPropertyToEntity = colValues.get(dependentColumn).get(rowIndex - 1).get(0);
-
-										String multipleValues[] = cellValue.split(dependendField.getValueSplitter());
+										String multipleValues[] = cellValue.split(field.getValueSplitter());
 
 										List<Object> values = new ArrayList<Object>();
 
-										if(field.getClassType().equals(Category.class.getSimpleName()))
-										{
+										for(int i = 0; i < multipleValues.length; i++){
 
-											for(int i = 0; i < multipleValues.length; i++)
-											{
-												multipleValues[i] = multipleValues[i].substring(multipleValues[i].indexOf("=") + 1).replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
-												
-												String categoryCodeString = multipleValues[i];
-//
-//												if(categoryCodeString.split("=").length > 1)
-//												{	
-//													multipleValues[i] = categoryCodeString.split("=")[1];
-//												}
+											if(referenceFields.contains(field.getFieldName())){
 
-												values.add(categoryCodeString.trim());
+												values.add(multipleValues[i].replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim());
 
-											}
-										}else{
-											
-											cellValue = cellValue.replaceAll("[^(a-zA-Z0-9_\\s)]", " ");
-											
-											multipleValues = cellValue.split(dependendField.getValueSplitter());
-											
-											for(int i = 0; i < multipleValues.length; i++){
+											}else{
 												values.add(multipleValues[i].trim());
 											}
 										}
@@ -384,6 +429,7 @@ public class TableController {
 										{
 											if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(ArrayList.class))
 											{
+												@SuppressWarnings("unchecked")
 												List<String> previousProperties = (List<String>) addingPropertyToEntity.get(field.getRelationString());
 
 												if(previousProperties != null && previousProperties.size() > 0)
@@ -397,8 +443,7 @@ public class TableController {
 													}
 												}
 
-											}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(Boolean.class))
-											{
+											}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(Boolean.class)){
 
 												values.clear();
 
@@ -416,11 +461,10 @@ public class TableController {
 														values.add(true);
 												}
 
-											}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(String.class))
-											{
+											}else if(addingPropertyToEntity.get(field.getRelationString()).getClass().equals(String.class)){
 
 												values.clear();
-												values.add(addingPropertyToEntity.get(field.getRelationString()));
+												values.add(cellValue);
 											}
 
 											if(field.getRelationString().equals(Measurement.DATATYPE))
@@ -432,6 +476,9 @@ public class TableController {
 												{
 													values.clear();
 													values.add(dataType);
+												}else{
+													values.clear();
+													values.add("string");
 												}
 											}
 										}
@@ -445,17 +492,16 @@ public class TableController {
 												if(!multipleValues[i].equals(""))
 												{
 
-													List<String> eachValues = new ArrayList<String>();
+													String ontologyTermName = multipleValues[i].replaceAll("[^(a-zA-Z0-9_\\s)]", " ");
 
-													eachValues.add(multipleValues[i]);
-
-													List<OntologyTerm> existingOntologyTermList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.IN, eachValues));
+													List<OntologyTerm> existingOntologyTermList = db.find(OntologyTerm.class, new QueryRule(OntologyTerm.NAME, Operator.EQUALS, ontologyTermName));
 
 													if(existingOntologyTermList.size() == 0)
 													{
-
 														OntologyTerm unitOntologyTerm = new OntologyTerm();
-														unitOntologyTerm.set(OntologyTerm.NAME, multipleValues[i]);
+
+														unitOntologyTerm.setName(ontologyTermName);
+														unitOntologyTerm.setDefinition(multipleValues[i]);
 
 														if(!ontologyTermOfList.keySet().contains(unitOntologyTerm.getName()))
 														{
@@ -465,6 +511,15 @@ public class TableController {
 												}
 											}
 										}
+
+										List<Object> removeDuplicate = new ArrayList<Object>();
+
+										for(Object o : values){
+											if(!removeDuplicate.contains(o)){
+												removeDuplicate.add(o);
+											}
+										}
+										values = removeDuplicate;
 
 										if(values.size() == 1)
 										{	
@@ -487,110 +542,62 @@ public class TableController {
 
 									if(field.getClassType().equalsIgnoreCase(ObservedValue.class.getSimpleName())){
 
+										//										"".replaceAll("[^(a-zA-Z0-9_\\s)]", " ");
+
+										String measurementName = cellValue.replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+
 										Measurement measurement = new Measurement();
 
-										measurement.setName(cellValue);
-										
+										measurement.setName(measurementName);
+
 										measurement.setInvestigation_Name(investigationName);
-										
-										if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).size() != 0){
-											
-											Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
-											
+
+										if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).size() != 0){
+
+											Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).get(0);
+
 											if(!measure.getInvestigation_Name().equals(investigationName)){
-												measurement.setName(cellValue + "_" +investigationName);
-												measurement.setLabel(cellValue);
-												checkExistingMeasurementsInDB.put(measure.getName(), cellValue);
+												measurement.setName(measurementName + "_" +investigationName);
+												measurement.setLabel(measurementName);
+												checkExistingMeasurementsInDB.put(measure.getName(), measurementName + "_" +investigationName);
 												headerMeasurements.add(measurement);
 											}
-											
+
 										}else{
 											headerMeasurements.add(measurement);
 										}
-										
-										
-//										if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).size() != 0){
-//
-//											Measurement measure = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, cellValue)).get(0);
-//											
-//											//TODO this needs to be re-written!
-//											//The measurement already exists but not "display name. 
-//											if(!cellValue.equals("display name")){
-//
-//												if(!measure.getInvestigation_Name().equals(investigationName)){
-//
-//													if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
-//
-//														displayNameMeasurement = new Measurement();
-//
-//														displayNameMeasurement.setName("display name");
-//
-//														db.add(displayNameMeasurement);
-//
-//													}
-//
-//													ObservedValue ov = new ObservedValue();
-//													ov.setTarget_Name(cellValue + "_" +investigationName);
-//													ov.setFeature_Name("display name");
-//													ov.setValue(cellValue);
-//													ov.setInvestigation_Name(investigationName);
-//													cellValue += "_" + investigationName;
-//													checkExistingMeasurementsInDB.put(measure.getName().toLowerCase(), cellValue);
-//													observedValueList.add(ov);
-//												}
-//											}
-//
-//										}
-//										if(cellValue.equals("display name")){
-//
-//											if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, "display name")).size() == 0){
-//
-//												displayNameMeasurement = new Measurement();
-//
-//												displayNameMeasurement.setName("display name");
-//
-//												db.add(displayNameMeasurement);
-//
-//											}
-//										}else{
-//											measurement.setName(cellValue);
-//											headerMeasurements.add(measurement);
-//
-//											if(investigationName != null)
-//												measurement.set("Investigation_name", investigationName);
-//										}
 									}
 									//The rest of the column is observedValue!
 								}else{
 
 									if(!cellValue.equals("") && cellValue != null && field.getObservationTarget() != -1){
-										
+
 										List<String> multipleValuesInCells = new ArrayList<String>();
-										
-										if(field.multipleValues.equals("true")){
+
+										if(field.getMultipleValues().equals("true")){
 
 											multipleValuesInCells = Arrays.asList(cellValue.split(","));
 
 										}else{
 											multipleValuesInCells.add(cellValue);
 										}
-										
+
 										for(String eachValue : multipleValuesInCells){
-											
+
 											ObservedValue observedValue = new ObservedValue();
 
-											String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
+											String headerName = sheet.getCell(colIndex, startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
 
-											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_=\\/><\\s)]", " ").trim();
-											
-											
+											String targetName = sheet.getCell(field.getObservationTarget(), rowIndex + startingRowIndex).getContents().replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+
 											//TODO: import measurements then import individual data. The measurement has to be consistent.
-											
 											if(checkExistingMeasurementsInDB.keySet().contains(headerName)){
 												headerName = checkExistingMeasurementsInDB.get(headerName);
 											}
 
 											observedValue.setFeature_Name(headerName);
+
+											observedValue.setTarget_Name(targetName);
 
 											TableField targetField = columnIndexToTableField.get(field.getObservationTarget());
 
@@ -598,19 +605,17 @@ public class TableController {
 
 												if(!checkExistingMeasurementsInDB.containsKey(targetName)){
 
-													if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, targetName)).size() > 0){
+													Query<Measurement> q = db.query(Measurement.class);
+													q.addRules(new QueryRule(Measurement.NAME, Operator.EQUALS, targetName));
+													q.addRules(new QueryRule(Measurement.INVESTIGATION_NAME, Operator.NOT, investigationName));
+
+													if(q.find().size() > 0){
 														checkExistingMeasurementsInDB.put(targetName, targetName + "_" + investigationName);
-
-													}else{
-														checkExistingMeasurementsInDB.put(targetName, targetName);
-
+														observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
 													}
+												}else{
+													observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
 												}
-
-												observedValue.setTarget_Name(checkExistingMeasurementsInDB.get(targetName));
-
-											}else{
-												observedValue.setTarget_Name(targetName);
 											}
 
 											observedValue.setValue(eachValue);
@@ -635,9 +640,9 @@ public class TableController {
 				//			List<InvestigationElement> observationTargetList = new ArrayList<InvestigationElement>();
 				//			List<InvestigationElement> computeProtocolList = new ArrayList<InvestigationElement>();
 				//			
-				
+
 				List<InvestigationElement> measurementListForEachSheet = new ArrayList<InvestigationElement>();
-				
+
 				for(Integer colIndex: colValues.keySet())
 				{
 					for(List<InvestigationElement> list: colValues.get(colIndex))
@@ -664,12 +669,10 @@ public class TableController {
 							panelList.addAll(list);
 						}
 					}
-
 				}
-				
 
-				String sheetName = sheet.getName();
-				
+				String sheetName = sheet.getName().replaceAll("[^(a-zA-Z0-9_\\s)]", " ").trim();
+
 				if(sheetImportProtocol == false){
 					Protocol sheetNameProtocol = new Protocol();
 					sheetNameProtocol.setName(sheetName);
@@ -681,41 +684,34 @@ public class TableController {
 					sheetNameProtocol.setFeatures_Name(nameOfMeasurements);
 					protocolList.add(sheetNameProtocol);
 				}
-
-				for(String ontologyTermName : ontologyTermOfList.keySet()){
-					ontologyTermList.add(ontologyTermOfList.get(ontologyTermName));
-				}
 			}
-
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-		try
-		{
 
 			db.beginTx();
 
 			setInvestigation();
+			
+			db.update(new ArrayList<OntologyTerm>(ontologyTermOfList.values()), Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
 
-			db.update(ontologyTermList, Database.DatabaseAction.ADD_IGNORE_EXISTING, OntologyTerm.NAME);
+			db.update(new ArrayList<Institute>(listOfInstitute.values()), Database.DatabaseAction.ADD_IGNORE_EXISTING, Institute.NAME);
+			
+			db.update(new ArrayList<Person>(listOfPerson.values()), Database.DatabaseAction.ADD_IGNORE_EXISTING, Person.NAME);
 			
 			HashMap<String, InvestigationElement> removedPanelList = removeDuplicates(panelList); 
-			
+
 			checkExistenceInDB(removedPanelList, Panel.class.getSimpleName());
-			
+
 			panelList = new ArrayList<InvestigationElement>(removedPanelList.values());
-			
-			for(InvestigationElement e : panelList){
-				System.out.println(e.getName());
-			}
+
+			//			for(InvestigationElement e : panelList){
+			//				System.out.println(e.getName());
+			//			}
 			db.update(panelList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Panel.NAME);
 
 			HashMap<String, InvestigationElement> hashMapObservationTarget = removeDuplicates(observationTargetList);
 
-			observationTargetList = new ArrayList<InvestigationElement>(hashMapObservationTarget.values());
-
 			checkExistenceInDB(hashMapObservationTarget, ObservationTarget.class.getSimpleName());
+
+			observationTargetList = new ArrayList<InvestigationElement>(hashMapObservationTarget.values());
 
 			int iterationForObservationTarget = 1;
 
@@ -738,20 +734,18 @@ public class TableController {
 
 			HashMap<String, InvestigationElement> hashMapCategory = removeDuplicates(categoryList);
 
-			categoryList = new ArrayList<InvestigationElement> (hashMapCategory.values());
-			
 			checkExistenceInDB(hashMapCategory, Category.class.getSimpleName());
-			
+
+			categoryList = new ArrayList<InvestigationElement> (hashMapCategory.values());
+
 			for(InvestigationElement c : categoryList){
 				System.out.println(c.getName());
 				if(c.getName().equals("")){
 					System.out.println();
 				}
 			}
-			
-			db.update(categoryList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
 
-			HashMap<String, InvestigationElement> displayNameToMeasurement = new HashMap<String, InvestigationElement>();
+			db.update(categoryList, Database.DatabaseAction.ADD_UPDATE_EXISTING, Category.NAME, Category.INVESTIGATION_NAME);
 
 			for(InvestigationElement m : measurementList){
 
@@ -762,21 +756,23 @@ public class TableController {
 				//name. such as weight_study_KORA. In order to display the measurement with its original name such as "weight"
 				//a meta-measurement "display name" is created to describe the measurements as a label (measurement becomes observationElement
 				//in Molgenis) such as weight_study_KORA (ObservationElement) --------->"weight" (value) <-----------diaplay name (measurement)
-				if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).size() != 0){
-
-					//if the existing measurement comes from the same investigation, that means they are the same measurement, don`t import
-					Measurement existingMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).get(0);
-
-					if(!existingMeasurement.getInvestigation_Name().equals(investigationName)){
-
-						//Resolving importing the measurements with the same name. In the different studies, measurements with the same name could
-						//have different definitions, so we need to distinguish this kind of variables. Therefore a display name meta-measurement is created
-						//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
-						m.set(Measurement.LABEL, measurementName);
-						measurementName += "_" + m.get(Measurement.INVESTIGATION_NAME);
-						m.setName(measurementName);
-					}
+				//				if(db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).size() != 0){
+				//
+				//					//if the existing measurement comes from the same investigation, that means they are the same measurement, don`t import
+				//					Measurement existingMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME, Operator.EQUALS, measurementName)).get(0);
+				//
+				//					if(!existingMeasurement.getInvestigation_Name().equals(investigationName)){
+				if(checkExistingMeasurementsInDB.containsKey(m.getName())){
+					m.set(Measurement.LABEL, measurementName);
+					measurementName = checkExistingMeasurementsInDB.get(m.getName());
+					m.setName(measurementName);
 				}
+				//Resolving importing the measurements with the same name. In the different studies, measurements with the same name could
+				//have different definitions, so we need to distinguish this kind of variables. Therefore a display name meta-measurement is created
+				//to describe these measurements! For example, measurement weight-study-1 and weight-study-2 have the same value for the display name, "weight"
+
+				//					}
+				//				}
 
 				List<String> categories_name = (List<String>) m.get(Measurement.CATEGORIES_NAME);
 
@@ -809,14 +805,16 @@ public class TableController {
 
 			HashMap<String, InvestigationElement> hashMapMeasurement = removeDuplicates(measurementList);
 
-			measurementList = new ArrayList<InvestigationElement> (hashMapMeasurement.values());
-
 			checkExistenceInDB(hashMapMeasurement, Measurement.class.getSimpleName());
+
+			measurementList = new ArrayList<InvestigationElement> (hashMapMeasurement.values());
 
 			db.update(measurementList, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 
 			//Try to update measurements
 			HashMap<String, InvestigationElement> hashMapProtocol = removeDuplicates(protocolList);
+
+			checkExistenceInDB(hashMapProtocol, Protocol.class.getSimpleName());
 
 			protocolList = new ArrayList<InvestigationElement>(hashMapProtocol.values());
 
@@ -825,7 +823,8 @@ public class TableController {
 			//mref is not working for the name. We can`t do protocol.setFeatures_name(""). Therefore we need to 
 			//add features in db first, afterwards we could use protocol.setFeatures_ID(). Mref for ID is working fine
 			for(InvestigationElement p : protocolList)
-			{
+			{	
+				@SuppressWarnings("unchecked")
 				List<String> feature_names = (List<String>) p.get(Protocol.FEATURES_NAME);
 
 				List<String> features_new = new ArrayList<String>();
@@ -846,13 +845,13 @@ public class TableController {
 					if(features.size() > 0)
 					{
 						List<Integer> featuresId = new ArrayList<Integer>();
-						
+
 						for(Measurement m : features){
-							
+
 							if(!featuresId.contains(m.getId()))
 								featuresId.add(m.getId());
 						}
-						
+
 						p.set(Protocol.FEATURES, featuresId);
 					}
 				}
@@ -874,6 +873,10 @@ public class TableController {
 			for(InvestigationElement p : protocolList)
 			{
 
+				if(p.getName().equals("Blood pressure")){
+					System.out.println();
+				}
+
 				if(!subProtocols.contains(p)){
 
 					List<String> subProtocol_names = subProtocolAndProtocol.get(p.getName());
@@ -891,7 +894,12 @@ public class TableController {
 
 					if(subProtocols_new.size() > 0)
 					{
-						List<Protocol> subProtocolList = db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.IN, subProtocols_new));
+						Query<Protocol> q = db.query(Protocol.class);
+
+						q.addRules(new QueryRule(Protocol.INVESTIGATION_NAME, Operator.EQUALS, investigationName));
+						q.addRules(new QueryRule(Protocol.NAME, Operator.IN, subProtocols_new));
+
+						List<Protocol> subProtocolList = q.find();
 
 						if(subProtocolList.size() > 0)
 						{
@@ -914,7 +922,7 @@ public class TableController {
 			db.update(headerMeasurements, Database.DatabaseAction.ADD_IGNORE_EXISTING, Measurement.NAME, Measurement.INVESTIGATION_NAME);
 
 			observedValueList = removeDuplicatesObservedValue(observedValueList);
-			
+
 			int iteration = 1;
 
 			while(observedValueList.size() > iteration * 5000){
@@ -928,14 +936,19 @@ public class TableController {
 
 			List<ObservedValue> subList = observedValueList.subList((iteration - 1)*5000, observedValueList.size()); 
 
-			db.update(subList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, 
-					ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
-
-//			for(ObservedValue ov : observedValueList){
+//			for(ObservedValue ov : subList){
 //				System.out.println(ov);
 //				db.add(ov);
 //			}
+			
+			db.update(subList, Database.DatabaseAction.ADD_IGNORE_EXISTING, ObservedValue.INVESTIGATION_NAME, 
+					ObservedValue.VALUE, ObservedValue.FEATURE_NAME, ObservedValue.TARGET_NAME);
 
+			//			for(ObservedValue ov : observedValueList){
+			//				System.out.println(ov);
+			//				db.add(ov);
+			//			}
+			
 			db.commitTx();
 
 			observationTargetList.clear();
@@ -948,14 +961,14 @@ public class TableController {
 
 			observationTargetList.clear();
 
-			ontologyTermList.clear();
+			ontologyTermOfList.clear();
 
 
 		} catch (Exception e) {
 
+			e.printStackTrace();
 			db.rollbackTx();
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 
@@ -965,7 +978,7 @@ public class TableController {
 
 		List<String> names = new ArrayList<String>(hashMap.keySet());
 
-//		checkExistingEntitesInDB.clear();
+		//		checkExistingEntitesInDB.clear();
 
 		if(names.size() > 0){
 
@@ -973,60 +986,89 @@ public class TableController {
 					|| ClassType.equals(ObservationTarget.class.getSimpleName()) || ClassType.equals(Panel.class.getSimpleName()) ){
 
 				for(Category c : db.find(Category.class, new QueryRule("name", Operator.IN, names))){
-					InvestigationElement categoryToAdd =  hashMap.get(c.getName().toLowerCase());
-					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
-					checkExistingEntitesInDB.put(c.getName().toLowerCase(), categoryToAdd.getName());
+					if(!c.getInvestigation_Name().equals(investigationName)){
+						InvestigationElement categoryToAdd =  hashMap.get(c.getName().toLowerCase());
+						categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+						checkExistingEntitesInDB.put(c.getName().toLowerCase(), categoryToAdd.getName());
+					}else{
+						hashMap.remove(c.getName().toLowerCase());
+					}
 				}
 
 				for(Measurement m : db.find(Measurement.class, new QueryRule("name", Operator.IN, names))){
-					InvestigationElement categoryToAdd =  hashMap.get(m.getName().toLowerCase());
-					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
-					checkExistingEntitesInDB.put(m.getName().toLowerCase(), categoryToAdd.getName());
+					if(!m.getInvestigation_Name().equals(investigationName)){
+						InvestigationElement categoryToAdd =  hashMap.get(m.getName().toLowerCase());
+						categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+						checkExistingEntitesInDB.put(m.getName().toLowerCase(), categoryToAdd.getName());
+					}else{
+						hashMap.remove(m.getName().toLowerCase());
+					}
 				}
 
 				for(ObservationTarget ot : db.find(ObservationTarget.class, new QueryRule("name", Operator.IN, names))){
-					InvestigationElement categoryToAdd =  hashMap.get(ot.getName().toLowerCase());
-					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
-					checkExistingEntitesInDB.put(ot.getName().toLowerCase(), categoryToAdd.getName());
+					if(!ot.getInvestigation_Name().equals(investigationName)){
+						InvestigationElement categoryToAdd =  hashMap.get(ot.getName().toLowerCase());
+						categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+						checkExistingEntitesInDB.put(ot.getName().toLowerCase(), categoryToAdd.getName());
+					}else{
+						hashMap.remove(ot.getName().toLowerCase());
+					}
 				}
 			}
 
 			if(ClassType.equals(ComputeProtocol.class.getSimpleName()) || ClassType.equals(Protocol.class.getSimpleName())){
 
 				for(Protocol p : db.find(Protocol.class, new QueryRule("name", Operator.IN, names))){
-
-					InvestigationElement categoryToAdd =  hashMap.get(p.getName().toLowerCase());
-					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
-					checkExistingEntitesInDB.put(p.getName().toLowerCase(), categoryToAdd.getName());
-
+					if(!p.getInvestigation_Name().equals(investigationName)){
+						InvestigationElement categoryToAdd =  hashMap.get(p.getName().toLowerCase());
+						categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+						checkExistingEntitesInDB.put(p.getName().toLowerCase(), categoryToAdd.getName());
+					}else{
+						hashMap.remove(p.getName().toLowerCase());
+					}
 				}
 				for(ComputeProtocol p : db.find(ComputeProtocol.class, new QueryRule("name", Operator.IN, names))){
-
-					InvestigationElement categoryToAdd =  hashMap.get(p.getName().toLowerCase());
-					categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
-					checkExistingEntitesInDB.put(p.getName().toLowerCase(), categoryToAdd.getName());
-
+					if(!p.getInvestigation_Name().equals(investigationName)){
+						InvestigationElement categoryToAdd =  hashMap.get(p.getName().toLowerCase());
+						categoryToAdd.setName(categoryToAdd.getName() + "_" + ClassType + "_" + investigationName);
+						checkExistingEntitesInDB.put(p.getName().toLowerCase(), categoryToAdd.getName());
+					}else{
+						hashMap.remove(p.getName().toLowerCase());
+					}
 				}
 			}
 		}
 	}
-	
-	private List<ObservedValue> removeDuplicatesObservedValue(List<ObservedValue> observedValueList){
-		
+
+	private List<ObservedValue> removeDuplicatesObservedValue(List<ObservedValue> observedValueList) throws DatabaseException{
+
 		List<ObservedValue> uniqueValues = new ArrayList<ObservedValue>();
-		
+
 		List<String> uniqueCombination = new ArrayList<String>();
-		
+
 		for(ObservedValue ov : observedValueList){
-			
+
 			String combination = ov.getTarget_Name() + ov.getFeature_Name() + ov.getValue();
-			
+
 			if(!uniqueCombination.contains(combination)){
 				uniqueCombination.add(combination);
-				uniqueValues.add(ov);
+
+				Query<ObservedValue> q = db.query(ObservedValue.class);
+
+				q.addRules(new QueryRule(ObservedValue.VALUE, Operator.EQUALS, ov.getValue()));
+
+				q.addRules(new QueryRule(ObservedValue.TARGET_NAME, Operator.EQUALS, ov.getTarget_Name()));
+
+				q.addRules(new QueryRule(ObservedValue.FEATURE_NAME, Operator.EQUALS, ov.getFeature_Name()));
+
+				q.addRules(new QueryRule(ObservedValue.INVESTIGATION_NAME, Operator.EQUALS, ov.getInvestigation_Name()));
+
+				if(q.find().size() == 0){
+					uniqueValues.add(ov);
+				}
 			}
 		}
-		
+
 		return uniqueValues;
 	}
 
@@ -1047,7 +1089,7 @@ public class TableController {
 
 		for(String keySet : InputToMolgenisDataType.keySet())
 		{
-			Pattern p = Pattern.compile(keySet);
+			Pattern p = Pattern.compile(keySet, Pattern.CASE_INSENSITIVE);
 
 			Matcher m = p.matcher(cellValue);
 
@@ -1061,7 +1103,7 @@ public class TableController {
 
 	public void setDataType(String dataTypeInput, String molgenisDataType) {
 
-		InputToMolgenisDataType.put(dataTypeInput.toLowerCase(), molgenisDataType);
+		InputToMolgenisDataType.put(dataTypeInput, molgenisDataType);
 	}
 
 	public void setMissingCategoryIndex(int missingCategoryIndex) {

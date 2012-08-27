@@ -1,0 +1,10 @@
+<molgenis>
+	<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/browsedata.xml"/>
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/importdata.xml"/>
+	<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/configureanalysis.xml"/>
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/search.xml"/>
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/utilities.xml"/>
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/admin.xml"/>
+</molgenis>

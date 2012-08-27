@@ -2,9 +2,9 @@
 # =====================================================
 # $Id$
 # $URL$
-# $LastChangedDate$
+# $LastChangedDate 20120807$
 # $LastChangedRevision$
-# $LastChangedBy$
+# $LastChangedBy WBKoetsier$
 # =====================================================
 #
 
@@ -12,7 +12,6 @@
 #FOREACH flowcell, lane, seqType, filenamePrefix
 
 export PATH=${R_HOME}/bin:<#noparse>${PATH}</#noparse>
-export R_HOME=${R_HOME}
 
 #
 # Check if we need to run this step or wether demultiplexing was already executed successfully in a previous run.
@@ -21,7 +20,7 @@ export R_HOME=${R_HOME}
 #       where success is based on a comparison of the amount of reads in the multiplexed input file and the total amount of reads in 
 #       the demultiplexed output files: these counts should be the same.
 #
-alloutputsexist "${runResultsDir}/demultiplex.${filenamePrefix}.read_count_check.passed"
+alloutputsexist "${runResultsDir}/${filenamePrefix}.demultiplex.read_count_check.passed"
 
 #
 # For each lane demultiplex rawdata.
@@ -32,24 +31,29 @@ alloutputsexist "${runResultsDir}/demultiplex.${filenamePrefix}.read_count_check
 		#
 		# Do nothing.
 		#
-		touch ${runResultsDir}/demultiplex.read_count_check.skipped
-	<#else>
+		touch ${runResultsDir}/${filenamePrefix}.demultiplex.read_count_check.skipped
+	<#elseif barcodeType[0] == "RPI">
+	    #
+	    # Do nothing.
+	    #
+	    touch ${runResultsDir}/${filenamePrefix}.demultiplex.read_count_check.skipped
+	<#elseif barcodeType[0] == "GAF">
 		#
 		# Check if the files required for demultiplexing are present.
 		#
-		inputs "${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenameSR}"
+		inputs "${runResultsDir}/${compressedFastqFilenameSR}"
 		
 		#
 		# Read count of the input file.
 		# Note: we actually count lines, which equals reads * 4 for FastQ files.
 		#
-		reads_in_1=$(gzip -cd ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenameSR} | wc -l)
+		reads_in_1=$(gzip -cd ${runResultsDir}/${compressedFastqFilenameSR} | wc -l)
 		
 		#
 		# Demultiplex the multiplexed, gzipped FastQ file.
 		#
 		Rscript ${demultiplexscript} --bcs '${csv(barcode)}' \
-		--mpr1 ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenameSR} \
+		--mpr1 ${runResultsDir}/${compressedFastqFilenameSR} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathSR)}' \
 		--ukr1 ${runResultsDir}/${compressedDemultiplexedDiscardedFastqFilenameSR} \
 		--tm MP \
@@ -106,6 +110,12 @@ alloutputsexist "${runResultsDir}/demultiplex.${filenamePrefix}.read_count_check
 		else touch ${runResultsDir}/${filenamePrefix}.demultiplex.read_count_check.FAILED
 		fi
 		
+	<#else>
+		#
+		# Found unknown barcode type!
+		#
+		echo "FATAL: unknown barcode type found for ${filenamePrefix}"
+		exit 1
 	</#if>
 	
 <#elseif seqType == "PE">
@@ -114,20 +124,50 @@ alloutputsexist "${runResultsDir}/demultiplex.${filenamePrefix}.read_count_check
 		#
 		# Do nothing.
 		#
-		touch ${runResultsDir}/demultiplex.read_count_check.skipped
-	<#else>
+		touch ${runResultsDir}/${filenamePrefix}.demultiplex.read_count_check.skipped
+	<#elseif barcodeType[0] == "RPI">
+	    #
+	    # Illumina demultiplexed files: do not demultiplex, but do perform a read count check between reads 1 and 2
+	    #
+	    # Check if the files required for the read count check are present.
+	    #
+	    <#list compressedDemultiplexedSampleFastqFilenamePE1 as fileToCheck>
+	    	inputs "${runResultsDir}/${compressedDemultiplexedSampleFastqFilenamePE1[fileToCheck_index]}"
+	    </#list>
+	    
+	    <#list compressedDemultiplexedSampleFastqFilenamePE2 as fileToCheck>
+	    	inputs "${runResultsDir}/${compressedDemultiplexedSampleFastqFilenamePE2[fileToCheck_index]}"
+	    </#list>
+	  	
+	  	#
+		# Read count of the input file.
+		# Note: we actually count lines, which equals reads * 4 for FastQ files.
+		# Read count sanity check for the inputs.
+		# For PE data the amount of reads in both input files must be the same!
+		#
+	    <#list compressedDemultiplexedSampleFastqFilenamePE1 as fileToCheck>
+			reads_1=$(gzip -cd ${runResultsDir}/${compressedDemultiplexedSampleFastqFilenamePE1[fileToCheck_index]} | wc -l)
+			reads_2=$(gzip -cd ${runResultsDir}/${compressedDemultiplexedSampleFastqFilenamePE2[fileToCheck_index]} | wc -l)
+			if (( $reads_1 != $reads_2))
+				then touch ${runResultsDir}/${filenamePrefix}_${barcode[fileToCheck_index]}.read_count_check.FAILED
+				echo "FATAL: Number of reads in both ${filenamePrefix}_${barcode[fileToCheck_index]} FastQ files not the same!"
+				exit 1
+			fi
+
+		</#list>
+	<#elseif barcodeType[0] == "GAF">
 		#
 		# Check if the files required for demultiplexing are present.
 		#
-		inputs "${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE1}"
-		inputs "${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE2}"
+		inputs "${runResultsDir}/${compressedFastqFilenamePE1}"
+		inputs "${runResultsDir}/${compressedFastqFilenamePE2}"
 	
 		#
 		# Read count of the input file.
 		# Note: we actually count lines, which equals reads * 4 for FastQ files.
 		#
-		reads_in_1=$(gzip -cd ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE1} | wc -l)
-		reads_in_2=$(gzip -cd ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE2} | wc -l)
+		reads_in_1=$(gzip -cd ${runResultsDir}/${compressedFastqFilenamePE1} | wc -l)
+		reads_in_2=$(gzip -cd ${runResultsDir}/${compressedFastqFilenamePE2} | wc -l)
 		
 		#
 		# Read count sanity check for the inputs.
@@ -143,8 +183,8 @@ alloutputsexist "${runResultsDir}/demultiplex.${filenamePrefix}.read_count_check
 		# Demultiplex the multiplexed, gzipped FastQ file.
 		#
 		Rscript ${demultiplexscript} --bcs '${csv(barcode)}' \
-		--mpr1 ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE1} \
-		--mpr2 ${allRawNgsDataDir}/${runPrefix}/${compressedFastqFilenamePE2} \
+		--mpr1 ${runResultsDir}/${compressedFastqFilenamePE1} \
+		--mpr2 ${runResultsDir}/${compressedFastqFilenamePE2} \
 		--dmr1 '${csv(compressedDemultiplexedSampleFastqFilepathPE1)}' \
 		--dmr2 '${csv(compressedDemultiplexedSampleFastqFilepathPE2)}' \
 		--ukr1 ${runResultsDir}/${compressedDemultiplexedDiscardedFastqFilenamePE1} \
@@ -224,6 +264,14 @@ alloutputsexist "${runResultsDir}/demultiplex.${filenamePrefix}.read_count_check
 		then touch ${runResultsDir}/${filenamePrefix}.demultiplex.read_count_check.passed
 		else touch ${runResultsDir}/${filenamePrefix}.demultiplex.read_count_check.FAILED
 		fi
+
+	<#else>
+		#
+		# Found unknown barcode type!
+		#
+		echo "FATAL: unknown barcode type found for ${filenamePrefix}"
+		exit 1
+
 	</#if>
 	
 </#if>

@@ -8,27 +8,37 @@
 	<!-- This determines what handwritten modules should be loaded -->
 	<path id="app.class.path">
 		<pathelement location="apps/${app_name}" />
-		<pathelement location="modules/auth" />
-		<pathelement location="modules/compute" />
-		<pathelement location="modules/pheno" />
-		<pathelement location="modules/import" />
+		<pathelement location="modules/compute4" />
 		<pathelement location="modules/settings" />
 		<pathelement location="modules/file" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/decorators/core" />
-		<pathelement location="modules/decorators/pheno" />
-		<pathelement location="modules/decorators/auth" />
 		<pathelement location="modules/webserver" />
 	</path>
 
 	<!-- Import all tasks from build_common: clean, generate, compile, test, war, standalone-jar -->
 	<import file="build_common.xml" />
 		
+	<target name="gitversion">
+		<!-- Get GIT revision info from the commandline GIT client-->
+		<exec executable="git" dir="${basedir}" outputproperty="git.apps.version">
+		     <arg value="rev-parse"/>
+		     <arg value="--short"/>			
+		     <arg value="HEAD"/>
+		</exec>
+		<exec executable="git" dir="${molgenis.dir}" outputproperty="git.molgenis.version">
+		     <arg value="rev-parse"/>
+		     <arg value="--short"/>			
+		     <arg value="HEAD"/>
+		</exec>
+		<echo>Creating MOLGENIS/compute distro based on Git Revision: ${git.version}</echo>
+	</target>
+	
 	<!-- Make a distribution:
 	      * Generate and compile this molgenis app
 	      * Bundle it with all associated dependencies and resources like manuals, example files, etc.
 	      * Create a *.zip archive -->
-	<target name="makedistro">
+	<target name="makedistro" depends="gitversion">
 		
 		<!-- Create folder structure for distro -->
 		<property name="root_distro_dir" value="${basedir}/dist/"/>
@@ -36,31 +46,13 @@
 		
 		<mkdir dir="${app_distro_dir}"/>
 		
-		<!-- Get SVN revision info from the commandline SVN client-->
-		<exec executable="svn" output="${app_distro_dir}/svn.properties">
-			<arg value="info"/>
-			<!--<arg value="http://www.molgenis.org/svn/molgenis_apps/trunk"/>-->
-			<arg value="${basedir}"/>
-		</exec>
-		<exec executable="sed" output="${app_distro_dir}/svn.properties">		
-			<arg value="s/[[:space:]]//g"/>
-			<arg value="${app_distro_dir}/svn.properties"/>
-		</exec>
-		<exec executable="sed" output="${app_distro_dir}/svn.properties">		
-			<arg value="s/(.*)//"/>
-			<arg value="${app_distro_dir}/svn.properties"/>
-		</exec>
-		<property prefix="svn" file="${app_distro_dir}/svn.properties"/>
-		<echo>Creating MOLGENIS/compute distro based on SVN Revision: ${svn.Revision}</echo>
-		<echo>Creating MOLGENIS/compute distro based on SVN LCD: ${svn.LastChangedDate}</echo>
-		
 		<!-- Delete the old distro -->
 		<delete includeEmptyDirs="true" failonerror="false">
 				<fileset dir="${app_distro_dir}" />
 		</delete>
 
 		<!-- Create folder substructure for distro -->
-		<property name="app-r_distro_dir" value="${app_distro_dir}/molgenis_${app_name}-r${svn.Revision}/"/>
+		<property name="app-r_distro_dir" value="${app_distro_dir}/molgenis_${app_name}-${git.apps.version}/"/>
 		<property name="lib_dir" value="${app-r_distro_dir}/lib/"/>
 		<property name="templates_dir" value="${app-r_distro_dir}/templates/"/>
 		<property name="protocols_dir" value="${app-r_distro_dir}/protocols/"/>
@@ -103,11 +95,11 @@
 		</copy>
 		
 		<!-- Create molgenis.jar -->
-		<jar jarfile="${lib_dir}/molgenis-r${svn.Revision}.jar" basedir="${build.molgenis.dir}" update="false"/>
+		<jar jarfile="${lib_dir}/molgenis-${git.molgenis.version}.jar" basedir="${build.molgenis.dir}" update="false"/>
 
 						
 		<!-- Create molgenis_app.jar in folder dist/${app} -->
-		<jar jarfile="${lib_dir}/molgenis_${app_name}-r${svn.Revision}.jar" basedir="${build.molgenis_apps.dir}" update="false"/>
+		<jar jarfile="${lib_dir}/molgenis-${app_name}-${git.apps.version}.jar" basedir="${build.molgenis_apps.dir}" update="false"/>
 		
 		<!-- Make shell script to start molgenis app from the commandline -->
 		<echo file="${app-r_distro_dir}/molgenis_${app_name}.sh">#!/bin/bash
@@ -119,8 +111,8 @@
 MCDIR=$( cd -P "$( dirname "$0" )" &amp;&amp; pwd )
 			
 java -cp \
-$(dirname -- "$0")/lib/molgenis-r${svn.Revision}.jar:\
-$(dirname -- "$0")/lib/molgenis_compute-r${svn.Revision}.jar:\
+$(dirname -- "$0")/lib/molgenis-${git.molgenis.version}.jar:\
+$(dirname -- "$0")/lib/molgenis-compute-${git.apps.version}.jar:\
 $(dirname -- "$0")/lib/commons-io-2.4.jar:\
 $(dirname -- "$0")/lib/freemarker.jar:\
 $(dirname -- "$0")/lib/log4j-1.2.15.jar \
@@ -131,7 +123,7 @@ $*
 		<chmod file="${app-r_distro_dir}/molgenis_${app_name}.sh" perm="755"/>
 
 		<!-- Make package with 'lib','workflows','protocols' and shell script -->
-		<zip destfile="${root_distro_dir}/molgenis_${app_name}-r${svn.Revision}.zip" basedir="${app_distro_dir}" update="false" />
+		<zip destfile="${root_distro_dir}/molgenis_${app_name}-${git.apps.version}.zip" basedir="${app_distro_dir}" update="false" />
 		
 		<!-- Cleanup -->
 		<delete includeEmptyDirs="true" failonerror="false">

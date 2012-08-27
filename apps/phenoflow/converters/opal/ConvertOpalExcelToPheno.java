@@ -69,7 +69,7 @@
 //
 //		// store in database
 //		JDBCDatabase db = new JDBCDatabase(
-//				"apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties");
+//				"modules/xgap/org/molgenis/xgap/xqtlworkbench/xqtl.properties");
 //		try
 //		{
 //			db.beginTx();

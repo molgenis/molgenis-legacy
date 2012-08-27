@@ -2,6 +2,7 @@ package org.molgenis.matrix.component;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.molgenis.fieldtypes.FieldType;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 
@@ -65,8 +66,8 @@ public class Column  {
     }
     
     @Deprecated
-    public static ColumnType getColumnType(String columnType) {
-        columnType = WordUtils.capitalize(columnType);
+    public static ColumnType getColumnType(String column) {
+        String columnType = WordUtils.capitalize(column);
         
         if(columnType.startsWith("NUMMER") || columnType.startsWith("NUMBER")) {
         	final int decimalPrecision = Integer.parseInt(StringUtils.substringBetween(columnType, ",", ")"));

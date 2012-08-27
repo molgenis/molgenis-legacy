@@ -1,7 +1,39 @@
 <#macro plugins_harmonizationPlugin_harmonizationPlugin screen>
 <style type="text/css">
+div#popup{
+	position: fixed;
+   	top: 0;
+   	right: 0;
+   	bottom: 0;
+   	left: 0;
+   	height: 100%;
+   	width: 100%;
+   	margin: 0;
+   	padding: 0;
+   	background: #000000;
+   	opacity: .15;
+   	filter: alpha(opacity=15);
+   	-moz-opacity: .15;
+   	z-index: 101;
+   	display: none;
+
+}
+.clickRow:hover{
+	color: #d0e4fe;
+}
+
 .insertTable{
-	background-color:#d0e4fe;
+	display: none;
+   	top: 50%;
+   	left: 50%;
+   	margin-left: -190px;
+   	margin-top: -100px;
+   	background-color: #ffffff;
+   	border: 2px solid #336699;
+   	padding: 0px;
+   	z-index: 102;
+   	font-family: Verdana;
+   	font-size: 10pt;
 }
 
 .HighLightTR.highlight {
@@ -12,53 +44,23 @@
 	background-color: transparent;
 	padding-left: 3px;
 }
-
 </style>
 
-
 <script type="text/javascript">
-function addingTable(tableId){
-	
-	if(map.get(tableId) != "null"){
-		document.getElementById('details').innerHTML += map.get(tableId);
-		document.getElementById(tableId + " table").style.display = "none";		
-	}
-}
-
-function insertTable(tableId){
-	
-	var table = document.getElementById(tableId);
-	
-	if(table.style.display == "none") {
-    		table.style.display = "inline";
-  	} else {
-		table.style.display = "none";
-	}
-	
-}
-
-function refreshByHits(){
-	
-	var hits = document.getElementById('changeHits').value;
-	var divForTable = document.getElementById('details');
-	var tables = divForTable.getElementsByTagName('table');	
-	
-	for(var i = 0; i < tables.length; i++){
+function refreshByHits () {
+  
+	$('#details >table').each(function(i) {
 		
-		var eachTable = tables[i];
-		
-		var rowElements = eachTable.getElementsByTagName('tr');
-		
-		for(var j = 0; j < rowElements.length; j++){
-			
-			if(j <= hits){
-				rowElements[j].style.display = "table-row";
+		$('>tbody >tr',this).each(function(j){
+			if(j <= $('#changeHits').val()){
+				$(this).show();
 			}else{
-				rowElements[j].style.display = "none";
-			}
-		}
-	}
+				$(this).hide();
+			}	
+		});
+	});
 }
+
 
 function setValidationStudy(validationStudyName){
 	
@@ -85,6 +87,23 @@ function checkFileExisting(){
     }
 }
 
+function getClickedTableById(key){
+	$('#details > table').hide();
+	$('#' + key + '_table').show();
+}
+
+$(document).ready(function(){
+	$('#startMatching').button();
+	$('#saveMapping').button();
+	$('#startMatching').show();
+	$('#saveMapping').show();
+	$('#changeHits').css({
+		'font-family':'comic sans ms',
+		'font-size':'14px',
+		'height':'25px'
+	});
+});
+
 </script>
 <!-- normally you make one big form for the whole plugin-->
 <form method="post" enctype="multipart/form-data" id="plugins_catalogueTree_catalogueTreePlugin" name="${screen.name}" action="">
@@ -94,10 +113,11 @@ function checkFileExisting(){
 	<input type="hidden" name="__action" id="test" value="">
 	<!-- hidden input for measurementId -->
 	<input type="hidden" name="measurementId" id="measureId" value="">
-	<input type="hidden" name="DemoName" id="DemoName" value="%= demoName %">
-	
+	<input type="hidden" name="validationStudyName" id="validationStudyName" value="${screen.getValidationStudyName()}">
+		
 <!-- this shows a title and border -->
-
+	<link type="text/css" href="WebContent/jquery/css/smoothness/jquery-ui-1.8.7.custom.css" rel="Stylesheet"/>
+	<script type="text/javascript" src="WebContent/jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js"></script>
 
 	<div class="formscreen">
 		<div class="form_header" id="${screen.getName()}">
@@ -114,51 +134,20 @@ function checkFileExisting(){
 		</#list>
 		
 		<div class="screenbody">
-			<div class="screenpadding">
-				
+			<div class="screenpadding">	
 				<#if screen.getDevelopingAlgorithm() == true>
-					
-					Please choose an ontology file and algorithm will be automatically generated </br></br>
-					
-					<table width="100%">
-						<tr>
-							<td class="box-body" style="width:50%;">
-								1. Choose a validation study
-								<select name="validationStudy" id="validationStudy"> 
-									<#list screen.arrayInvestigations as inv>
-										<#assign invName = inv.name>
-											<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
-									</#list>
-								</select></br></br>
-								<script>
-									setValidationStudy('${screen.getValidationStudyName()}');
-									$('#validationStudy').chosen();
-								</script>
-								2. Please upload your ontology (compulsory)</br></br>
-								<input type="file" id = "ontologyFileForAlgorithm" name = "ontologyFileForAlgorithm"/></br></br>
-								
-								<input type="submit" value="generate algorithm" id="continue" name="continue" onclick="__action.value='generateAlgorithm';return checkFileExisting();" />
-								
-								<input type="submit" value="back to mapping" id="backToMapping" name="backToMapping" onclick="__action.value='backToMapping';" />
-							</td>
-							<td class="box-body" style="width:50%;">
-								<p align="justify" style="font-family:arial;margin-left:20px;font-size:12px;">${screen.getMessageForAlgorithm()}</p>
-							</td>
-						</tr>
-					</table>
-					
-					
+						
+				<#elseif screen.getManualMatch() == true>
 					
 				<#else>
-				
 					<#if screen.isSelectedInv() == true>
+						
 						<table class="box" width="100%" cellpadding="0" cellspacing="0">
 							<tr><td class="box-header" colspan="1">  
 									<label>Choose a prediction model:
 									<select name="investigation" id="investigation"> 
-										<#list screen.arrayInvestigations as inv>
-											<#assign invName = inv.name>
-												<option value="${invName}" <#if screen.selectedInvestigation??><#if screen.selectedInvestigation == invName>selected="selected"</#if></#if> >${invName}</option>			
+										<#list screen.getPredictionModel() as inv>
+											<option value="${inv}">${inv}</option>			
 										</#list>
 									</select>
 									<script>$('#investigation').chosen();</script>
@@ -169,7 +158,7 @@ function checkFileExisting(){
 										DownloadMeasurementsSubmit.style.display='inline';" title="load another study"	/>	
 									</label>
 									<div id="masstoggler"> 	
-										<label>Browse protocols and their variables '${screen.selectedInvestigation}':click to expand, collapse or show details</label>
+										<label>Browse protocols and their variables '${screen.getSelectedPredictionModel()}':click to expand, collapse or show details</label>
 								 			<a title="Collapse entire tree" href="#"><img src="res/img/toggle_collapse_tiny.png"  style="vertical-align: bottom;"></a> 
 								 			<a title="Expand entire tree" href="#"><img src="res/img/toggle_expand_tiny.png"  style="vertical-align: bottom;"></a> 
 					 				</div>
@@ -202,59 +191,91 @@ function checkFileExisting(){
 							</tr>
 						    <tr>
 						    	<td class="box-body">
-									<div id="leftSideTree">  
+									<div id="leftSideTree" style="height:400px">  
+										
 										${screen.getTreeView()}
+										
 									</div><br/>
 							    </td>
 							    
 							    <td class="box-body">
 							    	<!--div id="scrollingDiv"--> 
-	      								<div id="details">
-	      									
+	      								<div id="details" style="height:400px;overflow:auto">
 	      									${screen.getHitSizeOption()}
-	      									
+	      									<script>
+												<#if screen.getListOfJSON()??>
+													<#list screen.getListOfJSON() as eachMapping>
+														var json = eval(${eachMapping});
+														$('#details').append(json.result);
+														$('#details').append(json.script);
+													</#list>
+												</#if>
+												$('#details > table').hide();
+											</script>
+											<script>
+												$('#details > table.dataResult').each(function(index) {
+													var length = $(this).attr('id').length;												   
+												    var measurementId = $(this).attr('id').substring(0, length - 6);
+												    $('#' + measurementId).click(function(){
+												    	getClickedTableById(measurementId);
+												    });
+												});
+											</script>
+											<script>
+												$('#details > table td.clickRow').click(function() {
+													var id = $(this).parent().attr('id');
+													var position = $(this).offset();
+													var top = position.top + 140;
+													var left = position.left + 10;
+													$("#popup").show();
+													$('#' + id + '_table').css('top', top + 'px');
+													$('#' + id + '_table').css('left', left + 'px');
+													$('#' + id + '_table').fadeIn(300);
+													$("#popup").click(function(){
+														$("#popup").hide();
+														$('#' + id + '_table').fadeOut(300);
+													});
+													$('#' + id + '_table').click(function(){
+														$("#popup").hide();
+														$('#' + id + '_table').fadeOut(300);
+													});
+												});
+	      									</script>
+	      									<script>
+	      										$('#browser li').each(function(){
+	      											if($(this).find('li').length == 0){
+	      												$(this).click(function(){
+	      													$('#browser li').css('color','black');
+	      													$('#browser li').css('font-size', 13);
+	      													$('#browser li').css('font-style','normal');
+	      													$('#browser li').css('font-weight', 400);
+	      													$(this).css('color','#778899');
+	      													$(this).css('font-size', 15);
+	      													$(this).css('font-style','italic');
+	      													$(this).css('font-weight', 'bold');
+	      												});
+	      											}
+	      										});
+	      									</script>
 	      								</div><br/><br/>
 	      							<!--/div-->
-	
+										<div id="popup">
+										</div>
 							   </td>
 							</tr>
 							<tr>
 								<td class="box-body">
-									<input class="saveSubmit" type="submit" id="startMatching" name="startMatching" value="Matching" 
-										onclick="__action.value='startMatching';" 
-										style="color: #000; background: #8EC7DE;
-											   border: 2px outset #d7b9c9;
-											   font-size:15px;
-											   font-weight:bold;"/>
-									<input type="submit" value="Algorithm" id="switchToAlgorithm" name="switchToAlgorithm" 
-										onclick="__action.value='switchToAlgorithm';" 
-										style="color: #000; background: #8EC7DE;
-											   border: 2px outset #d7b9c9;
-											   font-size:15px;
-											   font-weight:bold;"/>	
+									<input type="submit" id="startMatching" name="startMatching" value="Matching" 
+										style="display:none" onclick="__action.value='startMatching';" />
+									<input type="submit" id="saveMapping" name="saveMapping" value="save Mapping" 
+										style="display:none" onclick="__action.value='saveMapping';"/>	
 								</td>
-								<td class="box-body">
-								<input class="saveMapping" type="submit" id="saveMapping" name="saveMapping" value="save Mapping" 
-										onclick="__action.value='saveMapping';" 
-										style="color: #000; background: #8EC7DE;
-											   border: 2px outset #d7b9c9;
-											   font-size:15px;
-											   font-weight:bold;"/></td>
-								
+								<td class="box-body"></td>
 							</tr>
 						</table>
-						
-						<#list screen.getListOfParameters() as parameter>
-							<script>
-								addingTable('${parameter}');
-							</script>
-						</#list>
 						<script>
 							refreshByHits();
 						</script>
-						<#list screen.getExecutiveScript() as executiveScript>
-								${executiveScript}
-							</#list>
 				   </#if>
 			   </#if>	
 			</div>

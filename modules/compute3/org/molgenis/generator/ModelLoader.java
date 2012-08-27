@@ -43,14 +43,14 @@ public class ModelLoader
 
     public static final String FLAG_INTERPRETER = "interpreter";
     private static final String INTERPRETER_BASH = "bash";
-	private static final String INTERPRETER_R = "R";
+    private static final String INTERPRETER_R = "R";
 
 
     private static Logger logger = Logger.getLogger(ModelLoader.class);
 
     private Workflow workflow = null;
 
-    public Workflow loadWorkflowFromFiles(File fileWorkflow, File dirProtocol, File fileParameters) throws Exception
+    public Workflow loadWorkflowFromFiles(File fileWorkflow, File dirProtocol, File fileParameters, File fileEnvironment) throws Exception
     {
         workflow = new Workflow();
         String name = fileWorkflow.getName();
@@ -62,13 +62,20 @@ public class ModelLoader
         List<WorkflowElement> workflowElements = readEntitiesFromFile(fileWorkflow, WorkflowElement.class);
         workflow.setWorkflowWorkflowElementCollection(workflowElements);
 
+        //read workflow environment parameters
+        List<ComputeParameter> workflowParameters1 = readEntitiesFromFile(fileEnvironment, ComputeParameter.class);
+
         //read workflow parameters
-        List<ComputeParameter> workflowParameters = readEntitiesFromFile(fileParameters, ComputeParameter.class);
-        workflow.setWorkflowComputeParameterCollection(workflowParameters);
+        List<ComputeParameter> workflowParameters2 = readEntitiesFromFile(fileParameters, ComputeParameter.class);
+
+        //add parameters and environment parameters
+        workflowParameters1.addAll(workflowParameters2);
+        workflow.setWorkflowComputeParameterCollection(workflowParameters1);
+
 
         //set protocols and workflow_name to elements
         Iterator<WorkflowElement> iterator = workflow.getWorkflowWorkflowElementCollection().iterator();
-        while(iterator.hasNext())
+        while (iterator.hasNext())
         {
             WorkflowElement workflowElement = iterator.next();
             workflowElement.setWorkflow_Name(workflow.getName());
@@ -82,7 +89,7 @@ public class ModelLoader
 
             isExist(fileProtocol);
 
-            String protocol = readFileAsString( fileProtocol);
+            String protocol = readFileAsString(fileProtocol);
             //create ComputeProtocol parsing file
             ComputeProtocol computeProtocol = parseComputeProtocolFromString(strComputeProtocol, protocol);
             workflowElement.setProtocol(computeProtocol);
@@ -99,7 +106,7 @@ public class ModelLoader
         List<WorkflowElement> previous = new ArrayList<WorkflowElement>();
         List<String> names = workflowElement.getPreviousSteps_Name();
 
-        for(int i = 0; i < names.size(); i++)
+        for (int i = 0; i < names.size(); i++)
         {
             WorkflowElement el = findWorkflowElement(names.get(i), workflowElements);
             previous.add(el);
@@ -111,12 +118,12 @@ public class ModelLoader
     private WorkflowElement findWorkflowElement(String s, List<WorkflowElement> workflowElements)
     {
         Iterator<WorkflowElement> itr = workflowElements.iterator();
-        while(itr.hasNext())
+        while (itr.hasNext())
         {
             WorkflowElement el = itr.next();
             String name = el.getName();
 
-            if(s.equalsIgnoreCase(name))
+            if (s.equalsIgnoreCase(name))
                 return el;
         }
 
@@ -139,42 +146,42 @@ public class ModelLoader
         String str = null;
 
         //set walltime
-        if(strMolgenisHeader.indexOf(FLAG_WALLTIME) > -1)
+        if (strMolgenisHeader.indexOf(FLAG_WALLTIME) > -1)
         {
             str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_WALLTIME);
             protocol.setWalltime(str);
         }
 
         //set # nodes
-        if(strMolgenisHeader.indexOf(FLAG_NODES) > -1)
+        if (strMolgenisHeader.indexOf(FLAG_NODES) > -1)
         {
             str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_NODES);
             protocol.setNodes(Integer.parseInt(str));
         }
 
         //set # cores
-        if(strMolgenisHeader.indexOf(FLAG_CORES) > -1)
+        if (strMolgenisHeader.indexOf(FLAG_CORES) > -1)
         {
             str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_CORES);
             protocol.setCores(Integer.parseInt(str));
         }
 
         //set interpreter
-        if(strMolgenisHeader.indexOf(FLAG_INTERPRETER) > -1)
+        if (strMolgenisHeader.indexOf(FLAG_INTERPRETER) > -1)
         {
             str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_INTERPRETER);
             protocol.setInterpreter(str);
         }
 
         //set cluster queue
-        if(strMolgenisHeader.indexOf(FLAG_CLUSTER_QUEUE) > -1)
+        if (strMolgenisHeader.indexOf(FLAG_CLUSTER_QUEUE) > -1)
         {
             str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_CLUSTER_QUEUE);
             protocol.setClusterQueue(str);
         }
 
         //set memory
-        if(strMolgenisHeader.indexOf(FLAG_MEMORY) > -1)
+        if (strMolgenisHeader.indexOf(FLAG_MEMORY) > -1)
         {
             str = getValueFromMolgenisHeader(strMolgenisHeader, FLAG_MEMORY);
             protocol.setMem(str);
@@ -182,7 +189,7 @@ public class ModelLoader
 
         List<ComputeParameter> list = null;
         //set targets
-        if(protocolListing.indexOf(FLAG_TARGETS) > -1)
+        if (protocolListing.indexOf(FLAG_TARGETS) > -1)
         {
             str = protocolListing.substring(protocolListing.indexOf(FLAG_TARGETS),
                     protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_TARGETS)));
@@ -191,37 +198,37 @@ public class ModelLoader
         }
 
         //set inputs
-        if(protocolListing.indexOf(FLAG_INPUTS) > -1)
+        if (protocolListing.indexOf(FLAG_INPUTS) > -1)
         {
             str = protocolListing.substring(protocolListing.indexOf(FLAG_INPUTS),
-                            protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_INPUTS)));
+                    protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_INPUTS)));
             list = getParametersFromHeader(str);
             protocol.setInputs(list);
         }
 
         //set outputs
-        if(protocolListing.indexOf(FLAG_OUTPUTS) > -1)
+        if (protocolListing.indexOf(FLAG_OUTPUTS) > -1)
         {
             str = protocolListing.substring(protocolListing.indexOf(FLAG_OUTPUTS),
-                            protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_OUTPUTS)));
+                    protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_OUTPUTS)));
             list = getParametersFromHeader(str);
             protocol.setOutputs(list);
         }
 
         //set exes
-        if(protocolListing.indexOf(FLAG_EXES) > -1)
+        if (protocolListing.indexOf(FLAG_EXES) > -1)
         {
             str = protocolListing.substring(protocolListing.indexOf(FLAG_EXES),
-                                protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_EXES)));
+                    protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_EXES)));
             list = getParametersFromHeader(str);
             protocol.setExes(list);
         }
 
         //set logs
-        if(protocolListing.indexOf(FLAG_LOG) > -1)
+        if (protocolListing.indexOf(FLAG_LOG) > -1)
         {
             str = protocolListing.substring(protocolListing.indexOf(FLAG_LOG),
-                                protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_LOG)));
+                    protocolListing.indexOf("\n", protocolListing.indexOf(FLAG_LOG)));
             list = getParametersFromHeader(str);
             protocol.setLogs(list);
         }
@@ -235,28 +242,50 @@ public class ModelLoader
         List<ComputeParameter> list = new ArrayList<ComputeParameter>();
         Vector<String> names = findNames(str);
 
-        for(int i = 0; i < names.size(); i++)
+        for (int i = 0; i < names.size(); i++)
         {
-            ComputeParameter par = findParameter(names.elementAt(i));
-            list.add(par);
+            Vector<ComputeParameter> pars = findParameter(names.elementAt(i));
+            list.addAll(pars);
         }
 
         return list;
     }
 
-    private ComputeParameter findParameter(String s)
+    private Vector<ComputeParameter> findParameter(String s)
     {
+        //here we manage wildcards in the parameter names
+        Vector<ComputeParameter> pars = new Vector<ComputeParameter>();
+
         Collection<ComputeParameter> parameters = workflow.getWorkflowComputeParameterCollection();
 
         Iterator<ComputeParameter> itr = parameters.iterator();
-        while(itr.hasNext())
+        while (itr.hasNext())
         {
             ComputeParameter par = itr.next();
             String name = par.getName();
 
-            if(s.equalsIgnoreCase(name))
-                return par;
+            if (s.contains(".*"))
+            {
+                String prefix = s.substring(0, s.lastIndexOf("."));
+                if (name.contains(prefix))
+                {
+                    int prefixIndex = name.indexOf(prefix);
+                    if (prefixIndex == 0)
+                        pars.add(par);
+                }
+            }
+            else
+            {
+                if (s.equalsIgnoreCase(name))
+                {
+                    pars.add(par);
+                    return pars;
+                }
+            }
         }
+
+        if (pars.size() > 0)
+            return pars;
 
         logger.log(Level.ERROR, "parameter " + s + " does not exist");
         System.exit(1);
@@ -264,27 +293,27 @@ public class ModelLoader
     }
 
     //here, we trim first to remove end string white spaces
-    private Vector<String> findNames(String list)
+    public Vector<String> findNames(String list)
     {
         list = list.trim();
 
         Vector<String> names = new Vector<String>();
         int posEmpty = list.indexOf(" ") + 1;
 
-        if(posEmpty == 0)
+        if (posEmpty == 0)
             return names;
 
         list = list.substring(posEmpty);
 
-        while(list.indexOf(",") > -1)
+        while (list.indexOf(",") > -1)
         {
             int posComa = list.indexOf(",");
             String name = list.substring(0, posComa).trim();
-            if(name != "")
+            if (name != "")
                 names.addElement(name);
             list = list.substring(posComa + 1);
         }
-            names.add(list);
+        names.add(list);
         return names;
     }
 
@@ -296,7 +325,7 @@ public class ModelLoader
 
         int indexSpace = str.indexOf(" ", index);
 
-        if(indexSpace > -1)
+        if (indexSpace > -1)
             value = str.substring(index, indexSpace);
         else
             value = str.substring(index);
@@ -345,20 +374,20 @@ public class ModelLoader
     }
 
     private String readFileAsString(File file) throws java.io.IOException
-	{
-		StringBuffer fileData = new StringBuffer(1000);
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		char[] buf = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1)
-		{
-			String readData = String.valueOf(buf, 0, numRead);
-			fileData.append(readData);
-			buf = new char[1024];
-		}
-		reader.close();
-		return fileData.toString();
-	}
+    {
+        StringBuffer fileData = new StringBuffer(1000);
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        char[] buf = new char[1024];
+        int numRead = 0;
+        while ((numRead = reader.read(buf)) != -1)
+        {
+            String readData = String.valueOf(buf, 0, numRead);
+            fileData.append(readData);
+            buf = new char[1024];
+        }
+        reader.close();
+        return fileData.toString();
+    }
 
     private void isExist(File file)
     {
@@ -367,5 +396,18 @@ public class ModelLoader
             logger.log(Level.ERROR, "protocol " + file.getName() + " does not exist");
             System.exit(1);
         }
+    }
+
+    public Vector<String> findFlagValues(String script, String flag)
+    {
+        if (script.indexOf(flag) > -1)
+        {
+            String str = script.substring(script.indexOf(flag),
+                    script.indexOf("\n", script.indexOf(flag)));
+
+            Vector<String> names = findNames(str);
+            return names;
+        }
+        return null;
     }
 }
