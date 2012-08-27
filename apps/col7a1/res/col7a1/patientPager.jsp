@@ -145,14 +145,9 @@
 	<c:out value="${current.variantDTOList[1].observedValue}" escapeXml="false"/>
 	</c:if>
 </display:column>
-<display:column media="csv excel pdf" title="Reference">
-<c:forEach var="publicationVO" items="${current.publicationDTOList}">
-	<c:out value="${publicationVO.name}" escapeXml="false"/>;
-</c:forEach>
-</display:column>
 <display:column media="csv excel pdf" title="PubMed ID">
-<c:forEach var="publicationVO" items="${current.publicationDTOList}">
-	<c:out value="PM:${publicationVO.pubmedId}" escapeXml="false"/>;
+<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<c:out value="${publicationDTO.pubmedId}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 

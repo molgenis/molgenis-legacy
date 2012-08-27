@@ -955,6 +955,7 @@ public class MolgenisVariantService
 			{
 				PatientSummaryDTO patientSummaryDTO = new PatientSummaryDTO();
 				patientSummaryDTO.setPatientIdentifier(patient.getAlternateId().get(0).getName());
+				patientSummaryDTO.setPhenotypeMajor(patient.getPhenotype());
 				
 				phenotypeNameHash.put(patient.getPhenotype(), patient.getPhenotype());
 	
