@@ -191,12 +191,18 @@ var JQGridView = {
     },
     
     createJQGrid : function(filters) {
-    	var self = this;
-    	
+    	var self = this; 	
     	
 		if(filters != null) { // If condition may be redundant?
 			this.config.postData.filters = filters; 
 		}
+    	
+    	if(self.grid != null){
+    		
+    		currentPage = self.grid.jqGrid('getGridParam', 'page');
+    		this.config.page = currentPage;
+    	}
+        
     	
     	grid = jQuery("table#"+this.tableId).jqGrid(this.config)
             .jqGrid('navGrid', "#"+this.pagerId,
@@ -225,7 +231,7 @@ var JQGridView = {
 					 
             	},{multipleSearch:true, multipleGroup:true, showQuery: true} // search options
             ).jqGrid('gridResize');
-        
+ 
         if(this.columnPageEnabled) {
 
         	firstButton = $("<input id='firstColButton' type='button' value='|< Columns' style='height:20px;font-size:-3'/>")

@@ -194,6 +194,15 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 				result.add(row);
 			}
 
+			// Query for the measurement that is asked to sort, Scolsom01, with
+			// filter rule
+			//
+
+			if (this.getFilters().size() > 0)
+			{
+
+			}
+
 			return result;
 		}
 		catch (Exception e)
@@ -241,7 +250,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		Set<String> columnsUsed = new HashSet<String>();
 		for (QueryRule r : getFilters())
 		{
-			columnsUsed.add(r.getField());
+			columnsUsed.add(r.getValue().toString());
 		}
 
 		// get measurements
