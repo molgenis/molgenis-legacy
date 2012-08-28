@@ -4,7 +4,6 @@ import app.DatabaseFactory;
 import org.molgenis.compute.design.ComputeProtocol;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
-import org.molgenis.compute.design.WorkflowElement_PreviousSteps;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
@@ -39,8 +38,11 @@ public class WorkflowReaderDBJDBC implements WorkflowReader
                 ComputeProtocol protocol = db.find(ComputeProtocol.class, new QueryRule(ComputeProtocol.NAME, QueryRule.Operator.EQUALS, protocol_name)).get(0);
                 we.setProtocol(protocol);
 
-                List<WorkflowElement_PreviousSteps> prev = db.find(WorkflowElement_PreviousSteps.class,
-                        new QueryRule(WorkflowElement_PreviousSteps.WORKFLOWELEMENT, QueryRule.Operator.EQUALS, we.getName()));
+//                we.getPreviousSteps_Id();
+
+//                List<WorkflowElement> prev = db.find(WorkflowElement.class,
+//                        new QueryRule(WorkflowElement_PreviousSteps., QueryRule.Operator.EQUALS, we.getName()));
+                int i = 0;
             }
 
             db.close();

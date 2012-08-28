@@ -20,7 +20,7 @@
 				example: bwa-align. Therefore the Protocol class is
 				extended:
 			</description>
-			<field name="scriptTemplate" type="freemarker"
+			<field name="scriptTemplate" type="text"
 				description="Commandline or (template of) an script, e.g. in bash, R. Templating engine is freemarker." />
 			<field name="scriptInterpreter" type="enum" default="bash"
 				enum_options="[bash,R]"

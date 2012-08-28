@@ -2,6 +2,7 @@ package org.molgenis.compute.test.generator;
 
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.test.temp.Target;
+import org.molgenis.util.Tuple;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -15,6 +16,6 @@ import java.util.List;
  */
 public interface ComputeGenerator
 {
-
     void generate(Workflow workflow, List<Target> targets, Hashtable<String, String> config);
+    void generateWithTuple(Workflow workflow, List<Tuple> targets, Hashtable<String, String> config);
 }

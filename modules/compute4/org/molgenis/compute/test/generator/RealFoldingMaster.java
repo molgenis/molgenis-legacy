@@ -11,26 +11,15 @@ import java.util.List;
 /**
  * Created with IntelliJ IDEA.
  * User: georgebyelas
- * Date: 22/08/2012
- * Time: 12:49
+ * Date: 27/08/2012
+ * Time: 16:37
  * To change this template use File | Settings | File Templates.
  */
-public class FakeFoldingMaster implements FoldingMaster
+public class RealFoldingMaster implements FoldingMaster
 {
-
     public Hashtable<String, String> createValues(Collection<ComputeParameter> listParameters, List<Target> targets, Hashtable<String, String> userValues)
     {
-        Hashtable<String, String> values = new Hashtable<String, String>();
-
-        for(ComputeParameter c : listParameters)
-        {
-            String name = c.getName();
-            String value = c.getDefaultValue();
-
-            values.put(name, value);
-        }
-
-        return values;
+        return null;
     }
 
     public List<Tuple> createTuples(Collection<ComputeParameter> listParameters, List<Tuple> targets, Hashtable<String, String> userValues)

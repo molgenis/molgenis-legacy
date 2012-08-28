@@ -67,8 +67,9 @@ public class PilotService implements MolgenisService
 
             if(task != null)
             {
-                //task.
-                //request.getDatabase().update(task);
+                task.setStatusCode("done");
+                task.setRunLog(results);
+                request.getDatabase().update(task);
             }
         }
     }

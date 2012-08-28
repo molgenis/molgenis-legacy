@@ -3,8 +3,10 @@ package org.molgenis.compute.test.generator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
+import org.molgenis.compute.commandline.Worksheet;
 import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.design.Workflow;
 import org.molgenis.compute.design.WorkflowElement;
@@ -22,30 +24,34 @@ import app.DatabaseFactory;
  * To change this template use File | Settings | File Templates.
  */
 
-public class ComputeGeneratorDB implements ComputeGenerator {
+public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 	public static final String RUN_ID = "run_id";
-	public static final String BACKEND = "backend";
-	public static final String BACKEND_GRID = "backend_grid";
-	public static final String BACKEND_PBS = "backend_pbs";
 
-	// supplementary
+	// supplementary (just because it's handy to use)
 	Hashtable<WorkflowElement, ComputeTask> workflowElementComputeTaskHashtable = new Hashtable<WorkflowElement, ComputeTask>();
 
 	private TemplateWeaver weaver = new TemplateWeaver();
-	private FoldingMaster foldingMaster = new FakeFoldingMaster();
+	private FoldingMaster foldingMaster = new RealFoldingMaster();
 
-	private Hashtable<String, String> userValues = null;
+	private Hashtable<String, String> userParameters = null;
 	private String backend = "grid";
 
 	Database db = null;
 
 	public void generate(Workflow workflow, List<Target> targets,
 			Hashtable<String, String> config) {
-		this.userValues = config;
+	}
 
-		Collection<ComputeParameter> listParameters = workflow
+	/**
+	 * Generate tasks and put them into the database
+	 */
+	public void generateWithTuple(Workflow workflow, List<Tuple> worksheet,
+			Hashtable<String, String> userParametersInput) {
+		this.userParameters = userParametersInput;
+
+		List<ComputeParameter> parameterList = (List<ComputeParameter>) workflow
 				.getWorkflowComputeParameterCollection();
-		Collection<WorkflowElement> listWorkflowElements = workflow
+		Collection<WorkflowElement> workflowElementsList = workflow
 				.getWorkflowWorkflowElementCollection();
 
 		try {
@@ -57,17 +63,43 @@ public class ComputeGeneratorDB implements ComputeGenerator {
 		}
 
 		List<ComputeTask> tasks = new ArrayList<ComputeTask>();
-		for (WorkflowElement workflowElement : listWorkflowElements) {
-			// most probably values generation
-			Hashtable<String, String> values = foldingMaster.createValues(
-					listParameters, targets, userValues);
+		for (WorkflowElement workflowElement : workflowElementsList) {
+
+			List<String> iterationTargetNameList = new ArrayList<String>();
+			Iterator<ComputeParameter> it = workflowElement.getProtocol()
+					.getIterateOver().iterator();
+			while (it.hasNext()) {
+				iterationTargetNameList.add(it.next().getName());
+			}
+
+			System.out.println(">>");
+
+			List<Tuple> foldedWorksheet = Worksheet.foldWorksheet(worksheet,
+					parameterList, iterationTargetNameList);
+
+			// foldingMaster.createTuples(
+			// computeParameterList, worksheet, userParameters);
 
 			String template = workflowElement.getProtocol().getScriptTemplate();
-			String result = weaver.weaveFreemarker(template, values);
+
+			String result = null;
+			if (userParameters.get(ComputeGeneratorDB.BACKEND).equals(
+					ComputeGeneratorDB.BACKEND_GRID)) {
+				result = null;// weaver.weaveFreemarker(template,
+								// values);
+			} else if (userParameters.get(ComputeGeneratorDB.BACKEND).equals(
+					ComputeGeneratorDB.BACKEND_PBS)) {
+				// String result = weaver.weaveFreemarker(template,
+				// foldedWorksheet);
+			} else {
+				System.err
+						.println("Backend should be: backend_grid or backend_pbs");
+				System.exit(1);
+			}
 
 			ComputeTask task = new ComputeTask();
 			String taskName = workflowElement.getName() + "_"
-					+ userValues.get(RUN_ID);
+					+ userParameters.get(RUN_ID);
 			task.setName(taskName);
 			task.setComputeScript(result);
 			task.setInterpreter(workflowElement.getProtocol()
@@ -87,6 +119,8 @@ public class ComputeGeneratorDB implements ComputeGenerator {
 			task.setPrevSteps(prevTasks);
 
 			tasks.add(task);
+
+			// because it's handy:
 			workflowElementComputeTaskHashtable.put(workflowElement, task);
 		}
 
@@ -96,10 +130,6 @@ public class ComputeGeneratorDB implements ComputeGenerator {
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void generateWithTuple(Workflow workflow, List<Tuple> targets,
-			Hashtable<String, String> config) {
 
 	}
 

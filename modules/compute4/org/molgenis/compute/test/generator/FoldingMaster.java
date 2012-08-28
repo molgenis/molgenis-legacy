@@ -2,6 +2,7 @@ package org.molgenis.compute.test.generator;
 
 import org.molgenis.compute.design.ComputeParameter;
 import org.molgenis.compute.test.temp.Target;
+import org.molgenis.util.Tuple;
 
 import java.util.Collection;
 import java.util.Hashtable;
@@ -18,5 +19,7 @@ public interface FoldingMaster
 {
 
     Hashtable<String, String> createValues(Collection<ComputeParameter> listParameters, List<Target> targets, Hashtable<String, String> userValues);
+    List<Tuple> createTuples(Collection<ComputeParameter> listParameters, List<Tuple> targets, Hashtable<String, String> userValues);
+
 
 }
