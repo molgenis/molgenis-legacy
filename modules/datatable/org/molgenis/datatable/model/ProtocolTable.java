@@ -248,9 +248,20 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 	{
 		// get columns that are used in filtering or sorting
 		Set<String> columnsUsed = new HashSet<String>();
+
 		for (QueryRule r : getFilters())
 		{
-			columnsUsed.add(r.getValue().toString());
+
+			// IF SEARCH BUTTON IS CLICKED
+			if (getFilters().get(0).getField() != null)
+			{
+				columnsUsed.add(r.getField());
+			}
+			else
+			{
+				// IF WE WANT TO ORDER A COLUMN
+				columnsUsed.add(r.getValue().toString());
+			}
 		}
 
 		// get measurements
@@ -260,6 +271,7 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		{
 			measurementsUsed = getDb().query(Measurement.class)
 					.in(Measurement.NAME, new ArrayList<String>(columnsUsed)).find();
+
 		}
 
 		// one column is defined by ObservedValue.Investigation,
@@ -287,12 +299,23 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
 
 		// limit and offset
-		if (!count && getLimit() > 0) filters.add(new QueryRule(Operator.LIMIT, getLimit()));
-		if (!count && getOffset() > 0) filters.add(new QueryRule(Operator.OFFSET, getOffset()));
+		if (!count && getLimit() > 0)
+		{
+			filters.add(new QueryRule(Operator.LIMIT, getLimit()));
+		}
+		if (!count && getOffset() > 0)
+		{
+			filters.add(new QueryRule(Operator.OFFSET, getOffset()));
+		}
 
 		List<Integer> result = new ArrayList<Integer>();
+		// sql = SELECT count (*) as id from ProtocolApplication
+		// filters = Scl90som3 = '1'
+		// filters.size() = 1
+
 		for (Tuple t : this.getDb().sql(sql, filters.toArray(new QueryRule[filters.size()])))
 			result.add(t.getInt("id"));
+
 		return result;
 	}
 }

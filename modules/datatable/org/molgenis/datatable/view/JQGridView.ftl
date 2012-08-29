@@ -6,6 +6,8 @@
 <script src="jqGrid/grid.formedit.js" type="text/javascript"></script>
 <script src="jqGrid/jqDnR.js" type="text/javascript"></script>
 <script src="jqGrid/jqModal.js" type="text/javascript"></script>
+<script src="jqGrid/jqGridCustomjavascript.js" type="text/javascript"></script>
+
 
 <script src="jquery/development-bundle/ui/jquery-ui-1.8.7.custom.js" type="text/javascript"></script>
 <script src="jquery/development-bundle/ui/jquery.ui.dialog.js" type="text/javascript"></script>
@@ -372,9 +374,6 @@ var JQGridView = {
 			
 			//Create a new div in which the next and previous buttons are added.
 			navPage = "<div id=\"navPage\">";
-			
-			
-			
 			navPage += "<input id=\"prevPage\" type=\"button\" style=\"font-size:0.7em\" value=\"< previous page\"></input>";
 			navPage += "<input id=\"nextPage\" type=\"button\" style=\"font-size:0.7em\" value=\"next page >\"></input>";			
 			navPage += "</div>";
@@ -457,9 +456,7 @@ var JQGridView = {
 		 			}
 	 			}
  			});
- 			
- 			
- 			
+
  			grid = self.grid;
  			
  			//Add click event to submit button
