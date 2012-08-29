@@ -25,9 +25,11 @@ public interface EmailService
 	 */
 	public abstract boolean email(String subject, String body, String toEmail) throws EmailException;
 
-
+	public boolean email(String subject, String body, String toEmail, boolean deObf, String sender) throws EmailException;
+	
 	public boolean email(String subject, String body, String toEmail, String fileAttachment, ByteArrayOutputStream outputStream, boolean deObf) throws EmailException;
 	
+	public boolean email(String subject, String body, String toEmail, String fileAttachment, ByteArrayOutputStream outputStream, boolean deObf, String sender) throws EmailException;
 	/* (non-Javadoc)
 	 * @see org.molgenis.util.email.EmailServer#getSmtpHostName()
 	 */

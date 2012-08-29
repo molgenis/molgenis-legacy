@@ -74,23 +74,22 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 	public static String INPUT_SILENT = "data_silent";
 	/** keep track of window ids */
 	private static long newWindowId;
-	
+
 	private Database db;
-	
+
 	public Database getDatabase() throws Exception
 	{
 		return this.db;
 	}
-	
-	//seems to be the only way to store login info from e.g. R API
-	//(standalone) database seems to be refreshed for every request
-	//and even request.getSession().setAttribute("user", user) has no effect
+
+	// seems to be the only way to store login info from e.g. R API
+	// (standalone) database seems to be refreshed for every request
+	// and even request.getSession().setAttribute("user", user) has no effect
 	private String __remote__login__request__username = "anonymous";
 	private String __remote__login__request__password = "anonymous";
 
 	// get logger
-	protected final transient Logger logger = Logger.getLogger(this.getClass()
-			.getSimpleName());
+	protected final transient Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
 	private static final long serialVersionUID = 3141439968743510237L;
 	// whether cxf is already loaded
@@ -105,8 +104,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 	 * 
 	 * @throws Exception
 	 */
-	public abstract Login createLogin(Database db, HttpServletRequest request)
-			throws Exception;
+	public abstract Login createLogin(Database db, HttpServletRequest request) throws Exception;
 
 	/**
 	 * Instantiate an application with the right root screen and optional file
@@ -134,37 +132,55 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		newWindowId++;
 		return newWindowId;
 	}
-	
-	public void init(ServletConfig config) throws ServletException {
+
+	public void init(ServletConfig config) throws ServletException
+	{
 		System.out.println("AbstractMolgenisServlet is initializing log4j");
 		String log4jLocation = config.getInitParameter("log4j-properties-location");
 
 		ServletContext sc = config.getServletContext();
 
-		if (log4jLocation == null) {
-			if(StringUtils.isNotEmpty(this.usedOptions.log4j_properties_uri)) {
+		if (log4jLocation == null)
+		{
+			if (StringUtils.isNotEmpty(this.usedOptions.log4j_properties_uri))
+			{
 				ClassLoader loader = this.getClass().getClassLoader();
 				URL urlLog4jProp = loader.getResource(this.usedOptions.log4j_properties_uri);
-				if(urlLog4jProp == null) {
-					System.out.println(String.format("*** Incorrect log4j_properties_uri : '%s' in Molgenis properties file, so initializing log4j with BasicConfigurator", urlLog4jProp));
-					BasicConfigurator.configure();					
-				} else {
+				if (urlLog4jProp == null)
+				{
+					System.out
+							.println(String
+									.format("*** Incorrect log4j_properties_uri : '%s' in Molgenis properties file, so initializing log4j with BasicConfigurator",
+											urlLog4jProp));
+					BasicConfigurator.configure();
+				}
+				else
+				{
 					System.out.println(String.format("*** Log4j initializing with config file %s", urlLog4jProp));
-					PropertyConfigurator.configure(urlLog4jProp);	
-				}				
-			} else {
-				System.err.println("*** No log4j-properties-location init param, so initializing log4j with BasicConfigurator");
+					PropertyConfigurator.configure(urlLog4jProp);
+				}
+			}
+			else
+			{
+				System.err
+						.println("*** No log4j-properties-location init param, so initializing log4j with BasicConfigurator");
 				BasicConfigurator.configure();
 			}
-		} else {
+		}
+		else
+		{
 			String webAppPath = sc.getRealPath("/");
 			String log4jProp = webAppPath + File.separator + log4jLocation;
 			File log4jFile = new File(log4jProp);
-			if (log4jFile.exists()) {
+			if (log4jFile.exists())
+			{
 				System.out.println("Initializing log4j with: " + log4jProp);
 				PropertyConfigurator.configure(log4jProp);
-			} else {
-				System.err.println("*** " + log4jProp + " file not found, so initializing log4j with BasicConfigurator");
+			}
+			else
+			{
+				System.err
+						.println("*** " + log4jProp + " file not found, so initializing log4j with BasicConfigurator");
 				BasicConfigurator.configure();
 			}
 		}
@@ -206,8 +222,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 	}
 
 	@Override
-	public void doDelete(HttpServletRequest request,
-			HttpServletResponse response)
+	public void doDelete(HttpServletRequest request, HttpServletResponse response)
 	{
 		try
 		{
@@ -238,17 +253,16 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 			e.printStackTrace();
 		}
 	}
-	
-	protected abstract Database createDatabase(); 
-	
+
+	protected abstract Database createDatabase();
+
 	/**
 	 * Frontcontroller of the MOLGENIS application. Based on paths, requests are
 	 * delegated to the particular handlers.
 	 * 
 	 * @throws ServletException
 	 */
-	public void service(HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServletException
+	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
 	{
 		// time the service
 		long startTime = System.currentTimeMillis();
@@ -261,9 +275,8 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		try
 		{
 			this.db = createDatabase();
-			createLogin(db, request); //set login to database!
-			
-			
+			createLogin(db, request); // set login to database!
+
 			if (path != null && path.contains("/api/find"))
 			{
 				this.handleDownload(request, response);
@@ -310,7 +323,9 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		catch (Exception e)
 		{
 			e.printStackTrace();
-		} finally {
+		}
+		finally
+		{
 			try
 			{
 				this.db.close();
@@ -323,13 +338,11 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		}
 
 		// end timing the service
-		logger.info("service completed in "
-				+ (System.currentTimeMillis() - startTime) + " milliseconds");
+		logger.info("service completed in " + (System.currentTimeMillis() - startTime) + " milliseconds");
 		logger.info("------------------------------");
 	}
 
-	private void handleDownloadFile(HttpServletRequest request,
-			HttpServletResponse response) throws IOException
+	private void handleDownloadFile(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
 		// setup the output-stream
 		response.setBufferSize(10000);
@@ -337,8 +350,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 
 		// get the relative path
 		String filename = request.getRequestURI().substring(
-				request.getServletPath().length()
-						+ request.getContextPath().length());
+				request.getServletPath().length() + request.getContextPath().length());
 		logger.debug("THEFILETODOWNLOAD: " + filename);
 
 		String tempDir = System.getProperty("java.io.tmpdir");
@@ -368,8 +380,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		}
 	}
 
-	private void handleSOAPrequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception
+	private void handleSOAPrequest(HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
 		// delegate to CXF servlet
 		// load the bus if needed
@@ -377,9 +388,9 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		// this.getRestImpl()
 		// != null))
 		{
-//			super.loadBus(this.getServletConfig());
-//
-//			Bus bus = this.getBus();
+			// super.loadBus(this.getServletConfig());
+			//
+			// Bus bus = this.getBus();
 
 			// from samples/restfull directory
 
@@ -397,8 +408,8 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 
 			// sf.create();
 
-//			BusFactory.setDefaultBus(bus);
-//			Endpoint.publish("/soap/", this.getSoapImpl());
+			// BusFactory.setDefaultBus(bus);
+			// Endpoint.publish("/soap/", this.getSoapImpl());
 			// Endpoint.publish("/rest/", this.getSoapImpl());
 
 			// JAX-RS
@@ -452,47 +463,44 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 
 	}
 
-	public void handleGUIrequest(HttpServletRequest request,
-			HttpServletResponse response) throws Exception
+	public void handleGUIrequest(HttpServletRequest request, HttpServletResponse response) throws Exception
 	{
-//		// get database session (note: this shouldn't be in the tomcat
-//		// session!!!
-//		Database db = null;
-//		boolean dbAvailable = false;
-//		String dbErrorMessage = null;
-//		try
-//		{
-//			db = getDatabase();
-//			// db.beginTx(); DISCUSSION
-//			System.err.println("???" + db);
-//			if (db != null)
-//			{
-//				dbAvailable = true;
-//				logger.info("created database " + db);
-//			}
-//			else
-//			{
-//				dbErrorMessage = "database is NULL";
-//			}
-//		}
-//		catch (Exception e)
-//		{
-//			logger.error("Database creation failed: " + e.getMessage());
-//			e.printStackTrace();
-//			// throw new DatabaseException(e);
-//			dbErrorMessage = e.getMessage();
-//		}
+		// // get database session (note: this shouldn't be in the tomcat
+		// // session!!!
+		// Database db = null;
+		// boolean dbAvailable = false;
+		// String dbErrorMessage = null;
+		// try
+		// {
+		// db = getDatabase();
+		// // db.beginTx(); DISCUSSION
+		// System.err.println("???" + db);
+		// if (db != null)
+		// {
+		// dbAvailable = true;
+		// logger.info("created database " + db);
+		// }
+		// else
+		// {
+		// dbErrorMessage = "database is NULL";
+		// }
+		// }
+		// catch (Exception e)
+		// {
+		// logger.error("Database creation failed: " + e.getMessage());
+		// e.printStackTrace();
+		// // throw new DatabaseException(e);
+		// dbErrorMessage = e.getMessage();
+		// }
 
 		// login/logout
 		HttpSession session = request.getSession();
 		Login userLogin = null;
 		// Get application from session (or create one)
-		ApplicationController molgenis = (ApplicationController) session
-				.getAttribute("application");
+		ApplicationController molgenis = (ApplicationController) session.getAttribute("application");
 
 		// on logout throw whole session away.
-		if (request.getParameter("__action") != null
-				&& request.getParameter("__action").equalsIgnoreCase("Logout"))
+		if (request.getParameter("__action") != null && request.getParameter("__action").equalsIgnoreCase("Logout"))
 		{
 			molgenis = null;
 			session.setAttribute("application", null);
@@ -501,30 +509,23 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		{
 			userLogin = createLogin(db, request);
 			if ((!userLogin.isAuthenticated() && userLogin.isLoginRequired())
-					|| (request.getParameter("logout") != null && !session
-							.isNew()))
+					|| (request.getParameter("logout") != null && !session.isNew()))
 			{
-				response.setHeader("WWW-Authenticate",
-						"BASIC realm=\"MOLGENIS\"");
+				response.setHeader("WWW-Authenticate", "BASIC realm=\"MOLGENIS\"");
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 				session.invalidate();
 				return;
 			}
 			molgenis = createUserInterface(userLogin);
 		}
-		// this should work unless complicated load balancing without proxy
-		// rewriting...
-		molgenis.setBaseUrl(request.getScheme() + "://"
-				+ request.getServerName() + getPort(request)
-				+ request.getContextPath());
 
 		// ((UserInterface)molgenis).setDatabase(db);
 		userLogin = ((ApplicationController) molgenis).getLogin();
 
-//		if (dbAvailable)
-//		{
-//			db.setLogin(userLogin);
-//		}
+		// if (dbAvailable)
+		// {
+		// db.setLogin(userLogin);
+		// }
 
 		// handle request
 		try
@@ -535,29 +536,21 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 
 			// action == download an attached file
 			// FIXME move to form controllers handlerequest...
-			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple
-					.getString(ScreenModel.INPUT_ACTION)))
+			if (FileInput.ACTION_DOWNLOAD.equals(requestTuple.getString(ScreenModel.INPUT_ACTION)))
 			{
 				logger.info(requestTuple);
 
-				File file = new File(
-						db.getFilesource()
-								+ "/"
-								+ requestTuple
-										.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
+				File file = new File(db.getFilesource() + "/"
+						+ requestTuple.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
 
 				FileInputStream filestream = new FileInputStream(file);
 
 				response.setContentType("application/x-download");
 				response.setContentLength((int) file.length());
-				response.setHeader(
-						"Content-Disposition",
-						"attachment; filename="
-								+ requestTuple
-										.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
+				response.setHeader("Content-Disposition",
+						"attachment; filename=" + requestTuple.getString(FileInput.INPUT_CURRENT_DOWNLOAD));
 
-				BufferedOutputStream out = new BufferedOutputStream(
-						response.getOutputStream());
+				BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
 				byte[] buffer = new byte[1024];
 				int bytes_read;
 				while ((bytes_read = filestream.read(buffer)) != -1)
@@ -571,18 +564,16 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 
 			// action == download, but now in a standard way, handled by
 			// controller
-			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple
-					.getString(FormModel.INPUT_SHOW)))
+			else if (ScreenModel.Show.SHOW_DOWNLOAD.equals(requestTuple.getString(FormModel.INPUT_SHOW)))
 			{
 				// get the screen that will hande the download request
-				ScreenController<? extends ScreenModel> controller = molgenis
-						.get(requestTuple.getString(ScreenModel.INPUT_TARGET));
+				ScreenController<? extends ScreenModel> controller = molgenis.get(requestTuple
+						.getString(ScreenModel.INPUT_TARGET));
 
 				// set the headers for the download
 				response.setContentType("application/x-download");
 
-				String action = requestTuple
-						.getString(ScreenModel.INPUT_ACTION);
+				String action = requestTuple.getString(ScreenModel.INPUT_ACTION);
 				String extension = null;
 				if (action.startsWith("download_txt_"))
 				{
@@ -594,19 +585,15 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 				}
 				else
 				{
-					throw new Exception("Download type '" + action
-							+ "' unsupported!");
+					throw new Exception("Download type '" + action + "' unsupported!");
 				}
 
 				ScreenModel.Show.values();
-				response.setHeader("Content-Disposition",
-						"attachment; filename="
-								+ controller.getName().toLowerCase() + "."
-								+ extension);
+				response.setHeader("Content-Disposition", "attachment; filename=" + controller.getName().toLowerCase()
+						+ "." + extension);
 
 				// let the handleRequest produce the content
-				controller.handleRequest(db, requestTuple,
-						response.getOutputStream());
+				controller.handleRequest(db, requestTuple, response.getOutputStream());
 
 				// TODO: does this fail when stream is already closed??
 				response.getOutputStream().flush();
@@ -620,13 +607,11 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 				if (requestTuple.getString("select") != null)
 				{
 					// get the screen to be selected
-					ScreenController<?> toBeSelected = molgenis
-							.get(requestTuple.getString("select"));
+					ScreenController<?> toBeSelected = molgenis.get(requestTuple.getString("select"));
 					// select leaf in its parent
 					try
 					{
-						toBeSelected.getParent().setSelected(
-								requestTuple.getString("select"));
+						toBeSelected.getParent().setSelected(requestTuple.getString("select"));
 					}
 					catch (NullPointerException npe)
 					{
@@ -634,10 +619,9 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 					}
 				}
 
-				if (Show.SHOW_CLOSE.equals(molgenis.handleRequest(db,
-						requestTuple, null)))
+				if (Show.SHOW_CLOSE.equals(molgenis.handleRequest(db, requestTuple, null)))
 				{
-					//if close, then write a close script
+					// if close, then write a close script
 					PrintWriter writer = response.getWriter();
 					writer.write("<html><head></head><body><script>window.close();</script></body></html>");
 					writer.close();
@@ -655,8 +639,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 
 				// handle request
 				molgenis.reload(db); // reload the application
-				logger.debug("reloaded " + molgenis.getName()
-						+ " screen, rendering...");
+				logger.debug("reloaded " + molgenis.getName() + " screen, rendering...");
 
 				// ((UserInterface)molgenis).getDatabase().close();
 				// ((UserInterface)molgenis).setDatabase(null);
@@ -686,8 +669,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 				if (ScreenModel.Show.SHOW_DIALOG.equals(show))
 				{
 					molgenis.getModel().setShow(show);
-					ScreenController<?> target = molgenis.get(requestTuple
-							.getString("__target"));
+					ScreenController<?> target = molgenis.get(requestTuple.getString("__target"));
 					molgenis.getModel().setTarget(target);
 					writer.write(molgenis.render());
 				}
@@ -874,14 +856,12 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 	 * @param response
 	 * @throws IOException
 	 */
-	public void handleRAPIrequest(HttpServletRequest request,
-			HttpServletResponse response) throws IOException
+	public void handleRAPIrequest(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
 		PrintWriter out = response.getWriter();
 
 		String filename = request.getRequestURI().substring(
-				request.getServletPath().length()
-						+ request.getContextPath().length());
+				request.getServletPath().length() + request.getContextPath().length());
 		logger.info("getting file: " + filename);
 		logger.info("url: " + request.getRequestURL());
 		logger.info("port: " + request.getLocalPort());
@@ -900,8 +880,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 			// this.getMolgenisHostName()+request.getContextPath();
 			String localName = request.getLocalName();
 			if (localName.equals("0.0.0.0")) localName = "localhost";
-			String server = "http://" + localName + ":"
-					+ request.getLocalPort() + request.getContextPath();
+			String server = "http://" + localName + ":" + request.getLocalPort() + request.getContextPath();
 			String rSource = server + "/api/R/";
 			// getRequestURL omits port!
 			out.println("#step1: (first time only) install RCurl package from omegahat or bioconductor, i.e. <br>");
@@ -939,8 +918,8 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 			filename = filename.replace(".", "/");
 			filename = filename.substring(0, filename.length() - 2) + ".R";
 			// map to hard drive, minus path papp/servlet
-			File root = new File(this.getClass().getResource("source.R")
-					.getFile()).getParentFile().getParentFile().getParentFile();
+			File root = new File(this.getClass().getResource("source.R").getFile()).getParentFile().getParentFile()
+					.getParentFile();
 
 			if (filename.equals("source.R"))
 			{
@@ -949,8 +928,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 			File source = new File(root.getAbsolutePath() + "/" + filename);
 
 			// up to root of app
-			logger.info("trying to load R file: " + filename + " from path "
-					+ source);
+			logger.info("trying to load R file: " + filename + " from path " + source);
 			if (source.exists())
 			{
 				this.writeURLtoOutput(source.toURI().toURL(), out);
@@ -973,8 +951,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 	 * @param request
 	 * @param response
 	 */
-	public void handleDownload(HttpServletRequest request,
-			HttpServletResponse response)
+	public void handleDownload(HttpServletRequest request, HttpServletResponse response)
 	{
 		// setup the output-stream
 		response.setBufferSize(10000);
@@ -996,13 +973,12 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		try
 		{
 			db = this.getDatabase();
-			//db.setLogin(new org.molgenis.framework.security.SimpleLogin(db));
+			// db.setLogin(new org.molgenis.framework.security.SimpleLogin(db));
 			try
 			{
 
 				// check whether a class is chosen
-				if (request.getPathInfo() == null
-						|| request.getPathInfo().equals("/find"))
+				if (request.getPathInfo() == null || request.getPathInfo().equals("/find"))
 				{
 					logger.debug("show 'choose entity' dialogue");
 					out.println("<html><body>");
@@ -1011,13 +987,10 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 					for (String className : db.getEntityNames())
 					{
 
-						if (request.getPathInfo() == null) out
-								.println("<a href=\"find/" + className
-										+ "?__showQueryDialogue=true\">"
-										+ className + "</a><br>");
+						if (request.getPathInfo() == null) out.println("<a href=\"find/" + className
+								+ "?__showQueryDialogue=true\">" + className + "</a><br>");
 						else
-							out.println("<a href=\"" + className + "\">"
-									+ className + "</a><br>");
+							out.println("<a href=\"" + className + "\">" + className + "</a><br>");
 					}
 
 					out.println("</body></html>");
@@ -1028,9 +1001,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 				String entityName = request.getPathInfo().substring(1);
 
 				// check whether a querystring has to build
-				if (request.getQueryString() != null
-						&& request.getQueryString().equals(
-								"__showQueryDialogue=true"))
+				if (request.getQueryString() != null && request.getQueryString().equals("__showQueryDialogue=true"))
 				{
 					logger.debug("show 'set filters' dialogue");
 					out.println("<html><body><form>");
@@ -1038,28 +1009,18 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 							+ entityName
 							+ "' data. (<a href=\"../api/find\">back</a>)<br><br> Here you can have to set at least one filter:<br>");
 					out.println("<table>");
-					for (String field : ((Entity) Class.forName(entityName)
-							.newInstance()).getFields())
+					for (String field : ((Entity) Class.forName(entityName).newInstance()).getFields())
 					{
-						out.println("<tr><td>" + field
-								+ "</td><td>=</td><td><input name=\"" + field
+						out.println("<tr><td>" + field + "</td><td>=</td><td><input name=\"" + field
 								+ "\" type=\"text\"></td><tr/>");
 					}
 					out.println("</table>");
-					out.println("<SCRIPT>"
-							+ "function createFilterURL(fields)"
-							+ "{	"
-							+ "	var query = '';"
-							+ "	var count = 0;"
-							+ "	for (i = 0; i < fields.length; i++) "
-							+ "	{"
-							+ "		if (fields[i].value != '' && fields[i].name != '__submitbutton')"
-							+ "		{"
-							+ "			if(count > 0)"
-							+ "				query +='&';"
-							+ "			query += fields[i].name + '=' + fields[i].value;"
-							+ "			count++;" + "		}" + "	}" + "	return query"
-							+ "}" + "</SCRIPT>");
+					out.println("<SCRIPT>" + "function createFilterURL(fields)" + "{	" + "	var query = '';"
+							+ "	var count = 0;" + "	for (i = 0; i < fields.length; i++) " + "	{"
+							+ "		if (fields[i].value != '' && fields[i].name != '__submitbutton')" + "		{"
+							+ "			if(count > 0)" + "				query +='&';"
+							+ "			query += fields[i].name + '=' + fields[i].value;" + "			count++;" + "		}" + "	}"
+							+ "	return query" + "}" + "</SCRIPT>");
 
 					// with security break out.println( "<input
 					// name=\"__submitbutton\" type=\"submit\" value=\"download
@@ -1083,8 +1044,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 				// use get
 				if (request.getQueryString() != null)
 				{
-					logger.debug("handle find query via http-get: "
-							+ request.getQueryString());
+					logger.debug("handle find query via http-get: " + request.getQueryString());
 					String[] ruleStrings = request.getQueryString().split("&");
 
 					for (String rule : ruleStrings)
@@ -1098,21 +1058,14 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 						}
 						else if (ruleElements[1].startsWith("["))
 						{
-							ruleElements[1] = ruleElements[1].replace("%20",
-									" ");
-							String[] values = ruleElements[1].substring(1,
-									ruleElements[1].indexOf("]")).split(",");
-							rulesList.add(new QueryRule(ruleElements[0],
-									QueryRule.Operator.IN, values));
+							ruleElements[1] = ruleElements[1].replace("%20", " ");
+							String[] values = ruleElements[1].substring(1, ruleElements[1].indexOf("]")).split(",");
+							rulesList.add(new QueryRule(ruleElements[0], QueryRule.Operator.IN, values));
 						}
 						else
 						{
-							if (ruleElements[1] != ""
-									&& !"__submitbutton"
-											.equals(ruleElements[0])) rulesList
-									.add(new QueryRule(ruleElements[0],
-											QueryRule.Operator.EQUALS,
-											ruleElements[1]));
+							if (ruleElements[1] != "" && !"__submitbutton".equals(ruleElements[0])) rulesList
+									.add(new QueryRule(ruleElements[0], QueryRule.Operator.EQUALS, ruleElements[1]));
 						}
 					}
 				}
@@ -1120,26 +1073,18 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 				else
 				{
 					Tuple requestTuple = new HttpServletRequestTuple(request);
-					logger.debug("handle find query via http-post with parameters: "
-							+ requestTuple.getFields());
+					logger.debug("handle find query via http-post with parameters: " + requestTuple.getFields());
 					for (String name : requestTuple.getFields())
 					{
 						if (requestTuple.getString(name).startsWith("["))
 						{
-							String[] values = requestTuple
-									.getString(name)
-									.substring(
-											1,
-											requestTuple.getString(name)
-													.indexOf("]")).split(",");
-							rulesList.add(new QueryRule(name,
-									QueryRule.Operator.IN, values));
+							String[] values = requestTuple.getString(name)
+									.substring(1, requestTuple.getString(name).indexOf("]")).split(",");
+							rulesList.add(new QueryRule(name, QueryRule.Operator.IN, values));
 						}
 						else
 						{
-							rulesList.add(new QueryRule(name,
-									QueryRule.Operator.EQUALS, requestTuple
-											.getString(name)));
+							rulesList.add(new QueryRule(name, QueryRule.Operator.EQUALS, requestTuple.getString(name)));
 						}
 					}
 				}
@@ -1150,13 +1095,11 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 				TupleWriter writer = new CsvWriter(out);
 				// CsvWriter writer = new CsvFileWriter( new
 				// File("c:/testout.txt") );
-				db.find(getClassForName(entityName), writer,
-						rulesList.toArray(new QueryRule[rulesList.size()]));
+				db.find(getClassForName(entityName), writer, rulesList.toArray(new QueryRule[rulesList.size()]));
 			}
 			catch (Exception e)
 			{
-				out.println("<div class='errormessage'>" + e.getMessage()
-						+ "</div>");
+				out.println("<div class='errormessage'>" + e.getMessage() + "</div>");
 				// e.printStackTrace();
 				// throw e;
 			}
@@ -1169,12 +1112,10 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		}
 		catch (Exception e)
 		{
-			out.println("<div class='errormessage'>No database available to query: "
-					+ e.getMessage() + "</div>");
+			out.println("<div class='errormessage'>No database available to query: " + e.getMessage() + "</div>");
 			logger.error(e);
 		}
-		logger.info("servlet took: "
-				+ (System.currentTimeMillis() - start_time));
+		logger.info("servlet took: " + (System.currentTimeMillis() - start_time));
 		logger.info("------------");
 	}
 
@@ -1182,14 +1123,12 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 	/*
 	 * No way to do this without warnings.
 	 */
-	private Class<? extends Entity> getClassForName(String entityName)
-			throws ClassNotFoundException
+	private Class<? extends Entity> getClassForName(String entityName) throws ClassNotFoundException
 	{
 		return (Class<? extends Entity>) Class.forName(entityName);
 	}
 
-	public void handleUpload(HttpServletRequest request,
-			HttpServletResponse response)
+	public void handleUpload(HttpServletRequest request, HttpServletResponse response)
 	{
 		// setup the output-stream
 		response.setBufferSize(10000);
@@ -1211,13 +1150,15 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 			PrintWriter out = response.getWriter();
 			// EntityReaderFactory readerFactory = new CsvReaderFactory();
 
-			//"hack" to be able to log in via R (default R API has been overridden for xQTL)
-			if(requestTuple.getString(INPUT_ACTION) != null && requestTuple.getString(INPUT_ACTION).equals("__remote__login__request"))
+			// "hack" to be able to log in via R (default R API has been
+			// overridden for xQTL)
+			if (requestTuple.getString(INPUT_ACTION) != null
+					&& requestTuple.getString(INPUT_ACTION).equals("__remote__login__request"))
 			{
 				String username = requestTuple.getString(INPUT_DATA);
 				String password = requestTuple.getString(INPUT_SILENT);
 				boolean loggedIn = db.getLogin().login(db, username, password);
-				if(loggedIn)
+				if (loggedIn)
 				{
 					out.println("Welcome, " + username + "!");
 					this.__remote__login__request__username = username;
@@ -1231,7 +1172,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 				out.close();
 				return;
 			}
-			
+
 			// if no type selected: show data type choice
 			if (requestTuple.getString(INPUT_DATATYPE) == null)
 			{
@@ -1240,19 +1181,17 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 					out.println("<html><body><form method=\"post\" enctype=\"multipart/form-data\">");
 					out.println("<h1>Data upload (step 1)</h1>");
 					out.println("Choose your data type.");
-					out.println("<table><tr><td><label>Data type:</label></td><td><select name=\""
-							+ INPUT_DATATYPE + "\">");
+					out.println("<table><tr><td><label>Data type:</label></td><td><select name=\"" + INPUT_DATATYPE
+							+ "\">");
 
-					for (Class<? extends Entity> c : this.getDatabase()
-							.getEntityClasses())
+					for (Class<? extends Entity> c : this.getDatabase().getEntityClasses())
 					{
 						// write to screen
-						out.println("<option value=\"" + c.getName() + "\">"
-								+ c.getName() + "</option>");
+						out.println("<option value=\"" + c.getName() + "\">" + c.getName() + "</option>");
 					}
 					out.println("</select></td></tr>");
-					out.println("<tr><td></td><td><input type=\"submit\" name=\""
-							+ INPUT_SUBMIT + "\" value=\"Submit\"></td></tr>");
+					out.println("<tr><td></td><td><input type=\"submit\" name=\"" + INPUT_SUBMIT
+							+ "\" value=\"Submit\"></td></tr>");
 					out.println("</table></form></body></html>");
 				}
 				catch (Exception e)
@@ -1264,8 +1203,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 
 			}
 			// if no data provided, show csv input form
-			else if (requestTuple.getObject(INPUT_DATA) == null
-					&& requestTuple.getObject(INPUT_FILE) == null)
+			else if (requestTuple.getObject(INPUT_DATA) == null && requestTuple.getObject(INPUT_FILE) == null)
 			{
 				try
 				{
@@ -1321,14 +1259,11 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 					Tuple constants = new SimpleTuple();
 					for (String column : requestTuple.getFields())
 					{
-						if (!column.equals(INPUT_DATATYPE)
-								&& !column.equals(INPUT_DATA)
-								&& !column.equals(INPUT_ACTION)
-								&& !column.equals(INPUT_SUBMIT)
+						if (!column.equals(INPUT_DATATYPE) && !column.equals(INPUT_DATA)
+								&& !column.equals(INPUT_ACTION) && !column.equals(INPUT_SUBMIT)
 								&& !requestTuple.getString(column).equals(""))
 						{
-							constants.set(column,
-									requestTuple.getObject(column));
+							constants.set(column, requestTuple.getObject(column));
 						}
 					}
 					action = requestTuple.getString(INPUT_ACTION);
@@ -1345,10 +1280,8 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 					if (action.equals("ADD"))
 					{
 						File temp = File.createTempFile("molgenis", "tab");
-						TupleWriter writer = new CsvWriter(new PrintWriter(
-								new BufferedWriter(new FileWriter(temp))));
-						if (requestTuple.getObject(INPUT_SILENT) != null
-								&& requestTuple.getBool(INPUT_SILENT) == true)
+						TupleWriter writer = new CsvWriter(new PrintWriter(new BufferedWriter(new FileWriter(temp))));
+						if (requestTuple.getObject(INPUT_SILENT) != null && requestTuple.getBool(INPUT_SILENT) == true)
 						{
 							writer.close();
 							writer = null;
@@ -1359,33 +1292,30 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
 							logger.info("processing textarea upload...");
-							
-							//allows secure uploading of data from R API
+
+							// allows secure uploading of data from R API
 							String username = this.__remote__login__request__username;
 							String password = this.__remote__login__request__password;
 							db.getLogin().login(db, username, password);
-							nRowsChanged = db.add(entityClass, new CsvStringReader(requestTuple.getString(INPUT_DATA)), writer);
+							nRowsChanged = db.add(entityClass, new CsvStringReader(requestTuple.getString(INPUT_DATA)),
+									writer);
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
 							logger.info("processing file upload...");
-							nRowsChanged = db.add(
-									entityClass,
-									new CsvFileReader(requestTuple
-											.getFile(INPUT_FILE)), writer);
+							nRowsChanged = db.add(entityClass, new CsvFileReader(requestTuple.getFile(INPUT_FILE)),
+									writer);
 						}
 						else
 						{
 							logger.error("no input data or input file provided.");
 							out.print("ERROR: no input data or input file provided.");
 						}
-						out.print("Uploaded " + formatter.format(nRowsChanged)
-								+ " rows of " + entityClass.getCanonicalName()
-								+ "\n");
+						out.print("Uploaded " + formatter.format(nRowsChanged) + " rows of "
+								+ entityClass.getCanonicalName() + "\n");
 
 						if (writer != null) writer.close();
-						BufferedReader reader = new BufferedReader(
-								new FileReader(temp));
+						BufferedReader reader = new BufferedReader(new FileReader(temp));
 						String line = null;
 						while ((line = reader.readLine()) != null)
 						{
@@ -1397,24 +1327,15 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 					{
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
-							nRowsChanged = db.update(
-									entityClass,
-									new CsvStringReader(requestTuple
-											.getString(INPUT_DATA)));
-							out.print("Updated "
-									+ formatter.format(nRowsChanged)
-									+ " rows of "
+							nRowsChanged = db.update(entityClass,
+									new CsvStringReader(requestTuple.getString(INPUT_DATA)));
+							out.print("Updated " + formatter.format(nRowsChanged) + " rows of "
 									+ entityClass.getCanonicalName() + "\n");
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
-							nRowsChanged = db.update(
-									entityClass,
-									new CsvFileReader(requestTuple
-											.getFile(INPUT_FILE)));
-							out.print("Updated "
-									+ formatter.format(nRowsChanged)
-									+ " rows of "
+							nRowsChanged = db.update(entityClass, new CsvFileReader(requestTuple.getFile(INPUT_FILE)));
+							out.print("Updated " + formatter.format(nRowsChanged) + " rows of "
 									+ entityClass.getCanonicalName() + "\n");
 						}
 					}
@@ -1422,24 +1343,15 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 					{
 						if (requestTuple.getObject(INPUT_DATA) != null)
 						{
-							nRowsChanged = db.remove(
-									entityClass,
-									new CsvStringReader(requestTuple
-											.getString(INPUT_DATA)));
-							out.print("Removed "
-									+ formatter.format(nRowsChanged)
-									+ " rows of "
+							nRowsChanged = db.remove(entityClass,
+									new CsvStringReader(requestTuple.getString(INPUT_DATA)));
+							out.print("Removed " + formatter.format(nRowsChanged) + " rows of "
 									+ entityClass.getCanonicalName() + "\n");
 						}
 						else if (requestTuple.getObject(INPUT_FILE) != null)
 						{
-							nRowsChanged = db.remove(
-									entityClass,
-									new CsvFileReader(requestTuple
-											.getFile(INPUT_FILE)));
-							out.print("Removed "
-									+ formatter.format(nRowsChanged)
-									+ " rows of "
+							nRowsChanged = db.remove(entityClass, new CsvFileReader(requestTuple.getFile(INPUT_FILE)));
+							out.print("Removed " + formatter.format(nRowsChanged) + " rows of "
 									+ entityClass.getCanonicalName() + "\n");
 						}
 					}
@@ -1450,9 +1362,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 				}
 				catch (Exception e)
 				{
-					out.print("Failed to " + action + " "
-							+ entityClass.getName() + ": " + e.getMessage()
-							+ "");
+					out.print("Failed to " + action + " " + entityClass.getName() + ": " + e.getMessage() + "");
 					e.printStackTrace();
 					throw e;
 				}
@@ -1466,8 +1376,7 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 			logger.error(e);
 			e.printStackTrace();
 		}
-		logger.info("servlet took: "
-				+ (System.currentTimeMillis() - start_time) + " ms");
+		logger.info("servlet took: " + (System.currentTimeMillis() - start_time) + " ms");
 		logger.info("------------");
 	}
 
@@ -1500,11 +1409,9 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 	 * @param out
 	 * @throws IOException
 	 */
-	private void writeURLtoOutput(URL source, PrintWriter out)
-			throws IOException
+	private void writeURLtoOutput(URL source, PrintWriter out) throws IOException
 	{
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				source.openStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(source.openStream()));
 		String sourceLine;
 		while ((sourceLine = reader.readLine()) != null)
 		{
@@ -1513,12 +1420,12 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		reader.close();
 	}
 
-	public void handleXREFrequest(final Database db,  final HttpServletRequest request, 
+	public void handleXREFrequest(final Database db, final HttpServletRequest request,
 			final HttpServletResponse response) throws ServletException
 	{
 		try
 		{
-			MolgenisXrefService.handleXrefRequest(db, new MolgenisRequest(request),  new MolgenisResponse(response));
+			MolgenisXrefService.handleXrefRequest(db, new MolgenisRequest(request), new MolgenisResponse(response));
 		}
 		catch (Exception e)
 		{
@@ -1526,14 +1433,10 @@ public abstract class AbstractMolgenisServlet extends HttpServlet
 		}
 	}
 
-
-
 	private static String getPort(HttpServletRequest req)
 	{
-		if ("http".equalsIgnoreCase(req.getScheme())
-				&& req.getServerPort() != 80
-				|| "https".equalsIgnoreCase(req.getScheme())
-				&& req.getServerPort() != 443)
+		if ("http".equalsIgnoreCase(req.getScheme()) && req.getServerPort() != 80
+				|| "https".equalsIgnoreCase(req.getScheme()) && req.getServerPort() != 443)
 		{
 			return (":" + req.getServerPort());
 		}
