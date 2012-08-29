@@ -1,0 +1,3 @@
+<molgenis name="xqtl" label="xQTL workbench">
+	<plugin name="MOLGENIS" type="org.molgenis.minigui.MiniGUI" />
+</molgenis>
