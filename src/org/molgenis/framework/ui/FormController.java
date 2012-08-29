@@ -641,23 +641,10 @@ public abstract class FormController<E extends Entity> extends
 	}
 
 	// helper method
-	protected void doUpdate(Database db, Tuple request) throws DatabaseException, IOException, ParseException
+	protected void doUpdate(Database db, Tuple request)
+			throws DatabaseException, IOException, ParseException
 	{
-		
-		Class<? extends Entity> entityClass = getModel().create().getClass();
-		 
-		Entity entity;
-		try
-		{
-			final String idField = String.format("%s_%s", entityClass.getSimpleName(), entityClass.newInstance().getIdField());
-			
-			entity = db.findById(entityClass, request.getObject(idField));
-		}
-		catch (Exception e)
-		{
-			throw new DatabaseException(e);
-		}
-
+		Entity entity = getModel().create();
 		ScreenMessage msg = null;
 		try
 		{
