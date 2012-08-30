@@ -28,9 +28,6 @@
 
 <table width="100%">
 	<tr>
-		<td width="33%">
-			<!--left flank-->
-		</td>
 		<td align="center">
 			<table>
 				<tr>
@@ -94,10 +91,6 @@
 					</td>
 				</tr>
 			</table>
-			
-		</td>
-		<td width="33%">
-			<!--right flank-->
 		</td>
 	</tr>
 </table>

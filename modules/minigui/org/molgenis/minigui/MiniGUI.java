@@ -73,29 +73,29 @@ public class MiniGUI<E extends Entity> extends PluginModel<E>
 	public void reload(Database db)
 	{
 		this.model.setUiTree(this.getParent().getChildren());
-		for (ScreenController sc : this.getParent().getAllChildren())
-		{
-			// if (sc instanceof FormController)
-			// {
-			// System.out.println("FormController: " + sc.getName());
-			// }
-			// else if (sc instanceof MenuController)
-			// {
-			// System.out.println("MenuController: " + sc.getName());
-			// }
-			// else if (sc instanceof PluginModel)
-			// {
-			// System.out.println("PluginModel: " + sc.getName());
-			// }
-			// else if (sc instanceof EasyPluginController)
-			// {
-			// System.out.println("EasyPluginController: " + sc.getName());
-			// }
-			// else
-			// {
-			// System.out.println("UNKNOWN: " + sc.getName());
-			// }
-		}
+		// for (ScreenController sc : this.getParent().getAllChildren())
+		// {
+		// if (sc instanceof FormController)
+		// {
+		// System.out.println("FormController: " + sc.getName());
+		// }
+		// else if (sc instanceof MenuController)
+		// {
+		// System.out.println("MenuController: " + sc.getName());
+		// }
+		// else if (sc instanceof PluginModel)
+		// {
+		// System.out.println("PluginModel: " + sc.getName());
+		// }
+		// else if (sc instanceof EasyPluginController)
+		// {
+		// System.out.println("EasyPluginController: " + sc.getName());
+		// }
+		// else
+		// {
+		// System.out.println("UNKNOWN: " + sc.getName());
+		// }
+		// }
 	}
 
 	@Override

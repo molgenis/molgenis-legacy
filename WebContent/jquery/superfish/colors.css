@@ -10,9 +10,9 @@
 	background: #FFFFFF;
 }
 
-/**matrix inner table and cells*/
+/**matrix inner table and cells, border-color original EAEAEA color original 000000*/
 .tableBorder,.matrixTableCell{
-	border-color: #EAEAEA;
+	border-color: #fff;
 	color: #000000;
 }
 
@@ -28,10 +28,10 @@
 	color: #FFFFFF;
 }
 
-/**highlight*/
+/**highlight original lightgreen 9EA98E, no color */
 .highlight,.leftNavigationNotSelected,.navigationNotSelected, .form_menu, .submenuitem   {
-	background: #9EA98E;
-	
+	background: #fff;
+	color: #fff;
 }
 
 .submenuitem{
@@ -54,11 +54,11 @@
 }
 
 .matrixRowColor0,.form_listrow0 {
-	background: #A9B5B9;
+	background: #BDD2FF;
 }
 
 .matrixRowColor1,.form_listrow1 {
-	background: #BAC4AB;
+	background: #9AAEDB;
 }
 
 .matrixRowColorEmpty {
