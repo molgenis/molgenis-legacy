@@ -1,4 +1,4 @@
-package plugins.hl7parser;
+package org.molgenis.lifelinesresearchportal.plugins.hl7parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,22 +10,24 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.StageLRA.HL7ObservationLRA;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.StageLRA.HL7OrganizerLRA;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.StageLRA.HL7ValueSetAnswerLRA;
+import org.molgenis.lifelinesresearchportal.plugins.catalogue.StageLRA.HL7ValueSetLRA;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.protocol.Protocol;
 
-import plugins.hl7parser.StageLRA.HL7ObservationLRA;
-import plugins.hl7parser.StageLRA.HL7OrganizerLRA;
-import plugins.hl7parser.StageLRA.HL7ValueSetAnswerLRA;
-import plugins.hl7parser.StageLRA.HL7ValueSetLRA;
+public class HL7PhenoImporter
+{
 
-public class HL7PhenoImporter {
-
-	public void start(HL7Data ll, Database db) throws Exception {
+	public void start(HL7Data ll, Database db) throws Exception
+	{
 		// TODO Auto-generated method stub
 
-		try {
+		try
+		{
 
 			db.beginTx();
 
@@ -33,10 +35,9 @@ public class HL7PhenoImporter {
 
 			Investigation inv = null;
 
-			if (db.find(
-					Investigation.class,
-					new QueryRule(Investigation.NAME, Operator.EQUALS,
-							investigationName)).size() == 0) {
+			if (db.find(Investigation.class, new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName))
+					.size() == 0)
+			{
 
 				inv = new Investigation();
 
@@ -44,34 +45,31 @@ public class HL7PhenoImporter {
 
 				db.add(inv);
 
-			} else {
-				inv = db.find(
-						Investigation.class,
-						new QueryRule(Investigation.NAME, Operator.EQUALS,
-								investigationName)).get(0);
+			}
+			else
+			{
+				inv = db.find(Investigation.class,
+						new QueryRule(Investigation.NAME, Operator.EQUALS, investigationName)).get(0);
 			}
 
 			Protocol stageCatalogue;
 
-			if (db.find(
-					Protocol.class,
-					new QueryRule(Protocol.NAME, Operator.EQUALS,
-							"stageCatalogue")).size() == 0) {
+			if (db.find(Protocol.class, new QueryRule(Protocol.NAME, Operator.EQUALS, "stageCatalogue")).size() == 0)
+			{
 				stageCatalogue = new Protocol();
 				stageCatalogue.setName("stageCatalogue");
 
 				stageCatalogue.setInvestigation_Name(investigationName);
 
 				db.add(stageCatalogue);
-			} else {
-				stageCatalogue = db.find(
-						Protocol.class,
-						new QueryRule(Protocol.NAME, Operator.EQUALS,
-								"stageCatalogue")).get(0);
+			}
+			else
+			{
+				stageCatalogue = db.find(Protocol.class,
+						new QueryRule(Protocol.NAME, Operator.EQUALS, "stageCatalogue")).get(0);
 			}
 
-			HashMap<String, HL7ValueSetLRA> hashValueSetLRA = ll
-					.getHashValueSetLRA();
+			HashMap<String, HL7ValueSetLRA> hashValueSetLRA = ll.getHashValueSetLRA();
 
 			List<Integer> listOfProtocolIds = new ArrayList<Integer>();
 
@@ -82,7 +80,8 @@ public class HL7PhenoImporter {
 			List<Protocol> uniqueProtocol = new ArrayList<Protocol>();
 			List<String> uniqueListOfProtocolName = new ArrayList<String>();
 
-			for (HL7OrganizerLRA organizer : ll.getHL7OrganizerLRA()) {
+			for (HL7OrganizerLRA organizer : ll.getHL7OrganizerLRA())
+			{
 
 				System.out.println(organizer.getHL7OrganizerNameLRA());
 				String protocolName = organizer.getHL7OrganizerNameLRA().trim();
@@ -92,112 +91,121 @@ public class HL7PhenoImporter {
 
 				List<String> protocolFeature = new ArrayList<String>();
 
-				for (HL7ObservationLRA meas : organizer.measurements) {
+				for (HL7ObservationLRA meas : organizer.measurements)
+				{
 
 					List<String> measurementCategory = new ArrayList<String>();
 
-					if (db.find(
-							Measurement.class,
-							new QueryRule(Measurement.NAME, Operator.EQUALS,
-									meas.getMeasurementName())).size() > 0) {
-						Measurement m = db.find(
-								Measurement.class,
-								new QueryRule(Measurement.NAME,
-										Operator.EQUALS, meas
-												.getMeasurementName())).get(0);
+					if (db.find(Measurement.class,
+							new QueryRule(Measurement.NAME, Operator.EQUALS, meas.getMeasurementName())).size() > 0)
+					{
+						Measurement m = db.find(Measurement.class,
+								new QueryRule(Measurement.NAME, Operator.EQUALS, meas.getMeasurementName())).get(0);
 
 						m.setDescription(meas.getMeasurementLabel());
 						m.setInvestigation(inv);
 
 						protocolFeature.add(m.getName());
 
-						if (hashValueSetLRA.containsKey(protocolName + "."
-								+ meas.getMeasurementName().trim())) {
+						if (hashValueSetLRA.containsKey(protocolName + "." + meas.getMeasurementName().trim()))
+						{
 
-							HL7ValueSetLRA valueSetLRA = hashValueSetLRA
-									.get(protocolName + "."
-											+ meas.getMeasurementName());
+							HL7ValueSetLRA valueSetLRA = hashValueSetLRA.get(protocolName + "."
+									+ meas.getMeasurementName());
 
-							for (HL7ValueSetAnswerLRA eachAnswer : valueSetLRA
-									.getListOFAnswers()) {
+							for (HL7ValueSetAnswerLRA eachAnswer : valueSetLRA.getListOFAnswers())
+							{
 
 								String codeValue = eachAnswer.getCodeValue();
-								String categoryName = eachAnswer.getName()
-										.trim().toLowerCase();
+								String categoryName = eachAnswer.getName().trim().toLowerCase();
 
-								if (!uniqueCategoryName.contains(categoryName)) {
+								if (!uniqueCategoryName.contains(categoryName))
+								{
 									uniqueCategoryName.add(categoryName);
 									Category c = new Category();
-									String indentifier = codeValue
-											+ categoryName.replaceAll(
-													"[^(a-zA-Z0-9)]", "");
+									String indentifier = codeValue + categoryName.replaceAll("[^(a-zA-Z0-9)]", "");
 									c.setName(indentifier.trim().toLowerCase());
 									c.setCode_String(codeValue);
 									c.setDescription(categoryName);
 									c.setInvestigation(inv);
 									uniqueListOfCategory.add(c);
 								}
-								String indentifier = codeValue
-										+ categoryName.replaceAll(
-												"[^(a-zA-Z0-9)]", "");
-								measurementCategory.add(indentifier.trim()
-										.toLowerCase());
+								String indentifier = codeValue + categoryName.replaceAll("[^(a-zA-Z0-9)]", "");
+								measurementCategory.add(indentifier.trim().toLowerCase());
 							}
 						}
 						m.setCategories_Name(measurementCategory);
 
 						String dataType = meas.getMeasurementDataType();
 
-						if (dataType.equals("INT")) {
+						if (dataType.equals("INT"))
+						{
 							m.setDataType("int");
-						} else if (dataType.equals("ST")) {
+						}
+						else if (dataType.equals("ST"))
+						{
 							m.setDataType("string");
-						} else if (dataType.equals("CO")) {
+						}
+						else if (dataType.equals("CO"))
+						{
 							m.setDataType("categorical");
-						} else if (dataType.equals("CD")) {
+						}
+						else if (dataType.equals("CD"))
+						{
 							m.setDataType("code");
-						} else if (dataType.equals("PQ")) {
+						}
+						else if (dataType.equals("PQ"))
+						{
 							m.setDataType("decimal");
-						} else if (dataType.equals("TS")) {
+						}
+						else if (dataType.equals("TS"))
+						{
 							m.setDataType("datetime");
-						} else if (dataType.equals("REAL")) {
+						}
+						else if (dataType.equals("REAL"))
+						{
 							m.setDataType("decimal");
-						} else if (dataType.equals("BL")) {
+						}
+						else if (dataType.equals("BL"))
+						{
 							m.setDataType("bool");
 						}
 
-						if (!uniqueListOfMeasurementNames.contains(m.getName())) {
+						if (!uniqueListOfMeasurementNames.contains(m.getName()))
+						{
 							uniqueListOfMeasurementNames.add(m.getName());
 							uniqueListOfMeasurements.add(m);
 						}
 					}
 					protocol.setFeatures_Name(protocolFeature);
-					if (protocol.getFeatures_Name().size() > 0) {
+					if (protocol.getFeatures_Name().size() > 0)
+					{
 						uniqueProtocol.add(protocol);
 						uniqueListOfProtocolName.add(protocolName);
 					}
 				}
 			}
 
-			for (Category c : uniqueListOfCategory) {
+			for (Category c : uniqueListOfCategory)
+			{
 				System.out.println("-------------." + c.getName());
 			}
 
-			db.update(uniqueListOfCategory,
-					Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
+			db.update(uniqueListOfCategory, Database.DatabaseAction.ADD_IGNORE_EXISTING, Category.NAME);
 
-			for (Measurement m : uniqueListOfMeasurements) {
+			for (Measurement m : uniqueListOfMeasurements)
+			{
 
-				if (m.getCategories_Name().size() > 0) {
+				if (m.getCategories_Name().size() > 0)
+				{
 
-					List<Category> listOfCategory = db.find(
-							Category.class,
-							new QueryRule(Category.NAME, Operator.IN, m
-									.getCategories_Name()));
+					List<Category> listOfCategory = db.find(Category.class,
+							new QueryRule(Category.NAME, Operator.IN, m.getCategories_Name()));
 
 					List<Integer> listOfCategoryID = new ArrayList<Integer>();
 
-					for (Category c : listOfCategory) {
+					for (Category c : listOfCategory)
+					{
 						listOfCategoryID.add(c.getId());
 					}
 					m.setCategories_Id(listOfCategoryID);
@@ -205,30 +213,32 @@ public class HL7PhenoImporter {
 			}
 			db.update(uniqueListOfMeasurements);
 
-			for (Protocol p : uniqueProtocol) {
+			for (Protocol p : uniqueProtocol)
+			{
 
-				if (p.getFeatures_Name().size() > 0) {
+				if (p.getFeatures_Name().size() > 0)
+				{
 
-					List<Measurement> listOfMeasurement = db.find(
-							Measurement.class, new QueryRule(Measurement.NAME,
-									Operator.IN, p.getFeatures_Name()));
+					List<Measurement> listOfMeasurement = db.find(Measurement.class, new QueryRule(Measurement.NAME,
+							Operator.IN, p.getFeatures_Name()));
 
 					List<Integer> listOfMeasurementID = new ArrayList<Integer>();
 
-					for (Measurement m : listOfMeasurement) {
+					for (Measurement m : listOfMeasurement)
+					{
 						listOfMeasurementID.add(m.getId());
 					}
 					p.setFeatures_Id(listOfMeasurementID);
 				}
 			}
 
-			db.update(uniqueProtocol,
-					Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
+			db.update(uniqueProtocol, Database.DatabaseAction.ADD_IGNORE_EXISTING, Protocol.NAME);
 
-			uniqueProtocol = db.find(Protocol.class, new QueryRule(
-					Protocol.NAME, Operator.IN, uniqueListOfProtocolName));
+			uniqueProtocol = db.find(Protocol.class,
+					new QueryRule(Protocol.NAME, Operator.IN, uniqueListOfProtocolName));
 
-			for (Protocol p : uniqueProtocol) {
+			for (Protocol p : uniqueProtocol)
+			{
 				listOfProtocolIds.add(p.getId());
 			}
 
@@ -236,16 +246,18 @@ public class HL7PhenoImporter {
 			otherProtocol.setName("NotClassified");
 			otherProtocol.setInvestigation_Name(investigationName);
 			List<Integer> listOfFeaturesID = new ArrayList<Integer>();
-			for (Measurement m : db.find(Measurement.class, new QueryRule(
-					Measurement.INVESTIGATION_NAME, Operator.EQUALS,
-					investigationName))) {
+			for (Measurement m : db.find(Measurement.class, new QueryRule(Measurement.INVESTIGATION_NAME,
+					Operator.EQUALS, investigationName)))
+			{
 
-				if (!uniqueListOfMeasurementNames.contains(m.getName())) {
+				if (!uniqueListOfMeasurementNames.contains(m.getName()))
+				{
 					listOfFeaturesID.add(m.getId());
 				}
 
 			}
-			if (listOfFeaturesID.size() > 0) {
+			if (listOfFeaturesID.size() > 0)
+			{
 				otherProtocol.setFeatures_Id(listOfFeaturesID);
 
 				db.add(otherProtocol);
@@ -449,68 +461,70 @@ public class HL7PhenoImporter {
 
 			db.commitTx();
 
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			db.rollbackTx();
 		}
 	}
 
-	public List<Integer> addingOntologyTerm(
-			List<HL7OntologyTerm> listOfHL7OntologyTerms, Database db)
-			throws Exception {
+	public List<Integer> addingOntologyTerm(List<HL7OntologyTerm> listOfHL7OntologyTerms, Database db) throws Exception
+	{
 
 		List<Integer> listOfOntologyTermIDs = new ArrayList<Integer>();
 
-		for (HL7OntologyTerm t : listOfHL7OntologyTerms) {
+		for (HL7OntologyTerm t : listOfHL7OntologyTerms)
+		{
 
 			String codeSystemName = t.getCodeSystemName();
 
 			if (t.getCodeSystemName().toLowerCase().startsWith("snomed")
-					|| t.getCodeSystemName().equalsIgnoreCase("sct")) {
+					|| t.getCodeSystemName().equalsIgnoreCase("sct"))
+			{
 				codeSystemName = "SCT";
 			}
 
 			Ontology ot = new Ontology();
 
-			if (db.find(
-					Ontology.class,
-					new QueryRule(Ontology.ONTOLOGYACCESSION, Operator.EQUALS,
-							t.getCodeSystem())).size() == 0) {
+			if (db.find(Ontology.class, new QueryRule(Ontology.ONTOLOGYACCESSION, Operator.EQUALS, t.getCodeSystem()))
+					.size() == 0)
+			{
 
 				ot.setName(codeSystemName);
 				ot.setOntologyAccession(t.getCodeSystem());
 				db.add(ot);
 
-			} else {
-				ot = db.find(
-						Ontology.class,
-						new QueryRule(Ontology.ONTOLOGYACCESSION,
-								Operator.EQUALS, t.getCodeSystem())).get(0);
+			}
+			else
+			{
+				ot = db.find(Ontology.class,
+						new QueryRule(Ontology.ONTOLOGYACCESSION, Operator.EQUALS, t.getCodeSystem())).get(0);
 			}
 
 			Query<OntologyTerm> q = db.query(OntologyTerm.class);
-			q.addRules(new QueryRule(OntologyTerm.TERMACCESSION,
-					Operator.EQUALS, t.getCode()));
-			q.addRules(new QueryRule(OntologyTerm.ONTOLOGY_NAME,
-					Operator.EQUALS, codeSystemName));
+			q.addRules(new QueryRule(OntologyTerm.TERMACCESSION, Operator.EQUALS, t.getCode()));
+			q.addRules(new QueryRule(OntologyTerm.ONTOLOGY_NAME, Operator.EQUALS, codeSystemName));
 
 			OntologyTerm ont = new OntologyTerm();
 
-			if (q.find().size() == 0) {
+			if (q.find().size() == 0)
+			{
 
 				ont.setOntology_Id(ot.getId());
 				ont.setName(t.getDisplayName());
 				ont.setTermAccession(t.getCode());
 				db.add(ont);
 
-			} else {
+			}
+			else
+			{
 				ont = q.find().get(0);
 			}
 
 			listOfOntologyTermIDs.add(ont.getId());
 
-			System.out.println("The mapped ontology term is "
-					+ t.getDisplayName() + "\t" + t.getCode());
+			System.out.println("The mapped ontology term is " + t.getDisplayName() + "\t" + t.getCode());
 		}
 
 		return listOfOntologyTermIDs;

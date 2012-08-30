@@ -1,13 +1,11 @@
 package org.molgenis.datatable.plugin;
 
-import java.io.File;
-
 import matrix.DataMatrixInstance;
 import matrix.general.DataMatrixHandler;
 
 import org.molgenis.data.Data;
 import org.molgenis.datatable.model.BinaryTupleTable;
-import org.molgenis.datatable.view.JQGridTableView;
+import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.FormController;
 import org.molgenis.framework.ui.FormModel;
@@ -29,18 +27,19 @@ public class JQGridPlugin_xQTL extends JQGridPluginEntity
 	public void reload(Database db)
 	{
 		ScreenController<?> parentController = (ScreenController<?>) this.getParent().getParent();
-		FormModel<Data> parentForm = (FormModel<Data>) ((FormController)parentController).getModel();
+		FormModel<Data> parentForm = (FormModel<Data>) ((FormController) parentController).getModel();
 		Data data = parentForm.getRecords().get(0);
-		
-		if(this.dmh == null){
+
+		if (this.dmh == null)
+		{
 			dmh = new DataMatrixHandler(db);
 		}
-		
+
 		try
 		{
 			DataMatrixInstance m = dmh.createInstance(data, db);
 			BinaryTupleTable btt = new BinaryTupleTable(m.getAsFile());
-			tableView = new JQGridTableView("test", this, btt);
+			tableView = new JQGridView("test", this, btt);
 		}
 		catch (Exception e)
 		{

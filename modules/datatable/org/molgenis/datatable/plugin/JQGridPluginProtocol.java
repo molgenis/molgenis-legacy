@@ -2,7 +2,6 @@ package org.molgenis.datatable.plugin;
 
 import java.io.OutputStream;
 
-import org.molgenis.datatable.model.EditableTableDecorator;
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
@@ -18,6 +17,7 @@ import org.molgenis.util.Tuple;
 public class JQGridPluginProtocol extends
 		EasyPluginController<JQGridPluginProtocol> {
 	JQGridView tableView;
+	boolean editable = false;
 
 	public JQGridPluginProtocol(String name, ScreenController<?> parent) {
 		super(name, parent);
@@ -35,9 +35,9 @@ public class JQGridPluginProtocol extends
 			ProtocolTable table = new ProtocolTable(db, p);
 			table.setTargetString("Pa_Id");
 			// add editable decorator
-			EditableTableDecorator editableTable = new EditableTableDecorator(
-					table);
-			tableView = new JQGridView("test", this, editableTable);
+
+			// check which table to show
+			tableView = new JQGridView("test", this, table);
 
 			tableView
 					.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
@@ -52,8 +52,23 @@ public class JQGridPluginProtocol extends
 	public void download_json_test(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException {
 		// handle requests for the table named 'test'
+
 		tableView.handleRequest(db, request, out);
+
+		if ("edit".equals(request.getAction())) {
+			editable = true;
+		} else {
+			editable = false;
+		}
+
 	}
+
+	//
+	// public void handleRequest(Database db, Tuple request) {
+	// if (request.getAction().equals("edit")) {
+	// System.out.println("hello world");
+	// }
+	// }
 
 	// what is shown to the user
 	public ScreenView getView() {

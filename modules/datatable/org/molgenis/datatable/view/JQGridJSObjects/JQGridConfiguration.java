@@ -10,11 +10,15 @@ import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.model.elements.Field;
 
+import com.google.gson.Gson;
+
 public class JQGridConfiguration {
 	public String id;
 
 	/** ajax url */
 	public final String url;
+
+	public final String editurl;
 
 	/** formatting of the ajax service data */
 	public final String datatype = "json";
@@ -75,6 +79,7 @@ public class JQGridConfiguration {
 		this.id = id;
 		this.pager = "#" + id + "_pager";
 		this.url = url;
+		this.editurl = url;
 		this.caption = caption;
 
 		// "{repeatitems: false, id: \"Code\"}"
@@ -84,6 +89,9 @@ public class JQGridConfiguration {
 		if (tupleTable instanceof FilterableTupleTable) {
 			// sortable = true;
 			settings.search = true;
+			settings.add = true;
+			settings.edit = true;
+			settings.del = true;
 		}
 
 		for (final Field f : tupleTable.getColumns()) {
@@ -94,12 +102,15 @@ public class JQGridConfiguration {
 			colModel.add(model);
 			colNames.add(f.getSqlName());
 		}
+
+		System.out.println(new Gson().toJson(settings));
 	}
 
 	public JQGridConfiguration(String id, String url, String caption) {
 		this.id = id;
 		pager = "#" + id + "Pager";
 		this.url = url;
+		this.editurl = url;
 		this.caption = caption;
 	}
 }

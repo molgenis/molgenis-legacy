@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package plugins.hl7parser;
+package org.molgenis.lifelinesresearchportal.plugins.hl7parser;
 
 import org.molgenis.framework.db.Database;
 
