@@ -54,7 +54,12 @@ public class MiniGUI<E extends Entity> extends PluginModel<E>
 
 			try
 			{
-
+				// if (action.equals("goto"))
+				// {
+				// String screen = request.getString("__selectScreen");
+				// System.out.println("SCREEN SELECT: " + screen);
+				// this.getParent().setSelected(screen);
+				// }
 			}
 			catch (Exception e)
 			{
@@ -67,7 +72,30 @@ public class MiniGUI<E extends Entity> extends PluginModel<E>
 	@Override
 	public void reload(Database db)
 	{
-
+		this.model.setUiTree(this.getParent().getChildren());
+		for (ScreenController sc : this.getParent().getAllChildren())
+		{
+			// if (sc instanceof FormController)
+			// {
+			// System.out.println("FormController: " + sc.getName());
+			// }
+			// else if (sc instanceof MenuController)
+			// {
+			// System.out.println("MenuController: " + sc.getName());
+			// }
+			// else if (sc instanceof PluginModel)
+			// {
+			// System.out.println("PluginModel: " + sc.getName());
+			// }
+			// else if (sc instanceof EasyPluginController)
+			// {
+			// System.out.println("EasyPluginController: " + sc.getName());
+			// }
+			// else
+			// {
+			// System.out.println("UNKNOWN: " + sc.getName());
+			// }
+		}
 	}
 
 	@Override

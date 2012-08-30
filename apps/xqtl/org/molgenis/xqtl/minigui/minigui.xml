@@ -1,3 +1,7 @@
 <molgenis name="xqtl" label="xQTL workbench">
 	<plugin name="MOLGENIS" type="org.molgenis.minigui.MiniGUI" />
+	<menu name="main">
+		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/xqtl_gui_wrapper.xml"/>
+	</menu>
 </molgenis>

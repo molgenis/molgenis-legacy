@@ -7,8 +7,22 @@
 
 package org.molgenis.minigui;
 
+import java.util.Vector;
+
+import org.molgenis.framework.ui.ScreenController;
 
 public class MiniGUIModel
 {
+	private Vector<ScreenController<?>> uiTree;
+
+	public Vector<ScreenController<?>> getUiTree()
+	{
+		return uiTree;
+	}
+
+	public void setUiTree(Vector<ScreenController<?>> uiTree)
+	{
+		this.uiTree = uiTree;
+	}
 
 }

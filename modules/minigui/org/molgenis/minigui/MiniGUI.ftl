@@ -6,10 +6,7 @@
 	<input type="hidden" name="__target" value="${screen.name}">
 	<!--needed in every form: to define the action. This can be set by the submit button-->
 	<input type="hidden" name="__action">
-	
-	<input type="hidden" name="__selectName">
-	<input type="hidden" name="__selectFieldEntity">
-	<input type="hidden" name="__selectFieldIndex">
+	<input type="hidden" name="__selectScreen">
 	
 <!-- this shows a title and border -->
 	<div class="formscreen">
@@ -62,104 +59,35 @@
 							<li class="current">
 								<a href="#a">Database</a>
 								<ul>
-									<li>
-										<a href="#aa">menu item that is quite long</a>
-									</li>
-									<li class="current">
-										<a href="#ab">menu item</a>
-										<ul>
-											<li class="current"><a href="#">menu item</a></li>
-											<li><a href="#aba">menu item</a></li>
-											<li><a href="#abb">menu item</a></li>
-											<li><a href="#abc">menu item</a></li>
-											<li><a href="#abd">menu item</a></li>
-										</ul>
-									</li>
-									<li>
-										<a href="#">menu item</a>
-										<ul>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-										</ul>
-									</li>
-									<li>
-										<a href="#">menu item</a>
-										<ul>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-										</ul>
-									</li>
+									<#list model.uiTree as parent>
+										<li><a href="#">${parent.name}</a>
+										<@toList parent/>
+										</li>
+									</#list>
 								</ul>
-							</li>
-							<li>
-								<a href="#">Help</a>
 							</li>
 							<li>
 								<a href="#">Tools</a>
 								<ul>
 									<li>
-										<a href="#">menu item</a>
-										<ul>
-											<li><a href="#">short</a></li>
-											<li><a href="#">short</a></li>
-											<li><a href="#">short</a></li>
-											<li><a href="#">short</a></li>
-											<li><a href="#">short</a></li>
-										</ul>
+										<a href="api/R/">R API</a>
 									</li>
 									<li>
-										<a href="#">menu item</a>
-										<ul>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-										</ul>
+										<a href="api/find/">Find API</a>
 									</li>
 									<li>
-										<a href="#">menu item</a>
-										<ul>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-										</ul>
+										<a href="api/add/">Add API</a>
 									</li>
 									<li>
-										<a href="#">menu item</a>
-										<ul>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-										</ul>
-									</li>
-									<li>
-										<a href="#">menu item</a>
-										<ul>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-											<li><a href="#">menu item</a></li>
-										</ul>
+										<a href="generated-doc/fileformat.html">File format</a>
 									</li>
 								</ul>
 							</li>
 							<li>
-								<a href="#">APIs</a>
+								<a href="http://www.molgenis.org/wiki/xQTL">Help</a>
 							</li>
 							<li>
-								<a href="#">Admin</a>
+								<a href="?select=Admin">Admin</a>
 							</li>	
 						</ul>
 						
@@ -173,12 +101,22 @@
 		</td>
 	</tr>
 </table>
-
-
-
 	
 			</div>
 		</div>
 	</div>
 </form>
+</#macro>
+
+
+<#macro toList parent>
+	<#if parent.children?size gt 0>
+		<ul>
+		<#list parent.children as child>
+			<li><a href="?select=${child.name}">${child.label}</a>
+			<@toList child/>
+			</li>
+		</#list>
+		</ul>
+	</#if>
 </#macro>
