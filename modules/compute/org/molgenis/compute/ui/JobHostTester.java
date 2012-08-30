@@ -17,8 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
 /**
  * This view enables:
  * <ul>
@@ -30,84 +28,87 @@ import java.util.Map;
 public class JobHostTester extends EasyPluginController<JobHostTester>
 {
 	List<Job> jobs = new ArrayList<Job>();
-	Map<String,ComputeHost> backends = new LinkedHashMap<String,ComputeHost>();
-	
+	Map<String, ComputeHost> backends = new LinkedHashMap<String, ComputeHost>();
+
 	public JobHostTester(String name, ScreenController<?> parent)
 	{
 		super(name, parent);
-		this.setModel(this); 
+		this.setModel(this);
 	}
 
 	public ScreenView getView()
 	{
 		MolgenisForm form = new MolgenisForm(this);
-		
+
 		VerticalLayout view = new VerticalLayout();
 		form.add(view);
 
-		/////////
+		// ///////
 		view.add(new Paragraph("<h1>Define hosts:</h1>"));
-		
-		SelectInput sel = new SelectInput("type","pbs");
-		sel.addOption("pbs","pbs");
-		sel.addOption("grid","grid");
+
+		SelectInput sel = new SelectInput("type", "pbs");
+		sel.setNillable(false);
+		sel.addOption("pbs", "pbs");
+		sel.addOption("grid", "grid");
 		view.add(sel);
 
 		view.add(new StringInput("hostname", ""));
 		view.add(new StringInput("username", ""));
 		view.add(new StringInput("password", ""));
 		view.add(new StringInput("workingDir", ""));
-		
+
 		view.add(new ActionInput("addHost", "Add host"));
-		
+
 		view.add(new Paragraph("Current hosts:"));
-		for(String host: backends.keySet())
+		for (String host : backends.keySet())
 		{
 			view.add(new Paragraph(host));
 		}
-		
-		/////////
+
+		// ///////
 		view.add(new Paragraph("<h1>Define and start a new job below</h1>"));
-		
+
 		view.add(new TextInput("script"));
-		
-		SelectInput hostSel = new SelectInput("backend","");
-		for(String name: backends.keySet()) hostSel.addOption(name, name);
+
+		SelectInput hostSel = new SelectInput("backend", "");
+		hostSel.setNillable(false);
+		for (String name : backends.keySet())
+			hostSel.addOption(name, name);
 		view.add(hostSel);
 		
 		view.add(new ActionInput("submitJob","Submit Job"));
 		view.add(new ActionInput("submitPilot", "Submit Pilot"));
 
-		/////
 		view.add(new Paragraph("<h1>Currently running jobs</h1>"));
-		
-		for(Job j: jobs)
+
+		for (Job j : jobs)
 		{
-			view.add(new Paragraph(j.getName() + ":" + j.getState() + ", host="+j.getHost()+", output="+j.getOutput_log()));
+			view.add(new Paragraph(j.getName() + ":" + j.getState() + ", host=" + j.getHost() + ", output="
+					+ j.getOutput_log()));
 		}
 		view.add(new ActionInput("refreshJobs", "Refresh job statuses"));
-		
+
 		return form;
 	}
-	
+
 	public void refreshJobs(Database db, Tuple request) throws Exception
 	{
-		for(Job job: jobs)
+		for (Job job : jobs)
 		{
 			ComputeHost h = backends.get(job.getHost());
 			h.refresh(job);
 		}
 	}
-	
+
 	public void addHost(Database db, Tuple request) throws Exception
-	{	
+	{
 		String hostname = request.getString("hostname");
 		String username = request.getString("username");
 		String password = request.getString("password");
 		String workingDir = request.getString("workingDir");
-		
+
 		ComputeHost m = null;
-		if("pbs".equals(request.getString("type")))
+		if ("pbs".equals(request.getString("type")))
 		{
 			m = new Pbs(hostname, username, password);
 		}
@@ -116,20 +117,20 @@ public class JobHostTester extends EasyPluginController<JobHostTester>
 			m = new Glite(hostname, username, password);
 		}
 		m.setWorkingDir(workingDir);
-		
-		backends.put(username+"@"+hostname+":"+workingDir, m);
+
+		backends.put(username + "@" + hostname + ":" + workingDir, m);
 	}
-	
+
 	public void submitJob(Database db, Tuple request) throws IOException
 	{
 		Job j = new Job();
-		j.setScript(request.getString("script"));		
-		
-		//get suitable backend
+		j.setScript(request.getString("script"));
+
+		// get suitable backend
 		String host = request.getString("backend");
 		backends.get(host).submit(j);
-		
-		//remember ...
+
+		// remember ...
 		j.setHost(host);
 		jobs.add(j);
 	}

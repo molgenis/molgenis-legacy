@@ -78,7 +78,7 @@
 		<a href="downloadmatrixasexcel">Matrix Excel downloader</a> to download all experimental data as Excel files. Similar to the CSV downloader, except no streaming options. Example: <a href="downloadmatrixasexcel?id=24&download=all">CBxN2_WUR_RILs</a>
 	</li>
 	<li>
-		<a href="downloadfile">File downloader</a> to get the matrices as <a href="http://www.molgenis.org/svn/molgenis_apps/trunk/apps/xgap/matrix/implementations/binary/etc/design.txt">xQTL binaries</a>. This goes by name, e.g. <a href="downloadfile?name=CBxN2_USA_RILs">CBxN2_USA_RILs</a>. You can get a list of all names of matrices by <a href="api/find/Data">via the scriptable interface</a>. In addition, you can also download all <a href="api/find/InvestigationFile">GFF files</a> with QTL results via this downloader.
+		<a href="downloadfile">File downloader</a> to get the matrices as <a href="https://raw.github.com/joerivandervelde/molgenis_apps/master/modules/xgap/matrix/implementations/binary/etc/design.txt">xQTL binaries</a>. This goes by name, e.g. <a href="downloadfile?name=CBxN2_USA_RILs">CBxN2_USA_RILs</a>. You can get a list of all names of matrices by <a href="api/find/Data">via the scriptable interface</a>. In addition, you can also download all <a href="api/find/InvestigationFile">GFF files</a> with QTL results via this downloader.
 	</li>
 </ul>
 

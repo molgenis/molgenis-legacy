@@ -81,7 +81,7 @@ It should be used via 'import' plus passing of properties
 		</copy>
 
 		<!-- call the generator -->
-		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+		<java maxmemory="512m" classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
 			<classpath refid="molgenis.classpath" />
 			<classpath refid="app.class.path" />
 			<arg value="${app_properties}" />
@@ -272,6 +272,8 @@ It should be used via 'import' plus passing of properties
 	<target name="clean-generate-compile-run" depends="clean,generate,compile,run" />
 
 	<target name="clean-generate-compile-test" depends="clean,generate,compile,test" />
+	
+	<target name="clean-generate-compile-webtest" depends="clean,generate,compile,webtest" />
 
 	<target name="testcopy">
 		<pathconvert property="app_path" refid="app.class.path" pathsep="/**/*," dirsep="/">
@@ -294,8 +296,19 @@ It should be used via 'import' plus passing of properties
 		</copy>
 	</target>
 
-	<target name="run" description="Start the application">
+	<target name="run" description="Start the application on port 8080">
 		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<classpath>
+				<path refid="molgenis.classpath" />
+				<path location="${build.molgenis.dir}" />
+				<path location="${build.molgenis_apps.dir}" />
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="runOn" description="Start the application on a specified port, e.g. ant -f build_myapp.xml runOn -Dport=9000">
+		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
+			<arg value="${port}"/>
 			<classpath>
 				<path refid="molgenis.classpath" />
 				<path location="${build.molgenis.dir}" />
@@ -329,8 +342,8 @@ It should be used via 'import' plus passing of properties
 	</target>
 	
 	<target name="webtest" description="Start the Selenium test">
-		<testng classpathref="${molgenis.classpath}" haltOnFailure="true">
-			<classfileset dir="${app_build_dir}" includes="**/${selenium_test_class}.class"/>
+		<testng classpathref="molgenis.classpath" haltOnFailure="true">
+			<classfileset dir="${build.molgenis_apps.dir}" includes="**/${selenium_test_class}.class"/>
 		</testng>
 	</target>
 

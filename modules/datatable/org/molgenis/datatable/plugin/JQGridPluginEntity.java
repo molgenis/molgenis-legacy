@@ -3,7 +3,6 @@ package org.molgenis.datatable.plugin;
 import java.io.OutputStream;
 
 import org.molgenis.datatable.model.EntityTable;
-import org.molgenis.datatable.model.TableException;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.ui.EasyPluginController;
@@ -27,16 +26,17 @@ public class JQGridPluginEntity extends EasyPluginController<JQGridPluginEntity>
 	@Override
 	public void reload(Database db)
 	{
-		// need to (re) load the table
-			EntityTable table = new EntityTable(db, Individual.class);
-			tableView = new JQGridView("test", this, table);
+		EntityTable table = new EntityTable(db, Individual.class);
+		tableView = new JQGridView("test", this, table);
 
 	}
-	
-	//handling of the ajax; should be auto-wired via the JQGridTableView contructor (TODO)
-	public void download_json_test(Database db, Tuple request, OutputStream out) throws HandleRequestDelegationException
+
+	// handling of the ajax; should be auto-wired via the JQGridTableView
+	// contructor (TODO)
+	public void download_json_test(Database db, Tuple request, OutputStream out)
+			throws HandleRequestDelegationException
 	{
-		//handle requests for the table named 'test'
+		// handle requests for the table named 'test'
 		tableView.handleRequest(db, request, out);
 	}
 

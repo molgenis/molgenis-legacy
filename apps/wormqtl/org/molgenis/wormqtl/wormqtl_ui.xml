@@ -9,12 +9,12 @@
 		<plugin label="Genome browser" name="GenomeBrowser" type="plugins.genomebrowser.GenomeBrowser" group="biologist" />
 		<include file="apps/wormqtl/org/molgenis/wormqtl/browsedata.xml"/>
 		<plugin label="Help" name="Help" type="org.molgenis.wormqtl.help.Help" group="biologist" />
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/importdata.xml"/>
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/importdata.xml"/>
 		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/configureanalysis.xml"/>
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/configureanalysis.xml"/>
 		<include file="apps/wormqtl/org/molgenis/wormqtl/search.xml"/>
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/>
-		<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/utilities.xml"/>
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/admin.xml"/>
 		<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
 	</menu>
 </molgenis>

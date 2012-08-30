@@ -1,23 +1,19 @@
 package org.molgenis.datatable.model;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.molgenis.MolgenisFieldTypes;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.model.elements.Field;
-import org.molgenis.util.ResultSetTuple;
-import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
-public class JdbcTable extends AbstractFilterableTupleTable {
+public class JdbcTable extends AbstractFilterableTupleTable
+{
 
-	private ResultSetTuple rs;
+	private List<Tuple> rs;
 	private List<Field> columns;
 	private final String query;
 	private Database db;
@@ -35,117 +31,91 @@ public class JdbcTable extends AbstractFilterableTupleTable {
 		this.countQuery = StringUtils.replace(query, fromExpression, " COUNT(*) ");
 	}
 
-	public JdbcTable(Database db, String query) throws TableException {
+	public JdbcTable(Database db, String query) throws TableException
+	{
 		this(db, query, new ArrayList<QueryRule>());
 	}
 
-	private void load() throws TableException {
-		if (!loaded) {
+	private void load() throws TableException
+	{
+		if (!loaded)
+		{
 			loaded = true;
-			try {
-				rs = new ResultSetTuple(db.executeQuery(query, getFilters().toArray(new QueryRule[0])));
+			try
+			{
+				rs = db.sql(query, getFilters().toArray(new QueryRule[0]));
 				columns = loadColumns();
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				throw new TableException(e);
 			}
 		}
 	}
 
 	@Override
-	public List<Field> getColumns() throws TableException {
+	public List<Field> getAllColumns() throws TableException
+	{
 		load();
 		return columns;
 	}
 
-	private List<Field> loadColumns() throws TableException {
+	private List<Field> loadColumns() throws TableException
+	{
 		load();
-		final List<Field> columns = new ArrayList<Field>();
-		final List<String> fields = rs.getFieldNames();
-		int colIdx = 1;
-		for (String fieldName : fields) {
-			final Field field = new Field(fieldName);
-			try {
-				field.setType(MolgenisFieldTypes.getTypeBySqlTypesCode(rs.getSqlType(colIdx)));
-			} catch (SQLException e) {
-				throw new TableException(e);
-			}
-			columns.add(field);
-			++colIdx;
+		if (rs.size() > 0)
+		{
+			return rs.get(0).getFieldTypes();
 		}
-		return columns;
-	}
-
-	@Override
-	public List<Tuple> getRows() throws TableException {
-		load();
-		try {
-			List<Tuple> result = new ArrayList<Tuple>();
-
-			while (rs.next()) {
-				result.add(new SimpleTuple(rs));
-			}
-			return result;
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		return new ArrayList<Field>();
 	}
 
 	/**
 	 * Don't forget to call close after done with Iterator
 	 */
 	@Override
-	public Iterator<Tuple> iterator() {
-		try {
+	public Iterator<Tuple> iterator()
+	{
+		try
+		{
 			load();
-			return new RSIterator(rs);
-		} catch (Exception e) {
+			return rs.iterator();
+		}
+		catch (Exception e)
+		{
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public void close() throws TableException {
-		try {
-			if (rs != null) {
-				rs.close();
-			}
-			loaded = false;
-		} catch (SQLException e) {
-			throw new TableException(e);
-		}
+	public void close() throws TableException
+	{
 	}
 
 	@Override
-	public int getCount() throws TableException {
-		try {
-			final ResultSet countSet = db.executeQuery(countQuery, getFilters().toArray(new QueryRule[0]));
+	public int getCount() throws TableException
+	{
+		try
+		{
+			final List<Tuple> countSet = db.sql(countQuery, getFilters().toArray(new QueryRule[0]));
 			int rowCount = 0;
-			if (countSet.next()) {
-				final Number count = (Number) countSet.getObject(1);
+			if (countSet.size() > 0)
+			{
+				final Number count = (Number) countSet.get(0).getInt(1);
 				rowCount = count.intValue();
 			}
-			countSet.close();
 			return rowCount;
-		} catch (Exception ex) {
+		}
+		catch (Exception ex)
+		{
 			throw new TableException(ex);
 		}
 	}
 
-	public void setDatabase(Database db) {
+	public void setDatabase(Database db)
+	{
 		this.db = db;
 	}
-
-	@Override
-	public void setVisibleColumns(List<String> fieldNames) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public List<Field> getVisibleColumns() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 	@Override
 	public void setDb(Database db)

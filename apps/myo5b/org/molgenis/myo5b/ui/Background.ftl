@@ -46,7 +46,7 @@ All users who upload unpublished data will be mentioned in the news field on the
 </p>
 <h3>About curation of unpublished data</h3>
 <p>
-Curation will be done by the curator (Dr. Sven van IJzendoorn, MD, Department of Genetics, University Medical Center Groningen, Groningen, the Netherlands). All submitted data will be checked and completed where necessary. If questions remain, we will contact the user who submitted the data.
+Curation will be done by the curator (Dr. Sven van IJzendoorn, MD, Department of Cellbiology, University Medical Center Groningen, Groningen, the Netherlands). All submitted data will be checked and completed where necessary. If questions remain, we will contact the user who submitted the data.
 </p>
 <h3>About the software</h3>
 <p>
@@ -57,14 +57,14 @@ Please contact Dr. Morris Swertz, <a href="mailto:m.a.swertz@rug.nl">m.a.swertz@
 </p>
 <h3>References</h3>
 <ol>
-<!--
+<#--
 <li>Bruckner-Tuderman L. Dystrophic epidermolysis bullosa: pathogenesis and clinical features. Dermatol Clin. 2010 Jan;28(1):107-14. Review. PubMed PMID: <a href="http://www.ncbi.nlm.nih.gov/pubmed/19945622" target="_new">19945622</a>.</li>
 <li>Fine JD, Eady RA, Bauer EA, Bauer JW, Bruckner-Tuderman L, Heagerty A, Hintner H, Hovnanian A, Jonkman MF, Leigh I, McGrath JA, Mellerio JE, Murrell DF, Shimizu H, Uitto J, Vahlquist A, Woodley D, Zambruno G. The classification of inherited epidermolysis bullosa (EB): Report of the Third International Consensus Meeting on Diagnosis and Classification of EB. J Am Acad Dermatol. 2008 Jun;58(6):931-50. Epub 2008 Apr 18. PubMed PMID: <a href="http://www.ncbi.nlm.nih.gov/pubmed/18374450" target="_new">18374450</a>.</li>
 -->
 <li>Swertz MA, De Brock EO, Van Hijum SA, De Jong A, Buist G, Baerends RJ, Kok J, Kuipers OP, Jansen RC. Molecular Genetics Information System (MOLGENIS): alternatives in developing local experimental genomics databases. Bioinformatics. 2004 Sep 1;20(13):2075-83. Epub 2004 Apr 1. PubMed PMID: <a href="http://www.ncbi.nlm.nih.gov/pubmed/15059831" target="_new">15059831</a>.</li>
 <li>Swertz MA, Jansen RC. Beyond standardization: dynamic software infrastructures for systems biology. Nat Rev Genet. 2007 Mar;8(3):235-43. Epub 2007 Feb 13. Review. PubMed PMID: <a href="http://www.ncbi.nlm.nih.gov/pubmed/17297480" target="_new">17297480</a>.</li>
 </ol>
-<!--
+<#--
 <h3>Collaborators and supporters</h3>
 <table width="100%">
 <tr>

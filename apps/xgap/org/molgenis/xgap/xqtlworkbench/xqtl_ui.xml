@@ -1,8 +1,0 @@
-<molgenis name="xqtl" label="xQTL workbench">
-	<plugin name="MolgenisHeader" type="org.molgenis.xgap.xqtlworkbench.header.MolgenisHeader" />
-	<plugin name="FeedbackForm" type="org.molgenis.feedback.FeedbackForm" />
-	<menu name="main">
-		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
-		<include file="apps/xgap/org/molgenis/xgap/xqtlworkbench/xqtl_shared_ui.xml"/>
-	</menu>
-</molgenis>

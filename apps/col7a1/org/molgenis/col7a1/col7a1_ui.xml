@@ -15,10 +15,13 @@
 		<plugin name="Background" type="org.molgenis.col7a1.ui.Background" label="Background"/>
 		<plugin name="NewsPlugin" type="org.molgenis.news.ui.News" label="News"/>
 		<menu name="Management" position="left" label="Management">
-			<form name="Gene" entity="MutationGene"/>
-			<form name="ProteinDomain" entity="ProteinDomain" label="Protein domain"/>
-			<form name="Exon" entity="Exon"/>
-			<form name="Mutation" entity="Mutation"/>
+			<form name="Gene" entity="Gene">
+				<form name="Protein" entity="Protein"/>
+			</form>
+			<form name="ProteinDomain" entity="ProteinDomain"/>
+			<form name="SequenceCharacteristic" entity="SequenceCharacteristic">
+				<form name="SequenceObservedValue" entity="ObservedValue" label="Phenotypic Value" hide_fields="Investigation,protocolApplication,ontologyReference,time,endtime"/>
+			</form>
 			<form name="Workflow" entity="Workflow" label="Patient Workflow">
 				<form name="WorkflowElement" entity="WorkflowElement">
 					<form name="Protocol" entity="Protocol" label="Patient Protocol" hide_fields="Investigation,ontologyReference,TargetFilter"/>
@@ -26,12 +29,15 @@
 			</form>
 			<form name="Measurement" entity="Measurement" label="Phenotypic Feature" hide_fields="Investigation,ontologyReference,targettypeAllowedForRelation,panelLabelAllowedForRelation"/>
 			<form name="ObservedValue" entity="ObservedValue" label="Phenotypic Value" hide_fields="Investigation,protocolApplication,ontologyReference,time,endtime"/>
-			<form name="Patient" entity="Patient"/>
+			<form name="Patient" entity="Patient">
+				<form name="PatientObservedValue" entity="ObservedValue" label="Phenotypic Value" hide_fields="Investigation,protocolApplication,ontologyReference,time,endtime"/>
+			</form>
 			<form name="Submission" entity="Submission"/>
 			<form name="Publication" entity="Publication" compact_view="Title,PubmedID" label="References">
 				<form name="OntologyTerm" entity="OntologyTerm" label="Ontology term"/>
 			</form>
 			<form name="News" entity="MolgenisNews"/>
+			<form name="Paragraph" entity="Paragraph" label="Content Management"/>
 			<plugin name="ExportCsv" type="org.molgenis.mutation.ui.export.Export" label="Export CSV"/>
 			<!-- <form name="FrontEndElement" entity="FrontEndElement" label="Front End Elements"/> -->
 		</menu>

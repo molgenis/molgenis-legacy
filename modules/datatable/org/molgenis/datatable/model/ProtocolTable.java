@@ -1,17 +1,21 @@
 package org.molgenis.datatable.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
-import org.molgenis.framework.db.Query;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.model.elements.Field;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
-import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.SimpleTuple;
 import org.molgenis.util.Tuple;
 
@@ -26,126 +30,208 @@ import org.molgenis.util.Tuple;
  * added as first column. Optionally, the ProtocolApplication metadata can be
  * viewed (future todo).
  */
-public class ProtocolTable extends AbstractTupleTable
-{
+public class ProtocolTable extends AbstractFilterableTupleTable {
 	// protocol to query
 	private Protocol protocol;
 
-	// database holding the data
-	private Database db;
+	// mapping to Field (changes on paging)
+	private List<Field> columns = new ArrayList<Field>();
+	private String targetString = "Pa_Id";
 
-	// mapping to Field (so we only have to convert once)
-	private List<Field> columns;
+	public String getTargetString() {
+		return targetString;
+	}
 
-	public ProtocolTable(Database db, Protocol protocol)
-	{
-		this.db = db;
+	public void setTargetString(String targetString) {
+		this.targetString = targetString;
+	}
+
+	// measurements
+	Map<Measurement, Protocol> measurements = new LinkedHashMap<Measurement, Protocol>();
+
+	public ProtocolTable(Database db, Protocol protocol) throws TableException {
+		this.setDb(db);
+
+		if (protocol == null)
+			throw new TableException("protocol cannot be null");
+
 		this.protocol = protocol;
 	}
 
 	@Override
-	public List<Field> getColumns()
-	{
-		try
-		{
-			List<Measurement> measurements = db.query(Measurement.class).in(Measurement.ID, protocol.getFeatures_Id())
-					.find();
-
-			columns = new ArrayList<Field>();
-			
-			//target
-			columns.add( new Field("target"));
-
-			for (Measurement m : measurements)
-			{
-				Field col = new Field(m.getName());
-				col.setDescription(m.getDescription());
-				// todo: setType()
-				columns.add(col);
-			}
-
-			return columns;
-		}
-		catch (DatabaseException e)
-		{
-			// TODO need exception?
-			e.printStackTrace();
-
-			return null;
-		}
+	public int getColCount() {
+		// +1 for the target column
+		return protocol.getFeatures_Id().size() + 1;
 	}
 
-	@Override
-	public List<Tuple> getRows()
-	{
-		List<Tuple> result = new ArrayList<Tuple>();
-		
-		List<String> colNames = new ArrayList<String>();
-		for(Field f: getColumns()) colNames.add(f.getName());
+	public List<Field> getAllColumns() throws TableException {
+		if (columns.size() == 0) {
+			try {
+				// get all features of protocol AND subprotocols
+				measurements = getMeasurementsRecursive(protocol);
 
-		try
-		{
-			// get protocol applications
-			Query<ProtocolApplication> q = db.query(ProtocolApplication.class).eq(ProtocolApplication.PROTOCOL,
-					protocol.getId());
-			if (getLimit() > 0) q.limit(getLimit());
-			if (getOffset() > 0) q.offset(getOffset());
-			List<ProtocolApplication> apps = q.find();
-
-			// for each protocol application get all values
-			for (ProtocolApplication pa : apps)
-			{
-				Tuple row = new SimpleTuple(colNames);
-				
-				for(ObservedValue v: db.query(ObservedValue.class).eq(ObservedValue.PROTOCOLAPPLICATION, pa.getId()).find())
-				{
-					row.set("target", v.getTarget_Name());
-					row.set(v.getFeature_Name(), v.getValue());
+				// convert into field
+				for (Measurement m : measurements.keySet()) {
+					Field col = new Field(m.getName());
+					// col.setLabel(m.getName());
+					// col.setTableName(measurements.get(m).getName());
+					col.setDescription(m.getDescription());
+					// todo: setType()
+					columns.add(col);
 				}
-				
-				result.add(row);
+
+			} catch (Exception e) {
+				throw new TableException(e);
 			}
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
+		return columns;
+	}
+
+	private Map<Measurement, Protocol> getMeasurementsRecursive(
+			Protocol protocol) throws DatabaseException {
+		List<Integer> featureIds = protocol.getFeatures_Id();
+
+		Map<Measurement, Protocol> result = new LinkedHashMap<Measurement, Protocol>();
+
+		if (featureIds.size() > 0) {
+			List<Measurement> mList = getDb().query(Measurement.class)
+					.in(Measurement.ID, featureIds).find();
+			for (Measurement m : mList) {
+				result.put(m, protocol);
+			}
 		}
 
+		// go recursive on all subprotocols
+		if (protocol.getSubprotocols_Id().size() > 0) {
+			List<Protocol> subProtocols = getDb().query(Protocol.class)
+					.in(Protocol.ID, protocol.getSubprotocols_Id()).find();
+			for (Protocol subProtocol : subProtocols) {
+				result.putAll(getMeasurementsRecursive(subProtocol));
+			}
+		}
+
+		// return all the featureId
 		return result;
 
 	}
 
-	@Override
-	public Iterator<Tuple> iterator()
-	{
-		// TODO: can we use the streaming interface of the database for this in
-		// some way?
-		return getRows().iterator();
-	}
+	public List<Tuple> getRows() throws TableException {
+		try {
+			// List<String> colNames = new ArrayList<String>();
+			// for (Field f : getColumns())
+			// {
+			// colNames.add(protocol.getName() + "." + f.getName());
+			// }
 
-	@Override
-	public void close()
-	{
-		try
-		{
-			db.close();
-		}
-		catch (DatabaseException e)
-		{
-			e.printStackTrace();
-		}
-	}
+			List<Tuple> result = new ArrayList<Tuple>();
+			for (Integer rowId : getRowIds(false)) {
+				boolean target = false;
+				Tuple row = new SimpleTuple();
 
-	@Override
-	public int getCount() throws TableException
-	{
-		try
-		{
-			return db.query(ProtocolApplication.class).eq(ProtocolApplication.PROTOCOL, protocol.getIdValue()).count();
-		}
-		catch (DatabaseException e)
-		{
+				for (ObservedValue v : getDb().query(ObservedValue.class)
+						.eq(ObservedValue.PROTOCOLAPPLICATION, rowId).find()) {
+					if (!target) {
+						row.set(targetString, v.getTarget_Name());
+						target = true;
+					}
+
+					// get measurements (evil expensive)
+					Protocol p = null;
+					for (Measurement m : measurements.keySet()) {
+						if (m.getName().equals(v.getFeature_Name())) {
+							p = measurements.get(m);
+							break;
+						}
+					}
+
+					// if (p == null) {
+					row.set(v.getFeature_Name(), v.getValue());
+					// } else {
+					// row.set(p.getName() + "." + v.getFeature_Name(),
+					// v.getValue());
+					// }
+				}
+				result.add(row);
+			}
+
+			return result;
+		} catch (Exception e) {
 			throw new TableException(e);
 		}
+	}
+
+	@Override
+	public Iterator<Tuple> iterator() {
+		try {
+			return getRows().iterator();
+		} catch (TableException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void close() {
+	}
+
+	@Override
+	public int getCount() throws TableException {
+		try {
+			return this.getRowIds(true).get(0);
+		} catch (DatabaseException e) {
+			throw new TableException(e);
+		}
+	}
+
+	// FILTERING
+	// we only need to know what rows to show :-)
+	private List<Integer> getRowIds(boolean count) throws TableException,
+			DatabaseException {
+		// get columns that are used in filtering or sorting
+		Set<String> columnsUsed = new HashSet<String>();
+		for (QueryRule r : getFilters()) {
+			columnsUsed.add(r.getField());
+		}
+
+		// get measurements
+		List<Measurement> measurementsUsed = new ArrayList<Measurement>();
+
+		if (columnsUsed.size() > 0) {
+			measurementsUsed = getDb().query(Measurement.class)
+					.in(Measurement.NAME, new ArrayList<String>(columnsUsed))
+					.find();
+		}
+
+		// one column is defined by ObservedValue.Investigation,
+		// ObservedValue.protocolApplication, ObservedValue.Feature (column
+		// 'target' will be moved to ProtocolApplication)
+
+		String sql = "SELECT id from ProtocolApplication ";
+		if (count)
+			sql = "SELECT count(*) as id from ProtocolApplication";
+
+		for (Measurement m : measurementsUsed) {
+			sql += " NATURAL JOIN (SELECT ObservedValue.protocolApplication as id, ObservedValue.target as targetId, ObservedValue.value as "
+					+ m.getName()
+					+ " FROM ObservedValue WHERE ObservedValue.feature = "
+					+ m.getId() + ") as " + m.getName();
+		}
+		// filtering [todo: data model change!]
+		if (columnsUsed.contains(targetString)) {
+			sql += " NATURAL JOIN (SELECT id as targetId, name as target from ObservationElement) as target";
+		}
+
+		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
+
+		// limit and offset
+		if (!count && getLimit() > 0)
+			filters.add(new QueryRule(Operator.LIMIT, getLimit()));
+		if (!count && getOffset() > 0)
+			filters.add(new QueryRule(Operator.OFFSET, getOffset()));
+
+		List<Integer> result = new ArrayList<Integer>();
+		for (Tuple t : this.getDb().sql(sql,
+				filters.toArray(new QueryRule[filters.size()])))
+			result.add(t.getInt("id"));
+		return result;
 	}
 }
