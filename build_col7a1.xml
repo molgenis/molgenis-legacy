@@ -11,10 +11,10 @@
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/search" />	
-		<pathelement location="modules/mutation" />	
 		<pathelement location="modules/news" />	
 		<pathelement location="modules/settings" />	
 		<pathelement location="modules/file" />	
+		<pathelement location="modules/variant" />	
 		<pathelement location="modules/webserver" />
 		<pathelement location="modules/decorators/core" />
 		<pathelement location="modules/decorators/auth" />

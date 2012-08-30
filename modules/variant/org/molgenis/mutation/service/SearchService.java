@@ -81,6 +81,23 @@ public class SearchService extends MolgenisVariantService
 		}
 	}
 
+	public List<String> getAllVariantTypes()
+	{
+		try
+		{
+			String sql = "SELECT DISTINCT type_ FROM Variant";
+			TypedQuery<String> query = this.em.createQuery(sql, String.class);
+			List<String> typeList = query.getResultList();
+			
+			return typeList;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SearchServiceException(e.getMessage());
+		}
+	}
+
 	/**
 	 * Get all exons sorted by their position
 	 * @return list of ExonDTOs

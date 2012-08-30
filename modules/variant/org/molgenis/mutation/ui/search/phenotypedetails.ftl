@@ -1,5 +1,6 @@
 <#include "header.ftl">
 
+<a name="phenotype"></a>
 <#-- Observable features -->
 <#assign individualDTO = vo.individualDTO>
 <#list individualDTO.protocolList as protocolDTO>

@@ -296,6 +296,7 @@ public class UploadService extends MolgenisVariantService
 				this.em.getTransaction().rollback();
 
 			e.printStackTrace();
+			//TODO: Produce nicer error message
 			throw new UploadServiceException(e.getMessage());
 		}
 	}
@@ -371,7 +372,7 @@ public class UploadService extends MolgenisVariantService
 		}
 	}
 
-	public void assignValuesFromNotation(MutationUploadDTO mutationUploadDTO)
+	public void assignValuesFromNotation(MutationUploadDTO mutationUploadDTO) throws UploadServiceException
 	{
 //		logger.debug(">>> assignValuesFromNotation: cdnaNotation==" + mutationUploadVO.getMutation().getCdna_notation());
 		if (mutationUploadDTO.getCdnaNotation() != null)
@@ -464,6 +465,10 @@ public class UploadService extends MolgenisVariantService
 				mutationUploadDTO.setMutationPosition(mSubstitution.group(1));
 				mutationUploadDTO.setLength(mSubstitution.group(2).length());
 				mutationUploadDTO.setNtChange(mSubstitution.group(3));
+			}
+			else
+			{
+				throw new UploadServiceException("No valid mutation notation: '" + cdnaNotation + "'");
 			}
 //			logger.debug(">>> assignValuesFromNotation: cdnaNotation==" + cdnaNotation + ", event==" + mutationUploadVO.getMutation().getEvent() + ", pos==" + mutationUploadVO.getMutation().getPosition() + ", len==" + mutationUploadVO.getMutation().getLength() + ", ntchange==" + mutationUploadVO.getMutation().getNtchange());
 		}
