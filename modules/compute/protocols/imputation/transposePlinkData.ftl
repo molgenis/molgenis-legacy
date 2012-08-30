@@ -10,12 +10,9 @@
 inputs "${plinkdata}.bed"
 inputs "${plinkdata}.bim"
 inputs "${plinkdata}.fam"
-inputs "${plinkdata}.map"
-inputs "${plinkdata}.ped"
 alloutputsexist "${plinkdatatransposed}.tfam"
 alloutputsexist "${plinkdatatransposed}.tped"
 
-#Build in iteration over chromosome!
 
 
 
