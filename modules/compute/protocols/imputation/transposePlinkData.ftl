@@ -33,7 +33,7 @@ returnCode=$?
 if [ $returnCode -eq 0 ]
 then
 	
-	echo -e "\nMoving temp files to final files\n\n" >> ${gwasOutputLog} 	
+	echo -e "\nMoving temp files to final files\n\n"
 
 	for tempFile in ${plinkdatatransposed}* ; do
 		finalFile=`echo $tempFile | sed -e "s/~//g"`
@@ -42,7 +42,7 @@ then
 	
 else
   
-	echo -e "\nNon zero return code not making files final. Existing temp files are kept for debuging purposes\n\n" >> ${gwasOutputLog}
+	echo -e "\nNon zero return code not making files final. Existing temp files are kept for debuging purposes\n\n"
 	#Return non zero return code
 	exit 1
 
