@@ -5,7 +5,7 @@
 	<menu name="main">
 		<plugin label="Home" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
 	<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
-	<include file="apps/xgap/org/molgenis/xgap/guicomponents/browsedata.xml"/>
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/browsedata.xml"/>
 	<menu name="ImportDataMenu" label="Upload data" group="biologist">
 		<plugin label="R/qtl" name="QTLWizard"
 			type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
@@ -20,10 +20,10 @@
 		
 	</menu>
 	<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
-	<include file="apps/xgap/org/molgenis/xgap/guicomponents/configureanalysis.xml"/>
-	<include file="apps/xgap/org/molgenis/xgap/guicomponents/search.xml"/>
-	<include file="apps/xgap/org/molgenis/xgap/guicomponents/utilities.xml"/>
-	<include file="apps/xgap/org/molgenis/xgap/guicomponents/admin.xml"/>
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/configureanalysis.xml"/>
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/search.xml"/>
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/utilities.xml"/>
+	<include file="apps/xqtl/org/molgenis/xqtl/gui/admin.xml"/>
 		
 	</menu>
 </molgenis>

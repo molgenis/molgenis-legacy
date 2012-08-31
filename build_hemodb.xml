@@ -11,7 +11,7 @@
 		-->
 	<path id="app.class.path">
 		<pathelement location="apps/hemodb" />
-		<pathelement location="apps/xgap" />
+		<pathelement location="modules/xgap" />
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />
