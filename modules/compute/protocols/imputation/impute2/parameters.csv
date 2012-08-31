@@ -41,8 +41,11 @@ studyPedMap,studyPedMapDir/${chr},,,
 gtoolBin,${tooldir}/gtool_v0.7.5_x86_64>/gtool,,,
 referenceTriTyperDir,${referenceFolder}/TriTyper/,end with slash,,
 referenceImpute2Dir,${referenceFolder}/Impute2/,end with slash,,
-
-
-
+impute2Bin,${tooldir}/impute_v2.2.2_x86_64_static/impute2,,,
+referenceImpute2HapFile,${referenceImpute2Dir}/${chr}.hap
+referenceImpute2LegendFile,${referenceImpute2Dir}/${chr}.legend
+referenceImpute2MapFile,${referenceImpute2Dir}/${chr}.map
+impute2ResultDir,${projectTempDir}/Impute2Result/,end with slash,,
+calculateBeagleR2ForIMpute2ResultsPythonScript,${tooldir}/python_scripts/calculateBeagleR2ForImpute2Results.py
 
 
