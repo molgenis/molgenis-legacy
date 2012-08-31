@@ -2,7 +2,7 @@
 
 
 mkdir -p ${impute2ResultDir}/${chr}/
-${impute2Bin} -h ${referenceImpute2HapFile} -l ${referenceImpute2LegendFile} -m ${referenceImpute2MapFile} -g ${preparedStudyDir}/chr${chr}.gen -int ${fromChrPos} ${toChrPos} -o ${impute2ResultDir}/${chr}/~chr_${chr}_from_${fromChrPos}_to_${toChrPos}
+${impute2Bin} -h ${referenceImpute2HapFile} -l ${referenceImpute2LegendFile} -m ${referenceImpute2MapFile} -g ${preparedStudyDir}/chr${chr}.gen -int ${fromChrPos} ${toChrPos} -o ${impute2ResultChrBinTemp}
 
 
 #Get return code from last program call
