@@ -51,7 +51,7 @@
 				</tr>
 				<tr>
 					<td align="center">
-
+						
 						<ul class="sf-menu">
 							<li class="current">
 								<a href="#a">Database</a>
@@ -81,11 +81,22 @@
 								</ul>
 							</li>
 							<li>
-								<a href="http://www.molgenis.org/wiki/xQTL">Help</a>
+								<a href="http://www.molgenis.org/wiki/xQTL">Community</a>
+								<ul>
+									<li>
+										<a href="http://www.xgap.org/wiki/xQTL">Help</a>
+									</li>
+									<li>
+										<a href="http://www.molgenis.org">MOLGENIS.org</a>
+									</li>
+									<li>
+										<a href="http://xqtl.nl/">xQTL.nl</a>
+									</li>
+									<li>
+										<a href="https://github.com/molgenis/">GitHub</a>
+									</li>
+								</ul>
 							</li>
-							<li>
-								<a href="?select=Admin">Admin</a>
-							</li>	
 						</ul>
 						
 					</td>

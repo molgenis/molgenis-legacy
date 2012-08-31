@@ -1,5 +1,5 @@
 <molgenis name="xqtl" label="xQTL workbench">
-	<plugin name="MOLGENIS" type="org.molgenis.minigui.MiniGUI" />
+	<plugin name="MiniGUI" type="org.molgenis.minigui.MiniGUI" />
 	<menu name="main">
 		<plugin label="Home" name="CleanHome" type="org.molgenis.xqtl.minigui.CleanHome" />
 		<plugin label="Setup" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />

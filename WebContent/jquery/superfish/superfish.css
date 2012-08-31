@@ -58,22 +58,29 @@ ul.sf-menu li li li.sfHover ul {
 	margin-bottom:	1em;
 }
 .sf-menu a {
+	border:1px solid #aaa; /* added! */
 	border-left:	1px solid #fff;
-	border-top:		1px solid #CFDEFF;
+	border-top:		1px solid #eee; /*original CFDEFF*/
 	padding: 		.75em 1em;
 	text-decoration:none;
+	/* below: all added! */
+	font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+    font-size:100%;
+    text-decoration:none;
+    font-weight:bold;
+    color:#565656;
 }
 .sf-menu a, .sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
-	color:			#13a;
+	color:			#565656; /*original 13a*/
 }
 .sf-menu li {
-	background:		#BDD2FF; /*original BDD2FF*/
+	background:		#ddd; /*original BDD2FF*/
 }
 .sf-menu li li {
-	background:		#AABDE6;
+	background:		#ddd; /*original AABDE6*/
 }
 .sf-menu li li li {
-	background:		#9AAEDB;
+	background:		#ddd; /*original 9AAEDB*/
 }
 .sf-menu li:hover, .sf-menu li.sfHover,
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
@@ -95,7 +102,7 @@ ul.sf-menu li li li.sfHover ul {
 	height:			10px;
 	text-indent: 	-999em;
 	overflow:		hidden;
-	background:		url('arrows-ffffff.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
+	background:		url('arrows-grey.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
 }
 a > .sf-sub-indicator {  /* give all except IE6 the correct values */
 	top:			.8em;

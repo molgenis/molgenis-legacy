@@ -73,6 +73,8 @@ public class MiniGUI<E extends Entity> extends PluginModel<E>
 	public void reload(Database db)
 	{
 		this.model.setUiTree(this.getParent().getChildren());
+		// System.out.println("selected: " +
+		// this.getParent().getSelected().getName());
 		// for (ScreenController sc : this.getParent().getAllChildren())
 		// {
 		// if (sc instanceof FormController)
