@@ -31,29 +31,18 @@ homedir,${root}/groups/gonl/projects/imputationBenchmarking/eQtl/,,,
 projectdir,${homedir}/${project},,,
 plinkdata,${projectdir}/${chr},,,
 projectTempDir,${tempdir}/${id}/,end with slash,,
-plinkTempDir,${projectTempDir}/PedMap/,end with slash,,
-studyTriTyperTempDir,${projectTempDir}/StudyTriTyper/,end with slash,,
-preparedStudyTempDir,${projectTempDir}/preparedStudy/,end with slash,,
-plinkdataPrepared,plinkTempDir/${chr},,,
-gtoolBin,${tooldir}/***,,,
-referenceTriTyperFolder,${referenceFolder}/TriTyper/,end with slash,,
-referenceImpute2Folder,${referenceFolder}/Impute2/,end with slash,,
+
+studyPedMapDir,${projectTempDir}/PedMap/,end with slash,,
+studyTriTyperTempDir,${projectTempDir}/~StudyTriTyper/,end with slash,,
+studyTriTyperDir,${projectTempDir}/StudyTriTyper/,end with slash,,
+preparedStudyTempDir,${projectTempDir}/~preparedStudy/,end with slash,,
+preparedStudyDir,${projectTempDir}/preparedStudy/,end with slash,,
+studyPedMap,studyPedMapDir/${chr},,,
+gtoolBin,${tooldir}/gtool_v0.7.5_x86_64>/gtool,,,
+referenceTriTyperDir,${referenceFolder}/TriTyper/,end with slash,,
+referenceImpute2Dir,${referenceFolder}/Impute2/,end with slash,,
 
 
 
 
 
-
-
-
-
-plinkdatatransposed,${plinkdata}.transposed,,,
-beaglefile,${plinkdata}.bgl,,,
-beaglefilephased,/target/gpfs2/gcc/home/fvandijk/gonl_beagle_phased/bgl-likelihoods.gonl.20.biallelic.VA.vqsr.bgl.phased,Comes from samplesheet,,
-markerspt1,${plinkdata}.markers1.txt,,,
-markerspt2,${plinkdata}.markers2.txt,,,
-markers,${plinkdata}.markers.txt,,,
-imputedoutputbeagle,${plinkdata}.imputed,,,
-beaglejar,${tooldir}/beagle_3.3_26Dec10/beagle.jar,,,
-convertbgltotrityperjar,${tooldir}/BeagleSingleFileConvertToTriTyper/dist/BeagleSingleFileConvertToTriTyper.jar,,,
-bgltotrityperoutput,${projectdir}/TriTyperOutput/,The trailing backslash is obligatory!,,
