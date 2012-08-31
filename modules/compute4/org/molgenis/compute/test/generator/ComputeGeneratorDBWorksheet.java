@@ -38,21 +38,17 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 
 	Database db = null;
 
-	public void generate(Workflow workflow, List<Target> targets,
-			Hashtable<String, String> config) {
+	public void generate(Workflow workflow, List<Target> targets, Hashtable<String, String> config) {
 	}
 
 	/**
 	 * Generate tasks and put them into the database
 	 */
-	public void generateWithTuple(Workflow workflow, List<Tuple> worksheet,
-			Hashtable<String, String> userParametersInput) {
+	public void generateWithTuple(Workflow workflow, List<Tuple> worksheet, Hashtable<String, String> userParametersInput) {
 		this.userParameters = userParametersInput;
 
-		List<ComputeParameter> parameterList = (List<ComputeParameter>) workflow
-				.getWorkflowComputeParameterCollection();
-		Collection<WorkflowElement> workflowElementsList = workflow
-				.getWorkflowWorkflowElementCollection();
+		List<ComputeParameter> parameterList = (List<ComputeParameter>) workflow.getWorkflowComputeParameterCollection();
+		Collection<WorkflowElement> workflowElementsList = workflow.getWorkflowWorkflowElementCollection();
 
 		try {
 			db = DatabaseFactory.create();
@@ -62,20 +58,36 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 			e.printStackTrace();
 		}
 
+		// I guess, we should also add line_number as a 'ComputeParameter'...
+		// Actually, I think this should happen at a different place...
+		ComputeParameter line_number = new ComputeParameter();
+		line_number.setName("line_number");
+		line_number.setDefaultValue(null);
+		parameterList.add(line_number);
+
+		// Create a Worksheet entity, just as in Compute 2
+		Worksheet worksheetEntity = new Worksheet(parameterList, worksheet);
+
 		List<ComputeTask> tasks = new ArrayList<ComputeTask>();
 		for (WorkflowElement workflowElement : workflowElementsList) {
 
+			System.out.println(">> Workflow element name: " + workflowElement.getName());
+			System.out.println(">> Protocol name: " + workflowElement.getProtocol_Name());
+			System.out.println(">> Protocol template: " + workflowElement.getProtocol().getScriptTemplate());
+
 			List<String> iterationTargetNameList = new ArrayList<String>();
-			Iterator<ComputeParameter> it = workflowElement.getProtocol()
-					.getIterateOver().iterator();
+			Iterator<ComputeParameter> it = workflowElement.getProtocol().getIterateOver().iterator();
 			while (it.hasNext()) {
 				iterationTargetNameList.add(it.next().getName());
 			}
 
-			System.out.println(">>");
+			// if no targets specified, then actually we mean "all targets".
+			// Therefore, we add line_number as a target.
+			if (0 == iterationTargetNameList.size()) {
+				iterationTargetNameList.add("line_number");
+			}
 
-			List<Tuple> foldedWorksheet = Worksheet.foldWorksheet(worksheet,
-					parameterList, iterationTargetNameList);
+			List<Tuple> foldedWorksheet = Worksheet.foldWorksheet(worksheetEntity.worksheet, parameterList, iterationTargetNameList);
 
 			// foldingMaster.createTuples(
 			// computeParameterList, worksheet, userParameters);
@@ -83,37 +95,30 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 			String template = workflowElement.getProtocol().getScriptTemplate();
 
 			String result = null;
-			if (userParameters.get(ComputeGeneratorDB.BACKEND).equals(
-					ComputeGeneratorDB.BACKEND_GRID)) {
+			if (userParameters.get(ComputeGeneratorDB.BACKEND).equals(ComputeGeneratorDB.BACKEND_GRID)) {
 				result = null;// weaver.weaveFreemarker(template,
 								// values);
-			} else if (userParameters.get(ComputeGeneratorDB.BACKEND).equals(
-					ComputeGeneratorDB.BACKEND_PBS)) {
+			} else if (userParameters.get(ComputeGeneratorDB.BACKEND).equals(ComputeGeneratorDB.BACKEND_PBS)) {
 				// String result = weaver.weaveFreemarker(template,
 				// foldedWorksheet);
 			} else {
-				System.err
-						.println("Backend should be: backend_grid or backend_pbs");
+				System.err.println("Backend should be: backend_grid or backend_pbs");
 				System.exit(1);
 			}
 
 			ComputeTask task = new ComputeTask();
-			String taskName = workflowElement.getName() + "_"
-					+ userParameters.get(RUN_ID);
+			String taskName = workflowElement.getName() + "_" + userParameters.get(RUN_ID);
 			task.setName(taskName);
 			task.setComputeScript(result);
-			task.setInterpreter(workflowElement.getProtocol()
-					.getScriptInterpreter());
-			task.setRequirements(workflowElement.getProtocol()
-					.getRequirements());
+			task.setInterpreter(workflowElement.getProtocol().getScriptInterpreter());
+			task.setRequirements(workflowElement.getProtocol().getRequirements());
 			task.setWorkflowElement(workflowElement);
 
 			List<WorkflowElement> prev = workflowElement.getPreviousSteps();
 			List<ComputeTask> prevTasks = new ArrayList<ComputeTask>();
 
 			for (WorkflowElement w : prev) {
-				ComputeTask prevTask = workflowElementComputeTaskHashtable
-						.get(w);
+				ComputeTask prevTask = workflowElementComputeTaskHashtable.get(w);
 				prevTasks.add(prevTask);
 			}
 			task.setPrevSteps(prevTasks);
