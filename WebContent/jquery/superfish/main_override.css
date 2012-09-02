@@ -1,0 +1,11 @@
+#container {
+	width: 900px;
+	/* text-align: center; */
+	align: center;
+	margin: auto;
+}
+
+.matrixviewer 
+{
+	width: inherit;
+}
