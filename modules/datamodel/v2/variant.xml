@@ -27,6 +27,7 @@
 			<field name="nameAa" nillable="true" index="true" description="Aa name of the variant, e.g. p.Ser123ArgfsX12"/>
 			<field name="startAa" type="int" nillable="true" index="true" description="Start position on amino acid sequence."/>
 			<field name="endAa" type="int" nillable="true" description="End position on amino acid sequence."/>
+			<field name="exon" type="xref" nillable="true" xref_field="Exon.id" description="The exon/intron this variant lies on."/>
 			<field name="gene" type="xref" nillable="false" xref_field="Gene.id" description="The gene this variant lies on."/>
 		</entity>
 		<entity name="Gene" extends="SequenceCharacteristic">
