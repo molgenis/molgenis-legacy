@@ -38,7 +38,14 @@
 	<a href="<c:out value="${url}"/>"><c:out value="${current.variantDTOList[1].cdnaNotation}"/></a>
 	</c:when>
 	<c:otherwise>
-	<c:out value="${current.variantComment}"/>
+		<c:choose>
+		<c:when test="${fn:contains(current.variantDTOList[0].inheritance, 'dominant')}">
+			NA
+		</c:when>
+		<c:otherwise>
+			Unknown
+		</c:otherwise>
+		</c:choose>
 	</c:otherwise>
 	</c:choose>
 </div>
@@ -91,10 +98,11 @@
 </div>
 </display:column>
 <display:column media="html" title="Reference">
+<div class="unwrapped">
 	<c:choose>
 	<c:when test="${fn:length(current.publicationDTOList) > 0}">
-	<c:forEach var="publicationVO" items="${current.publicationDTOList}">
-	<a href="${current.pubmedURL}${publicationVO.pubmedId}" title="${publicationVO.title}" target="_new"><c:out value="${publicationVO.name}"/></a><br/>
+	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="PM:${publicationDTO.pubmedId}"/></a><br/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>
@@ -102,6 +110,7 @@
 	<c:out value="${current.submitterDepartment}, ${current.submitterInstitute}, ${current.submitterCity}, ${current.submitterCountry}"/>
 	</c:otherwise>
 	</c:choose>
+</div>
 </display:column>
 
 <display:column media="csv excel pdf" title="cDNA change 1">
@@ -136,14 +145,9 @@
 	<c:out value="${current.variantDTOList[1].observedValue}" escapeXml="false"/>
 	</c:if>
 </display:column>
-<display:column media="csv excel pdf" title="Reference">
-<c:forEach var="publicationVO" items="${current.publicationDTOList}">
-	<c:out value="${publicationVO.name}" escapeXml="false"/>;
-</c:forEach>
-</display:column>
 <display:column media="csv excel pdf" title="PubMed ID">
-<c:forEach var="publicationVO" items="${current.publicationDTOList}">
-	<c:out value="PM:${publicationVO.pubmedId}" escapeXml="false"/>;
+<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
+	<c:out value="${publicationDTO.pubmedId}" escapeXml="false"/>;
 </c:forEach>
 </display:column>
 

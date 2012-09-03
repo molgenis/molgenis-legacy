@@ -42,7 +42,7 @@
 
 <display:column media="csv excel pdf" property="identifier" title="Mutation ID" sortable="true" headerClass="sortable"/>
 <display:column media="csv excel pdf" title="Patient ID">
-	<c:forEach var="patientVO" items="${current.patientSummaryVOList}"><c:out value="${patientDTO.patientIdentifier}"/> </c:forEach>
+	<c:forEach var="patientDTO" items="${current.patientSummaryDTOList}"><c:out value="${patientDTO.patientIdentifier}"/> </c:forEach>
 </display:column>
 <display:column media="csv excel pdf" title="Reference">
 	<c:choose>

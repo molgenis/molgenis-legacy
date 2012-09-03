@@ -17,7 +17,7 @@
 <tr class="form_listrow1"><th width="50%">mRNA change</th><td>${mutationSummaryDTO.mrnaNotation}</td></tr>
 <tr class="form_listrow0"><th width="50%">Chromosomal change</th><td>${mutationSummaryDTO.gdnaNotation}</td></tr>
 <#if mutationSummaryDTO.codonChange != "">
-<tr class="form_listrow1"><th width="50%">First affected codon number</th><td><#if mutationSummaryDTO.aaPosition??>${mutationSummaryDTO.aaPosition?c}</#if></td></tr>
+<tr class="form_listrow1"><th width="50%">First affected codon number</th><td>${mutationSummaryDTO.aaStart?c}</td></tr>
 <tr class="form_listrow0"><th width="50%">Codon change</th><td>${mutationSummaryDTO.codonChange}</td></tr>
 </#if>
 <tr class="form_listrow1"><th width="50%">Protein change</th><td>${mutationSummaryDTO.aaNotation}</td></tr>
@@ -68,4 +68,4 @@
 [<a href="#">Back to top</a>]
 </p>
 
-<#include "footer.ftl">
+<#include "/org/molgenis/mutation/ui/search/footer.ftl">

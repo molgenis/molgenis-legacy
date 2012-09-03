@@ -113,8 +113,8 @@ public class Upload extends EasyPluginController<UploadModel>
 		}
 		catch(Exception e)
 		{
-			String message = "Oops, an error occurred. We apologize and will work on fixing it as soon as possible. <a href=\"molgenis.do?__target=Upload&__action=newBatch\">Return to home page</a>";
-			this.getModel().getMessages().add(new ScreenMessage(message, false));
+//			String message = "Oops, an error occurred. We apologize and will work on fixing it as soon as possible. <a href=\"molgenis.do?__target=Upload&__action=newBatch\">Return to home page</a>";
+			this.getModel().getMessages().add(new ScreenMessage(e.getMessage(), false));
 			logger.error(e.getMessage());
 			for (StackTraceElement el : e.getStackTrace())
 				logger.error(el.toString());

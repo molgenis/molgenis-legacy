@@ -182,7 +182,7 @@
 				using name instead! field name="Title" label="Publication Title"
 				description="The title of the Publication" nillable="true"/
 			-->
-			<field name="Title" label="Publication Title" description="The title of the Publication" />
+			<field name="Title" label="Publication Title" description="The title of the Publication" index="true"/>
 			<field name="Status" label="Publication Status" description="The status of the Publication"
 				type="xref" xref_entity="OntologyTerm" nillable="true" />
 			<!--

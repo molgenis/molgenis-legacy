@@ -622,9 +622,6 @@ Changed unique(name) on Observation element to unique(investigation,name)</li>
 				description="Description of the code.
 				Use of ontology terms references to establish unambigious descriptions is
 				recommended" />
-			<field name="ontologyReference" type="xref" xref_entity="OntologyTerm"
-				nillable="true"
-				description="(Optional) Reference to the formal ontology definition for this code." />
 			<!-- <unique fields="code" description="Categorys should be unique within 
 				one feature" /> -->
 		</entity>

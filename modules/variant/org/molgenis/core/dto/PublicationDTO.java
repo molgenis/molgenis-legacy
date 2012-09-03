@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class PublicationDTO implements Serializable
 {
 	private static final long serialVersionUID = 5698195640755912071L;
+	private Integer id;
 	private String authors;
 	private String name;
 	private String title;
@@ -14,6 +15,12 @@ public class PublicationDTO implements Serializable
 	private String pubmedUrl;
 	private String status;
 
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	public String getAuthors() {
 		return authors;
 	}

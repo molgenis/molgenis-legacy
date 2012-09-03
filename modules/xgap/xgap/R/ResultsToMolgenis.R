@@ -153,7 +153,8 @@ ResultsToMolgenis <- function(investigationname = "", resultname = "", result=NU
 		if(verbose)cat("INFO: Not matrix named",name,"found in the current database\n")
 		if(verbose)cat("INFO: Creating:",name,"in the current database\n")
 		cat("BEFORE TRYCATCH")
-		tryCatch(aaa <- add.data(name = name,storage="Database",investigation_name=investigationname,targettype="Marker",featuretype="DerivedTrait",ontologyreference_name="qtl_matrix",valuetype="Decimal",.verbose=verbose), error=function(e){cat("Upload failed.")})
+		#removed: ontologyreference_name="qtl_matrix"
+		tryCatch(aaa <- add.data(name = name,storage="Database",investigation_name=investigationname,targettype="Marker",featuretype="DerivedTrait",valuetype="Decimal",.verbose=verbose), error=function(e){cat("Upload failed.")})
 		cat("AFTER TRYCATCH")
 		}else{
 		   cat("FOUND")

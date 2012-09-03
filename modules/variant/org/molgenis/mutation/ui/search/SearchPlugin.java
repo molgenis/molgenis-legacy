@@ -263,7 +263,7 @@ public class SearchPlugin extends IntegratedPluginController<SearchModel>
 	
 			this.getModel().setHeader("Details for mutation " + mutationIdentifier);
 			
-			this.setView(new FreemarkerView("mutation.ftl", getModel()));
+			this.setView(new FreemarkerView(this.getModel().getMutationViewer(), this.getModel()));
 		}
 	}
 
