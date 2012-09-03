@@ -496,7 +496,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/cxf-2.3.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gson-2.2.1.jar">
 		<attributes>
