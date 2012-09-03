@@ -17,7 +17,6 @@ alloutputsexist "${plinkdatatransposed}.tped"
 
 
 
-
 #Transpose plink data
 ${plink} \
 --bfile ${plinkdata} \
@@ -33,6 +32,7 @@ returnCode=$?
 if [ $returnCode -eq 0 ]
 then
 	
+
 	echo -e "\nMoving temp files to final files\n\n"
 
 	for tempFile in ${plinkdatatransposed}* ; do
@@ -43,6 +43,7 @@ then
 else
   
 	echo -e "\nNon zero return code not making files final. Existing temp files are kept for debuging purposes\n\n"
+
 	#Return non zero return code
 	exit 1
 
