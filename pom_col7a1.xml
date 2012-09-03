@@ -6,7 +6,7 @@
 
     <groupId>org.molgenis</groupId>
     <artifactId>molgenisapp</artifactId>
-    <version>12.28</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>deb-central</name>
@@ -43,7 +43,7 @@
 		<dependency>
             <groupId>org.molgenis</groupId>
             <artifactId>molgenis</artifactId>
-            <version>12.28</version>
+            <version>1.0-SNAPSHOT</version>
 <!--
 		<exclusions>
 			<exclusion>
