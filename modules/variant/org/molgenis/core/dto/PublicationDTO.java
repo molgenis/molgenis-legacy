@@ -7,6 +7,7 @@ public class PublicationDTO implements Serializable
 	private static final long serialVersionUID = 5698195640755912071L;
 	private Integer id;
 	private String authors;
+	private String firstAuthor;
 	private String name;
 	private String title;
 	private String journal;
@@ -26,6 +27,12 @@ public class PublicationDTO implements Serializable
 	}
 	public void setAuthors(String authors) {
 		this.authors = authors;
+	}
+	public String getFirstAuthor() {
+		return firstAuthor;
+	}
+	public void setFirstAuthor(String firstAuthor) {
+		this.firstAuthor = firstAuthor;
 	}
 	public String getName() {
 		return name;
