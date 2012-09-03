@@ -38,6 +38,8 @@ import org.molgenis.framework.security.Login;
 import org.molgenis.util.CsvReader;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.variant.Exon;
+import org.molgenis.variant.Gene;
 import org.molgenis.variant.Patient;
 import org.molgenis.variant.SequenceCharacteristic;
 import org.molgenis.variant.SequenceRelation;
@@ -63,7 +65,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 {
 	public final transient Logger logger    = Logger.getLogger(UploadBatchCsvReader.class);
 	private final String[] patientValueCols = { };
-	private final String[] variantValueCols = { "Reported Classification", "Grantham Score", "SIFT", "PolyPhen", "Domain", "Notes" };
+	private final String[] variantValueCols = { "Locus", "Reported Classification", "Grantham Score", "SIFT", "PolyPhen", "Domain", "Notes" };
 
 	/**
 	 * Imports UploadBatch from tab/comma delimited File
@@ -139,24 +141,26 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		{
 			//parse object, setting defaults and values from file
 
-//			Patient patient = new Patient();
-//
-//			patient.setSubmission(submission);
-//
-//			// Add stable external identifier
-//
-//			patientIdentifier = patientIdentifier + 1;
-//			patient.setName("P" + patientIdentifier);
-//
-//			AlternateId patientId = new AlternateId();
-//			patientId.setDefinition("molgenis_patient_id");
-//			patientId.setName("P" + patientIdentifier);
-//			alternateIdList.put(patientId.getName(), patientId);
-//
-//			patient.getAlternateId().add(patientId);
-//			
-//			// Add local id
-//
+			Patient patient = new Patient();
+
+			patient.setSubmission(submission);
+
+			// Add stable external identifier
+
+			patientIdentifier = patientIdentifier + 1;
+			patient.setName("P" + patientIdentifier);
+
+			AlternateId patientId = new AlternateId();
+			patientId.setDefinition("molgenis_patient_id");
+			patientId.setName("P" + patientIdentifier);
+			alternateIdList.put(patientId.getName(), patientId);
+
+			patient.getAlternateId().add(patientId);
+			
+			patient.setPhenotype("Unknown");
+			
+			// Add local id
+
 //			String localIdString = tuple.getString("patient ID");
 //
 //			AlternateId localId = new AlternateId();
@@ -168,7 +172,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 
 			// Add variants
 
-			if (StringUtils.isNotEmpty(tuple.getString("cDNA change")))
+			if (StringUtils.isNotEmpty(tuple.getString("DNA change")))
 			{
 				String[] cdnaNotations   = StringUtils.split(tuple.getString("DNA change"), ", ");
 				String[] aaNotations     = StringUtils.split(tuple.getString("Protein change"), ", ");
@@ -198,16 +202,30 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 
 						variantList.put(cdnaVariant.getName(), cdnaVariant);
 
+						cdnaVariant.setNameCdna(cdnaNotation);
 						cdnaVariant.setStartCdna(mutationUploadDTO.getCdnaStart());
 						cdnaVariant.setEndCdna(mutationUploadDTO.getCdnaEnd());
 
+						cdnaVariant.setNameAa(aaNotation);
 						cdnaVariant.setStartAa(mutationUploadDTO.getAaStart());
 						cdnaVariant.setEndAa(mutationUploadDTO.getAaEnd());
 
+						cdnaVariant.setNameGdna("g.?");
 						cdnaVariant.setStartGdna(mutationUploadDTO.getGdnaStart());
 						cdnaVariant.setEndGdna(mutationUploadDTO.getGdnaEnd());
 
-						cdnaVariant.setType(mutationUploadDTO.getType());
+						cdnaVariant.setType(mutationUploadDTO.getEvent());
+//						cdnaVariant.setType(mutationUploadDTO.getType());
+
+						List<Gene> geneList = db.query(Gene.class).equals(Gene.NAME, tuple.getString("Gene")).find();
+						
+						if (geneList.size() > 0)
+							cdnaVariant.setGene(geneList.get(0));
+					
+						List<Exon> exonList = db.query(Exon.class).equals(Exon.NAME, tuple.getString("Exon")).find();
+						
+						if (exonList.size() > 0)
+							cdnaVariant.setExon(exonList.get(0));
 
 						// Add stable external identifier
 
@@ -239,51 +257,51 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 
 						// Add calculated values from variantUploadDTO
 						
-						ObservedValue codonChangeOV          = new ObservedValue();
-						ObservableFeature codonChangeFeature = new ObservableFeature();
-						codonChangeFeature.setName("Codon change");
-						codonChangeOV.setFeature(codonChangeFeature);
-						codonChangeOV.setTarget(cdnaVariant);
-						codonChangeOV.setValue(mutationUploadDTO.getCodonChange());
-						observedValueList.add(codonChangeOV);
+//						ObservedValue codonChangeOV          = new ObservedValue();
+//						ObservableFeature codonChangeFeature = new ObservableFeature();
+//						codonChangeFeature.setName("Codon change");
+//						codonChangeOV.setFeature(codonChangeFeature);
+//						codonChangeOV.setTarget(cdnaVariant);
+//						codonChangeOV.setValue(mutationUploadDTO.getCodonChange());
+//						observedValueList.add(codonChangeOV);
 
-						ObservedValue consequenceOV          = new ObservedValue();
-						ObservableFeature consequenceFeature = new ObservableFeature();
-						consequenceFeature.setName("Consequence");
-						consequenceOV.setFeature(consequenceFeature);
-						consequenceOV.setTarget(cdnaVariant);
-						consequenceOV.setValue(mutationUploadDTO.getConsequence());
-						observedValueList.add(consequenceOV);
+//						ObservedValue consequenceOV          = new ObservedValue();
+//						ObservableFeature consequenceFeature = new ObservableFeature();
+//						consequenceFeature.setName("Consequence");
+//						consequenceOV.setFeature(consequenceFeature);
+//						consequenceOV.setTarget(cdnaVariant);
+//						consequenceOV.setValue(mutationUploadDTO.getConsequence());
+//						observedValueList.add(consequenceOV);
 
-						ObservedValue splicingOV          = new ObservedValue();
-						ObservableFeature splicingFeature = new ObservableFeature();
-						splicingFeature.setName("Effect on splicing");
-						splicingOV.setFeature(splicingFeature);
-						splicingOV.setTarget(cdnaVariant);
-						splicingOV.setValue(mutationUploadDTO.getEffectOnSplicing().toString());
-						observedValueList.add(splicingOV);
+//						ObservedValue splicingOV          = new ObservedValue();
+//						ObservableFeature splicingFeature = new ObservableFeature();
+//						splicingFeature.setName("Effect on splicing");
+//						splicingOV.setFeature(splicingFeature);
+//						splicingOV.setTarget(cdnaVariant);
+//						splicingOV.setValue(mutationUploadDTO.getEffectOnSplicing().toString());
+//						observedValueList.add(splicingOV);
 
-						ObservedValue eventOV          = new ObservedValue();
-						ObservableFeature eventFeature = new ObservableFeature();
-						eventFeature.setName("Event");
-						eventOV.setFeature(eventFeature);
-						eventOV.setTarget(cdnaVariant);
-						eventOV.setValue(mutationUploadDTO.getEvent());
-						observedValueList.add(eventOV);
+//						ObservedValue eventOV          = new ObservedValue();
+//						ObservableFeature eventFeature = new ObservableFeature();
+//						eventFeature.setName("Event");
+//						eventOV.setFeature(eventFeature);
+//						eventOV.setTarget(cdnaVariant);
+//						eventOV.setValue(mutationUploadDTO.getEvent());
+//						observedValueList.add(eventOV);
 
-						ObservedValue ntchangeOV          = new ObservedValue();
-						ObservableFeature ntchangeFeature = new ObservableFeature();
-						ntchangeFeature.setName("NT change");
-						ntchangeOV.setFeature(ntchangeFeature);
-						ntchangeOV.setTarget(cdnaVariant);
-						ntchangeOV.setValue(mutationUploadDTO.getNtChange());
-						observedValueList.add(ntchangeOV);
+//						ObservedValue ntchangeOV          = new ObservedValue();
+//						ObservableFeature ntchangeFeature = new ObservableFeature();
+//						ntchangeFeature.setName("NT change");
+//						ntchangeOV.setFeature(ntchangeFeature);
+//						ntchangeOV.setTarget(cdnaVariant);
+//						ntchangeOV.setValue(mutationUploadDTO.getNtChange());
+//						observedValueList.add(ntchangeOV);
 
-//						patient.getMutations().add(cdnaVariant);
+						patient.getMutations().add(cdnaVariant);
 					}
 					else
 					{
-//						patient.getMutations().add(results.get(0));
+						patient.getMutations().add(results.get(0));
 					}
 				}
 			}
@@ -329,7 +347,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 //				observedValueList.add(observedValue);
 //			}
 //			
-//			patientList.put(patient.getName(), patient);
+			patientList.put(patient.getName(), patient);
 		}
 
 		int counter = 0;
@@ -337,7 +355,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 		// Now finally import everything
 
 //		counter += db.add(Arrays.asList(alternateIdList.toArray(new AlternateId[alternateIdList.size()])));
-//		counter += db.add(Arrays.asList(alternateIdList.values().toArray(new AlternateId[0])));
+		counter += db.add(Arrays.asList(alternateIdList.values().toArray(new AlternateId[0])));
 		
 		// resolve foreign keys for sequenceCharacteristicList
 		
@@ -362,6 +380,7 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 				}
 				variant.setAlternateId(resolvedAlternateIdList);
 			}
+
 			resolvedVariantList.add(variant);
 		}
 
@@ -400,12 +419,12 @@ public class UploadBatchCsvReader extends CsvToDatabase<Entity>
 
 		// resolve foreign keys for pubmedStringList
 		
-		if (pubmedStringList.size() > 0)
-		{
-			List<Publication> publicationList = publicationService.pubmedIdListToPublicationList(Arrays.asList(pubmedStringList.toArray(new String[pubmedStringList.size()])));
-		
-			counter += db.add(publicationList);
-		}
+//		if (pubmedStringList.size() > 0)
+//		{
+//			List<Publication> publicationList = publicationService.pubmedIdListToPublicationList(Arrays.asList(pubmedStringList.toArray(new String[pubmedStringList.size()])));
+//		
+//			counter += db.add(publicationList);
+//		}
 
 		// resolve foreign keys for patientList
 
