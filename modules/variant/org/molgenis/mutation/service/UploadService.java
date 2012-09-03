@@ -470,6 +470,11 @@ public class UploadService extends MolgenisVariantService
 			{
 				throw new UploadServiceException("No valid mutation notation: '" + cdnaNotation + "'");
 			}
+			int mutationPosition = SequenceUtils.getCDNAPosition(mutationUploadDTO.getMutationPosition());
+			mutationUploadDTO.setCdnaStart(mutationPosition);
+			mutationUploadDTO.setCdnaEnd(mutationUploadDTO.getCdnaStart() + mutationUploadDTO.getLength() - 1);
+			mutationUploadDTO.setGdnaStart(0);
+			mutationUploadDTO.setGdnaEnd(0);
 //			logger.debug(">>> assignValuesFromNotation: cdnaNotation==" + cdnaNotation + ", event==" + mutationUploadVO.getMutation().getEvent() + ", pos==" + mutationUploadVO.getMutation().getPosition() + ", len==" + mutationUploadVO.getMutation().getLength() + ", ntchange==" + mutationUploadVO.getMutation().getNtchange());
 		}
 		this.assignValuesFromPosition(mutationUploadDTO);
@@ -479,9 +484,6 @@ public class UploadService extends MolgenisVariantService
 	{
 		if (StringUtils.isEmpty(mutationUploadDTO.getMutationPosition()) || "0".equals(mutationUploadDTO.getMutationPosition()))
 			return;
-
-		int mutationPosition      = SequenceUtils.getCDNAPosition(mutationUploadDTO.getMutationPosition());
-		mutationUploadDTO.setCdnaStart(mutationPosition);
 
 		GeneDTO geneDTO           = this.findGene();
 		List<ExonDTO> exonDTOList = this.findAllExons();
@@ -558,7 +560,6 @@ public class UploadService extends MolgenisVariantService
 			mutSequence.insert(mutationStart, mutationUploadDTO.getNtChange());
 		}
 
-		mutationUploadDTO.setCdnaEnd(mutationUploadDTO.getCdnaStart() + mutationUploadDTO.getLength() - 1);
 		if ("F".equals(exonDTO.getOrientation()))
 			mutationUploadDTO.setGdnaEnd(mutationUploadDTO.getGdnaStart() + mutationUploadDTO.getLength() - 1);
 		else
