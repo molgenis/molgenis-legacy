@@ -1,4 +1,14 @@
+#MOLGENIS walltime=05:00:00 nodes=1 cores=1 mem=4
 
+
+#INPUTS plinkdata.map,studyPedMapDir.ped
+#OUTPUTS studyPedMap.map,studyPedMap.ped
+#EXES
+#LOGS log
+#TARGETS plinkdata
+
+inputs ${studyPedMap}.map
+inputs ${studyPedMap}.ped
 
 
 mkdir ${studyTriTyperTempDir}

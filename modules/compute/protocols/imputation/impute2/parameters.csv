@@ -29,7 +29,6 @@ plink,${tooldir}/plink-1.07-x86_64/plink-1.07-x86_64/plink,,,
 #homedir,${root}/home/fvandijk,,,
 homedir,${root}/groups/gonl/projects/imputationBenchmarking/eQtl/,,,
 projectdir,${homedir}/${project},,,
-plinkdata,${projectdir}/${chr},,,
 projectTempDir,${tempdir}/${id}/,end with slash,,
 
 studyPedMapDir,${projectTempDir}/PedMap/,end with slash,,
