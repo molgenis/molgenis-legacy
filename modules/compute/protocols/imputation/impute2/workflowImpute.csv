@@ -1,6 +1,6 @@
 name,protocol_name,PreviousSteps_name
-impute_s01,converPedMapToTriTyper,
-createBglFileFromPlinkData,createBglFileFromPlinkData,transposePlinkData
-createMarkerFile,createMarkerFile,createBglFileFromPlinkData
-imputeWithBeagle,imputeWithBeagle,createMarkerFile
-beagleOutputToTrityper,beagleOutputToTrityper,imputeWithBeagle
+impute_s01,convertPedMapToTriTyper,
+impute_s02,convertPedMapToTriTyper,impute_s01
+,,
+,,
+,,
