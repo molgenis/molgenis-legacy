@@ -1,14 +1,21 @@
 #MOLGENIS walltime=05:00:00 nodes=1 cores=1 mem=4
 
 
-#INPUTS plinkdata.map,studyPedMapDir.ped
-#OUTPUTS studyPedMap.map,studyPedMap.ped
+#INPUTS studyPedMap.map,studyPedMap.ped
+#OUTPUTS studyTriTyperDir
 #EXES
 #LOGS log
-#TARGETS plinkdata
+#TARGETS studyTriTyperTempDir
 
 inputs ${studyPedMap}.map
 inputs ${studyPedMap}.ped
+
+alloutputsexist ${studyTriTyperDir}/GenotypeMatrix.dat
+alloutputsexist ${studyTriTyperDir}/Individuals.txt
+alloutputsexist ${studyTriTyperDir}/PhenotypeInformation.txt
+alloutputsexist ${studyTriTyperDir}/SNPMappings.txt
+alloutputsexist ${studyTriTyperDir}/SNPsHash.txt
+alloutputsexist ${studyTriTyperDir}/SNPs.txt
 
 
 mkdir ${studyTriTyperTempDir}
