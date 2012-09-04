@@ -46,7 +46,7 @@ referenceImpute2LegendFile,${referenceImpute2Dir}/${chr}.legend
 referenceImpute2MapFile,${referenceImpute2Dir}/${chr}.map
 impute2ResultDir,${projectTempDir}/Impute2Result/,end with slash,,
 calculateBeagleR2ForIMpute2ResultsPythonScript,${tooldir}/python_scripts/calculateBeagleR2ForImpute2Results.py,,,
-impute2ResultChrBinTemp${impute2ResultDir}/${chr}/~chr_${chr}_from_${fromChrPos}_to_${toChrPos},,,
-impute2ResultChrBin${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos},,,
-impute2ResultChrBinGenFile,${impute2ResultChrBin}.***,,,
+impute2ResultChrBinTemp,${impute2ResultDir}/${chr}/~chr_${chr}_from_${fromChrPos}_to_${toChrPos},,,
+impute2ResultChrBin,${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_${toChrPos},,,
+impute2ResultChrBinGenFile,${impute2ResultChrBin}.gen,Ask alex for correct file extension,,
 impute2ResultChrBinInfoFile,${impute2ResultChrBin}.info,,,
