@@ -1,5 +1,17 @@
+#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
 
+#INPUTS impute2ResultDir/${chr}/,referenceImpute2HapFile,referenceImpute2LegendFile,referenceImpute2MapFile,preparedStudyDir/chr${chr}.gen
+#OUTPUTS impute2ResultChrBinTemp
+#EXES impute2Bin
+#LOGS log
+#TARGETS
 
+inputs ${impute2ResultDir}/${chr}/
+inputs ${referenceImpute2HapFile}
+inputs ${referenceImpute2LegendFile}
+inputs ${referenceImpute2MapFile}
+inputs ${preparedStudyDir}/chr${chr}.gen
+alloutputsexist ${impute2ResultChrBinTemp}
 
 mkdir -p ${impute2ResultDir}/${chr}/
 ${impute2Bin} -h ${referenceImpute2HapFile} -l ${referenceImpute2LegendFile} -m ${referenceImpute2MapFile} -g ${preparedStudyDir}/chr${chr}.gen -int ${fromChrPos} ${toChrPos} -o ${impute2ResultChrBinTemp}

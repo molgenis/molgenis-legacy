@@ -1,0 +1,2 @@
+project,studyInputPedMap,referencePanel,imputationResult,imputationPipeline,genomeBuild
+testproject,bloodb37,GoNL_release3,/target/gpfs2/gcc/home/fvandijk/ikbendebestetest,impute2,b37

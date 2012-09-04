@@ -1,4 +1,24 @@
+#MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
 
+#INPUTS studyTriTyperDir,referenceTriTyperDir
+#OUTPUTS preparedStudyTempDir
+#EXES imputationToolJar
+#LOGS log
+#TARGETS plinkdata
+
+inputs ${studyTriTyperDir}/GenotypeMatrix.dat
+inputs ${studyTriTyperDir}/Individuals.txt
+inputs ${studyTriTyperDir}/PhenotypeInformation.txt
+inputs ${studyTriTyperDir}/SNPMappings.txt
+inputs ${studyTriTyperDir}/SNPsHash.txt
+inputs ${studyTriTyperDir}/SNPs.txt
+inputs ${referenceTriTyperDir}/GenotypeMatrix.dat
+inputs ${referenceTriTyperDir}/Individuals.txt
+inputs ${referenceTriTyperDir}/PhenotypeInformation.txt
+inputs ${referenceTriTyperDir}/SNPMappings.txt
+inputs ${referenceTriTyperDir}/SNPsHash.txt
+inputs ${referenceTriTyperDir}/SNPs.txt
+alloutputsexist preparedStudyTempDir/*
 
 
 

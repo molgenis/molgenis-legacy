@@ -3,9 +3,9 @@
 
 #INPUTS studyPedMap.map,studyPedMap.ped
 #OUTPUTS studyTriTyperDir
-#EXES
+#EXES imputationToolJar
 #LOGS log
-#TARGETS studyTriTyperTempDir
+#TARGETS plinkdata
 
 inputs ${studyPedMap}.map
 inputs ${studyPedMap}.ped
