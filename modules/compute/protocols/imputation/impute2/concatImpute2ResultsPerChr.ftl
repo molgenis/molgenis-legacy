@@ -6,6 +6,8 @@
 #LOGS log
 #TARGETS plinkdata,chr
 
+#FOREACH plinkdata,chr
+
 inputs ${csvQuoted(impute2ResultChrBinGenFile)},${csvQuoted(impute2ResultChrBinInfoFile)}
 alloutputsexist ${imputationResult}/chr_${chr}
 
