@@ -4,7 +4,9 @@
 #OUTPUTS preparedStudyDir/chr${chr}.gen,preparedStudyDir/chr${chr}.sample
 #EXES gtoolBin
 #LOGS log
-#TARGETS plinkdata,chr
+#TARGETS project,chr
+
+#FOREACH project,chr
 
 inputs "${preparedStudyDir}/chr${chr}.ped"
 inputs "${preparedStudyDir}/chr${chr}.map"

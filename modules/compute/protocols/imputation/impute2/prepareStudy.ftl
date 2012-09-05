@@ -4,9 +4,9 @@
 #OUTPUTS preparedStudyTempDir
 #EXES imputationToolJar
 #LOGS log
-#TARGETS project,chr,referencePanel
+#TARGETS project,referencePanel
 
-#FOREACH project,chr,referencePanel
+#FOREACH project,referencePanel
 
 inputs ${studyTriTyperDir}/GenotypeMatrix.dat
 inputs ${studyTriTyperDir}/Individuals.txt

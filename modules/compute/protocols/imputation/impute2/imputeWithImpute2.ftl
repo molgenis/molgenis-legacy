@@ -4,7 +4,9 @@
 #OUTPUTS impute2ResultChrBinTemp
 #EXES impute2Bin
 #LOGS log
-#TARGETS
+#TARGETS project,studyInputPedMap,referencePanel,chr,fromChrPos,toChrPos
+
+#FOREACH project,studyInputPedMap,referencePanel,chr,fromChrPos,toChrPos
 
 inputs "${impute2ResultDir}/${chr}/"
 inputs "${referenceImpute2HapFile}"

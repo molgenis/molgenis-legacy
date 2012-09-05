@@ -4,12 +4,15 @@
 #OUTPUTS imputationResult/chr_${chr}
 #EXES
 #LOGS log
-#TARGETS plinkdata,chr
+#TARGETS project,chr,fromChrPos,toChrPos
 
-#FOREACH plinkdata,chr
+#FOREACH project,chr,fromChrPos,toChrPos
 
 inputs ${csvQuoted(impute2ResultChrBinGenFile)},${csvQuoted(impute2ResultChrBinInfoFile)}
 alloutputsexist ${imputationResult}/chr_${chr}
+
+####### MAKE SURE THE OUTPUT IS SORTED #######
+#### IN OTHER WORDS, RETURN FROM CSVQUOTED MUST BE SORTED BY CHR,POS ###
 
 
 #Concate the bins with compute for each
