@@ -48,7 +48,7 @@ ResultsFromMolgenis <- function(investigationname=NULL, resultname=NULL,verbose=
 	}else{
 		returnObj <- NULL
 		tempObj <- NULL
-		m_data_url <- paste(serverpath,"/downloadmatrixascsv?id=",resultmatrixid,"&download=all",sep="")
+		m_data_url <- paste(app_location,"/downloadmatrixascsv?id=",resultmatrixid,"&download=all",sep="")
 		cat(m_data_url,"\n")
 		data <- read.table(m_data_url,sep="\t",header=T,row.names=1,check.names=FALSE)
 		marker_info <- find.marker(name=rownames(data), .verbose=verbose)

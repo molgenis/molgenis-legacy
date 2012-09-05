@@ -12,14 +12,15 @@
 			<field name="nodes" default="1" type="int" description="# required nodes" />
 			<unique fields="name" />
 		</entity>
-		<entity name="ComputeProtocol" implements="Identifiable,Nameable,Describable" xref_label="name">
+		<entity name="ComputeProtocol" implements="Identifiable,Nameable,Describable"
+			xref_label="name">
 			<description>
 				Executable definitions of computational 'protocols' of
 				analysis. For
 				example: bwa-align. Therefore the Protocol class is
 				extended:
 			</description>
-			<field name="scriptTemplate" type="freemarker"
+			<field name="scriptTemplate" type="text"
 				description="Commandline or (template of) an script, e.g. in bash, R. Templating engine is freemarker." />
 			<field name="scriptInterpreter" type="enum" default="bash"
 				enum_options="[bash,R]"
@@ -38,7 +39,8 @@
 			<field name="nodes" default="1" type="int" description="# required nodes" />
 			<unique fields="name" />
 		</entity>
-		<entity name="ComputeParameter" implements="Identifiable,Nameable" xref_label="name">
+		<entity name="ComputeParameter" implements="Identifiable,Nameable"
+			xref_label="name">
 			<description>Parameter are the inputs or outputs into an
 				ComputeProtocol.
 			</description>
@@ -48,8 +50,11 @@
 			<field name="hasOne" type="mref" xref_entity="ComputeParameter"
 				description="relationship between parameters, enables parameter 'flattening'" />
 			<unique fields="name" />
+			<field name="Workflow" type="xref" xref_entity="Workflow"
+				xref_label="name" description="Workflow this element is part of" />
 		</entity>
-		<entity name="Workflow" implements="Identifiable,Nameable,Describable" xref_label="name">
+		<entity name="Workflow" implements="Identifiable,Nameable,Describable"
+			xref_label="name">
 			<description>A workflow is a plan to execute a series of subprotocols
 				in a particular order. Each workflow elements is another protocol as
 				refered to via WorkflowElement. Because Workflow extends Protocol,
@@ -74,13 +79,16 @@
 		</entity>
 	</module>
 	<module name="compute.runtime">
-		<entity name="ComputeTask" implements="Identifiable,Nameable" xref_label="name">
+		<entity name="ComputeTask" implements="Identifiable,Nameable"
+			xref_label="name">
 			<description>A protocolApplication that reports the application of
 				running a ComputeProtocol.
 			</description>
 			<field name="ComputeScript" type="text"
 				description="The actual command to be sent to the cluster, is a
 			filled in version of the one define in the ComputeProtocol" />
+            <field name="RunLog" type="text"
+            				description="Log of the task execution" nillable="true"/>
 			<field name="WorkflowElement" nillable="true" type="xref"
 				xref_entity="WorkflowElement"
 				description="Reference to the workflow element that generated this script." />
@@ -91,12 +99,13 @@
 			<field name="requirements" type="xref" nillable="true"
 				xref_entity="ComputeRequirement" description="requirements of the compation." />
 			<field name="StatusCode" nillable="false" type="enum"
-				enum_options="[submitted,running,failed,done]" default="submitted"
+				enum_options="[generated,ready,running,failed,done]" default="generated"
 				description="last known status of this task. See compute history for details." />
 			<unique fields="name" />
 		</entity>
 		<!-- todo: store the parameter values -->
-		<entity name="ComputeHistory" implements="Identifiable"
+
+        <entity name="ComputeHistory" implements="Identifiable"
 			xref_label="ComputeTask,StatusCode,StatusTime">
 			<description>Keep track of the compute history of a task, including
 				resubmissions. One worker may process multiple tasks.
@@ -116,7 +125,9 @@
 				description="field to show the content of the error file (only applicable on fail/done of a task)" />
 			<unique fields="ComputeTask,StatusCode,StatusTime" />
 		</entity>
-		<entity name="ComputeWorker" implements="Identifiable,Nameable" xref_label="name">
+
+		<entity name="ComputeWorker" implements="Identifiable,Nameable"
+			xref_label="name">
 			<description>Worker on the remote system. This can be pilot job or
 				traditional job. A worker executes the tasks (one or more). Each
 				worker gets a unique name.

@@ -15,6 +15,7 @@
 		<pathelement location="modules/datamodel" />
 		<pathelement location="modules/auth" />
 		<pathelement location="modules/file" />
+		<pathelement location="apps/catalogue" />
 		<pathelement location="modules/xgap" />
 		<pathelement location="modules/webserver" />
 		<pathelement location="modules/datatable" />

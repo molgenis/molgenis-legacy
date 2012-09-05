@@ -558,7 +558,7 @@ if (returnObject) {return(GWAS.obj)}
 #data.path       <- "D:/willem/statistical.genetics.large.files/arabidopsis.data/"
 #script.path     <- "D:/willem/Dropbox/research/STATISTICAL.GENETICS/arabidopsis.project/version.1.0/"
 #GWAS.obj <- add.pheno.data(gwas.obj=GWAS.obj,csv.file.name="2ndHAPMAPscr.csv",add.var.means=T,mean.cols=3:4,make.pheno.image=T,pheno.image.name="charles2test.RData")
-#source(paste(script.path,"functions.R",sep=""))
+#msource(paste(script.path,"functions.R",sep=""))
 #setwd(data.path)
 
 ##########################

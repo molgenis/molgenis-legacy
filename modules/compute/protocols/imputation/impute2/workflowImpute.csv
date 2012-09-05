@@ -1,0 +1,9 @@
+name,protocol_name,PreviousSteps_name
+impute2_s1,preparePedMapForImpute2,
+impute2_s2,convertPedMapToTriTyper,impute2_s1
+impute2_s3,prepareStudy,impute2_s2
+impute2_s4,convertPreparedStudyPedMapToGen,impute2_s3
+impute2_s5,imputeWithImpute2,impute2_s4
+impute2_s6,concatImpute2ResultsPerChr,impute2_s5
+impute2_s7,convertConcatedImpute2ResultToPedMap,impute2_s6
+impute2_s8,calculateBeagleR2ForImpute2Results,impute2_s7
