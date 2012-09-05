@@ -102,8 +102,7 @@ public class MolgenisHeader extends PluginModel<Entity>
 			this.userLogin = "<a href='autohideloginswitch'>" + "Logged in as: "
 					+ ((DatabaseLogin) this.getLogin()).getUserName() + "</a>";
 			this.userLogin += " | ";
-			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>"
-					+ "Logout " + "</a>";
+			this.userLogin += "<a href='molgenis.do?__target=UserLogin&__action=Logout'>" + "Logout " + "</a>";
 		}
 		else
 		{
@@ -118,8 +117,7 @@ public class MolgenisHeader extends PluginModel<Entity>
 			this.userLogin = "<a href='molgenis.do?__target=main&select=UserLogin'>" + "Logged in as: "
 					+ ((DatabaseLogin) this.getLogin()).getUserName() + "</a>";
 			this.userLogin += " | ";
-			this.userLogin += "<a href='molgenis.do?__target=MolgenisHeader&select=UserLogin&__action=doLogout'>"
-					+ "Logout " + "</a>";
+			this.userLogin += "<a href='molgenis.do?__target=UserLogin&__action=Logout'>" + "Logout " + "</a>";
 		}
 		else
 		{
