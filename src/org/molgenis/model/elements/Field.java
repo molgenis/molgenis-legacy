@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.molgenis.fieldtypes.CharField;
 import org.molgenis.fieldtypes.EnumField;
@@ -138,6 +140,7 @@ public class Field implements Serializable {
     public Field(String name)
     {
     	this.name = name;
+    	this.type = new StringField();
     }
 
     
@@ -962,6 +965,7 @@ public class Field implements Serializable {
     private String annotations;
     /** Used for serialization purposes. */
     private static final long serialVersionUID = -1879739243713730190L;
+	private String tableName;
 
     public String getAnnotations() {
         return annotations;
@@ -1159,6 +1163,22 @@ public class Field implements Serializable {
     public void setJpaCascade(String jpaCascade) {
         this.jpaCascade = jpaCascade;
     }
+
+	public void setTableName(String tableName)
+	{
+		this.tableName = tableName;		
+	}
     
-    
+	public String getTableName()
+	{
+		return this.tableName;		
+	}
+	
+	public String getSqlName() {
+		if(StringUtils.isNotEmpty(this.tableName)) {
+			return WordUtils.capitalize(this.tableName) + "." + this.name;
+		} else {
+			return this.name;
+		}		
+	}
 }

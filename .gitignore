@@ -3,6 +3,7 @@ bin/
 build/
 target/
 tmp/
+target/
 
 ## Always ignore these
 *~
@@ -28,3 +29,4 @@ log*
 .classpath
 /.externalToolBuilders
 /.settings
+/test-output

@@ -21,16 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.molgenis.fieldtypes.FieldType;
-
 
 /**
  * A {link Tuple} that wraps the current JDBC ResultSet row.
  * <p>
  * JDBCTuple class wraps the current row in a java.sql.Resultset so it can be
  * questioned as Tuple. Thus, we can use
- * {@link org.molgenis.util.Entity#set(Tuple)} to quicly load new
- * Entities. Note that a JDBCTuple is readonly!
+ * {@link org.molgenis.util.Entity#set(Tuple)} to quicly load new Entities. Note
+ * that a JDBCTuple is readonly!
  * <p>
  * FIXME this class can be made more efficient because the
  * resultset.getMetaData() is rather expensive? <br>
@@ -48,7 +46,7 @@ public class ResultSetTuple extends SimpleTuple
 
 	/** cache of the field names */
 	private List<String> fieldNames = null;
-	
+
 	/** cach of column labels */
 	private List<String> columnLabels = null;
 
@@ -83,13 +81,15 @@ public class ResultSetTuple extends SimpleTuple
 
 	/**
 	 * Deprecated: use getFieldNames instead.
+	 * 
 	 * @return
 	 */
 	@Deprecated
-	public List<String> getFields() {
+	public List<String> getFields()
+	{
 		return getFieldNames();
 	}
-	
+
 	public List<String> getFieldNames()
 	{
 		if (fieldNames == null)
@@ -100,7 +100,15 @@ public class ResultSetTuple extends SimpleTuple
 				int colcount = metadata.getColumnCount();
 				for (int i = 1; i <= colcount; i++)
 				{
-					fieldNames.add(metadata.getColumnName(i));
+					String name = metadata.getColumnName(i);
+					if (name == null)
+					{
+						throw new RuntimeException("column with id " + i + " == null");
+					}
+					else
+					{
+						fieldNames.add(metadata.getColumnName(i));
+					}
 				}
 
 			}
@@ -113,21 +121,27 @@ public class ResultSetTuple extends SimpleTuple
 		}
 		return fieldNames;
 	}
-	
-	public List<String> getColumnLabels() {
-		if(columnLabels == null) {
+
+	public List<String> getColumnLabels()
+	{
+		if (columnLabels == null)
+		{
 			columnLabels = new ArrayList<String>();
-			try {
-				for(int colIdx = 1, n = metadata.getColumnCount(); colIdx < n; ++colIdx) {
+			try
+			{
+				for (int colIdx = 1, n = metadata.getColumnCount(); colIdx < n; ++colIdx)
+				{
 					columnLabels.add(metadata.getColumnLabel(colIdx));
-				}				
-			} catch (Exception ex) {
+				}
+			}
+			catch (Exception ex)
+			{
 				final String errorMsg = "getColumnNames(): failed " + ex;
 				logger.error(errorMsg);
 				throw new RuntimeException(errorMsg);
 			}
 		}
-		return columnLabels;		
+		return columnLabels;
 	}
 
 	/**
@@ -178,10 +192,12 @@ public class ResultSetTuple extends SimpleTuple
 	{
 		try
 		{
-			if (resultset.getObject(columnName) == null)
-			// watchout, null != false!
-			return null;
-			return resultset.getInt(columnName);
+			if (resultset.getObject(columnName) == null) {
+				// watchout, null != false!
+				return null;
+			} else {
+				return resultset.getInt(columnName);
+			}
 		}
 		catch (SQLException e)
 		{
@@ -409,7 +425,7 @@ public class ResultSetTuple extends SimpleTuple
 		}
 		return null;
 	}
-	
+
 	public boolean next() throws SQLException
 	{
 		return this.resultset.next();
