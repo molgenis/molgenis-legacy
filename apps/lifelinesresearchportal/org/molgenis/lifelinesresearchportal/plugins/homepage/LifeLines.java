@@ -180,7 +180,7 @@ public class LifeLines extends PluginModel<Entity>
 			String action = request.getString("__action");
 			if (action.equals("setPathAndLoad"))
 			{
-				setupStorageAndLoadExample(db, request.getString("fileDirPath"));
+				setupStorageAndLoadExample(db);
 			}
 		}
 		catch (Exception e)
@@ -191,40 +191,9 @@ public class LifeLines extends PluginModel<Entity>
 
 	}
 
-	public void setupStorageAndLoadExample(Database db, String path) throws Exception
+	public void setupStorageAndLoadExample(Database db) throws Exception
 	{
 
-		if (sh.hasValidFileStorage(db))
-		{
-			path = sh.getFileStorage(true, db).getAbsolutePath();
-		}
-		// case 2 (not a validated path: just delete and use input)
-		else if (sh.hasFileStorage(false, db))
-		{
-			sh.deleteFileStorage(db);
-			sh.setFileStorage(path, db);
-			sh.validateFileStorage(db);
-		}
-		else
-		{
-			sh.setFileStorage(path, db);
-			sh.validateFileStorage(db);
-		}
-
-		try
-		{
-			new StorageHandler(db).getFileStorage(true, db);
-		}
-		catch (Exception e)
-		{
-			throw new Exception(
-					"Storage location is not set or invalid. Please use the system settings plugin to assign one. Exception: "
-							+ e.getMessage());
-		}
-
-		// if file path is valid:
-		// File llrp = new
-		// File(LLRPExampleData.class.getResource("llrp.tar.gz").getFile());
 		File llrp = new File("./publicdata/llrp/llrp.tar.gz");
 		if (llrp.exists())
 		{
