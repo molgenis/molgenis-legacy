@@ -55,12 +55,6 @@ public class JQGridPluginProtocol extends
 
 		tableView.handleRequest(db, request, out);
 
-		if ("edit".equals(request.getAction())) {
-			editable = true;
-		} else {
-			editable = false;
-		}
-
 	}
 
 	//
