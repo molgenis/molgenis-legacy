@@ -293,7 +293,8 @@ public class ProtocolTable extends AbstractFilterableTupleTable
 		// filtering [todo: data model change!]
 		if (columnsUsed.contains(targetString))
 		{
-			sql += " NATURAL JOIN (SELECT id as targetId, name as target from ObservationElement) as target";
+			sql += " NATURAL JOIN (SELECT id as targetId, name as " + this.targetString
+					+ " from ObservationElement) as " + this.targetString;
 		}
 
 		List<QueryRule> filters = new ArrayList<QueryRule>(getFilters());
