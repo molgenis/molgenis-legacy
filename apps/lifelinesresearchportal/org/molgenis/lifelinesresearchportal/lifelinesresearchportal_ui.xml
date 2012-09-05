@@ -5,6 +5,7 @@
 	<menu name="main">
 		<plugin label="Home" name="LifeLinesHome"
 			type="org.molgenis.lifelinesresearchportal.plugins.homepage.LifeLines" />
+		<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
 	<!--	<plugin name="jqGridView" type="org.molgenis.datatable.plugin.JQGridPlugin" />
 		<plugin name="jqGridViewEntity" type="org.molgenis.datatable.plugin.JQGridPluginEntity" />
 		<plugin name="jqGridViewMemory" type="org.molgenis.datatable.plugin.JQGridPluginMemory" /> -->
