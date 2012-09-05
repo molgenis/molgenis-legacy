@@ -1,0 +1,15 @@
+<molgenis name="xqtl" label="xQTL workbench">
+	<plugin name="MiniGUI" type="org.molgenis.minigui.MiniGUI" />
+	<menu name="main">
+		<plugin label="Home" name="CleanHome" type="org.molgenis.xqtl.minigui.CleanHome" />
+		<plugin label="Setup" name="ClusterDemo" type="plugins.cluster.demo.ClusterDemo" />
+		<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/browsedata.xml"/>
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/importdata.xml"/>
+		<plugin label="Run QTL mapping" name="Cluster" type="plugins.cluster.ClusterPlugin" group="biologist" />
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/configureanalysis.xml"/>
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/search.xml"/>
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/utilities.xml"/>
+		<include file="apps/xqtl/org/molgenis/xqtl/gui/admin.xml"/>
+	</menu>
+</molgenis>

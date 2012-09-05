@@ -57,6 +57,7 @@ intermediatedir,${tempprojectdir}/${project}/${McId}/,store intermediate results
 projectJobsDir,${projectdir}/jobs/,Project specific job scripts directory,string,
 projectLogsDir,${projectdir}/logs/,Project specific log directory,string,
 projectResultsDir,${projectdir}/results/,Store final results here; a sub set of the primary outputs that we want to keep/archive are moved to this dir; afterwards the remaining files from the intermediate dir will be lost when we clean up.,string,
+contact,,,,
 project,,,,"contact,allRawNgsDataDir"
 sequencingStartDate,,,,
 sequencer,,,,

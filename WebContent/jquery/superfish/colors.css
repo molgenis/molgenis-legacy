@@ -1,0 +1,66 @@
+/** http://colorschemedesigner.com/#2V51T55n7v5w0 */ 
+
+/**color of title*/
+.colorOfTitle,#header {
+	color: #FFFFFF;
+}
+
+/**overall background*/
+.overallBackground,body,#header,#navigation,#information,#footer {
+	background: #FFFFFF;
+}
+
+/**matrix inner table and cells, border-color original EAEAEA color original 000000*/
+.tableBorder,.matrixTableCell{
+	border-color: #fff;
+	color: #000000;
+}
+
+/**highlight background, original lightgrey EAEAEA*/
+.highlightBackground,.formscreen, .form_new, .form_filter, .embedtable, .popup, .form_new,.form_filter {
+	background: #fff;
+	color: #000000;
+}
+
+/**shade header, original darkgreen: 275A36*/
+.shadeHeader,.leftNavigationSelected,.navigationSelected,.form_header, td.submenuitem:hover {
+	background: #fff;
+	color: #FFFFFF;
+}
+
+/**highlight original lightgreen 9EA98E, no color */
+.highlight,.leftNavigationNotSelected,.navigationNotSelected, .form_menu, .submenuitem   {
+	background: #fff;
+	color: #fff;
+}
+
+.submenuitem{
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#275A36'; this.style.color='#fff';"),
+                       onmouseout=new Function("this.style.backgroundColor='#9EA98E'; this.style.color='black';"));	
+	/*ie hack for td.submenuitem:hover*/
+	
+}
+
+/**shade borders, original darkgreen 275A36*/
+.shadeBorder,.leftNavigationSelected,.navigationSelected,.formscreen,.form_new,.form_filter,.popup, .form_menu 
+{
+	border-color: #fff;
+	
+}
+
+/**font color*/
+.fontColor,.leftNavigationSelected,.navigationSelected {
+	color: #FFFFFF;
+}
+
+.matrixRowColor0,.form_listrow0 {
+	background: #BDD2FF;
+}
+
+.matrixRowColor1,.form_listrow1 {
+	background: #9AAEDB;
+}
+
+.matrixRowColorEmpty {
+	background: #EAEAEA;
+}
