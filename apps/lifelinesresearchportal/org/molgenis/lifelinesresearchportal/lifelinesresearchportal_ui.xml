@@ -8,8 +8,9 @@
 	<!--	<plugin name="jqGridView" type="org.molgenis.datatable.plugin.JQGridPlugin" />
 		<plugin name="jqGridViewEntity" type="org.molgenis.datatable.plugin.JQGridPluginEntity" />
 		<plugin name="jqGridViewMemory" type="org.molgenis.datatable.plugin.JQGridPluginMemory" /> -->
-		<plugin name="jqGridViewProtocol" type="org.molgenis.datatable.plugin.JQGridPluginProtocol" label="Phenotype"/>
 		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Catalogue" />
+		<plugin name="jqGridViewProtocol" type="org.molgenis.datatable.plugin.JQGridPluginProtocol" label="Phenotype"/>
+		<plugin name="jqGridViewGenotype" type="org.molgenis.datatable.plugin.JQGridPluginGenotype" label="Genotype"/>
 		<!--<plugin name="jqGridViewProtocolFilterable" type="org.molgenis.datatable.plugin.JQGridPluginProtocolFilterable" />
 
 		 <plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" 
