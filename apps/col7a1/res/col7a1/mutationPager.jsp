@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 
-<display:table name="mutationSummaryDTOList" pagesize="10" export="true" sort="list" class="listtable2" id="current">
+<display:table name="mutationSummaryDTOList" pagesize="10" export="true" sort="list" class="listtable" id="current">
 <display:setProperty name="paging.banner.full"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0} <a href="{3}">Next</a> <a href="{4}">Last</a></span></display:setProperty>  
 <display:setProperty name="paging.banner.first"><span class="pagelinks">{0} <a href="{3}">Next</a> <a href="{4}">Last</a> </span></display:setProperty>
 <display:setProperty name="paging.banner.last"><span class="pagelinks"><a href="{1}">First</a> <a href="{2}">Prev</a> {0}</span></display:setProperty>
@@ -143,7 +143,7 @@
 	<c:choose>
 	<c:when test="${fn:length(patientDTO.publicationDTOList) > 0}">
 	<c:forEach var="publicationDTO" items="${patientDTO.publicationDTOList}">
-	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="PM:${publicationDTO.pubmedId}"/></a><br/>
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}"/></a><br/>
 	</c:forEach>
 <!-- 	<a href="${patientDTO.publicationDTOList[0].pubmedUrl}" target="_new"><c:out value="${patientDTO.publicationDTOList[0].name}"/></a>-->
 	</c:when>

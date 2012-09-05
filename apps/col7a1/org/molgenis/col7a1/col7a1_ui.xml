@@ -19,7 +19,7 @@
 				<form name="Protein" entity="Protein"/>
 			</form>
 			<form name="ProteinDomain" entity="ProteinDomain"/>
-			<form name="SequenceCharacteristic" entity="SequenceCharacteristic">
+			<form name="Variant" entity="Variant">
 				<form name="SequenceObservedValue" entity="ObservedValue" label="Phenotypic Value" hide_fields="Investigation,protocolApplication,ontologyReference,time,endtime"/>
 			</form>
 			<form name="Workflow" entity="Workflow" label="Patient Workflow">

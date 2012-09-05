@@ -18,12 +18,11 @@
     </properties>
     
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>3.1.1.RELEASE</version>
-		</dependency>
+        </dependency>
 		<dependency>
 			<groupId>xml-apis</groupId>
 			<artifactId>xml-apis</artifactId>
@@ -48,12 +47,20 @@
             <groupId>org.molgenis</groupId>
             <artifactId>molgenis</artifactId>
             <version>[12.28,)</version>
-        </dependency>
+		<exclusions>
+			<exclusion>
+				<artifactId>spring-web</artifactId>
+				<groupId>org.springframework</groupId>
+			</exclusion>
+		</exclusions>
+		</dependency>
+<!--
 <dependency>
                         <groupId>org.hibernate</groupId>
                         <artifactId>hibernate-search</artifactId>
                         <version>3.4.2.Final</version>
                 </dependency>
+-->
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
@@ -68,6 +75,18 @@
 		</dependency>
 
         <!-- Testing -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.4</version>
+			<scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+			<scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
@@ -106,9 +125,24 @@
 			<groupId>org.apache.abdera</groupId>
 			<artifactId>abdera-bundle</artifactId>
 			<version>1.1.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>lucene-core</artifactId>
+					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+			 <exclusion>
+			  <artifactId>spring-web</artifactId>
+			  <groupId>org.springframework</groupId>
+			 </exclusion>
+			</exclusions>
 		</dependency>        
 
 		<!-- Collections -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>      
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
@@ -228,6 +262,7 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
+						<id>add-source</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>add-source</goal>
@@ -248,8 +283,37 @@
                                 <source>modules/decorators/pheno</source>
                                 <source>publicdata</source>
                             </sources>
+							<excludes>
+								<exclude>**/test/**</exclude>
+								<exclude>**/res/**</exclude>
+							</excludes>
                         </configuration>
                     </execution>
+					<execution>
+						<id>add-test-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>generated/java</source>
+                                <source>apps/myo5b</source>
+                                <source>modules/auth</source>
+                                <source>modules/datamodel</source>
+                                <source>modules/file</source>
+                                <source>modules/news</source>
+                                <source>modules/pheno</source>
+                                <source>modules/settings</source>
+                                <source>modules/variant</source>
+                                <source>modules/decorators/auth</source>
+                                <source>modules/decorators/core</source>
+                                <source>modules/decorators/pheno</source>
+                                <source>publicdata</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
             <plugin>
@@ -296,6 +360,7 @@
                     </compilerArguments>
 					<excludes>
 						<exclude>**/test/**</exclude>
+						<exclude>**/res/**</exclude>
 					</excludes>
 					<testIncludes>
 						<testInclude>**/test/**</testInclude>
@@ -371,6 +436,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
+				<!-- use 2.6 since newer version produce incorrect .classpath -->
+				<version>2.6</version>
 				<configuration>
 					<wtpversion>2.0</wtpversion>
 				</configuration>
