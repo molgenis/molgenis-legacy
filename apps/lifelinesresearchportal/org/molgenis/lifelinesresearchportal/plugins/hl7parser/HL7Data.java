@@ -19,7 +19,8 @@ import org.molgenis.lifelinesresearchportal.plugins.catalogue.StageLRA.HL7ValueS
  * 
  * @author roankanninga
  */
-interface HL7Data {
+public interface HL7Data
+{
 
 	//
 	ArrayList<HL7OrganizerLRA> getHL7OrganizerLRA();

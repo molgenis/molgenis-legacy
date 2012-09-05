@@ -66,7 +66,7 @@ public abstract class AbstractTupleTable implements TupleTable
 		{
 			if (getColLimit() > 0)
 			{
-				return columns.subList(getColOffset(), getColOffset() + getColLimit());
+				return columns.subList(getColOffset(), Math.min(getColOffset() + getColLimit(), columns.size()));
 			}
 			else
 			{

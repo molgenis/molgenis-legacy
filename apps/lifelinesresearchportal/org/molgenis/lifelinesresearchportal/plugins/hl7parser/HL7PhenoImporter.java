@@ -466,6 +466,7 @@ public class HL7PhenoImporter
 		{
 			e.printStackTrace();
 			db.rollbackTx();
+			throw e;
 		}
 	}
 
