@@ -32,6 +32,7 @@
 					<tr>
 						<td>
 							<br><i><font color="red">You are logged in as admin, and the database does not contain any investigations or other users. Automated setup is now possible. Database additions will disable this notice.</font></i><br><br>
+							<input type="file" name="llrptar"/>
 							<input type="submit" value="Load" id="loadExamples" onclick="document.forms.${screen.name}.__action.value = 'setPathAndLoad'; document.forms.${screen.name}.submit();"/>
 							<br><br>
 						</td>
