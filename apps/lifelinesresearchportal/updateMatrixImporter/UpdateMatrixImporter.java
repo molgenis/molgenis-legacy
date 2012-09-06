@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.molgenis.datatable.model.CsvTable;
+import org.molgenis.datatable.model.MemoryTable;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
@@ -17,9 +18,11 @@ import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
 import org.molgenis.pheno.ObservedValue;
+import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
 import org.molgenis.util.Tuple;
+import org.molgenis.util.ValueLabel;
 
 import com.google.gson.Gson;
 
@@ -74,19 +77,63 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			STATUS = "UploadFile";
 
-		} else if (request.getAction().equals("previewFile")) {
+		} else if (request.getAction().equals("previewFileAction")) {
 
 			STATUS = "previewFile";
+
 			if (csvTable != null) {
-				tableView = new JQGridView("Preview", this, csvTable);
-				tableView
-						.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+
+				// If there are no new records and columns at all, show all the
+				// table
+				if (newFeatures.size() == 0 && newTargets.size() == 0) {
+
+					tableView = new JQGridView("Preview", this, csvTable);
+
+				} else if (newTargets.size() > 0) {// If there are new records,
+													// show new records only
+					String targetString = csvTable.getAllColumns().get(0)
+							.getName();
+
+					List<Tuple> newRecords = new ArrayList<Tuple>();
+
+					for (Tuple tuple : csvTable.getRows()) {
+						String targetName = tuple.getString(targetString);
+						if (newTargets.contains(targetName)) {
+							newRecords.add(tuple);
+						}
+					}
+
+					MemoryTable table = new MemoryTable(newRecords);
+					tableView = new JQGridView("Preview", this, table);
+				}
 			}
+		} else if (request.getAction().equals("previousStepSummary")) {
+
+			STATUS = "CheckFile";
+
 		} else if (request.getAction().equals("importUploadFile")) {
 
 			importUploadFile(db, request);
 
 			STATUS = "UploadFile";
+
+		} else if (request.getAction().equals("showNewRecordsOnly")) {
+
+			STATUS = "previewFile";
+
+			String targetString = csvTable.getAllColumns().get(0).getName();
+
+			List<Tuple> newRecords = new ArrayList<Tuple>();
+
+			for (Tuple tuple : csvTable.getRows()) {
+				String targetName = tuple.getString(targetString);
+				if (newTargets.contains(targetName)) {
+					newRecords.add(tuple);
+				}
+			}
+
+			MemoryTable table = new MemoryTable(newRecords);
+			tableView = new JQGridView("Preview", this, table);
 
 		} else {
 
@@ -137,13 +184,14 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 				String targetName = row.getString(targetString);
 				// Only add the new records to the database
-				ProtocolApplication pa = null;
+				String paName = null;
 
-				if (newTargets.contains(targetName.toLowerCase())) {
-					pa = new ProtocolApplication();
+				if (newTargets.contains(targetName)) {
+					ProtocolApplication pa = new ProtocolApplication();
 					pa.setProtocol_Name("TestProtocol");
 					pa.setName("pa_" + row.getString(targetString));
 					pa.setInvestigation_Name(investigationName);
+					paName = pa.getName();
 					listOfPA.add(pa);
 				}
 
@@ -151,23 +199,38 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 					String eachColumn = field.getName();
 
-					if (newFeatures.contains(eachColumn.toLowerCase())
-							&& pa == null || pa != null
+					if (newFeatures.contains(eachColumn) && paName == null
+							|| paName != null
 							&& !eachColumn.equalsIgnoreCase(targetString)) {
 
-						if (pa == null) {
-							pa = db.find(
+						if (paName == null) {
+							if (db.find(
 									ObservedValue.class,
 									new QueryRule(ObservedValue.TARGET_NAME,
 											Operator.EQUALS, targetName))
-									.get(0).getProtocolApplication();
+									.size() > 0) {
+								paName = db
+										.find(ObservedValue.class,
+												new QueryRule(
+														ObservedValue.TARGET_NAME,
+														Operator.EQUALS,
+														targetName)).get(0)
+										.getProtocolApplication_Name();
+							} else {
+								ProtocolApplication pa = new ProtocolApplication();
+								pa.setProtocol_Name("TestProtocol");
+								pa.setName("pa_" + row.getString(targetString));
+								pa.setInvestigation_Name(investigationName);
+								paName = pa.getName();
+								listOfPA.add(pa);
+							}
 						}
 						ObservedValue ov = new ObservedValue();
 						ov.setTarget_Name(row.getString(targetString));
 						ov.setFeature_Name(eachColumn);
 						ov.setValue(row.getString(eachColumn));
 						ov.setInvestigation_Name(investigationName);
-						ov.setProtocolApplication_Name(pa.getName());
+						ov.setProtocolApplication_Name(paName);
 						listOfValues.add(ov);
 
 					}
@@ -178,6 +241,20 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			db.add(listOfFeatures);
 			db.add(listOfPA);
 			db.add(listOfValues);
+
+			if (newFeatures.size() > 0
+					&& db.find(
+							Protocol.class,
+							new QueryRule(Protocol.NAME, Operator.EQUALS,
+									"NotClassified")).size() > 0) {
+				Protocol p = db.find(
+						Protocol.class,
+						new QueryRule(Protocol.NAME, Operator.EQUALS,
+								"NotClassified")).get(0);
+				p.getFeatures_Name().addAll(newFeatures);
+
+				db.update(p);
+			}
 
 			db.commitTx();
 
@@ -215,8 +292,8 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			// check the existing variables in measurements
 			for (Field field : csvTable.getAllColumns()) {
-				colHeaders.add(field.getName().toLowerCase());
-				newFeatures.add(field.getName().toLowerCase());
+				colHeaders.add(field.getName());
+				newFeatures.add(field.getName());
 			}
 
 			colHeaders.remove(0);
@@ -227,16 +304,16 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 							Operator.IN, colHeaders));
 
 			for (Measurement m : colHeadersMeasurement) {
-				if (colHeaders.contains(m.getName().toLowerCase())) {
-					newFeatures.remove(m.getName().toLowerCase());
+				if (colHeaders.contains(m.getName())) {
+					newFeatures.remove(m.getName());
 				}
 			}
 
 			// check the existing records
 
 			for (Tuple tuple : csvTable.getRows()) {
-				rowHeaders.add(tuple.getString(targetString).toLowerCase());
-				newTargets.add(tuple.getString(targetString).toLowerCase());
+				rowHeaders.add(tuple.getString(targetString));
+				newTargets.add(tuple.getString(targetString));
 			}
 
 			List<ObservationTarget> rowHeadersTarget = db.find(
@@ -244,8 +321,8 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 							ObservationTarget.NAME, Operator.IN, rowHeaders));
 
 			for (ObservationTarget ot : rowHeadersTarget) {
-				if (rowHeaders.contains(ot.getName().toLowerCase())) {
-					newTargets.remove(ot.getName().toLowerCase());
+				if (rowHeaders.contains(ot.getName())) {
+					newTargets.remove(ot.getName());
 				}
 			}
 			colHeaders.removeAll(newFeatures);
@@ -290,5 +367,16 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 	public String getTableView() {
 		return tableView.getHtml();
+	}
+
+	public List<String> getFeatureDataTypes() throws Exception {
+
+		List<String> dataTypes = new ArrayList<String>();
+		for (ValueLabel label : Measurement.class.newInstance()
+				.getDataTypeOptions()) {
+			dataTypes.add(label.getLabel());
+		}
+
+		return dataTypes;
 	}
 }
