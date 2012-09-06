@@ -355,7 +355,7 @@ It should be used via 'import' plus passing of properties
 
 	<target name="clean-generate-compile-updatedbfillmeta-run" depends="clean,generate,compile,updatedbfillmeta,run" />
 
-	<target name="download-jars">
+	<target name="download-jars" depends="clean">
 		<echo message="installing ivy..." />
 		<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.3.0-rc1/ivy-2.3.0-rc1.jar" dest="WebContent/WEB-INF/lib/ivy.jar" usetimestamp="true" />
 		<path id="ivy.lib.path">
