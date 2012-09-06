@@ -5,17 +5,18 @@
 #OUTPUTS studyTriTyperDir
 #EXES imputationToolJar
 #LOGS log
-#TARGETS plinkdata
+#TARGETS project,studyInputPedMap,chr
 
-inputs ${studyPedMap}.map
-inputs ${studyPedMap}.ped
+#FOREACH project,studyInputPedMap,chr
 
-alloutputsexist ${studyTriTyperDir}/GenotypeMatrix.dat
-alloutputsexist ${studyTriTyperDir}/Individuals.txt
-alloutputsexist ${studyTriTyperDir}/PhenotypeInformation.txt
-alloutputsexist ${studyTriTyperDir}/SNPMappings.txt
-alloutputsexist ${studyTriTyperDir}/SNPsHash.txt
-alloutputsexist ${studyTriTyperDir}/SNPs.txt
+inputs "${studyPedMap}.map"
+inputs "${studyPedMap}.ped"
+alloutputsexist "${studyTriTyperDir}/GenotypeMatrix.dat"
+alloutputsexist "${studyTriTyperDir}/Individuals.txt"
+alloutputsexist "${studyTriTyperDir}/PhenotypeInformation.txt"
+alloutputsexist "${studyTriTyperDir}/SNPMappings.txt"
+alloutputsexist "${studyTriTyperDir}/SNPsHash.txt"
+alloutputsexist "${studyTriTyperDir}/SNPs.txt"
 
 
 mkdir ${studyTriTyperTempDir}

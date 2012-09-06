@@ -4,7 +4,9 @@
 #OUTPUTS preparedStudyTempDir
 #EXES imputationToolJar
 #LOGS log
-#TARGETS plinkdata
+#TARGETS project,referencePanel
+
+#FOREACH project,referencePanel
 
 inputs ${studyTriTyperDir}/GenotypeMatrix.dat
 inputs ${studyTriTyperDir}/Individuals.txt
@@ -36,7 +38,7 @@ then
 	
 	echo -e "\nMoving temp files to final files\n\n"
 
-	mv ${preparedStudyTempDir} ${preparedTempDir}
+	mv ${preparedStudyTempDir} ${preparedStudyDir}
 
 	
 else

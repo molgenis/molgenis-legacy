@@ -6,10 +6,10 @@
 #LOGS log
 #TARGETS plinkdata,chr
 
-inputs ${imputationResult}/chr_${chr}
-inputs ${preparedStudyDir}/chr${chr}.sample
-alloutputsexist ${imputationResult}/chr_${chr}.ped
-alloutputsexist ${imputationResult}/chr_${chr}.map
+inputs "${imputationResult}/chr_${chr}"
+inputs "${preparedStudyDir}/chr${chr}.sample"
+alloutputsexist "${imputationResult}/chr_${chr}.ped"
+alloutputsexist "${imputationResult}/chr_${chr}.map"
 
 
 ${gtoolBin} -G --g ${imputationResult}/chr_${chr} --s ${preparedStudyDir}/chr${chr}.sample --ped ${imputationResult}/~chr_${chr}.ped --map ${imputationResult}/~chr_${chr}.map

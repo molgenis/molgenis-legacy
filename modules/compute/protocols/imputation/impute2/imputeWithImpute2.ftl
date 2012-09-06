@@ -4,14 +4,16 @@
 #OUTPUTS impute2ResultChrBinTemp
 #EXES impute2Bin
 #LOGS log
-#TARGETS
+#TARGETS project,studyInputPedMap,referencePanel,chr,fromChrPos,toChrPos
 
-inputs ${impute2ResultDir}/${chr}/
-inputs ${referenceImpute2HapFile}
-inputs ${referenceImpute2LegendFile}
-inputs ${referenceImpute2MapFile}
-inputs ${preparedStudyDir}/chr${chr}.gen
-alloutputsexist ${impute2ResultChrBinTemp}
+#FOREACH project,studyInputPedMap,referencePanel,chr,fromChrPos,toChrPos
+
+inputs "${impute2ResultDir}/${chr}/"
+inputs "${referenceImpute2HapFile}"
+inputs "${referenceImpute2LegendFile}"
+inputs "${referenceImpute2MapFile}"
+inputs "${preparedStudyDir}/chr${chr}.gen"
+alloutputsexist "${impute2ResultChrBinTemp}"
 
 mkdir -p ${impute2ResultDir}/${chr}/
 ${impute2Bin} -h ${referenceImpute2HapFile} -l ${referenceImpute2LegendFile} -m ${referenceImpute2MapFile} -g ${preparedStudyDir}/chr${chr}.gen -int ${fromChrPos} ${toChrPos} -o ${impute2ResultChrBinTemp}
