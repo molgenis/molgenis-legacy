@@ -1,0 +1,41 @@
+<ivy-module version="2.0">
+	<info organisation="org.apache" module="hello-ivy" />
+	<configurations>
+		<conf name="compile" description="Compile classpath" />
+	</configurations>
+	<dependencies>
+		<dependency org="xml-apis" name="xml-apis" rev="1.4.01" />
+		<dependency org="javax.servlet" name="servlet-api" rev="2.5" />
+		<dependency org="commons-pool" name="commons-pool" rev="20030825.183949" />
+		<dependency org="org.apache.commons" name="commons-math"
+			rev="2.2" />
+		<dependency org="commons-collections" name="commons-collections"
+			rev="3.2.1" />
+		<dependency org="mysql" name="mysql-connector-java" rev="5.1.20" />
+
+		<!-- testing -->
+		<dependency org="org.testng" name="testng" rev="6.4" />
+		<dependency org="org.seleniumhq.selenium" name="selenium-java"
+			rev="2.19.0" />
+		<dependency org="org.seleniumhq.selenium" name="selenium-firefox-driver"
+			rev="2.19.0" />
+		<dependency org="org.seleniumhq.selenium" name="selenium-server"
+			rev="2.19.0" />
+		<dependency org="org.mockito" name="mockito-core" rev="1.9.0" />
+		<dependency org="org.apache.poi" name="poi" rev="3.8" />
+		<dependency org="org.apache.poi" name="poi-ooxml" rev="3.8" />
+
+		<dependency org="org.semanticweb.elk" name="elk-owlapi"
+			rev="0.3.1" />
+
+		<dependency org="com.mysema.querydsl" name="querydsl-core"
+			rev="2.7.2" />
+		<dependency org="com.mysema.querydsl" name="querydsl-sql"
+			rev="2.7.2" conf="compile->default" />
+
+		<dependency org="axis" name="axis-jaxrpc" rev="1.4" />
+
+
+
+	</dependencies>
+</ivy-module>
