@@ -2,6 +2,7 @@ package org.molgenis.datatable.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,13 +55,30 @@ public class PedMapTupleTable extends AbstractFilterableTupleTable
 		return columns;
 	}
 
+	@Override
+	public Iterator<Tuple> iterator()
+	{
+		return new PedMapIterator(pedFile, mapFile, this);
+	}
+
+	@Override
+	public int getCount() throws TableException
+	{
+		return (int) pedFile.getNrOfElements();
+	}
+
+	@Override
+	public int getColCount() throws TableException
+	{
+		return (int) (mapFile.getNrOfElements() + fixedColumns.length);
+	}
+
 	private static class PedMapIterator implements Iterator<Tuple>
 	{
 		int count = 0;
 
 		// source data
 		PedFileDriver pedFile;
-		MapFileDriver mapFile;
 		List<String> columns;
 
 		// wrapper state
@@ -72,14 +90,9 @@ public class PedMapTupleTable extends AbstractFilterableTupleTable
 		PedMapIterator(PedFileDriver pedFile, MapFileDriver mapFile, TupleTable table)
 		{
 			this.pedFile = pedFile;
-			this.mapFile = mapFile;
 			this.table = table;
 
-			columns = new ArrayList<String>();
-			for (String col : fixedColumns)
-			{
-				columns.add(col);
-			}
+			columns = new ArrayList<String>(Arrays.asList(fixedColumns));
 
 			try
 			{
@@ -93,7 +106,9 @@ public class PedMapTupleTable extends AbstractFilterableTupleTable
 				throw new RuntimeException(e);
 			}
 
-			colLimit = (int) (table.getColLimit() == 0 ? mapFile.getNrOfElements() + 6 : table.getColLimit());
+			// TODO FIX MapFile.getNrOfElements
+			colLimit = (int) (table.getColLimit() == 0 ? mapFile.getNrOfElements() + fixedColumns.length
+					- table.getColOffset() : table.getColLimit());
 		}
 
 		@Override
@@ -104,42 +119,56 @@ public class PedMapTupleTable extends AbstractFilterableTupleTable
 			{
 				return false;
 			}
+
 			return true;
 		}
 
 		@Override
 		public Tuple next()
 		{
+			if (!hasNext())
+			{
+				throw new UnsupportedOperationException("No next element exists");
+			}
+
 			try
 			{
+				int index = table.getOffset() + count;
+				List<PedEntry> pedEntries = pedFile.getEntries(index, index + 1);
+				PedEntry pe = pedEntries.get(0);
+
 				Tuple result = new SimpleTuple();
 
-				List<PedEntry> pedEntries = new ArrayList<PedEntry>();
-				pedEntries = pedFile.getEntries(table.getOffset() + count, table.getOffset() + count + 1);
-
-				// List<PedEntry> colLimitedPedEntries = new
-				// ArrayList<PedEntry>();
-				// for (PedEntry pe : pedEntries)
-				// {
-				// colLimitedPedEntries
-				// .add(new PedEntry(pe,
-				// pe.getBialleles().subList(table.getColOffset(), colLimit)));
-				// }
-
-				for (PedEntry pe : pedEntries)
+				for (int i = table.getColOffset(); i < table.getColOffset() + colLimit; i++)
 				{
-					result.set(fixedColumns[0], pe.getFamily());
-					result.set(fixedColumns[1], pe.getIndividual());
-					result.set(fixedColumns[2], pe.getFather());
-					result.set(fixedColumns[3], pe.getMother());
-					result.set(fixedColumns[4], pe.getSex());
-					result.set(fixedColumns[5], pe.getPhenotype());
+					Object value;
 
-					for (int i = table.getColOffset(); i < table.getColOffset() + colLimit; i++)
+					switch (i)
 					{
-						result.set(columns.get(i), pe.getBialleles().get(i).getAllele1()
-								+ pe.getBialleles().get(i).getAllele2());
+						case 0:
+							value = pe.getFamily();
+							break;
+						case 1:
+							value = pe.getIndividual();
+							break;
+						case 2:
+							value = pe.getFather();
+							break;
+						case 3:
+							value = pe.getMother();
+							break;
+						case 4:
+							value = pe.getSex();
+							break;
+						case 5:
+							value = pe.getPhenotype();
+							break;
+						default:
+							value = pe.getBialleles().get(i - fixedColumns.length).toString();
+
 					}
+
+					result.set(columns.get(i), value);
 				}
 
 				count++;
@@ -160,21 +189,4 @@ public class PedMapTupleTable extends AbstractFilterableTupleTable
 
 	}
 
-	@Override
-	public Iterator<Tuple> iterator()
-	{
-		return new PedMapIterator(pedFile, mapFile, this);
-	}
-
-	@Override
-	public int getCount() throws TableException
-	{
-		return (int) pedFile.getNrOfElements();
-	}
-
-	@Override
-	public int getColCount() throws TableException
-	{
-		return (int) (mapFile.getNrOfElements() + 6);
-	}
 }
