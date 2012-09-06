@@ -180,7 +180,8 @@ public class LifeLines extends PluginModel<Entity>
 			String action = request.getString("__action");
 			if (action.equals("setPathAndLoad"))
 			{
-				setupStorageAndLoadExample(db);
+				File llrp = request.getFile("llrptar");
+				setupStorageAndLoadExample(db, llrp);
 			}
 		}
 		catch (Exception e)
@@ -191,10 +192,10 @@ public class LifeLines extends PluginModel<Entity>
 
 	}
 
-	public void setupStorageAndLoadExample(Database db) throws Exception
+	public void setupStorageAndLoadExample(Database db, File llrp) throws Exception
 	{
 
-		File llrp = new File("./publicdata/llrp/llrp.tar.gz");
+		// File llrp = new File("./publicdata/llrp/llrp.tar.gz");
 		if (llrp.exists())
 		{
 			File extractDir = TarGz.tarExtract(llrp);
