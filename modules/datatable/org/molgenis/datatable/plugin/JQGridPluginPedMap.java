@@ -1,47 +1,76 @@
 package org.molgenis.datatable.plugin;
 
+import java.io.File;
 import java.io.OutputStream;
+import java.util.List;
 
-import org.molgenis.datatable.model.GenotypeTable;
+import org.molgenis.datatable.model.PedMapTupleTable;
+import org.molgenis.datatable.model.TupleTable;
 import org.molgenis.datatable.view.JQGridView;
 import org.molgenis.framework.db.Database;
+import org.molgenis.framework.db.QueryRule;
+import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.EasyPluginController;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.framework.ui.ScreenView;
 import org.molgenis.framework.ui.html.MolgenisForm;
-import org.molgenis.protocol.Protocol;
 import org.molgenis.util.HandleRequestDelegationException;
 import org.molgenis.util.Tuple;
+import org.molgenis.xgap.InvestigationFile;
+
+import decorators.MolgenisFileHandler;
 
 /** Simple plugin that only shows a data table for testing */
-public class JQGridPluginGenotype extends
-		EasyPluginController<JQGridPluginGenotype> {
+public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
+{
 	JQGridView tableView;
 	boolean editable = false;
 
-	public JQGridPluginGenotype(String name, ScreenController<?> parent) {
+	public JQGridPluginPedMap(String name, ScreenController<?> parent)
+	{
 		super(name, parent);
 	}
 
 	@Override
-	public void reload(Database db) {
+	public void reload(Database db)
+	{
 		// need to (re) load the table
-		try {
+		try
+		{
 			// only this line changed ...
-			Protocol p = db.query(Protocol.class)
-					.eq(Protocol.NAME, "stageCatalogue").find().get(0);
+			List<InvestigationFile> pedFiles = db.find(InvestigationFile.class, new QueryRule(
+					InvestigationFile.EXTENSION, Operator.EQUALS, "ped"));
+
+			if (pedFiles.size() != 1)
+			{
+				throw new Exception("Expecting 1 PED file");
+			}
+
+			List<InvestigationFile> mapFiles = db.find(InvestigationFile.class, new QueryRule(
+					InvestigationFile.EXTENSION, Operator.EQUALS, "map"));
+
+			if (mapFiles.size() != 1)
+			{
+				throw new Exception("Expecting 1 MAP file");
+			}
+
+			MolgenisFileHandler mfh = new MolgenisFileHandler(db);
+
+			File pedFile = mfh.getFile(pedFiles.get(0), db);
+			File mapFile = mfh.getFile(mapFiles.get(0), db);
 
 			// create table
-			GenotypeTable table = new GenotypeTable(db, p);
-			table.setTargetString("Pa_Id");
+			TupleTable table = new PedMapTupleTable(pedFile, mapFile);
+
 			// add editable decorator
 
 			// check which table to show
 			tableView = new JQGridView("test", this, table);
 
-			tableView
-					.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
-		} catch (Exception e) {
+			tableView.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 			this.setError(e.getMessage());
 		}
@@ -50,7 +79,8 @@ public class JQGridPluginGenotype extends
 	// handling of the ajax; should be auto-wired via the JQGridTableView
 	// contructor (TODO)
 	public void download_json_test(Database db, Tuple request, OutputStream out)
-			throws HandleRequestDelegationException {
+			throws HandleRequestDelegationException
+	{
 		// handle requests for the table named 'test'
 
 		tableView.handleRequest(db, request, out);
@@ -65,7 +95,8 @@ public class JQGridPluginGenotype extends
 	// }
 
 	// what is shown to the user
-	public ScreenView getView() {
+	public ScreenView getView()
+	{
 		MolgenisForm view = new MolgenisForm(this);
 
 		view.add(tableView);
