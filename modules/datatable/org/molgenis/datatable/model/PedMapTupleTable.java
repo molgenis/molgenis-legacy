@@ -184,6 +184,7 @@ public class PedMapTupleTable extends AbstractFilterableTupleTable
 		@Override
 		public void remove()
 		{
+			System.out.println("REMOVE");
 			// TODO Auto-generated method stub
 		}
 
