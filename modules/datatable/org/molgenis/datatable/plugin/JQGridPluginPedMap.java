@@ -54,20 +54,31 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 				throw new Exception("Expecting 1 MAP file");
 			}
 
+			System.out.println("1 ped, 1 map file..");
+
 			MolgenisFileHandler mfh = new MolgenisFileHandler(db);
 
 			File pedFile = mfh.getFile(pedFiles.get(0), db);
 			File mapFile = mfh.getFile(mapFiles.get(0), db);
 
+			System.out.println("got ped/map files from db..");
+
 			// create table
 			TupleTable table = new PedMapTupleTable(pedFile, mapFile);
 
-			// add editable decorator
+			System.out.println("PedMapTupleTable created..");
+
+			table.setColLimit(10);
+
+			System.out.println("columns limited to 10..");
 
 			// check which table to show
-			tableView = new JQGridView("test", this, table);
+			tableView = new JQGridView("pedmaptable", this, table);
 
 			tableView.setLabel("<b>Table:</b>Testing using the MemoryTupleTable");
+
+			System.out.println("tableView created..");
+
 		}
 		catch (Exception e)
 		{
@@ -78,7 +89,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 	// handling of the ajax; should be auto-wired via the JQGridTableView
 	// contructor (TODO)
-	public void download_json_test(Database db, Tuple request, OutputStream out)
+	public void download_json_pedmaptable(Database db, Tuple request, OutputStream out)
 			throws HandleRequestDelegationException
 	{
 		// handle requests for the table named 'test'
