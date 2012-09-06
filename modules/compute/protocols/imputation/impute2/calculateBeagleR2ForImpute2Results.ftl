@@ -4,8 +4,9 @@
 #OUTPUTS imputationResult/chr_${chr}.beagleR2
 #EXES calculateBeagleR2ForIMpute2ResultsPythonScript
 #LOGS log
-#TARGETS plinkdata,chr
+#TARGETS project,chr
 
+#FOREACH project,chr
 
 inputs "${imputationResult}/chr_${chr}"
 alloutputsexist "${imputationResult}/chr_${chr}.beagleR2"
