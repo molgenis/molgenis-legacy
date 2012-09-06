@@ -5,9 +5,9 @@
 #OUTPUTS studyPedMap.map,studyPedMap.ped
 #EXES
 #LOGS log
-#TARGETS project,studyInputPedMap,chr
+#TARGETS project
 
-#FOREACH project,studyInputPedMap,chr
+#FOREACH project
 
 inputs "${studyInputPedMap}.map"
 inputs "${studyInputPedMap}.ped"

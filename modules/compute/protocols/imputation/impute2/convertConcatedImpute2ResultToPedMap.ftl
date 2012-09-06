@@ -4,7 +4,9 @@
 #OUTPUTS imputationResult/chr_${chr}.ped,imputationResult/chr_${chr}.map
 #EXES gtoolBin
 #LOGS log
-#TARGETS plinkdata,chr
+#TARGETS project,chr
+
+#FOREACH project,chr
 
 inputs "${imputationResult}/chr_${chr}"
 inputs "${preparedStudyDir}/chr${chr}.sample"

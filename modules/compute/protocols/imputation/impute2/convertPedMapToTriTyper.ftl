@@ -5,9 +5,9 @@
 #OUTPUTS studyTriTyperDir
 #EXES imputationToolJar
 #LOGS log
-#TARGETS project,studyInputPedMap,chr
+#TARGETS project
 
-#FOREACH project,studyInputPedMap,chr
+#FOREACH project
 
 inputs "${studyPedMap}.map"
 inputs "${studyPedMap}.ped"
