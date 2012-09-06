@@ -50,6 +50,11 @@ public class SimpleEmailService implements EmailService
 	private String smtpAu = null;
 	private String smtpProtocol = "smtps";
 	
+	public boolean email(String subject, String body, String toEmail, boolean deObf) throws EmailException
+	{
+		return email(subject, body, toEmail, deObf, "MOLGENIS user activation");
+	}
+	
 	/**
 	 * Send an email.
 	 * @param subject
@@ -59,7 +64,7 @@ public class SimpleEmailService implements EmailService
 	 * @return
 	 * @throws EmailException
 	 */
-	public boolean email(String subject, String body, String toEmail, boolean deObf) throws EmailException
+	public boolean email(String subject, String body, String toEmail, boolean deObf, String sender) throws EmailException
 	{
 		//put in config
 		Properties props = new Properties();
@@ -71,12 +76,13 @@ public class SimpleEmailService implements EmailService
 
 		try
 		{
-			message.setFrom(new InternetAddress(this.smtpFromAddress, "MOLGENIS user activation"));
+			message.setFrom(new InternetAddress(this.smtpFromAddress, sender));
 			message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
 			message.setSubject(subject);
 			message.setText(body);
 			message.setSentDate(new Date());
 			message.saveChanges();
+
 
 			Transport transport = session.getTransport();
 			transport.connect(smtpHostname, smtpPort, smtpUser, (deObf ? HtmlTools.fromSafeUrlStringO_b_f(smtpAu) : smtpAu));
@@ -93,6 +99,12 @@ public class SimpleEmailService implements EmailService
 	
 	public boolean email(String subject, String body, String toEmail, String fileAttachment, ByteArrayOutputStream outputStream, boolean deObf) throws EmailException
 	{
+		String sender = "MOLGENIS";
+		return email(subject, body, toEmail, fileAttachment, outputStream, deObf, sender);
+	}
+	
+	public boolean email(String subject, String body, String toEmail, String fileAttachment, ByteArrayOutputStream outputStream, boolean deObf, String sender) throws EmailException
+	{
 		Properties props = new Properties();
 		props.put("mail.transport.protocol", smtpProtocol);	
 		Session session = Session.getDefaultInstance(props, null);
@@ -101,7 +113,7 @@ public class SimpleEmailService implements EmailService
 
 		try
 		{
-			message.setFrom(new InternetAddress(this.smtpFromAddress, "MOLGENIS"));
+			message.setFrom(new InternetAddress(this.smtpFromAddress, sender));
 			message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
 			message.setSubject(subject);
 				
@@ -119,7 +131,8 @@ public class SimpleEmailService implements EmailService
 
 	        MimeBodyPart attachment = new MimeBodyPart();
 	        attachment.setFileName("attachment.xls");
-	        attachment.setContent(outputStream.toByteArray(), "application/vnd.ms-excel");              
+	        //attachment.setContent(outputStream.toByteArray(), "application/vnd.ms-excel");
+	        attachment.setContent(fileAttachment, "application/vnd.ms-excel");
 	        multipart.addBodyPart(attachment);
 
 	        message.setContent(multipart);

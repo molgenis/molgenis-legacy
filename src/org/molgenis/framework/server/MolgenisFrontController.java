@@ -1,12 +1,18 @@
 package org.molgenis.framework.server;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,24 +21,27 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.RollingFileAppender;
 import org.molgenis.MolgenisOptions;
 import org.molgenis.framework.db.DatabaseException;
-//import java.util.Date;
-//import java.util.Enumeration;
-//import javax.servlet.http.HttpSession;
 
 public abstract class MolgenisFrontController extends HttpServlet implements MolgenisService
 {
 	// helper vars
 	private static final long serialVersionUID = -2141508157810793106L;
 	protected Logger logger;
+	private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss 'on' dd MMMM yyyy");
 
 	// map of all services for this app
 	protected Map<String, MolgenisService> services;
 
 	// list of all connections
-	protected Map<UUID, Connection> connections;
+	protected ConcurrentHashMap<UUID, Connection> connections;
 
 	// the used molgenisoptions, set by generated MolgenisServlet
 	protected MolgenisOptions usedOptions = null;
@@ -87,38 +96,52 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 			DatabaseException, IOException
 	{
 		HttpServletRequest req = request.getRequest();
-		String contextPath = (StringUtils.isNotEmpty(req.getContextPath()) ? req.getContextPath() : context
-				.getVariant());
-		if (StringUtils.startsWith(this.getServletContext().getServerInfo(), "Apache Tomcat"))
-		{
-			contextPath = req.getContextPath();
-		}
-		String path = req.getRequestURI().substring(contextPath.length() + 1);
-		if (path.equals("")) path = "/";
 
-		if (!path.startsWith("/"))
+		// lots of info about request variables & webservers @
+		// http://gbic.target.rug.nl/forum/showthread.php?tid=690
+
+		// same for every tested webserver: e.g.
+		// "http://localhost:8080/xqtl/api/R"
+		String requestURL = req.getRequestURL().toString();
+
+		// same for every tested webserver: e.g. "/xqtl/api/R"
+		String requestURI = req.getRequestURI();
+
+		// empty for Apache Tomcat, but e.g. "/xqtl" for standalone
+		String appName = req.getServletPath();
+		if (appName.equals(""))
 		{
-			path = "/" + path;
+			// empty for standalone, but e.g. "/xqtl" for Apache Tomcat
+			appName = req.getContextPath();
 		}
 
-		for (String p : services.keySet())
+		// turns "http://localhost:8080/xqtl/api/R" into
+		// "http://localhost:8080/xqtl"
+		String appLocation = requestURL.substring(0, requestURL.length() - (requestURI.length() - appName.length()));
+
+		// turns "http://localhost:8080/xqtl/api/R" into "/api/R"
+		String requestPath = requestURL.substring(requestURL.length() - (requestURI.length() - appName.length()));
+
+		for (String servicePath : services.keySet())
 		{
-			if (path.startsWith(p))
+			if (requestPath.startsWith(servicePath))
 			{
 				long startTime = System.currentTimeMillis();
+				Date date = new Date();
 
 				// if mapped to "/", we assume we are serving out a file, and do
 				// not manage security/connections
-				if (p.equals("/"))
+				if (servicePath.equals("/"))
 				{
-					System.out.println("> serving file: " + path);
-					services.get(p).handleRequest(request, response);
+					System.out.println("> serving file: " + requestPath);
+					services.get(servicePath).handleRequest(request, response);
 				}
 				else
 				{
-					System.out.println("> new request to '" + path + "' from " + request.getRequest().getRemoteHost()
-							+ " handled by " + services.get(p).getClass().getSimpleName() + " mapped on path " + p);
-					System.out.println("request content: " + request.toString());
+					System.out.println("> new request \"" + requestPath + "\" from "
+							+ request.getRequest().getRemoteHost() + " at " + dateFormat.format(date) + " handled by "
+							+ services.get(servicePath).getClass().getSimpleName() + " mapped on path " + servicePath);
+					System.out.println("request fields: " + request.toString());
 
 					UUID connId = getSecuredDatabase(request);
 
@@ -126,13 +149,18 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 							+ (request.getDatabase().getLogin().isAuthenticated() ? "authenticated as "
 									+ request.getDatabase().getLogin().getUserName() : "not authenticated"));
 
-					request.setRequestPath(path); // the path that was requested
-					request.setServicePath(p); // the path mapping used to
-												// handle the request
+					// e.g. "http://localhost:8080/xqtl"
+					request.setAppLocation(appLocation);
+
+					// e.g. "/api/R/"
+					request.setServicePath(servicePath);
+
+					// e.g. "/api/R/source.R"
+					request.setRequestPath(requestPath);
 
 					try
 					{
-						services.get(p).handleRequest(request, response);
+						services.get(servicePath).handleRequest(request, response);
 					}
 					finally
 					{
@@ -197,61 +225,67 @@ public abstract class MolgenisFrontController extends HttpServlet implements Mol
 
 	protected void createLogger(MolgenisOptions mo) throws ServletException
 	{
-		// try{
-		// if(StringUtils.isEmpty(mo.log4j_properties_uri)) {
-		// //get logger and remove appenders added by classpath JARs. (= evil)
-		// Logger rootLogger = Logger.getRootLogger();
-		// rootLogger.removeAllAppenders();
-		//
-		// //the pattern used to format the logger output
-		// PatternLayout pattern = new PatternLayout("%-4r %-5p [%c] %m%n");
-		//
-		// //get the level from the molgenis options
-		// rootLogger.setLevel(mo.log_level);
-		//
-		// //console appender
-		// if(mo.log_target.equals(MolgenisOptions.LogTarget.CONSOLE))
-		// {
-		// rootLogger.addAppender(new ConsoleAppender(pattern));
-		// System.out.println("Log4j CONSOLE appender added log level " +
-		// mo.log_level);
-		// }
-		//
-		// //file appender
-		// if(mo.log_target.equals(MolgenisOptions.LogTarget.FILE))
-		// {
-		// RollingFileAppender fa = new RollingFileAppender(pattern,
-		// "logger.out");
-		// fa.setMaximumFileSize(100000000); //100MB
-		// rootLogger.addAppender(fa);
-		// System.out.println("Log4j FILE appender added with level " +
-		// mo.log_level + ", writing to: " + new
-		// File(fa.getFile()).getAbsolutePath());
-		// }
-		//
-		// //add no appender at all
-		// if(mo.log_target.equals(MolgenisOptions.LogTarget.OFF))
-		// {
-		// System.out.println("Log4j logger turned off");
-		// }
-		// } else {
-		// ClassLoader loader = this.getClass().getClassLoader();
-		// URL urlLog4jProp = loader.getResource(mo.log4j_properties_uri);
-		// if(urlLog4jProp == null) {
-		// System.out.println(String.format("*** Incorrect log4j_properties_uri : '%s' in Molgenis properties file, so initializing log4j with BasicConfigurator",
-		// urlLog4jProp));
-		// BasicConfigurator.configure();
-		// } else {
-		// System.out.println(String.format("*** Log4j initializing with config file %s",
-		// urlLog4jProp));
-		// PropertyConfigurator.configure(urlLog4jProp);
-		// }
-		// }
-		// }
-		// catch(Exception e)
-		// {
-		// throw new ServletException(e);
-		// }
+		try
+		{
+			if (StringUtils.isEmpty(mo.log4j_properties_uri))
+			{
+				// get logger and remove appenders added by classpath JARs. (=
+				// evil)
+				Logger rootLogger = Logger.getRootLogger();
+				rootLogger.removeAllAppenders();
+
+				// the pattern used to format the logger output
+				PatternLayout pattern = new PatternLayout("%-4r %-5p [%c] %m%n");
+
+				// get the level from the molgenis options
+				rootLogger.setLevel(mo.log_level);
+
+				// console appender
+				if (mo.log_target.equals(MolgenisOptions.LogTarget.CONSOLE))
+				{
+					rootLogger.addAppender(new ConsoleAppender(pattern));
+					System.out.println("Log4j CONSOLE appender added log level " + mo.log_level);
+				}
+
+				// file appender
+				if (mo.log_target.equals(MolgenisOptions.LogTarget.FILE))
+				{
+					RollingFileAppender fa = new RollingFileAppender(pattern, "logger.out");
+					fa.setMaximumFileSize(100000000); // 100MB
+					rootLogger.addAppender(fa);
+					System.out.println("Log4j FILE appender added with level " + mo.log_level + ", writing to: "
+							+ new File(fa.getFile()).getAbsolutePath());
+				}
+
+				// add no appender at all
+				if (mo.log_target.equals(MolgenisOptions.LogTarget.OFF))
+				{
+					System.out.println("Log4j logger turned off");
+				}
+			}
+			else
+			{
+				ClassLoader loader = this.getClass().getClassLoader();
+				URL urlLog4jProp = loader.getResource(mo.log4j_properties_uri);
+				if (urlLog4jProp == null)
+				{
+					System.out
+							.println(String
+									.format("*** Incorrect log4j_properties_uri : '%s' in Molgenis properties file, so initializing log4j with BasicConfigurator",
+											urlLog4jProp));
+					BasicConfigurator.configure();
+				}
+				else
+				{
+					System.out.println(String.format("*** Log4j initializing with config file %s", urlLog4jProp));
+					PropertyConfigurator.configure(urlLog4jProp);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			throw new ServletException(e);
+		}
 	}
 
 	// private void printSessionInfo(HttpSession session)
