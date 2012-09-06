@@ -5,11 +5,14 @@
 	<menu name="main">
 		<plugin label="Home" name="LifeLinesHome"
 			type="org.molgenis.lifelinesresearchportal.plugins.homepage.LifeLines" />
+		<plugin label="Login" name="UserLogin" type="plugins.autohidelogin.AutoHideLogin" />
 	<!--	<plugin name="jqGridView" type="org.molgenis.datatable.plugin.JQGridPlugin" />
 		<plugin name="jqGridViewEntity" type="org.molgenis.datatable.plugin.JQGridPluginEntity" />
 		<plugin name="jqGridViewMemory" type="org.molgenis.datatable.plugin.JQGridPluginMemory" /> -->
-		<plugin name="jqGridViewProtocol" type="org.molgenis.datatable.plugin.JQGridPluginProtocol" label="Phenotype"/>
 		<plugin name="CatalogueTreePlugin" type="plugins.catalogueTree.catalogueTreePlugin" label="Catalogue" />
+		<plugin name="jqGridViewProtocol" type="org.molgenis.datatable.plugin.JQGridPluginProtocol" label="Phenotype"/>
+		<plugin name="jqGridViewGenotype" type="org.molgenis.datatable.plugin.JQGridPluginPedMap" label="Genotype"/>
+		<plugin name="updateMatrixImporter" type="updateMatrixImporter.UpdateMatrixImporter" label="Upload" />
 		<!--<plugin name="jqGridViewProtocolFilterable" type="org.molgenis.datatable.plugin.JQGridPluginProtocolFilterable" />
 
 		 <plugin label="Data viewer" name="MatrixViewer" type="org.molgenis.matrix.component.plugin.MatrixPlugin" 
@@ -26,6 +29,39 @@
 				<form name="observedvalue" entity="ObservedValue" view="list" label="Observed values" />
 			</menu>
 		</form>
-	
+		<menu label="Admin" name="Admin">
+			<menu name="Auth" label="Users and permissions">
+				<menu label="Basic management" name="Management">
+					<form name="MolgenisUser" entity="MolgenisUser" />
+					<form name="MolgenisGroup" entity="MolgenisGroup" />
+					<form name="MolgenisRoleGroupLink" entity="MolgenisRoleGroupLink" />
+					<form name="MolgenisEntity" entity="MolgenisEntity" view="list"
+						label="Entities" />
+					<form name="MolgenisPermission" entity="MolgenisPermission" />
+				</menu>
+				<plugin label="My permissions" name="PermissionManagementPlugin"
+					type="org.molgenis.auth.service.permissionmanagement.PermissionManagementPlugin" />
+				<plugin label="Upgrade person to user" name="UserToPersonPlugin"
+					type="org.molgenis.auth.service.persontouser.PersonToUser" />
+				<plugin label="Security tokens" name="TokenManagerPlugin"
+					type="org.molgenis.auth.service.tokenmanager.TokenManager" />
+			</menu>
+			<plugin label="Database status" name="DatabaseSettings"
+				type="plugins.system.database.Settings" />
+			<plugin label="File storage" name="FileStorage"
+				type="plugins.system.settings.Settings" />
+			<menu name="ImportDataMenu" label="Upload data" group="biologist">
+				<plugin label="R/qtl" name="QTLWizard"
+					type="plugins.xgapwizard.QTLDataSetWizard" group="biologist" />
+				<plugin label="Plink" name="PlinkFileManager"
+					type="plugins.molgenisfile.plink.PlinkFileManager" group="biologist" />
+				<plugin label="Excel" name="ExcelWizard"
+					type="plugins.genericwizard.GenericWizard" group="biologist" />
+				<plugin label="Archiver" name="SimpleArchiver" type="plugins.archiver.Archiver" />
+				<form name="Files" entity="InvestigationFile" label="Files" header="Navigate files" group="biologist">
+					<plugin name="Viewer" type="plugins.molgenisfile.MolgenisFileManager" group="biologist" />
+				</form>
+			</menu>
+		</menu>
 	</menu>
 </molgenis>

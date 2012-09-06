@@ -398,7 +398,7 @@ var JQGridView = {
 			controlDiv += "</div>";
 			$('#dialog').append(controlDiv);
 			//Using jQuery UI Button
-			$('#submitAddRecord').button();Ê Ê Ê Ê Ê Ê
+			$('#submitAddRecord').button();
 			$('#quitAddRecord').button();
 			
 			
@@ -505,6 +505,8 @@ var JQGridView = {
  			
  			//Set up event for quit dialog button. If the quit button is clicked, another confirmation dialog
  			//pops up, therefore it prevents people from mis-clicking the quit button and losing input.
+ 			
+ 		
  			$('#quitAddRecord').click(function(){
  				confirmDialog = "<div id=\"confirmDialog\" title=\"Confirmation\">";
  				confirmDialog += "Are you sure you want to quit?</br>";
@@ -512,7 +514,7 @@ var JQGridView = {
  				confirmDialog += "<input id=\"cancelButton\" type=\"button\" style=\"font-size:0.8em\" value=\"Cancel\"></input>";
  				confirmDialog += "<div>";
  				$('#dialog').append(confirmDialog);
- 				$('#confirmButton').button();Ê Ê Ê Ê Ê Ê
+ 				$('#confirmButton').button();
 				$('#cancelButton').button();
  				$('#confirmDialog').dialog();
  				$('#confirmButton').click(function(){
@@ -521,6 +523,7 @@ var JQGridView = {
  				});
  				$('#cancelButton').click(function(){$('#confirmDialog').remove();});
  			});
+ 			
     	});
     	
         return grid;

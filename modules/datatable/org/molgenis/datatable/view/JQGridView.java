@@ -1,5 +1,6 @@
 package org.molgenis.datatable.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class JQGridView extends HtmlWidget
 	 */
 	private enum Operation
 	{
-		LOAD_CONFIG, RENDER_DATA, LOAD_TREE, EDIT_RECORD, ADD_RECORD, DELETE_RECORD
+		LOAD_CONFIG, RENDER_DATA, LOAD_TREE, EDIT_RECORD, ADD_RECORD, DELETE_RECORD, UPLOAD_MATRIX
 	}
 
 	/**
@@ -420,6 +421,13 @@ public class JQGridView extends HtmlWidget
 						db.remove(ind);
 					}
 					break;
+				case UPLOAD_MATRIX:
+
+					File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+					String filePath = tmpDir.getAbsolutePath() + "/" + request.getString("fileName");
+
+					break;
 				default:
 					break;
 			}
@@ -623,8 +631,8 @@ public class JQGridView extends HtmlWidget
 			throws TableException, IOException
 	{
 		tupleTable.setDb(db);
-		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(), "test",
-				tupleTable);
+		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(),
+				getLabel(), tupleTable);
 
 		final String jqJsonConfig = new Gson().toJson(config);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
