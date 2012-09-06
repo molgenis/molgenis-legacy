@@ -641,8 +641,6 @@ var JQGridView = {
 $(document).ready(function() {
     configUrl = "${url}";
     $("#dialog").dialog({ autoOpen: false });
-   	$("#${tableId}_uploadFile_form").dialog({ autoOpen: false });
-   
     //load JQGrid configuration and creates grid
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
@@ -652,35 +650,21 @@ $(document).ready(function() {
         
     });
 	$('#${tableId}_exportButton').click(function() {
-		$("#${tableId}_dialog-form").dialog('open');
+		$( "#${tableId}_dialog-form" ).dialog('open');
 	});
 	
-	$('#${tableId}_uploadButton').click(function() {
-		$("#${tableId}_uploadFile_form").dialog( "option", "width", 400);
-		$("#${tableId}_uploadFile_form").dialog('open');
-		$('#fileUploadNext').button();
-		$('#fileUploadCancel').button();
-		
-		$('#fileUploadCancel').click(function(){
-			$("#${tableId}_uploadFile_form").dialog('close');
-		});
-		
-		$('#fileUploadNext').click(function(){
-			uploadFileName = $('#uploadFileName').val();
-			
-			if(uploadFileName != ""){
-				$.ajax(configUrl + "&Operation=UPLOAD_MATRIX&fileName=" + uploadFileName).done(function(status) {
-			 	
-			 	});
-			}else{
-				alert("Please upload your file");
-			}
-		});
-	});
+	
 	
 });
 
 </script>
+
+
+
+<div id="dialog" title="Add record" style="width:200px; height:200px;font-size:12px">
+	
+
+</div><!-- End demo -->
 
 
 <div id="${tableId}_treeBox">
@@ -697,7 +681,6 @@ $(document).ready(function() {
 	<table id="${tableId}"></table>
 	<div id="${tableId}_pager"></div>
 	<input id="${tableId}_exportButton" type="button" value="export data"/>
-	<input id="${tableId}_uploadButton" type="button" value="upload data"/>
 	
 	<div id="${tableId}_dialog-form" title="Export data">
 		<form>
@@ -718,24 +701,6 @@ $(document).ready(function() {
 	            <input type="radio" name="exportColumnSelection" value="SELECTED_COLUMNS" checked>Selected<br>
 	            <input type="radio" name="exportColumnSelection" value="GRID_COLUMNS">Visible Columns<br>
 		</fieldset>
-		</form>
-	</div>
-	
-	
-	<div id="${tableId}_uploadFile_form" title="Upload data">
-		<form>
-			<fieldset style="border-radius:0.2em">
-		            <label >Data type</label><br>
-		            <input type="radio" name="uploadFileType" value="Pheno" checked>Pheno<br>
-		            <input type="radio" name="uploadFileType" value="Geno">Geno<br> 
-		    </fieldset>
-		    <fieldset style="border-radius:0.2em">
-		            <label >Upload a file</label><br>
-		            <input type=file id="uploadFileName" style="font-size:12px"/> 
-		    </fieldset>
-            <input id="fileUploadNext" type="button" style="font-size:0.6em" value="Next"/>
-            <input id="fileUploadCancel" type="button" style="font-size:0.6em" value="Cancel"/>
-            
 		</form>
 	</div>
 </div>
