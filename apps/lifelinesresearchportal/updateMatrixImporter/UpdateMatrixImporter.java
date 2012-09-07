@@ -3,8 +3,10 @@ package updateMatrixImporter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,6 +26,7 @@ import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.framework.ui.PluginModel;
 import org.molgenis.framework.ui.ScreenController;
 import org.molgenis.model.elements.Field;
+import org.molgenis.pheno.Category;
 import org.molgenis.pheno.Individual;
 import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservationTarget;
@@ -158,8 +161,10 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 				String variableName = tuple.getString("variable");
 				String dataType = tuple.getString("datatype");
 				String category = tuple.getString("category");
+				String code = tuple.getString("code");
 				String table = tuple.getString("table");
-				allMappings.addMapping(variableName, dataType, table, category);
+				allMappings.addMapping(variableName, dataType, table, category,
+						code);
 
 			}
 
@@ -252,8 +257,12 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			List<Measurement> listOfFeatures = new ArrayList<Measurement>();
 			List<ObservedValue> listOfValues = new ArrayList<ObservedValue>();
 			List<ProtocolApplication> listOfPA = new ArrayList<ProtocolApplication>();
+			HashMap<String, Category> listOfCategories = new HashMap<String, Category>();
+			HashMap<String, List<String>> featureToProtocolTable = new HashMap<String, List<String>>();
 
 			List<Field> allColumns = csvTable.getAllColumns();
+
+			List<String> removedColumns = new ArrayList<String>();
 
 			String targetString = allColumns.get(0).getName();
 
@@ -270,11 +279,77 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			// new columns are added.
 			if (newFeatures.size() > 0) {
+
 				for (String feature : newFeatures) {
-					Measurement m = new Measurement();
-					m.setName(feature);
-					m.setInvestigation_Name(investigationName);
-					listOfFeatures.add(m);
+
+					String identifier = feature.replaceAll(" ", "_");
+
+					if (request.getBool(identifier + "_check") != null) {
+
+						Measurement m = new Measurement();
+
+						String dataType = request.getString(identifier
+								+ "_dataType");
+
+						m.setName(feature);
+						m.setInvestigation_Name(investigationName);
+						m.setDataType(dataType);
+
+						String protocolTable = request.getString(identifier
+								+ "_protocolTable");
+
+						if (!featureToProtocolTable.containsKey(protocolTable)) {
+
+							List<String> features = new ArrayList<String>();
+							features.add(feature);
+							featureToProtocolTable.put(protocolTable, features);
+
+						} else {
+							List<String> features = featureToProtocolTable
+									.get(protocolTable);
+							if (!features.contains(feature)) {
+								features.add(feature);
+								featureToProtocolTable.put(protocolTable,
+										features);
+							}
+						}
+
+						if (dataType.equals("categorical")) {
+
+							List<String> categoryNameClean = new ArrayList<String>();
+
+							for (String eachCategory : request
+									.getStringList(identifier
+											+ "_categoryString")) {
+
+								String standardName = eachCategory.replaceAll(
+										"[^(a-zA-Z0-9_\\s)]", " ").trim();
+
+								if (!listOfCategories.containsKey(standardName
+										.toLowerCase())) {
+
+									String code = eachCategory.split("=")[0]
+											.trim();
+									String codeLabel = eachCategory.split("=")[1]
+											.trim();
+									Category c = new Category();
+									c.setCode_String(code);
+									c.setDescription(codeLabel);
+									c.setName(standardName);
+									listOfCategories.put(
+											standardName.toLowerCase(), c);
+								}
+								categoryNameClean.add(standardName);
+							}
+							m.setCategories_Name(categoryNameClean);
+						}
+						// String protocolTable = request.getString(identifier +
+						// "_protocolTable");
+
+						listOfFeatures.add(m);
+					} else {
+						removedColumns.add(feature);
+					}
 				}
 			}
 
@@ -297,9 +372,16 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 					String eachColumn = field.getName();
 
-					if (newFeatures.contains(eachColumn) && paName == null
-							|| paName != null
-							&& !eachColumn.equalsIgnoreCase(targetString)) {
+					// TODO Separate the new columns and new rows
+					if (!removedColumns.contains(eachColumn)
+							&& (newFeatures.contains(eachColumn)
+									&& paName == null || paName != null
+									&& !eachColumn
+											.equalsIgnoreCase(targetString))) {
+
+						if (eachColumn.equals("test3")) {
+							System.out.println();
+						}
 
 						if (paName == null) {
 							if (db.find(
@@ -335,22 +417,45 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 				}
 			}
 
+			for (Category c : db.find(Category.class, new QueryRule(
+					Category.NAME, Operator.IN, new ArrayList<String>(
+							listOfCategories.keySet())))) {
+				listOfCategories.remove(c.getName().toLowerCase());
+			}
+
+			List<Category> uniqueCategories = new ArrayList<Category>(
+					listOfCategories.values());
+
 			db.add(listOfTargets);
+			db.add(uniqueCategories);
+
+			for (Measurement m : listOfFeatures) {
+
+				if (m.getCategories_Name().size() > 0) {
+
+					List<Integer> listOfCategoryID = new ArrayList<Integer>();
+
+					for (Category c : db
+							.find(Category.class, new QueryRule(Category.NAME,
+									Operator.IN, m.getCategories_Name()))) {
+						listOfCategoryID.add(c.getId());
+					}
+					m.setCategories_Id(listOfCategoryID);
+				}
+			}
+
 			db.add(listOfFeatures);
 			db.add(listOfPA);
 			db.add(listOfValues);
 
-			if (newFeatures.size() > 0
-					&& db.find(
-							Protocol.class,
-							new QueryRule(Protocol.NAME, Operator.EQUALS,
-									"NotClassified")).size() > 0) {
-				Protocol p = db.find(
-						Protocol.class,
-						new QueryRule(Protocol.NAME, Operator.EQUALS,
-								"NotClassified")).get(0);
-				p.getFeatures_Name().addAll(newFeatures);
-
+			for (Protocol p : db.find(Protocol.class, new QueryRule(
+					Protocol.NAME, Operator.IN, new ArrayList<String>(
+							featureToProtocolTable.keySet())))) {
+				List<Integer> oldFeatures = p.getFeatures_Id();
+				for (Measurement m : listOfFeatures) {
+					oldFeatures.add(m.getId());
+				}
+				p.setFeatures_Id(oldFeatures);
 				db.update(p);
 			}
 
@@ -447,13 +552,13 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		HashMap<String, eachMapping> allMappings = new HashMap<String, eachMapping>();
 
 		public void addMapping(String variableName, String dataType,
-				String table, String category) {
+				String table, String category, String code) {
 
 			if (allMappings.containsKey(variableName)) {
-				allMappings.get(variableName).addCategory(category);
+				allMappings.get(variableName).addCategory(category, code);
 			} else {
 				eachMapping newMapping = new eachMapping(variableName,
-						dataType, table, category);
+						dataType, table, category, code);
 				allMappings.put(variableName, newMapping);
 			}
 		}
@@ -467,19 +572,21 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			private String variableName;
 			private String dataType;
 			private String table;
-			private List<String> listOfCategories = new ArrayList<String>();
+			// private List<String> listOfCategories = new ArrayList<String>();
+			private Map<String, String> listOfCategories = new LinkedHashMap<String, String>();
 
 			private eachMapping(String variableName, String dataType,
-					String table, String category) {
+					String table, String category, String code) {
 
 				this.variableName = variableName;
 				this.dataType = dataType;
 				this.table = table;
-				this.listOfCategories.add(category);
+				this.listOfCategories.put(code, category);
 			}
 
-			private void addCategory(String category) {
-				this.listOfCategories.add(category);
+			private void addCategory(String category, String code) {
+
+				this.listOfCategories.put(code, category);
 			}
 		}
 	}
