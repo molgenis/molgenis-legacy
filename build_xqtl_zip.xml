@@ -169,6 +169,7 @@
 	</target>
 	
 	<target name="create_zip">
+		<antcall target="download-jars" />
 		<antcall target="build" />
 		<antcall target="package" />
 	</target>
