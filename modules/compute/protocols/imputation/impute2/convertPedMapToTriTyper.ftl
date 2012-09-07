@@ -18,9 +18,9 @@ alloutputsexist "${studyTriTyperChrDir}/SNPsHash.txt"
 alloutputsexist "${studyTriTyperChrDir}/SNPs.txt"
 
 
-mkdir -p ${studyTriTyperTempDir}
+mkdir -p ${studyTriTyperChrTempDir}
 
-java -jar ${imputationToolJar} --mode pmtt --in ${studyPedMapChrDir} --out ${studyTriTyperTempDir}
+java -jar ${imputationToolJar} --mode pmtt --in ${studyPedMapChrDir} --out ${studyTriTyperChrTempDir}
 
 
 #Get return code from last program call
@@ -31,7 +31,7 @@ then
 	
 	echo -e "\nMoving temp files to final files\n\n"
 
-	mv ${studyTriTyperTempDir} ${studyTriTyperChrDir}
+	mv ${studyTriTyperChrTempDir} ${studyTriTyperChrDir}
 
 	
 else

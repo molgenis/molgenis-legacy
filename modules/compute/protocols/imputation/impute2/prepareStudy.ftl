@@ -1,19 +1,18 @@
 #MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
 
-#INPUTS studyTriTyperDir,referenceTriTyperDir
+#INPUTS studyTriTyperChrDir,referenceTriTyperDir
 #OUTPUTS preparedStudyDir
 #EXES imputationToolJar
 #LOGS log
-#TARGETS project
 
-#FOREACH project
+#FOREACH project,chr
 
-inputs ${studyTriTyperDir}/GenotypeMatrix.dat
-inputs ${studyTriTyperDir}/Individuals.txt
-inputs ${studyTriTyperDir}/PhenotypeInformation.txt
-inputs ${studyTriTyperDir}/SNPMappings.txt
-inputs ${studyTriTyperDir}/SNPsHash.txt
-inputs ${studyTriTyperDir}/SNPs.txt
+inputs ${studyTriTyperChrDir}/GenotypeMatrix.dat
+inputs ${studyTriTyperChrDir}/Individuals.txt
+inputs ${studyTriTyperChrDir}/PhenotypeInformation.txt
+inputs ${studyTriTyperChrDir}/SNPMappings.txt
+inputs ${studyTriTyperChrDir}/SNPsHash.txt
+inputs ${studyTriTyperChrDir}/SNPs.txt
 inputs ${referenceTriTyperDir}/GenotypeMatrix.dat
 inputs ${referenceTriTyperDir}/Individuals.txt
 inputs ${referenceTriTyperDir}/PhenotypeInformation.txt
@@ -30,7 +29,7 @@ inputs ${referenceTriTyperDir}/SNPs.txt
 mkdir ${preparedStudyTempDir}
 
 
-java -Xmx16g -jar ${imputationToolJar} --mode ttpmh --in ${studyTriTyperDir} --hap ${referenceTriTyperDir} --out ${preparedStudyTempDir}
+java -Xmx16g -jar ${imputationToolJar} --mode ttpmh --in ${studyTriTyperChrDir} --hap ${referenceTriTyperDir} --out ${preparedStudyTempDir}
 
 
 #Get return code from last program call
