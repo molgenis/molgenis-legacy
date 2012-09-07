@@ -53,22 +53,18 @@ public class PedFileDriver extends AbstractFileDriver
 			{
 				String al1 = tuple.getString(col);
 				String al2 = tuple.getString(col + 1);
-				if (al1 == null) throw new Exception(Helper.errorMsg(
-						line_number, col));
-				if (al2 == null) throw new Exception(Helper.errorMsg(
-						line_number, col + 1));
+				if (al1 == null) throw new Exception(Helper.errorMsg(line_number, col));
+				if (al2 == null) throw new Exception(Helper.errorMsg(line_number, col + 1));
 				Biallele biallele = new Biallele(al1, al2);
 				bialleles.add(biallele);
 			}
 
 			for (int objIndex = 0; objIndex < 6; objIndex++)
 			{
-				if (tuple.getObject(objIndex) == null) throw new Exception(
-						Helper.errorMsg(line_number, objIndex));
+				if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 			}
-			PedEntry pe = new PedEntry(tuple.getString(0), tuple.getString(1),
-					tuple.getString(2), tuple.getString(3), tuple.getInt(4)
-							.byteValue(), tuple.getDouble(5), bialleles);
+			PedEntry pe = new PedEntry(tuple.getString(0), tuple.getString(1), tuple.getString(2), tuple.getString(3),
+					tuple.getInt(4).byteValue(), tuple.getDouble(5), bialleles);
 			result.add(pe);
 
 		}
@@ -86,8 +82,7 @@ public class PedFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<PedEntry> getEntries(final long from, final long to)
-			throws Exception
+	public List<PedEntry> getEntries(final long from, final long to) throws Exception
 	{
 		reader.reset();
 		final ArrayList<PedEntry> result = new ArrayList<PedEntry>();
@@ -103,24 +98,25 @@ public class PedFileDriver extends AbstractFileDriver
 				{
 					String al1 = tuple.getString(col);
 					String al2 = tuple.getString(col + 1);
-					if (al1 == null) throw new Exception(Helper.errorMsg(
-							line_number, col));
-					if (al2 == null) throw new Exception(Helper.errorMsg(
-							line_number, col + 1));
+					if (al1 == null) throw new Exception(Helper.errorMsg(line_number, col));
+					if (al2 == null) throw new Exception(Helper.errorMsg(line_number, col + 1));
 					Biallele biallele = new Biallele(al1, al2);
 					bialleles.add(biallele);
 				}
 
 				for (int objIndex = 0; objIndex < 6; objIndex++)
 				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(
-							Helper.errorMsg(line_number, objIndex));
+					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 				}
-				PedEntry pe = new PedEntry(tuple.getString(0),
-						tuple.getString(1), tuple.getString(2),
-						tuple.getString(3), tuple.getInt(4).byteValue(),
-						tuple.getDouble(5), bialleles);
+				PedEntry pe = new PedEntry(tuple.getString(0), tuple.getString(1), tuple.getString(2),
+						tuple.getString(3), tuple.getInt(4).byteValue(), tuple.getDouble(5), bialleles);
 				result.add(pe);
+			}
+
+			// Dirty optimazation
+			if (line_number > to)
+			{
+				break;
 			}
 		}
 
