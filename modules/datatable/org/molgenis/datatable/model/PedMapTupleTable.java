@@ -14,7 +14,7 @@ import org.molgenis.util.plink.datatypes.PedEntry;
 import org.molgenis.util.plink.drivers.MapFileDriver;
 import org.molgenis.util.plink.drivers.PedFileDriver;
 
-public class PedMapTupleTable extends AbstractFilterableTupleTable
+public class PedMapTupleTable extends AbstractTupleTable
 {
 	private PedFileDriver pedFile;
 	private MapFileDriver mapFile;
