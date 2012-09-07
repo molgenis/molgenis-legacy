@@ -21,7 +21,7 @@ public class PedMapTupleTable extends AbstractTupleTable
 	private List<Field> columns = null;
 
 	private static String[] fixedColumns = new String[]
-	{ "FamilyID", "IndividualID", "FatherID", "MotherID", "Sex", "Phenotype" };
+	{ "IndividualID", "FamilyID", "FatherID", "MotherID", "Sex", "Phenotype" };
 
 	public PedMapTupleTable(File ped, File map) throws Exception
 	{
@@ -146,10 +146,10 @@ public class PedMapTupleTable extends AbstractTupleTable
 					switch (i)
 					{
 						case 0:
-							value = pe.getFamily();
+							value = pe.getIndividual();
 							break;
 						case 1:
-							value = pe.getIndividual();
+							value = pe.getFamily();
 							break;
 						case 2:
 							value = pe.getFather();
