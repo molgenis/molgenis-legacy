@@ -1,7 +1,7 @@
 #MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
 
 #INPUTS studyTriTyperDir,referenceTriTyperDir
-#OUTPUTS preparedStudyTempDir
+#OUTPUTS preparedStudyDir
 #EXES imputationToolJar
 #LOGS log
 #TARGETS project
@@ -20,7 +20,10 @@ inputs ${referenceTriTyperDir}/PhenotypeInformation.txt
 inputs ${referenceTriTyperDir}/SNPMappings.txt
 inputs ${referenceTriTyperDir}/SNPsHash.txt
 inputs ${referenceTriTyperDir}/SNPs.txt
-alloutputsexist preparedStudyTempDir/*
+
+
+### This is not correct
+#alloutputsexist preparedStudyDir/*
 
 
 
