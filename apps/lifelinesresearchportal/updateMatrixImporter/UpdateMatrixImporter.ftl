@@ -40,14 +40,105 @@
 		
 		$('#newColHeaders').click(function(){
 			
-			$('#reportForm').fadeOut();
+			$('#reportForm').hide();
 			
-			var molgenisDataOptions;
-			<#list screen.getFeatureDataTypes() as dataType>
-				$('#newColumnsMapping').append("${dataType}</br>");
-				molgenisDataOptions += "<option>${dataType}</option>";
-			</#list>
+			if(newColumns.length > 0){
+				
+				if(newColumns.length > 0 && $('#newColumnsMapping').children().length == 0){
 			
+					var molgenisDataOptions;
+					
+					var protocolTables;
+					
+					<#list screen.getFeatureDataTypes() as dataType>
+						<#if dataType == "string">
+							molgenisDataOptions += "<option value=\"${dataType}\" selected=\"selected\">${dataType}</option>";
+						<#else>
+							molgenisDataOptions += "<option value=\"${dataType}\">${dataType}</option>";
+						</#if>
+					</#list>
+					<#list screen.getProtocolTables() as table>
+						<#if table == "NotClassified">
+							protocolTables += "<option value=\"${table}\" selected=\"selected\">${table}</option>";
+						<#else>
+							protocolTables += "<option value=\"${table}\">${table}</option>";
+						</#if>
+					</#list>
+					
+					mappingTable = "<table id=\"mappingTable\" style=\"border:1px\"><tr><th>Variable</th><th>Data type</th><th>Table</th></tr>";
+					
+					for(var i = 0; i < newColumns.length; i++ ){
+						
+						identifier = newColumns[i].replace(" ","_");
+						
+						selectDataTypes = "<select id=\"" + identifier + "_dataType\">" + molgenisDataOptions + "</select>";
+						
+						tables = "<select id=\"" + identifier + "_protocolTable\">" + protocolTables + "</select>";
+						
+						mappingTable += "<tr id=\"" + identifier + "_mapping\"><td>" + newColumns[i] + "</td><td>" 
+							+ selectDataTypes + "</td><td>" + tables + "</td></tr>";
+	
+					} 
+					
+					mappingTable += "</table>";
+					
+					mappingHeader = "Please specify the type of the new columns. The data type is by default string. </br></br>";
+					
+					mappingHeader += "<fieldset>Upload your mapping file<input type=\"file\" id=\"mappingForColumns\" name=\"mappingForColumns\" />";
+					
+					mappingHeader += "<input type=\"button\" id=\"downloadTemplate\" name=\"downloadTemplate\""+
+						"style=\"font-size:0.6em;color:#03406A\" value=\"download template\" onclick=\"__action.value='downloadTemplate';return true;\"></fieldset>";
+					
+					$('#newColumnsMapping').append(mappingTable);
+					
+					$('#newColumnsMapping').prepend(mappingHeader);
+					
+					$('#newColumnsMapping').append("</br><input type=\"button\" id=\"previousFromMapping\" style=\"font-size:0.6em;color:#03406A\" value=\"Previous\"/>");
+					
+					$('#previousFromMapping').button();
+					
+					$('#previousFromMapping').click(function(){
+						$('#newColumnsMapping').hide();
+						$('#reportForm').fadeIn();
+					});
+					$('#downloadTemplate').button();
+					$('#mappingTable th').width(700);
+					$('#mappingTable td').css('text-align','center');
+					$('#mappingTable th').css('background','#65A5D1');
+					$('#mappingTable tr').css('border-bottom','1px dotted');
+					
+					$('#mappingTable tr').each(function(){
+						$(this).find('select').eq(0).change(function(){
+							if($(this).val() == "categorical"){
+								identifier = $(this).parents('tr:first').attr('id');
+								identifier = identifier.replace("_mapping","");
+								button = "<input type=\"button\" id=\""+ identifier + "_category\" value=\"click\" />";
+								dialog = "<div id=\"" + identifier + "_categoryInput\">Hello world!<input type=\"button\" value=\"Close\"/></div>";
+								$(this).parent().append(button);
+								$(this).parent().append(dialog);
+								$('#' + identifier + '_categoryInput').dialog({ autoOpen: false });
+								$('#' + identifier + '_categoryInput').find('input[type="button"]').click(function(){
+									$('#' + identifier + '_categoryInput').dialog('close');
+								});
+								
+								$(this).siblings('input[type="button"]').click(function(){
+									$('#' + identifier + '_categoryInput').dialog('open');
+								});
+								
+							}else{
+								$(this).siblings().remove()
+							}
+						});
+					});
+					
+					
+				}
+				
+				$('#newColumnsMapping').fadeIn(1000);
+				
+			}else{
+				alert("There are no new columns in the file!");
+			}
 		});
 		
 		//Submit the form and reload page to show the new records only
@@ -115,6 +206,7 @@
 		    	</td></tr>
 	    	</table>
     	<#elseif screen.getSTATUS() == "CheckFile">
+    		<div id="newColumnsMapping"></div>
     		<div id="reportForm">
     			<fieldset>
     				<table style="width:100%;">
@@ -136,8 +228,7 @@
     			</fieldset>
     			<script>generateReport(${screen.getReport()});</script>
     		</div>
-    		<div id="newColumnsMapping">
-    		</div>
+    		
     	<#elseif screen.getSTATUS() == "previewFile">
     		${screen.getTableView()}
     		<fieldset id="controlPanelForImporting">
@@ -146,6 +237,8 @@
 				<input type="submit" name="uploadNewFile" id="uploadNewFile" value="Upload a new file" 
 					style="font-size:0.6em;color:#03406A" onclick="__action.value='uploadNewFile';return true;"/>
 			</fieldset>
+    	<#elseif screen.getSTATUS() == "mappingVariables">
+    		<div id="newColumnsMapping" style="display:none"></div>
     	</#if>
 	</div>
 </form>

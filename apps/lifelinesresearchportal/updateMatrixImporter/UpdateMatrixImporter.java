@@ -37,7 +37,9 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	private JQGridView tableView = null;
 	private String STATUS = "UploadFile";
 	private String investigationName = "LifeLines";
+	private String tempalteFilePath = null;
 
+	private List<String> listOfProtocols = new ArrayList<String>();
 	private List<String> colHeaders = new ArrayList<String>();
 	private List<String> newFeatures = new ArrayList<String>();
 	private List<String> rowHeaders = new ArrayList<String>();
@@ -66,8 +68,20 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			newFeatures.clear();
 			rowHeaders.clear();
 			newTargets.clear();
+			listOfProtocols.clear();
 
 			String fileName = request.getString("uploadFileName");
+
+			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+			File templateMapping = new File(tmpDir.getAbsolutePath()
+					+ "/tempalteMapping.xls");
+
+			if (!templateMapping.exists()) {
+
+			}
+
+			tempalteFilePath = templateMapping.getAbsolutePath();
 
 			checkHeaders(db, request, fileName);
 
@@ -116,6 +130,10 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			importUploadFile(db, request);
 
 			STATUS = "UploadFile";
+
+		} else if (request.getAction().equals("downloadTemplate")) {
+
+			STATUS = "CheckFile";
 
 		} else if (request.getAction().equals("showNewRecordsOnly")) {
 
@@ -332,6 +350,12 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 					.createReportUploadStatus(colHeaders, newFeatures,
 							rowHeaders, newTargets));
 
+			for (Protocol p : db.find(Protocol.class, new QueryRule(
+					Protocol.INVESTIGATION_NAME, Operator.EQUALS,
+					investigationName))) {
+				listOfProtocols.add(p.getName());
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -378,5 +402,14 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 		}
 
 		return dataTypes;
+	}
+
+	public List<String> getProtocolTables() throws Exception {
+
+		return listOfProtocols;
+	}
+
+	public String getTempalteFilePath() {
+		return tempalteFilePath;
 	}
 }
