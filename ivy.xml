@@ -63,5 +63,8 @@
 		
 		<dependency org="org.expressme" name="JOpenId" rev="1.08" />
 		
+		<dependency org="org.apache.lucene" name="lucene-core" rev="3.0.2" />
+		<dependency org="org.apache.lucene" name="lucene-highlighter" rev="3.0.2" />
+		
 	</dependencies>
 </ivy-module>

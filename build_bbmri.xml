@@ -11,7 +11,6 @@
 		<pathelement location="apps/bbmri" />
 		<pathelement location="apps/catalogue" />
 		<pathelement location="modules/auth" />
-		<pathelement location="modules/compute" />
 		<pathelement location="modules/pheno" />
 		<pathelement location="modules/file" />
 		<pathelement location="modules/datamodel" />
