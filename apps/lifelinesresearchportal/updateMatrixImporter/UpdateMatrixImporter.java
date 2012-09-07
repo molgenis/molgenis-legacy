@@ -2,7 +2,17 @@ package updateMatrixImporter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+
+import javax.servlet.http.HttpServletResponse;
+
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 
 import org.molgenis.datatable.model.CsvTable;
 import org.molgenis.datatable.model.MemoryTable;
@@ -21,6 +31,7 @@ import org.molgenis.pheno.ObservedValue;
 import org.molgenis.protocol.Protocol;
 import org.molgenis.protocol.ProtocolApplication;
 import org.molgenis.util.Entity;
+import org.molgenis.util.HttpServletRequestTuple;
 import org.molgenis.util.Tuple;
 import org.molgenis.util.ValueLabel;
 
@@ -38,6 +49,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	private String STATUS = "UploadFile";
 	private String investigationName = "LifeLines";
 	private String tempalteFilePath = null;
+	private String jsonForMapping = null;
 
 	private List<String> listOfProtocols = new ArrayList<String>();
 	private List<String> colHeaders = new ArrayList<String>();
@@ -69,6 +81,7 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 			rowHeaders.clear();
 			newTargets.clear();
 			listOfProtocols.clear();
+			jsonForMapping = null;
 
 			String fileName = request.getString("uploadFileName");
 
@@ -131,9 +144,76 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 			STATUS = "UploadFile";
 
+		} else if (request.getAction().equals("uploadMapping")) {
+
+			// List<String> listOfMappings = new ArrayList<String>();
+			String mappingFileName = request.getString("mappingForColumns");
+
+			CsvTable mappingTable = new CsvTable(new File(mappingFileName));
+
+			mappingClass allMappings = new mappingClass();
+
+			for (Tuple tuple : mappingTable.getRows()) {
+
+				String variableName = tuple.getString("variable");
+				String dataType = tuple.getString("datatype");
+				String category = tuple.getString("category");
+				String table = tuple.getString("table");
+				allMappings.addMapping(variableName, dataType, table, category);
+
+			}
+
+			jsonForMapping = new Gson().toJson(allMappings.getMapping());
+
+			// for (String newFeature : newFeatures) {
+			//
+			// String variableName = newFeature.replaceAll(" ", "_");
+			// String dataType = request.getString(variableName + "_dataType");
+			// String protocolTable = request.getString(variableName
+			// + "_protocolTable");
+			// mappingClass newMappingClass = mappingClass.createMappingClass(
+			// variableName, dataType, protocolTable);
+			//
+			// listOfMappings.add(new Gson().toJson(newMappingClass));
+			// }
+
+			System.out.println();
+
 		} else if (request.getAction().equals("downloadTemplate")) {
 
-			STATUS = "CheckFile";
+			WorkbookSettings ws = new WorkbookSettings();
+
+			ws.setLocale(new Locale("en", "EN"));
+
+			File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+			File mappingResult = new File(tmpDir + File.separator
+					+ "template.xls");
+
+			WritableWorkbook workbook = Workbook.createWorkbook(mappingResult,
+					ws);
+
+			WritableSheet outputExcel = workbook.createSheet("Sheet1", 0);
+
+			outputExcel.addCell(new Label(0, 0, "Table"));
+
+			outputExcel.addCell(new Label(1, 0, "variable"));
+
+			outputExcel.addCell(new Label(2, 0, "data type"));
+
+			workbook.write();
+			workbook.close();
+
+			HttpServletRequestTuple rt = (HttpServletRequestTuple) request;
+			HttpServletResponse httpResponse = rt.getResponse();
+			// System.out.println(">>> " + this.getParent().getName()+
+			// "or >>>  "+ this.getSelected().getLabel());
+			// String redirectURL = httpRequest.getRequestURL() + "?__target=" +
+			// this.getParent().getName() + "&select=MeasurementsDownloadForm";
+
+			String redirectURL = "tmpfile/template.xls";
+
+			httpResponse.sendRedirect(redirectURL);
 
 		} else if (request.getAction().equals("showNewRecordsOnly")) {
 
@@ -362,6 +442,48 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 
 	}
 
+	public class mappingClass {
+
+		HashMap<String, eachMapping> allMappings = new HashMap<String, eachMapping>();
+
+		public void addMapping(String variableName, String dataType,
+				String table, String category) {
+
+			if (allMappings.containsKey(variableName)) {
+				allMappings.get(variableName).addCategory(category);
+			} else {
+				eachMapping newMapping = new eachMapping(variableName,
+						dataType, table, category);
+				allMappings.put(variableName, newMapping);
+			}
+		}
+
+		public List<eachMapping> getMapping() {
+			return new ArrayList<eachMapping>(allMappings.values());
+		}
+
+		private class eachMapping {
+
+			private String variableName;
+			private String dataType;
+			private String table;
+			private List<String> listOfCategories = new ArrayList<String>();
+
+			private eachMapping(String variableName, String dataType,
+					String table, String category) {
+
+				this.variableName = variableName;
+				this.dataType = dataType;
+				this.table = table;
+				this.listOfCategories.add(category);
+			}
+
+			private void addCategory(String category) {
+				this.listOfCategories.add(category);
+			}
+		}
+	}
+
 	public static class ReportUploadStatus {
 
 		List<String> colHeaders;
@@ -412,4 +534,13 @@ public class UpdateMatrixImporter extends PluginModel<Entity> {
 	public String getTempalteFilePath() {
 		return tempalteFilePath;
 	}
+
+	public String getUrl() {
+		return "molgenis.do?__target=" + this.getName();
+	}
+
+	public String getJsonForMapping() {
+		return jsonForMapping;
+	}
+
 }
