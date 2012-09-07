@@ -58,5 +58,8 @@
 		<dependency org="org.apache.axis" name="axis" rev="1.4" />
 
 		<dependency org="org.apache.axis" name="axis-jaxrpc" rev="1.4" />
+		
+		<dependency org="com.itextpdf" name="itextpdf" rev="5.0.6"/>
+		
 	</dependencies>
 </ivy-module>
