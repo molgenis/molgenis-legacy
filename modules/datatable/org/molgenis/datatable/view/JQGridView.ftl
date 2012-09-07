@@ -70,9 +70,12 @@ var JQGridView = {
         this.createDialog();
       
 		//load & create Tree
-	    $.getJSON(configUrl + "&Operation=LOAD_TREE").done(function(data) { 
-	    	 self.tree = self.createTree(data);   
-	    });
+		
+		if (config.showColumnTree) {
+	    	$.getJSON(configUrl + "&Operation=LOAD_TREE").done(function(data) { 
+	    		 self.tree = self.createTree(data);   
+	    	});
+	    }
 
         return JQGridView;
     },
@@ -648,10 +651,9 @@ $(document).ready(function() {
     $.ajax(configUrl + "&Operation=LOAD_CONFIG").done(function(data) {
         config = data;
         
-        grid = JQGridView.init("${tableId}", "${tableId}_pager", config);
-       
-        
+        grid = JQGridView.init("${tableId}", "${tableId}_pager", config);    
     });
+    
 	$('#${tableId}_exportButton').click(function() {
 		$( "#${tableId}_dialog-form" ).dialog('open');
 	});

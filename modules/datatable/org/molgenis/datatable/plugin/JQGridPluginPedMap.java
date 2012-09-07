@@ -67,8 +67,6 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 				selectedPedFile = pedFiles.get(0);
 			}
 
-			System.out.println("1 ped, 1 map file..");
-
 			MolgenisFileHandler mfh = new MolgenisFileHandler(db);
 
 			File pedFile = mfh.getFile(selectedPedFile, db);
@@ -81,12 +79,14 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 
 			System.out.println("PedMapTupleTable created..");
 
-			// table.setColLimit(10);
-			//
-			// System.out.println("columns limited to 10..");
+			if (table.getColumns().size() > 10)
+			{
+				table.setColLimit(10);
+				System.out.println("columns limited to 10..");
+			}
 
 			// check which table to show
-			tableView = new JQGridView("pedmaptable", this, table);
+			tableView = new JQGridView("pedmaptable", this, table, false);
 
 			tableView.setLabel("Genotypes");
 
@@ -114,7 +114,6 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 	{
 		String pedFileName = request.getString("pedfile");
 		String mapFileName = request.getString("mapfile");
-		System.out.println("XXXXXloadFile mapFile=" + mapFileName);
 
 		for (InvestigationFile file : pedFiles)
 		{

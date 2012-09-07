@@ -50,6 +50,8 @@ public class JQGridView extends HtmlWidget
 {
 	public static final String OPERATION = "Operation";
 	private boolean initialize = true;
+	private boolean showColumnTree = true;// The javascript tree to show/hide
+											// columns above the grid
 	HashMap<String, String> hashMeasurementsWithCategories = new HashMap<String, String>();
 
 	/**
@@ -74,6 +76,16 @@ public class JQGridView extends HtmlWidget
 	}
 
 	private final TupleTableBuilder tupleTableBuilder;
+
+	public boolean isShowColumnTree()
+	{
+		return showColumnTree;
+	}
+
+	public void setShowColumnTree(boolean showColumnTree)
+	{
+		this.showColumnTree = showColumnTree;
+	}
 
 	public JQGridView(String name, TupleTableBuilder tupleTableBuilder)
 	{
@@ -103,6 +115,13 @@ public class JQGridView extends HtmlWidget
 				return table;
 			}
 		});
+	}
+
+	public JQGridView(final String name, final ScreenController<?> hostController, final TupleTable table,
+			boolean showColumnTree)
+	{
+		this(name, hostController, table);
+		this.showColumnTree = showColumnTree;
 	}
 
 	/**
@@ -632,7 +651,7 @@ public class JQGridView extends HtmlWidget
 	{
 		tupleTable.setDb(db);
 		final JQGridConfiguration config = new JQGridConfiguration(getId(), "Name", tupleTableBuilder.getUrl(),
-				getLabel(), tupleTable);
+				getLabel(), tupleTable, showColumnTree);
 
 		final String jqJsonConfig = new Gson().toJson(config);
 		request.getResponse().getOutputStream().println(jqJsonConfig);
@@ -659,8 +678,11 @@ public class JQGridView extends HtmlWidget
 			final TupleTable table) throws TableException
 	{
 		final JQGridResult result = new JQGridResult(page, totalPages, rowCount);
-		for (final Tuple row : table.getRows())
+
+		Iterator<Tuple> it = table.iterator();
+		while (it.hasNext())
 		{
+			Tuple row = it.next();
 			System.out.println("check: " + row);
 			final LinkedHashMap<String, String> rowMap = new LinkedHashMap<String, String>();
 

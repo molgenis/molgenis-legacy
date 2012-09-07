@@ -74,8 +74,18 @@ public class JQGridConfiguration
 
 	public JQGridSettings settings = new JQGridSettings();
 
+	// The javascript tree to show/hide columns above the grid
+	public boolean showColumnTree = true;
+
 	@SuppressWarnings("unchecked")
 	public Object[] toolbar = Arrays.asList(true, "top").toArray();
+
+	public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable,
+			boolean showColumnTree) throws TableException
+	{
+		this(id, idField, url, caption, tupleTable);
+		this.showColumnTree = showColumnTree;
+	}
 
 	public JQGridConfiguration(String id, String idField, String url, String caption, TupleTable tupleTable)
 			throws TableException
