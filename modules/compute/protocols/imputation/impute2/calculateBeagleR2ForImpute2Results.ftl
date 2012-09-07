@@ -4,7 +4,6 @@
 #OUTPUTS imputationResult/chr_${chr}.beagleR2
 #EXES calculateBeagleR2ForIMpute2ResultsPythonScript
 #LOGS log
-#TARGETS project,chr
 
 #FOREACH project,chr
 
