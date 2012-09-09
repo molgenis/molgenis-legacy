@@ -2,26 +2,25 @@
 
 
 #INPUTS studyPedMap.map,studyPedMap.ped
-#OUTPUTS studyTriTyperDir
+#OUTPUTS studyTriTyperChrDir
 #EXES imputationToolJar
 #LOGS log
-#TARGETS project
 
-#FOREACH project
+#FOREACH project,chr
 
-inputs "${studyPedMap}.map"
-inputs "${studyPedMap}.ped"
-alloutputsexist "${studyTriTyperDir}/GenotypeMatrix.dat"
-alloutputsexist "${studyTriTyperDir}/Individuals.txt"
-alloutputsexist "${studyTriTyperDir}/PhenotypeInformation.txt"
-alloutputsexist "${studyTriTyperDir}/SNPMappings.txt"
-alloutputsexist "${studyTriTyperDir}/SNPsHash.txt"
-alloutputsexist "${studyTriTyperDir}/SNPs.txt"
+inputs "${studyPedMapChr}.map"
+inputs "${studyPedMapChr}.ped"
+alloutputsexist "${studyTriTyperChrDir}/GenotypeMatrix.dat"
+alloutputsexist "${studyTriTyperChrDir}/Individuals.txt"
+alloutputsexist "${studyTriTyperChrDir}/PhenotypeInformation.txt"
+alloutputsexist "${studyTriTyperChrDir}/SNPMappings.txt"
+alloutputsexist "${studyTriTyperChrDir}/SNPsHash.txt"
+alloutputsexist "${studyTriTyperChrDir}/SNPs.txt"
 
 
-mkdir ${studyTriTyperTempDir}
+mkdir -p ${studyTriTyperChrTempDir}
 
-java -jar ${imputationToolJar} --mode pmtt --in ${studyPedMapDir} --out ${studyTriTyperTempDir}
+java -jar ${imputationToolJar} --mode pmtt --in ${studyPedMapChrDir} --out ${studyTriTyperChrTempDir}
 
 
 #Get return code from last program call
@@ -32,7 +31,7 @@ then
 	
 	echo -e "\nMoving temp files to final files\n\n"
 
-	mv ${studyTriTyperTempDir} ${studyTriTyperDir}
+	mv ${studyTriTyperChrTempDir} ${studyTriTyperChrDir}
 
 	
 else

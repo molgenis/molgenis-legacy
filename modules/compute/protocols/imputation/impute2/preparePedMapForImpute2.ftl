@@ -1,26 +1,23 @@
 #MOLGENIS walltime=05:00:00 nodes=1 cores=1 mem=4
 
 
-#INPUTS "studyInputPedMap.map,studyInputPedMap.ped
-#OUTPUTS studyPedMap.map,studyPedMap.ped
 #EXES
 #LOGS log
-#TARGETS project
 
-#FOREACH project
+#FOREACH project,chr
 
-inputs "${studyInputPedMap}.map"
-inputs "${studyInputPedMap}.ped"
-alloutputsexist "${studyPedMap}.map"
-alloutputsexist "${studyPedMap}.ped"
+inputs "${studyInputPedMapChr}.map"
+inputs "${studyInputPedMapChr}.ped"
+alloutputsexist "${studyPedMapChr}.map"
+alloutputsexist "${studyPedMapChr}.ped"
 
-mkdir ${studyPedMapDir}
+mkdir -p ${studyPedMapChrDir}
 
 #Convert SNPids to chr_pos
-awk '{$2=$1_$4; print $0}' ${studyInputPedMap}.map > ${studyPedMap}.map
+awk '{$2=$1_$4; print $0}' ${studyInputPedMapChr}.map > ${studyPedMapChr}.map
 
 #Copy ped file
-cp ${studyInputPedMap}.ped ${studyPedMap}.ped
+cp ${studyInputPedMapChr}.ped ${studyPedMapChr}.ped
 
 #Becarefull of phenotype field in ped files. Might crash later on -9
 
