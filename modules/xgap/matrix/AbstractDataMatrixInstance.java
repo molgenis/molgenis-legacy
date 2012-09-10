@@ -1,8 +1,6 @@
 package matrix;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -22,21 +20,14 @@ import org.apache.log4j.Logger;
 import org.molgenis.core.Nameable;
 import org.molgenis.data.Data;
 import org.molgenis.framework.db.Database;
-import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
 import org.molgenis.matrix.MatrixException;
-import org.molgenis.matrix.component.general.MatrixQueryRule;
-import org.molgenis.matrix.component.interfaces.BasicMatrix;
-import org.molgenis.matrix.component.interfaces.SliceableMatrix;
-import org.molgenis.matrix.component.legacy.AbstractSliceableMatrix;
-import org.molgenis.matrix.component.legacy.RenderDescriptor;
-import org.molgenis.matrix.component.legacy.SourceMatrix;
 import org.molgenis.pheno.ObservationElement;
 import org.molgenis.util.CsvWriter;
 
-import com.pmstation.spss.SPSSWriter;
+//import com.pmstation.spss.SPSSWriter;
 
 /**
  * Abstract implementation for MatrixInterface. Some functions require XGAP
@@ -123,9 +114,8 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	/**
 	 * Helper to convert ObservationElement to String
 	 */
-	public DataMatrixInstance getSubMatrixByObservationElement(
-			List<ObservationElement> rows, List<ObservationElement> cols)
-			throws MatrixException
+	public DataMatrixInstance getSubMatrixByObservationElement(List<ObservationElement> rows,
+			List<ObservationElement> cols) throws MatrixException
 	{
 		List<String> rowNames = new ArrayList<String>();
 		for (ObservationElement row : rows)
@@ -142,8 +132,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return getSubMatrix(rowNames, colNames);
 	}
 
-	public DataMatrixInstance getSubMatrix(
-			List<String> rowNames, List<String> colNames) throws MatrixException
+	public DataMatrixInstance getSubMatrix(List<String> rowNames, List<String> colNames) throws MatrixException
 	{
 		int[] rowIndices = new int[rowNames.size()];
 		int[] colIndices = new int[colNames.size()];
@@ -161,34 +150,29 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return getSubMatrix(rowIndices, colIndices);
 	}
 
-	public DataMatrixInstance getSubMatrixByOffset(
-			String rowName, int nRows, String colName, int nCols)
+	public DataMatrixInstance getSubMatrixByOffset(String rowName, int nRows, String colName, int nCols)
 			throws Exception
 	{
-		return getSubMatrixByOffset(this.rowNames.indexOf(rowName), nRows,
-				this.colNames.indexOf(colName), nCols);
+		return getSubMatrixByOffset(this.rowNames.indexOf(rowName), nRows, this.colNames.indexOf(colName), nCols);
 	}
 
 	public int getRowIndexForName(String rowName) throws Exception
 	{
-		if (!rowNames.contains(rowName)) throw new MatrixReadException(
-				"rowname " + rowName + " not known in matrix");
+		if (!rowNames.contains(rowName)) throw new MatrixReadException("rowname " + rowName + " not known in matrix");
 		return this.rowNames.indexOf(rowName);
 	}
 
 	public int getColIndexForName(String colName) throws Exception
 	{
-		if (!colNames.contains(colName)) throw new MatrixReadException(
-				"colname " + colName + " not known in matrix");
+		if (!colNames.contains(colName)) throw new MatrixReadException("colname " + colName + " not known in matrix");
 		return this.colNames.indexOf(colName);
 	}
 
 	public Object getElement(String rowName, String colName) throws Exception
 	{
-		return getElement(this.getRowIndexForName(rowName),
-				this.getColIndexForName(colName));
+		return getElement(this.getRowIndexForName(rowName), this.getColIndexForName(colName));
 	}
-	
+
 	public void toPrintStream(PrintStream p)
 	{
 		try
@@ -198,12 +182,12 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 				p.append("\t" + col);
 			}
 			p.append("\n");
-		//	Object[][] elements = getElements();
-			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
+			// Object[][] elements = getElements();
+			for (int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 			{
 				Object[] row = this.getRow(rowIndex);
 				p.append(getRowNames().get(rowIndex));
-				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
+				for (int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 				{
 					if (row[colIndex] == null)
 					{
@@ -235,10 +219,10 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 			}
 			result.append("\n");
 			Object[][] elements = getElements();
-			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
+			for (int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 			{
 				result.append(getRowNames().get(rowIndex));
-				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
+				for (int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 				{
 					if (elements[rowIndex][colIndex] == null)
 					{
@@ -258,145 +242,77 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		}
 		return result.toString();
 	}
-	
-	@Override
-	public File getAsSpssFile() throws Exception
-	{
-		File spssFile = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator + this.getData().getName() + ".sav");
-		
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(spssFile));
-		SPSSWriter spssWriter = new SPSSWriter(out, "windows-1252");
-		spssWriter.setCalculateNumberOfCases(false);
-		spssWriter.addDictionarySection(-1);
-		
-		Object[][] elements = this.getElements();
-		
-		if(this.getData().getValueType().equals("Decimal"))
-		{
-			for(String colName : this.colNames)
-			{
-				spssWriter.addNumericVar(colName, 10, 10, colName);
-			}
-			
-			spssWriter.addDataSection();
-			
-			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
-			{
-				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
-				{
-					Object val = elements[rowIndex][colIndex];
-					if(val == null)
-					{
-						spssWriter.addData(0.0); //FIXME: has to be added to prevent shifts, I suppose?
-					}
-					else
-					{
-						spssWriter.addData(Double.valueOf(val.toString()));
-					}
-				}
-			}
-		}
-		else if (this.getData().getValueType().equals("Text"))
-		{
-			for(String colName : this.colNames)
-			{
-				spssWriter.addStringVar(colName, 10, colName);
-			}
-			
-			spssWriter.addDataSection();
-			
-			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
-			{
-				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
-				{
-					Object val = elements[rowIndex][colIndex];
-					if(val == null)
-					{
-						spssWriter.addData(""); //FIXME: correct?
-					}
-					else
-					{
-						spssWriter.addData(val.toString());	
-					}
-					
-				}
-			}
-		}
-		else
-		{
-			throw new Exception("Value type '" + this.getData().getValueType() + "' unknown");
-		}
-		
-		spssWriter.addFinishSection();
-		out.close();
-		
-		return spssFile;
-	}
-	
+
 	@Override
 	public String getAsRobject(boolean replaceNaWithZero) throws Exception
 	{
-		//e.g.
-//		mdat <- matrix(
-//				  nrow = 2,
-//				  ncol=3,
-//				  byrow=TRUE,
-//				dimnames = list(c(
-//				  "row1","row2"),c(
-//				  "C.1","C.2","C.3")),
-//				data = c(
-//				  1,2,3,
-//				  11,12,13))
+		// e.g.
+		// mdat <- matrix(
+		// nrow = 2,
+		// ncol=3,
+		// byrow=TRUE,
+		// dimnames = list(c(
+		// "row1","row2"),c(
+		// "C.1","C.2","C.3")),
+		// data = c(
+		// 1,2,3,
+		// 11,12,13))
 
-		
 		StringBuffer result = new StringBuffer();
 		result.append(this.getData().getName() + " <- matrix(\n");
 		result.append("\tnrow = " + this.getNumberOfRows() + ",\n");
 		result.append("\tncol = " + this.getNumberOfCols() + ",\n");
 		result.append("\tbyrow=TRUE,\n");
 		result.append("dimnames = list(c(\n");
-		
-		for(String rowName : this.getRowNames()){
-			result.append("\""+rowName+"\",");
+
+		for (String rowName : this.getRowNames())
+		{
+			result.append("\"" + rowName + "\",");
 		}
-		result.insert(result.length()-1, ")");
+		result.insert(result.length() - 1, ")");
 		result.append("c(\n");
-		for(String colName : this.getColNames()){
-			result.append("\""+colName+"\",");
+		for (String colName : this.getColNames())
+		{
+			result.append("\"" + colName + "\",");
 		}
-		result.insert(result.length()-1, "))");
+		result.insert(result.length() - 1, "))");
 		result.append("\n");
 		result.append("data = c(");
-		
+
 		try
 		{
 			Object[][] elements = getElements();
-			for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
+			for (int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 			{
-				for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
+				for (int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 				{
 					Object val = elements[rowIndex][colIndex];
 					if (val == null)
 					{
-						if( replaceNaWithZero){ result.append("0,"); }
-						else{ result.append("NA,"); }
-					}
-					else
-					{
-						if(val instanceof Number)
+						if (replaceNaWithZero)
 						{
-							result.append(val+",");
+							result.append("0,");
 						}
 						else
 						{
-							result.append("\""+val+"\",");
+							result.append("NA,");
+						}
+					}
+					else
+					{
+						if (val instanceof Number)
+						{
+							result.append(val + ",");
+						}
+						else
+						{
+							result.append("\"" + val + "\",");
 						}
 					}
 				}
 				result.append("\n");
 			}
-			result.setCharAt(result.length()-2, ')');
+			result.setCharAt(result.length() - 2, ')');
 			result.append(")\n");
 		}
 		catch (Exception e)
@@ -409,8 +325,8 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	public File getAsExcelFile() throws Exception
 	{
 		/* Create tmp file */
-		File excelFile = new File(System.getProperty("java.io.tmpdir")
-				+ File.separator + this.getData().getName() + ".xls");
+		File excelFile = new File(System.getProperty("java.io.tmpdir") + File.separator + this.getData().getName()
+				+ ".xls");
 
 		/* Create new Excel workbook and sheet */
 		WorkbookSettings ws = new WorkbookSettings();
@@ -419,12 +335,10 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		WritableSheet s = workbook.createSheet("Sheet1", 0);
 
 		/* Format the fonts */
-		WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10,
-				WritableFont.BOLD);
+		WritableFont headerFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
 		WritableCellFormat headerFormat = new WritableCellFormat(headerFont);
 		headerFormat.setWrap(false);
-		WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10,
-				WritableFont.NO_BOLD);
+		WritableFont cellFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
 		WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
 		cellFormat.setWrap(false);
 
@@ -452,8 +366,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 			{
 				if (elements[j][i] != null)
 				{
-					Label l = new Label(i + 1, j + 1,
-							elements[j][i].toString(), cellFormat);
+					Label l = new Label(i + 1, j + 1, elements[j][i].toString(), cellFormat);
 					s.addCell(l);
 				}
 				else
@@ -489,60 +402,50 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 	{
 		return rowNames;
 	}
-	
+
 	public DataMatrixInstance getSubMatrixFilterByIndex(QueryRule... rules) throws Exception
 	{
 		return AbstractDataMatrixQueries.getSubMatrixFilterByIndex(this, rules);
 	}
 
-	public DataMatrixInstance getSubMatrixFilterByRowEntityValues(
-			Database db, QueryRule... rules) throws Exception
+	public DataMatrixInstance getSubMatrixFilterByRowEntityValues(Database db, QueryRule... rules) throws Exception
 	{
-		return AbstractDataMatrixQueries.getSubMatrixFilterByRowEntityValues(
-				 this, db, rules);
+		return AbstractDataMatrixQueries.getSubMatrixFilterByRowEntityValues(this, db, rules);
 	}
 
-	public DataMatrixInstance getSubMatrixFilterByColEntityValues(
-			Database db, QueryRule... rules) throws Exception
+	public DataMatrixInstance getSubMatrixFilterByColEntityValues(Database db, QueryRule... rules) throws Exception
 	{
-		return AbstractDataMatrixQueries.getSubMatrixFilterByColEntityValues(
-				 this, db, rules);
+		return AbstractDataMatrixQueries.getSubMatrixFilterByColEntityValues(this, db, rules);
 	}
 
-	public DataMatrixInstance getSubMatrixFilterByRowMatrixValues(
-			QueryRule... rules) throws Exception
+	public DataMatrixInstance getSubMatrixFilterByRowMatrixValues(QueryRule... rules) throws Exception
 	{
-		return AbstractDataMatrixQueries.getSubMatrixFilterByRowMatrixValues(
-				this, rules);
+		return AbstractDataMatrixQueries.getSubMatrixFilterByRowMatrixValues(this, rules);
 	}
 
-	public DataMatrixInstance getSubMatrixFilterByColMatrixValues(
-			QueryRule... rules) throws Exception
+	public DataMatrixInstance getSubMatrixFilterByColMatrixValues(QueryRule... rules) throws Exception
 	{
-		return AbstractDataMatrixQueries.getSubMatrixFilterByColMatrixValues(
-			 this, rules);
+		return AbstractDataMatrixQueries.getSubMatrixFilterByColMatrixValues(this, rules);
 	}
-	
+
 	@Override
 	public DataMatrixInstance getSubMatrix2DFilterByRow(QueryRule... rules) throws Exception
 	{
 		return AbstractDataMatrixQueries.getSubMatrix2DFilterByRow(this, rules);
 	}
-	
+
 	@Override
 	public DataMatrixInstance getSubMatrix2DFilterByCol(QueryRule... rules) throws Exception
 	{
 		return AbstractDataMatrixQueries.getSubMatrix2DFilterByCol(this, rules);
 	}
 
-	public DataMatrixInstance getMatrixSortByRowEntityValues(
-			boolean asc) throws Exception
+	public DataMatrixInstance getMatrixSortByRowEntityValues(boolean asc) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public DataMatrixInstance getMatrixSortByColEntityValues(
-			Database db, boolean asc) throws Exception
+	public DataMatrixInstance getMatrixSortByColEntityValues(Database db, boolean asc) throws Exception
 	{
 		QueryRule sorting = null;
 		if (asc)
@@ -554,8 +457,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 			sorting = new QueryRule(Operator.SORTDESC);
 		}
 		List<String> rowNames = this.getRowNames();
-		List<Nameable> subCol = (List<Nameable>) db.find(
-				db.getClassForName(this.getData().getFeatureType()), sorting);
+		List<Nameable> subCol = (List<Nameable>) db.find(db.getClassForName(this.getData().getFeatureType()), sorting);
 		List<String> colNames = new ArrayList<String>();
 		for (Nameable i : subCol)
 		{
@@ -565,17 +467,14 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		return res;
 	}
 
-	public DataMatrixInstance getMatrixSortByRowMatrixValues(
-			boolean asc) throws Exception
+	public DataMatrixInstance getMatrixSortByRowMatrixValues(boolean asc) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public DataMatrixInstance getMatrixSortByColMatrixValues(
-			Database db, boolean asc) throws Exception
+	public DataMatrixInstance getMatrixSortByColMatrixValues(Database db, boolean asc) throws Exception
 	{
-		List<Data> result = db.find(Data.class, new QueryRule("name",
-				Operator.EQUALS, this.getData().getName()));
+		List<Data> result = db.find(Data.class, new QueryRule("name", Operator.EQUALS, this.getData().getName()));
 		Data thisData = null;
 		if (result.size() < 1)
 		{
@@ -585,8 +484,7 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		else if (result.size() > 1)
 		{
 			// multiple Data objects!
-			throw new Exception("Multiple 'Data' descriptions for name '"
-					+ this.getData().getName() + "'.");
+			throw new Exception("Multiple 'Data' descriptions for name '" + this.getData().getName() + "'.");
 		}
 		else
 		{
@@ -598,32 +496,27 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		throw new Exception("Unimplemented.");
 	}
 
-	public DataMatrixInstance performUnion(
-			DataMatrixInstance N) throws Exception
+	public DataMatrixInstance performUnion(DataMatrixInstance N) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public DataMatrixInstance performIntersection(
-			DataMatrixInstance N) throws Exception
+	public DataMatrixInstance performIntersection(DataMatrixInstance N) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public DataMatrixInstance performDifference(
-			DataMatrixInstance I) throws Exception
+	public DataMatrixInstance performDifference(DataMatrixInstance I) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public DataMatrixInstance performExclusion(
-			DataMatrixInstance I) throws Exception
+	public DataMatrixInstance performExclusion(DataMatrixInstance I) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
 
-	public DataMatrixInstance performTransposition(
-			DataMatrixInstance I) throws Exception
+	public DataMatrixInstance performTransposition(DataMatrixInstance I) throws Exception
 	{
 		throw new Exception("Unimplemented.");
 	}
@@ -643,10 +536,10 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 			out.write("\t" + col);
 		}
 		out.write("\n");
-		for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
+		for (int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 		{
 			out.write(getRowNames().get(rowIndex));
-			for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
+			for (int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 			{
 				if (elements[rowIndex][colIndex] == null)
 				{
@@ -678,16 +571,15 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 
 		// add header
 		// TODO: finish this part
-//		res.add(this.getData().getTarget_Name() + "\t"
-//				+ this.getData().getFeature_Name() + "\t" + "etc");
+		// res.add(this.getData().getTarget_Name() + "\t"
+		// + this.getData().getFeature_Name() + "\t" + "etc");
 
 		// iterate over all the values and add in the form of a list
-		for(int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
+		for (int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++)
 		{
-			for(int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
+			for (int colIndex = 0; colIndex < this.getNumberOfCols(); colIndex++)
 			{
-				res.add(getRowNames().get(rowIndex) + "\t"
-						+ getColNames().get(colIndex) + "\t"
+				res.add(getRowNames().get(rowIndex) + "\t" + getColNames().get(colIndex) + "\t"
 						+ elements[rowIndex][colIndex]);
 			}
 		}
@@ -703,23 +595,13 @@ public abstract class AbstractDataMatrixInstance<E> implements DataMatrixInstanc
 		{
 			content += f + " = " + o.get(f) + "<br>";
 		}
-		return "<div style=\"display: inline; text-align: center;\" onmouseover=\"return overlib('"
-				+ content
-				+ "', CAPTION, '"
-				+ head
-				+ "')\" onmouseout=\"return nd();\"><nobr>"
-				+ "<a target=\"_blank\" href=?select="
-				+ o.get__Type()
-				+ "s&__target="
-				+ o.get__Type()
-				+ "s&__comebacktoscreen="
-				+ screenName
-				+ "&__action=filter_set&__filter_attribute="
-				+ o.get__Type()
-				+ "_name&__filter_operator=EQUALS&__filter_value="
-				+ o.getName() + ">" + o.getName() + "</a></nobr></div>";
+		return "<div style=\"display: inline; text-align: center;\" onmouseover=\"return overlib('" + content
+				+ "', CAPTION, '" + head + "')\" onmouseout=\"return nd();\"><nobr>"
+				+ "<a target=\"_blank\" href=?select=" + o.get__Type() + "s&__target=" + o.get__Type()
+				+ "s&__comebacktoscreen=" + screenName + "&__action=filter_set&__filter_attribute=" + o.get__Type()
+				+ "_name&__filter_operator=EQUALS&__filter_value=" + o.getName() + ">" + o.getName()
+				+ "</a></nobr></div>";
 
 	}
 
-	
 }

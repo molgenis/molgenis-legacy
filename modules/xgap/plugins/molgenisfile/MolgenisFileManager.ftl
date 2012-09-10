@@ -36,7 +36,7 @@
 <#if model.db_path?exists>
 	<#assign dbUrl = model.db_path>
 <#else>
-	ERROR: Could not retrieve db path to localize the applet!
+	<#--ERROR: Could not retrieve db path to localize the applet!-->
 </#if>
 
 <#if model.hasFile == true>

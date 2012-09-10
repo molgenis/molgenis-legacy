@@ -99,6 +99,7 @@ public class PublicationService
 		PublicationDTO publicationDTO = new PublicationDTO();
 		publicationDTO.setId(publication.getId());
 		publicationDTO.setAuthors(publication.getAuthorList());
+		publicationDTO.setFirstAuthor(StringUtils.split(publication.getAuthorList(), ",")[0]);
 		publicationDTO.setJournal(publication.getJournal());
 		publicationDTO.setName(publication.getName());
 		publicationDTO.setPubmedId(publication.getName());

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
-import org.molgenis.datatable.model.FilterableTupleTable;
 import org.molgenis.datatable.model.ProtocolTable;
 import org.molgenis.datatable.model.TableException;
 import org.molgenis.framework.db.Database;
@@ -22,8 +21,8 @@ import app.DatabaseFactory;
 
 public class TestProtocolTable
 {
-	FilterableTupleTable table;
-
+	ProtocolTable table;
+	String targetString = "Pa_Id";
 	Database db;
 
 	@BeforeClass
@@ -36,13 +35,14 @@ public class TestProtocolTable
 		Protocol protocol = db.query(Protocol.class).eq(Protocol.NAME, "TestProtocol").find().get(0);
 
 		table = new ProtocolTable(db, protocol);
+		table.setTargetString(targetString);
 	}
 
 	@Test
 	public void testFilter() throws TableException, DatabaseException
 	{
 		final List<QueryRule> filters = new ArrayList<QueryRule>();
-		filters.add(new QueryRule("target", Operator.EQUALS, "patient1"));
+		filters.add(new QueryRule(targetString, Operator.EQUALS, "patient1"));
 		filters.add(new QueryRule("meas1", Operator.EQUALS, "meas1:val0"));
 		filters.add(new QueryRule("meas2", Operator.EQUALS, "meas2:val0"));
 		table.setFilters(filters);
@@ -66,12 +66,12 @@ public class TestProtocolTable
 
 		List<Field> visibleColumns = table.getColumns();
 		Assert.assertEquals(visibleColumns.size(), 6);
-		Assert.assertEquals(visibleColumns.get(0).getName(), "target");
+		Assert.assertEquals(visibleColumns.get(0).getName(), targetString);
 		Assert.assertEquals(visibleColumns.get(1).getName(), "meas1");
 
 		List<Tuple> rows = table.getRows();
 		Assert.assertEquals(rows.size(), 5);
-		Assert.assertEquals(rows.get(0).getString("target"), "patient1");
+		Assert.assertEquals(rows.get(0).getString(targetString), "patient1");
 		Assert.assertEquals(rows.get(0).getString("meas4"), "meas4:val0");
 
 		table.setColOffset(6);
@@ -86,7 +86,7 @@ public class TestProtocolTable
 		Assert.assertEquals(allColumns.size(), 11);
 
 		// we expect allColumns to start with target
-		Assert.assertEquals(allColumns.get(0).getName(), "target");
+		Assert.assertEquals(allColumns.get(0).getName(), targetString);
 
 		rows = table.getRows();
 		Assert.assertEquals(rows.get(0).getString("meas6"), "meas6:val0");
@@ -99,6 +99,6 @@ public class TestProtocolTable
 	{
 		List<Field> fields = table.getAllColumns();
 
-		Assert.assertEquals(fields.get(0).getName(), "target");
+		Assert.assertEquals(fields.get(0).getName(), targetString);
 	}
 }

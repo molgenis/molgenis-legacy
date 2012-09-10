@@ -30,6 +30,7 @@ public class ResetXgapDb
 			report += "Database unavailable.";
 			report += "\n\n";
 			report += e.getMessage();
+			e.printStackTrace();
 		}
 
 		if (databaseIsAvailable)
@@ -67,6 +68,7 @@ public class ResetXgapDb
 				report += "Error while trying to overwrite datamodel.";
 				report += "\n\n";
 				report += e.getMessage();
+				e.printStackTrace();
 			}
 		}
 

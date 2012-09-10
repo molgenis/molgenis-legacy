@@ -297,6 +297,7 @@ public class MolgenisVariantService
 	 * @return ExonDTO
 	 * @throws DatabaseException 
 	 */
+/*
 	public ExonDTO sequenceCharacteristicToExonDTO(final SequenceCharacteristic exon) throws DatabaseException
 	{
 		ExonDTO exonDTO = new ExonDTO();
@@ -377,6 +378,7 @@ public class MolgenisVariantService
 
 		return exonDTO;
 	}
+*/
 
 	/**
 	 * Convert a SequenceCharacteristic into a ExonDTO
@@ -420,13 +422,11 @@ public class MolgenisVariantService
 			exonDTO.getDomainName().add(proteinDomain.getName());
 		}
 
-		GeneDTO geneDTO = this.findGene();
-
-		Integer gdnaStart = Math.abs(exonDTO.getGdnaStart() - geneDTO.getBpStart().intValue());
-		Integer gdnaEnd   = Math.abs(exonDTO.getGdnaEnd() - geneDTO.getBpStart().intValue());//gdnaStart + exon.getLength();
-		exonDTO.setNuclSequence(StringUtils.substring(geneDTO.getNuclSequence(), gdnaStart, gdnaEnd + 1));
-		exonDTO.setNuclSequenceFlankLeft(this.getNuclSequenceFlankLeft(exonDTO, geneDTO));
-		exonDTO.setNuclSequenceFlankRight(this.getNuclSequenceFlankRight(exonDTO, geneDTO));
+		Integer gdnaStart = Math.abs(exonDTO.getGdnaStart() - exon.getGene().getStartGdna());
+		Integer gdnaEnd   = Math.abs(exonDTO.getGdnaEnd() - exon.getGene().getStartGdna());//gdnaStart + exon.getLength();
+		exonDTO.setNuclSequence(StringUtils.substring(exon.getGene().getResidues(), gdnaStart, gdnaEnd + 1));
+		exonDTO.setNuclSequenceFlankLeft(this.getNuclSequenceFlankLeft(exonDTO, exon.getGene()));
+		exonDTO.setNuclSequenceFlankRight(this.getNuclSequenceFlankRight(exonDTO, exon.getGene()));
 		exonDTO.setOrientation("-1".equals(exon.getStrand()) ? "R" : "F"); //TODO: What about "0"???
 
 		if (!exonDTO.getIsIntron())
@@ -434,7 +434,7 @@ public class MolgenisVariantService
 			exonDTO.setNuclSequence(exonDTO.getNuclSequence().toUpperCase());
 			exonDTO.setNuclSequenceFlankLeft(exonDTO.getNuclSequenceFlankLeft().toLowerCase());
 			exonDTO.setNuclSequenceFlankRight(exonDTO.getNuclSequenceFlankRight().toLowerCase());
-			exonDTO.setAaSequence(StringUtils.substring(geneDTO.getAaSequence(), exonDTO.getCdnaStart(), exonDTO.getCdnaEnd() + 1));
+			exonDTO.setAaSequence(StringUtils.substring(exon.getGene().getProtein().getResidues(), exonDTO.getCdnaStart() - 1, exonDTO.getCdnaEnd()));
 			exonDTO.setNumFullAminoAcids(SequenceUtils.getNumFullAminoAcids(exonDTO.getAaSequence()));
 			exonDTO.setNumPartAminoAcids(SequenceUtils.getNumPartAminoAcids(exonDTO.getAaSequence()));
 			exonDTO.setNumGlyXYRepeats(SequenceUtils.getNumGlyXYRepeats(exonDTO.getAaSequence()));
@@ -459,7 +459,7 @@ public class MolgenisVariantService
 		
 		return result;
 	}
-
+/*
 	public List<ExonDTO> sequenceCharacteristicListToExonDTOList(final List<SequenceCharacteristic> exons) throws DatabaseException
 	{
 		List<ExonDTO> result = new ArrayList<ExonDTO>();
@@ -469,7 +469,7 @@ public class MolgenisVariantService
 		
 		return result;
 	}
-
+*/
 	public List<VariantDTO> variantListToVariantDTOList(final List<Variant> variantList)
 	{
 		List<VariantDTO> result = new ArrayList<VariantDTO>();
@@ -519,6 +519,8 @@ public class MolgenisVariantService
 				variantDTO.setExonId(exon.getId());
 				variantDTO.setExonName(exon.getName());
 			}
+//			variantDTO.setExonId(variant.getExon().getId());
+//			variantDTO.setExonName(variant.getExon().getName());
 
 			/* Find prominent value to be displayed in table view */
 			String pathoSql = "SELECT ov FROM ObservedValue ov JOIN ov.feature f WHERE ov.target = :target AND (f.name = 'Pathogenicity' OR f.name = 'Consequence' OR f.name = 'Inheritance')";
@@ -862,6 +864,8 @@ public class MolgenisVariantService
 				mutationSummaryDTO.setExonId(exon.getId());
 				mutationSummaryDTO.setExonName(exon.getName());
 			}
+//			mutationSummaryDTO.setExonId(variant.getExon().getId());
+//			mutationSummaryDTO.setExonName(variant.getExon().getName());
 
 			/* Find protein domains */
 			String sqlpd = "SELECT pd FROM ProteinDomain pd WHERE ((pd.startGdna <= :pos AND :pos <= pd.endGdna AND pd.strand = '+1') OR (pd.endGdna <= :pos AND :pos <= pd.startGdna AND pd.strand = '-1'))";
@@ -1176,7 +1180,7 @@ public class MolgenisVariantService
 			throw new SearchServiceException(e.getMessage());
 		}
 	}
-
+/*
 	public ProteinDomainDTO sequenceCharacteristicToProteinDomainDTO(final SequenceCharacteristic proteinDomain, final Boolean noIntrons)
 	{
 		try
@@ -1223,7 +1227,7 @@ public class MolgenisVariantService
 
 				if ("exon".equals(feature.getFeatureType().getName()))
 					proteinDomainDTO.getExonDTOList().add(this.sequenceCharacteristicToExonDTO(feature));
-				if (/*!noIntrons && */"intron".equals(feature.getFeatureType().getName()))
+				if (/*!noIntrons && "intron".equals(feature.getFeatureType().getName()))
 					proteinDomainDTO.getExonDTOList().add(this.sequenceCharacteristicToExonDTO(feature));
 			}
 	
@@ -1235,7 +1239,7 @@ public class MolgenisVariantService
 			throw new SearchServiceException(e.getMessage());
 		}
 	}
-
+*/
 	public List<ProteinDomainDTO> proteinDomainListToProteinDomainDTOList(final List<ProteinDomain> proteinDomainList)
 	{
 		List<ProteinDomainDTO> result = new ArrayList<ProteinDomainDTO>();
@@ -1245,7 +1249,7 @@ public class MolgenisVariantService
 		
 		return result;
 	}
-
+/*
 	public List<ProteinDomainDTO> sequenceCharacteristicListToProteinDomainDTOList(final List<SequenceCharacteristic> proteinDomainList)
 	{
 		List<ProteinDomainDTO> result = new ArrayList<ProteinDomainDTO>();
@@ -1255,7 +1259,7 @@ public class MolgenisVariantService
 		
 		return result;
 	}
-	
+*/
 	/**
 	 * get the notation of the codon change for a given mutation
 	 * @param mutation
@@ -1277,13 +1281,13 @@ public class MolgenisVariantService
 	 * @param exonDTO
 	 * @return Left flanking sequence 
 	 */
-	private String getNuclSequenceFlankLeft(final ExonDTO exonDTO, final GeneDTO geneDTO)
+	private String getNuclSequenceFlankLeft(final ExonDTO exonDTO, final Gene gene)
 	{
-		Integer gdnaStart  = Math.abs(exonDTO.getGdnaStart().intValue() - geneDTO.getBpStart().intValue());
+		Integer gdnaStart  = Math.abs(exonDTO.getGdnaStart().intValue() - gene.getStartGdna());
 		Integer flankEnd   = Math.abs(gdnaStart);
 		Integer flankStart = Math.abs(flankEnd - 10);
 
-		return StringUtils.substring(geneDTO.getNuclSequence(), flankStart, flankEnd);
+		return StringUtils.substring(gene.getResidues(), flankStart, flankEnd);
 	}
 
 	/**
@@ -1291,14 +1295,14 @@ public class MolgenisVariantService
 	 * @param exon
 	 * @return Right flanking sequence
 	 */
-	private String getNuclSequenceFlankRight(final ExonDTO exonDTO, final GeneDTO geneDTO)
+	private String getNuclSequenceFlankRight(final ExonDTO exonDTO, final Gene gene)
 	{
-		Integer gdnaStart  = Math.abs(exonDTO.getGdnaStart().intValue() - geneDTO.getBpStart().intValue());
+		Integer gdnaStart  = Math.abs(exonDTO.getGdnaStart().intValue() - gene.getStartGdna());
 		Integer gdnaEnd    = gdnaStart + exonDTO.getLength();
 		Integer flankStart = gdnaEnd;
 		Integer flankEnd   = flankStart + 10;
 
-		return StringUtils.substring(geneDTO.getNuclSequence(), flankStart, flankEnd);
+		return StringUtils.substring(gene.getResidues(), flankStart, flankEnd);
 	}
 	
 	/**
@@ -1338,6 +1342,7 @@ public class MolgenisVariantService
 	 * Get all introns sorted by their gDNA position
 	 * @return list of ExonDTO's
 	 */
+/*
 	public List<ExonDTO> findAllIntrons()
 	{
 		try
@@ -1356,7 +1361,7 @@ public class MolgenisVariantService
 			throw new SearchServiceException(e.getMessage());
 		}
 	}
-
+*/
 	public ExonDTO findFirstExon(final ExonSearchCriteriaDTO criteria)
 	{
 		try

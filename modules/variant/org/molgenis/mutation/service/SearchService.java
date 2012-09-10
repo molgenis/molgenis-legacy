@@ -53,6 +53,10 @@ public class SearchService extends MolgenisVariantService
 		try
 		{
 			Exon exon = this.em.find(Exon.class, id);
+
+			if (exon == null)
+				throw new SearchServiceException("No exon found for " + id);
+
 			return this.exonToExonDTO(exon);
 		}
 		catch (Exception e)
@@ -825,7 +829,12 @@ public class SearchService extends MolgenisVariantService
 	{
 		try
 		{
-			return this.proteinDomainToProteinDomainDTO(this.em.find(ProteinDomain.class, id), noIntrons);
+			ProteinDomain domain = this.em.find(ProteinDomain.class, id);
+
+			if (domain == null)
+				throw new SearchServiceException("No domain found for " + id);
+
+			return this.proteinDomainToProteinDomainDTO(domain, noIntrons);
 		}
 		catch (Exception e)
 		{

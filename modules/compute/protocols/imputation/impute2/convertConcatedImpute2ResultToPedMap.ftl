@@ -4,15 +4,16 @@
 #OUTPUTS imputationResult/chr_${chr}.ped,imputationResult/chr_${chr}.map
 #EXES gtoolBin
 #LOGS log
-#TARGETS plinkdata,chr
 
-inputs ${imputationResult}/chr_${chr}
-inputs ${preparedStudyDir}/chr${chr}.sample
-alloutputsexist ${imputationResult}/chr_${chr}.ped
-alloutputsexist ${imputationResult}/chr_${chr}.map
+#FOREACH project,chr
+
+inputs "${imputationResult}/chr_${chr}.gen"
+inputs "${preparedStudyDir}/chr${chr}.sample"
+alloutputsexist "${imputationResult}/chr_${chr}.ped"
+alloutputsexist "${imputationResult}/chr_${chr}.map"
 
 
-${gtoolBin} -G --g ${imputationResult}/chr_${chr} --s ${preparedStudyDir}/chr${chr}.sample --ped ${imputationResult}/~chr_${chr}.ped --map ${imputationResult}/~chr_${chr}.map
+${gtoolBin} -G --g ${imputationResult}/chr_${chr}.gen --s ${preparedStudyDir}/chr${chr}.sample --ped ${imputationResult}/~chr_${chr}.ped --map ${imputationResult}/~chr_${chr}.map
 
 
 

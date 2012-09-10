@@ -6,7 +6,7 @@ tmp/
 hsqldb/
 handwritten/
 generated/
-WebContent/WEB-INF/
+WebContent/WEB-INF/lib/
 
 ## Always ignore these
 *~

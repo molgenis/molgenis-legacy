@@ -2,7 +2,8 @@
 It should be used via 'import' plus passing of properties
 'app_properties' (reference properties file) and
 'app_src' (listing of the src folders to be included) -->
-<project>
+<project xmlns:ivy="antlib:org.apache.ivy.ant">
+
 	<!-- requires app_name, app_properties properties and app_src path -->
 	<fail unless="app_properties">app_properties is not set. Did you use the right build_xyz.xml?</fail>
 	<available file="${app_properties}" property="isFileAvail" />
@@ -19,6 +20,7 @@ It should be used via 'import' plus passing of properties
 	<property name="war.dir" value="dist/war" />
 	<property name="war.name" value="${app_name}.war" />
 	<property name="webxml.dir" value="WebContent/WEB-INF/web.xml" />
+	<property name="lib.dir" value="WebContent/WEB-INF/lib" />
 
 	<!-- path to MOLGENIS toolkit -->
 	<path id="molgenis.classpath">
@@ -45,7 +47,7 @@ It should be used via 'import' plus passing of properties
 			<fileset dir="${testng.report.dir}" />
 			<fileset dir="${war.dir}" />
 		</delete>
-		<mkdir dir="${build.molgenis.dir}"/>
+		<mkdir dir="${build.molgenis.dir}" />
 		<mkdir dir="${build.molgenis_apps.dir}" />
 		<mkdir dir="${output_src}" />
 		<mkdir dir="${output_sql}" />
@@ -57,11 +59,11 @@ It should be used via 'import' plus passing of properties
 	<target name="generate" depends="update-eclipse">
 		<!-- clean generated folders -->
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${output_src}" excludes=".gitignore"/>
-			<fileset dir="${output_sql}" excludes=".gitignore"/>
-			<fileset dir="${output_ccp}" excludes=".gitignore"/>
+			<fileset dir="${output_src}" excludes=".gitignore" />
+			<fileset dir="${output_sql}" excludes=".gitignore" />
+			<fileset dir="${output_ccp}" excludes=".gitignore" />
 		</delete>
-		
+
 		<mkdir dir="${output_src}" />
 		<mkdir dir="${output_sql}" />
 
@@ -103,9 +105,9 @@ It should be used via 'import' plus passing of properties
 		</copy>
 
 		<!-- copy sql and other resources from generate sql -->
-		
+
 		<copy todir="${build.molgenis_apps.dir}" verbose="true">
-			<fileset dir="${output_sql}" includes="**/*.sql" erroronmissingdir="false"/>
+			<fileset dir="${output_sql}" includes="**/*.sql" erroronmissingdir="false" />
 			<fileset dir="${output_src}" includes="**/*.xml,**/*.properties,**/*.txt,**/*.ico" />
 		</copy>
 
@@ -119,7 +121,7 @@ It should be used via 'import' plus passing of properties
 			<isset property="persistence_xml_location" />
 		</condition>
 	</target>
-	
+
 	<target name="updatedb">
 		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
 			<classpath refid="molgenis.classpath" />
@@ -128,16 +130,16 @@ It should be used via 'import' plus passing of properties
 			<arg value="--updatedb" />
 		</java>
 	</target>
-	
+
 	<target name="updatedbfillmeta">
-			<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
-				<classpath refid="molgenis.classpath" />
-				<classpath refid="app.class.path" />
-				<arg value="${app_properties}" />
-				<arg value="--updatedbfillmeta" />
-			</java>
-		</target>
-	
+		<java classname="org.molgenis.Molgenis" fork="yes" failonerror="true">
+			<classpath refid="molgenis.classpath" />
+			<classpath refid="app.class.path" />
+			<arg value="${app_properties}" />
+			<arg value="--updatedbfillmeta" />
+		</java>
+	</target>
+
 	<target name="copy-persistence.xml" depends="check_persistence_xml_locaton" if="condition">
 		<copy file="${persistence_xml_location}" todir="${build.molgenis_apps.dir}/META-INF/" overwrite="true" />
 		<echo>persistence.xml copied from ${persistence_xml_location} to ${build.molgenis_apps.dir}/META-INF/</echo>
@@ -217,7 +219,7 @@ It should be used via 'import' plus passing of properties
 	</target>
 	-->
 
-	<target name="update-eclipse">
+	<target name="update-eclipse" depends="download-jars">
 
 		<echo>Restoring .classpath from template file ${basedir}/.classpath.template.xml</echo>
 		<copy file="${basedir}/.classpath.template.xml" tofile="${basedir}/.classpath" overwrite="true" />
@@ -272,7 +274,7 @@ It should be used via 'import' plus passing of properties
 	<target name="clean-generate-compile-run" depends="clean,generate,compile,run" />
 
 	<target name="clean-generate-compile-test" depends="clean,generate,compile,test" />
-	
+
 	<target name="clean-generate-compile-webtest" depends="clean,generate,compile,webtest" />
 
 	<target name="testcopy">
@@ -305,10 +307,10 @@ It should be used via 'import' plus passing of properties
 			</classpath>
 		</java>
 	</target>
-	
+
 	<target name="runOn" description="Start the application on a specified port, e.g. ant -f build_myapp.xml runOn -Dport=9000">
 		<java maxmemory="512m" classname="boot.RunStandalone" fork="yes" failonerror="true">
-			<arg value="${port}"/>
+			<arg value="${port}" />
 			<classpath>
 				<path refid="molgenis.classpath" />
 				<path location="${build.molgenis.dir}" />
@@ -340,15 +342,29 @@ It should be used via 'import' plus passing of properties
 			</metainf>
 		</war>
 	</target>
-	
+
 	<target name="webtest" description="Start the Selenium test">
 		<testng classpathref="molgenis.classpath" haltOnFailure="true">
-			<classfileset dir="${build.molgenis_apps.dir}" includes="**/${selenium_test_class}.class"/>
+			<classfileset dir="${build.molgenis_apps.dir}" includes="**/${selenium_test_class}.class" />
 		</testng>
 	</target>
 
 	<target name="clean-generate-compile-war" depends="clean,generate,compile,makeWar" />
-	
+
 	<target name="clean-generate-compile-updatedbfillmeta-run" depends="clean,generate,compile,updatedbfillmeta,run" />
 
+	<target name="download-jars">
+		<echo message="installing ivy.." />
+		<get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/2.0.0-rc1/ivy-2.0.0-rc1.jar" dest="WebContent/WEB-INF/lib/ivy.jar" usetimestamp="true" />
+		<path id="ivy.lib.path">
+			<fileset dir="${lib.dir}" includes="ivy.jar"/>
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+	
+		<echo message="resolving dependecies ..." />
+		
+		<ivy:retrieve pattern="${lib.dir}/[artifact].[ext]" type="jar,bundle" sync="true" />
+		
+	</target>
+	
 </project>

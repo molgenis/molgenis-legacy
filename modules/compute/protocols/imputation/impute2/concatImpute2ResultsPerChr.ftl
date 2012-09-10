@@ -1,18 +1,14 @@
 #MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=16
 
-#INPUTS ${ssvQuoted(logisticRegressionLikelihoodRatioTestFile)}
-#OUTPUTS imputationResult/chr_${chr}
-#EXES
-#LOGS log
-#TARGETS plinkdata,chr
+#FOREACH project,chr
 
-inputs "${ssvQuoted(logisticRegressionLikelihoodRatioTestFile)}"
+inputs ${ssvQuoted(impute2ResultChrBinInfoFile)}
+inputs ${ssvQuoted(impute2ResultChrBinGenFile)}
 alloutputsexist ${imputationResult}/chr_${chr}
 
 
 #Concate the bins with compute for each
 
-cat ${ssvQuoted(logisticRegressionLikelihoodRatioTestFile)} > ${imputationResult}/chr_${chr}
+cat ${ssvQuoted(impute2ResultChrBinInfoFile)} > ${imputationResult}/chr_${chr}.gen
 
-
-
+cat ${ssvQuoted(impute2ResultChrBinGenFile)} > ${imputationResult}/chr_${chr}.info

@@ -84,12 +84,12 @@
 </display:column>
 <display:column media="html" title="Consequence">
 <div class="unwrapped">
-	<c:out value="${current.variantDTOList[0].observedValue}"/>
+	<c:out value="${current.variantDTOList[0].consequence}"/>
 </div>
 <div class="unwrapped">
 	<c:choose>
 	<c:when test="${fn:length(current.variantDTOList) > 1}">
-	<c:out value="${current.variantDTOList[1].observedValue}"/>
+	<c:out value="${current.variantDTOList[1].consequence}"/>
 	</c:when>
 	<c:otherwise>
 	&nbsp;
@@ -102,7 +102,7 @@
 	<c:choose>
 	<c:when test="${fn:length(current.publicationDTOList) > 0}">
 	<c:forEach var="publicationDTO" items="${current.publicationDTOList}">
-	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="PM:${publicationDTO.pubmedId}"/></a><br/>
+	<a href="${current.pubmedURL}${publicationDTO.pubmedId}" title="${publicationDTO.title}" target="_new"><c:out value="${publicationDTO.firstAuthor} (${publicationDTO.year}) ${publicationDTO.journal}"/></a><br/>
 	</c:forEach>
 	</c:when>
 	<c:otherwise>

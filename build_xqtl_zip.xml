@@ -59,14 +59,13 @@
 		<unjar src="${mlibs}gson-2.2.1.jar" dest="${zipme}" overwrite="false"/><!-- GSON for XrefService-->
 		<unjar src="${mlibs}tjws-1.98.jar" dest="${zipme}" overwrite="false"/><!-- Webserver -->
 		<!-- Application jars -->
-		<unjar src="${alibs}jaxrpc.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
+		<unjar src="${alibs}axis-jaxrpc.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
 		<unjar src="${alibs}axis.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
-		<unjar src="${alibs}keggapi.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
-		<unjar src="${alibs}mindterm.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: Mindterm SSH -->
-		<unjar src="${alibs}commons-math-2.2.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: Report builder statistics -->
-		<unjar src="${alibs}simplecaptcha-1.2.1.jar" dest="${zipme}" overwrite="false" /> <!-- Auth captcha service -->
-		<unjar src="${alibs}jopenid-1.07.jar" dest="${zipme}" overwrite="false" /> <!-- Auth OpenID login -->
-		<unjar src="${alibs}spssw-1.66.jar" dest="${zipme}" overwrite="false" /> <!-- SPSS writer -->
+		<unjar src="${mlibs}keggapi.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: KEGG tools -->
+		<unjar src="${mlibs}mindterm.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: Mindterm SSH -->
+		<unjar src="${alibs}commons-math.jar" dest="${zipme}" overwrite="false" /> <!-- xQTL: Report builder statistics -->
+		<unjar src="${mlibs}simplecaptcha-1.2.1.jar" dest="${zipme}" overwrite="false" /> <!-- Auth captcha service -->
+		<unjar src="${alibs}JOpenId.jar" dest="${zipme}" overwrite="false" /> <!-- Auth OpenID login -->
 	</target>
 	
 	<!-- Compile Molgenis on the unjarred content in zipme -->
@@ -170,6 +169,7 @@
 	</target>
 	
 	<target name="create_zip">
+		<antcall target="download-jars" />
 		<antcall target="build" />
 		<antcall target="package" />
 	</target>

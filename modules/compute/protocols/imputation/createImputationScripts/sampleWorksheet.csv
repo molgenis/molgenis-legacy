@@ -1,3 +1,3 @@
-project,studyInputPedMap,referencePanel,imputationResult,imputationPipeline,genomeBuild
-testproject,bloodb37,GoNL_release3,/target/gpfs2/gcc/home/fvandijk/ikbendebestetest,impute2,b37
-testproject,bloodb37,GoNL_release3,/target/gpfs2/gcc/home/pdeelen/neeikbendebeste,impute2,b37
+project,studyInputDir,referencePanel,imputationResult,imputationPipeline,genomeBuild,chr,fromChrPos,toChrPos
+1240Blood_b37,/target/gpfs2/gcc/groups/gonl/projects/imputationBenchmarking/eQtl/1240Blood_b37/,gonl_release3,/target/gpfs2/gcc/groups/gonl/projects/imputationBenchmarking/testImputations/1240Blood_b37Impute2,impute2,b37,20,1,5000001
+1240Blood_b37,/target/gpfs2/gcc/groups/gonl/projects/imputationBenchmarking/eQtl/1240Blood_b37/,gonl_release3,/target/gpfs2/gcc/groups/gonl/projects/imputationBenchmarking/testImputations/1240Blood_b37Impute2,impute2,b37,20,5000001,10000001

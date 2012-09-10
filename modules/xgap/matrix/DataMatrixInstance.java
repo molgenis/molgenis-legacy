@@ -24,7 +24,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 */
 	public Data getData();
-	
+
 	/**
 	 * Get the number of columns in this matrix.
 	 * 
@@ -33,7 +33,7 @@ public interface DataMatrixInstance
 	 * @return int
 	 */
 	public int getNumberOfCols();
-	
+
 	/**
 	 * Get the number of rows in this matrix.
 	 * 
@@ -42,7 +42,7 @@ public interface DataMatrixInstance
 	 * @return int
 	 */
 	public int getNumberOfRows();
-	
+
 	/**
 	 * All column names for this matrix in order of ascending column index.
 	 * 
@@ -51,7 +51,7 @@ public interface DataMatrixInstance
 	 * @return List of String
 	 */
 	public List<String> getColNames();
-	
+
 	/**
 	 * All row names for this matrix in order of ascending row index.
 	 * 
@@ -164,7 +164,7 @@ public interface DataMatrixInstance
 
 	/**
 	 * Retrieve a partition of the matrix by listing row and column indices.
-
+	 * 
 	 * @param rowIndices
 	 * @param colIndices
 	 * @return A submatrix, which is a new matrix itself
@@ -172,7 +172,7 @@ public interface DataMatrixInstance
 	 *             if row or column names are not known
 	 */
 	public DataMatrixInstance getSubMatrix(int[] rowIndices, int[] colIndices) throws MatrixException;
-	
+
 	/**
 	 * Retrieve a partition of the matrix by listing rowname(s) and colname(s).
 	 * 
@@ -185,7 +185,7 @@ public interface DataMatrixInstance
 	 *             if row or column names are not known
 	 */
 	public DataMatrixInstance getSubMatrix(List<String> rowNames, List<String> colNames) throws Exception;
-	
+
 	/**
 	 * Retrieve a partition of the matrix by listing rowindex, rownlenght,
 	 * colindex and collenght.
@@ -212,14 +212,14 @@ public interface DataMatrixInstance
 	 * @return A submatrix, which is a new matrix itself
 	 * @throws Exception
 	 */
-	public DataMatrixInstance getSubMatrixByOffset(String rowName, int nRows, String colName, int nCols) throws Exception;
-	
-	
+	public DataMatrixInstance getSubMatrixByOffset(String rowName, int nRows, String colName, int nCols)
+			throws Exception;
+
 	/**
 	 * QueryRules version of index retrieve
 	 */
 	public DataMatrixInstance getSubMatrixFilterByIndex(QueryRule... rules) throws Exception;
-	
+
 	/**
 	 * Get a submatrix from this matrix by applying a generic filter ('where')
 	 * to the row entities. For example, a matrix where rows are Patients and
@@ -330,7 +330,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 */
 	public DataMatrixInstance getMatrixSortByColEntityValues(Database db, boolean asc) throws Exception;
-	
+
 	/**
 	 * Get a sorted copy of this matrix. The sorting is applied to a row of
 	 * values in this matrix. For example, a matrix where rows are Patients and
@@ -374,7 +374,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 */
 	public DataMatrixInstance performUnion(DataMatrixInstance N) throws Exception;
-	
+
 	/**
 	 * Make a logical intersection with another matrix and return the resulting
 	 * matrix. Say 'T' is this matrix, and 'N' the input matrix, we perform
@@ -386,7 +386,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 */
 	public DataMatrixInstance performIntersection(DataMatrixInstance N) throws Exception;
-	
+
 	/**
 	 * Make a logical difference with another matrix and return the resulting
 	 * matrix. Say 'T' is this matrix, and 'N' the input matrix, we perform
@@ -399,7 +399,7 @@ public interface DataMatrixInstance
 	 * @return
 	 */
 	public DataMatrixInstance performDifference(DataMatrixInstance N) throws Exception;
-	
+
 	/**
 	 * Make a logical exclusion with another matrix and return the resulting
 	 * matrix. Say 'T' is this matrix, and 'N' the input matrix, we perform
@@ -412,7 +412,7 @@ public interface DataMatrixInstance
 	 * @return
 	 */
 	public DataMatrixInstance performExclusion(DataMatrixInstance N) throws Exception;
-	
+
 	/**
 	 * Transpose this matrix into a new matrix.
 	 * 
@@ -424,7 +424,6 @@ public interface DataMatrixInstance
 	 */
 	public DataMatrixInstance performTransposition(DataMatrixInstance N) throws Exception;
 
-	
 	/**
 	 * Write this matrix to an Excel file and return the File object.
 	 * 
@@ -471,7 +470,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 */
 	public void writeToPrintWriter(PrintWriter out) throws Exception;
-	
+
 	/**
 	 * TODO: DEFINITION<br>
 	 * Add a row to this matrix at position X, with values 1..Y, bound to a new
@@ -497,7 +496,7 @@ public interface DataMatrixInstance
 	 * @throws Exception
 	 */
 	public void updateElement() throws Exception;
-	
+
 	/**
 	 * Returns this matrix as a string. Uses fast retrieval but can cost a lot
 	 * of memory.
@@ -508,35 +507,32 @@ public interface DataMatrixInstance
 
 	/**
 	 * TODO: 2D filter doc
+	 * 
 	 * @param q
 	 * @return
 	 */
-	public DataMatrixInstance getSubMatrix2DFilterByRow(QueryRule... rules)  throws Exception;
+	public DataMatrixInstance getSubMatrix2DFilterByRow(QueryRule... rules) throws Exception;
 
 	/**
 	 * TODO: 2D filter doc
+	 * 
 	 * @param q
 	 * @return
 	 */
-	public DataMatrixInstance getSubMatrix2DFilterByCol(QueryRule... rules)  throws Exception;
+	public DataMatrixInstance getSubMatrix2DFilterByCol(QueryRule... rules) throws Exception;
 
 	/**
 	 * Get this matrix as an R 'matrix' object
+	 * 
 	 * @param b
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public String getAsRobject(boolean b) throws Exception;
 
 	/**
-	 * Get this matrix as an SPSS file (*.sav)
-	 * @return
-	 * @throws Exception 
-	 */
-	public File getAsSpssFile() throws Exception;
-
-	/**
 	 * Write this matrix to a PrintStream
+	 * 
 	 * @param p
 	 */
 	public void toPrintStream(PrintStream p);

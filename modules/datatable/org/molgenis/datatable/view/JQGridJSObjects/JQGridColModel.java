@@ -132,6 +132,16 @@ public class JQGridColModel
 	public String add;
 	public String datetype;
 
+	public JQGridColModel(String f)
+	{
+		this.name = f;
+		this.index = f;
+		this.title = f;
+		this.path = f;
+		this.editable = false;
+		this.sortable = false;
+	}
+
 	public JQGridColModel(Field f)
 	{
 		this.name = f.getSqlName();

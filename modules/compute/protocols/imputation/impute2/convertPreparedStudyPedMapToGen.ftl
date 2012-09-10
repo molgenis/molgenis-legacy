@@ -4,12 +4,14 @@
 #OUTPUTS preparedStudyDir/chr${chr}.gen,preparedStudyDir/chr${chr}.sample
 #EXES gtoolBin
 #LOGS log
-#TARGETS plinkdata,chr
+#TARGETS project,chr
 
-inputs ${preparedStudyDir}/chr${chr}.ped
-inputs ${preparedStudyDir}/chr${chr}.map
-alloutputsexist ${preparedStudyDir}/chr${chr}.gen
-alloutputsexist ${preparedStudyDir}/chr${chr}.sample
+#FOREACH project,chr
+
+inputs "${preparedStudyDir}/chr${chr}.ped"
+inputs "${preparedStudyDir}/chr${chr}.map"
+alloutputsexist "${preparedStudyDir}/chr${chr}.gen"
+alloutputsexist "${preparedStudyDir}/chr${chr}.sample"
 
 
 ${gtoolBin} -P --ped ${preparedStudyDir}/chr${chr}.ped --map ${preparedStudyDir}/chr${chr}.map --og ${preparedStudyDir}/~chr${chr}.gen --os ${preparedStudyDir}/~chr${chr}.sample
