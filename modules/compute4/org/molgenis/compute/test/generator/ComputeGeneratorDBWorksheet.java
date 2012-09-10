@@ -33,28 +33,36 @@ import freemarker.template.TemplateException;
  * To change this template use File | Settings | File Templates.
  */
 
-public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
+public class ComputeGeneratorDBWorksheet implements ComputeGenerator
+{
 	// supplementary (just because it's handy to use)
 	Hashtable<WorkflowElement, ComputeTask> workflowElementComputeTaskHashtable = new Hashtable<WorkflowElement, ComputeTask>();
 
 	Database db = null;
 
-	public void generate(Workflow workflow, List<Target> targets, Hashtable<String, String> config) {
+	public void generate(Workflow workflow, List<Target> targets, Hashtable<String, String> config)
+	{
 	}
 
 	/**
 	 * Generate tasks and put them into the database
 	 */
-	public void generateWithTuple(Workflow workflow, List<Tuple> worksheet, Hashtable<String, String> commandLineParameters) {
+	public void generateWithTuple(Workflow workflow, List<Tuple> worksheet,
+			Hashtable<String, String> commandLineParameters)
+	{
 
-		List<ComputeParameter> parameterList = (List<ComputeParameter>) workflow.getWorkflowComputeParameterCollection();
+		List<ComputeParameter> parameterList = (List<ComputeParameter>) workflow
+				.getWorkflowComputeParameterCollection();
 		Collection<WorkflowElement> workflowElementsList = workflow.getWorkflowWorkflowElementCollection();
 
-		try {
+		try
+		{
 			db = DatabaseFactory.create();
 			db.beginTx();
 
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			e.printStackTrace();
 		}
 
@@ -69,7 +77,8 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 		Worksheet worksheetEntity = new Worksheet(parameterList, worksheet);
 
 		List<ComputeTask> tasks = new ArrayList<ComputeTask>();
-		for (WorkflowElement workflowElement : workflowElementsList) {
+		for (WorkflowElement workflowElement : workflowElementsList)
+		{
 
 			// System.out.println(">> Workflow element name: " +
 			// workflowElement.getName());
@@ -80,30 +89,36 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 
 			List<String> iterationTargetNameList = new ArrayList<String>();
 			Iterator<ComputeParameter> it = workflowElement.getProtocol().getIterateOver().iterator();
-			while (it.hasNext()) {
+			while (it.hasNext())
+			{
 				iterationTargetNameList.add(it.next().getName());
 			}
 
 			// if no targets specified, then actually we mean "all targets".
 			// Therefore, we add line_number as a target.
 			// MD: is this best place to do this?!
-			if (0 == iterationTargetNameList.size()) {
+			if (0 == iterationTargetNameList.size())
+			{
 				iterationTargetNameList.add("line_number");
 			}
 
-			List<Tuple> foldedWorksheet = Worksheet.foldWorksheet(worksheetEntity.worksheet, parameterList, iterationTargetNameList);
+			List<Tuple> foldedWorksheet = Worksheet.foldWorksheet(worksheetEntity.worksheet, parameterList,
+					iterationTargetNameList);
 
 			String template = workflowElement.getProtocol().getScriptTemplate();
 
-			for (Tuple work : foldedWorksheet) {
+			for (Tuple work : foldedWorksheet)
+			{
 				// put ComputeParams in map
 				Map<String, Object> parameters = new HashMap<String, Object>();
-				for (String field : work.getFields()) {
+				for (String field : work.getFields())
+				{
 					parameters.put(field, work.getObject(field));
 				}
 
 				// construct taskName
-				String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_" + parameters.get("line_number");
+				String taskName = workflowElement.getName() + "_" + parameters.get("McId") + "_"
+						+ parameters.get("line_number");
 
 				String script = createScript(template, work, taskName, workflowElementsList, parameterList);
 
@@ -118,7 +133,8 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 				List<WorkflowElement> prev = workflowElement.getPreviousSteps();
 				List<ComputeTask> prevTasks = new ArrayList<ComputeTask>();
 
-				for (WorkflowElement w : prev) {
+				for (WorkflowElement w : prev)
+				{
 					ComputeTask prevTask = workflowElementComputeTaskHashtable.get(w);
 					prevTasks.add(prevTask);
 				}
@@ -131,12 +147,14 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 			}
 		}
 
-		try {
+		try
+		{
 			// dirty hack to ensure we don't add tasks twice
-			if (db.find(ComputeTask.class).size() < 0)
-				db.add(tasks);
+			if (db.find(ComputeTask.class).size() < 0) db.add(tasks);
 			db.commitTx();
-		} catch (DatabaseException e) {
+		}
+		catch (DatabaseException e)
+		{
 			e.printStackTrace();
 		}
 
@@ -152,11 +170,14 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 	 * @param workflowElementsList
 	 * @return filledtemplate.toString();
 	 */
-	private String createScript(String templateScript, Tuple work, String taskName, Collection<WorkflowElement> workflowElementsList, List<ComputeParameter> paramList) {
+	private String createScript(String templateScript, Tuple work, String taskName,
+			Collection<WorkflowElement> workflowElementsList, List<ComputeParameter> paramList)
+	{
 
 		// put all parameters from tuple in hashmap for weaving
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		for (String field : work.getFields()) {
+		for (String field : work.getFields())
+		{
 			parameters.put(field, work.getObject(field));
 		}
 
@@ -165,7 +186,8 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 		parameters.put("parameters", work);
 		parameters.put("workflowElements", workflowElementsList);
 
-		try {
+		try
+		{
 			Configuration cfg = new Configuration();
 			// Set path so that protocols can include other protocols using the
 			// "include" statement
@@ -176,10 +198,14 @@ public class ComputeGeneratorDBWorksheet implements ComputeGenerator {
 			StringWriter script = new StringWriter();
 			template.process(parameters, script);
 			return script.toString();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			System.err.println(">> ERROR >> IOException");
 			e.printStackTrace();
-		} catch (TemplateException e) {
+		}
+		catch (TemplateException e)
+		{
 			System.err.println(">> ERROR >> TemplateException");
 			e.printStackTrace();
 		}
