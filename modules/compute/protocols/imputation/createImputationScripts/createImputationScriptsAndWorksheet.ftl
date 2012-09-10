@@ -6,13 +6,17 @@
 
 ####TEMPLATE TO BE FINISHED SOON####
 
+mkdir -p ${projectdir}
+mkdir -p ${projectTempDir}
+
+
 #Run Jar to create full worksheet
 
 
 <#if imputationPipeline == "impute2">
 
 
-	java -jar ${expandWorksheetJar} ${baseWorksheet} ${imputationWorksheet} ${chrBinsFile} 
+	java -jar ${expandWorksheetJar} ${McWorksheet} ${projectJobsDir}/${project}.csv ${chrBinsFile} 
 	
 	
 	
@@ -21,7 +25,7 @@
 	sh ${McDir}/molgenis_compute.sh \
 	-worksheet=${projectJobsDir}/${project}.csv \
 	-parameters=${McParameters} \
-	-workflow=${workflowFile} \
+	-workflow=${McProtocols}/workflowImpute.csv \
 	-protocols=${McProtocols}/ \
 	-templates=${McTemplates}/ \
 	-scripts=${projectJobsDir}/ \
