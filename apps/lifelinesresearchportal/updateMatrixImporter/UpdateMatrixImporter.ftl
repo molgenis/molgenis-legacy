@@ -13,9 +13,17 @@
 		$('#fileUploadNext').button();
 		$('#fileUploadCancel').button();
 		$('#fileUploadNext').click(function(){
+			
 			if($('#uploadFileName').val() != ""){
-				$('input[name="__action"]').val('uploadFile');
-				$('form[name="${screen.name}"]').submit();
+				fileNameComponent = $('#uploadFileName').val().split(".");
+				numOfComponent = fileNameComponent.length;
+				areEqual = fileNameComponent[numOfComponent - 1].toUpperCase() === ("csv").toUpperCase();
+				if(!areEqual){
+					alert("please upload a csv file");
+				}else{
+					$('input[name="__action"]').val('uploadFile');
+					$('form[name="${screen.name}"]').submit();
+				}
 			}else{
 				alert("Please upload a file!");
 			}
@@ -41,10 +49,10 @@
 		
 		$('#newColHeaders').click(function(){
 			
-			$('#reportForm').hide();
-			
 			if(newColumns.length > 0){
 				
+				$('#reportForm').hide();
+					
 				if(newColumns.length > 0 && $('#newColumnsMapping').children().length == 0){
 			
 					var molgenisDataOptions;
@@ -92,8 +100,8 @@
 					
 					mappingHeader += "<fieldset>Upload your mapping file <input type=\"file\" id=\"mappingForColumns\" name=\"mappingForColumns\" />";
 					
-					mappingHeader += "<input type=\"submit\" id=\"uploadMapping\" name=\"uploadMapping\""+
-						"style=\"font-size:0.6em;color:#03406A\" value=\"upload\" onclick=\"__action.value='uploadMapping';return true;\">";
+					mappingHeader += "<input type=\"button\" id=\"uploadMapping\" name=\"uploadMapping\""+
+						"style=\"font-size:0.6em;color:#03406A\" value=\"upload\">";
 					
 					mappingHeader += "<input type=\"submit\" id=\"downloadTemplate\" name=\"downloadTemplate\""+
 						"style=\"font-size:0.6em;color:#03406A\" value=\"download template\" onclick=\"__action.value='downloadTemplate';return true;\"></fieldset>";
@@ -101,6 +109,16 @@
 					$('#newColumnsMapping').append(mappingTable);
 					$('#newColumnsMapping').prepend(mappingHeader);
 					$('#newColumnsMapping').append("</br><input type=\"button\" id=\"previousFromMapping\" style=\"font-size:0.6em;color:#03406A\" value=\"Previous\"/>");
+					
+					
+					$('#previousFromMapping').button();
+					$('#downloadTemplate').button();
+					$('#uploadMapping').button();
+					
+					$('#mappingTable th').width(700);
+					$('#mappingTable td').css('text-align','center');
+					$('#mappingTable th').css('background','#65A5D1');
+					$('#mappingTable tr').css('border-bottom','1px dotted');
 					
 					<#if screen.getJsonForMapping()??>
 						
@@ -129,18 +147,27 @@
 						}
 					</#if>
 					
-					$('#previousFromMapping').button();
-					$('#downloadTemplate').button();
-					$('#uploadMapping').button();
-					
-					$('#mappingTable th').width(700);
-					$('#mappingTable td').css('text-align','center');
-					$('#mappingTable th').css('background','#65A5D1');
-					$('#mappingTable tr').css('border-bottom','1px dotted');
+					<#if screen.getMappingMessage()??>
+						$('#newColumnsMapping').prepend("<p style=\"color:red\"><i>There are errors in your mapping file, please check before upload!</i></p>");
+					</#if>
 					
 					$('#previousFromMapping').click(function(){
 						$('#newColumnsMapping').hide();
 						$('#reportForm').fadeIn();
+					});
+					
+					$('#uploadMapping').click(function(){
+						
+						fileNameComponent = $('#mappingForColumns').val().split(".");
+						numOfComponent = fileNameComponent.length;
+						areEqual = fileNameComponent[numOfComponent - 1].toUpperCase() === ("csv").toUpperCase();
+						if(!areEqual){
+							alert("please upload a csv file");
+						}else{
+							$('input[name="__action"]').val('uploadMapping');
+							$('form[name="${screen.name}"]').submit();
+						}
+						
 					});
 					
 					$('#mappingTable tr:gt(0)').each(function(){
@@ -280,7 +307,7 @@
 	<div class="formscreen">	
 		
 		<div class="form_header" id="${screen.getName()}">
-		${screen.label}
+			${screen.label}
 		</div>
 		
 		<#if screen.getSTATUS() == "UploadFile">
@@ -307,6 +334,10 @@
 			    	</div>
 		    	</td></tr>
 	    	</table>
+	    	<#if screen.getUploadFileErrorMessage()??>
+				<script>$('#explanationForm').html("${screen.getUploadFileErrorMessage()}");</script>
+			</#if>
+			
     	<#elseif screen.getSTATUS() == "CheckFile">
     		<div id="newColumnsMapping"></div>
     		<div id="reportForm">
@@ -329,15 +360,20 @@
     					style="font-size:0.6em;color:#03406A" onclick="__action.value='uploadNewFile';return true;"/>
     			</fieldset>
     			<script>
-    				generateReport(${screen.getReport()});
+    				<#if screen.screen.getReport()??>
+    					generateReport(${screen.getReport()});
+    				</#if>
     				<#if screen.getJsonForMapping()??>
+						$('#newColHeaders').trigger('click');
+					</#if>
+					<#if screen.getMappingMessage()??>
 						$('#newColHeaders').trigger('click');
 					</#if>
     			</script>
     		</div>
     		
     	<#elseif screen.getSTATUS() == "previewFile">
-    		${screen.getTableView()}
+    		<#if screen.getTableView()??>${screen.getTableView()}</#if>
     		<fieldset id="controlPanelForImporting">
 				<input type="submit" name="previousStepSummary" id="previousStepSummary" value="Previous"  
     					style="font-size:0.6em;color:#03406A" onclick="__action.value='previousStepSummary';return true;"/>
