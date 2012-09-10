@@ -40,7 +40,7 @@ studyTriTyperChrDir,${projectTempDir}/StudyTriTyper/chr${chr}/,end with slash,,
 preparedStudyTempDir,${projectTempDir}/~preparedStudy/,end with slash,,
 preparedStudyDir,${projectTempDir}/preparedStudy/,end with slash,,
 studyPedMap,${studyPedMapDir}/,,,
-chrBinsFile,${McProtocols}/createImputationScripts/build37ChrBins.csv,,,
+chrBinsFile,${McProtocols}/build37ChrBins.csv,,,
 gtoolBin,${tooldir}/gtool_v0.7.5_x86_64/gtool,,,
 referenceFolder,${resdir}/imputationReference/,Maybe change this path later,,
 referenceTriTyperDir,${referenceFolder}/${referencePanel}/TriTyper/Chr${chr}/,end with slash,,
@@ -57,3 +57,4 @@ impute2ResultChrBin,${impute2ResultDir}/${chr}/chr_${chr}_from_${fromChrPos}_to_
 impute2ResultChrBinGenFile,${impute2ResultChrBin}.gen,Ask alex for correct file extension,,
 impute2ResultChrBinInfoFile,${impute2ResultChrBin}.info,,,
 project,,,,"imputationResult,studyInputDir,referencePanel"
+expandWorksheetJar,${scriptdir}/ExpandWorksheetWithMergeWorksheet.jar,,,

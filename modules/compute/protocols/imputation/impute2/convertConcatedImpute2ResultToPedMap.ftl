@@ -1,19 +1,19 @@
 #MOLGENIS walltime=48:00:00 nodes=1 cores=1 mem=4
 
-#INPUTS imputationResult/chr_${chr},preparedStudyDir/chr${chr}.sample
-#OUTPUTS imputationResult/chr_${chr}.ped,imputationResult/chr_${chr}.map
+#INPUTS imputationResultDir/chr_${chr},preparedStudyDir/chr${chr}.sample
+#OUTPUTS imputationResultDir/chr_${chr}.ped,imputationResultDir/chr_${chr}.map
 #EXES gtoolBin
 #LOGS log
 
 #FOREACH project,chr
 
-inputs "${imputationResult}/chr_${chr}.gen"
+inputs "${imputationResultDir}/chr_${chr}.gen"
 inputs "${preparedStudyDir}/chr${chr}.sample"
-alloutputsexist "${imputationResult}/chr_${chr}.ped"
-alloutputsexist "${imputationResult}/chr_${chr}.map"
+alloutputsexist "${imputationResultDir}/chr_${chr}.ped"
+alloutputsexist "${imputationResultDir}/chr_${chr}.map"
 
 
-${gtoolBin} -G --g ${imputationResult}/chr_${chr}.gen --s ${preparedStudyDir}/chr${chr}.sample --ped ${imputationResult}/~chr_${chr}.ped --map ${imputationResult}/~chr_${chr}.map
+${gtoolBin} -G --g ${imputationResultDir}/chr_${chr}.gen --s ${preparedStudyDir}/chr${chr}.sample --ped ${imputationResultDir}/~chr_${chr}.ped --map ${imputationResultDir}/~chr_${chr}.map
 
 
 
@@ -22,8 +22,8 @@ then
 	
 	echo -e "\nMoving temp files to final files\n\n"
 
-	mv ${imputationResult}/~chr_${chr}.ped ${imputationResult}/chr_${chr}.ped
-	mv ${imputationResult}/~chr_${chr}.map ${imputationResult}/chr_${chr}.map
+	mv ${imputationResultDir}/~chr_${chr}.ped ${imputationResultDir}/chr_${chr}.ped
+	mv ${imputationResultDir}/~chr_${chr}.map ${imputationResultDir}/chr_${chr}.map
 
 	
 else
