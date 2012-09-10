@@ -2,6 +2,8 @@
 
 #FOREACH project,chr
 
+inputs ${ssvQuoted(impute2ResultChrBinInfoFile)}
+inputs ${ssvQuoted(impute2ResultChrBinGenFile)}
 alloutputsexist ${imputationResult}/chr_${chr}
 
 
