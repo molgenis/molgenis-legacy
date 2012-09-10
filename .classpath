@@ -534,5 +534,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/selenium-server-standalone-2.25.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/simplecaptcha-1.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/keggapi.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mindterm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.semanticweb.HermiT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ontocat-0.9.9.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
