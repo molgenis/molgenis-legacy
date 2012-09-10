@@ -8,18 +8,12 @@
 mkdir -p ${projectTempDir}
 mkdir -p ${projectJobsDir}
 
-dos2unix ${McWorksheet}
-
-${scriptdir}/extract_samples_from_GAF_list.pl --i ${McWorksheet} --o ${projectTempDir}/${project}.csv --c project --q ${project}
-
-
-
 #Run Jar to create full worksheet
 
 <#if imputationPipeline == "impute2">
 
 
-	java -jar ${expandWorksheetJar} ${projectTempDir}/${project}.csv ${projectComputeDir}/${project}.worksheet.csv ${chrBinsFile} 
+	java -jar ${expandWorksheetJar} ${projectTempDir}/${project}.csv ${projectComputeDir}/${project}.worksheet.csv ${chrBinsFile} project ${project} 
 	
 	
 	
