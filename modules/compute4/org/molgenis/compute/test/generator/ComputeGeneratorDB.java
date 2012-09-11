@@ -25,8 +25,8 @@ import app.DatabaseFactory;
 public class ComputeGeneratorDB implements ComputeGenerator {
 	public static final String RUN_ID = "run_id";
 	public static final String BACKEND = "backend";
-	public static final String BACKEND_GRID = "backend_grid";
-	public static final String BACKEND_PBS = "backend_pbs";
+	public static final String BACKEND_GRID = "grid";
+	public static final String BACKEND_PBS = "pbs";
 
 	// supplementary
 	Hashtable<WorkflowElement, ComputeTask> workflowElementComputeTaskHashtable = new Hashtable<WorkflowElement, ComputeTask>();
@@ -39,14 +39,11 @@ public class ComputeGeneratorDB implements ComputeGenerator {
 
 	Database db = null;
 
-	public void generate(Workflow workflow, List<Target> targets,
-			Hashtable<String, String> config) {
+	public void generate(Workflow workflow, List<Target> targets, Hashtable<String, String> config) {
 		this.userValues = config;
 
-		Collection<ComputeParameter> listParameters = workflow
-				.getWorkflowComputeParameterCollection();
-		Collection<WorkflowElement> listWorkflowElements = workflow
-				.getWorkflowWorkflowElementCollection();
+		Collection<ComputeParameter> listParameters = workflow.getWorkflowComputeParameterCollection();
+		Collection<WorkflowElement> listWorkflowElements = workflow.getWorkflowWorkflowElementCollection();
 
 		try {
 			db = DatabaseFactory.create();
@@ -59,29 +56,24 @@ public class ComputeGeneratorDB implements ComputeGenerator {
 		List<ComputeTask> tasks = new ArrayList<ComputeTask>();
 		for (WorkflowElement workflowElement : listWorkflowElements) {
 			// most probably values generation
-			Hashtable<String, String> values = foldingMaster.createValues(
-					listParameters, targets, userValues);
+			Hashtable<String, String> values = foldingMaster.createValues(listParameters, targets, userValues);
 
 			String template = workflowElement.getProtocol().getScriptTemplate();
 			String result = weaver.weaveFreemarker(template, values);
 
 			ComputeTask task = new ComputeTask();
-			String taskName = workflowElement.getName() + "_"
-					+ userValues.get(RUN_ID);
+			String taskName = workflowElement.getName() + "_" + userValues.get(RUN_ID);
 			task.setName(taskName);
 			task.setComputeScript(result);
-			task.setInterpreter(workflowElement.getProtocol()
-					.getScriptInterpreter());
-			task.setRequirements(workflowElement.getProtocol()
-					.getRequirements());
+			task.setInterpreter(workflowElement.getProtocol().getScriptInterpreter());
+			task.setRequirements(workflowElement.getProtocol().getRequirements());
 			task.setWorkflowElement(workflowElement);
 
 			List<WorkflowElement> prev = workflowElement.getPreviousSteps();
 			List<ComputeTask> prevTasks = new ArrayList<ComputeTask>();
 
 			for (WorkflowElement w : prev) {
-				ComputeTask prevTask = workflowElementComputeTaskHashtable
-						.get(w);
+				ComputeTask prevTask = workflowElementComputeTaskHashtable.get(w);
 				prevTasks.add(prevTask);
 			}
 			task.setPrevSteps(prevTasks);
@@ -98,8 +90,7 @@ public class ComputeGeneratorDB implements ComputeGenerator {
 		}
 	}
 
-	public void generateWithTuple(Workflow workflow, List<Tuple> targets,
-			Hashtable<String, String> config) {
+	public void generateWithTuple(Workflow workflow, List<Tuple> targets, Hashtable<String, String> config) {
 
 	}
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -248,12 +249,12 @@ public class Worksheet {
 		// equal to the original worksheet?
 		// if not, throw exception
 
-		System.out.println(">> original:");
-		System.out.println(">> " + worksheet);
-		System.out.println(">> folded:");
-		System.out.println(">> " + folded);
-		System.out.println(">> unfolded:");
-		System.out.println(">> " + unfoldWorksheet(folded));
+		// System.out.println(">> original:");
+		// System.out.println(">> " + worksheet);
+		// System.out.println(">> folded:");
+		// System.out.println(">> " + folded);
+		// System.out.println(">> unfolded:");
+		// System.out.println(">> " + unfoldWorksheet(folded));
 
 		if (!equalWorksheets(unfoldWorksheet(folded), worksheet)) {
 			throw new RuntimeException(">> Error: folded and unfolded worksheets should be equal but are not!");
@@ -261,7 +262,16 @@ public class Worksheet {
 
 		// reduce the folded worksheet (i.e., reduce list to single value where
 		// 'allowed')
-		return reduceTargets(folded, parameterlist, targets);
+		List<Tuple> reducedWorksheet = reduceTargets(folded, parameterlist, targets);
+
+		// Add task_number as a number to each line in (folded) worksheet
+		Iterator<Tuple> it = reducedWorksheet.iterator();
+		int i = 0;
+		while (it.hasNext()) {
+			it.next().set("task_number", ++i);
+		}
+
+		return reducedWorksheet;
 	}
 
 	private static Set<String> reduceFieldSet(List<ComputeParameter> parameterlist, List<String> targets) {
@@ -580,10 +590,6 @@ public class Worksheet {
 		}
 
 		return true;
-	}
-
-	private void print(String string) {
-		System.out.println(">> " + string);
 	}
 
 	/**
