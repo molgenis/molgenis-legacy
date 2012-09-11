@@ -162,7 +162,7 @@
 	<div class="form_header">Create litter from parentgroup ${screen.getSelectedParentgroup()}</div>
 	<div style="clear:both; display:block">
 		<label style="width:16em;float:left;" for='birthdate'>Birth date:</label>		
-		<input type='text' class="text ui-widget-content ui-corner-all" id='birthdate' name='birthdate' value='' />
+		<input type='text' class="text ui-widget-content ui-corner-all" id='birthdate' name='birthdate' value='' readonly='readonly'/>
 	</div>
 	<div style="clear:both; display:block">
 		<label style="width:16em;float:left;" for='littersize'>Litter size:</label>
@@ -190,7 +190,7 @@
 		<div style="clear:both; display:block">
 		  <p>
 			<label style="width:16em;float:left;" for='weandate'>Wean date:</label>		
-			<input type='text' class="text ui-widget-content ui-corner-all" id='weandate' name='weandate' value=''/>
+			<input type='text' class="text ui-widget-content ui-corner-all" id='weandate' name='weandate' readonly='readonly' value=''/>
 		      <script>
 		          $(function() {
                     $( "#weandate" ).datepicker({
@@ -270,13 +270,13 @@
 		<div style="clear:both; display:block">
 		  <p>
 			<label style="width:16em;float:left;" for='genodate'>Genotyping date:</label>
-			<input type='text' class="text ui-widget-content ui-corner-all" name='genodate' id='genodate' value='' />
+			<input type='text' class="text ui-widget-content ui-corner-all" name='genodate' id='genodate' value='' readonly='readonly' />
 		  </p>
 		</div>
 		<div style="clear:both; display:block">
 		  <p>
 			<label style="width:16em;float:left;" for='remarks'>Genotyping remarks:</label>
-			<input type='text' class="text ui-widget-content ui-corner-all" class='textbox' name='remarks' id='remarks' />
+			<input type='text' class="text ui-widget-content ui-corner-all" class='textbox' name='remarks' id='remarks'  />
 		  </p> 
 		</div>
 		<div style="clear:both; display:block">
