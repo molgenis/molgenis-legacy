@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="knowledgecenter">
+	<menu name="admin">
+		<plugin name="wireframe" type="org.molgenis.knowledgecenter.Wireframe" />
+		<form name="pages" entity="KcPage" />
+	</menu>
+</molgenis>

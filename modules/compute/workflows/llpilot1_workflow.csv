@@ -1,0 +1,14 @@
+name,protocol_name,PreviousSteps_name
+1_RemoveBadSamples, 1_RemoveBadSamples,
+2_UpdateFamilyIDs, 2_UpdateFamilyIDs, _RemoveBadSamples
+3_UpdateParents, 3_UpdateParents, 2_UpdateFamilyIDs
+4_SexCheck, 4_SexCheck, 3_UpdateParents
+5_UpdateSex, 5_UpdateSex, 4_SexCheck
+6_Missingness, 6_Missingness, 5_UpdateSex
+7_Heterozygosity, 7_Heterozygosity, 6_Missingness
+8_Join, 8_Join, 7_Heterozygosity
+9_HeterozygosityFilter, 9_HeterozygosityFilter, 8_Join
+A_RemoveSamples, A_RemoveSamples, 9_HeterozygosityFilter
+B_SNPPruning, B_SNPPruning, A_RemoveSamples
+C_PairwiseIBS, C_PairwiseIBS, B_SNPPruning
+D_MendelErrorRate, D_MendelErrorRate, C_PairwiseIBS

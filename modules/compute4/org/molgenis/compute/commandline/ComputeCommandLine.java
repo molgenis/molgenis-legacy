@@ -136,7 +136,7 @@ public class ComputeCommandLine {
 			for (Tuple work : folded) {
 				// fill template with work and put in script
 				ComputeTask job = new ComputeTask();
-				job.setName(this.generateJobName(wfe, work));
+				job.setName(this.createJobName(wfe, work));
 				job.setInterpreter(protocol.getScriptInterpreter());
 
 				// if walltime, cores, mem not specified in protocol, then use
@@ -291,25 +291,25 @@ public class ComputeCommandLine {
 		return null;
 	}
 
-	private String generateJobName(WorkflowElement wfe, Tuple tuple) {
+	private String createJobName(WorkflowElement wfe, Tuple tuple) {
 		String jobName = wfe.getName();
 		ComputeProtocol wfeProtocol = findProtocol(wfe.getProtocol_Name(), computeBundle.getComputeProtocols());
 
 		// in case no targets, we number
 		List<String> targets = wfeProtocol.getIterateOver_Name();
-		if (0 == targets.size()) {
-			jobName += "_" + tuple.getString("line_number");
-		}
-		// otherwise use targets
-		else
-			for (String target : targets) {
-				jobName += "_" + tuple.getString(target);
-			}
+		// if (0 == targets.size()) {
+		jobName += "_" + tuple.getString("task_number");
+		// }
+		// // otherwise use targets
+		// else
+		// for (String target : targets) {
+		// jobName += "_" + tuple.getString(target);
+		// }
 
 		return stepnr(wfe.getName()) + jobName;
 	}
 
-	private String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException, TemplateException {
+	public String filledtemplate(String scripttemplate, Tuple work, String jobname) throws IOException, TemplateException {
 		// first create map
 		Map<String, Object> parameters = new HashMap<String, Object>();
 
