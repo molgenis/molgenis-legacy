@@ -19,8 +19,10 @@ import org.molgenis.organization.Investigation;
 import org.molgenis.util.Entity;
 import org.molgenis.util.TarGz;
 import org.molgenis.util.Tuple;
+import org.molgenis.xgap.InvestigationFile;
 import org.molgenis.xgap.xqtlworkbench.ResetXgapDb;
 
+import filehandling.generic.PerformUpload;
 import filehandling.storage.StorageHandler;
 
 public class LifeLines extends PluginModel<Entity>
@@ -29,22 +31,23 @@ public class LifeLines extends PluginModel<Entity>
 	private Investigation inv = null;
 	private StorageHandler sh;
 	private boolean userIsAdminAndDatabaseIsEmpty;
-	private String validpath;
+
+	private boolean validFileStorage;
+
+	public boolean isValidFileStorage()
+	{
+		return validFileStorage;
+	}
+
+	public void setValidFileStorage(boolean validFileStorage)
+	{
+		this.validFileStorage = validFileStorage;
+	}
 
 	@Override
 	public boolean isVisible()
 	{
 		return true;
-	}
-
-	public String getValidpath()
-	{
-		return validpath;
-	}
-
-	public void setValidpath(String validpath)
-	{
-		this.validpath = validpath;
 	}
 
 	public void setUserIsAdminAndDatabaseIsEmpty(boolean userIsAdminAndDatabaseIsEmpty)
@@ -94,6 +97,8 @@ public class LifeLines extends PluginModel<Entity>
 			// do nothing
 		}
 
+		this.setValidFileStorage(false);
+
 		try
 		{
 			// fails when there is no table 'MolgenisUser', or no MolgenisUser
@@ -132,11 +137,7 @@ public class LifeLines extends PluginModel<Entity>
 					// find out if there is a validated path and save this info
 					if (sh.hasValidFileStorage(db))
 					{
-						this.setValidpath(sh.getFileStorage(true, db).getAbsolutePath());
-					}
-					else
-					{
-						this.setValidpath(null);
+						this.setValidFileStorage(true);
 					}
 
 				}
@@ -180,8 +181,7 @@ public class LifeLines extends PluginModel<Entity>
 			String action = request.getString("__action");
 			if (action.equals("setPathAndLoad"))
 			{
-				File llrp = request.getFile("llrptar");
-				setupStorageAndLoadExample(db, llrp);
+				setupStorageAndLoadExample(db);
 			}
 		}
 		catch (Exception e)
@@ -192,18 +192,18 @@ public class LifeLines extends PluginModel<Entity>
 
 	}
 
-	public void setupStorageAndLoadExample(Database db, File llrp) throws Exception
+	public void setupStorageAndLoadExample(Database db) throws Exception
 	{
 
-		// File llrp = new File("./publicdata/llrp/llrp.tar.gz");
-		if (llrp.exists())
+		File llrp_pheno = new File("./publicdata/llrp_testing/llrp_fake_pheno.tar.gz");
+		if (llrp_pheno.exists())
 		{
-			File extractDir = TarGz.tarExtract(llrp);
+			File extractDir = TarGz.tarExtract(llrp_pheno);
 
 			System.out.println("files extracted to " + extractDir.getAbsolutePath());
 
 			File voorbeeld1_dataset = new File(extractDir, "voorbeeld1_dataset.csv");
-			new mainImporter(voorbeeld1_dataset);
+			new mainImporter(voorbeeld1_dataset, db);
 
 			System.out.println();
 
@@ -214,13 +214,43 @@ public class LifeLines extends PluginModel<Entity>
 			HL7PhenoImporter importer = new HL7PhenoImporter();
 			importer.start(ll, db);
 
-			this.setMessages(new ScreenMessage("LLRP example data loaded!", true));
+			this.setMessages(new ScreenMessage("LLRP pheno data loaded!", true));
 
 		}
 		else
 		{
-			throw new Exception("File " + llrp.getAbsolutePath() + " is missing!");
+			throw new Exception("File " + llrp_pheno.getAbsolutePath() + " is missing!");
 		}
 
+		File llrp_geno = new File("./publicdata/llrp_testing/llrp_fake_geno.tar.gz");
+		if (llrp_geno.exists())
+		{
+			File extractDir = TarGz.tarExtract(llrp_geno);
+			InvestigationFile ped = new InvestigationFile();
+			ped.setName("llrp_fake_geno");
+			ped.setExtension("ped");
+			ped.setInvestigation(db.find(Investigation.class,
+					new QueryRule(Investigation.NAME, Operator.EQUALS, "LifeLines")).get(0));
+			db.add(ped);
+
+			File uploadPed = new File(extractDir, "llrp_fake_geno.ped");
+			PerformUpload.doUpload(db, ped, uploadPed, true);
+
+			InvestigationFile map = new InvestigationFile();
+			map.setName("llrp_fake_snp");
+			map.setExtension("map");
+			map.setInvestigation(db.find(Investigation.class,
+					new QueryRule(Investigation.NAME, Operator.EQUALS, "LifeLines")).get(0));
+			db.add(map);
+
+			File uploadMap = new File(extractDir, "llrp_fake_snp.map");
+			PerformUpload.doUpload(db, map, uploadMap, true);
+
+			this.setMessages(new ScreenMessage("LLRP geno data loaded!", true));
+		}
+		else
+		{
+			throw new Exception("File " + llrp_geno.getAbsolutePath() + " is missing!");
+		}
 	}
 }
