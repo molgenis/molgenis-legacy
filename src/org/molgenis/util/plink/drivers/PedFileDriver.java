@@ -31,6 +31,26 @@ public class PedFileDriver extends AbstractFileDriver
 	public PedFileDriver(File pedFile) throws Exception
 	{
 		super(pedFile);
+		validate();
+	}
+
+	/**
+	 * Validates the ped file, for now it only checks if the file contains at
+	 * least 6 columns
+	 * 
+	 * @throws Exception
+	 */
+	public void validate() throws Exception
+	{
+		reader.reset();
+
+		Tuple tuple = reader.next();
+		if (tuple.size() < 6)
+		{
+			throw new Exception("Incorrect ped file format. Ped file must contain at least 6 columns");
+		}
+
+		reader.reset();
 	}
 
 	/**

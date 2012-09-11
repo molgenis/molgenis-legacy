@@ -25,6 +25,26 @@ public class MapFileDriver extends AbstractFileDriver
 	public MapFileDriver(File mapFile) throws Exception
 	{
 		super(mapFile);
+		validate();
+	}
+
+	/**
+	 * Validates the map file. For now it only validates if the file has exactly
+	 * 4 columns
+	 * 
+	 * @throws Exception
+	 */
+	public void validate() throws Exception
+	{
+		reader.reset();
+
+		Tuple tuple = reader.next();
+		if (tuple.size() != 4)
+		{
+			throw new Exception("Incorrect map file format. Map file must contain 4 columns");
+		}
+
+		reader.reset();
 	}
 
 	/**
@@ -37,8 +57,7 @@ public class MapFileDriver extends AbstractFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public List<MapEntry> getEntries(final long from, final long to)
-			throws Exception
+	public List<MapEntry> getEntries(final long from, final long to) throws Exception
 	{
 		reader.reset();
 
@@ -52,12 +71,9 @@ public class MapFileDriver extends AbstractFileDriver
 			{
 				for (int objIndex = 0; objIndex < 4; objIndex++)
 				{
-					if (tuple.getObject(objIndex) == null) throw new Exception(
-							Helper.errorMsg(line_number, objIndex));
+					if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 				}
-				MapEntry me = new MapEntry(tuple.getString(0),
-						tuple.getString(1), tuple.getDouble(2),
-						tuple.getLong(3));
+				MapEntry me = new MapEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2), tuple.getLong(3));
 				result.add(me);
 			}
 		}
@@ -81,11 +97,9 @@ public class MapFileDriver extends AbstractFileDriver
 			line_number++;
 			for (int objIndex = 0; objIndex < 4; objIndex++)
 			{
-				if (tuple.getObject(objIndex) == null) throw new Exception(
-						Helper.errorMsg(line_number, objIndex));
+				if (tuple.getObject(objIndex) == null) throw new Exception(Helper.errorMsg(line_number, objIndex));
 			}
-			MapEntry me = new MapEntry(tuple.getString(0), tuple.getString(1),
-					tuple.getDouble(2), tuple.getLong(3));
+			MapEntry me = new MapEntry(tuple.getString(0), tuple.getString(1), tuple.getDouble(2), tuple.getLong(3));
 			result.add(me);
 		}
 
