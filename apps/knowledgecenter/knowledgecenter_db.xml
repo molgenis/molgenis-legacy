@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<molgenis name="knowledgecenter">
+	<!-- We want as main categories: - about - projects / groups (depending 
+		if we are looking at group or project respectively) - output - news And as 
+		information types - projects - groups - persons - papers - databases - tools 
+		- training - help - services - datasets - facilities - presentations -->
+	<entity name="KcPage" xref_label="pageType,title">
+		<description>Any page in this knowledge center</description>
+		<field name="id" type="autoid" description="page identifier (todo: make nice path)" />
+		<field name="title" type="string" description="human readible title, not necessarily unique" />
+		<field name="content" type="richtext" />
+		<field name="publicationDate" type="datetime" auto="true" />
+		<field name="pageType" type="enum"
+			enum_options="[news,projects,groups,page,services,datasets,tools,presentations,about,training,facilities,papers,persons,vacancies]" />
+		<field name="related" type="mref" xref_entity="KcPage" nillable="true"/>	
+		<unique fields="pageType,title"/>
+	</entity>
+</molgenis>
