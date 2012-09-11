@@ -13,9 +13,17 @@
 		$('#fileUploadNext').button();
 		$('#fileUploadCancel').button();
 		$('#fileUploadNext').click(function(){
+			
 			if($('#uploadFileName').val() != ""){
-				$('input[name="__action"]').val('uploadFile');
-				$('form[name="${screen.name}"]').submit();
+				fileNameComponent = $('#uploadFileName').val().split(".");
+				numOfComponent = fileNameComponent.length;
+				areEqual = fileNameComponent[numOfComponent - 1].toUpperCase() === ("csv").toUpperCase();
+				if(!areEqual){
+					alert("please upload a csv file");
+				}else{
+					$('input[name="__action"]').val('uploadFile');
+					$('form[name="${screen.name}"]').submit();
+				}
 			}else{
 				alert("Please upload a file!");
 			}
@@ -41,10 +49,10 @@
 		
 		$('#newColHeaders').click(function(){
 			
-			$('#reportForm').hide();
-			
 			if(newColumns.length > 0){
 				
+				$('#reportForm').hide();
+					
 				if(newColumns.length > 0 && $('#newColumnsMapping').children().length == 0){
 			
 					var molgenisDataOptions;
@@ -92,8 +100,8 @@
 					
 					mappingHeader += "<fieldset>Upload your mapping file <input type=\"file\" id=\"mappingForColumns\" name=\"mappingForColumns\" />";
 					
-					mappingHeader += "<input type=\"submit\" id=\"uploadMapping\" name=\"uploadMapping\""+
-						"style=\"font-size:0.6em;color:#03406A\" value=\"upload\" onclick=\"__action.value='uploadMapping';return true;\">";
+					mappingHeader += "<input type=\"button\" id=\"uploadMapping\" name=\"uploadMapping\""+
+						"style=\"font-size:0.6em;color:#03406A\" value=\"upload\">";
 					
 					mappingHeader += "<input type=\"submit\" id=\"downloadTemplate\" name=\"downloadTemplate\""+
 						"style=\"font-size:0.6em;color:#03406A\" value=\"download template\" onclick=\"__action.value='downloadTemplate';return true;\"></fieldset>";
@@ -101,26 +109,6 @@
 					$('#newColumnsMapping').append(mappingTable);
 					$('#newColumnsMapping').prepend(mappingHeader);
 					$('#newColumnsMapping').append("</br><input type=\"button\" id=\"previousFromMapping\" style=\"font-size:0.6em;color:#03406A\" value=\"Previous\"/>");
-					
-					<#if screen.getJsonForMapping()??>
-						mappingResult = eval(${screen.getJsonForMapping()});
-						for(var index = 0; index < mappingResult.length; index++){
-							eachMapping = mappingResult[index];
-							identifier = eachMapping["variableName"].replace(" ","_");
-							$('#' + identifier + '_dataType').val(eachMapping["dataType"]);
-							if(eachMapping["dataType"] == "categorical"){
-								$('#' + identifier + '_categoriesControl').show();
-							}
-							
-							listOfCategories = eachMapping["listOfCategories"];
-							
-							for(var i = 0; i < listOfCategories.length; i++){
-								$('#' + identifier + '_categories').append("<option>" + listOfCategories[i] + "</option>");
-							}
-							$('#' + identifier + '_protocolTable').val(eachMapping["table"]);
-						}
-					</#if>
-					
 					
 					
 					$('#previousFromMapping').button();
@@ -132,9 +120,54 @@
 					$('#mappingTable th').css('background','#65A5D1');
 					$('#mappingTable tr').css('border-bottom','1px dotted');
 					
+					<#if screen.getJsonForMapping()??>
+						
+						mappingResult = eval(${screen.getJsonForMapping()});
+						
+						for(var index = 0; index < mappingResult.length; index++){
+							eachMapping = mappingResult[index];
+							identifier = eachMapping["variableName"].replace(" ","_");
+							$('#' + identifier + '_dataType').val(eachMapping["dataType"]);
+							if(eachMapping["dataType"] == "categorical"){
+								$('#' + identifier + '_categoriesControl').show();
+							}
+							
+							listOfCategories = eachMapping["listOfCategories"];
+							
+							for (var key in listOfCategories) {
+								newCategory = key + "=" + listOfCategories[key];
+								$('#' + identifier + '_categories').append("<option>" + newCategory + "</option>");
+								addNewCategory = "<input type=\"hidden\" id=\"" + identifier + "_categoryString\" name=\"" + identifier 
+									+ "_categoryString\" value=\"" + newCategory + "\"/>";
+								$('#' + identifier + '_categoriesControl').append(addNewCategory);
+								
+							}
+							
+							$('#' + identifier + '_protocolTable').val(eachMapping["table"]);
+						}
+					</#if>
+					
+					<#if screen.getMappingMessage()??>
+						$('#newColumnsMapping').prepend("<p style=\"color:red\"><i>There are errors in your mapping file, please check before upload!</i></p>");
+					</#if>
+					
 					$('#previousFromMapping').click(function(){
 						$('#newColumnsMapping').hide();
 						$('#reportForm').fadeIn();
+					});
+					
+					$('#uploadMapping').click(function(){
+						
+						fileNameComponent = $('#mappingForColumns').val().split(".");
+						numOfComponent = fileNameComponent.length;
+						areEqual = fileNameComponent[numOfComponent - 1].toUpperCase() === ("csv").toUpperCase();
+						if(!areEqual){
+							alert("please upload a csv file");
+						}else{
+							$('input[name="__action"]').val('uploadMapping');
+							$('form[name="${screen.name}"]').submit();
+						}
+						
 					});
 					
 					$('#mappingTable tr:gt(0)').each(function(){
@@ -151,31 +184,81 @@
 						});
 						
 						$(this).find('td:eq(2) input').click(function(){
+							
 							identifier = $(this).parents('tr:first').attr('id').replace("_mapping","");
 							
-							select = "<select id=\"" + identifier + "_dialogSelect\">";
+							variableName = $(this).parents('tr:first').find('td:first').html();
 							
-							$('#' + identifier + '_categories option').each(function(){
-								select += "<option>" + $(this).html() + "</option>";
-							});
+							if($('#' + identifier + '_dialog').length == 0){
 							
-							select += "</select>";
-							
-							removeButton = "<input type=\"button\" id=\"" + identifier + "_dialogRemove\" value=\"remove\"/>";
-							
-							addButton = "<input type=\"button\" id=\"" + identifier + "_dialogAdd\" value=\"add\"/>";
-							
-							addCategoryInput = "<div id=\"" + identifier + "_dialogInput\"></div>";
-							
-							addCategoryInput += "<input type=\"text\" id=\"" + identifier + "_dialogCode\" size=\"25\">";
-							
-							addCategoryInput += "<input type=\"text\" id=\"" + identifier + "_dialogString\" size=\"25\"></div>";
-							
-							dialogPanel = "<div id=\"" + identifier + "_dialog\">" + select + removeButton + addButton + addCategoryInput + "</div>";
-							
-							$('#' + identifier + '_categoriesControl').append(dialogPanel);
-							
-							$('#' + identifier + '_dialog').dialog();
+								select = "<select id=\"" + identifier + "_dialogSelect\">";
+								
+								$('#' + identifier + '_categories option').each(function(){
+									select += "<option>" + $(this).html() + "</option>";
+								});
+								
+								select += "</select>";
+								
+								removeButton = "<input type=\"button\" id=\"" + identifier + "_dialogRemove\" value=\"remove\"/>";
+								
+								addCategoryInput = "<div id=\"" + identifier + "_dialogInput\"></div>";
+								
+								addCategoryInput += "Code:&nbsp;<input type=\"text\" id=\"" + identifier + "_dialogCode\" size=\"15\"></br></br>"
+									+ "String:<input type=\"text\" id=\"" + identifier + "_dialogString\" size=\"15\">"	
+									+ "  <input type=\"button\" id=\"" + identifier + "_dialogAdd\" value=\"add\" /></div>";
+								
+								removePanel = "<fieldset><b><i>Remove existing category:</b></i></br></br>" + select + "&nbsp;&nbsp;" + removeButton + "</fieldset>";
+								
+								addPanel = "<fieldset> <b><i>Please input your category:</b></i></br></br>" +  addCategoryInput + "</fieldset>";
+								
+								dialogPanel = "<div id=\"" + identifier + "_dialog\"><fieldset><b><i>Variable name: </i></b>" 
+									+ variableName + "</fieldset>" + removePanel + addPanel + "</div>";
+								
+								$('#' + identifier + '_categoriesControl').append(dialogPanel);
+								
+								$('#' + identifier + '_dialog').dialog({ buttons: [
+								    {
+								        text: "Close",
+								        click: function() { $(this).dialog("close"); }
+								    }],
+								    title: "Edit the category",
+								    width:400,
+								});
+								
+								$('#' + identifier + '_dialog').css('font-size', 15);					
+								$('#' + identifier + '_dialogAdd').button();
+								$('#' + identifier + '_dialogRemove').button();
+								
+								$('#' + identifier + '_dialogAdd').click(function(){
+									codeString = $('#' +  identifier + '_dialogString').val();
+									code = $('#' +  identifier + '_dialogCode').val();
+									if(code == "" || codeString == ""){
+										alert("Please specify the code and corresponding label");
+									}else{
+										newCategory = "<option>"+ code + "=" + codeString + "</option>";
+										$('#' + identifier + '_categories').append(newCategory);
+										$('#' + identifier + '_dialogSelect').append(newCategory);
+										
+										addNewCategory = "<input type=\"hidden\" id=\"" + identifier + "_categoryString\" name=\"" + identifier 
+														+ "_categoryString\" value=\"" + code + "=" + codeString + "\"/>";
+										$('#' + identifier + '_categoriesControl').append(addNewCategory);
+										
+										lastOption = $('#' + identifier + '_dialogSelect option:last').val();
+										$('#' + identifier + '_dialogSelect').val(lastOption);
+										
+										$('#' +  identifier + '_dialogString').val("");
+										$('#' +  identifier + '_dialogCode').val("");
+									}
+								});
+																
+								$('#' + identifier + '_dialogRemove').click(function(){
+									$('#' + identifier + '_categories option:selected').remove();
+									$('#' + identifier + '_dialogSelect option:selected').remove();
+								});
+								
+							}else{
+								$('#' + identifier + '_dialog').dialog('open');
+							}
 						});
 					});
 				}
@@ -224,7 +307,7 @@
 	<div class="formscreen">	
 		
 		<div class="form_header" id="${screen.getName()}">
-		${screen.label}
+			${screen.label}
 		</div>
 		
 		<#if screen.getSTATUS() == "UploadFile">
@@ -251,6 +334,10 @@
 			    	</div>
 		    	</td></tr>
 	    	</table>
+	    	<#if screen.getUploadFileErrorMessage()??>
+				<script>$('#explanationForm').html("${screen.getUploadFileErrorMessage()}");</script>
+			</#if>
+			
     	<#elseif screen.getSTATUS() == "CheckFile">
     		<div id="newColumnsMapping"></div>
     		<div id="reportForm">
@@ -273,15 +360,20 @@
     					style="font-size:0.6em;color:#03406A" onclick="__action.value='uploadNewFile';return true;"/>
     			</fieldset>
     			<script>
-    				generateReport(${screen.getReport()});
+    				<#if screen.screen.getReport()??>
+    					generateReport(${screen.getReport()});
+    				</#if>
     				<#if screen.getJsonForMapping()??>
+						$('#newColHeaders').trigger('click');
+					</#if>
+					<#if screen.getMappingMessage()??>
 						$('#newColHeaders').trigger('click');
 					</#if>
     			</script>
     		</div>
     		
     	<#elseif screen.getSTATUS() == "previewFile">
-    		${screen.getTableView()}
+    		<#if screen.getTableView()??>${screen.getTableView()}</#if>
     		<fieldset id="controlPanelForImporting">
 				<input type="submit" name="previousStepSummary" id="previousStepSummary" value="Previous"  
     					style="font-size:0.6em;color:#03406A" onclick="__action.value='previousStepSummary';return true;"/>
