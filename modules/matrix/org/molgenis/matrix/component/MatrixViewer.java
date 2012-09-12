@@ -739,8 +739,11 @@ public class MatrixViewer extends HtmlWidget {
 		divContents += measurementChooser.render();
 		divContents += new ActionInput(UPDATECOLHEADERFILTER, "", "Update")
 				.render();
-		divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all")
-				.render();
+		if (this.APPLICATION_STRING != "ANIMALDB") {
+			divContents += new ActionInput(ADDALLCOLHEADERFILTER, "", "Add all")
+					.render();
+		}
+
 		// divContents += new ActionInput(REMALLCOLHEADERFILTER, "",
 		// "Remove all").render();
 		divContents += "</div></div>";
