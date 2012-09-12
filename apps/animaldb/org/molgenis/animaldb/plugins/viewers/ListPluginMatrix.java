@@ -31,9 +31,7 @@ import org.molgenis.pheno.Measurement;
 import org.molgenis.pheno.ObservedValue;
 import org.molgenis.util.Tuple;
 
-
-public class ListPluginMatrix extends EasyPluginController
-{
+public class ListPluginMatrix extends EasyPluginController {
 	private static final long serialVersionUID = 8804579908239186037L;
 	MatrixViewer targetMatrixViewer = null;
 	static String TARGETMATRIX = "targetmatrix";
@@ -45,161 +43,177 @@ public class ListPluginMatrix extends EasyPluginController
 	private boolean reload = true;
 	private int userId = -1;
 	private Boolean inEditMode;
-	
-	public ListPluginMatrix(String name, ScreenController<?> parent)
-	{
+
+	public ListPluginMatrix(String name, ScreenController<?> parent) {
 		super(name, parent);
 	}
 
 	@Override
-    public Show handleRequest(Database db, Tuple request, OutputStream out)
-	{
+	public Show handleRequest(Database db, Tuple request, OutputStream out) {
 		if (targetMatrixViewer != null) {
 			targetMatrixViewer.setDatabase(db);
+			targetMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
 		}
-		
+
 		reload = true;
 		action = request.getAction();
-		
+
 		try {
-			if (action != null && action.startsWith(targetMatrixViewer.getName())) {
-	    		targetMatrixViewer.handleRequest(db, request);
-	    		reload = false;
+			if (action != null
+					&& action.startsWith(targetMatrixViewer.getName())) {
+				targetMatrixViewer.handleRequest(db, request);
+				reload = false;
 			}
-			
-			if(action.equals(EDIT_BUTTON_ACTION) || action.equals(targetMatrixViewer.getName() + EditableJQueryDataTable.MATRIX_EDIT_ACTION))
-			{
-				if(inEditMode)
-				{
+
+			if (action.equals(EDIT_BUTTON_ACTION)
+					|| action.equals(targetMatrixViewer.getName()
+							+ EditableJQueryDataTable.MATRIX_EDIT_ACTION)) {
+				if (inEditMode) {
 					inEditMode = false;
-				}
-				else
-				{
+				} else {
 					inEditMode = true;
 				}
 				reload = true;
 			}
-			
-		} catch(Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
-			this.getMessages().add(new ScreenMessage("Something went wrong while handling request: " + e.getMessage(), false));
+			this.getMessages().add(
+					new ScreenMessage(
+							"Something went wrong while handling request: "
+									+ e.getMessage(), false));
 		}
-		
+
 		return Show.SHOW_MAIN;
 	}
 
 	@Override
-	public void reload(Database db)
-	{
-		if(inEditMode == null)
-		{
+	public void reload(Database db) {
+		if (inEditMode == null) {
 			inEditMode = false;
 		}
-		
+
 		cs.setDatabase(db);
-		
-		// If a non-matrix related request was handled or if a new user has logged in, reload the matrix
+
+		// If a non-matrix related request was handled or if a new user has
+		// logged in, reload the matrix
 		if (reload == true || userId != db.getLogin().getUserId().intValue()) {
 			userId = db.getLogin().getUserId().intValue();
 			container = new Container();
 			div = new DivPanel();
 			try {
-				List<String> investigationNames = cs.getAllUserInvestigationNames(db.getLogin().getUserName());
+				List<String> investigationNames = cs
+						.getAllUserInvestigationNames(db.getLogin()
+								.getUserName());
 				List<String> measurementsToShow = new ArrayList<String>();
-				// Some measurements that we think AnimalDB users like to see most:
+				// Some measurements that we think AnimalDB users like to see
+				// most:
 				measurementsToShow.add("Active");
 				measurementsToShow.add("Sex");
 				measurementsToShow.add("Species");
 				measurementsToShow.add("Line");
-				//measurementsToShow.add("OldUliDbId");
+				// measurementsToShow.add("OldUliDbId");
 				measurementsToShow.add("OldUliDbTiernummer");
 				measurementsToShow.add("OldRhutDbAnimalId");
 				measurementsToShow.add("Location");
 				measurementsToShow.add("Background");
-				//measurementsToShow.add("Remark");
+				// measurementsToShow.add("Remark");
 				List<MatrixQueryRule> filterRules = new ArrayList<MatrixQueryRule>();
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.rowHeader, Individual.INVESTIGATION_NAME, 
-						Operator.IN, investigationNames));
-				filterRules.add(new MatrixQueryRule(MatrixQueryRule.Type.colValueProperty, 
-						cs.getMeasurementId("Active"), ObservedValue.VALUE, Operator.EQUALS,
-						"Alive"));
-				
-				if(inEditMode)
-				{
-					//restore filters and measurements to show
+				filterRules.add(new MatrixQueryRule(
+						MatrixQueryRule.Type.rowHeader,
+						Individual.INVESTIGATION_NAME, Operator.IN,
+						investigationNames));
+				filterRules.add(new MatrixQueryRule(
+						MatrixQueryRule.Type.colValueProperty, cs
+								.getMeasurementId("Active"),
+						ObservedValue.VALUE, Operator.EQUALS, "Alive"));
+
+				if (inEditMode) {
+					// restore filters and measurements to show
 					filterRules = targetMatrixViewer.getMatrix().getRules();
-					int oldOffset = targetMatrixViewer.getMatrix().getRowOffset();
+					int oldOffset = targetMatrixViewer.getMatrix()
+							.getRowOffset();
 					int oldLimit = targetMatrixViewer.getMatrix().getRowLimit();
-					
-					targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
-							new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-							true, 0, true, false, filterRules, 
-							null, true);
-					
-					//restore paging
+
+					targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX,
+							new SliceablePhenoMatrix<Individual, Measurement>(
+									Individual.class, Measurement.class), true,
+							0, true, false, filterRules, null, true);
+					// enable animalDB specific traits (sorting filtering etc)
+					targetMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
+					// restore paging
 					targetMatrixViewer.getMatrix().setRowOffset(oldOffset);
 					targetMatrixViewer.getMatrix().setRowLimit(oldLimit);
 
-					String nameIdSave = targetMatrixViewer.getName() + EditableJQueryDataTable.MATRIX_EDIT_ACTION;
-					ActionInput saveButton = new ActionInput(nameIdSave, "", "Save");
+					String nameIdSave = targetMatrixViewer.getName()
+							+ EditableJQueryDataTable.MATRIX_EDIT_ACTION;
+					ActionInput saveButton = new ActionInput(nameIdSave, "",
+							"Save");
 					saveButton.setId(nameIdSave);
 					div.add(saveButton);
-					
-					ActionInput editButton = new ActionInput(EDIT_BUTTON_ACTION, "", "Cancel");
+
+					ActionInput editButton = new ActionInput(
+							EDIT_BUTTON_ACTION, "", "Cancel");
 					editButton.setId(EDIT_BUTTON_ACTION);
 					div.add(editButton);
-					
-				}
-				else
-				{
+
+				} else {
 					int oldOffset = 0;
-					int oldLimit = 10;	
-					MatrixQueryRule measurements = new MatrixQueryRule(MatrixQueryRule.Type.colHeader, Measurement.NAME, Operator.IN, measurementsToShow);
-					
-					if(targetMatrixViewer != null)
-					{
-						//restore filters and measurements to show
+					int oldLimit = 10;
+					MatrixQueryRule measurements = new MatrixQueryRule(
+							MatrixQueryRule.Type.colHeader, Measurement.NAME,
+							Operator.IN, measurementsToShow);
+
+					if (targetMatrixViewer != null) {
+						// restore filters and measurements to show
 						filterRules = targetMatrixViewer.getMatrix().getRules();
-						oldOffset = targetMatrixViewer.getMatrix().getRowOffset();
+						oldOffset = targetMatrixViewer.getMatrix()
+								.getRowOffset();
 						oldLimit = targetMatrixViewer.getMatrix().getRowLimit();
 						measurements = null;
 					}
 
-					targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX, 
-							new SliceablePhenoMatrix<Individual, Measurement>(Individual.class, Measurement.class), 
-							true, 0, true, false, filterRules, 
-							measurements, false);
-					
-					//restore paging
+					targetMatrixViewer = new MatrixViewer(this, TARGETMATRIX,
+							new SliceablePhenoMatrix<Individual, Measurement>(
+									Individual.class, Measurement.class), true,
+							0, true, false, filterRules, measurements, false);
+
+					// enable animalDB specific traits (sorting filtering etc)
+					targetMatrixViewer.setAPPLICATION_STRING("ANIMALDB");
+					// restore paging
 					targetMatrixViewer.getMatrix().setRowOffset(oldOffset);
 					targetMatrixViewer.getMatrix().setRowLimit(oldLimit);
-					
-					// Temporarily make this function admin only, because it is to dangerous for normal users in its current form
+
+					// Temporarily make this function admin only, because it is
+					// to dangerous for normal users in its current form
 					String userName = db.getLogin().getUserName();
 					if (userName.equals("admin")) {
-						ActionInput editButton = new ActionInput(EDIT_BUTTON_ACTION, "", "Edit");
+						ActionInput editButton = new ActionInput(
+								EDIT_BUTTON_ACTION, "", "Edit");
 						editButton.setId(EDIT_BUTTON_ACTION);
 						div.add(editButton);
-					}					
+					}
 				}
-				
+
 				targetMatrixViewer.setDatabase(db);
 				div.add(targetMatrixViewer);
 				container.add(div);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-				this.getMessages().add(new ScreenMessage("Something went wrong while loading matrix: " + e.getMessage(), false));
+				this.getMessages().add(
+						new ScreenMessage(
+								"Something went wrong while loading matrix: "
+										+ e.getMessage(), false));
 			}
 		} else {
 			targetMatrixViewer.setDatabase(db);
 		}
-    }
-	
-	public ScreenView getView()
-    {
+	}
+
+	public ScreenView getView() {
 		MolgenisForm view = new MolgenisForm(this);
 		view.add(container);
 		return view;
-    }
-	
+	}
+
 }
