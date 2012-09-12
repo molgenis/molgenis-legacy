@@ -31,7 +31,7 @@
 //
 //public class CategoryLoader {
 //	
-//	private final EntityManager em;Œ
+//	private final EntityManager em;a
 //	private final Map<String, Protocol> protocols;
 //	private final List<Category> categories = new ArrayList<Category>();
 //	private final Investigation investigation;

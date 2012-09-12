@@ -250,22 +250,22 @@ var JQGridView = {
         	$(pageInput).attr('value', this.columnPage);  
 
 			maxPage = Math.floor( this.numOfSelectedNodes / this.columnPagerSize);
-			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) maxPage = maxPage + 2;
+			if( (this.numOfSelectedNodes % this.columnPagerSize) > 0) maxPage = maxPage + 1;
 
 			// handle input of specific column page number
         	$(pageInput).change(function() {
         		value = parseInt($(this).val(), 10);
         		
         		
-        		if(value - 1 > 0 && value - 1 < maxPage) {
+        		if(value > 0 && value < maxPage) {
         			$(this).attr('value', value);
         			self.setColumnPageIndex(value - 1);
         		} else {
-        			if(value - 1 >= maxPage) {
+        			if(value >= maxPage) {
         				$(this).attr('value', value);
         				self.setColumnPageIndex(maxPage - 1);
         			}
-        			if(value - 1 <= 0) {
+        			if(value <= 0) {
         				$(this).attr('value', value);
         				self.setColumnPageIndex(0);        			
         			}
@@ -533,7 +533,7 @@ var JQGridView = {
 	},
 
 	setColumnPageIndex : function(columnPagerIndex) {
-		this.columnPage = columnPagerIndex;
+		this.columnPage = columnPagerIndex+1;
 		this.changeColumns(null);
 	},
 	

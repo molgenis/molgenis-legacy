@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.molgenis.core.RuntimeProperty;
@@ -15,10 +14,9 @@ import org.molgenis.framework.db.Database;
 import org.molgenis.framework.db.DatabaseException;
 import org.molgenis.framework.db.QueryRule;
 import org.molgenis.framework.db.QueryRule.Operator;
-import org.molgenis.framework.db.jdbc.JDBCDatabase;
 import org.molgenis.util.DetectOS;
 
-import app.servlet.MolgenisServlet;
+import app.servlet.UsedMolgenisOptions;
 
 public class StorageHandler
 {
@@ -112,7 +110,7 @@ public class StorageHandler
 		{
 			throw new Exception("No retrievable or valid file storage location present.");
 		}
-		return new File(storage.getAbsolutePath() + File.separator + MolgenisServlet.getMolgenisVariantID());
+		return new File(storage.getAbsolutePath() + File.separator + new UsedMolgenisOptions().appName);
 	}
 
 	/**
@@ -289,7 +287,8 @@ public class StorageHandler
 	 * @throws DatabaseException
 	 * @throws UnsupportedEncodingException
 	 */
-	private File getFileStorageRoot(boolean mustBeValid, Database db) throws UnsupportedEncodingException, DatabaseException
+	private File getFileStorageRoot(boolean mustBeValid, Database db) throws UnsupportedEncodingException,
+			DatabaseException
 	{
 		URI loc = getURIStorageRoot(mustBeValid, db);
 		if (loc == null)
@@ -307,7 +306,8 @@ public class StorageHandler
 	 * @param mustBeValid
 	 * @return
 	 */
-	private URI getURIStorageRoot(boolean mustBeValid, Database db) throws UnsupportedEncodingException, DatabaseException
+	private URI getURIStorageRoot(boolean mustBeValid, Database db) throws UnsupportedEncodingException,
+			DatabaseException
 	{
 		RuntimeProperty path = getRuntimeProperty(RUNTIME_FILE_STORAGE_PATH, db);
 		RuntimeProperty valid = getRuntimeProperty(RUNTIME_FILE_STORAGE_VALIDATED, db);

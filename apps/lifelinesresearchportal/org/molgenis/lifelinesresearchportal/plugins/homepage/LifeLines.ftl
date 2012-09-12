@@ -31,9 +31,12 @@
 				<table bgcolor="white" border="3" bordercolor="red">
 					<tr>
 						<td>
-							<br><i><font color="red">You are logged in as admin, and the database does not contain any investigations or other users. Automated setup is now possible. Database additions will disable this notice.</font></i><br><br>
-							<input type="file" name="llrptar"/>
+							<br><i><font color="red">You are logged in as admin, and the database does not contain any investigations or other users. Automated setup is now possible. Database additions will disable this notice. <b>Please be patient: loading the test data will take a few minutes.</b></font></i><br><br>
+							<#if screen.validFileStorage == true>
 							<input type="submit" value="Load" id="loadExamples" onclick="document.forms.${screen.name}.__action.value = 'setPathAndLoad'; document.forms.${screen.name}.submit();"/>
+							<#else>
+							<h2>Please setup your file storage location first:</h2><h3>Go to <u>Admin</u> -> <u>File Storage</u>, validate a location, and come back here.</h3>
+							</#if>
 							<br><br>
 						</td>
 					</tr>
