@@ -20,13 +20,13 @@ public class CachingPedFileDriver extends PedFileDriver
 		this.entries = new ArrayList<PedEntry>(cache);
 	}
 
-	public void setFilters(List<QueryRule> rules)
+	public void setFilters(List<QueryRule> rules, List<String> snpNames)
 	{
 		this.entries = new ArrayList<PedEntry>(cache);
 
 		for (QueryRule rule : rules)
 		{
-			entries = filter(entries, rule);
+			entries = filter(entries, rule, snpNames);
 		}
 
 		nrOfElements = entries.size();
@@ -45,7 +45,7 @@ public class CachingPedFileDriver extends PedFileDriver
 	}
 
 	/** for now only simple single queries are implemented **/
-	private List<PedEntry> filter(List<PedEntry> entries, final QueryRule filter)
+	private List<PedEntry> filter(List<PedEntry> entries, QueryRule filter, List<String> snpNames)
 	{
 		List<PedEntry> filtered = new ArrayList<PedEntry>();
 
@@ -80,6 +80,19 @@ public class CachingPedFileDriver extends PedFileDriver
 						&& new Double(entry.getPhenotype()).toString().equals(filter.getValue()))
 				{
 					filtered.add(entry);
+				}
+				else
+				{
+					boolean found = false;
+					for (int i = 0; i < snpNames.size() && !found; i++)
+					{
+						if (snpNames.get(i).equals(filter.getField())
+								&& entry.getBialleles().get(i).toString().equals(filter.getValue()))
+						{
+							filtered.add(entry);
+							found = true;
+						}
+					}
 				}
 
 			}
