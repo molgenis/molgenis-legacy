@@ -557,6 +557,7 @@ public class MatrixViewer extends HtmlWidget {
 														" ");
 									}
 								}
+
 								// If value is empty, use relation_Name:
 								if (val instanceof ObservedValue
 										&& valueToShow == null) {
@@ -620,6 +621,7 @@ public class MatrixViewer extends HtmlWidget {
 											+ "')\" onMouseOut=\"toolTip()\">...</a>";
 
 								}
+
 								// If timing should be shown:
 								if (showValueValidRange) {
 									if (val.get(ObservedValue.TIME) != null) {
