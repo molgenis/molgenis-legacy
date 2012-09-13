@@ -52,7 +52,7 @@ public class BedFileDriver
 
 		if (mn1 == 108 && mn2 == 27) // tested, bit code 01101100 00011011
 		{
-			//System.out.println("Plink magic number valid");
+			// System.out.println("Plink magic number valid");
 		}
 		else
 		{
@@ -63,11 +63,11 @@ public class BedFileDriver
 
 		if (bmode == 1) // tested, bit code 00000001
 		{
-			//System.out.println("mode 1: SNP-major");
+			// System.out.println("mode 1: SNP-major");
 		}
 		else if (bmode == 0) // assumed... bit code 00000000
 		{
-			//System.out.println("mode 0: individual-major");
+			// System.out.println("mode 0: individual-major");
 		}
 		else
 		{
@@ -91,8 +91,7 @@ public class BedFileDriver
 	 * @return
 	 * @throws Exception
 	 */
-	public String convertGenoCoding(String in, String hom1, String hom2,
-			String het, String _null) throws Exception
+	public String convertGenoCoding(String in, String hom1, String hom2, String het, String _null) throws Exception
 	{
 		if (in.equals("00"))
 		{
@@ -135,13 +134,13 @@ public class BedFileDriver
 	 */
 	public String getElement(long index) throws Exception
 	{
-		throw new Exception("fixme!");
-//		RandomAccessFile raf = new RandomAccessFile(bedFile, "r");
-//		raf.seek((index / 4) + 3);
-//		String byteString = reverse(bits(raf.readByte()));
-//		raf.close();
-//		int bitpair = (int) (index % 4) * 2;
-//		return byteString.substring(bitpair, bitpair + 2);
+		// throw new Exception("fixme!");
+		RandomAccessFile raf = new RandomAccessFile(bedFile, "r");
+		raf.seek((index / 4) + 3);
+		String byteString = reverse(bits(raf.readByte()));
+		raf.close();
+		int bitpair = (int) (index % 4) * 2;
+		return byteString.substring(bitpair, bitpair + 2);
 	}
 
 	/**
@@ -157,14 +156,17 @@ public class BedFileDriver
 	public String[] getElements(long from, long to, int paddingBitpairs, int pass) throws IOException
 	{
 		double paddingFraction = paddingBitpairs / 4.0;
-		// Start byte = byte position of start individual, corrected for padding 0's that get added at every SNP:
-		long start = (long)((from / 4.0) - (pass * paddingFraction) + pass + 3);
-		// Stop byte = byte position after last individual, corrected for padding 0's that get added at every SNP:
-		long stop = (long)((to / 4.0) - ((pass + 1) * paddingFraction) + (pass + 1) + 3);
+		// Start byte = byte position of start individual, corrected for padding
+		// 0's that get added at every SNP:
+		long start = (long) ((from / 4.0) - (pass * paddingFraction) + pass + 3);
+		// Stop byte = byte position after last individual, corrected for
+		// padding 0's that get added at every SNP:
+		long stop = (long) ((to / 4.0) - ((pass + 1) * paddingFraction) + (pass + 1) + 3);
 		byte[] res = new byte[(int) (stop - start)];
 		int res_index = 0;
-		String[] result = new String[(int) (to - from)]; // to - from = nr. of individuals
-		
+		String[] result = new String[(int) (to - from)]; // to - from = nr. of
+															// individuals
+
 		RandomAccessFile raf = new RandomAccessFile(bedFile, "r");
 		raf.seek(start);
 		raf.read(res);
@@ -174,26 +176,29 @@ public class BedFileDriver
 		{
 			byte b = res[i];
 			String byteString = reverse(bits(b));
-			
+
 			int toBit = 8; // normally we take the whole byte
-			if (i == res.length - 1) // except at the end, when we correct for padding 0's
+			if (i == res.length - 1) // except at the end, when we correct for
+										// padding 0's
 			{
 				// At the end, the string is padded with 0's -> check
-				for (int j = paddingBitpairs * 2; j < 8; j++) {
-					if (byteString.charAt(j) != '0') {
+				for (int j = paddingBitpairs * 2; j < 8; j++)
+				{
+					if (byteString.charAt(j) != '0')
+					{
 						throw new IOException("Fatal error: padding 0's not present where expected!");
 					}
 				}
-				toBit -= (paddingBitpairs * 2); 
+				toBit -= (paddingBitpairs * 2);
 			}
 
 			for (int pair = 0; pair < toBit; pair += 2)
 			{
-				//System.out.print(res_index + " ");
+				// System.out.print(res_index + " ");
 				result[res_index++] = byteString.substring(pair, pair + 2);
 			}
 		}
-		//System.out.println("");
+		// System.out.println("");
 		return result;
 	}
 
