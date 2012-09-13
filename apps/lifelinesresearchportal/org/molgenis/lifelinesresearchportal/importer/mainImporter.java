@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.molgenis.Molgenis;
 import org.molgenis.framework.db.Database;
 import org.molgenis.organization.Investigation;
 import org.molgenis.pheno.Individual;
@@ -26,23 +25,23 @@ import app.DatabaseFactory;
 public class mainImporter
 {
 
-	public mainImporter() throws FileNotFoundException, SQLException, IOException, Exception
+	public mainImporter(Database db) throws FileNotFoundException, SQLException, IOException, Exception
 	{
-		this(new File("/Users/pc_iverson/Desktop/Input/HL7Files/voorbeeld1_dataset.csv"));
+		this(new File("/Users/pc_iverson/Desktop/Input/HL7Files/voorbeeld1_dataset.csv"), db);
 	}
 
-	public mainImporter(File voorbeeld1_dataset) throws FileNotFoundException, SQLException, IOException, Exception
+	public mainImporter(File voorbeeld1_dataset, Database db) throws FileNotFoundException, SQLException, IOException,
+			Exception
 	{
 		// BasicConfigurator.configure();
 
 		// empty db
-		new Molgenis(
-				"apps/lifelinesresearchportal/org/molgenis/lifelinesresearchportal/lifelinesresearchportal.properties")
-				.updateDb(true);
+		// new Molgenis(
+		// "apps/lifelinesresearchportal/org/molgenis/lifelinesresearchportal/lifelinesresearchportal.properties")
+		// .updateDb(true);
 
 		Logger.getRootLogger().setLevel(Level.ERROR);
 
-		Database db = DatabaseFactory.create();
 		try
 		{
 
@@ -147,7 +146,7 @@ public class mainImporter
 
 	public static void main(String[] args) throws SQLException, Exception
 	{
-		new mainImporter();
+		new mainImporter(DatabaseFactory.create());
 	}
 
 }

@@ -27,6 +27,7 @@ import decorators.MolgenisFileHandler;
 public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 {
 	private static final long serialVersionUID = 1049195164197133420L;
+	private static final String JQ_GRID_VIEW_NAME = "pedmaptable";
 	private JQGridView tableView;
 	private List<InvestigationFile> pedFiles;
 	private List<InvestigationFile> mapFiles;
@@ -47,14 +48,11 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 			pedFiles = getInvestigationFiles(db, "ped");
 			mapFiles = getInvestigationFiles(db, "map");
 
-			if (pedFiles.isEmpty())
+			if (pedFiles.isEmpty() || mapFiles.isEmpty())
 			{
-				throw new Exception("No ped files");
-			}
-
-			if (mapFiles.isEmpty())
-			{
-				throw new Exception("No map files");
+				// Show errormessage
+				setError("Missing ped or map files");
+				return;
 			}
 
 			if (selectedMapFile == null)
@@ -86,7 +84,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 			}
 
 			// check which table to show
-			tableView = new JQGridView("pedmaptable", this, table, false);
+			tableView = new JQGridView(JQ_GRID_VIEW_NAME, this, table, false);
 
 			tableView.setLabel("Genotypes");
 
@@ -96,7 +94,7 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			this.setError(e.getMessage());
+			setError(e.getMessage());
 		}
 	}
 
@@ -143,7 +141,11 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 		{
 			selectPed.addOption(file.getName(), file.getName());
 		}
-		selectPed.setValue(selectedPedFile.getName());
+
+		if (selectedPedFile != null)
+		{
+			selectPed.setValue(selectedPedFile.getName());
+		}
 		view.add(selectPed);
 
 		SelectInput selectMap = new SelectInput("mapfile");
@@ -151,12 +153,19 @@ public class JQGridPluginPedMap extends EasyPluginController<JQGridPluginPedMap>
 		{
 			selectMap.addOption(file.getName(), file.getName());
 		}
-		selectMap.setValue(selectedMapFile.getName());
+
+		if (selectedMapFile != null)
+		{
+			selectMap.setValue(selectedMapFile.getName());
+		}
 		view.add(selectMap);
 
 		view.add(new ActionInput("reloadTable", "Reload table"));
 
-		view.add(tableView);
+		if (tableView != null)
+		{
+			view.add(tableView);
+		}
 
 		return view;
 	}
