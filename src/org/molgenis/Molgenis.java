@@ -432,24 +432,18 @@ public class Molgenis
 		{
 			logger.info("Skipping R interface ....");
 		}
-		// SCREEN
-		if (options.generate_MolgenisServlet)
-		{
-			// SERVER SETTINGS
-			generators.add(new MolgenisServletContextGen());
-			generators.add(new MolgenisContextListenerGen());
-			generators.add(new FrontControllerGen()); // will replace
-														// MolgenisServlet
-														// (service mapping,
-														// database & security)
-			generators.add(new MolgenisGuiServiceGen()); // will replace
-															// MolgenisServlet
-															// (gui service)
 
-		}
-		else
+		// always generate frontcontroller
+		generators.add(new FrontControllerGen());
+
+		// also generate context (still used?)
+		generators.add(new MolgenisServletContextGen());
+		generators.add(new MolgenisContextListenerGen());
+
+		// optional: the GUI
+		if (options.generate_gui)
 		{
-			logger.info("Skipping MolgenisServlet ....");
+			generators.add(new MolgenisGuiServiceGen());
 		}
 
 		// HTML
