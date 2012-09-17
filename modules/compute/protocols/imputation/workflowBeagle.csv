@@ -1,6 +1,0 @@
-name,protocol_name,PreviousSteps_name
-transposePlinkData,transposePlinkData,
-createBglFileFromPlinkData,createBglFileFromPlinkData,transposePlinkData
-createMarkerFile,createMarkerFile,createBglFileFromPlinkData
-imputeWithBeagle,imputeWithBeagle,createMarkerFile
-beagleOutputToTrityper,beagleOutputToTrityper,imputeWithBeagle

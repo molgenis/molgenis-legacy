@@ -1,1 +1,0 @@
-${location}/err/err_${scriptID}.err

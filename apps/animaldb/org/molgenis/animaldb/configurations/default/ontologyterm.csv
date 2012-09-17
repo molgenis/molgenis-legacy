@@ -1,7 +1,0 @@
-ontology;termName;termDefinition
-Units;TargetLink;Link to an entry in one of the ObservationTarget tables.
-Units;Gram;SI unit for mass.
-Units;Boolean;True (1) or false (0).
-Units;Datetime;Timestamp.
-Units;Number;A discrete number greater than 0.
-Units;String;Short piece of text.

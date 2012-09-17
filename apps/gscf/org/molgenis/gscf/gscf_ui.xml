@@ -1,9 +1,0 @@
-<molgenis name="animaldb" label="AnimalDB">
-
-	<menu name="mainmenu" position="left" startswith="WelcomeScreen">
-
-		<form name="assay" entity="assay" view="list" label="Assays" />
-				
-	</menu>
-
-</molgenis>

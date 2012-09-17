@@ -1,1 +1,0 @@
-${location}/extra/${scriptID}.txt
