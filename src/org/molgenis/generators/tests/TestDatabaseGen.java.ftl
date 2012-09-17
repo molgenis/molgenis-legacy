@@ -48,8 +48,8 @@ import org.molgenis.framework.db.Query;
 import org.molgenis.framework.db.DatabaseException;
 
 import static  org.testng.AssertJUnit.*;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 <#list model.entities as entity>
@@ -75,7 +75,7 @@ public class TestDatabase
 	/*
 	 * Create a database to use
 	 */
-	@BeforeTest(alwaysRun = true)
+	@BeforeClass(alwaysRun = true)
 	public static void oneTimeSetUp()   
 	{
 		try
@@ -104,7 +104,7 @@ public class TestDatabase
 		logger.info("Database created");
 	}
 <#if databaseImp = 'jpa'>		
-	@AfterTest(alwaysRun = true)
+	@AfterClass(alwaysRun = true)
 	public static void destroy() {
 		JpaUtil.dropTables((JpaDatabase)db, configOverrides);
 	}	
