@@ -1,4 +1,6 @@
+
 ## Build folders
+
 bin/
 build/
 target/
@@ -9,6 +11,14 @@ hsqldb/
 handwritten/
 generated/
 WebContent/WEB-INF/lib/
+
+<<<<<<< HEAD
+*.class
+*,so
+*,si
+*,dll
+*.o
+*.tmp
 
 ## Always ignore these
 *~
@@ -38,7 +48,6 @@ molgenis_apps.iml
 *.tmp
 tmp*
 log*
-.classpath
 /.externalToolBuilders
 /test-output
 *.svn
